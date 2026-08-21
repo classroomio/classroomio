@@ -142,7 +142,7 @@ export const createExerciseSchema = {
             .describe(
               `Required on every question — never omit. Supported types: ${ENABLED_QUESTION_TYPE_ID_DESCRIPTION}. Vary types across questions (do not default everything to RADIO/1).`
             ),
-          points: z.number().min(0).default(1).describe('Points for this question'),
+          points: z.number().min(1).default(1).describe('Points for this question'),
           order: z.number().int().min(0).describe('Display order'),
           settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
           options: z
@@ -271,7 +271,7 @@ export const addQuestionsSchema = {
           .describe(
             `Required on every question — never omit. Supported types: ${ENABLED_QUESTION_TYPE_ID_DESCRIPTION}. Vary types across questions (do not default everything to RADIO/1).`
           ),
-        points: z.number().min(0).default(1).describe('Points for this question'),
+        points: z.number().min(1).default(1).describe('Points for this question'),
         order: z.number().int().min(0).describe('Display order'),
         settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
         options: z
@@ -303,7 +303,7 @@ export const updateQuestionsSchema = {
           .max(ENABLED_QUESTION_TYPE_MAX_ID)
           .optional()
           .describe(`Question type ID. Supported types: ${ENABLED_QUESTION_TYPE_ID_DESCRIPTION}`),
-        points: z.number().min(0).optional(),
+        points: z.number().min(1).optional(),
         order: z.number().int().min(0).optional(),
         exerciseSectionId: z
           .string()

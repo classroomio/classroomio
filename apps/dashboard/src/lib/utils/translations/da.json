@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Point skal være mindst 0"
+        "too_small": "Point skal være mindst 1"
       },
       "label": {
         "too_small": "Mulighedsmærkat er påkrævet"

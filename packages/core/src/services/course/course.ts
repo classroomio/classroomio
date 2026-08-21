@@ -7,7 +7,6 @@ import {
   deleteCourse as deleteCourseQuery,
   getCourseById,
   getCourseProgress as getCourseProgressQuery,
-  getCourseById,
   getCourseWithRelations,
   getOrgIdByCourseId,
   updateCourse as updateCourseQuery,

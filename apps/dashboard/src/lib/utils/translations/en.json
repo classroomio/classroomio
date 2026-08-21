@@ -4595,7 +4595,7 @@
         "too_small": "Option label is required"
       },
       "points": {
-        "too_small": "Points must be at least 0"
+        "too_small": "Points must be at least 1"
       },
       "options": {
         "custom": "{message}"
