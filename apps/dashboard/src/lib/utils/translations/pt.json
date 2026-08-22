@@ -3320,6 +3320,9 @@
           "remove": "Remover link de navegação"
         },
         "hero": {
+          "eyebrow": "Antetítulo",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Rótulo opcional acima do título (usado por modelos que o suportam, p. ex. Tech). Deixe em branco para ocultar.",
           "heading": "Título",
           "subheading": "Subtítulo",
           "primary_label": "Etiqueta do botão principal",
