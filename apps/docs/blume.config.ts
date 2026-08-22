@@ -196,6 +196,7 @@ export default defineConfig({
               '/self-hosted/configuration/storage',
               '/self-hosted/configuration/csp',
               '/self-hosted/configuration/integrations',
+              '/self-hosted/configuration/ai',
               '/self-hosted/enterprise'
             ]
           },
