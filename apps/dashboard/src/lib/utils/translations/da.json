@@ -516,7 +516,8 @@
     "download_course": "Opgrader for at downloade kursus",
     "required": "Opgradering påkrævet",
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
-    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API."
+    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
+    "unlock_field": "Opgrader for at låse denne indstilling op"
   },
   "analytics": {
     "title": "Analyse",
@@ -1011,7 +1012,9 @@
             "curriculum": "Læreplan",
             "chips": "Færdigheder og værktøjer",
             "skills": "Færdigheder du får",
-            "tools": "Værktøjer du lærer"
+            "tools": "Værktøjer du lærer",
+            "navigation": "Navigation",
+            "footer": "Sidefod"
           },
           "skills_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
           "tools_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
@@ -3625,16 +3628,16 @@
           "placeholder": "tilmeldinger er f.eks. deaktiveret, kontakt venligst learn@domain.com for at få adgang"
         },
         "disable_signup": {
-          "label": "Deaktiver tilmelding",
-          "description": "Forhindre nye brugere i at tilmelde sig. Kun inviterede brugere kan deltage."
+          "label": "Bloker alle nye tilmeldinger",
+          "description": "Forhindre helt oprettelse af nye konti. Ingen kan tilmelde sig — heller ikke inviterede brugere. Eksisterende konti påvirkes ikke."
         },
         "allow_public_signups": {
           "label": "Tillad offentlige tilmeldinger",
-          "description": "Når den er deaktiveret, kan kun brugere med et invitationslink tilmelde sig. Aktiver for at tillade alle at oprette en konto."
+          "description": "Når aktiveret, kan alle oprette en konto. Når deaktiveret, kan kun brugere med et gyldigt invitationslink tilmelde sig."
         },
         "internal_enrollment_only": {
           "label": "Kun intern tilmelding",
-          "description": "Når det er aktiveret, er ethvert offentliggjort kursus åbent for selvtilmelding for alle studerende i din organisation. Brug med Disable Signup til at oprette et lukket, kun for inviterede akademi, hvor elever kan deltage i ethvert offentliggjort kursus uden opsætning pr. kursus."
+          "description": "Når det er aktiveret, kan kun eksisterende medlemmer af din organisation tilmelde sig dine kurser. Alle andre skal inviteres - de kan ikke selv tilmelde sig fra en kursusside, selv når kurset er åbent for nye studerende."
         }
       },
       "login": {

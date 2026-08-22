@@ -516,7 +516,8 @@
     "download_course": "Mettre à niveau pour télécharger le cours",
     "required": "Mise à niveau requise",
     "enterprise_required": "Cette fonctionnalité nécessite un forfait Entreprise.",
-    "public_api_required": "Passez à Early Adopter ou Enterprise pour accéder à l'API publique."
+    "public_api_required": "Passez à Early Adopter ou Enterprise pour accéder à l'API publique.",
+    "unlock_field": "Mettez à niveau pour déverrouiller ce paramètre"
   },
   "analytics": {
     "title": "Analytique",
@@ -1011,7 +1012,9 @@
             "curriculum": "Programme d'études",
             "chips": "Compétences et outils",
             "skills": "Compétences que vous gagnerez",
-            "tools": "Outils que vous apprendrez"
+            "tools": "Outils que vous apprendrez",
+            "navigation": "Navigation",
+            "footer": "Pied de page"
           },
           "skills_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
           "tools_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
@@ -3625,16 +3628,16 @@
           "placeholder": "par exemple, les inscriptions sont désactivées, veuillez contacter learn@domain.com pour y accéder"
         },
         "disable_signup": {
-          "label": "Désactiver l'inscription",
-          "description": "Empêcher les nouveaux utilisateurs de s'inscrire. Seuls les utilisateurs invités peuvent rejoindre."
+          "label": "Bloquer toutes les nouvelles inscriptions",
+          "description": "Empêcher complètement la création de nouveaux comptes. Personne ne peut s'inscrire — même les utilisateurs invités. Les comptes existants ne sont pas affectés."
         },
         "allow_public_signups": {
           "label": "Autoriser les inscriptions publiques",
-          "description": "Lorsqu'il est désactivé, seuls les utilisateurs disposant d'un lien d'invitation peuvent s'inscrire. Activez pour permettre à quiconque de créer un compte."
+          "description": "Lorsqu'il est activé, quiconque peut créer un compte. Lorsqu'il est désactivé, seuls les utilisateurs disposant d'un lien d'invitation valide peuvent s'inscrire."
         },
         "internal_enrollment_only": {
           "label": "Inscription interne uniquement",
-          "description": "Lorsqu'il est activé, tout cours publié est ouvert à l'auto-inscription à tous les étudiants de votre organisation. Utilisez avec Désactiver l'inscription pour créer une académie fermée sur invitation uniquement où les étudiants peuvent rejoindre n'importe quel cours publié sans configuration par cours."
+          "description": "Lorsque cette option est activée, seuls les membres existants de votre organisation peuvent s'inscrire à vos cours. Tous les autres doivent être invités : ils ne peuvent pas s'inscrire eux-mêmes à partir d'une page de cours, même lorsque le cours est ouvert à de nouveaux étudiants."
         }
       },
       "login": {

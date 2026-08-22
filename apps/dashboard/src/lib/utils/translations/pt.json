@@ -516,7 +516,8 @@
     "download_course": "Atualize para baixar o curso",
     "required": "Atualização necessária",
     "enterprise_required": "Este recurso requer um plano Enterprise.",
-    "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública."
+    "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública.",
+    "unlock_field": "Atualize para desbloquear esta configuração"
   },
   "analytics": {
     "title": "Análises",
@@ -1011,7 +1012,9 @@
             "curriculum": "Currículo",
             "chips": "Habilidades e ferramentas",
             "skills": "Habilidades que você ganhará",
-            "tools": "Ferramentas que você aprenderá"
+            "tools": "Ferramentas que você aprenderá",
+            "navigation": "Navegação",
+            "footer": "Rodapé"
           },
           "skills_help": "Pressione Enter para adicionar. Eles aparecem como fichas abaixo do currículo.",
           "tools_help": "Pressione Enter para adicionar. Eles aparecem como fichas abaixo do currículo.",
@@ -3625,16 +3628,16 @@
           "placeholder": "por exemplo, as inscrições estão desativadas, entre em contato com learn@domain.com para obter acesso"
         },
         "disable_signup": {
-          "label": "Desativar inscrição",
-          "description": "Impedir que novos usuários se inscrevam. Somente usuários convidados podem participar."
+          "label": "Bloquear todas as novas inscrições",
+          "description": "Impedir completamente a criação de novas contas. Ninguém pode se inscrever — nem usuários convidados. Contas existentes não são afetadas."
         },
         "allow_public_signups": {
           "label": "Permitir inscrições públicas",
-          "description": "Quando desativado, apenas usuários com link de convite poderão se inscrever. Ative para permitir que qualquer pessoa crie uma conta."
+          "description": "Quando habilitado, qualquer pessoa pode criar uma conta. Quando desativado, apenas usuários com um link de convite válido podem se inscrever."
         },
         "internal_enrollment_only": {
           "label": "Somente inscrição interna",
-          "description": "Quando ativado, qualquer curso publicado fica aberto para autoinscrição para todos os alunos da sua organização. Use com Desativar inscrição para criar uma academia fechada somente para convidados, onde os alunos podem ingressar em qualquer curso publicado sem configuração por curso."
+          "description": "Quando ativado, apenas os membros existentes da sua organização podem se inscrever nos seus cursos. Todos os demais devem ser convidados — eles não podem se inscrever na página do curso, mesmo quando o curso estiver aberto a novos alunos."
         }
       },
       "login": {

@@ -589,11 +589,11 @@
         "description": "Control how users can sign up and log in to your organization.",
         "allow_public_signups": {
           "label": "Allow public signups",
-          "description": "When disabled, only users with an invite link can sign up. Enable to allow anyone to create an account."
+          "description": "When enabled, anyone can create an account. When disabled, only users with a valid invitation link can sign up."
         },
         "disable_signup": {
-          "label": "Disable Signup",
-          "description": "Prevent new users from signing up. Only invited users can join."
+          "label": "Block all new signups",
+          "description": "Completely prevent new account creation. No one can sign up — even invited users. Existing accounts are not affected."
         },
         "disable_signup_message": {
           "label": "Signup Disabled Message",
@@ -613,7 +613,7 @@
         "note_description": "These settings only affect this organization. Admins can always sign in using their credentials for break-glass access.",
         "internal_enrollment_only": {
           "label": "Internal Enrollment Only",
-          "description": "When enabled, any published course is open for self-enrollment to all students in your organization. Use with Disable Signup to create a closed, invite-only academy where students can join any published course without per-course setup."
+          "description": "When enabled, only existing members of your organization can enroll in your courses. Everyone else must be invited — they cannot enroll themselves from a course page, even when the course is open to new students."
         }
       },
       "sso": {
@@ -3487,6 +3487,8 @@
             "certificate": "Certificate",
             "curriculum": "Curriculum",
             "chips": "Skills & Tools",
+            "navigation": "Navigation",
+            "footer": "Footer",
             "skills": "Skills you'll gain",
             "tools": "Tools you'll learn"
           },
@@ -3986,7 +3988,8 @@
     "download_course": "Upgrade to download course",
     "required": "Upgrade Required",
     "enterprise_required": "This feature requires an Enterprise plan.",
-    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API."
+    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
+    "unlock_field": "Upgrade to unlock this setting"
   },
   "automation": {
     "title": "Automation",
