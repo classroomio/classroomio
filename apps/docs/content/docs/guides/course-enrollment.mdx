@@ -84,7 +84,7 @@ Paid courses are useful when you want to prevent casual sign-ups on a free landi
 | Only people you add manually | **Allow New Students** off, use **People → Add people** to directly enroll existing students |
 | Paywall + optional invites | Set a price, send invites to buyers who should skip or supplement checkout |
 | Visible in catalog, enrollment closed | Published course, **Allow New Students** off, use invites or **People** to add members |
-| All students in your org can join any published course | Enable **Internal Enrollment Only** in **Settings → Authentication → General**; students bypass per-course **Allow New Students** |
+| All students in your org can join any free published course | Enable **Internal Enrollment Only** in **Settings → Authentication → General**; students bypass per-course **Allow New Students** |
 
 ## Enrollment vs visibility
 
@@ -97,7 +97,7 @@ Restricting who can **join** a course is not the same as hiding it from every st
 | **Email invites** | Who can join via a link sent to their email (works even on unpublished or closed courses) |
 | **People → Add people** | Who you add directly, with or without an invite link |
 | **Price** | Whether open self-enrollment requires payment |
-| **Internal Enrollment Only** (org-wide) | When on, any student in your organization can self-enroll in any published course, bypassing per-course **Allow New Students** |
+| **Internal Enrollment Only** (org-wide) | When on, any student in your organization can self-enroll in any free published course, bypassing per-course **Allow New Students**; paid courses still require payment or an invite |
 
 :::warning[Explore shows published courses]
 **Explore** in the student LMS lists published courses the student has not enrolled in yet. Turning off **Allow New Students** blocks open enrollment from the landing page. It does **not** remove the course from Explore. ClassroomIO does not support hiding a published course from specific people in Explore today.
@@ -140,7 +140,7 @@ Both settings control who can sign up for your organization, not which courses t
 **Block all new signups** takes precedence over invites at account creation. If you invite an email address that has no ClassroomIO account yet while it is on, the recipient cannot finish signing up and will see your **Signup Disabled Message** instead. To invite brand-new people, turn off **Allow public signups** instead.
 :::
 
-**Internal Enrollment Only** — when enabled, any student in your organization can self-enroll in any published course without needing the course to have **Allow New Students** turned on. This is useful for internal academies: turn off **Allow public signups**, add employees via course invite links (which creates their account as a student in your organization), and they can then discover and join any other published course themselves without per-course admin work.
+**Internal Enrollment Only** — when enabled, any student in your organization can self-enroll in any free published course without needing the course to have **Allow New Students** turned on. Paid courses are unaffected — they still require payment or an invite. This is useful for internal academies: turn off **Allow public signups**, add employees via course invite links (which creates their account as a student in your organization), and they can then discover and join any other published course themselves without per-course admin work.
 
 A student might be in your org but not enrolled in any course until you assign them, they self-enroll on a course with **Allow New Students** on, or **Internal Enrollment Only** is enabled org-wide.
 
@@ -180,7 +180,7 @@ Set the course price on the landing page. Students pay to enroll, or you send in
 <Step>
 ### Closed org academy — any student can join any course
 
-Turn off **Allow public signups** and enable **Internal Enrollment Only** in **Settings → Authentication → General**, leaving **Block all new signups** off so the people you invite can still create their account. Add employees by sending them course invite links from **People → Add people** — accepting a course invite creates their account as a student in your organization. Once they are students in your org, they can discover and self-enroll in any other published course from Explore without per-course setup. **Allow New Students** on individual courses is bypassed for students when this setting is on.
+Turn off **Allow public signups** and enable **Internal Enrollment Only** in **Settings → Authentication → General**, leaving **Block all new signups** off so the people you invite can still create their account. Add employees by sending them course invite links from **People → Add people** — accepting a course invite creates their account as a student in your organization. Once they are students in your org, they can discover and self-enroll in any other free published course from Explore without per-course setup. **Allow New Students** on individual courses is bypassed for students when this setting is on.
 </Step>
 </Steps>
 

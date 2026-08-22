@@ -3636,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Inscripción interna únicamente",
-          "description": "Cuando está habilitado, cualquier curso publicado está abierto para la autoinscripción de todos los estudiantes de su organización. Úselo con Permitir registros públicos (deshabilitado) para crear una academia cerrada solo por invitación donde los estudiantes pueden unirse a cualquier curso publicado sin configuración por curso."
+          "description": "Cuando está habilitado, cualquier curso publicado gratuito está abierto para la autoinscripción de todos los estudiantes de su organización. Los cursos pagos aún requieren pago o una invitación. Úselo con Permitir registros públicos (deshabilitado) para crear una academia cerrada, solo por invitación, donde los estudiantes pueden unirse a cursos sin configuración por curso."
         }
       },
       "login": {

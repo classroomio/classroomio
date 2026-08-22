@@ -3636,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Inscription interne uniquement",
-          "description": "Lorsqu'il est activé, tout cours publié est ouvert à l'auto-inscription à tous les étudiants de votre organisation. Utilisez avec Autoriser les inscriptions publiques (désactivé) pour créer une académie fermée sur invitation uniquement où les étudiants peuvent rejoindre n'importe quel cours publié sans configuration par cours."
+          "description": "Lorsqu'il est activé, tout cours publié gratuitement est ouvert à l'auto-inscription à tous les étudiants de votre organisation. Les cours payants nécessitent toujours un paiement ou une invitation. Utilisez avec Autoriser les inscriptions publiques (désactivé) pour créer une académie fermée sur invitation uniquement où les étudiants peuvent rejoindre des cours sans configuration par cours."
         }
       },
       "login": {

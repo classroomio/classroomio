@@ -3636,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Tylko rejestracja wewnętrzna",
-          "description": "Jeśli ta opcja jest włączona, każdy opublikowany kurs jest dostępny do samodzielnej rejestracji dla wszystkich uczniów w Twojej organizacji. Użyj opcji Zezwalaj na publiczne rejestracje (wyłączone), aby utworzyć zamkniętą akademię dostępną tylko dla zaproszonych, w której uczniowie mogą dołączać do dowolnego opublikowanego kursu bez konieczności konfigurowania poszczególnych kursów."
+          "description": "Po włączeniu każdy bezpłatny opublikowany kurs jest dostępny do samodzielnej rejestracji dla wszystkich uczniów w Twojej organizacji. Płatne kursy nadal wymagają płatności lub zaproszenia. Użyj opcji Zezwalaj na rejestracje publiczne (wyłączone), aby utworzyć zamkniętą akademię dostępną tylko dla zaproszonych, w której uczniowie mogą dołączać do kursów bez konfigurowania poszczególnych kursów."
         }
       },
       "login": {

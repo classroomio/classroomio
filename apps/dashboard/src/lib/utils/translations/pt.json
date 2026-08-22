@@ -3636,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Somente inscrição interna",
-          "description": "Quando ativado, qualquer curso publicado fica aberto para autoinscrição para todos os alunos da sua organização. Use com Permitir inscrições públicas (desativado) para criar uma academia fechada somente para convidados, onde os alunos podem ingressar em qualquer curso publicado sem configuração por curso."
+          "description": "Quando ativado, qualquer curso gratuito publicado fica aberto para autoinscrição para todos os alunos da sua organização. Os cursos pagos ainda exigem pagamento ou convite. Use com Permitir inscrições públicas (desativado) para criar uma academia fechada, somente para convidados, onde os alunos podem ingressar em cursos sem configuração por curso."
         }
       },
       "login": {
