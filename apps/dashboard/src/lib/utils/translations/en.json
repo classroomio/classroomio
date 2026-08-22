@@ -2132,7 +2132,13 @@
           "save": "Save",
           "saving": "Saving...",
           "send": "Send",
-          "load_more_replies": "Load more replies"
+          "load_more_replies": "Load more replies",
+          "collapse_thread": "Collapse thread",
+          "expand_thread": "Expand thread",
+          "more_replies": "{count} more {count, plural, =1 {reply} other {replies}}",
+          "continue_thread": "Continue this thread",
+          "collapsed_summary": "{count} {count, plural, =1 {reply} other {replies}} hidden",
+          "back_to_comments": "Back to all comments"
         },
         "user_avatar_alt": "User avatar",
         "snackbar": {
@@ -3541,6 +3547,7 @@
             "currency": "Currency",
             "cost": "Cost",
             "payment": "Payment Link",
+            "payment_required": "A payment link is required for paid courses",
             "discount": "Discount",
             "no": "No",
             "yes": "Yes",
@@ -4590,7 +4597,7 @@
         "too_small": "Option label is required"
       },
       "points": {
-        "too_small": "Points must be at least 0"
+        "too_small": "Points must be at least 1"
       },
       "options": {
         "custom": "{message}"
