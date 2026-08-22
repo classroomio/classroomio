@@ -4370,6 +4370,10 @@
     "heading": "Widgets",
     "subtitle": "Udgive brandede kursussamlinger til eksterne hjemmesider.",
     "empty_state": "Ingen widgets endnu. Opret en for at generere en indlejrbar kursusblok.",
+    "archived": {
+      "heading": "Arkiverede widgets",
+      "empty": "Ingen arkiverede widgets"
+    },
     "filter": {
       "status": "Status",
       "all": "Alle",
@@ -4382,6 +4386,7 @@
       "published": "Widget offentliggjort",
       "rolled_back": "Widget gendannet",
       "deleted": "Widget arkiveret",
+      "restored": "Widget gendannet",
       "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange."
     },
     "form": {

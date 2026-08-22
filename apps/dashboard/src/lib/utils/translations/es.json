@@ -4370,6 +4370,10 @@
     "heading": "Widgets",
     "subtitle": "Publique colecciones de cursos de marca para sitios web externos.",
     "empty_state": "Aún no hay widgets. Cree uno para generar un bloque de curso integrable.",
+    "archived": {
+      "heading": "Widgets archivados",
+      "empty": "No hay widgets archivados"
+    },
     "filter": {
       "status": "Estado",
       "all": "Todos",
@@ -4382,6 +4386,7 @@
       "published": "Widget publicado",
       "rolled_back": "Widget restaurado",
       "deleted": "Widget archivado",
+      "restored": "Widget restaurado",
       "validation_failed": "Algunos campos no son válidos. Verifique las entradas resaltadas."
     },
     "form": {
