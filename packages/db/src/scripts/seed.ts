@@ -16,6 +16,7 @@ import { seedEarlyAdopterOrganizationPlan, seedEnterpriseOrganizationPlan } from
 import { seedProfile } from '@db/utils/seed/profile';
 import { seedQuestionTypes } from '@db/utils/seed/questionType';
 import { seedQuestions } from '@db/utils/seed/question';
+import { seedReactCoursePeopleProgress } from '@db/utils/seed/reactCoursePeopleProgress';
 import { seedRoles } from '@db/utils/seed/role';
 import { seedSubmissions } from '@db/utils/seed/submission';
 import { seedUsers } from '@db/utils/seed/users';
@@ -82,6 +83,7 @@ Flags:
   --questions                Seed questions
   --templates                Seed exercise templates
   --compliance               Seed compliance demo data (coursera-test org)
+  --react-people-progress    Seed React course students with varied progress (udemy-test)
   --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
   --help, -h                  Show this help message
 
@@ -225,6 +227,15 @@ const seedFunctions = {
     console.log('📝 Seeding compliance demo data (coursera-test)...');
     await seedCompliance({ enterpriseOrgId: ENTERPRISE_ORG_ID });
   },
+  'react-people-progress': async () => {
+    console.log('📝 Seeding React course people progress demo (udemy-test)...');
+    await seedReactCoursePeopleProgress({
+      testOrgId: TEST_ORG_ID,
+      reactGroupId: REACT_GROUP_ID,
+      reactCourseId: REACT_COURSE_ID,
+      existingStudentUserId: STUDENT_USER_ID
+    });
+  },
   'newsfeed-threads': async () => {
     console.log('📝 Seeding nested newsfeed threads (coursera-test)...');
     await seedNewsfeedThreads({ enterpriseOrgId: ENTERPRISE_ORG_ID });
@@ -266,6 +277,7 @@ async function seed() {
       await seedFunctions.questions();
       await seedFunctions.templates();
       await seedFunctions.compliance();
+      await seedFunctions['react-people-progress']();
       await seedFunctions['newsfeed-threads']();
     } else {
       // Run only specified seed functions
@@ -289,6 +301,7 @@ async function seed() {
         'questions',
         'templates',
         'compliance',
+        'react-people-progress',
         'newsfeed-threads'
       ];
 
