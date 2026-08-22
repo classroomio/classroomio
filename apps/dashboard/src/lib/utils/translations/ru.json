@@ -516,7 +516,8 @@
     "download_course": "Обновите, чтобы загрузить курс",
     "required": "Требуется обновление",
     "enterprise_required": "Для этой функции требуется план Enterprise.",
-    "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API."
+    "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API.",
+    "unlock_field": "Обновите версию, чтобы разблокировать эту настройку."
   },
   "analytics": {
     "title": "Аналитика",

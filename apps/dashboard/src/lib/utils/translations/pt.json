@@ -516,7 +516,8 @@
     "download_course": "Atualize para baixar o curso",
     "required": "Atualização necessária",
     "enterprise_required": "Este recurso requer um plano Enterprise.",
-    "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública."
+    "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública.",
+    "unlock_field": "Atualize para desbloquear esta configuração"
   },
   "analytics": {
     "title": "Análises",

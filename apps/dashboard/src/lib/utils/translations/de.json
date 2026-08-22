@@ -516,7 +516,8 @@
     "download_course": "Upgrade zum Download-Kurs",
     "required": "Upgrade erforderlich",
     "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
-    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen."
+    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen.",
+    "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten"
   },
   "analytics": {
     "title": "Analysen",

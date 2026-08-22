@@ -28,6 +28,7 @@ export { preloadTextEditor } from './text-editor.svelte';
 export { default as UnsavedChanges } from './unsaved-changes.svelte';
 export { default as UploadImage } from './upload-image.svelte';
 export { default as UpgradeBanner } from './upgrade-banner.svelte';
+export { default as UpgradeLock } from './upgrade-lock.svelte';
 export { default as UpgradeModal } from './upgrade-modal.svelte';
 export { default as VisitOrgSiteButton } from './visit-org-site-btn.svelte';
 export { default as Vote } from './vote.svelte';
