@@ -272,6 +272,8 @@ export async function rollbackOrganizationWidget(
       throw new AppError('Widget version not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
+    const restoredPayload = ZWidgetPayload.parse(version.payloadSnapshot);
+
     const nextVersion = await getNextWidgetVersion(widgetId);
     const rollbackVersion = await createWidgetVersion({
       widgetId: widget.id,
@@ -287,6 +289,9 @@ export async function rollbackOrganizationWidget(
       status: 'PUBLISHED',
       hasUnpublishedChanges: false,
       latestPublishedVersionId: rollbackVersion.id,
+      layoutType: restoredPayload.layoutType,
+      selectionMode: restoredPayload.selectionMode,
+      config: version.configSnapshot,
       updatedByUserId: userId
     });
 
