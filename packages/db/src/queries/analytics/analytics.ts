@@ -677,6 +677,38 @@ export async function selectPopularCourseTypes(orgId: string, fromDate: string, 
 }
 
 /**
+ * Top courses by page views for an org in a date range. Joins the daily
+ * course rollup with the canonical course row so the result includes the
+ * live title. Courses with zero views in the window are omitted.
+ */
+export async function selectTopCoursesByViews(orgId: string, fromDate: string, toDate: string, limit: number = 10) {
+  try {
+    return await db
+      .select({
+        courseId: schema.analyticsCourseDaily.courseId,
+        title: schema.course.title,
+        views: sql<number>`SUM(${schema.analyticsCourseDaily.views})::int`.as('views')
+      })
+      .from(schema.analyticsCourseDaily)
+      .innerJoin(schema.course, eq(schema.course.id, schema.analyticsCourseDaily.courseId))
+      .where(
+        and(
+          eq(schema.analyticsCourseDaily.orgId, orgId),
+          sql`${schema.analyticsCourseDaily.date} >= ${fromDate}`,
+          sql`${schema.analyticsCourseDaily.date} <= ${toDate}`
+        )
+      )
+      .groupBy(schema.analyticsCourseDaily.courseId, schema.course.title)
+      .having(sql`SUM(${schema.analyticsCourseDaily.views}) > 0`)
+      .orderBy(desc(sql`SUM(${schema.analyticsCourseDaily.views})`))
+      .limit(limit);
+  } catch (error) {
+    console.error('selectTopCoursesByViews error:', error);
+    throw new Error('Failed to select top courses by views');
+  }
+}
+
+/**
  * Right-to-be-forgotten: null out user_id on past events for a given user.
  * Rollups remain (aggregate only); raw events stay queryable but anonymous.
  */
