@@ -128,11 +128,19 @@ The **People** tab in the course dashboard is the source of truth for course mem
 
 ## Organization-level access settings (separate from course enrollment)
 
-Course enrollment is different from **organization signup**. In **Settings → Authentication → General**, you have two org-level controls that work together:
+Course enrollment is different from **organization signup**. In **Settings → Authentication → General**, you have three org-level controls that work together:
 
-**Disable Signup / Allow Public Signups** — controls who can create an account on your academy. When signup is disabled (invite-only), only people you invite can register. This controls who can sign up, not which courses they can join.
+**Block all new signups** — the strictest setting: nobody can create a new account on your academy, invite links included. Existing accounts are not affected, so someone who already has a ClassroomIO account and holds an invite to your organization can still join. Turning this on reveals a **Signup Disabled Message** field, where you can explain how to request access.
 
-**Internal Enrollment Only** — when enabled, any student in your organization can self-enroll in any published course without needing the course to have **Allow New Students** turned on. This is useful for internal academies: disable public signup, add employees via course invite links (which creates their account as a student in your organization), and they can then discover and join any other published course themselves without per-course admin work.
+**Allow public signups** — a filter rather than a lock. When turned off, your signup page stays available but only people you have invited can use it: a new account can be created, as long as its email address has an active invite. Leave it on to let anyone register.
+
+Both settings control who can sign up for your organization, not which courses they can join.
+
+:::info[Inviting someone while new signups are blocked]
+**Block all new signups** takes precedence over invites at account creation. If you invite an email address that has no ClassroomIO account yet while it is on, the recipient cannot finish signing up and will see your **Signup Disabled Message** instead. To invite brand-new people, turn off **Allow public signups** instead.
+:::
+
+**Internal Enrollment Only** — when enabled, any student in your organization can self-enroll in any published course without needing the course to have **Allow New Students** turned on. This is useful for internal academies: turn off **Allow public signups**, add employees via course invite links (which creates their account as a student in your organization), and they can then discover and join any other published course themselves without per-course admin work.
 
 A student might be in your org but not enrolled in any course until you assign them, they self-enroll on a course with **Allow New Students** on, or **Internal Enrollment Only** is enabled org-wide.
 
