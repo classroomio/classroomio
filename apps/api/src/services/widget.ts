@@ -14,8 +14,9 @@ import {
   listWidgetVersions,
   listWidgetsByOrganization,
   replaceWidgetCourses,
-  updateWidget,
-  updateWidgetWithCourses
+  updateWidgetWithCourses,
+  restoreArchivedWidget,
+  updateWidget
 } from '@cio/db/queries/widget';
 import {
   ZWidgetPayload,
@@ -230,13 +231,10 @@ export async function restoreOrganizationWidget(orgId: string, widgetId: string,
     }
 
     const restoredStatus = resolveRestoredWidgetStatus(archivedWidget.latestPublishedVersionId);
-    const restoredWidget = await updateWidget(orgId, widgetId, {
-      status: restoredStatus,
-      updatedByUserId: userId
-    });
+    const restoredWidget = await restoreArchivedWidget(orgId, widgetId, restoredStatus, userId);
 
     if (!restoredWidget) {
-      throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+      throw new AppError('Widget is no longer archived', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
     const listItem = await getWidgetListItemById(orgId, widgetId);

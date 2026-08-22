@@ -40,6 +40,9 @@ class WidgetApi extends BaseApiWithErrors {
       logContext: 'fetching archived widgets',
       onSuccess: (response) => {
         this.archivedWidgets = response.data;
+      },
+      onError: () => {
+        snackbar.error('widgets.notifications.archived_load_failed');
       }
     });
   }
@@ -157,6 +160,9 @@ class WidgetApi extends BaseApiWithErrors {
         this.archivedWidgets = this.archivedWidgets.filter((widget) => widget.id !== widgetId);
         this.widgets = [response.data, ...this.widgets];
         snackbar.success('widgets.notifications.restored');
+      },
+      onError: () => {
+        snackbar.error('widgets.notifications.restore_failed');
       }
     });
   }

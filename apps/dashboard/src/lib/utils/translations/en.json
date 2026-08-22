@@ -1583,6 +1583,8 @@
       "rolled_back": "Widget restored",
       "deleted": "Widget archived",
       "restored": "Widget restored",
+      "archived_load_failed": "Couldn't load archived widgets",
+      "restore_failed": "Couldn't restore widget",
       "validation_failed": "Some fields are invalid. Check the highlighted inputs."
     },
     "archived": {

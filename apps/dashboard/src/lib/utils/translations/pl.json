@@ -4438,6 +4438,8 @@
       "rolled_back": "Widżet przywrócony",
       "deleted": "Widżet zarchiwizowany",
       "restored": "Widżet przywrócony",
+      "archived_load_failed": "Nie udało się wczytać zarchiwizowanych widżetów",
+      "restore_failed": "Nie udało się przywrócić widżetu",
       "validation_failed": "Niektóre pola są nieprawidłowe. Sprawdź wyróżnione wejścia."
     },
     "form": {

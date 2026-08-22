@@ -4438,6 +4438,8 @@
       "rolled_back": "Widget restauré",
       "deleted": "Widget archivé",
       "restored": "Widget restauré",
+      "archived_load_failed": "Impossible de charger les widgets archivés",
+      "restore_failed": "Impossible de restaurer le widget",
       "validation_failed": "Certains champs ne sont pas valides. Vérifiez les entrées en surbrillance."
     },
     "form": {

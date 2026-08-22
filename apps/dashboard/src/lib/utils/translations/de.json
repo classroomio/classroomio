@@ -4438,6 +4438,8 @@
       "rolled_back": "Widget wiederhergestellt",
       "deleted": "Widget archiviert",
       "restored": "Widget wiederhergestellt",
+      "archived_load_failed": "Archivierte Widgets konnten nicht geladen werden",
+      "restore_failed": "Widget konnte nicht wiederhergestellt werden",
       "validation_failed": "Einige Felder sind ungültig. Überprüfen Sie die hervorgehobenen Eingaben."
     },
     "form": {

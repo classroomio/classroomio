@@ -4438,6 +4438,8 @@
       "rolled_back": "Đã khôi phục tiện ích",
       "deleted": "Đã lưu trữ tiện ích",
       "restored": "Đã khôi phục tiện ích",
+      "archived_load_failed": "Không thể tải tiện ích đã lưu trữ",
+      "restore_failed": "Không thể khôi phục tiện ích",
       "validation_failed": "Một số trường không hợp lệ. Kiểm tra các đầu vào được đánh dấu."
     },
     "form": {

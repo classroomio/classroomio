@@ -70,6 +70,7 @@
     "db:create-org": "tsx src/scripts/create-org-with-admin.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
     "db:backfill-profile-email-verification": "tsx src/scripts/backfill-profile-email-verification.ts",
+    "db:backfill-archived-widgets": "tsx src/scripts/backfill-archived-widgets.ts",
     "db:backfill-member-email-notifications": "tsx src/scripts/backfill-member-email-notifications-from-profile.ts",
     "db:backfill-cohort-course-enrollment": "tsx src/scripts/backfill-cohort-course-enrollment.ts",
     "db:update-user-email": "tsx src/scripts/update-user-email.ts",

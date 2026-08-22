@@ -4438,6 +4438,8 @@
       "rolled_back": "Widget gendannet",
       "deleted": "Widget arkiveret",
       "restored": "Widget gendannet",
+      "archived_load_failed": "Kunne ikke indlæse arkiverede widgets",
+      "restore_failed": "Kunne ikke gendanne widget",
       "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange."
     },
     "form": {

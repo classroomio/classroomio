@@ -8,12 +8,14 @@
   import { WidgetsPage } from '$features/widget/pages';
   import { widgetApi } from '$features/widget';
   import { t } from '$lib/utils/functions/translations';
+  import { isOrgAdmin } from '$lib/utils/store/org';
 
   let { data } = $props();
 
   let createModalOpen = $state(false);
   let newWidgetName = $state('');
   let archivedModalOpen = $state(false);
+  let archivedLoadFailed = $state(false);
 
   async function handleCreate() {
     if (!newWidgetName.trim()) return;
@@ -35,7 +37,9 @@
 
   async function openArchivedWidgets() {
     archivedModalOpen = true;
-    await widgetApi.getArchivedWidgets();
+    archivedLoadFailed = false;
+    const result = await widgetApi.getArchivedWidgets();
+    archivedLoadFailed = result === undefined;
   }
 </script>
 
@@ -81,14 +85,21 @@
     <Dialog.Header>
       <Dialog.Title>{$t('widgets.archived.heading')}</Dialog.Title>
     </Dialog.Header>
-    {#if widgetApi.archivedWidgets.length === 0}
+    {#if archivedLoadFailed}
+      <p class="ui:text-destructive text-sm">{$t('widgets.notifications.archived_load_failed')}</p>
+    {:else if widgetApi.archivedWidgets.length === 0}
       <p class="ui:text-muted-foreground text-sm">{$t('widgets.archived.empty')}</p>
     {:else}
       <div class="space-y-2">
         {#each widgetApi.archivedWidgets as widget (widget.id)}
           <div class="ui:border-border ui:bg-card/50 flex items-center justify-between gap-3 rounded-2xl border p-3">
             <span class="truncate text-sm font-medium">{widget.name}</span>
-            <Button variant="outline" size="sm" onclick={() => widgetApi.restoreWidget(widget.id)}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!$isOrgAdmin}
+              onclick={() => widgetApi.restoreWidget(widget.id)}
+            >
               {$t('widgets.actions.restore')}
             </Button>
           </div>

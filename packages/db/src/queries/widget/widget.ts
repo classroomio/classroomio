@@ -237,6 +237,37 @@ export async function archiveWidget(orgId: string, widgetId: string, updatedByUs
   }
 }
 
+export async function restoreArchivedWidget(
+  orgId: string,
+  widgetId: string,
+  status: 'DRAFT' | 'PUBLISHED',
+  updatedByUserId: string
+): Promise<TWidget | null> {
+  try {
+    const [result] = await db
+      .update(schema.widget)
+      .set({
+        status,
+        updatedAt: new Date().toISOString(),
+        updatedByUserId
+      })
+      .where(
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          eq(schema.widget.status, 'ARCHIVED')
+        )
+      )
+      .returning();
+
+    return result ?? null;
+  } catch (error) {
+    console.error('restoreArchivedWidget error:', error);
+    throw new Error('Failed to restore widget');
+  }
+}
+
 export async function listWidgetCourses(widgetId: string): Promise<TWidgetCourse[]> {
   try {
     return db
