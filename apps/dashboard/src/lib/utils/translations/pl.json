@@ -1011,7 +1011,9 @@
             "curriculum": "Program nauczania",
             "chips": "Umiejętności i narzędzia",
             "skills": "Umiejętności, które zyskasz",
-            "tools": "Narzędzia, których się nauczysz"
+            "tools": "Narzędzia, których się nauczysz",
+            "navigation": "Nawigacja",
+            "footer": "Stopka"
           },
           "skills_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
           "tools_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
@@ -3634,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Tylko rejestracja wewnętrzna",
-          "description": "Jeśli ta opcja jest włączona, każdy opublikowany kurs jest dostępny do samodzielnej rejestracji dla wszystkich uczniów w Twojej organizacji. Użyj opcji Wyłącz rejestrację, aby utworzyć zamkniętą akademię dostępną tylko dla zaproszonych, w której uczniowie mogą dołączać do dowolnego opublikowanego kursu bez konieczności konfigurowania poszczególnych kursów."
+          "description": "Jeśli ta opcja jest włączona, każdy opublikowany kurs jest dostępny do samodzielnej rejestracji dla wszystkich uczniów w Twojej organizacji. Użyj opcji Zezwalaj na publiczne rejestracje (wyłączone), aby utworzyć zamkniętą akademię dostępną tylko dla zaproszonych, w której uczniowie mogą dołączać do dowolnego opublikowanego kursu bez konieczności konfigurowania poszczególnych kursów."
         }
       },
       "login": {

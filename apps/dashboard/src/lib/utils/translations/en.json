@@ -613,7 +613,7 @@
         "note_description": "These settings only affect this organization. Admins can always sign in using their credentials for break-glass access.",
         "internal_enrollment_only": {
           "label": "Internal Enrollment Only",
-          "description": "When enabled, any published course is open for self-enrollment to all students in your organization. Use with Disable Signup to create a closed, invite-only academy where students can join any published course without per-course setup."
+          "description": "When enabled, any published course is open for self-enrollment to all students in your organization. Use with Allow public signups (disabled) to create a closed, invite-only academy where students can join any published course without per-course setup."
         }
       },
       "sso": {
@@ -3487,6 +3487,8 @@
             "certificate": "Certificate",
             "curriculum": "Curriculum",
             "chips": "Skills & Tools",
+            "navigation": "Navigation",
+            "footer": "Footer",
             "skills": "Skills you'll gain",
             "tools": "Tools you'll learn"
           },

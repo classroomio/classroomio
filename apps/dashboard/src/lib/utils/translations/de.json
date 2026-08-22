@@ -1011,7 +1011,9 @@
             "curriculum": "Lehrplan",
             "chips": "Fähigkeiten und Werkzeuge",
             "skills": "Fähigkeiten, die Sie erwerben werden",
-            "tools": "Werkzeuge, die Sie lernen werden"
+            "tools": "Werkzeuge, die Sie lernen werden",
+            "navigation": "Navigation",
+            "footer": "Fußzeile"
           },
           "skills_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
           "tools_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
@@ -3634,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Nur interne Anmeldung",
-          "description": "Wenn diese Option aktiviert ist, steht jeder veröffentlichte Kurs allen Studierenden in Ihrer Organisation zur Selbsteinschreibung offen. Verwenden Sie die Option „Anmeldung deaktivieren“, um eine geschlossene, nur auf Einladung zugängliche Akademie zu erstellen, in der Studierende jedem veröffentlichten Kurs ohne kursspezifische Einrichtung beitreten können."
+          "description": "Wenn diese Option aktiviert ist, steht jeder veröffentlichte Kurs allen Studierenden in Ihrer Organisation zur Selbsteinschreibung offen. Verwenden Sie die Option „Öffentliche Anmeldungen zulassen (deaktiviert)“, um eine geschlossene, nur auf Einladung zugängliche Akademie zu erstellen, in der Studierende jedem veröffentlichten Kurs ohne kursspezifische Einrichtung beitreten können."
         }
       },
       "login": {

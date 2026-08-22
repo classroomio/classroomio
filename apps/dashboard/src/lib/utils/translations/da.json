@@ -1011,7 +1011,9 @@
             "curriculum": "Læreplan",
             "chips": "Færdigheder og værktøjer",
             "skills": "Færdigheder du får",
-            "tools": "Værktøjer du lærer"
+            "tools": "Værktøjer du lærer",
+            "navigation": "Navigation",
+            "footer": "Sidefod"
           },
           "skills_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
           "tools_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
@@ -3634,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Kun intern tilmelding",
-          "description": "Når det er aktiveret, er ethvert offentliggjort kursus åbent for selvtilmelding for alle studerende i din organisation. Brug med Disable Signup til at oprette et lukket, kun for inviterede akademi, hvor elever kan deltage i ethvert offentliggjort kursus uden opsætning pr. kursus."
+          "description": "Når det er aktiveret, er ethvert offentliggjort kursus åbent for selvtilmelding for alle studerende i din organisation. Brug med Tillad offentlige tilmeldinger (deaktiveret) til at oprette et lukket, kun for inviterede akademi, hvor elever kan deltage i ethvert offentliggjort kursus uden opsætning pr. kursus."
         }
       },
       "login": {

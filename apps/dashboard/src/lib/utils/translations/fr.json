@@ -1011,7 +1011,9 @@
             "curriculum": "Programme d'études",
             "chips": "Compétences et outils",
             "skills": "Compétences que vous gagnerez",
-            "tools": "Outils que vous apprendrez"
+            "tools": "Outils que vous apprendrez",
+            "navigation": "Navigation",
+            "footer": "Pied de page"
           },
           "skills_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
           "tools_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
@@ -3634,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Inscription interne uniquement",
-          "description": "Lorsqu'il est activé, tout cours publié est ouvert à l'auto-inscription à tous les étudiants de votre organisation. Utilisez avec Désactiver l'inscription pour créer une académie fermée sur invitation uniquement où les étudiants peuvent rejoindre n'importe quel cours publié sans configuration par cours."
+          "description": "Lorsqu'il est activé, tout cours publié est ouvert à l'auto-inscription à tous les étudiants de votre organisation. Utilisez avec Autoriser les inscriptions publiques (désactivé) pour créer une académie fermée sur invitation uniquement où les étudiants peuvent rejoindre n'importe quel cours publié sans configuration par cours."
         }
       },
       "login": {

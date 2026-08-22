@@ -1011,7 +1011,9 @@
             "curriculum": "Currículo",
             "chips": "Habilidades e ferramentas",
             "skills": "Habilidades que você ganhará",
-            "tools": "Ferramentas que você aprenderá"
+            "tools": "Ferramentas que você aprenderá",
+            "navigation": "Navegação",
+            "footer": "Rodapé"
           },
           "skills_help": "Pressione Enter para adicionar. Eles aparecem como fichas abaixo do currículo.",
           "tools_help": "Pressione Enter para adicionar. Eles aparecem como fichas abaixo do currículo.",
@@ -3634,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Somente inscrição interna",
-          "description": "Quando ativado, qualquer curso publicado fica aberto para autoinscrição para todos os alunos da sua organização. Use com Desativar inscrição para criar uma academia fechada somente para convidados, onde os alunos podem ingressar em qualquer curso publicado sem configuração por curso."
+          "description": "Quando ativado, qualquer curso publicado fica aberto para autoinscrição para todos os alunos da sua organização. Use com Permitir inscrições públicas (desativado) para criar uma academia fechada somente para convidados, onde os alunos podem ingressar em qualquer curso publicado sem configuração por curso."
         }
       },
       "login": {

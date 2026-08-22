@@ -1011,7 +1011,9 @@
             "curriculum": "Plan de estudios",
             "chips": "Habilidades y herramientas",
             "skills": "Habilidades que obtendrás",
-            "tools": "Herramientas que aprenderás"
+            "tools": "Herramientas que aprenderás",
+            "navigation": "Navegación",
+            "footer": "Pie de página"
           },
           "skills_help": "Presione Entrar para agregar. Estos aparecen como fichas debajo del plan de estudios.",
           "tools_help": "Presione Entrar para agregar. Estos aparecen como fichas debajo del plan de estudios.",
@@ -3634,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Inscripción interna únicamente",
-          "description": "Cuando está habilitado, cualquier curso publicado está abierto para la autoinscripción de todos los estudiantes de su organización. Úselo con Desactivar registro para crear una academia cerrada solo por invitación donde los estudiantes pueden unirse a cualquier curso publicado sin configuración por curso."
+          "description": "Cuando está habilitado, cualquier curso publicado está abierto para la autoinscripción de todos los estudiantes de su organización. Úselo con Permitir registros públicos (deshabilitado) para crear una academia cerrada solo por invitación donde los estudiantes pueden unirse a cualquier curso publicado sin configuración por curso."
         }
       },
       "login": {

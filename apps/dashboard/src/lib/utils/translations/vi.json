@@ -1011,7 +1011,9 @@
             "curriculum": "chương trình giảng dạy",
             "chips": "Kỹ năng & Công cụ",
             "skills": "Những kỹ năng bạn sẽ đạt được",
-            "tools": "Công cụ bạn sẽ học"
+            "tools": "Công cụ bạn sẽ học",
+            "navigation": "Điều hướng",
+            "footer": "Chân trang"
           },
           "skills_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
           "tools_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
@@ -3634,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Chỉ đăng ký nội bộ",
-          "description": "Khi được bật, mọi khóa học đã xuất bản đều có thể tự đăng ký cho tất cả sinh viên trong tổ chức của bạn. Sử dụng tính năng Tắt đăng ký để tạo học viện khép kín, chỉ dành cho người được mời, nơi sinh viên có thể tham gia bất kỳ khóa học đã xuất bản nào mà không cần thiết lập mỗi khóa học."
+          "description": "Khi được bật, mọi khóa học đã xuất bản đều có thể tự đăng ký cho tất cả sinh viên trong tổ chức của bạn. Sử dụng tính năng Cho phép đăng ký công khai (tắt) để tạo học viện khép kín, chỉ dành cho người được mời, nơi sinh viên có thể tham gia bất kỳ khóa học đã xuất bản nào mà không cần thiết lập mỗi khóa học."
         }
       },
       "login": {
