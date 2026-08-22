@@ -3578,7 +3578,8 @@
           "join_course": "Join Course",
           "enrolled_success": "You're enrolled in this course.",
           "enrolled_verify_email": "You're enrolled! Verify your email to access this course.",
-          "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator."
+          "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator.",
+          "members_only": "Only members of this organization can enroll. Ask an administrator for an invitation."
         },
         "course_content": "Course content",
         "modules": "modules",

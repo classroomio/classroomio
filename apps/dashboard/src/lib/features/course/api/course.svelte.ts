@@ -331,6 +331,16 @@ export class CourseApi extends BaseApiWithErrors {
           result.field === 'certificate.deadline'
         ) {
           snackbar.error('course.certification.deadline_invalid');
+        } else if (
+          typeof result === 'object' &&
+          result !== null &&
+          'code' in result &&
+          result.code === ErrorCodes.FORBIDDEN
+        ) {
+          const message = t.get('course.navItem.landing_page.enroll_page.members_only');
+
+          this.errors = { ...this.errors, general: message };
+          snackbar.error(message);
         } else if (typeof result === 'object' && result !== null && 'error' in result) {
           snackbar.error((result as { error: string }).error);
         }

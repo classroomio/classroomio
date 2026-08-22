@@ -923,7 +923,8 @@
           "join_course": "Tham gia khóa học",
           "enrolled_success": "Bạn đã ghi danh khóa học này.",
           "enrolled_verify_email": "Bạn đã ghi danh! Xác minh email để truy cập khóa học này.",
-          "student_limit_reached": "{orgName} đã đạt đủ số lượng sinh viên. Vui lòng liên hệ với quản trị viên tổ chức của bạn."
+          "student_limit_reached": "{orgName} đã đạt đủ số lượng sinh viên. Vui lòng liên hệ với quản trị viên tổ chức của bạn.",
+          "members_only": "Chỉ thành viên của tổ chức này mới có thể đăng ký. Hãy yêu cầu quản trị viên gửi lời mời."
         },
         "pricing_section": {
           "free": "miễn phí",

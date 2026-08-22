@@ -120,7 +120,7 @@
       const result = await courseApi.enroll(data.course.id, body);
 
       if (!result?.data) {
-        enrollmentError = t.get('snackbar.invite.failed_join');
+        enrollmentError = courseApi.errors.general || t.get('snackbar.invite.failed_join');
         return;
       }
 

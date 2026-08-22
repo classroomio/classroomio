@@ -923,7 +923,8 @@
           "join_course": "Nehmen Sie am Kurs teil",
           "enrolled_success": "Sie sind für diesen Kurs eingeschrieben.",
           "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen.",
-          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation."
+          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation.",
+          "members_only": "Nur Mitglieder dieser Organisation können sich einschreiben. Bitten Sie einen Administrator um eine Einladung."
         },
         "pricing_section": {
           "free": "Kostenlos",
