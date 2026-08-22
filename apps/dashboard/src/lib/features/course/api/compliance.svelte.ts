@@ -49,8 +49,8 @@ export class ComplianceApi extends BaseApiWithErrors {
     return result?.data;
   }
 
-  async ensureOverview(courseId: string) {
-    if (this.overviewKey === courseId && this.overview) {
+  async ensureOverview(courseId: string, refresh = false) {
+    if (!refresh && this.overviewKey === courseId && this.overview) {
       return this.overview;
     }
 
@@ -80,9 +80,9 @@ export class ComplianceApi extends BaseApiWithErrors {
     return result?.data;
   }
 
-  async ensureLearnerHistory(courseId: string, profileId: string) {
+  async ensureLearnerHistory(courseId: string, profileId: string, refresh = false) {
     const requestKey = `${courseId}:${profileId}`;
-    if (this.learnerHistoryKey === requestKey && this.learnerHistory) {
+    if (!refresh && this.learnerHistoryKey === requestKey && this.learnerHistory) {
       return this.learnerHistory;
     }
 

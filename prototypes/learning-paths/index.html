@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Paths — Prototype Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .page { max-width: 980px; margin: 0 auto; padding: 56px 24px 80px; }
+      h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin: 8px 0 8px; }
+      .lead { color: var(--muted-foreground); font-size: 15px; max-width: 70ch; margin: 0 0 12px; }
+      .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); }
+      .sec { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); margin: 36px 0 14px; display: flex; align-items: center; gap: 10px; }
+      .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .shot { overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.15s, box-shadow 0.15s; }
+      .shot:hover { border-color: var(--ring); box-shadow: var(--shadow-md); }
+      .shot .cover { height: 72px; display: grid; place-items: center; color: #fff; }
+      .shot .cover svg { width: 26px; height: 26px; stroke-width: 1.8; }
+      .shot .b { padding: 13px 15px 15px; }
+      .shot .n { font-size: 11px; font-weight: 600; color: var(--muted-foreground); letter-spacing: 0.05em; text-transform: uppercase; }
+      .shot .t { font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; margin: 3px 0 4px; }
+      .shot .d { font-size: 12.5px; color: var(--muted-foreground); margin: 0; line-height: 1.5; }
+      .foot { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 13.5px; line-height: 1.7; }
+      .foot b { color: var(--foreground); font-weight: 500; }
+      .foot code { background: var(--muted); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+      @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <span class="eyebrow">ClassroomIO · Prototype + PRD handoff</span>
+      <h1>Learning Paths</h1>
+      <p class="lead">
+        A <b style="color: var(--foreground)">learning path</b> is an ordered bundle of courses sold and taken as one:
+        courses unlock sequentially (lessons + exercises complete → next course), one bundle price with savings,
+        and an optional path certificate at the end. Built on the real <code>packages/ui</code> tokens.
+        The engineering PRD lives at <code>prd/learning-paths/README.md</code>.
+      </p>
+      <p class="lead" style="font-size: 13.5px">Every page has a theme toggle and cross-links so you can click through each journey end to end.</p>
+
+      <!-- PUBLIC -->
+      <div class="sec">1 · Public — org landing site (visitor)</div>
+      <div class="grid">
+        <a class="card shot" href="org-landing.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div class="b"><div class="n">Entry</div><div class="t">Org Landing Page</div><p class="d">Learning Paths section above Courses — mirrors the "minimal" landing theme.</p></div>
+        </a>
+        <a class="card shot" href="public-paths.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.546 0.245 262.881), oklch(0.488 0.243 264.376))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+          <div class="b"><div class="n">List</div><div class="t">Paths Catalog</div><p class="d">/paths — search, filters, and path cards with savings pricing (like /courses).</p></div>
+        </a>
+        <a class="card shot" href="public-path.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.424 0.199 265.638), oklch(0.546 0.245 262.881))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
+          <div class="b"><div class="n">Detail · Coursera-style</div><div class="t">Public Path Page</div><p class="d">Hero + enroll box with savings, stats, outcomes, skills, course series with lesson outlines, certificate, instructors, testimonials, FAQ.</p></div>
+        </a>
+      </div>
+
+      <!-- LEARNER -->
+      <div class="sec">2 · Learner — LMS (enrolled student)</div>
+      <div class="grid">
+        <a class="card shot" href="lms-home.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+          <div class="b"><div class="n">Entry</div><div class="t">LMS Home</div><p class="d">Paths above courses, segmented cross-course progress bars.</p></div>
+        </a>
+        <a class="card shot" href="paths.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.488 0.243 264.376))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+          <div class="b"><div class="n">List</div><div class="t">My Learning Paths</div><p class="d">In progress / Completed tabs; each row shows segment progress + next course.</p></div>
+        </a>
+        <a class="card shot" href="path-detail.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.696 0.17 162.48), oklch(0.596 0.145 163.225))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
+          <div class="b"><div class="n">Detail</div><div class="t">Path Detail</div><p class="d">The journey spine — Done / Continue / Locked courses with per-course progress and a certificate end-row.</p></div>
+        </a>
+        <a class="card shot" href="course-in-path.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+          <div class="b"><div class="n">Inside a course</div><div class="t">Course in Path</div><p class="d">Lesson view wrapped in path chrome: stepper ribbon + "next course unlocks" callout.</p></div>
+        </a>
+      </div>
+
+      <!-- TEACHER -->
+      <div class="sec">3 · Teacher — admin dashboard</div>
+      <div class="grid">
+        <a class="card shot" href="teacher-paths.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.37 0.044 257.287), oklch(0.279 0.041 260.031))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+          <div class="b"><div class="n">List</div><div class="t">Manage Paths</div><p class="d">Org-level listing: stats, statuses, Create path → setup checklist.</p></div>
+        </a>
+        <a class="card shot" href="teacher-path-setup.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.488 0.243 264.376))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div class="b"><div class="n">Onboarding</div><div class="t">Set up your path</div><p class="d">"Get Started"-style checklist: courses → order → price → landing page → activate.</p></div>
+        </a>
+        <a class="card shot" href="teacher-path-builder.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.424 0.199 265.638))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg></div>
+          <div class="b"><div class="n">Tab · Courses</div><div class="t">Path Builder</div><p class="d">Drag-to-reorder course list + sequential-unlock toggle. Try dragging rows.</p></div>
+        </a>
+        <a class="card shot" href="teacher-path-people.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.546 0.245 262.881), oklch(0.488 0.243 264.376))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+          <div class="b"><div class="n">Tab · People</div><div class="t">Learners</div><p class="d">Per-learner path progress, current course, auto-enroll note, add learners.</p></div>
+        </a>
+        <a class="card shot" href="teacher-path-analytics.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
+          <div class="b"><div class="n">Tab · Analytics</div><div class="t">Path Funnel</div><p class="d">Course-by-course funnel, drop-off callouts, stuck lessons/exercises.</p></div>
+        </a>
+        <a class="card shot" href="teacher-path-landing-editor.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.623 0.214 259.815), oklch(0.546 0.245 262.881))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div class="b"><div class="n">Tab · Landing page</div><div class="t">Landing Editor</div><p class="d">Hero copy, visitor access level, outcomes, skills, instructors, testimonials, FAQ.</p></div>
+        </a>
+        <a class="card shot" href="teacher-path-certificate.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.769 0.188 70.08), oklch(0.666 0.179 58.318))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+          <div class="b"><div class="n">Tab · Certificate</div><div class="t">Path Certificate</div><p class="d">Award toggle, completion requirements, live certificate preview.</p></div>
+        </a>
+        <a class="card shot" href="teacher-path-settings.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.37 0.044 257.287), oklch(0.488 0.243 264.376))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg></div>
+          <div class="b"><div class="n">Tab · Settings</div><div class="t">Path Settings</div><p class="d">General, bundle pricing + savings, enrollment & unlock rules, status, danger zone.</p></div>
+        </a>
+      </div>
+
+      <div class="foot">
+        <b>Key product decisions baked into these prototypes:</b><br />
+        · Learning paths are a <b>new entity</b> (separate from Programs) — <code>learning_path</code>, <code>learning_path_course</code> (ordered), <code>learning_path_member</code>.<br />
+        · <b>Self-enrollment with bundle pricing</b> from the public site; the price shows savings vs summed course prices.<br />
+        · A course unlocks when the previous course's <b>lessons AND exercises</b> are complete; sequential unlocking is a per-path toggle.<br />
+        · <b>Path certificate</b> is a teacher toggle with its own tab; visitor access to the syllabus is teacher-configurable.<br />
+        · Public pages mirror the <b>"minimal" org-landing theme</b>; app pages mirror <code>packages/ui</code> (shadcn-svelte, Geist, OKLCH tokens).
+      </div>
+    </div>
+
+    <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme" style="position: fixed; bottom: 18px; right: 18px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

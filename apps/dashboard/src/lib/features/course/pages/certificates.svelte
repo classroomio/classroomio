@@ -6,15 +6,17 @@
 
   type Props = {
     errors: Record<string, string>;
+    activeTab?: string;
+    onActiveTabChange?: (tab: string) => void;
   };
 
-  let { errors }: Props = $props();
+  let { errors, activeTab = 'design', onActiveTabChange }: Props = $props();
 </script>
 
 <IssueCertificateModal />
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>
-  <CertificateEdit {errors} />
+  <CertificateEdit {errors} {activeTab} {onActiveTabChange} />
 </RoleBasedSecurity>
 <RoleBasedSecurity onlyStudent allowedRoles={[3]}>
   <StudentCertificate />

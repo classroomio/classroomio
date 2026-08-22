@@ -218,7 +218,7 @@ export function handleAddQuestion(exerciseSectionId?: string | null) {
           id: nextQuestionId,
           name: `${nextQuestionId}`,
           value: '',
-          points: 0,
+          points: 1,
           order: questions.length,
           exerciseSectionId: nextExerciseSectionId,
           questionType: DEFAULT_QUESTION_TYPE,
@@ -418,7 +418,7 @@ export function handleReorderQuestionsInSection(exerciseSectionId: string, order
         .map((questionId) => questionById.get(String(questionId)))
         .filter(
           (question): question is Question =>
-            Boolean(question) && !question.deletedAt && question.exerciseSectionId === exerciseSectionId
+            Boolean(question) && !question?.deletedAt && question?.exerciseSectionId === exerciseSectionId
         );
       const missingSectionQuestions = sectionQuestions.filter(
         (question) => !orderedQuestionIdSet.has(String(question.id))

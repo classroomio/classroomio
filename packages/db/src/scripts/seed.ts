@@ -9,6 +9,7 @@ import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
 import { seedGroupmembers } from '@db/utils/seed/groupmember';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
+import { seedNewsfeedThreads } from '@db/utils/seed/newsfeedThreads';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
 import { seedEarlyAdopterOrganizationPlan, seedEnterpriseOrganizationPlan } from '@db/utils/seed/organizationPlan';
@@ -83,6 +84,7 @@ Flags:
   --templates                Seed exercise templates
   --compliance               Seed compliance demo data (coursera-test org)
   --react-people-progress    Seed React course students with varied progress (udemy-test)
+  --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
   --help, -h                  Show this help message
 
 Examples:
@@ -233,6 +235,10 @@ const seedFunctions = {
       reactCourseId: REACT_COURSE_ID,
       existingStudentUserId: STUDENT_USER_ID
     });
+  },
+  'newsfeed-threads': async () => {
+    console.log('📝 Seeding nested newsfeed threads (coursera-test)...');
+    await seedNewsfeedThreads({ enterpriseOrgId: ENTERPRISE_ORG_ID });
   }
 };
 
@@ -271,7 +277,8 @@ async function seed() {
       await seedFunctions.questions();
       await seedFunctions.templates();
       await seedFunctions.compliance();
-      await seedFunctions['react-people-progress'];
+      await seedFunctions['react-people-progress']();
+      await seedFunctions['newsfeed-threads']();
     } else {
       // Run only specified seed functions
       // Order matters for dependencies, so we maintain the original order
@@ -294,7 +301,8 @@ async function seed() {
         'questions',
         'templates',
         'compliance',
-        'react-people-progress'
+        'react-people-progress',
+        'newsfeed-threads'
       ];
 
       for (const seedName of orderedSeeds) {

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { page } from '$app/state';
+  import { replaceState } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { CertificatesPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -7,15 +10,25 @@
   import { parseCertificateThemeId } from '$features/course/utils/certificate-utils';
   import { isFreePlan, isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { Button } from '@cio/ui/base/button';
-  import ZapIcon from '@lucide/svelte/icons/zap';
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
   import { ZCourseUpdate } from '@cio/utils/validation/course/course';
   import { validateWithTranslation } from '$lib/utils/validation';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
 
   let errors = $state<Record<string, string>>({});
+
+  function normalizeCertificateTab(tab: string | null) {
+    return tab === 'settings' ? 'settings' : 'design';
+  }
+
+  // replaceState does not update page.url; local state handles tab clicks, this resyncs on navigation.
+  let certificateActiveTab = $state(normalizeCertificateTab(page.url.searchParams.get('tab')));
+
+  $effect.pre(() => {
+    certificateActiveTab = normalizeCertificateTab(page.url.searchParams.get('tab'));
+  });
+
   let hasUnsavedChanges = $state(false);
   let savedCertificateState = $state<string | null>(null);
   let savedCertificateStateCourseId = $state<string | null>(null);
@@ -122,6 +135,33 @@
       snackbar.success('snackbar.course_settings.success.saved');
     }
   }
+
+  function handleDiscard() {
+    if (!savedCertificateState || !courseApi.course) return;
+
+    const snapshot = JSON.parse(savedCertificateState) as ReturnType<typeof getCertificateFormState>;
+
+    if (!snapshot) return;
+
+    courseApi.course.description = snapshot.description;
+    courseApi.course.certificate = { ...snapshot.certificate };
+    hasUnsavedChanges = false;
+    errors = {};
+  }
+
+  function handleActiveTabChange(tab: string) {
+    const nextTab = normalizeCertificateTab(tab);
+
+    if (nextTab === certificateActiveTab) {
+      return;
+    }
+
+    certificateActiveTab = nextTab;
+
+    const url = new URL(page.url);
+    url.searchParams.set('tab', nextTab);
+    replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
+  }
 </script>
 
 <svelte:head>
@@ -143,26 +183,24 @@
       </Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      <div class="flex w-full justify-end gap-2">
-        {#if canEditCertificates}
-          <Button
-            onclick={saveCertificate}
-            loading={courseApi.isLoading}
-            disabled={courseApi.isLoading || !hasUnsavedChanges}
-          >
-            {#if $isFreePlan}
-              <ZapIcon size={16} class="filled" />
-            {/if}
-            {$t('course.navItem.certificates.save')}
-          </Button>
-        {/if}
-        <RefreshPageData />
-      </div>
+      <RefreshPageData />
     </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CertificatesPage {errors} />
+      <CertificatesPage {errors} activeTab={certificateActiveTab} onActiveTabChange={handleActiveTabChange} />
     {/snippet}
   </Page.Body>
+  {#if canEditCertificates && certificateActiveTab === 'settings'}
+    <Page.SettingsActions
+      hasChanges={hasUnsavedChanges}
+      loading={courseApi.isLoading}
+      disabled={courseApi.isLoading}
+      statusLabel={$t('common.unsaved_changes.label')}
+      discardLabel={$t('common.discard')}
+      saveLabel={$t('common.save_changes')}
+      onSave={saveCertificate}
+      onDiscard={handleDiscard}
+    />
+  {/if}
 </Page.Root>

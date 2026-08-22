@@ -1,5 +1,6 @@
 export { default as ActivityCard } from './analytics/activity-card.svelte';
 export { default as AppHeader } from './navigation/app-header.svelte';
+export { default as AttentionHighlight } from './attention-highlight.svelte';
 export { default as AuthUI } from './auth-ui.svelte';
 export { default as Backdrop } from './backdrop.svelte';
 export { default as CloseButton } from './close-btn.svelte';

@@ -16,9 +16,10 @@
     "db:reset": "pnpm --filter @cio/db db:reset",
     "db:studio": "pnpm --filter @cio/db db:studio",
     "db:backfill-profile-email-verification": "pnpm --filter @cio/db db:backfill-profile-email-verification",
+    "dashboard:dev:full": "pnpm turbo run build --filter=@cio/dashboard^... --filter=@cio/ui^... && pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
     "dashboard:dev": "pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
-    "api:dev:full": "pnpm turbo run build --filter=@cio/api^... --filter=@cio/jobs-worker^... && pnpm concurrently -n api,jobs -c blue,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
-    "api:dev": "pnpm concurrently -n api,jobs -c blue,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
+    "api:dev:full": "pnpm turbo run build --filter=@cio/api^... --filter=@cio/jobs-worker^... && pnpm concurrently -n api,core,jobs -c blue,red,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/core run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
+    "api:dev": "pnpm concurrently -n api,core,jobs -c blue,red,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/core run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "jobs:dev": "pnpm --filter=@cio/jobs-worker run dev",
     "docs:dev": "pnpm --filter @cio/docs dev",
     "docs:build": "pnpm --filter @cio/docs build",
@@ -55,9 +56,6 @@
       "esbuild",
       "@tailwindcss/oxide"
     ],
-    "patchedDependencies": {
-      "layerchart@2.0.0-next.27": "patches/layerchart@2.0.0-next.27.patch"
-    },
     "overrides": {
       "zod": "4.2.1",
       "miniflare>zod": "3.22.3",

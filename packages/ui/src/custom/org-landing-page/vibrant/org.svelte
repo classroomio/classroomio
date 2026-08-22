@@ -8,7 +8,7 @@
   import VibrantHero from './hero.svelte';
   import VibrantCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
   import { Button } from '../../../base/button';
   import { getCourseTypeLandingMeta, defaultLessonsLabel, defaultExercisesLabel } from '../landing-page-utils';
 
@@ -47,10 +47,7 @@
   }
 </script>
 
-<div
-  class="ui:min-h-screen ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans"
-  style={themeStyle('vibrant')}
->
+<LandingThemeScope theme="vibrant" class="ui:font-sans">
   <main>
     <VibrantHero {hero} {labels}>
       {#snippet navigation()}
@@ -223,4 +220,4 @@
   <OrgLandingPageCallout {callout} {labels} variant="vibrant" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="vibrant" />
-</div>
+</LandingThemeScope>

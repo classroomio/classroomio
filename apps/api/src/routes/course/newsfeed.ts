@@ -2,7 +2,7 @@ import {
   ZNewsfeedCommentCreate,
   ZNewsfeedCommentGetParam,
   ZNewsfeedCommentUpdate,
-  ZNewsfeedCommentsQuery,
+  ZNewsfeedCommentThreadQuery,
   ZNewsfeedCreate,
   ZNewsfeedGetParam,
   ZNewsfeedListQuery,
@@ -14,7 +14,7 @@ import {
   createNewsfeedService,
   deleteNewsfeedCommentService,
   deleteNewsfeedService,
-  getNewsfeedCommentsService,
+  getNewsfeedCommentThreadService,
   getNewsfeedItem,
   listNewsfeedPaginated,
   updateNewsfeedCommentService,
@@ -127,13 +127,20 @@ export const newsfeedRouter = new Hono()
     authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZNewsfeedGetParam),
-    zValidator('query', ZNewsfeedCommentsQuery),
+    zValidator('query', ZNewsfeedCommentThreadQuery),
     async (c) => {
       try {
         const { feedId } = c.req.valid('param');
-        const { parentId, cursor, limit = 5 } = c.req.valid('query');
+        const { rootId, cursor, childCursor, limit = 5, childLimit = 3, maxDepth = 3 } = c.req.valid('query');
 
-        const result = await getNewsfeedCommentsService(feedId, { parentId, cursor, limit });
+        const result = await getNewsfeedCommentThreadService(feedId, {
+          rootId,
+          cursor,
+          childCursor,
+          rootLimit: limit,
+          childLimit,
+          maxDepth
+        });
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {

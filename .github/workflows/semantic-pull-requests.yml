@@ -1,5 +1,9 @@
 name: 'Check PR'
 
+# pull_request_target is used so title lint can comment on fork PRs.
+# SAFE ONLY because this workflow never checks out or executes PR code.
+# Do not add actions/checkout, pnpm install, build, or cache steps here.
+
 on:
   pull_request_target:
     types:
@@ -9,6 +13,7 @@ on:
       - synchronize
 
 permissions:
+  contents: read
   pull-requests: write
 
 jobs:

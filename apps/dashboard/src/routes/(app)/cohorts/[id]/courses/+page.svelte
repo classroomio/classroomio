@@ -23,6 +23,7 @@
   import AddCourseToCohortModal from '$features/cohort/components/add-course-to-cohort-modal.svelte';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
+  import { isStudentExperience } from '$lib/utils/store/app';
 
   let { data } = $props();
 
@@ -52,7 +53,7 @@
       description: item.course.description ?? '',
       lessonCount: 0,
       totalStudents: 0,
-      isPublished: item.course.status === 'ACTIVE',
+      isPublished: !!item.course.isPublished,
       tags: []
     }))
   );
@@ -94,19 +95,23 @@
   <Page.Header>
     <Page.HeaderContent class="min-w-0 flex-1">
       <Page.Title>{$t('cohorts.sidebar.courses') || 'Courses'}</Page.Title>
-      <Alert.Callout
-        variant="information"
-        title={$t('cohorts.courses.published_access_callout_title')}
-        description={$t('cohorts.courses.published_access_callout_description')}
-        class="mt-3 w-full"
-      />
+      {#if !$isStudentExperience}
+        <Alert.Callout
+          variant="information"
+          title={$t('cohorts.courses.published_access_callout_title')}
+          description={$t('cohorts.courses.published_access_callout_description')}
+          class="mt-3 w-full"
+        />
+      {/if}
     </Page.HeaderContent>
-    <Page.Action>
-      <Button onclick={() => (showAddCourseModal = true)}>
-        <Plus size={16} />
-        {$t('cohorts.courses.add') || 'Add Course'}
-      </Button>
-    </Page.Action>
+    {#if !$isStudentExperience}
+      <Page.Action>
+        <Button onclick={() => (showAddCourseModal = true)}>
+          <Plus size={16} />
+          {$t('cohorts.courses.add') || 'Add Course'}
+        </Button>
+      </Page.Action>
+    {/if}
   </Page.Header>
   <Page.Body>
     {#snippet child()}
@@ -129,11 +134,13 @@
           title={$t('cohorts.courses.empty_title') || 'No courses yet'}
           description={searchValue.trim()
             ? $t('cohorts.courses.no_matching_cohort_courses') || 'No cohort courses match your search.'
-            : $t('cohorts.courses.empty_description') || 'Add courses to this cohort.'}
+            : $isStudentExperience
+              ? $t('cohorts.courses.empty_student_description') || 'There are no published courses in this cohort yet.'
+              : $t('cohorts.courses.empty_description') || 'Add courses to this cohort.'}
           icon={BookOpenIcon}
           variant="page"
         >
-          {#if !searchValue.trim()}
+          {#if !searchValue.trim() && !$isStudentExperience}
             <Button onclick={() => (showAddCourseModal = true)}>
               <Plus size={16} />
               {$t('cohorts.courses.add') || 'Add Course'}
@@ -145,10 +152,18 @@
           <Table.Root class="w-full table-fixed">
             <Table.Header>
               <Table.Row>
-                <Table.Head class="w-[28%]">{$t('courses.course_card.list_view.title')}</Table.Head>
-                <Table.Head class="w-[44%]">{$t('courses.course_card.list_view.description')}</Table.Head>
-                <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.published')}</Table.Head>
-                <Table.Head class="w-[8%]"></Table.Head>
+                <Table.Head class={!$isStudentExperience ? 'w-[28%]' : 'w-[30%]'}
+                  >{$t('courses.course_card.list_view.title')}</Table.Head
+                >
+                <Table.Head class={!$isStudentExperience ? 'w-[44%]' : 'w-[48%]'}
+                  >{$t('courses.course_card.list_view.description')}</Table.Head
+                >
+                <Table.Head class={!$isStudentExperience ? 'w-[10%]' : 'w-[12%]'}
+                  >{$t('courses.course_card.list_view.published')}</Table.Head
+                >
+                {#if !$isStudentExperience}
+                  <Table.Head class="w-[8%]"></Table.Head>
+                {/if}
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -161,21 +176,23 @@
                     <p>{item.course.description}</p>
                   </Table.Cell>
                   <Table.Cell>
-                    <CoursePublishBadge isPublished={item.course.status === 'ACTIVE'} />
+                    <CoursePublishBadge isPublished={!!item.course.isPublished} />
                   </Table.Cell>
-                  <Table.Cell class="text-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="text-muted-foreground hover:text-destructive"
-                      onclick={(event) => {
-                        event.stopPropagation();
-                        openDeleteModal(item.courseId);
-                      }}
-                    >
-                      <Trash2Icon size={16} />
-                    </Button>
-                  </Table.Cell>
+                  {#if !$isStudentExperience}
+                    <Table.Cell class="text-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="text-muted-foreground hover:text-destructive"
+                        onclick={(event) => {
+                          event.stopPropagation();
+                          openDeleteModal(item.courseId);
+                        }}
+                      >
+                        <Trash2Icon size={16} />
+                      </Button>
+                    </Table.Cell>
+                  {/if}
                 </Table.Row>
               {/each}
             </Table.Body>
@@ -186,17 +203,19 @@
           {#each courseCards as course (course.id)}
             <CourseCard course={course as unknown as OrgCourses[number]} href={`/courses/${course.id}`}>
               {#snippet actions()}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  class="text-muted-foreground hover:text-destructive absolute! top-6 right-6 z-40"
-                  onclick={(event) => {
-                    event.stopPropagation();
-                    openDeleteModal(course.id);
-                  }}
-                >
-                  <Trash2Icon size={16} />
-                </Button>
+                {#if !$isStudentExperience}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    class="text-muted-foreground hover:text-destructive absolute! top-6 right-6 z-40"
+                    onclick={(event) => {
+                      event.stopPropagation();
+                      openDeleteModal(course.id);
+                    }}
+                  >
+                    <Trash2Icon size={16} />
+                  </Button>
+                {/if}
               {/snippet}
             </CourseCard>
           {/each}

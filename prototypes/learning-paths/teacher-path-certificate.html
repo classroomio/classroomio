@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Path Certificate · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .fset { margin-top: 16px; }
+      .fset-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+      .fset-head h2 { font-size: 14.5px; font-weight: 600; margin: 0; }
+      .fset-head p { font-size: 12.5px; color: var(--muted-foreground); margin: 2px 0 0; }
+      .fset-body { padding: 18px 20px; }
+      /* certificate preview */
+      .cert-frame { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 28px; background: var(--background); position: relative; }
+      .cert-frame::before { content: ''; position: absolute; inset: 8px; border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent); border-radius: var(--radius-sm); pointer-events: none; }
+      .cert-inner { text-align: center; padding: 12px 8px; }
+      .cert-org { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 14px; }
+      .cert-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 4px; }
+      .cert-sub { font-size: 12.5px; color: var(--muted-foreground); margin: 0 0 14px; }
+      .cert-name { font-size: 17px; font-weight: 500; border-bottom: 1px solid var(--border); display: inline-block; padding: 0 24px 6px; margin-bottom: 14px; }
+      .cert-meta { display: flex; justify-content: center; gap: 28px; font-size: 11.5px; color: var(--muted-foreground); }
+      .cert-seal { width: 44px; height: 44px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 10%, transparent); color: var(--primary); display: grid; place-items: center; margin: 0 auto 12px; }
+      .cert-seal svg { width: 22px; height: 22px; stroke-width: 2; }
+      .req { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 8px; }
+      .req svg { width: 15px; height: 15px; stroke-width: 2.2; color: var(--success); flex-shrink: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <a class="back-link" href="teacher-paths.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All Learning Paths</a>
+        <div class="path-id">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
+          <div><div class="nm">Frontend Engineering Bootcamp</div><div class="st st-active"><span class="dot"></span>Active</div></div>
+        </div>
+        <a class="nav-item" href="teacher-path-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses<span class="nav-tail tnum">5</span></a>
+        <a class="nav-item" href="teacher-path-people.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>People<span class="nav-tail tnum">48</span></a>
+        <a class="nav-item" href="teacher-path-analytics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Analytics</a>
+        <a class="nav-item" href="teacher-path-landing-editor.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Landing page</a>
+        <a class="nav-item active" href="teacher-path-certificate.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate</a>
+        <a class="nav-item" href="teacher-path-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <nav class="crumbs">
+            <a href="teacher-paths.html">Learning Paths</a><span class="sep">/</span>
+            <a href="teacher-path-builder.html">Frontend Engineering Bootcamp</a><span class="sep">/</span>
+            <span class="here">Certificate</span>
+          </nav>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap-narrow">
+            <div class="page-head" style="margin-bottom: 6px">
+              <div>
+                <h1 class="page-title">Certificate</h1>
+                <p class="page-sub">Award a path-level certificate when a learner completes every course.</p>
+              </div>
+            </div>
+
+            <section class="card fset">
+              <div class="fset-head">
+                <div style="flex: 1"><h2>Award a path certificate</h2><p>Issued automatically on completion and shown in the learner's Certificates page.</p></div>
+                <label class="switch"><input type="checkbox" checked aria-label="Award a path certificate" /><span class="track"></span><span class="knob"></span></label>
+              </div>
+              <div class="fset-body">
+                <div class="req"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>All 5 courses completed — every lesson finished</div>
+                <div class="req"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>All exercises submitted or passed in each course</div>
+                <p class="hint" style="margin-top: 10px">Completion rules follow the path's unlock rule (lessons + exercises). 13 certificates awarded so far.</p>
+              </div>
+            </section>
+
+            <section class="card fset">
+              <div class="fset-head"><div><h2>Certificate details</h2><p>What appears on the issued certificate.</p></div></div>
+              <div class="fset-body">
+                <div class="field">
+                  <label class="label" for="ct">Certificate title</label>
+                  <input class="input" id="ct" value="Frontend Engineering Bootcamp Certificate" />
+                </div>
+                <div class="field">
+                  <label class="label" for="cs">Issued by</label>
+                  <input class="input" id="cs" value="Acme Academy" />
+                </div>
+                <div class="field">
+                  <span class="label">Preview</span>
+                  <div class="cert-frame">
+                    <div class="cert-inner">
+                      <div class="cert-seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+                      <div class="cert-org">Acme Academy</div>
+                      <h3 class="cert-title">Frontend Engineering Bootcamp Certificate</h3>
+                      <p class="cert-sub">This certifies that</p>
+                      <div class="cert-name">Ada Okafor</div>
+                      <p class="cert-sub">has successfully completed all 5 courses in the Frontend Engineering Bootcamp learning path.</p>
+                      <div class="cert-meta tnum"><span>Issued · Jul 25, 2026</span><span>ID · LP-8F42-19AC</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end">
+                  <button class="btn btn-ghost btn-sm">Discard</button>
+                  <button class="btn btn-primary btn-sm">Save changes</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

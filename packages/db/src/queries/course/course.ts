@@ -1168,6 +1168,27 @@ export const getExploreCourses = async ({
 };
 
 /**
+ * Resolves the organization ID for a course via its group.
+ */
+export async function getOrgIdByCourseId(courseId: string): Promise<string | null> {
+  try {
+    const [row] = await db
+      .select({ orgId: schema.group.organizationId })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return row?.orgId ?? null;
+  } catch (error) {
+    console.error('getOrgIdByCourseId error:', error);
+    throw new Error(
+      `Failed to get organization ID for course: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Gets course with organization data (title, org name, org siteName, groupId)
  * @param courseId Course ID
  * @returns Course and organization data or null if not found

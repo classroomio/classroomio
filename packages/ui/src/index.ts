@@ -91,3 +91,5 @@ export * as CommentTree from './custom/comment-tree';
 export * as Certificate from './custom/certificate-preview';
 export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
+export { AttachmentList } from './custom/attachment-list';
+export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';

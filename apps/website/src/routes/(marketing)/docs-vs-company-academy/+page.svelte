@@ -193,7 +193,7 @@
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/docs-vs-company-academy/docs-vs-customer-site.jpeg"
-          alt="Docs answering questions, customer academy building capability — side by side"
+          alt="Docs answering questions and a customer academy building capability, side by side"
           class="block h-auto w-full"
           loading="eager"
           decoding="async"
@@ -262,7 +262,7 @@
           </h2>
           <p class="mt-5 text-sm leading-relaxed text-gray-500">
             Documentation works best when the user has a specific job and needs a precise answer. Easy to find, easy to
-            scan, easy to trust — no enrollment required.
+            scan, easy to trust, and no enrollment required.
           </p>
 
           <div class="my-7 border-t border-gray-200"></div>

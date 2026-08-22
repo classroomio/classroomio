@@ -8,7 +8,11 @@ import type {
   GetNewsfeedRequest,
   ListNewsfeed,
   ListNewsfeedRequest,
+  NewsfeedComment,
   NewsfeedCommentsResponse,
+  NewsfeedNodeState,
+  NewsfeedThreadIngestMode,
+  NewsfeedThreadState,
   ReactToNewsfeedRequest,
   UpdateNewsfeedCommentRequest,
   UpdateNewsfeedRequest
@@ -28,23 +32,19 @@ import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
 
-export type NewsfeedCommentsByFeedId = {
-  items: NewsfeedCommentsResponse['items'];
-  totalCount: number;
-  hasMore: boolean;
-  isLoading: boolean;
-  cursor: string | null;
-};
-
 /**
  * API class for newsfeed operations
  */
 export class NewsfeedApi extends BaseApiWithErrors {
   feeds = $state<ListNewsfeed>([]);
 
-  commentsByFeedId = $state<Record<string, NewsfeedCommentsByFeedId>>({});
+  commentById = $state<Record<string, NewsfeedComment>>({});
 
-  repliesByParentId = $state<Record<number, NewsfeedCommentsByFeedId>>({});
+  childIdsByParent = $state<Record<string, number[]>>({});
+
+  commentStateById = $state<Record<string, NewsfeedNodeState>>({});
+
+  threadByFeedId = $state<Record<string, NewsfeedThreadState>>({});
 
   isNewFeedModalOpen = $state(false);
 
@@ -140,6 +140,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
 
           const newFeed = {
             ...response.data,
+            createdAt: response.data.createdAt ?? new Date().toISOString(),
             authorProfileId: author.id,
             authorFullname: author.fullname,
             authorUsername: author.username,
@@ -147,7 +148,8 @@ export class NewsfeedApi extends BaseApiWithErrors {
             commentCount: 0
           };
 
-          this.feeds = [...feedsArray, newFeed];
+          this.initComments(newFeed.id, 0);
+          this.feeds = [newFeed, ...feedsArray];
         }
       },
       onError: (result) => {
@@ -204,6 +206,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
             return {
               ...feed,
               ...response.data,
+              isPinned: result.data.isPinned ?? response.data.isPinned ?? feed.isPinned,
               authorProfileId: feed.authorProfileId,
               authorFullname: feed.authorFullname,
               authorUsername: feed.authorUsername,
@@ -303,54 +306,167 @@ export class NewsfeedApi extends BaseApiWithErrors {
     });
   }
 
-  /**
-   * Initialize comment state for a feed
-   */
-  initComments(feedId: string, totalCount: number) {
-    if (!this.commentsByFeedId[feedId]) {
-      this.commentsByFeedId[feedId] = {
-        items: [],
-        totalCount,
-        hasMore: totalCount > 0,
-        isLoading: false,
-        cursor: null
+  initComments(feedId: string, totalCommentCount: number) {
+    const existing = this.threadByFeedId[feedId];
+    if (!existing) {
+      this.threadByFeedId[feedId] = {
+        rootIds: [],
+        totalRootCount: 0,
+        totalCommentCount,
+        hasMore: totalCommentCount > 0,
+        cursor: null,
+        isLoading: false
       };
-    } else {
-      this.commentsByFeedId[feedId].totalCount = totalCount;
-      this.commentsByFeedId[feedId].hasMore = totalCount > this.commentsByFeedId[feedId].items.length;
+      return;
+    }
+
+    existing.totalCommentCount = totalCommentCount;
+  }
+
+  private nodeState(id: number): NewsfeedNodeState | undefined {
+    return this.commentStateById[String(id)];
+  }
+
+  private ancestorIds(id: number): number[] {
+    const ancestors: number[] = [];
+    let parentId = this.nodeState(id)?.parentId ?? null;
+
+    while (parentId !== null && ancestors.indexOf(parentId) === -1) {
+      ancestors.push(parentId);
+      parentId = this.nodeState(parentId)?.parentId ?? null;
+    }
+
+    return ancestors;
+  }
+
+  private bumpDescendants(id: number, delta: number) {
+    for (const ancestorId of [id, ...this.ancestorIds(id)]) {
+      const state = this.nodeState(ancestorId);
+      if (!state) continue;
+
+      state.descendantCount = Math.max(0, state.descendantCount + delta);
     }
   }
 
+  /** Prunes a comment and every loaded descendant. Returns how many were removed locally. */
+  private removeSubtree(id: number): number {
+    const key = String(id);
+    const childIds = this.childIdsByParent[key] ?? [];
+    let removed = 1;
+
+    for (const childId of [...childIds]) {
+      removed += this.removeSubtree(childId);
+    }
+
+    delete this.childIdsByParent[key];
+    delete this.commentById[key];
+    delete this.commentStateById[key];
+
+    return removed;
+  }
+
   /**
-   * Fetch paginated comments for a feed
+   * The single write path for server data. Counts are re-authored from the response on
+   * every ingest, so they cannot drift at any depth.
    */
-  async getComments(courseId: string, feedId: string, limit = 5) {
-    if (!this.commentsByFeedId[feedId]) {
+  private ingest(feedId: string, data: NewsfeedCommentsResponse, mode: NewsfeedThreadIngestMode) {
+    const thread = this.threadByFeedId[feedId];
+
+    for (const item of data.items) {
+      const key = String(item.id);
+      const previous = this.commentStateById[key];
+
+      this.commentById[key] = item;
+      this.commentStateById[key] = {
+        depth: item.depth,
+        parentId: item.parentId,
+        directReplyCount: item.directReplyCount,
+        descendantCount: item.descendantCount,
+        loadedChildCount: item.loadedChildCount,
+        childCursor: previous?.childCursor ?? null,
+        hasMoreChildren: item.hasMoreChildren,
+        isLoading: false,
+        isOptimistic: false
+      };
+    }
+
+    const childIds = new Map<string, number[]>();
+    for (const item of data.items) {
+      if (item.parentId === null) continue;
+
+      const key = String(item.parentId);
+      const siblings = childIds.get(key) ?? [];
+      siblings.push(item.id);
+      childIds.set(key, siblings);
+    }
+
+    for (const [parentKey, incoming] of childIds) {
+      const isReplacedParent = mode === 'replaceChildren' && parentKey === String(data.rootId);
+      const existing = mode === 'replaceRoots' || isReplacedParent ? [] : (this.childIdsByParent[parentKey] ?? []);
+      const merged = [...existing];
+      for (const id of incoming) {
+        if (merged.indexOf(id) === -1) merged.push(id);
+      }
+      merged.sort((a, b) => b - a);
+      this.childIdsByParent[parentKey] = merged;
+    }
+
+    if (!thread) return;
+
+    const incomingRootIds = data.items.filter((item) => item.depth === 0).map((item) => item.id);
+
+    if (mode === 'replaceRoots' || mode === 'appendRoots') {
+      const base = mode === 'replaceRoots' ? [] : thread.rootIds;
+      const merged = [...base];
+      for (const id of incomingRootIds) {
+        if (merged.indexOf(id) === -1) merged.push(id);
+      }
+      thread.rootIds = merged;
+      thread.hasMore = data.hasMore;
+      thread.cursor = data.nextCursor;
+    }
+
+    thread.totalRootCount = data.totalRootCount;
+    thread.totalCommentCount = data.totalCommentCount;
+
+    if ((mode === 'appendChildren' || mode === 'replaceChildren') && data.rootId !== null) {
+      const rootState = this.nodeState(data.rootId);
+      if (rootState) {
+        rootState.childCursor = data.nextCursor;
+        rootState.hasMoreChildren = data.hasMore;
+        rootState.loadedChildCount = (this.childIdsByParent[String(data.rootId)] ?? []).length;
+      }
+    }
+  }
+
+  async getThread(
+    courseId: string,
+    feedId: string,
+    options: { limit?: number; childLimit?: number; maxDepth?: number } = {}
+  ) {
+    if (!this.threadByFeedId[feedId]) {
       this.initComments(feedId, 0);
     }
 
-    this.commentsByFeedId[feedId].isLoading = true;
+    this.threadByFeedId[feedId].isLoading = true;
 
     await this.execute<GetNewsfeedCommentsRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
           param: { courseId, feedId },
-          query: { limit: String(limit) }
+          query: {
+            limit: String(options.limit ?? 5),
+            childLimit: String(options.childLimit ?? 3),
+            maxDepth: String(options.maxDepth ?? 3)
+          }
         }),
-      logContext: 'fetching newsfeed comments',
+      logContext: 'fetching newsfeed comment thread',
       onSuccess: (response) => {
-        if (response.data) {
-          this.commentsByFeedId[feedId] = {
-            items: response.data.items,
-            totalCount: response.data.totalCount,
-            hasMore: response.data.hasMore,
-            isLoading: false,
-            cursor: response.data.nextCursor
-          };
-        }
+        if (response.data) this.ingest(feedId, response.data, 'replaceRoots');
+        this.threadByFeedId[feedId].isLoading = false;
       },
       onError: (result) => {
-        this.commentsByFeedId[feedId].isLoading = false;
+        this.threadByFeedId[feedId].isLoading = false;
         if (typeof result === 'string') {
           snackbar.error('Failed to fetch comments');
         }
@@ -358,122 +474,28 @@ export class NewsfeedApi extends BaseApiWithErrors {
     });
   }
 
-  /**
-   * Fetch replies for a specific parent comment
-   */
-  async getReplies(courseId: string, feedId: string, parentId: number, limit = 5) {
-    if (!this.repliesByParentId[parentId]) {
-      this.repliesByParentId[parentId] = {
-        items: [],
-        totalCount: 0,
-        hasMore: false,
-        isLoading: true,
-        cursor: null
-      };
-    } else {
-      this.repliesByParentId[parentId].isLoading = true;
-    }
-
-    await this.execute<GetNewsfeedCommentsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
-          param: { courseId, feedId },
-          query: { parentId: String(parentId), limit: String(limit) }
-        }),
-      logContext: 'fetching newsfeed comment replies',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.repliesByParentId[parentId] = {
-            items: response.data.items,
-            totalCount: response.data.totalCount,
-            hasMore: response.data.hasMore,
-            isLoading: false,
-            cursor: response.data.nextCursor
-          };
-        }
-      },
-      onError: (result) => {
-        if (this.repliesByParentId[parentId]) {
-          this.repliesByParentId[parentId].isLoading = false;
-        }
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch replies');
-        }
-      }
-    });
-  }
-
-  /**
-   * Load more replies for a specific parent comment (uses cursor)
-   */
-  async loadMoreReplies(courseId: string, feedId: string, parentId: number, limit = 5) {
-    const replyState = this.repliesByParentId[parentId];
-    if (!replyState || !replyState.hasMore || replyState.isLoading || !replyState.cursor) {
-      return;
-    }
-
-    replyState.isLoading = true;
-
-    await this.execute<GetNewsfeedCommentsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
-          param: { courseId, feedId },
-          query: { parentId: String(parentId), cursor: replyState.cursor!, limit: String(limit) }
-        }),
-      logContext: 'loading more newsfeed replies',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.repliesByParentId[parentId] = {
-            items: [...replyState.items, ...response.data.items],
-            totalCount: response.data.totalCount,
-            hasMore: response.data.hasMore,
-            isLoading: false,
-            cursor: response.data.nextCursor
-          };
-        }
-      },
-      onError: (result) => {
-        if (this.repliesByParentId[parentId]) {
-          this.repliesByParentId[parentId].isLoading = false;
-        }
-        if (typeof result === 'string') {
-          snackbar.error('Failed to load more replies');
-        }
-      }
-    });
-  }
-
-  /**
-   * Load more comments (uses cursor)
-   */
   async loadMoreComments(courseId: string, feedId: string, limit = 5) {
-    const commentState = this.commentsByFeedId[feedId];
-    if (!commentState || !commentState.hasMore || commentState.isLoading || !commentState.cursor) {
-      return;
-    }
+    const thread = this.threadByFeedId[feedId];
+    if (!thread || thread.isLoading || !thread.hasMore) return;
 
-    commentState.isLoading = true;
+    thread.isLoading = true;
 
     await this.execute<GetNewsfeedCommentsRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
           param: { courseId, feedId },
-          query: { cursor: commentState.cursor!, limit: String(limit) }
+          query: {
+            limit: String(limit),
+            ...(thread.cursor ? { cursor: thread.cursor } : {})
+          }
         }),
       logContext: 'loading more newsfeed comments',
       onSuccess: (response) => {
-        if (response.data) {
-          this.commentsByFeedId[feedId] = {
-            items: [...commentState.items, ...response.data.items],
-            totalCount: response.data.totalCount,
-            hasMore: response.data.hasMore,
-            isLoading: false,
-            cursor: response.data.nextCursor
-          };
-        }
+        if (response.data) this.ingest(feedId, response.data, 'appendRoots');
+        thread.isLoading = false;
       },
       onError: (result) => {
-        this.commentsByFeedId[feedId].isLoading = false;
+        thread.isLoading = false;
         if (typeof result === 'string') {
           snackbar.error('Failed to load more comments');
         }
@@ -482,13 +504,54 @@ export class NewsfeedApi extends BaseApiWithErrors {
   }
 
   /**
-   * Creates a newsfeed comment or reply
+   * Loads more of a comment's subtree. With the node's stored cursor this pages its
+   * remaining children; without one it re-roots the fetch, which is what continuing a
+   * thread past the indent cap needs.
    */
+  async loadMoreReplies(
+    courseId: string,
+    feedId: string,
+    parentId: number,
+    options: { childLimit?: number; maxDepth?: number; fromStart?: boolean } = {}
+  ) {
+    const state = this.nodeState(parentId);
+    if (!state || state.isLoading) return;
+
+    const cursor = options.fromStart ? null : state.childCursor;
+    state.isLoading = true;
+
+    await this.execute<GetNewsfeedCommentsRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
+          param: { courseId, feedId },
+          query: {
+            rootId: String(parentId),
+            childLimit: String(options.childLimit ?? 3),
+            maxDepth: String(options.maxDepth ?? 3),
+            ...(cursor ? { childCursor: cursor } : {})
+          }
+        }),
+      logContext: 'loading more newsfeed replies',
+      onSuccess: (response) => {
+        if (response.data) this.ingest(feedId, response.data, options.fromStart ? 'replaceChildren' : 'appendChildren');
+        const current = this.nodeState(parentId);
+        if (current) current.isLoading = false;
+      },
+      onError: (result) => {
+        const current = this.nodeState(parentId);
+        if (current) current.isLoading = false;
+        if (typeof result === 'string') {
+          snackbar.error('Failed to load more replies');
+        }
+      }
+    });
+  }
+
   async createComment(
     courseId: string,
     feedId: string,
     content: string,
-    author: { id: string; username: string; fullname: string; avatarUrl: string },
+    author: { id: string; profileId: string; username: string; fullname: string; avatarUrl: string },
     parentId?: number
   ) {
     const result = ZNewsfeedCommentCreate.safeParse({ courseNewsfeedId: feedId, content, parentId });
@@ -496,6 +559,85 @@ export class NewsfeedApi extends BaseApiWithErrors {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
       return;
     }
+
+    const parentState = parentId === undefined ? undefined : this.nodeState(parentId);
+    const tempId = -Date.now();
+    const tempKey = String(tempId);
+
+    if (!this.threadByFeedId[feedId]) {
+      this.initComments(feedId, 0);
+    }
+
+    const optimistic = {
+      id: tempId,
+      parentId: parentId ?? null,
+      replyToCommentId: null,
+      courseNewsfeedId: feedId,
+      authorId: author.id,
+      content,
+      createdAt: new Date().toISOString(),
+      depth: (parentState?.depth ?? -1) + 1,
+      authorProfileId: author.profileId,
+      authorFullname: author.fullname,
+      authorUsername: author.username,
+      authorAvatarUrl: author.avatarUrl,
+      replyToAuthorFullname: null,
+      directReplyCount: 0,
+      descendantCount: 0,
+      loadedChildCount: 0,
+      hasMoreChildren: false
+    } as NewsfeedComment;
+
+    this.commentById[tempKey] = optimistic;
+    this.commentStateById[tempKey] = {
+      depth: optimistic.depth,
+      parentId: optimistic.parentId,
+      directReplyCount: 0,
+      descendantCount: 0,
+      loadedChildCount: 0,
+      childCursor: null,
+      hasMoreChildren: false,
+      isLoading: false,
+      isOptimistic: true
+    };
+
+    const thread = this.threadByFeedId[feedId];
+    if (parentId === undefined) {
+      if (thread) {
+        thread.rootIds = [tempId, ...thread.rootIds];
+        thread.totalRootCount += 1;
+      }
+    } else {
+      const siblings = this.childIdsByParent[String(parentId)] ?? [];
+      this.childIdsByParent[String(parentId)] = [tempId, ...siblings];
+      if (parentState) {
+        parentState.directReplyCount += 1;
+        parentState.loadedChildCount += 1;
+      }
+      this.bumpDescendants(parentId, 1);
+    }
+    if (thread) thread.totalCommentCount += 1;
+
+    const rollback = () => {
+      this.removeSubtree(tempId);
+      if (parentId === undefined) {
+        if (thread) {
+          thread.rootIds = thread.rootIds.filter((id) => id !== tempId);
+          thread.totalRootCount = Math.max(0, thread.totalRootCount - 1);
+        }
+      } else {
+        this.childIdsByParent[String(parentId)] = (this.childIdsByParent[String(parentId)] ?? []).filter(
+          (id) => id !== tempId
+        );
+        const current = this.nodeState(parentId);
+        if (current) {
+          current.directReplyCount = Math.max(0, current.directReplyCount - 1);
+          current.loadedChildCount = Math.max(0, current.loadedChildCount - 1);
+        }
+        this.bumpDescendants(parentId, -1);
+      }
+      if (thread) thread.totalCommentCount = Math.max(0, thread.totalCommentCount - 1);
+    };
 
     await this.execute<CreateNewsfeedCommentRequest>({
       requestFn: () =>
@@ -505,60 +647,28 @@ export class NewsfeedApi extends BaseApiWithErrors {
         }),
       logContext: 'creating newsfeed comment',
       onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('Comment added successfully');
+        if (!response.data) {
+          rollback();
+          return;
+        }
 
-          const newComment = {
-            ...response.data,
-            authorProfileId: author.id,
-            authorFullname: author.fullname,
-            authorUsername: author.username,
-            authorAvatarUrl: author.avatarUrl,
-            replyCount: 0
-          };
+        const realId = Number(response.data.id);
+        const realKey = String(realId);
 
-          if (parentId) {
-            const repliesState = this.repliesByParentId[parentId];
-            if (repliesState) {
-              this.repliesByParentId[parentId] = {
-                ...repliesState,
-                items: [...repliesState.items, newComment],
-                totalCount: repliesState.totalCount + 1
-              };
-            } else {
-              this.repliesByParentId[parentId] = {
-                items: [newComment],
-                totalCount: 1,
-                hasMore: false,
-                isLoading: false,
-                cursor: null
-              };
-            }
+        this.commentById[realKey] = { ...optimistic, id: realId, createdAt: response.data.createdAt };
+        this.commentStateById[realKey] = { ...this.commentStateById[tempKey], isOptimistic: false };
+        delete this.commentById[tempKey];
+        delete this.commentStateById[tempKey];
 
-            // Increment parent reply count in local top-level items
-            const commentState = this.commentsByFeedId[feedId];
-            if (commentState) {
-              const updatedItems = commentState.items.map((item) => {
-                if (item.id === parentId) {
-                  return { ...item, replyCount: (item.replyCount || 0) + 1 };
-                }
-                return item;
-              });
-              this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
-            }
-          } else {
-            const commentState = this.commentsByFeedId[feedId];
-            if (commentState) {
-              this.commentsByFeedId[feedId] = {
-                ...commentState,
-                items: [newComment, ...commentState.items],
-                totalCount: commentState.totalCount + 1
-              };
-            }
-          }
+        const swap = (ids: number[]) => ids.map((id) => (id === tempId ? realId : id));
+        if (parentId === undefined) {
+          if (thread) thread.rootIds = swap(thread.rootIds);
+        } else {
+          this.childIdsByParent[String(parentId)] = swap(this.childIdsByParent[String(parentId)] ?? []);
         }
       },
       onError: (result) => {
+        rollback();
         if (typeof result === 'string') {
           snackbar.error('Failed to add comment');
         }
@@ -566,10 +676,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
     });
   }
 
-  /**
-   * Updates a newsfeed comment
-   */
-  async updateComment(courseId: string, feedId: string, commentId: string, content: string, parentId?: number) {
+  async updateComment(courseId: string, commentId: string, content: string) {
     const result = ZNewsfeedCommentUpdate.safeParse({ content });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
@@ -584,32 +691,12 @@ export class NewsfeedApi extends BaseApiWithErrors {
         }),
       logContext: 'updating newsfeed comment',
       onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('Comment updated successfully');
+        if (!response.data) return;
 
-          const numericId = Number(commentId);
-          if (parentId && this.repliesByParentId[parentId]) {
-            const replyState = this.repliesByParentId[parentId];
-            const updatedItems = replyState.items.map((item) => {
-              if (item.id === numericId) {
-                return { ...item, content: response.data?.content ?? content };
-              }
-              return item;
-            });
-            this.repliesByParentId[parentId] = { ...replyState, items: updatedItems };
-          } else {
-            const commentState = this.commentsByFeedId[feedId];
-            if (commentState) {
-              const updatedItems = commentState.items.map((item) => {
-                if (item.id === numericId) {
-                  return { ...item, content: response.data?.content ?? content };
-                }
-                return item;
-              });
-              this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
-            }
-          }
-        }
+        snackbar.success('Comment updated successfully');
+
+        const existing = this.commentById[commentId];
+        if (existing) existing.content = response.data.content ?? content;
       },
       onError: (result) => {
         if (typeof result === 'string') {
@@ -619,10 +706,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
     });
   }
 
-  /**
-   * Deletes a newsfeed comment
-   */
-  async deleteComment(courseId: string, feedId: string, commentId: string, parentId?: number) {
+  async deleteComment(courseId: string, feedId: string, commentId: string) {
     await this.execute<DeleteNewsfeedCommentRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].newsfeed.comment[':commentId'].$delete({
@@ -630,42 +714,37 @@ export class NewsfeedApi extends BaseApiWithErrors {
         }),
       logContext: 'deleting newsfeed comment',
       onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('Comment deleted successfully');
+        if (!response.data) return;
 
-          const numericId = Number(commentId);
-          if (parentId && this.repliesByParentId[parentId]) {
-            const replyState = this.repliesByParentId[parentId];
-            this.repliesByParentId[parentId] = {
-              ...replyState,
-              items: replyState.items.filter((item) => String(item.id) !== commentId),
-              totalCount: Math.max(0, replyState.totalCount - 1)
-            };
+        snackbar.success('Comment deleted successfully');
 
-            const commentState = this.commentsByFeedId[feedId];
-            if (commentState) {
-              const updatedItems = commentState.items.map((item) => {
-                if (item.id === parentId) {
-                  return { ...item, replyCount: Math.max(0, (item.replyCount || 1) - 1) };
-                }
-                return item;
-              });
-              this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
-            }
-          } else {
-            if (this.repliesByParentId[numericId]) {
-              delete this.repliesByParentId[numericId];
-            }
-            const commentState = this.commentsByFeedId[feedId];
-            if (commentState) {
-              this.commentsByFeedId[feedId] = {
-                ...commentState,
-                items: commentState.items.filter((item) => String(item.id) !== commentId),
-                totalCount: Math.max(0, commentState.totalCount - 1)
-              };
-            }
+        const numericId = Number(commentId);
+        const state = this.nodeState(numericId);
+        const parentId = state?.parentId ?? null;
+        // Server truth: the cascade also removed descendants this client never loaded.
+        const removedTotal = 1 + Number(response.data.deletedDescendantCount ?? 0);
+
+        this.removeSubtree(numericId);
+
+        const thread = this.threadByFeedId[feedId];
+        if (parentId === null) {
+          if (thread) {
+            thread.rootIds = thread.rootIds.filter((id) => id !== numericId);
+            thread.totalRootCount = Math.max(0, thread.totalRootCount - 1);
           }
+        } else {
+          this.childIdsByParent[String(parentId)] = (this.childIdsByParent[String(parentId)] ?? []).filter(
+            (id) => id !== numericId
+          );
+          const parentState = this.nodeState(parentId);
+          if (parentState) {
+            parentState.directReplyCount = Math.max(0, parentState.directReplyCount - 1);
+            parentState.loadedChildCount = Math.max(0, parentState.loadedChildCount - 1);
+          }
+          this.bumpDescendants(parentId, -removedTotal);
         }
+
+        if (thread) thread.totalCommentCount = Math.max(0, thread.totalCommentCount - removedTotal);
       },
       onError: (result) => {
         if (typeof result === 'string') {
