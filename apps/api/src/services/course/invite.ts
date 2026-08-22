@@ -984,7 +984,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       throw new AppError('This invite is not valid for student enrollment', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    if (course.status !== 'ACTIVE') {
+    if (course.status !== 'ACTIVE' || !course.isPublished) {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 

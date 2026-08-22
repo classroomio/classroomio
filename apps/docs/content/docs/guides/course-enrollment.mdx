@@ -23,7 +23,7 @@ For **public** self-service paths (landing page, Explore), the course must be:
 - **Published** — unpublished courses are not listed in Explore and do not accept open enrollment from the public site
 - **Active** — deleted courses are blocked in all paths
 
-**Email invites are an exception:** a valid invite token lets a student join a course even if it is unpublished. This lets you pre-enroll students before a course goes live. The course must still not be deleted.
+**Email invites are a partial exception:** a valid invite token lets a student join a course whose **Allow New Students** is off, but the course must still be published and not deleted. To build a roster before a course goes live, use **People → Add people**, which works on unpublished courses.
 
 ## Public self-enrollment (free courses)
 
@@ -53,8 +53,8 @@ When a student opens the link, they sign in (or sign up) and click **Join course
 
 For step-by-step instructions, see [How to Invite Students](/guides/invite-students).
 
-:::info[Email invites work on closed or unpublished courses]
-**Allow New Students** can be off and email invites still work. The toggle only blocks unsolicited self-enrollment from the landing page; it does not block people you explicitly invited. Invites also work on **unpublished** courses, so you can pre-enroll students before a course goes live.
+:::info[Email invites work on closed courses]
+**Allow New Students** can be off and email invites still work. The toggle only blocks unsolicited self-enrollment from the landing page; it does not block people you explicitly invited. Invites do require the course to be **published**, so unpublishing a course stops outstanding invite links from admitting anyone.
 :::
 
 ## Direct add (People)
@@ -94,20 +94,20 @@ Restricting who can **join** a course is not the same as hiding it from every st
 | --- | --- |
 | **Published** | Whether the course is live on your academy and eligible for Explore |
 | **Allow New Students** | Whether the public **Enroll** button works on the landing page |
-| **Email invites** | Who can join via a link sent to their email (works even on unpublished or closed courses) |
+| **Email invites** | Who can join via a link sent to their email (works on closed courses, but not unpublished ones) |
 | **People → Add people** | Who you add directly, with or without an invite link |
 | **Price** | Whether open self-enrollment requires payment |
 | **Internal Enrollment Only** (org-wide) | When on, any student in your organization can self-enroll in any free published course, bypassing per-course **Allow New Students**; paid courses still require payment or an invite |
 
-:::warning[Explore shows published courses]
-**Explore** in the student LMS lists published courses the student has not enrolled in yet. Turning off **Allow New Students** blocks open enrollment from the landing page. It does **not** remove the course from Explore. ClassroomIO does not support hiding a published course from specific people in Explore today.
+:::warning[Explore hides courses that are closed to new students]
+**Explore** in the student LMS lists published courses the student has not enrolled in yet, and excludes any course whose **Allow New Students** is off. So turning that toggle off both blocks open enrollment and drops the course out of Explore. What ClassroomIO does not support today is hiding a published, open course from *specific* people.
 :::
 
 **Workarounds:**
 
 - Keep the course **unpublished** until you are ready for students to discover it.
 - Use **Allow New Students** off plus invites or **People** so only the people you choose can actually join.
-- Accept that enrolled students may see the course in Explore even when they cannot self-enroll.
+- Unpublish the course to close every self-service path at once, including outstanding invite links.
 
 For where students see enrolled vs available courses, see [Student Dashboard](/student-dashboard).
 
