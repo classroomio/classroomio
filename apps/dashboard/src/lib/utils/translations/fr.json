@@ -5,6 +5,11 @@
       "message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir partir ?",
       "label": "Modifications non enregistrées"
     },
+    "app_update": {
+      "title": "Une nouvelle version est disponible.",
+      "description": "Rechargez pour obtenir les dernières fonctionnalités et corrections.",
+      "reload": "Recharger"
+    },
     "discard": "Abandonner les modifications",
     "save_changes": "Enregistrer les modifications"
   },

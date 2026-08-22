@@ -290,6 +290,11 @@
       "message": "You have unsaved changes. Are you sure you want to leave?",
       "label": "Unsaved changes"
     },
+    "app_update": {
+      "title": "A new version is available.",
+      "description": "Reload to get the latest features and fixes.",
+      "reload": "Reload"
+    },
     "discard": "Discard",
     "save_changes": "Save changes",
     "refresh": "Refresh"

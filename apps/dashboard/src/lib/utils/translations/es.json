@@ -5,6 +5,11 @@
       "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres irte?",
       "label": "Cambios sin guardar"
     },
+    "app_update": {
+      "title": "Hay una nueva versión disponible.",
+      "description": "Vuelve a cargar para obtener las últimas funciones y correcciones.",
+      "reload": "Recargar"
+    },
     "discard": "Descartar",
     "save_changes": "Guardar cambios"
   },

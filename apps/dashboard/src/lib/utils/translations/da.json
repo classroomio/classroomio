@@ -5,6 +5,11 @@
       "message": "Du har ikke-gemte ændringer. Er du sikker på, at du vil tage afsted?",
       "label": "Ikke-gemte ændringer"
     },
+    "app_update": {
+      "title": "En ny version er tilgængelig.",
+      "description": "Genindlæs for at få de nyeste funktioner og rettelser.",
+      "reload": "Genindlæs"
+    },
     "discard": "Kassér",
     "save_changes": "Gem ændringer"
   },
