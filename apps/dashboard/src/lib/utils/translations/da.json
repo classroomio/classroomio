@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Markeret som komplet",
+        "complete_unmarked": "Markeret som ufuldstændig",
         "complete_download": "Download fuldført",
         "version_restored": "Version blev gendannet"
       },
@@ -2460,7 +2461,8 @@
       "nav_landing_page": "Landingsside",
       "nav_settings": "Indstillinger",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "AI underviser"
+      "nav_ai_tutor": "AI underviser",
+      "exit_course": "Forlad kursus"
     },
     "completion": {
       "modal": {

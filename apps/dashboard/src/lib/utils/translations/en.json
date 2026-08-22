@@ -1999,7 +1999,8 @@
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings",
       "nav_ai_assistant": "Assistant",
-      "nav_ai_tutor": "AI Tutor"
+      "nav_ai_tutor": "AI Tutor",
+      "exit_course": "Exit course"
     },
     "sidebar": {
       "back_to_course": "Back to course",
@@ -4372,6 +4373,7 @@
       "completion_update_failed": "Failed to update lesson completion",
       "success": {
         "complete_marked": "Marked as complete",
+        "complete_unmarked": "Marked as incomplete",
         "complete_download": "Download Complete",
         "version_restored": "Version restored sucessfully"
       },

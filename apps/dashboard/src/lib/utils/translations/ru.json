@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Помечено как завершенное",
+        "complete_unmarked": "Помечено как незавершенное",
         "complete_download": "Загрузка завершена",
         "version_restored": "Версия успешно восстановлена"
       },
@@ -2460,7 +2461,8 @@
       "nav_landing_page": "Целевая страница",
       "nav_settings": "Настройки",
       "nav_ai_assistant": "Ассистент",
-      "nav_ai_tutor": "Репетитор по искусственному интеллекту"
+      "nav_ai_tutor": "Репетитор по искусственному интеллекту",
+      "exit_course": "Выйти из курса"
     },
     "completion": {
       "modal": {
