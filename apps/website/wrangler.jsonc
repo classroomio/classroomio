@@ -8,6 +8,16 @@
     "binding": "ASSETS",
     "directory": ".svelte-kit/cloudflare"
   },
+  // Persisted cache for values that must survive Worker deploys (e.g. GitHub stars).
+  // Create once: `pnpm exec wrangler kv namespace create CACHE`
+  // then replace `id` (and optionally `preview_id`) with the returned namespace ids.
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "00000000000000000000000000000001",
+      "preview_id": "00000000000000000000000000000002"
+    }
+  ],
   "observability": {
     "enabled": true,
     "logs": {
