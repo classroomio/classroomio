@@ -3,9 +3,11 @@ import type {
   CreateWidgetInput,
   CreateWidgetRequest,
   DeleteWidgetRequest,
+  GetArchivedWidgetsRequest,
   GetWidgetDetailRequest,
   GetWidgetsRequest,
   PublishWidgetRequest,
+  RestoreWidgetRequest,
   RollbackWidgetRequest,
   UpdateWidgetInput,
   UpdateWidgetRequest,
@@ -19,6 +21,7 @@ import { snackbar } from '$features/ui/snackbar/store';
 
 class WidgetApi extends BaseApiWithErrors {
   widgets = $state<WidgetListItem[]>([]);
+  archivedWidgets = $state<WidgetListItem[]>([]);
   widgetDetail = $state<WidgetDetail | null>(null);
 
   async getWidgets() {
@@ -27,6 +30,16 @@ class WidgetApi extends BaseApiWithErrors {
       logContext: 'fetching widgets',
       onSuccess: (response) => {
         this.widgets = response.data;
+      }
+    });
+  }
+
+  async getArchivedWidgets() {
+    return this.execute<GetArchivedWidgetsRequest>({
+      requestFn: () => classroomio.organization.widgets.archived.$get(),
+      logContext: 'fetching archived widgets',
+      onSuccess: (response) => {
+        this.archivedWidgets = response.data;
       }
     });
   }
@@ -129,6 +142,21 @@ class WidgetApi extends BaseApiWithErrors {
       onSuccess: () => {
         this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
         snackbar.success('widgets.notifications.deleted');
+      }
+    });
+  }
+
+  async restoreWidget(widgetId: string) {
+    return this.execute<RestoreWidgetRequest>({
+      requestFn: () =>
+        classroomio.organization.widgets[':widgetId'].restore.$post({
+          param: { widgetId }
+        }),
+      logContext: 'restoring widget',
+      onSuccess: (response) => {
+        this.archivedWidgets = this.archivedWidgets.filter((widget) => widget.id !== widgetId);
+        this.widgets = [response.data, ...this.widgets];
+        snackbar.success('widgets.notifications.restored');
       }
     });
   }

@@ -3,11 +3,13 @@ import {
   archiveWidget,
   createWidget,
   createWidgetVersion,
+  getArchivedWidgetById,
   getWidgetListItemById,
   getNextWidgetVersion,
   getPublishedWidgetPayloadByPublicKey,
   getWidgetById,
   getWidgetVersionById,
+  listArchivedWidgetsByOrganization,
   listWidgetCourses,
   listWidgetVersions,
   listWidgetsByOrganization,
@@ -41,6 +43,18 @@ export async function listOrganizationWidgets(orgId: string) {
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list widgets',
+      ErrorCodes.WIDGET_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+export async function listArchivedOrganizationWidgets(orgId: string) {
+  try {
+    return await listArchivedWidgetsByOrganization(orgId);
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list archived widgets',
       ErrorCodes.WIDGET_FETCH_FAILED,
       500
     );
@@ -198,6 +212,48 @@ export async function deleteOrganizationWidget(orgId: string, widgetId: string, 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to delete widget',
       ErrorCodes.WIDGET_DELETE_FAILED,
+      500
+    );
+  }
+}
+
+// Only widgets that were live before archiving come back published; a never-published draft stays a draft.
+export function resolveRestoredWidgetStatus(latestPublishedVersionId: string | null): 'DRAFT' | 'PUBLISHED' {
+  return latestPublishedVersionId ? 'PUBLISHED' : 'DRAFT';
+}
+
+export async function restoreOrganizationWidget(orgId: string, widgetId: string, userId: string) {
+  try {
+    const archivedWidget = await getArchivedWidgetById(orgId, widgetId);
+    if (!archivedWidget) {
+      throw new AppError('Archived widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    const restoredStatus = resolveRestoredWidgetStatus(archivedWidget.latestPublishedVersionId);
+    const restoredWidget = await updateWidget(orgId, widgetId, {
+      status: restoredStatus,
+      updatedByUserId: userId
+    });
+
+    if (!restoredWidget) {
+      throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    const listItem = await getWidgetListItemById(orgId, widgetId);
+
+    if (!listItem) {
+      throw new AppError('Widget not found after restore', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    return listItem;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to restore widget',
+      ErrorCodes.WIDGET_RESTORE_FAILED,
       500
     );
   }

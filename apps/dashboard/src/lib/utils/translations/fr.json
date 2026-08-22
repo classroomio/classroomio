@@ -4421,6 +4421,10 @@
     "heading": "Widgets",
     "subtitle": "Publiez des collections de cours de marque pour des sites Web externes.",
     "empty_state": "Aucun widget pour l'instant. Créez-en un pour générer un bloc de cours intégrable.",
+    "archived": {
+      "heading": "Widgets archivés",
+      "empty": "Aucun widget archivé"
+    },
     "filter": {
       "status": "Statut",
       "all": "Tout",
@@ -4433,6 +4437,7 @@
       "published": "Widget publié",
       "rolled_back": "Widget restauré",
       "deleted": "Widget archivé",
+      "restored": "Widget restauré",
       "validation_failed": "Certains champs ne sont pas valides. Vérifiez les entrées en surbrillance."
     },
     "form": {

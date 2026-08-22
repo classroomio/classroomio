@@ -1582,7 +1582,12 @@
       "published": "Widget published",
       "rolled_back": "Widget restored",
       "deleted": "Widget archived",
+      "restored": "Widget restored",
       "validation_failed": "Some fields are invalid. Check the highlighted inputs."
+    },
+    "archived": {
+      "heading": "Archived widgets",
+      "empty": "No archived widgets"
     },
     "filter": {
       "status": "Status",

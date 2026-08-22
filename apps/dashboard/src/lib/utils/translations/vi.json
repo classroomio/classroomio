@@ -4421,6 +4421,10 @@
     "heading": "Widget",
     "subtitle": "Xuất bản bộ sưu tập khóa học có thương hiệu cho các trang web bên ngoài.",
     "empty_state": "Chưa có vật dụng nào. Tạo một cái để tạo khối khóa học có thể nhúng.",
+    "archived": {
+      "heading": "Tiện ích đã lưu trữ",
+      "empty": "Không có tiện ích đã lưu trữ"
+    },
     "filter": {
       "status": "Trạng thái",
       "all": "Tất cả",
@@ -4433,6 +4437,7 @@
       "published": "Đã xuất bản tiện ích",
       "rolled_back": "Đã khôi phục tiện ích",
       "deleted": "Đã lưu trữ tiện ích",
+      "restored": "Đã khôi phục tiện ích",
       "validation_failed": "Một số trường không hợp lệ. Kiểm tra các đầu vào được đánh dấu."
     },
     "form": {
