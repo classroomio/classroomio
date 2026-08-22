@@ -4370,6 +4370,10 @@
     "heading": "Widżety",
     "subtitle": "Publikuj markowe zbiory kursów na zewnętrznych stronach internetowych.",
     "empty_state": "Nie ma jeszcze widżetów. Utwórz go, aby wygenerować osadzony blok kursu.",
+    "archived": {
+      "heading": "Zarchiwizowane widżety",
+      "empty": "Brak zarchiwizowanych widżetów"
+    },
     "filter": {
       "status": "Status",
       "all": "Wszystko",
@@ -4382,6 +4386,7 @@
       "published": "Widżet opublikowany",
       "rolled_back": "Widżet przywrócony",
       "deleted": "Widżet zarchiwizowany",
+      "restored": "Widżet przywrócony",
       "validation_failed": "Niektóre pola są nieprawidłowe. Sprawdź wyróżnione wejścia."
     },
     "form": {

@@ -4370,6 +4370,10 @@
     "heading": "Widgets",
     "subtitle": "Veröffentlichen Sie gebrandete Kurssammlungen für externe Websites.",
     "empty_state": "Noch keine Widgets. Erstellen Sie einen, um einen einbettbaren Kursblock zu generieren.",
+    "archived": {
+      "heading": "Archivierte Widgets",
+      "empty": "Keine archivierten Widgets"
+    },
     "filter": {
       "status": "Status",
       "all": "Alle",
@@ -4382,6 +4386,7 @@
       "published": "Widget veröffentlicht",
       "rolled_back": "Widget wiederhergestellt",
       "deleted": "Widget archiviert",
+      "restored": "Widget wiederhergestellt",
       "validation_failed": "Einige Felder sind ungültig. Überprüfen Sie die hervorgehobenen Eingaben."
     },
     "form": {
