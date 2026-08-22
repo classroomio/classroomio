@@ -3636,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Chỉ đăng ký nội bộ",
-          "description": "Khi được bật, mọi khóa học được xuất bản miễn phí đều có thể tự đăng ký cho tất cả sinh viên trong tổ chức của bạn. Các khóa học trả phí vẫn yêu cầu thanh toán hoặc lời mời. Sử dụng với Cho phép đăng ký công khai (đã tắt) để tạo một học viện khép kín, chỉ dành cho những người được mời, nơi sinh viên có thể tham gia các khóa học mà không cần thiết lập mỗi khóa học."
+          "description": "Khi được bật, chỉ những thành viên hiện tại trong tổ chức của bạn mới có thể đăng ký các khóa học của bạn. Mọi người khác phải được mời — họ không thể tự đăng ký từ trang khóa học, ngay cả khi khóa học mở cho sinh viên mới."
         }
       },
       "login": {

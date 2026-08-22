@@ -612,6 +612,10 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
 
 /**
  * Unified enrollment: with inviteToken validates and consumes invite; without token enrolls in free course only.
+ *
+ * Self-enrollment also requires the course to accept new students, and when the
+ * org sets `internalEnrollmentOnly`, the user must already be an org member.
+ * Invites bypass both checks — they are how non-members are let in.
  */
 export async function enrollInCourse(
   courseId: string,
@@ -657,8 +661,16 @@ export async function enrollInCourse(
 
   const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
 
-  if (courseMetadata?.allowNewStudent === false && !(isInternalEnrollmentOnly && orgMemberId)) {
+  if (courseMetadata?.allowNewStudent === false) {
     throw new AppError('This course is not accepting new students', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  if (isInternalEnrollmentOnly && !orgMemberId) {
+    throw new AppError(
+      'This organization only allows its members to enroll. Ask an admin for an invitation.',
+      ErrorCodes.FORBIDDEN,
+      403
+    );
   }
 
   const normalizedEmail = user.email.toLowerCase().trim();

@@ -3636,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Kun intern tilmelding",
-          "description": "Når det er aktiveret, er ethvert gratis offentliggjort kursus åbent for selvtilmelding for alle studerende i din organisation. Betalte kurser kræver stadig betaling eller en invitation. Brug med Tillad offentlige tilmeldinger (deaktiveret) for at oprette et lukket akademi, der kun kan inviteres, hvor elever kan deltage i kurser uden opsætning pr. kursus."
+          "description": "Når det er aktiveret, kan kun eksisterende medlemmer af din organisation tilmelde sig dine kurser. Alle andre skal inviteres - de kan ikke selv tilmelde sig fra en kursusside, selv når kurset er åbent for nye studerende."
         }
       },
       "login": {

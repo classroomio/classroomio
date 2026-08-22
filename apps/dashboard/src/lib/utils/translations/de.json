@@ -3636,7 +3636,7 @@
         },
         "internal_enrollment_only": {
           "label": "Nur interne Anmeldung",
-          "description": "Wenn diese Option aktiviert ist, steht jeder kostenlos veröffentlichte Kurs allen Studierenden in Ihrer Organisation zur Selbsteinschreibung offen. Bezahlte Kurse erfordern weiterhin eine Zahlung oder eine Einladung. Verwenden Sie die Option „Öffentliche Anmeldungen zulassen“ (deaktiviert), um eine geschlossene, nur auf Einladung zugängliche Akademie zu erstellen, in der Studierende an Kursen ohne kursspezifische Einrichtung teilnehmen können."
+          "description": "Wenn diese Option aktiviert ist, können sich nur bestehende Mitglieder Ihrer Organisation für Ihre Kurse anmelden. Alle anderen müssen eingeladen werden – sie können sich nicht über eine Kursseite anmelden, auch wenn der Kurs für neue Studierende offen ist."
         }
       },
       "login": {
