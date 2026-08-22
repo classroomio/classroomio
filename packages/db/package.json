@@ -72,6 +72,7 @@
     "db:backfill-profile-email-verification": "tsx src/scripts/backfill-profile-email-verification.ts",
     "db:backfill-member-email-notifications": "tsx src/scripts/backfill-member-email-notifications-from-profile.ts",
     "db:update-user-email": "tsx src/scripts/update-user-email.ts",
+    "db:ban-user": "tsx src/scripts/ban-user.ts",
     "db:notify-students-over-limit": "tsx src/scripts/notify-students-over-limit.ts",
     "db:downgrade-expired-subscriptions": "tsx src/scripts/downgrade-expired-subscriptions.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
