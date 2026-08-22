@@ -4,10 +4,10 @@
  * sessions so the ban takes effect immediately.
  *
  * Usage:
- *   pnpm db:ban-user -- --email user@example.com --reason "ToS violation"                  # dry run (default)
- *   pnpm db:ban-user -- --email user@example.com --reason "ToS violation" --execute        # permanent ban
- *   pnpm db:ban-user -- --email user@example.com --expires "2026-12-31T23:59:59Z" --execute # temporary ban
- *   pnpm db:ban-user -- --email user@example.com --unban --execute                         # lift ban
+ *   pnpm --filter @cio/db db:ban-user -- --email user@example.com --reason "ToS violation"                  # dry run (default)
+ *   pnpm --filter @cio/db db:ban-user -- --email user@example.com --reason "ToS violation" --execute        # permanent ban
+ *   pnpm --filter @cio/db db:ban-user -- --email user@example.com --expires "2026-12-31T23:59:59Z" --execute # temporary ban
+ *   pnpm --filter @cio/db db:ban-user -- --email user@example.com --unban --execute                         # lift ban
  */
 import 'dotenv/config';
 
@@ -20,6 +20,11 @@ const shouldUnban = process.argv.includes('--unban');
 function readArg(flag: string): string {
   const flagIndex = process.argv.indexOf(flag);
   const value = flagIndex === -1 ? '' : (process.argv[flagIndex + 1] ?? '');
+
+  if (value.startsWith('--')) {
+    console.error(`Missing value for ${flag}`);
+    process.exit(1);
+  }
 
   return value.trim();
 }
@@ -35,7 +40,7 @@ if (!connectionString) {
 
 if (!email) {
   console.error(
-    'Usage: pnpm db:ban-user -- --email user@example.com [--reason "..."] [--expires <iso-date>] [--unban] [--execute]'
+    'Usage: pnpm --filter @cio/db db:ban-user -- --email user@example.com [--reason "..."] [--expires <iso-date>] [--unban] [--execute]'
   );
   process.exit(1);
 }
@@ -47,6 +52,11 @@ if (!shouldUnban && banExpiresRaw) {
 
   if (Number.isNaN(banExpiresDate.getTime())) {
     console.error(`"${banExpiresRaw}" is not a valid date. Use an ISO timestamp, e.g. 2026-12-31T23:59:59Z.`);
+    process.exit(1);
+  }
+
+  if (banExpiresDate.getTime() <= Date.now()) {
+    console.error(`"${banExpiresRaw}" is in the past. Provide a future timestamp.`);
     process.exit(1);
   }
 }
@@ -61,6 +71,13 @@ async function main() {
 
     if (users.length === 0) {
       console.error(`No user found with email ${email}`);
+      process.exit(1);
+    }
+
+    if (users.length > 1) {
+      console.error(
+        `${users.length} users match ${email} case-insensitively: ${users.map((match) => match.id).join(', ')}. Resolve the ambiguity before running this script.`
+      );
       process.exit(1);
     }
 
