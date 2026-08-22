@@ -224,7 +224,10 @@ The repository also contains shared packages under `packages/` (for example `pac
 10. Optional: run other apps:
 
    - **website**: `pnpm website:dev`
-   - **docs**: `pnpm dev --filter=@cio/docs`
+   - **docs**: `CHOKIDAR_USEPOLLING=true pnpm dev --filter=@cio/docs`
+     (Requires Node ≥ 22.12: `nvm use 22.12` first. The polling flag prevents
+     an `EMFILE` error on macOS when other dev servers are already consuming
+     file descriptors.)
 
 11. Login into `dashboard`:
 
