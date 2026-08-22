@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Les points doivent être au moins 0"
+        "too_small": "Les points doivent être au moins 1"
       },
       "label": {
         "too_small": "L'étiquette d'option est requise"
@@ -953,7 +953,8 @@
             "no": "Non",
             "yes": "Oui",
             "percent": "Pourcentage de remise",
-            "gift": "À propos du cadeau"
+            "gift": "À propos du cadeau",
+            "payment_required": "Un lien de paiement est requis pour les cours payants"
           },
           "instructor_form": {
             "upload": "Logo de l'instructeur",
@@ -2296,14 +2297,20 @@
           "reply": "Répondre",
           "replying_to": "Répondre à @{name}",
           "cancel_reply": "Annuler",
-          "view_replies": "Voir {count} {count, plural, =1 {réponse} autres {réponses}}",
+          "view_replies": "{count, plural, one {Voir # réponse} other {Voir # réponses}}",
           "hide_replies": "Masquer les réponses",
           "view_more": "Afficher plus de commentaires ({count})",
           "loading": "Chargement...",
           "save": "Enregistrer",
           "saving": "Sauvegarde...",
           "send": "Envoyer",
-          "load_more_replies": "Charger plus de réponses"
+          "load_more_replies": "Charger plus de réponses",
+          "collapse_thread": "Réduire le fil de discussion",
+          "expand_thread": "Développer le fil de discussion",
+          "more_replies": "{count, plural, one {# réponse supplémentaire} other {# réponses supplémentaires}}",
+          "continue_thread": "Continuez ce fil",
+          "collapsed_summary": "{count, plural, one {# réponse masquée} other {# réponses masquées}}",
+          "back_to_comments": "Retour à tous les commentaires"
         },
         "card": {
           "pin": "Épingler",

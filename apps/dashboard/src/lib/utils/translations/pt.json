@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Os pontos devem ser pelo menos 0"
+        "too_small": "Os pontos devem ser pelo menos 1"
       },
       "label": {
         "too_small": "O rótulo da opção é obrigatório"
@@ -953,7 +953,8 @@
             "no": "Não",
             "yes": "Sim",
             "percent": "Porcentagem de desconto",
-            "gift": "Sobre presente"
+            "gift": "Sobre presente",
+            "payment_required": "Um link de pagamento é necessário para cursos pagos"
           },
           "instructor_form": {
             "upload": "Logotipo do instrutor",
@@ -2296,14 +2297,20 @@
           "reply": "Responder",
           "replying_to": "Respondendo a @{name}",
           "cancel_reply": "Cancelar",
-          "view_replies": "Ver {count} {count, plural, =1 {resposta} other {respostas}}",
+          "view_replies": "{count, plural, one {Ver # resposta} other {Ver # respostas}}",
           "hide_replies": "Ocultar respostas",
           "view_more": "Ver mais comentários ({count})",
           "loading": "Carregando...",
           "save": "Salvar",
           "saving": "Salvando...",
           "send": "Enviar",
-          "load_more_replies": "Carregar mais respostas"
+          "load_more_replies": "Carregar mais respostas",
+          "collapse_thread": "Recolher tópico",
+          "expand_thread": "Expandir tópico",
+          "more_replies": "{count, plural, one {Mais # resposta} other {Mais # respostas}}",
+          "continue_thread": "Continuar este tópico",
+          "collapsed_summary": "{count, plural, one {# resposta oculta} other {# respostas ocultas}}",
+          "back_to_comments": "Voltar para todos os comentários"
         },
         "card": {
           "pin": "Fixar",
