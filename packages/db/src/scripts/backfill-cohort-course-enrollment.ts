@@ -21,13 +21,12 @@ if (!connectionString) {
   process.exit(1);
 }
 
-const STUDENT_ROLE_ID = 3;
-
 /** Members linked to a profile and missing a groupmember row for an ACTIVE cohort course. */
 function buildAffectedSql(limitToOrg: boolean) {
   return `
     SELECT DISTINCT
       cm.profile_id,
+      cm.role_id,
       cm.email,
       c.group_id,
       c.id AS course_id,
@@ -66,18 +65,25 @@ async function main() {
 
     if (!shouldExecute) {
       console.log('Dry run only. Re-run with --execute to apply.');
+      const staff = affected.filter((row) => Number(row.role_id) !== 3);
+      console.log(`  of which non-student cohort roles: ${staff.length}`);
       console.log('Sample (up to 10):');
       for (const row of affected.slice(0, 10)) {
-        console.log(`  profile=${row.profile_id}  course=${row.course_id}  cohort=${row.cohort_id}`);
+        console.log(
+          `  profile=${row.profile_id}  course=${row.course_id}  cohort=${row.cohort_id}  role=${row.role_id}`
+        );
       }
       return;
     }
 
+    // Carries the cohort role across: a cohort tutor or admin must not become a
+    // student. Where one profile holds several cohort roles for the same course,
+    // ORDER BY takes the most privileged so the result is deterministic.
     const insertSql = `
       INSERT INTO groupmember (group_id, role_id, profile_id, email)
       SELECT DISTINCT ON (c.group_id, cm.profile_id)
         c.group_id,
-        $${orgId ? '2' : '1'}::bigint,
+        cm.role_id,
         cm.profile_id,
         cm.email
       FROM cohort_member cm
@@ -90,13 +96,12 @@ async function main() {
         AND c.status = 'ACTIVE'
         AND gm.id IS NULL
         ${orgId ? 'AND co.organization_id = $1' : ''}
+      ORDER BY c.group_id, cm.profile_id, cm.role_id ASC
       ON CONFLICT DO NOTHING
       RETURNING id
     `;
 
-    const inserted = orgId
-      ? await sql.unsafe(insertSql, [orgId, STUDENT_ROLE_ID])
-      : await sql.unsafe(insertSql, [STUDENT_ROLE_ID]);
+    const inserted = orgId ? await sql.unsafe(insertSql, [orgId]) : await sql.unsafe(insertSql);
 
     const remainingRows = orgId ? await sql.unsafe(affectedSql, [orgId]) : await sql.unsafe(affectedSql);
 
