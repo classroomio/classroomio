@@ -12,7 +12,7 @@ import 'dotenv/config';
 
 import postgres from 'postgres';
 
-const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
+const connectionString = process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || '';
 const shouldExecute = process.argv.includes('--execute');
 
 if (!connectionString) {
@@ -59,7 +59,7 @@ async function main() {
     console.log(`Updated ${updated.length} widget(s).`);
     console.log('Backfill complete.');
   } catch (error) {
-    console.error('backfill-archived-widgets error:', error);
+    console.error('main backfill-archived-widgets error:', error);
     throw error;
   } finally {
     await sql.end();
