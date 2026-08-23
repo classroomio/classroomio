@@ -23,7 +23,7 @@ import {
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { addCohortMember, getExistingCohortMembers } from '@cio/db/queries/cohort';
+import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
@@ -454,6 +454,25 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
             })
           )
         );
+
+        const cohortCourseIds = await getCourseIdsByCohortIds(cohortIds);
+        const courseIdsToEnroll = cohortCourseIds.filter((courseId) => !courseIds.includes(courseId));
+
+        if (courseIdsToEnroll.length > 0) {
+          const cohortCourseGroups = await getCourseGroupIds(courseIdsToEnroll);
+          const cohortGroupIds = cohortCourseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+          const cohortEnrolledCount = await enrollUsersInCourseGroups(
+            cohortGroupIds,
+            [{ profileId: user.id, email: normalizedEmail }],
+            invite.invite.roleId
+          );
+
+          if (cohortEnrolledCount > 0 && invite.invite.roleId === ROLE.STUDENT) {
+            await invalidateOrgStats(invite.invite.organizationId);
+          }
+
+          await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [user.id]);
+        }
       } catch (error) {
         console.error('acceptOrganizationInvite cohort enrollment error:', error);
       }
