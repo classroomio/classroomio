@@ -900,7 +900,7 @@ export async function previewStudentInvite(token: string, context: TInviteReques
       console.error('previewStudentInvite getProfileByEmail error:', error);
     }
   }
-  const courseMetadata = data.course.metadata as { allowNewStudent?: boolean } | null;
+  const courseMetadata = data.course.metadata as { allowSelfEnrollment?: boolean; allowNewStudent?: boolean } | null;
 
   return {
     invite: {
@@ -920,7 +920,7 @@ export async function previewStudentInvite(token: string, context: TInviteReques
       id: data.course.id,
       title: data.course.title,
       description: data.course.description,
-      allowNewStudent: courseMetadata?.allowNewStudent ?? true,
+      allowSelfEnrollment: isSelfEnrollmentAllowed(courseMetadata),
       isPublished: data.course.isPublished,
       status: data.course.status,
       slug: data.course.slug ?? undefined,

@@ -61,7 +61,7 @@
   const canJoinCourse = $derived(
     data.requiresPaymentOrInvite || blocksNewSignup
       ? false
-      : (hasActiveInvite || (!data.invite && data.course?.allowNewStudent !== false)) &&
+      : (hasActiveInvite || (!data.invite && data.course?.allowSelfEnrollment !== false)) &&
           data.course?.status === 'ACTIVE' &&
           Boolean(data.course?.isPublished)
   );
@@ -83,7 +83,7 @@
     if (data.requiresPaymentOrInvite) {
       return t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
     }
-    if (data.course?.allowNewStudent === false && !hasActiveInvite) {
+    if (data.course?.allowSelfEnrollment === false && !hasActiveInvite) {
       return t.get('course.navItem.landing_page.pricing_section.not_accepting');
     }
     if (data.course?.status !== 'ACTIVE' || !data.course?.isPublished) {
