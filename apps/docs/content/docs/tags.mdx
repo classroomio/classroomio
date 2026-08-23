@@ -4,7 +4,7 @@ description: Organize and filter courses with organization-scoped tags in Classr
 ---
 
 Tags in ClassroomIO help teams structure course catalogs and improve discovery across admin
-and student experiences.
+and student experiences. For step-by-step setup, see [Manage Tags](/guides/manage-tags).
 
 ## Scope and Ownership
 
@@ -23,15 +23,6 @@ and student experiences.
 - Student:
   - Filter and discover courses using tags.
 
-## Admin Workflow
-
-1. Open `Org -> Tags` at `/org/[slug]/tags`.
-2. Create a tag group (for example `Difficulty`, `Technology`, `Job Offering`).
-3. Create tags inside a group.
-4. Choose a tag color from the fixed 10-color popover palette.
-5. Use the `Total Courses` value in the table to deep-link into filtered org courses:
-   `/org/[slug]/courses?tags=<tagSlug>`.
-
 ## Filtering Surfaces
 
 - Org Courses:
@@ -40,28 +31,13 @@ and student experiences.
   - Displays published courses.
   - Supports tag filtering with URL query params.
 
-## URL Query Format
-
-- Single tag:
-  - `/org/acme/courses?tags=beginner`
-- Multiple tags:
-  - `/org/acme/courses?tags=beginner,react`
-- Public catalog:
-  - `/courses?tags=beginner,react`
-
-## API Notes
-
-Current tags-related endpoints include:
-
-- `GET /organization/tags`
-- `POST /organization/tags`
-- `PUT /organization/tags/:tagId`
-- `GET /organization/tags/public`
-- `GET /course/:courseId/tags`
-- `PUT /course/:courseId/tags`
-- `GET /organization/courses/public?siteName=<siteName>&tags=<...>`
-
 :::note[In Progress]
 Archive/restore lifecycle, advanced facet semantics, and expanded LMS filtering UX are being
 incrementally rolled out.
 :::
+
+## Related guides
+
+- [Manage Tags](/guides/manage-tags) — create tag groups and tags, assign them to courses, and filter by tag
+- [Roles and Permissions](/guides/roles-and-permissions) — how these roles work elsewhere in the dashboard
+- [Course](/course) — course settings and admin areas

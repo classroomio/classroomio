@@ -50,6 +50,20 @@ deployment with real data.)
 Set `CIO_VERSION` to the newer release and redeploy (on a DigitalOcean-style VPS: `dc pull && dc up -d`).
 Because you pin a version, a new release never restarts you onto changed images unattended.
 
+### Upgrading from a pre-Cohorts deployment
+
+Schema migrations run automatically when the API starts (see the warning below). If your deployment
+predates the Cohorts feature, though, it may still have data in the legacy `program` tables. That data does
+**not** move itself. After the automatic schema migration has applied, run this one-time script to copy it
+into the new cohort tables:
+
+```zsh title="Terminal"
+pnpm --filter @cio/db migrate:programs-to-cohorts
+```
+
+This copies existing data into the new tables without dropping the legacy `program` tables. Skip this step
+entirely on a fresh install or any deployment that was already on Cohorts.
+
 ## Rolling back
 
 Set `CIO_VERSION` back to the previous release and run the same upgrade command (or redeploy). Pinned

@@ -56,8 +56,9 @@ export default defineConfig({
   navigation: {
       tabs: [
       { label: 'Platform', path: '/', icon: 'house' },
-      { label: 'Guides', path: '/guides', icon: 'book-open' },
-      { label: 'Self Hosting', path: '/self-hosted', icon: 'server' },
+      { label: 'Help Center', path: '/guides', icon: 'book-open' },
+      { label: 'Developers', path: '/developers', icon: 'terminal' },
+      { label: 'Self-Hosting', path: '/self-hosted', icon: 'server' },
       { label: 'API', path: '/api', icon: 'code' }
     ],
     sidebar: [
@@ -66,106 +67,111 @@ export default defineConfig({
         items: [
           '/',
           {
-            label: 'Introduction',
-            items: [
-              '/what-is-classroomio',
-              '/terminology',
-              {
-                label: 'Quickstart',
-                items: ['/quickstart/signup', '/quickstart/onboarding']
-              }
-            ]
+            label: 'Quickstart',
+            items: ['/quickstart/signup', '/quickstart/onboarding']
           },
           {
-            label: 'Core Features',
+            label: 'Introduction',
+            items: ['/what-is-classroomio', '/terminology']
+          },
+          {
+            label: 'Features',
             items: [
               '/course',
               '/cohorts',
-              '/mcp',
               '/tags',
               '/audience',
               '/community',
               '/organization',
               '/student-dashboard',
-              '/enterprise-sso',
-              '/token-auth'
+              '/enterprise-sso'
             ]
           }
         ]
       },
       {
-        label: 'Guides',
+        label: 'Help Center',
         root: '/guides',
         items: [
           '/guides',
           {
-            label: '',  // User Guides
+            label: 'Get started',
+            items: ['/guides/create-first-course']
+          },
+          {
+            label: 'Build a course',
             items: [
-              {
-                label: 'Get started',
-                items: ['/guides/create-first-course']
-              },
-              {
-                label: 'Build a course',
-                items: [
-                  '/guides/course-types',
-                  '/guides/create-exercise',
-                  '/guides/grade-exercise',
-                  '/guides/course-progression',
-                  '/guides/use-math-in-editor',
-                  '/guides/certificates'
-                ]
-              },
-              {
-                label: 'Live classes',
-                items: ['/guides/live-class', '/guides/take-attendance']
-              },
-              {
-                label: 'Enrollment & students',
-                items: [
-                  '/guides/course-enrollment',
-                  '/guides/welcome-email',
-                  '/guides/invite-students'
-                ]
-              },
-              {
-                label: 'Publish your academy',
-                items: [
-                  '/guides/course-landingpage',
-                  '/guides/org-landing-page',
-                  '/guides/academy-sharing-and-branding',
-                  '/guides/custom-domain'
-                ]
-              },
-              {
-                label: 'Organization & team',
-                items: [
-                  '/guides/admin-dashboard',
-                  '/guides/customize-organization',
-                  '/guides/invite-team-member',
-                  '/guides/roles-and-permissions'
-                ]
-              }
+              '/guides/course-types',
+              '/guides/create-exercise',
+              '/guides/grade-exercise',
+              '/guides/course-progression',
+              '/guides/use-math-in-editor',
+              '/guides/certificates'
             ]
           },
           {
-            label: 'Developer Guides',
+            label: 'Live classes',
+            items: ['/guides/live-class', '/guides/take-attendance']
+          },
+          {
+            label: 'Enrollment & students',
             items: [
-              '/guides/contributing',
-              '/guides/contributing/devs',
-              '/guides/contributing/design',
-              '/guides/contributing/cloudflare-setup',
-              '/guides/contributing/org-site-opengraph-and-favicon',
-              '/guides/contributing/gitpod',
-              '/guides/contributing/demo-accounts',
-              '/guides/contributing/student-dashboard',
-              '/guides/contributing/adding-translation-to-code'
+              '/guides/course-enrollment',
+              '/guides/welcome-email',
+              '/guides/invite-students',
+              '/guides/create-a-cohort',
+              '/guides/manage-your-audience'
+            ]
+          },
+          {
+            label: 'Publish your academy',
+            items: [
+              '/guides/course-landingpage',
+              '/guides/org-landing-page',
+              '/guides/academy-sharing-and-branding',
+              '/guides/custom-domain'
+            ]
+          },
+          {
+            label: 'Organization & team',
+            items: [
+              '/guides/admin-dashboard',
+              '/guides/customize-organization',
+              '/guides/invite-team-member',
+              '/guides/roles-and-permissions',
+              '/guides/enterprise-sso-setup',
+              '/guides/manage-tags',
+              '/guides/use-the-community-forum'
             ]
           }
         ]
       },
       {
-        label: 'Self Hosting',
+        label: 'Developers',
+        root: '/developers',
+        items: [
+          '/developers',
+          {
+            label: 'Build with the API',
+            items: ['/developers/mcp', '/developers/token-auth']
+          },
+          {
+            label: 'Contributor Guides',
+            items: [
+              '/developers/contributing',
+              '/developers/contributing/devs',
+              '/developers/contributing/cloudflare-setup',
+              '/developers/contributing/org-site-opengraph-and-favicon',
+              '/developers/contributing/gitpod',
+              '/developers/contributing/demo-accounts',
+              '/developers/contributing/student-dashboard',
+              '/developers/contributing/adding-translation-to-code'
+            ]
+          }
+        ]
+      },
+      {
+        label: 'Self-Hosting',
         root: '/self-hosted',
         items: [
           '/self-hosted',

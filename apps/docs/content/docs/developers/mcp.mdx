@@ -11,27 +11,12 @@ ClassroomIO API.
 
 ## Architecture
 
-```text
-Teacher / Admin
-  |
-  v
-Claude Code / Codex / Cursor / OpenCode / other MCP client
-  |
-  | 1. Reads prompt, PDF, or existing course goal
-  | 2. Produces or edits normalized course JSON
-  v
-@classroomio/mcp (stdio)
-  |
-  | 3. Sends authenticated tool calls
-  |    Authorization: Bearer <cio_mcp_...>
-  v
-ClassroomIO API
-  |
-  | 4. Validates payloads
-  | 5. Resolves the organization from the key
-  | 6. Creates drafts or applies changes to a course
-  v
-ClassroomIO DB
+```mermaid
+flowchart TD
+  T[Teacher / Admin] --> C[Claude Code / Codex / Cursor / OpenCode / other MCP client]
+  C -->|"1. Reads prompt, PDF, or existing course goal<br/>2. Produces or edits normalized course JSON"| M["@classroomio/mcp (stdio)"]
+  M -->|"3. Sends authenticated tool calls<br/>Authorization: Bearer &lt;cio_mcp_...&gt;"| A[ClassroomIO API]
+  A -->|"4. Validates payloads<br/>5. Resolves the organization from the key<br/>6. Creates drafts or applies changes to a course"| D[(ClassroomIO DB)]
 ```
 
 ## Core Principles
