@@ -22,6 +22,7 @@ import {
 } from '@cio/db/queries/course';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
@@ -612,6 +613,10 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
 
 /**
  * Unified enrollment: with inviteToken validates and consumes invite; without token enrolls in free course only.
+ *
+ * Self-enrollment also requires the course to accept new students, and when the
+ * org sets `internalEnrollmentOnly`, the user must already be an org member.
+ * Invites bypass both checks — they are how non-members are let in.
  */
 export async function enrollInCourse(
   courseId: string,
@@ -652,13 +657,25 @@ export async function enrollInCourse(
   }
 
   const courseMetadata =
-    (courseWithRelations.metadata as { allowNewStudent?: boolean; welcomeEmailMessage?: string | null } | null) ?? null;
+    (courseWithRelations.metadata as {
+      allowSelfEnrollment?: boolean;
+      allowNewStudent?: boolean;
+      welcomeEmailMessage?: string | null;
+    } | null) ?? null;
   const isInternalEnrollmentOnly = org.settings?.internalEnrollmentOnly ?? false;
 
   const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
 
-  if (courseMetadata?.allowNewStudent === false && !(isInternalEnrollmentOnly && orgMemberId)) {
+  if (!isSelfEnrollmentAllowed(courseMetadata)) {
     throw new AppError('This course is not accepting new students', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  if (isInternalEnrollmentOnly && !orgMemberId) {
+    throw new AppError(
+      'This organization only allows its members to enroll. Ask an admin for an invitation.',
+      ErrorCodes.FORBIDDEN,
+      403
+    );
   }
 
   const normalizedEmail = user.email.toLowerCase().trim();
@@ -883,7 +900,7 @@ export async function previewStudentInvite(token: string, context: TInviteReques
       console.error('previewStudentInvite getProfileByEmail error:', error);
     }
   }
-  const courseMetadata = data.course.metadata as { allowNewStudent?: boolean } | null;
+  const courseMetadata = data.course.metadata as { allowSelfEnrollment?: boolean; allowNewStudent?: boolean } | null;
 
   return {
     invite: {
@@ -903,7 +920,7 @@ export async function previewStudentInvite(token: string, context: TInviteReques
       id: data.course.id,
       title: data.course.title,
       description: data.course.description,
-      allowNewStudent: courseMetadata?.allowNewStudent ?? true,
+      allowSelfEnrollment: isSelfEnrollmentAllowed(courseMetadata),
       isPublished: data.course.isPublished,
       status: data.course.status,
       slug: data.course.slug ?? undefined,
@@ -984,7 +1001,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       throw new AppError('This invite is not valid for student enrollment', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    if (course.status !== 'ACTIVE') {
+    if (course.status !== 'ACTIVE' || !course.isPublished) {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 

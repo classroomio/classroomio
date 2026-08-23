@@ -487,6 +487,9 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         description: '',
         requirements: '',
         lessonDownload: false,
+        // Deliberately the legacy key: these two courses exercise the
+        // allowNewStudent fallback in isSelfEnrollmentAllowed, since there is
+        // no backfill and real rows still look like this.
         allowNewStudent: false
       },
       cost: 0,
@@ -520,6 +523,9 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         description: '',
         requirements: '',
         lessonDownload: false,
+        // Deliberately the legacy key: these two courses exercise the
+        // allowNewStudent fallback in isSelfEnrollmentAllowed, since there is
+        // no backfill and real rows still look like this.
         allowNewStudent: false
       },
       cost: 0,
