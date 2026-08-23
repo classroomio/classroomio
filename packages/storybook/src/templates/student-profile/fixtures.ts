@@ -170,7 +170,12 @@ export interface StudentProfileCourse {
   exercises_count: number;
   exercises_completed: number;
   progress_percentage: number;
-  average_grade: number;
+  /**
+   * `null` means "no grade yet", which is NOT the same as a grade of 0. A course
+   * whose exercises sum to zero total points cannot produce a grade either, so
+   * this is keyed on grade availability rather than on `exercises.length`.
+   */
+  average_grade: number | null;
   /**
    * Per-exercise rows for this course. The API already fetches these per course
    * (`getUserExercisesStats`) and currently discards them after averaging into
@@ -189,7 +194,8 @@ export interface StudentProfileAnalytics {
   };
   courses: StudentProfileCourse[];
   overallCourseProgress: number;
-  overallAverageGrade: number;
+  /** `null` when no enrolled course has a gradeable exercise. */
+  overallAverageGrade: number | null;
 }
 
 const SUPABASE_LOGO = 'https://placehold.co/240x160/1e3a8a/ffffff?text=Supabase+%26+Svelte';
@@ -199,8 +205,8 @@ const DESIGN_LOGO = 'https://placehold.co/240x160/4c1d95/ede9fe?text=Design+Syst
 
 export const student: StudentProfileAnalytics['user'] = {
   id: 'e2f0a1c4-8b1e-4a4b-9f77-6c2d4c0a1b23',
-  fullName: 'Abdul-muizz Hamzat',
-  email: 'abdulmuizzayo6@gmail.com',
+  fullName: 'Ada Okafor',
+  email: 'ada.okafor@example.com',
   avatarUrl: 'https://github.com/shadcn.png',
   lastSeen: '5 days ago'
 };
@@ -263,7 +269,7 @@ export const courses: StudentProfileCourse[] = [
     exercises_count: 0,
     exercises_completed: 0,
     progress_percentage: 0,
-    average_grade: 0,
+    average_grade: null,
     exercises: []
   }
 ];
@@ -272,7 +278,9 @@ export const analytics: StudentProfileAnalytics = {
   user: student,
   courses,
   overallCourseProgress: 41,
-  overallAverageGrade: 68
+  // mean(72, 91, 45) rounded. The exercise-free course contributes no grade
+  // rather than a 0 — see the PRD's Decision 8.
+  overallAverageGrade: 69
 };
 
 /** The state this page most often renders in: one course, nothing started. */
@@ -284,7 +292,7 @@ export const justEnrolledAnalytics: StudentProfileAnalytics = {
       lessons_completed: 0,
       exercises_completed: 0,
       progress_percentage: 0,
-      average_grade: 0,
+      average_grade: null,
       exercises: courses[0]!.exercises.map((exercise) => ({
         ...exercise,
         status: undefined,
@@ -294,14 +302,14 @@ export const justEnrolledAnalytics: StudentProfileAnalytics = {
     }
   ],
   overallCourseProgress: 0,
-  overallAverageGrade: 0
+  overallAverageGrade: null
 };
 
 export const noCoursesAnalytics: StudentProfileAnalytics = {
   user: student,
   courses: [],
   overallCourseProgress: 0,
-  overallAverageGrade: 0
+  overallAverageGrade: null
 };
 
 export function isComplete(course: StudentProfileCourse) {
@@ -320,7 +328,8 @@ export interface CourseStudentAnalytics {
   user: StudentProfileAnalytics['user'];
   courseTitle: string;
   progressPercentage: number;
-  averageGrade: number;
+  /** `null` when nothing gradeable has been submitted. */
+  averageGrade: number | null;
   lessonsCompleted: number;
   lessonsCount: number;
   userExercisesStats: StudentExerciseStat[];
@@ -340,7 +349,7 @@ export const courseStudent: CourseStudentAnalytics = {
 export const courseStudentNotStarted: CourseStudentAnalytics = {
   ...courseStudent,
   progressPercentage: 0,
-  averageGrade: 0,
+  averageGrade: null,
   lessonsCompleted: 0,
   userExercisesStats: supabaseExercises.map((exercise) => ({
     ...exercise,
@@ -353,5 +362,8 @@ export const courseStudentNotStarted: CourseStudentAnalytics = {
 /** A course with no exercises authored yet. */
 export const courseStudentNoExercises: CourseStudentAnalytics = {
   ...courseStudent,
+  // No exercises means no grade. Lesson progress is independent of exercises, so
+  // progressPercentage and lessonsCompleted deliberately stay as they are.
+  averageGrade: null,
   userExercisesStats: []
 };

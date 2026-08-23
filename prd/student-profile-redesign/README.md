@@ -61,11 +61,22 @@ Two dashboard pages answer the same question — "how is this student doing?" �
    ```
 
    - **Double-scaling.** The values are already percentages, so multiplying by 100 again is wrong. Course grades of 72/91/45/0 produce `Math.round((208 / 4) * 100)` = **5200**, and the page renders `5200 %`. Nothing clamps it client-side. It reads as `0 %` only when every course grade is 0 — which is exactly the state the current screenshots happen to be in, which is why it has gone unnoticed.
-   - **Dilution.** A course with no exercises has no grade, but contributes a `0` to the mean. Excluding those, the same data averages **69%**, not 52%.
+   - **Dilution.** A course with no grade contributes a `0` to the mean. Excluding those, the same data averages **69%**, not 52%.
 
    Both are fixed together; `overallCourseProgress` on the line above is correct (it divides raw lesson counts) and must not be touched.
 
 9. **Neither page renders a `Page.Title` or `Page.Subtitle`.** The header carries only the back link and the 3-dot menu; the rail identifies the student. This removes "Student profile / Progress, grades, and activity across their courses." and "People / _course title_". Two consequences that are easy to get wrong — see Technical Design § Removing the page headings.
+
+10. **"No grade" is representable, and is not a grade of zero.** `average_grade` and `overallAverageGrade` become `number | null`; `null` renders as an em dash, never `0%`. Two things force this:
+
+    - `calcPercentageWithRounding(0, 0)` returns `0`, so a course with nothing gradeable already reports a real-looking `0%` today.
+    - **Filtering on `exercises.length > 0` is not sufficient.** An authored exercise whose questions sum to zero points also cannot yield a grade. The test is whether the course has any gradeable points at all — `sum(totalPoints) > 0` — not whether exercises exist.
+
+    Same rule as the existing `—/20` treatment for an ungraded submission: absence of a mark is shown as absence, not as zero.
+
+11. **The grade for an exercise is its latest submission.** `getUserExercisesStats` selects submissions with no `ORDER BY` and then calls `submissions.find(...)`, and there is **no unique constraint on `submission(exerciseId, submittedBy)`** — only foreign keys. So a student with two submissions for one exercise currently gets whichever row Postgres happens to return first. The query must order deterministically and the policy must be stated: **most recent submission by `created_at`, tie-broken by `id`**.
+
+12. **A failed exercise query must not look like an empty one.** `getUserExercisesStats` catches every error and returns `[]` (`packages/db/src/queries/analytics/analytics.ts:213-217`). Exposing that as `exercises: []` would render the Grades tab's "nothing graded yet" empty state on a database failure — the exact confusion this PRD sets out to remove elsewhere. The failure has to reach the caller.
 
 ## Current-State Audit
 
@@ -158,18 +169,57 @@ return {
 };
 ```
 
-And Decision 8. Note that `calcPercentageWithRounding` is **not** the right helper here — its `× 100` is what produces `5200 %`. These values are already percentages, so this is a plain mean:
+Decisions 8 and 10 together. Note that `calcPercentageWithRounding` is **not** the right helper for the aggregate — its `× 100` is what produces `5200 %`. These values are already percentages, so this is a plain mean, and a course with no gradeable points is excluded rather than counted as zero:
 
 ```ts
-// A course with no exercises has no grade, which is not the same as a grade of 0.
-const gradedCourses = coursesWithStats.filter((course) => course.exercises.length > 0);
-const gradeTotal = sumArrObject(gradedCourses, 'average_grade');
-const overallAverageGrade = gradedCourses.length === 0 ? 0 : Math.round(gradeTotal / gradedCourses.length);
+// A course is gradeable only if its exercises carry points. Authored exercises
+// worth 0 points cannot produce a grade any more than no exercises can.
+const gradeablePoints = (exercises: StudentExerciseStat[]) =>
+  exercises.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
+
+const averageGrade = gradeablePoints(userExercisesStats) > 0
+  ? calcPercentageWithRounding(totalEarnedPoints, totalPoints)
+  : null; // per-course, replaces the old `average_grade: 0`
+
+// …then, across courses:
+const graded = coursesWithStats.filter((course) => course.average_grade !== null);
+const gradeTotal = graded.reduce((sum, course) => sum + course.average_grade!, 0);
+const overallAverageGrade = graded.length === 0 ? null : Math.round(gradeTotal / graded.length);
 ```
+
+`sumArrObject` is not used here — it coerces `null` to `0` via `|| 0`, which would reintroduce the dilution this fixes.
 
 Leave `overallCourseProgress` alone — `calcPercentageWithRounding(completedLessons, totalLessons)` is correct because those are raw counts, not percentages.
 
 All 8 `calcPercentageWithRounding` call sites in the repo were audited — line 948 is the only one that passes already-percentage values. The rest divide raw counts and are correct.
+
+### Query-layer changes (Decisions 11 and 12)
+
+`getUserExercisesStats` needs two fixes before its rows can be trusted on a page, in `packages/db/src/queries/analytics/analytics.ts`:
+
+```ts
+// Decision 11 — deterministic submission choice. Latest wins.
+const submissions = await db
+  .select({ /* … */ createdAt: schema.submission.createdAt })
+  .from(schema.submission)
+  .where(and(inArray(/* … */), eq(schema.submission.submittedBy, groupMember[0].id)))
+  .orderBy(desc(schema.submission.createdAt), desc(schema.submission.id));
+// `submissions.find(…)` then returns the newest for that exercise, not an arbitrary row.
+```
+
+```ts
+// Decision 12 — stop swallowing failures.
+} catch (error) {
+  console.error('getUserExerciseStats error:', error);
+  throw new Error('Failed to fetch user exercise stats');
+}
+```
+
+The `throw` matches the repo's query-layer convention (CLAUDE.md § Query error logging), but **the blast radius makes it the wrong first move.** There are two other callers: `packages/core/src/services/course/course.ts:666`, and `course.ts:553` — which calls it **once per student inside a course-wide loop**. Converting the catch to a throw there means one unreadable submission row takes down the entire course analytics page, trading a quiet wrong answer for a loud outage.
+
+Preferred approach: leave the `catch` in place and have `getUserAnalytics` distinguish the two cases itself, so only this feature changes behaviour — e.g. return `exercises: StudentExerciseStat[] | null` per course, with `null` meaning "could not load" and `[]` meaning "none authored", and have the Grades tab render an error row for that course. Revisit the throw as its own hardening PR across all three call sites.
+
+The early `return []` paths (no exercises, course missing, user not a group member) are legitimate empties and stay as they are.
 
 ### Dashboard types
 
@@ -279,22 +329,25 @@ Node 20 throughout: `export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"`.
 2. `?tab=grades` deep-links to the Grades tab; an unknown value falls back to Courses; switching tabs adds no browser-history entries and does not scroll the page.
 3. The Grades tab lists every exercise the API returns, grouped by course, with the course's average on the group row.
 4. An ungraded submission renders `—/N`. No screen anywhere renders an unearned `0/N`.
-5. `overallAverageGrade` is a true mean in the range 0–100 — a student with course grades 72/91/45 and one exercise-free course reports `69%`, not `5200%` and not `52%`. A student with no graded exercises anywhere reports `0%` without dividing by zero.
-6. Killing the API makes both pages render an error state with a retry — not a skeleton.
-7. `Reset progress` works from the 3-dot menu with its confirmation dialog, role gate and disabled condition intact.
-8. `Export progress` downloads a CSV whose rows match what is on screen.
-9. The course page renders correctly for an exercise with `lessonId: null`.
-10. Neither page renders a heading or subtitle; the browser tab still titles correctly on the audience page, and the people **list** page keeps its "People" heading.
-11. **Zero regression:** the five other `ActivityCard` consumers and the `HeroProfileCard` consumer render unchanged.
-12. All user-facing copy resolves from translation keys; no literal strings in components; the 9 non-English locales keep every `{}` placeholder.
-13. `pnpm --filter @cio/dashboard build`, `pnpm --filter @cio/api build` and `pnpm format:check` all pass.
+5. `overallAverageGrade` is a true mean in the range 0–100 — a student with course grades 72/91/45 and one exercise-free course reports `69%`, not `5200%` and not `52%`.
+6. A course with no gradeable points renders an em dash, not `0%`. This holds both for a course with no exercises and for a course whose exercises sum to zero points. A student with nothing gradeable anywhere shows an em dash for the overall figure, and nothing divides by zero.
+7. An exercise with two submissions shows the most recent one, deterministically, across repeated loads.
+8. A failed exercise query renders an error, not the "nothing graded yet" empty state.
+9. Killing the API makes both pages render an error state with a retry — not a skeleton.
+10. `Reset progress` works from the 3-dot menu with its confirmation dialog, role gate and disabled condition intact.
+11. `Export progress` downloads a CSV whose rows match what is on screen.
+12. The course page renders correctly for an exercise with `lessonId: null`.
+13. Neither page renders a heading or subtitle; the browser tab still titles correctly on the audience page, and the people **list** page keeps its "People" heading.
+14. **Zero regression:** the five other `ActivityCard` consumers and the `HeroProfileCard` consumer render unchanged.
+15. All user-facing copy resolves from translation keys; no literal strings in components; the 9 non-English locales keep every `{}` placeholder.
+16. `pnpm --filter @cio/dashboard build`, `pnpm --filter @cio/api build` and `pnpm format:check` all pass.
 
 ## Risks and Mitigations
 
 | Risk                                                                                                   | Mitigation                                                                                                                          |
 | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Two rail implementations drift (Decision 5)                                                             | Build the course rail by copying the audience rail in the same PR, so they start identical; note in both files that they are a pair. |
-| Deleting `ActivityCard`/`HeroProfileCard` breaks six other screens                                      | Neither is deleted. Acceptance criterion 11 covers it.                                                                              |
+| Deleting `ActivityCard`/`HeroProfileCard` breaks six other screens                                      | Neither is deleted. Acceptance criterion 14 covers it.                                                                              |
 | `exercises` bloats the audience payload for a student in many courses                                    | Rows are small and already computed. If it becomes a problem, move the Grades tab to its own endpoint — the tab is already lazy UI.  |
 | The `average_grade` fix changes a number people may have screenshotted or reported on                   | Call it out in the changelog as a correction with both formulas stated. The old value was not a plausible-but-different number — it was out of range — so nothing downstream can have been calibrated to it. |
 | The same percentage-of-percentages defect exists elsewhere                                               | Checked: it does not. All 8 `calcPercentageWithRounding` call sites were audited (`apps/api/src/services/organization.ts`, `packages/core/src/services/course/course.ts`) and line 948 is the only one passing already-percentage values; every other divides raw counts. No follow-up needed. |

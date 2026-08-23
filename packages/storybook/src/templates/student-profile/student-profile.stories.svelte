@@ -33,11 +33,17 @@
 
   const AUDIENCE_HREF = '#audience';
 
-  function gradeVariant(grade: number) {
+  function gradeVariant(grade: number | null) {
+    if (grade === null) return 'outline';
     if (grade >= 70) return 'success';
     if (grade >= 50) return 'warning';
 
     return 'secondary';
+  }
+
+  /** No grade is not a grade of 0 — it renders as an em dash. */
+  function gradeLabel(grade: number | null, suffix = '%') {
+    return grade === null ? '—' : `${grade}${suffix}`;
   }
 </script>
 
@@ -136,7 +142,7 @@
               {@render factRow('Enrolled courses', data.courses.length)}
               {@render factRow('Completed', completed)}
               {@render factRow('In progress', inProgress)}
-              {@render factRow('Average grade', `${data.overallAverageGrade}%`)}
+              {@render factRow('Average grade', gradeLabel(data.overallAverageGrade))}
             </Card.Content>
           </Card.Root>
 
@@ -205,7 +211,7 @@
                           </div>
                           <div class="flex flex-col">
                             <span class="ui:text-muted-foreground">Grade</span>
-                            <span class="ui:tabular-nums font-medium">{course.average_grade}%</span>
+                            <span class="ui:tabular-nums font-medium">{gradeLabel(course.average_grade)}</span>
                           </div>
                         </div>
                       </div>
@@ -249,7 +255,7 @@
                           </Table.Cell>
                           <Table.Cell>
                             <Badge variant={gradeVariant(course.average_grade)} class="ui:tabular-nums">
-                              {course.average_grade}% avg
+                              {gradeLabel(course.average_grade, '% avg')}
                             </Badge>
                           </Table.Cell>
                         </Table.Row>

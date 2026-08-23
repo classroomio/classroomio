@@ -2,7 +2,6 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
 
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import AwardIcon from '@lucide/svelte/icons/award';
   import CircleCheckIcon from '@lucide/svelte/icons/circle-check-big';
   import ClockIcon from '@lucide/svelte/icons/clock';
   import DownloadIcon from '@lucide/svelte/icons/download';
@@ -42,11 +41,27 @@
 
   const PEOPLE_HREF = '#people';
 
-  function gradeVariant(grade: number) {
+  function gradeVariant(grade: number | null) {
+    if (grade === null) return 'outline';
     if (grade >= 70) return 'success';
     if (grade >= 50) return 'warning';
 
     return 'secondary';
+  }
+
+  /** No grade is not a grade of 0 — it renders as an em dash. */
+  function gradeLabel(grade: number | null) {
+    return grade === null ? '—' : `${grade}%`;
+  }
+
+  /**
+   * Percentage for one exercise, or `null` when it cannot have one. An exercise
+   * whose questions sum to zero points would otherwise produce NaN.
+   */
+  function exercisePercent(exercise: { score: number; totalPoints: number }) {
+    if (exercise.totalPoints <= 0) return null;
+
+    return Math.round((exercise.score / exercise.totalPoints) * 100);
   }
 
   function scoreLabel(exercise: { score: number; totalPoints: number; status: number | undefined }) {
@@ -159,7 +174,7 @@
               {@render factRow('Lessons', `${data.lessonsCompleted}/${data.lessonsCount}`)}
               {@render factRow('Exercises', `${completedExercises}/${totalExercises}`)}
               {@render factRow('Assignment completion', `${exerciseCompletion}%`)}
-              {@render factRow('Average grade', `${data.averageGrade}%`)}
+              {@render factRow('Average grade', gradeLabel(data.averageGrade))}
             </Card.Content>
           </Card.Root>
 
@@ -220,10 +235,7 @@
                     <ResourceListRow.End class="ui:gap-6 ui:self-start">
                       <div class="flex w-20 justify-end">
                         {#if isGraded(exercise)}
-                          <Badge
-                            variant={gradeVariant(Math.round((exercise.score / exercise.totalPoints) * 100))}
-                            class="ui:tabular-nums"
-                          >
+                          <Badge variant={gradeVariant(exercisePercent(exercise))} class="ui:tabular-nums">
                             {scoreLabel(exercise)}
                           </Badge>
                         {:else}
