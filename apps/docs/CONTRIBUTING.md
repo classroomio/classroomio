@@ -2,7 +2,7 @@
 
 These are the placement rules for the ClassroomIO docs. Read them before adding or moving a page. They exist so the site stays organized as more people write for it, not just as a one-time cleanup.
 
-## The twelve rules
+## The twelve rules 
 
 1. **Audience decides the tab.** Pages for people using the product in a browser go in the user zones (Platform, Help Center). Pages for people integrating with, running, or contributing to the product go in the developer zones (Developers, Self-Hosting, API).
 2. **Intent decides the section within the tab.** Explaining what something is is a concept page and belongs in Features. Walking someone through a task is a how-to: Help Center for academy owners, Developers for contributors and integrators. Listing endpoints and parameters is reference and belongs in API. Getting the product running on someone's infrastructure is Self-Hosting.
