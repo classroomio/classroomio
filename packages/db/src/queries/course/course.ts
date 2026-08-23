@@ -1108,10 +1108,10 @@ export const getExploreCourses = async ({
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
       isNull(schema.groupmember.id),
-      or(
-        sql`${schema.course.metadata}->>'allowNewStudent' IS NULL`,
-        sql`${schema.course.metadata}->>'allowNewStudent' != 'false'`
-      )
+      // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
+      // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,
+      // so COALESCE falls through exactly as `??` does.
+      sql`COALESCE(${schema.course.metadata}->>'allowSelfEnrollment', ${schema.course.metadata}->>'allowNewStudent', 'true') != 'false'`
     );
 
     const courseSelect = {

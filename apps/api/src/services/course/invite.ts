@@ -22,6 +22,7 @@ import {
 } from '@cio/db/queries/course';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
@@ -656,12 +657,16 @@ export async function enrollInCourse(
   }
 
   const courseMetadata =
-    (courseWithRelations.metadata as { allowNewStudent?: boolean; welcomeEmailMessage?: string | null } | null) ?? null;
+    (courseWithRelations.metadata as {
+      allowSelfEnrollment?: boolean;
+      allowNewStudent?: boolean;
+      welcomeEmailMessage?: string | null;
+    } | null) ?? null;
   const isInternalEnrollmentOnly = org.settings?.internalEnrollmentOnly ?? false;
 
   const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
 
-  if (courseMetadata?.allowNewStudent === false) {
+  if (!isSelfEnrollmentAllowed(courseMetadata)) {
     throw new AppError('This course is not accepting new students', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
