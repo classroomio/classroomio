@@ -207,6 +207,11 @@
       return;
     }
 
+    if (Number(courseApi.course?.cost) > 0 && !(courseApi.course?.metadata?.paymentLink ?? '').trim()) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+      return;
+    }
+
     try {
       let logoUrl = $settings.logo;
 

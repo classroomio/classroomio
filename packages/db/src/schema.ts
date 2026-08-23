@@ -1717,7 +1717,8 @@ export const courseNewsfeedComment = pgTable(
       foreignColumns: [table.id],
       name: 'course_newsfeed_comment_reply_to_comment_id_fkey'
     }).onDelete('set null'),
-    index('course_newsfeed_comment_parent_id_idx').on(table.parentId)
+    index('course_newsfeed_comment_parent_id_idx').on(table.parentId),
+    index('course_newsfeed_comment_course_newsfeed_id_idx').on(table.courseNewsfeedId)
   ]
 );
 
