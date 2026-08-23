@@ -694,7 +694,7 @@ export class CourseApi extends BaseApiWithErrors {
           description: '',
           imgUrl: ''
         },
-        allowNewStudent: false,
+        allowSelfEnrollment: true,
         isContentGroupingEnabled: true,
         progressionMode: 'free'
       };

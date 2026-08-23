@@ -31,7 +31,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { generateSlug, isPublishedComplianceMissingDeadline } from '@cio/utils/functions';
+  import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
@@ -187,7 +187,7 @@
 
     // Otherwise, publish normally
     $settings.isPublished = true;
-    $settings.allowNewStudents = true;
+    $settings.allowSelfEnrollment = true;
     hasUnsavedChanges = true;
   }
 
@@ -242,7 +242,7 @@
         lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
-        allowNewStudent: $settings.allowNewStudents ?? false,
+        allowSelfEnrollment: $settings.allowSelfEnrollment,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
         welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
@@ -331,7 +331,7 @@
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
         isPublished: !!course.isPublished,
-        allowNewStudents: !!course.metadata?.allowNewStudent,
+        allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         callout: normalizeCallout(course.callout),
@@ -1064,15 +1064,15 @@
     <Field.Description>{$t('course.navItem.settings.access')}</Field.Description>
     <Field.Field orientation="horizontal">
       <Switch
-        id="allow-new-students"
-        checked={$settings.allowNewStudents}
+        id="allow-self-enrollment"
+        checked={$settings.allowSelfEnrollment}
         onCheckedChange={(checked) => {
-          $settings.allowNewStudents = checked;
+          $settings.allowSelfEnrollment = checked;
           hasUnsavedChanges = true;
         }}
       />
-      <Label for="allow-new-student">
-        {$settings.allowNewStudents ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      <Label for="allow-self-enrollment">
+        {$settings.allowSelfEnrollment ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
       </Label>
     </Field.Field>
   </Field.Set>
