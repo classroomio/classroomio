@@ -9,6 +9,7 @@ import type {
   GetOrgPublicCoursesRequest,
   ImportAudienceRequest,
   InviteTeamRequest,
+  JoinAcademyRequest,
   OrgLinkInvite,
   OrgPublicCourses,
   OrganizationAudience,
@@ -43,6 +44,7 @@ import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { uploadImage } from '$lib/utils/services/upload';
+import { authClient } from '$lib/utils/services/auth/client';
 import { DEFAULT_ORG_AUDIENCE_QUERY, toAudienceRequestQuery } from '../utils/audience-query-utils';
 import type { ZodError } from 'zod';
 
@@ -78,6 +80,25 @@ class OrgApi extends BaseApiWithErrors {
   private activePublicCoursesFetch: Promise<void> | null = null;
   private activePublicCoursesFetchSiteName: string | null = null;
   private activeAudienceRequestController: AbortController | null = null;
+
+  async joinAcademy(orgId: string, redirectTo = '/lms') {
+    return this.execute<JoinAcademyRequest>({
+      requestFn: () => classroomio.organization.join.$post({}, { headers: { 'cio-org-id': orgId } }),
+      logContext: 'joining academy',
+      onSuccess: async (response) => {
+        if (response.data.pendingInvite) {
+          window.location.href = '/';
+          return;
+        }
+
+        await authClient.getSession({ query: { disableCookieCache: true } });
+        window.location.href = redirectTo;
+      },
+      onError: () => {
+        snackbar.error('invite.organization.messages.join_failed');
+      }
+    });
+  }
 
   cancelAudienceRequest() {
     this.activeAudienceRequestController?.abort();

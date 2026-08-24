@@ -1632,6 +1632,7 @@
     "people": "People",
     "goto_lms": "Go to LMS",
     "goto_dashboard": "Dashboard",
+    "join_academy": "Join Academy",
     "goto_home": "Go to ClassroomIO Home",
     "login": "Login",
     "signup": "Sign Up",
@@ -4470,7 +4471,8 @@
         "accepted": "This invite has already been used.",
         "invalid": "This invite link is not valid.",
         "joined": "Joined organization",
-        "join_failed": "Failed to join organization"
+        "join_failed": "Failed to join organization",
+        "try_again": "Try again"
       }
     },
     "link": {

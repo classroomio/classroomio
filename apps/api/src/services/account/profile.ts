@@ -3,6 +3,7 @@ import {
   countActiveStudents,
   createOrganizationMember,
   getFirstOrganization,
+  getOrganizationCount,
   getOrganizationByProfileId,
   getUserOrgRolesMap,
   hasOrgMemberByProfileIdOrEmail
@@ -52,25 +53,28 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
   // Self-hosted: auto-add user as student to the single org if they are not a member.
   // Skip if they already have membership (by profileId) or a pending invite (by email).
   // Also skip if the user is an admin/tutor in any org — they should not be downgraded to student.
-  if (env.PUBLIC_IS_SELFHOSTED === 'true' && organizations.length === 0) {
-    const orgRoles = await getUserOrgRolesMap(userId);
-    const isTeamMember = Object.values(orgRoles).some((roleId) => roleId === ROLE.ADMIN || roleId === ROLE.TUTOR);
+  if (isSelfHosted && organizations.length === 0) {
+    const organizationCount = await getOrganizationCount();
+    if (organizationCount === 1) {
+      const orgRoles = await getUserOrgRolesMap(userId);
+      const isTeamMember = Object.values(orgRoles).some((roleId) => roleId === ROLE.ADMIN || roleId === ROLE.TUTOR);
 
-    if (!isTeamMember) {
-      const firstOrg = await getFirstOrganization();
-      if (firstOrg) {
-        const alreadyInOrg = await hasOrgMemberByProfileIdOrEmail(firstOrg.id, userId, profile.email ?? undefined);
+      if (!isTeamMember) {
+        const firstOrg = await getFirstOrganization();
+        if (firstOrg) {
+          const alreadyInOrg = await hasOrgMemberByProfileIdOrEmail(firstOrg.id, userId, profile.email ?? undefined);
 
-        if (!alreadyInOrg) {
-          await createOrganizationMember({
-            organizationId: firstOrg.id,
-            profileId: userId,
-            roleId: ROLE.STUDENT,
-            verified: true
-          });
+          if (!alreadyInOrg) {
+            await createOrganizationMember({
+              organizationId: firstOrg.id,
+              profileId: userId,
+              roleId: ROLE.STUDENT,
+              verified: true
+            });
+          }
+
+          organizations = await getOrganizationByProfileId(userId);
         }
-
-        organizations = await getOrganizationByProfileId(userId);
       }
     }
   }
