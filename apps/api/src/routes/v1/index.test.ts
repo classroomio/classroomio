@@ -18,12 +18,6 @@ vi.mock('@hono/node-server/conninfo', () => ({
 vi.mock('@api/middlewares/rate-limiter', () => ({
   createAuthenticationFailureRateLimiter:
     (options: { keyGenerator: (context: Context) => string }) => async (context: Context, next: Next) => {
-      const authHeader = context.req.header('Authorization');
-
-      if (!authHeader?.startsWith('Bearer ')) {
-        return next();
-      }
-
       const key = options.keyGenerator(context);
       const reservation = await mocks.reserveFailure(key);
 
@@ -103,13 +97,27 @@ describe('public API rate limiting', () => {
     });
   });
 
-  it('rejects a missing token without consuming the failed-authentication budget', async () => {
+  it('reserves failed-authentication capacity for a missing token and blocks it when exhausted', async () => {
     const unauthorizedResponse = await requestWithToken();
 
     expect(unauthorizedResponse.status).toBe(401);
-    expect(mocks.reserveFailure).not.toHaveBeenCalled();
+    expect(mocks.reserveFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY);
     expect(mocks.releaseFailure).not.toHaveBeenCalled();
     expect(mocks.authenticate).not.toHaveBeenCalled();
+
+    const exhaustedLimitResetTime = Date.now() + 60_000;
+    mocks.reserveFailure.mockResolvedValueOnce({
+      allowed: false,
+      remaining: 0,
+      reservationId: 'exhausted-reservation',
+      resetTime: exhaustedLimitResetTime
+    });
+
+    const limitedResponse = await requestWithToken();
+
+    expect(limitedResponse.status).toBe(429);
+    expect(mocks.authenticate).not.toHaveBeenCalled();
+    expect(mocks.releaseFailure).not.toHaveBeenCalled();
   });
 
   it('keeps reservations for invalid tokens and blocks another authentication lookup when exhausted', async () => {

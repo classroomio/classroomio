@@ -109,9 +109,7 @@ export const createAuthenticationFailureRateLimiter = (options: RateLimiterOptio
   const opts = { ...defaultOptions, ...options };
 
   return async (c, next) => {
-    const authHeader = c.req.header('Authorization');
-
-    if (env.NODE_ENV !== 'production' || !authHeader?.startsWith('Bearer ') || opts.skip(c)) {
+    if (env.NODE_ENV !== 'production' || opts.skip(c)) {
       return await next();
     }
 
