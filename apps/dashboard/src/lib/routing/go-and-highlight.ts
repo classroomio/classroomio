@@ -21,5 +21,5 @@ export function goAndHighlight<R extends ROUTE_NAME>(
   }
 
   query.set('highlight', sectionName);
-  goto(resolve(`${path}?${query.toString()}`, {}));
+  goto(resolve(`${path}?${query.toString()}`, {}), { noScroll: true, keepFocus: true });
 }

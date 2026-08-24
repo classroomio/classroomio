@@ -1,4 +1,4 @@
-import { tokenize, type CourseLandingTokens } from '../course-tokens-base';
+import { richTextChildren, tokenize, type CourseLandingTokens } from '../course-tokens-base';
 
 export const courseTokens: CourseLandingTokens = tokenize({
   sectionShell: 'ui:py-12 ui:md:py-14 ui:px-4 ui:bg-[var(--landing-bg)]',
@@ -25,5 +25,5 @@ export const courseTokens: CourseLandingTokens = tokenize({
   instructorAvatarWrap: 'ui:shrink-0',
   instructorBodyWrap: 'ui:flex-1',
   instructorAvatar: 'ui:size-24 ui:rounded-full ui:object-cover ui:border ui:border-[var(--landing-border)]',
-  instructorBody: 'ui:text-sm ui:text-[var(--landing-fg-muted)] ui:leading-relaxed ui:mt-3'
+  instructorBody: 'ui:text-sm ui:text-[var(--landing-fg-muted)] ui:leading-relaxed ui:mt-3' + ` ${richTextChildren}`
 });

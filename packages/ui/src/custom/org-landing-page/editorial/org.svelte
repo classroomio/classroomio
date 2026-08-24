@@ -8,7 +8,7 @@
   import EditorialHero from './hero.svelte';
   import EditorialCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
   import { Button } from '../../../base/button';
   import { getCourseTypeLandingMeta } from '../landing-page-utils';
 
@@ -87,10 +87,7 @@
   }
 </script>
 
-<div
-  class="ui:min-h-screen ui:font-sans ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)]"
-  style={themeStyle('editorial')}
->
+<LandingThemeScope theme="editorial" class="ui:font-sans">
   <main>
     <EditorialHero {hero} {courses} {labels}>
       {#snippet navigation()}
@@ -185,4 +182,4 @@
   <OrgLandingPageCallout {callout} {labels} variant="editorial" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="editorial" />
-</div>
+</LandingThemeScope>

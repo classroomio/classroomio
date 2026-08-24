@@ -7,6 +7,7 @@ interface SeedGroup {
   testOrgId: string;
   earlyAdopterGroupId: string;
   earlyAdopterOrgId: string;
+  selectedOrganizationId?: string;
 }
 
 export async function seedGroup({
@@ -15,7 +16,8 @@ export async function seedGroup({
   pandasGroupId,
   testOrgId,
   earlyAdopterGroupId,
-  earlyAdopterOrgId
+  earlyAdopterOrgId,
+  selectedOrganizationId
 }: SeedGroup) {
   const existingGroups = await db.select().from(group);
   const existingGroupIds = existingGroups.map((g) => g.id);
@@ -49,7 +51,11 @@ export async function seedGroup({
         'A practical introduction to product management covering roadmaps, prioritization frameworks, user research, and cross-functional collaboration skills needed to ship great products.',
       organizationId: earlyAdopterOrgId
     }
-  ].filter((g) => !existingGroupIds.includes(g.id));
+  ].filter(
+    (groupToInsert) =>
+      (!selectedOrganizationId || groupToInsert.organizationId === selectedOrganizationId) &&
+      !existingGroupIds.includes(groupToInsert.id)
+  );
 
   if (groupsToInsert.length > 0) {
     await db.insert(group).values(groupsToInsert);

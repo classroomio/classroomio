@@ -339,7 +339,7 @@
 
 <!-- PDF Viewer Modal -->
 {#if pdfViewerOpen}
-  <div class="z-modal fixed inset-0 flex flex-col bg-white dark:bg-neutral-800">
+  <div class="ui:z-modal fixed inset-0 flex flex-col bg-white dark:bg-neutral-800">
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:bg-neutral-800">
       <div class="flex items-center space-x-4">

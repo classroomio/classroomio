@@ -30,7 +30,10 @@
   import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
-  import { isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
+  import { isOrgStudent, isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { exerciseApi } from '$features/course/api';
@@ -48,6 +51,8 @@
   } from '$features/ui';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import { saveExerciseDraft } from '$features/course/utils/exercise-draft';
+  import { onUpgradeCheckoutHandoff } from '$lib/utils/store/upgrade-modal';
   import {
     hydrateExercisePageData
     // , refreshExercisePageData
@@ -86,6 +91,15 @@
     submissions,
     mySubmissions = []
   }: Props = $props();
+
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage: Boolean(exerciseId),
+      courseProgress: getCourseProgress(courseApi.course)
+    })
+  );
 
   type ExerciseTab = 'questions' | 'settings' | 'submissions';
 
@@ -463,6 +477,19 @@
     selectedTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
   });
 
+  // Upgrading from a premium question type sends the browser to an external checkout. Stash the
+  // editor so it can be restored on the way back, and stand the leave guard down — with the work
+  // persisted there is nothing to warn about.
+  onMount(() =>
+    onUpgradeCheckoutHandoff(() => {
+      const courseId = courseApi.course?.id;
+      if ($isOrgStudent || !courseId || !hasDirtyQuestionnaire()) return;
+
+      saveExerciseDraft(courseId, exerciseId, $questionnaire);
+      hasUnsavedChanges = false;
+    })
+  );
+
   $effect(() => {
     const nextTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
     if (nextTab === untrack(() => selectedTab)) return;
@@ -592,7 +619,7 @@
   }
 </script>
 
-<Page.Header isSticky={true} class="z-app-bar! top-12! min-h-[36px]">
+<Page.Header isSticky={true} class="ui:z-app-bar top-12! min-h-[36px]">
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
       <span>{exerciseDisplayTitle}</span>
@@ -611,7 +638,7 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if $isStudentExperience && courseApi.course?.id && exerciseId}
+      {#if $isCourseLearnerView && courseApi.course?.id && exerciseId && !showMobileBottomNav}
         <ContentNavigationActions courseId={courseApi.course.id} {exerciseId} />
       {/if}
 
@@ -638,7 +665,7 @@
                       </Button>
                     {/snippet}
                   </DropdownMenu.Trigger>
-                  <DropdownMenu.Content align="end" class="z-menu-elevated!">
+                  <DropdownMenu.Content align="end">
                     <DropdownMenu.Item onclick={addSectionFromHeader}>
                       {$t('course.navItem.lessons.exercises.all_exercises.add_section')}
                     </DropdownMenu.Item>
@@ -677,7 +704,7 @@
                       </Button>
                     {/snippet}
                   </DropdownMenu.Trigger>
-                  <DropdownMenu.Content align="end" class="z-menu-elevated!">
+                  <DropdownMenu.Content align="end">
                     {#if hasSections($questionnaire.sections)}
                       <DropdownMenu.Item onclick={() => (reorderQuestions = !reorderQuestions)}>
                         {reorderQuestions

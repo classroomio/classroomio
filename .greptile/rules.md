@@ -2,6 +2,10 @@
 
 Repo-specific conventions for code review. See https://www.greptile.com/docs/code-review/custom-standards.
 
+## Out of scope for review
+
+The `prototypes/` directory contains standalone HTML/CSS design mocks and exploration artifacts. They are **not** part of the shipped application and should not receive production code review feedback (navigation semantics, a11y, idempotency, etc.). Skip these paths entirely.
+
 ## One-time admin/ops scripts (`packages/db/src/scripts/**`)
 
 These are manual, operator-invoked, run-once maintenance scripts (backfills, notifications, migrations). They are **not** part of the request/runtime path.

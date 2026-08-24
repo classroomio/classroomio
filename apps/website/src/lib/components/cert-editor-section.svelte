@@ -13,8 +13,8 @@
           <em class="text-blue-700 not-italic">look like yours.</em>
         </h2>
         <p class="mt-5 text-base leading-relaxed text-gray-500">
-          A real design canvas — drag elements, swap brand colours and fonts, configure the ID format. Issue PDFs and
-          PNGs learners actually want to share.
+          A real design canvas. Drag elements, swap brand colours and fonts, configure the ID format. Issue PDFs and
+          PNGs learners want to share.
         </p>
       </div>
     </BlurFade>

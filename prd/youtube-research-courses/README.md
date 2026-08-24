@@ -185,7 +185,7 @@ This is intentionally deferred until after teacher-led workflows because learner
 | YouTube lesson embeds | Exists | Lessons can already store YouTube links and render them through media player components. |
 | YouTube URL parsing | Exists | `packages/core/src/services/assets/assets.ts` extracts YouTube IDs and metadata. |
 | Uploaded-video transcription | Exists | Jobs worker extracts audio and transcribes uploaded assets into `media_transcript`. |
-| YouTube transcript ingestion | Missing | Existing agent tools explicitly say embedded YouTube links return no transcript. |
+| YouTube transcript ingestion | Missing | Existing agent tools explicitly say embedded YouTube links return no transcript. Lesson-scoped fetch + cache is specified in [`prd/youtube-embed-transcripts`](../youtube-embed-transcripts/README.md); research runs should reuse that caption cache instead of a second transcript table. |
 | AI course generation | Exists | Durable course-generation worker can create sections, lessons, exercises, and content. |
 | Study from Source | Draft PRD | Covers documents, webpages, and pasted text but excludes YouTube/video ingestion in v1. |
 | Asset model | Exists | Supports `youtube` provider for video links, but not research candidate scoring or segment coverage. |
@@ -992,7 +992,8 @@ MVP can defer:
 
 ## Related Files and References
 
-- [Study from Source PRD](/Users/rotimibest/_pros/classroomio/prd/study-from-source/README.md)
+- [YouTube Embed Transcripts PRD](../youtube-embed-transcripts/README.md) — shared caption cache for lesson AI and this research workflow
+- [Study from Source PRD](../study-from-source/README.md)
 - [AI Course Assistant PRD](</Users/rotimibest/_pros/classroomio/prd/ai-course-assistant [DONE]/README.md>)
 - [Asset service](/Users/rotimibest/_pros/classroomio/packages/core/src/services/assets/assets.ts)
 - [Uploaded video transcription processor](/Users/rotimibest/_pros/classroomio/apps/jobs/src/processors/media/transcribe-audio.ts)

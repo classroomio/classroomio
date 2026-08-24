@@ -5,7 +5,7 @@
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { licenseApi } from '$features/license/api/license.svelte';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrgPath, isEnterprisePlan } from '$lib/utils/store/org';
   import { UpgradeBanner } from '$features/ui';
 
   import AuthGeneral from '../components/auth-general.svelte';
@@ -75,7 +75,7 @@
   }
 </script>
 
-<UpgradeBanner>{$t('upgrade.enterprise_required')}</UpgradeBanner>
+<UpgradeBanner visible={!$isEnterprisePlan}>{$t('upgrade.enterprise_required')}</UpgradeBanner>
 
 <UnderlineTabs.Root value={currentTab} onValueChange={(e) => handleTabChange(e)}>
   <UnderlineTabs.List class="mb-6">

@@ -9,6 +9,7 @@
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { getCourseContent } from '$features/course/utils/content';
+  import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
 
   interface Props {
@@ -41,15 +42,11 @@
   const isCourseLoadedForThisPage = $derived(courseApi.course?.id === courseId);
   const canResolveNext = $derived(isCourseLoadedForThisPage && navigableContentItems.length > 0 && !hasHandledNext);
 
-  function findFirstIncompleteContent() {
-    return navigableContentItems.find((item) => !item.isComplete && item.isUnlocked === true);
-  }
-
   $effect(() => {
     if (!canResolveNext || isFetching || query.get('next') !== 'true') return;
 
     hasHandledNext = true;
-    const incompleteContent = findFirstIncompleteContent();
+    const incompleteContent = getFirstIncompleteNavigableContent(courseApi.course);
     if (incompleteContent) {
       if (incompleteContent.type === ContentType.Lesson) {
         goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);

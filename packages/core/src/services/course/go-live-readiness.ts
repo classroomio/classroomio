@@ -3,7 +3,7 @@ import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/querie
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import type { TCourse, TOrganization } from '@cio/db/types';
-import { generateSlug } from '@cio/utils/functions';
+import { generateSlug, isPublishedComplianceMissingDeadline } from '@cio/utils/functions';
 import { ContentType } from '@cio/utils/constants';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 
@@ -32,7 +32,17 @@ export type CourseGoLiveReadiness = {
 type CourseReadinessInput = {
   course: Pick<
     TCourse,
-    'id' | 'title' | 'description' | 'overview' | 'slug' | 'logo' | 'bannerImage' | 'metadata' | 'type' | 'cost'
+    | 'id'
+    | 'title'
+    | 'description'
+    | 'overview'
+    | 'slug'
+    | 'logo'
+    | 'bannerImage'
+    | 'metadata'
+    | 'type'
+    | 'cost'
+    | 'certificate'
   >;
   contentItems: CourseContentItemRow[];
   suggestedSlug?: string;
@@ -190,6 +200,22 @@ export function evaluateCourseGoLiveReadiness(input: CourseReadinessInput): Cour
   }
 
   if (course.type === 'COMPLIANCE') {
+    if (
+      isPublishedComplianceMissingDeadline({
+        type: course.type,
+        isPublished: true,
+        deadline: course.certificate?.deadline
+      })
+    ) {
+      blockers.push(
+        buildIssue(
+          'COMPLIANCE_DEADLINE_MISSING',
+          'Compliance courses require a completion deadline before they can be published.',
+          'course.certificate.deadline'
+        )
+      );
+    }
+
     warnings.push(
       buildIssue('COMPLIANCE_REVIEW_RECOMMENDED', 'Review compliance settings before publishing.', 'course.compliance')
     );

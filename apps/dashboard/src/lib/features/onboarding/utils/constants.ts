@@ -18,14 +18,6 @@ export const DROPDOWN_ITEMS = [
 
 export const GOALS = [
   {
-    label: 'onboarding.sell',
-    value: 'sell-online'
-  },
-  {
-    label: 'onboarding.teach',
-    value: 'teach-online'
-  },
-  {
     label: 'onboarding.employees',
     value: 'employees'
   },

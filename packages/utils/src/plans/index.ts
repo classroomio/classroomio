@@ -2,6 +2,7 @@ export * from './constants';
 export * from './limits';
 export * from './automation';
 export * from './public-api';
+export * from './auth-settings';
 export * from './org-plan';
 export * from './utils';
 export * from './token-packs';

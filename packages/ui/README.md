@@ -100,6 +100,22 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
+### Comment tree (`src/custom/comment-tree/`)
+
+Presentational parts for an arbitrarily deep comment thread. All copy is passed in, so dashboard wrappers supply translated strings. See `Molecules/CommentTree` in Storybook.
+
+- `Root` / `Item` — layout wrappers.
+- `Node` — the recursive node. It renders one comment via the `body` snippet, then recurses over `node.children`. It imports its own file to recurse (`svelte:self` is deprecated in Svelte 5). Indent is applied as an inline `padding-left` from `indentStep` rather than a class, because a composed `ui:pl-*` string would never be emitted. At `indentCap` (default 5) indenting stops and `onContinueThread` is offered instead, so deep chains stay readable on narrow screens. Collapse state is not held by the node — pass `isCollapsed(id)` and `onToggleCollapse(id)` so it survives remounts and sibling appends.
+- `CollapseToggle` — the `[−]` / `[+]` control. Carries `aria-expanded` and `aria-controls` pointing at the children container.
+- `ThreadLine` — the vertical rail beside a nesting level; a real `<button>` so it is a keyboard-safe target, with `tabindex="-1"` to avoid a duplicate tab stop per level.
+- `MoreReplies` — one control for both "N more replies" (`kind="more"`) and "Continue this thread" (`kind="continue"`).
+- `Header` — avatar, name, optional `roleBadge`, date, and an edit/delete dropdown gated by `canEdit` / `canDelete`.
+- `Content` — sanitizes and renders comment HTML.
+- `Actions` — reply button plus an optional delete dropdown.
+- `Input` — the composer, with optional "replying to" chrome that is live UI state and never persisted.
+- `ReplyingTo` — the "↳ Replying to @X" line. Only for rows written before replies carried a real parent, where the visual parent is the thread root rather than the comment being answered.
+- `Replies` — superseded by `Node`; kept for compatibility and no longer used.
+
 ### Live session card (`src/custom/live-session-card/`)
 
 Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
@@ -139,9 +155,9 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.Action`                  | Right-aligned header actions                                 |
 | `Page.Body`                    | Main content area (`child` snippet)                          |
 | `Page.BodyHeader`              | Toolbar inside the body                                      |
-| `Page.SettingsActions`         | Save/discard bar for settings forms (floats, then docks)     |
+| `Page.SettingsActions`         | Compact save/discard card for dirty settings forms           |
 
-**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The bar uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). Disable Save and Discard via `hasChanges={false}` when the form is clean. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard. Use `disabled` to block Save only (Discard still follows `hasChanges`). Use `contentClass` for extra classes on the inner card when needed.
+**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The card uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). The card is compact and centered (not full width) and **only renders when `hasChanges` is true**. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard. Save is a primary button; Discard is a secondary button. Use `disabled` to block Save only (Discard still follows `loading`). Use `contentClass` for extra classes on the inner card when needed.
 
 **`Page.Root` can come from a layout.** "Last child of `Page.Root`" is a runtime relationship, not a same-file one. Where a `+layout.svelte` owns the `Page.Root` and renders pages into it via `{@render children?.()}`, the page file itself contains only `Page.Header`, `Page.Body`, and `Page.SettingsActions` — that is correct and already satisfies the rule. Do **not** add a second `Page.Root` in the page: nesting them stacks two `min-h-[calc(100vh-48px)]` containers, drops the layout's width constraints, and shortens the sticky bar's containing block so it stops floating. Pages that rely on a layout-owned `Page.Root`:
 
@@ -150,19 +166,19 @@ Composable page shell used across dashboard list and settings screens. Import as
 
 **Never render `Page.SettingsActions` from inside `Page.Body`.** That includes rendering it from a feature component that a route passes into `Page.Body`'s `child` snippet. `Page.Body` sets `overflow-x-hidden`, and CSS computes `overflow-y` to `auto` whenever the other axis is not `visible` — so `Page.Body` is a scroll container. It is sized by its content and never scrolls internally, so a sticky bar inside it has no travel and renders flat at the end of the content. Keep the bar a sibling of `Page.Body` and lift the dirty/saving state up to the route with `bind:this` and `bind:hasUnsavedChanges`, the way `routes/(app)/courses/[id]/settings/+page.svelte` does.
 
-The bar also sits at `z-50`, matching the editor root so it paints above editor content (later in DOM wins the tie) while staying below body-portaled dialogs and sheets. Its shadow appears only while it is pinned away from its flow position, tracked by an `IntersectionObserver` on a 1px sentinel rendered as its next sibling.
+The card also sits at `z-50`, matching the editor root so it paints above editor content (later in DOM wins the tie) while staying below body-portaled dialogs and sheets. The sticky wrapper is full width with `pointer-events: none` so it does not block clicks beside the compact card.
 
-| Prop           | Description                                              |
-| -------------- | -------------------------------------------------------- |
-| `hasChanges`   | Enables Save and Discard when the form is dirty          |
-| `loading`      | Shows loading state on Save                              |
-| `disabled`     | Disables Save only (e.g. while not initialized)          |
-| `contentClass` | Extra classes on the inner card (width, padding, etc.)   |
-| `statusLabel`  | Left-side status text (e.g. "Unsaved changes")           |
-| `discardLabel` | Discard button label                                     |
-| `saveLabel`    | Save button label                                        |
-| `onSave`       | Save handler                                             |
-| `onDiscard`    | Discard handler                                          |
+| Prop           | Description                                            |
+| -------------- | ------------------------------------------------------ |
+| `hasChanges`   | When true, shows the floating save/discard card        |
+| `loading`      | Shows loading state on Save                            |
+| `disabled`     | Disables Save only (e.g. while not initialized)        |
+| `contentClass` | Extra classes on the inner card (width, padding, etc.) |
+| `statusLabel`  | Left-side status text (e.g. "Unsaved changes")         |
+| `discardLabel` | Discard button label                                   |
+| `saveLabel`    | Save button label                                      |
+| `onSave`       | Save handler                                           |
+| `onDiscard`    | Discard handler                                        |
 
 ```svelte
 <Page.Root>

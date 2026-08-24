@@ -7,6 +7,7 @@
   import { basePath } from '$lib/utils/store/app';
   import { user } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
+  import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { importCourseLandingPageTheme, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
   import type { Course } from '$features/course/utils/types';
   import type { AccountOrg } from '$features/app/types';
@@ -49,7 +50,7 @@
     return slug ? resolve(`/course/${slug}/enroll`, {}) : '#';
   });
 
-  const enrollmentsOpen = $derived(get(courseData, 'metadata.allowNewStudent') !== false);
+  const enrollmentsOpen = $derived(isSelfEnrollmentAllowed(courseData?.metadata));
   const enrollDisabled = $derived(editMode || !enrollmentsOpen);
 
   const discount = $derived(get(courseData, 'metadata.discount', 0));
