@@ -1,17 +1,10 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { sanitizeEmbedHtml } from '../../tools/sanitize';
   import { parseEmbedIframeDimensions } from './landing-page-utils';
 
   let { code }: { code: string } = $props();
-
   const dimensions = $derived(parseEmbedIframeDimensions(code));
-  let isMounted = $state(false);
-  const sanitizedCode = $derived(isMounted ? sanitizeEmbedHtml(code) : '');
-
-  onMount(() => {
-    isMounted = true;
-  });
 </script>
 
 <div
@@ -19,9 +12,11 @@
   style:width={dimensions.width}
   style:max-width="100%"
 >
-  <div class="landing-embed-frame ui:w-full" style:height={dimensions.height}>
-    {@html sanitizedCode}
-  </div>
+  {#if browser}
+    <div class="landing-embed-frame ui:w-full" style:height={dimensions.height}>
+      {@html sanitizeEmbedHtml(code)}
+    </div>
+  {/if}
 </div>
 
 <style>
