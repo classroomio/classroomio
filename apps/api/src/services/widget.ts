@@ -259,9 +259,10 @@ export async function rollbackOrganizationWidget(
   data: TRollbackWidget
 ) {
   try {
-    const [widget, version] = await Promise.all([
+    const [widget, version, activePlan] = await Promise.all([
       getWidgetById(orgId, widgetId),
-      getWidgetVersionById(orgId, widgetId, data.versionId)
+      getWidgetVersionById(orgId, widgetId, data.versionId),
+      getActiveOrganizationPlan(orgId)
     ]);
 
     if (!widget) {
@@ -273,12 +274,16 @@ export async function rollbackOrganizationWidget(
     }
 
     const restoredPayload = ZWidgetPayload.parse(version.payloadSnapshot);
+    const restoredConfig = normalizeWidgetConfig(
+      version.configSnapshot as Record<string, unknown>,
+      activePlan?.planName ?? null
+    );
 
     const nextVersion = await getNextWidgetVersion(widgetId);
     const rollbackVersion = await createWidgetVersion({
       widgetId: widget.id,
       version: nextVersion,
-      configSnapshot: version.configSnapshot,
+      configSnapshot: restoredConfig,
       payloadSnapshot: version.payloadSnapshot,
       runtimeManifest: version.runtimeManifest,
       rolledBackFromVersionId: version.id,
@@ -291,7 +296,7 @@ export async function rollbackOrganizationWidget(
       latestPublishedVersionId: rollbackVersion.id,
       layoutType: restoredPayload.layoutType,
       selectionMode: restoredPayload.selectionMode,
-      config: version.configSnapshot,
+      config: restoredConfig,
       updatedByUserId: userId
     });
 
