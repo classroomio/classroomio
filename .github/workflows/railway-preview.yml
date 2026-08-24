@@ -343,6 +343,7 @@ jobs:
         run: pnpm --filter @cio/db^... build
 
       - name: Seed the selected demo organization (optional)
+        id: seed
         if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
         # GitHub runner, so seeding needs Postgres's own DATABASE_PUBLIC_URL instead
@@ -353,9 +354,14 @@ jobs:
           PUBLIC_DB_URL=$(railway variables --service Postgres --kv | grep '^DATABASE_PUBLIC_URL=' | cut -d= -f2-)
           if [ -z "$PUBLIC_DB_URL" ]; then
             echo "::warning::Postgres has no DATABASE_PUBLIC_URL in this environment — skipping $SEED_ORGANIZATION seed; only essential seed ran on api boot."
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
           else
-            railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed -- --organization "$SEED_ORGANIZATION" || \
+            if railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed -- --organization "$SEED_ORGANIZATION"; then
+              echo "status=seeded" >> "$GITHUB_OUTPUT"
+            else
               echo "$SEED_ORGANIZATION seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
+              echo "status=failed" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
       - name: Report the preview URL
@@ -365,6 +371,7 @@ jobs:
           BRANCH: ${{ inputs.branch }}
           ENV_NAME: ${{ steps.env.outputs.name }}
           SEED_ORGANIZATION: ${{ inputs.seed_organization }}
+          SEED_STATUS: ${{ steps.seed.outputs.status || 'not requested' }}
         run: |
           railway domain --service cio-dashboard || true
           URL=$(railway variables --service cio-dashboard --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
@@ -378,7 +385,7 @@ jobs:
             echo ""
             echo "- Environment: \`$ENV_NAME\` (branch \`$BRANCH\`)"
             echo "- Dashboard: https://${URL}"
-            echo "- Demo seed: \`$SEED_ORGANIZATION\`"
+            echo "- Demo seed: \`$SEED_ORGANIZATION\` ($SEED_STATUS)"
             echo ""
             echo "> All services passed their Railway deploy/healthcheck before this link was printed, so it should be live now."
             echo ""
