@@ -51,7 +51,8 @@
           <input
             type="color"
             bind:value={draftConfig.colors.primaryColor}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5"
+            disabled={!canUseCustomColors}
+            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
           />
           <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.primaryColor}</span>
         </div>
