@@ -314,11 +314,12 @@ jobs:
         # succeeds or fails. Run the independent app builds concurrently, then wait for
         # every service so the URL printed later is actually live.
         #
-        # `railway up --ci` can exit 1 on a log-streaming glitch (railwayapp/cli#696) even
-        # though the deploy succeeded. Only on that specific error do we poll the real
-        # deployment status instead of trusting the exit code — any other failure means no
-        # new deployment exists yet, so it fails immediately rather than risking a match
-        # against a stale, unrelated deployment.
+        # `railway up --ci` can exit 1 even though the deploy succeeded — the log-streaming
+        # glitch (railwayapp/cli#696), or a transient network failure against Railway's API.
+        # Whenever the CLI already printed a deployment id we poll that deployment's real
+        # status instead of trusting the exit code; the id comes from this invocation's own
+        # output, so it can never match a stale, unrelated deployment. A failure with no id
+        # means nothing was created yet and fails immediately.
         run: bash .github/scripts/railway-preview-deploy.sh
 
       - name: Setup pnpm
