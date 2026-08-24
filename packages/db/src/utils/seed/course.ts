@@ -7,9 +7,16 @@ interface SeedCourse {
   reactGroupId: string;
   pandasGroupId: string;
   earlyAdopterGroupId: string;
+  selectedGroupIds?: string[];
 }
 
-export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId, earlyAdopterGroupId }: SeedCourse) {
+export async function seedCourses({
+  mvcGroupId,
+  reactGroupId,
+  pandasGroupId,
+  earlyAdopterGroupId,
+  selectedGroupIds
+}: SeedCourse) {
   const existingCourses = await db.select().from(course);
   const existingCourseIds = existingCourses.map((c) => c.id);
 
@@ -128,7 +135,11 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId, ear
       },
       status: 'ACTIVE'
     }
-  ].filter((c) => !existingCourseIds.includes(c.id));
+  ].filter(
+    (courseToInsert) =>
+      (!selectedGroupIds || selectedGroupIds.includes(courseToInsert.groupId)) &&
+      !existingCourseIds.includes(courseToInsert.id)
+  );
 
   if (coursesToInsert.length > 0) {
     await db.insert(course).values(coursesToInsert);

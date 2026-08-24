@@ -17,7 +17,8 @@ name: Railway Preview Environment
 #
 # The DB needs no explicit migration step here: the cio-api image self-migrates on boot
 # (docker/entrypoint-api.sh -> `pnpm --filter @cio/db db:setup`, which runs drizzle
-# migrations + essential seed). The optional `seed` input adds the full demo dataset.
+# migrations + essential seed). The optional organization seed adds only that demo
+# organization's users, memberships, and content.
 
 on:
   workflow_dispatch:
@@ -39,11 +40,16 @@ on:
         options:
           - deploy
           - destroy
-      seed:
-        description: "Seed the full demo dataset (admin@test.com etc.) after deploy"
-        required: false
-        type: boolean
-        default: true
+      seed_organization:
+        description: "Demo organization to seed after deploy"
+        required: true
+        type: choice
+        default: udemy-test
+        options:
+          - udemy-test
+          - coursera-test
+          - skillshare-test
+          - none
 
 # One run per branch at a time; a newer run supersedes an in-flight one.
 concurrency:
@@ -316,38 +322,40 @@ jobs:
         run: bash .github/scripts/railway-preview-deploy.sh
 
       - name: Setup pnpm
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         run: pnpm install --frozen-lockfile
 
       - name: Build workspace dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         # @cio/db imports compiled output (e.g. @cio/utils/dist/...) from its workspace
         # deps, not source — they must be built before the seed script can import them.
         run: pnpm --filter @cio/db^... build
 
-      - name: Seed the full demo dataset (optional)
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+      - name: Seed the selected demo organization (optional)
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
         # GitHub runner, so seeding needs Postgres's own DATABASE_PUBLIC_URL instead
         # (railway.internal isn't reachable from here).
+        env:
+          SEED_ORGANIZATION: ${{ inputs.seed_organization }}
         run: |
           PUBLIC_DB_URL=$(railway variables --service Postgres --kv | grep '^DATABASE_PUBLIC_URL=' | cut -d= -f2-)
           if [ -z "$PUBLIC_DB_URL" ]; then
-            echo "::warning::Postgres has no DATABASE_PUBLIC_URL in this environment — skipping full seed; only essential seed ran on api boot."
+            echo "::warning::Postgres has no DATABASE_PUBLIC_URL in this environment — skipping $SEED_ORGANIZATION seed; only essential seed ran on api boot."
           else
-            railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed || \
-              echo "Demo seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
+            railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed -- --organization "$SEED_ORGANIZATION" || \
+              echo "$SEED_ORGANIZATION seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
           fi
 
       - name: Report the preview URL
@@ -356,6 +364,7 @@ jobs:
         env:
           BRANCH: ${{ inputs.branch }}
           ENV_NAME: ${{ steps.env.outputs.name }}
+          SEED_ORGANIZATION: ${{ inputs.seed_organization }}
         run: |
           railway domain --service cio-dashboard || true
           URL=$(railway variables --service cio-dashboard --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
@@ -369,6 +378,7 @@ jobs:
             echo ""
             echo "- Environment: \`$ENV_NAME\` (branch \`$BRANCH\`)"
             echo "- Dashboard: https://${URL}"
+            echo "- Demo seed: \`$SEED_ORGANIZATION\`"
             echo ""
             echo "> All services passed their Railway deploy/healthcheck before this link was printed, so it should be live now."
             echo ""
