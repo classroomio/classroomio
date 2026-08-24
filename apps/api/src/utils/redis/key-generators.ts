@@ -90,8 +90,8 @@ export const publicApiKeyGenerator = (c: Context): string => {
   return `ip:${extractClientIp(c)}`;
 };
 
-export const publicApiIpKeyGenerator = (c: Context): string => {
-  return `public_api_ip:${extractClientIp(c)}`;
+export const publicApiFailedAuthKeyGenerator = (c: Context): string => {
+  return `public_api_failed_auth:${extractClientIp(c)}`;
 };
 
 /**

@@ -7,6 +7,12 @@ import {
 
 import { redis, type RedisClient } from '@cio/core/utils/redis/redis';
 
+export interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetTime: number;
+}
+
 export class RedisRateLimiter {
   private redis: RedisClient;
   private windowMs: number;
@@ -18,7 +24,31 @@ export class RedisRateLimiter {
     this.maxRequests = maxRequests;
   }
 
-  async isAllowed(key: string): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
+  async getStatus(key: string): Promise<RateLimitResult> {
+    const now = Date.now();
+    const windowStart = now - this.windowMs;
+    const keyWithPrefix = `${RATE_LIMIT_KEY_PREFIX}${key}`;
+    const multi = this.redis.multi();
+
+    multi.zRemRangeByScore(keyWithPrefix, '-inf', windowStart);
+    multi.zCard(keyWithPrefix);
+
+    const results = await multi.exec();
+
+    if (!results || results.some((result) => result === null)) {
+      throw new Error(ERROR_MESSAGES.REDIS_PIPELINE_FAILED);
+    }
+
+    const currentCount = results[1] as number;
+
+    return {
+      allowed: currentCount < this.maxRequests,
+      remaining: Math.max(0, this.maxRequests - currentCount),
+      resetTime: now + this.windowMs
+    };
+  }
+
+  async isAllowed(key: string): Promise<RateLimitResult> {
     const now = Date.now();
     const windowStart = now - this.windowMs;
     const keyWithPrefix = `${RATE_LIMIT_KEY_PREFIX}${key}`;

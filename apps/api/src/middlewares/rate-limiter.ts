@@ -6,7 +6,7 @@ import {
 } from '@api/constants/rate-limiter';
 
 import type { Context, MiddlewareHandler } from 'hono';
-import { RedisRateLimiter } from '@api/utils/redis/limiter';
+import { RedisRateLimiter, type RateLimitResult } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
 import { env } from '@cio/core/config/env';
 import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
@@ -40,6 +40,34 @@ const defaultOptions: Required<RateLimiterOptions> = {
   skip: () => false
 };
 
+function setRateLimitHeaders(c: Context, maxRequests: number, result: RateLimitResult): void {
+  c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
+  c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
+  c.header(RATE_LIMIT_HEADERS.RESET, new Date(result.resetTime).toISOString());
+}
+
+function createRateLimitResponse(
+  c: Context,
+  message: string,
+  result: RateLimitResult,
+  includeStandardHeaders: boolean
+): Response {
+  const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
+
+  if (includeStandardHeaders) {
+    c.header(RATE_LIMIT_HEADERS.RETRY_AFTER, retryAfter.toString());
+  }
+
+  return c.json(
+    {
+      error: ERROR_MESSAGES.RATE_LIMIT_EXCEEDED,
+      message,
+      retryAfter
+    },
+    HTTP_STATUS.TOO_MANY_REQUESTS
+  );
+}
+
 export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareHandler => {
   const opts = { ...defaultOptions, ...options };
 
@@ -56,9 +84,7 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
       const result = await limiter.isAllowed(key);
 
       if (opts.standardHeaders) {
-        c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
-        c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
-        c.header(RATE_LIMIT_HEADERS.RESET, new Date(result.resetTime).toISOString());
+        setRateLimitHeaders(c, maxRequests, result);
       }
 
       if (opts.legacyHeaders) {
@@ -68,26 +94,65 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
       }
 
       if (!result.allowed) {
-        const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
-
-        if (opts.standardHeaders) {
-          c.header(RATE_LIMIT_HEADERS.RETRY_AFTER, retryAfter.toString());
-        }
-
-        return c.json(
-          {
-            error: ERROR_MESSAGES.RATE_LIMIT_EXCEEDED,
-            message: opts.message,
-            retryAfter
-          },
-          HTTP_STATUS.TOO_MANY_REQUESTS
-        );
+        return createRateLimitResponse(c, opts.message, result, opts.standardHeaders);
       }
 
       await next();
     } catch (error) {
       logRedisUnavailableOnce('Redis rate limiter unavailable, allowing requests without rate limiting', error);
       await next();
+    }
+  };
+};
+
+export const createAuthenticationFailureRateLimiter = (options: RateLimiterOptions = {}): MiddlewareHandler => {
+  const opts = { ...defaultOptions, ...options };
+
+  return async (c, next) => {
+    const authHeader = c.req.header('Authorization');
+
+    if (env.NODE_ENV !== 'production' || !authHeader?.startsWith('Bearer ') || opts.skip(c)) {
+      return await next();
+    }
+
+    const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
+    const limiter = new RedisRateLimiter(redis, opts.windowMs, maxRequests);
+    const key = opts.keyGenerator(c);
+
+    try {
+      const status = await limiter.getStatus(key);
+
+      if (!status.allowed) {
+        if (opts.standardHeaders) {
+          setRateLimitHeaders(c, maxRequests, status);
+        }
+
+        return createRateLimitResponse(c, opts.message, status, opts.standardHeaders);
+      }
+    } catch (error) {
+      logRedisUnavailableOnce('Redis authentication failure limiter unavailable, allowing request', error);
+
+      return await next();
+    }
+
+    await next();
+
+    if (c.get('automationKey')) {
+      return;
+    }
+
+    try {
+      const result = await limiter.isAllowed(key);
+
+      if (opts.standardHeaders) {
+        setRateLimitHeaders(c, maxRequests, result);
+      }
+
+      if (!result.allowed) {
+        c.res = createRateLimitResponse(c, opts.message, result, opts.standardHeaders);
+      }
+    } catch (error) {
+      logRedisUnavailableOnce('Redis authentication failure limiter unavailable, allowing request', error);
     }
   };
 };

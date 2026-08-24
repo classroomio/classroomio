@@ -3,9 +3,7 @@ export const DEFAULT_WINDOW_MS = 60 * 1000;
 
 export const DEFAULT_MAX_REQUESTS = 100;
 
-// Keep this above the per-key budget so normal API-key traffic remains governed
-// by its own limiter while abusive pre-authentication traffic is still bounded.
-export const PUBLIC_API_PRE_AUTH_MAX_REQUESTS = 1000;
+export const PUBLIC_API_FAILED_AUTH_MAX_REQUESTS = 1000;
 
 export const RATE_LIMIT_KEY_PREFIX = 'rate_limit:';
 
