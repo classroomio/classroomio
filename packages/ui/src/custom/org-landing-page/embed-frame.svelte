@@ -1,11 +1,17 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { sanitizeEmbedHtml } from '../../tools/sanitize';
   import { parseEmbedIframeDimensions } from './landing-page-utils';
 
   let { code }: { code: string } = $props();
 
   const dimensions = $derived(parseEmbedIframeDimensions(code));
-  const sanitizedCode = $derived(sanitizeEmbedHtml(code));
+  let isMounted = $state(false);
+  const sanitizedCode = $derived(isMounted ? sanitizeEmbedHtml(code) : '');
+
+  onMount(() => {
+    isMounted = true;
+  });
 </script>
 
 <div
