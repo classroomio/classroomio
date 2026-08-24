@@ -279,12 +279,19 @@ export async function rollbackOrganizationWidget(
       activePlan?.planName ?? null
     );
 
+    const rebuiltPayload = await buildWidgetPayload({
+      ...widget,
+      layoutType: restoredPayload.layoutType,
+      selectionMode: restoredPayload.selectionMode,
+      config: restoredConfig
+    });
+
     const nextVersion = await getNextWidgetVersion(widgetId);
     const rollbackVersion = await createWidgetVersion({
       widgetId: widget.id,
       version: nextVersion,
       configSnapshot: restoredConfig,
-      payloadSnapshot: version.payloadSnapshot,
+      payloadSnapshot: rebuiltPayload,
       runtimeManifest: version.runtimeManifest,
       rolledBackFromVersionId: version.id,
       publishedByUserId: userId
