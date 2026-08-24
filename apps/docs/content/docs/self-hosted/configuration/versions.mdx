@@ -59,7 +59,7 @@ into the new cohort tables:
 
 ```zsh title="Terminal"
 docker compose --env-file .env -p classroomio -f docker-compose.images.yaml stop api dashboard jobs
-docker compose --env-file .env -p classroomio -f docker-compose.images.yaml run --rm --no-deps --entrypoint pnpm api --filter `@cio/db` migrate:programs-to-cohorts
+docker compose --env-file .env -p classroomio -f docker-compose.images.yaml run --rm --no-deps --entrypoint pnpm api --filter '@cio/db' migrate:programs-to-cohorts
 ```
 
 This copies existing data into the new tables without dropping the legacy `program` tables. Skip this step
