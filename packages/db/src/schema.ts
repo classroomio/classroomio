@@ -688,6 +688,8 @@ export const course = pgTable(
       }[];
       grading?: boolean;
       lessonDownload?: boolean;
+      allowSelfEnrollment?: boolean;
+      /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. Kept because there is no backfill. */
       allowNewStudent?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;

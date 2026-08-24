@@ -101,12 +101,52 @@ export default defineConfig({
           {
             label: 'Build a course',
             items: [
-              '/guides/course-types',
-              '/guides/create-exercise',
-              '/guides/grade-exercise',
-              '/guides/course-progression',
-              '/guides/use-math-in-editor',
-              '/guides/certificates'
+              {
+                label: 'Get started',
+                items: ['/guides/create-first-course']
+              },
+              {
+                label: 'Build a course',
+                items: [
+                  '/guides/course-types',
+                  '/guides/create-exercise',
+                  '/guides/grade-exercise',
+                  '/guides/course-progression',
+                  '/guides/use-math-in-editor',
+                  '/guides/certificates'
+                ]
+              },
+              {
+                label: 'Live classes',
+                items: ['/guides/live-class', '/guides/take-attendance']
+              },
+              {
+                label: 'Enrollment & students',
+                items: [
+                  '/guides/course-enrollment',
+                  '/guides/enrollment-access-control',
+                  '/guides/welcome-email',
+                  '/guides/invite-students'
+                ]
+              },
+              {
+                label: 'Publish your academy',
+                items: [
+                  '/guides/course-landingpage',
+                  '/guides/org-landing-page',
+                  '/guides/academy-sharing-and-branding',
+                  '/guides/custom-domain'
+                ]
+              },
+              {
+                label: 'Organization & team',
+                items: [
+                  '/guides/admin-dashboard',
+                  '/guides/customize-organization',
+                  '/guides/invite-team-member',
+                  '/guides/roles-and-permissions'
+                ]
+              }
             ]
           },
           {

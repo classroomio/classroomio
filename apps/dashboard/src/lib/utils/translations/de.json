@@ -516,7 +516,8 @@
     "download_course": "Upgrade zum Download-Kurs",
     "required": "Upgrade erforderlich",
     "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
-    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen."
+    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen.",
+    "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten"
   },
   "analytics": {
     "title": "Analysen",
@@ -799,8 +800,8 @@
         "course_download": "Kurs-Download",
         "course_avail": "Laden Sie eine Kopie dieses Kurses herunter.",
         "download": "Herunterladen",
-        "allow": "Erlauben Sie neue Studenten",
-        "access": "Ermöglichen Sie neuen Studierenden den Zugang zu diesem Kurs",
+        "allow": "Studierende können sich selbst einschreiben",
+        "access": "Wenn deaktiviert, können Studierende nur über einen Einladungslink beitreten oder indem sie unter Personen hinzugefügt werden.",
         "publish": "Kurs veröffentlichen",
         "determines": "Dies bestimmt, ob Ihr Kurs auf Ihrer Zielseite angezeigt wird",
         "published": "Veröffentlicht",
@@ -922,7 +923,8 @@
           "join_course": "Nehmen Sie am Kurs teil",
           "enrolled_success": "Sie sind für diesen Kurs eingeschrieben.",
           "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen.",
-          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation."
+          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation.",
+          "members_only": "Nur Mitglieder dieser Organisation können sich einschreiben. Bitten Sie einen Administrator um eine Einladung."
         },
         "pricing_section": {
           "free": "Kostenlos",
@@ -1011,7 +1013,9 @@
             "curriculum": "Lehrplan",
             "chips": "Fähigkeiten und Werkzeuge",
             "skills": "Fähigkeiten, die Sie erwerben werden",
-            "tools": "Werkzeuge, die Sie lernen werden"
+            "tools": "Werkzeuge, die Sie lernen werden",
+            "navigation": "Navigation",
+            "footer": "Fußzeile"
           },
           "skills_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
           "tools_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
@@ -3625,16 +3629,16 @@
           "placeholder": "Wenn beispielsweise Anmeldungen deaktiviert sind, wenden Sie sich bitte an learn@domain.com, um Zugriff zu erhalten"
         },
         "disable_signup": {
-          "label": "Deaktivieren Sie die Anmeldung",
-          "description": "Verhindern Sie, dass sich neue Benutzer anmelden. Nur eingeladene Benutzer können beitreten."
+          "label": "Alle neuen Registrierungen blockieren",
+          "description": "Vollständig die Erstellung neuer Konten verhindern. Niemand kann sich registrieren — auch eingeladene Benutzer nicht. Bestehende Konten sind nicht betroffen."
         },
         "allow_public_signups": {
           "label": "Öffentliche Anmeldungen zulassen",
-          "description": "Wenn die Funktion deaktiviert ist, können sich nur Benutzer mit einem Einladungslink anmelden. Aktivieren Sie diese Option, damit jeder ein Konto erstellen kann."
+          "description": "Wenn aktiviert, kann jeder ein Konto erstellen. Wenn deaktiviert, können sich nur Benutzer mit einem gültigen Einladungslink anmelden."
         },
         "internal_enrollment_only": {
           "label": "Nur interne Anmeldung",
-          "description": "Wenn diese Option aktiviert ist, steht jeder veröffentlichte Kurs allen Studierenden in Ihrer Organisation zur Selbsteinschreibung offen. Verwenden Sie die Option „Anmeldung deaktivieren“, um eine geschlossene, nur auf Einladung zugängliche Akademie zu erstellen, in der Studierende jedem veröffentlichten Kurs ohne kursspezifische Einrichtung beitreten können."
+          "description": "Wenn diese Option aktiviert ist, können sich nur bestehende Mitglieder Ihrer Organisation für Ihre Kurse anmelden. Alle anderen müssen eingeladen werden – sie können sich nicht über eine Kursseite anmelden, auch wenn der Kurs für neue Studierende offen ist."
         }
       },
       "login": {

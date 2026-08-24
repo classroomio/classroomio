@@ -18,7 +18,7 @@
   let { orgName, logoUrl, navItems, authAction }: Props = $props();
 </script>
 
-<EditableLandingSection sectionKey="navigation">
+<EditableLandingSection sectionKey="navigation" capPlacement="inside">
   <header
     class="ui:sticky ui:top-0 ui:z-50 ui:bg-[var(--landing-bg)]/95 ui:backdrop-blur-md ui:border-b ui:border-[var(--landing-border)]"
   >
