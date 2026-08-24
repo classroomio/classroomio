@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Context, Next } from 'hono';
+import { PUBLIC_API_FAILED_AUTH_MAX_REQUESTS } from '@api/constants/rate-limiter';
 import { Hono } from '@api/utils/hono';
 
 const mocks = vi.hoisted(() => ({
   authenticate: vi.fn(),
-  getFailureStatus: vi.fn(),
   isAllowed: vi.fn(),
-  recordFailure: vi.fn(),
+  releaseFailure: vi.fn(),
+  reserveFailure: vi.fn(),
   touchLastUsed: vi.fn()
 }));
 
@@ -24,16 +25,16 @@ vi.mock('@api/middlewares/rate-limiter', () => ({
       }
 
       const key = options.keyGenerator(context);
-      const status = await mocks.getFailureStatus(key);
+      const reservation = await mocks.reserveFailure(key);
 
-      if (!status.allowed) {
+      if (!reservation.allowed) {
         return context.json({ error: 'Too Many Requests' }, 429);
       }
 
       await next();
 
-      if (!context.get('automationKey')) {
-        await mocks.recordFailure(key);
+      if (context.get('automationKey')) {
+        await mocks.releaseFailure(key, reservation.reservationId);
       }
     },
   createRateLimiter:
@@ -81,20 +82,24 @@ function requestWithToken(token?: string) {
 
 describe('public API rate limiting', () => {
   beforeEach(() => {
+    const defaultResetTime = Date.now() + 60_000;
+
     mocks.authenticate.mockReset();
-    mocks.getFailureStatus.mockReset();
     mocks.isAllowed.mockReset();
-    mocks.recordFailure.mockReset();
+    mocks.releaseFailure.mockReset();
+    mocks.reserveFailure.mockReset();
     mocks.touchLastUsed.mockReset();
-    mocks.getFailureStatus.mockResolvedValue({
+    mocks.reserveFailure.mockResolvedValue({
       allowed: true,
       remaining: 1000,
-      resetTime: Date.now() + 60_000
+      reservationId: 'failure-reservation',
+      resetTime: defaultResetTime
     });
     mocks.isAllowed.mockResolvedValue({
       allowed: true,
       remaining: 999,
-      resetTime: Date.now() + 60_000
+      reservationId: 'per-key-reservation',
+      resetTime: defaultResetTime
     });
   });
 
@@ -102,30 +107,36 @@ describe('public API rate limiting', () => {
     const unauthorizedResponse = await requestWithToken();
 
     expect(unauthorizedResponse.status).toBe(401);
-    expect(mocks.getFailureStatus).not.toHaveBeenCalled();
-    expect(mocks.recordFailure).not.toHaveBeenCalled();
+    expect(mocks.reserveFailure).not.toHaveBeenCalled();
+    expect(mocks.releaseFailure).not.toHaveBeenCalled();
     expect(mocks.authenticate).not.toHaveBeenCalled();
   });
 
-  it('records invalid tokens and blocks another authentication lookup after the budget is exhausted', async () => {
+  it('keeps reservations for invalid tokens and blocks another authentication lookup when exhausted', async () => {
     mocks.authenticate.mockRejectedValue(new Error('Invalid organization API key'));
 
     const unauthorizedResponse = await requestWithToken('invalid-key');
 
     expect(unauthorizedResponse.status).toBe(401);
     expect(mocks.authenticate).toHaveBeenCalledOnce();
-    expect(mocks.recordFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY);
+    expect(mocks.releaseFailure).not.toHaveBeenCalled();
 
-    mocks.getFailureStatus.mockResolvedValueOnce({ allowed: false, remaining: 0, resetTime: Date.now() + 60_000 });
+    const exhaustedLimitResetTime = Date.now() + 60_000;
+    mocks.reserveFailure.mockResolvedValueOnce({
+      allowed: false,
+      remaining: 0,
+      reservationId: 'exhausted-reservation',
+      resetTime: exhaustedLimitResetTime
+    });
 
     const limitedResponse = await requestWithToken('invalid-key');
 
     expect(limitedResponse.status).toBe(429);
-    expect(mocks.getFailureStatus).toHaveBeenCalledTimes(2);
-    expect(mocks.getFailureStatus).toHaveBeenNthCalledWith(1, FAILED_AUTH_KEY);
-    expect(mocks.getFailureStatus).toHaveBeenNthCalledWith(2, FAILED_AUTH_KEY);
+    expect(mocks.reserveFailure).toHaveBeenCalledTimes(2);
+    expect(mocks.reserveFailure).toHaveBeenNthCalledWith(1, FAILED_AUTH_KEY);
+    expect(mocks.reserveFailure).toHaveBeenNthCalledWith(2, FAILED_AUTH_KEY);
     expect(mocks.authenticate).toHaveBeenCalledOnce();
-    expect(mocks.recordFailure).toHaveBeenCalledOnce();
+    expect(mocks.releaseFailure).not.toHaveBeenCalled();
   });
 
   it('does not consume the failed-authentication budget for an authenticated out-of-scope key', async () => {
@@ -141,8 +152,8 @@ describe('public API rate limiting', () => {
     expect(forbiddenResponse.status).toBe(403);
     expect(mocks.authenticate).toHaveBeenCalledOnce();
     expect(mocks.touchLastUsed).toHaveBeenCalledOnce();
-    expect(mocks.getFailureStatus).toHaveBeenCalledWith(FAILED_AUTH_KEY);
-    expect(mocks.recordFailure).not.toHaveBeenCalled();
+    expect(mocks.reserveFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY);
+    expect(mocks.releaseFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY, 'failure-reservation');
   });
 
   it('retains the per-key limiter for valid tokens', async () => {
@@ -152,15 +163,51 @@ describe('public API rate limiting', () => {
       createdByProfileId: 'profile-id',
       scopes: ['public_api:*']
     });
-    mocks.isAllowed.mockResolvedValueOnce({ allowed: false, remaining: 0, resetTime: Date.now() + 60_000 });
+    const perKeyResetTime = Date.now() + 60_000;
+    mocks.isAllowed.mockResolvedValueOnce({
+      allowed: false,
+      remaining: 0,
+      reservationId: 'per-key-reservation',
+      resetTime: perKeyResetTime
+    });
 
     const response = await requestWithToken('valid-key');
 
     expect(response.status).toBe(429);
-    expect(mocks.getFailureStatus).toHaveBeenCalledWith(FAILED_AUTH_KEY);
-    expect(mocks.recordFailure).not.toHaveBeenCalled();
+    expect(mocks.reserveFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY);
+    expect(mocks.releaseFailure).toHaveBeenCalledWith(FAILED_AUTH_KEY, 'failure-reservation');
     expect(mocks.isAllowed).toHaveBeenCalledOnce();
     expect(mocks.isAllowed).toHaveBeenCalledWith('automation_key:key-id');
     expect(mocks.authenticate).toHaveBeenCalledWith('valid-key');
+  });
+
+  it('atomically bounds concurrent invalid-token authentication attempts', async () => {
+    let reservedFailures = 0;
+    const concurrentResetTime = Date.now() + 60_000;
+    mocks.authenticate.mockRejectedValue(new Error('Invalid organization API key'));
+    mocks.reserveFailure.mockImplementation(async () => {
+      const allowed = reservedFailures < PUBLIC_API_FAILED_AUTH_MAX_REQUESTS;
+      reservedFailures += 1;
+      const remaining = Math.max(0, PUBLIC_API_FAILED_AUTH_MAX_REQUESTS - reservedFailures);
+      const reservationId = `failure-reservation-${reservedFailures}`;
+
+      return {
+        allowed,
+        remaining,
+        reservationId,
+        resetTime: concurrentResetTime
+      };
+    });
+
+    const requests = Array.from({ length: PUBLIC_API_FAILED_AUTH_MAX_REQUESTS + 1 }, () =>
+      requestWithToken('invalid-key')
+    );
+    const responses = await Promise.all(requests);
+    const responseStatuses = responses.map((response) => response.status);
+
+    expect(responseStatuses.filter((status) => status === 401)).toHaveLength(PUBLIC_API_FAILED_AUTH_MAX_REQUESTS);
+    expect(responseStatuses.filter((status) => status === 429)).toHaveLength(1);
+    expect(mocks.authenticate).toHaveBeenCalledTimes(PUBLIC_API_FAILED_AUTH_MAX_REQUESTS);
+    expect(mocks.releaseFailure).not.toHaveBeenCalled();
   });
 });

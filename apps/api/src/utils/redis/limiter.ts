@@ -10,6 +10,7 @@ import { redis, type RedisClient } from '@cio/core/utils/redis/redis';
 export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
+  reservationId: string;
   resetTime: number;
 }
 
@@ -24,34 +25,11 @@ export class RedisRateLimiter {
     this.maxRequests = maxRequests;
   }
 
-  async getStatus(key: string): Promise<RateLimitResult> {
-    const now = Date.now();
-    const windowStart = now - this.windowMs;
-    const keyWithPrefix = `${RATE_LIMIT_KEY_PREFIX}${key}`;
-    const multi = this.redis.multi();
-
-    multi.zRemRangeByScore(keyWithPrefix, '-inf', windowStart);
-    multi.zCard(keyWithPrefix);
-
-    const results = await multi.exec();
-
-    if (!results || results.some((result) => result === null)) {
-      throw new Error(ERROR_MESSAGES.REDIS_PIPELINE_FAILED);
-    }
-
-    const currentCount = results[1] as number;
-
-    return {
-      allowed: currentCount < this.maxRequests,
-      remaining: Math.max(0, this.maxRequests - currentCount),
-      resetTime: now + this.windowMs
-    };
-  }
-
   async isAllowed(key: string): Promise<RateLimitResult> {
     const now = Date.now();
     const windowStart = now - this.windowMs;
     const keyWithPrefix = `${RATE_LIMIT_KEY_PREFIX}${key}`;
+    const reservationId = `${now}-${Math.random()}`;
 
     // Use Redis multi (transaction) for atomic operations
     const multi = this.redis.multi();
@@ -63,7 +41,7 @@ export class RedisRateLimiter {
     multi.zCard(keyWithPrefix);
 
     // Add current request
-    multi.zAdd(keyWithPrefix, { score: now, value: `${now}-${Math.random()}` });
+    multi.zAdd(keyWithPrefix, { score: now, value: reservationId });
 
     // Set expiration for the key
     multi.expire(keyWithPrefix, Math.ceil(this.windowMs / 1000));
@@ -83,8 +61,14 @@ export class RedisRateLimiter {
     return {
       allowed: currentCount < this.maxRequests,
       remaining,
+      reservationId,
       resetTime
     };
+  }
+
+  async release(key: string, reservationId: string): Promise<void> {
+    const keyWithPrefix = `${RATE_LIMIT_KEY_PREFIX}${key}`;
+    await this.redis.zRem(keyWithPrefix, reservationId);
   }
 
   async reset(key: string): Promise<void> {

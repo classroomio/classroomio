@@ -118,16 +118,17 @@ export const createAuthenticationFailureRateLimiter = (options: RateLimiterOptio
     const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
     const limiter = new RedisRateLimiter(redis, opts.windowMs, maxRequests);
     const key = opts.keyGenerator(c);
+    let reservation: RateLimitResult;
 
     try {
-      const status = await limiter.getStatus(key);
+      reservation = await limiter.isAllowed(key);
 
-      if (!status.allowed) {
+      if (!reservation.allowed) {
         if (opts.standardHeaders) {
-          setRateLimitHeaders(c, maxRequests, status);
+          setRateLimitHeaders(c, maxRequests, reservation);
         }
 
-        return createRateLimitResponse(c, opts.message, status, opts.standardHeaders);
+        return createRateLimitResponse(c, opts.message, reservation, opts.standardHeaders);
       }
     } catch (error) {
       logRedisUnavailableOnce('Redis authentication failure limiter unavailable, allowing request', error);
@@ -138,21 +139,11 @@ export const createAuthenticationFailureRateLimiter = (options: RateLimiterOptio
     await next();
 
     if (c.get('automationKey')) {
-      return;
-    }
-
-    try {
-      const result = await limiter.isAllowed(key);
-
-      if (opts.standardHeaders) {
-        setRateLimitHeaders(c, maxRequests, result);
+      try {
+        await limiter.release(key, reservation.reservationId);
+      } catch (error) {
+        logRedisUnavailableOnce('Redis authentication failure limiter reservation release failed', error);
       }
-
-      if (!result.allowed) {
-        c.res = createRateLimitResponse(c, opts.message, result, opts.standardHeaders);
-      }
-    } catch (error) {
-      logRedisUnavailableOnce('Redis authentication failure limiter unavailable, allowing request', error);
     }
   };
 };
