@@ -246,7 +246,9 @@ describe('rollbackOrganizationWidget', () => {
     expect(buildWidgetPayload).toHaveBeenCalledWith(
       expect.objectContaining({
         config: expect.objectContaining({ colors: defaultWidgetConfig.colors })
-      })
+      }),
+      undefined,
+      null
     );
     expect(createWidgetVersion).toHaveBeenCalledWith(expect.objectContaining({ payloadSnapshot: rebuiltPayload }));
     expect(createWidgetVersion).not.toHaveBeenCalledWith(expect.objectContaining({ payloadSnapshot: targetPayload }));

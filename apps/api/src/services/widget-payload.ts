@@ -11,7 +11,7 @@ import {
   type BuildWidgetPayloadCourse,
   type TWidgetPayload
 } from '@cio/utils/validation/widget';
-import type { TWidget } from '@db/types';
+import type { TOrganizationPlan, TWidget } from '@db/types';
 import * as csstree from 'css-tree';
 import { env } from '@cio/core/config/env';
 
@@ -196,14 +196,16 @@ export function formatCourseForWidget(
 
 export async function buildWidgetPayload(
   widget: TWidget,
-  overrideSelectedCourseIds?: string[]
+  overrideSelectedCourseIds?: string[],
+  overrideActivePlan?: TOrganizationPlan | null
 ): Promise<TWidgetPayload> {
   const organization = await getOrganizationById(widget.organizationId);
   if (!organization) {
     throw new Error('Organization not found for widget');
   }
 
-  const activePlan = await getActiveOrganizationPlan(widget.organizationId);
+  const activePlan =
+    overrideActivePlan !== undefined ? overrideActivePlan : await getActiveOrganizationPlan(widget.organizationId);
   const planName = activePlan?.planName ?? null;
   const normalizedConfig = normalizeWidgetConfig(widget.config as Record<string, unknown>, planName);
   const selectedCourseIds =
