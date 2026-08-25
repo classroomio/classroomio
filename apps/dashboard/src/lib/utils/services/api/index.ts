@@ -319,9 +319,6 @@ export function getApiHeaders(
     cookie: cioCookies || ''
   };
 
-  console.log('headers', headers);
-  console.log('orgId', orgId);
-
   if (orgId) {
     headers['cio-org-id'] = orgId;
   }

@@ -8,4 +8,3 @@ export const authServerClient = createAuthClient({
     credentials: 'include' // Include cookies in requests
   }
 });
-console.log('baseURL', baseURL);

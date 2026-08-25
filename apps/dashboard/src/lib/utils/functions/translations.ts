@@ -65,14 +65,47 @@ export const selectedLocale = writable<string>('en');
 export const LOCALE_STORAGE_KEY = 'classroomio_locale';
 export const LOCALE_COOKIE_KEY = 'classroomio_locale';
 
-// Translations logs
-loading.subscribe(async ($loading) => {
-  if ($loading) {
-    console.log('Loading translations...');
+/*
+  `@sveltekit-i18n/base` keeps its loading state in a process-global singleton: a
+  single `currentRoute` writable that every request overwrites, and a shared
+  `promises` Set that any request can `.clear()`. `loadTranslations` resolves by
+  filtering that Set for its own `{ locale, route }` entry, so two concurrent SSR
+  renders can leave one of them awaiting a promise the other already purged --
+  the request then never settles and the browser gets no HTML at all.
 
-    await loading.toPromise();
-  }
-});
+  Dedupe by locale so concurrent renders await one shared promise instead of
+  racing. Note the loaders below declare no `routes`, so every loader already
+  runs for every route: there is nothing to load per-pathname, and passing one
+  only widens the race to every first-time URL.
+*/
+const localeLoads = new Map<string, Promise<unknown>>();
+
+function primeLocale(targetLocale: string): Promise<unknown> {
+  const inFlight = localeLoads.get(targetLocale);
+  if (inFlight) return inFlight;
+
+  const load = Promise.resolve(loadTranslations(targetLocale)).catch((error) => {
+    // Drop the cached rejection so the next render can retry.
+    localeLoads.delete(targetLocale);
+    throw error;
+  });
+
+  localeLoads.set(targetLocale, load);
+
+  return load;
+}
+
+/**
+ * Load a locale's translations once per process, then activate it for this
+ * render. Use this instead of calling `loadTranslations` directly.
+ */
+export async function ensureTranslations(targetLocale: string): Promise<void> {
+  await primeLocale(targetLocale);
+
+  // `locale.set` re-enters the library's loader trigger; `forceSet` just marks
+  // the active locale for the strings we already hold.
+  locale.forceSet(targetLocale);
+}
 
 export function handleLocaleChange(newLocale: TLocale) {
   if (!newLocale) {
