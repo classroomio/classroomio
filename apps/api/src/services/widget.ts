@@ -204,7 +204,7 @@ export async function deleteOrganizationWidget(orgId: string, widgetId: string, 
 
 export async function publishOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
-    const widget = await getWidgetById(orgId, widgetId);
+    const [widget, activePlan] = await Promise.all([getWidgetById(orgId, widgetId), getActiveOrganizationPlan(orgId)]);
     if (!widget) {
       throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
@@ -214,7 +214,7 @@ export async function publishOrganizationWidget(orgId: string, widgetId: string,
     const version = await createWidgetVersion({
       widgetId: widget.id,
       version: nextVersion,
-      configSnapshot: normalizeWidgetConfig(widget.config as Record<string, unknown>),
+      configSnapshot: normalizeWidgetConfig(widget.config as Record<string, unknown>, activePlan?.planName ?? null),
       payloadSnapshot: payload,
       runtimeManifest: {
         version: 'v1',
