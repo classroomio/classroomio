@@ -12,7 +12,7 @@ Full lifecycle: **implement → verify → commit → draft PR → iterate**. On
 Run `git status` and `gh pr view --json number,url,isDraft,state 2>/dev/null`.
 
 - Current branch already has an open PR → skip to [Iteration loop](#5-iteration-loop-chat-feedback). Do not create a second PR.
-- Otherwise create a branch off the latest `main`: `git checkout -b feat/<kebab-slug> && git pull origin main`.
+- Otherwise create a branch off the latest `main`: `git fetch origin main && git checkout -b feat/<kebab-slug> origin/main`.
 - A different feature's PR is open → start a fresh branch; never mix scopes in one PR.
 
 ## 1. Implement
