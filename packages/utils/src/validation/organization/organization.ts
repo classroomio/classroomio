@@ -37,6 +37,18 @@ export const ZGetOrganizationCoursesQuery = z.object({
 
 export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
 
+export const ZCourseReorder = z.object({
+  courses: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        order: z.number().int().min(0)
+      })
+    )
+    .min(1)
+});
+export type TCourseReorder = z.infer<typeof ZCourseReorder>;
+
 export const ZGetOrgSetup = z.object({
   siteName: z.string().min(1)
 });

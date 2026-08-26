@@ -2,6 +2,7 @@ import {
   ZAssignAudienceCourses,
   ZAudienceInviteByEmail,
   ZCancelOrgPlan,
+  ZCourseReorder,
   ZCreateLinkInvite,
   ZCreateOrgPlan,
   ZCreateOrganization,
@@ -42,6 +43,7 @@ import {
   getUserEnrolledCourses,
   removeAudienceMember,
   removeTeamMember,
+  reorderOrgCourses,
   updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
@@ -413,6 +415,29 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch public courses');
     }
   })
+  /**
+   * POST /organization/courses/reorder
+   * Persists the manual display order of organization courses (landing page + public catalog)
+   * Requires authentication and organization membership
+   */
+  .post(
+    '/courses/reorder',
+    authOrAutomationKeyMiddleware,
+    orgMemberOrAutomationKeyMiddleware(['course:write']),
+    zValidator('json', ZCourseReorder),
+    async (c) => {
+      try {
+        const { courses } = c.req.valid('json');
+        const orgId = c.get('orgId')!;
+
+        await reorderOrgCourses(orgId, courses);
+
+        return c.json({ success: true }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to reorder courses');
+      }
+    }
+  )
   /**
    * GET /organization/courses/enrolled
    * Gets enrolled courses for a user in an organization (used in lms)

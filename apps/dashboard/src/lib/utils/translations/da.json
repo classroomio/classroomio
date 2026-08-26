@@ -253,14 +253,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Komplet :)"
+        "complete": "Komplet :)",
+        "courses_reordered": "Kursusrækkefølge opdateret"
       },
       "error": {
         "file_size": "Filstørrelsen må ikke være større end 500 kb",
         "try_again": "Prøv igen",
         "label": "Upload billede",
         "fetch_error": "Fejl ved hentning af billeder fra Unsplash",
-        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen."
+        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen.",
+        "courses_reorder_failed": "Kunne ikke opdatere kursusrækkefølgen. Prøv igen."
       }
     },
     "team_members": {
@@ -3357,7 +3359,9 @@
           "footer": "Sidefod",
           "footer_desc": "Brandlinje, sociale medier, linkkolonner og juridisk bundrække.",
           "links": "Links",
-          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser."
+          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser.",
+          "courses": "Kurser",
+          "courses_desc": "Træk for at indstille rækkefølgen af ​​offentliggjorte kurser på landingssiden."
         },
         "links": {
           "toggle": "Vis linksafsnittet",
@@ -3395,6 +3399,14 @@
             "calendar": "Begivenheder",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Træk kurser for at ændre deres rækkefølge på landingssiden.",
+          "empty": "Ingen offentliggjorte kurser endnu — offentliggør et kursus for at se et eksempel på det her.",
+          "load_failed": "Kunne ikke indlæse offentliggjorte kurser.",
+          "add_button": "Tilføj",
+          "popover_title": "Vælg kurser",
+          "popover_empty": "Ingen offentliggjorte kurser tilgængelige."
         }
       },
       "content": {

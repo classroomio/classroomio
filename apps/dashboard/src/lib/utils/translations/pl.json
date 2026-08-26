@@ -253,14 +253,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Kompletne :)"
+        "complete": "Kompletne :)",
+        "courses_reordered": "Zaktualizowano kolejność kursów"
       },
       "error": {
         "file_size": "Rozmiar pliku nie może przekraczać 500 KB",
         "try_again": "Spróbuj ponownie",
         "label": "Prześlij obraz",
         "fetch_error": "Błąd podczas pobierania obrazów z Unsplash",
-        "upload_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie."
+        "upload_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie.",
+        "courses_reorder_failed": "Nie udało się zaktualizować kolejności kursów. Spróbuj ponownie."
       }
     },
     "team_members": {
@@ -3357,7 +3359,9 @@
           "footer": "Stopka",
           "footer_desc": "Linia marki, media społecznościowe, wielokolumnowe linki i dolny wiersz prawny.",
           "links": "Linki",
-          "links_desc": "Opcjonalny blok linków zewnętrznych (centrum pomocy, społeczność, webinaria) wyświetlanych po kursach."
+          "links_desc": "Opcjonalny blok linków zewnętrznych (centrum pomocy, społeczność, webinaria) wyświetlanych po kursach.",
+          "courses": "Kursy",
+          "courses_desc": "Przeciągnij, aby ustawić kolejność opublikowanych kursów na stronie docelowej."
         },
         "links": {
           "toggle": "Pokaż sekcję linków",
@@ -3395,6 +3399,14 @@
             "calendar": "Wydarzenia",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Przeciągnij kursy, aby zmienić ich kolejność na stronie docelowej.",
+          "empty": "Brak opublikowanych kursów — opublikuj kurs, aby wyświetlić jego podgląd.",
+          "load_failed": "Nie udało się załadować opublikowanych kursów.",
+          "add_button": "Dodaj",
+          "popover_title": "Wybierz kursy",
+          "popover_empty": "Brak opublikowanych kursów."
         }
       },
       "content": {

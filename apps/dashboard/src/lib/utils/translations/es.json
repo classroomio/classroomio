@@ -253,14 +253,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Completo :)"
+        "complete": "Completo :)",
+        "courses_reordered": "Orden de los cursos actualizado"
       },
       "error": {
         "file_size": "El tamaño del archivo no debe ser superior a 500 kb.",
         "try_again": "Inténtalo de nuevo",
         "label": "Subir imagen",
         "fetch_error": "Error al recuperar imágenes de Unsplash",
-        "upload_failed": "No se pudo cargar la imagen. Por favor inténtalo de nuevo."
+        "upload_failed": "No se pudo cargar la imagen. Por favor inténtalo de nuevo.",
+        "courses_reorder_failed": "Error al actualizar el orden de los cursos. Inténtalo de nuevo."
       }
     },
     "team_members": {
@@ -3357,7 +3359,9 @@
           "footer": "Pie de página",
           "footer_desc": "Línea de marca, redes sociales, enlaces en varias columnas y fila legal inferior.",
           "links": "Enlaces",
-          "links_desc": "Bloque opcional de enlaces externos (centro de ayuda, comunidad, seminarios web) que se muestran después de los cursos."
+          "links_desc": "Bloque opcional de enlaces externos (centro de ayuda, comunidad, seminarios web) que se muestran después de los cursos.",
+          "courses": "Cursos",
+          "courses_desc": "Arrastra para establecer el orden de los cursos publicados en la página de inicio."
         },
         "links": {
           "toggle": "Mostrar sección de enlaces",
@@ -3395,6 +3399,14 @@
             "calendar": "Eventos",
             "mail": "Correo electrónico"
           }
+        },
+        "courses": {
+          "drag_hint": "Arrastra los cursos para reordenarlos en la página de inicio.",
+          "empty": "Aún no hay cursos publicados. Publica un curso para previsualizarlo aquí.",
+          "load_failed": "Error al cargar los cursos publicados.",
+          "add_button": "Agregar",
+          "popover_title": "Seleccionar cursos",
+          "popover_empty": "No hay cursos publicados disponibles."
         }
       },
       "content": {

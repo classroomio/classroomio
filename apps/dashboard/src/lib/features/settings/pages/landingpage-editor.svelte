@@ -13,6 +13,7 @@
   import { landingPageEditorSelection } from '$features/settings/utils/store';
   import {
     ContentIcon,
+    CourseIcon,
     ExploreIcon,
     ExternalLinkIcon,
     GoalIcon,
@@ -26,6 +27,7 @@
   import CalloutSection from './landingpage-editor/callout-section.svelte';
   import EmbedSection from './landingpage-editor/embed-section.svelte';
   import FooterSection from './landingpage-editor/footer-section.svelte';
+  import CoursesSection from './landingpage-editor/courses-section.svelte';
 
   interface Props {
     settings: OrgLandingPageJson;
@@ -61,6 +63,12 @@
       title: t.get('settings.landing_page.editor.sections.hero'),
       icon: HeaderIcon,
       component: HeroSection
+    },
+    {
+      key: 'courses',
+      title: t.get('settings.landing_page.editor.sections.courses'),
+      icon: CourseIcon,
+      component: CoursesSection
     },
     {
       key: 'links',
@@ -143,6 +151,10 @@
         {selectedSectionDefinition?.title}
       </h3>
     </div>
+
+    <Button type="button" variant="outline" onclick={handleSaveClick} loading={isSaving} disabled={isSaving}>
+      {$t('settings.landing_page.editor.save')}
+    </Button>
   {:else}
     <IconButton onclick={() => ($landingPageEditorSelection = null)} tooltip={selectedSectionDefinition?.title ?? ''}>
       <ArrowLeftIcon size={16} />
@@ -165,7 +177,9 @@
                 tooltipContent={section.title}
               >
                 {@const SectionIcon = section.icon}
-                <SectionIcon size={16} />
+                <span style="pointer-events: none;">
+                  <SectionIcon size={16} />
+                </span>
                 <span>{section.title}</span>
                 <ChevronRightIcon size={16} />
               </Sidebar.MenuButton>
@@ -175,7 +189,7 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   {:else if selectedSectionDefinition}
-    {@const SectionComponent = selectedSectionDefinition.component}
+    {@const SectionComponent = selectedSectionDefinition?.component}
     <div class="min-w-0 overflow-x-hidden p-4">
       <SectionComponent bind:settings {markDirty} />
     </div>

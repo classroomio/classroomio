@@ -84,22 +84,23 @@
         <OrgLandingPageLinks {links} {labels} variant="saas" />
       {/if}
 
-    {#if links && links.enabled !== false && links.cards.length > 0}
-      <div class="plus-row"></div>
-      <OrgLandingPageLinks {links} {labels} variant="saas" />
-    {/if}
+      {#if links && links.enabled !== false && links.cards.length > 0}
+        <div class="plus-row"></div>
+        <OrgLandingPageLinks {links} {labels} variant="saas" />
+      {/if}
 
-    {#if embed && embed.enabled !== false}
-      <div class="plus-row"></div>
-      <OrgLandingPageEmbed {embed} {labels} variant="saas" />
-    {/if}
+      {#if embed && embed.enabled !== false}
+        <div class="plus-row"></div>
+        <OrgLandingPageEmbed {embed} {labels} variant="saas" />
+      {/if}
 
-    {#if callout && callout.enabled !== false}
-      <div class="plus-row"></div>
-      <OrgLandingPageCallout {callout} {labels} variant="saas" />
-    {/if}
-  </div>
-</LandingThemeScope>
+      {#if callout && callout.enabled !== false}
+        <div class="plus-row"></div>
+        <OrgLandingPageCallout {callout} {labels} variant="saas" />
+      {/if}
+    </div>
+  </div></LandingThemeScope
+>
 
 <style>
   /* ============ FRAME (vertical lines + dotted bg) ============ */
