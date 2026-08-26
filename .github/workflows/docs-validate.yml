@@ -1,0 +1,51 @@
+name: Docs validate
+
+# Plain pull_request, not pull_request_target: this job lints real PR-head
+# content, which is a different risk profile than checking out and running
+# PR code. Fork PRs get a read-only token, so we report via check
+# annotations instead of a PR comment.
+#
+# Scoped to apps/docs/**, so this never runs on code-only PRs. Advisory
+# only. Never add this to branch protection's required checks: a
+# path-filtered required check that never runs on some PRs leaves those
+# PRs stuck pending forever. See apps/docs/WORKFLOW.md.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/docs/**'
+      - '.github/workflows/docs-validate.yml'
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  validate:
+    name: Lint docs content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: blume validate
+        continue-on-error: true
+        run: pnpm --filter @cio/docs validate
+
+      - name: Vale
+        continue-on-error: true
+        uses: errata-ai/vale-action@v2
+        with:
+          files: apps/docs/content/docs
+          vale_flags: '--config=apps/docs/.vale.ini'
+          reporter: github-pr-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

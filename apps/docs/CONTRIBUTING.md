@@ -42,6 +42,28 @@ So in practice, "prefer a description" means the page's own opening line does th
 - **Self-Hosting**: running ClassroomIO on your own infrastructure.
 - **API**: the OpenAPI reference, generated. Don't hand-write pages here.
 
+## Documentation types
+
+Every page is one of three types:
+
+- **User guide**: task-based, "how to do X." Help Center, or Developers for contributor and integrator tasks.
+- **Feature reference**: what something is and how it behaves. Features (Platform tab) or the relevant Developers section.
+- **Changelog entry**: one line, no page.
+
+If a change doesn't cleanly fit a user guide or a feature reference, it gets a changelog line, not a page. Most PRs that touch the product surface warrant a line, not a new file.
+
+The API reference is generated from the OpenAPI spec (`upload-openapi-spec.yml` regenerates it on every push to `main`), so it sits outside this taxonomy. Never hand-write pages there.
+
+## Voice and style
+
+Second person, present tense. Headings name what the reader does, not the feature's internal name: "See your food," not "Food viewing feature."
+
+Vale (`docs-validate.yml`) checks prose for passive voice and wordiness on every PR touching `apps/docs/**`, advisory only. It doesn't check the heading rule above yet: that's still a review call, not a lint rule.
+
+## Staying current
+
+Give pages a `last_reviewed: YYYY-MM-DD` frontmatter field. Run `pnpm docs:check-stale` to list pages missing that date or older than 90 days.
+
 ## Before you move or rename a page
 
 - Navigation lives in exactly one place: `blume.config.ts`. Don't add a second sidebar or route list anywhere else.
