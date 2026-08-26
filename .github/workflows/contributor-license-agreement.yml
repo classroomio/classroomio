@@ -1,0 +1,81 @@
+name: Contributor License Agreement
+
+# pull_request_target is used so the check can comment on pull requests from forks.
+# SAFE ONLY because this workflow never checks out or executes pull request code.
+# Do not add actions/checkout, pnpm install, build, or cache steps here.
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+
+permissions:
+  contents: none
+  issues: write
+  pull-requests: read
+
+jobs:
+  cla:
+    name: CLA signed
+    if: >-
+      github.event.pull_request.user.type != 'Bot' &&
+      contains(fromJSON('["FIRST_TIMER", "FIRST_TIME_CONTRIBUTOR", "NONE"]'), github.event.pull_request.author_association)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check contributor license agreement
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const signatureLabel = 'cla: signed';
+            const commentMarker = '<!-- classroomio-cla-check -->';
+            const pullRequest = context.payload.pull_request;
+            const hasSignedLabel = pullRequest.labels.some(
+              (label) => label.name === signatureLabel
+            );
+
+            if (hasSignedLabel) {
+              core.notice('A maintainer has verified the contributor license agreement.');
+
+              return;
+            }
+
+            const commentBody = `${commentMarker}
+            Thanks for contributing to ClassroomIO, @${pullRequest.user.login}! Before we can merge your first contribution, please sign the [ClassroomIO Contributor License Agreement](https://forms.gle/XsXdfGcgJpWtNuzs7).
+
+            After you submit the form, a maintainer will verify it and add the \`${signatureLabel}\` label to this pull request. This check will then pass automatically.`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullRequest.number,
+              per_page: 100,
+            });
+            const existingComment = comments.find(
+              (comment) =>
+                comment.user.type === 'Bot' && comment.body.includes(commentMarker)
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequest.number,
+                body: commentBody,
+              });
+            }
+
+            core.setFailed(
+              `The contributor license agreement has not been verified. A maintainer must add the "${signatureLabel}" label after checking the form submission.`
+            );
