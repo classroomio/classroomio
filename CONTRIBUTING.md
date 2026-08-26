@@ -14,7 +14,7 @@ We invite innovative minds to contribute to the evolution of ClassroomIO. If you
 
 Ready to dive into the code and make a real impact? Here's your path:
 
-1. **Sign the Contributor License Agreement:** Before your first contribution can be merged, sign the [ClassroomIO Contributor License Agreement](https://forms.gle/XsXdfGcgJpWtNuzs7). Our pull request workflow will remind new contributors and wait for a maintainer to verify the submission.
+1. **Sign the Contributor License Agreement:** If you are a first-time or external contributor, sign the [ClassroomIO Contributor License Agreement](https://forms.gle/XsXdfGcgJpWtNuzs7) before your contribution can be merged. Our pull request workflow will remind you and wait for a maintainer to verify the submission.
 
 2. **Fork the Repository:** Fork our repository
 
