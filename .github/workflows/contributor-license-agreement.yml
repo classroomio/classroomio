@@ -14,6 +14,7 @@ on:
       - unlabeled
 
 permissions:
+  actions: write
   contents: none
   issues: write
   pull-requests: read
@@ -32,6 +33,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const authorizedSigner = 'rotimi-best';
             const signatureLabel = 'cla: signed';
             const signatureRequiredLabel = 'sign-cla-required';
             const commentMarker = '<!-- classroomio-cla-check -->';
@@ -40,8 +42,46 @@ jobs:
               pullRequest.labels.map((label) => label.name)
             );
             const hasSignedLabel = pullRequestLabels.has(signatureLabel);
+            const labelEvents = await github.paginate(
+              github.rest.issues.listEvents,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequest.number,
+                per_page: 100,
+              }
+            );
+            let signatureAppliedBy = null;
 
-            if (hasSignedLabel) {
+            for (const labelEvent of labelEvents) {
+              if (labelEvent.label?.name !== signatureLabel) continue;
+
+              if (labelEvent.event === 'labeled') {
+                signatureAppliedBy = labelEvent.actor?.login ?? null;
+              } else if (labelEvent.event === 'unlabeled') {
+                signatureAppliedBy = null;
+              }
+            }
+
+            const hasAuthorizedSignature =
+              hasSignedLabel && signatureAppliedBy === authorizedSigner;
+
+            if (hasSignedLabel && !hasAuthorizedSignature) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequest.number,
+                name: signatureLabel,
+              });
+
+              core.setFailed(
+                `Only @${authorizedSigner} can verify the contributor license agreement.`
+              );
+
+              return;
+            }
+
+            if (hasAuthorizedSignature) {
               if (pullRequestLabels.has(signatureRequiredLabel)) {
                 await github.rest.issues.removeLabel({
                   owner: context.repo.owner,
@@ -51,7 +91,33 @@ jobs:
                 });
               }
 
-              core.notice('A maintainer has verified the contributor license agreement.');
+              const pullRequestWorkflowRuns = await github.paginate(
+                github.rest.actions.listWorkflowRunsForRepo,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  event: 'pull_request',
+                  head_sha: pullRequest.head.sha,
+                  per_page: 100,
+                }
+              );
+              const workflowRunsAwaitingApproval = pullRequestWorkflowRuns.filter(
+                (workflowRun) =>
+                  workflowRun.status === 'action_required' ||
+                  workflowRun.conclusion === 'action_required'
+              );
+
+              for (const workflowRun of workflowRunsAwaitingApproval) {
+                await github.rest.actions.approveWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: workflowRun.id,
+                });
+              }
+
+              core.notice(
+                `@${authorizedSigner} verified the contributor license agreement. Approved ${workflowRunsAwaitingApproval.length} CI workflow run(s).`
+              );
 
               return;
             }
@@ -68,7 +134,7 @@ jobs:
             const commentBody = `${commentMarker}
             Thanks for contributing to ClassroomIO, @${pullRequest.user.login}! Because this is a first-time or external contribution, please sign the [ClassroomIO Contributor License Agreement](https://forms.gle/XsXdfGcgJpWtNuzs7) before it can be merged.
 
-            This pull request has been labeled \`${signatureRequiredLabel}\`. After you submit the form, a maintainer will verify it and add the \`${signatureLabel}\` label. The required label will be removed and this check will pass automatically.`;
+            This pull request has been labeled \`${signatureRequiredLabel}\`. After you submit the form, @${authorizedSigner} will verify it and add the \`${signatureLabel}\` label. The required label will be removed, this check will pass, and the held CI workflows will be approved automatically.`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -97,5 +163,5 @@ jobs:
             }
 
             core.setFailed(
-              `The contributor license agreement has not been verified. A maintainer must add the "${signatureLabel}" label after checking the form submission.`
+              `The contributor license agreement has not been verified. @${authorizedSigner} must add the "${signatureLabel}" label after checking the form submission.`
             );

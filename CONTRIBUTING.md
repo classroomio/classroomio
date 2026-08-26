@@ -30,7 +30,7 @@ PRs that touch `pnpm-lock.yaml`, `.github/workflows/**`, or npm publish config g
 
 ### Verifying contributor license agreements
 
-The Contributor License Agreement workflow adds the `sign-cla-required` label while a new contributor's signature is outstanding. When the check fails, compare the pull request author's GitHub username with the submitted form responses. After confirming their submission, add the `cla: signed` label to the pull request; the workflow will remove `sign-cla-required` automatically. Repository administrators should make the `Contributor License Agreement / CLA signed` status check required in the branch ruleset for `main` so an unverified contribution cannot be merged.
+The Contributor License Agreement workflow adds the `sign-cla-required` label while a new contributor's signature is outstanding. Only [@rotimi-best](https://github.com/rotimi-best) is authorized to verify submissions and add the `cla: signed` label; unauthorized applications are removed automatically. After `cla: signed` is applied, the workflow removes `sign-cla-required`, passes the CLA check, and approves the contributor's held CI workflow runs. Repository administrators should make the `Contributor License Agreement / CLA signed` status check required in the branch ruleset for `main` so an unverified contribution cannot be merged.
 
 ## Features
 
