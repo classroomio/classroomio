@@ -33,22 +33,42 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const signatureLabel = 'cla: signed';
+            const signatureRequiredLabel = 'sign-cla-required';
             const commentMarker = '<!-- classroomio-cla-check -->';
             const pullRequest = context.payload.pull_request;
-            const hasSignedLabel = pullRequest.labels.some(
-              (label) => label.name === signatureLabel
+            const pullRequestLabels = new Set(
+              pullRequest.labels.map((label) => label.name)
             );
+            const hasSignedLabel = pullRequestLabels.has(signatureLabel);
 
             if (hasSignedLabel) {
+              if (pullRequestLabels.has(signatureRequiredLabel)) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pullRequest.number,
+                  name: signatureRequiredLabel,
+                });
+              }
+
               core.notice('A maintainer has verified the contributor license agreement.');
 
               return;
             }
 
+            if (!pullRequestLabels.has(signatureRequiredLabel)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequest.number,
+                labels: [signatureRequiredLabel],
+              });
+            }
+
             const commentBody = `${commentMarker}
             Thanks for contributing to ClassroomIO, @${pullRequest.user.login}! Before we can merge your first contribution, please sign the [ClassroomIO Contributor License Agreement](https://forms.gle/XsXdfGcgJpWtNuzs7).
 
-            After you submit the form, a maintainer will verify it and add the \`${signatureLabel}\` label to this pull request. This check will then pass automatically.`;
+            This pull request has been labeled \`${signatureRequiredLabel}\`. After you submit the form, a maintainer will verify it and add the \`${signatureLabel}\` label. The required label will be removed and this check will pass automatically.`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
