@@ -863,17 +863,14 @@
           "unlock_all": "Odblokuj wszystko"
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach certyfikatu.",
+        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
         "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
-        "completion_deadline_label": "Termin ukończenia kursu",
-        "completion_deadline_helper": "Uczniowie muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
+        "completion_deadline_label": "Termin zakończenia kursu",
+        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
+        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
-        "copy_link": "Skopiuj link",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
-        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
-        "completion_deadline_label": "Termin zakończenia kursu",
-        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
+        "copy_link": "Skopiuj link"
       },
       "analytics": {
         "title": "Analityka"
@@ -2506,8 +2503,6 @@
       "email_message_label": "Wiadomość e-mail",
       "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!",
       "final_exercise_multiple_attempts_note": "Studenci będą mieli nieograniczoną liczbę prób wykonania wybranego ćwiczenia.",
-      "deadline_required": "W przypadku możliwości pobrania certyfikatów wymagany jest termin wydania certyfikatu.",
-      "deadline_required_enroll": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników."
       "deadline_required": "Kursy zgodności wymagają terminu ukończenia przed publikacją.",
       "deadline_required_enroll": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników.",
       "deadline_invalid": "Termin ukończenia kursu jest nieprawidłowy."

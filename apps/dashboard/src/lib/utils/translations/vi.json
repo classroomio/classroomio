@@ -863,17 +863,14 @@
           "unlock_all": "Mở khóa tất cả"
         },
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt chứng chỉ trước khi xuất bản.",
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
         "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
-        "completion_deadline_label": "Hạn chót hoàn thành khóa học",
+        "completion_deadline_label": "Thời hạn hoàn thành khóa học",
+        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
+        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
-        "copy_link": "Sao chép liên kết",
-        "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
-        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
-        "completion_deadline_label": "Thời hạn hoàn thành khóa học",
-        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn."
+        "copy_link": "Sao chép liên kết"
       },
       "analytics": {
         "title": "Phân tích"
@@ -2506,8 +2503,6 @@
       "email_message_label": "Tin nhắn email",
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
       "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
-      "deadline_required": "Thời hạn cấp chứng chỉ là bắt buộc khi có thể tải xuống chứng chỉ.",
-      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký."
       "deadline_required": "Các khóa học tuân thủ yêu cầu thời hạn hoàn thành trước khi có thể xuất bản.",
       "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký.",
       "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ."
