@@ -116,6 +116,49 @@ export async function getCohortsByOrg(
   }
 }
 
+/**
+ * Returns org cohorts the given profile can access.
+ * Org admins see all cohorts; other members see only cohorts they belong to.
+ */
+export async function getCohortsByOrgForProfile(
+  organizationId: string,
+  profileId: string
+): Promise<Array<TCohort & { courseCount: number; studentCount: number }>> {
+  try {
+    const [adminRow] = await db
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        )
+      )
+      .limit(1);
+
+    if (adminRow) {
+      return getCohortsByOrg(organizationId);
+    }
+
+    const memberRows = await db
+      .select({ cohortId: schema.cohortMember.cohortId })
+      .from(schema.cohortMember)
+      .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
+      .where(and(eq(schema.cohortMember.profileId, profileId), eq(schema.cohort.organizationId, organizationId)));
+
+    const cohortIds = memberRows.map((r) => r.cohortId);
+    if (cohortIds.length === 0) return [];
+
+    return getCohortsByOrg(organizationId, cohortIds);
+  } catch (error) {
+    console.error('getCohortsByOrgForProfile error:', error);
+    throw new Error(
+      `Failed to get cohorts for profile "${profileId}" in org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface TSearchOrgCohort {
   id: string;
   name: string;

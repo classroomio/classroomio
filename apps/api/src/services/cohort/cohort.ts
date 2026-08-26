@@ -28,6 +28,7 @@ import {
   getCohortNewsfeedCommentById,
   getCohortNewsfeedComments,
   getCohortsByOrg,
+  getCohortsByOrgForProfile,
   getCoursesByCohort,
   getCohortMemberRole,
   isCohortCourse,
@@ -148,9 +149,9 @@ export async function getCohort(cohortId: string) {
   }
 }
 
-export async function listOrgCohorts(organizationId: string) {
+export async function listOrgCohorts(organizationId: string, profileId: string) {
   try {
-    return getCohortsByOrg(organizationId);
+    return getCohortsByOrgForProfile(organizationId, profileId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
