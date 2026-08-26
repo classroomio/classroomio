@@ -41,11 +41,12 @@ on:
           - deploy
           - destroy
       seed_organization:
-        description: "Demo organization to seed after deploy"
+        description: "Demo data to seed after deploy"
         required: true
         type: choice
         default: udemy-test
         options:
+          - all
           - udemy-test
           - coursera-test
           - skillshare-test
@@ -342,7 +343,7 @@ jobs:
         # deps, not source — they must be built before the seed script can import them.
         run: pnpm --filter @cio/db^... build
 
-      - name: Seed the selected demo organization (optional)
+      - name: Seed the selected demo data (optional)
         id: seed
         if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
@@ -351,12 +352,20 @@ jobs:
         env:
           SEED_ORGANIZATION: ${{ inputs.seed_organization }}
         run: |
+          run_seed() {
+            if [ "$SEED_ORGANIZATION" = "all" ]; then
+              railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed
+            else
+              railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed -- --organization "$SEED_ORGANIZATION"
+            fi
+          }
+
           PUBLIC_DB_URL=$(railway variables --service Postgres --kv | grep '^DATABASE_PUBLIC_URL=' | cut -d= -f2-)
           if [ -z "$PUBLIC_DB_URL" ]; then
             echo "::warning::Postgres has no DATABASE_PUBLIC_URL in this environment — skipping $SEED_ORGANIZATION seed; only essential seed ran on api boot."
             echo "status=skipped" >> "$GITHUB_OUTPUT"
           else
-            if railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed -- --organization "$SEED_ORGANIZATION"; then
+            if run_seed; then
               echo "status=seeded" >> "$GITHUB_OUTPUT"
             else
               echo "$SEED_ORGANIZATION seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
