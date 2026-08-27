@@ -32,9 +32,22 @@ function parseFrontmatter(source) {
   return data;
 }
 
+// `new Date()` silently rolls over invalid calendar dates (e.g. 2026-02-30
+// becomes March 2) instead of rejecting them, so a typo'd date would pass
+// as valid. Validate the shape, then confirm the parsed date round-trips
+// to the same year/month/day before trusting it.
 function daysSince(dateString) {
-  const parsed = new Date(dateString);
-  if (Number.isNaN(parsed.getTime())) return null;
+  const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+
+  const [, year, month, day] = match.map(Number);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  const isValid =
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month - 1 &&
+    parsed.getUTCDate() === day;
+  if (!isValid) return null;
+
   return Math.floor((Date.now() - parsed.getTime()) / (1000 * 60 * 60 * 24));
 }
 

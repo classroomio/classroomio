@@ -27,12 +27,12 @@ Everything else user-facing (routes, nav, components, copy) is hand-written and 
 
 ## Running things locally
 
-```
+```bash
 cd apps/docs
 vale sync && vale content/docs
 ```
 
-```
+```bash
 pnpm docs:check-stale
 ```
 
