@@ -142,6 +142,7 @@
   let acknowledgedPassedPolicyReviewSignature = $state<string | null>(null);
   let passedPolicyAttemptChoice = $state<PassedPolicyAttemptChoice>('retry');
   const passedPolicyReviewStoragePrefix = 'classroomio:passed-policy-review';
+  let lastHandledHighlight = $state<string | null>(null);
 
   function isTemporaryId(id: string | number | undefined) {
     return typeof id === 'string' && id.includes('-form');
@@ -515,6 +516,7 @@
     untrack(() => {
       const url = new URL(page.url);
       url.searchParams.set('tab', selectedTab);
+      url.searchParams.delete('highlight');
       goto(resolve(`${url.pathname}${url.search}`, {}), {
         replaceState: true,
         keepFocus: true,
@@ -760,7 +762,7 @@
         {/if}
       {:else}
         <UnderlineTabs.Root bind:value={selectedTab} class="mb-4">
-          <UnderlineTabs.List class="grid w-full max-w-lg grid-cols-3">
+          <UnderlineTabs.List>
             <UnderlineTabs.Trigger value="questions">
               {$t('course.navItem.lessons.exercises.all_exercises.questions')}
             </UnderlineTabs.Trigger>
