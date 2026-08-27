@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Presenter view · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="deck.css" />
+    <style>
+      body { background: #0b0d12; margin: 0; }
+      .pbtn { border: 1px solid #2a3140; background: #161a23; color: #d6dbe3; font-family: inherit; font-size: 13px; padding: 7px 12px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+      .pbtn:hover { background: #1e2431; }
+      .pbtn svg { width: 14px; height: 14px; stroke-width: 2; }
+      .pnext { opacity: 0.55; }
+      .blackout { position: fixed; inset: 0; background: #000; z-index: 500; display: grid; place-items: center; color: #3a4150; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <div class="presenter">
+      <!-- current slide + controls -->
+      <div class="pcol">
+        <div class="pmeta">
+          <span class="plabel">Now presenting</span>
+          <span class="plabel" id="posLabel">3 / 8</span>
+        </div>
+        <div class="pframe" id="cur"></div>
+        <div class="pmeta">
+          <div style="display: flex; gap: 8px">
+            <button class="pbtn" id="prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6" /></svg>Prev</button>
+            <button class="pbtn" id="next">Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6" /></svg></button>
+            <button class="pbtn" id="ovBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>Overview</button>
+            <button class="pbtn" id="blackBtn">Blackout</button>
+          </div>
+          <div class="pkeys">
+            <span class="kbd">←</span><span class="kbd">→</span><span class="kbd">O</span><span class="kbd">B</span><span class="kbd">F</span><span class="kbd">Esc</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- next slide + notes + timer -->
+      <div class="pcol">
+        <div class="pmeta">
+          <span class="plabel">Up next</span>
+          <span class="ptimer" id="timer">00:00</span>
+        </div>
+        <div class="pframe pnext" id="nextFrame"></div>
+        <span class="plabel">Presenter notes</span>
+        <div class="notes" id="notes" style="min-height: 180px"></div>
+        <div class="pmeta">
+          <button class="pbtn" id="reset">Reset timer</button>
+          <a class="pbtn" href="deck-editor.html">Exit presenter</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- overview grid -->
+    <div class="blackout" id="overview" hidden style="background: #0b0d12; align-items: start; padding: 30px; overflow: auto">
+      <div style="width: 100%">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px">
+          <span class="plabel" style="color: #7f8794">Overview — press O or Esc to close</span>
+        </div>
+        <div class="overview" id="ovGrid"></div>
+      </div>
+    </div>
+
+    <div class="blackout" id="black" hidden>Screen blacked out — press B to resume</div>
+
+    <script src="deck-data.js"></script>
+    <script>
+      let index = 2;
+      let seconds = 0;
+
+      const cur = document.getElementById('cur');
+      const nextFrame = document.getElementById('nextFrame');
+      const notes = document.getElementById('notes');
+
+      function paint() {
+        const slide = DECK.slides[index];
+        cur.innerHTML = renderSlide(slide);
+        nextFrame.innerHTML = DECK.slides[index + 1]
+          ? renderSlide(DECK.slides[index + 1])
+          : '<div class="slide-frame theme-classic" style="display:grid;place-items:center;color:var(--slide-fg-muted);font-size:calc(36 * var(--u))">End of deck</div>';
+        notes.innerHTML = slide.notes ? slide.notes : '<i style="color:#6b7280">No notes on this slide.</i>';
+        document.getElementById('posLabel').textContent = `${index + 1} / ${DECK.slides.length}`;
+        document.querySelectorAll('#ovGrid .ov-item').forEach((el, i) => el.classList.toggle('current', i === index));
+      }
+
+      document.getElementById('ovGrid').innerHTML = DECK.slides
+        .map((slide, i) => `<div class="ov-item" data-i="${i}">${renderSlide(slide, { chrome: false })}<span class="n">${i + 1}</span></div>`)
+        .join('');
+
+      document.querySelectorAll('#ovGrid .ov-item').forEach((el) => {
+        el.onclick = () => {
+          index = +el.dataset.i;
+          document.getElementById('overview').hidden = true;
+          paint();
+        };
+      });
+
+      const go = (delta) => {
+        index = Math.min(DECK.slides.length - 1, Math.max(0, index + delta));
+        paint();
+      };
+
+      document.getElementById('prev').onclick = () => go(-1);
+      document.getElementById('next').onclick = () => go(1);
+      document.getElementById('ovBtn').onclick = () => toggle('overview');
+      document.getElementById('blackBtn').onclick = () => toggle('black');
+      document.getElementById('reset').onclick = () => { seconds = 0; tick(); };
+
+      function toggle(id) {
+        const el = document.getElementById(id);
+        el.hidden = !el.hidden;
+      }
+
+      addEventListener('keydown', (event) => {
+        const key = event.key.toLowerCase();
+        if (event.key === 'ArrowRight' || event.key === ' ') { event.preventDefault(); go(1); }
+        if (event.key === 'ArrowLeft') go(-1);
+        if (key === 'o') toggle('overview');
+        if (key === 'b') toggle('black');
+        if (key === 'f') document.documentElement.requestFullscreen?.();
+        if (event.key === 'Escape') {
+          document.getElementById('overview').hidden = true;
+          document.getElementById('black').hidden = true;
+        }
+      });
+
+      function tick() {
+        const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const ss = String(seconds % 60).padStart(2, '0');
+        document.getElementById('timer').textContent = `${mm}:${ss}`;
+      }
+      setInterval(() => { seconds += 1; tick(); }, 1000);
+
+      paint();
+      tick();
+    </script>
+  </body>
+</html>

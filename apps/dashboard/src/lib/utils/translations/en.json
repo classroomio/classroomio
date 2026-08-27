@@ -367,7 +367,7 @@
       "full_name": "Full Name",
       "password": "Your Password",
       "confirm_password": "Confirm Password",
-      "password_helper_message": "Password must be more than 8 characters",
+      "password_helper_message": "Password must be 8 or more characters",
       "create_account": "Create Account"
     },
     "validation": {
@@ -378,6 +378,10 @@
       "title": "Signup Disabled",
       "invite_only_message": "Signup is invite-only. Please use an invite link to create an account.",
       "go_to_login": "Go to Login"
+    },
+    "reset_password": {
+      "heading": "New Password",
+      "description": "Enter your new password details"
     }
   },
   "profileMenu": {
@@ -589,11 +593,11 @@
         "description": "Control how users can sign up and log in to your organization.",
         "allow_public_signups": {
           "label": "Allow public signups",
-          "description": "When disabled, only users with an invite link can sign up. Enable to allow anyone to create an account."
+          "description": "When enabled, anyone can create an account. When disabled, only users with a valid invitation link can sign up."
         },
         "disable_signup": {
-          "label": "Disable Signup",
-          "description": "Prevent new users from signing up. Only invited users can join."
+          "label": "Block all new signups",
+          "description": "Completely prevent new account creation. No one can sign up — even invited users. Existing accounts are not affected."
         },
         "disable_signup_message": {
           "label": "Signup Disabled Message",
@@ -613,7 +617,7 @@
         "note_description": "These settings only affect this organization. Admins can always sign in using their credentials for break-glass access.",
         "internal_enrollment_only": {
           "label": "Internal Enrollment Only",
-          "description": "When enabled, any published course is open for self-enrollment to all students in your organization. Use with Disable Signup to create a closed, invite-only academy where students can join any published course without per-course setup."
+          "description": "When enabled, only existing members of your organization can enroll in your courses. Everyone else must be invited — they cannot enroll themselves from a course page, even when the course is open to new students."
         }
       },
       "sso": {
@@ -1632,6 +1636,7 @@
     "people": "People",
     "goto_lms": "Go to LMS",
     "goto_dashboard": "Dashboard",
+    "join_academy": "Join Academy",
     "goto_home": "Go to ClassroomIO Home",
     "login": "Login",
     "signup": "Sign Up",
@@ -3237,6 +3242,13 @@
         "you": "You",
         "pending": "Pending",
         "name": "Name",
+        "learner": "Learner",
+        "progress": "Progress",
+        "stage": "Stage",
+        "last_login_at": "Last Login At",
+        "enrolled_at": "Enrolled At",
+        "certificate_earned": "Certificate earned",
+        "not_started": "Not started",
         "role": "Role",
         "action": "Action",
         "feedback": "Copied Email to clipboard",
@@ -3488,6 +3500,8 @@
             "certificate": "Certificate",
             "curriculum": "Curriculum",
             "chips": "Skills & Tools",
+            "navigation": "Navigation",
+            "footer": "Footer",
             "skills": "Skills you'll gain",
             "tools": "Tools you'll learn"
           },
@@ -3577,7 +3591,8 @@
           "join_course": "Join Course",
           "enrolled_success": "You're enrolled in this course.",
           "enrolled_verify_email": "You're enrolled! Verify your email to access this course.",
-          "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator."
+          "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator.",
+          "members_only": "Only members of this organization can enroll. Ask an administrator for an invitation."
         },
         "course_content": "Course content",
         "modules": "modules",
@@ -3664,8 +3679,8 @@
         "course_download": "Course download",
         "course_avail": "Download a copy of this course.",
         "download": "Download",
-        "allow": "Allow New Students",
-        "access": "Allow new students to access this course",
+        "allow": "Students can enroll themselves",
+        "access": "When off, students can only join through an invite link or by being added from People.",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
@@ -3987,7 +4002,8 @@
     "download_course": "Upgrade to download course",
     "required": "Upgrade Required",
     "enterprise_required": "This feature requires an Enterprise plan.",
-    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API."
+    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
+    "unlock_field": "Upgrade to unlock this setting"
   },
   "automation": {
     "title": "Automation",
@@ -4468,7 +4484,8 @@
         "accepted": "This invite has already been used.",
         "invalid": "This invite link is not valid.",
         "joined": "Joined organization",
-        "join_failed": "Failed to join organization"
+        "join_failed": "Failed to join organization",
+        "try_again": "Try again"
       }
     },
     "link": {
@@ -4552,12 +4569,12 @@
         "invalid_email": "Invalid email address"
       },
       "password": {
-        "min_char": "Must be 6 or more characters long"
+        "min_char": "Must be 8 or more characters long"
       }
     },
     "reset": {
       "password": {
-        "min_char": "Must be 6 or more characters long"
+        "min_char": "Must be 8 or more characters long"
       }
     },
     "onboarding": {

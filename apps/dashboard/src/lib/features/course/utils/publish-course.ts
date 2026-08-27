@@ -28,7 +28,7 @@ export async function publishCourse(course: Course): Promise<PublishCourseResult
 
   const metadataPayload = {
     ...(isObject(course.metadata) ? course.metadata : {}),
-    allowNewStudent: true
+    allowSelfEnrollment: true
   };
 
   const result = await courseApi.update(

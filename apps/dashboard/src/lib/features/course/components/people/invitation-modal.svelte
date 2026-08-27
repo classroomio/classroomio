@@ -19,6 +19,13 @@
   import { TutorSelectSection, ExistingStudentsSection, BulkEmailSection } from '$features/people/components';
   import { UpgradeBanner } from '$features/ui';
 
+  interface Props {
+    /** Called after the course roster changes so the caller can refresh its list. */
+    onMembersChanged?: () => void;
+  }
+
+  let { onMembersChanged }: Props = $props();
+
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
   let courseId = $derived(courseApi.course?.id ?? '');
@@ -120,6 +127,7 @@
     }
 
     await courseApi.refreshCourse(courseId, $profile.id);
+    onMembersChanged?.();
   }
 
   async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
@@ -134,6 +142,7 @@
     }
 
     await courseApi.refreshCourse(courseId, $profile.id);
+    onMembersChanged?.();
   }
 
   async function onSubmit() {
@@ -149,6 +158,7 @@
     }));
     await peopleApi.add(courseId, members);
     if (peopleApi.success) {
+      onMembersChanged?.();
       goto(resolve(page.url.pathname, {}));
     }
   }

@@ -1,6 +1,7 @@
 import isNumber from 'lodash/isNumber';
 import { t } from '$lib/utils/functions/translations';
 import { validateEmail } from './validateEmail';
+import { PASSWORD_MIN_LENGTH, ZPassword, ZPasswordFields } from '@cio/utils/validation/auth/password';
 import z from 'zod';
 
 function getOrgNameValidation() {
@@ -21,10 +22,20 @@ function getSiteNameValidation() {
     });
 }
 
-export const getConfirmPasswordError = ({ password, confirmPassword }) => {
-  return password > 6 && confirmPassword > 6 && password !== confirmPassword
-    ? `${t.get('validations.confirm_password.not_match')}`
-    : undefined;
+export const getConfirmPasswordError = ({
+  password = '',
+  confirmPassword = ''
+}: {
+  password?: string;
+  confirmPassword?: string;
+}) => {
+  if (!password || password.length < PASSWORD_MIN_LENGTH || !confirmPassword) {
+    return undefined;
+  }
+
+  const result = ZPasswordFields.safeParse({ password, confirmPassword });
+
+  return result.success ? undefined : t.get('validations.confirm_password.not_match');
 };
 
 export const processErrors = (error, mapToId?: boolean) => {
@@ -61,9 +72,7 @@ export const authValidation = (fields = {}) => {
     email: z.string().email({
       message: 'validations.auth.email.invalid_email'
     }),
-    password: z.string().min(6, {
-      message: 'validations.auth.password.min_char'
-    })
+    password: ZPassword
   });
 
   const { error } = schema.safeParse(fields);
@@ -194,8 +203,14 @@ export const commentInCommunityValidation = (fields = {}) => {
   return processErrors(error);
 };
 
-export const getDisableSubmit = ({ password, confirmPassword }) => {
-  return !!(password && confirmPassword && password !== confirmPassword);
+export const getDisableSubmit = ({
+  password = '',
+  confirmPassword = ''
+}: {
+  password?: string;
+  confirmPassword?: string;
+}) => {
+  return !ZPasswordFields.safeParse({ password, confirmPassword }).success;
 };
 
 export const validateEmailInString = (emailsStr) => {

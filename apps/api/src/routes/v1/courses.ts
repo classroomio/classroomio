@@ -17,8 +17,6 @@ import {
 } from '@api/services/v1/course';
 
 import { Hono } from '@api/utils/hono';
-import { automationKeyMiddleware } from '@api/middlewares/automation-key';
-import { automationKeyScopesMiddleware } from '@api/middlewares/automation-key-scopes';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
@@ -76,8 +74,6 @@ const CourseDetailResponse = {
 export const v1CoursesRouter = new Hono()
   .get(
     '/',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'List courses for the authenticated organization',
       tags: ['Public API Courses'],
@@ -117,8 +113,6 @@ export const v1CoursesRouter = new Hono()
   )
   .post(
     '/',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Create a course for the authenticated organization',
       tags: ['Public API Courses'],
@@ -158,8 +152,6 @@ export const v1CoursesRouter = new Hono()
   )
   .get(
     '/:courseId/students',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'List enrolled students for a course',
       tags: ['Public API Courses'],
@@ -198,8 +190,6 @@ export const v1CoursesRouter = new Hono()
   )
   .get(
     '/:courseId/export',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Export a course structure snapshot',
       tags: ['Public API Courses'],
@@ -238,8 +228,6 @@ export const v1CoursesRouter = new Hono()
   )
   .get(
     '/:courseId/structure',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Get a course structure snapshot',
       tags: ['Public API Courses'],
@@ -278,8 +266,6 @@ export const v1CoursesRouter = new Hono()
   )
   .put(
     '/:courseId/structure',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Synchronize a course structure using the draft payload shape',
       tags: ['Public API Courses'],
@@ -322,8 +308,6 @@ export const v1CoursesRouter = new Hono()
   )
   .get(
     '/:courseId',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Get a single course by id',
       tags: ['Public API Courses'],
@@ -362,8 +346,6 @@ export const v1CoursesRouter = new Hono()
   )
   .put(
     '/:courseId',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Update a course by id',
       tags: ['Public API Courses'],
@@ -405,8 +387,6 @@ export const v1CoursesRouter = new Hono()
   )
   .delete(
     '/:courseId',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Delete a course by id',
       tags: ['Public API Courses'],

@@ -55,12 +55,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Debe tener 6 o más caracteres"
+        "min_char": "Debe tener 8 o más caracteres"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Debe tener 6 o más caracteres"
+        "min_char": "Debe tener 8 o más caracteres"
       },
       "email": {
         "invalid_email": "Dirección de correo electrónico no válida"
@@ -517,7 +517,8 @@
     "download_course": "Actualizar para descargar el curso",
     "required": "Actualización requerida",
     "enterprise_required": "Esta característica requiere un plan Enterprise.",
-    "public_api_required": "Actualiza a Early Adopter o Enterprise para acceder a la API pública."
+    "public_api_required": "Actualiza a Early Adopter o Enterprise para acceder a la API pública.",
+    "unlock_field": "Actualice para desbloquear esta configuración"
   },
   "analytics": {
     "title": "Analíticas",
@@ -785,7 +786,7 @@
         "link": "Enlace del curso",
         "grading": "Calificación",
         "reports": "Hacer que los informes de calificaciones estén disponibles para las lecciones",
-        "disabled": "Discapacitado",
+        "disabled": "Deshabilitado",
         "enabled": "Habilitado",
         "order": "Pestaña Ordenar lecciones",
         "drag": "Arrastre y suelte las etiquetas para reordenar las pestañas de materiales",
@@ -800,8 +801,8 @@
         "course_download": "Descarga del curso",
         "course_avail": "Descarga una copia de este curso.",
         "download": "Descargar",
-        "allow": "Permitir nuevos estudiantes",
-        "access": "Permitir que nuevos estudiantes accedan a este curso",
+        "allow": "Los estudiantes pueden inscribirse por su cuenta",
+        "access": "Cuando está desactivado, los estudiantes solo pueden unirse mediante un enlace de invitación o si los agregas desde Personas.",
         "publish": "Publicar curso",
         "determines": "Esto determina si su curso se muestra en su página de destino.",
         "published": "Publicado",
@@ -923,7 +924,8 @@
           "join_course": "Unirse al curso",
           "enrolled_success": "Estás inscrito en este curso.",
           "enrolled_verify_email": "¡Estás inscrito! Verifica tu correo electrónico para acceder a este curso.",
-          "student_limit_reached": "{orgName} ha alcanzado su capacidad de estudiantes. Comuníquese con el administrador de su organización."
+          "student_limit_reached": "{orgName} ha alcanzado su capacidad de estudiantes. Comuníquese con el administrador de su organización.",
+          "members_only": "Solo los miembros de esta organización pueden inscribirse. Solicite una invitación a un administrador."
         },
         "pricing_section": {
           "free": "Gratis",
@@ -1012,7 +1014,9 @@
             "curriculum": "Plan de estudios",
             "chips": "Habilidades y herramientas",
             "skills": "Habilidades que obtendrás",
-            "tools": "Herramientas que aprenderás"
+            "tools": "Herramientas que aprenderás",
+            "navigation": "Navegación",
+            "footer": "Pie de página"
           },
           "skills_help": "Presione Entrar para agregar. Estos aparecen como fichas debajo del plan de estudios.",
           "tools_help": "Presione Entrar para agregar. Estos aparecen como fichas debajo del plan de estudios.",
@@ -1115,6 +1119,13 @@
         "you": "tu",
         "pending": "Pendiente",
         "name": "Nombre",
+        "learner": "Estudiante",
+        "progress": "Progreso",
+        "stage": "Etapa",
+        "last_login_at": "Último inicio de sesión",
+        "enrolled_at": "Inscrito el",
+        "certificate_earned": "Certificado obtenido",
+        "not_started": "No iniciado",
         "role": "Rol",
         "action": "Acción",
         "feedback": "Correo electrónico copiado al portapapeles",
@@ -2865,6 +2876,7 @@
     "discussion": "Discusión",
     "people": "gente",
     "goto_lms": "Ir a LMS",
+    "join_academy": "Unirse a la academia",
     "goto_home": "Ir a la página de inicio de ClassroomIO",
     "login": "Iniciar sesión",
     "signup": "Regístrate",
@@ -3627,16 +3639,16 @@
           "placeholder": "por ejemplo, los registros están deshabilitados; comuníquese con learn@domain.com para obtener acceso"
         },
         "disable_signup": {
-          "label": "Deshabilitar registro",
-          "description": "Evitar que nuevos usuarios se registren. Sólo los usuarios invitados pueden unirse."
+          "label": "Bloquear todos los registros nuevos",
+          "description": "Impedir completamente la creación de nuevas cuentas. Nadie puede registrarse — ni siquiera usuarios invitados. Las cuentas existentes no se ven afectadas."
         },
         "allow_public_signups": {
           "label": "Permitir registros públicos",
-          "description": "Cuando está deshabilitado, solo los usuarios con un enlace de invitación pueden registrarse. Habilite esta opción para permitir que cualquiera pueda crear una cuenta."
+          "description": "Cuando está habilitado, cualquiera puede crear una cuenta. Cuando está deshabilitado, solo los usuarios con un enlace de invitación válido pueden registrarse."
         },
         "internal_enrollment_only": {
           "label": "Inscripción interna únicamente",
-          "description": "Cuando está habilitado, cualquier curso publicado está abierto para la autoinscripción de todos los estudiantes de su organización. Úselo con Desactivar registro para crear una academia cerrada solo por invitación donde los estudiantes pueden unirse a cualquier curso publicado sin configuración por curso."
+          "description": "Cuando está habilitado, solo los miembros existentes de su organización pueden inscribirse en sus cursos. Se debe invitar a todos los demás; no pueden inscribirse desde la página de un curso, incluso cuando el curso está abierto a nuevos estudiantes."
         }
       },
       "login": {
@@ -3830,13 +3842,17 @@
       "full_name": "Nombre completo",
       "password": "Tu Contraseña",
       "confirm_password": "Confirmar contraseña",
-      "password_helper_message": "La contraseña debe tener más de 8 caracteres.",
+      "password_helper_message": "La contraseña debe tener 8 o más caracteres.",
       "create_account": "Crear cuenta"
     },
     "signup_disabled": {
       "title": "Registro deshabilitado",
       "invite_only_message": "El registro es sólo por invitación. Utilice un enlace de invitación para crear una cuenta.",
       "go_to_login": "Ir a Iniciar sesión"
+    },
+    "reset_password": {
+      "heading": "Nueva contraseña",
+      "description": "Ingrese los detalles de su nueva contraseña"
     },
     "continue_with": "O continuar con"
   },
@@ -4058,7 +4074,8 @@
         "accepted": "Esta invitación ya ha sido utilizada.",
         "invalid": "Este enlace de invitación no es válido.",
         "joined": "Organización unida",
-        "join_failed": "No se pudo unir a la organización"
+        "join_failed": "No se pudo unir a la organización",
+        "try_again": "Intentar de nuevo"
       }
     },
     "link": {
