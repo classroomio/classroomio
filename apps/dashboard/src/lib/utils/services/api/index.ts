@@ -62,6 +62,15 @@ function toBase64Utf8(input: string): string {
   return btoa(binary);
 }
 
+/** Path only -- a full URL can carry tokens in its query string. */
+function toLogPath(rawUrl: string): string {
+  try {
+    return new URL(rawUrl).pathname;
+  } catch {
+    return rawUrl;
+  }
+}
+
 function mergeAbortSignals(...signals: Array<AbortSignal | null | undefined>) {
   const activeSignals = signals.filter((signal): signal is AbortSignal => Boolean(signal));
 
@@ -169,10 +178,23 @@ class ApiClient {
 
     let lastError: Error | null = null;
 
+    // Server-side only. An SSR load blocked on an API call that never returns
+    // produces no error and no response -- the page just hangs with nothing in
+    // the log. A `->` line with no matching `<-` line names that call.
+    const shouldTrace = typeof window === 'undefined';
+    const method = (requestInit.method || 'GET').toUpperCase();
+
     // Retry logic with exponential backoff
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
+        if (shouldTrace) console.log(`[api] -> ${method} ${toLogPath(fullUrl)}`);
+
+        const startedAt = Date.now();
         const response = await this.config.customFetch(fullUrl, requestInit);
+
+        if (shouldTrace) {
+          console.log(`[api] <- ${method} ${toLogPath(fullUrl)} ${response.status} in ${Date.now() - startedAt}ms`);
+        }
 
         clearTimeout(timeoutId);
 

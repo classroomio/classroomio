@@ -80,6 +80,7 @@ export const LOCALE_COOKIE_KEY = 'classroomio_locale';
 */
 const localeLoads = new Map<string, Promise<unknown>>();
 
+/** Load a locale once per process, reusing the in-flight promise for callers that race. */
 function primeLocale(targetLocale: string): Promise<unknown> {
   const inFlight = localeLoads.get(targetLocale);
   if (inFlight) return inFlight;
