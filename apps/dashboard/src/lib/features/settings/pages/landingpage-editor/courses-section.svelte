@@ -251,7 +251,7 @@
               {#each filteredCourses as course (course.id)}
                 {@const isChecked = selectedIds.has(course.id)}
                 <label class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-gray-50">
-                  <span class="min-w-0 flex-1 truncate text-sm">{course.title}</span>
+                  <span class="line-clamp-2 min-w-0 flex-1 text-sm">{course.title}</span>
                   <Checkbox
                     checked={isChecked}
                     disabled={!isChecked && isAtLimit()}
@@ -319,7 +319,7 @@
                 </div>
               {/if}
 
-              <span class="min-w-0 flex-1 truncate text-sm font-medium">{courseItem.title}</span>
+              <span class="line-clamp-2 min-w-0 flex-1 text-sm font-medium">{courseItem.title}</span>
 
               <GripVerticalIcon size={16} class="ui:text-muted-foreground shrink-0" />
             </div>
