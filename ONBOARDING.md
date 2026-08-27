@@ -83,7 +83,6 @@ then complete the type-specific checklist below.
 - [ ] Go to **Marks** — verify the grading interface is available.
 - [ ] Create a live session from the sidebar (add a join link, date, and time).
 - [ ] Go to **People** — invite a student.
-- [ ] Go to **Settings** — enable grading, set a passing score.
 - 📸 **Screenshot:** The Marks page showing the grading interface.
 
 ### 2.3 Compliance Course
