@@ -22,6 +22,7 @@
     showLogo?: boolean;
     hideGoogleAuth?: boolean;
     redirectPathname?: string;
+    newUserCallbackPathname?: string;
     handleSubmit?: () => void;
     children?: Snippet;
     getPasswordAuthAlternative?: Snippet;
@@ -34,6 +35,7 @@
     showLogo = false,
     hideGoogleAuth = false,
     redirectPathname = '',
+    newUserCallbackPathname,
     handleSubmit = () => {},
     children,
     getPasswordAuthAlternative
@@ -52,12 +54,16 @@
     const pathname = redirectPathname || params.get('redirect') || '';
     const redirectTo = `${window.location.origin + pathname}`;
     const errorCallbackURL = `${window.location.origin + ROUTE.AUTH_FAILED}`;
+    const newUserCallbackURL = newUserCallbackPathname
+      ? `${window.location.origin}${newUserCallbackPathname}`
+      : undefined;
 
     try {
       const result = await authClient.signIn.social({
         provider: 'google',
         callbackURL: redirectTo,
-        errorCallbackURL: errorCallbackURL
+        errorCallbackURL,
+        ...(newUserCallbackURL ? { newUserCallbackURL } : {})
       });
 
       if (result?.error) {

@@ -39,12 +39,115 @@ const EARLY_ADOPTER_ADMIN_USER_ID = '6e0163ff-9161-4d4b-be9f-3e7fbd913c5e';
 const EARLY_ADOPTER_STUDENT_USER_ID = '7fb274aa-a272-4e5c-cf0a-4f8cce024d6f';
 const EARLY_ADOPTER_GROUP_ID = '8ac385bb-b383-4f6d-d01b-5a9ddf135e7a';
 
-// Parse command line arguments
-function parseFlags(): Set<string> {
+const orderedSeeds = [
+  'roles',
+  'submissions',
+  'question-types',
+  'users',
+  'profiles',
+  'accounts',
+  'organizations',
+  'organization-members',
+  'organization-plan',
+  'groups',
+  'group-members',
+  'courses',
+  'sections',
+  'lessons',
+  'exercises',
+  'questions',
+  'templates',
+  'compliance',
+  'newsfeed-threads'
+] as const;
+
+type SeedName = (typeof orderedSeeds)[number];
+type DemoOrganizationSlug = 'udemy-test' | 'coursera-test' | 'skillshare-test';
+
+interface DemoOrganizationSeedConfig {
+  organizationId: string;
+  userIds: string[];
+  groupIds: string[];
+  seedNames: SeedName[];
+}
+
+const COMMON_ORGANIZATION_SEEDS: SeedName[] = [
+  'roles',
+  'submissions',
+  'question-types',
+  'users',
+  'profiles',
+  'accounts',
+  'organizations',
+  'organization-members'
+];
+
+const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeedConfig> = {
+  'udemy-test': {
+    organizationId: TEST_ORG_ID,
+    userIds: [ADMIN_USER_ID, STUDENT_USER_ID],
+    groupIds: [MVC_GROUP_ID, REACT_GROUP_ID, PANDAS_GROUP_ID],
+    seedNames: [
+      ...COMMON_ORGANIZATION_SEEDS,
+      'groups',
+      'group-members',
+      'courses',
+      'sections',
+      'lessons',
+      'exercises',
+      'questions'
+    ]
+  },
+  'coursera-test': {
+    organizationId: ENTERPRISE_ORG_ID,
+    userIds: [ENTERPRISE_ADMIN_USER_ID, ENTERPRISE_STUDENT_USER_ID],
+    groupIds: [],
+    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'compliance', 'newsfeed-threads']
+  },
+  'skillshare-test': {
+    organizationId: EARLY_ADOPTER_ORG_ID,
+    userIds: [EARLY_ADOPTER_ADMIN_USER_ID, EARLY_ADOPTER_STUDENT_USER_ID],
+    groupIds: [EARLY_ADOPTER_GROUP_ID],
+    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'groups', 'group-members', 'courses']
+  }
+};
+
+function isDemoOrganizationSlug(value: string): value is DemoOrganizationSlug {
+  return Object.prototype.hasOwnProperty.call(DEMO_ORGANIZATION_SEEDS, value);
+}
+
+function parseCliOptions(): { flags: Set<string>; organization?: DemoOrganizationSlug } {
   const args = process.argv.slice(2);
   const flags = new Set<string>();
+  let organization: DemoOrganizationSlug | undefined;
 
-  for (const arg of args) {
+  for (let index = 0; index < args.length; index++) {
+    const arg = args[index];
+
+    if (arg === '--organization') {
+      const organizationValue = args[index + 1];
+      if (!organizationValue || organizationValue.startsWith('-')) {
+        throw new Error('--organization requires a value');
+      }
+      if (!isDemoOrganizationSlug(organizationValue)) {
+        throw new Error(`Unknown seed organization: ${organizationValue}`);
+      }
+
+      organization = organizationValue;
+      index++;
+      continue;
+    }
+
+    if (arg.startsWith('--organization=')) {
+      const organizationValue = arg.slice('--organization='.length);
+      if (!isDemoOrganizationSlug(organizationValue)) {
+        throw new Error(`Unknown seed organization: ${organizationValue}`);
+      }
+
+      organization = organizationValue;
+      continue;
+    }
+
     if (arg.startsWith('--')) {
       flags.add(arg.slice(2));
     } else if (arg.startsWith('-')) {
@@ -52,8 +155,15 @@ function parseFlags(): Set<string> {
     }
   }
 
-  return flags;
+  return { flags, organization };
 }
+
+const cliOptions = parseCliOptions();
+const selectedOrganization = cliOptions.organization;
+const selectedOrganizationConfig = selectedOrganization ? DEMO_ORGANIZATION_SEEDS[selectedOrganization] : undefined;
+const selectedUsersData = selectedOrganizationConfig
+  ? usersData.filter((seedUser) => selectedOrganizationConfig.userIds.includes(seedUser.id))
+  : usersData;
 
 // Show help message
 function showHelp() {
@@ -64,6 +174,7 @@ Usage: pnpm seed [flags]
 
 Flags:
   --all, -a                    Run all seed functions (default if no flags provided)
+  --organization <site-name>  Limit demo data to udemy-test, coursera-test, or skillshare-test
   --roles                      Seed roles
   --submissions                Seed submission statuses
   --question-types             Seed question types
@@ -86,6 +197,7 @@ Flags:
   --help, -h                  Show this help message
 
 Examples:
+  pnpm seed --organization coursera-test
   pnpm seed --users --profiles
   pnpm seed --all
   pnpm seed --roles --submissions --question-types
@@ -108,23 +220,24 @@ const seedFunctions = {
   },
   users: async () => {
     console.log('📝 Seeding users...');
-    await seedUsers({ usersData });
+    await seedUsers({ usersData: selectedUsersData });
   },
   profiles: async () => {
     console.log('📝 Seeding profiles...');
-    await seedProfile({ usersData });
+    await seedProfile({ usersData: selectedUsersData });
   },
   accounts: async () => {
     console.log('📝 Seeding accounts...');
     // @ts-expect-error missing properties
-    await seedAccount({ usersData });
+    await seedAccount({ usersData: selectedUsersData });
   },
   organizations: async () => {
     console.log('📝 Seeding organizations...');
     await seedOrganization({
       testOrgId: TEST_ORG_ID,
       enterpriseOrgId: ENTERPRISE_ORG_ID,
-      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID
+      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
     });
   },
   'organization-members': async () => {
@@ -138,14 +251,20 @@ const seedFunctions = {
       enterpriseStudentUserId: ENTERPRISE_STUDENT_USER_ID,
       earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID,
       earlyAdopterAdminUserId: EARLY_ADOPTER_ADMIN_USER_ID,
-      earlyAdopterStudentUserId: EARLY_ADOPTER_STUDENT_USER_ID
+      earlyAdopterStudentUserId: EARLY_ADOPTER_STUDENT_USER_ID,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
     });
   },
   'organization-plan': async () => {
-    console.log('📝 Seeding enterprise organization plan...');
-    await seedEnterpriseOrganizationPlan({ enterpriseOrgId: ENTERPRISE_ORG_ID });
-    console.log('📝 Seeding early adopter organization plan...');
-    await seedEarlyAdopterOrganizationPlan({ earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID });
+    if (!selectedOrganization || selectedOrganization === 'coursera-test') {
+      console.log('📝 Seeding enterprise organization plan...');
+      await seedEnterpriseOrganizationPlan({ enterpriseOrgId: ENTERPRISE_ORG_ID });
+    }
+
+    if (!selectedOrganization || selectedOrganization === 'skillshare-test') {
+      console.log('📝 Seeding early adopter organization plan...');
+      await seedEarlyAdopterOrganizationPlan({ earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID });
+    }
   },
   groups: async () => {
     console.log('📝 Seeding groups...');
@@ -155,7 +274,8 @@ const seedFunctions = {
       pandasGroupId: PANDAS_GROUP_ID,
       testOrgId: TEST_ORG_ID,
       earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID,
-      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID
+      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
     });
   },
   'group-members': async () => {
@@ -168,7 +288,8 @@ const seedFunctions = {
       studentUserId: STUDENT_USER_ID,
       earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID,
       earlyAdopterAdminUserId: EARLY_ADOPTER_ADMIN_USER_ID,
-      earlyAdopterStudentUserId: EARLY_ADOPTER_STUDENT_USER_ID
+      earlyAdopterStudentUserId: EARLY_ADOPTER_STUDENT_USER_ID,
+      selectedGroupIds: selectedOrganizationConfig?.groupIds
     });
   },
   courses: async () => {
@@ -177,7 +298,8 @@ const seedFunctions = {
       mvcGroupId: MVC_GROUP_ID,
       reactGroupId: REACT_GROUP_ID,
       pandasGroupId: PANDAS_GROUP_ID,
-      earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID
+      earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID,
+      selectedGroupIds: selectedOrganizationConfig?.groupIds
     });
   },
   sections: async () => {
@@ -233,7 +355,7 @@ const seedFunctions = {
 
 async function seed() {
   try {
-    const flags = parseFlags();
+    const { flags } = cliOptions;
 
     // Show help if requested
     if (flags.has('help') || flags.has('h')) {
@@ -241,65 +363,30 @@ async function seed() {
       process.exit(0);
     }
 
-    console.log('🌱 Starting seed...');
+    const scopeLabel = selectedOrganization ? ` for ${selectedOrganization}` : '';
+    console.log(`🌱 Starting seed${scopeLabel}...`);
 
     // If --all flag or no flags provided, run all seeds
     const runAll = flags.size === 0 || flags.has('all') || flags.has('a');
+    const allowedSeeds = selectedOrganizationConfig
+      ? new Set(selectedOrganizationConfig.seedNames)
+      : new Set<string>(orderedSeeds);
 
-    if (runAll) {
-      // Run all seeds in order
-      await seedFunctions.roles();
-      await seedFunctions.submissions();
-      await seedFunctions['question-types']();
-      await seedFunctions.users();
-      await seedFunctions.profiles();
-      await seedFunctions.accounts();
-      await seedFunctions.organizations();
-      await seedFunctions['organization-members']();
-      await seedFunctions['organization-plan']();
-      await seedFunctions.groups();
-      await seedFunctions['group-members']();
-      await seedFunctions.courses();
-      await seedFunctions.sections();
-      await seedFunctions.lessons();
-      await seedFunctions.exercises();
-      await seedFunctions.questions();
-      await seedFunctions.templates();
-      await seedFunctions.compliance();
-      await seedFunctions['newsfeed-threads']();
-    } else {
-      // Run only specified seed functions
-      // Order matters for dependencies, so we maintain the original order
-      const orderedSeeds = [
-        'roles',
-        'submissions',
-        'question-types',
-        'users',
-        'profiles',
-        'accounts',
-        'organizations',
-        'organization-members',
-        'organization-plan',
-        'groups',
-        'group-members',
-        'courses',
-        'sections',
-        'lessons',
-        'exercises',
-        'questions',
-        'templates',
-        'compliance',
-        'newsfeed-threads'
-      ];
-
-      for (const seedName of orderedSeeds) {
-        if (flags.has(seedName)) {
-          const seedFn = seedFunctions[seedName as keyof typeof seedFunctions];
-          if (seedFn) {
-            await seedFn();
-          }
-        }
+    for (const seedName of orderedSeeds) {
+      const wasRequested = runAll || flags.has(seedName);
+      if (!wasRequested) {
+        continue;
       }
+
+      if (!allowedSeeds.has(seedName)) {
+        if (!runAll) {
+          console.log(`⏭️  Skipping ${seedName}: not part of the ${selectedOrganization} demo organization.`);
+        }
+
+        continue;
+      }
+
+      await seedFunctions[seedName]();
     }
 
     console.log('✅ Seed completed successfully!');

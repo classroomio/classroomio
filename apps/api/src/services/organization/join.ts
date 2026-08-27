@@ -13,6 +13,7 @@ import {
 import { ROLE } from '@cio/utils/constants';
 import { getProfileById } from '@cio/db/queries/auth';
 import { db } from '@cio/db/drizzle';
+import { env } from '@cio/core/config/env';
 import { assertStudentCapacityOrThrow } from './student-limit';
 
 interface OrgSignupSettings {
@@ -21,7 +22,7 @@ interface OrgSignupSettings {
   };
 }
 
-export interface AutoJoinResult {
+export interface JoinOrganizationResult {
   alreadyMember: boolean;
   /** True when an email-only roster row was linked to the signing-in profile (session refresh needed). */
   linkedExistingMember: boolean;
@@ -38,7 +39,7 @@ async function linkExistingMemberByEmail(
   userId: string,
   orgId: string,
   normalizedEmail: string
-): Promise<AutoJoinResult | null> {
+): Promise<JoinOrganizationResult | null> {
   const existingMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(db, orgId, normalizedEmail);
 
   if (!existingMemberByEmail) {
@@ -63,19 +64,17 @@ async function linkExistingMemberByEmail(
 }
 
 /**
- * Auto-join the authenticated user to the given org. Used by the dashboard when
- * a newly-signed-in user lands on a tenant site they aren't yet a member of
- * (free-tier `<org>.myclassroomio.com` or a verified BYOD domain).
+ * Joins an authenticated user to an open organization as a student.
  *
- * New members are created as STUDENT when no roster row or invite applies.
- * Idempotent: existing members get an `alreadyMember: true` no-op so invited
- * admins/tutors don't get downgraded.
- *
- * Pre-existing roster rows matched by email (e.g. tutors added with
- * `profile_id` null) are linked before signup policy checks — invite-only and
- * disableSignup only apply to net-new student signups.
+ * The caller owns the intent: tenant signup invokes this after creating a new
+ * account, while an existing account invokes it from the explicit Join Academy
+ * action. Login and app bootstrap never call this service.
  */
-export async function autoJoinOrg(userId: string, orgId: string): Promise<AutoJoinResult> {
+export async function joinOrganization(userId: string, orgId: string): Promise<JoinOrganizationResult> {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    throw new AppError('Join Academy is only available on cloud tenant sites', ErrorCodes.FORBIDDEN, 403);
+  }
+
   const existingMemberId = await getOrganizationMemberIdByOrgAndProfile(orgId, userId);
   if (existingMemberId) {
     return { alreadyMember: true, linkedExistingMember: false };

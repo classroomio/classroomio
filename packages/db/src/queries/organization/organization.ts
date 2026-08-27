@@ -326,6 +326,63 @@ export const hasOrgMemberByProfileIdOrEmail = async (
 };
 
 /**
+ * Creates a self-hosted student membership only while the organization table
+ * contains exactly one row. The table lock makes the singleton check and insert
+ * atomic with concurrent organization inserts.
+ */
+export async function ensureSelfHostedStudentMembership({
+  profileId,
+  email
+}: {
+  profileId: string;
+  email: string | null | undefined;
+}): Promise<boolean> {
+  try {
+    return await db.transaction(async (tx) => {
+      await tx.execute(sql`LOCK TABLE "organization" IN SHARE ROW EXCLUSIVE MODE`);
+
+      const organizations = await tx
+        .select({ id: schema.organization.id })
+        .from(schema.organization)
+        .orderBy(schema.organization.createdAt)
+        .limit(2);
+
+      if (organizations.length !== 1) {
+        return false;
+      }
+
+      const organizationId = organizations[0].id;
+      const normalizedEmail = email?.toLowerCase().trim();
+      const profileOrEmailMatch = or(
+        eq(schema.organizationmember.profileId, profileId),
+        ...(normalizedEmail ? [eq(schema.organizationmember.email, normalizedEmail)] : [])
+      );
+      const [existingMember] = await tx
+        .select({ id: schema.organizationmember.id })
+        .from(schema.organizationmember)
+        .where(and(eq(schema.organizationmember.organizationId, organizationId), profileOrEmailMatch))
+        .limit(1);
+
+      if (!existingMember) {
+        const memberData: TNewOrganizationmember = {
+          organizationId,
+          profileId,
+          roleId: ROLE.STUDENT,
+          verified: true
+        };
+
+        await createOrganizationMember(memberData, tx);
+      }
+
+      return true;
+    });
+  } catch (error) {
+    console.error('ensureSelfHostedStudentMembership error:', error);
+    throw new Error('Failed to ensure self-hosted student membership');
+  }
+}
+
+/**
  * Checks which emails already exist as team members in an organization (bulk check)
  * Checks both organizationmember.email and profile.email (via organizationmember.profileId)
  * @param orgId Organization ID

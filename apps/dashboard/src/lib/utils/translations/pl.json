@@ -516,7 +516,8 @@
     "download_course": "Uaktualnij, aby pobrać kurs",
     "required": "Wymagana aktualizacja",
     "enterprise_required": "Ta funkcja wymaga planu Enterprise.",
-    "public_api_required": "Uaktualnij do Early Adopter lub Enterprise, aby uzyskać dostęp do publicznego API."
+    "public_api_required": "Uaktualnij do Early Adopter lub Enterprise, aby uzyskać dostęp do publicznego API.",
+    "unlock_field": "Uaktualnij, aby odblokować to ustawienie"
   },
   "analytics": {
     "title": "Analityka",
@@ -784,7 +785,7 @@
         "link": "Link do kursu",
         "grading": "Ocenianie",
         "reports": "Udostępnij raporty ocen na lekcjach",
-        "disabled": "Niepełnosprawny",
+        "disabled": "Wyłączone",
         "enabled": "Włączone",
         "order": "Zakładka Zamów Lekcje",
         "drag": "Przeciągnij i upuść etykiety, aby zmienić kolejność zakładek materiałów",
@@ -799,8 +800,8 @@
         "course_download": "Pobieranie kursu",
         "course_avail": "Pobierz kopię tego kursu.",
         "download": "Pobierz",
-        "allow": "Zezwalaj na nowych uczniów",
-        "access": "Zezwól nowym studentom na dostęp do tego kursu",
+        "allow": "Uczniowie mogą zapisać się samodzielnie",
+        "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu w sekcji Osoby.",
         "publish": "Publikuj kurs",
         "determines": "Od tego zależy, czy Twój kurs wyświetli się na stronie docelowej",
         "published": "Opublikowano",
@@ -922,7 +923,8 @@
           "join_course": "Dołącz do kursu",
           "enrolled_success": "Zapisano Cię na ten kurs.",
           "enrolled_verify_email": "Jesteś zapisany! Zweryfikuj swój e-mail, aby uzyskać dostęp do tego kursu.",
-          "student_limit_reached": "Organizacja {orgName} osiągnęła już limit uczniów. Skontaktuj się z administratorem organizacji."
+          "student_limit_reached": "Organizacja {orgName} osiągnęła już limit uczniów. Skontaktuj się z administratorem organizacji.",
+          "members_only": "Tylko członkowie tej organizacji mogą się zapisać. Poproś administratora o zaproszenie."
         },
         "pricing_section": {
           "free": "Bezpłatny",
@@ -1011,7 +1013,9 @@
             "curriculum": "Program nauczania",
             "chips": "Umiejętności i narzędzia",
             "skills": "Umiejętności, które zyskasz",
-            "tools": "Narzędzia, których się nauczysz"
+            "tools": "Narzędzia, których się nauczysz",
+            "navigation": "Nawigacja",
+            "footer": "Stopka"
           },
           "skills_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
           "tools_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
@@ -2863,6 +2867,7 @@
     "discussion": "Dyskusja",
     "people": "Ludzie",
     "goto_lms": "Przejdź do LMS-a",
+    "join_academy": "Dołącz do akademii",
     "goto_home": "Przejdź do strony głównej ClassroomIO",
     "login": "Zaloguj się",
     "signup": "Zarejestruj się",
@@ -3625,16 +3630,16 @@
           "placeholder": "np. rejestracja jest wyłączona. Aby uzyskać dostęp, skontaktuj się z nami pod adresem Learn@domain.com"
         },
         "disable_signup": {
-          "label": "Wyłącz rejestrację",
-          "description": "Uniemożliwiaj rejestrację nowym użytkownikom. Tylko zaproszeni użytkownicy mogą dołączyć."
+          "label": "Zablokuj wszystkie nowe rejestracje",
+          "description": "Całkowicie uniemożliwiaj tworzenie nowych kont. Nikt nie może się zarejestrować — nawet zaproszeni użytkownicy. Istniejące konta nie są dotknięte."
         },
         "allow_public_signups": {
           "label": "Zezwalaj na publiczne rejestracje",
-          "description": "Gdy opcja jest wyłączona, rejestrować się mogą tylko użytkownicy posiadający link z zaproszeniem. Włącz, aby pozwolić każdemu na utworzenie konta."
+          "description": "Gdy włączone, każdy może utworzyć konto. Gdy wyłączone, tylko użytkownicy z prawidłowym linkiem zaproszenia mogą się zarejestrować."
         },
         "internal_enrollment_only": {
           "label": "Tylko rejestracja wewnętrzna",
-          "description": "Jeśli ta opcja jest włączona, każdy opublikowany kurs jest dostępny do samodzielnej rejestracji dla wszystkich uczniów w Twojej organizacji. Użyj opcji Wyłącz rejestrację, aby utworzyć zamkniętą akademię dostępną tylko dla zaproszonych, w której uczniowie mogą dołączać do dowolnego opublikowanego kursu bez konieczności konfigurowania poszczególnych kursów."
+          "description": "Po włączeniu tej opcji tylko obecni członkowie Twojej organizacji będą mogli zapisać się na Twoje kursy. Wszyscy pozostali muszą zostać zaproszeni — nie mogą zarejestrować się ze strony kursu, nawet jeśli kurs jest otwarty dla nowych studentów."
         }
       },
       "login": {
@@ -4060,7 +4065,8 @@
         "accepted": "To zaproszenie zostało już wykorzystane.",
         "invalid": "Ten link z zaproszeniem jest nieprawidłowy.",
         "joined": "Dołączył do organizacji",
-        "join_failed": "Nie udało się dołączyć do organizacji"
+        "join_failed": "Nie udało się dołączyć do organizacji",
+        "try_again": "Spróbuj ponownie"
       }
     },
     "link": {

@@ -513,6 +513,22 @@ export async function getCoursesByCohort(
   }
 }
 
+export async function getCourseIdsByCohortIds(cohortIds: string[]): Promise<string[]> {
+  try {
+    if (cohortIds.length === 0) return [];
+
+    const rows = await db
+      .selectDistinct({ courseId: schema.cohortCourse.courseId })
+      .from(schema.cohortCourse)
+      .where(inArray(schema.cohortCourse.cohortId, cohortIds));
+
+    return rows.map((row) => row.courseId).filter((courseId): courseId is string => !!courseId);
+  } catch (error) {
+    console.error('getCourseIdsByCohortIds error:', error);
+    throw new Error(`Failed to get cohort course IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function isCohortCourse(cohortId: string, courseId: string): Promise<boolean> {
   try {
     const [row] = await db
