@@ -20,6 +20,8 @@
   import ShieldIcon from '@lucide/svelte/icons/shield';
   import { buildSsoRedirectUrl, createSsoEmailChecker, type SsoAuthState } from '$features/auth/utils/auth-sso';
   import { authSsoStore, ensureSsoInfoLoaded } from '$features/auth/utils/auth-sso-store';
+  import { orgApi } from '$features/org/api/org.svelte';
+  import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   let { data } = $props();
   const emailFromUrl = page.url.searchParams.get('email') ?? '';
@@ -50,6 +52,16 @@
   const hasInviteContext = $derived(
     !!inviteToken || (!!redirectUrl && (redirectUrl.includes('/invite/') || redirectUrl.includes('invite_token')))
   );
+  const isNormalOrgSiteSignup = $derived(
+    PUBLIC_IS_SELFHOSTED !== 'true' && $globalStore.isOrgSite && !!org.id && !hasInviteContext
+  );
+  const newUserCallbackPathname = $derived.by(() => {
+    if (!isNormalOrgSiteSignup) {
+      return undefined;
+    }
+
+    return redirectUrl ? `/join-academy?redirect=${encodeURIComponent(redirectUrl)}` : '/join-academy';
+  });
 
   const inviteOnly = $derived(!!org?.settings?.signup?.inviteOnly);
   const signupRestricted = $derived($globalStore.isOrgSite && (org.disableSignup || (inviteOnly && !hasInviteContext)));
@@ -145,14 +157,27 @@
                 username: name
               });
             }
-
-            const redirect = redirectUrl || '/';
-            window.location.href = redirect.startsWith('/') ? redirect : `/?redirect=${encodeURIComponent(redirect)}`;
           }
         }
       );
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
+      if (isNormalOrgSiteSignup) {
+        const joinResult = await orgApi.joinAcademy(org.id, redirectUrl || '/lms');
+        const joinRetryPathname = newUserCallbackPathname;
+
+        if (!joinResult && joinRetryPathname) {
+          await goto(resolve(joinRetryPathname, {}));
+        }
+
+        return;
+      }
+
+      const redirect = redirectUrl || '/';
+      window.location.href = redirect.startsWith('/') ? redirect : `/?redirect=${encodeURIComponent(redirect)}`;
     } catch (error) {
       submitError =
         (error as { error_description?: string; message?: string })?.error_description ||
@@ -222,6 +247,7 @@
     {handleSubmit}
     isLoading={loading}
     {hideGoogleAuth}
+    {newUserCallbackPathname}
     getPasswordAuthAlternative={ssoState.available ? getPasswordAuthAlternative : undefined}
   >
     <div class="ui:flex ui:flex-col ui:gap-6">

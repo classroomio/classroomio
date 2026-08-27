@@ -2867,6 +2867,7 @@
     "discussion": "Discussão",
     "people": "Pessoas",
     "goto_lms": "Acesse o LMS",
+    "join_academy": "Entrar na academia",
     "goto_home": "Vá para a página inicial do ClassroomIO",
     "login": "Entrar",
     "signup": "Inscreva-se",
@@ -4060,7 +4061,8 @@
         "accepted": "Este convite já foi usado.",
         "invalid": "Este link de convite não é válido.",
         "joined": "Organização aderida",
-        "join_failed": "Falha ao ingressar na organização"
+        "join_failed": "Falha ao ingressar na organização",
+        "try_again": "Tentar novamente"
       }
     },
     "link": {

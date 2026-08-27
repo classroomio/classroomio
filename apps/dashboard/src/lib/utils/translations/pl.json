@@ -2867,6 +2867,7 @@
     "discussion": "Dyskusja",
     "people": "Ludzie",
     "goto_lms": "Przejdź do LMS-a",
+    "join_academy": "Dołącz do akademii",
     "goto_home": "Przejdź do strony głównej ClassroomIO",
     "login": "Zaloguj się",
     "signup": "Zarejestruj się",
@@ -4060,7 +4061,8 @@
         "accepted": "To zaproszenie zostało już wykorzystane.",
         "invalid": "Ten link z zaproszeniem jest nieprawidłowy.",
         "joined": "Dołączył do organizacji",
-        "join_failed": "Nie udało się dołączyć do organizacji"
+        "join_failed": "Nie udało się dołączyć do organizacji",
+        "try_again": "Spróbuj ponownie"
       }
     },
     "link": {

@@ -2867,6 +2867,7 @@
     "discussion": "Diskussion",
     "people": "Mennesker",
     "goto_lms": "Gå til LMS",
+    "join_academy": "Tilmeld dig akademiet",
     "goto_home": "Gå til ClassroomIO Home",
     "login": "Log ind",
     "signup": "Tilmeld dig",
@@ -4060,7 +4061,8 @@
         "accepted": "Denne invitation er allerede blevet brugt.",
         "invalid": "Dette invitationslink er ikke gyldigt.",
         "joined": "Tilsluttet organisation",
-        "join_failed": "Kunne ikke deltage i organisationen"
+        "join_failed": "Kunne ikke deltage i organisationen",
+        "try_again": "Prøv igen"
       }
     },
     "link": {
