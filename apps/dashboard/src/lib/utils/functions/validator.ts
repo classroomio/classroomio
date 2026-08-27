@@ -67,12 +67,12 @@ export const processErrors = (error, mapToId?: boolean) => {
   return errors;
 };
 
-export const authValidation = (fields = {}) => {
+export const authValidation = (fields = {}, { skipPassword = false }: { skipPassword?: boolean } = {}) => {
   const schema = z.object({
     email: z.string().email({
       message: 'validations.auth.email.invalid_email'
     }),
-    password: ZPassword
+    ...(skipPassword ? {} : { password: ZPassword })
   });
 
   const { error } = schema.safeParse(fields);
