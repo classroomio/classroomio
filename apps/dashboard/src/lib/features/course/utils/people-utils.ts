@@ -1,8 +1,23 @@
 import dayjs from 'dayjs';
-import type { CourseMember } from '$features/course/utils/types';
+import type { CourseMember, ListPeopleQuery, ListPeopleRequestQuery } from '$features/course/utils/types';
 import { ROLE } from '@cio/utils/constants';
 
 export type CourseMemberStage = NonNullable<CourseMember['stage']>;
+
+export const DEFAULT_PEOPLE_PAGE_SIZE = 20;
+
+/** Role filter value that means "every role" and so sends no roleId to the API. */
+export const ALL_ROLES_FILTER = 'all';
+
+/** The API reads pagination and filters from the query string, so numbers go over the wire as strings. */
+export function toPeopleRequestQuery(query: ListPeopleQuery): ListPeopleRequestQuery {
+  return {
+    page: String(query.page),
+    limit: String(query.limit),
+    search: query.search,
+    roleId: query.roleId === undefined ? undefined : String(query.roleId)
+  };
+}
 
 export function formatPeopleShortDate(value: string | null | undefined): string {
   if (!value) return '—';

@@ -3,7 +3,7 @@ import * as schema from '@db/schema';
 import { and, eq, inArray, or } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
-import { getCompletedExerciseIdsForMember } from './progression';
+import { submissionMeetsCompletionPolicySql } from './progression';
 
 export type StudentCourseMembership = {
   groupMemberId: string;
@@ -137,34 +137,45 @@ export async function getCourseTrackableContentCounts(courseId: string): Promise
   }
 }
 
-const EXERCISE_COMPLETION_CHUNK_SIZE = 8;
-
 /**
- * Returns completed exercise IDs per group member, using bounded concurrency.
+ * Returns completed exercise IDs for all requested group members in one query.
  */
 export async function getBatchCompletedExerciseIdsForMembers(
   courseId: string,
   groupMemberIds: string[]
 ): Promise<Map<string, Set<string>>> {
-  const completionMap = new Map<string, Set<string>>();
+  const completionMap = new Map<string, Set<string>>(
+    groupMemberIds.map((groupMemberId) => [groupMemberId, new Set<string>()])
+  );
 
   if (groupMemberIds.length === 0) {
     return completionMap;
   }
 
   try {
-    for (let index = 0; index < groupMemberIds.length; index += EXERCISE_COMPLETION_CHUNK_SIZE) {
-      const chunk = groupMemberIds.slice(index, index + EXERCISE_COMPLETION_CHUNK_SIZE);
-      const chunkResults = await Promise.all(
-        chunk.map(async (groupMemberId) => {
-          const completedIds = await getCompletedExerciseIdsForMember(courseId, groupMemberId);
-          return { groupMemberId, completedIds };
-        })
+    const completionCondition = submissionMeetsCompletionPolicySql('exercise', 'submission');
+    const rows = await db
+      .selectDistinct({
+        groupMemberId: schema.submission.submittedBy,
+        exerciseId: schema.exercise.id
+      })
+      .from(schema.exercise)
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .innerJoin(
+        schema.submission,
+        and(
+          eq(schema.submission.exerciseId, schema.exercise.id),
+          inArray(schema.submission.submittedBy, groupMemberIds)
+        )
+      )
+      .where(
+        and(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)), completionCondition)
       );
 
-      for (const result of chunkResults) {
-        completionMap.set(result.groupMemberId, result.completedIds);
-      }
+    for (const row of rows) {
+      if (!row.groupMemberId) continue;
+
+      completionMap.get(row.groupMemberId)?.add(row.exerciseId);
     }
 
     return completionMap;

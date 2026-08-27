@@ -16,7 +16,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Progress } from '@cio/ui/base/progress';
   import * as Tooltip from '@cio/ui/base/tooltip';
-  import { ComingSoon, RoleBasedSecurity, UpgradeBanner } from '$features/ui';
+  import { ComingSoon, RoleBasedSecurity, TablePagination, UpgradeBanner } from '$features/ui';
   import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
   import InvitationModal from '$features/course/components/people/invitation-modal.svelte';
   import GrantAccessModal from '$features/course/components/people/grant-access-modal.svelte';
@@ -24,7 +24,7 @@
   import { isStudentLimitReached } from '$lib/utils/store/org';
 
   import { profile } from '$lib/utils/store/user';
-  import type { CourseMembers, CourseMember } from '$features/course/utils/types';
+  import type { CourseMembers, CourseMember, CourseMembersPagination } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import UserIcon from '@lucide/svelte/icons/user';
@@ -35,7 +35,10 @@
   import { deleteMemberModal } from '$features/course/components/people/store';
   import { Search } from '@cio/ui/custom/search';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { onDestroy, untrack } from 'svelte';
   import {
+    ALL_ROLES_FILTER,
+    DEFAULT_PEOPLE_PAGE_SIZE,
     formatPeopleShortDate,
     getMemberAvatarUrl,
     getMemberProgressPercent,
@@ -48,22 +51,31 @@
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
   let memberRows = $state<CourseMembers>([]);
+  let pagination = $state<CourseMembersPagination | null>(null);
+  let currentPage = $state(1);
   let isLoadingMembers = $state(false);
   let membersRequestId = 0;
+  let searchDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  let loadedCourseId: string | null = null;
 
-  const people: CourseMembers = $derived(sortAndFilterPeople(memberRows, filterBy));
-
-  async function loadMembers(courseId: string) {
+  async function loadMembers(courseId: string, page: number) {
     const requestId = ++membersRequestId;
     isLoadingMembers = true;
 
     try {
-      const response = await peopleApi.list(courseId);
+      const roleId = filterBy === ALL_ROLES_FILTER ? undefined : Number(filterBy);
+      const response = await peopleApi.list(courseId, {
+        page,
+        limit: DEFAULT_PEOPLE_PAGE_SIZE,
+        search: searchValue.trim() || undefined,
+        roleId
+      });
       if (requestId !== membersRequestId) return;
 
       if (response?.data) {
         memberRows = response.data;
-        courseApi.group.people = response.data;
+        pagination = response.pagination;
+        currentPage = response.pagination.page;
       }
     } catch (error) {
       console.error('Failed to load course members:', error);
@@ -77,45 +89,75 @@
     }
   }
 
+  // Only the course id should retrigger a load; the search and role filter reads inside
+  // loadMembers would otherwise make this effect refetch on every keystroke.
   $effect(() => {
+    const courseId = courseApi.course?.id;
+    if (!courseId || courseId === loadedCourseId) return;
+
+    loadedCourseId = courseId;
+    untrack(() => reloadFirstPage());
+  });
+
+  onDestroy(() => {
+    if (searchDebounceTimeout) {
+      clearTimeout(searchDebounceTimeout);
+    }
+  });
+
+  function reloadFirstPage() {
     const courseId = courseApi.course?.id;
     if (!courseId) return;
 
-    void loadMembers(courseId);
-  });
+    currentPage = 1;
+    void loadMembers(courseId, 1);
+  }
 
-  function filterPeople(_query: string, peopleList: CourseMembers) {
-    const query = _query.toLowerCase();
-    return peopleList.filter((person) => {
-      const { profile, email } = person;
-      return profile?.fullname?.toLowerCase()?.includes(query) || email?.includes(query);
-    });
+  function refreshCurrentPage() {
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    void loadMembers(courseId, currentPage);
+  }
+
+  function handleSearchValueChange(value: string) {
+    searchValue = value;
+
+    if (searchDebounceTimeout) {
+      clearTimeout(searchDebounceTimeout);
+    }
+
+    searchDebounceTimeout = setTimeout(reloadFirstPage, 300);
+  }
+
+  function handleRoleChange(value: string) {
+    filterBy = value;
+    reloadFirstPage();
+  }
+
+  function handlePageChange(page: number) {
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    currentPage = page;
+    void loadMembers(courseId, page);
   }
 
   async function deletePerson() {
-    if (!member.id || !courseApi.course?.id) return;
+    const courseId = courseApi.course?.id;
+    if (!member.id || !courseId) return;
 
-    await peopleApi.delete(courseApi.course?.id, member.id);
+    await peopleApi.delete(courseId, member.id);
 
     if (peopleApi.success) {
       memberRows = memberRows.filter((person) => person.id !== member.id);
       courseApi.group.people = courseApi.group.people.filter((person: { id: string }) => person.id !== member.id);
       courseApi.group.tutors = courseApi.group.tutors.filter((person: CourseMember) => person.id !== member.id);
+
+      const nextPage = memberRows.length === 0 && currentPage > 1 ? currentPage - 1 : currentPage;
+      currentPage = nextPage;
+      await loadMembers(courseId, nextPage);
     }
-  }
-
-  function sortAndFilterPeople(_people: CourseMembers, roleFilter: string) {
-    return (_people || [])
-      .filter((person) => {
-        if (roleFilter === 'all') return true;
-
-        return person.roleId === Number(roleFilter);
-      })
-      .sort(
-        (a: CourseMember, b: CourseMember) =>
-          new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime()
-      )
-      .sort((a: CourseMember, b: CourseMember) => Number(a.roleId) - Number(b.roleId));
   }
 
   function getEmail(person: CourseMember) {
@@ -175,8 +217,8 @@
   const selectOptions = $derived(ROLES.map((role) => ({ label: $t(role.label), value: `${role.value}` })));
 </script>
 
-<InvitationModal />
-<GrantAccessModal />
+<InvitationModal onMembersChanged={refreshCurrentPage} />
+<GrantAccessModal onMembersChanged={refreshCurrentPage} />
 
 {#if $isStudentLimitReached}
   <UpgradeBanner className="mb-2">{$t('course.navItem.people.invite_modal.student_limit_reached')}</UpgradeBanner>
@@ -186,8 +228,12 @@
 
 <section class="space-y-2">
   <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
-    <Search placeholder={$t('course.navItem.people.search')} bind:value={searchValue} />
-    <Select.Root type="single" name="roles" bind:value={filterBy}>
+    <Search
+      placeholder={$t('course.navItem.people.search')}
+      bind:value={searchValue}
+      onValueChange={handleSearchValueChange}
+    />
+    <Select.Root type="single" name="roles" bind:value={filterBy} onValueChange={handleRoleChange}>
       <Select.Trigger class="max-w-[80px]">
         {$t(ROLE_LABEL[Number(filterBy)])}
       </Select.Trigger>
@@ -223,8 +269,14 @@
                 {$t('course.navItem.people.invite_modal.loading')}
               </Table.Cell>
             </Table.Row>
+          {:else if memberRows.length === 0}
+            <Table.Row>
+              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+                {$t('course.search.empty')}
+              </Table.Cell>
+            </Table.Row>
           {:else}
-            {#each filterPeople(searchValue, people) as person (person.id)}
+            {#each memberRows as person (person.id)}
               <Table.Row
                 class={person.profileId ? navigableRowClass : 'group'}
                 tabindex={person.profileId ? 0 : undefined}
@@ -436,4 +488,15 @@
       </Table.Root>
     </Tooltip.Provider>
   </div>
+
+  {#if pagination && pagination.totalPages > 1}
+    <div class="pt-4">
+      <TablePagination
+        count={pagination.total}
+        perPage={pagination.limit}
+        page={currentPage}
+        onPageChange={handlePageChange}
+      />
+    </div>
+  {/if}
 </section>
