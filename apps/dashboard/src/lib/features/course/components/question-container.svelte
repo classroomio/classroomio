@@ -42,9 +42,9 @@
 
 <div
   id={elementId}
-  class="ui:border-border border bg-white dark:bg-black {hasError
-    ? 'border-red-700'
-    : ''} root relative rounded-md {className}"
+  class="{hasError
+    ? 'ui:border-destructive ui:dark:border-destructive'
+    : 'ui:border-border'} root relative rounded-md border bg-white dark:bg-black {className}"
 >
   {#if isTitle}
     <div class="title bg-primary-700 absolute"></div>

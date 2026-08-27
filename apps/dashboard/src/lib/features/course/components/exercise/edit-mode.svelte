@@ -441,9 +441,9 @@
 
       {#if isNonAutoGradableInConversion}
         <div
-          class="ui:border-destructive/30 ui:bg-destructive/5 ui:text-destructive ui:dark:border-destructive/20 ui:dark:bg-destructive/10 mt-2 mb-3 flex items-start gap-2.5 rounded-md border p-2.5 text-xs"
+          class="ui:border-border ui:text-foreground dark:ui:bg-muted/30 mt-2 mb-3 flex items-start gap-2.5 rounded-md border p-2.5 text-xs"
         >
-          <TriangleAlertIcon class="mt-0.5 size-4 shrink-0" />
+          <TriangleAlertIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
           <div class="min-w-0 flex-1">
             <p class="font-medium">
               {$t('course.navItem.settings.public_conversion.blocks_public_conversion_title')}
