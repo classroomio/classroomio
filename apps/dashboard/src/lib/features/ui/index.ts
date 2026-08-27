@@ -1,5 +1,6 @@
 export { default as ActivityCard } from './analytics/activity-card.svelte';
 export { default as AppHeader } from './navigation/app-header.svelte';
+export { default as AttentionHighlight } from './attention-highlight.svelte';
 export { default as AuthUI } from './auth-ui.svelte';
 export { default as Backdrop } from './backdrop.svelte';
 export { default as CloseButton } from './close-btn.svelte';
@@ -27,6 +28,7 @@ export { preloadTextEditor } from './text-editor.svelte';
 export { default as UnsavedChanges } from './unsaved-changes.svelte';
 export { default as UploadImage } from './upload-image.svelte';
 export { default as UpgradeBanner } from './upgrade-banner.svelte';
+export { default as UpgradeLock } from './upgrade-lock.svelte';
 export { default as UpgradeModal } from './upgrade-modal.svelte';
 export { default as VisitOrgSiteButton } from './visit-org-site-btn.svelte';
 export { default as Vote } from './vote.svelte';

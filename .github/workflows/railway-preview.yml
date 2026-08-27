@@ -17,11 +17,17 @@ name: Railway Preview Environment
 #
 # The DB needs no explicit migration step here: the cio-api image self-migrates on boot
 # (docker/entrypoint-api.sh -> `pnpm --filter @cio/db db:setup`, which runs drizzle
-# migrations + essential seed). The optional `seed` input adds the full demo dataset.
+# migrations + essential seed). The optional organization seed adds only that demo
+# organization's users, memberships, and content.
 
 on:
   workflow_dispatch:
     inputs:
+      repo:
+        description: "Repo to deploy from (leave blank for classroomio/classroomio; set to e.g. Arun5768/classroomio for a fork)"
+        required: false
+        type: string
+        default: ""
       branch:
         description: "Branch (or PR head ref) to deploy into the preview env"
         required: true
@@ -34,11 +40,17 @@ on:
         options:
           - deploy
           - destroy
-      seed:
-        description: "Seed the full demo dataset (admin@test.com etc.) after deploy"
-        required: false
-        type: boolean
-        default: true
+      seed_organization:
+        description: "Demo data to seed after deploy"
+        required: true
+        type: choice
+        default: udemy-test
+        options:
+          - all
+          - udemy-test
+          - coursera-test
+          - skillshare-test
+          - none
 
 # One run per branch at a time; a newer run supersedes an in-flight one.
 concurrency:
@@ -57,10 +69,15 @@ env:
 jobs:
   preview:
     runs-on: ubuntu-latest
+    # Bounded so a hung download or a stuck Railway build can't run until GitHub's
+    # default 6-hour job limit. Longest legit path is the three parallel source
+    # builds + polling, which finishes well under this cap.
+    timeout-minutes: 90
     steps:
       - name: Checkout target branch
         uses: actions/checkout@v4
         with:
+          repository: ${{ inputs.repo != '' && inputs.repo || github.repository }}
           ref: ${{ inputs.branch }}
 
       - name: Install Railway CLI
@@ -157,13 +174,40 @@ jobs:
         # Railway has no minio-init sidecar and a duplicated env's MinIO volume is empty,
         # so create the buckets the app expects. Root creds carry over via duplication,
         # but the public domain doesn't, so generate one here (same as "Report the preview
-        # URL" does for cio-dashboard). `--ignore-existing` keeps re-deploys safe.
+        # URL" does for cio-dashboard).
+        #
+        # Railway allows only ONE Railway-provided domain per service, so the single
+        # generated domain is pinned to port 9000 (S3 API). The Web Console on 9001
+        # cannot get a second generated domain — to browse buckets in a preview, add a
+        # custom domain targeting 9001 on cio-minio by hand.
         run: |
+          # Sets one variable and FAILS THE RUN if the update doesn't stick. A silent
+          # failure here would deploy the preview with stale storage/CORS/CSP config
+          # while still reporting it as ready.
+          set_var() {
+            local service="$1"
+            local kv="$2"
+            local attempt output
+            for attempt in $(seq 1 3); do
+              if output=$(railway variables --service "$service" --set "$kv" 2>&1); then
+                echo "$output"
+                return 0
+              fi
+              echo "$output"
+              if [ "$attempt" -eq 3 ]; then
+                echo "::error::Setting '$kv' on $service failed after 3 attempts."
+                return 1
+              fi
+              echo "Variable update failed (attempt $attempt/3) — retrying in 5s..."
+              sleep 5
+            done
+          }
+
           # A freshly duplicated environment's cio-minio ServiceInstance (volume-backed, like
           # Postgres) can take a few seconds to materialize after `railway environment new
           # --duplicate` returns, so `railway domain`/`variables` can fail with "ServiceInstance
           # not found" immediately after duplication. Retry instead of failing the run.
-          MINIO_HOST=""
+          MINIO_API_HOST=""
           for attempt in $(seq 1 10); do
             # --port 9000: the minio/minio image exposes both 9000 (S3 API) and 9001
             # (console); pin it so domain generation doesn't land on the wrong one.
@@ -183,8 +227,8 @@ jobs:
             fi
             # `cut -d= -f2-` (not `awk -F= '{print $2}'`) so a value containing '=' — common in
             # base64/auto-generated secrets like MINIO_ROOT_PASSWORD — isn't silently truncated.
-            MINIO_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
-            if [ -n "$MINIO_HOST" ]; then
+            MINIO_API_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+            if [ -n "$MINIO_API_HOST" ]; then
               break
             fi
             if [ "$attempt" -eq 10 ]; then
@@ -194,22 +238,49 @@ jobs:
             echo "cio-minio has no public domain yet (attempt $attempt/10) — retrying in 5s..."
             sleep 5
           done
+
+          # Neutralize a stale MINIO_SERVER_URL inherited from the base env (its domain
+          # doesn't exist in this environment) and enable browser presigned uploads.
+          set_var cio-minio "MINIO_SERVER_URL=http://127.0.0.1:9000"
+          set_var cio-minio "MINIO_API_CORS_ALLOW_ORIGIN=*"
+
+          # Update S3 endpoints on api and jobs
+          set_var cio-api "OBJECT_STORAGE_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-api "OBJECT_STORAGE_PUBLIC_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-api "OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://${MINIO_API_HOST}/media"
+
+          set_var cio-jobs "OBJECT_STORAGE_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-jobs "OBJECT_STORAGE_PUBLIC_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-jobs "OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://${MINIO_API_HOST}/media"
+
+          # Append the MinIO API domain to ALLOWED_EXTERNAL_DOMAINS for cio-dashboard CSP.
+          # Read the current value first (fail loudly if unreadable) and append — never
+          # overwrite, since the base env may already allow other hosts.
+          DASHBOARD_VARS=$(railway variables --service cio-dashboard --kv)
+          CURRENT_ALLOWED=$(echo "$DASHBOARD_VARS" | grep '^ALLOWED_EXTERNAL_DOMAINS=' | cut -d= -f2- || true)
+          if [ -z "$CURRENT_ALLOWED" ]; then
+            set_var cio-dashboard "ALLOWED_EXTERNAL_DOMAINS=https://${MINIO_API_HOST}"
+          elif ! echo "$CURRENT_ALLOWED" | grep -q "${MINIO_API_HOST}"; then
+            set_var cio-dashboard "ALLOWED_EXTERNAL_DOMAINS=${CURRENT_ALLOWED},https://${MINIO_API_HOST}"
+          fi
+
           MINIO_USER=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_USER=' | cut -d= -f2-)
           MINIO_PASS=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_PASSWORD=' | cut -d= -f2-)
-          # Verify mc against MinIO's published SHA256 before executing it.
-          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
-          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
+
+          # Verify mc against MinIO's published SHA256 before executing it. Bounded
+          # timeouts + retries so a stalled dl.min.io download can't hang the job.
+          curl --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5 -fsSL \
+            https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
+          curl --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5 -fsSL \
+            https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
           echo "$(cut -d' ' -f1 mc.sha256sum)  mc" | sha256sum -c -
           chmod +x mc
           # --path on forces path-style bucket addressing (host/bucket/key), same as the
           # app's own OBJECT_STORAGE_FORCE_PATH_STYLE=true — this Railway domain doesn't
           # route wildcard bucket subdomains, so virtual-host style (mc's "auto" default)
           # fails bucket creation with a misleading "does not exist" error.
-          ./mc alias set cio "https://${MINIO_HOST}" "$MINIO_USER" "$MINIO_PASS" --path on
-          # A freshly duplicated cio-minio's HTTP listener accepts connections before it
-          # finishes formatting its storage backend ("Formatting 1st pool..." in its boot
-          # logs), so bucket creation can transiently fail right after boot. Retry instead
-          # of failing the run on what's usually just a not-ready-yet response.
+          ./mc alias set cio "https://${MINIO_API_HOST}" "$MINIO_USER" "$MINIO_PASS" --path on
+
           for attempt in $(seq 1 10); do
             if output=$(./mc mb cio/videos cio/documents cio/media --ignore-existing 2>&1); then
               echo "$output"
@@ -223,9 +294,7 @@ jobs:
             echo "Bucket creation failed (attempt $attempt/10) — cio-minio may still be initializing; retrying in 5s..."
             sleep 5
           done
-          # Same boot-race as above can hit the very next call too, even right after mb
-          # just succeeded — cio-minio's storage layer can take a moment past that point
-          # to fully settle.
+
           for attempt in $(seq 1 10); do
             if output=$(./mc anonymous set download cio/media 2>&1); then
               echo "$output"
@@ -240,50 +309,68 @@ jobs:
             sleep 5
           done
 
-      - name: Deploy each app service from this branch
+      - name: Deploy app services from this branch in parallel
         if: ${{ inputs.action == 'deploy' }}
-        # `--ci` (not `--detach`) blocks until each service's deploy/healthcheck succeeds,
-        # so the URL printed later is actually live. Trade-off: builds run sequentially.
-        run: |
-          for svc in $APP_SERVICES; do
-            echo "::group::railway up $svc"
-            railway up --service "$svc" --ci
-            echo "::endgroup::"
-          done
+        # `--ci` (not `--detach`) keeps each process attached until its deployment
+        # succeeds or fails. Run the independent app builds concurrently, then wait for
+        # every service so the URL printed later is actually live.
+        #
+        # `railway up --ci` can exit 1 on a log-streaming glitch (railwayapp/cli#696) even
+        # though the deploy succeeded. Only on that specific error do we poll the real
+        # deployment status instead of trusting the exit code — any other failure means no
+        # new deployment exists yet, so it fails immediately rather than risking a match
+        # against a stale, unrelated deployment.
+        run: bash .github/scripts/railway-preview-deploy.sh
 
       - name: Setup pnpm
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         run: pnpm install --frozen-lockfile
 
       - name: Build workspace dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         # @cio/db imports compiled output (e.g. @cio/utils/dist/...) from its workspace
         # deps, not source — they must be built before the seed script can import them.
         run: pnpm --filter @cio/db^... build
 
-      - name: Seed the full demo dataset (optional)
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+      - name: Seed the selected demo data (optional)
+        id: seed
+        if: ${{ inputs.action == 'deploy' && inputs.seed_organization != 'none' }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
         # GitHub runner, so seeding needs Postgres's own DATABASE_PUBLIC_URL instead
         # (railway.internal isn't reachable from here).
+        env:
+          SEED_ORGANIZATION: ${{ inputs.seed_organization }}
         run: |
+          run_seed() {
+            if [ "$SEED_ORGANIZATION" = "all" ]; then
+              railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed
+            else
+              railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed -- --organization "$SEED_ORGANIZATION"
+            fi
+          }
+
           PUBLIC_DB_URL=$(railway variables --service Postgres --kv | grep '^DATABASE_PUBLIC_URL=' | cut -d= -f2-)
           if [ -z "$PUBLIC_DB_URL" ]; then
-            echo "::warning::Postgres has no DATABASE_PUBLIC_URL in this environment — skipping full seed; only essential seed ran on api boot."
+            echo "::warning::Postgres has no DATABASE_PUBLIC_URL in this environment — skipping $SEED_ORGANIZATION seed; only essential seed ran on api boot."
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
           else
-            railway run --service cio-api -- env DATABASE_URL="$PUBLIC_DB_URL" pnpm --filter @cio/db db:setup:seed || \
-              echo "Demo seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
+            if run_seed; then
+              echo "status=seeded" >> "$GITHUB_OUTPUT"
+            else
+              echo "$SEED_ORGANIZATION seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
+              echo "status=failed" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
       - name: Report the preview URL
@@ -292,6 +379,8 @@ jobs:
         env:
           BRANCH: ${{ inputs.branch }}
           ENV_NAME: ${{ steps.env.outputs.name }}
+          SEED_ORGANIZATION: ${{ inputs.seed_organization }}
+          SEED_STATUS: ${{ steps.seed.outputs.status || 'not requested' }}
         run: |
           railway domain --service cio-dashboard || true
           URL=$(railway variables --service cio-dashboard --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
@@ -299,11 +388,13 @@ jobs:
             echo "::error::cio-dashboard has no public domain — 'railway domain' may have failed."
             exit 1
           fi
+
           {
             echo "### Railway preview ready :rocket:"
             echo ""
             echo "- Environment: \`$ENV_NAME\` (branch \`$BRANCH\`)"
             echo "- Dashboard: https://${URL}"
+            echo "- Demo seed: \`$SEED_ORGANIZATION\` ($SEED_STATUS)"
             echo ""
             echo "> All services passed their Railway deploy/healthcheck before this link was printed, so it should be live now."
             echo ""

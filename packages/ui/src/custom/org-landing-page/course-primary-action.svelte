@@ -18,13 +18,11 @@
   const landingSize = $derived<LandingButtonSize>(size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'md');
   const isDisabled = $derived(action.disabled ?? false);
 
-  const disabledClass = $derived(
-    variant === 'secondary'
-      ? 'ui:!bg-[var(--landing-button-secondary-bg)] ui:!text-[var(--landing-button-secondary-fg)] ui:hover:!bg-[var(--landing-button-secondary-bg)]'
-      : variant === 'tertiary'
-        ? 'ui:!bg-transparent ui:!text-[var(--landing-button-tertiary-fg)] ui:hover:!bg-transparent'
-        : 'ui:!bg-[var(--landing-button-primary-bg)] ui:!text-[var(--landing-button-primary-fg)] ui:hover:!bg-[var(--landing-button-primary-bg)]'
-  );
+  // Match pricing CTA disabled appearance: theme hero color overrides must not win when enrollment is closed.
+  const disabledClass =
+    'ui:pointer-events-none ui:!opacity-50 ui:disabled:opacity-50 ui:aria-disabled:opacity-50' +
+    ' ui:!bg-[var(--landing-button-primary-bg)] ui:!text-[var(--landing-button-primary-fg)]' +
+    ' ui:hover:!bg-[var(--landing-button-primary-bg)] ui:hover:!opacity-50 ui:!border-transparent';
 </script>
 
 <LandingButton

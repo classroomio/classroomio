@@ -10,7 +10,7 @@
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import { DotPattern } from '../../animation/dot-pattern';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
 
   let {
     orgName,
@@ -30,10 +30,7 @@
   }: OrgLandingPageProps = $props();
 </script>
 
-<div
-  class="ui:min-h-screen ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans"
-  style={themeStyle('bold')}
->
+<LandingThemeScope theme="bold" class="ui:font-sans">
   <BoldNav {orgName} {logoUrl} {navItems} {authAction} />
 
   <main>
@@ -78,4 +75,4 @@
   <OrgLandingPageCallout {callout} {labels} variant="bold" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="bold" />
-</div>
+</LandingThemeScope>

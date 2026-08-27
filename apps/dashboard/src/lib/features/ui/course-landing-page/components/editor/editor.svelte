@@ -42,6 +42,8 @@
 
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { isCourseFree } from '$lib/utils/functions/course';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     course: Course;
@@ -61,6 +63,11 @@
 
   const sidebar = useSidebar();
   let loading = $state(false);
+  let showPaymentError = $state(false);
+
+  const isPaidWithoutPaymentLink = $derived(
+    !isCourseFree(course.cost || 0) && !(course.metadata?.paymentLink ?? '').trim()
+  );
 
   interface Section {
     key: LandingSectionKey;
@@ -136,6 +143,13 @@
       return;
     }
 
+    if (selectedSectionKey === 'pricing' && isPaidWithoutPaymentLink) {
+      showPaymentError = true;
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+      return;
+    }
+
+    showPaymentError = false;
     selectedSectionKey = null;
   }
 
@@ -161,6 +175,12 @@
   });
 
   async function handleSave() {
+    if (isPaidWithoutPaymentLink) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+      selectedSectionKey = 'pricing';
+      return;
+    }
+
     loading = true;
     course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
 
@@ -212,7 +232,13 @@
       <CloseButton onClick={handleClose} />
 
       <div class="flex items-center gap-1" data-open={sidebar.open} data-mobile={sidebar.isMobile}>
-        <Button type="button" variant="outline" onclick={handleSave} {loading}>
+        <Button
+          type="button"
+          variant="outline"
+          onclick={handleSave}
+          {loading}
+          disabled={loading || isPaidWithoutPaymentLink}
+        >
           {$t('course.navItem.landing_page.editor.save')}
         </Button>
         <HoverableItem>
@@ -282,7 +308,7 @@
       {:else if selectedSection.key === 'instructor'}
         <InstructorForm bind:course {setter} />
       {:else if selectedSection.key === 'pricing'}
-        <PricingForm bind:course {setter} />
+        <PricingForm bind:course {setter} bind:showPaymentError />
       {/if}
     </div>
   {/if}

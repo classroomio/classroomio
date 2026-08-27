@@ -232,8 +232,6 @@
     }
   },
   "onboarding": {
-    "sell": "Sell courses online",
-    "teach": "Teach my current students online",
     "expanding": "On another platform, expanding here",
     "employees": "Train my employees",
     "customers": "Create courses for my customers",
@@ -353,6 +351,7 @@
     "password": "Your password",
     "forgot": "Forgot password?",
     "login": "Log In",
+    "continue_with": "Or continue With",
     "login_with": "or login with",
     "signup_with": "or sign up with",
     "already_have_account": "Already have an account?",
@@ -590,11 +589,11 @@
         "description": "Control how users can sign up and log in to your organization.",
         "allow_public_signups": {
           "label": "Allow public signups",
-          "description": "When disabled, only users with an invite link can sign up. Enable to allow anyone to create an account."
+          "description": "When enabled, anyone can create an account. When disabled, only users with a valid invitation link can sign up."
         },
         "disable_signup": {
-          "label": "Disable Signup",
-          "description": "Prevent new users from signing up. Only invited users can join."
+          "label": "Block all new signups",
+          "description": "Completely prevent new account creation. No one can sign up — even invited users. Existing accounts are not affected."
         },
         "disable_signup_message": {
           "label": "Signup Disabled Message",
@@ -614,7 +613,7 @@
         "note_description": "These settings only affect this organization. Admins can always sign in using their credentials for break-glass access.",
         "internal_enrollment_only": {
           "label": "Internal Enrollment Only",
-          "description": "When enabled, any published course is open for self-enrollment to all students in your organization. Use with Disable Signup to create a closed, invite-only academy where students can join any published course without per-course setup."
+          "description": "When enabled, only existing members of your organization can enroll in your courses. Everyone else must be invited — they cannot enroll themselves from a course page, even when the course is open to new students."
         }
       },
       "sso": {
@@ -1301,7 +1300,10 @@
       "pricing_free": "Free",
       "pricing_paid": "Paid",
       "empty": "No tags available yet",
-      "search_placeholder": "Search courses..."
+      "search_placeholder": "Search courses...",
+      "clear_search": "Clear search",
+      "selected": "Selected:",
+      "save_changes": "Save Changes"
     },
     "empty": {
       "title": "No courses found",
@@ -1861,6 +1863,7 @@
       "most_lessons": "Lessons: Most first",
       "fewest_lessons": "Lessons: Fewest first",
       "date_created": "Date Created",
+      "last_updated_at": "Last Updated At",
       "published": "Published",
       "lessons": "Lessons"
     },
@@ -2014,6 +2017,11 @@
         "completed": "{completed} of {total} completed",
         "lessons": "{completed} of {total} lessons",
         "exercises": "{completed} of {total} exercises"
+      },
+      "footer_nav": {
+        "label": "Course content navigation",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "search": {
@@ -2027,6 +2035,9 @@
       "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
       "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+      "deadline_required": "Compliance courses require a completion deadline before they can be published.",
+      "deadline_required_enroll": "Compliance courses require a certificate deadline before learners can be enrolled.",
+      "deadline_invalid": "The course completion deadline is invalid.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
       "final_exercise_label": "Final exercise (optional)",
@@ -2120,7 +2131,13 @@
           "save": "Save",
           "saving": "Saving...",
           "send": "Send",
-          "load_more_replies": "Load more replies"
+          "load_more_replies": "Load more replies",
+          "collapse_thread": "Collapse thread",
+          "expand_thread": "Expand thread",
+          "more_replies": "{count} more {count, plural, =1 {reply} other {replies}}",
+          "continue_thread": "Continue this thread",
+          "collapsed_summary": "{count} {count, plural, =1 {reply} other {replies}} hidden",
+          "back_to_comments": "Back to all comments"
         },
         "user_avatar_alt": "User avatar",
         "snackbar": {
@@ -3470,6 +3487,8 @@
             "certificate": "Certificate",
             "curriculum": "Curriculum",
             "chips": "Skills & Tools",
+            "navigation": "Navigation",
+            "footer": "Footer",
             "skills": "Skills you'll gain",
             "tools": "Tools you'll learn"
           },
@@ -3529,6 +3548,7 @@
             "currency": "Currency",
             "cost": "Cost",
             "payment": "Payment Link",
+            "payment_required": "A payment link is required for paid courses",
             "discount": "Discount",
             "no": "No",
             "yes": "Yes",
@@ -3558,7 +3578,8 @@
           "join_course": "Join Course",
           "enrolled_success": "You're enrolled in this course.",
           "enrolled_verify_email": "You're enrolled! Verify your email to access this course.",
-          "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator."
+          "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator.",
+          "members_only": "Only members of this organization can enroll. Ask an administrator for an invitation."
         },
         "course_content": "Course content",
         "modules": "modules",
@@ -3620,6 +3641,9 @@
         "setup_landing_for_link": "Setup landing page to get course link",
         "coming_soon": "Coming soon",
         "link": "Course Link",
+        "generate_link": "Generate new link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
         "grading": "Grading",
         "reports": "Make grading reports available for lessons",
         "disabled": "Disabled",
@@ -3637,17 +3661,22 @@
         "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order.",
         "progression_mode_free": "Free — unlocked content is accessible",
         "progression_mode_sequential": "Sequential — complete prior items to unlock next",
-        "lesson_download": "Lessons DownLoad",
-        "available": "Make the Lesson available for Download in pdf for registered students",
-        "course_download": "Course Downlaod",
-        "course_avail": "Make the Course available for Download for registered students",
+        "lesson_download": "Lesson download",
+        "available": "Let registered students download lessons as PDF.",
+        "course_download": "Course download",
+        "course_avail": "Download a copy of this course.",
         "download": "Download",
-        "allow": "Allow New Students",
-        "access": "Allow new students to access this course",
+        "allow": "Students can enroll themselves",
+        "access": "When off, students can only join through an invite link or by being added from People.",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
+        "certificate_deadline_required": "Set Certificate Deadline First",
+        "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the course settings before publishing.",
+        "go_to_completion_deadline": "Go to Completion Deadline",
+        "completion_deadline_label": "Course completion deadline",
+        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
           "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
@@ -3960,7 +3989,8 @@
     "download_course": "Upgrade to download course",
     "required": "Upgrade Required",
     "enterprise_required": "This feature requires an Enterprise plan.",
-    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API."
+    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API.",
+    "unlock_field": "Upgrade to unlock this setting"
   },
   "automation": {
     "title": "Automation",
@@ -4007,9 +4037,7 @@
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
       "usage": {
         "title": "Usage and limits",
-        "description": "MCP is available on every plan, but usage is controlled with monthly automation credits and key limits.",
-        "credits_title": "Credits remaining",
-        "credits_description": "Mutating MCP actions consume credits. Read actions are free.",
+        "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
         "keys_title": "Active keys",
         "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
         "rate_limits_title": "Rate limits",
@@ -4037,7 +4065,8 @@
         "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
         "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
         "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      }
+      },
+      "view_docs": "View Docs"
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
@@ -4207,7 +4236,8 @@
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",
       "submission_updated": "Submission updated to",
-      "error_fetching": "Fetching exercises failed, please reload the page"
+      "error_fetching": "Fetching exercises failed, please reload the page",
+      "draft_restored": "We restored the unsaved changes you left behind"
     },
     "materials": {
       "apology": "We apologise, there was an error saving your lesson.",
@@ -4244,7 +4274,8 @@
         "saved": "Saved successfully",
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
-        "update_successful": "Update successful"
+        "update_successful": "Update successful",
+        "link_generated": "Course link updated successfully"
       },
       "error": {
         "not_right": "Something's not right - Please try later",
@@ -4568,7 +4599,7 @@
         "too_small": "Option label is required"
       },
       "points": {
-        "too_small": "Points must be at least 0"
+        "too_small": "Points must be at least 1"
       },
       "options": {
         "custom": "{message}"
@@ -4895,8 +4926,9 @@
       "pagination_status": "Page {page} of {totalPages}",
       "empty_title": "No courses yet",
       "empty_description": "Add courses to this cohort.",
+      "empty_student_description": "There are no published courses in this cohort yet.",
       "published_access_callout_title": "Student access",
-      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished while those stay hidden from students until you publish them."
+      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished, but they remain hidden from students until you publish them."
     },
     "people": {
       "invite": "Invite",

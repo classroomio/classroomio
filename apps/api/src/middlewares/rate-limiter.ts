@@ -6,7 +6,7 @@ import {
 } from '@api/constants/rate-limiter';
 
 import type { Context, MiddlewareHandler } from 'hono';
-import { RedisRateLimiter } from '@api/utils/redis/limiter';
+import { RedisRateLimiter, type RateLimitResult } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
 import { env } from '@cio/core/config/env';
 import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
@@ -40,11 +40,38 @@ const defaultOptions: Required<RateLimiterOptions> = {
   skip: () => false
 };
 
+function setRateLimitHeaders(c: Context, maxRequests: number, result: RateLimitResult): void {
+  c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
+  c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
+  c.header(RATE_LIMIT_HEADERS.RESET, new Date(result.resetTime).toISOString());
+}
+
+function createRateLimitResponse(
+  c: Context,
+  message: string,
+  result: RateLimitResult,
+  includeStandardHeaders: boolean
+): Response {
+  const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
+
+  if (includeStandardHeaders) {
+    c.header(RATE_LIMIT_HEADERS.RETRY_AFTER, retryAfter.toString());
+  }
+
+  return c.json(
+    {
+      error: ERROR_MESSAGES.RATE_LIMIT_EXCEEDED,
+      message,
+      retryAfter
+    },
+    HTTP_STATUS.TOO_MANY_REQUESTS
+  );
+}
+
 export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareHandler => {
   const opts = { ...defaultOptions, ...options };
 
   return async (c, next) => {
-    // Skip rate limiting if not in production
     if (env.NODE_ENV !== 'production' || opts.skip(c)) {
       return await next();
     }
@@ -53,17 +80,11 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
       const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
       const limiter = new RedisRateLimiter(redis, opts.windowMs, maxRequests);
 
-      // Generate rate limit key
       const key = opts.keyGenerator(c);
-
-      // Check rate limit
       const result = await limiter.isAllowed(key);
 
-      // Set rate limit headers
       if (opts.standardHeaders) {
-        c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
-        c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
-        c.header(RATE_LIMIT_HEADERS.RESET, new Date(result.resetTime).toISOString());
+        setRateLimitHeaders(c, maxRequests, result);
       }
 
       if (opts.legacyHeaders) {
@@ -73,26 +94,54 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
       }
 
       if (!result.allowed) {
-        const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
-
-        if (opts.standardHeaders) {
-          c.header(RATE_LIMIT_HEADERS.RETRY_AFTER, retryAfter.toString());
-        }
-
-        return c.json(
-          {
-            error: ERROR_MESSAGES.RATE_LIMIT_EXCEEDED,
-            message: opts.message,
-            retryAfter
-          },
-          HTTP_STATUS.TOO_MANY_REQUESTS
-        );
+        return createRateLimitResponse(c, opts.message, result, opts.standardHeaders);
       }
 
       await next();
     } catch (error) {
       logRedisUnavailableOnce('Redis rate limiter unavailable, allowing requests without rate limiting', error);
       await next();
+    }
+  };
+};
+
+export const createAuthenticationFailureRateLimiter = (options: RateLimiterOptions = {}): MiddlewareHandler => {
+  const opts = { ...defaultOptions, ...options };
+
+  return async (c, next) => {
+    if (env.NODE_ENV !== 'production' || opts.skip(c)) {
+      return await next();
+    }
+
+    const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
+    const limiter = new RedisRateLimiter(redis, opts.windowMs, maxRequests);
+    const key = opts.keyGenerator(c);
+    let reservation: RateLimitResult;
+
+    try {
+      reservation = await limiter.isAllowed(key);
+
+      if (!reservation.allowed) {
+        if (opts.standardHeaders) {
+          setRateLimitHeaders(c, maxRequests, reservation);
+        }
+
+        return createRateLimitResponse(c, opts.message, reservation, opts.standardHeaders);
+      }
+    } catch (error) {
+      logRedisUnavailableOnce('Redis authentication failure limiter unavailable, allowing request', error);
+
+      return await next();
+    }
+
+    await next();
+
+    if (c.get('automationKey')) {
+      try {
+        await limiter.release(key, reservation.reservationId);
+      } catch (error) {
+        logRedisUnavailableOnce('Redis authentication failure limiter reservation release failed', error);
+      }
     }
   };
 };
@@ -106,6 +155,8 @@ function defaultMaxRequests(c: Context): number {
 
 function shouldSkipRateLimit(c: Context): boolean {
   if (isTrustedServerApiKeyRequest(c)) return true;
+
+  if (c.req.path.startsWith('/public-api/')) return true;
 
   return c.req.path === '/api/auth/get-session';
 }

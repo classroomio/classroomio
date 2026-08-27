@@ -10,15 +10,16 @@
   type Props = {
     errors: Record<string, string>;
     activeTab?: string;
+    onActiveTabChange?: (tab: string) => void;
   };
 
-  let { errors, activeTab = $bindable('design') }: Props = $props();
+  let { errors, activeTab = 'design', onActiveTabChange }: Props = $props();
 </script>
 
 <UpgradeBanner>{$t('upgrade.certificate')}</UpgradeBanner>
 
 <main class="px-2 md:-mr-3 md:-ml-3">
-  <UnderlineTabs.Root bind:value={activeTab} class="w-full">
+  <UnderlineTabs.Root value={activeTab} onValueChange={(value) => onActiveTabChange?.(value)} class="w-full">
     <UnderlineTabs.List>
       <UnderlineTabs.Trigger value="design">
         {$t('course.navItem.certificates.tab_design')}

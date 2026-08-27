@@ -61,9 +61,6 @@ The workflow will automatically publish images when:
 2. **Push a version tag `vX.Y.Z`**: Publishes `X.Y.Z`, `X.Y`, `X` (immutable, pinned releases).
 3. **Manual trigger**: Use the Actions tab in GitHub.
 
-Every build is **boot smoke-tested** (started against ephemeral postgres + redis, healthcheck
-verified) by the `smoke` job *before* anything is pushed — a broken image never reaches users.
-
 #### Create a version tag and push:
 
 ```bash
@@ -113,7 +110,7 @@ The published tags and what they mean:
 
 | Tag | Published by | Meaning |
 |-----|--------------|---------|
-| `1.4.2` (exact) | a `v1.4.2` git tag | Immutable, smoke-tested release — **what production should pin** |
+| `1.4.2` (exact) | a `v1.4.2` git tag | Immutable, pinned release — **what production should pin** |
 | `1.4`, `1` | a `v1.4.2` git tag | Latest patch/minor of that line |
 | `latest` | every push to `main` | The freshest `main` build (rolling; may include unreleased code) |
 
@@ -122,14 +119,14 @@ pin `CIO_VERSION` (see [SELF_HOST.md](SELF_HOST.md)) and upgrade on their own sc
 
 ### Cutting a release
 
-Versioning is driven by git tags; the CI workflow does the rest (build multi-arch → smoke-test →
-push `X.Y.Z`/`X.Y`/`X`). `latest` is published separately, on every merge to `main`.
+Versioning is driven by git tags; the CI workflow does the rest (build multi-arch → push
+`X.Y.Z`/`X.Y`/`X`). `latest` is published separately, on every merge to `main`.
 
 ```bash
 # Bump version + create the vX.Y.Z tag from the repo's changelog tooling
 pnpm release            # standard-version: bumps package.json, writes CHANGELOG, creates the git tag
 
-# Push the tag — this triggers the smoke-tested publish
+# Push the tag — this triggers the publish
 git push --follow-tags origin main
 ```
 

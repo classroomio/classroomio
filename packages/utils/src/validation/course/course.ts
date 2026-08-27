@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseType } from './course-type';
@@ -317,8 +318,13 @@ function preprocessCourseMetadata(value: unknown): unknown {
     metadata.instructor = instructor;
   }
 
-  if (metadata.allowNewStudent == null) {
-    metadata.allowNewStudent = true;
+  if (metadata.discount === null || metadata.discount === '') {
+    metadata.discount = undefined;
+  } else if (typeof metadata.discount === 'string') {
+    const parsedDiscount = toFiniteNumber(metadata.discount);
+    if (parsedDiscount !== undefined) {
+      metadata.discount = parsedDiscount;
+    }
   }
 
   return metadata;
@@ -370,7 +376,9 @@ const ZCourseMetadataFields = z.object({
   lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
-  allowNewStudent: z.boolean().default(true),
+  allowSelfEnrollment: z.boolean().optional(),
+  /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. */
+  allowNewStudent: z.boolean().optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
@@ -382,8 +390,7 @@ const ZCourseMetadataFields = z.object({
 export const ZCourseMetadata = z.preprocess(preprocessCourseMetadata, ZCourseMetadataFields);
 export type TCourseMetadata = z.infer<typeof ZCourseMetadata>;
 
-export const ZCourseLandingPageMetadataUpdateFields = ZCourseMetadataFields.omit({ allowNewStudent: true }).extend({
-  allowNewStudent: z.boolean().optional(),
+export const ZCourseLandingPageMetadataUpdateFields = ZCourseMetadataFields.extend({
   reward: ZCourseReward.partial().optional(),
   instructor: ZCourseInstructor.partial().optional(),
   certificate: ZCourseCertificate.partial().optional()

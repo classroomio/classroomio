@@ -50,6 +50,7 @@ export type OrgLandingPageFooterConfig = {
 };
 
 export interface OrgLandingPageEmbed {
+  enabled: boolean;
   title: string;
   description?: string;
   code: string;
@@ -60,6 +61,7 @@ export interface OrgLandingPageEmbed {
 }
 
 export interface OrgLandingPageCallout {
+  enabled: boolean;
   heading: string;
   description: string;
   action: {
@@ -88,6 +90,7 @@ export interface OrgLandingPageLinkCard {
 }
 
 export interface OrgLandingPageLinks {
+  enabled: boolean;
   heading: string;
   description?: string;
   boldVisitLabel?: string;

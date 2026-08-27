@@ -1,6 +1,10 @@
-import { ContentType } from '@cio/utils/constants';
-import { ROLE } from '@cio/utils/constants';
+import { ContentType, ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import {
+  computeProgressionAccess,
+  flattenNavigableItems,
+  type ProgressionLockReason
+} from '@cio/utils/functions/course-progression';
 import type { CourseContentItemRow } from '@cio/db/queries/course/content';
 import {
   getCompletedExerciseIdsForMember,
@@ -13,8 +17,6 @@ import {
 import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 
 import { buildCourseContent, type CourseContent, type CourseContentItem } from './utils';
-
-export type ProgressionLockReason = 'teacher_locked' | 'progression_blocked';
 
 export type AnnotatedCourseContentItem = CourseContentItem & {
   accessible?: boolean;
@@ -35,52 +37,6 @@ export type AnnotatedCourseContent = {
   items: AnnotatedCourseContentItem[];
 };
 
-function sortNavigableItems(items: CourseContentItem[]): CourseContentItem[] {
-  return [...items].sort((left, right) => {
-    const orderDiff = (left.order ?? 0) - (right.order ?? 0);
-    if (orderDiff !== 0) return orderDiff;
-
-    const typeDiff = (left.type === ContentType.Lesson ? 0 : 1) - (right.type === ContentType.Lesson ? 0 : 1);
-    if (typeDiff !== 0) return typeDiff;
-
-    return new Date(left.createdAt || 0).getTime() - new Date(right.createdAt || 0).getTime();
-  });
-}
-
-function flattenNavigableItems(content: CourseContent): CourseContentItem[] {
-  const items = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
-
-  return sortNavigableItems(
-    items.filter((item) => item.type === ContentType.Lesson || item.type === ContentType.Exercise)
-  );
-}
-
-function lessonBlocksProgression(policy: string | undefined): boolean {
-  return policy !== 'none';
-}
-
-function exerciseBlocksProgression(): boolean {
-  return true;
-}
-
-function isItemProgressComplete(params: {
-  item: CourseContentItem;
-  completedLessonIds: Set<string>;
-  completedExerciseIds: Set<string>;
-}): boolean {
-  const { item, completedLessonIds, completedExerciseIds } = params;
-
-  if (item.type === ContentType.Lesson) {
-    return completedLessonIds.has(item.id);
-  }
-
-  if (item.type === ContentType.Exercise) {
-    return completedExerciseIds.has(item.id) || Boolean(item.isComplete);
-  }
-
-  return true;
-}
-
 function annotateNavigableAccess(params: {
   navigableItems: CourseContentItem[];
   lessonPolicyById: Map<string, LessonProgressionPolicy>;
@@ -88,44 +44,25 @@ function annotateNavigableAccess(params: {
   completedLessonIds: Set<string>;
   completedExerciseIds: Set<string>;
 }): Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }> {
-  const accessById = new Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }>();
-  let priorBlockingComplete = true;
+  return computeProgressionAccess({
+    navigableItems: params.navigableItems,
+    progressionMode: params.progressionMode,
+    isComplete: (item) => {
+      if (item.type === ContentType.Lesson) {
+        return params.completedLessonIds.has(item.id);
+      }
 
-  for (const item of params.navigableItems) {
-    const lessonPolicy = params.lessonPolicyById.get(item.id);
-    const teacherLocked = !(item.isUnlocked ?? true);
-    const progressionLocked = params.progressionMode === 'sequential' && !priorBlockingComplete;
+      if (item.type === ContentType.Exercise) {
+        return params.completedExerciseIds.has(item.id) || Boolean(item.isComplete);
+      }
 
-    let accessible = !teacherLocked && !progressionLocked;
-    let lockReason: ProgressionLockReason | null = null;
-
-    if (teacherLocked) {
-      accessible = false;
-      lockReason = 'teacher_locked';
-    } else if (progressionLocked) {
-      accessible = false;
-      lockReason = 'progression_blocked';
+      return true;
+    },
+    getCompletionPolicy: (item) => {
+      const lessonPolicy = params.lessonPolicyById.get(item.id);
+      return lessonPolicy?.completionPolicy ?? 'manual';
     }
-
-    accessById.set(item.id, { accessible, lockReason });
-
-    const complete = isItemProgressComplete({
-      item,
-      completedLessonIds: params.completedLessonIds,
-      completedExerciseIds: params.completedExerciseIds
-    });
-
-    const blocks =
-      item.type === ContentType.Lesson
-        ? lessonBlocksProgression(lessonPolicy?.completionPolicy ?? 'manual')
-        : exerciseBlocksProgression();
-
-    if (blocks && !complete) {
-      priorBlockingComplete = false;
-    }
-  }
-
-  return accessById;
+  });
 }
 
 function applyAccessToContent(

@@ -8,7 +8,7 @@ type CourseSettings = {
   courseDescription: string;
   grading: boolean;
   type: TCourseType;
-  allowNewStudents: boolean;
+  allowSelfEnrollment: boolean;
   tabs: { id: number; name: string }[];
   lessonDownload: boolean;
   isPublished: boolean;
@@ -16,6 +16,12 @@ type CourseSettings = {
   progressionMode: 'free' | 'sequential';
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
+  certificate: {
+    deadline: string | null;
+    threshold: number;
+    requiredExerciseId: string | null;
+    exerciseMinScorePercent: number | null;
+  };
 };
 
 export const settings = writable<CourseSettings>({
@@ -24,7 +30,7 @@ export const settings = writable<CourseSettings>({
   courseDescription: '',
   grading: false,
   type: 'SELF_PACED' as TCourseType,
-  allowNewStudents: false,
+  allowSelfEnrollment: true,
   tabs: [
     { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
     { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
@@ -36,5 +42,11 @@ export const settings = writable<CourseSettings>({
   isContentGroupingEnabled: true,
   progressionMode: 'free',
   callout: null,
-  welcomeEmailMessage: ''
+  welcomeEmailMessage: '',
+  certificate: {
+    deadline: null,
+    threshold: 100,
+    requiredExerciseId: null,
+    exerciseMinScorePercent: null
+  }
 });

@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Die Punkte müssen mindestens 0 sein"
+        "too_small": "Die Punkte müssen mindestens 1 sein"
       },
       "label": {
         "too_small": "Optionsetikett ist erforderlich"
@@ -295,7 +295,8 @@
         "unlocked_all_content": "Alle Kursgegenstände freigeschaltet",
         "all_content_already_unlocked": "Alle Inhalte sind bereits freigeschaltet",
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
-        "content_grouping_disabled": "Inhaltsgruppierung deaktiviert"
+        "content_grouping_disabled": "Inhaltsgruppierung deaktiviert",
+        "link_generated": "Der Kurslink wurde erfolgreich aktualisiert"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
       "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu",
-      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein."
+      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein.",
+      "draft_restored": "Wir haben die nicht gespeicherten Änderungen wiederhergestellt, die Sie hinterlassen haben"
     },
     "poll": {
       "info": {
@@ -514,7 +516,8 @@
     "download_course": "Upgrade zum Download-Kurs",
     "required": "Upgrade erforderlich",
     "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
-    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen."
+    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen.",
+    "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten"
   },
   "analytics": {
     "title": "Analysen",
@@ -795,10 +798,10 @@
         "lesson_download": "Lektionen herunterladen",
         "available": "Stellen Sie die Lektion für registrierte Studierende zum Download im PDF-Format zur Verfügung",
         "course_download": "Kurs-Download",
-        "course_avail": "Stellen Sie den Kurs für registrierte Studierende zum Download bereit",
+        "course_avail": "Laden Sie eine Kopie dieses Kurses herunter.",
         "download": "Herunterladen",
-        "allow": "Erlauben Sie neue Studenten",
-        "access": "Ermöglichen Sie neuen Studierenden den Zugang zu diesem Kurs",
+        "allow": "Studierende können sich selbst einschreiben",
+        "access": "Wenn deaktiviert, können Studierende nur über einen Einladungslink beitreten oder indem sie unter Personen hinzugefügt werden.",
         "publish": "Kurs veröffentlichen",
         "determines": "Dies bestimmt, ob Ihr Kurs auf Ihrer Zielseite angezeigt wird",
         "published": "Veröffentlicht",
@@ -858,7 +861,15 @@
           "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
           "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
           "unlock_all": "Schalte alle frei"
-        }
+        },
+        "generate_link": "Neuen Link generieren",
+        "open_link": "Link in neuem Tab öffnen",
+        "copy_link": "Link kopieren",
+        "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "completion_deadline_label": "Frist für den Abschluss des Kurses",
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
       },
       "analytics": {
         "title": "Analysen"
@@ -912,7 +923,8 @@
           "join_course": "Nehmen Sie am Kurs teil",
           "enrolled_success": "Sie sind für diesen Kurs eingeschrieben.",
           "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen.",
-          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation."
+          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation.",
+          "members_only": "Nur Mitglieder dieser Organisation können sich einschreiben. Bitten Sie einen Administrator um eine Einladung."
         },
         "pricing_section": {
           "free": "Kostenlos",
@@ -943,7 +955,8 @@
             "no": "Nein",
             "yes": "Ja",
             "percent": "Rabattprozentsatz",
-            "gift": "Über Geschenk"
+            "gift": "Über Geschenk",
+            "payment_required": "Für kostenpflichtige Kurse ist ein Zahlungslink erforderlich"
           },
           "instructor_form": {
             "upload": "Lehrerlogo",
@@ -1000,7 +1013,9 @@
             "curriculum": "Lehrplan",
             "chips": "Fähigkeiten und Werkzeuge",
             "skills": "Fähigkeiten, die Sie erwerben werden",
-            "tools": "Werkzeuge, die Sie lernen werden"
+            "tools": "Werkzeuge, die Sie lernen werden",
+            "navigation": "Navigation",
+            "footer": "Fußzeile"
           },
           "skills_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
           "tools_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
@@ -2286,14 +2301,20 @@
           "reply": "Antwort",
           "replying_to": "Auf @{name} antworten",
           "cancel_reply": "Abbrechen",
-          "view_replies": "{count} {count, plural, =1 {reply} other {replies}} ansehen",
+          "view_replies": "{count, plural, one {# Antwort ansehen} other {# Antworten ansehen}}",
           "hide_replies": "Antworten ausblenden",
           "view_more": "Weitere Kommentare anzeigen ({count})",
           "loading": "Laden...",
           "save": "Speichern",
           "saving": "Sparen...",
           "send": "Senden",
-          "load_more_replies": "Weitere Antworten laden"
+          "load_more_replies": "Weitere Antworten laden",
+          "collapse_thread": "Thread schließen",
+          "expand_thread": "Thread erweitern",
+          "more_replies": "{count, plural, one {# weitere Antwort} other {# weitere Antworten}}",
+          "continue_thread": "Setzen Sie diesen Thread fort",
+          "collapsed_summary": "{count, plural, one {# Antwort ausgeblendet} other {# Antworten ausgeblendet}}",
+          "back_to_comments": "Zurück zu allen Kommentaren"
         },
         "card": {
           "pin": "Anheften",
@@ -2423,6 +2444,11 @@
         "completed": "{completed} von {total} abgeschlossen",
         "lessons": "{completed} von {total} Lektionen",
         "exercises": "{completed} von {total} Übungen"
+      },
+      "footer_nav": {
+        "label": "Kursinhalt-Navigation",
+        "previous": "Zurück",
+        "next": "Weiter"
       }
     },
     "navItems": {
@@ -2475,7 +2501,10 @@
       "blocker_final_misconfigured": "Für die Zertifizierungsübung „{exerciseTitle}“ sind keine Punkte konfiguriert; Bitten Sie Ihren Lehrer, das Problem zu beheben.",
       "email_message_label": "E-Mail-Nachricht",
       "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
-      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet."
+      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet.",
+      "deadline_required": "Für Compliance-Kurse ist eine Abschlussfrist erforderlich, bevor sie veröffentlicht werden können.",
+      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können.",
+      "deadline_invalid": "Die Abschlussfrist des Kurses ist ungültig."
     },
     "creator": {
       "heading": "Welchen Kurs möchten Sie erstellen?",
@@ -2613,6 +2642,7 @@
       "most_lessons": "Lektionen: Meiste zuerst",
       "fewest_lessons": "Lektionen: Wenigste zuerst",
       "date_created": "Erstellungsdatum",
+      "last_updated_at": "Zuletzt aktualisiert",
       "published": "Veröffentlicht",
       "lessons": "Lektionen"
     },
@@ -3599,16 +3629,16 @@
           "placeholder": "Wenn beispielsweise Anmeldungen deaktiviert sind, wenden Sie sich bitte an learn@domain.com, um Zugriff zu erhalten"
         },
         "disable_signup": {
-          "label": "Deaktivieren Sie die Anmeldung",
-          "description": "Verhindern Sie, dass sich neue Benutzer anmelden. Nur eingeladene Benutzer können beitreten."
+          "label": "Alle neuen Registrierungen blockieren",
+          "description": "Vollständig die Erstellung neuer Konten verhindern. Niemand kann sich registrieren — auch eingeladene Benutzer nicht. Bestehende Konten sind nicht betroffen."
         },
         "allow_public_signups": {
           "label": "Öffentliche Anmeldungen zulassen",
-          "description": "Wenn die Funktion deaktiviert ist, können sich nur Benutzer mit einem Einladungslink anmelden. Aktivieren Sie diese Option, damit jeder ein Konto erstellen kann."
+          "description": "Wenn aktiviert, kann jeder ein Konto erstellen. Wenn deaktiviert, können sich nur Benutzer mit einem gültigen Einladungslink anmelden."
         },
         "internal_enrollment_only": {
           "label": "Nur interne Anmeldung",
-          "description": "Wenn diese Option aktiviert ist, steht jeder veröffentlichte Kurs allen Studierenden in Ihrer Organisation zur Selbsteinschreibung offen. Verwenden Sie die Option „Anmeldung deaktivieren“, um eine geschlossene, nur auf Einladung zugängliche Akademie zu erstellen, in der Studierende jedem veröffentlichten Kurs ohne kursspezifische Einrichtung beitreten können."
+          "description": "Wenn diese Option aktiviert ist, können sich nur bestehende Mitglieder Ihrer Organisation für Ihre Kurse anmelden. Alle anderen müssen eingeladen werden – sie können sich nicht über eine Kursseite anmelden, auch wenn der Kurs für neue Studierende offen ist."
         }
       },
       "login": {
@@ -3809,7 +3839,8 @@
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
-    }
+    },
+    "continue_with": "Oder fahren Sie mit fort"
   },
   "app": {
     "search": {
@@ -3849,8 +3880,6 @@
     "deeply_appreciate": "Wir wissen das sehr zu schätzen und stehen Ihnen gerne zur Verfügung."
   },
   "onboarding": {
-    "sell": "Kurse online verkaufen",
-    "teach": "Unterrichte meine derzeitigen Schüler online",
     "expanding": "Auf einer anderen Plattform, hier erweitert",
     "employees": "Bilden Sie meine Mitarbeiter aus",
     "customers": "Erstellen Sie Kurse für meine Kunden",
@@ -3955,9 +3984,12 @@
       "tags_title": "Tags",
       "types_title": "Typen",
       "search_placeholder": "Kurse suchen...",
+      "clear_search": "Suche löschen",
       "pricing_title": "Preise",
       "pricing_free": "Kostenlos",
-      "pricing_paid": "Bezahlt"
+      "pricing_paid": "Bezahlt",
+      "selected": "Ausgewählt:",
+      "save_changes": "Änderungen speichern"
     }
   },
   "tags_admin": {
@@ -4073,16 +4105,15 @@
       },
       "usage": {
         "title": "Nutzung und Grenzen",
-        "description": "MCP ist in jedem Plan verfügbar, die Nutzung wird jedoch durch monatliche Automatisierungsguthaben und Schlüssellimits gesteuert.",
-        "credits_title": "Verbleibende Credits",
-        "credits_description": "Mutierende MCP-Aktionen verbrauchen Credits. Leseaktionen sind kostenlos.",
+        "description": "MCP ist in jedem Plan verfügbar. Die Nutzung wird durch Schlüssellimits und Ratenlimits gesteuert.",
         "keys_title": "Aktive Schlüssel",
         "keys_description": "Verwenden Sie einen MCP-Schlüssel pro Integration, damit der Zugriff sauber rotiert oder widerrufen werden kann.",
-        "rate_limits_title": "Tarifbegrenzungen",
+        "rate_limits_title": "Anfragenlimits pro Minute",
         "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
         "used_label": "Verwendet:"
       },
-      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können."
+      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können.",
+      "view_docs": "Dokumentation anzeigen"
     },
     "api": {
       "subtitle": "Verwalten Sie API-Schlüssel zur Integration mit der öffentlichen ClassroomIO-API.",
@@ -4624,7 +4655,7 @@
     },
     "powered_by": {
       "label": "Unterstützt von",
-      "brand": "KlassenzimmerIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Zurück",
@@ -4851,7 +4882,8 @@
       "no_matching_cohort_courses": "Zu Ihrer Suche passen keine Kohortenkurse.",
       "pagination_status": "Seite {page} von {totalPages}",
       "published_access_callout_title": "Zugang für Studierende",
-      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind, und bleiben den Studierenden verborgen, bis Sie sie veröffentlichen."
+      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind. Sie bleiben den Studierenden jedoch verborgen, bis Sie sie veröffentlichen.",
+      "empty_student_description": "In dieser Kohorte gibt es noch keine veröffentlichten Kurse."
     },
     "newsfeed": {
       "post": "Neuer Beitrag",

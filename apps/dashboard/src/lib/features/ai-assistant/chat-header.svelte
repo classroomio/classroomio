@@ -229,7 +229,7 @@
             </Button>
           {/snippet}
         </Popover.Trigger>
-        <Popover.Content class="ui:p-0! z-200! w-72" align="center">
+        <Popover.Content class="ui:p-0! w-72" align="center">
           <ChatHistoryPopover
             {conversations}
             {activeConversationId}

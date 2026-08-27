@@ -29,7 +29,7 @@ import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { coursesApi } from './courses.svelte';
-import { ROLE } from '@cio/utils/constants';
+import { ROLE, ErrorCodes } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import type { CourseMembers } from '../utils/types';
 
@@ -322,6 +322,25 @@ export class CourseApi extends BaseApiWithErrors {
               orgName: get(currentOrg)?.name ?? ''
             })
           );
+        } else if (
+          typeof result === 'object' &&
+          result !== null &&
+          'code' in result &&
+          result.code === ErrorCodes.VALIDATION_ERROR &&
+          'field' in result &&
+          result.field === 'certificate.deadline'
+        ) {
+          snackbar.error('course.certification.deadline_invalid');
+        } else if (
+          typeof result === 'object' &&
+          result !== null &&
+          'code' in result &&
+          result.code === ErrorCodes.FORBIDDEN
+        ) {
+          const message = t.get('course.navItem.landing_page.enroll_page.members_only');
+
+          this.errors = { ...this.errors, general: message };
+          snackbar.error(message);
         } else if (typeof result === 'object' && result !== null && 'error' in result) {
           snackbar.error((result as { error: string }).error);
         }
@@ -486,6 +505,11 @@ export class CourseApi extends BaseApiWithErrors {
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('Failed to update course');
+          return;
+        }
+        if ('code' in result && result.code === ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED) {
+          this.errors['certificate.deadline'] = t.get('course.certification.deadline_required');
+          snackbar.error('course.certification.deadline_required');
           return;
         }
         if ('error' in result && 'field' in result && result.field) {
@@ -670,7 +694,7 @@ export class CourseApi extends BaseApiWithErrors {
           description: '',
           imgUrl: ''
         },
-        allowNewStudent: false,
+        allowSelfEnrollment: true,
         isContentGroupingEnabled: true,
         progressionMode: 'free'
       };

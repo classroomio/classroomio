@@ -17,6 +17,9 @@
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
   import { isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -68,6 +71,14 @@
   let { courseId, lessonId }: Props = $props();
 
   const mode = $derived($page.url.searchParams.get('mode') === 'edit' ? MODES.edit : MODES.view);
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage: true,
+      courseProgress: getCourseProgress(courseApi.course)
+    })
+  );
 
   let prevModeParam = $state<string | null>(null);
   let isDeletingLesson = $state(false);
@@ -422,8 +433,8 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if mode === MODES.view && $isStudentExperience}
-        <ContentNavigationActions {lessonId} {courseId} />
+      {#if mode === MODES.view && $isCourseLearnerView}
+        <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
       {/if}
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>

@@ -168,7 +168,7 @@ The repository also contains shared packages under `packages/` (for example `pac
      PUBLIC_SERVER_URL="http://localhost:3002"
      PRIVATE_SERVER_URL="http://localhost:3002"      # used by the SSR auth proxy — required, or login returns "API upstream not configured"
      PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # must match the API (paste the value generated above)
-     PUBLIC_IS_SELFHOSTED=true
+     PUBLIC_IS_SELFHOSTED=false
      ```
 
    - Running the background workers? Also create `apps/jobs/.env` (e.g. `cp apps/api/.env apps/jobs/.env`); it needs `REDIS_URL`. The `packages/db/.env` used by the DB scripts is set up in step 6.
@@ -193,9 +193,10 @@ The repository also contains shared packages under `packages/` (for example `pac
    docker compose -f docker-compose.yaml --profile minio up -d minio minio-init
    ```
 
-   - Console: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`)
+   - Console Web UI: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`). Open in browser and select **Object Browser** to view buckets and uploaded files.
    - S3 endpoint: http://localhost:9000
    - Buckets created by `minio-init`: `videos`, `documents`, `media`
+   - Browser presigned uploads work out of the box: Compose passes `MINIO_API_CORS_ALLOW_ORIGIN` (default `*`) from the **root `.env`** to the MinIO container — set it there if you need to restrict origins.
    - Add to `apps/api/.env` when using MinIO locally:
      - `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`
      - `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000`
@@ -255,12 +256,12 @@ Notes:
 
 ```bash
 cp .env.example .env   # copy env template, edit for your domain
-./run-docker-full-stack.sh
+./classroomio.sh start           # pulls pre-built images; use --build to build from source
 ```
 
-The script reads root `.env` via `docker compose --env-file .env` and auto-generates a secure `PRIVATE_SERVER_KEY` (and `BETTER_AUTH_SECRET`) when missing.
+The script reads root `.env` via `docker compose --env-file .env` and auto-generates a secure `PRIVATE_SERVER_KEY` (and `BETTER_AUTH_SECRET`) when missing. Run `./classroomio.sh` with no arguments for the full lifecycle menu (install, start, stop, restart, upgrade, logs, backup).
 
-See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide. To raise upload caps (documents, videos, assignment files), set the `UPLOAD_MAX_*_MB` vars in `.env` — see the [docs](https://classroomio.com/docs/self-hosted/docker#optional--upload-file-size-limits).
+See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide. To raise upload caps (documents, videos, assignment files), set the `UPLOAD_MAX_*_MB` vars in `.env` — see the [docs](https://classroomio.com/docs/self-hosted/configuration/storage#upload-file-size-limits).
 
 ## Publishing
 

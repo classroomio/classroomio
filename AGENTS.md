@@ -6,6 +6,10 @@ This document collects implementation rules and workflow conventions for code ch
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
 
+## Out of scope paths
+
+The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
+
 ## Translation, Formatting, and Git Workflow
 
 - If `apps/dashboard/src/lib/utils/translations/en.json` changes, update the other dashboard locale files before staging or committing.
@@ -431,12 +435,48 @@ When cleanup or reset must follow a specific lifecycle moment, use the matching 
 
 Use `.server.ts` files for server-side code to isolate API keys.
 
+### Chart Imports and SSR
+
+`layerchart` has internal circular dependencies that Vite cannot reliably evaluate during SSR. Never statically import `layerchart` or the `@cio/ui/base/chart` runtime barrel from a component that can enter the server module graph.
+
+- Import chart types from the dependency-free types module: `import type { ChartConfig } from '@cio/ui/base/chart/types'` (or the equivalent relative path inside `packages/ui`).
+- Load chart runtime components with a browser-only dynamic import and render them inside an `{#await}` block guarded by `browser` or `typeof window !== 'undefined'`.
+- In exercise submission renderers, reuse `submission-response-bar-chart.svelte` or `submission-response-pie-chart.svelte`; do not import the chart barrel directly.
+
+```svelte
+<script module lang="ts">
+  function loadChart() {
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+
+    return import('@cio/ui/base/chart');
+  }
+</script>
+
+<script lang="ts">
+  import { browser } from '$app/environment';
+  import type { ChartConfig } from '@cio/ui/base/chart/types';
+</script>
+
+{#if browser}
+  {#await loadChart() then Chart}
+    <Chart.ChartContainer {config}>
+      <Chart.BarChart data={chartData} x="label" y="value" />
+    </Chart.ChartContainer>
+  {/await}
+{/if}
+```
+
 ### UI Components
 
 - Add new UI components under `packages/ui/src` following existing folder patterns.
 - **All Tailwind utility classes in `packages/ui/src/**` must use the `ui:` prefix** (see `packages/ui/README.md`). Pre-commit and CI run `pnpm --filter @cio/ui prefix:check` on touched UI files; fix with `pnpm --filter @cio/ui prefix`.
 - Document component usage and props in `packages/ui/README.md`.
-- Add example usages and variants in Storybook stories under `packages/storybook/src`.
+- **Every new component in `packages/ui/src` ships with a Storybook story in the same change.** A component without a story is incomplete — do not open the PR without one.
+  - Path: `packages/storybook/src/{atoms|molecules}/{component-name}/{component-name}.stories.svelte`, plus a `fields.ts` exporting the `FIELDS` array used by `parameters.controls.include`.
+  - Use `defineMeta` from `@storybook/addon-svelte-csf` with `tags: ['autodocs']`, and set `argTypes` callbacks to `{ control: false }`.
+  - Cover every state the component can be in, not just the happy path — each variant, each boolean prop, loading and empty states, and any recursive or nested rendering.
+  - When adding a component to an existing family (e.g. a new `comment-tree-*` part), extend that family's existing story file rather than creating a second one.
+  - `ui:` classes used inside a story must also exist somewhere under `packages/ui/src`, otherwise they emit no CSS — use unprefixed layout classes in story wrappers when in doubt.
 - See `packages/ui/README.md` and `packages/storybook/README.md` for full guidance.
 - For dashboard forms, prefer `@cio/ui/custom/*-field` wrappers (for example `InputField`, `TextareaField`, `CheckboxField`) so label/error/spacing behavior stays consistent.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
@@ -450,8 +490,9 @@ Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` �
 
 **Every settings page with save/discard** must use `Page.SettingsActions` as the last child of `Page.Root` (after `Page.Body`). Do not put Save in `Page.Header` or inline at the bottom of form sections.
 
-- Sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
-- Save and Discard are disabled when `hasChanges` is false
+- Compact centered card (not full width), sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
+- Only appears when `hasChanges` is true
+- Save is a primary button (not a split/combo control); Discard is secondary
 - Labels come from dashboard translations: `common.unsaved_changes.label`, `common.discard`, `common.save_changes`
 - Pair with `UnsavedChanges` for navigation guards where appropriate
 
@@ -465,6 +506,33 @@ Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` �
   onSave={handleSave}
   onDiscard={handleDiscard}
 />
+```
+
+### Scroll to top
+
+Any surface whose **main column can overflow the viewport** must use the shared `ScrollToTop` control. Do not invent a one-off back-to-top button, FAB, or “scroll up” link.
+
+Full behavior, threshold, clearance, and mount points: `prd/scroll-to-top/README.md`.
+
+**Rules:**
+
+- Implement and import from `@cio/ui/custom/scroll-to-top` (see that spec if the file is not there yet — add the shared component, do not inline a button in the page).
+- Hidden until the scroll container overflows **and** the user has scrolled at least **one viewport**. Hidden again below 0.8 viewports. Never visible at the top of the page.
+- Click only scrolls that container to `top: 0`. Prefer `behavior: 'smooth'`; use instant when `prefers-reduced-motion` is set.
+- Fixed to the **viewport**, bottom-right, icon-only `Button`/`IconButton` with `variant="secondary"`.
+- Pass `label` from the host (`$t('common.scroll_to_top')` in the dashboard). The UI package does not own copy.
+- Prefer **one mount per shell**, not per leaf page:
+  - Public lessons and exercises → `PublicCourse.PublicCourseShell` (`clearance="mobile-nav"`).
+  - Authenticated course contents list, lesson, and exercise → `routes/(app)/courses/[id]/+layout.svelte` (Ask AI clearance on lesson/exercise routes).
+- New long-read pages (community thread, public course landing, long catalogs, etc.) must include the same component. Do not mount it on `(app)/+layout.svelte` or inside dialogs/sheets/nested panes.
+
+```svelte
+<script lang="ts">
+  import { ScrollToTop } from '@cio/ui/custom/scroll-to-top';
+  import { t } from '$lib/utils/functions/translations';
+</script>
+
+<ScrollToTop label={$t('common.scroll_to_top')} />
 ```
 
 ## Emails: system vs org-branded
@@ -508,6 +576,7 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -525,6 +594,7 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
+- Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
 
 ## Checklist for New Routes
 
@@ -632,6 +702,8 @@ A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self
   - Multi-tenant: multiple orgs per user, "add org" shown; org is resolved from the **subdomain** (`acme.<PRIVATE_APP_HOST>`) or a custom domain. Locally there are no subdomains, so an org public site is simulated with the `?org=<siteName>` query param (sets the `_orgSiteName` cookie — see `layout-setup.ts`).
   - The license gate is a **no-op**, so all enterprise features are unlocked **without** a `LICENSE_KEY` — i.e. cloud mode is the easiest way to exercise SSO/token-auth/multi-org in dev.
   - Polar billing and analytics activate but are themselves gated by their own keys (absent keys just no-op), so they don't block startup.
+
+**Org membership invariant — admins/tutors vs students.** Self-hosted is single-org/single-domain, so one person must never hold a STUDENT membership in one org and an ADMIN/TUTOR membership in another. Concretely: the self-hosted auto-enroll path (`getAccountData` in `apps/api/src/services/account/profile.ts`) skips enrolling a user as STUDENT if `getUserOrgRolesMap` shows they are ADMIN/TUTOR anywhere. Cloud does **not** enforce this: multi-domain tenancy means the same person can legitimately be an admin of their own org and a student in someone else's, so tenant-site auto-join (`autoJoinOrg` in `apps/api/src/services/organization/auto-join.ts`) intentionally has no such guard. When changing enrollment logic, keep this asymmetry deliberate.
 
 Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both files. The flag is read at process start, so restart the dev servers after editing it.
 

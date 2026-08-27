@@ -22,7 +22,8 @@ import {
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
-import { addCohortMember, getExistingCohortMembers } from '@cio/db/queries/cohort';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
@@ -418,11 +419,16 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
         // Same as importAudienceMembers after course ids are known: resolve groups from course rows only.
         const courseGroupMappings = await getCourseGroupIds(courseIds);
         const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
-        await enrollUsersInCourseGroups(
+        const enrolledCount = await enrollUsersInCourseGroups(
           validGroupIds,
           [{ profileId: user.id, email: normalizedEmail }],
           invite.invite.roleId
         );
+
+        if (enrolledCount > 0 && invite.invite.roleId === ROLE.STUDENT) {
+          await invalidateOrgStats(invite.invite.organizationId);
+        }
+
         await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
       } catch (error) {
         console.error('acceptOrganizationInvite course enrollment error:', error);
@@ -448,6 +454,25 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
             })
           )
         );
+
+        const cohortCourseIds = await getCourseIdsByCohortIds(cohortIds);
+        const courseIdsToEnroll = cohortCourseIds.filter((courseId) => !courseIds.includes(courseId));
+
+        if (courseIdsToEnroll.length > 0) {
+          const cohortCourseGroups = await getCourseGroupIds(courseIdsToEnroll);
+          const cohortGroupIds = cohortCourseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+          const cohortEnrolledCount = await enrollUsersInCourseGroups(
+            cohortGroupIds,
+            [{ profileId: user.id, email: normalizedEmail }],
+            invite.invite.roleId
+          );
+
+          if (cohortEnrolledCount > 0 && invite.invite.roleId === ROLE.STUDENT) {
+            await invalidateOrgStats(invite.invite.organizationId);
+          }
+
+          await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [user.id]);
+        }
       } catch (error) {
         console.error('acceptOrganizationInvite cohort enrollment error:', error);
       }
@@ -710,11 +735,16 @@ export async function acceptOrganizationInviteById(
     try {
       const courseGroupMappings = await getCourseGroupIds(courseIds);
       const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
-      await enrollUsersInCourseGroups(
+      const enrolledCount = await enrollUsersInCourseGroups(
         validGroupIds,
         [{ profileId: user.id, email: normalizedEmail }],
         result.invite.roleId
       );
+
+      if (enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
+        await invalidateOrgStats(result.organization.id);
+      }
+
       await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
     } catch (error) {
       console.error('acceptOrganizationInviteById course enrollment error:', error);

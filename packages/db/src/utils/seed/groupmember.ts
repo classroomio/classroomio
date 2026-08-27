@@ -9,6 +9,7 @@ interface SeedGroupmember {
   earlyAdopterGroupId: string;
   earlyAdopterAdminUserId: string;
   earlyAdopterStudentUserId: string;
+  selectedGroupIds?: string[];
 }
 
 export async function seedGroupmembers({
@@ -19,7 +20,8 @@ export async function seedGroupmembers({
   studentUserId,
   earlyAdopterGroupId,
   earlyAdopterAdminUserId,
-  earlyAdopterStudentUserId
+  earlyAdopterStudentUserId,
+  selectedGroupIds
 }: SeedGroupmember) {
   const existingGroupMembers = await db.select().from(groupmember);
   const existingGroupMemberKeys = existingGroupMembers.map((gm) => `${gm.groupId}-${gm.profileId || gm.email}`);
@@ -59,7 +61,13 @@ export async function seedGroupmembers({
       roleId: 3, // STUDENT
       profileId: earlyAdopterStudentUserId
     }
-  ].filter((gm) => !existingGroupMemberKeys.includes(`${gm.groupId}-${gm.profileId || gm.email}`));
+  ].filter(
+    (groupMemberToInsert) =>
+      (!selectedGroupIds || selectedGroupIds.includes(groupMemberToInsert.groupId)) &&
+      !existingGroupMemberKeys.includes(
+        `${groupMemberToInsert.groupId}-${groupMemberToInsert.profileId || groupMemberToInsert.email}`
+      )
+  );
 
   if (groupMembersToInsert.length > 0) {
     await db.insert(groupmember).values(groupMembersToInsert);

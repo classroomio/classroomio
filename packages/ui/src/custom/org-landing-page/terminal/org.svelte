@@ -9,7 +9,7 @@
   import TerminalCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
   import { getCourseTypeLandingMeta } from '../landing-page-utils';
 
   let {
@@ -72,10 +72,7 @@
   }
 </script>
 
-<div
-  class="ui:min-h-screen ui:font-sans ui:w-full ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)]"
-  style={themeStyle('terminal')}
->
+<LandingThemeScope theme="terminal" class="ui:w-full ui:font-sans">
   <main>
     <TerminalHero {orgName} {hero} {courses}>
       {#snippet navigation()}
@@ -167,4 +164,4 @@
   <OrgLandingPageCallout {callout} {labels} variant="terminal" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="terminal" />
-</div>
+</LandingThemeScope>
