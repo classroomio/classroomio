@@ -694,7 +694,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       tags,
       image,
       link: courseSlug ? `/course/${courseSlug}` : undefined,
-      price,
+      price: courseIsPaid ? price : undefined,
       duration,
       level
     };
