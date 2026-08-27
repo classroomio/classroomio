@@ -55,12 +55,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
+        "min_char": "Phải dài từ 8 ký tự trở lên"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
+        "min_char": "Phải dài từ 8 ký tự trở lên"
       },
       "email": {
         "invalid_email": "Địa chỉ email không hợp lệ"
@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Điểm ít nhất phải bằng 0"
+        "too_small": "Điểm ít nhất phải bằng 1"
       },
       "label": {
         "too_small": "Nhãn tùy chọn là bắt buộc"
@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Được đánh dấu là hoàn thành",
+        "complete_unmarked": "Được đánh dấu là chưa hoàn thành",
         "complete_download": "Tải xuống hoàn tất",
         "version_restored": "Đã khôi phục phiên bản thành công"
       },
@@ -516,7 +517,8 @@
     "download_course": "Nâng cấp để tải xuống khóa học",
     "required": "Yêu cầu nâng cấp",
     "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
-    "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai."
+    "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai.",
+    "unlock_field": "Nâng cấp để mở khóa cài đặt này"
   },
   "analytics": {
     "title": "Phân tích",
@@ -799,8 +801,8 @@
         "course_download": "Tải xuống khóa học",
         "course_avail": "Tải xuống một bản sao của khóa học này.",
         "download": "Tải xuống",
-        "allow": "Cho phép sinh viên mới",
-        "access": "Cho phép sinh viên mới truy cập khóa học này",
+        "allow": "Học viên có thể tự đăng ký",
+        "access": "Khi tắt, học viên chỉ có thể tham gia qua liên kết mời hoặc khi được thêm từ mục Mọi người.",
         "publish": "Xuất bản khóa học",
         "determines": "Điều này xác định xem khóa học của bạn có hiển thị trên trang đích hay không",
         "published": "Đã xuất bản",
@@ -861,14 +863,15 @@
           "description_live": "Các bài học và bài tập bị khóa sẽ được ẩn khỏi học sinh cho đến khi bạn mở khóa chúng — hữu ích nếu bạn phát hành nội dung hàng tuần.",
           "unlock_all": "Mở khóa tất cả"
         },
-        "generate_link": "Tạo liên kết mới",
-        "open_link": "Mở liên kết trong tab mới",
-        "copy_link": "Sao chép liên kết",
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
         "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
-        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
+        "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
         "completion_deadline_label": "Thời hạn hoàn thành khóa học",
-        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn."
+        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
+        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
+        "generate_link": "Tạo liên kết mới",
+        "open_link": "Mở liên kết trong tab mới",
+        "copy_link": "Sao chép liên kết"
       },
       "analytics": {
         "title": "Phân tích"
@@ -922,7 +925,8 @@
           "join_course": "Tham gia khóa học",
           "enrolled_success": "Bạn đã ghi danh khóa học này.",
           "enrolled_verify_email": "Bạn đã ghi danh! Xác minh email để truy cập khóa học này.",
-          "student_limit_reached": "{orgName} đã đạt đủ số lượng sinh viên. Vui lòng liên hệ với quản trị viên tổ chức của bạn."
+          "student_limit_reached": "{orgName} đã đạt đủ số lượng sinh viên. Vui lòng liên hệ với quản trị viên tổ chức của bạn.",
+          "members_only": "Chỉ thành viên của tổ chức này mới có thể đăng ký. Hãy yêu cầu quản trị viên gửi lời mời."
         },
         "pricing_section": {
           "free": "miễn phí",
@@ -953,7 +957,8 @@
             "no": "Không",
             "yes": "Có",
             "percent": "Phần trăm chiết khấu",
-            "gift": "Về quà tặng"
+            "gift": "Về quà tặng",
+            "payment_required": "Cần có liên kết thanh toán cho các khóa học trả phí"
           },
           "instructor_form": {
             "upload": "Logo giảng viên",
@@ -1010,7 +1015,9 @@
             "curriculum": "chương trình giảng dạy",
             "chips": "Kỹ năng & Công cụ",
             "skills": "Những kỹ năng bạn sẽ đạt được",
-            "tools": "Công cụ bạn sẽ học"
+            "tools": "Công cụ bạn sẽ học",
+            "navigation": "Điều hướng",
+            "footer": "Chân trang"
           },
           "skills_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
           "tools_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
@@ -1113,6 +1120,13 @@
         "you": "bạn",
         "pending": "Đang chờ xử lý",
         "name": "Tên",
+        "learner": "Học viên",
+        "progress": "Tiến độ",
+        "stage": "Giai đoạn",
+        "last_login_at": "Đăng nhập lần cuối",
+        "enrolled_at": "Ghi danh",
+        "certificate_earned": "Đã nhận chứng chỉ",
+        "not_started": "Chưa bắt đầu",
         "role": "Vai trò",
         "action": "Hành động",
         "feedback": "Đã sao chép email vào clipboard",
@@ -2296,14 +2310,20 @@
           "reply": "trả lời",
           "replying_to": "Đang trả lời @{name}",
           "cancel_reply": "Hủy bỏ",
-          "view_replies": "Xem {count} {count, plural, =1 {trả lời} other {trả lời}} khác",
+          "view_replies": "{count, plural, other {Xem # trả lời}}",
           "hide_replies": "Ẩn câu trả lời",
           "view_more": "Xem thêm bình luận ({count})",
           "loading": "Đang tải...",
           "save": "Lưu",
           "saving": "Đang lưu...",
           "send": "Gửi",
-          "load_more_replies": "Tải thêm câu trả lời"
+          "load_more_replies": "Tải thêm câu trả lời",
+          "collapse_thread": "Thu gọn chủ đề",
+          "expand_thread": "Mở rộng chủ đề",
+          "more_replies": "{count, plural, other {Thêm # trả lời}}",
+          "continue_thread": "Tiếp tục chủ đề này",
+          "collapsed_summary": "{count, plural, other {# trả lời đã ẩn}}",
+          "back_to_comments": "Quay lại tất cả bình luận"
         },
         "card": {
           "pin": "Ghim",
@@ -2433,6 +2453,11 @@
         "completed": "Đã hoàn thành {completed} trong số {total}",
         "lessons": "{completed} trong số {total} bài học",
         "exercises": "{completed} trong số {total} bài tập"
+      },
+      "footer_nav": {
+        "label": "Điều hướng nội dung khóa học",
+        "previous": "Trước",
+        "next": "Tiếp"
       }
     },
     "navItems": {
@@ -2448,7 +2473,8 @@
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt",
       "nav_ai_assistant": "Trợ lý",
-      "nav_ai_tutor": "Gia sư AI"
+      "nav_ai_tutor": "Gia sư AI",
+      "exit_course": "Thoát khóa học"
     },
     "completion": {
       "modal": {
@@ -2851,6 +2877,7 @@
     "discussion": "Thảo luận",
     "people": "mọi người",
     "goto_lms": "Đi tới LMS",
+    "join_academy": "Tham gia học viện",
     "goto_home": "Đi tới Lớp họcIO Trang chủ",
     "login": "Đăng nhập",
     "signup": "Đăng ký",
@@ -3613,16 +3640,16 @@
           "placeholder": "ví dụ: Đăng ký bị vô hiệu hóa, vui lòng liên hệ learn@domain.com để có quyền truy cập"
         },
         "disable_signup": {
-          "label": "Tắt đăng ký",
-          "description": "Ngăn chặn người dùng mới đăng ký. Chỉ những người dùng được mời mới có thể tham gia."
+          "label": "Chặn tất cả đăng ký mới",
+          "description": "Hoàn toàn ngăn chặn việc tạo tài khoản mới. Không ai có thể đăng ký — kể cả người dùng được mời. Tài khoản hiện có không bị ảnh hưởng."
         },
         "allow_public_signups": {
           "label": "Cho phép đăng ký công khai",
-          "description": "Khi bị tắt, chỉ những người dùng có liên kết mời mới có thể đăng ký. Enable để cho phép mọi người tạo tài khoản."
+          "description": "Khi bật, bất kỳ ai cũng có thể tạo tài khoản. Khi tắt, chỉ người dùng có liên kết mời hợp lệ mới có thể đăng ký."
         },
         "internal_enrollment_only": {
           "label": "Chỉ đăng ký nội bộ",
-          "description": "Khi được bật, mọi khóa học đã xuất bản đều có thể tự đăng ký cho tất cả sinh viên trong tổ chức của bạn. Sử dụng tính năng Tắt đăng ký để tạo học viện khép kín, chỉ dành cho người được mời, nơi sinh viên có thể tham gia bất kỳ khóa học đã xuất bản nào mà không cần thiết lập mỗi khóa học."
+          "description": "Khi được bật, chỉ những thành viên hiện tại trong tổ chức của bạn mới có thể đăng ký các khóa học của bạn. Mọi người khác phải được mời — họ không thể tự đăng ký từ trang khóa học, ngay cả khi khóa học mở cho sinh viên mới."
         }
       },
       "login": {
@@ -3816,13 +3843,17 @@
       "full_name": "Tên đầy đủ",
       "password": "Mật khẩu của bạn",
       "confirm_password": "Xác nhận mật khẩu",
-      "password_helper_message": "Mật khẩu phải nhiều hơn 8 ký tự",
+      "password_helper_message": "Mật khẩu phải có từ 8 ký tự trở lên",
       "create_account": "Tạo tài khoản"
     },
     "signup_disabled": {
       "title": "Đăng ký bị vô hiệu hóa",
       "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
       "go_to_login": "Đi tới Đăng nhập"
+    },
+    "reset_password": {
+      "heading": "Mật khẩu mới",
+      "description": "Nhập chi tiết mật khẩu mới của bạn"
     },
     "continue_with": "Hoặc tiếp tục với"
   },
@@ -3946,7 +3977,11 @@
     "resend": "Gửi lại mã xác minh",
     "resend_in": "Gửi lại xác minh trong",
     "seconds": "giây",
-    "snackbar_error": "lỗi khi gửi mã"
+    "snackbar_error": "lỗi khi gửi mã",
+    "wrong_address": "Đăng ký sai địa chỉ?",
+    "switch_account": "Chuyển đổi tài khoản",
+    "confirm_link_prefix": "Nhấp vào liên kết chúng tôi đã gửi đến",
+    "confirm_link_suffix": "để xác nhận email của bạn"
   },
   "public_courses": {
     "page_title": "Khóa học - ClassroomIO",
@@ -4044,7 +4079,8 @@
         "accepted": "Lời mời này đã được sử dụng.",
         "invalid": "Liên kết mời này không hợp lệ.",
         "joined": "Đã tham gia tổ chức",
-        "join_failed": "Không thể tham gia tổ chức"
+        "join_failed": "Không thể tham gia tổ chức",
+        "try_again": "Thử lại"
       }
     },
     "link": {
@@ -4639,7 +4675,7 @@
     },
     "powered_by": {
       "label": "Được cung cấp bởi",
-      "brand": "Lớp họcIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "trước đó",

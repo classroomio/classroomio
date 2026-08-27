@@ -27,6 +27,10 @@
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { CourseMobileBottomNav } from '$features/course/components/mobile';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
   import type { CourseMember } from '$features/course/utils/types';
@@ -45,7 +49,6 @@
 
   interface Props {
     children?: import('svelte').Snippet;
-    path: string;
     data: {
       course?: Course;
       courseId: string;
@@ -53,7 +56,8 @@
     };
   }
 
-  let { children, path, data }: Props = $props();
+  let { children, data }: Props = $props();
+  const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
   let hasLoadedSidebarWidth = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
@@ -112,6 +116,19 @@
       !($isCourseLearnerView && isContentLockedForStudent) &&
       sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
   );
+
+  const courseProgress = $derived(getCourseProgress(courseApi.course));
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage,
+      courseProgress
+    })
+  );
+
+  const contentAskAiBarBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-4');
+  const contentAskAiBarExpandedBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-0');
 
   function clampSidebarWidth(width: number) {
     return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
@@ -197,7 +214,7 @@
   style={`--sidebar-width: ${sidebarWidth}px; --side-panel-width: ${sidePanel.width}px;`}
 >
   <CourseSidebar
-    {path}
+    path={currentPath}
     id={data.courseId}
     {isCourseReady}
     {sidebarWidth}
@@ -205,7 +222,7 @@
     onSidebarWidthChange={handleSidebarWidthChange}
   />
 
-  <Sidebar.Inset class="ui:min-w-0 ui:flex-1">
+  <Sidebar.Inset class="ui:min-w-0 ui:flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
     <CourseHeader />
     <ContentCreateModal />
     <CourseCompletionModal />
@@ -228,7 +245,15 @@
       {@render children?.()}
 
       {#if showContentAskAiBar}
-        <ContentAskAiBar class={contentAskAiWidthClass} />
+        <ContentAskAiBar
+          class={contentAskAiWidthClass}
+          bottomClass={contentAskAiBarBottomClass}
+          expandedBottomClass={contentAskAiBarExpandedBottomClass}
+        />
+      {/if}
+
+      {#if showMobileBottomNav}
+        <CourseMobileBottomNav courseId={data.courseId} path={currentPath} />
       {/if}
     {/if}
   </Sidebar.Inset>

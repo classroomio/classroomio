@@ -2,6 +2,7 @@ import type { CourseBySlugWithOrg, GetCourseBySlugRequest } from '$features/cour
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { calcCourseDiscount } from '$lib/utils/functions/course';
+import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { error } from '@sveltejs/kit';
 
 type GetStudentInvitePreviewRequest = (typeof classroomio.invite.student)[':token']['$get'];
@@ -33,7 +34,7 @@ export const load = async ({ params, url }) => {
       title: data.course.title,
       description: data.course.description,
       cost: data.course.cost ?? 0,
-      allowNewStudent: data.course.allowNewStudent ?? true,
+      allowSelfEnrollment: data.course.allowSelfEnrollment,
       status: data.course.status,
       isPublished: data.course.isPublished
     };
@@ -88,7 +89,7 @@ export const load = async ({ params, url }) => {
     title: courseData.title,
     description: courseData.description,
     cost: courseData.cost ?? 0,
-    allowNewStudent: (courseData.metadata as { allowNewStudent?: boolean } | null)?.allowNewStudent ?? true,
+    allowSelfEnrollment: isSelfEnrollmentAllowed(courseData.metadata),
     status: courseData.status,
     isPublished: courseData.isPublished
   };

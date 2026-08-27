@@ -6,9 +6,10 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
-  import { basePath } from '$lib/utils/store/app';
 
   import { PoweredBy } from '$features/ui';
+  import { appInitApi } from '$features/app/init.svelte';
+  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import XIcon from '@lucide/svelte/icons/x';
   import FilterIcon from '@lucide/svelte/icons/filter';
@@ -50,15 +51,13 @@
   const landingSettings = $derived(normalizeLandingPageSettings(data.org.landingpage));
 
   const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-        }
-      : {
-          label: t.get('navigation.login'),
-          href: '/login'
-        }
+    getOrgLandingAuthAction({
+      isLoggedIn: $user.isLoggedIn,
+      isInitialized: appInitApi.isInitializedAndReady,
+      org: data.org,
+      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
+      hasPendingInvite: !!appInitApi.pendingOrgInvite
+    })
   );
 
   const navInsideHero = $derived(themeRendersNavInsideHero(landingSettings.theme));

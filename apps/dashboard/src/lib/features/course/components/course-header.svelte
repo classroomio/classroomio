@@ -9,7 +9,10 @@
   import { Waves } from '@cio/ui/custom/animation';
   import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { isStudentExperience } from '$lib/utils/store/app';
+  import { isStudentExperience, isCourseLearnerView } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
@@ -30,6 +33,16 @@
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeNavKey = $derived(getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? ''));
   const isPublished = $derived(courseApi.course?.isPublished ?? false);
+  const lessonId = $derived(page.params.lessonId as string | undefined);
+  const exerciseId = $derived(page.params.exerciseId as string | undefined);
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage: Boolean(lessonId || exerciseId),
+      courseProgress: getCourseProgress(courseApi.course)
+    })
+  );
 
   let viewAsStudentOpen = $state(false);
   let viewCourseSiteUnpublishedOpen = $state(false);
@@ -87,7 +100,7 @@
 
     <span class="grow"></span>
 
-    {#if $isStudentExperience}
+    {#if $isCourseLearnerView && !showMobileBottomNav}
       <CourseProgressPopover class="md:hidden" />
     {/if}
 
