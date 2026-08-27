@@ -1,4 +1,4 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 // List lessons types
 export type ListLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['$get'];
@@ -379,8 +379,16 @@ export type CourseProgress = GetCourseProgressSuccess['data'];
 export type ListPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$get'];
 export type ListPeopleResponse = InferResponseType<ListPeopleRequest> | null;
 export type ListPeopleSuccess = Extract<InferResponseType<ListPeopleRequest>, { success: true }>;
+export type ListPeopleRequestQuery = NonNullable<InferRequestType<ListPeopleRequest>['query']>;
 export type CourseMembers = ListPeopleSuccess['data'];
 export type CourseMember = CourseMembers[number];
+export type CourseMembersPagination = ListPeopleSuccess['pagination'];
+export type ListPeopleQuery = {
+  page: number;
+  limit: number;
+  search?: string;
+  roleId?: number;
+};
 
 export type AddPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$post'];
 export type AddPeopleResponse = InferResponseType<AddPeopleRequest>;
