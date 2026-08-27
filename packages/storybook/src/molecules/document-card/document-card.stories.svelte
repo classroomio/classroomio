@@ -31,13 +31,13 @@
     {#snippet actions()}
       <button
         type="button"
-        class="ui:border-input ui:bg-background ui:text-foreground hover:ui:bg-accent hover:ui:text-accent-foreground ui:shrink ui:inline-flex ui:items-center ui:gap-1.5 ui:rounded-md ui:border ui:px-3 ui:py-1.5 ui:text-sm ui:font-medium"
+        class="ui:border-input ui:bg-background ui:text-foreground ui:hover:bg-accent ui:hover:text-accent-foreground inline-flex shrink items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium"
       >
         View PDF
       </button>
       <button
         type="button"
-        class="ui:border-input ui:bg-background ui:text-foreground hover:ui:bg-accent hover:ui:text-accent-foreground ui:shrink ui:inline-flex ui:items-center ui:gap-1.5 ui:rounded-md ui:border ui:px-3 ui:py-1.5 ui:text-sm ui:font-medium"
+        class="ui:border-input ui:bg-background ui:text-foreground ui:hover:bg-accent ui:hover:text-accent-foreground inline-flex shrink items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium"
       >
         Download
       </button>

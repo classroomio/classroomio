@@ -34,7 +34,7 @@
 
 <Story name="Default">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-md">
+    <div class="w-full max-w-md">
       <MultiSelectList
         heading="Select items"
         emptyMessage="No items to show."
@@ -43,14 +43,14 @@
         onToggle={toggle}
         namePrefix="story-ms"
       />
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {[...selected].join(', ') || 'none'}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {[...selected].join(', ') || 'none'}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="Empty">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-md">
+    <div class="w-full max-w-md">
       <MultiSelectList
         heading="Select items"
         emptyMessage="Nothing here yet."

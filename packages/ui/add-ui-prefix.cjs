@@ -493,7 +493,7 @@ function findFiles(dir, extensions = ['.svelte', '.ts', '.tsx', '.js', '.jsx']) 
 
       // Skip node_modules and other ignored directories
       if (entry.isDirectory()) {
-        if (entry.name === 'node_modules' || entry.name.startsWith('.')) {
+        if (entry.name === 'node_modules' || entry.name.startsWith('.') || entry.name === 'tools') {
           continue;
         }
         files.push(...findFiles(fullPath, extensions));
@@ -531,7 +531,7 @@ function runGitPaths(args) {
 }
 
 function isUiSourceFile(relativePath) {
-  if (!relativePath.startsWith('packages/ui/src/')) {
+  if (!relativePath.startsWith('packages/ui/src/') || relativePath.startsWith('packages/ui/src/tools/')) {
     return false;
   }
 

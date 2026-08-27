@@ -134,7 +134,7 @@
 </svelte:head>
 
 <div
-  class="bg-background fixed inset-0 z-250 h-screen w-screen"
+  class="ui:bg-background fixed inset-0 z-250 h-screen w-screen"
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: 500, duration: 500 }}
 >

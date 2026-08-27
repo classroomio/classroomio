@@ -22,16 +22,16 @@
 
 <Story name="Default">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <Password bind:value={password} placeholder="Enter password" />
-      <p class="ui:text-sm ui:text-muted-foreground">Value: {password || '(empty)'}</p>
+      <p class="ui:text-muted-foreground text-sm">Value: {password || '(empty)'}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="With Field">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <Field.Field>
         <Field.Label for="password">Password</Field.Label>
         <Field.Content>
@@ -45,7 +45,7 @@
 
 <Story name="With Error">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <Field.Field>
         <Field.Label for="password-error">Password</Field.Label>
         <Field.Content>
@@ -64,7 +64,7 @@
 
 <Story name="Disabled">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <Field.Field>
         <Field.Label for="password-disabled">Password</Field.Label>
         <Field.Content>
@@ -82,7 +82,7 @@
 
 <Story name="Custom Labels">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <Password
         bind:value={password}
         placeholder="Enter your password"

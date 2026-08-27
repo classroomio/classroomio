@@ -36,7 +36,7 @@
   const hasData = $derived(data.some((day) => day.tokens > 0));
 </script>
 
-<div class="bg-card flex flex-col rounded-xl border p-3 md:p-5 dark:text-white">
+<div class="ui:bg-card flex flex-col rounded-xl border p-3 md:p-5 dark:text-white">
   <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
     <div>
       <h3 class="text-lg font-semibold tracking-tight">{$t('settings.ai_credits.chart.heading')}</h3>

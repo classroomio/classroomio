@@ -30,9 +30,9 @@
 
 <Story name="Interactive Question Highlight">
   {#snippet template(args)}
-    <div class="ui:flex ui:w-full ui:max-w-md ui:flex-col ui:gap-4">
-      <div class="ui:flex ui:items-center ui:justify-between">
-        <span class="ui:text-muted-foreground ui:text-xs font-medium">Exercise Editor</span>
+    <div class="flex w-full max-w-md flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <span class="ui:text-muted-foreground text-xs font-medium">Exercise Editor</span>
         <Button
           size="sm"
           variant="outline"
@@ -41,7 +41,7 @@
             singleHighlighted = true;
           }}
         >
-          <CheckIcon class="ui:me-1.5 ui:size-3.5" />
+          <CheckIcon class="me-1.5 size-3.5" />
           {singleHighlighted ? 'Pulsing...' : 'Highlight Question'}
         </Button>
       </div>
@@ -54,24 +54,20 @@
           singleHighlighted = false;
         }}
       >
-        <div class="ui:rounded-lg ui:border ui:bg-card ui:p-4 ui:shadow-sm">
-          <div class="ui:flex ui:items-start ui:justify-between ui:gap-2">
-            <div class="ui:flex ui:items-center ui:gap-2">
-              <FileTextIcon class="ui:size-4 ui:text-primary" />
-              <h4 class="ui:text-sm ui:font-semibold">Question 1: Multiple Choice</h4>
+        <div class="ui:bg-card rounded-lg border p-4 shadow-sm">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <FileTextIcon class="ui:text-primary size-4" />
+              <h4 class="text-sm font-semibold">Question 1: Multiple Choice</h4>
             </div>
-            <Badge variant="secondary" class="ui:text-[11px]">Auto-graded</Badge>
+            <Badge variant="secondary" class="text-[11px]">Auto-graded</Badge>
           </div>
-          <p class="ui:text-muted-foreground ui:mt-2 ui:text-xs">
+          <p class="ui:text-muted-foreground mt-2 text-xs">
             What is the correct syntax for declaring a reactive state rune in Svelte 5?
           </p>
-          <div class="ui:mt-3 ui:space-y-1.5">
-            <div class="ui:rounded ui:border ui:bg-muted/40 ui:px-3 ui:py-1.5 ui:text-xs font-mono">
-              let count = $state(0);
-            </div>
-            <div class="ui:rounded ui:border ui:bg-muted/40 ui:px-3 ui:py-1.5 ui:text-xs font-mono">
-              let count = reactive(0);
-            </div>
+          <div class="mt-3 space-y-1.5">
+            <div class="ui:bg-muted/40 rounded border px-3 py-1.5 font-mono text-xs">let count = $state(0);</div>
+            <div class="ui:bg-muted/40 rounded border px-3 py-1.5 font-mono text-xs">let count = reactive(0);</div>
           </div>
         </div>
       </AttentionHighlight>
@@ -81,9 +77,9 @@
 
 <Story name="Multiple Items Targeting">
   {#snippet template()}
-    <div class="ui:flex ui:w-full ui:max-w-lg ui:flex-col ui:gap-4">
-      <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
-        <span class="ui:text-muted-foreground ui:text-xs font-medium">Jump to question:</span>
+    <div class="flex w-full max-w-lg flex-col gap-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="ui:text-muted-foreground text-xs font-medium">Jump to question:</span>
         <Button
           size="sm"
           variant={targetedQuestionId === 'q1' ? 'default' : 'outline'}
@@ -113,7 +109,7 @@
         </Button>
       </div>
 
-      <div class="ui:space-y-3">
+      <div class="space-y-3">
         <AttentionHighlight
           id="q1"
           highlight={targetedQuestionId === 'q1'}
@@ -121,9 +117,9 @@
             targetedQuestionId = null;
           }}
         >
-          <div class="ui:rounded-lg ui:border ui:bg-card ui:p-3.5">
-            <div class="ui:flex ui:items-center ui:justify-between">
-              <span class="ui:text-sm ui:font-medium">1. Introduction to Web Development</span>
+          <div class="ui:bg-card rounded-lg border p-3.5">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium">1. Introduction to Web Development</span>
               <Badge variant="outline">Single Choice</Badge>
             </div>
           </div>
@@ -136,15 +132,15 @@
             targetedQuestionId = null;
           }}
         >
-          <div class="ui:rounded-lg ui:border ui:border-destructive/30 ui:bg-card ui:p-3.5">
-            <div class="ui:flex ui:items-center ui:justify-between">
-              <div class="ui:flex ui:items-center ui:gap-2">
-                <TriangleAlertIcon class="ui:size-4 ui:text-destructive" />
-                <span class="ui:text-sm ui:font-medium">2. Explain the Event Loop</span>
+          <div class="ui:border-destructive/30 ui:bg-card rounded-lg border p-3.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <TriangleAlertIcon class="ui:text-destructive size-4" />
+                <span class="text-sm font-medium">2. Explain the Event Loop</span>
               </div>
               <Badge variant="destructive">Manual Review</Badge>
             </div>
-            <p class="ui:text-muted-foreground ui:mt-1 ui:text-xs">
+            <p class="ui:text-muted-foreground mt-1 text-xs">
               Requires tutor grading — not supported in Public courses.
             </p>
           </div>
@@ -157,9 +153,9 @@
             targetedQuestionId = null;
           }}
         >
-          <div class="ui:rounded-lg ui:border ui:bg-card ui:p-3.5">
-            <div class="ui:flex ui:items-center ui:justify-between">
-              <span class="ui:text-sm ui:font-medium">3. Code Output Prediction</span>
+          <div class="ui:bg-card rounded-lg border p-3.5">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium">3. Code Output Prediction</span>
               <Badge variant="outline">Coding</Badge>
             </div>
           </div>
@@ -171,7 +167,7 @@
 
 <Story name="Custom Duration">
   {#snippet template()}
-    <div class="ui:flex ui:w-full ui:max-w-md ui:flex-col ui:gap-4">
+    <div class="flex w-full max-w-md flex-col gap-4">
       <Button
         size="sm"
         variant="outline"
@@ -180,7 +176,7 @@
           customDurationHighlighted = true;
         }}
       >
-        <CheckIcon class="ui:me-1.5 ui:size-3.5" />
+        <CheckIcon class="me-1.5 size-3.5" />
         {customDurationHighlighted ? 'Pulsing (5s)...' : 'Trigger 5s Pulse'}
       </Button>
 
@@ -191,9 +187,9 @@
           customDurationHighlighted = false;
         }}
       >
-        <div class="ui:rounded-lg ui:border ui:bg-muted/20 ui:p-4 text-center">
-          <p class="ui:text-sm ui:font-medium">Extended 5-Second Attention Pulse</p>
-          <p class="ui:text-muted-foreground ui:mt-1 ui:text-xs">
+        <div class="ui:bg-muted/20 rounded-lg border p-4 text-center">
+          <p class="text-sm font-medium">Extended 5-Second Attention Pulse</p>
+          <p class="ui:text-muted-foreground mt-1 text-xs">
             Useful for longer instructional guides or critical settings warnings.
           </p>
         </div>

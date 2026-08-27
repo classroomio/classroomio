@@ -53,7 +53,7 @@
   }
 </script>
 
-<div class="ui:rounded-lg ui:border ui:border-destructive/40 ui:p-4 ui:space-y-4 w-full" role="alert">
+<div class="ui:border-destructive/40 w-full space-y-4 rounded-lg border p-4" role="alert">
   <div class="flex items-start gap-3">
     <TriangleAlertIcon class="ui:stroke-destructive h-5 w-5 shrink-0 translate-y-0.5" />
     <div class="min-w-0 flex-1">
@@ -84,7 +84,7 @@
   {#if groups.length > 0}
     <div class="space-y-3">
       {#each groups as group (group.exerciseId)}
-        <div class="ui:rounded-md ui:border ui:bg-background ui:p-3.5 space-y-2.5 shadow-xs">
+        <div class="ui:bg-background space-y-2.5 rounded-md border p-3.5 shadow-xs">
           <div class="flex items-center justify-between gap-3 border-b pb-2">
             <div class="flex min-w-0 flex-1 items-center gap-2">
               <span
@@ -129,7 +129,7 @@
                 onclick={() => handleFixExercise(group.exerciseId, question.questionId)}
               >
                 <div class="flex min-w-0 flex-1 items-center gap-2.5">
-                  <QuestionTypeIcon typeId={question.typeId} class="ui:size-6 shrink-0 rounded" />
+                  <QuestionTypeIcon typeId={question.typeId} class="size-6 shrink-0 rounded" />
                   <span
                     class="ui:text-foreground max-w-28 truncate text-xs font-medium md:max-w-44"
                     title={questionLabel}
@@ -151,7 +151,7 @@
   {/if}
 
   {#if onCancel}
-    <div class="border-destructive/20 flex justify-end border-t pt-1">
+    <div class="ui:border-destructive/20 flex justify-end border-t pt-1">
       <Button
         variant="ghost"
         size="sm"

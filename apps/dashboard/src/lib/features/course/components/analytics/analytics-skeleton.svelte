@@ -6,7 +6,7 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
     {#each Array(4) as _, i (i)}
       <div class="ui:bg-card ui:border-border overflow-hidden rounded-xl border shadow-sm">
-        <div class="ui:border-border ui:space-y-2 border-b px-6 py-5">
+        <div class="ui:border-border space-y-2 border-b px-6 py-5">
           <Skeleton class="h-3 w-24" />
         </div>
         <div class="px-6 py-6">
@@ -20,7 +20,7 @@
   <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
     {#each Array(2) as _, chartIndex (chartIndex)}
       <div class="ui:bg-card ui:border-border overflow-hidden rounded-xl border shadow-sm">
-        <div class="ui:border-border ui:space-y-2 border-b px-6 py-5">
+        <div class="ui:border-border space-y-2 border-b px-6 py-5">
           <Skeleton class="h-5 w-48" />
           <Skeleton class="h-4 w-full max-w-md" />
         </div>
@@ -36,7 +36,7 @@
       <Skeleton class="h-5 w-56" />
       <Skeleton class="mt-2 h-4 max-w-xl" />
     </div>
-    <div class="ui:divide-border divide-y px-6 py-2">
+    <div class="divide-border divide-y px-6 py-2">
       {#each Array(5) as _, i (i)}
         <div class="flex flex-wrap items-center gap-4 py-4">
           <Skeleton class="size-8 rounded-full" />

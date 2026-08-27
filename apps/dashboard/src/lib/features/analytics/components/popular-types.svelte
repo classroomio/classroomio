@@ -35,7 +35,7 @@
     {:else if data.length === 0}
       <Empty icon={LayersIcon} title={$t('analytics.popularTypes.empty')} />
     {:else}
-      <ul class="ui:divide-border divide-y">
+      <ul class="divide-border divide-y">
         {#each data as row (row.type)}
           <li class="relative py-3">
             <div

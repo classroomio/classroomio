@@ -42,7 +42,7 @@
 
 <div
   id={elementId}
-  class="border-border border bg-white dark:bg-black {hasError
+  class="ui:border-border border bg-white dark:bg-black {hasError
     ? 'border-red-700'
     : ''} root relative rounded-md {className}"
 >

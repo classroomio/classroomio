@@ -20,7 +20,7 @@
 
 <Story name="Default">
   {#snippet template()}
-    <div class="ui:max-w-5xl">
+    <div class="max-w-5xl">
       <QuestionTypePicker />
     </div>
   {/snippet}

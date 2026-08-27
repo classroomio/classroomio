@@ -20,12 +20,12 @@
 
 <Story name="All Types">
   {#snippet template()}
-    <div class="ui:flex ui:flex-wrap ui:gap-4 ui:p-4">
+    <div class="flex flex-wrap gap-4 p-4">
       {#each ENABLED_QUESTION_TYPE_REGISTRY as type (type.id)}
-        <div class="ui:flex ui:flex-col ui:items-center ui:gap-2 ui:rounded-lg ui:border ui:p-3 ui:w-28">
+        <div class="flex w-28 flex-col items-center gap-2 rounded-lg border p-3">
           <QuestionTypeIcon typeId={type.id} />
-          <span class="ui:text-xs ui:font-medium ui:text-center ui:text-foreground">{type.label}</span>
-          <span class="ui:text-[10px] ui:text-muted-foreground">{type.key}</span>
+          <span class="ui:text-foreground text-center text-xs font-medium">{type.label}</span>
+          <span class="ui:text-muted-foreground text-[10px]">{type.key}</span>
         </div>
       {/each}
     </div>
@@ -34,18 +34,18 @@
 
 <Story name="Sizes">
   {#snippet template()}
-    <div class="ui:flex ui:items-center ui:gap-4 ui:p-4">
-      <div class="ui:flex ui:items-center ui:gap-2">
-        <QuestionTypeIcon key="RADIO" class="ui:size-5" />
-        <span class="ui:text-xs">Small (20px)</span>
+    <div class="flex items-center gap-4 p-4">
+      <div class="flex items-center gap-2">
+        <QuestionTypeIcon key="RADIO" class="size-5" />
+        <span class="text-xs">Small (20px)</span>
       </div>
-      <div class="ui:flex ui:items-center ui:gap-2">
-        <QuestionTypeIcon key="RADIO" class="ui:size-7" />
-        <span class="ui:text-xs">Default (28px)</span>
+      <div class="flex items-center gap-2">
+        <QuestionTypeIcon key="RADIO" class="size-7" />
+        <span class="text-xs">Default (28px)</span>
       </div>
-      <div class="ui:flex ui:items-center ui:gap-2">
-        <QuestionTypeIcon key="RADIO" class="ui:size-10" />
-        <span class="ui:text-xs">Large (40px)</span>
+      <div class="flex items-center gap-2">
+        <QuestionTypeIcon key="RADIO" class="size-10" />
+        <span class="text-xs">Large (40px)</span>
       </div>
     </div>
   {/snippet}

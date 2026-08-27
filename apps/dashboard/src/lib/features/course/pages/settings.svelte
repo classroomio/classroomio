@@ -725,7 +725,7 @@
           />
         {/if}
       {:else if courseApi.errors.type}
-        <p class="ui:mt-2 ui:text-destructive/90 text-sm">{courseApi.errors.type}</p>
+        <p class="ui:text-destructive/90 mt-2 text-sm">{courseApi.errors.type}</p>
       {/if}
     </AttentionHighlight>
 
@@ -1054,7 +1054,7 @@
               );
               hasUnsavedChanges = true;
             }}
-            class="ui:mt-1 flex flex-col gap-2"
+            class="mt-1 flex flex-col gap-2"
           >
             <Field.Field orientation="horizontal">
               <RadioGroup.Item value="waves" id="callout-animation-waves" />
