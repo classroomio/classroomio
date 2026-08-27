@@ -226,7 +226,7 @@
           {:else}
             {#each filterPeople(searchValue, people) as person (person.id)}
               <Table.Row
-                class={person.profileId ? navigableRowClass : undefined}
+                class={person.profileId ? navigableRowClass : 'group'}
                 tabindex={person.profileId ? 0 : undefined}
                 onclick={(event) => handleRowClick(person, event)}
                 onkeydown={(event) => handleRowKeydown(person, event)}
@@ -259,7 +259,7 @@
                             <Button
                               variant="secondary"
                               size="icon"
-                              class="h-8 w-8"
+                              class="h-8 w-8 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
                               onclick={(event) => {
                                 event.stopPropagation();
                                 void copyToClipboard(getEmail(person) ?? '');
@@ -289,7 +289,7 @@
                           <Button
                             variant="secondary"
                             size="icon"
-                            class="h-8 w-8"
+                            class="h-8 w-8 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
                             onclick={(event) => {
                               event.stopPropagation();
                               void copyToClipboard(getEmail(person) ?? '');
