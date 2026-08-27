@@ -122,7 +122,8 @@
     })
   );
 
-  const contentAskAiBarBottomClass = $derived(showMobileBottomNav ? 'bottom-16' : 'bottom-4');
+  const contentAskAiBarBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-4');
+  const contentAskAiBarExpandedBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-0');
 
   function clampSidebarWidth(width: number) {
     return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
@@ -239,7 +240,11 @@
       {@render children?.()}
 
       {#if showContentAskAiBar}
-        <ContentAskAiBar class={contentAskAiWidthClass} bottomClass={contentAskAiBarBottomClass} />
+        <ContentAskAiBar
+          class={contentAskAiWidthClass}
+          bottomClass={contentAskAiBarBottomClass}
+          expandedBottomClass={contentAskAiBarExpandedBottomClass}
+        />
       {/if}
 
       {#if showMobileBottomNav}

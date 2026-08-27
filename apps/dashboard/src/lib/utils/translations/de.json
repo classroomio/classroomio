@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Als abgeschlossen markiert",
+        "complete_unmarked": "Als unvollständig markiert",
         "complete_download": "Download abgeschlossen",
         "version_restored": "Version erfolgreich wiederhergestellt"
       },
@@ -2471,7 +2472,8 @@
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "KI-Tutor"
+      "nav_ai_tutor": "KI-Tutor",
+      "exit_course": "Kurs verlassen"
     },
     "completion": {
       "modal": {

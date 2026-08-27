@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Marcado como completo",
+        "complete_unmarked": "Marcado como incompleto",
         "complete_download": "Descarga Completa",
         "version_restored": "Versión restaurada exitosamente"
       },
@@ -2471,7 +2472,8 @@
       "nav_landing_page": "Página de destino",
       "nav_settings": "Configuración",
       "nav_ai_assistant": "Asistente",
-      "nav_ai_tutor": "Tutor de IA"
+      "nav_ai_tutor": "Tutor de IA",
+      "exit_course": "Salir del curso"
     },
     "completion": {
       "modal": {
