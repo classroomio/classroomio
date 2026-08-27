@@ -29,6 +29,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/events` | draft |
 | - | - | `prd/youtube-embed-transcripts` | draft |
 | - | - | `prd/scroll-to-top` | draft |
+| - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 
 ## DONE (Completed PRDs)
 
