@@ -55,12 +55,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Deve ter 6 ou mais caracteres"
+        "min_char": "Deve ter 8 ou mais caracteres"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Deve ter 6 ou mais caracteres"
+        "min_char": "Deve ter 8 ou mais caracteres"
       },
       "email": {
         "invalid_email": "Endereço de e-mail inválido"
@@ -3840,13 +3840,17 @@
       "full_name": "Nome Completo",
       "password": "Sua senha",
       "confirm_password": "Confirmar senha",
-      "password_helper_message": "A senha deve ter mais de 8 caracteres",
+      "password_helper_message": "A senha deve ter 8 ou mais caracteres",
       "create_account": "Criar conta"
     },
     "signup_disabled": {
       "title": "Inscrição desativada",
       "invite_only_message": "A inscrição é apenas para convidados. Use um link de convite para criar uma conta.",
       "go_to_login": "Vá para Entrar"
+    },
+    "reset_password": {
+      "heading": "Nova senha",
+      "description": "Insira os detalhes da sua nova senha"
     },
     "continue_with": "Ou continue com"
   },

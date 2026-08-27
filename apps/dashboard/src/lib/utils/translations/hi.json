@@ -55,12 +55,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+        "min_char": "8 या अधिक अक्षर लंबा होना चाहिए"
       }
     },
     "auth": {
       "password": {
-        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+        "min_char": "8 या अधिक अक्षर लंबा होना चाहिए"
       },
       "email": {
         "invalid_email": "अमान्य ईमेल पता"
@@ -3840,13 +3840,17 @@
       "full_name": "पूरा नाम",
       "password": "आपका पासवर्ड",
       "confirm_password": "पासवर्ड की पुष्टि करें",
-      "password_helper_message": "पासवर्ड 8 अक्षर से अधिक होना चाहिए",
+      "password_helper_message": "पासवर्ड 8 या अधिक अक्षर का होना चाहिए",
       "create_account": "खाता बनाएँ"
     },
     "signup_disabled": {
       "title": "साइनअप अक्षम",
       "invite_only_message": "साइनअप केवल आमंत्रण के लिए है। खाता बनाने के लिए कृपया आमंत्रण लिंक का उपयोग करें।",
       "go_to_login": "लॉगइन पर जाएं"
+    },
+    "reset_password": {
+      "heading": "नया पासवर्ड",
+      "description": "अपना नया पासवर्ड विवरण दर्ज करें"
     },
     "continue_with": "या साथ जारी रखें"
   },
