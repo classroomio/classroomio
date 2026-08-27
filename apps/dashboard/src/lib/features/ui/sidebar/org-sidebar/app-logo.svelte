@@ -26,7 +26,7 @@
           rel="noopener noreferrer"
           {...props}
         >
-          <Avatar.Root class="ui:flex ui:size-6 ui:items-center ui:justify-center">
+          <Avatar.Root class="flex size-6 items-center justify-center">
             <Avatar.Image src="/logo-192.png" alt="ClassroomIO logo" />
           </Avatar.Root>
 

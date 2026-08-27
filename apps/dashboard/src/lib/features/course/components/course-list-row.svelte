@@ -170,7 +170,7 @@
   >
     <!-- Banner -->
     <div
-      class="ui:border-border bg-muted relative size-28 shrink-0 overflow-hidden rounded-md border"
+      class="ui:border-border ui:bg-muted relative size-28 shrink-0 overflow-hidden rounded-md border"
       aria-hidden="true"
     >
       <Image src={bannerImage} alt="" className="h-full w-full object-cover" />

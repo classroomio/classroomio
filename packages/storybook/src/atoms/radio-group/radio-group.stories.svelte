@@ -43,21 +43,21 @@
         <RadioGroup.Item value="default" id="r1" class="mt-1" />
         <div>
           <Label for="r1" class="font-medium">Default</Label>
-          <p class="text-muted-foreground text-sm">The standard spacing for your app</p>
+          <p class="ui:text-muted-foreground text-sm">The standard spacing for your app</p>
         </div>
       </div>
       <div class="flex items-start space-x-2">
         <RadioGroup.Item value="comfortable" id="r2" class="mt-1" />
         <div>
           <Label for="r2" class="font-medium">Comfortable</Label>
-          <p class="text-muted-foreground text-sm">More space for easier interaction</p>
+          <p class="ui:text-muted-foreground text-sm">More space for easier interaction</p>
         </div>
       </div>
       <div class="flex items-start space-x-2">
         <RadioGroup.Item value="compact" id="r3" class="mt-1" />
         <div>
           <Label for="r3" class="font-medium">Compact</Label>
-          <p class="text-muted-foreground text-sm">Less space, more content</p>
+          <p class="ui:text-muted-foreground text-sm">Less space, more content</p>
         </div>
       </div>
     </RadioGroup.Root>

@@ -104,7 +104,9 @@
     >
       {#each tags as tag (tag.id)}
         {#if variant === 'card'}
-          <Item.SubDescription class="border-border inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2">
+          <Item.SubDescription
+            class="ui:border-border inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2"
+          >
             <span
               class="ui:bg-primary/60 inline-block h-1.5 w-1.5 shrink-0 rounded-full"
               style={tag.color ? `background-color: ${tag.color}` : undefined}
@@ -126,7 +128,7 @@
     </div>
     <span
       bind:this={overflowBadgeMeasureEl}
-      class="border-border ui:text-muted-foreground pointer-events-none invisible absolute top-0 left-0 -z-10 inline-flex shrink-0 items-center rounded-full border {variant ===
+      class="ui:border-border ui:text-muted-foreground pointer-events-none invisible absolute top-0 left-0 -z-10 inline-flex shrink-0 items-center rounded-full border {variant ===
       'table'
         ? 'text-2xs px-1.5 py-0.5'
         : 'px-2 text-xs'}"
@@ -143,7 +145,9 @@
     >
       {#each tags.slice(0, displayTagCount) as tag (tag.id)}
         {#if variant === 'card'}
-          <Item.SubDescription class="border-border inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2">
+          <Item.SubDescription
+            class="ui:border-border inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2"
+          >
             <span
               class="ui:bg-primary/60 inline-block h-1.5 w-1.5 shrink-0 rounded-full"
               style={tag.color ? `background-color: ${tag.color}` : undefined}
@@ -170,7 +174,7 @@
                 {#if variant === 'card'}
                   <Item.SubDescription
                     {...props}
-                    class="border-border inline-flex shrink-0 cursor-default items-center gap-1.5 rounded-full border px-2"
+                    class="ui:border-border inline-flex shrink-0 cursor-default items-center gap-1.5 rounded-full border px-2"
                     aria-label={$t('courses.course_card.tags_overflow_aria', {
                       count: hiddenTags.length
                     })}
@@ -180,7 +184,7 @@
                 {:else}
                   <span
                     {...props}
-                    class="border-border ui:text-muted-foreground text-2xs inline-flex shrink-0 cursor-default items-center rounded-full border px-1.5 py-0.5"
+                    class="ui:border-border ui:text-muted-foreground text-2xs inline-flex shrink-0 cursor-default items-center rounded-full border px-1.5 py-0.5"
                     aria-label={$t('courses.course_card.tags_overflow_aria', {
                       count: hiddenTags.length
                     })}

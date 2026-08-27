@@ -47,10 +47,10 @@
   isLoading={resetApi.isLoading}
   showLogo={true}
 >
-  <div class="ui:flex ui:flex-col ui:gap-6">
+  <div class="flex flex-col gap-6">
     <div>
-      <Card.Title class="ui:text-xl">{$t('login.reset_password.heading')}</Card.Title>
-      <Card.Description class="ui:mt-2">{$t('login.reset_password.description')}</Card.Description>
+      <Card.Title class="text-xl">{$t('login.reset_password.heading')}</Card.Title>
+      <Card.Description class="mt-2">{$t('login.reset_password.description')}</Card.Description>
     </div>
     <Field.Field>
       <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
@@ -88,12 +88,7 @@
       </Field.Content>
     </Field.Field>
 
-    <Button
-      type="submit"
-      disabled={isSubmitDisabled || resetApi.isLoading}
-      loading={resetApi.isLoading}
-      class="ui:w-full"
-    >
+    <Button type="submit" disabled={isSubmitDisabled || resetApi.isLoading} loading={resetApi.isLoading} class="w-full">
       Reset Password
     </Button>
   </div>

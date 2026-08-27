@@ -72,7 +72,7 @@
 
 <Story name="Background">
   {#snippet template()}
-    <Empty.Root class="ui:from-muted/50 ui:to-background ui:h-full ui:bg-gradient-to-b ui:from-30%">
+    <Empty.Root class="ui:from-muted/50 ui:to-background h-full bg-gradient-to-b from-30%">
       <Empty.Header>
         <Empty.Media variant="icon">
           <BellIcon />
@@ -117,7 +117,7 @@
     <Empty.Root>
       <Empty.Header>
         <Empty.Media>
-          <div class="*:ring-background flex -space-x-2 *:size-12 *:ring-2 *:grayscale">
+          <div class="ui:*:ring-background flex -space-x-2 *:size-12 *:ring-2 *:grayscale">
             <Avatar.Root>
               <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
               <Avatar.Fallback>CN</Avatar.Fallback>

@@ -54,7 +54,9 @@
 <div
   id={elementId}
   bind:this={ref}
-  class="border-border border bg-white dark:bg-black {hasError ? 'border-red-700' : ''} root relative mb-6 rounded-md"
+  class="ui:border-border border bg-white dark:bg-black {hasError
+    ? 'border-red-700'
+    : ''} root relative mb-6 rounded-md"
 >
   {#if isTitle}
     <div class="title bg-primary-700 absolute"></div>

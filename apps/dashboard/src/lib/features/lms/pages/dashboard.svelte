@@ -407,7 +407,7 @@
                     </span>
                     <span class="ui:text-muted-foreground">{courseProgress}%</span>
                   </div>
-                  <Progress value={courseProgress} max={100} class="ui:h-1.5" />
+                  <Progress value={courseProgress} max={100} class="h-1.5" />
                 </div>
               </div>
             </article>

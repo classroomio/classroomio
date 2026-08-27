@@ -685,11 +685,11 @@
 
     {#if courseApi.errors.type}
       <div
-        class="ui:mt-2 ui:rounded-md ui:border ui:border-destructive/30 ui:bg-destructive/5 ui:p-3 ui:text-sm ui:text-destructive"
+        class="ui:border-destructive/30 ui:bg-destructive/5 ui:text-destructive mt-2 rounded-md border p-3 text-sm"
         role="alert"
       >
-        <div class="ui:font-medium">{$t('course.navItem.settings.convert_to_public_blocked')}</div>
-        <p class="ui:mt-1 ui:text-destructive/90">{courseApi.errors.type}</p>
+        <div class="font-medium">{$t('course.navItem.settings.convert_to_public_blocked')}</div>
+        <p class="ui:text-destructive/90 mt-1">{courseApi.errors.type}</p>
       </div>
     {/if}
 
@@ -1018,7 +1018,7 @@
               );
               hasUnsavedChanges = true;
             }}
-            class="ui:mt-1 flex flex-col gap-2"
+            class="mt-1 flex flex-col gap-2"
           >
             <Field.Field orientation="horizontal">
               <RadioGroup.Item value="waves" id="callout-animation-waves" />
