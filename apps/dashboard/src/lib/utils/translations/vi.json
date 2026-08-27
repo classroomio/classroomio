@@ -5,6 +5,11 @@
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?",
       "label": "Thay đổi chưa lưu"
     },
+    "app_update": {
+      "title": "Đã có phiên bản mới.",
+      "description": "Tải lại để nhận các tính năng và bản sửa lỗi mới nhất.",
+      "reload": "Tải lại"
+    },
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
+        "min_char": "Phải dài từ 8 ký tự trở lên"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
+        "min_char": "Phải dài từ 8 ký tự trở lên"
       },
       "email": {
         "invalid_email": "Địa chỉ email không hợp lệ"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Được đánh dấu là hoàn thành",
+        "complete_unmarked": "Được đánh dấu là chưa hoàn thành",
         "complete_download": "Tải xuống hoàn tất",
         "version_restored": "Đã khôi phục phiên bản thành công"
       },
@@ -864,14 +870,15 @@
           "description_live": "Các bài học và bài tập bị khóa sẽ được ẩn khỏi học sinh cho đến khi bạn mở khóa chúng — hữu ích nếu bạn phát hành nội dung hàng tuần.",
           "unlock_all": "Mở khóa tất cả"
         },
-        "generate_link": "Tạo liên kết mới",
-        "open_link": "Mở liên kết trong tab mới",
-        "copy_link": "Sao chép liên kết",
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
         "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
-        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
+        "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
         "completion_deadline_label": "Thời hạn hoàn thành khóa học",
-        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn."
+        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
+        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
+        "generate_link": "Tạo liên kết mới",
+        "open_link": "Mở liên kết trong tab mới",
+        "copy_link": "Sao chép liên kết"
       },
       "analytics": {
         "title": "Phân tích"
@@ -1120,6 +1127,13 @@
         "you": "bạn",
         "pending": "Đang chờ xử lý",
         "name": "Tên",
+        "learner": "Học viên",
+        "progress": "Tiến độ",
+        "stage": "Giai đoạn",
+        "last_login_at": "Đăng nhập lần cuối",
+        "enrolled_at": "Ghi danh",
+        "certificate_earned": "Đã nhận chứng chỉ",
+        "not_started": "Chưa bắt đầu",
         "role": "Vai trò",
         "action": "Hành động",
         "feedback": "Đã sao chép email vào clipboard",
@@ -2466,7 +2480,8 @@
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt",
       "nav_ai_assistant": "Trợ lý",
-      "nav_ai_tutor": "Gia sư AI"
+      "nav_ai_tutor": "Gia sư AI",
+      "exit_course": "Thoát khóa học"
     },
     "completion": {
       "modal": {
@@ -2869,6 +2884,7 @@
     "discussion": "Thảo luận",
     "people": "mọi người",
     "goto_lms": "Đi tới LMS",
+    "join_academy": "Tham gia học viện",
     "goto_home": "Đi tới Lớp họcIO Trang chủ",
     "login": "Đăng nhập",
     "signup": "Đăng ký",
@@ -3846,13 +3862,17 @@
       "full_name": "Tên đầy đủ",
       "password": "Mật khẩu của bạn",
       "confirm_password": "Xác nhận mật khẩu",
-      "password_helper_message": "Mật khẩu phải nhiều hơn 8 ký tự",
+      "password_helper_message": "Mật khẩu phải có từ 8 ký tự trở lên",
       "create_account": "Tạo tài khoản"
     },
     "signup_disabled": {
       "title": "Đăng ký bị vô hiệu hóa",
       "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
       "go_to_login": "Đi tới Đăng nhập"
+    },
+    "reset_password": {
+      "heading": "Mật khẩu mới",
+      "description": "Nhập chi tiết mật khẩu mới của bạn"
     },
     "continue_with": "Hoặc tiếp tục với"
   },
@@ -3976,7 +3996,11 @@
     "resend": "Gửi lại mã xác minh",
     "resend_in": "Gửi lại xác minh trong",
     "seconds": "giây",
-    "snackbar_error": "lỗi khi gửi mã"
+    "snackbar_error": "lỗi khi gửi mã",
+    "wrong_address": "Đăng ký sai địa chỉ?",
+    "switch_account": "Chuyển đổi tài khoản",
+    "confirm_link_prefix": "Nhấp vào liên kết chúng tôi đã gửi đến",
+    "confirm_link_suffix": "để xác nhận email của bạn"
   },
   "public_courses": {
     "page_title": "Khóa học - ClassroomIO",
@@ -4074,7 +4098,8 @@
         "accepted": "Lời mời này đã được sử dụng.",
         "invalid": "Liên kết mời này không hợp lệ.",
         "joined": "Đã tham gia tổ chức",
-        "join_failed": "Không thể tham gia tổ chức"
+        "join_failed": "Không thể tham gia tổ chức",
+        "try_again": "Thử lại"
       }
     },
     "link": {
@@ -4582,7 +4607,10 @@
         "mobile": "Di động",
         "tablet": "Máy tính bảng",
         "desktop": "Máy tính"
-      }
+      },
+      "current_version": "Phiên bản hiện tại",
+      "active_badge": "Đang hoạt động",
+      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn"
     },
     "tabs": {
       "select_courses": "Chọn khóa học",

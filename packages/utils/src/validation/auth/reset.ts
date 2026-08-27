@@ -1,8 +1,7 @@
 import * as z from 'zod';
+import { ZPasswordFields } from './password';
 
-export const ResetPasswordSchema = z.object({
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8),
+export const ResetPasswordSchema = ZPasswordFields.safeExtend({
   token: z.string()
 });
 

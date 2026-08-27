@@ -612,7 +612,8 @@ export const submission = pgTable(
       columns: [table.submittedBy],
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
-    })
+    }),
+    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
   ]
 );
 

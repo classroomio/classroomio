@@ -148,7 +148,11 @@
     "resend": "Resend Verification Code",
     "resend_in": "Resend verification in",
     "seconds": "seconds",
-    "snackbar_error": "error while sending code"
+    "snackbar_error": "Error while sending code",
+    "wrong_address": "Signed up with the wrong address?",
+    "switch_account": "Switch Account",
+    "confirm_link_prefix": "Click the link we sent to",
+    "confirm_link_suffix": "to confirm your account"
   },
   "email_verification": {
     "errors": {
@@ -290,6 +294,11 @@
       "message": "You have unsaved changes. Are you sure you want to leave?",
       "label": "Unsaved changes"
     },
+    "app_update": {
+      "title": "A new version is available.",
+      "description": "Reload to get the latest features and fixes.",
+      "reload": "Reload"
+    },
     "discard": "Discard",
     "save_changes": "Save changes",
     "refresh": "Refresh"
@@ -367,7 +376,7 @@
       "full_name": "Full Name",
       "password": "Your Password",
       "confirm_password": "Confirm Password",
-      "password_helper_message": "Password must be more than 8 characters",
+      "password_helper_message": "Password must be 8 or more characters",
       "create_account": "Create Account"
     },
     "validation": {
@@ -378,6 +387,10 @@
       "title": "Signup Disabled",
       "invite_only_message": "Signup is invite-only. Please use an invite link to create an account.",
       "go_to_login": "Go to Login"
+    },
+    "reset_password": {
+      "heading": "New Password",
+      "description": "Enter your new password details"
     }
   },
   "profileMenu": {
@@ -1397,6 +1410,9 @@
       "content": "Content",
       "design": "Design",
       "version_history": "Version History",
+      "current_version": "Current Version",
+      "active_badge": "Active",
+      "active_badge_description": "This version is currently live on your embed",
       "save_changes": "Save changes",
       "rename_widget": "Rename widget",
       "continue_to_layout": "Continue to layout",
@@ -1644,6 +1660,7 @@
     "people": "People",
     "goto_lms": "Go to LMS",
     "goto_dashboard": "Dashboard",
+    "join_academy": "Join Academy",
     "goto_home": "Go to ClassroomIO Home",
     "login": "Login",
     "signup": "Sign Up",
@@ -2011,7 +2028,8 @@
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings",
       "nav_ai_assistant": "Assistant",
-      "nav_ai_tutor": "AI Tutor"
+      "nav_ai_tutor": "AI Tutor",
+      "exit_course": "Exit course"
     },
     "sidebar": {
       "back_to_course": "Back to course",
@@ -3248,6 +3266,13 @@
         "you": "You",
         "pending": "Pending",
         "name": "Name",
+        "learner": "Learner",
+        "progress": "Progress",
+        "stage": "Stage",
+        "last_login_at": "Last Login At",
+        "enrolled_at": "Enrolled At",
+        "certificate_earned": "Certificate earned",
+        "not_started": "Not started",
         "role": "Role",
         "action": "Action",
         "feedback": "Copied Email to clipboard",
@@ -3698,6 +3723,8 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
+        "completion_deadline_label": "Course Completion Deadline",
+        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
@@ -4390,6 +4417,7 @@
       "completion_update_failed": "Failed to update lesson completion",
       "success": {
         "complete_marked": "Marked as complete",
+        "complete_unmarked": "Marked as incomplete",
         "complete_download": "Download Complete",
         "version_restored": "Version restored sucessfully"
       },
@@ -4484,7 +4512,8 @@
         "accepted": "This invite has already been used.",
         "invalid": "This invite link is not valid.",
         "joined": "Joined organization",
-        "join_failed": "Failed to join organization"
+        "join_failed": "Failed to join organization",
+        "try_again": "Try again"
       }
     },
     "link": {
@@ -4568,12 +4597,12 @@
         "invalid_email": "Invalid email address"
       },
       "password": {
-        "min_char": "Must be 6 or more characters long"
+        "min_char": "Must be 8 or more characters long"
       }
     },
     "reset": {
       "password": {
-        "min_char": "Must be 6 or more characters long"
+        "min_char": "Must be 8 or more characters long"
       }
     },
     "onboarding": {

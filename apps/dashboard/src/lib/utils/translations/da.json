@@ -5,6 +5,11 @@
       "message": "Du har ikke-gemte ændringer. Er du sikker på, at du vil tage afsted?",
       "label": "Ikke-gemte ændringer"
     },
+    "app_update": {
+      "title": "En ny version er tilgængelig.",
+      "description": "Genindlæs for at få de nyeste funktioner og rettelser.",
+      "reload": "Genindlæs"
+    },
     "discard": "Kassér",
     "save_changes": "Gem ændringer"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Skal være 6 eller flere tegn lange"
+        "min_char": "Skal være 8 eller flere tegn lange"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Skal være på 6 eller flere tegn"
+        "min_char": "Skal være på 8 eller flere tegn"
       },
       "email": {
         "invalid_email": "Ugyldig e-mailadresse"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Markeret som komplet",
+        "complete_unmarked": "Markeret som ufuldstændig",
         "complete_download": "Download fuldført",
         "version_restored": "Version blev gendannet"
       },
@@ -864,14 +870,15 @@
           "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
           "unlock_all": "Lås alle op"
         },
-        "generate_link": "Generer nyt link",
-        "open_link": "Åbn link i ny fane",
-        "copy_link": "Kopiér link",
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
-        "go_to_completion_deadline": "Gå til fuldførelsesfristen",
+        "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
-        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline."
+        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "go_to_completion_deadline": "Gå til fuldførelsesfristen",
+        "generate_link": "Generer nyt link",
+        "open_link": "Åbn link i ny fane",
+        "copy_link": "Kopiér link"
       },
       "analytics": {
         "title": "Analyse"
@@ -1120,6 +1127,13 @@
         "you": "Dig",
         "pending": "Afventer",
         "name": "Navn",
+        "learner": "Deltager",
+        "progress": "Fremskridt",
+        "stage": "Fase",
+        "last_login_at": "Sidste login",
+        "enrolled_at": "Tilmeldt",
+        "certificate_earned": "Certifikat opnået",
+        "not_started": "Ikke startet",
         "role": "Rolle",
         "action": "Handling",
         "feedback": "Kopieret e-mail til udklipsholder",
@@ -2466,7 +2480,8 @@
       "nav_landing_page": "Landingsside",
       "nav_settings": "Indstillinger",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "AI underviser"
+      "nav_ai_tutor": "AI underviser",
+      "exit_course": "Forlad kursus"
     },
     "completion": {
       "modal": {
@@ -2869,6 +2884,7 @@
     "discussion": "Diskussion",
     "people": "Mennesker",
     "goto_lms": "Gå til LMS",
+    "join_academy": "Tilmeld dig akademiet",
     "goto_home": "Gå til ClassroomIO Home",
     "login": "Log ind",
     "signup": "Tilmeld dig",
@@ -3846,13 +3862,17 @@
       "full_name": "Fuldt navn",
       "password": "Din adgangskode",
       "confirm_password": "Bekræft adgangskode",
-      "password_helper_message": "Adgangskoden skal være på mere end 8 tegn",
+      "password_helper_message": "Adgangskoden skal være på 8 eller flere tegn",
       "create_account": "Opret konto"
     },
     "signup_disabled": {
       "title": "Tilmelding deaktiveret",
       "invite_only_message": "Tilmelding er kun for invitationer. Brug venligst et invitationslink til at oprette en konto.",
       "go_to_login": "Gå til Login"
+    },
+    "reset_password": {
+      "heading": "Ny adgangskode",
+      "description": "Indtast dine nye adgangskodeoplysninger"
     },
     "continue_with": "Eller fortsæt med"
   },
@@ -3976,7 +3996,11 @@
     "resend": "Send bekræftelseskode igen",
     "resend_in": "Send bekræftelse ind igen",
     "seconds": "sekunder",
-    "snackbar_error": "fejl under afsendelse af kode"
+    "snackbar_error": "fejl under afsendelse af kode",
+    "wrong_address": "Tilmeldt med den forkerte adresse?",
+    "switch_account": "Skift konto",
+    "confirm_link_prefix": "Klik på linket, vi sendte til",
+    "confirm_link_suffix": "for at bekræfte din e-mail"
   },
   "public_courses": {
     "page_title": "Kurser - ClassroomIO",
@@ -4074,7 +4098,8 @@
         "accepted": "Denne invitation er allerede blevet brugt.",
         "invalid": "Dette invitationslink er ikke gyldigt.",
         "joined": "Tilsluttet organisation",
-        "join_failed": "Kunne ikke deltage i organisationen"
+        "join_failed": "Kunne ikke deltage i organisationen",
+        "try_again": "Prøv igen"
       }
     },
     "link": {
@@ -4582,7 +4607,10 @@
         "mobile": "Mobil",
         "tablet": "Tablet",
         "desktop": "Desktop"
-      }
+      },
+      "current_version": "Nuværende version",
+      "active_badge": "Aktiv",
+      "active_badge_description": "Denne version er i øjeblikket live på din indlejring"
     },
     "tabs": {
       "select_courses": "Vælg Kurser",

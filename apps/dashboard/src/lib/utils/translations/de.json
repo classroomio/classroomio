@@ -5,6 +5,11 @@
       "message": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie gehen möchten?",
       "label": "Nicht gespeicherte Änderungen"
     },
+    "app_update": {
+      "title": "Eine neue Version ist verfügbar.",
+      "description": "Laden Sie neu, um die neuesten Funktionen und Korrekturen zu erhalten.",
+      "reload": "Neu laden"
+    },
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Muss mindestens 6 Zeichen lang sein"
+        "min_char": "Muss mindestens 8 Zeichen lang sein"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Muss mindestens 6 Zeichen lang sein"
+        "min_char": "Muss mindestens 8 Zeichen lang sein"
       },
       "email": {
         "invalid_email": "Ungültige E-Mail-Adresse"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Als abgeschlossen markiert",
+        "complete_unmarked": "Als unvollständig markiert",
         "complete_download": "Download abgeschlossen",
         "version_restored": "Version erfolgreich wiederhergestellt"
       },
@@ -864,14 +870,15 @@
           "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
           "unlock_all": "Schalte alle frei"
         },
-        "generate_link": "Neuen Link generieren",
-        "open_link": "Link in neuem Tab öffnen",
-        "copy_link": "Link kopieren",
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
-        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
-        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
+        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "generate_link": "Neuen Link generieren",
+        "open_link": "Link in neuem Tab öffnen",
+        "copy_link": "Link kopieren"
       },
       "analytics": {
         "title": "Analysen"
@@ -1120,6 +1127,13 @@
         "you": "Du",
         "pending": "Ausstehend",
         "name": "Name",
+        "learner": "Lernender",
+        "progress": "Fortschritt",
+        "stage": "Phase",
+        "last_login_at": "Letzte Anmeldung",
+        "enrolled_at": "Eingeschrieben am",
+        "certificate_earned": "Zertifikat erhalten",
+        "not_started": "Nicht gestartet",
         "role": "Rolle",
         "action": "Aktion",
         "feedback": "E-Mail in die Zwischenablage kopiert",
@@ -2466,7 +2480,8 @@
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "KI-Tutor"
+      "nav_ai_tutor": "KI-Tutor",
+      "exit_course": "Kurs verlassen"
     },
     "completion": {
       "modal": {
@@ -2869,6 +2884,7 @@
     "discussion": "Diskussion",
     "people": "Menschen",
     "goto_lms": "Gehen Sie zu LMS",
+    "join_academy": "Akademie beitreten",
     "goto_home": "Gehen Sie zur ClassroomIO-Startseite",
     "login": "Anmelden",
     "signup": "Melden Sie sich an",
@@ -3846,13 +3862,17 @@
       "full_name": "Vollständiger Name",
       "password": "Ihr Passwort",
       "confirm_password": "Passwort bestätigen",
-      "password_helper_message": "Das Passwort muss mehr als 8 Zeichen lang sein",
+      "password_helper_message": "Das Passwort muss 8 oder mehr Zeichen lang sein",
       "create_account": "Konto erstellen"
     },
     "signup_disabled": {
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
+    },
+    "reset_password": {
+      "heading": "Neues Passwort",
+      "description": "Geben Sie Ihre neuen Passwortdaten ein"
     },
     "continue_with": "Oder fahren Sie mit fort"
   },
@@ -3976,7 +3996,11 @@
     "resend": "Bestätigungscode erneut senden",
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
-    "snackbar_error": "Fehler beim Senden des Codes"
+    "snackbar_error": "Fehler beim Senden des Codes",
+    "wrong_address": "Mit der falschen Adresse angemeldet?",
+    "switch_account": "Konto wechseln",
+    "confirm_link_prefix": "Klicken Sie auf den Link, an den wir gesendet haben",
+    "confirm_link_suffix": "um Ihre E-Mail zu bestätigen"
   },
   "public_courses": {
     "page_title": "Kurse - ClassroomIO",
@@ -4074,7 +4098,8 @@
         "accepted": "Diese Einladung wurde bereits verwendet.",
         "invalid": "Dieser Einladungslink ist ungültig.",
         "joined": "Der Organisation beigetreten",
-        "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen"
+        "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
+        "try_again": "Erneut versuchen"
       }
     },
     "link": {
@@ -4582,7 +4607,10 @@
         "mobile": "Mobil",
         "tablet": "Tablet",
         "desktop": "Desktop"
-      }
+      },
+      "current_version": "Aktuelle Version",
+      "active_badge": "Aktiv",
+      "active_badge_description": "Diese Version ist derzeit auf Ihrer Einbettung verfügbar"
     },
     "tabs": {
       "select_courses": "Wählen Sie Kurse aus",

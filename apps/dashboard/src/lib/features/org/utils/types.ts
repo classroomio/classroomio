@@ -10,6 +10,8 @@ export type GetFirstOrganizationResponse = InferResponseType<GetFirstOrganizatio
 export type GetFirstOrganizationSuccess = Extract<InferResponseType<GetFirstOrganizationRequest>, { success: true }>;
 export type FirstOrganizationRecord = GetFirstOrganizationSuccess['data'][number];
 
+export type JoinAcademyRequest = typeof classroomio.organization.join.$post;
+
 // Team member types
 export type GetTeamRequest = (typeof classroomio.organization)['team']['$get'];
 export type OrganizationTeamResponse = InferResponseType<GetTeamRequest> | null;

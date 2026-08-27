@@ -35,11 +35,14 @@
 <Story name="Required">
   {#snippet template()}
     <div class="grid w-full max-w-sm items-center gap-1.5">
-      <Label for="username">
-        Username
-        <span class="text-red-500">*</span>
-      </Label>
+      <Label for="username" required>Username</Label>
       <Input id="username" placeholder="Username" required />
     </div>
+  {/snippet}
+</Story>
+
+<Story name="Required Without Input">
+  {#snippet template()}
+    <Label required>Email</Label>
   {/snippet}
 </Story>

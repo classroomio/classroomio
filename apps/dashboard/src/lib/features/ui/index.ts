@@ -23,6 +23,7 @@ export { default as RoleBasedSecurity } from './role-based-security.svelte';
 export { default as Search } from './search.svelte';
 export { default as SenjaEmbed } from './senja-embed.svelte';
 export { default as Snackbar } from './snackbar/snackbar.svelte';
+export { default as TablePagination } from './table-pagination.svelte';
 export { default as TextEditor } from './text-editor.svelte';
 export { preloadTextEditor } from './text-editor.svelte';
 export { default as UnsavedChanges } from './unsaved-changes.svelte';

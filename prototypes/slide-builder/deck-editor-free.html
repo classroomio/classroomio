@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deck editor — free position · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="deck.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      body { overflow: hidden; }
+      .ed-head { height: 56px; border-bottom: 1px solid var(--border); background: var(--background); display: flex; align-items: center; gap: 10px; padding: 0 12px; flex-shrink: 0; }
+      .ed-head .t { font-size: 15px; letter-spacing: -0.01em; }
+      .ed-head .sp { flex: 1; }
+      .fblock { cursor: grab; }
+      .fblock.dragging { cursor: grabbing; }
+      .num { font-variant-numeric: tabular-nums; }
+      .box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .box-field { display: grid; gap: 4px; }
+      .box-field span { font-size: 11px; color: var(--muted-foreground); }
+      .box-field input { width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
+    </style>
+  </head>
+  <body>
+    <header class="ed-head">
+      <a class="icon-btn" href="deck-editor.html" title="Back" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 19-7-7 7-7M19 12H5" /></svg>
+      </a>
+      <span class="t">Designing Effective Assessments</span>
+      <span class="badge badge-muted">Slide 9 · Free position</span>
+      <span class="badge badge-outline" id="dirty" hidden>Unsaved</span>
+      <span class="sp"></span>
+      <button class="btn btn-primary btn-sm" id="save" disabled>Save</button>
+    </header>
+
+    <div class="deck-shell">
+      <aside class="slide-rail">
+        <div class="slide-rail-head"><span>Slides</span><span class="tnum">9</span></div>
+        <div class="thumb" onclick="location.href='deck-editor.html'"><span class="n">7</span><div id="t7"></div></div>
+        <div class="thumb" onclick="location.href='deck-editor.html'"><span class="n">8</span><div id="t8"></div></div>
+        <div class="thumb active"><span class="n">9</span><span class="warn" id="railWarn" title="Content past the canvas edge">!</span><div id="t9"></div></div>
+      </aside>
+
+      <section class="stage">
+        <div class="stage-inner">
+          <div class="stage-bar">
+            <div class="stage-meta"><span>Slide 9 of 9</span><span>·</span><span>Free position</span></div>
+            <div class="segctl" role="group" aria-label="Canvas mode">
+              <button type="button" onclick="location.href='deck-editor.html'">Layout</button>
+              <button class="active" type="button">Free</button>
+            </div>
+          </div>
+
+          <div class="stage-frame" id="stageFrame"></div>
+
+          <div id="overflowNote" class="note-strip" style="margin-top: 12px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01" /><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+            <span>
+              <b id="ovName">Quote</b> extends past the canvas — <span class="num" id="ovMath">760 + 400 = 1160 &gt; 1080</span>.
+              Saving is blocked until it fits. Drag it up, or shrink its height.
+            </span>
+          </div>
+          <p class="insp-hint" style="margin-top: 10px; text-align: center">
+            Drag any block to move it. Snap guides appear at the canvas centre and thirds.
+          </p>
+        </div>
+      </section>
+
+      <aside class="inspector">
+        <div class="insp-tabs">
+          <button class="insp-tab" data-tab="slide" type="button">Slide</button>
+          <button class="insp-tab active" data-tab="block" type="button">Block</button>
+          <button class="insp-tab" data-tab="notes" type="button">Notes</button>
+        </div>
+
+        <div class="insp-body" data-panel="slide" hidden>
+          <div class="insp-group">
+            <span class="insp-label">Layout</span>
+            <div class="insp-row"><span>Free position</span><span class="badge badge-muted">free</span></div>
+            <p class="insp-hint">Every block on this slide carries its own x / y / w / h box. Switch back to a named layout to let slots own geometry again.</p>
+          </div>
+          <div class="insp-group">
+            <span class="insp-label">Canvas</span>
+            <div class="insp-row"><span>Size</span><span class="num">1920 × 1080</span></div>
+            <div class="insp-row"><span>Snap</span><label class="switch"><input type="checkbox" checked id="snap" /><span></span></label></div>
+          </div>
+        </div>
+
+        <div class="insp-body" data-panel="block">
+          <div class="insp-group">
+            <span class="insp-label">Selected block</span>
+            <div class="insp-row"><span id="bKind">Quote</span><span class="badge badge-muted">free</span></div>
+          </div>
+          <div class="insp-group">
+            <span class="insp-label">Box</span>
+            <div class="box-grid">
+              <label class="box-field"><span>X</span><input class="input" id="fx" type="number" step="10" /></label>
+              <label class="box-field"><span>Y</span><input class="input" id="fy" type="number" step="10" /></label>
+              <label class="box-field"><span>W</span><input class="input" id="fw" type="number" step="10" /></label>
+              <label class="box-field"><span>H</span><input class="input" id="fh" type="number" step="10" /></label>
+            </div>
+            <p class="insp-hint" id="boxHint"></p>
+          </div>
+          <div class="insp-group">
+            <span class="insp-label">Text</span>
+            <textarea class="input" id="bText" rows="3" style="resize: vertical"></textarea>
+          </div>
+          <div class="insp-group">
+            <button class="btn btn-outline btn-sm" id="fit" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+              Snap back into the canvas
+            </button>
+          </div>
+        </div>
+
+        <div class="insp-body" data-panel="notes" hidden>
+          <div class="insp-group">
+            <span class="insp-label">Presenter notes</span>
+            <textarea class="input" rows="8" style="resize: vertical">Free-position example. The pull-quote block is dragged past the bottom edge on purpose.</textarea>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme" style="position: fixed; bottom: 18px; right: 320px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    </button>
+
+    <script src="deck-data.js"></script>
+    <script>
+      const slide = FREE_SLIDE;
+      let selected = 4; // the deliberately overflowing quote block
+
+      const stageFrame = document.getElementById('stageFrame');
+      document.getElementById('t7').innerHTML = renderSlide(DECK.slides[6], { chrome: false });
+      document.getElementById('t8').innerHTML = renderSlide(DECK.slides[7], { chrome: false });
+
+      function paint() {
+        stageFrame.innerHTML = renderSlide(slide);
+        document.getElementById('t9').innerHTML = renderSlide(slide, { chrome: false });
+
+        stageFrame.querySelectorAll('.fblock').forEach((el) => {
+          const index = +el.dataset.block;
+          el.onmousedown = (event) => startDrag(event, index, el);
+          el.onclick = () => selectBlock(index);
+          if (index === selected) drawSelection(el);
+        });
+
+        const bad = overflowingBlocks(slide);
+        const note = document.getElementById('overflowNote');
+        note.hidden = bad.length === 0;
+        document.getElementById('railWarn').hidden = bad.length === 0;
+        document.getElementById('save').disabled = bad.length > 0;
+
+        if (bad.length) {
+          const block = bad[0];
+          document.getElementById('ovName').textContent = block.kind;
+          const overY = block.box.y + block.box.h > 1080;
+          document.getElementById('ovMath').textContent = overY
+            ? `${block.box.y} + ${block.box.h} = ${block.box.y + block.box.h} > 1080`
+            : `${block.box.x} + ${block.box.w} = ${block.box.x + block.box.w} > 1920`;
+        }
+
+        syncFields();
+      }
+
+      function drawSelection(el) {
+        const marker = document.createElement('div');
+        marker.className = 'sel-box';
+        marker.dataset.label = slide.blocks[selected].kind;
+        const frame = stageFrame.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        marker.style.left = box.left - frame.left + 'px';
+        marker.style.top = box.top - frame.top + 'px';
+        marker.style.width = box.width + 'px';
+        marker.style.height = box.height + 'px';
+        marker.innerHTML = '<span class="handle nw"></span><span class="handle ne"></span><span class="handle sw"></span><span class="handle se"></span>';
+        stageFrame.appendChild(marker);
+      }
+
+      function selectBlock(index) {
+        selected = index;
+        paint();
+      }
+
+      function syncFields() {
+        const block = slide.blocks[selected];
+        document.getElementById('bKind').textContent = block.kind;
+        ['x', 'y', 'w', 'h'].forEach((key) => (document.getElementById('f' + key).value = Math.round(block.box[key])));
+        document.getElementById('bText').value = block.text || '';
+        const bottom = block.box.y + block.box.h;
+        const right = block.box.x + block.box.w;
+        document.getElementById('boxHint').textContent = `Bottom edge ${Math.round(bottom)} / 1080 · right edge ${Math.round(right)} / 1920`;
+      }
+
+      ['x', 'y', 'w', 'h'].forEach((key) => {
+        document.getElementById('f' + key).oninput = (event) => {
+          slide.blocks[selected].box[key] = +event.target.value || 0;
+          markDirty();
+          paint();
+        };
+      });
+
+      document.getElementById('bText').oninput = (event) => {
+        slide.blocks[selected].text = event.target.value;
+        markDirty();
+        paint();
+      };
+
+      document.getElementById('fit').onclick = () => {
+        const box = slide.blocks[selected].box;
+        box.y = Math.min(box.y, 1080 - box.h);
+        box.x = Math.min(box.x, 1920 - box.w);
+        markDirty();
+        paint();
+      };
+
+      /* ---- drag with snap guides ---- */
+      function startDrag(event, index, el) {
+        event.preventDefault();
+        selected = index;
+        el.classList.add('dragging');
+
+        const frame = stageFrame.getBoundingClientRect();
+        const scale = 1920 / frame.width;
+        const box = slide.blocks[index].box;
+        const originX = event.clientX;
+        const originY = event.clientY;
+        const startX = box.x;
+        const startY = box.y;
+
+        function onMove(moveEvent) {
+          box.x = Math.round(startX + (moveEvent.clientX - originX) * scale);
+          box.y = Math.round(startY + (moveEvent.clientY - originY) * scale);
+
+          if (document.getElementById('snap').checked) {
+            [0, 640, 960, 1280, 1920].forEach((line) => {
+              if (Math.abs(box.x - line) < 24) box.x = line;
+              if (Math.abs(box.x + box.w - line) < 24) box.x = line - box.w;
+            });
+            [0, 360, 540, 720, 1080].forEach((line) => {
+              if (Math.abs(box.y - line) < 24) box.y = line;
+              if (Math.abs(box.y + box.h - line) < 24) box.y = line - box.h;
+            });
+          }
+
+          paint();
+          showGuides(box);
+        }
+
+        function onUp() {
+          removeEventListener('mousemove', onMove);
+          removeEventListener('mouseup', onUp);
+          stageFrame.querySelectorAll('.guide').forEach((g) => g.remove());
+          markDirty();
+          paint();
+        }
+
+        addEventListener('mousemove', onMove);
+        addEventListener('mouseup', onUp);
+      }
+
+      function showGuides(box) {
+        stageFrame.querySelectorAll('.guide').forEach((g) => g.remove());
+        const add = (className, style) => {
+          const guide = document.createElement('div');
+          guide.className = 'guide ' + className;
+          Object.assign(guide.style, style);
+          stageFrame.appendChild(guide);
+        };
+        if ([0, 640, 960, 1280, 1920].includes(box.x)) add('v', { left: (box.x / 1920) * 100 + '%' });
+        if ([0, 360, 540, 720, 1080].includes(box.y)) add('h', { top: (box.y / 1080) * 100 + '%' });
+      }
+
+      function markDirty() { document.getElementById('dirty').hidden = false; }
+
+      document.querySelectorAll('.insp-tab').forEach((tab) => {
+        tab.onclick = () => {
+          document.querySelectorAll('.insp-tab').forEach((t) => t.classList.toggle('active', t === tab));
+          document.querySelectorAll('.insp-body').forEach((b) => (b.hidden = b.dataset.panel !== tab.dataset.tab));
+        };
+      });
+
+      paint();
+
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

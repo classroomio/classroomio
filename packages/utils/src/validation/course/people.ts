@@ -5,6 +5,14 @@ export const ZCourseMembersParam = z.object({
 });
 export type TCourseMembersParam = z.infer<typeof ZCourseMembersParam>;
 
+export const ZCourseMembersQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().max(200).optional(),
+  roleId: z.coerce.number().int().min(1).optional()
+});
+export type TCourseMembersQuery = z.infer<typeof ZCourseMembersQuery>;
+
 export const ZCourseMembersMemberParam = z.object({
   courseId: z.string().min(1),
   memberId: z.string().min(1)

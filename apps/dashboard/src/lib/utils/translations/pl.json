@@ -5,6 +5,11 @@
       "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?",
       "label": "Niezapisane zmiany"
     },
+    "app_update": {
+      "title": "Dostępna jest nowa wersja.",
+      "description": "Odśwież, aby uzyskać najnowsze funkcje i poprawki.",
+      "reload": "Odśwież"
+    },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Musi mieć 6 lub więcej znaków"
+        "min_char": "Musi mieć 8 lub więcej znaków"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Musi mieć 6 lub więcej znaków"
+        "min_char": "Musi mieć 8 lub więcej znaków"
       },
       "email": {
         "invalid_email": "Nieprawidłowy adres e-mail"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Oznaczono jako ukończone",
+        "complete_unmarked": "Oznaczono jako nieukończone",
         "complete_download": "Pobierz ukończono",
         "version_restored": "Wersja została przywrócona pomyślnie"
       },
@@ -865,13 +871,14 @@
           "unlock_all": "Odblokuj wszystko"
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
+        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
+        "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
+        "completion_deadline_label": "Termin zakończenia kursu",
+        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
+        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
-        "copy_link": "Skopiuj link",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
-        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
-        "completion_deadline_label": "Termin zakończenia kursu",
-        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
+        "copy_link": "Skopiuj link"
       },
       "analytics": {
         "title": "Analityka"
@@ -1120,6 +1127,13 @@
         "you": "Ty",
         "pending": "Oczekujące",
         "name": "Nazwa",
+        "learner": "Uczeń",
+        "progress": "Postęp",
+        "stage": "Etap",
+        "last_login_at": "Ostatnie logowanie",
+        "enrolled_at": "Zapisany",
+        "certificate_earned": "Certyfikat zdobyty",
+        "not_started": "Nie rozpoczęte",
         "role": "Rola",
         "action": "Akcja",
         "feedback": "Skopiowano wiadomość e-mail do schowka",
@@ -2466,7 +2480,8 @@
       "nav_landing_page": "Strona docelowa",
       "nav_settings": "Ustawienia",
       "nav_ai_assistant": "Asystent",
-      "nav_ai_tutor": "Nauczyciel AI"
+      "nav_ai_tutor": "Nauczyciel AI",
+      "exit_course": "Wyjdź z kursu"
     },
     "completion": {
       "modal": {
@@ -2869,6 +2884,7 @@
     "discussion": "Dyskusja",
     "people": "Ludzie",
     "goto_lms": "Przejdź do LMS-a",
+    "join_academy": "Dołącz do akademii",
     "goto_home": "Przejdź do strony głównej ClassroomIO",
     "login": "Zaloguj się",
     "signup": "Zarejestruj się",
@@ -3846,13 +3862,17 @@
       "full_name": "Pełne imię i nazwisko",
       "password": "Twoje hasło",
       "confirm_password": "Potwierdź hasło",
-      "password_helper_message": "Hasło musi mieć więcej niż 8 znaków",
+      "password_helper_message": "Hasło musi mieć 8 lub więcej znaków",
       "create_account": "Utwórz konto"
     },
     "signup_disabled": {
       "title": "Rejestracja wyłączona",
       "invite_only_message": "Rejestracja jest dostępna tylko za zaproszeniem. Aby utworzyć konto, użyj linku z zaproszeniem.",
       "go_to_login": "Przejdź do logowania"
+    },
+    "reset_password": {
+      "heading": "Nowe hasło",
+      "description": "Wprowadź dane nowego hasła"
     },
     "continue_with": "Lub kontynuuj z"
   },
@@ -3976,7 +3996,11 @@
     "resend": "Wyślij ponownie kod weryfikacyjny",
     "resend_in": "Wyślij ponownie weryfikację w",
     "seconds": "sekundy",
-    "snackbar_error": "błąd podczas wysyłania kodu"
+    "snackbar_error": "błąd podczas wysyłania kodu",
+    "wrong_address": "Zarejestrowałeś się pod złym adresem?",
+    "switch_account": "Zmień konto",
+    "confirm_link_prefix": "Kliknij link, na który wysłaliśmy",
+    "confirm_link_suffix": "aby potwierdzić swój e-mail"
   },
   "public_courses": {
     "page_title": "Kursy — ClassroomIO",
@@ -4074,7 +4098,8 @@
         "accepted": "To zaproszenie zostało już wykorzystane.",
         "invalid": "Ten link z zaproszeniem jest nieprawidłowy.",
         "joined": "Dołączył do organizacji",
-        "join_failed": "Nie udało się dołączyć do organizacji"
+        "join_failed": "Nie udało się dołączyć do organizacji",
+        "try_again": "Spróbuj ponownie"
       }
     },
     "link": {
@@ -4582,7 +4607,10 @@
         "mobile": "Telefon",
         "tablet": "Tablet",
         "desktop": "Komputer"
-      }
+      },
+      "current_version": "Aktualna wersja",
+      "active_badge": "Aktywny",
+      "active_badge_description": "Ta wersja jest obecnie dostępna na Twoim osadzeniu"
     },
     "tabs": {
       "select_courses": "Wybierz Kursy",

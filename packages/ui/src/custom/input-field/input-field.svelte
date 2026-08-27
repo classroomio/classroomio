@@ -77,11 +77,8 @@
 <Field.Field class={className}>
   {#if label}
     <div class="ui:flex ui:items-center ui:justify-between">
-      <Field.Label for={name || 'input-field'} class={labelClassName}>
+      <Field.Label for={name || 'input-field'} class={labelClassName} required={isRequired}>
         {label}
-        {#if isRequired}
-          <span class="ui:text-red-700">*</span>
-        {/if}
       </Field.Label>
       {@render labelAction?.()}
     </div>

@@ -216,6 +216,53 @@ export async function replaceWidgetCourses(widgetId: string, courseIds: string[]
   }
 }
 
+export async function updateWidgetWithCourses(
+  orgId: string,
+  widgetId: string,
+  data: Partial<TWidget>,
+  courseIds: string[]
+): Promise<TWidget | null> {
+  try {
+    const normalizedCourseIds = Array.from(new Set(courseIds));
+
+    return db.transaction(async (tx) => {
+      const [result] = await tx
+        .update(schema.widget)
+        .set({
+          ...data,
+          updatedAt: new Date().toISOString()
+        })
+        .where(
+          and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+        )
+        .returning();
+
+      if (!result) {
+        return null;
+      }
+
+      await tx.delete(schema.widgetCourse).where(eq(schema.widgetCourse.widgetId, widgetId));
+
+      if (normalizedCourseIds.length === 0) {
+        return result;
+      }
+
+      const rowsToInsert: TNewWidgetCourse[] = normalizedCourseIds.map((courseId, index) => ({
+        widgetId,
+        courseId,
+        order: index
+      }));
+
+      await tx.insert(schema.widgetCourse).values(rowsToInsert);
+
+      return result;
+    });
+  } catch (error) {
+    console.error('updateWidgetWithCourses error:', error);
+    throw new Error('Failed to update widget with courses');
+  }
+}
+
 export async function getNextWidgetVersion(widgetId: string): Promise<number> {
   try {
     const [result] = await db

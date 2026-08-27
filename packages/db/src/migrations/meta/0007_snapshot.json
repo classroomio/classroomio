@@ -1,5 +1,5 @@
 {
-  "id": "97272dc8-d5b9-4cf9-8495-622f517f0064",
+  "id": "2fea49d3-beb7-4eb8-b1ea-c799f47d1301",
   "prevId": "b201ac61-e28c-4e63-b327-52ccb6075530",
   "version": "7",
   "dialect": "postgresql",
@@ -3979,12 +3979,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
-        },
-        "display_order": {
-          "name": "display_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
         },
         "certificate": {
           "name": "certificate",
@@ -10993,7 +10987,29 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_submission_submitted_by_exercise_id": {
+          "name": "idx_submission_submitted_by_exercise_id",
+          "columns": [
+            {
+              "expression": "submitted_by",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "exercise_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "submission_course_id_fkey": {
           "name": "submission_course_id_fkey",
