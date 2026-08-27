@@ -36,6 +36,10 @@ vale sync && vale content/docs
 pnpm docs:check-stale
 ```
 
+## Known limitation
+
+`docs-validate.yml` runs on plain `pull_request`, not `pull_request_target`, because it checks out and builds PR content, and doing that under `pull_request_target` would hand a repo-write token to whatever install scripts a PR's `package.json` declares (see the comment in that file). The cost: fork PRs get a read-only token, so Vale's `github-pr-check` reporter can't publish inline annotations there, and the step's `continue-on-error` hides that silently. Same-repo PRs are unaffected. Fixing this properly means a `pull_request` job that safely lints PR content and saves the results as an artifact, plus a separate `workflow_run` job with elevated permissions that only reads that artifact and posts the annotations, never touching PR code. Worth doing if fork contributions to `apps/docs` become common; not built now.
+
 ## Deferred for later
 
 - A Vale rule for the task-first-heading style. Google and write-good don't catch it.
