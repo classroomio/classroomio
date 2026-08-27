@@ -5,6 +5,11 @@
       "message": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie gehen möchten?",
       "label": "Nicht gespeicherte Änderungen"
     },
+    "app_update": {
+      "title": "Eine neue Version ist verfügbar.",
+      "description": "Laden Sie neu, um die neuesten Funktionen und Korrekturen zu erhalten.",
+      "reload": "Neu laden"
+    },
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern"
   },

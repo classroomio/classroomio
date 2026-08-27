@@ -16,6 +16,7 @@
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
   import AppModeWatcher from '$features/app/app-mode-watcher.svelte';
+  import AppVersionNotifier from '$features/app/app-version-notifier.svelte';
   import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
 
   import '../app.css';
@@ -109,6 +110,7 @@
   <MetaTags {...metaTags} />
 
   <Snackbar />
+  <AppVersionNotifier />
 
   {#if appInitApi.pendingOrgInvite}
     <PendingInviteModal
