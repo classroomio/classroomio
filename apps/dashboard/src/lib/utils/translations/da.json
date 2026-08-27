@@ -55,12 +55,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Skal være 6 eller flere tegn lange"
+        "min_char": "Skal være 8 eller flere tegn lange"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Skal være på 6 eller flere tegn"
+        "min_char": "Skal være på 8 eller flere tegn"
       },
       "email": {
         "invalid_email": "Ugyldig e-mailadresse"

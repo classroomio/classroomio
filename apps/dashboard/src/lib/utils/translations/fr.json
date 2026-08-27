@@ -55,12 +55,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Doit contenir au moins 6 caractères"
+        "min_char": "Doit contenir au moins 8 caractères"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Doit contenir au moins 6 caractères"
+        "min_char": "Doit contenir au moins 8 caractères"
       },
       "email": {
         "invalid_email": "Adresse e-mail invalide"
