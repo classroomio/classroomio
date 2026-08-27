@@ -863,14 +863,15 @@
           "description_live": "Aulas e exercícios bloqueados permanecem ocultos aos alunos até que você os desbloqueie – o que é útil se você liberar conteúdo semana após semana.",
           "unlock_all": "Desbloquear tudo"
         },
-        "generate_link": "Gerar novo link",
-        "open_link": "Abrir link em nova aba",
-        "copy_link": "Copiar link",
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
-        "go_to_completion_deadline": "Ir para o prazo de conclusão",
+        "go_to_certificate_settings": "Vá para configurações de certificado",
         "completion_deadline_label": "Prazo para conclusão do curso",
-        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo."
+        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+        "go_to_completion_deadline": "Ir para o prazo de conclusão",
+        "generate_link": "Gerar novo link",
+        "open_link": "Abrir link em nova aba",
+        "copy_link": "Copiar link"
       },
       "analytics": {
         "title": "Análises"
@@ -3976,7 +3977,11 @@
     "resend": "Reenviar código de verificação",
     "resend_in": "Reenviar verificação em",
     "seconds": "segundos",
-    "snackbar_error": "erro ao enviar código"
+    "snackbar_error": "erro ao enviar código",
+    "wrong_address": "Inscreveu-se com o endereço errado?",
+    "switch_account": "Trocar de conta",
+    "confirm_link_prefix": "Clique no link que enviamos para",
+    "confirm_link_suffix": "para confirmar seu e-mail"
   },
   "public_courses": {
     "page_title": "Cursos - ClassroomIO",

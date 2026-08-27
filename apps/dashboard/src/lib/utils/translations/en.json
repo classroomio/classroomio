@@ -148,7 +148,11 @@
     "resend": "Resend Verification Code",
     "resend_in": "Resend verification in",
     "seconds": "seconds",
-    "snackbar_error": "error while sending code"
+    "snackbar_error": "Error while sending code",
+    "wrong_address": "Signed up with the wrong address?",
+    "switch_account": "Switch Account",
+    "confirm_link_prefix": "Click the link we sent to",
+    "confirm_link_suffix": "to confirm your account"
   },
   "email_verification": {
     "errors": {
@@ -3699,6 +3703,8 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
+        "completion_deadline_label": "Course Completion Deadline",
+        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",

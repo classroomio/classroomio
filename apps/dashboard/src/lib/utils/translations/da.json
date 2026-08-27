@@ -863,14 +863,15 @@
           "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
           "unlock_all": "Lås alle op"
         },
-        "generate_link": "Generer nyt link",
-        "open_link": "Åbn link i ny fane",
-        "copy_link": "Kopiér link",
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
-        "go_to_completion_deadline": "Gå til fuldførelsesfristen",
+        "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
-        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline."
+        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "go_to_completion_deadline": "Gå til fuldførelsesfristen",
+        "generate_link": "Generer nyt link",
+        "open_link": "Åbn link i ny fane",
+        "copy_link": "Kopiér link"
       },
       "analytics": {
         "title": "Analyse"
@@ -3976,7 +3977,11 @@
     "resend": "Send bekræftelseskode igen",
     "resend_in": "Send bekræftelse ind igen",
     "seconds": "sekunder",
-    "snackbar_error": "fejl under afsendelse af kode"
+    "snackbar_error": "fejl under afsendelse af kode",
+    "wrong_address": "Tilmeldt med den forkerte adresse?",
+    "switch_account": "Skift konto",
+    "confirm_link_prefix": "Klik på linket, vi sendte til",
+    "confirm_link_suffix": "for at bekræfte din e-mail"
   },
   "public_courses": {
     "page_title": "Kurser - ClassroomIO",

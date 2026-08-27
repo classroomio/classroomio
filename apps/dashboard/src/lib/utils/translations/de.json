@@ -863,14 +863,15 @@
           "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
           "unlock_all": "Schalte alle frei"
         },
-        "generate_link": "Neuen Link generieren",
-        "open_link": "Link in neuem Tab öffnen",
-        "copy_link": "Link kopieren",
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
-        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
-        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
+        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "generate_link": "Neuen Link generieren",
+        "open_link": "Link in neuem Tab öffnen",
+        "copy_link": "Link kopieren"
       },
       "analytics": {
         "title": "Analysen"
@@ -3976,7 +3977,11 @@
     "resend": "Bestätigungscode erneut senden",
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
-    "snackbar_error": "Fehler beim Senden des Codes"
+    "snackbar_error": "Fehler beim Senden des Codes",
+    "wrong_address": "Mit der falschen Adresse angemeldet?",
+    "switch_account": "Konto wechseln",
+    "confirm_link_prefix": "Klicken Sie auf den Link, an den wir gesendet haben",
+    "confirm_link_suffix": "um Ihre E-Mail zu bestätigen"
   },
   "public_courses": {
     "page_title": "Kurse - ClassroomIO",

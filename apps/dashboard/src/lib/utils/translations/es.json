@@ -863,14 +863,15 @@
           "description_live": "Las lecciones y ejercicios bloqueados permanecen ocultos para los estudiantes hasta que los desbloqueas, lo que resulta útil si publicas contenido semana tras semana.",
           "unlock_all": "Desbloquear todo"
         },
-        "generate_link": "Generar nuevo enlace",
-        "open_link": "Abrir enlace en nueva pestaña",
-        "copy_link": "Copiar enlace",
         "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del curso antes de publicarlo.",
-        "go_to_completion_deadline": "Ir a la fecha límite de finalización",
+        "go_to_certificate_settings": "Vaya a Configuración de certificado",
         "completion_deadline_label": "Fecha límite de finalización del curso",
-        "completion_deadline_helper": "Los estudiantes deben alcanzar el porcentaje de finalización antes de esta fecha (hora local). Déjelo vacío sin fecha límite."
+        "completion_deadline_helper": "Los estudiantes deben alcanzar el porcentaje de finalización antes de esta fecha (hora local). Déjelo vacío sin fecha límite.",
+        "go_to_completion_deadline": "Ir a la fecha límite de finalización",
+        "generate_link": "Generar nuevo enlace",
+        "open_link": "Abrir enlace en nueva pestaña",
+        "copy_link": "Copiar enlace"
       },
       "analytics": {
         "title": "Analíticas"
@@ -3976,7 +3977,11 @@
     "resend": "Reenviar código de verificación",
     "resend_in": "Reenviar verificación en",
     "seconds": "segundos",
-    "snackbar_error": "error al enviar código"
+    "snackbar_error": "error al enviar código",
+    "wrong_address": "¿Se registró con la dirección incorrecta?",
+    "switch_account": "Cambiar de cuenta",
+    "confirm_link_prefix": "Haga clic en el enlace que le enviamos",
+    "confirm_link_suffix": "para confirmar tu correo electrónico"
   },
   "public_courses": {
     "page_title": "Cursos - ClassroomIO",
