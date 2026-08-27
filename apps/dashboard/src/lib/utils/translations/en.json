@@ -3793,7 +3793,38 @@
         "convert_to_public_blocked_desc": "Exercises in a public course are graded automatically in the browser which is why we only support auto-gradable questions. Remove or replace the following questions before converting this course to Public:",
         "question_in_exercise": "In \"{exercise}\"",
         "fix_question": "Edit",
+        "fix": "Fix",
+        "fix_in_exercise": "Fix in exercise",
+        "cancel_conversion": "Cancel conversion",
         "fix_blocking_questions": "Fix blocking questions",
+        "save_changes_to_fix_questions": "Save your unsaved changes before navigating to fix questions.",
+        "public_conversion": {
+          "aria_label": "Public course conversion progress",
+          "banner_title": "Converting course to Public",
+          "all_exercises_fixed": "All {total} exercises fixed",
+          "ready_to_convert": "Ready to convert!",
+          "exercise_fixed": "This exercise is ready",
+          "questions_left_other_singular": "· {count} question left in other exercises",
+          "questions_left_other_plural": "· {count} questions left in other exercises",
+          "exercises_fixed": "{resolved}/{total} fixed",
+          "questions_left_singular": "fixed · {count} question left",
+          "questions_left_plural": "fixed · {count} questions left",
+          "progress_summary_singular": "{resolved}/{total} fixed · {remaining} question left",
+          "progress_summary_plural": "{resolved}/{total} fixed · {remaining} questions left",
+          "next_exercise": "Next: {exercise}",
+          "next": "Next",
+          "back_to_settings": "Back to Settings",
+          "complete_conversion": "Complete Public Conversion",
+          "jump_to": "Jump to",
+          "question_fallback": "Question {number}",
+          "question_count_singular": "{count} question",
+          "question_count_plural": "{count} questions",
+          "exercise_count_singular": "{count} exercise",
+          "exercise_count_plural": "{count} exercises",
+          "blocks_public_conversion": "Non-autogradable",
+          "blocks_public_conversion_title": "Manual grading isn't supported in Public courses",
+          "blocks_public_conversion_desc": "Public courses only support auto-gradable questions. Change this question's type or delete it to proceed with conversion."
+        },
         "callout": {
           "legend": "Public course callout",
           "description": "Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.",
@@ -4392,7 +4423,8 @@
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
         "update_successful": "Update successful",
-        "link_generated": "Course link updated successfully"
+        "link_generated": "Course link updated successfully",
+        "converted_to_public": "Course successfully converted to Public"
       },
       "error": {
         "not_right": "Something's not right - Please try later",
@@ -4401,6 +4433,9 @@
         "description": "description cannot be empty",
         "failed_integration": "Integration Failed, please try again later",
         "failed_deletion": "Deletion Failed, please try again later"
+      },
+      "info": {
+        "conversion_blocked": "Fix the questions below to complete conversion to Public."
       }
     },
     "course": {

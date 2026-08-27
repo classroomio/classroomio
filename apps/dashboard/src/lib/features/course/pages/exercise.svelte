@@ -17,17 +17,19 @@
 
   import {
     type ExerciseEditorErrors,
+    clearQuestionnaireValidation,
     handleAddQuestion,
     handleAddSection,
     getQuestionsForSection,
     hasSections,
     questionnaire,
+    questionnaireMetaData,
     questionnaireOrder,
     reset,
     mapZodErrorsToQuestionErrors,
     questionnaireValidation
   } from '$features/course/components/exercise/store';
-  import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
+  import { ZExerciseUpdate, type TExerciseUpdate } from '@cio/utils/validation/exercise';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
   import { isOrgStudent, isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
@@ -44,6 +46,9 @@
   import Submissions from '$features/course/components/exercise/submissions/submissions.svelte';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
+  import { PublicConversionBanner } from '$features/course/components';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { getManualQuestionsFromList } from '$features/course/utils/public-conversion-utils';
   import {
     // RefreshPageData,
     RoleBasedSecurity,
@@ -353,8 +358,9 @@
     return true;
   }
 
-  async function handleSave() {
-    if ($isOrgStudent || !courseApi.course?.id) return;
+  async function handleSave(options?: { silent?: boolean }): Promise<boolean> {
+    const silent = options?.silent ?? false;
+    if ($isOrgStudent || !courseApi.course?.id) return false;
 
     // Transform questionnaire to API format for validation
     // Include all non-deleted options (even empty ones) so Zod can catch validation errors
@@ -362,14 +368,24 @@
       shouldFilterEmptyLabels: false
     });
     const activeSections = $questionnaire.sections.filter((section) => !section.deletedAt);
-    const sectionsPayload = activeSections.map((section) => ({
+    const sectionsPayload: TExerciseUpdate['sections'] = activeSections.map((section) => ({
       id: section.id,
       title: section.title,
       description: section.description,
       order: section.order,
       colorTheme: section.colorTheme,
-      afterBehavior: section.afterBehavior,
-      questionIds: getQuestionsForSection($questionnaire.questions, section.id).map((question) => question.id)
+      afterBehavior:
+        section.afterBehavior.action === 'go_to_section' && section.afterBehavior.exerciseSectionId
+          ? {
+              action: 'go_to_section',
+              exerciseSectionId: section.afterBehavior.exerciseSectionId
+            }
+          : section.afterBehavior.action === 'submit'
+            ? { action: 'submit' }
+            : { action: 'continue' },
+      questionIds: getQuestionsForSection($questionnaire.questions, section.id)
+        .map((question) => question.id)
+        .filter((id): id is string | number => id != null)
     }));
     const shouldSyncSections = $questionnaire.sections.length > 0 || hasSections($questionnaire.sections);
     const sectionValidationErrors = getSectionValidationErrors(activeSections);
@@ -389,7 +405,7 @@
         ...sectionValidationErrors
       });
       snackbar.error('snackbar.exercise.validation_errors');
-      return;
+      return false;
     }
 
     if (requiresPositivePointsForAutoGrade) {
@@ -413,16 +429,15 @@
 
         snackbar.error('snackbar.exercise.points_required_auto_grade');
 
-        return;
+        return false;
       }
     }
 
     const passedPolicyCanSave = await runPassedPolicySaveGuard();
-    if (!passedPolicyCanSave) return;
+    if (!passedPolicyCanSave) return false;
 
     isSaving = true;
-
-    reset();
+    clearQuestionnaireValidation();
     try {
       // Transform questionnaire to API format (filter empty options for API, include deleted items)
       const questions = transformQuestionsToApiFormat($questionnaire.questions, {
@@ -434,7 +449,7 @@
       const completionPolicy = $questionnaire.completionPolicy ?? 'submitted';
       const passThreshold = $questionnaire.passThreshold ?? 100;
 
-      await exerciseApi.update(courseApi.course?.id, exerciseId, {
+      await exerciseApi.update(courseApi.course.id, exerciseId, {
         title: $questionnaire.title ?? '',
         description: $questionnaire.description ?? '',
         dueBy: $questionnaire.dueBy ?? '',
@@ -451,7 +466,7 @@
         console.log('Validation errors from API:', exerciseApi.errors);
         snackbar.error('snackbar.exercise.validation_errors');
         isSaving = false;
-        return;
+        return false;
       }
 
       if (exerciseApi.success) {
@@ -460,12 +475,26 @@
         }
         hasUnsavedChanges = false;
         patchExerciseListItemLocally();
-        snackbar.success('snackbar.exercise.success');
+        if (!silent) {
+          snackbar.success('snackbar.exercise.success');
+        }
+
+        if (publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id) {
+          const activeQuestions = getActiveExerciseQuestions($questionnaire.questions ?? []);
+          const manualQuestions = getManualQuestionsFromList(activeQuestions);
+          const exerciseTitle = exerciseApi.exercise?.title || $questionnaire.title || 'Untitled Exercise';
+
+          publicConversionFlow.syncExerciseQuestions(exerciseId, manualQuestions, exerciseTitle);
+        }
+        isSaving = false;
+        return true;
       }
     } catch {
       snackbar.error();
+    } finally {
+      isSaving = false;
     }
-    isSaving = false;
+    return false;
   }
 
   onDestroy(() => {
@@ -491,6 +520,12 @@
   );
 
   $effect(() => {
+    if (courseApi.course?.id) {
+      publicConversionFlow.restoreForCourse(courseApi.course.id);
+    }
+  });
+
+  $effect(() => {
     const nextTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
     if (nextTab === untrack(() => selectedTab)) return;
     selectedTab = nextTab;
@@ -508,7 +543,7 @@
   });
 
   $effect(() => {
-    const currentTab = page.url.searchParams.get('tab') ?? '';
+    const currentTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
     // Prevent self-navigation loops: only update URL when it actually changes.
     if (currentTab === selectedTab) return;
 
@@ -524,7 +559,17 @@
   });
 
   $effect(() => {
+    const highlight = page.url.searchParams.get('highlight');
+    if (highlight && highlight.startsWith('exercise-question-')) {
+      selectedTab = 'questions';
+      preview = false;
+      reorderQuestions = false;
+    }
+  });
+
+  $effect(() => {
     if ($isOrgStudent) return;
+    if ($questionnaireMetaData.exerciseId !== exerciseId) return;
 
     const addNewQ = $questionnaire?.questions?.length < 1;
 
@@ -617,9 +662,13 @@
     preview = !preview;
     reorderQuestions = false;
   }
+
+  const isConversionActive = $derived(
+    publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id
+  );
 </script>
 
-<Page.Header isSticky={true} class="ui:z-app-bar top-12! min-h-[36px]">
+<Page.Header isSticky={!isConversionActive} class={`min-h-9 ${isConversionActive ? '' : 'ui:z-app-bar top-12!'}`}>
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
       <span>{exerciseDisplayTitle}</span>
@@ -745,6 +794,18 @@
     </div>
   </Page.Action>
 </Page.Header>
+
+{#if !$isStudentExperience}
+  <PublicConversionBanner
+    {exerciseId}
+    onJumpToQuestion={() => {
+      selectedTab = 'questions';
+      preview = false;
+      reorderQuestions = false;
+    }}
+    onSave={handleSave}
+  />
+{/if}
 
 <Page.Body>
   {#snippet child()}

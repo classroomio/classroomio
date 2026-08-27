@@ -82,6 +82,23 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/newsfeed-reactions/` - Newsfeed reaction picker and summary used by course and program feeds
 - `custom/course-creator/` - ChatGPT-style course creation input with level and type selects
 - `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
+- `custom/question-type-picker/` - Question type picker modal and QuestionTypeIcon glyph/icon component
+
+### Question type icon (`src/custom/question-type-picker/question-type-icon.svelte`)
+
+Renders a question type glyph tile or Lucide icon based on `key` (QuestionTypeKey) or `typeId` (number), matching the design system from the question type picker.
+
+| Prop        | Type                        | Default | Description                                          |
+| ----------- | --------------------------- | ------- | ---------------------------------------------------- |
+| `key`       | `QuestionTypeKey \| string` | `null`  | Question type key (e.g. `'RADIO'`, `'SHORT_ANSWER'`) |
+| `typeId`    | `number`                    | `null`  | Numeric question type ID                             |
+| `class`     | `string`                    | `''`    | Additional classes for the container tile            |
+| `iconClass` | `string`                    | `''`    | Additional classes for the inner Lucide icon         |
+
+```svelte
+<QuestionTypeIcon typeId={offender.typeId} />
+<QuestionTypeIcon key="SHORT_ANSWER" class="ui:size-8" />
+```
 
 ### Attention highlight (`src/custom/attention-highlight/`)
 

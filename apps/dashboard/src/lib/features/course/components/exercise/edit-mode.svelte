@@ -2,6 +2,7 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
   import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
   import InfoIcon from '@lucide/svelte/icons/info';
+  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { dndzone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
   import { tick } from 'svelte';
@@ -35,6 +36,8 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
   import { QuestionContainer } from '$features/course/components';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { isQuestionAutoGradable } from '$features/course/utils/public-conversion-utils';
   import { AttentionHighlight } from '$features/ui';
   import { uploadImage } from '$lib/utils/services/upload';
   import {
@@ -44,12 +47,7 @@
     questionTypeSupportsOptions,
     toExerciseQuestionModel
   } from './question-type-utils';
-  import {
-    QUESTION_TYPE_KEY,
-    isAutoGradableQuestionTypeId,
-    resolveTrueFalseCorrectValue,
-    syncTrueFalseOptions
-  } from '@cio/question-types';
+  import { QUESTION_TYPE_KEY, resolveTrueFalseCorrectValue, syncTrueFalseOptions } from '@cio/question-types';
   import { getExerciseQuestionLabels } from './question-labels';
   import SectionEditor from './section-editor.svelte';
   import type { Question } from '$features/course/types';
@@ -127,8 +125,11 @@
     });
   }
 
-  function getQuestionElementId(questionId: string | number) {
-    return `exercise-question-${questionId}`;
+  function getQuestionElementId(questionId: string | number | undefined, index?: number) {
+    if (questionId != null && questionId !== '') {
+      return `exercise-question-${questionId}`;
+    }
+    return `exercise-question-idx-${index ?? 0}`;
   }
 
   async function addQuestionToSection(sectionId: string) {
@@ -353,13 +354,6 @@
     return questions.filter((question) => toExerciseQuestionModel(question).required !== false).length;
   }
 
-  function isQuestionAutoGradable(question: Question) {
-    const questionTypeId = Number(question.questionTypeId ?? question.questionType?.id);
-    if (!Number.isFinite(questionTypeId)) return false;
-
-    return isAutoGradableQuestionTypeId(questionTypeId);
-  }
-
   $effect(() => {
     if (reorderQuestions && !previousReorderQuestions) {
       syncReorderQuestionItems();
@@ -415,12 +409,13 @@
 
 {#snippet questionEditor(question, index)}
   {@const questionStoreIndex = $questionnaire.questions.findIndex((item) => item.id === question.id)}
-  <AttentionHighlight id={getQuestionElementId(question.id)} class="mb-6">
+  {@const isNonAutoGradableInConversion = !isQuestionAutoGradable(question) && publicConversionFlow.isActive}
+  <AttentionHighlight id={getQuestionElementId(question.id, index)} scrollBlock="start" class="mb-6 scroll-mt-36">
     <QuestionContainer
       key={String(question.id ?? `new-${index}`)}
       onClose={onInitDeleteClicked(question.id)}
       bind:points={$questionnaire.questions[questionStoreIndex].points}
-      hasError={!!errors[question.id]}
+      hasError={!!errors[question.id] || isNonAutoGradableInConversion}
       errorMsg={getQuestionErrorMsg(errors, question, 'points')}
       pointsHint={isQuestionAutoGradable(question) && requiresPositivePointsForAutoGrade
         ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
@@ -443,6 +438,22 @@
       {/if}
 
       {@render gradingBadge(question)}
+
+      {#if isNonAutoGradableInConversion}
+        <div
+          class="border-destructive/30 bg-destructive/5 text-destructive dark:border-destructive/20 dark:bg-destructive/10 mt-2 mb-3 flex items-start gap-2.5 rounded-md border p-2.5 text-xs"
+        >
+          <TriangleAlertIcon class="mt-0.5 size-4 shrink-0" />
+          <div class="min-w-0 flex-1">
+            <p class="font-medium">
+              {$t('course.navItem.settings.public_conversion.blocks_public_conversion_title')}
+            </p>
+            <p class="text-muted-foreground mt-0.5 text-[11px] leading-relaxed">
+              {$t('course.navItem.settings.public_conversion.blocks_public_conversion_desc')}
+            </p>
+          </div>
+        </div>
+      {/if}
 
       <div class="mt-2 flex flex-col">
         <ExerciseQuestion.QuestionRenderer

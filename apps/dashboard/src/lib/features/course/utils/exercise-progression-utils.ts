@@ -1,4 +1,4 @@
-import { isAutoGradableQuestionTypeId } from '@cio/question-types';
+import { getManualQuestionsFromList } from './public-conversion-utils';
 
 import type { Question } from '$features/course/types';
 import type { SubmissionListItem } from '$features/course/utils/types';
@@ -26,12 +26,7 @@ export function getTotalPossibleExercisePoints(questions: Question[]): number {
 }
 
 export function getManualGradedExerciseQuestions(questions: Question[]): Question[] {
-  return getActiveExerciseQuestions(questions).filter((question) => {
-    const questionTypeId = Number(question.questionTypeId ?? question.questionType?.id);
-    if (!Number.isFinite(questionTypeId)) return true;
-
-    return !isAutoGradableQuestionTypeId(questionTypeId);
-  });
+  return getManualQuestionsFromList(getActiveExerciseQuestions(questions));
 }
 
 function getSubmissionScore(submission: SubmissionListItem): number {

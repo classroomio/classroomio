@@ -1204,6 +1204,7 @@ export const exercise = pgTable(
   {
     title: varchar().notNull(),
     description: varchar(),
+    // @deprecated - we no longer support exercises belonging to a lesson
     lessonId: uuid('lesson_id'),
     courseId: uuid('course_id'),
     sectionId: uuid('section_id'),

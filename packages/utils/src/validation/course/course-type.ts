@@ -6,7 +6,7 @@ import { COURSE_TYPE_VALUES, type TCourseType } from '../../constants/course-typ
 export const ZCourseType = z.enum(COURSE_TYPE_VALUES);
 
 export interface NonAutoGradableQuestionOffender {
-  questionId: number;
+  questionId: number | string;
   questionTitle: string;
   exerciseId: string;
   exerciseTitle: string;

@@ -17,13 +17,12 @@ export type AppErrorStatusCode = number;
  * (notably `@cio/core`) without those packages depending on `@cio/api`.
  * HTTP-shaped helpers like `handleError` stay in `@cio/api`.
  */
-export class AppError<TDetails = unknown> extends Error {
+export class AppError extends Error {
   constructor(
     error: string | Error,
     public code: string,
     public statusCode: AppErrorStatusCode = 500,
-    public field?: string,
-    public details?: TDetails
+    public field?: string
   ) {
     super(error instanceof Error ? error.message : error);
     this.name = 'AppError';

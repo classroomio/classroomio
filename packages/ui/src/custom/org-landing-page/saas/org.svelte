@@ -82,11 +82,6 @@
         </section>
       </EditableLandingSection>
 
-      {#if links && links.cards.length > 0}
-        <div class="plus-row"></div>
-        <OrgLandingPageLinks {links} {labels} variant="saas" />
-      {/if}
-
       {#if links && links.enabled !== false && links.cards.length > 0}
         <div class="plus-row"></div>
         <OrgLandingPageLinks {links} {labels} variant="saas" />

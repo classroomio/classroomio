@@ -304,7 +304,11 @@
         "all_content_already_unlocked": "Alt indhold er allerede låst op",
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
         "content_grouping_disabled": "Indholdsgruppering deaktiveret",
-        "link_generated": "Kursuslinket blev opdateret"
+        "link_generated": "Kursuslinket blev opdateret",
+        "converted_to_public": "Kurset blev konverteret til offentligt"
+      },
+      "info": {
+        "conversion_blocked": "Indstillinger gemt. Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
       }
     },
     "people": {
@@ -900,7 +904,38 @@
         "question_in_exercise": "I \"{exercise}\"",
         "fix_question": "Rediger",
         "convert_to_public_blocked": "Offentlige kurser kræver kun autogradable spørgsmål.",
-        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter autogradable spørgsmål. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:"
+        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter autogradable spørgsmål. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:",
+        "fix_in_exercise": "Fix i træning",
+        "cancel_conversion": "Annuller konvertering",
+        "public_conversion": {
+          "banner_title": "Konvertering af kursus til offentlig",
+          "exercise_fixed": "Denne øvelse er klar",
+          "back_to_settings": "Tilbage til Indstillinger",
+          "complete_conversion": "Komplet offentlig konvertering",
+          "jump_to": "Hop til",
+          "blocks_public_conversion": "Ikke autograderbar",
+          "blocks_public_conversion_desc": "Offentlige kurser understøtter kun autogradable spørgsmål. Skift dette spørgsmåls type eller slet det for at fortsætte med konverteringen.",
+          "blocks_public_conversion_title": "Manuel karaktergivning understøttes ikke i offentlige kurser",
+          "aria_label": "Status for konvertering af offentlige kurser",
+          "all_exercises_fixed": "Alle {total} øvelser rettet",
+          "ready_to_convert": "Klar til at konvertere!",
+          "questions_left_other_singular": "· {count} spørgsmål tilbage i andre øvelser",
+          "questions_left_other_plural": "· {count} spørgsmål tilbage i andre øvelser",
+          "progress_summary_singular": "{resolved}/{total} fixed · {remaining} spørgsmål tilbage",
+          "progress_summary_plural": "{resolved}/{total} fixed · {remaining} spørgsmål tilbage",
+          "next_exercise": "Næste: {exercise}",
+          "next": "Næste",
+          "question_fallback": "Spørgsmål {number}",
+          "question_count_singular": "{count} spørgsmål",
+          "question_count_plural": "{count} spørgsmål",
+          "exercise_count_singular": "{count} øvelse",
+          "exercise_count_plural": "{count} øvelser",
+          "exercises_fixed": "{resolved}/{total} rettet",
+          "questions_left_singular": "rettet · {count} spørgsmål tilbage",
+          "questions_left_plural": "rettet · {count} spørgsmål tilbage"
+        },
+        "fix": "Lave",
+        "save_changes_to_fix_questions": "Gem dine ikke-gemte ændringer, før du navigerer for at rette spørgsmål."
       },
       "analytics": {
         "title": "Analyse"
