@@ -4588,7 +4588,10 @@
         "mobile": "Mobil",
         "tablet": "Tablet",
         "desktop": "Desktop"
-      }
+      },
+      "current_version": "Aktuelle Version",
+      "active_badge": "Aktiv",
+      "active_badge_description": "Diese Version ist derzeit auf Ihrer Einbettung verfügbar"
     },
     "tabs": {
       "select_courses": "Wählen Sie Kurse aus",

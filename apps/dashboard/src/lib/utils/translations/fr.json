@@ -4588,7 +4588,10 @@
         "mobile": "Mobile",
         "tablet": "Tablette",
         "desktop": "Bureau"
-      }
+      },
+      "current_version": "Version actuelle",
+      "active_badge": "Actif",
+      "active_badge_description": "Cette version est actuellement en ligne sur votre intégration"
     },
     "tabs": {
       "select_courses": "Sélectionnez des cours",
