@@ -1,6 +1,10 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type { TCourse, TOrganization } from '@cio/db/types';
-import type { TCourseLandingPageMetadataUpdate, TCourseLandingPageUpdate } from '@cio/utils/validation/course';
+import {
+  validatePaidCourseState,
+  type TCourseLandingPageMetadataUpdate,
+  type TCourseLandingPageUpdate
+} from '@cio/utils/validation/course';
 
 import { env } from '../../config/env';
 import { generateSlug } from '@cio/utils/functions';
@@ -180,6 +184,13 @@ export async function updateCourseLandingPageService(
 
   const nextTitle = payload.title ?? existingCourse.title;
   const metadata = mergeLandingPageMetadata(existingCourse.metadata ?? undefined, payload.metadata);
+
+  const nextCost = payload.cost ?? existingCourse.cost ?? 0;
+  const paidCourseIssue = validatePaidCourseState(nextCost, metadata)[0];
+  if (paidCourseIssue) {
+    throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   const imageUrl = await resolveLandingPageImage(nextTitle, payload);
 
   const updatedCourse = await updateCourse(courseId, {

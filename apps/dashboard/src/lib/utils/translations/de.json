@@ -952,7 +952,8 @@
             "payment_invalid_url": "Bitte geben Sie eine gültige URL ein (z. B. https://pay.example.com)",
             "payment_helper": "Stripe, Lemon Squeezy oder ein beliebiger Zahlungslink",
             "percentage_helper": "In Prozent %",
-            "gift_on_completion": "Geschenk bei Fertigstellung"
+            "gift_on_completion": "Geschenk bei Fertigstellung",
+            "payment_cost_required": "Bezahlte Kurse müssen Kosten von mehr als 0 haben."
           },
           "instructor_form": {
             "upload": "Lehrerlogo",

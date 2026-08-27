@@ -5,6 +5,7 @@ import {
   createCourse as createCourseQuery,
   createCourseSections,
   deleteCourse as deleteCourseQuery,
+  getCourseById,
   getCourseProgress as getCourseProgressQuery,
   getCourseTypeById,
   getCourseWithRelations,
@@ -29,7 +30,7 @@ import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
-import type { TCourseCreate } from '@cio/utils/validation/course';
+import { validatePaidCourseState, type TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
@@ -337,6 +338,18 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       logo: data.logo,
       slug: data.slug
     };
+
+    if (data.cost !== undefined || data.metadata !== undefined) {
+      const [existingCourse] = await getCourseById(courseId);
+      if (existingCourse) {
+        const nextCost = data.cost ?? existingCourse.cost ?? 0;
+        const nextMetadata = sanitizedData.metadata ?? existingCourse.metadata;
+        const paidCourseIssue = validatePaidCourseState(nextCost, nextMetadata)[0];
+        if (paidCourseIssue) {
+          throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
+        }
+      }
+    }
 
     if (data.type !== undefined) {
       const currentType = await getCourseTypeById(courseId);

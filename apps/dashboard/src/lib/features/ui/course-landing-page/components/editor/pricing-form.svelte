@@ -77,22 +77,6 @@
   function handleChange(content: string) {
     setter(content, 'metadata.reward.description');
   }
-
-  $effect(() => {
-    setter(showDiscount, 'metadata.showDiscount');
-  });
-  $effect(() => {
-    setter(toFiniteNumber(cost) ?? 0, 'cost');
-  });
-  $effect(() => {
-    setter(paymentLink, 'metadata.paymentLink');
-  });
-  $effect(() => {
-    setter(toFiniteNumber(discount) ?? 0, 'metadata.discount');
-  });
-  $effect(() => {
-    setter(giftToggled, 'metadata.reward.show');
-  });
 </script>
 
 {#if typeof course !== 'undefined'}
@@ -129,7 +113,8 @@
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
       type="number"
-      bind:value={cost}
+      value={cost}
+      oninput={(e) => setter(toFiniteNumber(e.currentTarget.value) ?? 0, 'cost')}
     />
 
     <InputField
@@ -139,8 +124,8 @@
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.payment_helper')}
       isRequired
       errorMessage={paymentLinkErrorMessage}
-      bind:value={paymentLink}
-      onchange={(e) => handlePaymentLinkChange(e.currentTarget.value)}
+      value={paymentLink}
+      oninput={(e) => handlePaymentLinkChange(e.currentTarget.value)}
     />
   {/if}
 
@@ -149,7 +134,7 @@
       <Label class="font-bold">{$t('course.navItem.landing_page.editor.pricing_form.discount')}</Label>
     </div>
     <div class="flex items-center space-x-2">
-      <Switch bind:checked={showDiscount} />
+      <Switch checked={showDiscount} onCheckedChange={(checked) => setter(checked === true, 'metadata.showDiscount')} />
       <Label class="text-gray-600">
         {showDiscount
           ? $t('course.navItem.landing_page.editor.pricing_form.yes')
@@ -164,7 +149,8 @@
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.percent')}
       type="number"
-      bind:value={discount}
+      value={discount}
+      oninput={(e) => setter(toFiniteNumber(e.currentTarget.value) ?? 0, 'metadata.discount')}
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
     />
   {/if}
@@ -174,7 +160,7 @@
       <Label class="font-bold">{$t('course.navItem.landing_page.editor.pricing_form.gift_on_completion')}</Label>
     </div>
     <div class="flex items-center space-x-2">
-      <Switch bind:checked={giftToggled} />
+      <Switch checked={giftToggled} onCheckedChange={(checked) => setter(checked === true, 'metadata.reward.show')} />
 
       <Label class="text-gray-600">
         {giftToggled

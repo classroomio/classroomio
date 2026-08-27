@@ -12,7 +12,11 @@ import {
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
-import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdateFields } from '@cio/utils/validation/course';
+import {
+  ZCourseLandingPageUpdate,
+  ZCourseLandingPageMetadataUpdateFields,
+  superRefinePaidCourse
+} from '@cio/utils/validation/course';
 
 // courseId is NOT a parameter — it's injected from the authenticated request context.
 
@@ -314,21 +318,23 @@ export const updateCourseLandingPageParam = ZCourseLandingPageUpdate.extend({
     .optional()
     .describe('Optional Unsplash search query (1–120 chars). Omit to let the server use the course title.'),
   metadata: agentLandingPageMetadataUpdate.optional()
-}).refine(
-  (data) =>
-    data.title !== undefined ||
-    data.description !== undefined ||
-    data.overview !== undefined ||
-    data.cost !== undefined ||
-    data.currency !== undefined ||
-    data.imageUrl !== undefined ||
-    data.generateImage !== undefined ||
-    data.imageQuery !== undefined ||
-    data.metadata !== undefined,
-  {
-    message: 'Provide at least one landing-page field to update'
-  }
-);
+})
+  .superRefine(superRefinePaidCourse)
+  .refine(
+    (data) =>
+      data.title !== undefined ||
+      data.description !== undefined ||
+      data.overview !== undefined ||
+      data.cost !== undefined ||
+      data.currency !== undefined ||
+      data.imageUrl !== undefined ||
+      data.generateImage !== undefined ||
+      data.imageQuery !== undefined ||
+      data.metadata !== undefined,
+    {
+      message: 'Provide at least one landing-page field to update'
+    }
+  );
 export const goLiveParam = z.object({
   confirmPublish: z
     .boolean()

@@ -3537,6 +3537,7 @@
             "payment_required": "A payment link is required for paid courses",
             "payment_invalid_url": "Please enter a valid URL (e.g. https://pay.example.com)",
             "payment_helper": "Stripe, Lemon Squeezy or any payment link",
+            "payment_cost_required": "Paid courses must have a cost greater than 0",
             "discount": "Discount",
             "no": "No",
             "yes": "Yes",

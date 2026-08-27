@@ -22,6 +22,11 @@ export async function publishCourse(course: Course): Promise<boolean> {
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
       return false;
     }
+
+    if (Number(course.cost ?? 0) <= 0) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_cost_required');
+      return false;
+    }
   }
 
   let slug = course.slug?.trim() ? course.slug : undefined;

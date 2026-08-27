@@ -428,31 +428,55 @@ type TPaidCoursePayload = {
   metadata?: { paymentEnabled?: boolean; paymentLink?: string | null } | null;
 };
 
-function superRefinePaidCourse(data: TPaidCoursePayload, ctx: z.RefinementCtx) {
-  const paidFlag = data.metadata?.paymentEnabled;
-  const isPaid = typeof paidFlag === 'boolean' ? paidFlag : typeof data.cost === 'number' && data.cost > 0;
-  if (!isPaid) return;
+export type TPaidCourseIssue = {
+  message: string;
+  path: ('cost' | 'metadata' | 'paymentLink')[];
+};
 
-  const paymentLink = typeof data.metadata?.paymentLink === 'string' ? data.metadata.paymentLink.trim() : '';
+/**
+ * Validates the payment state of a single course, so callers can check the
+ * final merged state (persisted course + pending update) and not just a
+ * partial request payload.
+ */
+export function validatePaidCourseState(
+  cost: number | null | undefined,
+  metadata: TPaidCoursePayload['metadata']
+): TPaidCourseIssue[] {
+  const issues: TPaidCourseIssue[] = [];
+
+  const paidFlag = metadata?.paymentEnabled;
+  const isPaid = typeof paidFlag === 'boolean' ? paidFlag : typeof cost === 'number' && cost > 0;
+  if (!isPaid) return issues;
+
+  const paymentLink = typeof metadata?.paymentLink === 'string' ? metadata.paymentLink.trim() : '';
   if (!paymentLink) {
-    ctx.addIssue({
-      code: 'custom',
+    issues.push({
       message: 'A payment link is required for paid courses',
       path: ['metadata', 'paymentLink']
     });
   } else if (!ZPaymentLink.safeParse(paymentLink).success) {
-    ctx.addIssue({
-      code: 'custom',
+    issues.push({
       message: 'Payment link must be a valid http(s) URL',
       path: ['metadata', 'paymentLink']
     });
   }
 
-  if (typeof data.cost === 'number' && data.cost <= 0) {
-    ctx.addIssue({
-      code: 'custom',
+  if (typeof cost === 'number' && cost <= 0) {
+    issues.push({
       message: 'Paid courses must have a cost greater than 0',
       path: ['cost']
+    });
+  }
+
+  return issues;
+}
+
+export function superRefinePaidCourse(data: TPaidCoursePayload, ctx: z.RefinementCtx) {
+  for (const issue of validatePaidCourseState(data.cost, data.metadata)) {
+    ctx.addIssue({
+      code: 'custom',
+      message: issue.message,
+      path: issue.path
     });
   }
 }
