@@ -1315,7 +1315,7 @@ importers:
         version: link:../utils
       '@lucide/svelte':
         specifier: ^1.33.0
-        version: 1.33.0(svelte@5.46.0)
+        version: 1.33.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))
       svelte-inview:
         specifier: ^4.0.4
         version: 4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))
@@ -19334,9 +19334,9 @@ snapshots:
     dependencies:
       svelte: 5.56.9(@typescript-eslint/types@8.50.1)
 
-  '@lucide/svelte@1.33.0(svelte@5.46.0)':
+  '@lucide/svelte@1.33.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))':
     dependencies:
-      svelte: 5.46.0
+      svelte: 5.56.9(@typescript-eslint/types@8.50.1)
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
