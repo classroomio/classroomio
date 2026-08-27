@@ -1304,12 +1304,18 @@ importers:
       '@cio/email':
         specifier: workspace:*
         version: link:../email
+      '@cio/question-types':
+        specifier: workspace:*
+        version: link:../question-types
       '@cio/ui':
         specifier: workspace:*
         version: link:../ui
       '@cio/utils':
         specifier: workspace:*
         version: link:../utils
+      '@lucide/svelte':
+        specifier: ^1.33.0
+        version: 1.33.0(svelte@5.46.0)
       svelte-inview:
         specifier: ^4.0.4
         version: 4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))
@@ -4844,6 +4850,11 @@ packages:
 
   '@lucide/svelte@0.562.0':
     resolution: {integrity: sha512-wDMULwtTFN2Sc/TFBm6gfuVCNb4Y5P9LDrwxNnUbV52+IEU7NXZmvxwXoz+vrrpad6Xupq+Hw5eUlqIHEGhouw==}
+    peerDependencies:
+      svelte: ^5
+
+  '@lucide/svelte@1.33.0':
+    resolution: {integrity: sha512-b+osTYG2V4dge5Lr7tnaTaahhy/4vH7Xb8zcqVjmctjwgkpXS0NNOJPkGzHHZoxtw/OO+2YAU28omeMfYCaawg==}
     peerDependencies:
       svelte: ^5
 
@@ -10264,6 +10275,7 @@ packages:
   eslint@9.39.2:
     resolution: {integrity: sha512-LEyamqS7W5HB3ujJyvi0HQK/dtVINZvd5mAAp9eT5S/ujByGjiZLCzPcHVzuXbpJDJF/cxwHlfceVUDZ2lnSTw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -19321,6 +19333,10 @@ snapshots:
   '@lucide/svelte@0.562.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))':
     dependencies:
       svelte: 5.56.9(@typescript-eslint/types@8.50.1)
+
+  '@lucide/svelte@1.33.0(svelte@5.46.0)':
+    dependencies:
+      svelte: 5.46.0
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:

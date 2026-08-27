@@ -8,13 +8,12 @@
   import * as Select from '@cio/ui/base/select';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
-  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import XIcon from '@lucide/svelte/icons/x';
-  import { getQuestionTypeById } from '@cio/question-types';
 
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
   import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
-  import { CourseTagPicker } from '$features/course/components';
+  import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
@@ -288,10 +287,7 @@
         if (hasTagChanges) {
           initialTagIds = normalizedSelectedTagIds;
           selectedTagIds = normalizedSelectedTagIds;
-          snackbar.success('snackbar.course_settings.success.update_successful');
         }
-
-        // courseApi.update() already updates courseApi.course internally
         hasUnsavedChanges = false;
       }
     } catch (error) {
@@ -323,10 +319,14 @@
   async function setDefault(course: Course) {
     if (!course || !Object.keys(course).length) return;
 
+    const isConversionFlowActive = publicConversionFlow.isActive && publicConversionFlow.courseId === course.id;
+
     untrack(() => {
       settings.set({
         courseTitle: course.title,
-        type: (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
+        type: isConversionFlowActive
+          ? ('PUBLIC' as TCourseType)
+          : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
         logo: course.logo || '',
         tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
@@ -356,12 +356,12 @@
   export function handleDiscard() {
     if (!courseApi.course) return;
 
+    publicConversionFlow.cancel();
     setDefault(courseApi.course);
     selectedTagIds = [...initialTagIds];
     avatar = undefined;
     errors = { title: undefined, description: undefined };
     delete courseApi.errors.type;
-    courseApi.publicConversionOffenders = [];
     hasUnsavedChanges = false;
   }
 
@@ -419,6 +419,7 @@
     const course = courseApi.course;
     if (course?.id && initializedCourseId !== course.id) {
       initializedCourseId = course.id;
+      publicConversionFlow.restoreForCourse(course.id);
       setDefault(course);
     }
   });
@@ -497,12 +498,14 @@
   function onCompletionDeadlineChange(e: Event) {
     const value = (e.currentTarget as HTMLInputElement).value;
     $settings.certificate.deadline = value ? new Date(value).toISOString() : null;
+    delete courseApi.errors['certificate.deadline'];
     hasUnsavedChanges = true;
   }
 
   function onThresholdInput(e: Event) {
     const value = Number((e.currentTarget as HTMLInputElement).value);
     $settings.certificate.threshold = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
+    delete courseApi.errors['certificate.threshold'];
     hasUnsavedChanges = true;
   }
 
@@ -515,12 +518,15 @@
       $settings.certificate.exerciseMinScorePercent = 100;
     }
 
+    delete courseApi.errors['certificate.requiredExerciseId'];
+    delete courseApi.errors['certificate.exerciseMinScorePercent'];
     hasUnsavedChanges = true;
   }
 
   function onMinExerciseScoreInput(e: Event) {
     const value = Number((e.currentTarget as HTMLInputElement).value);
     $settings.certificate.exerciseMinScorePercent = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
+    delete courseApi.errors['certificate.exerciseMinScorePercent'];
     hasUnsavedChanges = true;
   }
 </script>
@@ -578,8 +584,10 @@
           className="w-full"
           isRequired
           bind:value={$settings.courseTitle}
-          errorMessage={errors?.title}
+          errorMessage={errors?.title || courseApi.errors?.title}
           onInputChange={() => {
+            errors.title = undefined;
+            delete courseApi.errors.title;
             hasUnsavedChanges = true;
           }}
         />
@@ -591,8 +599,15 @@
           className="w-full"
           isRequired
           bind:value={$settings.courseDescription}
-          errorMessage={errors?.description}
+          errorMessage={errors?.description || courseApi.errors?.description}
+          oninput={() => {
+            errors.description = undefined;
+            delete courseApi.errors.description;
+            hasUnsavedChanges = true;
+          }}
           onchange={() => {
+            errors.description = undefined;
+            delete courseApi.errors.description;
             hasUnsavedChanges = true;
           }}
         />
@@ -655,103 +670,64 @@
         {$t('course.navItem.settings.course_type_learn_more')}
       </a>
     </Field.Description>
-    <Field.Field>
-      <Select.Root
-        type="single"
-        value={$settings.type}
-        onValueChange={(value) => {
-          if (!value) return;
-          $settings.type = value as TCourseType;
-          if (value !== 'PUBLIC') {
-            delete courseApi.errors.type;
-            courseApi.publicConversionOffenders = [];
-          }
-          hasUnsavedChanges = true;
-        }}
-      >
-        <Select.Trigger class="w-full">
-          {$t(`course.navItem.settings.${$settings.type.toLowerCase()}`)}
-        </Select.Trigger>
-        <Select.Content>
-          <Select.Group>
-            <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
-              {$t('course.navItem.settings.self_paced')}
-            </Select.Item>
-            <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
-              {$t('course.navItem.settings.live_class')}
-            </Select.Item>
-            <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
-              {$t('course.navItem.settings.compliance')}
-            </Select.Item>
-            <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
-              {$t('course.navItem.settings.public')}
-            </Select.Item>
-          </Select.Group>
-        </Select.Content>
-      </Select.Root>
-    </Field.Field>
+    <AttentionHighlight id="course-type" class="flex flex-col gap-4" scrollBlock="center">
+      <Field.Field>
+        <Select.Root
+          type="single"
+          value={$settings.type}
+          onValueChange={(value) => {
+            if (!value) return;
+            $settings.type = value as TCourseType;
+            if (value !== 'PUBLIC') {
+              delete courseApi.errors.type;
+              courseApi.publicConversionOffenders = [];
+              publicConversionFlow.cancel();
+            }
+            hasUnsavedChanges = true;
+          }}
+        >
+          <Select.Trigger class="w-full">
+            {$t(`course.navItem.settings.${$settings.type.toLowerCase()}`)}
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Group>
+              <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
+                {$t('course.navItem.settings.self_paced')}
+              </Select.Item>
+              <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
+                {$t('course.navItem.settings.live_class')}
+              </Select.Item>
+              <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
+                {$t('course.navItem.settings.compliance')}
+              </Select.Item>
+              <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
+                {$t('course.navItem.settings.public')}
+              </Select.Item>
+            </Select.Group>
+          </Select.Content>
+        </Select.Root>
+      </Field.Field>
 
-    {#if courseApi.errors.type || courseApi.publicConversionOffenders.length > 0}
-      <div class="ui:mt-3 ui:rounded-lg ui:border ui:border-destructive ui:p-4" role="alert">
-        <div class="flex items-start gap-3">
-          <TriangleAlertIcon class="ui:stroke-destructive h-5 w-5 shrink-0 translate-y-0.5" />
-          <div class="min-w-0 flex-1">
-            <h4 class="text-sm font-semibold">{$t('course.navItem.settings.convert_to_public_blocked')}</h4>
-            <p class="mt-1 text-xs leading-relaxed">
-              {$t('course.navItem.settings.convert_to_public_blocked_desc')}
-            </p>
-
-            {#if courseApi.publicConversionOffenders.length > 0}
-              <div class="mt-3 space-y-2">
-                {#each courseApi.publicConversionOffenders as offender (offender.questionId)}
-                  {@const questionTypeMeta = getQuestionTypeById(offender.typeId)}
-                  <a
-                    href={`/courses/${courseApi.course?.id}/exercises/${offender.exerciseId}?tab=questions&highlight=exercise-question-${offender.questionId}`}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    class="group ui:bg-background/80 flex items-center justify-between gap-3 rounded-md border p-2.5 transition-colors"
-                  >
-                    <div class="min-w-0 flex-1">
-                      <div class="flex items-center gap-2">
-                        <span
-                          class="ui:text-foreground max-w-24 truncate text-sm font-medium group-hover:underline md:max-w-40"
-                          title={offender.questionTitle}
-                        >
-                          {offender.questionTitle}
-                        </span>
-                        {#if questionTypeMeta?.label}
-                          <Badge variant="outline" class="text-[11px]">
-                            {questionTypeMeta.label}
-                          </Badge>
-                        {/if}
-                      </div>
-                      <p
-                        class="ui:text-muted-foreground mt-0.5 max-w-56 truncate text-xs md:max-w-72"
-                        title={$t('course.navItem.settings.question_in_exercise', {
-                          exercise: offender.exerciseTitle
-                        })}
-                      >
-                        {$t('course.navItem.settings.question_in_exercise', {
-                          exercise: offender.exerciseTitle
-                        })}
-                      </p>
-                    </div>
-                    <div class="text-destructive flex shrink-0 items-center gap-1 text-xs font-medium">
-                      <span>{$t('course.navItem.settings.fix_question')}</span>
-                      <ArrowUpRightIcon
-                        class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                      />
-                    </div>
-                  </a>
-                {/each}
-              </div>
-            {:else if courseApi.errors.type}
-              <p class="ui:mt-2 ui:text-destructive/90 text-sm">{courseApi.errors.type}</p>
-            {/if}
-          </div>
-        </div>
-      </div>
-    {/if}
+      {#if publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id && publicConversionFlow.offenders.length > 0}
+        {#if courseApi.course}
+          <PublicConversionSettingsCard
+            course={courseApi.course}
+            offenders={publicConversionFlow.offenders}
+            disabled={hasUnsavedChanges}
+            onCancel={() => {
+              if (courseApi.course) {
+                $settings.type = (courseApi.course.type as TCourseType) || 'SELF_PACED';
+                delete courseApi.errors.type;
+                publicConversionFlow.cancel();
+                hasUnsavedChanges = false;
+              }
+            }}
+          />
+        {/if}
+      {:else if courseApi.errors.type}
+        <p class="ui:mt-2 ui:text-destructive/90 text-sm">{courseApi.errors.type}</p>
+      {/if}
+    </AttentionHighlight>
 
     <Field.Group class="mt-3">
       <AttentionHighlight

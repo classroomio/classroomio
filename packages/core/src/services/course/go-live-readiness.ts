@@ -280,7 +280,7 @@ export async function publishCourseWhenReady(courseId: string) {
   }
 
   const slug = await ensureCourseSlug(courseId, course.title);
-  const publishedCourse = await updateCourse(courseId, { slug, isPublished: true });
+  const { course: publishedCourse } = await updateCourse(courseId, { slug, isPublished: true });
   const publishedReadiness = await getCourseGoLiveReadiness(courseId);
 
   return {

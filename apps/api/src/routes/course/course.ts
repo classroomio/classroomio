@@ -337,7 +337,7 @@ export const courseRouter = new Hono()
           };
         }
 
-        const result = await updateCourse(courseId, courseData);
+        const { course: result, conversionOffenders } = await updateCourse(courseId, courseData);
 
         if (tagIds !== undefined) {
           const orgId = c.req.header('cio-org-id');
@@ -361,7 +361,8 @@ export const courseRouter = new Hono()
               data: {
                 ...result,
                 tags
-              }
+              },
+              conversionBlocked: conversionOffenders ?? undefined
             },
             200
           );
@@ -370,7 +371,8 @@ export const courseRouter = new Hono()
         return c.json(
           {
             success: true,
-            data: result
+            data: result,
+            conversionBlocked: conversionOffenders ?? undefined
           },
           200
         );

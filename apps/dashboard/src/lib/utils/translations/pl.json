@@ -302,7 +302,11 @@
         "all_content_already_unlocked": "Cała treść jest już odblokowana",
         "content_grouping_enabled": "Grupowanie treści włączone",
         "content_grouping_disabled": "Grupowanie treści wyłączone",
-        "link_generated": "Link do kursu został pomyślnie zaktualizowany"
+        "link_generated": "Link do kursu został pomyślnie zaktualizowany",
+        "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny"
+      },
+      "info": {
+        "conversion_blocked": "Ustawienia zostały zapisane. Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
       }
     },
     "people": {
@@ -879,7 +883,38 @@
         "question_in_exercise": "W „{exercise}”",
         "fix_question": "Edytuj",
         "convert_to_public_blocked": "W kursach publicznych wymagane są wyłącznie pytania, które podlegają automatycznej ocenie.",
-        "convert_to_public_blocked_desc": "Ćwiczenia na kursie publicznym są oceniane automatycznie w przeglądarce, dlatego obsługujemy tylko pytania z automatyczną oceną. Usuń lub zastąp następujące pytania przed konwersją tego kursu na publiczny:"
+        "convert_to_public_blocked_desc": "Ćwiczenia na kursie publicznym są oceniane automatycznie w przeglądarce, dlatego obsługujemy tylko pytania z automatyczną oceną. Usuń lub zastąp następujące pytania przed konwersją tego kursu na publiczny:",
+        "fix_in_exercise": "Napraw podczas ćwiczeń",
+        "cancel_conversion": "Anuluj konwersję",
+        "public_conversion": {
+          "banner_title": "Konwersja kursu na publiczny",
+          "exercise_fixed": "To ćwiczenie jest gotowe",
+          "back_to_settings": "Powrót do Ustawień",
+          "complete_conversion": "Całkowita konwersja publiczna",
+          "jump_to": "Skocz do",
+          "blocks_public_conversion": "Nie ulega autogradacji",
+          "blocks_public_conversion_desc": "Kursy publiczne obsługują wyłącznie pytania, które podlegają automatycznej ocenie. Zmień typ tego pytania lub usuń je, aby kontynuować konwersję.",
+          "blocks_public_conversion_title": "Ocenianie ręczne nie jest obsługiwane w kursach publicznych",
+          "aria_label": "Postęp konwersji kursu publicznego",
+          "all_exercises_fixed": "Wszystkie {total} ćwiczenia poprawione",
+          "ready_to_convert": "Gotowy do konwersji!",
+          "questions_left_other_singular": "· {count} pytań pozostawionych w innych ćwiczeniach",
+          "questions_left_other_plural": "· {count} pytań pozostawionych w innych ćwiczeniach",
+          "progress_summary_singular": "{resolved}/{total} naprawiono · pozostało {remaining} pytań",
+          "progress_summary_plural": "{resolved}/{total} naprawiono · pozostało {remaining} pytań",
+          "next_exercise": "Następne: {exercise}",
+          "next": "Następny",
+          "question_fallback": "Pytanie {number}",
+          "question_count_singular": "pytanie {count}",
+          "question_count_plural": "{count} pytań",
+          "exercise_count_singular": "ćwiczenie {count}",
+          "exercise_count_plural": "{count} ćwiczenia",
+          "exercises_fixed": "{resolved}/{total} naprawione",
+          "questions_left_singular": "naprawiono · pozostało {count} pytań",
+          "questions_left_plural": "naprawiono · pozostało {count} pytań"
+        },
+        "fix": "Naprawić",
+        "save_changes_to_fix_questions": "Zapisz niezapisane zmiany przed przejściem do poprawiania pytań."
       },
       "analytics": {
         "title": "Analityka"

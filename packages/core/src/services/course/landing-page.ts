@@ -181,7 +181,7 @@ export async function updateCourseLandingPageService(
   const metadata = mergeLandingPageMetadata(existingCourse.metadata ?? undefined, payload.metadata);
   const imageUrl = await resolveLandingPageImage(nextTitle, payload);
 
-  const updatedCourse = await updateCourse(courseId, {
+  const { course: updatedCourse } = await updateCourse(courseId, {
     title: payload.title,
     description: payload.description,
     overview: payload.overview,

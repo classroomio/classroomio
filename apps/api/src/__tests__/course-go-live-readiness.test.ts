@@ -254,9 +254,12 @@ describe('course go-live service', () => {
     mockedGetCourseContentItems.mockResolvedValue([buildContentItem()] as never);
     mockedEnsureCourseSlug.mockResolvedValue('workplace-safety-essentials');
     mockedUpdateCourse.mockResolvedValue({
-      ...course,
-      slug: 'workplace-safety-essentials',
-      isPublished: true
+      course: {
+        ...course,
+        slug: 'workplace-safety-essentials',
+        isPublished: true
+      },
+      conversionOffenders: null
     } as never);
 
     const result = await publishCourseWhenReady('course-1');

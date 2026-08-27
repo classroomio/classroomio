@@ -35,26 +35,17 @@ export async function guardNonAutoGradableQuestionsForCourseType(params: {
 
 /**
  * When converting a course to `PUBLIC`, enumerate any questions whose type is not
- * auto-gradable. Throws `PUBLIC_COURSE_CONVERSION_BLOCKED` with the offending list
- * in `message` and `details`; callers should surface the list to the creator so they can fix them.
+ * auto-gradable. Returns the offending list so callers can block the type conversion
+ * while allowing other changes to proceed.
  */
-export async function guardCourseTypeTransition(params: {
+export async function getPublicConversionOffenders(params: {
   courseId: string;
   currentType: string | null;
   nextType: string | null | undefined;
-}): Promise<void> {
-  if (!params.nextType) return;
-  if (params.nextType !== 'PUBLIC') return;
-  if (params.currentType === 'PUBLIC') return;
+}): Promise<NonAutoGradableQuestionOffender[]> {
+  if (!params.nextType) return [];
+  if (params.nextType !== 'PUBLIC') return [];
+  if (params.currentType === 'PUBLIC') return [];
 
-  const offenders = await findNonAutoGradableQuestionsInCourse(params.courseId, AUTO_GRADABLE_QUESTION_TYPE_IDS);
-  if (offenders.length === 0) return;
-
-  throw new AppError<NonAutoGradableQuestionOffender[]>(
-    `Public courses require only auto-gradable questions`,
-    ErrorCodes.PUBLIC_COURSE_CONVERSION_BLOCKED,
-    400,
-    'type',
-    offenders
-  );
+  return findNonAutoGradableQuestionsInCourse(params.courseId, AUTO_GRADABLE_QUESTION_TYPE_IDS);
 }

@@ -18,7 +18,7 @@
     id,
     highlight = false,
     trigger = 0,
-    duration = 3,
+    duration = 2.5,
     autoScroll = true,
     scrollBlock = 'center',
     class: className = '',
@@ -28,8 +28,10 @@
 
   let containerRef = $state<HTMLDivElement | null>(null);
   let isPulsing = $state(false);
-  let lastTrigger = 0;
+  let lastSeenTrigger = $state(0);
+  let hasHandledHighlight = $state(false);
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let scrollTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   function scrollToElement() {
     if (!containerRef) return;
@@ -40,11 +42,15 @@
     isPulsing = true;
 
     if (autoScroll) {
-      requestAnimationFrame(() => {
+      if (scrollTimeoutId) {
+        clearTimeout(scrollTimeoutId);
+      }
+      scrollTimeoutId = setTimeout(() => {
         requestAnimationFrame(() => {
           scrollToElement();
+          scrollTimeoutId = null;
         });
-      });
+      }, 100);
     }
 
     if (timeoutId) {
@@ -59,23 +65,18 @@
   }
 
   $effect(() => {
-    if (highlight) {
+    if (highlight && !hasHandledHighlight) {
+      hasHandledHighlight = true;
       triggerPulse();
-    } else if (trigger === 0) {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
-      isPulsing = false;
+    } else if (!highlight) {
+      hasHandledHighlight = false;
     }
   });
 
   $effect(() => {
-    if (trigger !== lastTrigger) {
-      lastTrigger = trigger;
-      if (trigger > 0) {
-        triggerPulse();
-      }
+    if (trigger > 0 && trigger !== lastSeenTrigger) {
+      lastSeenTrigger = trigger;
+      triggerPulse();
     }
   });
 
@@ -85,19 +86,22 @@
         clearTimeout(timeoutId);
         timeoutId = null;
       }
+      if (scrollTimeoutId) {
+        clearTimeout(scrollTimeoutId);
+        scrollTimeoutId = null;
+      }
     };
   });
 </script>
 
-<div
-  {id}
-  bind:this={containerRef}
-  class={cn(
-    'ui:rounded-md ui:transition-all',
-    isPulsing && 'ui:border-primary ui:ring-primary/20 ui:animate-pulse ui:border ui:ring-4',
-    className
-  )}
->
+<div {id} bind:this={containerRef} class={cn('ui:relative ui:rounded-md', className)}>
+  {#if isPulsing}
+    <div
+      class="ui:pointer-events-none ui:absolute ui:inset-0 ui:animate-pulse ui:rounded-[inherit] ui:border ui:border-primary ui:ring-4 ui:ring-primary/20"
+      aria-hidden="true"
+    ></div>
+  {/if}
+
   {#if children}
     {@render children()}
   {/if}

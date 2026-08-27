@@ -482,7 +482,13 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
 - In app-level form UIs, do not introduce native form controls (`<input>`, `<textarea>`, `<label>`) when equivalent `packages/ui` components exist.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
-- **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
+- **`ui:` prefix rules in consumer code (`apps/dashboard/**` & `packages/storybook/**`):**
+  - **Theme tokens and semantic colors:** Prefix with `ui:` for classes binding to `@cio/ui` theme variables (e.g. `ui:bg-background`, `ui:text-muted-foreground`, `ui:border-input`, `ui:ring-ring`, `ui:text-primary`, `ui:bg-muted`, `ui:border-border`).
+  - **Named z-index scale:** Prefix with `ui:` for custom stacking layers defined in `@cio/ui` (`ui:z-app-bar`, `ui:z-app-bar-elevated`, `ui:z-modal`, `ui:z-menu-elevated`).
+  - **Custom animations and font tokens:** Prefix with `ui:` for custom animations and font utilities in `@cio/ui` (e.g. `ui:font-cio`, `ui:animate-meteor`, `ui:animate-shine`).
+  - **Standard Tailwind utilities:** Do not prefix layout, sizing, typography, spacing, borders, standard animations, or fonts (e.g. `flex`, `grid`, `w-full`, `min-h-*`, `p-*`, `m-*`, `gap-*`, `rounded-*`, `border`, `text-sm`, `font-semibold`, `animate-spin`, `focus-visible:outline-none`, `focus-visible:ring-2`).
+  - **Inside `packages/ui/src/**` only:** ALL Tailwind utility classes must use the `ui:` prefix (enforced by `pnpm --filter @cio/ui prefix:check`).
+- **Tailwind `ui:` variant prefix ordering:** When applying variants (`hover:`, `focus:`, `dark:`, `placeholder:`, `md:`) to `ui:` prefixed classes, `ui:` must come before the variant modifier (e.g. `ui:hover:text-primary`, `ui:focus-visible:ring-ring`, `ui:placeholder:text-muted-foreground`, `ui:dark:text-white`).
 
 ### Page layout and settings save bar
 

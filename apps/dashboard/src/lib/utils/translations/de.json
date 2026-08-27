@@ -302,7 +302,11 @@
         "all_content_already_unlocked": "Alle Inhalte sind bereits freigeschaltet",
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
         "content_grouping_disabled": "Inhaltsgruppierung deaktiviert",
-        "link_generated": "Der Kurslink wurde erfolgreich aktualisiert"
+        "link_generated": "Der Kurslink wurde erfolgreich aktualisiert",
+        "converted_to_public": "Der Kurs wurde erfolgreich in den öffentlichen Kurs konvertiert"
+      },
+      "info": {
+        "conversion_blocked": "Einstellungen gespeichert. Beantworten Sie die folgenden Fragen, um die Umstellung auf öffentlich abzuschließen."
       }
     },
     "people": {
@@ -879,7 +883,38 @@
         "question_in_exercise": "In „{exercise}“",
         "fix_question": "Bearbeiten",
         "convert_to_public_blocked": "Für öffentliche Kurse sind nur automatisch benotebare Fragen erforderlich.",
-        "convert_to_public_blocked_desc": "Übungen in einem öffentlichen Kurs werden automatisch im Browser benotet, weshalb wir nur automatisch benotebare Fragen unterstützen. Entfernen oder ersetzen Sie die folgenden Fragen, bevor Sie diesen Kurs in einen öffentlichen Kurs umwandeln:"
+        "convert_to_public_blocked_desc": "Übungen in einem öffentlichen Kurs werden automatisch im Browser benotet, weshalb wir nur automatisch benotebare Fragen unterstützen. Entfernen oder ersetzen Sie die folgenden Fragen, bevor Sie diesen Kurs in einen öffentlichen Kurs umwandeln:",
+        "fix_in_exercise": "Fix im Training",
+        "cancel_conversion": "Konvertierung abbrechen",
+        "public_conversion": {
+          "banner_title": "Konvertieren des Kurses in einen öffentlichen Kurs",
+          "exercise_fixed": "Diese Übung ist fertig",
+          "back_to_settings": "Zurück zu den Einstellungen",
+          "complete_conversion": "Vollständige öffentliche Konvertierung",
+          "jump_to": "Springe zu",
+          "blocks_public_conversion": "Nicht autogradierbar",
+          "blocks_public_conversion_desc": "Öffentliche Kurse unterstützen nur automatisch benotebare Fragen. Ändern Sie den Typ dieser Frage oder löschen Sie sie, um mit der Konvertierung fortzufahren.",
+          "blocks_public_conversion_title": "Manuelle Benotung wird in öffentlichen Kursen nicht unterstützt.",
+          "aria_label": "Fortschritt bei der Umwandlung des öffentlichen Kurses",
+          "all_exercises_fixed": "Alle {total} Übungen gelöst",
+          "ready_to_convert": "Bereit zur Umwandlung!",
+          "questions_left_other_singular": "· {count} Fragen in anderen Übungen verbleibend",
+          "questions_left_other_plural": "· {count} Fragen in anderen Übungen verbleibend",
+          "progress_summary_singular": "{resolved}/{total} gelöst · {remaining} Fragen verbleibend",
+          "progress_summary_plural": "{resolved}/{total} gelöst · {remaining} Fragen verbleibend",
+          "next_exercise": "Nächste: {exercise}",
+          "next": "Nächste",
+          "question_fallback": "Frage {number}",
+          "question_count_singular": "{count} Frage",
+          "question_count_plural": "{count} Fragen",
+          "exercise_count_singular": "{count} Übung",
+          "exercise_count_plural": "{count} Übungen",
+          "exercises_fixed": "{resolved}/{total} gelöst",
+          "questions_left_singular": "gelöst · {count} Fragen übrig",
+          "questions_left_plural": "gelöst · {count} Fragen übrig"
+        },
+        "fix": "Fix",
+        "save_changes_to_fix_questions": "Speichern Sie Ihre ungespeicherten Änderungen, bevor Sie die Fragen bearbeiten."
       },
       "analytics": {
         "title": "Analysen"

@@ -5,20 +5,21 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     isTitle?: boolean;
-    onClose?: any;
-    points?: any;
+    onClose?: () => void;
+    points?: number | string;
     hasError?: boolean;
     errorMsg?: string | null;
     /** Hint shown next to the points input while points is 0 (e.g. auto-grade requires non-zero points) */
     pointsHint?: string | null;
-    onPointsChange?: any;
+    onPointsChange?: (value?: unknown) => void;
     elementId?: string;
     class?: string;
     key?: string;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
   }
 
   let {
