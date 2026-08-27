@@ -46,6 +46,7 @@ import { t } from '$lib/utils/functions/translations';
 import { uploadImage } from '$lib/utils/services/upload';
 import { authClient } from '$lib/utils/services/auth/client';
 import { DEFAULT_ORG_AUDIENCE_QUERY, toAudienceRequestQuery } from '../utils/audience-query-utils';
+import { resolveOrgJoinRedirect } from '../utils/org-join-redirect';
 import type { ZodError } from 'zod';
 
 export interface TOrgUpdateForm {
@@ -92,7 +93,7 @@ class OrgApi extends BaseApiWithErrors {
         }
 
         await authClient.getSession({ query: { disableCookieCache: true } });
-        window.location.href = redirectTo;
+        window.location.href = resolveOrgJoinRedirect(redirectTo, window.location.origin);
       },
       onError: () => {
         snackbar.error('invite.organization.messages.join_failed');

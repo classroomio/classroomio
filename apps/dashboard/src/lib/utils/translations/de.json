@@ -4061,7 +4061,8 @@
         "accepted": "Diese Einladung wurde bereits verwendet.",
         "invalid": "Dieser Einladungslink ist ungültig.",
         "joined": "Der Organisation beigetreten",
-        "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen"
+        "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
+        "try_again": "Erneut versuchen"
       }
     },
     "link": {

@@ -4061,7 +4061,8 @@
         "accepted": "Lời mời này đã được sử dụng.",
         "invalid": "Liên kết mời này không hợp lệ.",
         "joined": "Đã tham gia tổ chức",
-        "join_failed": "Không thể tham gia tổ chức"
+        "join_failed": "Không thể tham gia tổ chức",
+        "try_again": "Thử lại"
       }
     },
     "link": {

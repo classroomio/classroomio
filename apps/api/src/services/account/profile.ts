@@ -1,12 +1,9 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveStudents,
-  createOrganizationMember,
-  getFirstOrganization,
-  getOrganizationCount,
+  ensureSelfHostedStudentMembership,
   getOrganizationByProfileId,
-  getUserOrgRolesMap,
-  hasOrgMemberByProfileIdOrEmail
+  getUserOrgRolesMap
 } from '@cio/db/queries/organization';
 import { getPlanLimit, toResourceUsage } from '@cio/utils/plans';
 import {
@@ -54,27 +51,17 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
   // Skip if they already have membership (by profileId) or a pending invite (by email).
   // Also skip if the user is an admin/tutor in any org — they should not be downgraded to student.
   if (isSelfHosted && organizations.length === 0) {
-    const organizationCount = await getOrganizationCount();
-    if (organizationCount === 1) {
-      const orgRoles = await getUserOrgRolesMap(userId);
-      const isTeamMember = Object.values(orgRoles).some((roleId) => roleId === ROLE.ADMIN || roleId === ROLE.TUTOR);
+    const orgRoles = await getUserOrgRolesMap(userId);
+    const isTeamMember = Object.values(orgRoles).some((roleId) => roleId === ROLE.ADMIN || roleId === ROLE.TUTOR);
 
-      if (!isTeamMember) {
-        const firstOrg = await getFirstOrganization();
-        if (firstOrg) {
-          const alreadyInOrg = await hasOrgMemberByProfileIdOrEmail(firstOrg.id, userId, profile.email ?? undefined);
+    if (!isTeamMember) {
+      const membershipEnsured = await ensureSelfHostedStudentMembership({
+        profileId: userId,
+        email: profile.email
+      });
 
-          if (!alreadyInOrg) {
-            await createOrganizationMember({
-              organizationId: firstOrg.id,
-              profileId: userId,
-              roleId: ROLE.STUDENT,
-              verified: true
-            });
-          }
-
-          organizations = await getOrganizationByProfileId(userId);
-        }
+      if (membershipEnsured) {
+        organizations = await getOrganizationByProfileId(userId);
       }
     }
   }

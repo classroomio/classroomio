@@ -167,8 +167,10 @@
 
       if (isNormalOrgSiteSignup) {
         const joinResult = await orgApi.joinAcademy(org.id, redirectUrl || '/lms');
-        if (!joinResult) {
-          loading = false;
+        const joinRetryPathname = newUserCallbackPathname;
+
+        if (!joinResult && joinRetryPathname) {
+          await goto(resolve(joinRetryPathname, {}));
         }
 
         return;

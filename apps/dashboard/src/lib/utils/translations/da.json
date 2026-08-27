@@ -4061,7 +4061,8 @@
         "accepted": "Denne invitation er allerede blevet brugt.",
         "invalid": "Dette invitationslink er ikke gyldigt.",
         "joined": "Tilsluttet organisation",
-        "join_failed": "Kunne ikke deltage i organisationen"
+        "join_failed": "Kunne ikke deltage i organisationen",
+        "try_again": "Prøv igen"
       }
     },
     "link": {

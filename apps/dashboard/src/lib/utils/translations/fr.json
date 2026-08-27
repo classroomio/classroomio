@@ -4061,7 +4061,8 @@
         "accepted": "Cette invitation a déjà été utilisée.",
         "invalid": "Ce lien d'invitation n'est pas valide.",
         "joined": "Organisation rejointe",
-        "join_failed": "Impossible de rejoindre l'organisation"
+        "join_failed": "Impossible de rejoindre l'organisation",
+        "try_again": "Réessayer"
       }
     },
     "link": {

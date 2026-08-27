@@ -4061,7 +4061,8 @@
         "accepted": "To zaproszenie zostało już wykorzystane.",
         "invalid": "Ten link z zaproszeniem jest nieprawidłowy.",
         "joined": "Dołączył do organizacji",
-        "join_failed": "Nie udało się dołączyć do organizacji"
+        "join_failed": "Nie udało się dołączyć do organizacji",
+        "try_again": "Spróbuj ponownie"
       }
     },
     "link": {
