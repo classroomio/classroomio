@@ -3828,7 +3828,7 @@
       "full_name": "Fuldt navn",
       "password": "Din adgangskode",
       "confirm_password": "Bekræft adgangskode",
-      "password_helper_message": "Adgangskoden skal være på 6 eller flere tegn",
+      "password_helper_message": "Adgangskoden skal være på 8 eller flere tegn",
       "create_account": "Opret konto"
     },
     "signup_disabled": {

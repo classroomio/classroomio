@@ -3828,7 +3828,7 @@
       "full_name": "Tên đầy đủ",
       "password": "Mật khẩu của bạn",
       "confirm_password": "Xác nhận mật khẩu",
-      "password_helper_message": "Mật khẩu phải có từ 6 ký tự trở lên",
+      "password_helper_message": "Mật khẩu phải có từ 8 ký tự trở lên",
       "create_account": "Tạo tài khoản"
     },
     "signup_disabled": {

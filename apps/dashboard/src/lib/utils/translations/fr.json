@@ -3828,7 +3828,7 @@
       "full_name": "Nom complet",
       "password": "Votre mot de passe",
       "confirm_password": "Confirmer le mot de passe",
-      "password_helper_message": "Le mot de passe doit comporter 6 caractères ou plus",
+      "password_helper_message": "Le mot de passe doit comporter 8 caractères ou plus",
       "create_account": "Créer un compte"
     },
     "signup_disabled": {

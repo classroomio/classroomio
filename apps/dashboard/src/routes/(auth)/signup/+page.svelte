@@ -162,11 +162,17 @@
     }
   }
 
-  let passwordBlurred = $state(false);
+  let passwordHasBlurred = $state(false);
 
   function handlePasswordBlur() {
-    passwordBlurred = true;
+    passwordHasBlurred = true;
     validatePasswordLength();
+  }
+
+  function handlePasswordInput() {
+    if (passwordHasBlurred) {
+      validatePasswordLength();
+    }
   }
 
   function validatePasswordLength() {
@@ -263,6 +269,7 @@
               placeholder="************"
               disabled={loading}
               onblur={handlePasswordBlur}
+              oninput={handlePasswordInput}
               aria-invalid={errors.password ? 'true' : undefined}
               autocomplete="new-password"
             />
