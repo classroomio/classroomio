@@ -3406,7 +3406,9 @@
           "load_failed": "Falha ao carregar os cursos publicados.",
           "add_button": "Adicionar",
           "popover_title": "Selecionar cursos",
-          "popover_empty": "Nenhum curso publicado disponível."
+          "popover_empty": "Nenhum curso publicado disponível.",
+          "search_no_results": "Nenhum curso corresponde à sua pesquisa.",
+          "search_placeholder": "Buscar cursos..."
         }
       },
       "content": {

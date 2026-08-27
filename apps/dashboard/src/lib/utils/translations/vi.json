@@ -3406,7 +3406,9 @@
           "load_failed": "Không thể tải các khóa học đã xuất bản.",
           "add_button": "Thêm",
           "popover_title": "Chọn khóa học",
-          "popover_empty": "Hiện không có khóa học nào được đăng tải."
+          "popover_empty": "Hiện không có khóa học nào được đăng tải.",
+          "search_no_results": "Không có khóa học nào khớp với tìm kiếm của bạn.",
+          "search_placeholder": "Tìm khóa học..."
         }
       },
       "content": {

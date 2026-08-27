@@ -3406,7 +3406,9 @@
           "load_failed": "Nie udało się załadować opublikowanych kursów.",
           "add_button": "Dodaj",
           "popover_title": "Wybierz kursy",
-          "popover_empty": "Brak opublikowanych kursów."
+          "popover_empty": "Brak opublikowanych kursów.",
+          "search_no_results": "Brak kursów pasujących do wyszukiwania.",
+          "search_placeholder": "Szukaj kursów..."
         }
       },
       "content": {

@@ -3402,11 +3402,13 @@
         },
         "courses": {
           "drag_hint": "Træk kurser for at ændre deres rækkefølge på landingssiden.",
-          "empty": "Ingen offentliggjorte kurser endnu — offentliggør et kursus for at se et eksempel på det her.",
+          "empty": "Ingen kurser valgt.",
           "load_failed": "Kunne ikke indlæse offentliggjorte kurser.",
           "add_button": "Tilføj",
           "popover_title": "Vælg kurser",
-          "popover_empty": "Ingen offentliggjorte kurser tilgængelige."
+          "popover_empty": "Ingen offentliggjorte kurser tilgængelige.",
+          "search_no_results": "Ingen kurser matcher din søgning.",
+          "search_placeholder": "Søg efter kurser..."
         }
       },
       "content": {

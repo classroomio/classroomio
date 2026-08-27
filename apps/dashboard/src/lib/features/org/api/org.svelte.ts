@@ -262,7 +262,11 @@ class OrgApi extends BaseApiWithErrors {
       logContext: 'fetching published courses for ordering'
     });
 
-    return response?.data.courses ?? [];
+    if (!response) {
+      throw new Error('Failed to fetch published courses for ordering');
+    }
+
+    return response.data.courses;
   }
 
   /**

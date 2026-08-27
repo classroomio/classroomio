@@ -3406,7 +3406,9 @@
           "load_failed": "Veröffentlichte Kurse konnten nicht geladen werden.",
           "add_button": "Hinzufügen",
           "popover_title": "Kurse auswählen",
-          "popover_empty": "Es sind keine Kurse verfügbar."
+          "popover_empty": "Es sind keine Kurse verfügbar.",
+          "search_no_results": "Keine Kurse entsprechen Ihrer Suche.",
+          "search_placeholder": "Kurse suchen..."
         }
       },
       "content": {

@@ -236,7 +236,11 @@
 
           <div class="px-4 py-2">
             <div class="relative">
-              <Input bind:value={searchQuery} placeholder="Search courses..." class="h-8 text-xs" />
+              <Input
+                bind:value={searchQuery}
+                placeholder={$t('settings.landing_page.editor.courses.search_placeholder')}
+                class="h-8 text-xs"
+              />
             </div>
           </div>
 
@@ -246,7 +250,9 @@
                 {$t('settings.landing_page.editor.courses.popover_empty')}
               </p>
             {:else if filteredCourses.length === 0}
-              <p class="ui:text-muted-foreground py-4 text-center text-xs">No courses match your search.</p>
+              <p class="ui:text-muted-foreground py-4 text-center text-xs">
+                {$t('settings.landing_page.editor.courses.search_no_results')}
+              </p>
             {:else}
               {#each filteredCourses as course (course.id)}
                 {@const isChecked = selectedIds.has(course.id)}

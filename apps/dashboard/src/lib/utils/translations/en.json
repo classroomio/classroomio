@@ -926,7 +926,9 @@
           "load_failed": "Failed to load courses.",
           "add_button": "Add",
           "popover_title": "Select courses",
-          "popover_empty": "No published courses available."
+          "popover_empty": "No published courses available.",
+          "search_no_results": "No courses match your search.",
+          "search_placeholder": "Search courses..."
         }
       },
       "title": "Title",

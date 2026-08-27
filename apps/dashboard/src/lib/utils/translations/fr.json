@@ -3406,7 +3406,9 @@
           "load_failed": "Échec du chargement des cours publiés.",
           "add_button": "Ajouter",
           "popover_title": "Sélectionner des cours",
-          "popover_empty": "Aucun cours publié disponible."
+          "popover_empty": "Aucun cours publié disponible.",
+          "search_no_results": "Aucun cours ne correspond à votre recherche.",
+          "search_placeholder": "Rechercher des cours..."
         }
       },
       "content": {

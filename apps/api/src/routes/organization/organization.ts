@@ -69,6 +69,7 @@ import {
   toggleOrgLinkInvite
 } from '@api/services/organization/invite';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
+import { orgAdminOrAutomationKeyMiddleware } from '@api/middlewares/org-admin-or-automation-key';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-or-automation-key';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
@@ -418,12 +419,12 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/courses/reorder
    * Persists the manual display order of organization courses (landing page + public catalog)
-   * Requires authentication and organization membership
+   * Requires authentication and organization administrator privileges (or automation key with `course:write`)
    */
   .post(
     '/courses/reorder',
     authOrAutomationKeyMiddleware,
-    orgMemberOrAutomationKeyMiddleware(['course:write']),
+    orgAdminOrAutomationKeyMiddleware(['course:write']),
     zValidator('json', ZCourseReorder),
     async (c) => {
       try {
