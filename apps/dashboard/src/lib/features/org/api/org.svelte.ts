@@ -269,7 +269,8 @@ class OrgApi extends BaseApiWithErrors {
    * Persists the manual display order of published courses
    * @param orders Array of course IDs with their new positions
    */
-  async reorderPublishedCourses(orders: TCourseReorder['courses']) {
+  async reorderPublishedCourses(orders: TCourseReorder['courses'], options: { showToast?: boolean } = {}) {
+    const { showToast = false } = options;
     return this.execute<ReorderOrgCoursesRequest>({
       requestFn: () =>
         classroomio.organization.courses.reorder.$post({
@@ -278,7 +279,11 @@ class OrgApi extends BaseApiWithErrors {
           }
         }),
       logContext: 'reordering published courses',
-      onSuccess: () => snackbar.success('snackbar.landing_page_settings.success.courses_reordered'),
+      onSuccess: () => {
+        if (showToast) {
+          snackbar.success('snackbar.landing_page_settings.success.courses_reordered');
+        }
+      },
       onError: () => snackbar.error('snackbar.landing_page_settings.error.courses_reorder_failed')
     });
   }

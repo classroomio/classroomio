@@ -16,6 +16,7 @@
   import { setLandingPageEditContext, type LandingSectionKey } from '@cio/ui/custom/org-landing-page';
   import {
     ContentIcon,
+    CourseIcon,
     ExploreIcon,
     ExternalLinkIcon,
     GoalIcon,
@@ -29,6 +30,7 @@
   const sectionIcons: Record<LandingSectionKey, Component> = {
     navigation: ContentIcon,
     hero: HeaderIcon,
+    courses: CourseIcon,
     links: ExploreIcon,
     embed: ExternalLinkIcon,
     callout: GoalIcon,

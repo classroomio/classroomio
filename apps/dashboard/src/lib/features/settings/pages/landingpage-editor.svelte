@@ -50,6 +50,9 @@
 
   let isSaving = $state(false);
   let hasUnsavedChanges = $state(false);
+  type SaveHandler = () => Promise<boolean> | void;
+
+  let sectionSaveHandler = $state<SaveHandler | null>(null);
 
   const sections: SectionDefinition[] = [
     {
@@ -117,6 +120,12 @@
     isSaving = true;
 
     try {
+      if (sectionSaveHandler) {
+        const saved = await sectionSaveHandler();
+        if (saved === false) {
+          return;
+        }
+      }
       await onSave();
       hasUnsavedChanges = false;
     } finally {
@@ -191,7 +200,12 @@
   {:else if selectedSectionDefinition}
     {@const SectionComponent = selectedSectionDefinition?.component}
     <div class="min-w-0 overflow-x-hidden p-4">
-      <SectionComponent bind:settings {markDirty} />
+      <SectionComponent
+        bind:settings
+        {markDirty}
+        onSave={handleSaveClick}
+        registerSaveHandler={(fn) => (sectionSaveHandler = fn)}
+      />
     </div>
   {/if}
 </Sidebar.Content>

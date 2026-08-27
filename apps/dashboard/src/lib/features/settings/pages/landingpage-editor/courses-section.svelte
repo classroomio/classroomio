@@ -3,7 +3,6 @@
   import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
   import ImageOffIcon from '@lucide/svelte/icons/image-off';
   import PlusIcon from '@lucide/svelte/icons/plus';
-  import SearchIcon from '@lucide/svelte/icons/search';
   import { page } from '$app/state';
 
   import { t } from '$lib/utils/functions/translations';
@@ -31,17 +30,18 @@
     settings?: OrgLandingPageJson;
     markDirty?: () => void;
     onSave?: () => Promise<void> | void;
+    registerSaveHandler?: (fn: (() => Promise<boolean> | void) | null) => void;
   }
 
-  let { settings = $bindable(), markDirty, onSave }: Props = $props();
+  let { settings = $bindable(), markDirty, registerSaveHandler }: Props = $props();
 
   void settings;
-  void markDirty;
 
   type DndEvent = CustomEvent<{ items: OrderedCourseItem[] }>;
 
   const FLIP_DURATION_MS = 200;
 
+  let rawPublicCourses = $state<OrgPublicCourses>([]);
   let allCourses = $state<OrderedCourseItem[]>([]);
   let selectedCourses = $state<OrderedCourseItem[]>([]);
   let selectedIds = new SvelteSet<string>();
@@ -50,11 +50,10 @@
   let loadedSiteName = $state<string | null>(null);
 
   let popoverOpen = $state(false);
-  let isDirty = $state(false);
   let popoverWasOpen = $state(false);
 
   let searchQuery = $state('');
-  let isSaving = $state(false);
+  let hasOrderChanged = $state(false);
 
   let itemsBeforeDrag: OrderedCourseItem[] = [];
 
@@ -67,6 +66,11 @@
   );
 
   $effect(() => {
+    registerSaveHandler?.(persistSelection);
+    return () => registerSaveHandler?.(null);
+  });
+
+  $effect(() => {
     if (!siteName || loadedSiteName === siteName) {
       return;
     }
@@ -76,15 +80,30 @@
   });
 
   $effect(() => {
-    if (popoverWasOpen && !popoverOpen && isDirty) {
-      isDirty = false;
+    if (popoverWasOpen && !popoverOpen) {
       searchQuery = '';
-      void persistSelection();
     }
     popoverWasOpen = popoverOpen;
   });
 
+  function updatePreview(selected: OrderedCourseItem[]) {
+    if (!rawPublicCourses.length) return;
+    const rawMap = new Map(rawPublicCourses.map((c) => [c.id, c]));
+    orgApi.publicCourses = selected
+      .map((sc, index) => {
+        const raw = rawMap.get(sc.id);
+        if (!raw) return null;
+        return {
+          ...raw,
+          displayOrder: index
+        };
+      })
+      .filter((c): c is OrgPublicCourses[number] => c !== null);
+  }
+
   function buildCourses(courses: OrgPublicCourses) {
+    rawPublicCourses = courses;
+
     const items: OrderedCourseItem[] = courses.map((course) => ({
       id: course.id,
       title: typeof course.title === 'string' ? course.title : '',
@@ -129,34 +148,38 @@
 
     itemsBeforeDrag = [];
     selectedCourses = nextItems;
+    updatePreview(selectedCourses);
 
     if (!orderChanged) {
       return;
     }
 
-    if (popoverOpen) {
-      isDirty = true;
-    } else {
-      void persistSelection();
-    }
+    hasOrderChanged = true;
+    markDirty?.();
   }
 
-  async function persistSelection() {
+  async function persistSelection(): Promise<boolean> {
+    if (!hasOrderChanged) {
+      return true;
+    }
+
     const orders = selectedCourses.map((item, index) => ({
       id: item.id,
       order: index
     }));
 
-    const result = await orgApi.reorderPublishedCourses(orders);
+    const result = await orgApi.reorderPublishedCourses(orders, { showToast: false });
 
     if (result) {
+      hasOrderChanged = false;
       void orgApi.refreshPublicCourses(siteName);
+      return true;
     }
+
+    return false;
   }
 
   function toggleCourse(courseId: string, checked: boolean) {
-    isDirty = true;
-
     if (checked) {
       if (selectedCourses.length >= MAX_COURSES) {
         return;
@@ -175,20 +198,14 @@
       selectedIds = new SvelteSet(selectedIds);
       selectedCourses = selectedCourses.filter((c) => c.id !== courseId);
     }
+
+    updatePreview(selectedCourses);
+    hasOrderChanged = true;
+    markDirty?.();
   }
 
   function isAtLimit(): boolean {
     return selectedCourses.length >= MAX_COURSES;
-  }
-
-  async function handleSave() {
-    if (!onSave) return;
-    isSaving = true;
-    try {
-      await onSave();
-    } finally {
-      isSaving = false;
-    }
   }
 </script>
 
@@ -217,10 +234,9 @@
             </p>
           </div>
 
-          <div class="border-b px-4 py-2">
+          <div class="px-4 py-2">
             <div class="relative">
-              <SearchIcon size={14} class="ui:text-muted-foreground absolute top-1/2 left-2.5 -translate-y-1/2" />
-              <Input bind:value={searchQuery} placeholder="Search courses..." class="h-8 pl-8 text-xs" />
+              <Input bind:value={searchQuery} placeholder="Search courses..." class="h-8 text-xs" />
             </div>
           </div>
 
@@ -311,13 +327,5 @@
         </div>
       {/if}
     </div>
-
-    {#if onSave}
-      <div class="flex justify-end pt-2">
-        <Button variant="secondary" onclick={handleSave} loading={isSaving} disabled={isSaving}>
-          {$t('settings.landing_page.editor.save')}
-        </Button>
-      </div>
-    {/if}
   </Field.Set>
 </Field.Group>
