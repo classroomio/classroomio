@@ -8,6 +8,7 @@
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import LogOutIcon from '@lucide/svelte/icons/log-out';
   import MessageSquarePlusIcon from '@lucide/svelte/icons/message-square-plus';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { useSidebar } from '@cio/ui/base/sidebar';
@@ -16,9 +17,21 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, getAppOrigin } from '$lib/utils/store/org';
   import { showUserJotWidget } from '$lib/utils/services/userjot';
   import { ROLE } from '@cio/utils/constants';
+  import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+
+  const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
+
+  function createOwnOrganization() {
+    if ($globalStore.isOrgSite) {
+      window.location.href = `${getAppOrigin()}/onboarding`;
+      return;
+    }
+
+    goto(resolve('/onboarding', {}));
+  }
 
   const SUPPORT_EMAIL = 'help@classroomio.com';
   const DOCS_URL = 'https://classroomio.com/docs';
@@ -142,7 +155,16 @@
               </div>
             {/if}
 
-            <DropdownMenu.Separator />
+            {#if !isSelfHosted}
+              <DropdownMenu.Item class="m-0" onclick={createOwnOrganization}>
+                <span class="flex w-full items-center gap-2">
+                  <PlusIcon size={16} />
+                  <p class="text-sm">{$t('add_org.create_org')}</p>
+                </span>
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Separator />
+            {/if}
 
             <DropdownMenu.Item onclick={() => goto(resolve(`/logout`, {}))}>
               <span class="flex items-center gap-2">
