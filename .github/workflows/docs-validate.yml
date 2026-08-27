@@ -1,9 +1,9 @@
 name: Docs validate
 
-# Plain pull_request, not pull_request_target: this job lints real PR-head
-# content, which is a different risk profile than checking out and running
-# PR code. Fork PRs get a read-only token, so we report via check
-# annotations instead of a PR comment.
+# Uses pull_request_target so fork PRs get a write-capable token to publish
+# Vale check annotations. The workflow file itself runs from the base branch
+# (safe from injection), while we explicitly check out the PR head to lint
+# the correct docs content.
 #
 # Scoped to apps/docs/**, so this never runs on code-only PRs. Advisory
 # only. Never add this to branch protection's required checks: a
@@ -11,7 +11,7 @@ name: Docs validate
 # PRs stuck pending forever. See apps/docs/WORKFLOW.md.
 
 on:
-  pull_request:
+  pull_request_target:
     paths:
       - 'apps/docs/**'
       - '.github/workflows/docs-validate.yml'
@@ -26,6 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
 
       - uses: pnpm/action-setup@v4
 
