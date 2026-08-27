@@ -428,7 +428,9 @@
       </Page.Header>
       <Page.Body>
         {#snippet child()}
-          <div class="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">All changes saved.</div>
+          <div class="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
+            All changes saved. The compact save card stays hidden until the form is dirty.
+          </div>
         {/snippet}
       </Page.Body>
       <Page.SettingsActions

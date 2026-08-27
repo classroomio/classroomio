@@ -3,20 +3,21 @@ title: Configuration
 description: Shared configuration reference for self-hosting ClassroomIO — secrets, email, storage, CSP, integrations, licensing, and versions.
 ---
 
-However you deploy ClassroomIO — [Docker](/self-hosted/docker), [Railway](/self-hosted/railway), or
-[Coolify](/self-hosted/coolify) — the stack reads the **same set of environment variables**. This
-section is the single source of truth for what each group of variables does. The provider guides show
-you *where* to set them for that platform; these pages explain *what* to set and *why*.
+However you deploy ClassroomIO ([Docker](/self-hosted/docker), [DigitalOcean](/self-hosted/digitalocean),
+[Railway](/self-hosted/railway), [Coolify](/self-hosted/coolify), or [Dokploy](/self-hosted/dokploy)),
+the stack reads the **same set of environment variables**. This section is the single source of truth
+for what each group of variables does. The provider guides show you *where* to set them for that
+platform; these pages explain *what* to set and *why*.
 
 ## How to read these pages
 
 ClassroomIO is configured entirely through environment variables. On Docker they live in one root
-`.env` file that every `docker compose` command reads via `--env-file .env`; on Railway and Coolify you
-set the same variables on each service.
+`.env` file that every `docker compose` command reads via `--env-file .env`; on PaaS platforms
+(Railway, Coolify, Dokploy) you set the same variables on each service.
 
 :::note[Value = required, blank = optional]
 Throughout these pages and the provider guides, a variable shown **with a value** is one you should
-set for a working deployment. A variable left **blank after `=`** is optional — fill it in only if you
+set for a working deployment. A variable left **blank after `=`** is optional: fill it in only if you
 use that feature. Leaving an optional variable blank never causes a build or boot error.
 :::
 
@@ -24,7 +25,7 @@ use that feature. Leaving an optional variable blank never causes a build or boo
 
 <CardGroup cols={2}>
   <Card title="Environment & secrets" href="/self-hosted/configuration/secrets" icon="key-round">
-    Generate `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` — the stack won't boot without them.
+    Generate `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY`: the stack won't boot without them.
   </Card>
   <Card title="Email (SMTP)" href="/self-hosted/configuration/email" icon="mail">
     SMTP for signup verification, password resets, and invite emails.
@@ -38,7 +39,7 @@ use that feature. Leaving an optional variable blank never causes a build or boo
   <Card title="Integrations" href="/self-hosted/configuration/integrations" icon="plug">
     Google OAuth, Unsplash, OpenAI transcription and AI course generation.
   </Card>
-  <Card title="SSO & licensing" href="/self-hosted/configuration/sso" icon="id-card">
+  <Card title="Enterprise & licensing" href="/self-hosted/enterprise" icon="id-card">
     Set `LICENSE_KEY` to unlock Enterprise features such as SSO.
   </Card>
   <Card title="Versions & upgrades" href="/self-hosted/configuration/versions" icon="git-branch">

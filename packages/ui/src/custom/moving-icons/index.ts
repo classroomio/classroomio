@@ -31,6 +31,7 @@ export { default as RadioIcon } from './radio.svelte';
 export { default as ReviewIcon } from './review.svelte';
 export { default as SettingsIcon } from './settings.svelte';
 export { default as SetupIcon } from './setup.svelte';
+export { default as ShieldCheckIcon } from './shield-check.svelte';
 export { default as SubmissionIcon } from './submission.svelte';
 export { default as TagIcon } from './tag.svelte';
 export { default as UploadIcon } from './upload.svelte';

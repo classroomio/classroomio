@@ -15,7 +15,7 @@
   } = $props();
 </script>
 
-{#if embed}
+{#if embed && embed.enabled !== false}
   <EditableLandingSection sectionKey="embed">
     {#if variant === 'terminal'}
       <section class="ui:py-24 ui:px-6" style="border-top: 1px solid #1c1f28; background: #06070a;">

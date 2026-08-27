@@ -476,6 +476,7 @@ export async function getCoursesByCohort(
         coverImage: string | null;
         slug: string | null;
         status: string | null;
+        isPublished: boolean | null;
       };
     }
   >
@@ -509,6 +510,22 @@ export async function getCoursesByCohort(
     throw new Error(
       `Failed to get courses for cohort "${cohortId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+export async function getCourseIdsByCohortIds(cohortIds: string[]): Promise<string[]> {
+  try {
+    if (cohortIds.length === 0) return [];
+
+    const rows = await db
+      .selectDistinct({ courseId: schema.cohortCourse.courseId })
+      .from(schema.cohortCourse)
+      .where(inArray(schema.cohortCourse.cohortId, cohortIds));
+
+    return rows.map((row) => row.courseId).filter((courseId): courseId is string => !!courseId);
+  } catch (error) {
+    console.error('getCourseIdsByCohortIds error:', error);
+    throw new Error(`Failed to get cohort course IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

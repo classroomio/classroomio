@@ -31,6 +31,15 @@ Base URL: \`${PUBLIC_API_BASE_URL}\`
 
 Use the **Authorize** button (lock icon) on this page, choose **bearerAuth**, paste your full API key, then run **Try it** on any endpoint.
 
+## Rate limits
+
+Requests to this API are rate limited per API key: **100 requests per minute** per key. A separate API key has its own budget, so traffic from one key does not affect another. Requests over the limit receive a \`429 Too Many Requests\` response with a \`Retry-After\` header.
+
+Two caveats to be aware of:
+
+- Rate limiting is only enforced when the API runs with NODE_ENV=production; it is disabled in development and test environments. This applies regardless of hosting a self-hosted production deployment with Redis available does enforce the per-key budget.
+- If the shared Redis store is unavailable, requests are served without rate limiting (fail open).
+
 ## Plan access
 
 > **Paid Access** — On ClassroomIO Cloud, API key creation is available on **Early Adopter** and **Enterprise** plans. Self-hosted deployments require **Enterprise**.

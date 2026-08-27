@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Path Analytics · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+      .funnel-row { display: grid; grid-template-columns: 30px 1fr; gap: 14px; align-items: center; padding: 10px 0; }
+      .f-ord { width: 26px; height: 26px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 10%, transparent); color: var(--primary); display: grid; place-items: center; font-weight: 600; font-size: 12px; }
+      .f-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; gap: 10px; }
+      .f-name { font-size: 13.5px; font-weight: 500; }
+      .f-nums { font-size: 12.5px; color: var(--muted-foreground); }
+      .f-nums b { color: var(--foreground); font-weight: 600; }
+      .f-bar { height: 22px; border-radius: var(--radius-sm); background: color-mix(in oklab, var(--primary) 10%, transparent); overflow: hidden; position: relative; }
+      .f-bar > span { position: absolute; inset: 0 auto 0 0; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 11.5px; font-weight: 600; color: var(--primary-foreground); }
+      .drop { font-size: 12px; color: var(--muted-foreground); display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+      .drop svg { width: 12px; height: 12px; stroke-width: 2; }
+      .drop.bad { color: var(--destructive); }
+      .stuck { display: flex; flex-direction: column; gap: 8px; }
+      @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <a class="back-link" href="teacher-paths.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All Learning Paths</a>
+        <div class="path-id">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
+          <div><div class="nm">Frontend Engineering Bootcamp</div><div class="st st-active"><span class="dot"></span>Active</div></div>
+        </div>
+        <a class="nav-item" href="teacher-path-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses<span class="nav-tail tnum">5</span></a>
+        <a class="nav-item" href="teacher-path-people.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>People<span class="nav-tail tnum">48</span></a>
+        <a class="nav-item active" href="teacher-path-analytics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Analytics</a>
+        <a class="nav-item" href="teacher-path-landing-editor.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Landing page</a>
+        <a class="nav-item" href="teacher-path-certificate.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate</a>
+        <a class="nav-item" href="teacher-path-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <nav class="crumbs">
+            <a href="teacher-paths.html">Learning Paths</a><span class="sep">/</span>
+            <a href="teacher-path-builder.html">Frontend Engineering Bootcamp</a><span class="sep">/</span>
+            <span class="here">Analytics</span>
+          </nav>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 920px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Analytics</h1>
+                <p class="page-sub">How learners are moving through the path.</p>
+              </div>
+              <select class="select" style="max-width: 160px"><option>Last 90 days</option><option>Last 30 days</option><option>All time</option></select>
+            </div>
+
+            <div class="stats">
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Enrolled</div><div class="v tnum">48</div><div class="s">+9 this month</div></div>
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>Active learners</div><div class="v tnum">31</div><div class="s">worked in the last 14 days</div></div>
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Completion rate</div><div class="v tnum">27%</div><div class="s">13 of 48 finished</div></div>
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Avg. time to finish</div><div class="v tnum">9.4 wks</div><div class="s">across completions</div></div>
+            </div>
+
+            <div class="card card-pad" style="margin-bottom: 20px">
+              <h2 class="sec-title" style="margin-bottom: 4px">Course funnel</h2>
+              <p class="page-sub" style="margin-bottom: 14px">How many learners have reached and completed each course, in order.</p>
+
+              <div class="funnel-row">
+                <span class="f-ord tnum">1</span>
+                <div>
+                  <div class="f-top"><span class="f-name">HTML &amp; CSS Foundations</span><span class="f-nums tnum"><b>44</b> completed · 3 in progress</span></div>
+                  <div class="f-bar"><span style="width: 92%; background: var(--primary)">44</span></div>
+                </div>
+              </div>
+              <div class="funnel-row">
+                <span class="f-ord tnum">2</span>
+                <div>
+                  <div class="f-top"><span class="f-name">JavaScript Essentials</span><span class="f-nums tnum"><b>36</b> completed · 6 in progress</span></div>
+                  <div class="f-bar"><span style="width: 75%; background: var(--primary)">36</span></div>
+                  <div class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>8 learners dropped after Course 1</div>
+                </div>
+              </div>
+              <div class="funnel-row">
+                <span class="f-ord tnum">3</span>
+                <div>
+                  <div class="f-top"><span class="f-name">Modern Web Development with React</span><span class="f-nums tnum"><b>22</b> completed · 9 in progress</span></div>
+                  <div class="f-bar"><span style="width: 46%; background: var(--primary)">22</span></div>
+                  <div class="drop bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>14 learners dropped after Course 2 — biggest drop-off</div>
+                </div>
+              </div>
+              <div class="funnel-row">
+                <span class="f-ord tnum">4</span>
+                <div>
+                  <div class="f-top"><span class="f-name">State Management &amp; Data Fetching</span><span class="f-nums tnum"><b>16</b> completed · 4 in progress</span></div>
+                  <div class="f-bar"><span style="width: 33%; background: var(--primary)">16</span></div>
+                </div>
+              </div>
+              <div class="funnel-row">
+                <span class="f-ord tnum">5</span>
+                <div>
+                  <div class="f-top"><span class="f-name">Building &amp; Shipping a Capstone</span><span class="f-nums tnum"><b>13</b> completed · 2 in progress</span></div>
+                  <div class="f-bar"><span style="width: 27%; background: var(--success)">13</span></div>
+                  <div class="drop" style="color: var(--success)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>13 certificates awarded</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-pad">
+              <h2 class="sec-title" style="margin-bottom: 4px">Where learners are stuck</h2>
+              <p class="page-sub" style="margin-bottom: 14px">Lessons and exercises blocking the most learners right now.</p>
+              <div class="stuck">
+                <div class="item item-muted" style="padding: 12px 14px">
+                  <div class="item-media-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                  <div class="item-content">
+                    <span class="item-title">Exercise: Build a to-do app · React</span>
+                    <span class="item-desc">7 learners have had this exercise in progress for over 2 weeks.</span>
+                  </div>
+                  <span class="badge badge-warning" style="background: var(--warning-soft); color: var(--warning)">7 stuck</span>
+                </div>
+                <div class="item item-muted" style="padding: 12px 14px">
+                  <div class="item-media-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+                  <div class="item-content">
+                    <span class="item-title">Lesson: The useEffect hook · React</span>
+                    <span class="item-desc">5 learners stopped at this lesson.</span>
+                  </div>
+                  <span class="badge badge-warning" style="background: var(--warning-soft); color: var(--warning)">5 stuck</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

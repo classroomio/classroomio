@@ -2,7 +2,6 @@ import * as schema from '@db/schema';
 
 import type { TCourseNewsfeed, TCourseNewsfeedComment, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@db/types';
 import { and, db, desc, eq, isNull, lt, ne, sql } from '@db/drizzle';
-import { alias } from 'drizzle-orm/pg-core';
 import { ROLE } from '@cio/utils/constants';
 
 /**
@@ -219,93 +218,266 @@ export async function getNewsfeedCommentsByFeedId(feedId: string): Promise<TCour
   }
 }
 
+export type TNewsfeedCommentNode = {
+  id: number;
+  parentId: number | null;
+  replyToCommentId: number | null;
+  courseNewsfeedId: string | null;
+  authorId: string | null;
+  content: string | null;
+  createdAt: string;
+  /** Levels below the requested root. */
+  depth: number;
+  authorProfileId: string | null;
+  authorFullname: string | null;
+  authorUsername: string | null;
+  authorAvatarUrl: string | null;
+  replyToAuthorFullname: string | null;
+  /** Immediate children in the database, not just the fetched ones. */
+  directReplyCount: number;
+  /** Whole subtree size in the database, including nodes below the fetched depth. */
+  descendantCount: number;
+  loadedChildCount: number;
+  hasMoreChildren: boolean;
+};
+
+type ThreadRow = Omit<TNewsfeedCommentNode, 'loadedChildCount' | 'hasMoreChildren'> & {
+  hasMoreRoots: boolean;
+  remainingChildren: number;
+  totalRootCount: number;
+  totalCommentCount: number;
+};
+
 /**
- * Gets paginated comments for a newsfeed item with author profile
- * @param feedId Newsfeed ID
- * @param options Pagination options (parentId, cursor, limit)
- * @returns Object with comments array, total count, hasMore flag, and nextCursor
+ * Gets a comment subtree for a newsfeed item in a single round trip.
+ *
+ * Ordering and pagination are both on `id DESC`. The identity sequence and `created_at`
+ * default advance together, so newest-first by id is a total, stable keyset — mixing
+ * `ORDER BY created_at` with an id cursor would silently skip rows.
+ *
+ * `descendantCount` is computed over a feed-scoped closure that ignores `maxDepth`, so a
+ * node sitting exactly at the fetch depth still reports how much is hidden beneath it.
  */
-export async function getNewsfeedCommentsByFeedIdPaginated(
+export async function getNewsfeedCommentThread(
   feedId: string,
-  options: { parentId?: number; cursor?: string; limit: number }
+  options: {
+    rootId?: number;
+    cursor?: string;
+    childCursor?: string;
+    rootLimit?: number;
+    childLimit?: number;
+    maxDepth?: number;
+  } = {}
 ) {
   try {
-    const { parentId, cursor, limit } = options;
+    const rootLimit = options.rootLimit ?? 5;
+    const childLimit = options.childLimit ?? 3;
+    const maxDepth = options.maxDepth ?? 3;
+    const rootId = options.rootId ?? null;
+    const cursor = options.cursor ? Number(options.cursor) : null;
+    const childCursor = options.childCursor ? Number(options.childCursor) : null;
 
-    // Build base parent-scoped conditions
-    const parentCondition =
-      parentId !== undefined
-        ? eq(schema.courseNewsfeedComment.parentId, parentId)
-        : isNull(schema.courseNewsfeedComment.parentId);
+    const result = await db.execute(sql`
+      WITH RECURSIVE
+      feed_comments AS MATERIALIZED (
+        SELECT id::int AS id, parent_id::int AS parent_id
+        FROM course_newsfeed_comment
+        WHERE course_newsfeed_id = ${feedId}
+      ),
+      direct_counts AS (
+        SELECT parent_id AS id, COUNT(*)::int AS direct_reply_count
+        FROM feed_comments WHERE parent_id IS NOT NULL GROUP BY parent_id
+      ),
+      roots AS (
+        SELECT id::int AS id
+        FROM course_newsfeed_comment
+        WHERE course_newsfeed_id = ${feedId}
+          AND CASE WHEN ${rootId}::int IS NULL THEN parent_id IS NULL ELSE id = ${rootId}::int END
+          AND (${cursor}::int IS NULL OR id < ${cursor}::int)
+        ORDER BY id DESC
+        LIMIT ${rootLimit + 1}
+      ),
+      root_page AS (
+        SELECT id FROM (SELECT id, row_number() OVER (ORDER BY id DESC) AS rn FROM roots) r
+        WHERE rn <= ${rootLimit}
+      ),
+      subtree AS (
+        SELECT rp.id, 0 AS depth FROM root_page rp
+        UNION ALL
+        SELECT fc.id, st.depth + 1
+        FROM subtree st
+        JOIN feed_comments fc ON fc.parent_id = st.id
+        WHERE st.depth < ${maxDepth}
+          AND (st.depth > 0 OR ${childCursor}::int IS NULL OR fc.id < ${childCursor}::int)
+      ),
+      ranked AS (
+        SELECT st.id, st.depth, fc.parent_id,
+               row_number() OVER (PARTITION BY fc.parent_id ORDER BY st.id DESC) AS sibling_rank
+        FROM subtree st JOIN feed_comments fc ON fc.id = st.id
+      ),
+      visible AS (
+        SELECT r.id, r.depth FROM ranked r WHERE r.depth = 0
+        UNION ALL
+        SELECT r.id, r.depth
+        FROM visible v JOIN ranked r ON r.parent_id = v.id
+        WHERE r.sibling_rank <= ${childLimit}
+      ),
+      closure AS (
+        SELECT v.id AS ancestor_id, v.id AS node_id FROM visible v
+        UNION ALL
+        SELECT cl.ancestor_id, fc.id
+        FROM closure cl
+        JOIN feed_comments fc ON fc.parent_id = cl.node_id
+      ),
+      descendant_counts AS (
+        SELECT ancestor_id AS id, (COUNT(*) - 1)::int AS descendant_count
+        FROM closure GROUP BY ancestor_id
+      ),
+      remaining_children AS (
+        SELECT COUNT(*)::int AS n
+        FROM feed_comments fc
+        WHERE ${rootId}::int IS NOT NULL
+          AND fc.parent_id = ${rootId}::int
+          AND fc.id < COALESCE((SELECT MIN(v.id) FROM visible v WHERE v.depth = 1), 0)
+      )
+      SELECT
+        c.id::int                  AS "id",
+        c.parent_id::int           AS "parentId",
+        c.reply_to_comment_id::int AS "replyToCommentId",
+        c.course_newsfeed_id       AS "courseNewsfeedId",
+        c.author_id                AS "authorId",
+        c.content                  AS "content",
+        c.created_at               AS "createdAt",
+        v.depth::int               AS "depth",
+        p.id                       AS "authorProfileId",
+        p.fullname                 AS "authorFullname",
+        p.username                 AS "authorUsername",
+        p.avatar_url               AS "authorAvatarUrl",
+        rtp.fullname               AS "replyToAuthorFullname",
+        COALESCE(dc.direct_reply_count, 0)::int AS "directReplyCount",
+        COALESCE(dsc.descendant_count, 0)::int  AS "descendantCount",
+        ((SELECT COUNT(*) FROM roots) > ${rootLimit})                       AS "hasMoreRoots",
+        (SELECT n FROM remaining_children)                                  AS "remainingChildren",
+        (SELECT COUNT(*)::int FROM feed_comments WHERE parent_id IS NULL)   AS "totalRootCount",
+        (SELECT COUNT(*)::int FROM feed_comments)                           AS "totalCommentCount"
+      FROM visible v
+      JOIN course_newsfeed_comment c ON c.id = v.id
+      LEFT JOIN groupmember gm  ON gm.id  = c.author_id
+      LEFT JOIN profile p       ON p.id   = gm.profile_id
+      LEFT JOIN course_newsfeed_comment rt ON rt.id = c.reply_to_comment_id
+      LEFT JOIN groupmember rtm ON rtm.id = rt.author_id
+      LEFT JOIN profile rtp     ON rtp.id = rtm.profile_id
+      LEFT JOIN direct_counts dc   ON dc.id  = c.id
+      LEFT JOIN descendant_counts dsc ON dsc.id = c.id
+      ORDER BY v.depth ASC, c.id DESC
+    `);
 
-    const baseWhereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId), parentCondition];
+    const rows = result.map((row) => row as unknown as ThreadRow);
 
-    const whereConditions = [...baseWhereConditions];
+    const loadedByParent = new Map<number, number>();
+    for (const row of rows) {
+      if (row.parentId === null) continue;
 
-    if (cursor) {
-      whereConditions.push(lt(schema.courseNewsfeedComment.id, Number(cursor)));
+      const parentId = Number(row.parentId);
+      loadedByParent.set(parentId, (loadedByParent.get(parentId) ?? 0) + 1);
     }
 
-    const totalCountResult = await db
-      .select({ count: sql<number>`count(*)`.as('count') })
-      .from(schema.courseNewsfeedComment)
-      .where(and(...baseWhereConditions));
-    const totalCount = Number(totalCountResult[0]?.count || 0);
+    const items: TNewsfeedCommentNode[] = rows.map((row) => {
+      const directReplyCount = Number(row.directReplyCount);
+      const loadedChildCount = loadedByParent.get(Number(row.id)) ?? 0;
 
-    const replyTarget = alias(schema.courseNewsfeedComment, 'reply_target');
-    const replyTargetMember = alias(schema.groupmember, 'reply_target_member');
-    const replyTargetProfile = alias(schema.profile, 'reply_target_profile');
+      return {
+        id: Number(row.id),
+        parentId: row.parentId === null ? null : Number(row.parentId),
+        replyToCommentId: row.replyToCommentId === null ? null : Number(row.replyToCommentId),
+        courseNewsfeedId: row.courseNewsfeedId,
+        authorId: row.authorId,
+        content: row.content,
+        createdAt: row.createdAt,
+        depth: Number(row.depth),
+        authorProfileId: row.authorProfileId,
+        authorFullname: row.authorFullname,
+        authorUsername: row.authorUsername,
+        authorAvatarUrl: row.authorAvatarUrl,
+        replyToAuthorFullname: row.replyToAuthorFullname,
+        directReplyCount,
+        descendantCount: Number(row.descendantCount),
+        loadedChildCount,
+        hasMoreChildren: directReplyCount > loadedChildCount
+      };
+    });
 
-    // Fetch comments with author profile & reply count
-    const comments = await db
-      .select({
-        comment: schema.courseNewsfeedComment,
-        groupmember: schema.groupmember,
-        profile: schema.profile,
-        replyToAuthorFullname: replyTargetProfile.fullname,
-        replyCount: sql<number>`
-          COALESCE(
-            (SELECT COUNT(*)::int
-             FROM ${schema.courseNewsfeedComment} c2
-             WHERE c2.parent_id = ${schema.courseNewsfeedComment.id}),
-            0
-          )
-        `.as('replyCount')
-      })
-      .from(schema.courseNewsfeedComment)
-      .leftJoin(schema.groupmember, eq(schema.courseNewsfeedComment.authorId, schema.groupmember.id))
-      .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-      .leftJoin(replyTarget, eq(schema.courseNewsfeedComment.replyToCommentId, replyTarget.id))
-      .leftJoin(replyTargetMember, eq(replyTarget.authorId, replyTargetMember.id))
-      .leftJoin(replyTargetProfile, eq(replyTargetMember.profileId, replyTargetProfile.id))
-      .where(and(...whereConditions))
-      .orderBy(desc(schema.courseNewsfeedComment.createdAt))
-      .limit(limit + 1);
+    const totals = rows[0];
+    const rootRows = items.filter((item) => item.depth === 0);
+    const isChildPage = rootId !== null;
 
-    const hasMore = comments.length > limit;
-    const items = comments.slice(0, limit);
-
-    const nextCursor = hasMore && items.length > 0 ? String(items[items.length - 1].comment.id) : null;
+    const hasMore = isChildPage ? Number(totals?.remainingChildren ?? 0) > 0 : Boolean(totals?.hasMoreRoots);
+    const childRows = isChildPage ? items.filter((item) => item.depth === 1) : [];
+    const lastChild = childRows.length > 0 ? childRows[childRows.length - 1] : undefined;
+    const lastRoot = rootRows.length > 0 ? rootRows[rootRows.length - 1] : undefined;
+    const nextCursorSource = isChildPage ? lastChild : lastRoot;
 
     return {
-      items: items.map((row) => ({
-        ...row.comment,
-        authorProfileId: row.profile?.id || null,
-        authorFullname: row.profile?.fullname || null,
-        authorUsername: row.profile?.username || null,
-        authorAvatarUrl: row.profile?.avatarUrl || null,
-        replyToAuthorFullname: row.replyToAuthorFullname || null,
-        replyCount: Number(row.replyCount || 0)
-      })),
-      totalCount,
+      items,
+      totalRootCount: Number(totals?.totalRootCount ?? 0),
+      totalCommentCount: Number(totals?.totalCommentCount ?? 0),
       hasMore,
-      nextCursor
+      nextCursor: hasMore && nextCursorSource ? String(nextCursorSource.id) : null,
+      rootId,
+      maxDepth
     };
   } catch (error) {
-    console.error('getNewsfeedCommentsByFeedIdPaginated error:', error);
+    console.error('getNewsfeedCommentThread error:', error);
     throw new Error(
-      `Failed to get paginated newsfeed comments for feed "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to get newsfeed comment thread for feed "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * Counts every descendant, including any the caller never fetched.
+ */
+export async function countNewsfeedCommentDescendants(commentId: number): Promise<number> {
+  try {
+    const result = await db.execute(sql`
+      WITH RECURSIVE descendants AS (
+        SELECT id::int AS id FROM course_newsfeed_comment WHERE parent_id = ${commentId}
+        UNION ALL
+        SELECT c.id::int
+        FROM course_newsfeed_comment c
+        JOIN descendants d ON c.parent_id = d.id
+      )
+      SELECT COUNT(*)::int AS "count" FROM descendants
+    `);
+    const rows = result.map((row) => row as unknown as { count: number });
+
+    return Number(rows[0]?.count ?? 0);
+  } catch (error) {
+    console.error('countNewsfeedCommentDescendants error:', error);
+    throw new Error(`Failed to count descendants for comment "${commentId}"`);
+  }
+}
+
+/** Depth within the thread; 0 for a top-level comment. */
+export async function getNewsfeedCommentDepth(commentId: number): Promise<number> {
+  try {
+    const result = await db.execute(sql`
+      WITH RECURSIVE ancestors AS (
+        SELECT id::int AS id, parent_id::int AS parent_id, 0 AS depth
+        FROM course_newsfeed_comment WHERE id = ${commentId}
+        UNION ALL
+        SELECT c.id::int, c.parent_id::int, a.depth + 1
+        FROM course_newsfeed_comment c
+        JOIN ancestors a ON a.parent_id = c.id
+      )
+      SELECT MAX(depth)::int AS "depth" FROM ancestors
+    `);
+    const rows = result.map((row) => row as unknown as { depth: number | null });
+
+    return Number(rows[0]?.depth ?? 0);
+  } catch (error) {
+    console.error('getNewsfeedCommentDepth error:', error);
+    throw new Error(`Failed to get depth for comment "${commentId}"`);
   }
 }
 

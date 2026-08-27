@@ -8,6 +8,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | --- | --- | --- | --- |
 | - | - | `prd/super-admin` | draft |
 | - | - | `prd/embed-link-platforms` | draft |
+| - | - | `prd/mobile-app` | draft (blocked on `prd/notification-system` for push) |
 | 1 | - | `prd/notification-system` | todo |
 | 2 | 14 | `prd/course-templates` | todo |
 | 3 | 5 | `prd/course-import` | todo |
@@ -26,6 +27,10 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/zapier` | draft |
 | - | - | `prd/release-process` | draft |
 | - | - | `prd/events` | draft |
+| - | - | `prd/plugin-system` | proposal |
+| - | - | `prd/youtube-embed-transcripts` | draft |
+| - | - | `prd/scroll-to-top` | draft |
+| - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 
 ## DONE (Completed PRDs)
 

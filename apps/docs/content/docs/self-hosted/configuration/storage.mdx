@@ -7,7 +7,7 @@ ClassroomIO stores uploaded files and videos in **object storage**. You have two
 **bundled MinIO** alongside the stack, or point ClassroomIO at an **external S3-compatible** service
 (AWS S3, Cloudflare R2, etc.). Both speak the S3 API and use the same `OBJECT_STORAGE_*` variables.
 
-## Option 1 — Bundled MinIO (default)
+## Option 1: Bundled MinIO (default)
 
 The Docker and Coolify compose files include **MinIO** under the `minio` profile, and the startup
 script auto-configures it. You only change these for custom credentials.
@@ -16,6 +16,7 @@ script auto-configures it. You only change these for custom credentials.
 |----------|---------|
 | `MINIO_ROOT_USER` | randomized by the script (`minioadmin` if you skip it) |
 | `MINIO_ROOT_PASSWORD` | randomized by the script (`minioadmin` if you skip it) |
+| `MINIO_API_CORS_ALLOW_ORIGIN` | `*` (enables cross-origin presigned URL uploads from browser origins) |
 | `OBJECT_STORAGE_ENDPOINT` | `http://minio:9000` |
 | `OBJECT_STORAGE_PUBLIC_ENDPOINT` | `http://localhost:9000` |
 | `OBJECT_STORAGE_ACCESS_KEY_ID` | matches `MINIO_ROOT_USER` |
@@ -23,17 +24,37 @@ script auto-configures it. You only change these for custom credentials.
 | `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` (required for MinIO) |
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | `http://localhost:9000/media` |
 
-:::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads. Give it
-**persistent storage** and **back it up**. If you'd rather not operate storage yourself, use external
-**Cloudflare R2 / AWS S3** instead (R2 has no egress fees) — see below.
+### Accessing the MinIO Console & Browsing Buckets
+
+MinIO provides a Web Console on **Port 9001** (while S3 API requests use **Port 9000**):
+
+- **Local Docker Compose Web UI:** Navigate to `http://localhost:9001` in your browser.
+- **Log in:** Use your `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` (default: `minioadmin` / `minioadmin`).
+- **Browse Files:** In the left sidebar, click **Object Browser** to inspect buckets and uploaded files:
+  - `videos`: Raw and encoded HLS course videos.
+  - `documents`: Course lesson documents and student assignment uploads.
+  - `media`: Public avatars, course thumbnails, and landing page images.
+
+:::note[Changing your domain later]
+If you change `DASHBOARD_ORIGIN` after Install, `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` is
+re-derived from it automatically the next time you run `./classroomio.sh restart` (or
+`start`/`upgrade`). If you've bundled MinIO but manually pinned
+`OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` to a custom media CDN, note that a domain change will
+overwrite it back to `<DASHBOARD_ORIGIN>/media` — re-set it afterward if you need the custom
+value.
 :::
 
-## Option 2 — External S3 / Cloudflare R2
+:::warning[MinIO is your durability boundary]
+Single-node MinIO has no redundancy: its volume is the only thing protecting your uploads. Give it
+**persistent storage** (`minio-data:/data` in Docker Compose or a Railway Volume mounted to `/data`) and **back it up**. If you'd rather not operate storage yourself, use external
+**Cloudflare R2 / AWS S3** instead (R2 has no egress fees); see below.
+:::
+
+## Option 2: External S3 / Cloudflare R2
 
 The `OBJECT_STORAGE_*` variables speak the S3 API, so they work with **any S3-compatible provider**,
 including Cloudflare R2 and AWS S3. Point them at the provider and start **without** the bundled MinIO
-(`./run-docker-full-stack.sh --no-minio`, or leave the `minio` profile off).
+(`./classroomio.sh start --no-minio`, or leave the `minio` profile off).
 
 | Variable | Description |
 |----------|-------------|
@@ -48,7 +69,7 @@ including Cloudflare R2 and AWS S3. Point them at the provider and start **witho
 :::note[Legacy `CLOUDFLARE_*` variables]
 ClassroomIO also accepts a legacy Cloudflare R2 config (`CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ACCESS_KEY`,
 `CLOUDFLARE_SECRET_ACCESS_KEY`, …). It is a **fallback** used only when the `OBJECT_STORAGE_*` variables
-are absent — prefer `OBJECT_STORAGE_*` for new deployments (it covers R2 too). For step-by-step R2 bucket
+are absent; prefer `OBJECT_STORAGE_*` for new deployments (it covers R2 too). For step-by-step R2 bucket
 and CORS setup, see the [Cloudflare Setup](/guides/contributing/cloudflare-setup) guide.
 :::
 

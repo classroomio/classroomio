@@ -32,11 +32,11 @@ interface SeedComplianceArgs {
 
 // ---------- Fixed IDs (stable across runs) ----------
 
-const HIPAA_GROUP_ID = '7e000000-1000-4000-8000-000000000001';
-const SOC2_GROUP_ID = '7e000000-1000-4000-8000-000000000002';
+export const HIPAA_GROUP_ID = '7e000000-1000-4000-8000-000000000001';
+export const SOC2_GROUP_ID = '7e000000-1000-4000-8000-000000000002';
 
-const HIPAA_COURSE_ID = '7e000000-2000-4000-8000-000000000001';
-const SOC2_COURSE_ID = '7e000000-2000-4000-8000-000000000002';
+export const HIPAA_COURSE_ID = '7e000000-2000-4000-8000-000000000001';
+export const SOC2_COURSE_ID = '7e000000-2000-4000-8000-000000000002';
 
 const HIPAA_SECTION_ID = '7e000000-3000-4000-8000-000000000001';
 const SOC2_SECTION_ID = '7e000000-3000-4000-8000-000000000002';
@@ -48,7 +48,13 @@ const HIPAA_EXERCISE_ID = '7e000000-5000-4000-8000-000000000001';
 const SOC2_EXERCISE_ID = '7e000000-5000-4000-8000-000000000002';
 
 // 20 stable learner profile UUIDs
-const LEARNER_PROFILES: Array<{ id: string; fullname: string; username: string; email: string; avatarUrl: string }> = [
+export const LEARNER_PROFILES: Array<{
+  id: string;
+  fullname: string;
+  username: string;
+  email: string;
+  avatarUrl: string;
+}> = [
   {
     id: '7e000000-9000-4000-8000-000000000001',
     fullname: 'Ada Lovelace',
@@ -481,6 +487,9 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         description: '',
         requirements: '',
         lessonDownload: false,
+        // Deliberately the legacy key: these two courses exercise the
+        // allowNewStudent fallback in isSelfEnrollmentAllowed, since there is
+        // no backfill and real rows still look like this.
         allowNewStudent: false
       },
       cost: 0,
@@ -514,6 +523,9 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
         description: '',
         requirements: '',
         lessonDownload: false,
+        // Deliberately the legacy key: these two courses exercise the
+        // allowNewStudent fallback in isSelfEnrollmentAllowed, since there is
+        // no backfill and real rows still look like this.
         allowNewStudent: false
       },
       cost: 0,

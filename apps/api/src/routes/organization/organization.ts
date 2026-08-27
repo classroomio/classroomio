@@ -50,7 +50,7 @@ import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
-import { autoJoinOrg } from '@api/services/organization/auto-join';
+import { joinOrganization } from '@api/services/organization/join';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -126,13 +126,12 @@ export const organizationRouter = new Hono()
    * Requires authentication
    */
   /**
-   * POST /organization/auto-join
-   * Idempotently joins the authenticated user to the org identified by the
-   * `cio-org-id` header. Called by the dashboard's `setupApp` after a user
-   * authenticates on a tenant site they aren't a member of yet. Respects
-   * `disableSignup` and `inviteOnly` policies.
+   * POST /organization/join
+   * Idempotently joins the authenticated user to the open organization
+   * identified by the `cio-org-id` header. Called after tenant signup or from
+   * the explicit Join Academy action; ordinary login never invokes this route.
    */
-  .post('/auto-join', authMiddleware, async (c) => {
+  .post('/join', authMiddleware, async (c) => {
     try {
       const user = c.get('user')!;
       const orgId = c.req.header('cio-org-id');
@@ -141,10 +140,10 @@ export const organizationRouter = new Hono()
         return c.json({ success: false, error: 'Organization ID is required', code: 'ORG_ID_REQUIRED' }, 400);
       }
 
-      const result = await autoJoinOrg(user.id, orgId);
+      const result = await joinOrganization(user.id, orgId);
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
-      return handleError(c, error, 'Failed to auto-join organization');
+      return handleError(c, error, 'Failed to join organization');
     }
   })
   .get('/team', authMiddleware, orgTeamMemberMiddleware, async (c) => {

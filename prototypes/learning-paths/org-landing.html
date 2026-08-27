@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acme Academy — Learn frontend, data, and product</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .paths-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+      .courses-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+      @media (max-width: 860px) { .paths-grid, .courses-grid { grid-template-columns: 1fr; } }
+      .view-more { display: flex; justify-content: center; margin-top: 36px; }
+    </style>
+  </head>
+  <body>
+    <!-- nav -->
+    <div class="lp-nav-outer">
+      <nav class="lp-nav">
+        <a class="lp-nav-brand" href="org-landing.html"><span class="lp-nav-logo">A</span>Acme Academy</a>
+        <div class="lp-nav-links">
+          <a href="public-paths.html">Learning Paths</a>
+          <a href="#courses">Courses</a>
+          <a class="lp-nav-auth" href="lms-home.html">Login</a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- hero -->
+    <header class="lp-hero">
+      <div class="lp-hero-dots"></div>
+      <div class="lp-hero-inner">
+        <h1>Practical tech skills, taught the way work actually happens</h1>
+        <p class="sub">Courses and guided learning paths in engineering, data, and product — built by practitioners, finished with certificates.</p>
+        <div class="lp-cta-row">
+          <a class="lp-btn lp-btn-primary lp-btn-lg lp-btn-pill" href="public-paths.html">Explore learning paths</a>
+          <a class="lp-btn lp-btn-secondary lp-btn-lg lp-btn-pill" href="#courses">Browse courses</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== LEARNING PATHS (above courses) ===== -->
+    <section class="lp-section" id="paths">
+      <div class="lp-wrap">
+        <span class="lp-eyebrow">Guided programs</span>
+        <h2>Learning Paths</h2>
+        <p class="lead">Multi-course tracks you complete in order — one enrollment, one price, one certificate at the end.</p>
+
+        <div class="paths-grid">
+          <!-- Path card 1 -->
+          <a class="lp-card lp-course-card" href="public-path.html">
+            <span class="lp-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Path</span>
+            <h3>Frontend Engineering Bootcamp</h3>
+            <p class="desc">Five courses, one path — from your first HTML tag to a deployed React capstone. Learn in order, build real projects, earn a certificate.</p>
+            <div class="lp-path-courses">
+              <div class="lp-path-course"><span class="n tnum">1</span><span class="t">HTML &amp; CSS Foundations</span><span class="d tnum">12 lessons</span></div>
+              <div class="lp-path-course"><span class="n tnum">2</span><span class="t">JavaScript Essentials</span><span class="d tnum">10 lessons</span></div>
+              <div class="lp-path-course"><span class="n tnum">3</span><span class="t">Modern Web Development with React</span><span class="d tnum">12 lessons</span></div>
+              <div class="lp-path-course" style="border-bottom: none"><span class="n" style="background: transparent; color: var(--landing-fg-muted)">＋</span><span class="t" style="color: var(--landing-fg-muted)">2 more courses</span></div>
+            </div>
+            <div class="lp-meta-row">
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5 courses</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~38 hours</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate</span>
+              <span class="price tnum">$199 <s>$280</s></span>
+            </div>
+          </a>
+
+          <!-- Path card 2 -->
+          <a class="lp-card lp-course-card" href="public-path.html">
+            <span class="lp-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Path</span>
+            <h3>Data Science with Python</h3>
+            <p class="desc">From Python basics to applied machine learning — pandas, visualization, and a real analysis project, in a fixed order that builds week over week.</p>
+            <div class="lp-path-courses">
+              <div class="lp-path-course"><span class="n tnum">1</span><span class="t">Intro to Python</span><span class="d tnum">9 lessons</span></div>
+              <div class="lp-path-course"><span class="n tnum">2</span><span class="t">Data Analysis with Pandas</span><span class="d tnum">11 lessons</span></div>
+              <div class="lp-path-course"><span class="n tnum">3</span><span class="t">Data Visualization</span><span class="d tnum">8 lessons</span></div>
+              <div class="lp-path-course" style="border-bottom: none"><span class="n" style="background: transparent; color: var(--landing-fg-muted)">＋</span><span class="t" style="color: var(--landing-fg-muted)">1 more course</span></div>
+            </div>
+            <div class="lp-meta-row">
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>4 courses</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~30 hours</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate</span>
+              <span class="price tnum">$159 <s>$212</s></span>
+            </div>
+          </a>
+        </div>
+
+        <div class="view-more">
+          <a class="lp-btn lp-btn-secondary lp-btn-lg" href="public-paths.html">View all learning paths</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COURSES ===== -->
+    <section class="lp-section" id="courses">
+      <div class="lp-wrap">
+        <h2>Our Courses</h2>
+        <p class="lead">Standalone courses you can take in any order.</p>
+
+        <div class="courses-grid">
+          <a class="lp-card lp-course-card" href="#">
+            <h3>HTML &amp; CSS Foundations</h3>
+            <p class="desc">Semantic markup, the box model, flexbox, and responsive layout basics for absolute beginners.</p>
+            <div class="lp-meta-row">
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>8 hours</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Self paced</span>
+              <span class="price tnum">$49</span>
+            </div>
+          </a>
+          <a class="lp-card lp-course-card" href="#">
+            <h3>JavaScript Essentials</h3>
+            <p class="desc">Types, functions, the DOM, async/await, and fetching data from APIs — production JavaScript from day one.</p>
+            <div class="lp-meta-row">
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>9 hours</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Self paced</span>
+              <span class="price tnum">$59</span>
+            </div>
+          </a>
+          <a class="lp-card lp-course-card" href="#">
+            <h3>Modern Web Development with React</h3>
+            <p class="desc">Components, props &amp; state, hooks, and building interactive UIs with the most-used frontend library.</p>
+            <div class="lp-meta-row">
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>10 hours</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Self paced</span>
+              <span class="price tnum">$79</span>
+            </div>
+          </a>
+          <a class="lp-card lp-course-card" href="#">
+            <h3>Getting Started with MVC</h3>
+            <p class="desc">A standalone deep dive on the model-view-controller pattern and where it still shines today.</p>
+            <div class="lp-meta-row">
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>5 hours</span>
+              <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Self paced</span>
+              <span class="price">Free</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="view-more">
+          <a class="lp-btn lp-btn-secondary lp-btn-lg" href="#">View more courses</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="lp-footer">
+      <div class="lp-wrap lp-footer-grid">
+        <div>
+          <div class="brand"><span class="lp-nav-logo" style="width: 26px; height: 26px; font-size: 12px">A</span>Acme Academy</div>
+          <p class="copy" style="max-width: 34ch">Practical tech skills, taught by practitioners.</p>
+          <p class="copy">© 2026 Acme Academy</p>
+        </div>
+        <div>
+          <h4>Learn</h4>
+          <a href="public-paths.html">Learning Paths</a>
+          <a href="#courses">Courses</a>
+          <a href="#">Certificates</a>
+        </div>
+        <div>
+          <h4>Academy</h4>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+          <a href="lms-home.html">Login</a>
+        </div>
+      </div>
+    </footer>
+
+    <button class="lp-theme-btn" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>
