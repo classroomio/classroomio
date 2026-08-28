@@ -485,7 +485,7 @@
 {/snippet}
 
 {#snippet compactQuestionRow(question, index)}
-  <div class="ui:border-border flex items-center gap-3 rounded-md border bg-white px-4 py-3 dark:bg-black">
+  <div class="border-border flex items-center gap-3 rounded-md border bg-white px-4 py-3 dark:bg-black">
     <span class="ui:text-muted-foreground w-6 text-sm font-medium tabular-nums">{index + 1}</span>
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-semibold">
