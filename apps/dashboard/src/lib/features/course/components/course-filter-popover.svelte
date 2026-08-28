@@ -165,7 +165,7 @@
                   <div class="space-y-2">
                     {#each group.tags as tag (tag.id)}
                       <label
-                        class="hover:ui:bg-muted/30 flex cursor-pointer items-center justify-between rounded-md border px-3 py-2"
+                        class="ui:hover:bg-muted/30 flex cursor-pointer items-center justify-between rounded-md border px-3 py-2"
                       >
                         <div class="flex items-center gap-2">
                           <Checkbox

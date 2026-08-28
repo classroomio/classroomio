@@ -774,7 +774,7 @@ export function themeRendersNavInsideHero(theme: LandingPageThemeKey): boolean {
 }
 
 export function themeHeaderShellClass(_theme: LandingPageThemeKey): string {
-  return 'ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans';
+  return 'bg-[var(--landing-bg)] text-[var(--landing-fg)] font-sans';
 }
 
 export { themeStyle } from '@cio/ui/custom/org-landing-page/theme-style';

@@ -57,12 +57,12 @@
   <p class="mb-3 font-bold">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
 
   {#if course.logo}
-    <div class="border-border mb-3 overflow-hidden rounded-md border">
+    <div class="ui:border-border mb-3 overflow-hidden rounded-md border">
       <img src={course.logo} alt={course.title ?? ''} class="block aspect-video w-full object-cover" />
     </div>
   {:else}
     <div
-      class="border-border bg-muted text-muted-foreground mb-3 flex aspect-video w-full items-center justify-center rounded-md border border-dashed text-xs"
+      class="ui:border-border ui:bg-muted ui:text-muted-foreground mb-3 flex aspect-video w-full items-center justify-center rounded-md border border-dashed text-xs"
     >
       {$t('course.navItem.landing_page.editor.header_form.no_cover')}
     </div>

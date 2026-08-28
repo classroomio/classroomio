@@ -30,7 +30,7 @@
 
 <DropdownMenu.Root>
   <DropdownMenu.Trigger
-    class="ui:data-[state=open]:opacity-100 absolute top-4 right-4 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100"
+    class="absolute top-4 right-4 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100"
     onclick={(e) => e.stopPropagation()}
   >
     <IconButton variant="outline">

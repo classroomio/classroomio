@@ -113,7 +113,7 @@
     if (!isOpen) $handleOpenWidget.open = false;
   }}
 >
-  <Dialog.Content class="ui:z-300! w-[95%] max-w-2xl!">
+  <Dialog.Content class="z-300! w-[95%] max-w-2xl!">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.landing_page.upload_widget.title')}</Dialog.Title>
     </Dialog.Header>
@@ -127,7 +127,7 @@
           {/each}
         </UnderlineTabs.List>
         <UnderlineTabs.Content value="upload">
-          <div class="w-full {isUploading ? 'ui:opacity-50 ui:pointer-events-none' : ''}">
+          <div class="w-full {isUploading ? 'pointer-events-none opacity-50' : ''}">
             <ImageCropper.Root
               bind:src={cropperSrc}
               onCropped={handleCropped}
@@ -137,18 +137,18 @@
               disabled={isUploading}
             >
               <ImageCropper.UploadTrigger
-                class="ui:flex ui:w-full ui:flex-col ui:items-center ui:justify-center ui:gap-2 ui:rounded-lg ui:border-2 ui:border-dashed ui:border-input ui:bg-muted/30 ui:px-6 ui:py-10 ui:text-center ui:transition-colors ui:hover:bg-muted/60"
+                class="ui:border-input ui:bg-muted/30 ui:hover:bg-muted/60 flex w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors"
               >
                 <UploadCloudIcon class="ui:text-muted-foreground" size={28} />
-                <p class="ui:m-0 ui:text-sm ui:font-medium">
+                <p class="m-0 text-sm font-medium">
                   {$t('course.navItem.landing_page.upload_widget.drag_drop')}
                 </p>
-                <p class="ui:m-0 ui:text-xs ui:text-muted-foreground">
+                <p class="ui:text-muted-foreground m-0 text-xs">
                   {$t('course.navItem.landing_page.upload_widget.size')}
                 </p>
               </ImageCropper.UploadTrigger>
 
-              <ImageCropper.Dialog class="ui:z-[400]!">
+              <ImageCropper.Dialog class="z-[400]!">
                 <ImageCropper.Cropper cropShape="rect" aspect={COVER_ASPECT} />
                 <ImageCropper.Controls>
                   <ImageCropper.Cancel />
