@@ -1,7 +1,8 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, asc, eq, inArray, isNotNull, or } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNotNull, isNull, or } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -137,9 +138,19 @@ export const isUserCourseMember = async (
  * - a member of the course's group (any role), OR
  * - an ADMIN of the organization that owns the course's group.
  *
+ * Either way the user must *still* be a member of the owning organization. A
+ * `groupmember` row outlives removal from the org (`deleteOrganizationMember` only
+ * deletes the `organizationmember` row, and the row cannot simply be cascaded away
+ * because submissions, newsfeed posts and comments all reference `groupmember.id`), so
+ * without this a removed user would keep course access forever. Every enrolment path
+ * creates the org membership before the group membership, so requiring both is safe.
+ * Groups with no organization are exempt, since there is no membership to check.
+ *
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
 export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
+  const orgMembership = alias(schema.organizationmember, 'org_membership');
+
   const result = await db
     .select({
       groupMemberId: schema.groupmember.id,
@@ -159,8 +170,16 @@ export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: 
         eq(schema.organizationmember.roleId, ROLE.ADMIN)
       )
     )
+    .leftJoin(
+      orgMembership,
+      and(eq(orgMembership.organizationId, schema.group.organizationId), eq(orgMembership.profileId, profileId))
+    )
     .where(
-      and(eq(schema.course.id, courseId), or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id)))
+      and(
+        eq(schema.course.id, courseId),
+        or(isNull(schema.group.organizationId), isNotNull(orgMembership.id)),
+        or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id))
+      )
     )
     .limit(1);
 
@@ -189,9 +208,16 @@ export const getUserCourseRole = async (courseId: string, profileId: string): Pr
  * - a team member (ADMIN or TUTOR) of the course's group, OR
  * - an ADMIN of the organization that owns the course's group.
  *
+ * Requires live organization membership for the same reason as
+ * `isUserCourseMemberOrOrgAdmin` — see the note there. It matters more here: a stale
+ * ADMIN/TUTOR `groupmember` row grants instructor privileges (grading, viewing
+ * submissions, editing content), so a removed admin must not keep satisfying this check.
+ *
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
 export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
+  const orgMembership = alias(schema.organizationmember, 'org_membership');
+
   const result = await db
     .select({
       groupMemberId: schema.groupmember.id,
@@ -215,8 +241,16 @@ export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: 
         eq(schema.organizationmember.roleId, ROLE.ADMIN)
       )
     )
+    .leftJoin(
+      orgMembership,
+      and(eq(orgMembership.organizationId, schema.group.organizationId), eq(orgMembership.profileId, profileId))
+    )
     .where(
-      and(eq(schema.course.id, courseId), or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id)))
+      and(
+        eq(schema.course.id, courseId),
+        or(isNull(schema.group.organizationId), isNotNull(orgMembership.id)),
+        or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id))
+      )
     )
     .limit(1);
 
