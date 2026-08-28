@@ -13,12 +13,12 @@ export function orgStatsVersionKey(orgId: string): string {
   return `dash:stats:ver:${orgId}`;
 }
 
-type CachedOrgStatsPayload<T> = {
+type VersionedOrgCachePayload<T> = {
   version: string;
   data: T;
 };
 
-function parseCachedOrgStatsPayload<T>(raw: string): CachedOrgStatsPayload<T> | null {
+function parseVersionedOrgCachePayload<T>(raw: string): VersionedOrgCachePayload<T> | null {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw) as unknown;
@@ -38,17 +38,24 @@ function parseCachedOrgStatsPayload<T>(raw: string): CachedOrgStatsPayload<T> | 
     return null;
   }
 
-  return parsed as CachedOrgStatsPayload<T>;
+  return parsed as VersionedOrgCachePayload<T>;
 }
 
-export async function readOrgStatsVersionAndCache<T>(orgId: string): Promise<{ version: string; data: T | null }> {
+/**
+ * Reads any organization analytics payload against the same generation used
+ * by the dashboard stats cache. A mutation can therefore invalidate every
+ * analytics surface atomically by incrementing one version key.
+ */
+export async function readVersionedOrgCache<T>(
+  orgId: string,
+  payloadKey: string
+): Promise<{ version: string; data: T | null }> {
   if (!env.REDIS_URL) {
     return { version: '0', data: null };
   }
 
   try {
     const versionKey = orgStatsVersionKey(orgId);
-    const payloadKey = orgStatsKey(orgId);
     const [versionRaw, payloadRaw] = await redis.mGet([versionKey, payloadKey]);
     const version = versionRaw ?? '0';
 
@@ -56,31 +63,45 @@ export async function readOrgStatsVersionAndCache<T>(orgId: string): Promise<{ v
       return { version, data: null };
     }
 
-    const payload = parseCachedOrgStatsPayload<T>(payloadRaw);
+    const payload = parseVersionedOrgCachePayload<T>(payloadRaw);
     if (!payload || payload.version !== version) {
       return { version, data: null };
     }
 
     return { version, data: payload.data };
   } catch (error) {
-    logRedisUnavailableOnce('Redis get failed for org stats cache, using database', error);
+    logRedisUnavailableOnce('Redis get failed for versioned org cache, using database', error);
     return { version: '0', data: null };
   }
 }
 
-export async function writeOrgStatsCache<T>(orgId: string, version: string, value: T): Promise<void> {
+export async function writeVersionedOrgCache<T>(
+  payloadKey: string,
+  ttlSeconds: number,
+  version: string,
+  value: T
+): Promise<void> {
   if (!env.REDIS_URL) {
     return;
   }
 
   try {
-    const payload: CachedOrgStatsPayload<T> = { version, data: value };
-    await redis.setEx(orgStatsKey(orgId), ORG_STATS_CACHE_TTL_SECONDS, JSON.stringify(payload));
+    const payload: VersionedOrgCachePayload<T> = { version, data: value };
+    await redis.setEx(payloadKey, ttlSeconds, JSON.stringify(payload));
   } catch (error) {
-    logRedisUnavailableOnce('Redis set failed for org stats cache, continuing', error);
+    logRedisUnavailableOnce('Redis set failed for versioned org cache, continuing', error);
   }
 }
 
+export function readOrgStatsVersionAndCache<T>(orgId: string): Promise<{ version: string; data: T | null }> {
+  return readVersionedOrgCache<T>(orgId, orgStatsKey(orgId));
+}
+
+export function writeOrgStatsCache<T>(orgId: string, version: string, value: T): Promise<void> {
+  return writeVersionedOrgCache(orgStatsKey(orgId), ORG_STATS_CACHE_TTL_SECONDS, version, value);
+}
+
+/** Invalidates the generation shared by org dashboard and analytics payloads. */
 export async function invalidateOrgStats(orgId: string | null | undefined): Promise<void> {
   if (!orgId || !env.REDIS_URL) {
     return;

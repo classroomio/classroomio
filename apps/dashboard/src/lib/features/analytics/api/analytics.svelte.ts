@@ -23,8 +23,6 @@ class AnalyticsApi extends BaseApi {
   loadingPopularTypes = $state(false);
 
   range = $state<7 | 30 | 90>(30);
-  lastFetchedOrgId = $state<string | null>(null);
-  lastFetchedRange = $state<7 | 30 | 90 | null>(null);
 
   get loading() {
     return this.loadingLanding || this.loadingCountry || this.loadingFunnel || this.loadingPopularTypes;
@@ -86,24 +84,12 @@ class AnalyticsApi extends BaseApi {
   fetchAll(orgId: string, bust = false) {
     if (!orgId) return Promise.resolve();
 
-    this.lastFetchedOrgId = orgId;
-    this.lastFetchedRange = this.range;
     return Promise.all([
       this.fetchLanding(orgId, bust),
       this.fetchCountry(orgId, bust),
       this.fetchFunnel(orgId, bust),
       this.fetchPopularTypes(orgId, bust)
     ]);
-  }
-
-  /**
-   * Fetch only if data for this (orgId, range) wasn't fetched in this session.
-   * Singleton state means navigating away and back reuses prior data.
-   */
-  ensureFetched(orgId: string) {
-    if (this.lastFetchedOrgId === orgId && this.lastFetchedRange === this.range) return;
-
-    this.fetchAll(orgId);
   }
 
   setRange(days: 7 | 30 | 90, orgId: string) {

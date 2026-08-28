@@ -23,6 +23,7 @@
     }
   },
   "dependencies": {
+    "@cio/core": "workspace:*",
     "@cio/db": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*"

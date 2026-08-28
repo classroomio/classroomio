@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
+  import { untrack } from 'svelte';
   import * as Page from '@cio/ui/base/page';
   import * as Tabs from '@cio/ui/custom/underline-tabs';
   import { Button } from '@cio/ui/base/button';
@@ -10,7 +11,8 @@
   import type { ComplianceLearnerRow } from '$features/compliance/utils/types';
 
   $effect(() => {
-    complianceApi.ensureFetched($currentOrg.id);
+    const orgId = $currentOrg.id;
+    void untrack(() => complianceApi.fetchOverview(orgId));
   });
 
   function handleRefresh() {
