@@ -441,14 +441,14 @@
 
       {#if isNonAutoGradableInConversion}
         <div
-          class="border-destructive/30 bg-destructive/5 text-destructive dark:border-destructive/20 dark:bg-destructive/10 mt-2 mb-3 flex items-start gap-2.5 rounded-md border p-2.5 text-xs"
+          class="ui:border-border ui:text-foreground dark:ui:bg-muted/30 mt-2 mb-3 flex items-start gap-2.5 rounded-md border p-2.5 text-xs"
         >
-          <TriangleAlertIcon class="mt-0.5 size-4 shrink-0" />
+          <TriangleAlertIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
           <div class="min-w-0 flex-1">
             <p class="font-medium">
               {$t('course.navItem.settings.public_conversion.blocks_public_conversion_title')}
             </p>
-            <p class="text-muted-foreground mt-0.5 text-[11px] leading-relaxed">
+            <p class="ui:text-muted-foreground mt-0.5 text-[11px] leading-relaxed">
               {$t('course.navItem.settings.public_conversion.blocks_public_conversion_desc')}
             </p>
           </div>
@@ -487,7 +487,7 @@
 {/snippet}
 
 {#snippet compactQuestionRow(question, index)}
-  <div class="border-border flex items-center gap-3 rounded-md border bg-white px-4 py-3 dark:bg-black">
+  <div class="ui:border-border flex items-center gap-3 rounded-md border bg-white px-4 py-3 dark:bg-black">
     <span class="ui:text-muted-foreground w-6 text-sm font-medium tabular-nums">{index + 1}</span>
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-semibold">

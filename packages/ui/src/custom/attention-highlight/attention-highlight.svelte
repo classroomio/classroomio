@@ -97,7 +97,7 @@
 <div {id} bind:this={containerRef} class={cn('ui:relative ui:rounded-md', className)}>
   {#if isPulsing}
     <div
-      class="ui:pointer-events-none ui:absolute ui:inset-0 ui:animate-pulse ui:rounded-[inherit] ui:border ui:border-primary ui:ring-4 ui:ring-primary/20"
+      class="ui:pointer-events-none ui:absolute ui:inset-0 ui:animate-pulse ui:rounded-[inherit] ui:ring-4 ui:ring-primary/20 ui:ring-offset-background ui:ring-offset-2"
       aria-hidden="true"
     ></div>
   {/if}

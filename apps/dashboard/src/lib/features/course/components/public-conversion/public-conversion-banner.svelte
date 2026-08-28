@@ -270,7 +270,7 @@
                   onclick={() => scrollToQuestion(q.id)}
                 >
                   <div class="flex min-w-0 flex-1 items-center gap-2">
-                    <QuestionTypeIcon {typeId} class="ui:size-5 shrink-0 rounded text-[9px]" />
+                    <QuestionTypeIcon {typeId} class="size-5 shrink-0 rounded text-[9px]" />
                     <span class="truncate font-medium"
                       >{q.title ||
                         $t('course.navItem.settings.public_conversion.question_fallback', { number: index + 1 })}</span
