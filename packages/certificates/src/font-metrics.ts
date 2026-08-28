@@ -190,18 +190,23 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
       const word = words[i];
       const wordWidth = measureTextWidth(word, fontSize, profile, letterSpacingPx);
 
-      // If a single word cannot fit on a line, this font size is too large
-      if (wordWidth > options.maxWidth) {
-        return false;
+      if (currentLineWidth > 0) {
+        if (currentLineWidth + spaceWidth + wordWidth <= options.maxWidth) {
+          currentLineWidth += spaceWidth + wordWidth;
+          continue;
+        }
+
+        lineCount += 1;
+        currentLineWidth = 0;
       }
 
-      if (currentLineWidth === 0) {
+      if (wordWidth <= options.maxWidth) {
         currentLineWidth = wordWidth;
-      } else if (currentLineWidth + spaceWidth + wordWidth <= options.maxWidth) {
-        currentLineWidth += spaceWidth + wordWidth;
       } else {
-        lineCount += 1;
-        currentLineWidth = wordWidth;
+        const fullLines = Math.floor(wordWidth / options.maxWidth);
+        const remainder = wordWidth % options.maxWidth;
+        lineCount += remainder === 0 ? fullLines - 1 : fullLines;
+        currentLineWidth = remainder === 0 ? options.maxWidth : remainder;
       }
     }
 

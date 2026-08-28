@@ -6,7 +6,23 @@ import {
   type CertificateRenderData
 } from '@cio/certificates';
 
-import { getCloudflarePdfBuffer, getCloudflarePngBuffer } from '@api/utils/cloudflare';
+import {
+  getCloudflarePdfBuffer,
+  getCloudflarePngBuffer,
+  type PdfPageOptions,
+  type RenderViewport
+} from '@api/utils/cloudflare';
+
+const CERTIFICATE_VIEWPORT: RenderViewport = { width: 1100, height: 780 };
+
+const CERTIFICATE_PDF_OPTIONS: PdfPageOptions = {
+  width: '1100px',
+  height: '780px',
+  landscape: true,
+  printBackground: true,
+  preferCSSPageSize: true,
+  margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' }
+};
 
 export interface CertificateRenderInput {
   design: CertificateDesign;
@@ -60,11 +76,11 @@ export function resolveCertificateDesign(stored: unknown): CertificateDesign {
 export async function generateCertificatePdf(input: CertificateRenderInput) {
   const { html, styles } = renderCertificate(input.design, input.data);
 
-  return getCloudflarePdfBuffer(html, styles);
+  return getCloudflarePdfBuffer(html, styles, CERTIFICATE_VIEWPORT, CERTIFICATE_PDF_OPTIONS);
 }
 
 export async function generateCertificatePng(input: CertificateRenderInput) {
   const { html, styles } = renderCertificate(input.design, input.data);
 
-  return getCloudflarePngBuffer(html, styles);
+  return getCloudflarePngBuffer(html, styles, { ...CERTIFICATE_VIEWPORT, deviceScaleFactor: 2 });
 }

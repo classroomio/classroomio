@@ -578,10 +578,15 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
    - Inject the computed font size via inline style in the HTML markup (e.g. `style="font-size: ${fontSizes.recipient}px;"`).
    - Wrap all interpolated user strings with `escapeHtml(...)`.
 
-2. **Define dedicated constants/variables for all paddings, margins, and decorative dimensions**:
-   - Do not use inline magic numbers. Define named constants at the top of the template file for any padding, cell dimensions, or flanking decoration widths.
+2. **Define dedicated constants/variables for layout factors (e.g. paddings, gaps, borders, sibling columns, decorations) used in layout calculations**:
+   - Extract layout values into named constants when calculations or multiple dependent declarations use them (e.g. element paddings, flex/grid gaps, border widths, sibling column widths, or flanking decorations that reduce `FIELDS.maxWidth` or `FIELDS.maxHeight`, or values reused across CSS and FIELDS).
+   - Standalone, non-computed dimension literals (like fixed container limits) do not need redundant variable wrappers.
+
    ```ts
    const recipientPaddingBottom = 14;
+   const recipientNumColumnWidth = 120;
+   const recipientRowGap = 30;
+   const borderLeftWidth = 12;
    const certIdPaddingHorizontal = 10;
    const certIdPaddingVertical = 6;
    const subtitleDecorationLineWidth = 50;
@@ -589,9 +594,10 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
    const subtitleTotalDecorationWidth = (subtitleDecorationLineWidth + subtitleDecorationGap) * 2;
    ```
 
-3. **`FIELDS` must subtract padding and decorations before computing size**:
+3. **`FIELDS` must subtract layout factors (e.g. paddings, gaps, borders, sibling elements) before computing font size**:
    - The sizing engine uses `maxWidth` and `maxHeight` in `FIELDS` to measure available space for text glyphs.
-   - If an element has CSS padding or flanking decoration, **subtract that padding/decoration from `FIELDS.maxWidth` or `FIELDS.maxHeight`** so the font size calculation accounts for the reduced text area:
+   - If an element has layout factors (e.g. CSS padding, flanking decorations, border widths, or shares a row with sibling columns/gaps), **subtract those dimensions from `FIELDS.maxWidth` or `FIELDS.maxHeight`** so the font size calculation accounts for the exact available text area:
+
    ```ts
    const FIELDS = {
      certId: {
@@ -612,7 +618,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
        textTransform: 'uppercase' as const
      },
      recipient: {
-       maxWidth: 820,
+       maxWidth: 900 - borderLeftWidth - recipientNumColumnWidth - recipientRowGap,
        maxHeight: 86 - recipientPaddingBottom,
        fontFamily: FONTS.display,
        basePx: 54,
@@ -622,10 +628,16 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
    } as const;
    ```
 
-4. **CSS styles must use the dedicated padding variables**:
-   - Reference the same dedicated padding constants in the template's CSS styles.
+4. **CSS styles must use the dedicated layout variables**:
+   - Reference the same dedicated layout constants (e.g. paddings, gaps, column widths, border dimensions) in the template's CSS styles.
    - Container max dimensions in CSS should reflect the total outer boundary where needed (e.g., inner width/height from `FIELDS` plus the padding):
    ```css
+   .t-minimal .recipient-row {
+     display: grid;
+     grid-template-columns: ${recipientNumColumnWidth}px 1fr;
+     gap: ${recipientRowGap}px;
+     padding-bottom: ${recipientRowPaddingBottom}px;
+   }
    .t-classique .recipient {
      padding-bottom: ${recipientPaddingBottom}px;
      max-width: ${FIELDS.recipient.maxWidth}px;
@@ -657,7 +669,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 - Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 - Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
 - In certificate templates, compute font sizes for dynamic text using `FIELDS` and `prepareCertificateRenderContext` (`packages/certificates`)
-- In certificate templates, extract paddings into dedicated constants, subtract them in `FIELDS` before computing font sizes, and reference those constants in CSS
+- In certificate templates, extract layout factors (e.g. paddings, gaps, borders, sibling columns, decorations) into dedicated constants, subtract them in `FIELDS` before computing font sizes, and reference those constants in CSS
 
 ### ❌ DON'T
 - Put business logic in routes or queries

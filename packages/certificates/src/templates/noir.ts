@@ -49,7 +49,7 @@ const FIELDS = {
   },
   title: {
     maxWidth: 860,
-    maxHeight: 140,
+    maxHeight: 120,
     fontFamily: FONTS.display,
     basePx: 62,
     lineHeight: 1.15,
@@ -74,7 +74,7 @@ const FIELDS = {
   },
   description: {
     maxWidth: 780,
-    maxHeight: 80,
+    maxHeight: 64,
     fontFamily: FONTS.serif,
     basePx: 16,
     lineHeight: 1.45,

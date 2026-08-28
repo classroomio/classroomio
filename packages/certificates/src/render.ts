@@ -1,4 +1,4 @@
-import { LEGACY_THEME_MAP } from './constants';
+import { FONTS_READY_CLASS, LEGACY_THEME_MAP } from './constants';
 import type { CertificateDesign, CertificateRenderData, CertificateRenderResult, CertificateTemplateId } from './types';
 import { CERTIFICATE_TEMPLATE_IDS } from './types';
 import { renderBrutalist } from './templates/brutalist';
@@ -48,12 +48,12 @@ ${body}
 <script>
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function() {
-      document.documentElement.classList.add('fonts-ready');
+      document.documentElement.classList.add('${FONTS_READY_CLASS}');
     }).catch(function() {
-      document.documentElement.classList.add('fonts-ready');
+      document.documentElement.classList.add('${FONTS_READY_CLASS}');
     });
   } else {
-    document.documentElement.classList.add('fonts-ready');
+    document.documentElement.classList.add('${FONTS_READY_CLASS}');
   }
 </script>
 </body>

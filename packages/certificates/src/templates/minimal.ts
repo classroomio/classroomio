@@ -13,14 +13,17 @@ const FONTS = {
   sans: CERTIFICATE_FONTS.spaceGrotesk
 } as const;
 
+const borderLeftWidth = 12;
 const subtitleDecorationLineWidth = 24;
 const subtitleDecorationGap = 10;
 const subtitleTotalDecorationWidth = (subtitleDecorationLineWidth + subtitleDecorationGap) * 2;
 const recipientRowPaddingBottom = 14;
+const recipientNumColumnWidth = 120;
+const recipientRowGap = 30;
 
 const FIELDS = {
   org: {
-    maxWidth: 480,
+    maxWidth: 520,
     maxHeight: 15,
     fontFamily: FONTS.mono,
     basePx: 10,
@@ -29,7 +32,7 @@ const FIELDS = {
     textTransform: 'uppercase' as const
   },
   certMeta: {
-    maxWidth: 450,
+    maxWidth: 340,
     maxHeight: 15,
     fontFamily: FONTS.mono,
     basePx: 10,
@@ -54,7 +57,7 @@ const FIELDS = {
     allowWrap: true
   },
   recipient: {
-    maxWidth: 780,
+    maxWidth: 900 - borderLeftWidth - recipientNumColumnWidth - recipientRowGap,
     maxHeight: 100,
     fontFamily: FONTS.serif,
     basePx: 88,
@@ -115,7 +118,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      border-left: 12px solid ${accent};
+      border-left: ${borderLeftWidth}px solid ${accent};
     }
     .t-minimal .header-area {
       flex-shrink: 0;
@@ -191,8 +194,8 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
     }
     .t-minimal .recipient-row {
       display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 30px;
+      grid-template-columns: ${recipientNumColumnWidth}px 1fr;
+      gap: ${recipientRowGap}px;
       align-items: end;
       border-bottom: 2px solid ${accent};
       padding-bottom: ${recipientRowPaddingBottom}px;

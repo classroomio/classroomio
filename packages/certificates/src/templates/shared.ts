@@ -65,6 +65,29 @@ export interface PreparedTemplateRender<K extends string = string> {
   fontSizes: Record<K, number>;
 }
 
+export function getDefaultCertificateFieldValues(design: CertificateDesign, data: CertificateRenderData) {
+  return {
+    org: data.orgName,
+    title: data.courseName,
+    course: data.courseName,
+    subtitle: design.subtitle ?? '',
+    recipient: data.recipientName,
+    description: design.descriptionOverride || data.courseDescription,
+    certId: data.certificateId,
+    certMeta: `${data.certificateId} · ${data.date}`,
+    date: data.date
+  };
+}
+
+export type DefaultCertificateFieldKey = keyof ReturnType<typeof getDefaultCertificateFieldValues>;
+
+export type CustomFieldValues<K extends string> = [Exclude<K, DefaultCertificateFieldKey>] extends [never]
+  ? [customValues?: Partial<Record<K, string | undefined | null>>]
+  : [
+      customValues: Record<Exclude<K, DefaultCertificateFieldKey>, string | undefined | null> &
+        Partial<Record<K, string | undefined | null>>
+    ];
+
 /**
  * Normalizes design/data values and computes all field font sizes in a single step.
  */
@@ -72,7 +95,7 @@ export function prepareCertificateRenderContext<K extends string>(
   design: CertificateDesign,
   data: CertificateRenderData,
   fieldDefinitions: Record<K, FitFontSizeOptions>,
-  customValues?: Partial<Record<K, string | undefined | null>>
+  ...[customValues]: CustomFieldValues<K>
 ): PreparedTemplateRender<K> {
   const accent = design.accentColor;
   const subtitle = design.subtitle ?? '';
@@ -81,20 +104,14 @@ export function prepareCertificateRenderContext<K extends string>(
   const year = getYear(data.date);
   const idDigits = data.certificateId.match(/\d+/)?.[0] ?? '00';
 
-  const defaultFieldValues: Record<string, string | undefined | null> = {
-    org: data.orgName,
-    title: data.courseName,
-    course: data.courseName,
-    subtitle,
-    recipient: data.recipientName,
-    description,
-    certId: data.certificateId,
-    certMeta: `${data.certificateId} · ${data.date}`,
-    date: data.date,
-    ...customValues
-  };
+  const defaultFieldValues = getDefaultCertificateFieldValues(design, data);
 
-  const fontSizes = computeFieldFontSizes(fieldDefinitions, defaultFieldValues as Record<K, string | undefined | null>);
+  const allFieldValues = {
+    ...defaultFieldValues,
+    ...customValues
+  } as Record<K, string | undefined | null>;
+
+  const fontSizes = computeFieldFontSizes(fieldDefinitions, allFieldValues);
 
   return {
     accent,

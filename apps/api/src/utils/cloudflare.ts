@@ -1,4 +1,5 @@
 import { CLOUDFLARE } from '@api/constants';
+import { FONTS_READY_CLASS, FONTS_READY_SELECTOR } from '@cio/certificates';
 
 export type RenderViewport = {
   width: number;
@@ -17,24 +18,6 @@ export type PdfPageOptions = {
 
 const DEFAULT_VIEWPORT: RenderViewport = { width: 1100, height: 780 };
 
-const DEFAULT_SCREENSHOT_OPTIONS = {
-  type: 'png',
-  omitBackground: false,
-  fullPage: false
-};
-
-const DEFAULT_PDF_OPTIONS: PdfPageOptions = {
-  width: '1100px',
-  height: '780px',
-  landscape: true,
-  printBackground: true,
-  preferCSSPageSize: true,
-  margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' }
-};
-
-const FONTS_READY_CLASS = 'fonts-ready';
-const FONTS_READY_SELECTOR = `.${FONTS_READY_CLASS}`;
-
 interface CloudflareRenderPayload {
   html: string;
   styles?: string;
@@ -43,11 +26,17 @@ interface CloudflareRenderPayload {
   screenshotOptions?: { type: 'png'; omitBackground?: boolean; fullPage?: boolean };
 }
 
+const DEFAULT_SCREENSHOT_OPTIONS: NonNullable<CloudflareRenderPayload['screenshotOptions']> = {
+  type: 'png',
+  omitBackground: false,
+  fullPage: false
+};
+
 async function renderCloudflareBrowserDocument(
   endpoint: 'pdf' | 'screenshot',
   options: CloudflareRenderPayload
 ): Promise<Buffer> {
-  let label;
+  let label: string | undefined;
 
   try {
     const requestBody: Record<string, unknown> = {
@@ -70,15 +59,16 @@ async function renderCloudflareBrowserDocument(
 
     switch (endpoint) {
       case 'pdf': {
-        const pdfOptions = options.pdfOptions ?? DEFAULT_PDF_OPTIONS;
-        requestBody.pdfOptions = pdfOptions;
+        if (options.pdfOptions) {
+          requestBody.pdfOptions = options.pdfOptions;
+        }
         label = 'PDF';
         break;
       }
       case 'screenshot': {
         const screenshotOptions = options.screenshotOptions ?? DEFAULT_SCREENSHOT_OPTIONS;
         requestBody.screenshotOptions = screenshotOptions;
-        label = (screenshotOptions as typeof screenshotOptions).type.toUpperCase();
+        label = screenshotOptions.type.toUpperCase();
         break;
       }
     }
@@ -92,7 +82,8 @@ async function renderCloudflareBrowserDocument(
           'Content-Type': 'application/json',
           Authorization: `Bearer ${CLOUDFLARE.CONFIGS.RENDERING_API_KEY}`
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(60000)
       }
     );
 
@@ -106,21 +97,21 @@ async function renderCloudflareBrowserDocument(
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer);
   } catch (error) {
-    console.error(`Error generating ${label}:`, error);
-    throw new Error(error instanceof Error ? error.message : `Failed to generate ${label}`);
+    console.error(`Error generating ${label ?? 'document'}:`, error);
+    if (error instanceof Error) throw error;
+    throw new Error(`Failed to generate ${label ?? 'document'}`, { cause: error });
   }
 }
 
 /**
  * Renders HTML to a PDF via Cloudflare Browser Rendering's `/pdf` endpoint.
- * Defaults to 1100×780 for certificate canvases; pass custom viewport / pdfOptions
- * for other document types.
+ * Pass custom viewport / pdfOptions if specific page dimensions are needed (e.g. certificates).
  */
 export const getCloudflarePdfBuffer = async (
   html: string,
   styles?: string,
-  viewport: RenderViewport = DEFAULT_VIEWPORT,
-  pdfOptions: PdfPageOptions = DEFAULT_PDF_OPTIONS
+  viewport?: RenderViewport,
+  pdfOptions?: PdfPageOptions
 ): Promise<Buffer> => {
   return renderCloudflareBrowserDocument('pdf', { html, styles, viewport, pdfOptions });
 };
