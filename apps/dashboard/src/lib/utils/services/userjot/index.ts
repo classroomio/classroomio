@@ -3,7 +3,7 @@ import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { get } from 'svelte/store';
 import { globalStore } from '$lib/utils/store/app';
 
-const USERJOT_APP_ID = 'cm4a6vcmp00jpmdb5n66rmkzz';
+const USERJOT_PROJECT_ID = 'cm4a6vcmp00jpmdb5n66rmkzz';
 
 let isInitialized = false;
 
@@ -22,16 +22,18 @@ function ensureSdkLoaded(): void {
   window.uj =
     window.uj ||
     (new Proxy({} as Window['uj'], {
-      get:
-        (_, prop) =>
-        (...args: unknown[]) =>
-          window.$ujq.push([prop, ...args])
+      get: (_, prop) =>
+        prop === 'then'
+          ? undefined
+          : (...args: unknown[]) => {
+              window.$ujq.push([prop, ...args]);
+            }
     }) as Window['uj']);
 
   const script = document.createElement('script');
   script.type = 'module';
   script.async = true;
-  script.src = 'https://cdn.userjot.com/sdk/v2/uj.js';
+  script.src = 'https://cdn.userjot.com/sdk/v3/uj.js';
   // Browsers hide the nonce attribute in the DOM; read via the IDL property.
   const nonceSource = document.querySelector('script[nonce]') as HTMLScriptElement | null;
   const nonce = nonceSource?.nonce || nonceSource?.getAttribute('nonce');
@@ -45,10 +47,12 @@ export function initUserJot(): void {
 
   ensureSdkLoaded();
 
-  window.uj.init(USERJOT_APP_ID, {
-    trigger: 'custom',
-    position: 'right',
-    theme: 'auto'
+  window.uj.init(USERJOT_PROJECT_ID, {
+    widget: {
+      launcher: false,
+      position: 'right',
+      theme: 'auto'
+    }
   });
 
   isInitialized = true;
@@ -70,11 +74,13 @@ export function identifyUserJotUser({ id, email, fullname, avatarUrl }: UserJotI
   const lastName = rest.join(' ');
 
   window.uj.identify({
-    id,
-    email,
-    firstName: firstName || undefined,
-    lastName: lastName || undefined,
-    avatar: avatarUrl ?? undefined
+    user: {
+      id,
+      email,
+      firstName: firstName || undefined,
+      lastName: lastName || undefined,
+      avatar: avatarUrl ?? undefined
+    }
   });
 }
 
@@ -83,7 +89,7 @@ export function clearUserJotUser(): void {
 
   ensureSdkLoaded();
 
-  window.uj.identify(null);
+  window.uj.logout();
 }
 
 export type UserJotWidgetSection = 'feedback' | 'roadmap' | 'updates';
@@ -93,5 +99,5 @@ export function showUserJotWidget(section: UserJotWidgetSection): void {
 
   ensureSdkLoaded();
 
-  window.uj.showWidget({ section });
+  window.uj.open({ to: section });
 }
