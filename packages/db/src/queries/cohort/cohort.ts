@@ -313,6 +313,30 @@ export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxCl
   }
 }
 
+/**
+ * Inserts a cohort member only if the (cohort, profile) pair is not already present,
+ * relying on `cohort_member_cohort_id_profile_id_unique` rather than a read-then-write.
+ * Returns the new row, or null when the membership already existed — so callers can
+ * tell a fresh join from a repeat without racing a separate existence check.
+ */
+export async function insertCohortMemberIfAbsent(
+  data: TNewCohortMember,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
+  try {
+    const [member] = await dbClient
+      .insert(schema.cohortMember)
+      .values(data)
+      .onConflictDoNothing({ target: [schema.cohortMember.cohortId, schema.cohortMember.profileId] })
+      .returning();
+
+    return member ?? null;
+  } catch (error) {
+    console.error('insertCohortMemberIfAbsent error:', error);
+    throw new Error(`Failed to add cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function removeCohortMember(memberId: string): Promise<TCohortMember | null> {
   try {
     const [deleted] = await db.delete(schema.cohortMember).where(eq(schema.cohortMember.id, memberId)).returning();

@@ -30,6 +30,8 @@ export class PeopleApi extends BaseApiWithErrors {
   inviteLink = $state<CourseInviteLink>(null);
   /** Which course `inviteLink` belongs to, so stale responses can be discarded. */
   activeInviteLinkCourseId = $state<string | null>(null);
+  /** Monotonic request id; only the newest in-flight response is applied. */
+  private inviteLinkRequestSeq = 0;
 
   /**
    * Lists all course members for a course
@@ -205,8 +207,10 @@ export class PeopleApi extends BaseApiWithErrors {
    * `peopleApi` is a singleton, so a response for a course the user has already
    * navigated away from must not overwrite the current one.
    */
-  private applyInviteLink(courseId: string, invite: CourseInviteLink) {
+  private applyInviteLink(courseId: string, seq: number, invite: CourseInviteLink) {
     if (this.activeInviteLinkCourseId !== courseId) return;
+    // Overlapping requests for the same course can resolve out of order.
+    if (seq !== this.inviteLinkRequestSeq) return;
 
     this.inviteLink = invite;
   }
@@ -215,45 +219,51 @@ export class PeopleApi extends BaseApiWithErrors {
    * Points the invite-link state at a course, clearing any link held for a previous
    * one so the tab can never show or copy the wrong course's URL.
    */
-  private beginInviteLinkRequest(courseId: string) {
+  private beginInviteLinkRequest(courseId: string): number {
     if (this.activeInviteLinkCourseId !== courseId) {
       this.activeInviteLinkCourseId = courseId;
       this.inviteLink = null;
     }
+
+    this.inviteLinkRequestSeq += 1;
+
+    return this.inviteLinkRequestSeq;
   }
 
   /** Loads the course's share link without creating one. Always refetches. */
   async getInviteLink(courseId: string) {
-    this.beginInviteLinkRequest(courseId);
+    const seq = this.beginInviteLinkRequest(courseId);
 
     await this.execute<GetCourseInviteLinkRequest>({
       requestFn: () => classroomio.course[':courseId']['invites']['link'].$get({ param: { courseId } }),
       logContext: 'loading course invite link',
-      onSuccess: (result) => this.applyInviteLink(courseId, result.data),
+      onSuccess: (result) => this.applyInviteLink(courseId, seq, result.data),
       onError: () => snackbar.error('invite_link.load_failed')
     });
   }
 
   /** Returns the course's share link, creating it on first call. */
   async generateInviteLink(courseId: string) {
-    this.beginInviteLinkRequest(courseId);
+    const seq = this.beginInviteLinkRequest(courseId);
 
     await this.execute<CreateCourseInviteLinkRequest>({
       requestFn: () => classroomio.course[':courseId']['invites']['link'].$post({ param: { courseId } }),
       logContext: 'creating course invite link',
-      onSuccess: (result) => this.applyInviteLink(courseId, result.data),
+      onSuccess: (result) => this.applyInviteLink(courseId, seq, result.data),
       onError: () => snackbar.error('invite_link.generate_failed')
     });
   }
 
   /** Disables or re-enables the course's share link. */
   async toggleInviteLink(courseId: string, isRevoked: boolean) {
+    const seq = this.beginInviteLinkRequest(courseId);
+
     await this.execute<ToggleCourseInviteLinkRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['invites']['link'].$patch({ param: { courseId }, json: { isRevoked } }),
       logContext: 'updating course invite link',
       onSuccess: (result) => {
-        this.applyInviteLink(courseId, result.data);
+        this.applyInviteLink(courseId, seq, result.data);
         snackbar.success(isRevoked ? 'invite_link.snackbar.disabled' : 'invite_link.snackbar.enabled');
       },
       onError: () => snackbar.error('invite_link.toggle_failed')

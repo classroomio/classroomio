@@ -1,12 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import { getCourseGroupIds, getCourseWithOrgData } from '@cio/db/queries/course';
-import {
-  addCohortMember,
-  getCohortById,
-  getCourseIdsByCohortIds,
-  getExistingCohortMembers
-} from '@cio/db/queries/cohort';
+import { getCohortById, getCourseIdsByCohortIds, insertCohortMemberIfAbsent } from '@cio/db/queries/cohort';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
@@ -89,7 +84,8 @@ async function sendCohortWelcomeEmail(input: {
       preference: { organizationId: organization.id, recipientProfileId: profileId }
     });
   } catch (error) {
-    console.error(`sendCohortWelcomeEmail enqueue error for ${email}:`, error);
+    // Correlate by ids only — the recipient address must not reach the logs.
+    console.error('sendCohortWelcomeEmail enqueue error', { cohortId, profileId }, error);
   }
 }
 
@@ -177,12 +173,12 @@ const cohortHandler: InviteLinkHandler = {
     // that path filters to profiles whose *organization* role is STUDENT, which silently
     // skips anyone who is already an org ADMIN or TUTOR. Cohort role is independent of
     // org role, so a staff member joining a cohort via its link must still be enrolled.
-    const existing = await getExistingCohortMembers([{ cohortId: cohort.id, profileId }]);
-    const isAlreadyCohortMember = existing.has(`${cohort.id}:${profileId}`);
-
-    if (!isAlreadyCohortMember) {
-      await addCohortMember({ cohortId: cohort.id, roleId, profileId, email });
-    }
+    //
+    // Insert-if-absent rather than check-then-insert: two concurrent accepts would
+    // otherwise both pass an existence check and the loser would fail on the unique
+    // constraint. The returned row also tells us whether this was a fresh join.
+    const createdMember = await insertCohortMemberIfAbsent({ cohortId: cohort.id, roleId, profileId, email });
+    const isFreshJoin = createdMember !== null;
 
     // Runs for existing members too, so re-opening the link repairs a partial join.
     const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id]);
@@ -197,7 +193,7 @@ const cohortHandler: InviteLinkHandler = {
 
     await invalidateOrgStats(context.organization.id);
 
-    if (!isAlreadyCohortMember && email) {
+    if (isFreshJoin && email) {
       await sendCohortWelcomeEmail({
         organization: context.organization,
         cohortId: cohort.id,
