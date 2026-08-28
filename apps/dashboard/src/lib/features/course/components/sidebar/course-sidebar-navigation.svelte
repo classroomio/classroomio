@@ -8,10 +8,10 @@
   import { BackButton } from '@cio/ui';
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
-  import BotIcon from '@lucide/svelte/icons/bot';
   import {
     AnalyticsIcon,
     AttendanceIcon,
+    BotIcon,
     CertificateIcon,
     ContentIcon,
     HoverableItem,
@@ -21,6 +21,7 @@
     PeopleIcon,
     PremiumIcon,
     SettingsIcon,
+    ShieldCheckIcon,
     SubmissionIcon
   } from '@cio/ui/custom/moving-icons';
   import { ContentType } from '@cio/utils/constants/content';
@@ -32,6 +33,7 @@
   import { NAV_IDS } from './constants';
   import { complianceApi, courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { currentOrg, isFreePlan, isStudentLimitReached, currentOrgPath } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
   import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
@@ -185,7 +187,7 @@
         url: getNavItemRoute(id, 'ai-tutor'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'ai-tutor'),
         show() {
-          return !isStudent;
+          return !isStudent && IS_AI_ENABLED;
         },
         icon: getNavIcon(NAV_IDS.AI_ASSISTANT)
       },
@@ -248,7 +250,7 @@
     } else if (id === NAV_IDS.MARKS) {
       return MarksIcon;
     } else if (id === NAV_IDS.COMPLIANCE) {
-      return CertificateIcon;
+      return ShieldCheckIcon;
     } else if (id === NAV_IDS.PEOPLE) {
       return PeopleIcon;
     } else if (id === NAV_IDS.ANALYTICS) {

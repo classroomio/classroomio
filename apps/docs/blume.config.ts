@@ -124,6 +124,7 @@ export default defineConfig({
                 label: 'Enrollment & students',
                 items: [
                   '/guides/course-enrollment',
+                  '/guides/enrollment-access-control',
                   '/guides/welcome-email',
                   '/guides/invite-students'
                 ]
@@ -140,6 +141,7 @@ export default defineConfig({
               {
                 label: 'Organization & team',
                 items: [
+                  '/guides/admin-dashboard',
                   '/guides/customize-organization',
                   '/guides/invite-team-member',
                   '/guides/roles-and-permissions'
@@ -195,6 +197,7 @@ export default defineConfig({
               '/self-hosted/configuration/storage',
               '/self-hosted/configuration/csp',
               '/self-hosted/configuration/integrations',
+              '/self-hosted/configuration/ai',
               '/self-hosted/enterprise'
             ]
           },

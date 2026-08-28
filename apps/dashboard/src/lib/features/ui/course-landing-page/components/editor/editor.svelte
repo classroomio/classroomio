@@ -190,6 +190,12 @@
   });
 
   async function handleSave() {
+    if (isPaidWithoutPaymentLink) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+      selectedSectionKey = 'pricing';
+      return;
+    }
+
     loading = true;
     course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
 
@@ -251,7 +257,13 @@
       <CloseButton onClick={handleClose} />
 
       <div class="flex items-center gap-1" data-open={sidebar.open} data-mobile={sidebar.isMobile}>
-        <Button type="button" variant="outline" onclick={handleSave} {loading}>
+        <Button
+          type="button"
+          variant="outline"
+          onclick={handleSave}
+          {loading}
+          disabled={loading || isPaidWithoutPaymentLink}
+        >
           {$t('course.navItem.landing_page.editor.save')}
         </Button>
         <HoverableItem>

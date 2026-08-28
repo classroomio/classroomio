@@ -9,7 +9,9 @@
   import { courseApi } from '$features/course/api';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { hydrateExercisePageData } from '$features/course/utils/exercise-page-utils';
+  import { restoreExerciseDraft } from '$features/course/utils/exercise-draft';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { ContentType } from '@cio/utils/constants/content';
 
   let { data = $bindable() } = $props();
@@ -47,6 +49,11 @@
     }
 
     hydrateExercisePageData(data.exercise, data.exerciseId);
+
+    // Puts back work stashed before an upgrade checkout redirect.
+    if (restoreExerciseDraft(data.courseId, data.exerciseId)) {
+      snackbar.success('snackbar.exercise.draft_restored');
+    }
   });
 </script>
 

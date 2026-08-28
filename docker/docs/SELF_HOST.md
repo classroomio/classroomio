@@ -56,7 +56,7 @@ Published images use a **rolling `latest` + pinned releases** tag policy:
 
 | Tag | Meaning | Use it for |
 |-----|---------|-----------|
-| `1.4.2` (exact) | An immutable, smoke-tested release | **Production — always pin this** |
+| `1.4.2` (exact) | An immutable, pinned release | **Production — always pin this** |
 | `1.4`, `1` | Latest patch/minor of that line | Tracking a line |
 | `latest` | The freshest `main` build (rolling; may include unreleased code) | Trying the newest code |
 
@@ -75,9 +75,6 @@ Schema migrations run automatically on `api` startup (`db:setup`), so upgrades n
 step. If a release consolidates ("squashes") older migrations, the startup baseline detects an
 existing instance and adopts the new baseline as already-applied, and your database is upgraded in
 place without re-running schema that already exists.
-
-(Maintainers: every published image is boot-smoke-tested in CI before it ships. See
-[`PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md).)
 
 ## Environment Variables
 
@@ -170,16 +167,24 @@ Container names: `cio-postgres`, `cio-redis`, `cio-api`, `cio-dashboard`, `cio-j
 
 MinIO is included by default. The startup script auto-configures env vars, starts MinIO, and creates `videos`, `documents`, and `media` buckets.
 
-- **API endpoint:** `http://localhost:9000`
-- **Web UI:** `http://localhost:9001` (default: `minioadmin` / `minioadmin`)
+- **S3 API Endpoint (Port 9000):** `http://localhost:9000` (used for `OBJECT_STORAGE_ENDPOINT` and browser presigned uploads)
+- **Web Console UI (Port 9001):** `http://localhost:9001` (default credentials: `minioadmin` / `minioadmin` or randomized in `.env`)
+
+### Viewing Buckets and Uploaded Files
+
+1. Open `http://localhost:9001` in your browser.
+2. Log in using `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
+3. In the left navigation bar, click **Object Browser** to inspect all buckets (`videos`, `documents`, `media`) and view file previews.
+
+### CORS & Presigned URL Uploads
+
+If uploading files from a custom web origin (e.g. `http://localhost:5173`), set `MINIO_API_CORS_ALLOW_ORIGIN="*"` in `.env` so MinIO returns `Access-Control-Allow-Origin` headers on preflight `OPTIONS` requests.
 
 To start MinIO manually (e.g. after `--no-minio`):
 
 ```bash
 docker compose -f docker-compose.yaml --profile minio up -d
 ```
-
-- **Web UI:** `http://localhost:9001` (credentials are the randomized `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` written to your `.env`).
 
 **Security:** The startup script randomizes `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` on first provision and mirrors them into `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY`. If you change them, keep both pairs in sync.
 

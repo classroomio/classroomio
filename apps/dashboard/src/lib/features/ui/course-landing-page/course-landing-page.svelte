@@ -7,6 +7,7 @@
   import { basePath } from '$lib/utils/store/app';
   import { user } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
+  import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { importCourseLandingPageTheme, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
   import type { Course } from '$features/course/utils/types';
   import type { AccountOrg } from '$features/app/types';
@@ -16,6 +17,8 @@
   import { handleOpenWidget } from './store';
   import { calcCourseEffectiveCost, isCourseFree } from '$lib/utils/functions/course';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { appInitApi } from '$features/app/init.svelte';
+  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
 
   interface Props {
     editMode?: boolean;
@@ -32,24 +35,36 @@
   const activeOrg = $derived(org ?? $currentOrg);
   const landingSettings = $derived(normalizeLandingPageSettings(activeOrg.landingpage));
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-        }
-      : {
-          label: t.get('navigation.login'),
-          href: '/login'
-        }
-  );
+  const authAction = $derived.by(() => {
+    if (editMode) {
+      return $user.isLoggedIn
+        ? {
+            label: t.get(
+              $basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'
+            ),
+            href: resolve($basePath !== '#' ? $basePath : '/lms', {})
+          }
+        : {
+            label: t.get('navigation.login'),
+            href: '/login'
+          };
+    }
+
+    return getOrgLandingAuthAction({
+      isLoggedIn: $user.isLoggedIn,
+      isInitialized: appInitApi.isInitializedAndReady,
+      org: activeOrg,
+      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
+      hasPendingInvite: !!appInitApi.pendingOrgInvite
+    });
+  });
 
   const enrollHref = $derived.by(() => {
     const slug = typeof courseData.slug === 'string' && courseData.slug.length > 0 ? courseData.slug : '';
     return slug ? resolve(`/course/${slug}/enroll`, {}) : '#';
   });
 
-  const enrollmentsOpen = $derived(get(courseData, 'metadata.allowNewStudent') !== false);
+  const enrollmentsOpen = $derived(isSelfEnrollmentAllowed(courseData?.metadata));
   const enrollDisabled = $derived(editMode || !enrollmentsOpen);
 
   const calculatedCost = $derived(calcCourseEffectiveCost(courseData));
@@ -81,19 +96,21 @@
     })
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let ThemeComponent = $state<Component<any> | null>(themeComponent);
+  let importedThemeComponent = $state<Component | null>(null);
+  const ThemeComponent = $derived(themeComponent ?? importedThemeComponent);
 
   $effect(() => {
     // Skip client-side loading if the theme was already resolved server-side.
-    if (ThemeComponent) return;
+    if (themeComponent) {
+      return;
+    }
 
     const theme = landingSettings.theme;
     let cancelled = false;
 
     void importCourseLandingPageTheme(theme).then((mod) => {
       if (!cancelled) {
-        ThemeComponent = mod.default;
+        importedThemeComponent = mod.default;
       }
     });
 
@@ -115,5 +132,5 @@
       <UploadWidget imageURL={courseData.logo} onchange={(newLogo) => (courseData.logo = newLogo)} />
     </div>
   {/if}
-  <svelte:component this={ThemeComponent} {...landingProps} />
+  <ThemeComponent {...landingProps} />
 {/if}

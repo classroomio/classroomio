@@ -7,8 +7,8 @@ import {
   deleteCourse as deleteCourseQuery,
   getCourseById,
   getCourseProgress as getCourseProgressQuery,
-  getCourseTypeById,
   getCourseWithRelations,
+  getOrgIdByCourseId,
   updateCourse as updateCourseQuery,
   updateLessonsSectionId
 } from '@cio/db/queries/course';
@@ -29,6 +29,7 @@ import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/res
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE } from '@cio/utils/constants';
+import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import { validatePaidCourseState, type TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
@@ -45,6 +46,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '../../config/env';
+import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
 import { guardCourseTypeTransition } from './public-course-guard';
@@ -119,7 +121,15 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
     );
   });
 
+  if (access.roleId === ROLE.STUDENT) {
+    await invalidateOrgStats(organizationId);
+  }
+
   return true;
+}
+
+function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {
+  return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined)) as T;
 }
 
 function sanitizeCourseMetadata(metadata: TCourse['metadata'] | undefined) {
@@ -307,6 +317,8 @@ export async function createCourse(
       };
     });
 
+    await invalidateOrgStats(data.organizationId);
+
     return result;
   } catch (error) {
     if (error instanceof AppError) {
@@ -329,36 +341,68 @@ export async function createCourse(
  */
 export async function updateCourse(courseId: string, data: Partial<TCourse>) {
   try {
+    const [existingCourse] = await getCourseById(courseId);
+
+    const effectiveCost = data.cost !== undefined ? data.cost : (existingCourse?.cost ?? 0);
+    const effectivePaymentLink =
+      data.metadata?.paymentLink !== undefined ? data.metadata.paymentLink : existingCourse?.metadata?.paymentLink;
+
+    if (Number(effectiveCost) > 0 && !effectivePaymentLink?.trim()) {
+      throw new AppError('Paid courses require a payment link', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const existingMetadata = existingCourse?.metadata;
+    const mergedMetadata = data.metadata ? { ...existingMetadata, ...omitUndefinedValues(data.metadata) } : undefined;
+
     const sanitizedData: Partial<TCourse> = {
       ...data,
       description: sanitizeOptionalHtml(data.description),
       overview: sanitizeOptionalHtml(data.overview),
-      metadata: sanitizeCourseMetadata(data.metadata),
+      metadata: sanitizeCourseMetadata(mergedMetadata),
       certificate: sanitizeCourseCertificate(data.certificate),
       logo: data.logo,
       slug: data.slug
     };
 
+    const [currentCourse] = await getCourseById(courseId);
+    if (!currentCourse) {
+      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
+
     if (data.cost !== undefined || data.metadata !== undefined) {
-      const [existingCourse] = await getCourseById(courseId);
-      if (existingCourse) {
-        const nextCost = data.cost === undefined ? (existingCourse.cost ?? 0) : (data.cost ?? 0);
-        const nextMetadata = sanitizedData.metadata ?? existingCourse.metadata;
-        const paidCourseIssue = validatePaidCourseState(nextCost, nextMetadata)[0];
-        if (paidCourseIssue) {
-          throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
-        }
+      const nextCost = data.cost === undefined ? (currentCourse.cost ?? 0) : (data.cost ?? 0);
+      const nextMetadata = sanitizedData.metadata ?? currentCourse.metadata;
+      const paidCourseIssue = validatePaidCourseState(nextCost, nextMetadata)[0];
+      if (paidCourseIssue) {
+        throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
       }
     }
 
     if (data.type !== undefined) {
-      const currentType = await getCourseTypeById(courseId);
-
       await guardCourseTypeTransition({
         courseId,
-        currentType: currentType ?? null,
+        currentType: currentCourse.type ?? null,
         nextType: data.type
       });
+    }
+
+    const nextType = data.type ?? currentCourse.type;
+    const nextIsPublished = data.isPublished ?? currentCourse.isPublished;
+    const nextDeadline = resolveCourseCertificateDeadline(currentCourse.certificate?.deadline, data.certificate);
+
+    if (
+      isPublishedComplianceMissingDeadline({
+        type: nextType,
+        isPublished: nextIsPublished,
+        deadline: nextDeadline
+      })
+    ) {
+      throw new AppError(
+        'Compliance courses require a completion deadline before they can be published',
+        ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED,
+        400,
+        'certificate.deadline'
+      );
     }
 
     if (data.certificate?.requiredExerciseId) {
@@ -410,6 +454,11 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       }
     }
 
+    if (data.status !== undefined) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -430,10 +479,14 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
  */
 export async function deleteCourse(courseId: string) {
   try {
+    const statsOrgId = await getOrgIdByCourseId(courseId);
     const deleted = await deleteCourseQuery(courseId);
     if (!deleted) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
+
+    await invalidateOrgStats(statsOrgId);
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) {

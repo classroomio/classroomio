@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import { Checkbox } from '@cio/ui/base/checkbox';
@@ -21,8 +22,8 @@
   type ComplianceStatus = CourseComplianceLearner['status'] | LearnerComplianceRecord['status'] | 'no_record';
   type StaffAction = 'reset' | 'extend' | 'waive' | null;
 
-  let lastRequestKey = $state<string | null>(null);
   let staffTab = $state<'overview' | 'learners'>('overview');
+  let loadedCourseId = $state<string | null>(null);
   let activeAction = $state<StaffAction>(null);
   let bulkActionType = $state<Exclude<StaffAction, null> | null>(null);
   let isBulkActionModalOpen = $state(false);
@@ -76,29 +77,20 @@
 
     if (!isComplianceCourse) {
       complianceApi.reset();
-      lastRequestKey = null;
+      loadedCourseId = null;
       return;
     }
 
     const courseId = courseApi.course.id;
+    const needsRefresh = untrack(() => loadedCourseId) !== courseId;
+    loadedCourseId = courseId;
+
     if (isStudent && currentMember?.profileId) {
-      const requestKey = `${courseId}:${currentMember.profileId}:learner`;
-      if (lastRequestKey === requestKey) {
-        return;
-      }
-
-      lastRequestKey = requestKey;
-      void complianceApi.ensureLearnerHistory(courseId, currentMember.profileId);
+      void complianceApi.ensureLearnerHistory(courseId, currentMember.profileId, needsRefresh);
       return;
     }
 
-    const requestKey = `${courseId}:overview`;
-    if (lastRequestKey === requestKey) {
-      return;
-    }
-
-    lastRequestKey = requestKey;
-    void complianceApi.ensureOverview(courseId);
+    void complianceApi.ensureOverview(courseId, needsRefresh);
   });
 
   $effect(() => {

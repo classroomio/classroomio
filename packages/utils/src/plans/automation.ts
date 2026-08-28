@@ -36,7 +36,6 @@ export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
 export type TAutomationUsageCategory = (typeof AUTOMATION_USAGE_CATEGORY)[keyof typeof AUTOMATION_USAGE_CATEGORY];
 
 export type McpAutomationLimits = {
-  monthlyCredits: number;
   maxActiveKeys: number;
   rateLimits: {
     perKey: {
@@ -54,7 +53,6 @@ export type McpAutomationLimits = {
 
 export const MCP_AUTOMATION_LIMITS_BY_PLAN: Record<string, McpAutomationLimits> = {
   [PLAN.BASIC]: {
-    monthlyCredits: 20,
     maxActiveKeys: 1,
     rateLimits: {
       perKey: {
@@ -70,7 +68,6 @@ export const MCP_AUTOMATION_LIMITS_BY_PLAN: Record<string, McpAutomationLimits> 
     }
   },
   [PLAN.EARLY_ADOPTER]: {
-    monthlyCredits: 500,
     maxActiveKeys: 5,
     rateLimits: {
       perKey: {
@@ -86,7 +83,6 @@ export const MCP_AUTOMATION_LIMITS_BY_PLAN: Record<string, McpAutomationLimits> 
     }
   },
   [PLAN.ENTERPRISE]: {
-    monthlyCredits: 5000,
     maxActiveKeys: 25,
     rateLimits: {
       perKey: {

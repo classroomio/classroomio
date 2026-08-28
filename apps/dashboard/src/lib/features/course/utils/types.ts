@@ -1,4 +1,4 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 // List lessons types
 export type ListLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['$get'];
@@ -228,6 +228,29 @@ export type Feed = ListNewsfeed[number];
 export type NewsfeedComment = NewsfeedCommentsResponse['items'][number];
 export type Reaction = NonNullable<Feed['reaction']>;
 
+export type NewsfeedNodeState = {
+  depth: number;
+  parentId: number | null;
+  directReplyCount: number;
+  descendantCount: number;
+  loadedChildCount: number;
+  childCursor: string | null;
+  hasMoreChildren: boolean;
+  isLoading: boolean;
+  isOptimistic: boolean;
+};
+
+export type NewsfeedThreadState = {
+  rootIds: number[];
+  totalRootCount: number;
+  totalCommentCount: number;
+  hasMore: boolean;
+  cursor: string | null;
+  isLoading: boolean;
+};
+
+export type NewsfeedThreadIngestMode = 'replaceRoots' | 'appendRoots' | 'appendChildren' | 'replaceChildren';
+
 // Attendance types
 // Note: Only POST (upsert) route exists, no GET or PUT routes
 export type UpsertAttendanceRequest = (typeof classroomio.course)[':courseId']['attendance']['$post'];
@@ -356,8 +379,16 @@ export type CourseProgress = GetCourseProgressSuccess['data'];
 export type ListPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$get'];
 export type ListPeopleResponse = InferResponseType<ListPeopleRequest> | null;
 export type ListPeopleSuccess = Extract<InferResponseType<ListPeopleRequest>, { success: true }>;
+export type ListPeopleRequestQuery = NonNullable<InferRequestType<ListPeopleRequest>['query']>;
 export type CourseMembers = ListPeopleSuccess['data'];
 export type CourseMember = CourseMembers[number];
+export type CourseMembersPagination = ListPeopleSuccess['pagination'];
+export type ListPeopleQuery = {
+  page: number;
+  limit: number;
+  search?: string;
+  roleId?: number;
+};
 
 export type AddPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$post'];
 export type AddPeopleResponse = InferResponseType<AddPeopleRequest>;

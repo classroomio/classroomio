@@ -78,7 +78,7 @@
       return;
     }
 
-    const validationRes = authValidation(fields);
+    const validationRes = authValidation(fields, { skipPassword: true });
     console.log('validationRes', validationRes);
 
     if (Object.keys(validationRes).length) {

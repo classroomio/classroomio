@@ -11,6 +11,7 @@
   import type { Course } from '$features/course/utils/types';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
+  import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 
   interface Props {
     className?: string;
@@ -35,6 +36,7 @@
   const calculatedCost = $derived(calcCourseEffectiveCost(courseData));
   const isFree = $derived(isCourseFree(calculatedCost));
   const isPaid = $derived(isCoursePaid(courseData));
+  const selfEnrollmentAllowed = $derived(isSelfEnrollmentAllowed(courseData?.metadata));
 
   async function handleJoinCourse() {
     if (editMode || !$currentOrg.siteName) return;
@@ -84,7 +86,7 @@
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
         <div class="text-center">
-          {#if courseData?.metadata?.allowNewStudent}
+          {#if selfEnrollmentAllowed}
             <p class="flex items-center gap-1 text-sm font-medium dark:text-white">
               {formatter?.format(calculatedCost) || calculatedCost}
               {#if isFree}
@@ -110,7 +112,7 @@
 
         <!-- Call To Action Buttons -->
         <div class="flex h-full w-full flex-col items-center">
-          <Button onclick={handleJoinCourse} disabled={!courseData.metadata?.allowNewStudent} class="w-full">
+          <Button onclick={handleJoinCourse} disabled={!selfEnrollmentAllowed} class="w-full">
             {isFree
               ? $t('course.navItem.landing_page.pricing_section.enroll')
               : $t('course.navItem.landing_page.pricing_section.buy')}
@@ -128,7 +130,7 @@
     <div class="p-4 lg:p-10">
       <!-- Pricing -->
       <div class="mb-6">
-        {#if courseData?.metadata?.allowNewStudent}
+        {#if selfEnrollmentAllowed}
           <p class="text-2xl font-bold dark:text-white">
             {formatter?.format(calculatedCost) || calculatedCost}
             {#if isFree}
@@ -157,13 +159,13 @@
         <Button
           class="mb-3 h-12 w-full text-base font-semibold"
           onclick={handleJoinCourse}
-          disabled={!courseData.metadata?.allowNewStudent}
+          disabled={!selfEnrollmentAllowed}
         >
           {isFree
             ? $t('course.navItem.landing_page.pricing_section.enroll')
             : $t('course.navItem.landing_page.pricing_section.buy')}
         </Button>
-        {#if isPaid && courseData?.metadata?.showDiscount && courseData.metadata.allowNewStudent}
+        {#if isPaid && courseData?.metadata?.showDiscount && selfEnrollmentAllowed}
           <p class="text-sm font-light text-gray-500 dark:text-white">
             {$t('course.navItem.landing_page.pricing_section.bird')}
           </p>

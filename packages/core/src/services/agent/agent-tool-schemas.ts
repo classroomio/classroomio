@@ -90,7 +90,7 @@ export const questionSchema = z.object({
   questionTypeId: zEnabledQuestionTypeId.describe(
     'Required. Use the numeric question type IDs from the teacher system prompt (Question Types). Omitting this field is invalid — set an explicit type on every question and vary types within each exercise.'
   ),
-  points: z.number().min(0).default(1),
+  points: z.number().min(1).default(1),
   order: z.number().int().min(0),
   settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
@@ -229,7 +229,7 @@ export const updateQuestionPatchSchema = z
     id: z.number().int(),
     question: z.string().min(1).optional(),
     questionTypeId: zEnabledQuestionTypeId.optional(),
-    points: z.number().min(0).optional(),
+    points: z.number().min(1).optional(),
     order: z.number().int().min(0).optional(),
     exerciseSectionId: z
       .string()

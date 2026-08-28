@@ -9,6 +9,7 @@
   import XIcon from '@lucide/svelte/icons/x';
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseEffectiveCost, isCourseFree } from '$lib/utils/functions/course';
+  import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import type { RecommendedCourses } from '$features/course/types';
   import pluralize from 'pluralize';
@@ -21,6 +22,7 @@
   let { course, open = $bindable(false) }: Props = $props();
 
   type CourseMetadata = {
+    allowSelfEnrollment?: boolean;
     allowNewStudent?: boolean;
     discount?: number;
     showDiscount?: boolean;
@@ -30,7 +32,7 @@
   const metadata = $derived(course.metadata as CourseMetadata | null);
   const calculatedCost = $derived(calcCourseEffectiveCost(course));
   const isFree = $derived(isCourseFree(calculatedCost));
-  const allowNewStudent = $derived(metadata?.allowNewStudent !== false);
+  const selfEnrollmentAllowed = $derived(isSelfEnrollmentAllowed(metadata));
   const requirements = $derived(metadata?.requirements?.trim() || null);
   const formatter = $derived(getCurrencyFormatter(course.currency ?? 'USD'));
 
@@ -91,7 +93,7 @@
 
     <div class="ui:border-t ui:bg-card sticky bottom-0 flex items-center justify-between px-6 py-4" data-sticky="true">
       <div>
-        {#if allowNewStudent}
+        {#if selfEnrollmentAllowed}
           <p class="text-lg font-bold">
             {formatter.format(calculatedCost)}
             {#if isFree}
@@ -112,7 +114,7 @@
         {/if}
       </div>
 
-      <Button onclick={handleJoinCourse} disabled={!allowNewStudent}>
+      <Button onclick={handleJoinCourse} disabled={!selfEnrollmentAllowed}>
         {isFree
           ? $t('course.navItem.landing_page.pricing_section.enroll')
           : $t('course.navItem.landing_page.pricing_section.buy')}

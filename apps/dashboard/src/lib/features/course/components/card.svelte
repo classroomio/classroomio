@@ -23,7 +23,8 @@
   import {
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
-    getStudentCourseComplianceStatusVariant
+    getStudentCourseComplianceStatusVariant,
+    shouldShowStudentCourseComplianceStatusBadge
   } from '$features/course/utils/compliance-utils';
   import CardDropdown from './card-dropdown.svelte';
   import CoursePublishBadge from './course-publish-badge.svelte';
@@ -142,8 +143,10 @@
 
   let cost = $derived(calcCourseEffectiveCost(course));
 
+  const isExploreClickable = $derived(!!(isLMS && isExplore && onExploreClick));
+
   let courseUrl = $derived.by(() => {
-    if (onExploreClick && isLMS && isExplore) {
+    if (isExploreClickable) {
       return undefined;
     }
 
@@ -193,6 +196,11 @@
       ? getStudentCourseComplianceStatusKey(course as UserEnrolledCourses[number])
       : null
   );
+  const showComplianceStatusBadge = $derived(
+    isLMS && type === 'COMPLIANCE' && !isExplore
+      ? shouldShowStudentCourseComplianceStatusBadge(course as UserEnrolledCourses[number])
+      : false
+  );
   const complianceStatusVariant = $derived(
     isLMS && type === 'COMPLIANCE' && !isExplore
       ? getStudentCourseComplianceStatusVariant(course as UserEnrolledCourses[number])
@@ -225,6 +233,7 @@
 
 <CourseCard
   href={courseUrl ? resolve(courseUrl, {}) : undefined}
+  onclick={isExploreClickable ? onExploreClick : undefined}
   {title}
   {description}
   {typeBadge}
@@ -297,7 +306,7 @@
 
               {#if type === 'COMPLIANCE'}
                 <div class="mt-2 flex flex-wrap items-center gap-2">
-                  {#if complianceStatusKey}
+                  {#if showComplianceStatusBadge && complianceStatusKey}
                     <Badge variant={complianceStatusVariant}>
                       {$t(complianceStatusKey)}
                     </Badge>
@@ -318,7 +327,15 @@
       </div>
 
       {#if isLMS}
-        <Button variant="outline" onclick={isExplore && onExploreClick ? onExploreClick : undefined}>
+        <Button
+          variant="outline"
+          onclick={(event) => {
+            if (isExploreClickable) {
+              event.stopPropagation();
+              onExploreClick?.();
+            }
+          }}
+        >
           {isCertificateView
             ? $t('certificates.view_certificate')
             : isExplore
