@@ -5090,6 +5090,9 @@
       "closed": "Nowi członkowie nie są już przyjmowani.",
       "succeeded": "Dołączyłeś",
       "failed": "Nie udało się dołączyć. Spróbuj ponownie."
-    }
+    },
+    "load_failed": "Nie można załadować linku z zaproszeniem",
+    "generate_failed": "Nie można utworzyć linku z zaproszeniem",
+    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem"
   }
 }

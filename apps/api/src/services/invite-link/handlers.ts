@@ -1,9 +1,16 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import { getCourseGroupIds, getCourseWithOrgData } from '@cio/db/queries/course';
-import { getCohortById } from '@cio/db/queries/cohort';
-import { assignAudienceToCourses } from '@api/services/organization/audience';
+import {
+  addCohortMember,
+  getCohortById,
+  getCourseIdsByCohortIds,
+  getExistingCohortMembers
+} from '@cio/db/queries/cohort';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { buildEmailBranding, buildEmailFromName } from '@cio/email';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
 import type { TInviteLinkResourceType } from '@cio/utils/validation/invite-link';
@@ -50,6 +57,40 @@ function requireCohort(context: TInviteLinkWithContext) {
   }
 
   return context.cohort;
+}
+
+/**
+ * Org-branded cohort welcome, matching the audience-import path. Failures are logged
+ * and swallowed: the learner is already enrolled, so a bounced email must not fail the
+ * join.
+ */
+async function sendCohortWelcomeEmail(input: {
+  organization: TInviteLinkWithContext['organization'];
+  cohortId: string;
+  cohortName: string;
+  profileId: string;
+  email: string;
+}): Promise<void> {
+  const { organization, cohortId, cohortName, profileId, email } = input;
+  const loginUrl = getDashboardBaseUrl(organization);
+  const branding = buildEmailBranding(organization);
+
+  try {
+    await enqueueTransactionalEmail('studentCohortWelcome', {
+      to: email,
+      fields: {
+        orgName: organization.name,
+        cohortName: cohortName || 'Cohort',
+        loginUrl,
+        branding
+      },
+      from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+      idempotencyKey: `invite-link-cohort-welcome:${cohortId}:${profileId}`,
+      preference: { organizationId: organization.id, recipientProfileId: profileId }
+    });
+  } catch (error) {
+    console.error(`sendCohortWelcomeEmail enqueue error for ${email}:`, error);
+  }
 }
 
 const courseHandler: InviteLinkHandler = {
@@ -128,17 +169,43 @@ const cohortHandler: InviteLinkHandler = {
     };
   },
 
-  async enroll(context, profileId) {
+  async enroll(context, profileId, email) {
     const cohort = requireCohort(context);
+    const roleId = context.invite.roleId;
 
-    // Reuses the shared audience path, which creates the cohort_member row, enrols the
-    // profile in every course attached to the cohort, writes compliance records, sends
-    // the cohort welcome email and invalidates org stats. Idempotent on re-run.
-    await assignAudienceToCourses(context.organization.id, {
-      profileIds: [profileId],
-      cohortIds: [cohort.id],
-      sendEmail: true
-    });
+    // Composed from the query layer rather than delegating to `assignAudienceToCourses`:
+    // that path filters to profiles whose *organization* role is STUDENT, which silently
+    // skips anyone who is already an org ADMIN or TUTOR. Cohort role is independent of
+    // org role, so a staff member joining a cohort via its link must still be enrolled.
+    const existing = await getExistingCohortMembers([{ cohortId: cohort.id, profileId }]);
+    const isAlreadyCohortMember = existing.has(`${cohort.id}:${profileId}`);
+
+    if (!isAlreadyCohortMember) {
+      await addCohortMember({ cohortId: cohort.id, roleId, profileId, email });
+    }
+
+    // Runs for existing members too, so re-opening the link repairs a partial join.
+    const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id]);
+
+    if (cohortCourseIds.length > 0) {
+      const courseGroups = await getCourseGroupIds(cohortCourseIds);
+      const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+
+      await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId);
+      await ensureComplianceEnrollmentRecordsForProfiles(cohortCourseIds, [profileId]);
+    }
+
+    await invalidateOrgStats(context.organization.id);
+
+    if (!isAlreadyCohortMember && email) {
+      await sendCohortWelcomeEmail({
+        organization: context.organization,
+        cohortId: cohort.id,
+        cohortName: cohort.name,
+        profileId,
+        email
+      });
+    }
   },
 
   redirectTo() {

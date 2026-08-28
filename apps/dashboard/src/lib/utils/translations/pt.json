@@ -5090,6 +5090,9 @@
       "closed": "Não estamos mais aceitando novos membros.",
       "succeeded": "Você se inscreveu",
       "failed": "Não foi possível se inscrever. Tente novamente."
-    }
+    },
+    "load_failed": "Não foi possível carregar o link de convite",
+    "generate_failed": "Não foi possível criar o link de convite",
+    "toggle_failed": "Não foi possível atualizar o link de convite"
   }
 }

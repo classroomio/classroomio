@@ -123,6 +123,9 @@ export type TInviteLinkWithContext = {
     siteName: string;
     theme: string | null;
     avatarUrl: string | null;
+    // Needed so learner-facing URLs resolve to the org's verified custom domain.
+    customDomain: string | null;
+    isCustomDomainVerified: boolean | null;
   };
   /** Denormalized resource display data, whichever resource the link targets. */
   course: {
@@ -153,7 +156,9 @@ export async function getInviteLinkByTokenHash(
           name: schema.organization.name,
           siteName: schema.organization.siteName,
           theme: schema.organization.theme,
-          avatarUrl: schema.organization.avatarUrl
+          avatarUrl: schema.organization.avatarUrl,
+          customDomain: schema.organization.customDomain,
+          isCustomDomainVerified: schema.organization.isCustomDomainVerified
         },
         courseId: schema.course.id,
         courseTitle: schema.course.title,
@@ -202,6 +207,27 @@ export async function getInviteLinkByTokenHash(
   } catch (error) {
     console.error('getInviteLinkByTokenHash error:', error);
     throw new Error(`Failed to load invite link: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Re-reads the link inside the accept transaction and locks the row, so a revoke that
+ * commits between the initial check and the membership writes can no longer slip
+ * through. Returns null when the link has been deleted.
+ */
+export async function lockInviteLinkForAccept(dbClient: DbOrTxClient, inviteId: string): Promise<TInviteLink | null> {
+  try {
+    const [row] = await dbClient
+      .select()
+      .from(schema.inviteLink)
+      .where(eq(schema.inviteLink.id, inviteId))
+      .limit(1)
+      .for('update');
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockInviteLinkForAccept error:', error);
+    throw new Error(`Failed to lock invite link: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

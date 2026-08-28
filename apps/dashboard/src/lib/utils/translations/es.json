@@ -5090,6 +5090,9 @@
       "closed": "Ya no se aceptan nuevos miembros.",
       "succeeded": "Te has unido",
       "failed": "No se pudo unir. Inténtalo de nuevo."
-    }
+    },
+    "load_failed": "No se pudo cargar el enlace de invitación",
+    "generate_failed": "No se pudo crear el enlace de invitación",
+    "toggle_failed": "No se pudo actualizar el enlace de invitación"
   }
 }

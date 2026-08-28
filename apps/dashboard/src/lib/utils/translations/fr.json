@@ -5087,9 +5087,12 @@
       "course_button": "Rejoindre le cours",
       "cohort_button": "Rejoindre la cohorte",
       "disabled": "Ce lien d'invitation est désactivé.",
-      "closed": "Ce groupe n'accepte plus de nouveaux membres.",
+      "closed": "Les nouvelles inscriptions ne sont plus acceptées.",
       "succeeded": "Vous vous êtes inscrit(e)",
       "failed": "Impossible de vous inscrire. Veuillez réessayer."
-    }
+    },
+    "load_failed": "Impossible de charger le lien d'invitation",
+    "generate_failed": "Impossible de créer le lien d'invitation",
+    "toggle_failed": "Impossible de mettre à jour le lien d'invitation"
   }
 }

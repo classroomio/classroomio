@@ -5090,6 +5090,9 @@
       "closed": "Dette accepterer ikke længere nye medlemmer.",
       "succeeded": "Du er tilmeldt",
       "failed": "Kunne ikke deltage. Prøv igen."
-    }
+    },
+    "load_failed": "Kunne ikke indlæse invitationslinket",
+    "generate_failed": "Kunne ikke oprette invitationslinket",
+    "toggle_failed": "Kunne ikke opdatere invitationslinket"
   }
 }

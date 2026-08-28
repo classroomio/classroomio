@@ -4,6 +4,7 @@ import {
   getInviteLinkByTarget,
   getInviteLinkByTokenHash,
   incrementInviteLinkJoinCount,
+  lockInviteLinkForAccept,
   setInviteLinkRevoked,
   toInviteLinkColumns,
   type TInviteLinkTarget
@@ -236,9 +237,21 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
   const organizationId = inviteContext.organization.id;
   const inviteId = inviteContext.invite.id;
 
-  // Committed before the handler runs: the cohort fan-out only assigns profiles that
-  // are already members of the org with the granted role.
+  // Org membership is committed before the handler runs so the resource handlers can
+  // rely on the profile already being a member.
   const wasAlreadyOrgMember = await db.transaction(async (tx) => {
+    // Re-read under a row lock: the revoked check above raced with any concurrent
+    // revoke, so without this a link disabled mid-request could still grant access.
+    const locked = await lockInviteLinkForAccept(tx, inviteId);
+
+    if (!locked) {
+      throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    if (locked.isRevoked) {
+      throw new AppError('This invite link has been disabled', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, user.id, tx);
 
     if (!orgMemberId) {
@@ -257,12 +270,15 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     }
 
     await markUserAndProfileEmailVerified(user.id, tx);
-    await incrementInviteLinkJoinCount(tx, inviteId);
 
     return Boolean(orgMemberId);
   });
 
   await handler.enroll(inviteContext, user.id, normalizedEmail);
+
+  // Counted only once enrollment has actually succeeded, so a failed join is not
+  // recorded as one. Enrollment is idempotent, so a retry repairs a partial join.
+  await incrementInviteLinkJoinCount(db, inviteId);
 
   console.info('acceptInviteLink joined', {
     inviteId,

@@ -34,7 +34,8 @@ class CohortApi extends BaseApiWithErrors {
   inviteLink = $state<CohortInviteLink>(null);
   isCohortShellLoading = $state(false);
   currentCohortId = $state<string | null>(null);
-  loadedInviteLinkCohortId = $state<string | null>(null);
+  /** Which cohort `inviteLink` belongs to, so stale responses can be discarded. */
+  activeInviteLinkCohortId = $state<string | null>(null);
 
   loadedCohortId = $state<string | null>(null);
   loadedMembersCohortId = $state<string | null>(null);
@@ -78,6 +79,8 @@ class CohortApi extends BaseApiWithErrors {
     this.members = [];
     this.courses = [];
     this.newsfeed = null;
+    this.inviteLink = null;
+    this.activeInviteLinkCohortId = null;
     this.loadedCohortId = null;
     this.loadedMembersCohortId = null;
     this.loadedCoursesCohortId = null;
@@ -355,28 +358,47 @@ class CohortApi extends BaseApiWithErrors {
 
   // Invite link
 
-  /** Loads the cohort's share link without creating one. */
+  /**
+   * `cohortApi` is a singleton, so a response for a cohort the user has already
+   * navigated away from must not overwrite the current one.
+   */
+  private applyInviteLink(cohortId: string, invite: CohortInviteLink) {
+    if (this.activeInviteLinkCohortId !== cohortId) return;
+
+    this.inviteLink = invite;
+  }
+
+  /**
+   * Points the invite-link state at a cohort, clearing any link held for a previous
+   * one so the tab can never show or copy the wrong cohort's URL.
+   */
+  private beginInviteLinkRequest(cohortId: string) {
+    if (this.activeInviteLinkCohortId !== cohortId) {
+      this.activeInviteLinkCohortId = cohortId;
+      this.inviteLink = null;
+    }
+  }
+
+  /** Loads the cohort's share link without creating one. Always refetches. */
   async getInviteLink(cohortId: string) {
-    if (this.loadedInviteLinkCohortId === cohortId) return;
+    this.beginInviteLinkRequest(cohortId);
 
     await this.execute<GetCohortInviteLinkRequest>({
       requestFn: () => classroomio.cohort[':cohortId']['invite-link'].$get({ param: { cohortId } }),
-      onSuccess: (result) => {
-        this.inviteLink = result.data;
-        this.loadedInviteLinkCohortId = cohortId;
-      },
+      onSuccess: (result) => this.applyInviteLink(cohortId, result.data),
+      onError: () => snackbar.error('invite_link.load_failed'),
       logContext: 'getCohortInviteLink'
     });
   }
 
   /** Returns the cohort's share link, creating it on first call. */
   async generateInviteLink(cohortId: string) {
+    this.beginInviteLinkRequest(cohortId);
+
     await this.execute<CreateCohortInviteLinkRequest>({
       requestFn: () => classroomio.cohort[':cohortId']['invite-link'].$post({ param: { cohortId } }),
-      onSuccess: (result) => {
-        this.inviteLink = result.data;
-        this.loadedInviteLinkCohortId = cohortId;
-      },
+      onSuccess: (result) => this.applyInviteLink(cohortId, result.data),
+      onError: () => snackbar.error('invite_link.generate_failed'),
       logContext: 'generateCohortInviteLink'
     });
   }
@@ -387,9 +409,10 @@ class CohortApi extends BaseApiWithErrors {
       requestFn: () =>
         classroomio.cohort[':cohortId']['invite-link'].$patch({ param: { cohortId }, json: { isRevoked } }),
       onSuccess: (result) => {
-        this.inviteLink = result.data;
+        this.applyInviteLink(cohortId, result.data);
         snackbar.success(isRevoked ? 'invite_link.snackbar.disabled' : 'invite_link.snackbar.enabled');
       },
+      onError: () => snackbar.error('invite_link.toggle_failed'),
       logContext: 'toggleCohortInviteLink'
     });
   }

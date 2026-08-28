@@ -5087,9 +5087,12 @@
       "course_button": "Tham gia khóa học",
       "cohort_button": "Tham gia nhóm",
       "disabled": "Liên kết mời này đã bị vô hiệu hóa.",
-      "closed": "Nhóm này không còn nhận thêm thành viên mới.",
+      "closed": "Hiện không còn nhận thêm thành viên mới.",
       "succeeded": "Bạn đã tham gia",
       "failed": "Không thể tham gia. Vui lòng thử lại."
-    }
+    },
+    "load_failed": "Không thể tải liên kết mời",
+    "generate_failed": "Không thể tạo liên kết mời",
+    "toggle_failed": "Không thể cập nhật liên kết mời"
   }
 }

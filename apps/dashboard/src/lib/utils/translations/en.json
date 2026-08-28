@@ -5066,6 +5066,9 @@
     "toggle_label": "Link is active",
     "disabled_notice": "This link is disabled. Nobody can join with it until you turn it back on.",
     "join_count": "{count} people have joined with this link",
+    "load_failed": "Could not load the invite link",
+    "generate_failed": "Could not create the invite link",
+    "toggle_failed": "Could not update the invite link",
     "join": {
       "page_title": "Join {resourceName} on ClassroomIO",
       "invitation": "You've been invited to join {resourceName} at {orgName}.",

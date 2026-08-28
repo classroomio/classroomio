@@ -5090,6 +5090,9 @@
       "closed": "Es werden keine neuen Mitglieder mehr aufgenommen.",
       "succeeded": "Sie sind beigetreten.",
       "failed": "Beitritt fehlgeschlagen. Bitte versuchen Sie es erneut."
-    }
+    },
+    "load_failed": "Der Einladungslink konnte nicht geladen werden.",
+    "generate_failed": "Der Einladungslink konnte nicht erstellt werden.",
+    "toggle_failed": "Der Einladungslink konnte nicht aktualisiert werden."
   }
 }
