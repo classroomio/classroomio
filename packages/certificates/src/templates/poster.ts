@@ -26,7 +26,7 @@ const FIELDS = {
     fontFamily: FONTS.mono,
     basePx: 11,
     allowWrap: false,
-    letterSpacingPx: 2,
+    letterSpacingEm: 0.2,
     textTransform: 'uppercase' as const
   },
   certMeta: {
@@ -35,6 +35,7 @@ const FIELDS = {
     fontFamily: FONTS.mono,
     basePx: 11,
     allowWrap: false,
+    letterSpacingEm: 0.2,
     textTransform: 'uppercase' as const
   },
   title: {
@@ -169,7 +170,6 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
       justify-content: space-between;
       align-items: center;
       font-family: '${FONTS.mono}', monospace;
-      letter-spacing: 0.2em;
       text-transform: uppercase;
       margin-bottom: 20px;
       flex-shrink: 0;
@@ -181,6 +181,7 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
       border-radius: 100px;
       font-weight: 500;
       font-size: ${fontSizes.org}px;
+      letter-spacing: ${FIELDS.org.letterSpacingEm}em;
       max-width: ${FIELDS.org.maxWidth + orgPillPaddingHorizontal * 2}px;
       max-height: ${FIELDS.org.maxHeight + orgPillPaddingVertical * 2}px;
       overflow-wrap: break-word;
@@ -189,6 +190,7 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
       font-size: ${fontSizes.certMeta}px;
       font-weight: 500;
       color: #1a1a1a;
+      letter-spacing: ${FIELDS.certMeta.letterSpacingEm}em;
       max-width: ${FIELDS.certMeta.maxWidth}px;
       max-height: ${FIELDS.certMeta.maxHeight}px;
       overflow-wrap: break-word;

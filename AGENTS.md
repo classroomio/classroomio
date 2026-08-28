@@ -584,6 +584,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 
    ```ts
    const recipientPaddingBottom = 14;
+   const recipientRowPaddingBottom = 14;
    const recipientNumColumnWidth = 120;
    const recipientRowGap = 30;
    const borderLeftWidth = 12;
@@ -614,7 +615,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
        fontFamily: FONTS.heading,
        basePx: 13,
        allowWrap: false,
-       letterSpacingPx: 4,
+       letterSpacingEm: 0.35,
        textTransform: 'uppercase' as const
      },
      recipient: {
@@ -631,6 +632,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 4. **CSS styles must use the dedicated layout variables**:
    - Reference the same dedicated layout constants (e.g. paddings, gaps, column widths, border dimensions) in the template's CSS styles.
    - Container max dimensions in CSS should reflect the total outer boundary where needed (e.g., inner width/height from `FIELDS` plus the padding):
+
    ```css
    .t-minimal .recipient-row {
      display: grid;
@@ -648,7 +650,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
    ```
 
 5. **Keep `FIELDS` typography configuration and CSS declarations strictly synchronized**:
-   - If CSS applies `letter-spacing`, `text-transform: uppercase`, or a specific `line-height`, the same values must be declared in `FIELDS` (`letterSpacingPx`, `textTransform: 'uppercase'`, `lineHeight`) so the advance-width and line-wrap calculations match the browser rendering.
+   - If CSS applies `letter-spacing`, `text-transform: uppercase`, or a specific `line-height`, the same values must be declared in `FIELDS` (`letterSpacingEm`, `textTransform: 'uppercase'`, `lineHeight`) so the advance-width and line-wrap calculations match the browser rendering.
 
 ## Best Practices Summary
 

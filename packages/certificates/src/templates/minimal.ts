@@ -28,7 +28,7 @@ const FIELDS = {
     fontFamily: FONTS.mono,
     basePx: 10,
     allowWrap: false,
-    letterSpacingPx: 2,
+    letterSpacingEm: 0.25,
     textTransform: 'uppercase' as const
   },
   certMeta: {
@@ -37,6 +37,7 @@ const FIELDS = {
     fontFamily: FONTS.mono,
     basePx: 10,
     allowWrap: false,
+    letterSpacingEm: 0.25,
     textTransform: 'uppercase' as const
   },
   subtitle: {
@@ -45,7 +46,7 @@ const FIELDS = {
     fontFamily: FONTS.mono,
     basePx: 11,
     allowWrap: false,
-    letterSpacingPx: 3,
+    letterSpacingEm: 0.3,
     textTransform: 'uppercase' as const
   },
   title: {
@@ -130,7 +131,6 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       justify-content: space-between;
       align-items: center;
       font-family: '${FONTS.mono}', monospace;
-      letter-spacing: 0.25em;
       text-transform: uppercase;
       color: #999;
       padding-bottom: 20px;
@@ -138,18 +138,20 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       flex-shrink: 0;
     }
     .t-minimal .org-name {
+      letter-spacing: ${FIELDS.org.letterSpacingEm}em;
       max-width: ${FIELDS.org.maxWidth}px;
       max-height: ${FIELDS.org.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-minimal .cert-meta {
+      letter-spacing: ${FIELDS.certMeta.letterSpacingEm}em;
       max-width: ${FIELDS.certMeta.maxWidth}px;
       max-height: ${FIELDS.certMeta.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-minimal .small {
       font-family: '${FONTS.mono}', monospace;
-      letter-spacing: 0.3em;
+      letter-spacing: ${FIELDS.subtitle.letterSpacingEm}em;
       text-transform: uppercase;
       color: ${accent};
       display: inline-flex;

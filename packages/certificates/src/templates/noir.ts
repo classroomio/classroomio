@@ -26,7 +26,7 @@ const FIELDS = {
     fontFamily: FONTS.heading,
     basePx: 13,
     allowWrap: false,
-    letterSpacingPx: 5,
+    letterSpacingEm: 0.45,
     textTransform: 'uppercase' as const
   },
   certId: {
@@ -35,7 +35,7 @@ const FIELDS = {
     fontFamily: FONTS.heading,
     basePx: 11,
     allowWrap: false,
-    letterSpacingPx: 2,
+    letterSpacingEm: 0.18,
     textTransform: 'uppercase' as const
   },
   date: {
@@ -44,7 +44,7 @@ const FIELDS = {
     fontFamily: FONTS.heading,
     basePx: 11,
     allowWrap: false,
-    letterSpacingPx: 2,
+    letterSpacingEm: 0.18,
     textTransform: 'uppercase' as const
   },
   title: {
@@ -61,7 +61,7 @@ const FIELDS = {
     fontFamily: FONTS.heading,
     basePx: 13,
     allowWrap: false,
-    letterSpacingPx: 4,
+    letterSpacingEm: 0.35,
     textTransform: 'uppercase' as const
   },
   recipient: {
@@ -181,7 +181,6 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       align-items: center;
       gap: 16px;
       font-family: '${FIELDS.org.fontFamily}', serif;
-      letter-spacing: 0.45em;
       color: ${accent};
       text-transform: ${FIELDS.org.textTransform};
       margin-top: 52px;
@@ -209,6 +208,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       margin-right: 16px;
     }
     .t-noir .cert-id {
+      letter-spacing: ${FIELDS.certId.letterSpacingEm}em;
       max-width: ${FIELDS.certId.maxWidth}px;
       max-height: ${FIELDS.certId.maxHeight}px;
       overflow-wrap: break-word;
@@ -216,12 +216,14 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       flex-shrink: 0;
     }
     .t-noir .org-name {
+      letter-spacing: ${FIELDS.org.letterSpacingEm}em;
       max-width: ${FIELDS.org.maxWidth}px;
       max-height: ${FIELDS.org.maxHeight}px;
       overflow-wrap: break-word;
       text-align: center;
     }
     .t-noir .cert-date {
+      letter-spacing: ${FIELDS.date.letterSpacingEm}em;
       max-width: ${FIELDS.date.maxWidth}px;
       max-height: ${FIELDS.date.maxHeight}px;
       overflow-wrap: break-word;
@@ -264,7 +266,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
     }
     .t-noir .title-line span {
       font-family: '${FIELDS.subtitle.fontFamily}', serif;
-      letter-spacing: 0.35em;
+      letter-spacing: ${FIELDS.subtitle.letterSpacingEm}em;
       color: ${accent};
       text-transform: ${FIELDS.subtitle.textTransform};
       max-width: ${FIELDS.subtitle.maxWidth}px;

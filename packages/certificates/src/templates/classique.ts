@@ -22,7 +22,7 @@ const FIELDS = {
     fontFamily: FONTS.heading,
     basePx: 13,
     allowWrap: false,
-    letterSpacingPx: 5,
+    letterSpacingEm: 0.45,
     textTransform: 'uppercase' as const
   },
   title: {
@@ -39,7 +39,7 @@ const FIELDS = {
     fontFamily: FONTS.heading,
     basePx: 13,
     allowWrap: false,
-    letterSpacingPx: 4,
+    letterSpacingEm: 0.35,
     textTransform: 'uppercase' as const
   },
   recipient: {
@@ -140,7 +140,7 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
     }
     .t-classique .top-tag {
       font-family: '${FIELDS.org.fontFamily}', serif;
-      letter-spacing: 0.45em;
+      letter-spacing: ${FIELDS.org.letterSpacingEm}em;
       color: ${accent};
       text-transform: ${FIELDS.org.textTransform};
       max-width: ${FIELDS.org.maxWidth}px;
@@ -170,7 +170,7 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
     .t-classique .subtitle {
       text-align: center;
       font-family: '${FIELDS.subtitle.fontFamily}', serif;
-      letter-spacing: 0.35em;
+      letter-spacing: ${FIELDS.subtitle.letterSpacingEm}em;
       color: ${accent};
       margin-top: 4px;
       text-transform: ${FIELDS.subtitle.textTransform};

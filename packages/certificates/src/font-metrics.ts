@@ -119,14 +119,19 @@ function getCharAdvanceRatio(char: string, profile: FontAdvanceProfile): number 
   return profile.defaultRatio;
 }
 
-function measureTextWidth(text: string, fontSize: number, profile: FontAdvanceProfile, letterSpacingPx = 0): number {
+function measureTextWidth(text: string, fontSize: number, profile: FontAdvanceProfile, letterSpacingEm = 0): number {
+  if (text.length === 0) return 0;
+
   let total = 0;
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
-    const advance = getCharAdvanceRatio(char, profile) * fontSize + letterSpacingPx;
-    total += advance;
+    total += getCharAdvanceRatio(char, profile) * fontSize;
   }
-  return total;
+
+  const trackingPerGap = letterSpacingEm * fontSize;
+  const totalTracking = Math.max(0, text.length - 1) * trackingPerGap;
+
+  return total + totalTracking;
 }
 
 export interface FitFontSizeOptions {
@@ -137,7 +142,7 @@ export interface FitFontSizeOptions {
   minPx?: number;
   lineHeight?: number;
   allowWrap?: boolean;
-  letterSpacingPx?: number;
+  letterSpacingEm?: number;
   textTransform?: 'none' | 'uppercase' | 'lowercase';
 }
 
@@ -166,16 +171,16 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
   const basePx = Math.max(minPx, options.basePx);
   const lineHeight = options.lineHeight ?? 1.15;
   const allowWrap = options.allowWrap !== false;
-  const letterSpacingPx = options.letterSpacingPx ?? 0;
+  const letterSpacingEm = options.letterSpacingEm ?? 0;
   const profile = FONT_PROFILES[options.fontFamily] ?? FONT_PROFILES['Cormorant Garamond'];
 
-  const cacheKey = `${transformedText}|${options.fontFamily}|${options.maxWidth}|${options.maxHeight}|${basePx}|${minPx}|${lineHeight}|${allowWrap}|${letterSpacingPx}`;
+  const cacheKey = `${transformedText}|${options.fontFamily}|${options.maxWidth}|${options.maxHeight}|${basePx}|${minPx}|${lineHeight}|${allowWrap}|${letterSpacingEm}`;
   const cached = FIT_CACHE.get(cacheKey);
   if (cached !== undefined) return cached;
 
   function doesFit(fontSize: number): boolean {
     if (!allowWrap) {
-      const singleLineWidth = measureTextWidth(transformedText, fontSize, profile, letterSpacingPx);
+      const singleLineWidth = measureTextWidth(transformedText, fontSize, profile, letterSpacingEm);
       const singleLineHeight = fontSize * lineHeight;
       return singleLineWidth <= options.maxWidth && singleLineHeight <= options.maxHeight;
     }
@@ -184,11 +189,11 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
     const words = transformedText.split(/\s+/);
     let currentLineWidth = 0;
     let lineCount = 1;
-    const spaceWidth = measureTextWidth(' ', fontSize, profile, letterSpacingPx);
+    const spaceWidth = measureTextWidth(' ', fontSize, profile, letterSpacingEm);
 
     for (let i = 0; i < words.length; i++) {
       const word = words[i];
-      const wordWidth = measureTextWidth(word, fontSize, profile, letterSpacingPx);
+      const wordWidth = measureTextWidth(word, fontSize, profile, letterSpacingEm);
 
       if (currentLineWidth > 0) {
         if (currentLineWidth + spaceWidth + wordWidth <= options.maxWidth) {

@@ -22,6 +22,7 @@ const metaRowItemData = {
   fontFamily: FONTS.mono,
   basePx: 18,
   lineHeight: 1.15,
+  letterSpacingEm: 0.05,
   allowWrap: true,
   textTransform: 'uppercase' as const
 };
@@ -33,7 +34,7 @@ const FIELDS = {
     fontFamily: FONTS.mono,
     basePx: 11,
     allowWrap: false,
-    letterSpacingPx: 2,
+    letterSpacingEm: 0.18,
     textTransform: 'uppercase' as const
   },
   certId: {
@@ -143,11 +144,11 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       position: relative;
       z-index: 2;
       font-family: '${FONTS.mono}', monospace;
-      letter-spacing: 0.18em;
       text-transform: uppercase;
       flex-shrink: 0;
     }
     .t-brutalist .org-name {
+      letter-spacing: ${FIELDS.org.letterSpacingEm}em;
       max-width: ${FIELDS.org.maxWidth}px;
       max-height: ${FIELDS.org.maxHeight}px;
       overflow-wrap: break-word;
@@ -207,7 +208,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       font-size: ${fontSizes.course}px;
       font-weight: 500;
       text-transform: ${FIELDS.course.textTransform};
-      letter-spacing: 0.05em;
+      letter-spacing: ${FIELDS.course.letterSpacingEm}em;
       line-height: ${FIELDS.course.lineHeight};
       overflow-wrap: break-word;
       word-break: normal;
