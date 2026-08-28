@@ -105,4 +105,12 @@ describe('ZCourseLandingPageUpdateValidated paid-course invariants', () => {
       }).success
     ).toBe(false);
   });
+
+  it('rejects a paid landing-page update when paymentEnabled is true but cost is missing', () => {
+    expect(
+      ZCourseLandingPageUpdateValidated.safeParse({
+        metadata: { paymentEnabled: true, paymentLink: 'https://pay.example.com/checkout' }
+      }).success
+    ).toBe(false);
+  });
 });

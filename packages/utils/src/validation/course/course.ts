@@ -461,7 +461,7 @@ export function validatePaidCourseState(
     });
   }
 
-  if (typeof cost === 'number' && cost <= 0) {
+  if (cost === undefined || cost === null || cost <= 0) {
     issues.push({
       message: 'Paid courses must have a cost greater than 0',
       path: ['cost']

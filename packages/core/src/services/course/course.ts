@@ -342,7 +342,7 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
     if (data.cost !== undefined || data.metadata !== undefined) {
       const [existingCourse] = await getCourseById(courseId);
       if (existingCourse) {
-        const nextCost = data.cost ?? existingCourse.cost ?? 0;
+        const nextCost = data.cost === undefined ? (existingCourse.cost ?? 0) : (data.cost ?? 0);
         const nextMetadata = sanitizedData.metadata ?? existingCourse.metadata;
         const paidCourseIssue = validatePaidCourseState(nextCost, nextMetadata)[0];
         if (paidCourseIssue) {

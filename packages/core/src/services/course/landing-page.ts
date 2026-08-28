@@ -185,7 +185,7 @@ export async function updateCourseLandingPageService(
   const nextTitle = payload.title ?? existingCourse.title;
   const metadata = mergeLandingPageMetadata(existingCourse.metadata ?? undefined, payload.metadata);
 
-  const nextCost = payload.cost ?? existingCourse.cost ?? 0;
+  const nextCost = payload.cost === undefined ? (existingCourse.cost ?? 0) : (payload.cost ?? 0);
   const paidCourseIssue = validatePaidCourseState(nextCost, metadata)[0];
   if (paidCourseIssue) {
     throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
