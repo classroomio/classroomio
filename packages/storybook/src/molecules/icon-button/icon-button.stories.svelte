@@ -56,7 +56,7 @@
 
 <Story name="Multiple Icons">
   {#snippet template()}
-    <div class="ui:flex ui:items-center ui:gap-4">
+    <div class="flex items-center gap-4">
       <IconButton tooltip="Settings">
         <SettingsIcon />
       </IconButton>
@@ -81,11 +81,11 @@
 
 <Story name="Tooltip Positions">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:items-center ui:gap-8 ui:p-8">
+    <div class="flex flex-col items-center gap-8 p-8">
       <IconButton tooltip="Top tooltip" tooltipSide="top">
         <SettingsIcon />
       </IconButton>
-      <div class="ui:flex ui:items-center ui:gap-8">
+      <div class="flex items-center gap-8">
         <IconButton tooltip="Left tooltip" tooltipSide="left">
           <SettingsIcon />
         </IconButton>

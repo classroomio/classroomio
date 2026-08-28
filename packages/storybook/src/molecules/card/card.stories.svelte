@@ -36,15 +36,15 @@
       </Card.Header>
       <Card.Content>
         <form>
-          <div class="ui:flex ui:flex-col ui:gap-6">
-            <div class="ui:grid ui:gap-2">
+          <div class="flex flex-col gap-6">
+            <div class="grid gap-2">
               <Label for="email">Email</Label>
               <Input id="email" type="email" bind:value={email} placeholder="m@example.com" required />
             </div>
-            <div class="ui:grid ui:gap-2">
-              <div class="ui:flex ui:items-center">
+            <div class="grid gap-2">
+              <div class="flex items-center">
                 <Label for="password">Password</Label>
-                <a href="/" class="ui:ms-auto ui:inline-block ui:text-sm ui:underline-offset-4 hover:ui:underline">
+                <a href="/" class="ms-auto inline-block text-sm underline-offset-4 hover:underline">
                   Forgot your password?
                 </a>
               </div>
@@ -53,9 +53,9 @@
           </div>
         </form>
       </Card.Content>
-      <Card.Footer class="ui:flex-col ui:gap-2">
-        <Button type="submit" class="ui:w-full">Login</Button>
-        <Button variant="outline" class="ui:w-full">Login with Google</Button>
+      <Card.Footer class="flex-col gap-2">
+        <Button type="submit" class="w-full">Login</Button>
+        <Button variant="outline" class="w-full">Login with Google</Button>
       </Card.Footer>
     </Card.Root>
   {/snippet}
@@ -63,7 +63,7 @@
 
 <Story name="Simple">
   {#snippet template()}
-    <Card.Root class="ui:w-full ui:max-w-sm">
+    <Card.Root class="w-full max-w-sm">
       <Card.Header>
         <Card.Title>Card Title</Card.Title>
         <Card.Description>Card description goes here.</Card.Description>
@@ -77,7 +77,7 @@
 
 <Story name="With Footer">
   {#snippet template()}
-    <Card.Root class="ui:w-full ui:max-w-sm">
+    <Card.Root class="w-full max-w-sm">
       <Card.Header>
         <Card.Title>Card Title</Card.Title>
         <Card.Description>Card description goes here.</Card.Description>
@@ -94,7 +94,7 @@
 
 <Story name="With Action">
   {#snippet template()}
-    <Card.Root class="ui:w-full ui:max-w-sm">
+    <Card.Root class="w-full max-w-sm">
       <Card.Header>
         <Card.Title>Card Title</Card.Title>
         <Card.Description>Card description goes here.</Card.Description>
@@ -111,7 +111,7 @@
 
 <Story name="No Header">
   {#snippet template()}
-    <Card.Root class="ui:w-full ui:max-w-sm">
+    <Card.Root class="w-full max-w-sm">
       <Card.Content>
         <p>Card content without header.</p>
       </Card.Content>
