@@ -277,6 +277,44 @@ export async function getCourseProgramAccess(
 }
 
 /**
+ * Resolves the course group an organization ADMIN is entitled to act in even when they
+ * have no `groupmember` row yet (accepting an org invite only creates an
+ * `organizationmember` row). Returns null when the profile is not an admin of the
+ * organization that owns the course.
+ */
+export async function getCourseOrgAdminAccess(
+  courseId: string,
+  profileId: string
+): Promise<{ courseGroupId: string; organizationId: string | null } | null> {
+  try {
+    const result = await db
+      .select({
+        courseGroupId: schema.group.id,
+        organizationId: schema.group.organizationId
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(
+        schema.organizationmember,
+        and(
+          eq(schema.organizationmember.organizationId, schema.group.organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        )
+      )
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return result[0] ?? null;
+  } catch (error) {
+    console.error('getCourseOrgAdminAccess error:', error);
+    throw new Error(
+      `Failed to get course org admin access: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Gets the group member ID for a user in a course
  * @param courseId Course ID
  * @param profileId Profile ID

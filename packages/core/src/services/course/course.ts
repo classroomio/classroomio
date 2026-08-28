@@ -15,7 +15,9 @@ import {
 import {
   addGroupMember,
   createGroup,
+  getCourseOrgAdminAccess,
   getCourseProgramAccess,
+  getGroupMemberIdByCourseAndProfile,
   insertGroupMembersOnConflictDoNothing
 } from '@cio/db/queries/group';
 import {
@@ -126,6 +128,33 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   }
 
   return true;
+}
+
+/**
+ * Resolves the `groupmember` row a user authors course content as (newsfeed posts,
+ * comments). Organization admins are allowed into any course in their org by
+ * `courseMemberMiddleware`/`courseTeamMemberMiddleware` without ever being added to the
+ * course group, so authoring used to fail for them with "User is not a member of this
+ * course". Backfill the membership on their first write instead of rejecting it.
+ *
+ * The row is inserted without an email on purpose: `profileId` already identifies the
+ * member, display email is read from `profile`, and leaving it null avoids colliding with
+ * the `unique_group_email` constraint on a pending invite for the same address.
+ *
+ * @returns the group member ID, or null when the user has no claim to the course
+ */
+export async function ensureCourseGroupMemberId(courseId: string, profileId: string): Promise<string | null> {
+  const existingGroupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, profileId);
+  if (existingGroupMemberId) return existingGroupMemberId;
+
+  const orgAdminAccess = await getCourseOrgAdminAccess(courseId, profileId);
+  if (!orgAdminAccess) return null;
+
+  await insertGroupMembersOnConflictDoNothing([
+    { groupId: orgAdminAccess.courseGroupId, roleId: ROLE.ADMIN, profileId }
+  ]);
+
+  return getGroupMemberIdByCourseAndProfile(courseId, profileId);
 }
 
 function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {
