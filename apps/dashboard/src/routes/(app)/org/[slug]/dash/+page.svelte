@@ -109,7 +109,7 @@
                 <CreateCourseButton variant="outline" />
               </Empty>
             {:else}
-              <ul class="divide-border -mx-2 divide-y">
+              <ul class="ui:divide-border -mx-2 divide-y">
                 {#each topCourses as course, i (course.id)}
                   {@const rank = i + 1}
                   <li>

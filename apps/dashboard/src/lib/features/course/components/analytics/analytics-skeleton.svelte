@@ -36,7 +36,7 @@
       <Skeleton class="h-5 w-56" />
       <Skeleton class="mt-2 h-4 max-w-xl" />
     </div>
-    <div class="divide-border divide-y px-6 py-2">
+    <div class="ui:divide-border divide-y px-6 py-2">
       {#each Array(5) as _, i (i)}
         <div class="flex flex-wrap items-center gap-4 py-4">
           <Skeleton class="size-8 rounded-full" />

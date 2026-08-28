@@ -1,7 +1,13 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-export * from './render-math';
 
+/**
+ * Merges and resolves conflicting Tailwind CSS classes while preserving `@cio/ui` theme prefixes (`ui:`).
+ * Normalizes prefixed tokens before passing them to `tailwind-merge` and restores original prefixes on output.
+ *
+ * @param inputs - Class names, conditional objects, or class arrays to merge.
+ * @returns Deduplicated and resolved class string.
+ */
 export function cn(...inputs: ClassValue[]) {
   const rawClass = clsx(inputs);
   if (!rawClass || !rawClass.includes('ui:')) return twMerge(rawClass);
@@ -33,4 +39,3 @@ export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T;
 export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, 'children'> : T;
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
-// HMR trigger

@@ -33,7 +33,7 @@
         <span>{$t('analytics.countries.country')}</span>
         <span>{$t('analytics.countries.visitors')}</span>
       </div>
-      <ul class="divide-border divide-y">
+      <ul class="ui:divide-border divide-y">
         {#each data.slice(0, 10) as row (row.country)}
           <li class="relative py-2.5">
             <div
