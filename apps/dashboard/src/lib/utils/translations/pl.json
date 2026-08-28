@@ -463,14 +463,6 @@
         "post_created": "Post został utworzony pomyślnie",
         "post_updated": "Post został pomyślnie zaktualizowany"
       }
-    },
-    "course_link_invite": {
-      "enabled": "Link z zaproszeniem na kurs włączony",
-      "disabled": "Link z zaproszeniem na kurs wyłączony"
-    },
-    "cohort_link_invite": {
-      "enabled": "Link z zaproszeniem do kohorty włączony",
-      "disabled": "Link z zaproszeniem do kohorty wyłączony"
     }
   },
   "explore": {
@@ -1288,19 +1280,7 @@
             "multi_use_30d": "Wielokrotnego użytku (30 dni)",
             "custom": "Niestandardowe"
           },
-          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów.",
-          "invite_link": {
-            "tab_label": "Link z zaproszeniem",
-            "title": "Link z zaproszeniem na kurs",
-            "description": "Każdy, kto ma ten link, może dołączyć do tego kursu jako student. Udostępnij go zamiast wpisywać adresy e-mail jeden po drugim.",
-            "generate": "Utwórz link z zaproszeniem",
-            "copy": "Kopiuj link z zaproszeniem",
-            "copied": "Link z zaproszeniem został skopiowany",
-            "copy_failed": "Nie można skopiować linku z zaproszeniem",
-            "toggle_label": "Link jest aktywny",
-            "disabled_notice": "Ten link jest wyłączony. Nikt nie będzie mógł do niego dołączyć, dopóki go ponownie nie włączysz.",
-            "join_count": "{count} osób dołączyło za pomocą tego linku"
-          }
+          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów."
         }
       },
       "marks": {
@@ -4119,15 +4099,6 @@
       "disabled": "Ten link z zaproszeniem został wyłączony przez organizację.",
       "join_failed": "Nie udało się dołączyć do organizacji",
       "joined": "Dołączył do organizacji"
-    },
-    "cohort": {
-      "page_title": "Dołącz do {cohortName} w ClassroomIO",
-      "invitation": "Zostałeś zaproszony do dołączenia do {cohortName} w {orgName}.",
-      "accept_button": "Dołącz do kohorty",
-      "disabled": "Ten link z zaproszeniem został wyłączony.",
-      "inactive": "Ta kohorta nie przyjmuje już nowych członków.",
-      "joined": "Dołączyłeś do kohorty",
-      "join_failed": "Nie udało się dołączyć do kohorty. Spróbuj ponownie."
     }
   },
   "automation": {
@@ -4923,11 +4894,7 @@
       "add_another": "Dodaj kolejny",
       "invite_submit": "Wyślij zaproszenia",
       "empty_title": "Nie ma jeszcze członków",
-      "empty_description": "Zaproś osoby do dołączenia do tej kohorty.",
-      "invite_link": {
-        "title": "Link z zaproszeniem do kohorty",
-        "description": "Każdy, kto ma ten link, może dołączyć do tej kohorty i wszystkich jej kursów. Udostępnij go, zamiast wpisywać adresy e-mail jeden po drugim."
-      }
+      "empty_description": "Zaproś osoby do dołączenia do tej kohorty."
     },
     "courses": {
       "add": "Dodaj kurs",
@@ -5095,6 +5062,34 @@
         "save": "Zapisz",
         "cancel": "Anuluj"
       }
+    }
+  },
+  "invite_link": {
+    "tab_label": "Link z zaproszeniem",
+    "title": "Link z zaproszeniem",
+    "description": "Każda osoba z tym linkiem może dołączyć. Udostępnij go zamiast wpisywać adresy e-mail pojedynczo.",
+    "course_description": "Każda osoba z tym linkiem może dołączyć do tego kursu jako student. Udostępnij go zamiast wpisywać adresy e-mail pojedynczo.",
+    "cohort_description": "Każda osoba z tym linkiem może dołączyć do tej grupy i każdego kursu w niej zawartego. Udostępnij go zamiast wpisywać adresy e-mail pojedynczo.",
+    "generate": "Utwórz link z zaproszeniem",
+    "copy": "Kopiuj link z zaproszeniem",
+    "copied": "Link z zaproszeniem został skopiowany",
+    "copy_failed": "Nie można skopiować linku z zaproszeniem",
+    "toggle_label": "Link jest aktywny",
+    "disabled_notice": "Ten link jest wyłączony. Nikt nie będzie mógł dołączyć, dopóki go ponownie nie włączysz.",
+    "join_count": "{count} osób dołączyło za pomocą tego linku",
+    "snackbar": {
+      "enabled": "Link z zaproszeniem włączony",
+      "disabled": "Link z zaproszeniem wyłączony"
+    },
+    "join": {
+      "page_title": "Dołącz do {resourceName} w ClassroomIO",
+      "invitation": "Zostałeś zaproszony do dołączenia do {resourceName} w {orgName}.",
+      "course_button": "Dołącz do kursu",
+      "cohort_button": "Dołącz do grupy",
+      "disabled": "Ten link z zaproszeniem został wyłączony.",
+      "closed": "Nowi członkowie nie są już przyjmowani.",
+      "succeeded": "Dołączyłeś",
+      "failed": "Nie udało się dołączyć. Spróbuj ponownie."
     }
   }
 }

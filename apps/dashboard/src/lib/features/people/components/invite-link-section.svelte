@@ -14,8 +14,9 @@
     link: string;
     isRevoked: boolean;
     isLoading: boolean;
-    /** How many people have joined with the link, when the surface tracks it. */
+    /** How many people have joined with the link. */
     joinCount?: number;
+    /** Overridden per resource so the copy names what the link joins. */
     titleKey?: string;
     descriptionKey?: string;
     onGenerate: () => void | Promise<void>;
@@ -27,8 +28,8 @@
     isRevoked,
     isLoading,
     joinCount,
-    titleKey = 'course.navItem.people.invite_modal.invite_link.title',
-    descriptionKey = 'course.navItem.people.invite_modal.invite_link.description',
+    titleKey = 'invite_link.title',
+    descriptionKey = 'invite_link.description',
     onGenerate,
     onToggle
   }: Props = $props();
@@ -41,7 +42,7 @@
 
     try {
       await navigator.clipboard.writeText(link);
-      snackbar.success('course.navItem.people.invite_modal.invite_link.copied');
+      snackbar.success('invite_link.copied');
 
       hasCopied = true;
       clearTimeout(copiedTimeout);
@@ -50,12 +51,8 @@
       }, 2000);
     } catch (error) {
       console.error('Failed to copy invite link', error);
-      snackbar.error('course.navItem.people.invite_modal.invite_link.copy_failed');
+      snackbar.error('invite_link.copy_failed');
     }
-  }
-
-  async function generateAndCopy() {
-    await onGenerate();
   }
 </script>
 
@@ -71,8 +68,8 @@
           <IconButton
             variant="secondary"
             onclick={copyLink}
-            tooltip={$t('course.navItem.people.invite_modal.invite_link.copy')}
-            aria-label={$t('course.navItem.people.invite_modal.invite_link.copy')}
+            tooltip={$t('invite_link.copy')}
+            aria-label={$t('invite_link.copy')}
           >
             {#if hasCopied}
               <CheckIcon size={16} />
@@ -88,24 +85,24 @@
           checked={!isRevoked}
           disabled={isLoading}
           onCheckedChange={(checked) => onToggle(!checked)}
-          aria-label={$t('course.navItem.people.invite_modal.invite_link.toggle_label')}
+          aria-label={$t('invite_link.toggle_label')}
         />
-        <Field.Label>{$t('course.navItem.people.invite_modal.invite_link.toggle_label')}</Field.Label>
+        <Field.Label>{$t('invite_link.toggle_label')}</Field.Label>
       </Field.Field>
 
       {#if isRevoked}
         <Field.Description class="ui:text-destructive">
-          {$t('course.navItem.people.invite_modal.invite_link.disabled_notice')}
+          {$t('invite_link.disabled_notice')}
         </Field.Description>
       {:else if joinCount !== undefined}
         <Field.Description>
-          {$t('course.navItem.people.invite_modal.invite_link.join_count', { count: joinCount })}
+          {$t('invite_link.join_count', { count: joinCount })}
         </Field.Description>
       {/if}
     </Field.Group>
   {:else}
-    <Button variant="secondary" onclick={generateAndCopy} loading={isLoading} disabled={isLoading}>
-      {$t('course.navItem.people.invite_modal.invite_link.generate')}
+    <Button variant="secondary" onclick={onGenerate} loading={isLoading} disabled={isLoading}>
+      {$t('invite_link.generate')}
     </Button>
   {/if}
 </Field.Set>

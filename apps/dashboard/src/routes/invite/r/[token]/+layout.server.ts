@@ -3,18 +3,18 @@ import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { error } from '@sveltejs/kit';
 
-type PreviewCohortInviteRequest = (typeof classroomio.invite)['cohort'][':token']['preview']['$get'];
-type PreviewCohortInviteSuccess = Extract<InferResponseType<PreviewCohortInviteRequest>, { success: true }>;
+type PreviewInviteLinkRequest = (typeof classroomio.invite)['r'][':token']['preview']['$get'];
+type PreviewInviteLinkSuccess = Extract<InferResponseType<PreviewInviteLinkRequest>, { success: true }>;
 
-export const load = async ({ params = { hash: '' } }) => {
+export const load = async ({ params = { token: '' } }) => {
   try {
-    const token = decodeURIComponent(params.hash);
-    const result = await safeServerApi<PreviewCohortInviteSuccess>(() =>
-      classroomio.invite.cohort[':token'].preview.$get({ param: { token } }, getApiKeyHeaders())
+    const token = decodeURIComponent(params.token);
+    const result = await safeServerApi<PreviewInviteLinkSuccess>(() =>
+      classroomio.invite.r[':token'].preview.$get({ param: { token } }, getApiKeyHeaders())
     );
 
     if (!result.ok || !result.body.data) {
-      throw new Error('Invalid cohort invite payload');
+      throw new Error('Invalid invite link payload');
     }
 
     const apiKeyHeaders = getApiKeyHeaders();
@@ -28,7 +28,7 @@ export const load = async ({ params = { hash: '' } }) => {
       currentOrg
     };
   } catch (e) {
-    console.error('Error decoding cohort invite params.hash', e);
+    console.error('Error loading invite link preview', e);
     throw error(404, 'Not found');
   }
 };

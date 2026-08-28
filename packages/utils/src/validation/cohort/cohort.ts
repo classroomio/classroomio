@@ -82,18 +82,6 @@ export const ZAssignExistingStudentsToCohort = z.object({
 });
 export type TAssignExistingStudentsToCohort = z.infer<typeof ZAssignExistingStudentsToCohort>;
 
-// ─── Cohort Link Invite ──────────────────────────────────────────────────────
-
-export const ZCohortInviteTokenParam = z.object({
-  token: z.string().min(10).max(512)
-});
-export type TCohortInviteTokenParam = z.infer<typeof ZCohortInviteTokenParam>;
-
-export const ZToggleCohortLinkInvite = z.object({
-  isRevoked: z.boolean()
-});
-export type TToggleCohortLinkInvite = z.infer<typeof ZToggleCohortLinkInvite>;
-
 // ─── Cohort Goals ────────────────────────────────────────────────────────────
 
 export const COHORT_GOAL_TYPES = ['complete_all', 'n_of_m', 'score', 'pass_rate', 'readiness'] as const;

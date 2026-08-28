@@ -52,12 +52,6 @@
 
   const inviteStatus = $derived(data.invite?.status ?? 'INVALID');
   const hasActiveInvite = $derived(Boolean(data.invite) && inviteStatus === 'ACTIVE');
-  // A staff-generated share link grants access to a draft course too, matching the
-  // backend rule in acceptStudentInvite. Email invites still need a published course.
-  const isActiveLinkInvite = $derived(hasActiveInvite && data.invite?.type === 'LINK');
-  const isCourseOpenForEnrollment = $derived(
-    data.course?.status === 'ACTIVE' && (isActiveLinkInvite || Boolean(data.course?.isPublished))
-  );
   // The org-wide cap only applies to *new* students joining the org. We can't
   // know the viewer's membership here (public, unauthenticated load), so only
   // pre-block anonymous visitors (would-be new joiners). Logged-in users are
@@ -67,7 +61,9 @@
   const canJoinCourse = $derived(
     data.requiresPaymentOrInvite || blocksNewSignup
       ? false
-      : (hasActiveInvite || (!data.invite && data.course?.allowSelfEnrollment !== false)) && isCourseOpenForEnrollment
+      : (hasActiveInvite || (!data.invite && data.course?.allowSelfEnrollment !== false)) &&
+          data.course?.status === 'ACTIVE' &&
+          Boolean(data.course?.isPublished)
   );
   const isPreparingEnrollment = $derived(
     isLoggedIn &&
@@ -90,7 +86,7 @@
     if (data.course?.allowSelfEnrollment === false && !hasActiveInvite) {
       return t.get('course.navItem.landing_page.pricing_section.not_accepting');
     }
-    if (!isCourseOpenForEnrollment) {
+    if (data.course?.status !== 'ACTIVE' || !data.course?.isPublished) {
       return 'This course is currently unavailable for enrollment.';
     }
     if (data.invite && inviteStatus === 'EXPIRED') {

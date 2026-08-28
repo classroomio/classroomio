@@ -463,14 +463,6 @@
         "post_created": "Publicación creada exitosamente",
         "post_updated": "Publicación actualizada exitosamente"
       }
-    },
-    "course_link_invite": {
-      "enabled": "Enlace de invitación al curso activado",
-      "disabled": "Enlace de invitación al curso desactivado"
-    },
-    "cohort_link_invite": {
-      "enabled": "Enlace de invitación al grupo activado",
-      "disabled": "Enlace de invitación al grupo desactivado"
     }
   },
   "explore": {
@@ -1288,19 +1280,7 @@
             "multi_use_30d": "Multiuso (30 días)",
             "custom": "personalizado"
           },
-          "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes.",
-          "invite_link": {
-            "tab_label": "Enlace de invitación",
-            "title": "Enlace de invitación al curso",
-            "description": "Cualquier persona con este enlace puede unirse a este curso como estudiante. Compártelo en lugar de ingresar los correos electrónicos uno por uno.",
-            "generate": "Crear enlace de invitación",
-            "copy": "Copiar enlace de invitación",
-            "copied": "Enlace de invitación copiado",
-            "copy_failed": "No se pudo copiar el enlace de invitación",
-            "toggle_label": "El enlace está activo",
-            "disabled_notice": "Este enlace está desactivado. Nadie puede unirse con él hasta que lo actives.",
-            "join_count": "{count} personas se han unido con este enlace"
-          }
+          "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes."
         }
       },
       "marks": {
@@ -4119,15 +4099,6 @@
       "disabled": "Este enlace de invitación ha sido deshabilitado por la organización.",
       "join_failed": "No se pudo unir a la organización",
       "joined": "Organización unida"
-    },
-    "cohort": {
-      "page_title": "Únete a {cohortName} en ClassroomIO",
-      "invitation": "Has recibido una invitación para unirte a {cohortName} en {orgName}.",
-      "accept_button": "Unirse al grupo",
-      "disabled": "Este enlace de invitación está desactivado.",
-      "inactive": "Este grupo ya no acepta nuevos miembros.",
-      "joined": "Te has unido al grupo",
-      "join_failed": "No se pudo unir al grupo. Inténtalo de nuevo."
     }
   },
   "automation": {
@@ -4923,11 +4894,7 @@
       "add_another": "agregar otro",
       "invite_submit": "Enviar invitaciones",
       "empty_title": "Aún no hay miembros",
-      "empty_description": "Invita a personas a unirse a esta cohorte.",
-      "invite_link": {
-        "title": "Enlace de invitación al grupo",
-        "description": "Cualquier persona con este enlace puede unirse a este grupo y a todos sus cursos. Compártelo en lugar de ingresar los correos electrónicos uno por uno."
-      }
+      "empty_description": "Invita a personas a unirse a esta cohorte."
     },
     "courses": {
       "add": "Agregar curso",
@@ -5095,6 +5062,34 @@
         "save": "Guardar",
         "cancel": "Cancelar"
       }
+    }
+  },
+  "invite_link": {
+    "tab_label": "Enlace de invitación",
+    "title": "Enlace de invitación",
+    "description": "Cualquiera con este enlace puede unirse. Compártelo en lugar de ingresar los correos electrónicos uno por uno.",
+    "course_description": "Cualquiera con este enlace puede unirse a este curso como estudiante. Compártelo en lugar de ingresar los correos electrónicos uno por uno.",
+    "cohort_description": "Cualquiera con este enlace puede unirse a este grupo y a todos los cursos que lo componen. Compártelo en lugar de ingresar los correos electrónicos uno por uno.",
+    "generate": "Crear enlace de invitación",
+    "copy": "Copiar enlace de invitación",
+    "copied": "Enlace de invitación copiado",
+    "copy_failed": "No se pudo copiar el enlace de invitación",
+    "toggle_label": "El enlace está activo",
+    "disabled_notice": "Este enlace está desactivado. Nadie puede unirse con él hasta que lo actives.",
+    "join_count": "{count} personas se han unido con este enlace",
+    "snackbar": {
+      "enabled": "Enlace de invitación habilitado",
+      "disabled": "Enlace de invitación deshabilitado"
+    },
+    "join": {
+      "page_title": "Únete a {resourceName} en ClassroomIO",
+      "invitation": "Te han invitado a unirte a {resourceName} en {orgName}.",
+      "course_button": "Unirse al curso",
+      "cohort_button": "Unirse al grupo",
+      "disabled": "Este enlace de invitación se ha deshabilitado.",
+      "closed": "Ya no se aceptan nuevos miembros.",
+      "succeeded": "Te has unido",
+      "failed": "No se pudo unir. Inténtalo de nuevo."
     }
   }
 }

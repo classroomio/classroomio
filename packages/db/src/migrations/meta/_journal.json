@@ -61,8 +61,8 @@
     {
       "idx": 8,
       "version": "7",
-      "when": 1787915094345,
-      "tag": "0008_cohort_and_course_link_invites",
+      "when": 1787953674643,
+      "tag": "0008_invite_link",
       "breakpoints": true
     }
   ]

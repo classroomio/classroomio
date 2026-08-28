@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  check,
   date,
   doublePrecision,
   foreignKey,
@@ -51,8 +52,6 @@ export const widgetLayoutType = pgEnum('WIDGET_LAYOUT_TYPE', [
   'category_shelf'
 ]);
 export const widgetSelectionMode = pgEnum('WIDGET_SELECTION_MODE', ['manual', 'published']);
-export const courseInviteType = pgEnum('COURSE_INVITE_TYPE', ['EMAIL', 'LINK']);
-
 export const courseInviteEventType = pgEnum('COURSE_INVITE_EVENT_TYPE', [
   'CREATED',
   'REVOKED',
@@ -1311,11 +1310,7 @@ export const courseInvite = pgTable(
     roleId: bigint('role_id', { mode: 'number' })
       .default(sql`'3'`)
       .notNull(),
-    type: courseInviteType().default('EMAIL').notNull(),
     tokenHash: text('token_hash').notNull(),
-    // Raw token, set only for `type = 'LINK'` so a permanent link can be re-displayed to staff.
-    // EMAIL invites never store it — their link is delivered once by email.
-    token: text(),
     createdByProfileId: uuid('created_by_profile_id').notNull(),
     revokedByProfileId: uuid('revoked_by_profile_id'),
     revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
@@ -1356,11 +1351,6 @@ export const courseInvite = pgTable(
       name: 'course_invite_role_id_fkey'
     }),
     unique('course_invite_token_hash_key').on(table.tokenHash),
-    // Exactly one shareable LINK invite per course, enforced in the database so the
-    // get-or-create path can never mint a duplicate. EMAIL invites are unconstrained.
-    uniqueIndex('course_invite_one_link_per_course')
-      .on(table.courseId)
-      .where(sql`${table.type} = 'LINK'`),
     index('idx_course_invite_course_id').on(table.courseId),
     index('idx_course_invite_expires_at').on(table.expiresAt),
     index('idx_course_invite_created_by').on(table.createdByProfileId),
@@ -3128,23 +3118,37 @@ export const cohortMember = pgTable(
   ]
 );
 
+export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
+
 /**
- * One permanent, revocable share link per cohort. Anyone who opens it joins the
- * cohort as a student and is enrolled in every course attached to the cohort.
+ * Shared share-link infrastructure for *resource* invites — a permanent, revocable
+ * link that lets anyone holding it join a course, a cohort, or whatever resource is
+ * added next. Adding a resource type means one nullable FK column, one enum value
+ * and one handler in the accept dispatcher; never a new table.
  *
- * Deliberately has no `expiresAt` / `maxUses` / `usedCount`: the link is permanent
- * and reusable, and access is withdrawn with `isRevoked` rather than by expiry.
+ * Deliberately separate from `organization_invite`, which owns *platform* invites
+ * (joining the org itself, as a team member or student). Those are a different
+ * concept with different permissions and lifecycle — see the accept services.
+ *
+ * There is no `expiresAt` / `maxUses` / `usedCount`: these links are permanent and
+ * uncapped, and access is withdrawn with `isRevoked` rather than by expiry.
  */
-export const cohortInvite = pgTable(
-  'cohort_invite',
+export const inviteLink = pgTable(
+  'invite_link',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
-    cohortId: uuid('cohort_id').notNull(),
-    roleId: integer('role_id').notNull(),
-    // Raw token, kept so staff can re-copy the link at any time.
+    // Scoping only — never the invite target. Drives org-wide listing and the
+    // student capacity check on accept.
+    organizationId: uuid('organization_id').notNull(),
+    resourceType: inviteLinkResourceType('resource_type').notNull(),
+    courseId: uuid('course_id'),
+    cohortId: uuid('cohort_id'),
+    /** Role granted on accept. Keyed into the uniques so a future tutor-level link needs no migration. */
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    /** Raw token, kept so staff can re-copy the link at any time. */
     token: text().notNull(),
     tokenHash: text('token_hash').notNull(),
     createdByProfileId: uuid('created_by_profile_id').notNull(),
@@ -3162,28 +3166,39 @@ export const cohortInvite = pgTable(
   },
   (table) => [
     foreignKey({
-      columns: [table.cohortId],
-      foreignColumns: [cohort.id],
-      name: 'cohort_invite_cohort_id_fkey'
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'invite_link_organization_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
-      columns: [table.createdByProfileId],
-      foreignColumns: [profile.id],
-      name: 'cohort_invite_created_by_profile_id_fkey'
-    }),
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'invite_link_course_id_fkey'
+    }).onDelete('cascade'),
     foreignKey({
-      columns: [table.revokedByProfileId],
-      foreignColumns: [profile.id],
-      name: 'cohort_invite_revoked_by_profile_id_fkey'
-    }),
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'invite_link_cohort_id_fkey'
+    }).onDelete('cascade'),
     foreignKey({
       columns: [table.roleId],
       foreignColumns: [role.id],
-      name: 'cohort_invite_role_id_fkey'
+      name: 'invite_link_role_id_fkey'
     }),
-    unique('cohort_invite_token_hash_key').on(table.tokenHash),
-    // One link per cohort, enforced in the database.
-    unique('cohort_invite_cohort_id_unique').on(table.cohortId)
+    unique('invite_link_token_hash_key').on(table.tokenHash),
+    // One link per (resource, role). Postgres treats NULLs as distinct, so cohort
+    // rows (course_id IS NULL) never collide with each other here, and vice versa.
+    unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
+    unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
+    // Exactly one target column set, matching resource_type.
+    check(
+      'invite_link_resource_target_check',
+      sql`(
+        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL)
+        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL)
+      )`
+    ),
+    index('idx_invite_link_organization_id').on(table.organizationId)
   ]
 );
 

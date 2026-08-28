@@ -1,11 +1,11 @@
 import type {
   AddPeopleRequest,
-  CourseLinkInvite,
-  CreateCourseLinkInviteRequest,
+  CourseInviteLink,
+  CreateCourseInviteLinkRequest,
   CreateStudentInvitePayload,
   CreateStudentInviteRequest,
   DeletePeopleRequest,
-  GetCourseLinkInviteRequest,
+  GetCourseInviteLinkRequest,
   GetStudentInviteAuditRequest,
   GetUserCourseAnalyticsRequest,
   ListStudentInvitesRequest,
@@ -13,7 +13,7 @@ import type {
   ListPeopleQuery,
   ResetMemberCourseProgressRequest,
   RevokeStudentInviteRequest,
-  ToggleCourseLinkInviteRequest,
+  ToggleCourseInviteLinkRequest,
   UpdatePeopleRequest
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
@@ -27,8 +27,8 @@ import { snackbar } from '$features/ui/snackbar/store';
  * API class for course members operations
  */
 export class PeopleApi extends BaseApiWithErrors {
-  linkInvite = $state<CourseLinkInvite>(null);
-  loadedLinkInviteCourseId = $state<string | null>(null);
+  inviteLink = $state<CourseInviteLink>(null);
+  loadedInviteLinkCourseId = $state<string | null>(null);
 
   /**
    * Lists all course members for a course
@@ -201,40 +201,40 @@ export class PeopleApi extends BaseApiWithErrors {
   }
 
   /** Loads the course's share link without creating one. */
-  async getLinkInvite(courseId: string) {
-    if (this.loadedLinkInviteCourseId === courseId) return;
+  async getInviteLink(courseId: string) {
+    if (this.loadedInviteLinkCourseId === courseId) return;
 
-    await this.execute<GetCourseLinkInviteRequest>({
+    await this.execute<GetCourseInviteLinkRequest>({
       requestFn: () => classroomio.course[':courseId']['invites']['link'].$get({ param: { courseId } }),
       logContext: 'loading course invite link',
       onSuccess: (result) => {
-        this.linkInvite = result.data;
-        this.loadedLinkInviteCourseId = courseId;
+        this.inviteLink = result.data;
+        this.loadedInviteLinkCourseId = courseId;
       }
     });
   }
 
   /** Returns the course's share link, creating it on first call. */
-  async generateLinkInvite(courseId: string) {
-    await this.execute<CreateCourseLinkInviteRequest>({
+  async generateInviteLink(courseId: string) {
+    await this.execute<CreateCourseInviteLinkRequest>({
       requestFn: () => classroomio.course[':courseId']['invites']['link'].$post({ param: { courseId } }),
       logContext: 'creating course invite link',
       onSuccess: (result) => {
-        this.linkInvite = result.data;
-        this.loadedLinkInviteCourseId = courseId;
+        this.inviteLink = result.data;
+        this.loadedInviteLinkCourseId = courseId;
       }
     });
   }
 
   /** Disables or re-enables the course's share link. */
-  async toggleLinkInvite(courseId: string, isRevoked: boolean) {
-    await this.execute<ToggleCourseLinkInviteRequest>({
+  async toggleInviteLink(courseId: string, isRevoked: boolean) {
+    await this.execute<ToggleCourseInviteLinkRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['invites']['link'].$patch({ param: { courseId }, json: { isRevoked } }),
       logContext: 'updating course invite link',
       onSuccess: (result) => {
-        this.linkInvite = result.data;
-        snackbar.success(isRevoked ? 'snackbar.course_link_invite.disabled' : 'snackbar.course_link_invite.enabled');
+        this.inviteLink = result.data;
+        snackbar.success(isRevoked ? 'invite_link.snackbar.disabled' : 'invite_link.snackbar.enabled');
       }
     });
   }

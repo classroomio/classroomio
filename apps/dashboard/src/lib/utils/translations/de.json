@@ -463,14 +463,6 @@
         "post_created": "Beitrag erfolgreich erstellt",
         "post_updated": "Beitrag erfolgreich aktualisiert"
       }
-    },
-    "course_link_invite": {
-      "enabled": "Einladungslink für den Kurs aktiviert",
-      "disabled": "Einladungslink für den Kurs deaktiviert"
-    },
-    "cohort_link_invite": {
-      "enabled": "Einladungslink für die Kohorte aktiviert",
-      "disabled": "Einladungslink für die Kohorte deaktiviert"
     }
   },
   "explore": {
@@ -1288,19 +1280,7 @@
             "multi_use_30d": "Mehrfachnutzung (30 Tage)",
             "custom": "Benutzerdefiniert"
           },
-          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen.",
-          "invite_link": {
-            "tab_label": "Einladungslink",
-            "title": "Einladungslink für den Kurs",
-            "description": "Mit diesem Link kann jeder dem Kurs beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
-            "generate": "Einladungslink erstellen",
-            "copy": "Einladungslink kopieren",
-            "copied": "Einladungslink kopiert",
-            "copy_failed": "Der Einladungslink konnte nicht kopiert werden.",
-            "toggle_label": "Link ist aktiv",
-            "disabled_notice": "Dieser Link ist deaktiviert. Niemand kann über diesen Link beitreten, bis Sie ihn wieder aktivieren.",
-            "join_count": "{count} Personen haben sich über diesen Link angemeldet."
-          }
+          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
         }
       },
       "marks": {
@@ -4119,15 +4099,6 @@
       "disabled": "Dieser Einladungslink wurde von der Organisation deaktiviert.",
       "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
       "joined": "Der Organisation beigetreten"
-    },
-    "cohort": {
-      "page_title": "Treten Sie {cohortName} auf ClassroomIO bei",
-      "invitation": "Sie wurden eingeladen, {cohortName} bei {orgName} beizutreten.",
-      "accept_button": "Kohorte beitreten",
-      "disabled": "Dieser Einladungslink ist deaktiviert.",
-      "inactive": "Diese Kohorte nimmt keine neuen Mitglieder mehr auf.",
-      "joined": "Sie sind der Kohorte beigetreten.",
-      "join_failed": "Der Beitritt zur Kohorte ist fehlgeschlagen. Bitte versuchen Sie es erneut."
     }
   },
   "automation": {
@@ -4923,11 +4894,7 @@
       "add_another": "Fügen Sie einen weiteren hinzu",
       "invite_submit": "Senden Sie Einladungen",
       "empty_title": "Noch keine Mitglieder",
-      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten.",
-      "invite_link": {
-        "title": "Einladungslink zur Kohorte",
-        "description": "Mit diesem Link kann jeder dieser Kohorte und allen dazugehörigen Kursen beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben."
-      }
+      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten."
     },
     "courses": {
       "add": "Kurs hinzufügen",
@@ -5095,6 +5062,34 @@
         "save": "Speichern",
         "cancel": "Abbrechen"
       }
+    }
+  },
+  "invite_link": {
+    "tab_label": "Einladungslink",
+    "title": "Einladungslink",
+    "description": "Mit diesem Link kann jeder beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "course_description": "Mit diesem Link kann jeder als Teilnehmer an diesem Kurs teilnehmen. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "cohort_description": "Mit diesem Link kann jeder dieser Gruppe und allen darin enthaltenen Kursen beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "generate": "Einladungslink erstellen",
+    "copy": "Einladungslink kopieren",
+    "copied": "Einladungslink kopiert",
+    "copy_failed": "Der Einladungslink konnte nicht kopiert werden.",
+    "toggle_label": "Der Link ist aktiv.",
+    "disabled_notice": "Dieser Link ist deaktiviert. Niemand kann mit diesem Link beitreten, bis Sie ihn wieder aktivieren.",
+    "join_count": "{count} Personen sind über diesen Link beigetreten.",
+    "snackbar": {
+      "enabled": "Einladungslink aktiviert",
+      "disabled": "Einladungslink deaktiviert"
+    },
+    "join": {
+      "page_title": "Treten Sie {resourceName} auf ClassroomIO bei",
+      "invitation": "Sie wurden eingeladen, {resourceName} bei {orgName} beizutreten.",
+      "course_button": "Kurs beitreten",
+      "cohort_button": "Gruppe beitreten",
+      "disabled": "Dieser Einladungslink wurde deaktiviert.",
+      "closed": "Es werden keine neuen Mitglieder mehr aufgenommen.",
+      "succeeded": "Sie sind beigetreten.",
+      "failed": "Beitritt fehlgeschlagen. Bitte versuchen Sie es erneut."
     }
   }
 }

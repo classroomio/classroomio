@@ -414,11 +414,11 @@ export type CreateStudentInvitePayload = {
   metadata?: Record<string, unknown>;
 };
 
-export type GetCourseLinkInviteRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$get'];
-export type CreateCourseLinkInviteRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$post'];
-export type ToggleCourseLinkInviteRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$patch'];
-type GetCourseLinkInviteSuccess = Extract<InferResponseType<GetCourseLinkInviteRequest>, { success: true }>;
-export type CourseLinkInvite = GetCourseLinkInviteSuccess['data'];
+export type GetCourseInviteLinkRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$get'];
+export type CreateCourseInviteLinkRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$post'];
+export type ToggleCourseInviteLinkRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$patch'];
+type GetCourseInviteLinkSuccess = Extract<InferResponseType<GetCourseInviteLinkRequest>, { success: true }>;
+export type CourseInviteLink = GetCourseInviteLinkSuccess['data'];
 
 export type ListStudentInvitesRequest = (typeof classroomio.course)[':courseId']['invites']['$get'];
 export type ListStudentInvitesResponse = InferResponseType<ListStudentInvitesRequest>;

@@ -3354,19 +3354,7 @@
           "snackbar_failed_load_audit": "Failed to load invite audit",
           "snackbar_metadata_copied": "Invite metadata copied",
           "snackbar_email_invites_success": "Created {count} invite(s). Sent {sent}, failed {failed}. Skipped {duplicates} duplicate(s).",
-          "select_at_least_one_student": "Select at least one existing student",
-          "invite_link": {
-            "tab_label": "Invite link",
-            "title": "Course invite link",
-            "description": "Anyone with this link can join this course as a student. Share it instead of entering emails one by one.",
-            "generate": "Create invite link",
-            "copy": "Copy invite link",
-            "copied": "Invite link copied",
-            "copy_failed": "Could not copy the invite link",
-            "toggle_label": "Link is active",
-            "disabled_notice": "This link is disabled. Nobody can join with it until you turn it back on.",
-            "join_count": "{count} people have joined with this link"
-          }
+          "select_at_least_one_student": "Select at least one existing student"
         },
         "delete_confirmation": {
           "title": "Delete",
@@ -4486,14 +4474,6 @@
           "cohort_newsfeed_comment_not_found": "That comment could not be found."
         }
       }
-    },
-    "cohort_link_invite": {
-      "enabled": "Cohort invite link enabled",
-      "disabled": "Cohort invite link disabled"
-    },
-    "course_link_invite": {
-      "enabled": "Course invite link enabled",
-      "disabled": "Course invite link disabled"
     }
   },
   "specialization": {
@@ -4531,15 +4511,6 @@
       "disabled": "This invite link has been disabled by the organization.",
       "join_failed": "Failed to join organization",
       "joined": "Joined organization"
-    },
-    "cohort": {
-      "page_title": "Join {cohortName} on ClassroomIO",
-      "invitation": "You've been invited to join {cohortName} at {orgName}.",
-      "accept_button": "Join cohort",
-      "disabled": "This invite link has been disabled.",
-      "inactive": "This cohort is no longer accepting new members.",
-      "joined": "You have joined the cohort",
-      "join_failed": "Could not join the cohort. Please try again."
     }
   },
   "content": {
@@ -4995,11 +4966,7 @@
       "add_another": "Add another",
       "invite_submit": "Send Invites",
       "empty_title": "No members yet",
-      "empty_description": "Invite people to join this cohort.",
-      "invite_link": {
-        "title": "Cohort invite link",
-        "description": "Anyone with this link can join this cohort and every course in it. Share it instead of entering emails one by one."
-      }
+      "empty_description": "Invite people to join this cohort."
     },
     "lms": {
       "empty_title": "No cohorts yet",
@@ -5084,6 +5051,34 @@
         "overdue": "Overdue",
         "no_deadline": "No deadline"
       }
+    }
+  },
+  "invite_link": {
+    "tab_label": "Invite link",
+    "title": "Invite link",
+    "description": "Anyone with this link can join. Share it instead of entering emails one by one.",
+    "course_description": "Anyone with this link can join this course as a student. Share it instead of entering emails one by one.",
+    "cohort_description": "Anyone with this link can join this cohort and every course in it. Share it instead of entering emails one by one.",
+    "generate": "Create invite link",
+    "copy": "Copy invite link",
+    "copied": "Invite link copied",
+    "copy_failed": "Could not copy the invite link",
+    "toggle_label": "Link is active",
+    "disabled_notice": "This link is disabled. Nobody can join with it until you turn it back on.",
+    "join_count": "{count} people have joined with this link",
+    "join": {
+      "page_title": "Join {resourceName} on ClassroomIO",
+      "invitation": "You've been invited to join {resourceName} at {orgName}.",
+      "course_button": "Join course",
+      "cohort_button": "Join cohort",
+      "disabled": "This invite link has been disabled.",
+      "closed": "This is no longer accepting new members.",
+      "succeeded": "You have joined",
+      "failed": "Could not join. Please try again."
+    },
+    "snackbar": {
+      "enabled": "Invite link enabled",
+      "disabled": "Invite link disabled"
     }
   }
 }

@@ -17,7 +17,6 @@
     InviteLinkSection,
     TutorSelectSection
   } from '$features/people/components';
-  import { getAppOrigin } from '$lib/utils/store/org';
   import { UpgradeBanner } from '$features/ui';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
   import type { OrgTeamMember } from '$lib/utils/types/org';
@@ -33,11 +32,6 @@
   let selectedIds = $state<string[]>([]);
   let isLoadingStudents = $state(false);
   let activeTab = $state<'tutors' | 'students' | 'link'>('students');
-  const inviteLink = $derived(
-    cohortApi.linkInvite?.token
-      ? `${getAppOrigin()}/invite/cohort/${encodeURIComponent(cohortApi.linkInvite.token)}`
-      : ''
-  );
 
   const addPeopleParam = $derived(new URLSearchParams(page.url.search).get('add'));
   const isOpen = $derived(addPeopleParam === 'true');
@@ -170,11 +164,11 @@
   }
 
   async function generateInviteLink() {
-    await cohortApi.generateLinkInvite(cohortId);
+    await cohortApi.generateInviteLink(cohortId);
   }
 
   async function toggleInviteLink(isRevoked: boolean) {
-    await cohortApi.toggleLinkInvite(cohortId, isRevoked);
+    await cohortApi.toggleInviteLink(cohortId, isRevoked);
   }
 
   $effect(() => {
@@ -190,7 +184,7 @@
       activeTab = 'students';
       selectedIds = [];
       void loadStudents($currentOrg.id);
-      void cohortApi.getLinkInvite(cohortId);
+      void cohortApi.getInviteLink(cohortId);
     });
   });
 </script>
@@ -215,7 +209,7 @@
           {$t(`${INVITE_MODAL}.invite_students`)}
         </UnderlineTabs.Trigger>
         <UnderlineTabs.Trigger value="link">
-          {$t(`${INVITE_MODAL}.invite_link.tab_label`)}
+          {$t('invite_link.tab_label')}
         </UnderlineTabs.Trigger>
       </UnderlineTabs.List>
 
@@ -254,12 +248,11 @@
       <UnderlineTabs.Content value="link">
         <div class="space-y-6">
           <InviteLinkSection
-            link={inviteLink}
-            isRevoked={cohortApi.linkInvite?.isRevoked ?? false}
+            link={cohortApi.inviteLink?.inviteLink ?? ''}
+            isRevoked={cohortApi.inviteLink?.isRevoked ?? false}
             isLoading={cohortApi.isLoading}
-            joinCount={cohortApi.linkInvite?.joinCount}
-            titleKey="cohorts.people.invite_link.title"
-            descriptionKey="cohorts.people.invite_link.description"
+            joinCount={cohortApi.inviteLink?.joinCount}
+            descriptionKey="invite_link.cohort_description"
             onGenerate={generateInviteLink}
             onToggle={toggleInviteLink}
           />

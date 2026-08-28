@@ -2,18 +2,20 @@ import {
   ZCourseInviteAuditParam,
   ZCourseInviteParam,
   ZCourseInviteRevokeParam,
-  ZCreateCourseInvite,
-  ZToggleCourseLinkInvite
+  ZCreateCourseInvite
 } from '@cio/utils/validation/course/invite';
+import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
 import {
   createStudentInvite,
-  fetchCourseLinkInvite,
-  getOrCreateCourseLinkInvite,
   getStudentInviteAuditTrail,
   listStudentInvites,
-  revokeStudentInvite,
-  toggleCourseLinkInvite
+  revokeStudentInvite
 } from '@api/services/course/invite';
+import {
+  fetchInviteLinkForResource,
+  getOrCreateInviteLinkForResource,
+  toggleInviteLinkForResource
+} from '@api/services/invite-link';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -97,7 +99,7 @@ export const invitesRouter = new Hono()
   .get('/link', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZCourseInviteParam), async (c) => {
     try {
       const { courseId } = c.req.valid('param');
-      const invite = await fetchCourseLinkInvite(courseId);
+      const invite = await fetchInviteLinkForResource('COURSE', courseId);
 
       return c.json({ success: true, data: invite }, 200);
     } catch (error) {
@@ -118,7 +120,7 @@ export const invitesRouter = new Hono()
       try {
         const user = c.get('user')!;
         const { courseId } = c.req.valid('param');
-        const invite = await getOrCreateCourseLinkInvite(courseId, user.id);
+        const invite = await getOrCreateInviteLinkForResource('COURSE', courseId, user.id);
 
         return c.json({ success: true, data: invite }, 200);
       } catch (error) {
@@ -135,13 +137,13 @@ export const invitesRouter = new Hono()
     authMiddleware,
     courseTeamMemberMiddleware,
     zValidator('param', ZCourseInviteParam),
-    zValidator('json', ZToggleCourseLinkInvite),
+    zValidator('json', ZToggleInviteLink),
     async (c) => {
       try {
         const user = c.get('user')!;
         const { courseId } = c.req.valid('param');
         const { isRevoked } = c.req.valid('json');
-        const invite = await toggleCourseLinkInvite(courseId, isRevoked, user.id);
+        const invite = await toggleInviteLinkForResource('COURSE', courseId, isRevoked, user.id);
 
         return c.json({ success: true, data: invite }, 200);
       } catch (error) {

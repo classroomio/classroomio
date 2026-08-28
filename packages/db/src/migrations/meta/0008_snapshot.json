@@ -1,5 +1,5 @@
 {
-  "id": "04129812-44c5-4c26-8331-eb4185972872",
+  "id": "3158dfad-befb-48f3-acbd-9058082141ca",
   "prevId": "2fea49d3-beb7-4eb8-b1ea-c799f47d1301",
   "version": "7",
   "dialect": "postgresql",
@@ -3384,150 +3384,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.cohort_invite": {
-      "name": "cohort_invite",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "cohort_id": {
-          "name": "cohort_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role_id": {
-          "name": "role_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "token_hash": {
-          "name": "token_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_by_profile_id": {
-          "name": "created_by_profile_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "revoked_by_profile_id": {
-          "name": "revoked_by_profile_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "revoked_at": {
-          "name": "revoked_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_revoked": {
-          "name": "is_revoked",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "join_count": {
-          "name": "join_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "last_used_at": {
-          "name": "last_used_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "cohort_invite_cohort_id_fkey": {
-          "name": "cohort_invite_cohort_id_fkey",
-          "tableFrom": "cohort_invite",
-          "tableTo": "cohort",
-          "columnsFrom": ["cohort_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "cohort_invite_created_by_profile_id_fkey": {
-          "name": "cohort_invite_created_by_profile_id_fkey",
-          "tableFrom": "cohort_invite",
-          "tableTo": "profile",
-          "columnsFrom": ["created_by_profile_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "cohort_invite_revoked_by_profile_id_fkey": {
-          "name": "cohort_invite_revoked_by_profile_id_fkey",
-          "tableFrom": "cohort_invite",
-          "tableTo": "profile",
-          "columnsFrom": ["revoked_by_profile_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "cohort_invite_role_id_fkey": {
-          "name": "cohort_invite_role_id_fkey",
-          "tableFrom": "cohort_invite",
-          "tableTo": "role",
-          "columnsFrom": ["role_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "cohort_invite_token_hash_key": {
-          "name": "cohort_invite_token_hash_key",
-          "nullsNotDistinct": false,
-          "columns": ["token_hash"]
-        },
-        "cohort_invite_cohort_id_unique": {
-          "name": "cohort_invite_cohort_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["cohort_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.cohort_member": {
       "name": "cohort_member",
       "schema": "",
@@ -4882,25 +4738,11 @@
           "notNull": true,
           "default": "'3'"
         },
-        "type": {
-          "name": "type",
-          "type": "COURSE_INVITE_TYPE",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'EMAIL'"
-        },
         "token_hash": {
           "name": "token_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_by_profile_id": {
           "name": "created_by_profile_id",
@@ -4988,22 +4830,6 @@
         }
       },
       "indexes": {
-        "course_invite_one_link_per_course": {
-          "name": "course_invite_one_link_per_course",
-          "columns": [
-            {
-              "expression": "course_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "where": "\"course_invite\".\"type\" = 'LINK'",
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_course_invite_course_id": {
           "name": "idx_course_invite_course_id",
           "columns": [
@@ -6336,6 +6162,195 @@
       },
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.invite_link": {
+      "name": "invite_link",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource_type": {
+          "name": "resource_type",
+          "type": "INVITE_LINK_RESOURCE_TYPE",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "course_id": {
+          "name": "course_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cohort_id": {
+          "name": "cohort_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by_profile_id": {
+          "name": "created_by_profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revoked_by_profile_id": {
+          "name": "revoked_by_profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_revoked": {
+          "name": "is_revoked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "join_count": {
+          "name": "join_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "last_used_at": {
+          "name": "last_used_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "timezone('utc'::text, now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "timezone('utc'::text, now())"
+        }
+      },
+      "indexes": {
+        "idx_invite_link_organization_id": {
+          "name": "idx_invite_link_organization_id",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "invite_link_organization_id_fkey": {
+          "name": "invite_link_organization_id_fkey",
+          "tableFrom": "invite_link",
+          "tableTo": "organization",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invite_link_course_id_fkey": {
+          "name": "invite_link_course_id_fkey",
+          "tableFrom": "invite_link",
+          "tableTo": "course",
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invite_link_cohort_id_fkey": {
+          "name": "invite_link_cohort_id_fkey",
+          "tableFrom": "invite_link",
+          "tableTo": "cohort",
+          "columnsFrom": ["cohort_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invite_link_role_id_fkey": {
+          "name": "invite_link_role_id_fkey",
+          "tableFrom": "invite_link",
+          "tableTo": "role",
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "invite_link_token_hash_key": {
+          "name": "invite_link_token_hash_key",
+          "nullsNotDistinct": false,
+          "columns": ["token_hash"]
+        },
+        "invite_link_course_id_role_id_unique": {
+          "name": "invite_link_course_id_role_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["course_id", "role_id"]
+        },
+        "invite_link_cohort_id_role_id_unique": {
+          "name": "invite_link_cohort_id_role_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["cohort_id", "role_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "invite_link_resource_target_check": {
+          "name": "invite_link_resource_target_check",
+          "value": "(\n        (\"invite_link\".\"resource_type\" = 'COURSE' AND \"invite_link\".\"course_id\" IS NOT NULL AND \"invite_link\".\"cohort_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\" = 'COHORT' AND \"invite_link\".\"cohort_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL)\n      )"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.job_step": {
@@ -12328,15 +12343,15 @@
       "schema": "public",
       "values": ["CREATED", "REVOKED", "PREVIEWED", "ACCEPTED", "EMAIL_SENT", "EMAIL_FAILED", "ABUSE_BLOCKED"]
     },
-    "public.COURSE_INVITE_TYPE": {
-      "name": "COURSE_INVITE_TYPE",
-      "schema": "public",
-      "values": ["EMAIL", "LINK"]
-    },
     "public.COURSE_TYPE": {
       "name": "COURSE_TYPE",
       "schema": "public",
       "values": ["SELF_PACED", "LIVE_CLASS", "COMPLIANCE", "PUBLIC"]
+    },
+    "public.INVITE_LINK_RESOURCE_TYPE": {
+      "name": "INVITE_LINK_RESOURCE_TYPE",
+      "schema": "public",
+      "values": ["COURSE", "COHORT"]
     },
     "public.JOB_STATUS": {
       "name": "JOB_STATUS",

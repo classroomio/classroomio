@@ -9,7 +9,6 @@ import {
   ZCreateCohortNewsfeed,
   ZCreateCohortNewsfeedComment,
   ZInviteStudentsToCohort,
-  ZToggleCohortLinkInvite,
   ZUpdateCohort,
   ZUpdateCohortGoal,
   ZUpdateCohortMember,
@@ -41,10 +40,11 @@ import {
 } from '@api/services/cohort/cohort';
 import { assignExistingStudentsToCohort, inviteStudentsToCohort } from '@api/services/cohort/invite';
 import {
-  fetchCohortLinkInvite,
-  getOrCreateCohortLinkInvite,
-  toggleCohortLinkInvite
-} from '@api/services/cohort/link-invite';
+  fetchInviteLinkForResource,
+  getOrCreateInviteLinkForResource,
+  toggleInviteLinkForResource
+} from '@api/services/invite-link';
+import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
 import {
   archiveGoal,
   createGoal,
@@ -316,21 +316,23 @@ export const cohortRouter = new Hono()
     }
   )
 
-  // ── Link invite ───────────────────────────────────────────────────────────
+  // ── Invite link ───────────────────────────────────────────────────────────
+  // Thin wrappers over the shared invite-link service; permissions stay with the
+  // cohort's own middleware so a cohort tutor can share a link without org-admin rights.
 
   /**
-   * GET /cohort/:cohortId/link-invite
+   * GET /cohort/:cohortId/invite-link
    * Returns the cohort's shareable join link, or null if one was never created.
    */
   .get(
-    '/:cohortId/link-invite',
+    '/:cohortId/invite-link',
     authMiddleware,
     cohortTeamMemberMiddleware,
     zValidator('param', ZCohortParam),
     async (c) => {
       try {
         const { cohortId } = c.req.valid('param');
-        const result = await fetchCohortLinkInvite(cohortId);
+        const result = await fetchInviteLinkForResource('COHORT', cohortId);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to load cohort invite link');
@@ -339,11 +341,11 @@ export const cohortRouter = new Hono()
   )
 
   /**
-   * POST /cohort/:cohortId/link-invite
+   * POST /cohort/:cohortId/invite-link
    * Returns the cohort's shareable join link, creating it on first call.
    */
   .post(
-    '/:cohortId/link-invite',
+    '/:cohortId/invite-link',
     authMiddleware,
     cohortTeamMemberMiddleware,
     zValidator('param', ZCohortParam),
@@ -351,7 +353,7 @@ export const cohortRouter = new Hono()
       try {
         const user = c.get('user')!;
         const { cohortId } = c.req.valid('param');
-        const result = await getOrCreateCohortLinkInvite(cohortId, user.id);
+        const result = await getOrCreateInviteLinkForResource('COHORT', cohortId, user.id);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to create cohort invite link');
@@ -360,21 +362,21 @@ export const cohortRouter = new Hono()
   )
 
   /**
-   * PATCH /cohort/:cohortId/link-invite
+   * PATCH /cohort/:cohortId/invite-link
    * Disables or re-enables the cohort's shareable join link.
    */
   .patch(
-    '/:cohortId/link-invite',
+    '/:cohortId/invite-link',
     authMiddleware,
     cohortTeamMemberMiddleware,
     zValidator('param', ZCohortParam),
-    zValidator('json', ZToggleCohortLinkInvite),
+    zValidator('json', ZToggleInviteLink),
     async (c) => {
       try {
         const user = c.get('user')!;
         const { cohortId } = c.req.valid('param');
         const { isRevoked } = c.req.valid('json');
-        const result = await toggleCohortLinkInvite(cohortId, isRevoked, user.id);
+        const result = await toggleInviteLinkForResource('COHORT', cohortId, isRevoked, user.id);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update cohort invite link');

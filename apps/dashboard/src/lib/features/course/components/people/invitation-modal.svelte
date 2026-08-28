@@ -151,11 +151,11 @@
   }
 
   async function generateInviteLink() {
-    await peopleApi.generateLinkInvite(courseId);
+    await peopleApi.generateInviteLink(courseId);
   }
 
   async function toggleInviteLink(isRevoked: boolean) {
-    await peopleApi.toggleLinkInvite(courseId, isRevoked);
+    await peopleApi.toggleInviteLink(courseId, isRevoked);
   }
 
   async function onSubmit() {
@@ -189,7 +189,7 @@
     untrack(() => {
       activeTab = 'students';
       void loadStudents($currentOrg.id);
-      void peopleApi.getLinkInvite(courseId);
+      void peopleApi.getInviteLink(courseId);
     });
   });
 </script>
@@ -214,7 +214,7 @@
           {$t(`${INVITE_MODAL}.invite_students`)}
         </UnderlineTabs.Trigger>
         <UnderlineTabs.Trigger value="link">
-          {$t(`${INVITE_MODAL}.invite_link.tab_label`)}
+          {$t('invite_link.tab_label')}
         </UnderlineTabs.Trigger>
       </UnderlineTabs.List>
 
@@ -255,9 +255,11 @@
       <UnderlineTabs.Content value="link">
         <div class="space-y-6">
           <InviteLinkSection
-            link={peopleApi.linkInvite?.inviteLink ?? ''}
-            isRevoked={peopleApi.linkInvite?.isRevoked ?? false}
+            link={peopleApi.inviteLink?.inviteLink ?? ''}
+            isRevoked={peopleApi.inviteLink?.isRevoked ?? false}
             isLoading={peopleApi.isLoading}
+            joinCount={peopleApi.inviteLink?.joinCount}
+            descriptionKey="invite_link.course_description"
             onGenerate={generateInviteLink}
             onToggle={toggleInviteLink}
           />
