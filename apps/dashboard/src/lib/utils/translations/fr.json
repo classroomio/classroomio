@@ -463,6 +463,14 @@
         "post_created": "Message créé avec succès",
         "post_updated": "Message mis à jour avec succès"
       }
+    },
+    "course_link_invite": {
+      "enabled": "Lien d'invitation au cours activé",
+      "disabled": "Lien d'invitation au cours désactivé"
+    },
+    "cohort_link_invite": {
+      "enabled": "Lien d'invitation à la cohorte activé",
+      "disabled": "Lien d'invitation à la cohorte désactivé"
     }
   },
   "explore": {
@@ -1280,7 +1288,19 @@
             "multi_use_30d": "Multi-usage (30 jours)",
             "custom": "Personnalisé"
           },
-          "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants."
+          "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants.",
+          "invite_link": {
+            "tab_label": "Lien d'invitation",
+            "title": "Lien d'invitation au cours",
+            "description": "Toute personne disposant de ce lien peut s'inscrire à ce cours en tant qu'étudiant(e). Partagez-le plutôt que de saisir les adresses e-mail une par une.",
+            "generate": "Créer un lien d'invitation",
+            "copy": "Copier le lien d'invitation",
+            "copied": "Lien d'invitation copié",
+            "copy_failed": "Impossible de copier le lien d'invitation",
+            "toggle_label": "Lien actif",
+            "disabled_notice": "Ce lien est désactivé. Personne ne peut s'inscrire avec ce lien tant que vous ne l'aurez pas réactivé.",
+            "join_count": "{count} personnes se sont inscrites avec ce lien"
+          }
         }
       },
       "marks": {
@@ -4099,6 +4119,15 @@
       "disabled": "Ce lien d'invitation a été désactivé par l'organisation.",
       "join_failed": "Impossible de rejoindre l'organisation",
       "joined": "Organisation rejointe"
+    },
+    "cohort": {
+      "page_title": "Rejoindre {cohortName} sur ClassroomIO",
+      "invitation": "Vous avez été invité(e) à rejoindre {cohortName} sur {orgName}.",
+      "accept_button": "Rejoindre la cohorte",
+      "disabled": "Ce lien d'invitation est désactivé.",
+      "inactive": "Cette cohorte n'accepte plus de nouveaux membres.",
+      "joined": "Vous avez rejoint la cohorte.",
+      "join_failed": "Impossible de rejoindre la cohorte. Veuillez réessayer."
     }
   },
   "automation": {
@@ -4894,7 +4923,11 @@
       "add_another": "Ajoutez-en un autre",
       "invite_submit": "Envoyer des invitations",
       "empty_title": "Pas encore de membres",
-      "empty_description": "Invitez des personnes à rejoindre cette cohorte."
+      "empty_description": "Invitez des personnes à rejoindre cette cohorte.",
+      "invite_link": {
+        "title": "Lien d'invitation à la cohorte",
+        "description": "Toute personne disposant de ce lien peut rejoindre cette cohorte et tous les cours qui y sont associés. Partagez-le plutôt que de saisir les adresses e-mail une par une."
+      }
     },
     "courses": {
       "add": "Ajouter un cours",

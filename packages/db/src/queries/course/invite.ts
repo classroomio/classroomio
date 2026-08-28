@@ -258,6 +258,79 @@ export async function revokeCourseInvite(
   }
 }
 
+/**
+ * Returns the course's shareable LINK invite regardless of revoked state, so the
+ * settings UI can show a disabled link and re-enable it instead of minting a
+ * duplicate. EMAIL invites are never returned here.
+ */
+export async function getCourseLinkInvite(courseId: string): Promise<TCourseInvite | null> {
+  try {
+    const [invite] = await db
+      .select()
+      .from(schema.courseInvite)
+      .where(and(eq(schema.courseInvite.courseId, courseId), eq(schema.courseInvite.type, 'LINK')))
+      .limit(1);
+
+    return invite || null;
+  } catch (error) {
+    console.error('getCourseLinkInvite error:', error);
+    throw new Error(`Failed to get course link invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function createCourseLinkInvite(values: Omit<TNewCourseInvite, 'type'>): Promise<TCourseInvite> {
+  try {
+    const [created] = await db
+      .insert(schema.courseInvite)
+      .values({ ...values, type: 'LINK' })
+      .onConflictDoNothing({
+        target: schema.courseInvite.courseId,
+        where: sql`${schema.courseInvite.type} = 'LINK'`
+      })
+      .returning();
+
+    if (created) {
+      return created;
+    }
+
+    // Another request won the race — the partial unique index guarantees the
+    // existing row is the course's one and only link invite.
+    const existing = await getCourseLinkInvite(values.courseId);
+    if (!existing) {
+      throw new Error('Failed to create course link invite');
+    }
+
+    return existing;
+  } catch (error) {
+    console.error('createCourseLinkInvite error:', error);
+    throw new Error(`Failed to create course link invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function setCourseLinkInviteRevoked(
+  courseId: string,
+  isRevoked: boolean,
+  profileId: string
+): Promise<TCourseInvite | null> {
+  try {
+    const [updated] = await db
+      .update(schema.courseInvite)
+      .set({
+        isRevoked,
+        revokedByProfileId: isRevoked ? profileId : null,
+        revokedAt: isRevoked ? new Date().toISOString() : null,
+        updatedAt: new Date().toISOString()
+      })
+      .where(and(eq(schema.courseInvite.courseId, courseId), eq(schema.courseInvite.type, 'LINK')))
+      .returning();
+
+    return updated ?? null;
+  } catch (error) {
+    console.error('setCourseLinkInviteRevoked error:', error);
+    throw new Error(`Failed to update course link invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export type TCourseInviteTokenData = {
   invite: TCourseInvite;
   course: {

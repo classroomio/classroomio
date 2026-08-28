@@ -51,6 +51,8 @@ export const widgetLayoutType = pgEnum('WIDGET_LAYOUT_TYPE', [
   'category_shelf'
 ]);
 export const widgetSelectionMode = pgEnum('WIDGET_SELECTION_MODE', ['manual', 'published']);
+export const courseInviteType = pgEnum('COURSE_INVITE_TYPE', ['EMAIL', 'LINK']);
+
 export const courseInviteEventType = pgEnum('COURSE_INVITE_EVENT_TYPE', [
   'CREATED',
   'REVOKED',
@@ -1309,7 +1311,11 @@ export const courseInvite = pgTable(
     roleId: bigint('role_id', { mode: 'number' })
       .default(sql`'3'`)
       .notNull(),
+    type: courseInviteType().default('EMAIL').notNull(),
     tokenHash: text('token_hash').notNull(),
+    // Raw token, set only for `type = 'LINK'` so a permanent link can be re-displayed to staff.
+    // EMAIL invites never store it — their link is delivered once by email.
+    token: text(),
     createdByProfileId: uuid('created_by_profile_id').notNull(),
     revokedByProfileId: uuid('revoked_by_profile_id'),
     revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
@@ -1350,6 +1356,11 @@ export const courseInvite = pgTable(
       name: 'course_invite_role_id_fkey'
     }),
     unique('course_invite_token_hash_key').on(table.tokenHash),
+    // Exactly one shareable LINK invite per course, enforced in the database so the
+    // get-or-create path can never mint a duplicate. EMAIL invites are unconstrained.
+    uniqueIndex('course_invite_one_link_per_course')
+      .on(table.courseId)
+      .where(sql`${table.type} = 'LINK'`),
     index('idx_course_invite_course_id').on(table.courseId),
     index('idx_course_invite_expires_at').on(table.expiresAt),
     index('idx_course_invite_created_by').on(table.createdByProfileId),
@@ -3114,6 +3125,65 @@ export const cohortMember = pgTable(
     unique('cohort_member_cohort_id_profile_id_unique').on(table.cohortId, table.profileId),
     index('idx_cohort_member_cohort_id').on(table.cohortId),
     index('idx_cohort_member_profile_id').on(table.profileId)
+  ]
+);
+
+/**
+ * One permanent, revocable share link per cohort. Anyone who opens it joins the
+ * cohort as a student and is enrolled in every course attached to the cohort.
+ *
+ * Deliberately has no `expiresAt` / `maxUses` / `usedCount`: the link is permanent
+ * and reusable, and access is withdrawn with `isRevoked` rather than by expiry.
+ */
+export const cohortInvite = pgTable(
+  'cohort_invite',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    cohortId: uuid('cohort_id').notNull(),
+    roleId: integer('role_id').notNull(),
+    // Raw token, kept so staff can re-copy the link at any time.
+    token: text().notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    joinCount: integer('join_count').default(0).notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'cohort_invite_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'cohort_invite_created_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.revokedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'cohort_invite_revoked_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'cohort_invite_role_id_fkey'
+    }),
+    unique('cohort_invite_token_hash_key').on(table.tokenHash),
+    // One link per cohort, enforced in the database.
+    unique('cohort_invite_cohort_id_unique').on(table.cohortId)
   ]
 );
 

@@ -463,6 +463,14 @@
         "post_created": "Bài viết được tạo thành công",
         "post_updated": "Đã cập nhật bài đăng thành công"
       }
+    },
+    "course_link_invite": {
+      "enabled": "Liên kết mời tham gia khóa học đã được kích hoạt.",
+      "disabled": "Liên kết mời tham gia khóa học đã bị vô hiệu hóa"
+    },
+    "cohort_link_invite": {
+      "enabled": "Liên kết mời tham gia nhóm đã được kích hoạt",
+      "disabled": "Liên kết mời tham gia nhóm đã bị vô hiệu hóa"
     }
   },
   "explore": {
@@ -1280,7 +1288,19 @@
             "multi_use_30d": "Sử dụng nhiều lần (30 ngày)",
             "custom": "tùy chỉnh"
           },
-          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
+          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên.",
+          "invite_link": {
+            "tab_label": "Liên kết mời",
+            "title": "Liên kết mời tham gia khóa học",
+            "description": "Bất kỳ ai có đường dẫn này đều có thể tham gia khóa học với tư cách học viên. Hãy chia sẻ đường dẫn này thay vì nhập email từng người một.",
+            "generate": "Tạo liên kết mời",
+            "copy": "Sao chép liên kết mời",
+            "copied": "Liên kết mời đã được sao chép",
+            "copy_failed": "Không thể sao chép liên kết mời",
+            "toggle_label": "Liên kết đang hoạt động",
+            "disabled_notice": "Liên kết này đã bị vô hiệu hóa. Không ai có thể truy cập được cho đến khi bạn kích hoạt lại nó.",
+            "join_count": "{count} người đã tham gia thông qua liên kết này"
+          }
         }
       },
       "marks": {
@@ -4099,6 +4119,15 @@
       "disabled": "Liên kết mời này đã bị tổ chức vô hiệu hóa.",
       "join_failed": "Không thể tham gia tổ chức",
       "joined": "Đã tham gia tổ chức"
+    },
+    "cohort": {
+      "page_title": "Hãy tham gia {cohortName} trên ClassroomIO.",
+      "invitation": "Bạn đã được mời tham gia {cohortName} tại {orgName}.",
+      "accept_button": "Tham gia nhóm",
+      "disabled": "Liên kết mời này đã bị vô hiệu hóa.",
+      "inactive": "Nhóm này hiện không còn nhận thêm thành viên mới.",
+      "joined": "Bạn đã gia nhập nhóm.",
+      "join_failed": "Không thể tham gia nhóm. Vui lòng thử lại."
     }
   },
   "automation": {
@@ -4894,7 +4923,11 @@
       "add_another": "Thêm cái khác",
       "invite_submit": "Gửi lời mời",
       "empty_title": "Chưa có thành viên nào",
-      "empty_description": "Mời mọi người tham gia nhóm học tập này."
+      "empty_description": "Mời mọi người tham gia nhóm học tập này.",
+      "invite_link": {
+        "title": "Liên kết mời tham gia nhóm",
+        "description": "Bất kỳ ai có liên kết này đều có thể tham gia nhóm này và mọi khóa học trong đó. Hãy chia sẻ liên kết này thay vì nhập email từng người một."
+      }
     },
     "courses": {
       "add": "Thêm khóa học",

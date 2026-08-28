@@ -27,6 +27,11 @@ export const ZCreatePublicCourseInviteLink = z.object({
 });
 export type TCreatePublicCourseInviteLink = z.infer<typeof ZCreatePublicCourseInviteLink>;
 
+export const ZToggleCourseLinkInvite = z.object({
+  isRevoked: z.boolean()
+});
+export type TToggleCourseLinkInvite = z.infer<typeof ZToggleCourseLinkInvite>;
+
 export const ZCourseInvitePreset = z.enum(['ONE_TIME_24H', 'MULTI_USE_7D', 'MULTI_USE_30D', 'CUSTOM']);
 export type TCourseInvitePreset = z.infer<typeof ZCourseInvitePreset>;
 

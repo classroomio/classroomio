@@ -463,6 +463,14 @@
         "post_created": "Indlægget er oprettet",
         "post_updated": "Opslaget blev opdateret"
       }
+    },
+    "course_link_invite": {
+      "enabled": "Kursusinvitationslink aktiveret",
+      "disabled": "Kursusinvitationslink deaktiveret"
+    },
+    "cohort_link_invite": {
+      "enabled": "Kohorte-invitationslink aktiveret",
+      "disabled": "Kohorte-invitationslink deaktiveret"
     }
   },
   "explore": {
@@ -1280,7 +1288,19 @@
             "multi_use_30d": "Multi-brug (30 dage)",
             "custom": "Brugerdefineret"
           },
-          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
+          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever.",
+          "invite_link": {
+            "tab_label": "Invitationslink",
+            "title": "Kursusinvitationslink",
+            "description": "Alle med dette link kan deltage i dette kursus som studerende. Del det i stedet for at indtaste e-mails én efter én.",
+            "generate": "Opret invitationslink",
+            "copy": "Kopier invitationslink",
+            "copied": "Invitationslink kopieret",
+            "copy_failed": "Kunne ikke kopiere invitationslinket",
+            "toggle_label": "Linket er aktivt",
+            "disabled_notice": "Dette link er deaktiveret. Ingen kan deltage med det, før du aktiverer det igen.",
+            "join_count": "{count} personer har deltaget med dette link"
+          }
         }
       },
       "marks": {
@@ -4099,6 +4119,15 @@
       "disabled": "Dette invitationslink er blevet deaktiveret af organisationen.",
       "join_failed": "Kunne ikke deltage i organisationen",
       "joined": "Tilsluttet organisation"
+    },
+    "cohort": {
+      "page_title": "Tilmeld dig {cohortName} på ClassroomIO",
+      "invitation": "Du er blevet inviteret til at deltage i {cohortName} på {orgName}.",
+      "accept_button": "Tilmeld dig kohorte",
+      "disabled": "Dette invitationslink er blevet deaktiveret.",
+      "inactive": "Denne kohorte accepterer ikke længere nye medlemmer.",
+      "joined": "Du er blevet medlem af kohorten",
+      "join_failed": "Kunne ikke deltage i kohorten. Prøv igen."
     }
   },
   "automation": {
@@ -4894,7 +4923,11 @@
       "add_another": "Tilføj en anden",
       "invite_submit": "Send invitationer",
       "empty_title": "Ingen medlemmer endnu",
-      "empty_description": "Inviter folk til at deltage i dette kohorte."
+      "empty_description": "Inviter folk til at deltage i dette kohorte.",
+      "invite_link": {
+        "title": "Kohorte-invitationslink",
+        "description": "Alle med dette link kan deltage i denne kohorte og alle kurser i den. Del det i stedet for at indtaste e-mails én efter én."
+      }
     },
     "courses": {
       "add": "Tilføj kursus",

@@ -2,14 +2,17 @@ import {
   countInviteDistinctPreviewIps,
   createCourseInvite,
   createCourseInviteAudit,
+  createCourseLinkInvite,
   getCourseInviteById,
   getCourseInviteByTokenHash,
+  getCourseLinkInvite,
   listCourseInviteAudit,
   listCourseInviteAuditStats,
   listCourseInvites,
   optimisticIncrementCourseInviteUsedCount,
   revokeCourseInvite,
-  selectCourseInviteAcceptBundleByTokenHash
+  selectCourseInviteAcceptBundleByTokenHash,
+  setCourseLinkInviteRevoked
 } from '@cio/db/queries/course/invite';
 import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
@@ -26,7 +29,7 @@ import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
-import crypto from 'node:crypto';
+import { generateInviteToken, hashInviteToken } from '@api/utils/invite-token';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
@@ -173,22 +176,20 @@ function getNormalizedRecipients(
   return { valid, invalid, duplicates };
 }
 
-function hashToken(token: string): string {
-  return crypto.createHash('sha256').update(token).digest('hex');
-}
-
-function generateToken(): string {
-  return crypto.randomBytes(32).toString('base64url');
-}
-
 function getInviteStatus(invite: {
   isRevoked: boolean;
   expiresAt: string;
   usedCount: number;
   maxUses: number;
+  type?: 'EMAIL' | 'LINK';
 }): InviteStatus {
   if (invite.isRevoked) {
     return 'REVOKED';
+  }
+
+  // A share link is permanent and uncapped: it can only ever be ACTIVE or REVOKED.
+  if (invite.type === 'LINK') {
+    return 'ACTIVE';
   }
 
   if (new Date(invite.expiresAt).getTime() <= Date.now()) {
@@ -325,8 +326,8 @@ async function createSingleInvite(
   courseSlug: string,
   org: OrgUrlInfo
 ) {
-  const token = generateToken();
-  const tokenHash = hashToken(token);
+  const token = generateInviteToken();
+  const tokenHash = hashInviteToken(token);
 
   const created = await createCourseInvite({
     courseId,
@@ -745,6 +746,152 @@ export async function enrollInCourse(
 /**
  * Lists secure invites for a course, enriched with activity stats.
  */
+/**
+ * `expiresAt` and `maxUses` are NOT NULL on `course_invite`, but a share link has
+ * neither. These sentinels keep the columns honest for anyone reading a row
+ * directly; `getInviteStatus` short-circuits on `type = 'LINK'` regardless, and
+ * `acceptStudentInvite` never increments `usedCount` for a link.
+ */
+const LINK_INVITE_FAR_FUTURE_MS = 100 * 365 * 24 * 60 * 60 * 1000;
+const LINK_INVITE_UNLIMITED_USES = 1_000_000;
+
+type CourseLinkInviteResponse = {
+  id: string;
+  courseId: string;
+  token: string;
+  inviteLink: string;
+  isRevoked: boolean;
+  usedCount: number;
+  createdAt: string;
+};
+
+function toCourseLinkInviteResponse(
+  invite: {
+    id: string;
+    courseId: string;
+    token: string | null;
+    isRevoked: boolean;
+    usedCount: number;
+    createdAt: string;
+  },
+  courseSlug: string,
+  org: OrgUrlInfo
+): CourseLinkInviteResponse {
+  const token = invite.token ?? '';
+
+  return {
+    id: invite.id,
+    courseId: invite.courseId,
+    token,
+    inviteLink: buildEnrollLink(courseSlug, token, org),
+    isRevoked: invite.isRevoked,
+    usedCount: invite.usedCount,
+    createdAt: invite.createdAt
+  };
+}
+
+/**
+ * Resolves the slug and org-url bundle needed to render a course invite link,
+ * generating a slug if the course does not have one yet.
+ */
+async function getCourseLinkContext(courseId: string): Promise<{ courseSlug: string; org: OrgUrlInfo }> {
+  const course = await getCourseById(courseId);
+  if (!course?.[0]) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  const courseOrgData = await getCourseWithOrgData(courseId);
+  if (!courseOrgData) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  const courseSlug = course[0].slug ?? (await ensureCourseSlug(course[0].id, course[0].title));
+
+  return {
+    courseSlug,
+    org: {
+      siteName: courseOrgData.orgSiteName ?? null,
+      customDomain: courseOrgData.orgCustomDomain ?? null,
+      isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified ?? null
+    }
+  };
+}
+
+/**
+ * Returns the course's share link, creating it on first request. Idempotent — the
+ * same link comes back forever so staff can re-copy it, and a partial unique index
+ * guarantees at most one LINK invite per course.
+ */
+export async function getOrCreateCourseLinkInvite(
+  courseId: string,
+  createdByProfileId: string
+): Promise<CourseLinkInviteResponse> {
+  const { courseSlug, org } = await getCourseLinkContext(courseId);
+
+  const existing = await getCourseLinkInvite(courseId);
+  if (existing) {
+    return toCourseLinkInviteResponse(existing, courseSlug, org);
+  }
+
+  const token = generateInviteToken();
+  const tokenHash = hashInviteToken(token);
+
+  const created = await createCourseLinkInvite({
+    courseId,
+    roleId: ROLE.STUDENT,
+    tokenHash,
+    token,
+    createdByProfileId,
+    expiresAt: new Date(Date.now() + LINK_INVITE_FAR_FUTURE_MS).toISOString(),
+    maxUses: LINK_INVITE_UNLIMITED_USES,
+    usedCount: 0,
+    isRevoked: false,
+    allowedEmails: null,
+    allowedDomains: null,
+    metadata: { source: 'COURSE_PEOPLE_LINK_INVITE' }
+  });
+
+  await recordInviteAudit(created.id, courseId, 'CREATED', {
+    actorProfileId: createdByProfileId,
+    metadata: { type: 'LINK' }
+  });
+
+  return toCourseLinkInviteResponse(created, courseSlug, org);
+}
+
+/** Returns the course's share link without creating one. */
+export async function fetchCourseLinkInvite(courseId: string): Promise<CourseLinkInviteResponse | null> {
+  const existing = await getCourseLinkInvite(courseId);
+
+  if (!existing) return null;
+
+  const { courseSlug, org } = await getCourseLinkContext(courseId);
+
+  return toCourseLinkInviteResponse(existing, courseSlug, org);
+}
+
+/** Disables or re-enables the course's share link without destroying it. */
+export async function toggleCourseLinkInvite(
+  courseId: string,
+  isRevoked: boolean,
+  profileId: string
+): Promise<CourseLinkInviteResponse> {
+  const updated = await setCourseLinkInviteRevoked(courseId, isRevoked, profileId);
+
+  if (!updated) {
+    throw new AppError('Course invite link not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  await recordInviteAudit(updated.id, courseId, isRevoked ? 'REVOKED' : 'CREATED', {
+    actorProfileId: profileId,
+    metadata: { type: 'LINK', isRevoked }
+  });
+
+  const { courseSlug, org } = await getCourseLinkContext(courseId);
+
+  return toCourseLinkInviteResponse(updated, courseSlug, org);
+}
+
 export async function listStudentInvites(courseId: string) {
   const [invites, stats] = await Promise.all([listCourseInvites(courseId), listCourseInviteAuditStats(courseId)]);
 
@@ -859,28 +1006,33 @@ export async function revokeStudentInvite(courseId: string, inviteId: string, re
  * Public invite preview by token.
  */
 export async function previewStudentInvite(token: string, context: TInviteRequestContext = {}) {
-  const tokenHash = hashToken(token);
+  const tokenHash = hashInviteToken(token);
   const data = await getCourseInviteByTokenHash(tokenHash);
 
   if (!data) {
     throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
   }
 
-  const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
-  const ipDiversity = await countInviteDistinctPreviewIps(data.invite.id, sinceIso);
+  // A share link is meant to be opened from many networks at once, so the IP-diversity
+  // heuristic would lock out a legitimately shared link. Rate limiting at the route
+  // layer remains the abuse control for links.
+  if (data.invite.type !== 'LINK') {
+    const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
+    const ipDiversity = await countInviteDistinctPreviewIps(data.invite.id, sinceIso);
 
-  if (ipDiversity >= MAX_PREVIEW_IP_DIVERSITY) {
-    await recordInviteAudit(data.invite.id, data.invite.courseId, 'ABUSE_BLOCKED', {
-      targetEmail: null,
-      ipAddress: context.ipAddress,
-      userAgent: context.userAgent,
-      metadata: {
-        reason: 'preview_ip_diversity',
-        uniqueIpCount: ipDiversity
-      }
-    });
+    if (ipDiversity >= MAX_PREVIEW_IP_DIVERSITY) {
+      await recordInviteAudit(data.invite.id, data.invite.courseId, 'ABUSE_BLOCKED', {
+        targetEmail: null,
+        ipAddress: context.ipAddress,
+        userAgent: context.userAgent,
+        metadata: {
+          reason: 'preview_ip_diversity',
+          uniqueIpCount: ipDiversity
+        }
+      });
 
-    throw new AppError('Suspicious invite activity detected', ErrorCodes.VALIDATION_ERROR, 429);
+      throw new AppError('Suspicious invite activity detected', ErrorCodes.VALIDATION_ERROR, 429);
+    }
   }
 
   await recordInviteAudit(data.invite.id, data.invite.courseId, 'PREVIEWED', {
@@ -906,6 +1058,7 @@ export async function previewStudentInvite(token: string, context: TInviteReques
     invite: {
       id: data.invite.id,
       roleId: data.invite.roleId,
+      type: data.invite.type,
       expiresAt: data.invite.expiresAt,
       maxUses: data.invite.maxUses,
       usedCount: data.invite.usedCount,
@@ -942,7 +1095,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
   }
 
   const normalizedEmail = user.email.toLowerCase().trim();
-  const tokenHash = hashToken(token);
+  const tokenHash = hashInviteToken(token);
 
   const result = await db.transaction(async (tx) => {
     const inviteRow = await selectCourseInviteAcceptBundleByTokenHash(tx, tokenHash);
@@ -952,21 +1105,25 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     }
 
     const { invite, course, organization } = inviteRow;
+    const isLinkInvite = invite.type === 'LINK';
 
-    const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
-    const ipDiversity = await countInviteDistinctPreviewIps(invite.id, sinceIso);
-    if (ipDiversity >= MAX_PREVIEW_IP_DIVERSITY) {
-      await recordInviteAudit(invite.id, invite.courseId, 'ABUSE_BLOCKED', {
-        actorProfileId: user.id,
-        targetEmail: normalizedEmail,
-        ipAddress: context.ipAddress,
-        userAgent: context.userAgent,
-        metadata: {
-          reason: 'accept_ip_diversity',
-          uniqueIpCount: ipDiversity
-        }
-      });
-      throw new AppError('Suspicious invite activity detected', ErrorCodes.VALIDATION_ERROR, 429);
+    // See previewStudentInvite — share links are exempt from the IP-diversity heuristic.
+    if (!isLinkInvite) {
+      const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
+      const ipDiversity = await countInviteDistinctPreviewIps(invite.id, sinceIso);
+      if (ipDiversity >= MAX_PREVIEW_IP_DIVERSITY) {
+        await recordInviteAudit(invite.id, invite.courseId, 'ABUSE_BLOCKED', {
+          actorProfileId: user.id,
+          targetEmail: normalizedEmail,
+          ipAddress: context.ipAddress,
+          userAgent: context.userAgent,
+          metadata: {
+            reason: 'accept_ip_diversity',
+            uniqueIpCount: ipDiversity
+          }
+        });
+        throw new AppError('Suspicious invite activity detected', ErrorCodes.VALIDATION_ERROR, 429);
+      }
     }
 
     // Idempotent behavior: if user is already enrolled, don't consume invite again.
@@ -1001,7 +1158,10 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       throw new AppError('This invite is not valid for student enrollment', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    if (course.status !== 'ACTIVE' || !course.isPublished) {
+    // A share link is an explicit staff act granting access, so it works on an
+    // unpublished course the same way "Add people" bypasses self-enrollment rules.
+    // Email invites keep requiring a published course.
+    if (course.status !== 'ACTIVE' || (!isLinkInvite && !course.isPublished)) {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
@@ -1055,10 +1215,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const consumeInvite = await optimisticIncrementCourseInviteUsedCount(tx, invite.id, invite.usedCount);
+    // Share links are never consumed — they are permanent and uncapped. Running the
+    // compare-and-swap on them would make concurrent joins fail with a spurious 409.
+    if (!isLinkInvite) {
+      const consumeInvite = await optimisticIncrementCourseInviteUsedCount(tx, invite.id, invite.usedCount);
 
-    if (!consumeInvite) {
-      throw new AppError('This invite was already used. Please try another link.', ErrorCodes.VALIDATION_ERROR, 409);
+      if (!consumeInvite) {
+        throw new AppError('This invite was already used. Please try another link.', ErrorCodes.VALIDATION_ERROR, 409);
+      }
     }
 
     await recordInviteAudit(invite.id, invite.courseId, 'ACCEPTED', {

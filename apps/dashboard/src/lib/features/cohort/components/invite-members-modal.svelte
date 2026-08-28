@@ -11,7 +11,13 @@
   import { currentOrg, isStudentLimitReached } from '$lib/utils/store/org';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
-  import { BulkEmailSection, ExistingStudentsSection, TutorSelectSection } from '$features/people/components';
+  import {
+    BulkEmailSection,
+    ExistingStudentsSection,
+    InviteLinkSection,
+    TutorSelectSection
+  } from '$features/people/components';
+  import { getAppOrigin } from '$lib/utils/store/org';
   import { UpgradeBanner } from '$features/ui';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
   import type { OrgTeamMember } from '$lib/utils/types/org';
@@ -26,7 +32,12 @@
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
   let isLoadingStudents = $state(false);
-  let activeTab = $state<'tutors' | 'students'>('students');
+  let activeTab = $state<'tutors' | 'students' | 'link'>('students');
+  const inviteLink = $derived(
+    cohortApi.linkInvite?.token
+      ? `${getAppOrigin()}/invite/cohort/${encodeURIComponent(cohortApi.linkInvite.token)}`
+      : ''
+  );
 
   const addPeopleParam = $derived(new URLSearchParams(page.url.search).get('add'));
   const isOpen = $derived(addPeopleParam === 'true');
@@ -158,6 +169,14 @@
     await cohortApi.inviteStudentsToCohort(cohortId, { recipientCsv, sendEmail });
   }
 
+  async function generateInviteLink() {
+    await cohortApi.generateLinkInvite(cohortId);
+  }
+
+  async function toggleInviteLink(isRevoked: boolean) {
+    await cohortApi.toggleLinkInvite(cohortId, isRevoked);
+  }
+
   $effect(() => {
     setTutors($currentOrg.id);
   });
@@ -171,6 +190,7 @@
       activeTab = 'students';
       selectedIds = [];
       void loadStudents($currentOrg.id);
+      void cohortApi.getLinkInvite(cohortId);
     });
   });
 </script>
@@ -193,6 +213,9 @@
         </UnderlineTabs.Trigger>
         <UnderlineTabs.Trigger value="students">
           {$t(`${INVITE_MODAL}.invite_students`)}
+        </UnderlineTabs.Trigger>
+        <UnderlineTabs.Trigger value="link">
+          {$t(`${INVITE_MODAL}.invite_link.tab_label`)}
         </UnderlineTabs.Trigger>
       </UnderlineTabs.List>
 
@@ -225,6 +248,25 @@
             <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
           {/if}
           <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
+        </div>
+      </UnderlineTabs.Content>
+
+      <UnderlineTabs.Content value="link">
+        <div class="space-y-6">
+          <InviteLinkSection
+            link={inviteLink}
+            isRevoked={cohortApi.linkInvite?.isRevoked ?? false}
+            isLoading={cohortApi.isLoading}
+            joinCount={cohortApi.linkInvite?.joinCount}
+            titleKey="cohorts.people.invite_link.title"
+            descriptionKey="cohorts.people.invite_link.description"
+            onGenerate={generateInviteLink}
+            onToggle={toggleInviteLink}
+          />
+
+          {#if $isStudentLimitReached}
+            <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
+          {/if}
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

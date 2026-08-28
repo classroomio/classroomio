@@ -463,6 +463,14 @@
         "post_created": "Postagem criada com sucesso",
         "post_updated": "Postagem atualizada com sucesso"
       }
+    },
+    "course_link_invite": {
+      "enabled": "Link de convite para o curso ativado",
+      "disabled": "Link de convite para o curso desativado"
+    },
+    "cohort_link_invite": {
+      "enabled": "Link de convite para a turma ativado",
+      "disabled": "Link de convite para a turma desativado"
     }
   },
   "explore": {
@@ -1280,7 +1288,19 @@
             "multi_use_30d": "Multiuso (30 dias)",
             "custom": "Personalizado"
           },
-          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
+          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos.",
+          "invite_link": {
+            "tab_label": "Link de convite",
+            "title": "Link de convite para o curso",
+            "description": "Qualquer pessoa com este link pode participar deste curso como aluno(a). Compartilhe em vez de digitar os e-mails um por um.",
+            "generate": "Criar link de convite",
+            "copy": "Copiar link de convite",
+            "copied": "Link de convite copiado",
+            "copy_failed": "Não foi possível copiar o link de convite",
+            "toggle_label": "O link está ativo",
+            "disabled_notice": "Este link está desativado. Ninguém poderá entrar com ele até que você o ative novamente.",
+            "join_count": "{count} pessoas entraram com este link"
+          }
         }
       },
       "marks": {
@@ -4099,6 +4119,15 @@
       "disabled": "Este link de convite foi desativado pela organização.",
       "join_failed": "Falha ao ingressar na organização",
       "joined": "Organização aderida"
+    },
+    "cohort": {
+      "page_title": "Participe da turma de {cohortName} no ClassroomIO",
+      "invitation": "Você foi convidado(a) a participar da turma de {cohortName} na {orgName}.",
+      "accept_button": "Participar da turma",
+      "disabled": "Este link de convite foi desativado.",
+      "inactive": "Esta turma não está mais aceitando novos membros.",
+      "joined": "Você participou da turma",
+      "join_failed": "Não foi possível participar da turma. Tente novamente."
     }
   },
   "automation": {
@@ -4894,7 +4923,11 @@
       "add_another": "Adicionar outro",
       "invite_submit": "Enviar convites",
       "empty_title": "Ainda não há membros",
-      "empty_description": "Convide pessoas para participar desta coorte."
+      "empty_description": "Convide pessoas para participar desta coorte.",
+      "invite_link": {
+        "title": "Link de convite para a turma",
+        "description": "Qualquer pessoa com este link pode participar desta turma e de todos os cursos nela. Compartilhe-o em vez de digitar os e-mails um por um."
+      }
     },
     "courses": {
       "add": "Adicionar curso",

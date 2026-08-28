@@ -63,3 +63,9 @@ type GoalsOverviewResponse = InferResponseType<GoalsOverviewRequest>;
 type GoalsOverviewSuccess = Extract<GoalsOverviewResponse, { success: true }>;
 export type GoalsOverview = GoalsOverviewSuccess['data'];
 export type GoalsOverviewRow = GoalsOverview['goals'][number];
+
+export type GetCohortLinkInviteRequest = (typeof classroomio.cohort)[':cohortId']['link-invite']['$get'];
+export type CreateCohortLinkInviteRequest = (typeof classroomio.cohort)[':cohortId']['link-invite']['$post'];
+export type ToggleCohortLinkInviteRequest = (typeof classroomio.cohort)[':cohortId']['link-invite']['$patch'];
+type GetCohortLinkInviteSuccess = Extract<InferResponseType<GetCohortLinkInviteRequest>, { success: true }>;
+export type CohortLinkInvite = GetCohortLinkInviteSuccess['data'];

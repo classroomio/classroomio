@@ -2,20 +2,41 @@ import {
   ZCourseInviteAuditParam,
   ZCourseInviteParam,
   ZCourseInviteRevokeParam,
-  ZCreateCourseInvite
+  ZCreateCourseInvite,
+  ZToggleCourseLinkInvite
 } from '@cio/utils/validation/course/invite';
 import {
   createStudentInvite,
+  fetchCourseLinkInvite,
+  getOrCreateCourseLinkInvite,
   getStudentInviteAuditTrail,
   listStudentInvites,
-  revokeStudentInvite
+  revokeStudentInvite,
+  toggleCourseLinkInvite
 } from '@api/services/course/invite';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { extractClientIp } from '@api/utils/redis/key-generators';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
+
+/**
+ * Invite creation fans out emails and mints tokens, so it is capped per actor even
+ * though the route is already staff-only.
+ */
+const createInviteRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 60,
+  message: 'Too many invite creation attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `course_invite_create:${actor}:${c.req.param('courseId')}`;
+  }
+});
 
 export const invitesRouter = new Hono()
   /**
@@ -46,6 +67,7 @@ export const invitesRouter = new Hono()
     '/',
     authMiddleware,
     courseTeamMemberMiddleware,
+    createInviteRateLimit,
     zValidator('param', ZCourseInviteParam),
     zValidator('json', ZCreateCourseInvite),
     async (c) => {
@@ -65,6 +87,65 @@ export const invitesRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to create invite');
+      }
+    }
+  )
+  /**
+   * GET /course/:courseId/invites/link
+   * Returns the course's shareable join link, or null if one was never created.
+   */
+  .get('/link', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZCourseInviteParam), async (c) => {
+    try {
+      const { courseId } = c.req.valid('param');
+      const invite = await fetchCourseLinkInvite(courseId);
+
+      return c.json({ success: true, data: invite }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load course invite link');
+    }
+  })
+  /**
+   * POST /course/:courseId/invites/link
+   * Returns the course's shareable join link, creating it on first call.
+   */
+  .post(
+    '/link',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    createInviteRateLimit,
+    zValidator('param', ZCourseInviteParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { courseId } = c.req.valid('param');
+        const invite = await getOrCreateCourseLinkInvite(courseId, user.id);
+
+        return c.json({ success: true, data: invite }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create course invite link');
+      }
+    }
+  )
+  /**
+   * PATCH /course/:courseId/invites/link
+   * Disables or re-enables the course's shareable join link.
+   */
+  .patch(
+    '/link',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseInviteParam),
+    zValidator('json', ZToggleCourseLinkInvite),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { courseId } = c.req.valid('param');
+        const { isRevoked } = c.req.valid('json');
+        const invite = await toggleCourseLinkInvite(courseId, isRevoked, user.id);
+
+        return c.json({ success: true, data: invite }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update course invite link');
       }
     }
   )

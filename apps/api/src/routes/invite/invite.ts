@@ -1,5 +1,7 @@
 import { ZCourseInviteTokenParam } from '@cio/utils/validation/course/invite';
+import { ZCohortInviteTokenParam } from '@cio/utils/validation/cohort';
 import { previewStudentInvite } from '@api/services/course/invite';
+import { acceptCohortLinkInvite, previewCohortLinkInvite } from '@api/services/cohort/link-invite';
 import { ZOrganizationInviteTokenParam } from '@cio/utils/validation/organization/invite';
 import {
   acceptLinkInvite,
@@ -41,6 +43,24 @@ const acceptOrganizationInviteRateLimit = createRateLimiter({
     const user = c.get('user');
     const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
     return `org_invite_accept:${actor}:${c.req.param('token')}`;
+  }
+});
+
+const previewCohortInviteRateLimit = createRateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 30,
+  message: 'Too many cohort invite preview requests. Please try again later.',
+  keyGenerator: (c) => `cohort_invite_preview:${extractClientIp(c)}:${c.req.param('token')}`
+});
+
+const acceptCohortInviteRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Too many cohort invite join attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `cohort_invite_accept:${actor}:${c.req.param('token')}`;
   }
 });
 
@@ -267,6 +287,52 @@ export const inviteRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to accept link invite');
+      }
+    }
+  )
+  /**
+   * GET /invite/cohort/:token/preview
+   * Server-only preview for cohort share links (API key)
+   */
+  .get(
+    '/cohort/:token/preview',
+    apiKeyMiddleware,
+    previewCohortInviteRateLimit,
+    zValidator('param', ZCohortInviteTokenParam),
+    async (c) => {
+      try {
+        const { token } = c.req.valid('param');
+        const preview = await previewCohortLinkInvite(token);
+
+        return c.json({ success: true, data: preview }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load cohort invite');
+      }
+    }
+  )
+  /**
+   * POST /invite/cohort/:token/accept
+   * Authenticated cohort share-link acceptance — enrolls the user as a student in
+   * the cohort and every course attached to it.
+   */
+  .post(
+    '/cohort/:token/accept',
+    authMiddleware,
+    acceptCohortInviteRateLimit,
+    zValidator('param', ZCohortInviteTokenParam),
+    async (c) => {
+      try {
+        const { token } = c.req.valid('param');
+        const user = c.get('user')!;
+        const result = await acceptCohortLinkInvite(
+          token,
+          { id: user.id, email: user.email },
+          { ipAddress: extractClientIp(c), userAgent: c.req.header('user-agent') || null }
+        );
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to accept cohort invite');
       }
     }
   );

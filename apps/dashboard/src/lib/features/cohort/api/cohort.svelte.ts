@@ -1,5 +1,15 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
-import type { Cohort, CohortDetail, CohortMember, CohortCourse, CohortNewsfeed } from '../utils/types';
+import type {
+  Cohort,
+  CohortDetail,
+  CohortLinkInvite,
+  CohortMember,
+  CohortCourse,
+  CohortNewsfeed,
+  CreateCohortLinkInviteRequest,
+  GetCohortLinkInviteRequest,
+  ToggleCohortLinkInviteRequest
+} from '../utils/types';
 import type {
   TCreateCohort,
   TUpdateCohort,
@@ -21,8 +31,10 @@ class CohortApi extends BaseApiWithErrors {
   members = $state<CohortMember[]>([]);
   courses = $state<CohortCourse[]>([]);
   newsfeed = $state<CohortNewsfeed | null>(null);
+  linkInvite = $state<CohortLinkInvite>(null);
   isCohortShellLoading = $state(false);
   currentCohortId = $state<string | null>(null);
+  loadedLinkInviteCohortId = $state<string | null>(null);
 
   loadedCohortId = $state<string | null>(null);
   loadedMembersCohortId = $state<string | null>(null);
@@ -339,6 +351,47 @@ class CohortApi extends BaseApiWithErrors {
     });
 
     return ok;
+  }
+
+  // Link invite
+
+  /** Loads the cohort's share link without creating one. */
+  async getLinkInvite(cohortId: string) {
+    if (this.loadedLinkInviteCohortId === cohortId) return;
+
+    await this.execute<GetCohortLinkInviteRequest>({
+      requestFn: () => classroomio.cohort[':cohortId']['link-invite'].$get({ param: { cohortId } }),
+      onSuccess: (result) => {
+        this.linkInvite = result.data;
+        this.loadedLinkInviteCohortId = cohortId;
+      },
+      logContext: 'getCohortLinkInvite'
+    });
+  }
+
+  /** Returns the cohort's share link, creating it on first call. */
+  async generateLinkInvite(cohortId: string) {
+    await this.execute<CreateCohortLinkInviteRequest>({
+      requestFn: () => classroomio.cohort[':cohortId']['link-invite'].$post({ param: { cohortId } }),
+      onSuccess: (result) => {
+        this.linkInvite = result.data;
+        this.loadedLinkInviteCohortId = cohortId;
+      },
+      logContext: 'generateCohortLinkInvite'
+    });
+  }
+
+  /** Disables or re-enables the cohort's share link. */
+  async toggleLinkInvite(cohortId: string, isRevoked: boolean) {
+    await this.execute<ToggleCohortLinkInviteRequest>({
+      requestFn: () =>
+        classroomio.cohort[':cohortId']['link-invite'].$patch({ param: { cohortId }, json: { isRevoked } }),
+      onSuccess: (result) => {
+        this.linkInvite = result.data;
+        snackbar.success(isRevoked ? 'snackbar.cohort_link_invite.disabled' : 'snackbar.cohort_link_invite.enabled');
+      },
+      logContext: 'toggleCohortLinkInvite'
+    });
   }
 
   // Newsfeed

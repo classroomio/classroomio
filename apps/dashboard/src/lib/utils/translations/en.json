@@ -3354,7 +3354,19 @@
           "snackbar_failed_load_audit": "Failed to load invite audit",
           "snackbar_metadata_copied": "Invite metadata copied",
           "snackbar_email_invites_success": "Created {count} invite(s). Sent {sent}, failed {failed}. Skipped {duplicates} duplicate(s).",
-          "select_at_least_one_student": "Select at least one existing student"
+          "select_at_least_one_student": "Select at least one existing student",
+          "invite_link": {
+            "tab_label": "Invite link",
+            "title": "Course invite link",
+            "description": "Anyone with this link can join this course as a student. Share it instead of entering emails one by one.",
+            "generate": "Create invite link",
+            "copy": "Copy invite link",
+            "copied": "Invite link copied",
+            "copy_failed": "Could not copy the invite link",
+            "toggle_label": "Link is active",
+            "disabled_notice": "This link is disabled. Nobody can join with it until you turn it back on.",
+            "join_count": "{count} people have joined with this link"
+          }
         },
         "delete_confirmation": {
           "title": "Delete",
@@ -3700,7 +3712,7 @@
         "certificate_deadline_required": "Set Certificate Deadline First",
         "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
-        "completion_deadline_label": "Course completion deadline",
+        "completion_deadline_label": "Course Completion Deadline",
         "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
@@ -3711,8 +3723,6 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
-        "completion_deadline_label": "Course Completion Deadline",
-        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
@@ -4476,6 +4486,14 @@
           "cohort_newsfeed_comment_not_found": "That comment could not be found."
         }
       }
+    },
+    "cohort_link_invite": {
+      "enabled": "Cohort invite link enabled",
+      "disabled": "Cohort invite link disabled"
+    },
+    "course_link_invite": {
+      "enabled": "Course invite link enabled",
+      "disabled": "Course invite link disabled"
     }
   },
   "specialization": {
@@ -4513,6 +4531,15 @@
       "disabled": "This invite link has been disabled by the organization.",
       "join_failed": "Failed to join organization",
       "joined": "Joined organization"
+    },
+    "cohort": {
+      "page_title": "Join {cohortName} on ClassroomIO",
+      "invitation": "You've been invited to join {cohortName} at {orgName}.",
+      "accept_button": "Join cohort",
+      "disabled": "This invite link has been disabled.",
+      "inactive": "This cohort is no longer accepting new members.",
+      "joined": "You have joined the cohort",
+      "join_failed": "Could not join the cohort. Please try again."
     }
   },
   "content": {
@@ -4968,7 +4995,11 @@
       "add_another": "Add another",
       "invite_submit": "Send Invites",
       "empty_title": "No members yet",
-      "empty_description": "Invite people to join this cohort."
+      "empty_description": "Invite people to join this cohort.",
+      "invite_link": {
+        "title": "Cohort invite link",
+        "description": "Anyone with this link can join this cohort and every course in it. Share it instead of entering emails one by one."
+      }
     },
     "lms": {
       "empty_title": "No cohorts yet",
