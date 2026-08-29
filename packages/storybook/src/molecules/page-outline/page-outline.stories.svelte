@@ -64,7 +64,9 @@
           </div>
         </div>
       </article>
-      <aside class="ui:sticky ui:top-0 ui:h-dvh ui:w-52 ui:shrink-0 ui:overflow-y-auto ui:px-4 ui:py-8">
+      <aside
+        class="ui:sticky ui:top-0 ui:z-10 ui:h-dvh ui:w-52 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:px-4 ui:py-8"
+      >
         <PageOutline items={outlineItems} label="On this page" hideBelow="never" />
       </aside>
     </div>
@@ -93,7 +95,9 @@
           </div>
         </div>
       </article>
-      <aside class="ui:sticky ui:top-0 ui:h-dvh ui:w-52 ui:shrink-0 ui:overflow-y-auto ui:px-4 ui:py-8">
+      <aside
+        class="ui:sticky ui:top-0 ui:z-10 ui:h-dvh ui:w-52 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:px-4 ui:py-8"
+      >
         <PageOutline items={outlineItems} label="On this page" />
       </aside>
     </div>

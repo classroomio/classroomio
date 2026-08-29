@@ -462,7 +462,7 @@
 
   {#if outlineItems.length > 0}
     <aside
-      class="ui:sticky ui:top-12 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-52 ui:shrink-0 ui:overflow-y-auto ui:lg:block"
+      class="ui:sticky ui:top-12 ui:z-10 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-52 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:lg:block"
     >
       <div class="ui:px-4 ui:py-8">
         <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />
