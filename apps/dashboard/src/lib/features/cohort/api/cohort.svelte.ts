@@ -36,7 +36,6 @@ class CohortApi extends BaseApiWithErrors {
   currentCohortId = $state<string | null>(null);
   /** Which cohort `inviteLink` belongs to, so stale responses can be discarded. */
   activeInviteLinkCohortId = $state<string | null>(null);
-  /** Monotonic request id; only the newest in-flight response is applied. */
   private inviteLinkRequestSeq = 0;
 
   loadedCohortId = $state<string | null>(null);
@@ -360,22 +359,15 @@ class CohortApi extends BaseApiWithErrors {
 
   // Invite link
 
-  /**
-   * `cohortApi` is a singleton, so a response for a cohort the user has already
-   * navigated away from must not overwrite the current one.
-   */
+  /** Discards responses for a cohort that is no longer active, or a superseded request. */
   private applyInviteLink(cohortId: string, seq: number, invite: CohortInviteLink) {
     if (this.activeInviteLinkCohortId !== cohortId) return;
-    // Overlapping requests for the same cohort can resolve out of order.
     if (seq !== this.inviteLinkRequestSeq) return;
 
     this.inviteLink = invite;
   }
 
-  /**
-   * Points the invite-link state at a cohort, clearing any link held for a previous
-   * one so the tab can never show or copy the wrong cohort's URL.
-   */
+  /** Points the state at a cohort, clearing any link held for a previous one. */
   private beginInviteLinkRequest(cohortId: string): number {
     if (this.activeInviteLinkCohortId !== cohortId) {
       this.activeInviteLinkCohortId = cohortId;
@@ -387,7 +379,7 @@ class CohortApi extends BaseApiWithErrors {
     return this.inviteLinkRequestSeq;
   }
 
-  /** Loads the cohort's share link without creating one. Always refetches. */
+  /** Loads the cohort's share link without creating one. */
   async getInviteLink(cohortId: string) {
     const seq = this.beginInviteLinkRequest(cohortId);
 

@@ -1,6 +1,5 @@
 import * as z from 'zod';
 
-/** Resources that support a shareable join link. Extend with the accept dispatcher. */
 export const ZInviteLinkResourceType = z.enum(['COURSE', 'COHORT']);
 export type TInviteLinkResourceType = z.infer<typeof ZInviteLinkResourceType>;
 

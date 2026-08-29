@@ -317,8 +317,6 @@ export const cohortRouter = new Hono()
   )
 
   // ── Invite link ───────────────────────────────────────────────────────────
-  // Thin wrappers over the shared invite-link service; permissions stay with the
-  // cohort's own middleware so a cohort tutor can share a link without org-admin rights.
 
   /**
    * GET /cohort/:cohortId/invite-link

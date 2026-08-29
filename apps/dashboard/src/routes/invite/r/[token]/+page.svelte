@@ -24,7 +24,6 @@
   const resourceName = $derived(data.invite?.resource?.resourceName ?? '');
   const resourceType = $derived(data.invite?.resource?.resourceType);
 
-  // One page for every resource type — only the noun changes.
   const joinLabel = $derived(
     resourceType === 'COHORT' ? $t('invite_link.join.cohort_button') : $t('invite_link.join.course_button')
   );

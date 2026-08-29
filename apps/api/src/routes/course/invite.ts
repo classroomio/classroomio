@@ -25,10 +25,7 @@ import { extractClientIp } from '@api/utils/redis/key-generators';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
-/**
- * Invite creation fans out emails and mints tokens, so it is capped per actor even
- * though the route is already staff-only.
- */
+/** Capped per actor: invite creation mints tokens and fans out emails. */
 const createInviteRateLimit = createRateLimiter({
   windowMs: 60 * 60 * 1000,
   maxRequests: 60,

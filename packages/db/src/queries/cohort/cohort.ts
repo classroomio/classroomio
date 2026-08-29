@@ -314,10 +314,8 @@ export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxCl
 }
 
 /**
- * Inserts a cohort member only if the (cohort, profile) pair is not already present,
- * relying on `cohort_member_cohort_id_profile_id_unique` rather than a read-then-write.
- * Returns the new row, or null when the membership already existed — so callers can
- * tell a fresh join from a repeat without racing a separate existence check.
+ * Inserts a cohort member if absent, relying on the unique constraint rather than a
+ * read-then-write. Returns null when the membership already existed.
  */
 export async function insertCohortMemberIfAbsent(
   data: TNewCohortMember,
