@@ -38,7 +38,9 @@
 
     if (!target) return;
 
-    target.scrollIntoView({ behavior, block: 'start' });
+    const headerOffsetPx = 96;
+    const top = window.scrollY + target.getBoundingClientRect().top - headerOffsetPx;
+    window.scrollTo({ top: Math.max(0, top), behavior });
   }
 
   function setHash(id: string) {
