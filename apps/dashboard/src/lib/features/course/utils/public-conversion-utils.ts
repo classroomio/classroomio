@@ -42,6 +42,12 @@ export function getManualQuestionsFromList<T extends QuestionLike>(questions: T[
   return questions.filter((q) => !q.deletedAt && !isQuestionAutoGradable(q));
 }
 
+/**
+ * Maps an array of non-autogradable question offenders by their respective exercise IDs.
+ *
+ * @param offenders - Array of question offenders.
+ * @returns Map indexing offenders by exerciseId.
+ */
 function mapOffendersByExercise(offenders: NonAutoGradableQuestionOffender[] = []) {
   const map = new Map<string, NonAutoGradableQuestionOffender[]>();
   for (const offender of offenders) {

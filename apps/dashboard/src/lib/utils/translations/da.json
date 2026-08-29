@@ -308,7 +308,7 @@
         "converted_to_public": "Kurset blev konverteret til offentligt"
       },
       "info": {
-        "conversion_blocked": "Indstillinger gemt. Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
+        "conversion_blocked": "Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
       }
     },
     "people": {
@@ -921,8 +921,8 @@
           "ready_to_convert": "Klar til at konvertere!",
           "questions_left_other_singular": "· {count} spørgsmål tilbage i andre øvelser",
           "questions_left_other_plural": "· {count} spørgsmål tilbage i andre øvelser",
-          "progress_summary_singular": "{resolved}/{total} fixed · {remaining} spørgsmål tilbage",
-          "progress_summary_plural": "{resolved}/{total} fixed · {remaining} spørgsmål tilbage",
+          "progress_summary_singular": "{resolved}/{total} rettet · {remaining} spørgsmål tilbage",
+          "progress_summary_plural": "{resolved}/{total} rettet · {remaining} spørgsmål tilbage",
           "next_exercise": "Næste: {exercise}",
           "next": "Næste",
           "question_fallback": "Spørgsmål {number}",

@@ -5,6 +5,12 @@
 
   let triggerCounter = 0;
 
+  /**
+   * Imperatively triggers an attention pulse and scroll-into-view on the AttentionHighlight
+   * wrapper component matching the provided element ID.
+   *
+   * @param id - Target DOM element / section identifier.
+   */
   export function triggerAttentionHighlight(id: string) {
     triggerCounter += 1;
     activeHighlightTrigger.set({ id, count: triggerCounter });
@@ -41,6 +47,13 @@
   let localTrigger = $state(0);
   let hasHandledUrlHighlight = $state(false);
 
+  /**
+   * Extracts the active highlight target element ID from the current page URL,
+   * checking the `?highlight=` query parameter first, followed by the URL hash.
+   *
+   * @param url - Current navigation URL.
+   * @returns Active element ID or `null` if none found.
+   */
   function getActiveHighlightId(url: URL): string | null {
     const query = url.searchParams.get('highlight');
     if (query) return query;
@@ -67,6 +80,10 @@
 
   const effectiveTrigger = $derived(trigger + localTrigger);
 
+  /**
+   * Cleanup callback fired when the attention animation completes.
+   * Removes `?highlight=` query param or hash from the URL history state without reloading.
+   */
   function handleComplete() {
     hasHandledUrlHighlight = true;
 

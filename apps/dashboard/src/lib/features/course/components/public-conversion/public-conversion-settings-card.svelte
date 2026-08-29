@@ -41,7 +41,9 @@
     if (disabled) return;
 
     // Start or update conversion flow tracking
-    publicConversionFlow.start(course.id, offenders);
+    if (!publicConversionFlow.isActive || publicConversionFlow.courseId !== course.id) {
+      publicConversionFlow.start(course.id, offenders);
+    }
 
     // Target the specific question or the first offending question in the exercise
     const targetQuestionId = questionId ?? groups.find((g) => g.exerciseId === exerciseId)?.questions[0]?.questionId;

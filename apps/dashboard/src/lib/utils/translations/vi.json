@@ -308,7 +308,7 @@
         "converted_to_public": "Khóa học được chuyển đổi thành công sang Công khai"
       },
       "info": {
-        "conversion_blocked": "Cài đặt đã được lưu. Vui lòng sửa các câu hỏi bên dưới để hoàn tất chuyển đổi sang chế độ Công khai."
+        "conversion_blocked": "Vui lòng sửa các câu hỏi bên dưới để hoàn tất chuyển đổi sang chế độ Công khai."
       }
     },
     "people": {
@@ -905,7 +905,7 @@
         "fix_question": "Chỉnh sửa",
         "convert_to_public_blocked": "Các khóa học công khai chỉ yêu cầu các câu hỏi có thể tự động phân loại.",
         "convert_to_public_blocked_desc": "Các bài tập trong khóa học công khai được chấm điểm tự động trong trình duyệt, đó là lý do tại sao chúng tôi chỉ hỗ trợ các câu hỏi có thể tự động chấm điểm. Xóa hoặc thay thế các câu hỏi sau trước khi chuyển khóa học này sang Công khai:",
-        "fix_in_exercise": "Sửa chữa trong tập thể dục",
+        "fix_in_exercise": "Sửa trong bài tập",
         "cancel_conversion": "Hủy chuyển đổi",
         "public_conversion": {
           "banner_title": "Chuyển đổi khóa học sang công khai",

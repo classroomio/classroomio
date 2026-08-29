@@ -94,3 +94,4 @@ export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
 export { AttentionHighlight, type AttentionHighlightProps } from './custom/attention-highlight';
+export { CircularProgress } from './custom/circular-progress';

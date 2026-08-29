@@ -5,7 +5,7 @@
   import { Button } from '@cio/ui/base/button';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Tooltip from '@cio/ui/base/tooltip';
-  import { QuestionTypeIcon } from '@cio/ui';
+  import { CircularProgress, QuestionTypeIcon } from '@cio/ui';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import CheckIcon from '@lucide/svelte/icons/check';
@@ -60,11 +60,6 @@
 
   const nextExercise = $derived(publicConversionFlow.getNextExercise(course, exerciseId));
 
-  const CIRCUMFERENCE = 100.5;
-  const strokeDashoffset = $derived(
-    CIRCUMFERENCE - (CIRCUMFERENCE * Math.min(100, Math.max(0, countdown.percentComplete))) / 100
-  );
-
   function scrollToQuestion(questionId: string | number) {
     onJumpToQuestion?.(questionId);
 
@@ -111,7 +106,7 @@
     try {
       const response = await courseApi.update(courseId, { type: 'PUBLIC' }, { showSuccessToast: false });
 
-      if (courseApi.success && response) {
+      if (courseApi.success && response?.type === 'PUBLIC') {
         publicConversionFlow.reset();
         snackbar.success('snackbar.course_settings.success.converted_to_public');
         goto(resolve(`/courses/${courseId}/settings?highlight=course-type`, {}));
@@ -169,25 +164,14 @@
 
         <!-- Circular Progress Ring -->
         <div class="relative flex size-9 shrink-0 items-center justify-center sm:size-10">
-          <svg viewBox="0 0 36 36" class="size-9 -rotate-90 sm:size-10">
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              class="fill-none stroke-amber-500/25 dark:stroke-amber-500/30"
-              stroke-width="3.5"
-            />
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              class="fill-none stroke-amber-600 transition-[stroke-dashoffset] duration-500 ease-out dark:stroke-amber-500"
-              stroke-width="3.5"
-              stroke-linecap="round"
-              stroke-dasharray="100.5"
-              stroke-dashoffset={strokeDashoffset}
-            />
-          </svg>
+          <CircularProgress
+            value={countdown.percentComplete}
+            size={36}
+            strokeWidth={3.5}
+            trackClass="stroke-amber-500/25 dark:stroke-amber-500/30"
+            progressClass="stroke-amber-600 dark:stroke-amber-500"
+            class="size-9 sm:size-10"
+          />
           <div
             class="ui:text-foreground absolute inset-0 flex items-center justify-center text-[10.5px] font-extrabold"
           >

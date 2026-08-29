@@ -20,7 +20,7 @@ export const isAnswerCorrect = (options, answer) => {
   Textarea = no validation
   Single = only one should be correct
   Multiple = all should be correct
-*/
+ */
 export function wasCorrectAnswerSelected(currentQuestion: Question, answers, isFinished?: boolean) {
   const questionTypeKey = getQuestionTypeKey(currentQuestion);
   if (!questionTypeSupportsOptions(questionTypeKey)) {
@@ -138,6 +138,8 @@ export function transformQuestionsToApiFormat(
   };
 
   const normalizeId = (id: unknown) => (id && !isNaN(Number(id)) ? Number(id) : undefined);
+
+  /** Checks if an item is active or an existing persisted record that requires soft-deletion sync. */
   const isPersistedOrActive = (item: { deletedAt?: string | null; id?: unknown }) => {
     // If deleted without a real database ID, it was never persisted -> ignore it
     if (item.deletedAt && !normalizeId(item.id)) return false;

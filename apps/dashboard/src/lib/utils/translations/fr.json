@@ -308,7 +308,7 @@
         "converted_to_public": "Cours converti avec succès en public"
       },
       "info": {
-        "conversion_blocked": "Paramètres enregistrés. Corrigez les questions ci-dessous pour terminer la conversion en public."
+        "conversion_blocked": "Corrigez les questions ci-dessous pour terminer la conversion en public."
       }
     },
     "people": {

@@ -616,7 +616,6 @@
       t.get('course.navItem.lessons.exercises.all_exercises.heading')
   );
 
-  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeQuestionTypeIds = $derived(
     ($questionnaire.questions ?? []).filter((q) => !q.deletedAt).map((q) => getQuestionTypeId(q))
@@ -854,7 +853,6 @@
                 {exerciseId}
                 {goBack}
                 {requiresPositivePointsForAutoGrade}
-                selfPacedCourse={isSelfPacedCourse}
                 {isPublicCourse}
                 {reorderQuestions}
               />

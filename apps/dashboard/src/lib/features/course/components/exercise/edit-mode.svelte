@@ -65,7 +65,6 @@
     goBack?: () => void;
     /** All auto-gradable question types (any course): enforce points &gt; 0 for scoring */
     requiresPositivePointsForAutoGrade?: boolean;
-    selfPacedCourse?: boolean;
     /** Public course restricts picker to auto-gradable question types only. */
     isPublicCourse?: boolean;
     reorderQuestions?: boolean;

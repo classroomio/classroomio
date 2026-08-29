@@ -2,12 +2,16 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { QuestionTypeIcon } from '@cio/ui';
   import { ENABLED_QUESTION_TYPE_REGISTRY } from '@cio/question-types';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Molecules/QuestionTypeIcon',
     component: QuestionTypeIcon,
     parameters: {
       layout: 'padded',
+      controls: {
+        include: FIELDS
+      },
       docs: {
         description: {
           component: 'Renders a question type glyph tile or Lucide icon based on question type key or numeric typeId.'

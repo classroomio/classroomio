@@ -18,7 +18,7 @@
     id,
     highlight = false,
     trigger = 0,
-    duration = 2.5,
+    duration = 3,
     autoScroll = true,
     scrollBlock = 'center',
     class: className = '',

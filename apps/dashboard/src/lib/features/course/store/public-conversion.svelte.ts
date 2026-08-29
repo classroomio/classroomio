@@ -108,14 +108,6 @@ class PublicConversionStore {
     this.persist();
   }
 
-  updateOffenders(courseId: string, offenders: NonAutoGradableQuestionOffender[]) {
-    this.courseId = courseId;
-    this.initialOffenders = [...offenders];
-    this.offenders = [...offenders];
-    this.isActive = offenders.length > 0;
-    this.persist();
-  }
-
   markExerciseResolved(exerciseId: string) {
     this.resolvedExerciseIds.add(exerciseId);
     this.persist();

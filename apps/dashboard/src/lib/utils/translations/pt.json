@@ -308,7 +308,7 @@
         "converted_to_public": "Curso convertido para Público com sucesso"
       },
       "info": {
-        "conversion_blocked": "Configurações salvas. Corrija as perguntas abaixo para concluir a conversão para Público."
+        "conversion_blocked": "Corrija as perguntas abaixo para concluir a conversão para Público."
       }
     },
     "people": {
@@ -926,9 +926,9 @@
           "next_exercise": "Próximo: {exercise}",
           "next": "Próximo",
           "question_fallback": "Questão {number}",
-          "question_count_singular": "{count} perguntas",
+          "question_count_singular": "{count} pergunta",
           "question_count_plural": "{count} perguntas",
-          "exercise_count_singular": "{count} exercícios",
+          "exercise_count_singular": "{count} exercício",
           "exercise_count_plural": "{count} exercícios",
           "exercises_fixed": "{resolved}/{total} corrigido",
           "questions_left_singular": "corrigido · {count} perguntas restantes",

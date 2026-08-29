@@ -308,7 +308,7 @@
         "converted_to_public": "Курс успешно преобразован в общедоступный"
       },
       "info": {
-        "conversion_blocked": "Настройки сохранены. Исправьте вопросы ниже, чтобы завершить преобразование в публичный доступ."
+        "conversion_blocked": "Исправьте вопросы ниже, чтобы завершить преобразование в публичный доступ."
       }
     },
     "people": {
@@ -926,9 +926,9 @@
           "next_exercise": "Далее: {exercise}",
           "next": "Далее",
           "question_fallback": "Вопрос {number}",
-          "question_count_singular": "{count} вопросов",
+          "question_count_singular": "{count} вопрос",
           "question_count_plural": "{count} вопросов",
-          "exercise_count_singular": "{count} упражнений",
+          "exercise_count_singular": "{count} упражнение",
           "exercise_count_plural": "{count} упражнений",
           "exercises_fixed": "{resolved}/{total} исправлено",
           "questions_left_singular": "исправлено · {count} оставшихся вопросов",

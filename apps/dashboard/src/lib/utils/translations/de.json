@@ -308,7 +308,7 @@
         "converted_to_public": "Der Kurs wurde erfolgreich in den öffentlichen Kurs konvertiert"
       },
       "info": {
-        "conversion_blocked": "Einstellungen gespeichert. Beantworten Sie die folgenden Fragen, um die Umstellung auf öffentlich abzuschließen."
+        "conversion_blocked": "Beantworten Sie die folgenden Fragen, um die Umstellung auf öffentlich abzuschließen."
       }
     },
     "people": {

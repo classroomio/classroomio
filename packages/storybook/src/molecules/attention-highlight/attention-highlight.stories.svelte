@@ -26,6 +26,7 @@
   let singleHighlighted = $state(false);
   let targetedQuestionId = $state<string | null>(null);
   let customDurationHighlighted = $state(false);
+  let counterTrigger = $state(0);
 </script>
 
 <Story name="Interactive Question Highlight">
@@ -191,6 +192,35 @@
           <p class="text-sm font-medium">Extended 5-Second Attention Pulse</p>
           <p class="ui:text-muted-foreground mt-1 text-xs">
             Useful for longer instructional guides or critical settings warnings.
+          </p>
+        </div>
+      </AttentionHighlight>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Imperative Counter Trigger">
+  {#snippet template()}
+    <div class="flex w-full max-w-md flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <span class="ui:text-muted-foreground text-xs font-medium">Trigger count: {counterTrigger}</span>
+        <Button
+          size="sm"
+          variant="outline"
+          onclick={() => {
+            counterTrigger += 1;
+          }}
+        >
+          <CheckIcon class="me-1.5 size-3.5" />
+          Pulse Again (+1)
+        </Button>
+      </div>
+
+      <AttentionHighlight trigger={counterTrigger}>
+        <div class="ui:bg-card rounded-lg border p-4 shadow-sm">
+          <h4 class="text-sm font-semibold">Imperatively Triggered Element</h4>
+          <p class="ui:text-muted-foreground mt-1 text-xs">
+            Incrementing the trigger counter triggers a new attention pulse each time without toggling a boolean flag.
           </p>
         </div>
       </AttentionHighlight>

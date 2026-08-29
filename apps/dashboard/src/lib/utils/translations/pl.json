@@ -308,7 +308,7 @@
         "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny"
       },
       "info": {
-        "conversion_blocked": "Ustawienia zostały zapisane. Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
+        "conversion_blocked": "Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
       }
     },
     "people": {

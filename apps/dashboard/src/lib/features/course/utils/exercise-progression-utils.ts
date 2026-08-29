@@ -17,6 +17,12 @@ export type ExerciseSubmissionStudentGroup = {
   attempts: ExerciseAttempt[];
 };
 
+/**
+ * Filters an array of exercise questions to only active, non-deleted questions.
+ *
+ * @param questions - Array of questions to filter.
+ * @returns Array of non-deleted questions.
+ */
 export function getActiveExerciseQuestions(questions: Question[]): Question[] {
   return questions.filter((question) => !question.deletedAt);
 }
@@ -25,6 +31,12 @@ export function getTotalPossibleExercisePoints(questions: Question[]): number {
   return getActiveExerciseQuestions(questions).reduce((total, question) => total + Number(question.points ?? 0), 0);
 }
 
+/**
+ * Filters an exercise's questions to only those requiring manual grading.
+ *
+ * @param questions - Array of exercise questions.
+ * @returns Array of manual-graded questions.
+ */
 export function getManualGradedExerciseQuestions(questions: Question[]): Question[] {
   return getManualQuestionsFromList(getActiveExerciseQuestions(questions));
 }
