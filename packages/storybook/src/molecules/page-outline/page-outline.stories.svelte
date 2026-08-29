@@ -53,19 +53,19 @@
 
 <Story name="Beside article" parameters={{ layout: 'fullscreen' }}>
   {#snippet template()}
-    <div class="ui:mx-auto ui:flex ui:w-full ui:max-w-[calc(48rem+13.5rem)]">
-      <article class="ui:min-w-0 ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6">
-        <h1 id={titleId} class="ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl">
-          {PAGE_TITLE}
-        </h1>
-        <div class="prose ui:mt-8 ui:max-w-none">
-          <SafeHtmlContent content={injected.html} />
+    <div class="ui:flex ui:w-full">
+      <article class="ui:min-w-0 ui:flex-1">
+        <div class="ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6">
+          <h1 id={titleId} class="ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl">
+            {PAGE_TITLE}
+          </h1>
+          <div class="prose ui:mt-8 ui:max-w-none">
+            <SafeHtmlContent content={injected.html} />
+          </div>
         </div>
       </article>
-      <aside class="ui:w-52 ui:shrink-0">
-        <div class="ui:sticky ui:top-8 ui:max-h-[calc(100dvh-4rem)] ui:overflow-y-auto ui:py-8 ui:pr-4">
-          <PageOutline items={outlineItems} label="On this page" hideBelow="never" />
-        </div>
+      <aside class="ui:sticky ui:top-0 ui:h-dvh ui:w-52 ui:shrink-0 ui:overflow-y-auto ui:px-4 ui:py-8">
+        <PageOutline items={outlineItems} label="On this page" hideBelow="never" />
       </aside>
     </div>
   {/snippet}
@@ -79,19 +79,21 @@
   }}
 >
   {#snippet template()}
-    <div class="ui:mx-auto ui:flex ui:w-full ui:max-w-[calc(48rem+13.5rem)]">
-      <article class="ui:min-w-0 ui:w-full ui:max-w-3xl ui:px-4 ui:py-8">
-        <h1 id={titleId} class="ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground">
-          {PAGE_TITLE}
-        </h1>
-        <p class="ui:mt-3 ui:text-sm ui:text-muted-foreground">
-          Default hideBelow is lg, so the outline is visible at the desktop viewport.
-        </p>
-        <div class="prose ui:mt-8 ui:max-w-none">
-          <SafeHtmlContent content={injected.html} />
+    <div class="ui:flex ui:w-full">
+      <article class="ui:min-w-0 ui:flex-1">
+        <div class="ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8">
+          <h1 id={titleId} class="ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground">
+            {PAGE_TITLE}
+          </h1>
+          <p class="ui:mt-3 ui:text-sm ui:text-muted-foreground">
+            Default hideBelow is lg, so the outline is visible at the desktop viewport.
+          </p>
+          <div class="prose ui:mt-8 ui:max-w-none">
+            <SafeHtmlContent content={injected.html} />
+          </div>
         </div>
       </article>
-      <aside class="ui:w-52 ui:shrink-0 ui:py-8 ui:pr-4">
+      <aside class="ui:sticky ui:top-0 ui:h-dvh ui:w-52 ui:shrink-0 ui:overflow-y-auto ui:px-4 ui:py-8">
         <PageOutline items={outlineItems} label="On this page" />
       </aside>
     </div>
