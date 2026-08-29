@@ -117,16 +117,16 @@
     <Empty.Root>
       <Empty.Header>
         <Empty.Media>
-          <div class="ui:*:ring-background flex -space-x-2 *:size-12 *:ring-2 *:grayscale">
-            <Avatar.Root>
+          <div class="flex -space-x-2">
+            <Avatar.Root class="ui:ring-background size-12 ring-2 grayscale">
               <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
               <Avatar.Fallback>CN</Avatar.Fallback>
             </Avatar.Root>
-            <Avatar.Root>
+            <Avatar.Root class="ui:ring-background size-12 ring-2 grayscale">
               <Avatar.Image src="https://github.com/maxleiter.png" alt="@maxleiter" />
               <Avatar.Fallback>LR</Avatar.Fallback>
             </Avatar.Root>
-            <Avatar.Root>
+            <Avatar.Root class="ui:ring-background size-12 ring-2 grayscale">
               <Avatar.Image src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
               <Avatar.Fallback>ER</Avatar.Fallback>
             </Avatar.Root>
