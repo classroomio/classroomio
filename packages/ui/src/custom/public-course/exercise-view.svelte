@@ -363,104 +363,108 @@
   const titleId = $derived(outlineItems[0]?.id);
 </script>
 
-<article class={cn('ui:mx-auto ui:flex ui:w-full ui:max-w-[calc(48rem+13.5rem)]', className)}>
-  <div class="ui:mx-auto ui:min-w-0 ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10">
-    {#if !exercise.isUnlocked}
-      <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
-    {:else}
-      {#if exercise.sectionTitle}
-        <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
-          {exercise.sectionTitle}
-        </div>
-      {/if}
-
-      {#if showAttemptsPicker}
-        <div class="ui:mt-4 ui:flex ui:flex-wrap ui:items-center ui:gap-2">
-          <span class="ui:sr-only" id="public-exercise-attempts-select-label">{attemptsSelectAriaLabel}</span>
-          <Select.Root
-            type="single"
-            value={selectValue}
-            onValueChange={(nextValue) => nextValue && handleAttemptSelect(nextValue)}
-          >
-            <Select.Trigger
-              class="ui:min-w-[min(24rem,calc(100vw-5rem))] ui:max-w-full"
-              aria-labelledby="public-exercise-attempts-select-label"
-            >
-              <span class="ui:truncate">
-                {selectValue === 'live'
-                  ? newAttemptOptionLabel
-                  : formatAttemptOption({
-                      attemptNumber: Number(selectValue) + 1,
-                      correct: persistedAttempts[Number(selectValue)]?.correctCount ?? 0,
-                      total: persistedAttempts[Number(selectValue)]?.totalGradable ?? totalGradable
-                    })}
-              </span>
-            </Select.Trigger>
-            <Select.Content>
-              {#each persistedAttempts as _, attemptIdx (attemptIdx)}
-                {@const stored = persistedAttempts[attemptIdx]}
-                {@const attemptLabel = formatAttemptOption({
-                  attemptNumber: attemptIdx + 1,
-                  correct: stored.correctCount,
-                  total: stored.totalGradable
-                })}
-                <Select.Item value={String(attemptIdx)} label={attemptLabel}>{attemptLabel}</Select.Item>
-              {/each}
-              <Select.Item value="live" label={newAttemptOptionLabel}>{newAttemptOptionLabel}</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </div>
-      {/if}
-
-      <div
-        class={cn(
-          'ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-3',
-          showAttemptsPicker ? 'ui:mt-4' : 'ui:mt-2'
-        )}
-      >
-        <h1
-          id={titleId}
-          class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
-        >
-          {exercise.title}
-        </h1>
-        {@render titleActions?.()}
-      </div>
-
-      {#if exercise.description}
-        <p class="ui:mt-3 ui:text-muted-foreground">{exercise.description}</p>
-      {/if}
-
-      <div class="ui:mt-8 ui:space-y-6">
-        <QuestionList
-          contract={{
-            mode,
-            questions: exercise.questions,
-            answersByKey: answers,
-            disabled: submitted,
-            labels
-          }}
-          onAnswerChange={handleAnswerChange}
-        />
-      </div>
-
-      <div class="ui:mt-10 ui:flex ui:items-center ui:justify-between ui:gap-4">
-        {#if submitted}
-          <div class="ui:text-sm ui:text-muted-foreground">{summaryText}</div>
-          <Button variant="outline" onclick={handleReset}>{tryAgainButtonLabel}</Button>
-        {:else}
-          <span class="ui:text-sm ui:text-muted-foreground">{privacyHint}</span>
-          <Button disabled={!canSubmitAnswers} onclick={handleSubmit}>{submitLabel}</Button>
+<article class={cn('ui:flex ui:w-full', className)}>
+  <div class="ui:min-w-0 ui:flex-1">
+    <div class="ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10">
+      {#if !exercise.isUnlocked}
+        <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
+      {:else}
+        {#if exercise.sectionTitle}
+          <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
+            {exercise.sectionTitle}
+          </div>
         {/if}
-      </div>
 
-      <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
-    {/if}
+        {#if showAttemptsPicker}
+          <div class="ui:mt-4 ui:flex ui:flex-wrap ui:items-center ui:gap-2">
+            <span class="ui:sr-only" id="public-exercise-attempts-select-label">{attemptsSelectAriaLabel}</span>
+            <Select.Root
+              type="single"
+              value={selectValue}
+              onValueChange={(nextValue) => nextValue && handleAttemptSelect(nextValue)}
+            >
+              <Select.Trigger
+                class="ui:min-w-[min(24rem,calc(100vw-5rem))] ui:max-w-full"
+                aria-labelledby="public-exercise-attempts-select-label"
+              >
+                <span class="ui:truncate">
+                  {selectValue === 'live'
+                    ? newAttemptOptionLabel
+                    : formatAttemptOption({
+                        attemptNumber: Number(selectValue) + 1,
+                        correct: persistedAttempts[Number(selectValue)]?.correctCount ?? 0,
+                        total: persistedAttempts[Number(selectValue)]?.totalGradable ?? totalGradable
+                      })}
+                </span>
+              </Select.Trigger>
+              <Select.Content>
+                {#each persistedAttempts as _, attemptIdx (attemptIdx)}
+                  {@const stored = persistedAttempts[attemptIdx]}
+                  {@const attemptLabel = formatAttemptOption({
+                    attemptNumber: attemptIdx + 1,
+                    correct: stored.correctCount,
+                    total: stored.totalGradable
+                  })}
+                  <Select.Item value={String(attemptIdx)} label={attemptLabel}>{attemptLabel}</Select.Item>
+                {/each}
+                <Select.Item value="live" label={newAttemptOptionLabel}>{newAttemptOptionLabel}</Select.Item>
+              </Select.Content>
+            </Select.Root>
+          </div>
+        {/if}
+
+        <div
+          class={cn(
+            'ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-3',
+            showAttemptsPicker ? 'ui:mt-4' : 'ui:mt-2'
+          )}
+        >
+          <h1
+            id={titleId}
+            class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
+          >
+            {exercise.title}
+          </h1>
+          {@render titleActions?.()}
+        </div>
+
+        {#if exercise.description}
+          <p class="ui:mt-3 ui:text-muted-foreground">{exercise.description}</p>
+        {/if}
+
+        <div class="ui:mt-8 ui:space-y-6">
+          <QuestionList
+            contract={{
+              mode,
+              questions: exercise.questions,
+              answersByKey: answers,
+              disabled: submitted,
+              labels
+            }}
+            onAnswerChange={handleAnswerChange}
+          />
+        </div>
+
+        <div class="ui:mt-10 ui:flex ui:items-center ui:justify-between ui:gap-4">
+          {#if submitted}
+            <div class="ui:text-sm ui:text-muted-foreground">{summaryText}</div>
+            <Button variant="outline" onclick={handleReset}>{tryAgainButtonLabel}</Button>
+          {:else}
+            <span class="ui:text-sm ui:text-muted-foreground">{privacyHint}</span>
+            <Button disabled={!canSubmitAnswers} onclick={handleSubmit}>{submitLabel}</Button>
+          {/if}
+        </div>
+
+        <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
+      {/if}
+    </div>
   </div>
 
   {#if outlineItems.length > 0}
-    <aside class="ui:hidden ui:w-52 ui:shrink-0 ui:lg:block">
-      <div class="ui:sticky ui:top-24 ui:max-h-[calc(100dvh-6rem)] ui:overflow-y-auto ui:py-8 ui:pr-4">
+    <aside
+      class="ui:sticky ui:top-12 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-52 ui:shrink-0 ui:overflow-y-auto ui:lg:block"
+    >
+      <div class="ui:px-4 ui:py-8">
         <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />
       </div>
     </aside>
