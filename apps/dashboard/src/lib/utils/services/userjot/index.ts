@@ -41,8 +41,9 @@ function ensureSdkLoaded(): void {
   document.head.appendChild(script);
 }
 
-export function initUserJot(): void {
+export function initUserJot(isOrgSite: boolean): void {
   if (isInitialized) return;
+  if (isOrgSite) return;
   if (!isWidgetAllowed()) return;
 
   ensureSdkLoaded();
@@ -66,9 +67,8 @@ type UserJotIdentity = {
 };
 
 export function identifyUserJotUser({ id, email, fullname, avatarUrl }: UserJotIdentity): void {
+  if (!isInitialized) return;
   if (!isWidgetAllowed()) return;
-
-  ensureSdkLoaded();
 
   const [firstName, ...rest] = (fullname ?? '').trim().split(/\s+/);
   const lastName = rest.join(' ');
@@ -85,9 +85,8 @@ export function identifyUserJotUser({ id, email, fullname, avatarUrl }: UserJotI
 }
 
 export function clearUserJotUser(): void {
+  if (!isInitialized) return;
   if (!isWidgetAllowed()) return;
-
-  ensureSdkLoaded();
 
   window.uj.logout();
 }
@@ -95,9 +94,8 @@ export function clearUserJotUser(): void {
 export type UserJotWidgetSection = 'feedback' | 'roadmap' | 'updates';
 
 export function showUserJotWidget(section: UserJotWidgetSection): void {
+  if (!isInitialized) return;
   if (!isWidgetAllowed()) return;
-
-  ensureSdkLoaded();
 
   window.uj.open({ to: section });
 }
