@@ -62,12 +62,27 @@ const CourseStudentsResponse = {
   required: ['success', 'data']
 };
 
+const NonAutoGradableQuestionOffenderSchema = {
+  type: 'object' as const,
+  properties: {
+    questionId: { type: 'number' as const },
+    questionTitle: { type: 'string' as const },
+    exerciseId: { type: 'string' as const },
+    exerciseTitle: { type: 'string' as const },
+    typeId: { type: 'number' as const }
+  },
+  required: ['questionId', 'questionTitle', 'exerciseId', 'exerciseTitle', 'typeId']
+};
+
 const CourseDetailResponse = {
   type: 'object' as const,
   properties: {
     success: { type: 'boolean' as const },
     data: { type: 'object' as const },
-    conversionBlocked: { type: 'array' as const, items: { type: 'object' as const } }
+    conversionBlocked: {
+      type: 'array' as const,
+      items: NonAutoGradableQuestionOffenderSchema
+    }
   },
   required: ['success', 'data']
 };
