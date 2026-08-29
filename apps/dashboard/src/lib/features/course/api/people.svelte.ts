@@ -30,7 +30,6 @@ export class PeopleApi extends BaseApiWithErrors {
   inviteLink = $state<CourseInviteLink>(null);
   /** Which course `inviteLink` belongs to, so stale responses can be discarded. */
   activeInviteLinkCourseId = $state<string | null>(null);
-  /** Monotonic request id; only the newest in-flight response is applied. */
   private inviteLinkRequestSeq = 0;
 
   /**
@@ -203,22 +202,15 @@ export class PeopleApi extends BaseApiWithErrors {
     return result?.data;
   }
 
-  /**
-   * `peopleApi` is a singleton, so a response for a course the user has already
-   * navigated away from must not overwrite the current one.
-   */
+  /** Discards responses for a course that is no longer active, or a superseded request. */
   private applyInviteLink(courseId: string, seq: number, invite: CourseInviteLink) {
     if (this.activeInviteLinkCourseId !== courseId) return;
-    // Overlapping requests for the same course can resolve out of order.
     if (seq !== this.inviteLinkRequestSeq) return;
 
     this.inviteLink = invite;
   }
 
-  /**
-   * Points the invite-link state at a course, clearing any link held for a previous
-   * one so the tab can never show or copy the wrong course's URL.
-   */
+  /** Points the state at a course, clearing any link held for a previous one. */
   private beginInviteLinkRequest(courseId: string): number {
     if (this.activeInviteLinkCourseId !== courseId) {
       this.activeInviteLinkCourseId = courseId;
@@ -230,7 +222,7 @@ export class PeopleApi extends BaseApiWithErrors {
     return this.inviteLinkRequestSeq;
   }
 
-  /** Loads the course's share link without creating one. Always refetches. */
+  /** Loads the course's share link without creating one. */
   async getInviteLink(courseId: string) {
     const seq = this.beginInviteLinkRequest(courseId);
 

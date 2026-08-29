@@ -6,7 +6,6 @@ import type { TInviteLink, TNewInviteLink } from '@db/types';
 
 export type TInviteLinkResourceType = 'COURSE' | 'COHORT';
 
-/** Identifies which resource a link points at, without the caller touching columns. */
 export type TInviteLinkTarget = {
   resourceType: TInviteLinkResourceType;
   resourceId: string;
@@ -20,7 +19,6 @@ function targetCondition(target: TInviteLinkTarget) {
   return and(eq(schema.inviteLink.resourceType, 'COHORT'), eq(schema.inviteLink.cohortId, target.resourceId));
 }
 
-/** Maps a target onto the nullable FK columns, leaving the other resource columns null. */
 export function toInviteLinkColumns(target: TInviteLinkTarget): { courseId: string | null; cohortId: string | null } {
   if (target.resourceType === 'COURSE') {
     return { courseId: target.resourceId, cohortId: null };
@@ -29,10 +27,7 @@ export function toInviteLinkColumns(target: TInviteLinkTarget): { courseId: stri
   return { courseId: null, cohortId: target.resourceId };
 }
 
-/**
- * Returns the resource's link for a role regardless of revoked state, so the UI can
- * show a disabled link and re-enable it instead of minting a duplicate.
- */
+/** Returns the link regardless of revoked state, so a disabled link can be re-enabled. */
 export async function getInviteLinkByTarget(target: TInviteLinkTarget, roleId: number): Promise<TInviteLink | null> {
   try {
     const [row] = await db
@@ -67,8 +62,6 @@ export async function createInviteLink(values: TNewInviteLink): Promise<TInviteL
       return created;
     }
 
-    // Another request won the race; the per-resource unique constraint means the
-    // existing row is the resource's one and only link for this role.
     const resourceId = values.resourceType === 'COURSE' ? values.courseId : values.cohortId;
     if (!resourceId) {
       throw new Error('Invite link is missing its resource id');
@@ -123,11 +116,9 @@ export type TInviteLinkWithContext = {
     siteName: string;
     theme: string | null;
     avatarUrl: string | null;
-    // Needed so learner-facing URLs resolve to the org's verified custom domain.
     customDomain: string | null;
     isCustomDomainVerified: boolean | null;
   };
-  /** Denormalized resource display data, whichever resource the link targets. */
   course: {
     id: string;
     title: string;
@@ -139,10 +130,7 @@ export type TInviteLinkWithContext = {
   cohort: { id: string; name: string; description: string | null; coverImage: string | null; status: string } | null;
 };
 
-/**
- * Loads a link by token hash together with its org and target resource. Accepts a tx
- * client so the accept path can read inside its transaction.
- */
+/** Loads a link by token hash with its org and target resource. */
 export async function getInviteLinkByTokenHash(
   dbClient: DbOrTxClient,
   tokenHash: string
@@ -210,11 +198,7 @@ export async function getInviteLinkByTokenHash(
   }
 }
 
-/**
- * Re-reads the link inside the accept transaction and locks the row, so a revoke that
- * commits between the initial check and the membership writes can no longer slip
- * through. Returns null when the link has been deleted.
- */
+/** Locks the row so a concurrent revoke cannot slip past the accept check. */
 export async function lockInviteLinkForAccept(dbClient: DbOrTxClient, inviteId: string): Promise<TInviteLink | null> {
   try {
     const [row] = await dbClient
@@ -231,10 +215,7 @@ export async function lockInviteLinkForAccept(dbClient: DbOrTxClient, inviteId: 
   }
 }
 
-/**
- * Bumps the join counter after a successful join. Informational only — these links
- * have no usage cap, so this never gates access and needs no compare-and-swap.
- */
+/** Informational counter; these links have no usage cap, so it gates nothing. */
 export async function incrementInviteLinkJoinCount(dbClient: DbOrTxClient, inviteId: string): Promise<void> {
   try {
     await dbClient
@@ -253,7 +234,6 @@ export async function incrementInviteLinkJoinCount(dbClient: DbOrTxClient, invit
   }
 }
 
-/** Lists an org's active links, for future admin surfaces. */
 export async function listOrganizationInviteLinks(organizationId: string): Promise<TInviteLink[]> {
   try {
     return await db

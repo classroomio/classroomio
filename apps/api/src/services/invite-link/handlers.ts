@@ -10,31 +10,21 @@ import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
 import type { TInviteLinkResourceType } from '@cio/utils/validation/invite-link';
 
-/** What the public join page renders, discriminated on `resourceType`. */
+/** What the public join page renders. */
 export type InviteLinkPreview = {
   resourceType: TInviteLinkResourceType;
-  /** Display name of the thing being joined — course title or cohort name. */
   resourceName: string;
   description: string | null;
   coverImage: string | null;
-  /** False when the resource itself has stopped accepting joins (archived cohort, inactive course). */
+  /** False when the resource has stopped accepting joins. */
   isResourceOpen: boolean;
 };
 
 type InviteLinkHandler = {
-  /**
-   * Resolves the owning organization for a resource id, so link creation never needs
-   * the caller to pass an org and can't be pointed at another tenant's resource.
-   */
   resolveOrganizationId(resourceId: string): Promise<string>;
-  /** Shapes the join-page payload for this resource type. */
   preview(context: TInviteLinkWithContext): InviteLinkPreview;
-  /**
-   * Resource-specific enrollment. Runs *after* the generic accept has committed org
-   * membership, so the profile is already a member of the org with `roleId`.
-   */
+  /** Runs after the generic accept has committed org membership. */
   enroll(context: TInviteLinkWithContext, profileId: string, email: string): Promise<void>;
-  /** Where the learner lands once they are in. */
   redirectTo(context: TInviteLinkWithContext): string;
 };
 
@@ -54,11 +44,7 @@ function requireCohort(context: TInviteLinkWithContext) {
   return context.cohort;
 }
 
-/**
- * Org-branded cohort welcome, matching the audience-import path. Failures are logged
- * and swallowed: the learner is already enrolled, so a bounced email must not fail the
- * join.
- */
+/** Failures are swallowed: the learner is already enrolled, so a bad email must not fail the join. */
 async function sendCohortWelcomeEmail(input: {
   organization: TInviteLinkWithContext['organization'];
   cohortId: string;
@@ -84,7 +70,6 @@ async function sendCohortWelcomeEmail(input: {
       preference: { organizationId: organization.id, recipientProfileId: profileId }
     });
   } catch (error) {
-    // Correlate by ids only — the recipient address must not reach the logs.
     console.error('sendCohortWelcomeEmail enqueue error', { cohortId, profileId }, error);
   }
 }
@@ -108,8 +93,7 @@ const courseHandler: InviteLinkHandler = {
       resourceName: course.title,
       description: course.description,
       coverImage: null,
-      // A share link is an explicit staff act, so an unpublished course still accepts
-      // joins through it — the same way invites already bypass self-enrollment rules.
+      // Unpublished courses still accept link joins, like invites bypass self-enrollment.
       isResourceOpen: course.status === 'ACTIVE'
     };
   },
@@ -169,14 +153,8 @@ const cohortHandler: InviteLinkHandler = {
     const cohort = requireCohort(context);
     const roleId = context.invite.roleId;
 
-    // Composed from the query layer rather than delegating to `assignAudienceToCourses`:
-    // that path filters to profiles whose *organization* role is STUDENT, which silently
-    // skips anyone who is already an org ADMIN or TUTOR. Cohort role is independent of
-    // org role, so a staff member joining a cohort via its link must still be enrolled.
-    //
-    // Insert-if-absent rather than check-then-insert: two concurrent accepts would
-    // otherwise both pass an existence check and the loser would fail on the unique
-    // constraint. The returned row also tells us whether this was a fresh join.
+    // Not `assignAudienceToCourses`: it filters to org-role STUDENT, silently skipping
+    // org admins/tutors. Cohort role is independent of org role.
     const createdMember = await insertCohortMemberIfAbsent({ cohortId: cohort.id, roleId, profileId, email });
     const isFreshJoin = createdMember !== null;
 
@@ -210,9 +188,8 @@ const cohortHandler: InviteLinkHandler = {
 };
 
 /**
- * Adding a new invite-link resource type means: one entry here, one enum value in
- * `INVITE_LINK_RESOURCE_TYPE`, one nullable FK column, and thin create/toggle routes
- * on that resource's router. No new table, no new join page, no new UI.
+ * A new resource type needs: one entry here, one `INVITE_LINK_RESOURCE_TYPE` value,
+ * one nullable FK column, and create/toggle routes on that resource's router.
  */
 export const INVITE_LINK_HANDLERS: Record<TInviteLinkResourceType, InviteLinkHandler> = {
   COURSE: courseHandler,

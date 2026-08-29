@@ -10,7 +10,6 @@ import {
   type TInviteLinkTarget
 } from '@cio/db/queries/invite-link';
 import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
-import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
@@ -39,10 +38,7 @@ export type InviteLinkResponse = {
   lastUsedAt: string | null;
 };
 
-/**
- * One join URL for every resource type. The token alone identifies the resource, so
- * the path never has to change when a new resource type is added.
- */
+/** One join URL for every resource type; the token identifies the resource. */
 export function buildInviteLinkUrl(token: string): string {
   return `${getAppBaseUrl()}/invite/r/${encodeURIComponent(token)}`;
 }
@@ -65,12 +61,9 @@ function toInviteLinkResponse(invite: {
 }
 
 /**
- * Returns the resource's share link, creating it on first request. Idempotent — the
- * same link comes back forever so staff can re-copy it, and a unique constraint keeps
- * it to one per (resource, role).
- *
- * Callers are responsible for authorizing access to `target` (the per-resource routers
- * do this with their existing team-member middleware).
+ * Returns the resource's share link, creating it on first request. Idempotent.
+ * Callers must authorize `target` themselves — the resource routers do this with
+ * their existing team-member middleware.
  */
 export async function getOrCreateInviteLink(input: {
   organizationId: string;
@@ -133,8 +126,6 @@ export async function toggleInviteLink(input: {
 }
 
 // ─── Resource-scoped entry points ────────────────────────────────────────────
-// The per-resource routers call these. They resolve the owning organization from the
-// resource itself, so a new resource type adds no service code — only a handler entry.
 
 export async function getOrCreateInviteLinkForResource(
   resourceType: TInviteLinkResourceType,
@@ -154,7 +145,7 @@ export async function fetchInviteLinkForResource(
   resourceType: TInviteLinkResourceType,
   resourceId: string
 ): Promise<InviteLinkResponse | null> {
-  // Resolves first so a bad resource id 404s instead of silently returning null.
+  // Resolves first so a bad resource id 404s instead of returning null.
   await getInviteLinkHandler(resourceType).resolveOrganizationId(resourceId);
 
   return fetchInviteLink({ resourceType, resourceId });
@@ -177,10 +168,7 @@ export type InviteLinkPreviewResponse = {
   organization: { id: string; name: string; siteName: string; theme: string | null; avatarUrl: string | null };
 };
 
-/**
- * Server-only preview for the join page (API-key protected at the route layer). Never
- * returns the raw token — the caller already holds it.
- */
+/** Server-only preview for the join page. Never returns the raw token. */
 export async function previewInviteLink(token: string): Promise<InviteLinkPreviewResponse> {
   const tokenHash = hashInviteToken(token);
   const context = await getInviteLinkByTokenHash(db, tokenHash);
@@ -191,23 +179,19 @@ export async function previewInviteLink(token: string): Promise<InviteLinkPrevie
 
   const handler = getInviteLinkHandler(context.invite.resourceType);
 
+  const { id, name, siteName, theme, avatarUrl } = context.organization;
+
   return {
     invite: { id: context.invite.id, isRevoked: context.invite.isRevoked },
     resource: handler.preview(context),
-    organization: context.organization
+    // Picked explicitly so the query's custom-domain fields don't reach the browser.
+    organization: { id, name, siteName, theme, avatarUrl }
   };
 }
 
 /**
- * Joins the authenticated user to the link's resource.
- *
- * The link is never consumed — it is permanent and reusable, so anyone holding it can
- * join until it is revoked. Joining is idempotent: an existing member simply has their
- * enrollment re-synced.
- *
- * Shared for every resource type: validate the link, confirm the resource is still
- * open, establish org membership (respecting the student cap), record the usage. Only
- * the enrollment step is delegated to the resource handler.
+ * Joins the authenticated user to the link's resource. The link is never consumed,
+ * and joining is idempotent. Only the enrollment step is delegated to the handler.
  */
 export async function acceptInviteLink(token: string, user: TAuthUser, context: TInviteRequestContext = {}) {
   if (!user.id || !user.email) {
@@ -237,11 +221,8 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
   const organizationId = inviteContext.organization.id;
   const inviteId = inviteContext.invite.id;
 
-  // Org membership is committed before the handler runs so the resource handlers can
-  // rely on the profile already being a member.
   const wasAlreadyOrgMember = await db.transaction(async (tx) => {
-    // Re-read under a row lock: the revoked check above raced with any concurrent
-    // revoke, so without this a link disabled mid-request could still grant access.
+    // Re-read under lock: without this a revoke landing mid-request still grants access.
     const locked = await lockInviteLinkForAccept(tx, inviteId);
 
     if (!locked) {
@@ -257,6 +238,7 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     if (!orgMemberId) {
       await assertStudentCapacityOrThrow(organizationId, 1);
 
+      // `verified` is membership confirmation, not email ownership.
       await createOrganizationMember(
         {
           organizationId,
@@ -269,15 +251,15 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
       );
     }
 
-    await markUserAndProfileEmailVerified(user.id, tx);
+    // Unlike email invites, a share link proves nothing about the address, so the
+    // email is left unverified and the dashboard's verify-email modal prompts them.
 
     return Boolean(orgMemberId);
   });
 
   await handler.enroll(inviteContext, user.id, normalizedEmail);
 
-  // Counted only once enrollment has actually succeeded, so a failed join is not
-  // recorded as one. Enrollment is idempotent, so a retry repairs a partial join.
+  // Counted only after enrollment succeeds, so a failed join isn't recorded as one.
   await incrementInviteLinkJoinCount(db, inviteId);
 
   console.info('acceptInviteLink joined', {

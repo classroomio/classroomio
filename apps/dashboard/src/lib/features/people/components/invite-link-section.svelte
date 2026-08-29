@@ -14,9 +14,7 @@
     link: string;
     isRevoked: boolean;
     isLoading: boolean;
-    /** How many people have joined with the link. */
     joinCount?: number;
-    /** Overridden per resource so the copy names what the link joins. */
     titleKey?: string;
     descriptionKey?: string;
     onGenerate: () => void | Promise<void>;

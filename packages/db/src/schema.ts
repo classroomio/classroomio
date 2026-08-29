@@ -3121,17 +3121,8 @@ export const cohortMember = pgTable(
 export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
 
 /**
- * Shared share-link infrastructure for *resource* invites — a permanent, revocable
- * link that lets anyone holding it join a course, a cohort, or whatever resource is
- * added next. Adding a resource type means one nullable FK column, one enum value
- * and one handler in the accept dispatcher; never a new table.
- *
- * Deliberately separate from `organization_invite`, which owns *platform* invites
- * (joining the org itself, as a team member or student). Those are a different
- * concept with different permissions and lifecycle — see the accept services.
- *
- * There is no `expiresAt` / `maxUses` / `usedCount`: these links are permanent and
- * uncapped, and access is withdrawn with `isRevoked` rather than by expiry.
+ * Permanent, revocable share links for resource invites (course, cohort, ...).
+ * Separate from `organization_invite`, which owns platform invites.
  */
 export const inviteLink = pgTable(
   'invite_link',
@@ -3140,15 +3131,12 @@ export const inviteLink = pgTable(
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
-    // Scoping only — never the invite target. Drives org-wide listing and the
-    // student capacity check on accept.
     organizationId: uuid('organization_id').notNull(),
     resourceType: inviteLinkResourceType('resource_type').notNull(),
     courseId: uuid('course_id'),
     cohortId: uuid('cohort_id'),
-    /** Role granted on accept. Keyed into the uniques so a future tutor-level link needs no migration. */
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
-    /** Raw token, kept so staff can re-copy the link at any time. */
+    /** Raw token, kept so staff can re-copy the link. */
     token: text().notNull(),
     tokenHash: text('token_hash').notNull(),
     createdByProfileId: uuid('created_by_profile_id').notNull(),
@@ -3186,11 +3174,9 @@ export const inviteLink = pgTable(
       name: 'invite_link_role_id_fkey'
     }),
     unique('invite_link_token_hash_key').on(table.tokenHash),
-    // One link per (resource, role). Postgres treats NULLs as distinct, so cohort
-    // rows (course_id IS NULL) never collide with each other here, and vice versa.
+    // One link per (resource, role); NULLs are distinct so the two never collide.
     unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
     unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
-    // Exactly one target column set, matching resource_type.
     check(
       'invite_link_resource_target_check',
       sql`(

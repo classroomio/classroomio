@@ -292,8 +292,7 @@ export const inviteRouter = new Hono()
   )
   /**
    * GET /invite/r/:token/preview
-   * Server-only preview for *resource* share links — course, cohort, and any resource
-   * type added later. One path for all of them; the token identifies the resource.
+   * Server-only preview for resource share links (course, cohort, ...).
    */
   .get(
     '/r/:token/preview',
@@ -313,8 +312,7 @@ export const inviteRouter = new Hono()
   )
   /**
    * POST /invite/r/:token/accept
-   * Authenticated resource share-link acceptance. Establishes org membership and then
-   * delegates enrollment to the resource handler.
+   * Authenticated resource share-link acceptance.
    */
   .post(
     '/r/:token/accept',
