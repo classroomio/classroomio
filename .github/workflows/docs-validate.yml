@@ -12,15 +12,16 @@ name: Docs validate
 # (continue-on-error hides the failure). Same-repo PRs are unaffected.
 # Known v1 limitation, not fixed here — see apps/docs/WORKFLOW.md.
 #
-# Scoped to apps/docs/**, so this never runs on code-only PRs. Advisory
-# only. Never add this to branch protection's required checks: a
-# path-filtered required check that never runs on some PRs leaves those
+# Scoped to apps/docs/** and apps/help/**, so this never runs on code-only
+# PRs. Advisory only. Never add this to branch protection's required checks:
+# a path-filtered required check that never runs on some PRs leaves those
 # PRs stuck pending forever.
 
 on:
   pull_request:
     paths:
       - 'apps/docs/**'
+      - 'apps/help/**'
       - '.github/workflows/docs-validate.yml'
 
 permissions:
@@ -43,16 +44,30 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: blume validate
+      - name: blume validate (docs)
         continue-on-error: true
         run: pnpm --filter @cio/docs validate
 
-      - name: Vale
+      - name: blume validate (help)
+        continue-on-error: true
+        run: pnpm --filter @cio/help validate
+
+      - name: Vale (docs)
         continue-on-error: true
         uses: errata-ai/vale-action@v2
         with:
           files: apps/docs/content/docs
           vale_flags: '--config=apps/docs/.vale.ini'
+          reporter: github-pr-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Vale (help)
+        continue-on-error: true
+        uses: errata-ai/vale-action@v2
+        with:
+          files: apps/help/content/help
+          vale_flags: '--config=apps/help/.vale.ini'
           reporter: github-pr-check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -7,8 +7,9 @@ import { defineConfig } from 'blume';
  * scripts/package-assets.mjs moves dist/ under docs/ to match the served path.
  *
  * Redirects are NOT declared here: under a base, Astro prefixes a redirect's
- * source but not its target, so it would emit `url=/guides` instead of
- * `/docs/guides`. They live in scripts/package-assets.mjs as a `_redirects` file.
+ * source but not its target, so it would emit `url=/developers/mcp` instead
+ * of `/docs/developers/mcp`. They live in scripts/package-assets.mjs as a
+ * `_redirects` file.
  */
 export default defineConfig({
   title: 'ClassroomIO Docs | Customer, Partner, and Employee Education',
@@ -56,7 +57,6 @@ export default defineConfig({
   navigation: {
       tabs: [
       { label: 'Platform', path: '/', icon: 'house' },
-      { label: 'Help Center', path: '/guides', icon: 'book-open' },
       { label: 'Developers', path: '/developers', icon: 'terminal' },
       { label: 'Self-Hosting', path: '/self-hosted', icon: 'server' },
       { label: 'API', path: '/api', icon: 'code' }
@@ -85,103 +85,6 @@ export default defineConfig({
               '/organization',
               '/student-dashboard',
               '/enterprise-sso'
-            ]
-          }
-        ]
-      },
-      {
-        label: 'Help Center',
-        root: '/guides',
-        items: [
-          '/guides',
-          {
-            label: 'Get started',
-            items: ['/guides/create-first-course']
-          },
-          {
-            label: 'Build a course',
-            items: [
-              {
-                label: 'Get started',
-                items: ['/guides/create-first-course']
-              },
-              {
-                label: 'Build a course',
-                items: [
-                  '/guides/course-types',
-                  '/guides/create-exercise',
-                  '/guides/grade-exercise',
-                  '/guides/course-progression',
-                  '/guides/use-math-in-editor',
-                  '/guides/certificates'
-                ]
-              },
-              {
-                label: 'Live classes',
-                items: ['/guides/live-class', '/guides/take-attendance']
-              },
-              {
-                label: 'Enrollment & students',
-                items: [
-                  '/guides/course-enrollment',
-                  '/guides/enrollment-access-control',
-                  '/guides/welcome-email',
-                  '/guides/invite-students'
-                ]
-              },
-              {
-                label: 'Publish your academy',
-                items: [
-                  '/guides/course-landingpage',
-                  '/guides/org-landing-page',
-                  '/guides/academy-sharing-and-branding',
-                  '/guides/custom-domain'
-                ]
-              },
-              {
-                label: 'Organization & team',
-                items: [
-                  '/guides/admin-dashboard',
-                  '/guides/customize-organization',
-                  '/guides/invite-team-member',
-                  '/guides/roles-and-permissions'
-                ]
-              }
-            ]
-          },
-          {
-            label: 'Live classes',
-            items: ['/guides/live-class', '/guides/take-attendance']
-          },
-          {
-            label: 'Enrollment & students',
-            items: [
-              '/guides/course-enrollment',
-              '/guides/welcome-email',
-              '/guides/invite-students',
-              '/guides/create-a-cohort',
-              '/guides/manage-your-audience'
-            ]
-          },
-          {
-            label: 'Publish your academy',
-            items: [
-              '/guides/course-landingpage',
-              '/guides/org-landing-page',
-              '/guides/academy-sharing-and-branding',
-              '/guides/custom-domain'
-            ]
-          },
-          {
-            label: 'Organization & team',
-            items: [
-              '/guides/admin-dashboard',
-              '/guides/customize-organization',
-              '/guides/invite-team-member',
-              '/guides/roles-and-permissions',
-              '/guides/enterprise-sso-setup',
-              '/guides/manage-tags',
-              '/guides/use-the-community-forum'
             ]
           }
         ]

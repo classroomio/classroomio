@@ -1,0 +1,121 @@
+---
+title: Create a Cohort
+description: Create a cohort, add courses to it, configure its settings, add goals, and assign students in ClassroomIO.
+sidebar:
+  order: 4
+---
+
+A cohort groups existing courses into a shared learning path with its own goals and a dedicated space for updates. This guide walks through setting one up end to end. For what cohorts are and how they differ from a single course, see [Cohorts](https://classroomio.com/docs/cohorts).
+
+## Create the cohort
+
+<Steps>
+<Step>
+### Open Cohorts
+
+From the admin dashboard sidebar, under **Content**, click **Cohorts**. This opens the cohort list for your organization, which you can search, sort by name/courses/students/status, and filter by status (Active, Inactive, Archived).
+</Step>
+
+<Step>
+### Start the create flow
+
+Click **New Cohort**.
+</Step>
+
+<Step>
+### Name it
+
+Enter a **Name** (for example "OSHA Safety Certification") and an optional **Description** of what the cohort is about, then click **Create**.
+</Step>
+</Steps>
+
+You land inside the new cohort, which has its own sidebar: **Newsfeed**, **Courses**, **People**, and **Settings**. Settings only appears for org Admins and cohort Tutors/Admins. Everyone else with access to the cohort sees Newsfeed, Courses, and People.
+
+## Add courses to the cohort
+
+<Steps>
+<Step>
+### Open Courses
+
+In the cohort's sidebar, click **Courses**.
+</Step>
+
+<Step>
+### Add existing courses
+
+Click **Add Course**. In the **Add Course to Cohort** dialog, search your organization's courses and select one or more that aren't already in the cohort, then confirm.
+</Step>
+</Steps>
+
+Cohorts group courses you've already built. You still create and edit course content the normal way (see [Create Your First Course](/get-started/create-first-course)). One detail worth knowing: a course can sit in a cohort while still unpublished, so your team can build the cohort out ahead of time, but students won't see that course, in the cohort or anywhere else, until you publish it.
+
+## Configure cohort settings
+
+Open **Settings** in the cohort's sidebar. It has three sections:
+
+- **General** — the cohort's **Name**, **Description**, and **Status**. Status is **Active**, **Inactive**, or **Archived**: the closest thing to a visibility control a cohort has, useful for retiring a cohort without deleting its data.
+- **Learning Goals** — covered below.
+- **Danger Zone** — **Delete Cohort** permanently removes the cohort along with its goals and newsfeed. It does not delete the courses inside it or unenroll students from those courses. Deleting a cohort only removes the grouping.
+
+Edits here save through the same unsaved-changes bar used across the dashboard: change a field and a **Save Changes** action appears at the bottom.
+
+## Add goals
+
+Goals measure progress across the courses you've added to the cohort. From **Settings**, scroll to **Learning Goals** and click **New Goal**.
+
+<Steps>
+<Step>
+### Name the goal and choose which courses it covers
+
+Enter a **Title** and optional **Description**, then check off which of the cohort's courses count toward this goal. At least one course is required.
+</Step>
+
+<Step>
+### Choose a type
+
+Pick a **Type**. This is the same set of goal types described on the [Cohorts](https://classroomio.com/docs/cohorts) concept page, and each one unlocks a different extra field:
+
+| Type | What it measures | Extra field |
+| --- | --- | --- |
+| **Complete all** | Every selected course is completed | none |
+| **N of M** | A minimum number of the selected courses completed | **Number of courses required** |
+| **Score** | Per-learner score threshold on every selected course | **Per-student pass score (%)** |
+| **Pass rate** | Team-wide pass-rate threshold | **Per-student pass score (%)** and **Team pass rate (%)** |
+| **Readiness** | Tracks completion with no deadline | none (deadline is locked to "No deadline") |
+</Step>
+
+<Step>
+### Set a deadline (optional)
+
+Choose a **Deadline**: **No deadline**, **Absolute date**, **Relative to student joining** (a number of days after they're assigned to the cohort), or **Recurring** (repeats every N months). Readiness goals are locked to no deadline. If you set one, you can also add **Reminders**, a comma-separated list of days before the deadline. For example, `7, 3, 1` reminds learners a week, three days, and a day out.
+</Step>
+
+<Step>
+### Save
+
+Click **Save**. The goal shows up in the Learning Goals list with live counts of learners who are completed, in progress, at risk, or overdue against it.
+</Step>
+</Steps>
+
+Edit or remove a goal later from the same list.
+
+## Assign students
+
+Students join a cohort from its **People** tab (visible to Admins and Tutors). Click **Invite** to open the **Invite Members** dialog, which has two tabs:
+
+- **Add Students** — search students already in your organization's audience, select the ones you want, and grant them access. A checkbox controls whether they get an email about it.
+- **Invite Tutors** — the same dialog can add Admins or Tutors to the cohort, picked from your organization's team.
+
+For students who don't have an account yet, the same **Add Students** flow includes a bulk email option: paste a list of addresses and ClassroomIO sends each one an invite, with a checkbox to control whether the invite email goes out. This works the same way course email invites do. See [Invite Students](/enrollment-and-students/invite-students) for how that invite-and-enrollment flow behaves.
+
+Assigning a student to a cohort is a separate action from enrolling them in the cohort's individual courses: it adds them to the cohort's roster and its goals, but doesn't by itself enroll them in every course inside it. For per-course enrollment paths (public self-enroll, invite links, direct add), see [How Course Enrollment Works](/enrollment-and-students/course-enrollment).
+
+Once assigned, students see the cohort under **Cohorts** in their LMS. See [Cohorts](https://classroomio.com/docs/cohorts) for what that view includes.
+
+## Related guides
+
+- [Cohorts](https://classroomio.com/docs/cohorts) — what cohorts are, goal types, and what students see
+- [Create Your First Course](/get-started/create-first-course) — build the courses you'll group into a cohort
+- [Invite Students](/enrollment-and-students/invite-students) — how email-based invites and enrollment work
+- [How Course Enrollment Works](/enrollment-and-students/course-enrollment) — enrollment paths for individual courses
+- [Roles and Permissions](/organization-and-team/roles-and-permissions) — who can manage a cohort's settings

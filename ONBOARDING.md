@@ -33,7 +33,7 @@ Open these pages in a new tab so you understand the product before clicking arou
 | What is ClassroomIO | https://classroomio.com/docs |
 | Terminology | https://classroomio.com/docs/terminology |
 | Quickstart | https://classroomio.com/docs/quickstart/signup |
-| Course Types | https://classroomio.com/docs/guides/course-types |
+| Course Types | https://classroomio.com/help/build-a-course/course-types |
 | Organization | https://classroomio.com/docs/organization |
 | Student Dashboard | https://classroomio.com/docs/student-dashboard |
 
@@ -51,7 +51,7 @@ Open these pages in a new tab so you understand the product before clicking arou
 ## Part 2 — Courses
 
 Create one course for each course type. For each course, follow the
-[Create First Course](https://classroomio.com/docs/guides/create-first-course) guide,
+[Create First Course](https://classroomio.com/help/get-started/create-first-course) guide,
 then complete the type-specific checklist below.
 
 ### 2.1 Self-Paced Course
@@ -498,9 +498,9 @@ student-side testing. This keeps the admin session clean.
 | Topic | Link |
 |---|---|
 | Student Dashboard | https://classroomio.com/docs/student-dashboard |
-| Course Enrollment | https://classroomio.com/docs/guides/course-enrollment |
-| Welcome Email | https://classroomio.com/docs/guides/welcome-email |
-| Invite Students | https://classroomio.com/docs/guides/invite-students |
+| Course Enrollment | https://classroomio.com/help/enrollment-and-students/course-enrollment |
+| Welcome Email | https://classroomio.com/help/enrollment-and-students/welcome-email |
+| Invite Students | https://classroomio.com/help/enrollment-and-students/invite-students |
 
 ### LMS Checklist
 
