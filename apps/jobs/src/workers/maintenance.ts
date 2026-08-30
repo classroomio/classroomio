@@ -4,12 +4,14 @@ import { Queue, Worker } from 'bullmq';
 
 import { runAnalyticsRollupDaily } from '@cio/analytics';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
+import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
 import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
 import {
   JOB_NAMES,
   QUEUE_NAMES,
   ZAnalyticsDailyRollupPayload,
   ZAssetStorageCleanupPayload,
+  ZCourseRoleReconcilePayload,
   ZDeadLetterCleanupPayload,
   ZMediaJobReapPayload,
   ZRetentionCompactPayload,
@@ -66,6 +68,21 @@ const worker = new Worker(
         keys: data.keys.length
       });
       return { assetId: data.assetId };
+    }
+
+    if (job.name === JOB_NAMES.maintenance.courseRoleReconcile) {
+      const data = ZCourseRoleReconcilePayload.parse(job.data ?? {});
+      const demoted = await reconcileCourseRolesToOrgRole(data.organizationId, data.profileId);
+
+      if (demoted > 0) {
+        log.warn('course-role-reconcile-demoted', {
+          organizationId: data.organizationId,
+          profileId: data.profileId,
+          demoted
+        });
+      }
+
+      return { demoted };
     }
 
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {

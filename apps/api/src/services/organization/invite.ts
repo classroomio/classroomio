@@ -22,6 +22,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
+import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
@@ -103,6 +104,20 @@ function getExpiryLabel(expiresAtIso: string): string {
 }
 
 async function syncOrgMemberForOrgInvite(
+  tx: DbOrTxClient,
+  params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
+): Promise<void> {
+  await applyOrgInviteMembership(tx, params);
+
+  // An invite can lower an existing member's role, and course roles live in a separate
+  // durable table that removal/demotion never touches, so a former admin re-invited as a
+  // tutor or student would keep instructor privileges on courses they once worked in.
+  // Reconciling can touch many rows, so it runs off the request path; the job re-reads the
+  // member's current org role, which makes it safe even if this transaction rolls back.
+  await scheduleCourseRoleReconcile(params.organizationId, params.userId);
+}
+
+async function applyOrgInviteMembership(
   tx: DbOrTxClient,
   params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
 ): Promise<void> {

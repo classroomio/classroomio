@@ -11,6 +11,7 @@ import {
 } from '@cio/db/queries/organization/invite';
 
 import { ROLE } from '@cio/utils/constants';
+import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { getProfileById } from '@cio/db/queries/auth';
 import { db } from '@cio/db/drizzle';
 import { env } from '@cio/core/config/env';
@@ -120,6 +121,11 @@ export async function joinOrganization(userId: string, orgId: string): Promise<J
     roleId: ROLE.STUDENT,
     verified: true
   });
+
+  // Someone who previously held a course team role in this org keeps that durable
+  // `groupmember` row after being removed from the org. Joining back as a student must not
+  // hand their instructor privileges back.
+  await scheduleCourseRoleReconcile(orgId, userId);
 
   return { alreadyMember: false, linkedExistingMember: false };
 }

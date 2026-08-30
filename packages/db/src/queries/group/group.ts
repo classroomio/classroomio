@@ -311,6 +311,58 @@ export async function getCourseProgramAccess(
 }
 
 /**
+ * Clamps a profile's course roles across one organization so they never outrank the role
+ * the person currently holds in that organization.
+ *
+ * A `groupmember` row is durable and cannot be deleted when someone's org role changes --
+ * submissions, newsfeed posts, comments, attendance and poll answers all reference
+ * `groupmember.id`, and eight of those nine constraints have no `on delete` rule -- so a
+ * stale ADMIN row would otherwise keep granting instructor privileges to a person who has
+ * since been re-invited as a tutor or student.
+ *
+ * Roles are ordered by privilege ascending (ADMIN 1, TUTOR 2, STUDENT 3), so clamping is
+ * "raise the role id to at least the org role id". Only rows that outrank the org role
+ * change, which means this can never promote: a course role deliberately set below the
+ * person's org role -- an admin enrolled as a student, a tutor on a course they created --
+ * is preserved.
+ *
+ * @returns the number of course roles that were demoted
+ */
+export async function clampCourseRolesToOrgRole(
+  orgId: string,
+  profileId: string,
+  orgRoleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  const outrankingRoles = Array.from({ length: Math.max(0, orgRoleId - 1) }, (_, index) => index + 1);
+  if (outrankingRoles.length === 0) return 0;
+
+  try {
+    const orgGroupIds = dbClient
+      .select({ id: schema.group.id })
+      .from(schema.group)
+      .where(eq(schema.group.organizationId, orgId));
+
+    const demoted = await dbClient
+      .update(schema.groupmember)
+      .set({ roleId: orgRoleId })
+      .where(
+        and(
+          eq(schema.groupmember.profileId, profileId),
+          inArray(schema.groupmember.roleId, outrankingRoles),
+          inArray(schema.groupmember.groupId, orgGroupIds)
+        )
+      )
+      .returning({ id: schema.groupmember.id });
+
+    return demoted.length;
+  } catch (error) {
+    console.error('clampCourseRolesToOrgRole error:', error);
+    throw new Error(`Failed to clamp course roles: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Resolves the course group an organization ADMIN is entitled to act in even when they
  * have no `groupmember` row yet (accepting an org invite only creates an
  * `organizationmember` row). Returns null when the profile is not an admin of the
