@@ -3,26 +3,18 @@
   import MessageSquarePlusIcon from '@lucide/svelte/icons/message-square-plus';
   import { Button } from '@cio/ui/base/button';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import { Switch } from '@cio/ui/base/switch';
   import { globalStore } from '$lib/utils/store/app';
   import { showUserJotWidget } from '$lib/utils/services/userjot';
   import { t } from '$lib/utils/functions/translations';
-
-  interface Props {
-    onlyUnread: boolean;
-  }
-
-  let { onlyUnread = $bindable() }: Props = $props();
 </script>
 
 <div class="flex items-center justify-between gap-2 px-4 py-3">
   <p class="text-sm font-semibold">{$t('notifications.title')}</p>
 
   <div class="flex items-center gap-2">
-    <label class="ui:text-muted-foreground flex cursor-pointer items-center gap-2 text-xs">
-      {$t('notifications.only_show_unread')}
-      <Switch bind:checked={onlyUnread} />
-    </label>
+    <!-- TODO: "Only show unread" toggle belongs here. Hidden until read state exists —
+         every notification is unread today, so it would filter nothing.
+         See prd/notification-system/README.md (notification.isRead). -->
 
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>

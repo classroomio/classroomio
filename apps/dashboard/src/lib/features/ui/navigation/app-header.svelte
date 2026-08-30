@@ -56,7 +56,7 @@
             </Button>
           {/snippet}
         </Popover.Trigger>
-        <Popover.Content align="end" sideOffset={8} class="w-[380px] p-0">
+        <Popover.Content align="end" sideOffset={8} class="w-[460px] p-0">
           <NotificationsPanel />
         </Popover.Content>
       </Popover.Root>

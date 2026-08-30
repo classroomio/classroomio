@@ -16,7 +16,8 @@
 
   // Kept as a plain string: UnderlineTabs.Root types `value` as string, so a union breaks bind:.
   let activeTab = $state(DIRECT_TAB);
-  let onlyUnread = $state(false);
+  // Always false while the toggle is hidden; the filter stays wired so re-enabling is one line.
+  const onlyUnread = false;
   let selectedInviteId = $state<string | null>(null);
   let isModalOpen = $state(false);
 
@@ -46,7 +47,7 @@
   }
 </script>
 
-<NotificationsPanelHeader bind:onlyUnread />
+<NotificationsPanelHeader />
 
 <UnderlineTabs.Root bind:value={activeTab} class="gap-0">
   <UnderlineTabs.List class="px-2">
