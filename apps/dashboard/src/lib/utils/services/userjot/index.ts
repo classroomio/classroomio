@@ -50,7 +50,7 @@ export function initUserJot(isOrgSite: boolean): void {
 
   window.uj.init(USERJOT_PROJECT_ID, {
     widget: {
-      launcher: false,
+      launcher: true,
       position: 'right',
       theme: 'auto'
     }
