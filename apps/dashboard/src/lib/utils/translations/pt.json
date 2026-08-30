@@ -4086,7 +4086,9 @@
         "joined": "Organização aderida",
         "join_failed": "Falha ao ingressar na organização",
         "try_again": "Tentar novamente"
-      }
+      },
+      "not_found": "Este convite não está mais disponível.",
+      "loading": "Carregando convite..."
     },
     "link": {
       "page_title": "Junte-se a {orgName} no ClassroomIO",
@@ -5062,6 +5064,17 @@
         "save": "Salvar",
         "cancel": "Cancelar"
       }
+    }
+  },
+  "notifications": {
+    "title": "Notificações",
+    "empty_title": "Nenhuma notificação",
+    "empty_description": "Você está atualizado. Novas notificações aparecerão aqui.",
+    "refresh": "Atualizar",
+    "pending_invite": {
+      "heading": "Convite da organização",
+      "body": "A {orgName} convidou você para participar como {role}.",
+      "action": "Ver convite"
     }
   }
 }

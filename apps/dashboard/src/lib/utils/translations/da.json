@@ -4086,7 +4086,9 @@
         "joined": "Tilsluttet organisation",
         "join_failed": "Kunne ikke deltage i organisationen",
         "try_again": "Prøv igen"
-      }
+      },
+      "not_found": "Denne invitation er ikke længere tilgængelig.",
+      "loading": "Indlæser invitation..."
     },
     "link": {
       "page_title": "Tilmeld dig {orgName} på ClassroomIO",
@@ -5062,6 +5064,17 @@
         "save": "Gem",
         "cancel": "Annuller"
       }
+    }
+  },
+  "notifications": {
+    "title": "Notifikationer",
+    "empty_title": "Ingen notifikationer",
+    "empty_description": "Du er helt opdateret. Nye notifikationer vises her.",
+    "refresh": "Opdater",
+    "pending_invite": {
+      "heading": "Organisationsinvitation",
+      "body": "{orgName} inviterede dig til at deltage som {role}.",
+      "action": "Se invitation"
     }
   }
 }

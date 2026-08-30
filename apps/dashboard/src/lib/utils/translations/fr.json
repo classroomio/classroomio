@@ -4086,7 +4086,9 @@
         "joined": "Organisation rejointe",
         "join_failed": "Impossible de rejoindre l'organisation",
         "try_again": "Réessayer"
-      }
+      },
+      "not_found": "Cette invitation n'est plus disponible.",
+      "loading": "Chargement de l'invitation…"
     },
     "link": {
       "page_title": "Rejoignez {orgName} sur ClassroomIO",
@@ -5062,6 +5064,17 @@
         "save": "Enregistrer",
         "cancel": "Annuler"
       }
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty_title": "Aucune notification",
+    "empty_description": "Vous êtes à jour. Les nouvelles notifications apparaîtront ici.",
+    "refresh": "Actualiser",
+    "pending_invite": {
+      "heading": "Invitation de l'organisation",
+      "body": "{orgName} vous a invité(e) à rejoindre l'organisation en tant que {role}.",
+      "action": "Voir l'invitation"
     }
   }
 }

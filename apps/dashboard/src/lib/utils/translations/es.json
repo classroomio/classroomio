@@ -4086,7 +4086,9 @@
         "joined": "Organización unida",
         "join_failed": "No se pudo unir a la organización",
         "try_again": "Intentar de nuevo"
-      }
+      },
+      "not_found": "Esta invitación ya no está disponible.",
+      "loading": "Cargando invitación..."
     },
     "link": {
       "page_title": "Únase a {orgName} en ClassroomIO",
@@ -5062,6 +5064,17 @@
         "save": "Guardar",
         "cancel": "Cancelar"
       }
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty_title": "Sin notificaciones",
+    "empty_description": "Ya estás al día. Las nuevas notificaciones aparecerán aquí.",
+    "refresh": "Actualizar",
+    "pending_invite": {
+      "heading": "Invitación a la organización",
+      "body": "{orgName} te invitó a unirte como {role}.",
+      "action": "Ver invitación"
     }
   }
 }

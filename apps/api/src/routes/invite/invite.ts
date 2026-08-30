@@ -6,6 +6,7 @@ import {
   acceptOrganizationInvite,
   acceptOrganizationInviteById,
   getPendingOrgInviteForUser,
+  listPendingOrgInvitesForUser,
   previewLinkInvite,
   previewOrganizationInvite
 } from '@api/services/organization/invite';
@@ -102,6 +103,25 @@ export const inviteRouter = new Hono()
       return c.json({ success: true, data: pendingInvite }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to load pending invite');
+    }
+  })
+  /**
+   * GET /invite/organization/pending-all
+   * Every pending org invite for the logged-in user, across all organizations.
+   */
+  .get('/organization/pending-all', authMiddleware, pendingInviteRateLimit, async (c) => {
+    try {
+      const user = c.get('user')!;
+
+      if (!user.email) {
+        return c.json({ success: true, data: [] }, 200);
+      }
+
+      const pendingInvites = await listPendingOrgInvitesForUser(user.email);
+
+      return c.json({ success: true, data: pendingInvites }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load pending invites');
     }
   })
   /**

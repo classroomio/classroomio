@@ -4086,7 +4086,9 @@
         "joined": "Đã tham gia tổ chức",
         "join_failed": "Không thể tham gia tổ chức",
         "try_again": "Thử lại"
-      }
+      },
+      "not_found": "Lời mời này không còn hiệu lực.",
+      "loading": "Đang tải lời mời..."
     },
     "link": {
       "page_title": "Tham gia cùng {orgName} trên ClassroomIO",
@@ -5062,6 +5064,17 @@
         "save": "Lưu",
         "cancel": "Hủy bỏ"
       }
+    }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "empty_title": "Không có thông báo",
+    "empty_description": "Bạn đã xem hết thông báo. Thông báo mới sẽ xuất hiện ở đây.",
+    "refresh": "Làm mới",
+    "pending_invite": {
+      "heading": "Lời mời tham gia tổ chức",
+      "body": "{orgName} đã mời bạn tham gia với tư cách là {role}.",
+      "action": "Xem lời mời"
     }
   }
 }

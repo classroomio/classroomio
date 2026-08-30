@@ -3700,7 +3700,7 @@
         "certificate_deadline_required": "Set Certificate Deadline First",
         "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
-        "completion_deadline_label": "Course completion deadline",
+        "completion_deadline_label": "Course Completion Deadline",
         "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
@@ -3711,8 +3711,6 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
-        "completion_deadline_label": "Course Completion Deadline",
-        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
@@ -4500,7 +4498,9 @@
         "joined": "Joined organization",
         "join_failed": "Failed to join organization",
         "try_again": "Try again"
-      }
+      },
+      "not_found": "This invite is no longer available.",
+      "loading": "Loading invite..."
     },
     "link": {
       "page_title": "Join {orgName} on ClassroomIO",
@@ -5053,6 +5053,17 @@
         "overdue": "Overdue",
         "no_deadline": "No deadline"
       }
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty_title": "No Notifications",
+    "empty_description": "You're all caught up. New notifications will appear here.",
+    "refresh": "Refresh",
+    "pending_invite": {
+      "heading": "Organization invite",
+      "body": "{orgName} invited you to join as {role}.",
+      "action": "View invite"
     }
   }
 }

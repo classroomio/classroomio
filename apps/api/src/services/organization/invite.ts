@@ -8,6 +8,7 @@ import {
   createOrganizationMembers,
   createLinkInvite,
   getActivePendingOrgInviteForEmail,
+  getActivePendingOrgInvitesForEmail,
   getOrganizationById,
   getOrganizationInviteByTokenHash,
   getOrgLinkInvite,
@@ -642,6 +643,27 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
 }
 
 // ─── End Link Invite ─────────────────────────────────────────────────────────
+
+/**
+ * Every pending org invite awaiting this user, across all organizations. Powers the
+ * dashboard notification bell, where an invite to another org must still be visible.
+ */
+export async function listPendingOrgInvitesForUser(email: string) {
+  if (!email) {
+    return [];
+  }
+
+  const rows = await getActivePendingOrgInvitesForEmail(email);
+
+  return rows.map((row) => ({
+    id: row.invite.id,
+    email: row.invite.email,
+    roleId: row.invite.roleId,
+    roleLabel: getRoleLabel(row.invite.roleId),
+    expiresAt: row.invite.expiresAt,
+    organization: row.organization
+  }));
+}
 
 /**
  * Returns the pending org invite for the currently logged-in user, if one exists.
