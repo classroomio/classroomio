@@ -41,8 +41,6 @@ export const handle: Handle = async (args) => {
     return proxyRequestToApi(event.request);
   }
 
-  const cookieString = event.cookies.getAll().map((c) => `${c.name}=${c.value}`);
-  console.log('event.cookies', cookieString);
   console.log('page path', event.url.pathname);
   const sessionData = await getSessionData(event.cookies);
 
@@ -55,12 +53,16 @@ export const handle: Handle = async (args) => {
   }
 
   let response: Response;
+  const resolveStart = performance.now();
 
   if (event.url.pathname.includes('/api')) {
     response = await handleAPIRoutes(args);
   } else {
     response = await handlePagesRoutes(args);
   }
+
+  const resolveMs = Math.round((performance.now() - resolveStart) * 100) / 100;
+  console.log(`[handle] resolved ${event.url.pathname} -> ${response.status} in ${resolveMs}ms`);
 
   // Prevent Cloudflare/CDN from caching HTML pages — stale HTML references old
   // hashed JS/CSS bundles after a deploy, causing the app to hang on deep links.
