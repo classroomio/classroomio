@@ -5064,6 +5064,17 @@
       "heading": "Organization invite",
       "body": "{orgName} invited you to join as {role}.",
       "action": "View invite"
-    }
+    },
+    "latest": "Latest",
+    "only_show_unread": "Only show unread",
+    "unread": "Unread",
+    "more_options": "More options",
+    "give_feedback": "Give feedback",
+    "tabs": {
+      "direct": "Direct",
+      "watching": "Watching"
+    },
+    "watching_empty_title": "Nothing to watch yet",
+    "watching_empty_description": "Updates on items you follow will show up here."
   }
 }

@@ -9,13 +9,13 @@
   import AppBreadcrumbs from './app-breadcrumbs.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
-  import { pendingInvitesApi } from '$features/invite/api/pending-invites.svelte';
-  import NotificationsContent from '$features/invite/components/notifications-content.svelte';
+  import { notificationsApi } from '$features/notifications/api/notifications.svelte';
+  import NotificationsPanel from '$features/notifications/components/notifications-panel.svelte';
   import AppSetup from './app-setup.svelte';
   import VisitOrgSiteBtn from '$features/ui/visit-org-site-btn.svelte';
 
   const siteName = $derived($currentOrg.siteName);
-  const notificationCount = $derived(pendingInvitesApi.count);
+  const notificationCount = $derived(notificationsApi.unreadCount);
 
   $effect(() => {
     if (!siteName) return;
@@ -24,7 +24,7 @@
   });
 
   onMount(() => {
-    pendingInvitesApi.fetchOnce();
+    notificationsApi.fetchOnce();
   });
 </script>
 
@@ -47,24 +47,27 @@
 
     <Search />
 
-    <Popover.Root>
-      <Popover.Trigger>
-        <div class="relative">
-          <Button variant="secondary" size="icon">
-            <BellIcon class="custom rounded-full" />
-          </Button>
-          {#if notificationCount > 0}
-            <span
-              class="ui:bg-primary ui:text-primary-foreground absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-medium"
-            >
-              {notificationCount}
-            </span>
-          {/if}
-        </div>
-      </Popover.Trigger>
-      <Popover.Content>
-        <NotificationsContent />
-      </Popover.Content>
-    </Popover.Root>
+    <div class="relative">
+      <Popover.Root>
+        <Popover.Trigger>
+          {#snippet child({ props })}
+            <Button {...props} variant="secondary" size="icon">
+              <BellIcon class="custom rounded-full" />
+            </Button>
+          {/snippet}
+        </Popover.Trigger>
+        <Popover.Content align="end" sideOffset={8} class="w-[380px] p-0">
+          <NotificationsPanel />
+        </Popover.Content>
+      </Popover.Root>
+
+      {#if notificationCount > 0}
+        <span
+          class="ui:bg-primary ui:text-primary-foreground pointer-events-none absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-medium"
+        >
+          {notificationCount}
+        </span>
+      {/if}
+    </div>
   </div>
 </header>

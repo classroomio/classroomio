@@ -124,6 +124,11 @@ export type TOrganizationInviteTokenData = {
   };
 };
 
+/** List rows for the notification panel: the token data plus the org avatar. */
+export type TPendingOrgInviteListItem = Omit<TOrganizationInviteTokenData, 'organization'> & {
+  organization: TOrganizationInviteTokenData['organization'] & { avatarUrl: string | null };
+};
+
 export async function getOrganizationInviteByTokenHash(
   tokenHash: string
 ): Promise<TOrganizationInviteTokenData | null> {
@@ -284,7 +289,7 @@ export async function getLatestOrgInvitesByEmails(
  * `getActivePendingOrgInviteForEmail` this is not scoped to one org, so it can surface an
  * invite to an org the user is not currently viewing.
  */
-export async function getActivePendingOrgInvitesForEmail(email: string): Promise<TOrganizationInviteTokenData[]> {
+export async function getActivePendingOrgInvitesForEmail(email: string): Promise<TPendingOrgInviteListItem[]> {
   const normalized = email.toLowerCase().trim();
   if (!normalized) {
     return [];
@@ -297,7 +302,8 @@ export async function getActivePendingOrgInvitesForEmail(email: string): Promise
         organization: {
           id: schema.organization.id,
           name: schema.organization.name,
-          siteName: schema.organization.siteName
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
         }
       })
       .from(schema.organizationInvite)

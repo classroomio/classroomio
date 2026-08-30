@@ -1,7 +1,7 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 
 import { snackbar } from '$features/ui/snackbar/store';
-import type { AcceptOrgInviteRequest, GetPendingOrgInvitesRequest, PendingOrgInviteItem } from '../utils/types';
+import type { AcceptOrgInviteRequest, GetPendingInvitesRequest, PendingOrgInviteItem } from '../utils/types';
 
 class PendingInvitesApi extends BaseApiWithErrors {
   invites = $state<PendingOrgInviteItem[]>([]);
@@ -23,8 +23,8 @@ class PendingInvitesApi extends BaseApiWithErrors {
   }
 
   async fetchPendingInvites() {
-    await this.execute<GetPendingOrgInvitesRequest>({
-      requestFn: () => classroomio.invite.organization['pending-all'].$get(),
+    await this.execute<GetPendingInvitesRequest>({
+      requestFn: () => classroomio.account.invites.$get(),
       logContext: 'fetching pending organization invites',
       onSuccess: (response) => {
         this.invites = response.data ?? [];

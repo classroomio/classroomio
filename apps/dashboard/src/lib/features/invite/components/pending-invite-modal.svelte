@@ -5,11 +5,11 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { ROLE } from '@cio/utils/constants';
-  import type { PendingOrgInvite } from '../utils/types';
+  import type { AcceptableOrgInvite } from '../utils/types';
 
   interface Props {
     open?: boolean;
-    invite: PendingOrgInvite;
+    invite: AcceptableOrgInvite;
     onAccepted?: (redirectTo?: string) => void;
   }
 
