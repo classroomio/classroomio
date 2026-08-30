@@ -10,7 +10,9 @@
     toast.info(t.get('common.app_update.title'), {
       id: UPDATE_TOAST_ID,
       duration: Number.POSITIVE_INFINITY,
+      position: 'bottom-right',
       description: t.get('common.app_update.description'),
+      actionButtonStyle: 'background: var(--primary); color: var(--primary-foreground);',
       action: {
         label: t.get('common.app_update.reload'),
         onClick: () => location.reload()
