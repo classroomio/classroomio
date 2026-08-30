@@ -33,4 +33,4 @@ jobs:
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
-          model: opencode/gpt-5.6-sol
+          model: opencode-go/gpt-5.6-luna
