@@ -5,9 +5,10 @@ import {
   createCourse as createCourseQuery,
   createCourseSections,
   deleteCourse as deleteCourseQuery,
-  getCourseProgress as getCourseProgressQuery,
   getCourseById,
+  getCourseProgress as getCourseProgressQuery,
   getCourseWithRelations,
+  getOrgIdByCourseId,
   updateCourse as updateCourseQuery,
   updateLessonsSectionId
 } from '@cio/db/queries/course';
@@ -45,6 +46,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '../../config/env';
+import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
 import { guardCourseTypeTransition } from './public-course-guard';
@@ -119,7 +121,15 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
     );
   });
 
+  if (access.roleId === ROLE.STUDENT) {
+    await invalidateOrgStats(organizationId);
+  }
+
   return true;
+}
+
+function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {
+  return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined)) as T;
 }
 
 function sanitizeCourseMetadata(metadata: TCourse['metadata'] | undefined) {
@@ -307,6 +317,8 @@ export async function createCourse(
       };
     });
 
+    await invalidateOrgStats(data.organizationId);
+
     return result;
   } catch (error) {
     if (error instanceof AppError) {
@@ -329,11 +341,24 @@ export async function createCourse(
  */
 export async function updateCourse(courseId: string, data: Partial<TCourse>) {
   try {
+    const [existingCourse] = await getCourseById(courseId);
+
+    const effectiveCost = data.cost !== undefined ? data.cost : (existingCourse?.cost ?? 0);
+    const effectivePaymentLink =
+      data.metadata?.paymentLink !== undefined ? data.metadata.paymentLink : existingCourse?.metadata?.paymentLink;
+
+    if (Number(effectiveCost) > 0 && !effectivePaymentLink?.trim()) {
+      throw new AppError('Paid courses require a payment link', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const existingMetadata = existingCourse?.metadata;
+    const mergedMetadata = data.metadata ? { ...existingMetadata, ...omitUndefinedValues(data.metadata) } : undefined;
+
     const sanitizedData: Partial<TCourse> = {
       ...data,
       description: sanitizeOptionalHtml(data.description),
       overview: sanitizeOptionalHtml(data.overview),
-      metadata: sanitizeCourseMetadata(data.metadata),
+      metadata: sanitizeCourseMetadata(mergedMetadata),
       certificate: sanitizeCourseCertificate(data.certificate),
       logo: data.logo,
       slug: data.slug
@@ -420,6 +445,11 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       }
     }
 
+    if (data.status !== undefined) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -440,10 +470,14 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
  */
 export async function deleteCourse(courseId: string) {
   try {
+    const statsOrgId = await getOrgIdByCourseId(courseId);
     const deleted = await deleteCourseQuery(courseId);
     if (!deleted) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
+
+    await invalidateOrgStats(statsOrgId);
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) {

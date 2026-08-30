@@ -9,6 +9,9 @@ export type ExerciseCompletionMember = { profileId: string } | { groupMemberId: 
 /** Allowed aliases for the exercise table in queries embedding the completion predicate. */
 export type ExerciseAlias = 'exercise' | 'ex';
 
+/** Allowed aliases for the submission table in queries embedding the completion predicate. */
+export type SubmissionAlias = 'cs' | 'submission';
+
 /**
  * Single source of truth for whether an exercise counts as completed for a student.
  *
@@ -37,21 +40,39 @@ export function isExerciseCompletedSql(exerciseAlias: ExerciseAlias, member: Exe
     FROM ${schema.submission} AS cs
     WHERE cs.exercise_id = ${exercise}.id
       AND ${memberFilter}
+      AND ${submissionMeetsCompletionPolicySql(exerciseAlias, 'cs')}
+  )`;
+}
+
+/**
+ * Whether one submission row satisfies its exercise's completion policy.
+ *
+ * Embed where both the exercise and submission tables are in scope under
+ * `exerciseAlias` / `submissionAlias`. `isExerciseCompletedSql` wraps this in a
+ * per-exercise EXISTS; batched queries that already join submission apply it
+ * directly, so every caller reads completion through the same predicate.
+ */
+export function submissionMeetsCompletionPolicySql(
+  exerciseAlias: ExerciseAlias,
+  submissionAlias: SubmissionAlias
+): SQL<boolean> {
+  const exercise = sql.raw(exerciseAlias);
+  const submission = sql.raw(submissionAlias);
+
+  return sql<boolean>`(
+    ${exercise}.completion_policy != 'passed'
+    OR (
+      ${submission}.grading_state = 'completed'
       AND (
-        ${exercise}.completion_policy != 'passed'
-        OR (
-          cs.grading_state = 'completed'
-          AND (
-            SELECT CASE
-              WHEN COALESCE(SUM(question.points), 0) <= 0 THEN false
-              ELSE ROUND((cs.total::numeric / SUM(question.points)::numeric) * 100)
-                >= COALESCE(${exercise}.pass_threshold, 100)
-            END
-            FROM ${schema.question}
-            WHERE question.exercise_id = ${exercise}.id
-          )
-        )
+        SELECT CASE
+          WHEN COALESCE(SUM(question.points), 0) <= 0 THEN false
+          ELSE ROUND((${submission}.total::numeric / SUM(question.points)::numeric) * 100)
+            >= COALESCE(${exercise}.pass_threshold, 100)
+        END
+        FROM ${schema.question}
+        WHERE question.exercise_id = ${exercise}.id
       )
+    )
   )`;
 }
 
@@ -125,6 +146,10 @@ export async function isExerciseCompletedForMember(exerciseId: string, groupMemb
   }
 }
 
+/**
+ * Returns the exercise IDs one group member has completed in a course.
+ * For a whole course roster use `getBatchCompletedExerciseIdsForMembers` instead.
+ */
 export async function getCompletedExerciseIdsForMember(courseId: string, groupMemberId: string): Promise<Set<string>> {
   try {
     const rows = await db

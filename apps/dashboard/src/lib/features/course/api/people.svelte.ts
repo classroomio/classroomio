@@ -6,11 +6,14 @@ import type {
   GetUserCourseAnalyticsRequest,
   ListStudentInvitesRequest,
   ListPeopleRequest,
+  ListPeopleQuery,
   ResetMemberCourseProgressRequest,
   RevokeStudentInviteRequest,
   UpdatePeopleRequest
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+
+import { toPeopleRequestQuery } from '$features/course/utils/people-utils';
 
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -24,11 +27,14 @@ export class PeopleApi extends BaseApiWithErrors {
    * @param courseId Course ID
    * @returns Array of course members with profile data
    */
-  async list(courseId: string) {
+  async list(courseId: string, query: ListPeopleQuery) {
+    const requestQuery = toPeopleRequestQuery(query);
+
     return this.execute<ListPeopleRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['members'].$get({
-          param: { courseId }
+          param: { courseId },
+          query: requestQuery
         }),
       logContext: 'listing course members',
       onSuccess: (response) => {

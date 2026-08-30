@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { onMount, untrack } from 'svelte';
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { getConfirmPasswordError } from '$lib/utils/functions/validator';
+  import { getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
+  import { t } from '$lib/utils/functions/translations';
   import { AuthUI } from '$features/ui';
   import { resetApi } from '$features/auth/api/reset.svelte';
   import type { TResetPasswordForm } from '$features/auth/utils/types';
@@ -19,9 +20,7 @@
     token: ''
   });
 
-  const isSubmitDisabled = $derived!(
-    fields.password && fields.confirmPassword && fields.password !== fields.confirmPassword
-  );
+  const isSubmitDisabled = $derived(getDisableSubmit(fields));
   const token = $derived(new URLSearchParams(page.url.search).get('token'));
 
   onMount(() => {
@@ -34,17 +33,7 @@
     }, 2000);
   });
 
-  function setConfirmPasswordError(fields: TResetPasswordForm) {
-    untrack(() => {
-      const errors = { ...resetApi.errors };
-      errors.confirmPassword = getConfirmPasswordError(fields) ?? '';
-      resetApi.setError(errors);
-    });
-  }
-
-  $effect(() => {
-    setConfirmPasswordError(fields);
-  });
+  const confirmPasswordError = $derived(getConfirmPasswordError(fields));
 </script>
 
 <svelte:head>
@@ -60,11 +49,11 @@
 >
   <div class="ui:flex ui:flex-col ui:gap-6">
     <div>
-      <Card.Title class="ui:text-xl">New Password</Card.Title>
-      <Card.Description class="ui:mt-2">Enter your new password details</Card.Description>
+      <Card.Title class="ui:text-xl">{$t('login.reset_password.heading')}</Card.Title>
+      <Card.Description class="ui:mt-2">{$t('login.reset_password.description')}</Card.Description>
     </div>
     <Field.Field>
-      <Field.Label for="password">Your Password</Field.Label>
+      <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
       <Field.Content>
         <Password
           id="password"
@@ -76,24 +65,25 @@
         />
         {#if resetApi.errors.password}
           <Field.Error>{resetApi.errors.password}</Field.Error>
+        {:else}
+          <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
         {/if}
-        <Field.Description>Password must be more than 8 characters</Field.Description>
       </Field.Content>
     </Field.Field>
 
     <Field.Field>
-      <Field.Label for="confirmPassword">Confirm Password</Field.Label>
+      <Field.Label for="confirmPassword">{$t('login.fields.confirm_password')}</Field.Label>
       <Field.Content>
         <Password
           id="confirmPassword"
           bind:value={fields.confirmPassword}
           placeholder="************"
           disabled={resetApi.isLoading}
-          aria-invalid={resetApi.errors.confirmPassword ? 'true' : undefined}
+          aria-invalid={confirmPasswordError || resetApi.errors.confirmPassword ? 'true' : undefined}
           autocomplete="new-password"
         />
-        {#if resetApi.errors.confirmPassword}
-          <Field.Error>{resetApi.errors.confirmPassword}</Field.Error>
+        {#if confirmPasswordError || resetApi.errors.confirmPassword}
+          <Field.Error>{confirmPasswordError || resetApi.errors.confirmPassword}</Field.Error>
         {/if}
       </Field.Content>
     </Field.Field>

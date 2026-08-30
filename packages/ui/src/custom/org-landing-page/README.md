@@ -101,7 +101,9 @@ The composer wires nav/hero/footer (theme-specific files) around the shared body
 
 `EditableLandingSection sectionKey="…"` wraps every editable region. When a parent route calls `setLandingPageEditContext({ selectedKey, selectKey, labelFor, iconFor })`, clicking a section in the preview calls `selectKey(key)`. The Editor sidebar reads the same key from a bound prop and opens the matching form. Without a context, the wrapper is a transparent pass-through.
 
-Course `LandingSectionKey` values: `header`, `requirement`, `description`, `goals`, `certificate`, `curriculum`, `chips`, `instructor`, `reviews`, `pricing`.
+Course `LandingSectionKey` values: `header`, `requirement`, `description`, `goals`, `certificate`, `curriculum`, `chips`, `instructor`, `reviews`, `pricing`. The shared nav and footer add `navigation` and `footer`, so a host's `labelFor` must resolve those keys too.
+
+The cap (icon + label) hangs above the section's top-left edge by default. Sections flush against the top of the page — every theme's `nav.svelte` — pass `capPlacement="inside"` so the cap renders in the section's top-right corner instead of scrolling out of the preview.
 
 ---
 

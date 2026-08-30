@@ -15,6 +15,7 @@
   import { PageOutline } from '../page-outline';
   import { outlineFromSections } from '../page-outline/heading-utils';
   import Callout from './callout.svelte';
+  import { SafeHtmlContent } from '../safe-html-content';
   import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicExerciseViewData } from './types';
   import type { PublicExerciseStoredAttempt } from './public-exercise-attempts-storage';
   import {

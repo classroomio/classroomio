@@ -5,35 +5,102 @@ import {
   deleteCourseMember,
   getCourseMember,
   getCourseMembers,
+  getPaginatedCourseMembers,
   getCourseTeachers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
-import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
+import type { TAddCourseMembers, TCourseMembersQuery } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
+import type { CourseMemberWithProfile } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { getCourseWithOrgData } from '@cio/db/queries/course';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 
 /**
- * Gets all course members (people) for a course
+ * Attaches progress, stage, last login and enrollment date to student members.
  * @param courseId Course ID
- * @returns Array of course members with profile data
+ * @param members Course members to decorate
+ * @returns The same members, with progress fields set on students
+ */
+async function addProgressSummaries(courseId: string, members: CourseMemberWithProfile[]) {
+  const progressSummaries = await getCourseMemberProgressSummaries(
+    courseId,
+    members.map((member) => ({
+      profileId: member.profileId ?? '',
+      roleId: member.roleId,
+      createdAt: member.createdAt ?? null
+    }))
+  );
+
+  return members.map((member) => {
+    const progress =
+      member.profileId && member.roleId === ROLE.STUDENT ? progressSummaries.get(member.profileId) : undefined;
+
+    if (!progress) {
+      return member;
+    }
+
+    return {
+      ...member,
+      progressPercent: progress.progressPercent,
+      stage: progress.stage,
+      lastLoginAt: progress.lastLoginAt,
+      enrolledAt: progress.enrolledAt
+    };
+  });
+}
+
+/**
+ * Gets every course member (people) for a course.
+ * @param courseId Course ID
+ * @returns Array of course members with profile and progress data
  */
 export async function listCourseMembers(courseId: string) {
   try {
-    return getCourseMembers(courseId);
+    const members = await getCourseMembers(courseId);
+    return await addProgressSummaries(courseId, members);
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
     }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list course members',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/**
+ * Gets one filtered page of course members for a course.
+ * @param courseId Course ID
+ * @param query Page, page size, search term and role filter
+ * @returns One page of course members with profile and progress data, plus pagination totals
+ */
+export async function listPaginatedCourseMembers(courseId: string, query: TCourseMembersQuery) {
+  try {
+    const result = await getPaginatedCourseMembers(courseId, query);
+    const items = await addProgressSummaries(courseId, result.items);
+
+    return {
+      ...result,
+      items
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list paginated course members',
       ErrorCodes.INTERNAL_ERROR,
       500
     );
@@ -56,6 +123,11 @@ export async function addMember(
     }
 
     const addedMember = await addCourseMember(courseId, data);
+
+    if (data.roleId === ROLE.STUDENT) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
 
     if (data.roleId === ROLE.STUDENT && data.profileId) {
       await ensureComplianceEnrollmentRecordsForProfiles([courseId], [data.profileId]);
@@ -201,8 +273,25 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       theme: courseOrgData.orgTheme
     });
 
-    // Add all members
-    const addedMembers = await Promise.all(members.map((member) => addCourseMember(courseId, member)));
+    // Add members sequentially so partial failures still invalidate stats for successful inserts.
+    const addedMembers = [];
+    let addedStudentMember = false;
+
+    try {
+      for (const member of members) {
+        const addedMember = await addCourseMember(courseId, member);
+        addedMembers.push(addedMember);
+
+        if (member.roleId === ROLE.STUDENT) {
+          addedStudentMember = true;
+        }
+      }
+    } finally {
+      if (addedStudentMember) {
+        await invalidateOrgStats(courseOrgData.orgId);
+      }
+    }
+
     const studentProfileIds = members
       .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
       .map((member) => member.profileId!);
@@ -279,10 +368,26 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
  */
 export async function updateMember(courseId: string, memberId: string, data: Partial<TGroupmember>) {
   try {
+    const existingMember = await getCourseMember(courseId, memberId);
+    if (!existingMember) {
+      throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
     const updated = await updateCourseMember(courseId, memberId, data);
     if (!updated) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
+
+    const previousRoleId = existingMember.roleId;
+    const nextRoleId = data.roleId ?? previousRoleId;
+    const studentRoleChanged =
+      data.roleId !== undefined && (previousRoleId === ROLE.STUDENT || nextRoleId === ROLE.STUDENT);
+
+    if (studentRoleChanged) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -308,6 +413,12 @@ export async function deleteMember(courseId: string, memberId: string) {
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
+
+    if (deleted.roleId === ROLE.STUDENT) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) {
@@ -347,6 +458,9 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
       memberId,
       summary
     });
+
+    const statsOrgId = await getOrgIdByCourseId(courseId);
+    await invalidateOrgStats(statsOrgId);
 
     return summary;
   } catch (error) {

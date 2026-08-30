@@ -1108,10 +1108,10 @@ export const getExploreCourses = async ({
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
       isNull(schema.groupmember.id),
-      or(
-        sql`${schema.course.metadata}->>'allowNewStudent' IS NULL`,
-        sql`${schema.course.metadata}->>'allowNewStudent' != 'false'`
-      )
+      // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
+      // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,
+      // so COALESCE falls through exactly as `??` does.
+      sql`COALESCE(${schema.course.metadata}->>'allowSelfEnrollment', ${schema.course.metadata}->>'allowNewStudent', 'true') != 'false'`
     );
 
     const courseSelect = {
@@ -1166,6 +1166,27 @@ export const getExploreCourses = async ({
     throw new Error(`Failed to get explore courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
+
+/**
+ * Resolves the organization ID for a course via its group.
+ */
+export async function getOrgIdByCourseId(courseId: string): Promise<string | null> {
+  try {
+    const [row] = await db
+      .select({ orgId: schema.group.organizationId })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return row?.orgId ?? null;
+  } catch (error) {
+    console.error('getOrgIdByCourseId error:', error);
+    throw new Error(
+      `Failed to get organization ID for course: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
 
 /**
  * Gets course with organization data (title, org name, org siteName, groupId)

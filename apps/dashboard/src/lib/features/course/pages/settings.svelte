@@ -6,12 +6,12 @@
   import { Switch } from '@cio/ui/base/switch';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import * as Select from '@cio/ui/base/select';
-  import * as Dialog from '@cio/ui/base/dialog';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import XIcon from '@lucide/svelte/icons/x';
 
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
+  import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
   import { CourseTagPicker } from '$features/course/components';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
@@ -31,7 +31,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { generateSlug, isPublishedComplianceMissingDeadline } from '@cio/utils/functions';
+  import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
@@ -43,6 +43,7 @@
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -51,6 +52,7 @@
   let { hasUnsavedChanges = $bindable(false) }: Props = $props();
 
   let isLoading = $state(false);
+  let isGeneratingLink = $state(false);
   let isDeleting = $state(false);
   let openCertificateDeadlineDialog = $state(false);
   let completionDeadlineTrigger = $state(0);
@@ -66,6 +68,7 @@
   let selectedTagIds = $state<string[]>([]);
   let initialTagIds = $state<string[]>([]);
   let loadedCourseTagsForId = $state<string | null>(null);
+  let initializedCourseId = $state<string | null>(null);
   let isTagPopoverOpen = $state(false);
 
   function normalizeTagIds(tagIds: string[]) {
@@ -184,7 +187,7 @@
 
     // Otherwise, publish normally
     $settings.isPublished = true;
-    $settings.allowNewStudents = true;
+    $settings.allowSelfEnrollment = true;
     hasUnsavedChanges = true;
   }
 
@@ -201,6 +204,11 @@
 
     if (!$settings.courseDescription) {
       errors.description = $t('snackbar.course_settings.error.description');
+      return;
+    }
+
+    if (Number(courseApi.course?.cost) > 0 && !(courseApi.course?.metadata?.paymentLink ?? '').trim()) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       return;
     }
 
@@ -236,6 +244,7 @@
         lessonDownload: $settings.lessonDownload,
         allowMarkdownExport: $settings.allowMarkdownExport,
         allowNewStudent: $settings.allowNewStudents ?? false,
+        allowSelfEnrollment: $settings.allowSelfEnrollment,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
         welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
@@ -286,14 +295,29 @@
         hasUnsavedChanges = false;
       }
     } catch (error) {
+      console.error(error);
       snackbar.error();
     }
   }
 
-  const generateNewCourseLink = () => {
-    if (!courseApi.course) return;
-    courseApi.course.slug = generateSlug(courseApi.course.title, { appendTimestamp: true });
-    hasUnsavedChanges = true;
+  const generateNewCourseLink = async () => {
+    if (!courseApi.course || isGeneratingLink) return;
+
+    isGeneratingLink = true;
+    try {
+      const newSlug = generateSlug(courseApi.course.title, { appendTimestamp: true });
+      const response = await courseApi.update(courseApi.course.id, { slug: newSlug }, { showSuccessToast: false });
+
+      if (courseApi.success && response) {
+        courseApi.course.slug = response.slug ?? newSlug;
+        snackbar.success('snackbar.course_settings.success.link_generated');
+      }
+    } catch (error) {
+      console.error(error);
+      snackbar.error();
+    } finally {
+      isGeneratingLink = false;
+    }
   };
 
   async function setDefault(course: Course) {
@@ -310,7 +334,7 @@
         lessonDownload: !!course.metadata?.lessonDownload,
         allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
         isPublished: !!course.isPublished,
-        allowNewStudents: !!course.metadata?.allowNewStudent,
+        allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         callout: normalizeCallout(course.callout),
@@ -391,8 +415,10 @@
   });
 
   $effect(() => {
-    if (courseApi.course) {
-      setDefault(courseApi.course);
+    const course = courseApi.course;
+    if (course?.id && initializedCourseId !== course.id) {
+      initializedCourseId = course.id;
+      setDefault(course);
     }
   });
 
@@ -502,24 +528,7 @@
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
-<Dialog.Root bind:open={openCertificateDeadlineDialog}>
-  <Dialog.Content class="max-w-md">
-    <Dialog.Header>
-      <Dialog.Title>{$t('course.navItem.settings.certificate_deadline_required')}</Dialog.Title>
-      <Dialog.Description>
-        {$t('course.navItem.settings.certificate_deadline_required_description')}
-      </Dialog.Description>
-    </Dialog.Header>
-    <Dialog.Footer>
-      <Button variant="outline" onclick={() => (openCertificateDeadlineDialog = false)}>
-        {$t('cancel')}
-      </Button>
-      <Button onclick={goToCompletionDeadline}>
-        {$t('course.navItem.settings.go_to_completion_deadline')}
-      </Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
+<CertificateDeadlineRequiredDialog bind:open={openCertificateDeadlineDialog} onGoToDeadline={goToCompletionDeadline} />
 
 <Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
@@ -592,10 +601,19 @@
           >{$t('course.navItem.settings.link')}
 
           <div class="flex items-center gap-1">
-            <IconButton onclick={generateNewCourseLink}>
+            <IconButton
+              onclick={generateNewCourseLink}
+              loading={isGeneratingLink}
+              tooltip={$t('course.navItem.settings.generate_link')}
+            >
               <RotateCcwIcon size={16} />
             </IconButton>
-            <IconButton href={courseLink} target="_blank">
+            <IconButton
+              href={courseLink}
+              target="_blank"
+              disabled={isGeneratingLink || !courseApi.course?.slug}
+              tooltip={$t('course.navItem.settings.open_link')}
+            >
               <ArrowUpRightIcon size={16} />
             </IconButton>
           </div>
@@ -608,6 +626,8 @@
               onclick={() => {
                 copyToClipboard(courseLink);
               }}
+              disabled={isGeneratingLink}
+              tooltip={$t('course.navItem.settings.copy_link')}
             >
               <Copy size={16} />
             </IconButton>
@@ -677,7 +697,10 @@
     {/if}
 
     <Field.Group class="mt-3">
-      <AttentionHighlight id="course-completion-deadline" trigger={completionDeadlineTrigger}>
+      <AttentionHighlight
+        id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
+        trigger={completionDeadlineTrigger}
+      >
         <Field.Field>
           <Field.Label>
             {$t('course.navItem.settings.completion_deadline_label')}
@@ -1068,15 +1091,15 @@
     <Field.Description>{$t('course.navItem.settings.access')}</Field.Description>
     <Field.Field orientation="horizontal">
       <Switch
-        id="allow-new-students"
-        checked={$settings.allowNewStudents}
+        id="allow-self-enrollment"
+        checked={$settings.allowSelfEnrollment}
         onCheckedChange={(checked) => {
-          $settings.allowNewStudents = checked;
+          $settings.allowSelfEnrollment = checked;
           hasUnsavedChanges = true;
         }}
       />
-      <Label for="allow-new-student">
-        {$settings.allowNewStudents ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      <Label for="allow-self-enrollment">
+        {$settings.allowSelfEnrollment ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
       </Label>
     </Field.Field>
   </Field.Set>

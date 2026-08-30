@@ -15,6 +15,9 @@ const csp = getCspDomains(isSelfHosted, process.env.PUBLIC_SERVER_URL);
 const config = {
   preprocess: [vitePreprocess({})],
   kit: {
+    version: {
+      pollInterval: 60_000
+    },
     // Default: Node server (Render, Docker). Opt into Cloudflare Pages only when CI_ENVIRONMENT=cloudflare.
     adapter: IS_CLOUDFLARE ? adapterCloudflare() : adapterNode(),
     alias: {

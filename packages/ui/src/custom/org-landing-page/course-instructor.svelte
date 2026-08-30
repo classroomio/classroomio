@@ -2,6 +2,7 @@
   import type { CourseInstructor, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
   import { courseLandingTokens } from './course-landing-page.tokens';
   import EditableLandingSection from './editable-section.svelte';
+  import SafeHtmlContent from '../safe-html-content/safe-html-content.svelte';
 
   interface Props {
     variant: OrgLandingPageTheme;
@@ -52,7 +53,7 @@
               <p class={t.instructorMeta}>{coursesLabel}</p>
             {/if}
             {#if instructor.description}
-              <p class={t.instructorBody}>{instructor.description}</p>
+              <div class={t.instructorBody}><SafeHtmlContent content={instructor.description} /></div>
             {/if}
           </div>
         </div>
