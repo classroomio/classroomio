@@ -107,20 +107,6 @@ async function syncOrgMemberForOrgInvite(
   tx: DbOrTxClient,
   params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
 ): Promise<void> {
-  await applyOrgInviteMembership(tx, params);
-
-  // An invite can lower an existing member's role, and course roles live in a separate
-  // durable table that removal/demotion never touches, so a former admin re-invited as a
-  // tutor or student would keep instructor privileges on courses they once worked in.
-  // Reconciling can touch many rows, so it runs off the request path; the job re-reads the
-  // member's current org role, which makes it safe even if this transaction rolls back.
-  await scheduleCourseRoleReconcile(params.organizationId, params.userId);
-}
-
-async function applyOrgInviteMembership(
-  tx: DbOrTxClient,
-  params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
-): Promise<void> {
   const orgMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(
     tx,
     params.organizationId,
@@ -407,6 +393,18 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     };
   });
 
+  // An invite can lower an existing member's role, and course roles live in a separate
+  // durable table that removal/demotion never touches, so a former admin re-invited as a
+  // tutor or student would keep instructor privileges on courses they once worked in.
+  //
+  // This has to run *after* the transaction commits: the reconciliation reads the member's
+  // current org role through the default client, so scheduling it inside the transaction
+  // lets it read the pre-commit role, clamp nothing, and leave the stale course role in
+  // place with no further reconciliation queued.
+  if (!result.alreadyAccepted) {
+    await scheduleCourseRoleReconcile(result.organization.id, user.id);
+  }
+
   const siteName = result.organization.siteName || '';
 
   const invite = await getOrganizationInviteByTokenHash(tokenHash);
@@ -633,6 +631,16 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
     return { organization: row.organization, roleId: row.invite.roleId, inviteId: row.invite.id };
   });
 
+  // An invite can lower an existing member's role, and course roles live in a separate
+  // durable table that removal/demotion never touches, so a former admin re-invited as a
+  // tutor or student would keep instructor privileges on courses they once worked in.
+  //
+  // This has to run *after* the transaction commits: the reconciliation reads the member's
+  // current org role through the default client, so scheduling it inside the transaction
+  // lets it read the pre-commit role, clamp nothing, and leave the stale course role in
+  // place with no further reconciliation queued.
+  await scheduleCourseRoleReconcile(result.organization.id, user.id);
+
   await recordOrganizationInviteAudit(result.inviteId, result.organization.id, 'ACCEPTED', {
     actorProfileId: user.id,
     targetEmail: normalizedEmail,
@@ -733,6 +741,18 @@ export async function acceptOrganizationInviteById(
 
     return { organization: row.organization, invite: row.invite, roleId: row.invite.roleId, alreadyAccepted: false };
   });
+
+  // An invite can lower an existing member's role, and course roles live in a separate
+  // durable table that removal/demotion never touches, so a former admin re-invited as a
+  // tutor or student would keep instructor privileges on courses they once worked in.
+  //
+  // This has to run *after* the transaction commits: the reconciliation reads the member's
+  // current org role through the default client, so scheduling it inside the transaction
+  // lets it read the pre-commit role, clamp nothing, and leave the stale course role in
+  // place with no further reconciliation queued.
+  if (!result.alreadyAccepted) {
+    await scheduleCourseRoleReconcile(result.invite.organizationId, user.id);
+  }
 
   await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
     actorProfileId: user.id,
