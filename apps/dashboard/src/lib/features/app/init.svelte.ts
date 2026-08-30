@@ -132,7 +132,8 @@ class AppInitApi extends BaseApi {
     setupAnalyticsBasedOnLicense(
       accountData.profile?.id
         ? { id: accountData.profile.id, email: accountData.profile.email, name: accountData.profile.fullname }
-        : undefined
+        : undefined,
+      params.isOrgSite
     );
     this.setUserAnalytics();
     this.routeUserToNextPage(params);
