@@ -393,14 +393,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     };
   });
 
-  // An invite can lower an existing member's role, and course roles live in a separate
-  // durable table that removal/demotion never touches, so a former admin re-invited as a
-  // tutor or student would keep instructor privileges on courses they once worked in.
-  //
-  // This has to run *after* the transaction commits: the reconciliation reads the member's
-  // current org role through the default client, so scheduling it inside the transaction
-  // lets it read the pre-commit role, clamp nothing, and leave the stale course role in
-  // place with no further reconciliation queued.
+  // Must run after commit: the reconcile reads the org role outside this transaction.
   if (!result.alreadyAccepted) {
     await scheduleCourseRoleReconcile(result.organization.id, user.id);
   }
@@ -631,14 +624,7 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
     return { organization: row.organization, roleId: row.invite.roleId, inviteId: row.invite.id };
   });
 
-  // An invite can lower an existing member's role, and course roles live in a separate
-  // durable table that removal/demotion never touches, so a former admin re-invited as a
-  // tutor or student would keep instructor privileges on courses they once worked in.
-  //
-  // This has to run *after* the transaction commits: the reconciliation reads the member's
-  // current org role through the default client, so scheduling it inside the transaction
-  // lets it read the pre-commit role, clamp nothing, and leave the stale course role in
-  // place with no further reconciliation queued.
+  // Must run after commit: the reconcile reads the org role outside this transaction.
   await scheduleCourseRoleReconcile(result.organization.id, user.id);
 
   await recordOrganizationInviteAudit(result.inviteId, result.organization.id, 'ACCEPTED', {
@@ -742,14 +728,7 @@ export async function acceptOrganizationInviteById(
     return { organization: row.organization, invite: row.invite, roleId: row.invite.roleId, alreadyAccepted: false };
   });
 
-  // An invite can lower an existing member's role, and course roles live in a separate
-  // durable table that removal/demotion never touches, so a former admin re-invited as a
-  // tutor or student would keep instructor privileges on courses they once worked in.
-  //
-  // This has to run *after* the transaction commits: the reconciliation reads the member's
-  // current org role through the default client, so scheduling it inside the transaction
-  // lets it read the pre-commit role, clamp nothing, and leave the stale course role in
-  // place with no further reconciliation queued.
+  // Must run after commit: the reconcile reads the org role outside this transaction.
   if (!result.alreadyAccepted) {
     await scheduleCourseRoleReconcile(result.invite.organizationId, user.id);
   }

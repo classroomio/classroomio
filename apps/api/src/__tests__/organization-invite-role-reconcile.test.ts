@@ -1,13 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
- * Course-role reconciliation reads the member's org role through the default database
- * client, so it must be scheduled only after the membership transaction has committed.
- * Scheduling it inside the transaction lets it observe the pre-commit role, clamp nothing,
- * and leave a stale course ADMIN row behind with no further reconciliation queued.
- *
- * `db.transaction` is mocked to record when its callback settles, so these tests assert the
- * ordering itself rather than merely that reconciliation happens.
+ * Reconciliation reads the org role outside the membership transaction, so it must be
+ * scheduled only after that transaction commits. `db.transaction` is mocked to record when
+ * its callback settles so these tests assert the ordering, not just that it happens.
  */
 
 const callOrder: string[] = [];
@@ -65,7 +61,7 @@ vi.mock('@api/utils/org', () => ({
   parseCourseIdsFromInviteMetadata: vi.fn(() => []),
   parseCohortIdsFromInviteMetadata: vi.fn(() => [])
 }));
-// Mocked to sidestep the nested-subpath resolution quirk Vite hits on `@cio/*` exports.
+// Mocked to sidestep Vite's nested-subpath resolution quirk on `@cio/*` exports.
 vi.mock('@cio/db/queries/auth/profile', () => ({
   getProfileById: vi.fn(),
   markUserAndProfileEmailVerified: vi.fn()
@@ -103,7 +99,7 @@ describe('acceptLinkInvite course-role reconciliation', () => {
       organization: { id: ORG_ID, siteName: 'acme' }
     } as never);
     vi.mocked(selectOrganizationMemberByOrgAndNormalizedEmail).mockResolvedValue(null as never);
-    // An existing member whose org role the invite is about to lower from admin to tutor.
+    // Existing member the invite is about to lower from admin to tutor.
     vi.mocked(selectOrganizationMemberByOrgAndProfile).mockResolvedValue({
       id: 10,
       roleId: ROLE.ADMIN

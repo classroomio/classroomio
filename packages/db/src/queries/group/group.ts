@@ -138,13 +138,7 @@ export const isUserCourseMember = async (
  * - a member of the course's group (any role), OR
  * - an ADMIN of the organization that owns the course's group.
  *
- * Either way the user must *still* be a member of the owning organization. A
- * `groupmember` row outlives removal from the org (`deleteOrganizationMember` only
- * deletes the `organizationmember` row, and the row cannot simply be cascaded away
- * because submissions, newsfeed posts and comments all reference `groupmember.id`), so
- * without this a removed user would keep course access forever. Every enrolment path
- * creates the org membership before the group membership, so requiring both is safe.
- * Groups with no organization are exempt, since there is no membership to check.
+ * Both require live org membership: a `groupmember` row outlives removal from the org.
  *
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
@@ -208,10 +202,7 @@ export const getUserCourseRole = async (courseId: string, profileId: string): Pr
  * - a team member (ADMIN or TUTOR) of the course's group, OR
  * - an ADMIN of the organization that owns the course's group.
  *
- * Requires live organization membership for the same reason as
- * `isUserCourseMemberOrOrgAdmin` — see the note there. It matters more here: a stale
- * ADMIN/TUTOR `groupmember` row grants instructor privileges (grading, viewing
- * submissions, editing content), so a removed admin must not keep satisfying this check.
+ * Requires live org membership, as `isUserCourseMemberOrOrgAdmin` does.
  *
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
@@ -311,20 +302,9 @@ export async function getCourseProgramAccess(
 }
 
 /**
- * Clamps a profile's course roles across one organization so they never outrank the role
- * the person currently holds in that organization.
- *
- * A `groupmember` row is durable and cannot be deleted when someone's org role changes --
- * submissions, newsfeed posts, comments, attendance and poll answers all reference
- * `groupmember.id`, and eight of those nine constraints have no `on delete` rule -- so a
- * stale ADMIN row would otherwise keep granting instructor privileges to a person who has
- * since been re-invited as a tutor or student.
- *
- * Roles are ordered by privilege ascending (ADMIN 1, TUTOR 2, STUDENT 3), so clamping is
- * "raise the role id to at least the org role id". Only rows that outrank the org role
- * change, which means this can never promote: a course role deliberately set below the
- * person's org role -- an admin enrolled as a student, a tutor on a course they created --
- * is preserved.
+ * Raises a profile's course roles in one org to at least their org role, so they never
+ * outrank it. Role ids ascend by privilege (ADMIN 1, TUTOR 2, STUDENT 3), so this only
+ * demotes — a deliberately lower course role is preserved.
  *
  * @returns the number of course roles that were demoted
  */
@@ -363,10 +343,8 @@ export async function clampCourseRolesToOrgRole(
 }
 
 /**
- * Resolves the course group an organization ADMIN is entitled to act in even when they
- * have no `groupmember` row yet (accepting an org invite only creates an
- * `organizationmember` row). Returns null when the profile is not an admin of the
- * organization that owns the course.
+ * Resolves the course group an org ADMIN may act in before they have a `groupmember` row.
+ * Returns null when the profile is not an admin of the course's organization.
  */
 export async function getCourseOrgAdminAccess(
   courseId: string,

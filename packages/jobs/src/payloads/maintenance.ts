@@ -57,12 +57,8 @@ export const ZAssetStorageCleanupPayload = z.object({
 export type TAssetStorageCleanupPayload = z.infer<typeof ZAssetStorageCleanupPayload>;
 
 /**
- * Re-align a person's course roles with the role they now hold in an organization.
- *
- * Enqueued whenever an invite establishes or changes someone's org role, or they rejoin an
- * open org. The payload deliberately carries no role: the worker re-reads the current org
- * role so a rolled-back transaction or a racing role change cannot make it act on stale
- * input, and so re-running it is always safe.
+ * Re-align a person's course roles with the role they now hold in an organization. Carries
+ * no role: the worker re-reads it, so the job never acts on stale input.
  */
 export const ZCourseRoleReconcilePayload = z.object({
   organizationId: z.string().min(1),

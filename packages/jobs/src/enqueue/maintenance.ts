@@ -20,8 +20,6 @@ export async function enqueueAssetStorageCleanup(payload: TAssetStorageCleanupPa
 
 /**
  * Enqueue a reconciliation of one person's course roles against their current org role.
- * Off the request path because it can touch many `groupmember` rows, and it is idempotent,
- * so a retry or a duplicate enqueue costs nothing.
  */
 export async function enqueueCourseRoleReconcile(payload: TCourseRoleReconcilePayload): Promise<string> {
   const job = await getQueue(QUEUE_NAMES.maintenance).add(

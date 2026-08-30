@@ -122,9 +122,7 @@ export async function joinOrganization(userId: string, orgId: string): Promise<J
     verified: true
   });
 
-  // Someone who previously held a course team role in this org keeps that durable
-  // `groupmember` row after being removed from the org. Joining back as a student must not
-  // hand their instructor privileges back.
+  // A course team role from a previous membership must not come back on rejoin.
   await scheduleCourseRoleReconcile(orgId, userId);
 
   return { alreadyMember: false, linkedExistingMember: false };

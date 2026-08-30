@@ -4,17 +4,8 @@ import { clampCourseRolesToOrgRole } from '@cio/db/queries/group';
 import { getUserOrgRole } from '@cio/db/queries/organization';
 
 /**
- * Re-aligns one person's course roles with the role they currently hold in an organization.
- *
- * A `groupmember` row is durable: it is the author of their newsfeed posts, comments and
- * submissions, so it cannot be deleted when their org role changes. Without this, a former
- * admin re-invited as a tutor or student would keep instructor privileges on every course
- * they had a team role in.
- *
- * The current org role is read here rather than passed in, so the job is safe to retry, to
- * run after a rolled-back transaction, or to run twice concurrently. A person with no
- * membership left is skipped: removal is already handled by the course authorization
- * checks, which require live org membership.
+ * Demotes a person's course roles to their current org role. Reads the role here rather
+ * than taking it as input, so the job stays safe to retry.
  *
  * @returns how many course roles were demoted
  */
@@ -26,12 +17,8 @@ export async function reconcileCourseRolesToOrgRole(organizationId: string, prof
 }
 
 /**
- * Schedules a course-role reconciliation off the request path.
- *
- * This must never fail the invite or join the user just completed, but it also must not be
- * silently dropped the way a best-effort cleanup can be: a course role outranking someone's
- * org role is a privilege-retention risk. So when the queue is unavailable, reconcile inline
- * rather than skip it.
+ * Queues a reconciliation without failing the caller. Falls back to running it inline
+ * rather than skipping, since dropping it would leave privileges behind.
  */
 export async function scheduleCourseRoleReconcile(organizationId: string, profileId: string): Promise<void> {
   if (isRedisConfigured()) {
