@@ -9,7 +9,7 @@
 </script>
 
 <div class="flex items-center justify-between gap-2 px-4 py-3">
-  <p class="text-sm font-semibold">{$t('notifications.title')}</p>
+  <p class="text-lg font-normal tracking-tight">{$t('notifications.title')}</p>
 
   <div class="flex items-center gap-2">
     <!-- TODO: "Only show unread" toggle belongs here. Hidden until read state exists —
