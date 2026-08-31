@@ -4,7 +4,7 @@ import type { Component } from 'svelte';
 import type { NodeViewProps, Node } from '@tiptap/core';
 
 function parseWidthFromStyle(style: string): string | null {
-  const match = style.match(/width:\s*([^;]+)/);
+  const match = style.match(/(?:^|;)\s*width\s*:\s*([^;]+)/i);
   return match ? match[1].trim() : null;
 }
 
@@ -44,7 +44,7 @@ export const ImageExtended = (component: Component<NodeViewProps>): Node<ImageOp
         align: {
           default: 'left',
           parseHTML: (element) => {
-            return element.getAttribute('data-align') || 'left';
+            return element.getAttribute('data-align') || element.getAttribute('align') || 'left';
           },
           renderHTML: (attributes) => {
             if (!attributes.align) return {};
