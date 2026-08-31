@@ -7,10 +7,8 @@
   import { buttonVariants } from '$src/base/button';
 
   function handleClick() {
-    const imageUrl = prompt('Please enter the image URL');
-    if (imageUrl) {
-      editor.chain().focus().setImage({ src: imageUrl }).run();
-    }
+    const imagePlaceholderExt = editor.extensionManager.extensions.find((ext) => ext.name === 'image-placeholder');
+    imagePlaceholderExt?.options?.onOpenModal?.(editor);
   }
 </script>
 

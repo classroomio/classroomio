@@ -17,13 +17,25 @@ export const ImageExtended = (component: Component<NodeViewProps>): Node<ImageOp
           default: null
         },
         width: {
-          default: '100%'
+          default: '100%',
+          renderHTML: (attributes) => {
+            if (!attributes.width) return {};
+            return {
+              style: `width: ${attributes.width}; max-width: 100%;`
+            };
+          }
         },
         height: {
           default: null
         },
         align: {
-          default: 'left'
+          default: 'left',
+          renderHTML: (attributes) => {
+            if (!attributes.align) return {};
+            return {
+              'data-align': attributes.align
+            };
+          }
         }
       };
     },

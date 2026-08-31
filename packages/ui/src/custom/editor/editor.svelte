@@ -28,6 +28,7 @@
     onContentChange?: (content: HTMLContent) => void;
     onEditorReady?: (editor: Editor) => void;
     onEditorDestroy?: () => void;
+    onImageUpload?: (file: File) => Promise<string>;
   }
 
   let {
@@ -41,7 +42,8 @@
     editorClass = '',
     placeholder,
     onContentChange,
-    onEditorReady
+    onEditorReady,
+    onImageUpload
   }: Props = $props();
 
   let editor = $state<Editor>();
@@ -151,6 +153,7 @@
       {content}
       {onUpdate}
       {placeholder}
+      {onImageUpload}
     />
   </div>
 {/if}

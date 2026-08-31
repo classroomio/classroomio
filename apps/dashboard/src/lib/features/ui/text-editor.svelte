@@ -19,6 +19,7 @@
   // Type-only imports are erased at build time — no static TipTap dependency.
   import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
   import { cn } from '@cio/ui/tools';
+  import { uploadImage } from '$lib/utils/services/upload';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
@@ -81,5 +82,6 @@
     onContentChange={onChange}
     onEditorReady={onReady}
     {onEditorDestroy}
+    onImageUpload={uploadImage}
   />
 {/await}

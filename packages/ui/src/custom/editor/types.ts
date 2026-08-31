@@ -12,6 +12,7 @@ export interface EdraEditorProps {
   autofocus?: boolean;
   onUpdate?: (args: { editor: Editor; transaction: Transaction }) => void;
   class?: string;
+  onImageUpload?: (file: File) => Promise<string>;
 }
 
 export interface EditorProps {
@@ -35,6 +36,7 @@ export interface EditorProps {
   onContentChange?: (content: Content) => void;
   onEditorReady?: (editor: Editor) => void;
   onEditorDestroy?: () => void;
+  onImageUpload?: (file: File) => Promise<string>;
 }
 
 export interface EdraToolbarProps {

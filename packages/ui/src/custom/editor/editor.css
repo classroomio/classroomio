@@ -509,3 +509,38 @@ input[type='checkbox'] {
   color: var(--color-destructive);
   border: 1px solid darkred;
 }
+
+/* Image & Media Styling */
+.tiptap img,
+.prose img {
+  max-width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
+.tiptap img[data-align='center'],
+.prose img[data-align='center'],
+.tiptap img[align='center'],
+.prose img[align='center'] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tiptap img[data-align='right'],
+.prose img[data-align='right'],
+.tiptap img[align='right'],
+.prose img[align='right'] {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.tiptap img[data-align='left'],
+.prose img[data-align='left'],
+.tiptap img[align='left'],
+.prose img[align='left'] {
+  display: block;
+  margin-left: 0;
+  margin-right: auto;
+}
