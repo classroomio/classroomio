@@ -1,40 +1,71 @@
 ---
 title: Developers
-description: Integrate with the ClassroomIO API, connect MCP, or contribute to the codebase.
+description: Call the ClassroomIO API, connect MCP or Token Auth, self-host the stack, or contribute to the codebase.
 ---
 
-This is where you come if you're building something on top of ClassroomIO rather than running an
-academy in it: calling the API from your own app, connecting an MCP client, or working on
-ClassroomIO's own codebase.
+You're here to build something on top of ClassroomIO, not run an academy in it: calling the API
+from your own app, connecting an agent client or an SSO-style handoff, running the stack on your
+own infrastructure, or working on ClassroomIO's own code.
 
-## Build with the API
+<CodeGroup>
+
+```bash cURL
+curl https://api.classroomio.com/public-api/v1/courses \
+  -H "Authorization: Bearer cio_api_your_key_here"
+```
+
+```js JavaScript
+const res = await fetch('https://api.classroomio.com/public-api/v1/courses', {
+  headers: { Authorization: 'Bearer cio_api_your_key_here' }
+});
+const { data } = await res.json();
+```
+
+</CodeGroup>
+
+Full endpoint reference, request/response schemas, and how to get a key: [API](/api).
+
+## Connect
+
+Bring an agent client or an existing sign-in flow into ClassroomIO instead of calling the REST API directly.
 
 <CardGroup cols={2}>
-  <Card title="Token Auth" href="/developers/token-auth" icon="key-round">
-    Sign users in to ClassroomIO from your own app with a short-lived JWT.
-  </Card>
   <Card title="MCP" href="/developers/mcp" icon="plug">
     Connect Claude Code, Codex, Cursor, or other MCP clients for course authoring.
   </Card>
+  <Card title="Token Auth" href="/developers/token-auth" icon="key-round">
+    Sign users in to ClassroomIO from your own app with a short-lived JWT.
+  </Card>
 </CardGroup>
 
-Looking for the full endpoint reference? See [API](/api).
+## Self-hosting
 
-## Contribute to ClassroomIO
-
-ClassroomIO is open source and we welcome contributions. These guides cover getting the project
-running on your machine, the conventions we follow, and the infrastructure behind the platform.
+Run the full stack on your own infrastructure.
 
 <CardGroup cols={2}>
-  <Card title="Contributor guides" href="/developers/contributing" icon="code">
+  <Card title="Self-Hosting" href="/self-hosted" icon="server">
+    Docker, Railway, Coolify, or Dokploy — server requirements and install steps.
+  </Card>
+  <Card title="Architecture" href="/self-hosted/architecture" icon="network">
+    The services in the stack — dashboard, api, jobs worker, Postgres, Redis, object storage —
+    and how they talk to each other.
+  </Card>
+</CardGroup>
+
+## Contributing
+
+ClassroomIO is open source. These guides cover getting the project running on your machine, the
+conventions we follow, and the infrastructure behind the platform.
+
+<CardGroup cols={2}>
+  <Card title="Contributor guides" href="/contributing" icon="code">
     Start here: local setup, contributing code, design, and translations.
   </Card>
-  <Card title="Developers Guide" href="/developers/contributing/devs" icon="terminal">
+  <Card title="Developers Guide" href="/contributing/devs" icon="terminal">
     Run the monorepo locally: prerequisites, install, and the apps you can start.
   </Card>
 </CardGroup>
 
-:::note[Looking to run an academy or self-host instead?]
+:::note[Looking to run an academy instead?]
 Building and running an academy is covered in the [Help Center](https://classroomio.com/help).
-Running ClassroomIO on your own infrastructure is covered in [Self-Hosting](/self-hosted).
 :::

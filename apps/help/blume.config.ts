@@ -1,4 +1,5 @@
 import { defineConfig } from 'blume';
+import { z } from 'zod';
 
 /**
  * The site is served at classroomio.com/help, proxied to this worker by the
@@ -6,10 +7,10 @@ import { defineConfig } from 'blume';
  * rewrites URLs in the emitted HTML — it does not nest the build output, so
  * scripts/package-assets.mjs moves dist/ under help/ to match the served path.
  *
- * No `navigation.sidebar` is declared: the sidebar is generated from the
- * content/help folder tree (one folder per group, each file a page). Group
- * label/order comes from each folder's meta.ts; page order within a group
- * comes from that page's `sidebar.order` frontmatter.
+ * `navigation.sidebar` below is explicit, which replaces Blume's generated
+ * folder-tree sidebar entirely — per-folder meta.ts files no longer drive
+ * group label/order. Page order within a group still comes from each page's
+ * `sidebar.order` frontmatter.
  */
 export default defineConfig({
   title: 'ClassroomIO Help Center',
@@ -34,12 +35,15 @@ export default defineConfig({
   },
   theme: {
     mode: 'system',
-    // ClassroomIO's brand blue (Tailwind blue-700, `--color-blue-700` in
-    // apps/website/src/app.css and apps/dashboard/src/app.css's default
-    // theme) — Blume's default `accent: 'blue'` preset is a generic
-    // desaturated blue, not this brand color, which is why the accent
-    // button/icons looked off before this was set explicitly.
     accent: '#1d4ed8'
+  },
+  // `last_reviewed` is the staleness field scripts/check-stale-docs.mjs reads.
+  // Blume's page frontmatter schema is strict, so without this it fails the
+  // build on any page that sets it.
+  frontmatter: {
+    extend: {
+      last_reviewed: z.string().optional()
+    }
   },
   search: {
     provider: 'orama'
@@ -54,14 +58,98 @@ export default defineConfig({
     }
   },
   navigation: {
-    // Pinned links above the sidebar tree, on every breakpoint — the
-    // cross-surface rail (dev docs, source, blog) that sits outside the
-    // Help Center's own content.
-    featured: [
-      { label: 'Help Center', href: '/', icon: 'book-open' },
-      { label: 'Developer Docs', href: 'https://classroomio.com/docs', icon: 'terminal' },
-      { label: 'GitHub', href: 'https://github.com/classroomio/classroomio', icon: 'github' },
-      { label: 'Blog', href: 'https://classroomio.com/blog', icon: 'newspaper' }
+    tabs: [
+      { label: 'Help Center', path: '/', icon: 'book-open' },
+      { label: 'Developers', path: 'https://classroomio.com/docs/developers', icon: 'terminal' },
+      { label: 'API', path: 'https://classroomio.com/docs/api', icon: 'code' }
+    ],
+    sidebar: [
+      '/',
+      {
+        label: 'Get started',
+        display: 'group',
+        collapsed: false,
+        items: [
+          '/get-started',
+          '/get-started/signup',
+          '/get-started/onboarding',
+          '/get-started/create-first-course'
+        ]
+      },
+      {
+        label: 'Build a course',
+        display: 'group',
+        collapsed: false,
+        items: [
+          '/build-a-course/course-types',
+          '/build-a-course/create-exercise',
+          '/build-a-course/grade-exercise',
+          '/build-a-course/course-progression',
+          '/build-a-course/certificates',
+          '/build-a-course/use-math-in-editor'
+        ]
+      },
+      {
+        label: 'Live classes',
+        display: 'group',
+        collapsed: false,
+        items: ['/live-classes/live-class', '/live-classes/take-attendance']
+      },
+      {
+        label: 'Enrollment & students',
+        display: 'group',
+        collapsed: false,
+        items: [
+          '/enrollment-and-students/course-enrollment',
+          '/enrollment-and-students/welcome-email',
+          '/enrollment-and-students/invite-students',
+          '/enrollment-and-students/create-a-cohort',
+          '/enrollment-and-students/manage-your-audience',
+          '/enrollment-and-students/enrollment-access-control'
+        ]
+      },
+      {
+        label: 'Publish your academy',
+        display: 'group',
+        collapsed: false,
+        items: [
+          '/publish-your-academy/course-landingpage',
+          '/publish-your-academy/org-landing-page',
+          '/publish-your-academy/academy-sharing-and-branding',
+          '/publish-your-academy/custom-domain'
+        ]
+      },
+      {
+        label: 'Organization & team',
+        display: 'group',
+        collapsed: false,
+        items: [
+          '/organization-and-team/admin-dashboard',
+          '/organization-and-team/customize-organization',
+          '/organization-and-team/invite-team-member',
+          '/organization-and-team/roles-and-permissions',
+          '/organization-and-team/enterprise-sso-setup',
+          '/organization-and-team/manage-tags',
+          '/organization-and-team/use-the-community-forum'
+        ]
+      },
+      {
+        label: 'Reference',
+        display: 'group',
+        collapsed: false,
+        items: [
+          '/reference',
+          '/reference/glossary',
+          '/reference/organization',
+          '/reference/course',
+          '/reference/cohorts',
+          '/reference/audience',
+          '/reference/student-dashboard',
+          '/reference/tags',
+          '/reference/community',
+          '/reference/enterprise-sso'
+        ]
+      }
     ]
   }
 });

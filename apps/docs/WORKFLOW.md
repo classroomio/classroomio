@@ -10,16 +10,18 @@ Everything else user-facing (routes, nav, components, copy) is hand-written and 
 
 `apps/api/**` should never end up in `.github/docs-review/globs.yml`. It would just relabel PRs whose docs already regenerate themselves.
 
+This applies equally to `apps/docs` (Developers, self-hosting, API reference) and `apps/help` (task-based user guides, plus the Glossary) — they're two separate Blume apps, but the same drift risk and the same tooling covers both.
+
 ## The pieces
 
 | File | Does what |
 |---|---|
 | `.github/docs-review/globs.yml` | Defines "user-facing." Edit this to tune the label. |
 | `.github/workflows/docs-label.yml` | Labels/comments on PRs matching the globs. Advisory. |
-| `.github/workflows/docs-validate.yml` | Lints `apps/docs/**` PRs (links + prose). Advisory. |
-| `apps/docs/.vale.ini` | Vale config: Google + write-good, warnings only. |
-| `apps/docs/CONTRIBUTING.md` | Placement rules, doc types, voice/style. |
-| `apps/docs/scripts/check-stale-docs.mjs` | `pnpm docs:check-stale`: stale-page worklist. |
+| `.github/workflows/docs-validate.yml` | Lints `apps/docs/**` and `apps/help/**` PRs (links + prose), each app checked separately. Advisory. |
+| `apps/docs/.vale.ini`, `apps/help/.vale.ini` | Vale config per app: Google + write-good, warnings only. |
+| `apps/docs/CONTRIBUTING.md` | Placement rules, doc types, voice/style — for `apps/docs`. |
+| `apps/docs/scripts/check-stale-docs.mjs`, `apps/help/scripts/check-stale-docs.mjs` | `pnpm docs:check-stale` / `pnpm help:check-stale`: stale-page worklists, one per app. |
 
 ## Making it blocking later
 
@@ -34,7 +36,10 @@ vale sync && vale content/docs
 
 ```bash
 pnpm docs:check-stale
+pnpm help:check-stale
 ```
+
+Swap `apps/docs` for `apps/help` (and its own `.vale.ini`) to run Vale against the Help Center content instead.
 
 ## Known limitation
 
