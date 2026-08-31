@@ -166,6 +166,7 @@
       {#if node.attrs.title !== null && node.attrs.title !== undefined && node.attrs.title !== ''}
         <input
           type="text"
+          aria-label="Image caption"
           value={node.attrs.title}
           oninput={(e) => updateAttributes({ title: (e.target as HTMLInputElement).value })}
           placeholder="Add caption..."

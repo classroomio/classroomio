@@ -16,10 +16,10 @@
 
   let { editor, open = $bindable(false), onImageUpload }: Props = $props();
 
-  const tabs = [
-    { label: 'Upload', value: 'upload' },
+  const tabs = $derived([
+    ...(onImageUpload ? [{ label: 'Upload', value: 'upload' }] : []),
     { label: 'Link', value: 'link' }
-  ];
+  ]);
 
   let currentTab = $state(tabs[0].value);
   let cropperSrc = $state('');
@@ -34,10 +34,11 @@
   }
 
   async function handleCropped(croppedUrl: string) {
+    if (!onImageUpload) return;
     try {
       isUploading = true;
       const file = await ImageCropper.getFileFromUrl(croppedUrl);
-      const url = await onImageUpload?.(file);
+      const url = await onImageUpload(file);
       if (url) insertImage(url);
     } catch (error) {
       console.error('Image upload failed:', error);
@@ -71,38 +72,40 @@
           {/each}
         </UnderlineTabs.List>
 
-        <UnderlineTabs.Content value="upload">
-          <div class="ui:w-full">
-            <ImageCropper.Root
-              bind:src={cropperSrc}
-              onCropped={handleCropped}
-              onUnsupportedFile={handleUnsupportedFile}
-              accept=".jpg, .jpeg, .png, .webp"
-              disabled={isUploading}
-            >
-              <ImageCropper.UploadTrigger
-                class="ui:flex ui:w-full ui:cursor-pointer ui:flex-col ui:items-center ui:justify-center ui:gap-2 ui:rounded-lg ui:border-2 ui:border-dashed ui:border-input ui:bg-muted/30 ui:px-6 ui:py-10 ui:text-center ui:transition-colors ui:hover:bg-muted/60"
+        {#if onImageUpload}
+          <UnderlineTabs.Content value="upload">
+            <div class="ui:w-full">
+              <ImageCropper.Root
+                bind:src={cropperSrc}
+                onCropped={handleCropped}
+                onUnsupportedFile={handleUnsupportedFile}
+                accept=".jpg, .jpeg, .png, .webp"
+                disabled={isUploading}
               >
-                {#if isUploading}
-                  <LoaderCircle class="ui:text-muted-foreground ui:size-6 ui:animate-spin" />
-                  <p class="ui:m-0 ui:text-sm ui:font-medium">Uploading…</p>
-                {:else}
-                  <UploadCloudIcon class="ui:text-muted-foreground" size={28} />
-                  <p class="ui:m-0 ui:text-sm ui:font-medium">Drag and drop an image here, or click to select</p>
-                  <p class="ui:m-0 ui:text-xs ui:text-muted-foreground">Accepted: jpeg, jpg, png, webp</p>
-                {/if}
-              </ImageCropper.UploadTrigger>
+                <ImageCropper.UploadTrigger
+                  class="ui:flex ui:w-full ui:cursor-pointer ui:flex-col ui:items-center ui:justify-center ui:gap-2 ui:rounded-lg ui:border-2 ui:border-dashed ui:border-input ui:bg-muted/30 ui:px-6 ui:py-10 ui:text-center ui:transition-colors ui:hover:bg-muted/60"
+                >
+                  {#if isUploading}
+                    <LoaderCircle class="ui:text-muted-foreground ui:size-6 ui:animate-spin" />
+                    <p class="ui:m-0 ui:text-sm ui:font-medium">Uploading…</p>
+                  {:else}
+                    <UploadCloudIcon class="ui:text-muted-foreground" size={28} />
+                    <p class="ui:m-0 ui:text-sm ui:font-medium">Drag and drop an image here, or click to select</p>
+                    <p class="ui:m-0 ui:text-xs ui:text-muted-foreground">Accepted: jpeg, jpg, png, webp</p>
+                  {/if}
+                </ImageCropper.UploadTrigger>
 
-              <ImageCropper.Dialog class="ui:z-[350]!">
-                <ImageCropper.Cropper cropShape="rect" />
-                <ImageCropper.Controls>
-                  <ImageCropper.Cancel />
-                  <ImageCropper.Crop />
-                </ImageCropper.Controls>
-              </ImageCropper.Dialog>
-            </ImageCropper.Root>
-          </div>
-        </UnderlineTabs.Content>
+                <ImageCropper.Dialog class="ui:z-[350]!">
+                  <ImageCropper.Cropper cropShape="rect" />
+                  <ImageCropper.Controls>
+                    <ImageCropper.Cancel />
+                    <ImageCropper.Crop />
+                  </ImageCropper.Controls>
+                </ImageCropper.Dialog>
+              </ImageCropper.Root>
+            </div>
+          </UnderlineTabs.Content>
+        {/if}
 
         <UnderlineTabs.Content value="link">
           <div class="ui:flex ui:flex-col ui:gap-3 ui:p-1">
