@@ -17,7 +17,6 @@
     "@cio/email": "workspace:*",
     "@cio/ui": "workspace:*",
     "@cio/utils": "workspace:*",
-    "@lucide/svelte": "^0.562.0",
     "svelte-inview": "^4.0.4",
     "svelte-motion": "^0.12.2"
   },
