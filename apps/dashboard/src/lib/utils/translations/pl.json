@@ -2652,7 +2652,7 @@
       "due_date": "Termin",
       "valid_until": "Ważne do",
       "student_empty_title": "Brak kursów",
-      "student_empty_description": "W tej organizacji nie ma jeszcze żadnych kursów. Sprawdź później."
+      "student_empty_description": "W tej organizacji nie ma jeszcze dostępnych kursów. Sprawdź później."
     },
     "course_filter": {
       "date_created_newest": "Data utworzenia: od najnowszych",
