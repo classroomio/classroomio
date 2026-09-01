@@ -76,16 +76,15 @@ export async function createOrganizationWithOwner(
         );
       }
 
-      return { organization, member };
-    });
+      const organizations = await getOrganizationByProfileId(profileId, tx);
 
-    // Fetch updated organizations list
-    const organizations = await getOrganizationByProfileId(profileId);
+      return { organization, member, organizations };
+    });
 
     return {
       organization: result.organization,
       member: result.member,
-      organizations
+      organizations: result.organizations
     };
   } catch (error) {
     console.error('Error creating organization:', error);
