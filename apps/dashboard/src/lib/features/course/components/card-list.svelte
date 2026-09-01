@@ -10,7 +10,7 @@
   let { courses, onCardClick, ...rest }: Props = $props();
 </script>
 
-<Item.Group class="grid! w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+<Item.Group class="grid! w-full grid-cols-1 justify-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
   {#each courses as course (course.id)}
     <Card {course} {...rest} onExploreClick={onCardClick ? () => onCardClick(course) : undefined} />
   {/each}
