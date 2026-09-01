@@ -2277,7 +2277,9 @@
           "starts_in": "Começa em",
           "session_ended": "Sessão encerrada",
           "link_copied": "Link copiado"
-        }
+        },
+        "student_share_your_knowledge": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
+        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde."
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -2343,7 +2345,8 @@
           "description": "Tem certeza de que deseja excluir este feed?",
           "no": "Não",
           "yes": "Sim"
-        }
+        },
+        "student_body_content": "Nenhuma publicação foi feita nesta turma ainda."
       },
       "compliance": {
         "title": "Conformidade",
@@ -2647,7 +2650,9 @@
         "copy_course_url": "Copiar URL do curso"
       },
       "due_date": "Vencimento",
-      "valid_until": "Válido até"
+      "valid_until": "Válido até",
+      "student_empty_title": "Nenhum curso ainda",
+      "student_empty_description": "Ainda não há cursos disponíveis nesta organização. Volte mais tarde."
     },
     "course_filter": {
       "date_created_newest": "Data de criação: mais recentes primeiro",

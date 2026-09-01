@@ -20,6 +20,7 @@
 
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { courseApi } from '$features/course/api';
   import { COURSE_SORT_OPTIONS, DEFAULT_COURSE_SORT, type CourseSortBy } from '../utils/constants';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
@@ -44,8 +45,8 @@
 
   let {
     courses = [],
-    emptyTitle = $t('courses.course_card.empty_title'),
-    emptyDescription = $t('courses.course_card.empty_description'),
+    emptyTitle,
+    emptyDescription,
     isExplore = false,
     isLMS = false,
     searchValue = $bindable(''),
@@ -56,6 +57,18 @@
     onCardClick,
     emptyAction
   }: Props = $props();
+
+  const resolvedEmptyTitle = $derived(
+    emptyTitle ??
+      ($isOrgStudent ? $t('courses.course_card.student_empty_title') : $t('courses.course_card.empty_title'))
+  );
+
+  const resolvedEmptyDescription = $derived(
+    emptyDescription ??
+      ($isOrgStudent
+        ? $t('courses.course_card.student_empty_description')
+        : $t('courses.course_card.empty_description'))
+  );
 
   const filterOptions = $derived(
     COURSE_SORT_OPTIONS.map((option) => ({
@@ -124,8 +137,8 @@
       <CourseCardLoader />
     </section>
   {:else if !courses.length}
-    <Empty title={emptyTitle} description={emptyDescription} icon={LibraryBigIcon} variant="page">
-      {#if !isLMS}
+    <Empty title={resolvedEmptyTitle} description={resolvedEmptyDescription} icon={LibraryBigIcon} variant="page">
+      {#if !isLMS && !$isOrgStudent}
         <CreateCourseButton isResponsive />
       {:else if emptyAction}
         {@render emptyAction()}
