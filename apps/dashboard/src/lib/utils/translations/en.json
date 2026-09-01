@@ -243,6 +243,18 @@
       "more_actions": "More copy page actions",
       "copy_failed": "Could not copy this lesson as Markdown"
     },
+    "rail": {
+      "copy_as_markdown": "Copy as Markdown",
+      "open_in_chat": "Open in chat"
+    },
+    "share": {
+      "label": "Share on social media",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link copied. Paste it in Instagram."
+    },
     "outline": {
       "label": "On this page"
     }

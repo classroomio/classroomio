@@ -26,3 +26,18 @@ export function buildChatGptUrl(prompt: string): string {
 export function buildClaudeUrl(prompt: string): string {
   return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
 }
+
+/** Fetches the lesson Markdown document, or `null` when the request fails. */
+export async function fetchLessonMarkdown(markdownUrl: string): Promise<string | null> {
+  try {
+    const response = await fetch(markdownUrl);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return await response.text();
+  } catch {
+    return null;
+  }
+}

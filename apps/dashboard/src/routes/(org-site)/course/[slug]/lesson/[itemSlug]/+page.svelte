@@ -9,7 +9,8 @@
     buildStudyPrompt,
     publicExerciseAttemptsStorageKey,
     type PublicLessonViewData,
-    type PublicExerciseViewData
+    type PublicExerciseViewData,
+    type OutlineRailActionLabels
   } from '@cio/ui/custom/public-course';
   import { getExerciseQuestionLabels } from '$features/course/components/exercise/question-labels';
   import { t } from '$lib/utils/functions/translations';
@@ -66,6 +67,20 @@
   );
   const chatgptUrl = $derived(buildChatGptUrl(studyPrompt));
   const claudeUrl = $derived(buildClaudeUrl(studyPrompt));
+  const pageTitle = $derived('title' in data.item ? data.item.title : data.tree.course.title);
+
+  const railLabels = $derived<OutlineRailActionLabels>({
+    copyAsMarkdown: t.get('public_course.rail.copy_as_markdown'),
+    copied: t.get('public_course.copy_page.copied'),
+    share: t.get('public_course.share.label'),
+    facebook: t.get('public_course.share.facebook'),
+    linkedin: t.get('public_course.share.linkedin'),
+    x: t.get('public_course.share.x'),
+    instagram: t.get('public_course.share.instagram'),
+    openInChat: t.get('public_course.rail.open_in_chat'),
+    openInChatGPT: t.get('public_course.copy_page.open_in_chatgpt'),
+    openInClaude: t.get('public_course.copy_page.open_in_claude')
+  });
 
   const breadcrumbJsonLd = $derived.by(() => {
     const courseUrl = new URL(`/course/${data?.tree.course.slug}`, page.url.origin).href;
@@ -115,6 +130,7 @@
       {#snippet titleActions()}
         {#if showCopyPage}
           <PublicCourse.CopyPageButton
+            class="ui:lg:hidden"
             {markdownUrl}
             {chatgptUrl}
             {claudeUrl}
@@ -130,6 +146,19 @@
             onCopyError={() => snackbar.error('public_course.copy_page.copy_failed')}
           />
         {/if}
+      {/snippet}
+      {#snippet outlineActions()}
+        <PublicCourse.OutlineRailActions
+          pageUrl={publicItemUrl}
+          {pageTitle}
+          markdownUrl={showCopyPage ? markdownUrl : null}
+          chatgptUrl={showCopyPage ? chatgptUrl : null}
+          claudeUrl={showCopyPage ? claudeUrl : null}
+          labels={railLabels}
+          onCopied={() => snackbar.success('public_course.copy_page.copied')}
+          onCopyError={() => snackbar.error('public_course.copy_page.copy_failed')}
+          onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
+        />
       {/snippet}
     </PublicCourse.PublicLessonView>
   {:else if exerciseView}
@@ -147,6 +176,15 @@
       privacyHint={$t('public_course.exercise.privacy_hint')}
       summaryTemplate={$t('public_course.exercise.summary_template')}
       outlineLabel={$t('public_course.outline.label')}
-    />
+    >
+      {#snippet outlineActions()}
+        <PublicCourse.OutlineRailActions
+          pageUrl={publicItemUrl}
+          {pageTitle}
+          labels={railLabels}
+          onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
+        />
+      {/snippet}
+    </PublicCourse.PublicExerciseView>
   {/if}
 {/key}
