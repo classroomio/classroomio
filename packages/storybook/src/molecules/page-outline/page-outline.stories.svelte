@@ -1,6 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { PageOutline, injectHeadingIds, withPageTitle } from '@cio/ui';
+  import { PageOutline, PublicCourse, injectHeadingIds, withPageTitle } from '@cio/ui';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { FIELDS } from './fields';
 
@@ -24,6 +24,19 @@
   const injected = injectHeadingIds(BODY_HTML);
   const outlineItems = withPageTitle(PAGE_TITLE, injected.items);
   const titleId = outlineItems[0]?.id ?? 'hallucination-limitations';
+
+  const RAIL_LABELS = {
+    copyAsMarkdown: 'Copy as Markdown',
+    copied: 'Copied',
+    share: 'Share on social media',
+    facebook: 'Facebook',
+    linkedin: 'LinkedIn',
+    x: 'X',
+    instagram: 'Instagram',
+    openInChat: 'Open in chat',
+    openInChatGPT: 'Open in ChatGPT',
+    openInClaude: 'Open in Claude'
+  };
 
   const { Story } = defineMeta({
     title: 'Molecules/PageOutline',
@@ -65,9 +78,19 @@
         </div>
       </article>
       <aside
-        class="ui:sticky ui:top-0 ui:z-10 ui:h-dvh ui:w-52 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:px-4 ui:py-8"
+        class="ui:sticky ui:top-0 ui:z-10 ui:h-dvh ui:w-56 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:px-4 ui:py-8"
       >
         <PageOutline items={outlineItems} label="On this page" hideBelow="never" />
+        <div class="ui:mt-6 ui:border-t ui:border-border ui:pt-4">
+          <PublicCourse.OutlineRailActions
+            pageUrl="https://example.com/lesson"
+            pageTitle={PAGE_TITLE}
+            markdownUrl="/lesson.md"
+            chatgptUrl="https://chatgpt.com/?prompt=demo"
+            claudeUrl="https://claude.ai/new?q=demo"
+            labels={RAIL_LABELS}
+          />
+        </div>
       </aside>
     </div>
   {/snippet}
