@@ -27,6 +27,7 @@ import {
 import { getOrgIdBySiteName, isUserOrgAdmin } from '@cio/db/queries/organization';
 import { TAG_COLOR_OPTIONS, type TTagColor } from '@cio/utils/validation/tag';
 import { slugifyTagValue } from '@cio/db/queries/tag';
+import type { DbOrTxClient } from '@cio/db/drizzle';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
@@ -314,17 +315,18 @@ export async function replaceCourseTags(
   data: TCourseTagAssignment,
   options: {
     updatedByUserId?: string;
+    dbClient?: DbOrTxClient;
   } = {}
 ) {
   try {
     if (options.updatedByUserId) {
-      const isAdmin = await isUserOrgAdmin(orgId, options.updatedByUserId);
+      const isAdmin = await isUserOrgAdmin(orgId, options.updatedByUserId, options.dbClient);
       if (!isAdmin) {
         throw new AppError('Only organization admins can update course tags', ErrorCodes.UNAUTHORIZED, 403);
       }
     }
 
-    const courseOrgId = await getCourseOrganizationId(courseId);
+    const courseOrgId = await getCourseOrganizationId(courseId, options.dbClient);
 
     if (!courseOrgId) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
@@ -337,15 +339,15 @@ export async function replaceCourseTags(
     const uniqueTagIds = Array.from(new Set(data.tagIds));
 
     if (uniqueTagIds.length > 0) {
-      const validTags = await getTagsByIds(orgId, uniqueTagIds);
+      const validTags = await getTagsByIds(orgId, uniqueTagIds, options.dbClient);
       if (validTags.length !== uniqueTagIds.length) {
         throw new AppError('One or more tags are invalid', ErrorCodes.VALIDATION_ERROR, 400, 'tagIds');
       }
     }
 
-    await replaceCourseTagAssignments(courseId, uniqueTagIds);
+    await replaceCourseTagAssignments(courseId, uniqueTagIds, options.dbClient);
 
-    return getCourseTagsForOrganization(orgId, courseId);
+    return getCourseTagsForOrganization(orgId, courseId, options.dbClient);
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

@@ -533,8 +533,12 @@ export const updateOrganizationAudienceMember = async (
  * @param profileId Profile ID to check
  * @returns True if user is admin, false otherwise
  */
-export const isUserOrgAdmin = async (orgId: string, profileId: string): Promise<boolean> => {
-  const result = await db
+export const isUserOrgAdmin = async (
+  orgId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> => {
+  const result = await dbClient
     .select({ roleId: schema.organizationmember.roleId })
     .from(schema.organizationmember)
     .where(

@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import type { DbOrTxClient } from '@cio/db/drizzle';
 import { findNonAutoGradableQuestionsInCourse, getCourseTypeById } from '@cio/db/queries/course';
 import { AUTO_GRADABLE_QUESTION_TYPE_IDS, isAutoGradableQuestionTypeId } from '@cio/question-types';
 
@@ -41,12 +42,17 @@ export async function guardCourseTypeTransition(params: {
   courseId: string;
   currentType: string | null;
   nextType: string | null | undefined;
+  dbClient?: DbOrTxClient;
 }): Promise<void> {
   if (!params.nextType) return;
   if (params.nextType !== 'PUBLIC') return;
   if (params.currentType === 'PUBLIC') return;
 
-  const offenders = await findNonAutoGradableQuestionsInCourse(params.courseId, AUTO_GRADABLE_QUESTION_TYPE_IDS);
+  const offenders = await findNonAutoGradableQuestionsInCourse(
+    params.courseId,
+    AUTO_GRADABLE_QUESTION_TYPE_IDS,
+    params.dbClient
+  );
   if (offenders.length === 0) return;
 
   const preview = offenders.slice(0, 5).map((item) => `"${item.questionTitle}" in "${item.exerciseTitle}"`);
