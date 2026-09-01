@@ -289,11 +289,15 @@ export const deleteOrganizationById = async (id: string) => {
  * @returns True if email exists, false otherwise
  */
 export const checkEmailExistsInOrg = async (orgId: string, email: string): Promise<boolean> => {
+  const normalizedEmail = email.toLowerCase();
   const result = await db
     .select({ id: schema.organizationmember.id })
     .from(schema.organizationmember)
     .where(
-      and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.email, email.toLowerCase()))
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        sql`lower(${schema.organizationmember.email}) = ${normalizedEmail}`
+      )
     )
     .limit(1);
 
