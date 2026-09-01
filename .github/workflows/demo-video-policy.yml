@@ -1,0 +1,212 @@
+name: Demo video policy
+
+# pull_request_target lets the policy comment on and update PRs from forks.
+# This workflow only inspects GitHub metadata; it never checks out or executes PR code.
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - edited
+      - ready_for_review
+  schedule:
+    # The scheduled pass closes PRs that remain noncompliant for three days.
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  enforce-demo-video:
+    name: Require demo video
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check demo video policy
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const targetBranch = 'main';
+            const noticeMarker = '<!-- demo-video-policy -->';
+            const closedMarker = '<!-- demo-video-policy-closed -->';
+            const closeAfterMilliseconds = 3 * 24 * 60 * 60 * 1000;
+            const videoHosts = new Set([
+              'awesomescreenshot.com',
+              'loom.com',
+              'youtu.be',
+              'youtube.com',
+              'vimeo.com',
+              'vidyard.com',
+              'screencastify.com',
+              'screenpal.com',
+              'screen.studio',
+              'share.descript.com'
+            ]);
+
+            function extractDemoSection(body) {
+              const lines = (body || '').split(/\r?\n/);
+              const demoHeadingIndex = lines.findIndex((line) =>
+                /^\s*#{1,6}\s+demo(?:\s+(?:video|recording))?\s*$/i.test(line)
+              );
+
+              if (demoHeadingIndex === -1) return '';
+
+              const headingLevel = lines[demoHeadingIndex].match(/^\s*(#+)/)[1].length;
+              const sectionLines = [];
+
+              for (const line of lines.slice(demoHeadingIndex + 1)) {
+                const nextHeading = line.match(/^\s*(#{1,6})\s+/);
+                if (nextHeading && nextHeading[1].length <= headingLevel) break;
+
+                sectionLines.push(line);
+              }
+
+              return sectionLines.join('\n').replace(/<!--[\s\S]*?-->/g, '').trim();
+            }
+
+            function isVideoUrl(rawUrl) {
+              const normalizedUrl = rawUrl.replace(/[)>\],.!?]+$/g, '');
+
+              let parsedUrl;
+              try {
+                parsedUrl = new URL(normalizedUrl);
+              } catch {
+                return false;
+              }
+
+              const hostname = parsedUrl.hostname.toLowerCase().replace(/^www\./, '');
+              const pathname = parsedUrl.pathname.toLowerCase();
+
+              if (/\.(?:mp4|mov|m4v|webm)(?:$|\/)/i.test(pathname)) return true;
+              if (hostname === 'github.com' && /\/(?:user-attachments\/assets|[^/]+\/[^/]+\/(?:assets|files))\//i.test(pathname)) return true;
+              if (hostname === 'user-images.githubusercontent.com') return true;
+              if ((hostname === 'zoom.us' || hostname.endsWith('.zoom.us')) && pathname.startsWith('/rec/')) return true;
+              if (!videoHosts.has(hostname)) return false;
+
+              if (hostname === 'awesomescreenshot.com') return pathname.startsWith('/video/');
+              if (hostname === 'loom.com') return /^\/(?:share|embed)\//.test(pathname);
+
+              return true;
+            }
+
+            function hasDemoVideo(body) {
+              const demoSection = extractDemoSection(body);
+              if (!demoSection) return false;
+
+              const urls = demoSection.match(/https?:\/\/[^\s<>"']+/gi) || [];
+
+              return urls.some(isVideoUrl);
+            }
+
+            async function listPolicyComments(pullNumber) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullNumber,
+                per_page: 100
+              });
+
+              return comments.filter((comment) => comment.body?.includes(noticeMarker));
+            }
+
+            async function createNotice(pullNumber) {
+              const body = `${noticeMarker}
+            A demo video is required before this PR can be tested and approved. Please add a working video link or GitHub-uploaded video under the **Demo** section of the PR description (for example, Awesome Screenshot, Loom, or Zoom).
+
+            This PR is being kept/returned to draft until the walkthrough is added. If no demo video is added within 3 days of this notice, the PR will be closed.`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullNumber,
+                body
+              });
+            }
+
+            async function convertToDraft(pullRequest) {
+              if (pullRequest.draft) return;
+
+              await github.graphql(
+                `mutation($pullRequestId: ID!) {
+                  convertPullRequestToDraft(input: { pullRequestId: $pullRequestId }) {
+                    pullRequest { isDraft }
+                  }
+                }`,
+                { pullRequestId: pullRequest.node_id }
+              );
+            }
+
+            async function closePullRequest(pullRequest) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequest.number,
+                body: `${closedMarker}\nClosing this PR because a demo video was not added within 3 days of the policy notice. Add the walkthrough under **Demo**, then reopen the PR when it is ready for review.`
+              });
+
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pullRequest.number,
+                state: 'closed'
+              });
+            }
+
+            async function enforcePolicy(pullRequest, options) {
+              if (pullRequest.base.ref !== targetBranch || pullRequest.state !== 'open') return;
+              if (hasDemoVideo(pullRequest.body)) {
+                core.info(`#${pullRequest.number} has a demo video.`);
+                return;
+              }
+
+              const policyComments = await listPolicyComments(pullRequest.number);
+              if (policyComments.length === 0) {
+                if (!options.shouldCreateNotice) return;
+
+                await createNotice(pullRequest.number);
+                core.info(`Commented on #${pullRequest.number}.`);
+              }
+
+              await convertToDraft(pullRequest);
+
+              if (!options.shouldCloseStale || policyComments.length === 0) return;
+
+              const firstNoticeTime = Math.min(
+                ...policyComments.map((comment) => new Date(comment.created_at).getTime())
+              );
+              const noticeAge = Date.now() - firstNoticeTime;
+
+              if (noticeAge < closeAfterMilliseconds) return;
+
+              await closePullRequest(pullRequest);
+              core.info(`Closed #${pullRequest.number} after three days without a demo video.`);
+            }
+
+            const shouldScanOpenPullRequests =
+              context.eventName === 'schedule' || context.eventName === 'workflow_dispatch';
+
+            if (shouldScanOpenPullRequests) {
+              const openPullRequests = await github.paginate(github.rest.pulls.list, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                base: targetBranch,
+                per_page: 100
+              });
+
+              for (const pullRequest of openPullRequests) {
+                await enforcePolicy(pullRequest, {
+                  shouldCreateNotice: false,
+                  shouldCloseStale: true
+                });
+              }
+            } else {
+              await enforcePolicy(context.payload.pull_request, {
+                shouldCreateNotice: true,
+                shouldCloseStale: false
+              });
+            }

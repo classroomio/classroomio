@@ -12,7 +12,13 @@
   import type { AccountOrg } from '$features/app/types';
 
   import { setTheme } from '$lib/utils/functions/theme';
-  import { currentOrg, currentOrgPath, managedOrgs, mergeAccountOrgFromServer } from '$lib/utils/store/org';
+  import {
+    currentOrg,
+    currentOrgPath,
+    currentOrgPlan,
+    managedOrgs,
+    mergeAccountOrgFromServer
+  } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   import ComingSoon from '$features/ui/coming-soon.svelte';
@@ -32,6 +38,7 @@
   }
 
   const accountRootId = $derived(rootIdFor($currentOrg));
+  const currentPlanName = $derived($currentOrgPlan?.planName || 'Free');
 
   const switchableOrgs = $derived($managedOrgs);
   const accountWorkspaces = $derived(switchableOrgs.filter((org) => rootIdFor(org) === accountRootId));
@@ -73,7 +80,7 @@
             </Avatar.Root>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-normal">{$currentOrg.name}</span>
-              <span class="truncate text-xs">{$currentOrg.plans?.[0]?.planName || 'Free'}</span>
+              <span class="truncate text-xs">{currentPlanName}</span>
             </div>
           {:else}
             <Skeleton class="h-full w-full" />
@@ -174,7 +181,7 @@
                     {$currentOrg.name}
                   </span>
                   <span class="truncate text-xs">
-                    {$currentOrg.plans?.[0]?.planName || 'Free'}
+                    {currentPlanName}
                   </span>
                 </div>
                 <ChevronsUpDownIcon class="ml-auto" />
