@@ -13,18 +13,21 @@ import {
 
 type StudentMilestone = 'half' | 'reached';
 
+export type StudentMilestoneNotification = {
+  orgId: string;
+  milestone: StudentMilestone;
+  studentCount: number;
+  studentLimit: number;
+};
+
 /**
  * Emails org admins once when the org crosses a student-count milestone (50%
  * of the limit, or the limit itself). The "already notified" state is persisted
  * on `organization.settings` so each milestone fires at most once, ever — no
  * repeat emails on every subsequent blocked attempt.
  */
-async function notifyStudentMilestone(
-  orgId: string,
-  milestone: StudentMilestone,
-  studentCount: number,
-  studentLimit: number
-): Promise<void> {
+export async function notifyStudentMilestone(notification: StudentMilestoneNotification): Promise<void> {
+  const { orgId, milestone, studentCount, studentLimit } = notification;
   const org = await getOrganizationById(orgId);
   if (!org) return;
 
@@ -58,14 +61,18 @@ async function notifyStudentMilestone(
  * When the addition is allowed and crosses a milestone (50% or the limit), it
  * fires a one-time admin email (fire-and-forget). Blocked attempts do NOT email.
  */
-export async function assertStudentCapacityOrThrow(orgId: string, additionalStudents: number): Promise<void> {
-  if (additionalStudents <= 0) return;
-  if (env.PUBLIC_IS_SELFHOSTED === 'true') return;
+export async function assertStudentCapacityOrThrow(
+  orgId: string,
+  additionalStudents: number,
+  options: { deferNotification?: boolean } = {}
+): Promise<StudentMilestoneNotification | null> {
+  if (additionalStudents <= 0) return null;
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') return null;
 
   const activePlan = await getActiveOrganizationPlan(orgId);
   const limit = getStudentLimit(activePlan?.planName);
 
-  if (!Number.isFinite(limit)) return;
+  if (!Number.isFinite(limit)) return null;
 
   const currentCount = await countActiveStudents(orgId);
   const newCount = currentCount + additionalStudents;
@@ -84,8 +91,16 @@ export async function assertStudentCapacityOrThrow(orgId: string, additionalStud
 
   if (crossedReached || crossedHalf) {
     const milestone: StudentMilestone = crossedReached ? 'reached' : 'half';
-    notifyStudentMilestone(orgId, milestone, newCount, limit).catch((error) => {
-      console.error('notifyStudentMilestone error:', error);
-    });
+    const notification = { orgId, milestone, studentCount: newCount, studentLimit: limit };
+
+    if (!options.deferNotification) {
+      notifyStudentMilestone(notification).catch((error) => {
+        console.error('notifyStudentMilestone error:', error);
+      });
+    }
+
+    return notification;
   }
+
+  return null;
 }

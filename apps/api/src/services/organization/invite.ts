@@ -29,7 +29,8 @@ import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
-import { assertStudentCapacityOrThrow } from './student-limit';
+import { assertStudentCapacityOrThrow, notifyStudentMilestone } from './student-limit';
+import type { StudentMilestoneNotification } from './student-limit';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
@@ -105,7 +106,7 @@ function getExpiryLabel(expiresAtIso: string): string {
 async function syncOrgMemberForOrgInvite(
   tx: DbOrTxClient,
   params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
-): Promise<void> {
+): Promise<StudentMilestoneNotification | null> {
   const orgMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(
     tx,
     params.organizationId,
@@ -124,7 +125,7 @@ async function syncOrgMemberForOrgInvite(
       verified: true
     });
 
-    return;
+    return null;
   }
 
   const orgMemberByProfile = await selectOrganizationMemberByOrgAndProfile(tx, params.organizationId, params.userId);
@@ -136,11 +137,14 @@ async function syncOrgMemberForOrgInvite(
       verified: true
     });
 
-    return;
+    return null;
   }
 
+  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
   if (params.roleId === ROLE.STUDENT) {
-    await assertStudentCapacityOrThrow(params.organizationId, 1);
+    studentMilestoneNotification = await assertStudentCapacityOrThrow(params.organizationId, 1, {
+      deferNotification: true
+    });
   }
 
   await createOrganizationMember(
@@ -153,6 +157,8 @@ async function syncOrgMemberForOrgInvite(
     },
     tx
   );
+
+  return studentMilestoneNotification;
 }
 
 async function recordOrganizationInviteAudit(
@@ -427,9 +433,10 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     }
 
     const alreadyAccepted = status === 'ACCEPTED';
+    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
 
     if (!alreadyAccepted) {
-      await syncOrgMemberForOrgInvite(tx, {
+      studentMilestoneNotification = await syncOrgMemberForOrgInvite(tx, {
         organizationId: row.invite.organizationId,
         roleId: row.invite.roleId,
         normalizedEmail,
@@ -458,6 +465,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       invite: row.invite,
       roleId: row.invite.roleId,
       alreadyAccepted,
+      studentMilestoneNotification,
       enrolledCount
     };
   });
@@ -474,6 +482,12 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
   if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
+  }
+
+  if (result.studentMilestoneNotification) {
+    notifyStudentMilestone(result.studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
   }
 
   const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
@@ -693,9 +707,10 @@ export async function acceptOrganizationInviteById(
     }
 
     const alreadyAccepted = status === 'ACCEPTED';
+    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
 
     if (!alreadyAccepted) {
-      await syncOrgMemberForOrgInvite(tx, {
+      studentMilestoneNotification = await syncOrgMemberForOrgInvite(tx, {
         organizationId: row.invite.organizationId,
         roleId: row.invite.roleId,
         normalizedEmail,
@@ -724,6 +739,7 @@ export async function acceptOrganizationInviteById(
       invite: row.invite,
       roleId: row.invite.roleId,
       alreadyAccepted,
+      studentMilestoneNotification,
       enrolledCount
     };
   });
@@ -738,6 +754,12 @@ export async function acceptOrganizationInviteById(
 
   if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
+  }
+
+  if (result.studentMilestoneNotification) {
+    notifyStudentMilestone(result.studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
   }
 
   const siteName = result.organization.siteName || '';
