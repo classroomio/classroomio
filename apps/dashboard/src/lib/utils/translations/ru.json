@@ -2277,7 +2277,9 @@
           "starts_in": "Начинается через",
           "session_ended": "Сессия завершена",
           "link_copied": "Ссылка скопирована"
-        }
+        },
+        "student_share_your_knowledge": "В этот курс пока не добавлены уроки. Пожалуйста, зайдите позже.",
+        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже."
       },
       "news_feed": {
         "heading": "Лента новостей",
@@ -2343,7 +2345,8 @@
           "description": "Вы уверены, что хотите удалить этот канал?",
           "no": "Нет",
           "yes": "Да"
-        }
+        },
+        "student_body_content": "В этой ленте пока нет публикаций."
       },
       "compliance": {
         "title": "Соответствие требованиям",
@@ -2648,6 +2651,8 @@
       },
       "due_date": "Срок",
       "valid_until": "Действительно до",
+      "student_empty_title": "Курсов пока нет",
+      "student_empty_description": "В этой организации пока нет доступных курсов. Пожалуйста, зайдите позже.",
       "updated_at": "Обновлено {date}",
       "lessons_count": "{count, plural, one {# урок} few {# урока} many {# уроков} other {# уроков}}",
       "exercises_count": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнений}}"
