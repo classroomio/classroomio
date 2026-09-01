@@ -65,6 +65,7 @@ import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
+import { updateCourseWithTags } from '@api/services/course/update-course';
 
 function slugifyForFilename(value: string): string {
   return (
@@ -337,8 +338,6 @@ export const courseRouter = new Hono()
           };
         }
 
-        const result = await updateCourse(courseId, courseData);
-
         if (tagIds !== undefined) {
           const orgId = c.req.header('cio-org-id');
           if (!orgId) {
@@ -353,19 +352,27 @@ export const courseRouter = new Hono()
           }
 
           const user = c.get('user')!;
-          const tags = await replaceCourseTags(orgId, courseId, { tagIds }, { updatedByUserId: user.id });
+          const result = await updateCourseWithTags({
+            courseId,
+            courseData,
+            orgId,
+            updatedByUserId: user.id,
+            tagIds
+          });
 
           return c.json(
             {
               success: true,
               data: {
-                ...result,
-                tags
+                ...result.course,
+                tags: result.tags
               }
             },
             200
           );
         }
+
+        const result = await updateCourse(courseId, courseData);
 
         return c.json(
           {
