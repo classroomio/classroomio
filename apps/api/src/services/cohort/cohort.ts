@@ -253,7 +253,8 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
           );
         }
 
-        return db.transaction(async (tx) => {
+        const transactionResult = await db.transaction(async (tx) => {
+          let studentMilestoneNotification: StudentMilestoneNotification | null = null;
           const member = await addCohortMember(
             {
               cohortId,
@@ -273,7 +274,9 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
               tx
             );
             if (!existingOrgMemberId) {
-              await assertStudentCapacityOrThrow(cohort.organizationId, 1);
+              studentMilestoneNotification = await assertStudentCapacityOrThrow(cohort.organizationId, 1, tx, {
+                deferNotification: true
+              });
             }
 
             await insertOrganizationMembersOnConflictDoNothing(
@@ -300,8 +303,16 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
             );
           }
 
-          return member;
+          return { member, studentMilestoneNotification };
         });
+
+        if (transactionResult.studentMilestoneNotification) {
+          notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
+            console.error('notifyStudentMilestone error:', error);
+          });
+        }
+
+        return transactionResult.member;
       })
     );
 
