@@ -472,13 +472,15 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
   const siteName = result.organization.siteName || '';
 
-  await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
-    actorProfileId: user.id,
-    targetEmail: normalizedEmail,
-    ipAddress: context.ipAddress,
-    userAgent: context.userAgent,
-    metadata: { alreadyAccepted: result.alreadyAccepted }
-  });
+  if (!result.alreadyAccepted) {
+    await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
+      actorProfileId: user.id,
+      targetEmail: normalizedEmail,
+      ipAddress: context.ipAddress,
+      userAgent: context.userAgent,
+      metadata: { alreadyAccepted: false }
+    });
+  }
 
   if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
@@ -744,13 +746,15 @@ export async function acceptOrganizationInviteById(
     };
   });
 
-  await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
-    actorProfileId: user.id,
-    targetEmail: normalizedEmail,
-    ipAddress: context.ipAddress,
-    userAgent: context.userAgent,
-    metadata: { alreadyAccepted: result.alreadyAccepted }
-  });
+  if (!result.alreadyAccepted) {
+    await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
+      actorProfileId: user.id,
+      targetEmail: normalizedEmail,
+      ipAddress: context.ipAddress,
+      userAgent: context.userAgent,
+      metadata: { alreadyAccepted: false }
+    });
+  }
 
   if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
