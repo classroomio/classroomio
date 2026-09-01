@@ -16,27 +16,34 @@
   });
 </script>
 
-<Story name="WithViewAndDownload">
-  {#snippet template()}
-    <DocumentCard
-      title="report.pdf"
-      subtitle="PDF · 2.4 MB"
-      fileUrl="https://example.com/report.pdf"
-      viewLabel="View"
-      downloadLabel="Download"
-    />
-  {/snippet}
-</Story>
+<Story
+  name="WithViewAndDownload"
+  args={{
+    title: 'report.pdf',
+    subtitle: 'PDF · 2.4 MB',
+    fileUrl: 'https://example.com/report.pdf',
+    viewLabel: 'View',
+    downloadLabel: 'Download'
+  }}
+/>
 
-<Story name="WithoutUrl">
-  {#snippet template()}
-    <DocumentCard title="draft.docx" subtitle="DOCX · 156 KB" />
-  {/snippet}
-</Story>
+<Story
+  name="WithoutUrl"
+  args={{
+    title: 'draft.docx',
+    subtitle: 'DOCX · 156 KB'
+  }}
+/>
 
-<Story name="WithCustomActions">
-  {#snippet template()}
-    <DocumentCard title="lesson-doc.pdf" subtitle="PDF · 1.2 MB">
+<Story
+  name="WithCustomActions"
+  args={{
+    title: 'lesson-doc.pdf',
+    subtitle: 'PDF · 1.2 MB'
+  }}
+>
+  {#snippet template(args)}
+    <DocumentCard {...args}>
       {#snippet actions()}
         <button
           type="button"
