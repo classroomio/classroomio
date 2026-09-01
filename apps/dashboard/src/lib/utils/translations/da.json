@@ -2653,7 +2653,10 @@
         "copy_course_url": "Kopiér kursus-URL"
       },
       "due_date": "Forfalder",
-      "valid_until": "Gælder indtil kl"
+      "valid_until": "Gælder indtil kl",
+      "updated_at": "Opdateret {date}",
+      "lessons_count": "{count, plural, one {# lektion} other {# lektioner}}",
+      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}"
     },
     "course_filter": {
       "date_created_newest": "Oprettelsesdato: Nyeste først",

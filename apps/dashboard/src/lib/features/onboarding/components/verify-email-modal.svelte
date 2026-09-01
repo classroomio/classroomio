@@ -216,14 +216,14 @@
     </div>
 
     <div
-      class="flex flex-row items-center gap-2 border-t border-gray-200 px-8 py-5 text-center text-sm text-gray-700 dark:border-gray-800 dark:text-gray-300"
+      class="flex flex-col items-center gap-2 border-t border-gray-200 px-8 py-5 text-center text-sm text-gray-700 sm:flex-row sm:justify-center dark:border-gray-800 dark:text-gray-300"
     >
       <p>
         {$t('verify_email_modal.wrong_address')}
       </p>
       <Button
         variant="link"
-        class="ml-1 inline-flex items-center gap-1 font-bold text-gray-900 dark:text-gray-50"
+        class="inline-flex items-center gap-1 font-bold text-gray-900 sm:ml-1 dark:text-gray-50"
         onclick={switchAccount}
       >
         <LogOut class="h-4 w-4" />

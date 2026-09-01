@@ -1,0 +1,193 @@
+---
+// Fork of blume/components/layout/Header.astro (Blume 1.2.0), extended with
+// two navbar actions Blume has no config surface for: a plain-text support
+// link and a solid "Dashboard" button. Everything else (logo, tabs,
+// selectors, search, language switcher, GitHub icon, theme toggle, Ask AI)
+// is unchanged, reusing Blume's own sub-components so behavior stays
+// identical. Re-diff this file against the upstream Header.astro when
+// bumping the `blume` dependency version — layout-slot overrides don't
+// track upstream markup/prop changes automatically.
+import Ask from 'blume:ask';
+import data from 'blume:data';
+import { withBase } from 'blume/components/islands/base-path.ts';
+import type { ComponentOverride } from 'blume/core/define-components.ts';
+import { EN_UI } from 'blume/core/i18n-ui.ts';
+import type { UIStrings } from 'blume/core/i18n-ui.ts';
+import type { LocaleSwitchOption, Navigation } from 'blume/core/types.ts';
+import { GITHUB_MARK } from 'blume/components/github-mark.ts';
+import Icon from 'blume/components/Icon.astro';
+import LanguageSwitcher from 'blume/components/layout/LanguageSwitcher.astro';
+import Logo from 'blume/components/layout/Logo.astro';
+import { activeTabForRoute } from 'blume/components/layout/nav-utils.ts';
+import NavSelector from 'blume/components/layout/NavSelector.astro';
+import { resolveSlot } from 'blume/components/layout/overrides.ts';
+import Search from 'blume/components/layout/Search.astro';
+
+interface Props {
+  site: { title: string };
+  logo?: {
+    svg?: string;
+    light?: string;
+    dark?: string;
+    alt: string;
+    href: string;
+    text?: string;
+  } | null;
+  navigation: Navigation;
+  route: string;
+  searchEnabled: boolean;
+  askEnabled?: boolean;
+  askStrings?: UIStrings['ask'];
+  hasSidebar?: boolean;
+  hasDrawer?: boolean;
+  searchStrings?: UIStrings['search'];
+  switcherStrings?: UIStrings['languageSwitcher'];
+  navStrings?: UIStrings['nav'];
+  localeSwitch?: LocaleSwitchOption[];
+  searchLocale?: string;
+  layout?: Record<string, ComponentOverride>;
+}
+
+const {
+  site,
+  logo,
+  navigation,
+  route,
+  searchEnabled,
+  askEnabled = Boolean(data.config.ask),
+  askStrings,
+  hasSidebar = true,
+  hasDrawer = true,
+  searchStrings,
+  switcherStrings,
+  navStrings,
+  localeSwitch,
+  searchLocale,
+  layout = {}
+} = Astro.props;
+
+const n = { ...EN_UI.nav, ...navStrings };
+
+const LogoSlot = resolveSlot(layout.Logo, Logo);
+const SearchSlot = resolveSlot(layout.Search, Search);
+
+const showNavToggle = hasDrawer && (hasSidebar || navigation.tabs.length > 0);
+const activeTab = activeTabForRoute(navigation.tabs, route);
+const tabsNavClass = hasSidebar ? 'hidden gap-1 md:flex' : 'hidden gap-1 lg:flex';
+
+const iconButton =
+  'inline-flex size-9 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground';
+
+// Same theme-init/drawer/theme-toggle script as upstream Header.astro —
+// copied verbatim so the mobile drawer and theme toggle keep working.
+const clickScript = `(()=>{const dr=()=>{const h=document.querySelector("[data-blume-header]");if(h){document.documentElement.style.setProperty("--blume-drawer-top",h.getBoundingClientRect().bottom+"px");}};document.addEventListener("click",(e)=>{const t=e.target.closest("[data-blume-theme-toggle]");if(t){const d=document.documentElement;const next=d.dataset.theme==="dark"?"light":"dark";const s=document.createElement("style");s.appendChild(document.createTextNode("*,*::before,*::after{transition:none!important}"));document.head.appendChild(s);d.dataset.theme=next;localStorage.setItem("blume-theme",next);window.getComputedStyle(d).opacity;setTimeout(()=>document.head.removeChild(s),1);}const n=e.target.closest("[data-blume-nav-toggle]");if(n){const d=document.documentElement;const open=d.toggleAttribute("data-blume-nav-open");if(open){dr();}d.style.overflow=open?"hidden":"";}const b=e.target.closest("[data-blume-banner-dismiss]");if(b){const bar=b.closest("[data-blume-banner]");const k=bar&&bar.getAttribute("data-banner-key");if(k){localStorage.setItem("blume-banner:"+k,"1");}document.documentElement.setAttribute("data-blume-banner-hidden","");requestAnimationFrame(dr);}});addEventListener("resize",()=>{const d=document.documentElement;if(!d.hasAttribute("data-blume-nav-open")){return;}if(matchMedia("(min-width:64rem)").matches){d.removeAttribute("data-blume-nav-open");d.style.overflow="";}else{dr();}});})();`;
+---
+
+<header
+  class="sticky top-0 z-40 flex h-16 items-center gap-3 bg-background/90 px-4 backdrop-blur md:px-6"
+  data-blume-header
+>
+  {
+    showNavToggle && (
+      <button
+        aria-label={n.toggleNavigation}
+        class={`${iconButton} lg:hidden`}
+        data-blume-nav-toggle
+        type="button"
+      >
+        <Icon name="menu" size={20} />
+      </button>
+    )
+  }
+  <LogoSlot logo={logo} site={site} />
+  {
+    navigation.selectors.length > 0 && (
+      <div class="flex items-center gap-1.5">
+        {navigation.selectors.map((selector) => (
+          <NavSelector route={route} selector={selector} />
+        ))}
+      </div>
+    )
+  }
+  {
+    navigation.tabs.length > 0 && (
+      <nav aria-label={n.sections} class={tabsNavClass}>
+        {navigation.tabs.map((tab) => (
+          <a
+            aria-current={tab === activeTab ? 'page' : undefined}
+            class="rounded-full px-3 py-1.5 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground aria-[current=page]:text-foreground"
+            href={withBase(tab.href ?? tab.path)}
+          >
+            {tab.label}
+          </a>
+        ))}
+      </nav>
+    )
+  }
+  <div class="flex-1" />
+  {
+    localeSwitch && localeSwitch.length > 1 && (
+      <LanguageSwitcher
+        label={switcherStrings?.label ?? 'Language'}
+        options={localeSwitch}
+        untranslatedLabel={switcherStrings?.untranslated ?? 'Not translated'}
+      />
+    )
+  }
+  {
+    searchEnabled && (
+      <SearchSlot
+        askEnabled={askEnabled}
+        locale={searchLocale}
+        navigation={navigation}
+        popularPages={data.config.search.popular}
+        strings={searchStrings}
+      />
+    )
+  }
+  <a
+    class="hidden rounded-full px-3 py-1.5 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground sm:inline-flex"
+    href="mailto:help@classroomio.com"
+  >
+    Support
+  </a>
+  <a
+    class="hidden h-9 items-center rounded-full bg-accent px-3.5 font-medium text-accent-foreground text-sm transition hover:bg-accent/90 sm:inline-flex"
+    href="https://app.classroomio.com"
+  >
+    Dashboard
+  </a>
+  <div class="flex items-center gap-2">
+    {
+      navigation.repoUrl && (
+        <a
+          aria-label={n.githubRepository}
+          class={iconButton}
+          href={navigation.repoUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <svg
+            aria-hidden="true"
+            fill="currentColor"
+            height="18"
+            set:html={GITHUB_MARK}
+            viewBox="0 0 16 16"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </a>
+      )
+    }
+    <button aria-label={n.toggleTheme} class={iconButton} data-blume-theme-toggle type="button">
+      <span class="inline-flex dark:hidden">
+        <Icon name="sun" size={18} />
+      </span>
+      <span class="hidden dark:inline-flex">
+        <Icon name="moon" size={18} />
+      </span>
+    </button>
+    {askEnabled && <Ask strings={askStrings} />}
+  </div>
+</header>
+<script is:inline set:html={clickScript} />

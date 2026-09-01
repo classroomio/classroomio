@@ -2653,7 +2653,10 @@
         "copy_course_url": "Sao chép URL khóa học"
       },
       "due_date": "Hạn",
-      "valid_until": "Có hiệu lực cho đến khi"
+      "valid_until": "Có hiệu lực cho đến khi",
+      "updated_at": "Đã cập nhật {date}",
+      "lessons_count": "{count, plural, other {# bài học}}",
+      "exercises_count": "{count, plural, other {# bài tập}}"
     },
     "course_filter": {
       "date_created_newest": "Ngày tạo: Mới nhất trước",

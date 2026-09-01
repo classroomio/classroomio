@@ -34,7 +34,8 @@
 
     const sessionUser = data?.locals?.user;
     setupCloudAnalytics(
-      sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined
+      sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined,
+      data.isOrgSite
     );
 
     if (data?.locals?.user) {

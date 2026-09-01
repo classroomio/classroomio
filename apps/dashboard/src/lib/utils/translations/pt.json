@@ -2653,7 +2653,10 @@
         "copy_course_url": "Copiar URL do curso"
       },
       "due_date": "Vencimento",
-      "valid_until": "Válido até"
+      "valid_until": "Válido até",
+      "updated_at": "Atualizado em {date}",
+      "lessons_count": "{count, plural, one {# lição} other {# lições}}",
+      "exercises_count": "{count, plural, one {# exercício} other {# exercícios}}"
     },
     "course_filter": {
       "date_created_newest": "Data de criação: mais recentes primeiro",
