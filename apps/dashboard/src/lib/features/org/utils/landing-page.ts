@@ -72,9 +72,9 @@ export function createDefaultFooterConfig(): OrgLandingPageFooterConfig {
     bottom: {
       text: '',
       links: [
-        { id: newFooterLinkId(), label: 'Terms', href: '/terms' },
-        { id: newFooterLinkId(), label: 'Privacy', href: '/privacy' },
-        { id: newFooterLinkId(), label: 'Contact', href: '#contact' }
+        { id: newFooterLinkId(), label: 'Terms', href: '#' },
+        { id: newFooterLinkId(), label: 'Privacy', href: '#' },
+        { id: newFooterLinkId(), label: 'Contact', href: '#' }
       ]
     }
   };
