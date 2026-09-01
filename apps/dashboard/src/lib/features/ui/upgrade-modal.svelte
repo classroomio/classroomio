@@ -130,7 +130,7 @@
 
 <Dialog.Root open={$isUpgradeModalOpen} onOpenChange={handleOpenChange}>
   <Dialog.Content
-    class="top-[4dvh]! max-h-[92dvh] w-[96vw] translate-y-0! overflow-y-auto p-4 sm:top-[50%]! sm:max-h-none sm:translate-y-[-50%]! sm:p-6 {upgraded ||
+    class="top-[4dvh]! max-h-[92dvh] w-[96vw] translate-y-0! overflow-y-auto p-4 sm:top-[50%]! sm:max-h-[92dvh] sm:translate-y-[-50%]! sm:p-6 {upgraded ||
     isConfirming
       ? 'max-w-[min(600px,96vw)]!'
       : 'max-w-5xl!'}"
