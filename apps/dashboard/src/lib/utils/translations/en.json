@@ -1910,6 +1910,9 @@
       "actions_menu_aria": "Course actions",
       "due_date": "Due",
       "valid_until": "Valid until",
+      "updated_at": "Updated {date}",
+      "lessons_count": "{count, plural, one {# lesson} other {# lessons}}",
+      "exercises_count": "{count, plural, one {# exercise} other {# exercises}}",
       "tags_overflow_aria": "{count} more tags",
       "list_view": {
         "title": "Title",

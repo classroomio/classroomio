@@ -2647,7 +2647,10 @@
         "copy_course_url": "कोर्स URL कॉपी करें"
       },
       "due_date": "देय",
-      "valid_until": "तक वैध है"
+      "valid_until": "तक वैध है",
+      "updated_at": "अद्यतन {date}",
+      "lessons_count": "{count, plural, one {# पाठ} other {# पाठ}}",
+      "exercises_count": "{count, plural, one {# अभ्यास} other {# अभ्यास}}"
     },
     "course_filter": {
       "date_created_newest": "निर्माण तिथि: नवीनतम पहले",

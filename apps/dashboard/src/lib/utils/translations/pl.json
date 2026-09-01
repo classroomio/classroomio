@@ -2647,7 +2647,10 @@
         "copy_course_url": "Kopiuj adres URL kursu"
       },
       "due_date": "Termin",
-      "valid_until": "Ważne do"
+      "valid_until": "Ważne do",
+      "updated_at": "Zaktualizowano {date}",
+      "lessons_count": "{count, plural, one {# lekcja} other {# lekcje}}",
+      "exercises_count": "{count, plural, one {# ćwiczenie} other {# ćwiczenia}}"
     },
     "course_filter": {
       "date_created_newest": "Data utworzenia: od najnowszych",

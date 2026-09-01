@@ -2647,7 +2647,10 @@
         "copy_course_url": "Копировать URL курса"
       },
       "due_date": "Срок",
-      "valid_until": "Действительно до"
+      "valid_until": "Действительно до",
+      "updated_at": "Обновлено {date}",
+      "lessons_count": "{count, plural, one {# урок} other {# уроков}}",
+      "exercises_count": "{count, plural, one {# упражнение} other {# упражнений}}"
     },
     "course_filter": {
       "date_created_newest": "Дата создания: сначала новые",

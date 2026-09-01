@@ -10,7 +10,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { Image } from '$features/ui';
-  import { t } from '$lib/utils/functions/translations';
+  import { locale, t } from '$lib/utils/functions/translations';
   import { buildCoursePlaceholderAvatarUrl } from '$features/course/utils/course-list-row-utils';
   import CoursePublicBadge from './course-public-badge.svelte';
   import CourseContextMenuContent from './course-context-menu-content.svelte';
@@ -112,12 +112,14 @@
 
   const updatedDateString = $derived.by(() => {
     if (!updatedAt) return null;
-    const d = new Date(updatedAt);
-    if (isNaN(d.getTime())) return null;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const parsedDate = new Date(updatedAt);
+    if (isNaN(parsedDate.getTime())) return null;
+    return parsedDate.toLocaleDateString($locale || 'en', { month: 'short', day: 'numeric', year: 'numeric' });
   });
 
-  const updatedLabel = $derived(updatedDateString ? `Updated ${updatedDateString}` : null);
+  const updatedLabel = $derived(
+    updatedDateString ? $t('courses.course_card.updated_at', { date: updatedDateString }) : null
+  );
 
   const courseUrl = $derived.by(() => {
     if (isExplore && onExploreClick) {
@@ -260,7 +262,7 @@
       <div class="flex min-w-0 flex-col gap-0.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <p
-            class="ui:text-foreground min-w-0 flex-1 truncate text-[13.5px] @3xl:line-clamp-2 @3xl:text-base @3xl:wrap-break-word @3xl:whitespace-normal"
+            class="ui:text-foreground min-w-0 flex-1 truncate text-[14px] @3xl:line-clamp-2 @3xl:text-base @3xl:wrap-break-word @3xl:whitespace-normal"
           >
             {title}
           </p>
@@ -288,13 +290,13 @@
         {/if}
 
         <!-- Mobile Subtitle (type & updated) -->
-        {#if typeLabel || updatedDateString}
+        {#if typeLabel || updatedLabel}
           <p class="ui:text-muted-foreground text-[11px] @3xl:hidden">
-            {typeLabel ? typeLabel : ''}{typeLabel && updatedDateString
-              ? `, updated ${updatedDateString}`
-              : updatedDateString
-                ? `Updated ${updatedDateString}`
-                : ''}
+            {#if typeLabel && updatedLabel}
+              {typeLabel} · {updatedLabel}
+            {:else}
+              {typeLabel || updatedLabel}
+            {/if}
           </p>
         {/if}
 
@@ -338,14 +340,14 @@
         <div class="flex items-center gap-3 tabular-nums @3xl:flex-col @3xl:items-start @3xl:gap-1">
           <p
             class="ui:text-foreground flex items-center gap-1 text-[11px] @3xl:gap-1.5 @3xl:text-sm"
-            aria-label="{lessonCount} lessons"
+            aria-label={$t('courses.course_card.lessons_count', { count: lessonCount })}
           >
             <CourseContentIcon type={ContentType.Lesson} className="size-3 @3xl:size-3.5 [&>svg]:size-full!" />
             <span class="font-medium">{lessonCount}</span>
           </p>
           <p
             class="ui:text-foreground flex items-center gap-1 text-[11px] @3xl:gap-1.5 @3xl:text-sm"
-            aria-label="{exerciseCount} exercises"
+            aria-label={$t('courses.course_card.exercises_count', { count: exerciseCount })}
           >
             <CourseContentIcon type={ContentType.Exercise} className="size-3 @3xl:size-3.5 [&>svg]:size-full!" />
             <span class="font-medium">{exerciseCount}</span>
