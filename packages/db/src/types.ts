@@ -246,3 +246,10 @@ export type TNewJobStep = typeof schema.jobStep.$inferInsert;
 
 export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
 export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;
+
+export type TContentReportTargetType = (typeof schema.contentReportTargetType.enumValues)[number];
+export type TContentReportReason = (typeof schema.contentReportReason.enumValues)[number];
+export type TContentReportStatus = (typeof schema.contentReportStatus.enumValues)[number];
+export type TContentReportResolutionCode = (typeof schema.contentReportResolutionCode.enumValues)[number];
+export type TContentReport = typeof schema.contentReport.$inferSelect;
+export type TNewContentReport = typeof schema.contentReport.$inferInsert;

@@ -463,6 +463,11 @@
         "post_created": "Bài viết được tạo thành công",
         "post_updated": "Đã cập nhật bài đăng thành công"
       }
+    },
+    "report": {
+      "success": "Thanks. We’ll review this report.",
+      "error": "Could not submit the report. Please try again.",
+      "already_submitted": "You’ve already reported this."
     }
   },
   "explore": {
@@ -1427,7 +1432,9 @@
           "comment_btn": "Bình luận",
           "cancel_btn": "Hủy bỏ",
           "load_more_btn": "Tải thêm",
-          "comment_error": "Không thể gửi bình luận. Vui lòng thử lại."
+          "comment_error": "Không thể gửi bình luận. Vui lòng thử lại.",
+          "edit": "Edit",
+          "delete": "Delete"
         },
         "exercises": {
           "heading": "Tất cả các bài tập",
@@ -5062,6 +5069,28 @@
         "save": "Lưu",
         "cancel": "Hủy bỏ"
       }
+    }
+  },
+  "report": {
+    "menu": "Report",
+    "title": "Report content",
+    "description": "Tell us what’s wrong. Our team will review this report.",
+    "reason_label": "Reason",
+    "reason_placeholder": "Select a reason",
+    "reason_required": "Please choose a reason",
+    "details_label": "Additional details",
+    "details_placeholder": "Add any context that will help us review this (optional)",
+    "submit": "Submit report",
+    "cancel": "Cancel",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment or bullying",
+      "hate_speech": "Hate speech",
+      "sexual_content": "Sexual content",
+      "violence": "Violence or threats",
+      "misinformation": "Misinformation",
+      "privacy": "Privacy violation",
+      "other": "Other"
     }
   }
 }
