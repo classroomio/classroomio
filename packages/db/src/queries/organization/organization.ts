@@ -55,8 +55,11 @@ export async function getVerifiedCustomDomainHostnames(): Promise<string[]> {
   }
 }
 
-export const getOrganizationByProfileId = async (profileId: string): Promise<OrganizationWithMemberAndPlans[]> => {
-  const result = await db
+export const getOrganizationByProfileId = async (
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<OrganizationWithMemberAndPlans[]> => {
+  const result = await dbClient
     .select({
       organization: schema.organization,
       memberId: schema.organizationmember.id,
