@@ -69,7 +69,7 @@
 
 <!-- YouTube-like: thumbnail on top; avatar + stacked text + overflow menu -->
 <div class="group w-full max-w-full min-w-0 {isEditMode ? 'rounded-lg border' : ''}">
-  <div class="ui:bg-muted ui:rounded-md relative aspect-video w-full min-w-0 overflow-hidden">
+  <div class="ui:bg-muted relative aspect-video w-full min-w-0 overflow-hidden rounded-md">
     {#if thumbnailUrl}
       <Image src={thumbnailUrl} alt={title} className="absolute inset-0 block h-full w-full object-cover" />
     {:else}
@@ -103,7 +103,7 @@
                   href={video.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="hover:ui:underline focus:ui:underline focus:ui:outline-none flex min-w-0 items-start gap-1.5"
+                  class="flex min-w-0 items-start gap-1.5 hover:underline focus:underline focus:outline-none"
                 >
                   <span class="line-clamp-2 min-w-0 flex-1 break-words">{title}</span>
                   <ExternalLinkIcon

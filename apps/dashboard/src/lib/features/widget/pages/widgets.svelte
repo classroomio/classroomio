@@ -67,7 +67,7 @@
                   </div>
 
                   <div class="min-w-0">
-                    <Item.Title class="ui:w-full text-sm! leading-tight font-semibold">
+                    <Item.Title class="w-full text-sm! leading-tight font-semibold">
                       <span class="line-clamp-2">{widget.name}</span>
                     </Item.Title>
                     <Item.Description class="mt-0.5 line-clamp-1! text-xs">

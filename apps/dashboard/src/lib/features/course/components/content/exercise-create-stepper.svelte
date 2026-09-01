@@ -278,7 +278,7 @@
           {#if exerciseTemplateApi.isLoading}
             <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {#each Array(16) as _, index (index)}
-                <div class="border-border h-[140px] w-full rounded-md border p-5 dark:bg-neutral-700">
+                <div class="ui:border-border h-[140px] w-full rounded-md border p-5 dark:bg-neutral-700">
                   <div class="flex h-full flex-col justify-evenly">
                     <Skeleton class="h-4 w-3/4" />
                     <div class="flex flex-col items-start justify-between gap-1">
