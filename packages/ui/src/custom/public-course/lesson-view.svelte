@@ -34,8 +34,10 @@
     playbackReloadLabel?: string;
     callout?: PublicCourseCalloutData | null;
     calloutAnimation?: PublicCourseCalloutAnimation;
-    /** Actions rendered beside the lesson title (e.g. Copy Page). */
+    /** Actions rendered beside the lesson title (e.g. Copy Page on small screens). */
     titleActions?: Snippet;
+    /** Actions rendered under the page outline (copy, share, open in chat). */
+    outlineActions?: Snippet;
     outlineLabel?: string;
     class?: string;
     id?: string;
@@ -51,6 +53,7 @@
     callout = null,
     calloutAnimation,
     titleActions,
+    outlineActions,
     outlineLabel = 'On this page',
     class: className,
     id
@@ -159,12 +162,19 @@
     </div>
   </div>
 
-  {#if lesson.isUnlocked && outlineItems.length > 0}
+  {#if lesson.isUnlocked && (outlineItems.length > 0 || outlineActions)}
     <aside
-      class="ui:sticky ui:top-12 ui:z-10 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-52 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:lg:block"
+      class="ui:sticky ui:top-12 ui:z-10 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-56 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:lg:block"
     >
       <div class="ui:px-4 ui:py-8">
-        <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />
+        {#if outlineItems.length > 0}
+          <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />
+        {/if}
+        {#if outlineActions}
+          <div class={outlineItems.length > 0 ? 'ui:mt-6 ui:border-t ui:border-border ui:pt-4' : ''}>
+            {@render outlineActions()}
+          </div>
+        {/if}
       </div>
     </aside>
   {/if}

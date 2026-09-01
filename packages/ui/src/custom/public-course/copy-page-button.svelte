@@ -10,7 +10,7 @@
   import { UseClipboard } from '../../hooks/use-clipboard.svelte';
   import { cn } from '../../tools';
   import { CHATGPT_ICON_PATH } from './copy-page-icons';
-  import type { CopyPageLabels } from './copy-page-utils';
+  import { fetchLessonMarkdown, type CopyPageLabels } from './copy-page-utils';
 
   interface Props {
     markdownUrl: string;
@@ -38,28 +38,23 @@
 
     copying = true;
 
-    try {
-      const response = await fetch(markdownUrl);
+    const markdown = await fetchLessonMarkdown(markdownUrl);
 
-      if (!response.ok) {
-        onCopyError?.();
-        return;
-      }
-
-      const markdown = await response.text();
-      const status = await clipboard.copy(markdown);
-
-      if (status === 'success') {
-        onCopied?.();
-        return;
-      }
-
-      onCopyError?.();
-    } catch {
-      onCopyError?.();
-    } finally {
+    if (!markdown) {
       copying = false;
+      onCopyError?.();
+      return;
     }
+
+    const status = await clipboard.copy(markdown);
+    copying = false;
+
+    if (status === 'success') {
+      onCopied?.();
+      return;
+    }
+
+    onCopyError?.();
   }
 </script>
 

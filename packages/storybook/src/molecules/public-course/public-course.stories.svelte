@@ -24,6 +24,33 @@
   });
 
   const flatItems = SIDEBAR_FIXTURE.flatMap((section) => section.items);
+
+  const COPY_PAGE_LABELS = {
+    copy: 'Copy Page',
+    copied: 'Copied',
+    viewAsMarkdown: 'View as Markdown',
+    openInChatGPT: 'Open in ChatGPT',
+    openInClaude: 'Open in Claude',
+    moreActions: 'More copy page actions'
+  };
+
+  const RAIL_LABELS = {
+    copyAsMarkdown: 'Copy as Markdown',
+    copied: 'Copied',
+    share: 'Share on social media',
+    facebook: 'Facebook',
+    linkedin: 'LinkedIn',
+    x: 'X',
+    instagram: 'Instagram',
+    openInChat: 'Open in chat',
+    openInChatGPT: 'Open in ChatGPT',
+    openInClaude: 'Open in Claude'
+  };
+
+  const DEMO_MARKDOWN_URL = '/course/ai-for-builders/lesson/hallucination-and-limitations/markdown';
+  const DEMO_PAGE_URL = 'https://example.com/course/ai-for-builders/lesson/hallucination-and-limitations';
+  const DEMO_CHATGPT_URL = 'https://chatgpt.com/?prompt=demo';
+  const DEMO_CLAUDE_URL = 'https://claude.ai/new?q=demo';
 </script>
 
 <Story name="Lesson · desktop + mobile frames">
@@ -97,21 +124,65 @@
       <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE}>
         {#snippet titleActions()}
           <PublicCourse.CopyPageButton
-            markdownUrl="/course/ai-for-builders/lesson/hallucination-and-limitations/markdown"
-            chatgptUrl="https://chatgpt.com/?prompt=demo"
-            claudeUrl="https://claude.ai/new?q=demo"
-            labels={{
-              copy: 'Copy Page',
-              copied: 'Copied',
-              viewAsMarkdown: 'View as Markdown',
-              openInChatGPT: 'Open in ChatGPT',
-              openInClaude: 'Open in Claude',
-              moreActions: 'More copy page actions'
-            }}
+            class="ui:lg:hidden"
+            markdownUrl={DEMO_MARKDOWN_URL}
+            chatgptUrl={DEMO_CHATGPT_URL}
+            claudeUrl={DEMO_CLAUDE_URL}
+            labels={COPY_PAGE_LABELS}
+          />
+        {/snippet}
+        {#snippet outlineActions()}
+          <PublicCourse.OutlineRailActions
+            pageUrl={DEMO_PAGE_URL}
+            pageTitle={LESSON_FIXTURE.title}
+            markdownUrl={DEMO_MARKDOWN_URL}
+            chatgptUrl={DEMO_CHATGPT_URL}
+            claudeUrl={DEMO_CLAUDE_URL}
+            labels={RAIL_LABELS}
           />
         {/snippet}
       </PublicCourse.PublicLessonView>
     </PublicCourse.PublicCourseShell>
+  {/snippet}
+</Story>
+
+<Story name="Lesson · outline rail actions">
+  {#snippet template()}
+    {@const activeSlug = 'hallucination-and-limitations'}
+    {@const activeIndex = flatItems.findIndex((item) => item.slug === activeSlug)}
+    {@const activeItem = flatItems[activeIndex] ?? null}
+    <PublicCourse.PublicCourseShell
+      sections={SIDEBAR_FIXTURE}
+      courseTitle={COURSE_TITLE_FIXTURE}
+      org={ORG_FIXTURE}
+      {activeSlug}
+      {activeItem}
+      activeFlatIndex={activeIndex}
+      totalItems={flatItems.length}
+      hasPrev={activeIndex > 0}
+      hasNext={activeIndex >= 0 && activeIndex < flatItems.length - 1}
+    >
+      <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE}>
+        {#snippet outlineActions()}
+          <PublicCourse.OutlineRailActions
+            pageUrl={DEMO_PAGE_URL}
+            pageTitle={LESSON_FIXTURE.title}
+            markdownUrl={DEMO_MARKDOWN_URL}
+            chatgptUrl={DEMO_CHATGPT_URL}
+            claudeUrl={DEMO_CLAUDE_URL}
+            labels={RAIL_LABELS}
+          />
+        {/snippet}
+      </PublicCourse.PublicLessonView>
+    </PublicCourse.PublicCourseShell>
+  {/snippet}
+</Story>
+
+<Story name="Lesson · outline rail share only">
+  {#snippet template()}
+    <div class="ui:w-56 ui:border-l ui:border-border ui:px-4 ui:py-8">
+      <PublicCourse.OutlineRailActions pageUrl={DEMO_PAGE_URL} pageTitle={LESSON_FIXTURE.title} labels={RAIL_LABELS} />
+    </div>
   {/snippet}
 </Story>
 

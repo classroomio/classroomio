@@ -4706,6 +4706,18 @@
     },
     "outline": {
       "label": "På denne side"
+    },
+    "rail": {
+      "copy_as_markdown": "Kopiér som Markdown",
+      "open_in_chat": "Åbn i chat"
+    },
+    "share": {
+      "label": "Del på sociale medier",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link kopieret. Indsæt det i Instagram."
     }
   },
   "account": {

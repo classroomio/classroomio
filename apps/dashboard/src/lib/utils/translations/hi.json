@@ -4706,6 +4706,18 @@
     },
     "outline": {
       "label": "इस पृष्ठ पर"
+    },
+    "rail": {
+      "copy_as_markdown": "Markdown के रूप में कॉपी करें",
+      "open_in_chat": "चैट में खोलें"
+    },
+    "share": {
+      "label": "सोशल मीडिया पर शेयर करें",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "लिंक कॉपी हो गया। इसे Instagram में पेस्ट करें।"
     }
   },
   "account": {

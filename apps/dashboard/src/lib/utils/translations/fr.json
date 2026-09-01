@@ -4706,6 +4706,18 @@
     },
     "outline": {
       "label": "Sur cette page"
+    },
+    "rail": {
+      "copy_as_markdown": "Copier en Markdown",
+      "open_in_chat": "Ouvrir dans le chat"
+    },
+    "share": {
+      "label": "Partager sur les réseaux sociaux",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Lien copié. Collez-le dans Instagram."
     }
   },
   "account": {

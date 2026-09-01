@@ -4706,6 +4706,18 @@
     },
     "outline": {
       "label": "На этой странице"
+    },
+    "rail": {
+      "copy_as_markdown": "Копировать как Markdown",
+      "open_in_chat": "Открыть в чате"
+    },
+    "share": {
+      "label": "Поделиться в соцсетях",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Ссылка скопирована. Вставьте её в Instagram."
     }
   },
   "account": {

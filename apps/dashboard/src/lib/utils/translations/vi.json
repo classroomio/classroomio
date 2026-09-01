@@ -4706,6 +4706,18 @@
     },
     "outline": {
       "label": "Trên trang này"
+    },
+    "rail": {
+      "copy_as_markdown": "Sao chép dạng Markdown",
+      "open_in_chat": "Mở trong chat"
+    },
+    "share": {
+      "label": "Chia sẻ trên mạng xã hội",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Đã sao chép liên kết. Dán vào Instagram."
     }
   },
   "account": {
