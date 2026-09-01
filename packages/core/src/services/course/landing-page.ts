@@ -122,7 +122,6 @@ function mergeLandingPageMetadata(
     goals: '',
     description: '',
     requirements: '',
-    allowNewStudent: true,
     ...(existing ?? {})
   };
 

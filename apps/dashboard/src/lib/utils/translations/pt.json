@@ -5,6 +5,11 @@
       "message": "Você tem alterações não salvas. Tem certeza de que deseja sair?",
       "label": "Alterações não salvas"
     },
+    "app_update": {
+      "title": "Uma nova versão está disponível.",
+      "description": "Recarregue para obter os recursos e correções mais recentes.",
+      "reload": "Recarregar"
+    },
     "discard": "Descartar",
     "save_changes": "Salvar alterações"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Deve ter 6 ou mais caracteres"
+        "min_char": "Deve ter 8 ou mais caracteres"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Deve ter 6 ou mais caracteres"
+        "min_char": "Deve ter 8 ou mais caracteres"
       },
       "email": {
         "invalid_email": "Endereço de e-mail inválido"
@@ -124,7 +129,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Os pontos devem ser pelo menos 0"
+        "too_small": "Os pontos devem ser pelo menos 1"
       },
       "label": {
         "too_small": "O rótulo da opção é obrigatório"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Marcado como concluído",
+        "complete_unmarked": "Marcado como incompleto",
         "complete_download": "Download completo",
         "version_restored": "Versão restaurada com sucesso"
       },
@@ -295,7 +301,8 @@
         "unlocked_all_content": "Todos os itens do curso desbloqueados",
         "all_content_already_unlocked": "Todo o conteúdo já está desbloqueado",
         "content_grouping_enabled": "Agrupamento de conteúdo ativado",
-        "content_grouping_disabled": "Agrupamento de conteúdo desativado"
+        "content_grouping_disabled": "Agrupamento de conteúdo desativado",
+        "link_generated": "Link do curso atualizado com sucesso"
       }
     },
     "people": {
@@ -329,7 +336,8 @@
       "success": "Salvo com sucesso",
       "submission_updated": "Envio atualizado para",
       "error_fetching": "Falha ao buscar exercícios. Atualize a página",
-      "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível."
+      "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível.",
+      "draft_restored": "Restauramos as alterações não salvas que você deixou"
     },
     "poll": {
       "info": {
@@ -519,7 +527,8 @@
     "download_course": "Atualize para baixar o curso",
     "required": "Atualização necessária",
     "enterprise_required": "Este recurso requer um plano Enterprise.",
-    "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública."
+    "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública.",
+    "unlock_field": "Atualize para desbloquear esta configuração"
   },
   "analytics": {
     "title": "Análises",
@@ -802,8 +811,8 @@
         "course_download": "Download do curso",
         "course_avail": "Baixe uma cópia deste curso.",
         "download": "Baixar",
-        "allow": "Permitir novos alunos",
-        "access": "Permitir que novos alunos acessem este curso",
+        "allow": "Os alunos podem se inscrever por conta própria",
+        "access": "Quando desativado, os alunos só podem entrar por um link de convite ou sendo adicionados em Pessoas.",
         "publish": "Publicar curso",
         "determines": "Isso determina se o seu curso será exibido na sua página de destino",
         "published": "Publicado",
@@ -866,9 +875,13 @@
         },
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
-        "go_to_completion_deadline": "Ir para o prazo de conclusão",
+        "go_to_certificate_settings": "Vá para configurações de certificado",
         "completion_deadline_label": "Prazo para conclusão do curso",
-        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo."
+        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+        "go_to_completion_deadline": "Ir para o prazo de conclusão",
+        "generate_link": "Gerar novo link",
+        "open_link": "Abrir link em nova aba",
+        "copy_link": "Copiar link"
       },
       "analytics": {
         "title": "Análises"
@@ -922,7 +935,8 @@
           "join_course": "Participe do curso",
           "enrolled_success": "Você está inscrito neste curso.",
           "enrolled_verify_email": "Você está inscrito! Verifique seu e-mail para acessar este curso.",
-          "student_limit_reached": "{orgName} atingiu sua capacidade de alunos. Entre em contato com o administrador da sua organização."
+          "student_limit_reached": "{orgName} atingiu sua capacidade de alunos. Entre em contato com o administrador da sua organização.",
+          "members_only": "Apenas membros desta organização podem se inscrever. Solicite um convite a um administrador."
         },
         "pricing_section": {
           "free": "Grátis",
@@ -953,7 +967,8 @@
             "no": "Não",
             "yes": "Sim",
             "percent": "Porcentagem de desconto",
-            "gift": "Sobre presente"
+            "gift": "Sobre presente",
+            "payment_required": "Um link de pagamento é necessário para cursos pagos"
           },
           "instructor_form": {
             "upload": "Logotipo do instrutor",
@@ -1010,7 +1025,9 @@
             "curriculum": "Currículo",
             "chips": "Habilidades e ferramentas",
             "skills": "Habilidades que você ganhará",
-            "tools": "Ferramentas que você aprenderá"
+            "tools": "Ferramentas que você aprenderá",
+            "navigation": "Navegação",
+            "footer": "Rodapé"
           },
           "skills_help": "Pressione Enter para adicionar. Eles aparecem como fichas abaixo do currículo.",
           "tools_help": "Pressione Enter para adicionar. Eles aparecem como fichas abaixo do currículo.",
@@ -1113,6 +1130,13 @@
         "you": "Você",
         "pending": "Pendente",
         "name": "Nome",
+        "learner": "Aluno",
+        "progress": "Progresso",
+        "stage": "Etapa",
+        "last_login_at": "Último login",
+        "enrolled_at": "Matriculado em",
+        "certificate_earned": "Certificado obtido",
+        "not_started": "Não iniciado",
         "role": "Função",
         "action": "Ação",
         "feedback": "E-mail copiado para a área de transferência",
@@ -2298,14 +2322,20 @@
           "reply": "Responder",
           "replying_to": "Respondendo a @{name}",
           "cancel_reply": "Cancelar",
-          "view_replies": "Ver {count} {count, plural, =1 {resposta} other {respostas}}",
+          "view_replies": "{count, plural, one {Ver # resposta} other {Ver # respostas}}",
           "hide_replies": "Ocultar respostas",
           "view_more": "Ver mais comentários ({count})",
           "loading": "Carregando...",
           "save": "Salvar",
           "saving": "Salvando...",
           "send": "Enviar",
-          "load_more_replies": "Carregar mais respostas"
+          "load_more_replies": "Carregar mais respostas",
+          "collapse_thread": "Recolher tópico",
+          "expand_thread": "Expandir tópico",
+          "more_replies": "{count, plural, one {Mais # resposta} other {Mais # respostas}}",
+          "continue_thread": "Continuar este tópico",
+          "collapsed_summary": "{count, plural, one {# resposta oculta} other {# respostas ocultas}}",
+          "back_to_comments": "Voltar para todos os comentários"
         },
         "card": {
           "pin": "Fixar",
@@ -2435,6 +2465,11 @@
         "completed": "{completed} de {total} concluídos",
         "lessons": "{completed} de {total} aulas",
         "exercises": "{completed} de {total} exercícios"
+      },
+      "footer_nav": {
+        "label": "Navegação do conteúdo do curso",
+        "previous": "Anterior",
+        "next": "Próximo"
       }
     },
     "navItems": {
@@ -2450,7 +2485,8 @@
       "nav_landing_page": "Página inicial",
       "nav_settings": "Configurações",
       "nav_ai_assistant": "Assistente",
-      "nav_ai_tutor": "Tutor de IA"
+      "nav_ai_tutor": "Tutor de IA",
+      "exit_course": "Sair do curso"
     },
     "completion": {
       "modal": {
@@ -2853,6 +2889,7 @@
     "discussion": "Discussão",
     "people": "Pessoas",
     "goto_lms": "Acesse o LMS",
+    "join_academy": "Entrar na academia",
     "goto_home": "Vá para a página inicial do ClassroomIO",
     "login": "Entrar",
     "signup": "Inscreva-se",
@@ -3615,16 +3652,16 @@
           "placeholder": "por exemplo, as inscrições estão desativadas, entre em contato com learn@domain.com para obter acesso"
         },
         "disable_signup": {
-          "label": "Desativar inscrição",
-          "description": "Impedir que novos usuários se inscrevam. Somente usuários convidados podem participar."
+          "label": "Bloquear todas as novas inscrições",
+          "description": "Impedir completamente a criação de novas contas. Ninguém pode se inscrever — nem usuários convidados. Contas existentes não são afetadas."
         },
         "allow_public_signups": {
           "label": "Permitir inscrições públicas",
-          "description": "Quando desativado, apenas usuários com link de convite poderão se inscrever. Ative para permitir que qualquer pessoa crie uma conta."
+          "description": "Quando habilitado, qualquer pessoa pode criar uma conta. Quando desativado, apenas usuários com um link de convite válido podem se inscrever."
         },
         "internal_enrollment_only": {
           "label": "Somente inscrição interna",
-          "description": "Quando ativado, qualquer curso publicado fica aberto para autoinscrição para todos os alunos da sua organização. Use com Desativar inscrição para criar uma academia fechada somente para convidados, onde os alunos podem ingressar em qualquer curso publicado sem configuração por curso."
+          "description": "Quando ativado, apenas os membros existentes da sua organização podem se inscrever nos seus cursos. Todos os demais devem ser convidados — eles não podem se inscrever na página do curso, mesmo quando o curso estiver aberto a novos alunos."
         }
       },
       "login": {
@@ -3818,13 +3855,17 @@
       "full_name": "Nome Completo",
       "password": "Sua senha",
       "confirm_password": "Confirmar senha",
-      "password_helper_message": "A senha deve ter mais de 8 caracteres",
+      "password_helper_message": "A senha deve ter 8 ou mais caracteres",
       "create_account": "Criar conta"
     },
     "signup_disabled": {
       "title": "Inscrição desativada",
       "invite_only_message": "A inscrição é apenas para convidados. Use um link de convite para criar uma conta.",
       "go_to_login": "Vá para Entrar"
+    },
+    "reset_password": {
+      "heading": "Nova senha",
+      "description": "Insira os detalhes da sua nova senha"
     },
     "continue_with": "Ou continue com"
   },
@@ -3948,7 +3989,11 @@
     "resend": "Reenviar código de verificação",
     "resend_in": "Reenviar verificação em",
     "seconds": "segundos",
-    "snackbar_error": "erro ao enviar código"
+    "snackbar_error": "erro ao enviar código",
+    "wrong_address": "Inscreveu-se com o endereço errado?",
+    "switch_account": "Trocar de conta",
+    "confirm_link_prefix": "Clique no link que enviamos para",
+    "confirm_link_suffix": "para confirmar seu e-mail"
   },
   "public_courses": {
     "page_title": "Cursos - ClassroomIO",
@@ -3970,9 +4015,12 @@
       "tags_title": "Etiquetas",
       "types_title": "Tipos",
       "search_placeholder": "Pesquisar cursos...",
+      "clear_search": "Limpar pesquisa",
       "pricing_title": "Preços",
       "pricing_free": "Grátis",
-      "pricing_paid": "Pago"
+      "pricing_paid": "Pago",
+      "selected": "Selecionado:",
+      "save_changes": "Salvar alterações"
     }
   },
   "tags_admin": {
@@ -4043,7 +4091,8 @@
         "accepted": "Este convite já foi usado.",
         "invalid": "Este link de convite não é válido.",
         "joined": "Organização aderida",
-        "join_failed": "Falha ao ingressar na organização"
+        "join_failed": "Falha ao ingressar na organização",
+        "try_again": "Tentar novamente"
       }
     },
     "link": {
@@ -4551,7 +4600,10 @@
         "mobile": "Mobile",
         "tablet": "Tablet",
         "desktop": "Desktop"
-      }
+      },
+      "current_version": "Versão Atual",
+      "active_badge": "Ativo",
+      "active_badge_description": "Esta versão está atualmente ativa em sua incorporação"
     },
     "tabs": {
       "select_courses": "Selecione os cursos",
@@ -4638,7 +4690,7 @@
     },
     "powered_by": {
       "label": "Desenvolvido por",
-      "brand": "Sala de aulaIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Anterior",

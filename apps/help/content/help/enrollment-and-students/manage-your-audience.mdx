@@ -1,0 +1,86 @@
+---
+title: Manage Your Audience
+description: Assign students to courses in bulk, manage pending invites, and import students into your organization in ClassroomIO.
+sidebar:
+  order: 5
+---
+
+This guide covers the recurring Audience tasks: assigning students to courses, managing pending invites, and importing students. For what Audience shows and what each status means, see [Audience](/reference/audience).
+
+## Assign students to courses
+
+<Steps>
+<Step>
+### Select students
+
+In the Audience table, check one or more students. Only members who already have an account can be selected this way. Rows for invites that haven't been accepted yet don't have a checkbox.
+</Step>
+
+<Step>
+### Open the assign dialog
+
+Once you have a selection, a bar appears above the table showing how many students are selected and an **Assign to Courses** button. Click it.
+</Step>
+
+<Step>
+### Pick courses and confirm
+
+In the **Assign to Courses** dialog, pick one or more courses from the list. Leave **Send notification email** checked (it's on by default) to email the students you're assigning, or clear it to give them access without notifying them. Click **Assign**.
+</Step>
+</Steps>
+
+Assignment happens immediately, and no action is needed from the students. The confirmation message reports how many students were newly assigned, how many already had access to a selected course, and how many emails were sent.
+
+## Manage pending invites
+
+Open the actions menu (the ellipsis icon at the end of a row) for a student whose invite hasn't been accepted yet:
+
+- **Resend invite** — sends a fresh invite email to that address. Available for **Pending**, **Expired**, and **Revoked** invites, so you can also use it to renew an invite that expired or was revoked by mistake.
+- **Revoke invite** — cancels the invite so the link stops working. Only available while the invite is still **Pending**.
+
+These actions only show up for invite rows. Once a student has an account, their row no longer has invite actions in this menu.
+
+## Import and export
+
+### Import students
+
+Click **Import Users** in the top right of the Audience page to open the import screen. The button is disabled once your organization reaches its plan's audience limit.
+
+<Steps>
+<Step>
+### Enter email addresses
+
+In the **Email Addresses** field, paste the addresses you want to add, separated by commas, newlines, or semicolons (for example: `alice@example.com, bob@example.com`). This is a plain list of addresses, not a file upload. There's no CSV template to fill in.
+</Step>
+
+<Step>
+### Choose course access
+
+Under **Course Access**, choose whether the imported students get no course assignment, all of your courses, or a specific set you pick from the list.
+</Step>
+
+<Step>
+### Choose cohort access
+
+Under **Cohort Access**, make the same choice for cohorts: none, all, or specific ones.
+</Step>
+
+<Step>
+### Submit
+
+Click **Import Users**.
+</Step>
+</Steps>
+
+Each address you enter gets one of three outcomes: a brand-new address gets a new invite, an address that already belongs to an existing account is given access to the courses and cohorts you picked, and an address with an existing pending, expired, or revoked invite has that invite renewed. The confirmation message reports counts for each, plus how many emails were actually sent. New students receive an invitation email by default.
+
+### Export
+
+The **Export** button next to Import Users is in the UI, but it isn't wired up yet: clicking it shows a "coming soon" message rather than downloading a file.
+
+## Related guides
+
+- [Audience](/reference/audience) — what Audience shows and what each status means
+- [How Course Enrollment Works](/enrollment-and-students/course-enrollment) — how students join courses
+- [Invite Students](/enrollment-and-students/invite-students) — send course-specific invites
+- [Roles and Permissions](/organization-and-team/roles-and-permissions) — difference between students and team members

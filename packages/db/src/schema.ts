@@ -612,7 +612,8 @@ export const submission = pgTable(
       columns: [table.submittedBy],
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
-    })
+    }),
+    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
   ]
 );
 
@@ -688,6 +689,8 @@ export const course = pgTable(
       }[];
       grading?: boolean;
       lessonDownload?: boolean;
+      allowSelfEnrollment?: boolean;
+      /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. Kept because there is no backfill. */
       allowNewStudent?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;
@@ -1717,7 +1720,8 @@ export const courseNewsfeedComment = pgTable(
       foreignColumns: [table.id],
       name: 'course_newsfeed_comment_reply_to_comment_id_fkey'
     }).onDelete('set null'),
-    index('course_newsfeed_comment_parent_id_idx').on(table.parentId)
+    index('course_newsfeed_comment_parent_id_idx').on(table.parentId),
+    index('course_newsfeed_comment_course_newsfeed_id_idx').on(table.courseNewsfeedId)
   ]
 );
 

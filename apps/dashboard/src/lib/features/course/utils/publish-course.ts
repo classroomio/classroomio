@@ -1,10 +1,23 @@
 import { generateSlug } from '@cio/utils/functions';
 import { isObject } from '$lib/utils/functions/isObject';
 import { courseApi } from '$features/course/api';
+import { snackbar } from '$features/ui/snackbar/store';
 import type { Course } from '$features/course/utils/types';
+import { isCourseMissingComplianceDeadline } from './compliance-deadline';
 
-export async function publishCourse(course: Course): Promise<boolean> {
+export type PublishCourseResult = { ok: true } | { ok: false; reason: 'missing_deadline' | 'failed' };
+
+export async function publishCourse(course: Course): Promise<PublishCourseResult> {
   if (!course?.id) {
+    return { ok: false, reason: 'failed' };
+  }
+
+  if (isCourseMissingComplianceDeadline(course)) {
+    return { ok: false, reason: 'missing_deadline' };
+  }
+
+  if (Number(course.cost) > 0 && !(course.metadata?.paymentLink ?? '').trim()) {
+    snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
     return false;
   }
 
@@ -15,7 +28,7 @@ export async function publishCourse(course: Course): Promise<boolean> {
 
   const metadataPayload = {
     ...(isObject(course.metadata) ? course.metadata : {}),
-    allowNewStudent: true
+    allowSelfEnrollment: true
   };
 
   const result = await courseApi.update(
@@ -28,5 +41,13 @@ export async function publishCourse(course: Course): Promise<boolean> {
     { showSuccessToast: true }
   );
 
-  return !!result;
+  if (!result) {
+    if (courseApi.errors['certificate.deadline']) {
+      return { ok: false, reason: 'missing_deadline' };
+    }
+
+    return { ok: false, reason: 'failed' };
+  }
+
+  return { ok: true };
 }

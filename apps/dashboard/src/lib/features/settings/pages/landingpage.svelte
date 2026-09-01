@@ -10,7 +10,7 @@
   import ZapIcon from '@lucide/svelte/icons/zap';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
   import { basePath } from '$lib/utils/store/app';

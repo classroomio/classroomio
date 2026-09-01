@@ -1,1 +1,1 @@
-export const FIELDS = ['children', 'child'] as string[];
+export const FIELDS = ['children', 'child', 'required'] as string[];

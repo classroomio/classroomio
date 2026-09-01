@@ -2,13 +2,14 @@ import {
   ZAddCourseMembers,
   ZCourseMembersMemberParam,
   ZCourseMembersParam,
+  ZCourseMembersQuery,
   ZResetCourseMemberProgressParam,
   ZUpdateCourseMember
 } from '@cio/utils/validation/course/people';
 import {
   addMembers,
   deleteMember,
-  listCourseMembers,
+  listPaginatedCourseMembers,
   resetMemberCourseProgress,
   updateMember
 } from '@api/services/course/people';
@@ -23,25 +24,39 @@ import { zValidator } from '@hono/zod-validator';
 export const membersRouter = new Hono()
   /**
    * GET /course/:courseId/members
-   * Gets all course members for a course
+   * Gets one page of course members for a course, filtered by search term and role
    * Requires authentication and course team membership (admin/tutor role)
    */
-  .get('/', courseTeamMemberMiddleware, zValidator('param', ZCourseMembersParam), async (c) => {
-    try {
-      const { courseId } = c.req.valid('param');
-      const members = await listCourseMembers(courseId);
+  .get(
+    '/',
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseMembersParam),
+    zValidator('query', ZCourseMembersQuery),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const query = c.req.valid('query');
+        const result = await listPaginatedCourseMembers(courseId, query);
+        const pagination = {
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: result.totalPages
+        };
 
-      return c.json(
-        {
-          success: true,
-          data: members
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch course members');
+        return c.json(
+          {
+            success: true,
+            data: result.items,
+            pagination
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch course members');
+      }
     }
-  })
+  )
   /**
    * POST /course/:courseId/members
    * Adds one or more course members to a course

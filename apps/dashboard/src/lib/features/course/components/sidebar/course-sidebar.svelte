@@ -13,7 +13,7 @@
   import { courseApi } from '$features/course/api';
   import { getCourseProgress } from '$features/course/utils/content';
   import { useSidebar } from '@cio/ui/base/sidebar';
-  import CourseProgressCard from '$features/course/components/course-progress-card.svelte';
+  import CourseSidebarFooterNav from '$features/course/components/sidebar/course-sidebar-footer-nav.svelte';
   import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
   import { COURSE_SIDEBAR_DEFAULT_WIDTH, COURSE_SIDEBAR_MAX_WIDTH, COURSE_SIDEBAR_MIN_WIDTH } from './constants';
 
@@ -48,7 +48,7 @@
 
   const attributionCourseSlug = $derived(courseApi.course?.slug ?? null);
   const courseProgress = $derived(getCourseProgress(courseApi.course));
-  const showCourseProgress = $derived(
+  const showStudentFooterNav = $derived(
     $isStudentExperience && isCourseReady && sidebar.open && !sidebar.isMobile && courseProgress.total > 0
   );
 
@@ -149,11 +149,8 @@
     <Sidebar.Rail onclick={handleRailClick} onpointerdown={handleRailPointerDown} />
 
     <Sidebar.Footer>
-      {#if showCourseProgress}
-        <CourseProgressCard
-          progress={courseProgress}
-          class="ui:border-sidebar-border ui:bg-sidebar-accent/50 rounded-lg border p-3"
-        />
+      {#if showStudentFooterNav}
+        <CourseSidebarFooterNav courseId={id} path={currentPath} class="ui:border-sidebar-border border-t" />
       {/if}
       <PoweredBy
         variant="sidebar"

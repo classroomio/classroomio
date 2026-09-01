@@ -6,6 +6,10 @@ This document collects implementation rules and workflow conventions for code ch
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
 
+## Out of scope paths
+
+The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
+
 ## Translation, Formatting, and Git Workflow
 
 - If `apps/dashboard/src/lib/utils/translations/en.json` changes, update the other dashboard locale files before staging or committing.
@@ -467,7 +471,12 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Add new UI components under `packages/ui/src` following existing folder patterns.
 - **All Tailwind utility classes in `packages/ui/src/**` must use the `ui:` prefix** (see `packages/ui/README.md`). Pre-commit and CI run `pnpm --filter @cio/ui prefix:check` on touched UI files; fix with `pnpm --filter @cio/ui prefix`.
 - Document component usage and props in `packages/ui/README.md`.
-- Add example usages and variants in Storybook stories under `packages/storybook/src`.
+- **Every new component in `packages/ui/src` ships with a Storybook story in the same change.** A component without a story is incomplete — do not open the PR without one.
+  - Path: `packages/storybook/src/{atoms|molecules}/{component-name}/{component-name}.stories.svelte`, plus a `fields.ts` exporting the `FIELDS` array used by `parameters.controls.include`.
+  - Use `defineMeta` from `@storybook/addon-svelte-csf` with `tags: ['autodocs']`, and set `argTypes` callbacks to `{ control: false }`.
+  - Cover every state the component can be in, not just the happy path — each variant, each boolean prop, loading and empty states, and any recursive or nested rendering.
+  - When adding a component to an existing family (e.g. a new `comment-tree-*` part), extend that family's existing story file rather than creating a second one.
+  - `ui:` classes used inside a story must also exist somewhere under `packages/ui/src`, otherwise they emit no CSS — use unprefixed layout classes in story wrappers when in doubt.
 - See `packages/ui/README.md` and `packages/storybook/README.md` for full guidance.
 - For dashboard forms, prefer `@cio/ui/custom/*-field` wrappers (for example `InputField`, `TextareaField`, `CheckboxField`) so label/error/spacing behavior stays consistent.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
@@ -693,6 +702,8 @@ A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self
   - Multi-tenant: multiple orgs per user, "add org" shown; org is resolved from the **subdomain** (`acme.<PRIVATE_APP_HOST>`) or a custom domain. Locally there are no subdomains, so an org public site is simulated with the `?org=<siteName>` query param (sets the `_orgSiteName` cookie — see `layout-setup.ts`).
   - The license gate is a **no-op**, so all enterprise features are unlocked **without** a `LICENSE_KEY` — i.e. cloud mode is the easiest way to exercise SSO/token-auth/multi-org in dev.
   - Polar billing and analytics activate but are themselves gated by their own keys (absent keys just no-op), so they don't block startup.
+
+**Org membership invariant — admins/tutors vs students.** Self-hosted is single-org/single-domain, so one person must never hold a STUDENT membership in one org and an ADMIN/TUTOR membership in another. Concretely: the self-hosted auto-enroll path (`getAccountData` in `apps/api/src/services/account/profile.ts`) skips enrolling a user as STUDENT if `getUserOrgRolesMap` shows they are ADMIN/TUTOR anywhere. Cloud does **not** enforce this: multi-domain tenancy means the same person can legitimately be an admin of their own org and a student in someone else's, so the explicit signup/Join Academy service (`joinOrganization` in `apps/api/src/services/organization/join.ts`) intentionally has no such guard. When changing enrollment logic, keep this asymmetry deliberate.
 
 Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both files. The flag is read at process start, so restart the dev servers after editing it.
 

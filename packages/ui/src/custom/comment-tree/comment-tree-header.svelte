@@ -34,7 +34,7 @@
     createdAt,
     dateLabel,
     roleBadge,
-    avatarSize = 'ui:size-8',
+    avatarSize = 'ui:size-7',
     canEdit = false,
     onEdit,
     canDelete = false,
@@ -57,7 +57,7 @@
 </script>
 
 <div class="ui:flex ui:w-full ui:items-center ui:justify-between {className}">
-  <div class="ui:flex ui:items-center ui:gap-2.5">
+  <div class="ui:flex ui:items-center ui:gap-2">
     <UserAvatar src={avatarUrl || undefined} alt={fullname || 'User Avatar'} class={avatarSize} />
     <div class="ui:flex ui:items-center ui:gap-2">
       {#if fullname}

@@ -13,9 +13,17 @@
   interface Props {
     /** Width classes matching the page content column (e.g. mx-auto w-full max-w-3xl). */
     class?: string;
+    /** Tailwind bottom offset class for the collapsed bar (e.g. bottom-4, bottom-24). */
+    bottomClass?: string;
+    /** Tailwind bottom offset class for the expanded input dock (e.g. bottom-0, bottom-24). */
+    expandedBottomClass?: string;
   }
 
-  let { class: contentClass = 'mx-auto w-full max-w-3xl' }: Props = $props();
+  let {
+    class: contentClass = 'mx-auto w-full max-w-3xl',
+    bottomClass = 'bottom-4',
+    expandedBottomClass = 'bottom-0'
+  }: Props = $props();
 
   const pageShellClass = 'mx-auto w-[90%] max-w-4xl px-3 sm:px-4 lg:max-w-5xl';
 
@@ -114,7 +122,7 @@
 
 {#if expanded}
   <div
-    class="ui:bg-background ui:border-border fixed right-0 bottom-0 left-0 z-40 border-t py-3 shadow-sm md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
+    class="ui:bg-background ui:border-border fixed right-0 {expandedBottomClass} left-0 z-50 border-t py-3 shadow-sm md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
     in:fly={expandIn}
     out:fly={expandOut}
   >
@@ -135,7 +143,7 @@
   </div>
 {:else}
   <div
-    class="pointer-events-none fixed right-0 bottom-4 left-0 z-40 md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
+    class="pointer-events-none fixed right-0 {bottomClass} left-0 z-50 md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
     in:fade={collapseIn}
     out:fade={collapseOut}
   >
