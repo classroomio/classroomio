@@ -2652,7 +2652,10 @@
       "due_date": "Termin",
       "valid_until": "Ważne do",
       "student_empty_title": "Brak kursów",
-      "student_empty_description": "W tej organizacji nie ma jeszcze dostępnych kursów. Sprawdź później."
+      "student_empty_description": "W tej organizacji nie ma jeszcze dostępnych kursów. Sprawdź później.",
+      "updated_at": "Zaktualizowano {date}",
+      "lessons_count": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
+      "exercises_count": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}"
     },
     "course_filter": {
       "date_created_newest": "Data utworzenia: od najnowszych",

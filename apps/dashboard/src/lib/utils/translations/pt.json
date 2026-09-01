@@ -2652,7 +2652,10 @@
       "due_date": "Vencimento",
       "valid_until": "Válido até",
       "student_empty_title": "Nenhum curso ainda",
-      "student_empty_description": "Ainda não há cursos disponíveis nesta organização. Volte mais tarde."
+      "student_empty_description": "Ainda não há cursos disponíveis nesta organização. Volte mais tarde.",
+      "updated_at": "Atualizado em {date}",
+      "lessons_count": "{count, plural, one {# lição} other {# lições}}",
+      "exercises_count": "{count, plural, one {# exercício} other {# exercícios}}"
     },
     "course_filter": {
       "date_created_newest": "Data de criação: mais recentes primeiro",

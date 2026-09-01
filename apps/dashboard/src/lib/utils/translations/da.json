@@ -2652,7 +2652,10 @@
       "due_date": "Forfalder",
       "valid_until": "Gælder indtil kl",
       "student_empty_title": "Ingen kurser endnu",
-      "student_empty_description": "Der er endnu ingen kurser tilgængelige i denne organisation. Tjek venligst tilbage senere."
+      "student_empty_description": "Der er endnu ingen kurser tilgængelige i denne organisation. Tjek venligst tilbage senere.",
+      "updated_at": "Opdateret {date}",
+      "lessons_count": "{count, plural, one {# lektion} other {# lektioner}}",
+      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}"
     },
     "course_filter": {
       "date_created_newest": "Oprettelsesdato: Nyeste først",

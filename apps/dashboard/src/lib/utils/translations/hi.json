@@ -2652,7 +2652,10 @@
       "due_date": "देय",
       "valid_until": "तक वैध है",
       "student_empty_title": "अभी तक कोई कोर्स उपलब्ध नहीं है।",
-      "student_empty_description": "इस संगठन में अभी तक कोई कोर्स उपलब्ध नहीं है। कृपया बाद में दोबारा देखें।"
+      "student_empty_description": "इस संगठन में अभी तक कोई कोर्स उपलब्ध नहीं है। कृपया बाद में दोबारा देखें।",
+      "updated_at": "अद्यतन {date}",
+      "lessons_count": "{count, plural, one {# पाठ} other {# पाठ}}",
+      "exercises_count": "{count, plural, one {# अभ्यास} other {# अभ्यास}}"
     },
     "course_filter": {
       "date_created_newest": "निर्माण तिथि: नवीनतम पहले",

@@ -2652,7 +2652,10 @@
       "due_date": "Fällig",
       "valid_until": "Gültig bis",
       "student_empty_title": "Noch keine Kurse verfügbar",
-      "student_empty_description": "In dieser Organisation sind derzeit keine Kurse verfügbar. Bitte schauen Sie später wieder vorbei."
+      "student_empty_description": "In dieser Organisation sind derzeit keine Kurse verfügbar. Bitte schauen Sie später wieder vorbei.",
+      "updated_at": "Aktualisiert am {date}",
+      "lessons_count": "{count, plural, one {# Lektion} other {# Lektionen}}",
+      "exercises_count": "{count, plural, one {# Übung} other {# Übungen}}"
     },
     "course_filter": {
       "date_created_newest": "Erstellungsdatum: Neueste zuerst",

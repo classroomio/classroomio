@@ -2652,7 +2652,10 @@
       "due_date": "Hạn",
       "valid_until": "Có hiệu lực cho đến khi",
       "student_empty_title": "Chưa có khóa học nào",
-      "student_empty_description": "Hiện chưa có khóa học nào trong tổ chức này. Vui lòng kiểm tra lại sau."
+      "student_empty_description": "Hiện chưa có khóa học nào trong tổ chức này. Vui lòng kiểm tra lại sau.",
+      "updated_at": "Đã cập nhật {date}",
+      "lessons_count": "{count, plural, other {# bài học}}",
+      "exercises_count": "{count, plural, other {# bài tập}}"
     },
     "course_filter": {
       "date_created_newest": "Ngày tạo: Mới nhất trước",

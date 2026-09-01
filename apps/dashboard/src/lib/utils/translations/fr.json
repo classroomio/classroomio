@@ -2652,7 +2652,10 @@
       "due_date": "Échéance",
       "valid_until": "Valable jusqu'au",
       "student_empty_title": "Aucun cours disponible pour le moment",
-      "student_empty_description": "Aucun cours n'est disponible pour le moment dans cet organisme. Veuillez réessayer plus tard."
+      "student_empty_description": "Aucun cours n'est disponible pour le moment dans cet organisme. Veuillez réessayer plus tard.",
+      "updated_at": "Mise à jour : {date}",
+      "lessons_count": "{count, plural, one {# leçon} other {# leçons}}",
+      "exercises_count": "{count, plural, one {# exercice} other {# exercices}}"
     },
     "course_filter": {
       "date_created_newest": "Date de création : plus récent d'abord",
