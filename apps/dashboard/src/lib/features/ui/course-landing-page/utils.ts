@@ -10,6 +10,16 @@ import type { CourseLandingPageProps, OrgLandingPageTheme } from '@cio/ui/custom
 import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
 import { t } from '$lib/utils/functions/translations';
 
+/**
+ * The org landing page's nav items can point to in-page anchors (e.g. `#contact`)
+ * that only exist on the landing page itself. Rendered as-is on the course page,
+ * clicking one just appends the hash to the current URL and goes nowhere. Route
+ * anchor-only hrefs through the org home page so they land on the section instead.
+ */
+export function resolveCourseNavItems(navItems: OrgLandingPageNavItem[]): OrgLandingPageNavItem[] {
+  return navItems.map((item) => (item.href.startsWith('#') ? { ...item, href: `/${item.href}` } : item));
+}
+
 export type LandingPageLesson = {
   id: string;
   title: string | null;
@@ -175,7 +185,7 @@ export function buildCourseLandingPageProps(
     theme: landing.theme as OrgLandingPageTheme,
     orgName: org.name ?? '',
     logoUrl: org.avatarUrl ?? undefined,
-    navItems: landing.navItems,
+    navItems: resolveCourseNavItems(landing.navItems),
     authAction: options.authAction,
     hero: {
       heading: course.title ?? landing.hero.heading,
