@@ -55,8 +55,11 @@ export async function getVerifiedCustomDomainHostnames(): Promise<string[]> {
   }
 }
 
-export const getOrganizationByProfileId = async (profileId: string): Promise<OrganizationWithMemberAndPlans[]> => {
-  const result = await db
+export const getOrganizationByProfileId = async (
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<OrganizationWithMemberAndPlans[]> => {
+  const result = await dbClient
     .select({
       organization: schema.organization,
       memberId: schema.organizationmember.id,
@@ -289,11 +292,15 @@ export const deleteOrganizationById = async (id: string) => {
  * @returns True if email exists, false otherwise
  */
 export const checkEmailExistsInOrg = async (orgId: string, email: string): Promise<boolean> => {
+  const normalizedEmail = email.toLowerCase();
   const result = await db
     .select({ id: schema.organizationmember.id })
     .from(schema.organizationmember)
     .where(
-      and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.email, email.toLowerCase()))
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        sql`lower(${schema.organizationmember.email}) = ${normalizedEmail}`
+      )
     )
     .limit(1);
 
