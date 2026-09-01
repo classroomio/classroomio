@@ -3,11 +3,13 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
+import { type DbOrTxClient, db } from '@cio/db/drizzle';
 import {
   countActiveStudents,
   getActiveOrganizationPlan,
   getOrganizationAdminEmails,
   getOrganizationById,
+  lockOrganizationForStudentCapacity,
   updateOrganization
 } from '@cio/db/queries/organization';
 
@@ -64,17 +66,20 @@ export async function notifyStudentMilestone(notification: StudentMilestoneNotif
 export async function assertStudentCapacityOrThrow(
   orgId: string,
   additionalStudents: number,
+  dbClient: DbOrTxClient = db,
   options: { deferNotification?: boolean } = {}
 ): Promise<StudentMilestoneNotification | null> {
   if (additionalStudents <= 0) return null;
   if (env.PUBLIC_IS_SELFHOSTED === 'true') return null;
 
-  const activePlan = await getActiveOrganizationPlan(orgId);
+  await lockOrganizationForStudentCapacity(orgId, dbClient);
+
+  const activePlan = await getActiveOrganizationPlan(orgId, dbClient);
   const limit = getStudentLimit(activePlan?.planName);
 
   if (!Number.isFinite(limit)) return null;
 
-  const currentCount = await countActiveStudents(orgId);
+  const currentCount = await countActiveStudents(orgId, dbClient);
   const newCount = currentCount + additionalStudents;
 
   if (newCount > limit) {

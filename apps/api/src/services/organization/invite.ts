@@ -142,7 +142,7 @@ async function syncOrgMemberForOrgInvite(
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
   if (params.roleId === ROLE.STUDENT) {
-    studentMilestoneNotification = await assertStudentCapacityOrThrow(params.organizationId, 1, {
+    studentMilestoneNotification = await assertStudentCapacityOrThrow(params.organizationId, 1, tx, {
       deferNotification: true
     });
   }

@@ -49,7 +49,8 @@ import {
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
-import { assertStudentCapacityOrThrow } from '../organization/student-limit';
+import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
+import type { StudentMilestoneNotification } from '../organization/student-limit';
 
 type CohortMemberEnrollment = {
   profileId: string;
@@ -78,8 +79,6 @@ async function enrollCohortStudentsInGroups(
     studentProfileIds.filter((profileId) => !existingMemberProfileIds.has(profileId))
   );
 
-  await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size);
-
   const organizationMemberRows = studentMembers.map((member) => ({
     organizationId,
     roleId: ROLE.STUDENT,
@@ -97,10 +96,21 @@ async function enrollCohortStudentsInGroups(
     }))
   );
 
+  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+
   await db.transaction(async (tx) => {
+    studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
+      deferNotification: true
+    });
     await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
     await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
   });
+
+  if (studentMilestoneNotification) {
+    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
 
   return groupMemberRows.length;
 }
