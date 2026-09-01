@@ -20,7 +20,7 @@
 
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isStudentExperience } from '$lib/utils/store/app';
   import { courseApi } from '$features/course/api';
   import { COURSE_SORT_OPTIONS, DEFAULT_COURSE_SORT, type CourseSortBy } from '../utils/constants';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
@@ -60,12 +60,12 @@
 
   const resolvedEmptyTitle = $derived(
     emptyTitle ??
-      ($isOrgStudent ? $t('courses.course_card.student_empty_title') : $t('courses.course_card.empty_title'))
+      ($isStudentExperience ? $t('courses.course_card.student_empty_title') : $t('courses.course_card.empty_title'))
   );
 
   const resolvedEmptyDescription = $derived(
     emptyDescription ??
-      ($isOrgStudent
+      ($isStudentExperience
         ? $t('courses.course_card.student_empty_description')
         : $t('courses.course_card.empty_description'))
   );
@@ -138,7 +138,7 @@
     </section>
   {:else if !courses.length}
     <Empty title={resolvedEmptyTitle} description={resolvedEmptyDescription} icon={LibraryBigIcon} variant="page">
-      {#if !isLMS && !$isOrgStudent}
+      {#if !isLMS && !$isStudentExperience}
         <CreateCourseButton isResponsive />
       {:else if emptyAction}
         {@render emptyAction()}

@@ -8,7 +8,7 @@
   import { newsfeedApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isStudentExperience } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$features/course/utils/types';
 
@@ -140,7 +140,7 @@
   }}
 >
   <RoleBasedSecurity allowedRoles={getPageRoles($currentOrg)}>
-    {#if !$isOrgStudent}
+    {#if !$isStudentExperience}
       <NewFeedModal {courseId} bind:edit bind:editFeed />
     {/if}
   </RoleBasedSecurity>
@@ -153,7 +153,7 @@
   {:else if !pinnedFeeds.length && !unpinnedFeeds.length}
     <Empty
       title={$t('course.navItem.news_feed.body_header')}
-      description={$isOrgStudent
+      description={$isStudentExperience
         ? $t('course.navItem.news_feed.student_body_content')
         : $t('course.navItem.news_feed.body_content')}
       icon={BookIcon}
