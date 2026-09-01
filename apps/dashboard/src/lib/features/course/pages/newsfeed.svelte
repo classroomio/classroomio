@@ -140,7 +140,9 @@
   }}
 >
   <RoleBasedSecurity allowedRoles={getPageRoles($currentOrg)}>
-    <NewFeedModal {courseId} bind:edit bind:editFeed />
+    {#if !$isOrgStudent}
+      <NewFeedModal {courseId} bind:edit bind:editFeed />
+    {/if}
   </RoleBasedSecurity>
   {#if isListing}
     <div class="flex w-full flex-col items-center">
