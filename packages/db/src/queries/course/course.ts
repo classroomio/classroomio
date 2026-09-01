@@ -312,9 +312,9 @@ export const getCoursesBySiteNameForSetup = async (siteName: string) => {
     ...row.course
   }));
 };
-export async function getCourseById(courseId: string) {
+export async function getCourseById(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return await db.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
   } catch (error) {
     console.error('getCourseById error:', error);
     throw new Error(
@@ -1395,11 +1395,11 @@ export async function deleteCourseSection(sectionId: string, dbClient: DbOrTxCli
  * @param courseIds Array of course IDs
  * @returns Array of { courseId, groupId } mappings
  */
-export async function getCourseGroupIds(courseIds: string[]) {
+export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxClient = db) {
   try {
     if (courseIds.length === 0) return [];
 
-    return db
+    return dbClient
       .select({ courseId: schema.course.id, groupId: schema.course.groupId })
       .from(schema.course)
       .where(inArray(schema.course.id, courseIds));

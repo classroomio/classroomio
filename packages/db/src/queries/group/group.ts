@@ -24,10 +24,10 @@ export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxCl
   }
 }
 
-export async function addGroupMembers(values: TNewGroupmember[]) {
+export async function addGroupMembers(values: TNewGroupmember[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
-    return db.insert(schema.groupmember).values(values).returning();
+    return dbClient.insert(schema.groupmember).values(values).returning();
   } catch (error) {
     console.error('addGroupMembers error:', error);
     throw new Error(`Failed to bulk add group members: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -35,7 +35,8 @@ export async function addGroupMembers(values: TNewGroupmember[]) {
 }
 
 export async function getExistingGroupMembers(
-  pairs: Array<{ groupId: string; profileId: string }>
+  pairs: Array<{ groupId: string; profileId: string }>,
+  dbClient: DbOrTxClient = db
 ): Promise<Set<string>> {
   if (pairs.length === 0) return new Set();
 
@@ -43,7 +44,7 @@ export async function getExistingGroupMembers(
     const groupIds = [...new Set(pairs.map((p) => p.groupId))];
     const profileIds = [...new Set(pairs.map((p) => p.profileId))];
 
-    const rows = await db
+    const rows = await dbClient
       .select({ groupId: schema.groupmember.groupId, profileId: schema.groupmember.profileId })
       .from(schema.groupmember)
       .where(and(inArray(schema.groupmember.groupId, groupIds), inArray(schema.groupmember.profileId, profileIds)));
@@ -64,12 +65,13 @@ export async function getExistingGroupMembers(
 export async function enrollUsersInCourseGroups(
   groupIds: string[],
   users: Array<{ profileId: string; email?: string }>,
-  roleId: number
+  roleId: number,
+  dbClient: DbOrTxClient = db
 ): Promise<number> {
   if (groupIds.length === 0 || users.length === 0) return 0;
 
   const pairs = users.flatMap((u) => groupIds.map((groupId) => ({ groupId, profileId: u.profileId })));
-  const existingSet = await getExistingGroupMembers(pairs);
+  const existingSet = await getExistingGroupMembers(pairs, dbClient);
   const emailByProfile = new Map(users.map((u) => [u.profileId, u.email]));
 
   const toInsert = pairs
@@ -82,7 +84,7 @@ export async function enrollUsersInCourseGroups(
     }));
 
   if (toInsert.length > 0) {
-    await addGroupMembers(toInsert);
+    await addGroupMembers(toInsert, dbClient);
   }
 
   return toInsert.length;
