@@ -5085,5 +5085,8 @@
         "cancel": "Anuluj"
       }
     }
+  },
+  "lms": {
+    "view_landing_page": "Wyświetl stronę docelową"
   }
 }

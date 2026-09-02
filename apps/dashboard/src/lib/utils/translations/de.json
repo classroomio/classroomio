@@ -5085,5 +5085,8 @@
         "cancel": "Abbrechen"
       }
     }
+  },
+  "lms": {
+    "view_landing_page": "Landingpage ansehen"
   }
 }
