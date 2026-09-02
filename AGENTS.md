@@ -577,6 +577,7 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
 - Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
+- Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -595,6 +596,23 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 - Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
+
+## E2E test hooks
+
+Playwright specs and PR demos should use stable, locale-independent selectors. Full registry: `e2e/README.md`.
+
+**Locator priority:** `getByRole` / `getByLabel` first, then legacy `#id`, then `getByTestId`. Never select by CSS class, Tailwind utility, or translated copy in CI.
+
+**Infrastructure ids** ship in the app shell (login, org sidebar, header, settings save bar). Org nav ids are derived by `orgNavTestId()` — e.g. `/courses` → `org-nav-courses`.
+
+**Call-site ids:** pass `testId` on `@cio/ui` field wrappers and `Button` when a feature needs a hook. Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{action}`.
+
+```svelte
+<InputField testId="course-settings-title" label={...} bind:value={...} />
+<Button testId="course-create-submit">Create</Button>
+```
+
+Do not annotate every control — add hooks only for high-impact flows (auth, nav, save bars, primary actions).
 
 ## Checklist for New Routes
 
