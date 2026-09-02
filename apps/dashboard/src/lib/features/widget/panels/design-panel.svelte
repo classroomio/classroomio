@@ -47,13 +47,13 @@
       </Field.Field>
       <Field.Field>
         <Field.Label>{$t('widgets.form.primary_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
+        <div class="flex items-center gap-2">
           <input
             type="color"
             bind:value={draftConfig.colors.primaryColor}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5"
+            class="h-9 w-9 cursor-pointer rounded border bg-transparent p-0.5"
           />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.primaryColor}</span>
+          <span class="ui:text-muted-foreground font-mono text-sm">{draftConfig.colors.primaryColor}</span>
         </div>
         {#if errFor('config.colors.primaryColor')}
           <Field.Error>{errFor('config.colors.primaryColor')}</Field.Error>
@@ -61,14 +61,14 @@
       </Field.Field>
       <Field.Field>
         <Field.Label>{$t('widgets.form.background_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
+        <div class="flex items-center gap-2">
           <input
             type="color"
             bind:value={draftConfig.colors.backgroundColor}
             disabled={!canUseCustomColors}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
+            class="h-9 w-9 cursor-pointer rounded border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.backgroundColor}</span>
+          <span class="ui:text-muted-foreground font-mono text-sm">{draftConfig.colors.backgroundColor}</span>
         </div>
         {#if errFor('config.colors.backgroundColor')}
           <Field.Error>{errFor('config.colors.backgroundColor')}</Field.Error>
@@ -76,14 +76,14 @@
       </Field.Field>
       <Field.Field>
         <Field.Label>{$t('widgets.form.text_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
+        <div class="flex items-center gap-2">
           <input
             type="color"
             bind:value={draftConfig.colors.textColor}
             disabled={!canUseCustomColors}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
+            class="h-9 w-9 cursor-pointer rounded border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.textColor}</span>
+          <span class="ui:text-muted-foreground font-mono text-sm">{draftConfig.colors.textColor}</span>
         </div>
         {#if errFor('config.colors.textColor')}
           <Field.Error>{errFor('config.colors.textColor')}</Field.Error>
@@ -91,14 +91,14 @@
       </Field.Field>
       <Field.Field>
         <Field.Label>{$t('widgets.form.border_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
+        <div class="flex items-center gap-2">
           <input
             type="color"
             bind:value={draftConfig.colors.borderColor}
             disabled={!canUseCustomColors}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
+            class="h-9 w-9 cursor-pointer rounded border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.borderColor}</span>
+          <span class="ui:text-muted-foreground font-mono text-sm">{draftConfig.colors.borderColor}</span>
         </div>
         {#if errFor('config.colors.borderColor')}
           <Field.Error>{errFor('config.colors.borderColor')}</Field.Error>

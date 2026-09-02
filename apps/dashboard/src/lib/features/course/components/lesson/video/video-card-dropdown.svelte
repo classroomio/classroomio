@@ -312,8 +312,8 @@
 >
   <DropdownMenu.Trigger
     class={menuPlacement === 'corner'
-      ? 'ui:data-[state=open]:opacity-100 absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100'
-      : 'ui:data-[state=open]:opacity-100 -mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100'}
+      ? 'absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100'
+      : '-mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100 data-[state=open]:opacity-100'}
     aria-label={$t('course.navItem.lessons.materials.tabs.video.simple_card.menu_aria')}
     onclick={(e) => e.stopPropagation()}
   >
@@ -392,7 +392,7 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    <DropdownMenu.Item class="ui:text-red-600" onclick={onRemove}>
+    <DropdownMenu.Item class="text-red-600" onclick={onRemove}>
       <span class="flex items-center gap-2">
         <Trash2Icon size={14} />
         {$t('course.navItem.lessons.materials.tabs.video.remove_video')}

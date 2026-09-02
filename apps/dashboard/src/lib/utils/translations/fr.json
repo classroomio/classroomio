@@ -2291,7 +2291,9 @@
           "starts_in": "Commence dans",
           "session_ended": "Séance terminée",
           "link_copied": "Lien copié"
-        }
+        },
+        "student_share_your_knowledge": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard.",
+        "student_body_content": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard."
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -2357,7 +2359,8 @@
           "description": "Êtes-vous sûr de vouloir supprimer ce flux ?",
           "no": "Non",
           "yes": "Oui"
-        }
+        },
+        "student_body_content": "Aucun message n'a encore été publié dans ce cours."
       },
       "compliance": {
         "title": "Conformité",
@@ -2661,7 +2664,12 @@
         "copy_course_url": "Copier l’URL du cours"
       },
       "due_date": "Échéance",
-      "valid_until": "Valable jusqu'au"
+      "valid_until": "Valable jusqu'au",
+      "student_empty_title": "Aucun cours disponible pour le moment",
+      "student_empty_description": "Aucun cours n'est disponible pour le moment dans cet organisme. Veuillez réessayer plus tard.",
+      "updated_at": "Mise à jour : {date}",
+      "lessons_count": "{count, plural, one {# leçon} other {# leçons}}",
+      "exercises_count": "{count, plural, one {# exercice} other {# exercices}}"
     },
     "course_filter": {
       "date_created_newest": "Date de création : plus récent d'abord",

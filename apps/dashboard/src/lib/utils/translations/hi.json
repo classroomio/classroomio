@@ -2291,7 +2291,9 @@
           "starts_in": "में शुरू होता है",
           "session_ended": "सत्र ख़त्म हुआ",
           "link_copied": "लिंक कॉपी किया गया"
-        }
+        },
+        "student_share_your_knowledge": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
+        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -2357,7 +2359,8 @@
           "description": "क्या आप वाकई इस फ़ीड को हटाना चाहते हैं?",
           "no": "नहीं",
           "yes": "हाँ"
-        }
+        },
+        "student_body_content": "इस क्लास में अभी तक कोई पोस्ट नहीं की गई है।"
       },
       "compliance": {
         "title": "अनुपालन",
@@ -2661,7 +2664,12 @@
         "copy_course_url": "कोर्स URL कॉपी करें"
       },
       "due_date": "देय",
-      "valid_until": "तक वैध है"
+      "valid_until": "तक वैध है",
+      "student_empty_title": "अभी तक कोई कोर्स उपलब्ध नहीं है।",
+      "student_empty_description": "इस संगठन में अभी तक कोई कोर्स उपलब्ध नहीं है। कृपया बाद में दोबारा देखें।",
+      "updated_at": "अद्यतन {date}",
+      "lessons_count": "{count, plural, one {# पाठ} other {# पाठ}}",
+      "exercises_count": "{count, plural, one {# अभ्यास} other {# अभ्यास}}"
     },
     "course_filter": {
       "date_created_newest": "निर्माण तिथि: नवीनतम पहले",

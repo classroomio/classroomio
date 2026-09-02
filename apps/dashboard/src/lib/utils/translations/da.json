@@ -2291,7 +2291,9 @@
           "starts_in": "Starter i",
           "session_ended": "Session afsluttet",
           "link_copied": "Linket er kopieret"
-        }
+        },
+        "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -2357,7 +2359,8 @@
           "description": "Er du sikker på, at du vil slette dette feed?",
           "no": "Nej",
           "yes": "Ja"
-        }
+        },
+        "student_body_content": "Der er endnu ikke oprettet nogen opslag til dette kursus."
       },
       "compliance": {
         "title": "Overholdelse",
@@ -2661,7 +2664,12 @@
         "copy_course_url": "Kopiér kursus-URL"
       },
       "due_date": "Forfalder",
-      "valid_until": "Gælder indtil kl"
+      "valid_until": "Gælder indtil kl",
+      "student_empty_title": "Ingen kurser endnu",
+      "student_empty_description": "Der er endnu ingen kurser tilgængelige i denne organisation. Tjek venligst tilbage senere.",
+      "updated_at": "Opdateret {date}",
+      "lessons_count": "{count, plural, one {# lektion} other {# lektioner}}",
+      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}"
     },
     "course_filter": {
       "date_created_newest": "Oprettelsesdato: Nyeste først",

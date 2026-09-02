@@ -129,7 +129,7 @@
       bind:searchValue
     >
       {#snippet headingSnippet()}
-        <p class="ui:text-sm ui:font-medium">
+        <p class="text-sm font-medium">
           {$t(headingKey)} ({multiSelectItems.length})
           {#if selectedCount > 0}
             <span class="ui:text-muted-foreground text-xs"
