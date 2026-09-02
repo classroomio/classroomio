@@ -17,9 +17,10 @@ release is still in active use.
 | `main` | Development only; reports are welcome |
 | Older releases | Unsupported; upgrade before reporting a version-specific issue |
 
-ClassroomIO publishes immutable version tags for pinned deployments. The
-`latest` container tag follows `main` and may contain unreleased changes; it
-is not considered a stable version for production use.
+ClassroomIO publishes immutable full-version tags for pinned deployments.
+Major and minor version tags are moving aliases. The `latest` container tag
+follows `main` and may contain unreleased changes; it is not considered a
+stable version for production use.
 
 ## Reporting a Vulnerability
 
