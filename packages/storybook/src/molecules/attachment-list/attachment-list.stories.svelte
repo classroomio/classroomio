@@ -54,7 +54,7 @@
 
 <Story name="ViewMode" parameters={{ layout: 'padded' }}>
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
+    <div class="w-full max-w-xl">
       <AttachmentList
         mode="view"
         files={sampleFiles}
@@ -68,7 +68,7 @@
 
 <Story name="EditMode" parameters={{ layout: 'padded' }}>
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
+    <div class="w-full max-w-xl">
       <AttachmentList
         mode="edit"
         files={sampleFiles}
@@ -87,7 +87,7 @@
 
 <Story name="SingleFile" parameters={{ layout: 'padded' }}>
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
+    <div class="w-full max-w-xl">
       <AttachmentList
         mode="view"
         files={[sampleFiles[0]]}
