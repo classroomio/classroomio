@@ -5085,5 +5085,8 @@
         "cancel": "Annuller"
       }
     }
+  },
+  "lms": {
+    "view_landing_page": "Se landingssiden"
   }
 }

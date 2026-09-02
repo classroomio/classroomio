@@ -4156,6 +4156,9 @@
     "settings": "Settings",
     "cohorts": "Cohorts"
   },
+  "lms": {
+    "view_landing_page": "View landing page"
+  },
   "my_learning": {
     "heading": "My Learning",
     "progress": "In progress",

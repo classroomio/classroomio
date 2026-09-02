@@ -5085,5 +5085,8 @@
         "cancel": "Hủy bỏ"
       }
     }
+  },
+  "lms": {
+    "view_landing_page": "Xem trang đích"
   }
 }
