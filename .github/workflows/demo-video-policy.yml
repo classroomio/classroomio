@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: none
   issues: write
   pull-requests: write
 
@@ -62,7 +62,17 @@ jobs:
 
               const urls = demoSection.match(/https?:\/\/[^\s<>"']+/gi) || [];
 
-              return urls.length > 0;
+              return urls.some((rawUrl) => {
+                const normalizedUrl = rawUrl.replace(/[)>\],.!?]+$/g, '');
+
+                try {
+                  const parsedUrl = new URL(normalizedUrl);
+
+                  return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+                } catch {
+                  return false;
+                }
+              });
             }
 
             async function listPolicyComments(pullNumber) {
