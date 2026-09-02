@@ -11,6 +11,21 @@ import {
 
 import { getLessonById } from '@cio/db/queries/lesson/lesson';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { db } from '@cio/db/drizzle';
+import { recordLessonLanguageVersion } from './lesson-version';
+import type { TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
+
+/**
+ * How a content write should show up in version history. Defaults to `auto`
+ * (prunable, coalesced into the author's open editing session); callers that
+ * know the write is a deliberate checkpoint pass `manual` or `publish`, and bulk
+ * writes that shouldn't appear in a tutor's history at all pass `none`.
+ */
+export interface LessonVersionOptions {
+  authorId?: string | null;
+  versionIntent?: TLessonVersionIntent;
+  versionLabel?: string | null;
+}
 
 /**
  * Gets all language translations for a lesson
@@ -57,7 +72,8 @@ export async function getLessonLanguage(lessonId: string, locale: TLocale): Prom
  */
 export async function upsertLessonLanguageService(
   lessonId: string,
-  data: Omit<TNewLessonLanguage, 'lessonId'>
+  data: Omit<TNewLessonLanguage, 'lessonId'>,
+  options: LessonVersionOptions = {}
 ): Promise<TLessonLanguage> {
   try {
     // Verify lesson exists
@@ -66,10 +82,24 @@ export async function upsertLessonLanguageService(
       throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
     }
 
-    const language = await upsertLessonLanguage({
-      ...data,
-      content: sanitizeOptionalHtml(data.content),
-      lessonId
+    const content = sanitizeOptionalHtml(data.content);
+    const intent = options.versionIntent ?? 'auto';
+
+    // One transaction so a failed snapshot can't leave the content committed
+    // without its history entry, and vice versa.
+    const language = await db.transaction(async (tx) => {
+      const saved = await upsertLessonLanguage({ ...data, content, lessonId }, tx);
+
+      await recordLessonLanguageVersion({
+        lessonLanguageId: saved.id,
+        content: saved.content,
+        authorId: options.authorId ?? null,
+        intent,
+        label: options.versionLabel ?? null,
+        dbClient: tx
+      });
+
+      return saved;
     });
 
     if (lesson.courseId) {
@@ -99,7 +129,8 @@ export async function upsertLessonLanguageService(
 export async function updateLessonLanguageService(
   lessonId: string,
   locale: TLocale,
-  data: Partial<TNewLessonLanguage>
+  data: Partial<TNewLessonLanguage>,
+  options: LessonVersionOptions = {}
 ): Promise<TLessonLanguage> {
   try {
     // Verify lesson exists
@@ -113,9 +144,26 @@ export async function updateLessonLanguageService(
       throw new AppError('Lesson language not found', ErrorCodes.LESSON_LANGUAGE_NOT_FOUND, 404);
     }
 
-    const language = await updateLessonLanguage(lessonId, locale, {
-      ...data,
-      content: sanitizeOptionalHtml(data.content)
+    const content = sanitizeOptionalHtml(data.content);
+    const intent = options.versionIntent ?? 'auto';
+    const isContentWrite = data.content !== undefined;
+
+    const language = await db.transaction(async (tx) => {
+      const saved = await updateLessonLanguage(lessonId, locale, { ...data, content }, tx);
+
+      // A metadata-only update is not a content change, so it earns no snapshot.
+      if (isContentWrite) {
+        await recordLessonLanguageVersion({
+          lessonLanguageId: saved.id,
+          content: saved.content,
+          authorId: options.authorId ?? null,
+          intent,
+          label: options.versionLabel ?? null,
+          dbClient: tx
+        });
+      }
+
+      return saved;
     });
 
     if (lesson.courseId) {

@@ -12,6 +12,24 @@ export const ZRetentionCompactPayload = z.object({
 });
 export type TRetentionCompactPayload = z.infer<typeof ZRetentionCompactPayload>;
 
+/**
+ * Tiered thinning of lesson content version history. Milestone snapshots
+ * (`manual`, `publish`) and the newest snapshot of each lesson language are
+ * never pruned; autosave snapshots are kept at decreasing resolution as they age
+ * so history stays useful without storing a full document copy per edit forever.
+ */
+export const ZLessonVersionRetentionPayload = z.object({
+  /** Keep every autosave snapshot newer than this. */
+  keepAllHours: z.number().int().positive().default(24),
+  /** Between `keepAllHours` and here, keep the last snapshot of each hour. */
+  hourlyDays: z.number().int().positive().default(7),
+  /** Between `hourlyDays` and here, keep the last snapshot of each day. */
+  dailyDays: z.number().int().positive().default(30),
+  /** Hard cap on autosave snapshots per lesson language, regardless of age. */
+  maxAutoPerLanguage: z.number().int().positive().default(50)
+});
+export type TLessonVersionRetentionPayload = z.infer<typeof ZLessonVersionRetentionPayload>;
+
 export const ZDeadLetterCleanupPayload = z.object({
   olderThanDays: z.number().int().positive().default(180)
 });

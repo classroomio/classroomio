@@ -11,6 +11,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { getDashboardBaseUrl } from '../../config/dashboard-url';
 import { updateCourse } from './course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
+import { sealLessonVersionsOnPublish } from '../lesson-version';
 
 export type CourseGoLiveIssue = {
   code: string;
@@ -281,6 +282,12 @@ export async function publishCourseWhenReady(courseId: string) {
 
   const slug = await ensureCourseSlug(courseId, course.title);
   const publishedCourse = await updateCourse(courseId, { slug, isPublished: true });
+
+  // Publishing is a hard boundary for lesson version history: the snapshot that
+  // students were served becomes immutable, and the next edit opens a fresh
+  // editing session instead of extending across the publish.
+  await sealLessonVersionsOnPublish(courseId);
+
   const publishedReadiness = await getCourseGoLiveReadiness(courseId);
 
   return {

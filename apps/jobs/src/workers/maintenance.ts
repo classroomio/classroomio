@@ -5,12 +5,14 @@ import { Queue, Worker } from 'bullmq';
 import { runAnalyticsRollupDaily } from '@cio/analytics';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
+import { capAutoLessonVersionsPerLanguage, pruneAutoLessonVersions } from '@cio/db/queries/lesson/version';
 import {
   JOB_NAMES,
   QUEUE_NAMES,
   ZAnalyticsDailyRollupPayload,
   ZAssetStorageCleanupPayload,
   ZDeadLetterCleanupPayload,
+  ZLessonVersionRetentionPayload,
   ZMediaJobReapPayload,
   ZRetentionCompactPayload,
   createRedisConnection
@@ -39,6 +41,27 @@ const worker = new Worker(
       // is observable without silently dropping data.
       log.info('retention-compact-noop', { reason: 'not-yet-implemented' });
       return { compacted: 0 };
+    }
+
+    if (job.name === JOB_NAMES.maintenance.lessonVersionRetention) {
+      const data = ZLessonVersionRetentionPayload.parse(job.data ?? {});
+      const thinned = await pruneAutoLessonVersions({
+        keepAllHours: data.keepAllHours,
+        hourlyDays: data.hourlyDays,
+        dailyDays: data.dailyDays
+      });
+      const capped = await capAutoLessonVersionsPerLanguage(data.maxAutoPerLanguage);
+
+      log.info('lesson-version-retention-done', {
+        thinned,
+        capped,
+        keepAllHours: data.keepAllHours,
+        hourlyDays: data.hourlyDays,
+        dailyDays: data.dailyDays,
+        maxAutoPerLanguage: data.maxAutoPerLanguage
+      });
+
+      return { thinned, capped };
     }
 
     if (job.name === JOB_NAMES.maintenance.mediaJobReap) {
@@ -110,6 +133,16 @@ async function registerSchedulers(): Promise<void> {
     );
     log.info('analytics-rollup-scheduler-registered', {
       name: JOB_NAMES.maintenance.analyticsDailyRollup,
+      everyMs: 86_400_000
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'lesson-version-retention-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.lessonVersionRetention, data: {} }
+    );
+    log.info('lesson-version-retention-scheduler-registered', {
+      name: JOB_NAMES.maintenance.lessonVersionRetention,
       everyMs: 86_400_000
     });
   } catch (err) {

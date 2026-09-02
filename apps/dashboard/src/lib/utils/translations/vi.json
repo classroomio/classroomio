@@ -1395,7 +1395,17 @@
           "title": "Lịch sử phiên bản",
           "fetch_more_versions": "Tìm nạp thêm phiên bản",
           "current_version": "Phiên bản hiện tại",
-          "restore_version": "Khôi phục phiên bản này"
+          "restore_version": "Khôi phục phiên bản này",
+          "edit_count": "{count, plural, one {# chỉnh sửa} other {# chỉnh sửa}}",
+          "today": "Hôm nay",
+          "yesterday": "Hôm qua",
+          "by_author": "bởi {name}",
+          "empty": "Chưa có phiên bản nào",
+          "kind": {
+            "auto": "Tự động lưu",
+            "manual": "Phiên bản đã lưu",
+            "publish": "Đã xuất bản"
+          }
         },
         "poll": {
           "voted": "Đã bình chọn",

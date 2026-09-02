@@ -1395,7 +1395,17 @@
           "title": "Histórico de versões",
           "fetch_more_versions": "Buscar mais versões",
           "current_version": "Versão atual",
-          "restore_version": "Restaurar esta versão"
+          "restore_version": "Restaurar esta versão",
+          "edit_count": "{count, plural, one {# edição} other {# edições}}",
+          "today": "Hoje",
+          "yesterday": "Ontem",
+          "by_author": "por {name}",
+          "empty": "Nenhuma versão ainda",
+          "kind": {
+            "auto": "Salvamento automático",
+            "manual": "Versão salva",
+            "publish": "Publicado"
+          }
         },
         "poll": {
           "voted": "Votado",

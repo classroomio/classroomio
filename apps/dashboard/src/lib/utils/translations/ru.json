@@ -1395,7 +1395,17 @@
           "title": "История версий",
           "fetch_more_versions": "Получить больше версий",
           "current_version": "Текущая версия",
-          "restore_version": "Восстановить эту версию"
+          "restore_version": "Восстановить эту версию",
+          "edit_count": "{count, plural, one {# редактирование} other {# редактирований}}",
+          "today": "Сегодня",
+          "yesterday": "Вчера",
+          "by_author": "Автор: {name}",
+          "empty": "Версий пока нет",
+          "kind": {
+            "auto": "Автосохранение",
+            "manual": "Сохраненная версия",
+            "publish": "Опубликовано"
+          }
         },
         "poll": {
           "voted": "Проголосовали",
