@@ -283,11 +283,7 @@ export async function publishCourseWhenReady(courseId: string) {
 
   const slug = await ensureCourseSlug(courseId, course.title);
 
-  // Publishing is a hard boundary for lesson version history: the snapshot
-  // students were served becomes immutable, and the next edit opens a fresh
-  // editing session instead of extending across the publish. Both writes share
-  // one transaction — a course that went live while sealing failed would keep
-  // serving a snapshot the next autosave could still rewrite.
+  // Publishing seals the snapshot students were served, so both writes share one transaction.
   const publishedCourse = await db.transaction(async (tx) => {
     const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
     await sealLessonVersionsOnPublish(courseId, tx);

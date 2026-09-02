@@ -15,12 +15,6 @@ import { db } from '@cio/db/drizzle';
 import { recordLessonLanguageVersion } from './lesson-version';
 import type { TLessonVersionIntent } from '@cio/utils/constants/lesson-version';
 
-/**
- * How a content write should show up in version history. Defaults to `auto`
- * (prunable, coalesced into the author's open editing session); callers that
- * know the write is a deliberate checkpoint pass `manual` or `publish`, and bulk
- * writes that shouldn't appear in a tutor's history at all pass `none`.
- */
 export interface LessonVersionOptions {
   authorId?: string | null;
   versionIntent?: TLessonVersionIntent;
@@ -85,8 +79,6 @@ export async function upsertLessonLanguageService(
     const content = sanitizeOptionalHtml(data.content);
     const intent = options.versionIntent ?? 'auto';
 
-    // One transaction so a failed snapshot can't leave the content committed
-    // without its history entry, and vice versa.
     const language = await db.transaction(async (tx) => {
       const saved = await upsertLessonLanguage({ ...data, content, lessonId }, tx);
 
