@@ -18,6 +18,8 @@
     "db:backfill-profile-email-verification": "pnpm --filter @cio/db db:backfill-profile-email-verification",
     "dashboard:dev:full": "pnpm turbo run build --filter=@cio/dashboard^... --filter=@cio/ui^... && pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
     "dashboard:dev": "pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
+    "dashboard:dev:fresh": "pnpm dev:kill-watchers && pnpm dashboard:dev",
+    "dev:kill-watchers": "node scripts/kill-watchers.mjs",
     "api:dev:full": "pnpm turbo run build --filter=@cio/api^... --filter=@cio/jobs-worker^... && pnpm concurrently -n api,core,jobs -c blue,red,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/core run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "api:dev": "pnpm concurrently -n api,core,jobs -c blue,red,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/core run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "jobs:dev": "pnpm --filter=@cio/jobs-worker run dev",
