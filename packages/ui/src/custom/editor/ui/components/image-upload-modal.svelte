@@ -36,6 +36,7 @@
   let searchQuery = $state('');
   let isSearching = $state(false);
   let unsplashImages: UnsplashPhoto[] = $state([]);
+  let searchError = $state('');
 
   function handleImageSelect(src: string) {
     if (!src) return;
@@ -73,10 +74,13 @@
   async function handleUnsplashSearch() {
     if (!onSearchUnsplash) return;
     isSearching = true;
+    searchError = '';
     try {
       unsplashImages = await onSearchUnsplash(searchQuery || 'nature landscape architecture');
     } catch (error) {
       console.error('Error fetching images from Unsplash:', error);
+      unsplashImages = [];
+      searchError = 'Failed to fetch images from Unsplash. Please try again.';
     } finally {
       isSearching = false;
     }
@@ -150,7 +154,9 @@
                   <SearchIcon size={16} />
                 </Button>
               </form>
-              {#if unsplashImages.length > 0}
+              {#if searchError}
+                <p class="ui:py-7 ui:text-center ui:text-sm ui:text-destructive">{searchError}</p>
+              {:else if unsplashImages.length > 0}
                 <div class="ui:grid ui:max-h-[400px] ui:grid-cols-4 ui:gap-3 ui:overflow-y-auto ui:p-1">
                   {#each unsplashImages as photo (photo.id)}
                     <div>
