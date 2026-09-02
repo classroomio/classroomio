@@ -38,7 +38,7 @@
       <div class="eyebrow">ClassroomIO · Prototype + PRD handoff</div>
       <h1>Interactive Video Checkpoints</h1>
       <p class="lead">
-        Pause an uploaded lesson video, ask a single-choice or true/false question on the player, then resume.
+        Pause an uploaded lesson video, ask any auto-gradable question on the player, then resume.
         The six-video course, graded exam, and certificate stay the current ClassroomIO model.
         Engineering spec: <code>prd/interactive-video-checkpoints/README.md</code>.
       </p>
@@ -61,7 +61,7 @@
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.424 0.199 265.638), oklch(0.546 0.245 262.881))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
           </div>
-          <div class="b"><span class="n">Dialog</span><span class="t">Add a question</span><span class="d">Single answer or true/false, timestamp, resume any vs require correct.</span></div>
+          <div class="b"><span class="n">Dialog</span><span class="t">Add a question</span><span class="d">Any auto-gradable type, timestamp, resume any vs require correct. Premium types keep the usual plan gate.</span></div>
         </a>
         <a class="shot" href="teacher-youtube-blocked.html">
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216))">
@@ -83,7 +83,7 @@
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 12h8M8 16h5"/></svg>
           </div>
-          <div class="b"><span class="n">Overlay</span><span class="t">Question on the video</span><span class="d">Paused at 0:45. Overlay lives on the player, not a new page.</span></div>
+          <div class="b"><span class="n">Overlay</span><span class="t">Question on the video</span><span class="d">Paused at 0:45. Switch types to see radio, checkbox, numeric, blanks, ordering, and stars.</span></div>
         </a>
         <a class="shot" href="student-resume.html">
           <div class="cover" style="background: linear-gradient(135deg, oklch(0.696 0.17 162.48), oklch(0.83 0.12 165))">
@@ -118,6 +118,7 @@
       <div class="foot">
         <b>Decisions baked into these prototypes:</b><br />
         · Checkpoints are <b>on the lesson video</b>, never extra rows in the contents tree.<br />
+        · Teachers can add <b>every auto-gradable question type</b> (premium types stay plan-gated). Manual types stay on the exam.<br />
         · Only <b>uploaded</b> videos get a timeline. YouTube is an honest blocked state.<br />
         · Default resume is <b>any answer</b>; require-correct is opt-in per question.<br />
         · The overlay has an explicit <b>Continue</b> after selecting an option.<br />

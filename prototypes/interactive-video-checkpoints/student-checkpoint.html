@@ -23,15 +23,14 @@
       <div class="course-main">
         <header class="course-header"><h1>Why hand hygiene matters</h1><span class="badge badge-outline">Learner</span></header>
         <div class="course-body"><div class="course-col">
+          <p class="text-muted" style="margin-top:0;font-size:13.5px;">Preview how each auto-gradable type sits on the player. Production mounts the existing take renderer in this overlay card (it scrolls when the question is tall).</p>
           <div class="player">
             <div class="player-stage"><div class="player-meta">Paused at 0:45</div></div>
             <div class="overlay">
               <div class="overlay-card">
-                <div class="overlay-kicker">Question · 0:45</div>
-                <h2>When must you wash your hands?</h2>
-                <label class="option selected"><input type="radio" name="q1" checked /><span class="option-label">Before and after every patient contact</span></label>
-                <label class="option"><input type="radio" name="q1" /><span class="option-label">Only at the start of a shift</span></label>
-                <label class="option"><input type="radio" name="q1" /><span class="option-label">Only when hands look dirty</span></label>
+                <div class="overlay-types" role="tablist" aria-label="Question type preview"></div>
+                <div class="overlay-kicker" id="kicker">Question · 0:45 · Single answer</div>
+                <div id="overlay-body"></div>
                 <div class="overlay-actions">
                   <a class="btn btn-primary" href="student-resume.html">Continue</a>
                 </div>
@@ -54,6 +53,100 @@
         const dark = document.documentElement.classList.toggle('dark');
         localStorage.cioTheme = dark ? 'dark' : 'light';
       };
+
+      const types = [
+        { id: 'RADIO', label: 'Single' },
+        { id: 'CHECKBOX', label: 'Multiple' },
+        { id: 'TRUE_FALSE', label: 'T/F' },
+        { id: 'NUMERIC', label: 'Numeric' },
+        { id: 'FILL_BLANK', label: 'Blank' },
+        { id: 'WORD_BANK', label: 'Word bank' },
+        { id: 'ORDERING', label: 'Order' },
+        { id: 'STAR', label: 'Stars' }
+      ];
+
+      const views = {
+        RADIO: {
+          kicker: 'Question · 0:45 · Single answer',
+          html:
+            '<h2>When must you wash your hands?</h2>' +
+            '<label class="option selected"><input type="radio" name="q" checked /><span class="option-label">Before and after every patient contact</span></label>' +
+            '<label class="option"><input type="radio" name="q" /><span class="option-label">Only at the start of a shift</span></label>' +
+            '<label class="option"><input type="radio" name="q" /><span class="option-label">Only when hands look dirty</span></label>'
+        },
+        CHECKBOX: {
+          kicker: 'Question · 1:20 · Multiple answers',
+          html:
+            '<h2>Which moments always require hand hygiene? Select all that apply.</h2>' +
+            '<label class="option selected"><input type="checkbox" checked /><span class="option-label">Before touching a patient</span></label>' +
+            '<label class="option selected"><input type="checkbox" checked /><span class="option-label">Before a clean or aseptic procedure</span></label>' +
+            '<label class="option"><input type="checkbox" /><span class="option-label">Only at the end of a shift</span></label>'
+        },
+        TRUE_FALSE: {
+          kicker: 'Question · 2:14 · True / false',
+          html:
+            '<h2>Alcohol rub replaces soap and water when hands are visibly soiled.</h2>' +
+            '<label class="option"><input type="radio" name="tf" /><span class="option-label">True</span></label>' +
+            '<label class="option selected"><input type="radio" name="tf" checked /><span class="option-label">False</span></label>'
+        },
+        NUMERIC: {
+          kicker: 'Question · 3:02 · Numeric',
+          html:
+            '<h2>How many moments of hand hygiene does WHO define?</h2>' +
+            '<input type="text" value="5" aria-label="Numeric answer" style="width:100%;margin-bottom:8px" />'
+        },
+        FILL_BLANK: {
+          kicker: 'Question · 3:40 · Fill in the blank',
+          html:
+            '<h2>Complete the sentence</h2>' +
+            '<p class="blank-line">Wash your hands <input type="text" value="before" aria-label="Blank 1" /> touching a patient and <input type="text" value="before" aria-label="Blank 2" /> a clean procedure.</p>'
+        },
+        WORD_BANK: {
+          kicker: 'Question · 4:10 · Word bank',
+          html:
+            '<h2>Use the words to fill the blanks</h2>' +
+            '<p class="blank-line">Use <input type="text" value="soap" aria-label="Blank 1" /> and water when hands are <input type="text" value="visibly" aria-label="Blank 2" /> soiled.</p>' +
+            '<div class="bank"><button type="button">soap</button><button type="button">visibly</button><button type="button">alcohol</button><button type="button">rarely</button></div>'
+        },
+        ORDERING: {
+          kicker: 'Question · 4:48 · Ordering',
+          html:
+            '<h2>Put the WHO 5 moments in order</h2>' +
+            '<div class="order-row"><span class="order-handle">::</span>Before touching a patient</div>' +
+            '<div class="order-row"><span class="order-handle">::</span>Before a clean procedure</div>' +
+            '<div class="order-row"><span class="order-handle">::</span>After body-fluid exposure</div>'
+        },
+        STAR: {
+          kicker: 'Question · 5:20 · Star rating',
+          html:
+            '<h2>How complete was that 5-moment sequence?</h2>' +
+            '<div class="stars" aria-label="Star rating">' +
+            '<button type="button" class="on">★</button><button type="button" class="on">★</button><button type="button" class="on">★</button><button type="button" class="on">★</button><button type="button">★</button>' +
+            '</div>'
+        }
+      };
+
+      const tablist = document.querySelector('.overlay-types');
+      types.forEach((type, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline btn-sm';
+        btn.type = 'button';
+        btn.textContent = type.label;
+        btn.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
+        btn.addEventListener('click', () => showType(type.id));
+        tablist.appendChild(btn);
+      });
+
+      function showType(id) {
+        const view = views[id];
+        document.getElementById('kicker').textContent = view.kicker;
+        document.getElementById('overlay-body').innerHTML = view.html;
+        tablist.querySelectorAll('button').forEach((btn, index) => {
+          btn.setAttribute('aria-pressed', types[index].id === id ? 'true' : 'false');
+        });
+      }
+
+      showType('RADIO');
     </script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 ---
 name: Interactive Video Checkpoints
-overview: Pause an uploaded lesson video at teacher-set timestamps, show a single-choice or true/false question overlay, then resume playback when the learner answers. Reuses existing lessons, the Plyr media player, RADIO/TRUE_FALSE renderers, sequential progression, the final-exam Exercise, and certificate rules. Does not add a new course content type.
+overview: Pause an uploaded lesson video at teacher-set timestamps, show an auto-gradable question overlay, then resume playback when the learner answers. Reuses existing lessons, the Plyr media player, every enabled auto-gradable `@cio/question-types` take/edit renderer, sequential progression, the final-exam Exercise, and certificate rules. Does not add a new course content type.
 todos:
   - id: schema-checkpoints
     content: Add lesson_video_checkpoint, lesson_video_checkpoint_option, and lesson_video_checkpoint_answer tables in packages/db/src/schema.ts
@@ -78,7 +78,7 @@ The trigger is a typical LMS buyer who needs LearnWorlds-style “questions that
 ## Confirmed Decisions
 
 1. **Checkpoints hang off a lesson video, not a new contents-tree item.** They never appear in the course sidebar as Lessons or Exercises. The six videos stay six lessons; the exam stays one Exercise.
-2. **v1 question types are `RADIO` and `TRUE_FALSE` only.** Reuse `@cio/question-types` keys and `@cio/ui/custom/exercise-question` take/edit renderers. No checkbox, numeric, file, or video-recording inside the player.
+2. **v1 question types are every enabled auto-gradable type.** Reuse `@cio/question-types` (`isAutoGradableQuestionType` and `!disabled`) and the matching `@cio/ui/custom/exercise-question` take/edit renderers. Allowed keys: `RADIO`, `CHECKBOX`, `TRUE_FALSE`, `NUMERIC`, `FILL_BLANK`, `WORD_BANK`, plus premium `ORDERING` and `STAR` (same plan gate as the exercise editor). Do **not** offer manual types (`TEXTAREA`, `SHORT_ANSWER`, `FILE_UPLOAD`, `LINK`, `VIDEO_RECORDING`), survey `THUMBS`, or disabled `MATCHING` / `HOTSPOT`.
 3. **In-video answers are formative.** They do **not** write `submission` / `question_answer` rows, do **not** email teachers, and do **not** feed `course.certificate.exerciseMinScorePercent`. The graded exam remains `course.certificate.requiredExerciseId`.
 4. **Default resume policy is `any`:** the learner clicks an option and playback continues. Optional per-checkpoint `correct`: wrong answers stay on the overlay with “Try again”; correct answers resume. No LearnWorlds-style action menu (jump, open URL, skip).
 5. **Uploaded / HLS videos only in v1.** Same enforceability rule as watch tracking (`isEnforceableLessonVideo` in `packages/core/src/utils/lesson-watch-enforcement.ts`). YouTube, Google Drive, generic embeds, and Muse show a blocked state with an upload CTA.
@@ -101,7 +101,7 @@ The trigger is a typical LMS buyer who needs LearnWorlds-style “questions that
 | Watch progress | `lesson_video_progress` + `PUT .../watch-progress` every ~15s (`packages/core/src/services/lesson/lesson.ts`) | Completion ignores unanswered questions |
 | Lesson completion | `manual` \| `video_watch` \| `none` (`lesson.completionPolicy`) | No “checkpoints satisfied” predicate |
 | Sequential progression | `course.metadata.progressionMode` (`packages/utils/src/functions/course-progression.ts`); lessons with policy ≠ `none` block | Works automatically once lesson complete is gated |
-| Question types | `RADIO` (id 1), `TRUE_FALSE` (id 4) auto-grade via `@cio/question-types` | Renderers exist; they only mount on the exercise page |
+| Question types | Enabled auto-gradable set via `@cio/question-types` (`RADIO`, `CHECKBOX`, `TRUE_FALSE`, `NUMERIC`, `FILL_BLANK`, `WORD_BANK`, premium `ORDERING` / `STAR`) | Take/edit renderers exist; they only mount on the exercise page. Checkpoints reuse them in the Video-tab dialog and the in-player overlay |
 | Exercises / submissions | Full-page take, `submission` + emails + grading board | Wrong primitive for mid-video taps |
 | Certificates | `evaluateCourseCertification`: progress threshold + optional `requiredExerciseId` (`apps/api/src/services/course/completion.ts`) | Keep as-is; do not add a checkpoint score rule |
 | Course clone | Copies `lesson.videos` jsonb, then exercises (`apps/api/src/services/course/clone.ts`) | Must copy checkpoint + option rows keyed to new lesson ids (same `assetId`) |
@@ -124,7 +124,7 @@ The trigger is a typical LMS buyer who needs LearnWorlds-style “questions that
 - YouTube IFrame API / Vimeo / Google Drive interactive cues.
 - Scoring checkpoints into the exam or the certificate.
 - Branching (jump to timestamp, open URL, skip remaining video).
-- Question types other than `RADIO` and `TRUE_FALSE`.
+- Manual-graded, survey, or disabled question types inside the player (`TEXTAREA`, `SHORT_ANSWER`, `FILE_UPLOAD`, `LINK`, `VIDEO_RECORDING`, `THUMBS`, `MATCHING`, `HOTSPOT`).
 - Checkpoints as Exercise rows, hidden or otherwise.
 - A new completion policy value.
 - In-player comments, polls, or discussion.
@@ -145,7 +145,10 @@ The trigger is a typical LMS buyer who needs LearnWorlds-style “questions that
 - Certification: `apps/api/src/services/course/completion.ts`
 - Clone: `apps/api/src/services/course/clone.ts`
 - Reset progress: `packages/db/src/queries/course/reset-progress.ts`
-- Question renderers: `packages/ui/src/custom/exercise-question/renderers/radio/take.svelte`, `true-false/take.svelte`
+- Question renderers: `packages/ui/src/custom/exercise-question/renderers/{type}/take.svelte` and `edit.svelte` for every enabled auto-gradable type
+- Auto-gradable registry: `packages/question-types/src/question-type-registry.ts`, `isAutoGradableQuestionType`
+- Exercise type picker (reuse, filtered): `apps/dashboard/src/lib/features/course/components/exercise/question-type-select.svelte`
+- Scoring / answer payloads: `packages/question-types/src/question-scoring.ts`, `answer-data.ts`
 - Public lesson: `packages/ui/src/custom/public-course/lesson-view.svelte`
 
 ---
@@ -160,7 +163,7 @@ No new content type. The teacher still builds:
 - One Exercise at the end, `completionPolicy: 'passed'`, pass threshold (e.g. 70%).
 - Certificates: downloadable, 100% progress, `requiredExerciseId` = that exam.
 
-The contents list may show a **small question-count badge** on a lesson that has checkpoints (e.g. “2 questions”). It must not gain extra rows.
+The contents list may show a **small question-count badge** on a lesson that has checkpoints (e.g. “4 questions”). It must not gain extra rows.
 
 ### 2. Teacher — Video tab timeline (`teacher-video-tab.html`)
 
@@ -180,13 +183,12 @@ Badge on the Video tab = video count, unchanged. Checkpoint count lives on the m
 Dialog (not a new route). Fields:
 
 - Timestamp (mm:ss), prefilled from playhead, editable.
-- Type: Single answer / True or false (`QuestionTypePicker` subset).
-- Prompt (`title`).
-- Options: RADIO 2–6 options, exactly one `isCorrect`. TRUE_FALSE fixed True/False labels, one correct.
+- Type: the existing exercise `question-type-select`, **auto-gradable group only** (hide the manual-grading section). Premium `ORDERING` / `STAR` use the same free-plan upgrade chip as the exercise editor.
+- Prompt (`title`) plus the matching **edit renderer** from `@cio/ui/custom/exercise-question` (options, numeric key, fill-blank template, word-bank blanks, ordering items, star max + correct value).
 - Resume: radio **Continue after they answer** (default) vs **Require the correct answer**.
-- Save / Cancel. Validation errors inline (`Field.Error`).
+- Save / Cancel. Validation errors inline (`Field.Error`). Reuse the same option/settings rules as exercise create (`QUESTION_VALIDATION_RULES` in `packages/utils/src/validation/exercise/exercise.ts`).
 
-No points field. No “section.” No images on options in v1 (keeps the overlay compact).
+No points field. No “section.” Option images are allowed when the existing RADIO/CHECKBOX renderer already supports them; the overlay scrolls rather than growing the player chrome.
 
 YouTube/Drive/generic: `teacher-youtube-blocked.html` — helper + “Upload a video instead,” no fake timeline.
 
@@ -195,9 +197,9 @@ YouTube/Drive/generic: `teacher-youtube-blocked.html` — helper + “Upload a v
 Authenticated lesson page, same route. When `onTimeUpdate` crosses an unanswered checkpoint for the current `assetId`:
 
 1. `player.pause()`.
-2. Overlay covers the video surface (inside the same `ui:relative` wrapper as the loading overlay). Heading = prompt. Body = existing take renderer. Primary control is choosing an option (RADIO/TRUE_FALSE already commit on select; add a **Continue** button so accidental clicks don’t auto-advance — **product call, see Risks**).
+2. Overlay covers the video surface (inside the same `ui:relative` wrapper as the loading overlay). Heading = prompt. Body = the matching take renderer for that checkpoint’s `questionType`. The overlay card scrolls (`max-height` inside the player) so FILL_BLANK / WORD_BANK / ORDERING / CHECKBOX fit. **Continue** is disabled until the renderer has a complete answer (selected option(s), filled blanks, numeric value, ordered list, star value) so mis-taps don’t auto-advance — **product call, see Risks**.
 3. `resumePolicy === 'any'`: persist answer, close overlay, `player.play()`. Do not reveal the key.
-4. `resumePolicy === 'correct'` and wrong: inline error, stay paused. Correct: persist, resume.
+4. `resumePolicy === 'correct'` and wrong: inline error, stay paused. Correct means **full mark** from `@cio/question-types` scoring (partial-credit types still require every blank / every correct checkbox). Correct: persist, resume.
 5. Space bar / Plyr play must not dismiss the overlay. Clicking the darkened video must not dismiss it.
 6. Already-answered checkpoints never re-open on rewind. Rewind is allowed; playback through an answered marker is silent.
 7. On reload, unanswered markers still fire; answered ids come from GET lesson (or GET checkpoints).
@@ -248,8 +250,9 @@ export const lessonVideoCheckpoint = pgTable(
     lessonId: uuid('lesson_id').notNull(),
     assetId: text('asset_id').notNull(),
     timestampSeconds: integer('timestamp_seconds').notNull(),
-    questionType: varchar('question_type').notNull(), // 'RADIO' | 'TRUE_FALSE'
+    questionType: varchar('question_type').notNull(), // enabled auto-gradable key
     title: text().notNull(),
+    settings: jsonb().default({}), // same shape as question.settings
     resumePolicy: varchar('resume_policy').notNull().default('any'), // 'any' | 'correct'
     order: integer().notNull().default(0),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -271,7 +274,9 @@ export const lessonVideoCheckpointOption = pgTable(
     id: uuid().default(sql`gen_random_uuid()`).primaryKey().notNull(),
     checkpointId: uuid('checkpoint_id').notNull(),
     label: text().notNull(),
+    value: text(),
     isCorrect: boolean('is_correct').notNull().default(false),
+    settings: jsonb().default({}),
     order: integer().notNull().default(0)
   },
   (table) => [
@@ -289,7 +294,7 @@ export const lessonVideoCheckpointAnswer = pgTable(
     id: uuid().default(sql`gen_random_uuid()`).primaryKey().notNull(),
     checkpointId: uuid('checkpoint_id').notNull(),
     profileId: uuid('profile_id').notNull(),
-    selectedOptionId: uuid('selected_option_id').notNull(),
+    answerData: jsonb('answer_data').notNull(), // AnswerData from @cio/question-types
     isCorrect: boolean('is_correct').notNull(),
     answeredAt: timestamp('answered_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -314,12 +319,13 @@ Limits (service-enforced, not DB CHECKs):
 - `timestampSeconds >= 0`, and `< durationSeconds` when duration is known.
 - Minimum **2s** gap between timestamps on the same `(lessonId, assetId)`.
 - Max **20** checkpoints per asset.
-- RADIO: 2–6 options, exactly one `isCorrect`.
-- TRUE_FALSE: exactly two options, labels supplied by the client from translation keys at save time? **No** — persist `True`/`False` as data the teacher sees in their locale at edit time is wrong. Persist stable keys `true` / `false` in `label` **or** store `value` `'true'|'false'` and render labels from i18n. Prefer a `value` column? Keep `label` as the displayed string the teacher typed (TRUE_FALSE uses translated defaults prefilled in the dialog, teacher can leave them). Student sees stored labels (same as exercise options today).
+- `questionType` must be an enabled auto-gradable key. Reject premium `ORDERING` / `STAR` on a free plan the same way the exercise editor does.
+- Option-backed types (`RADIO`, `CHECKBOX`, `TRUE_FALSE`, `ORDERING`) and settings-backed types (`NUMERIC`, `FILL_BLANK`, `WORD_BANK`, `STAR`) follow the same rules as exercise create. TRUE_FALSE uses translated True/False labels prefilled in the dialog; persist the displayed `label` plus a stable `value` (`true` / `false`), same as exercise options today.
+- Grade with existing `@cio/question-types` scoring at 1 point; persist `isCorrect` as full mark (partial-credit types still require a complete answer for `resumePolicy: 'correct'`). Checkpoints do not store points.
 
 `assetId` is `text`, matching `lesson_video_progress.assetId` (not a FK to `assets`, because watch progress already uses text and clone shares ids).
 
-Student GET must **omit `isCorrect` on options** until after that checkpoint is answered (and only then if we decide to reveal — v1 `any` never reveals; `correct` reveals by forcing retry). Teacher GET includes `isCorrect`.
+Student GET must **omit answer keys** (`options.isCorrect`, numeric/star `settings.correctValue`, fill-blank / word-bank accepted answers) until after that checkpoint is answered (and only then if we decide to reveal — v1 `any` never reveals; `correct` reveals by forcing retry). Teacher GET includes the key.
 
 ### Core logic (pseudocode)
 
@@ -355,10 +361,10 @@ Mount on the existing lesson router (`apps/api/src/routes/course/lesson.ts`). Do
 | Method | Path | Auth | Role | Body / notes |
 | --- | --- | --- | --- | --- |
 | `GET` | `/course/:courseId/lesson/:lessonId/checkpoints` | member | teacher: full; student: prompts + options without `isCorrect`, plus `answeredCheckpointIds` | |
-| `POST` | `/course/:courseId/lesson/:lessonId/checkpoints` | staff | create | `assetId`, `timestampSeconds`, `questionType`, `title`, `resumePolicy`, `options[]` |
+| `POST` | `/course/:courseId/lesson/:lessonId/checkpoints` | staff | create | `assetId`, `timestampSeconds`, `questionType`, `title`, `settings`, `resumePolicy`, `options[]` |
 | `PUT` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId` | staff | update | same fields |
 | `DELETE` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId` | staff | delete | |
-| `POST` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId/answer` | enrolled student (or learner-view staff) | `{ optionId }` | returns `{ isCorrect, satisfied, didJustComplete }` |
+| `POST` | `/course/:courseId/lesson/:lessonId/checkpoints/:checkpointId/answer` | enrolled student (or learner-view staff) | `{ answerData }` (`AnswerData` from `@cio/question-types`) | returns `{ isCorrect, satisfied, didJustComplete }` |
 
 Also include `checkpoints` + `checkpointAnswers` on `GET /course/:courseId/lesson/:lessonId` so the player does not wait on a second round-trip. Shape the student payload so options never leak the key.
 
@@ -370,10 +376,10 @@ Follow dashboard layering: types in `apps/dashboard/src/lib/features/course/util
 
 | Piece | Where |
 | --- | --- |
-| Overlay chrome | `@cio/ui/custom/video-checkpoint` (new). Host passes prompt, renderer slot, labels. **Storybook story required** (`packages/storybook/src/molecules/video-checkpoint/`). All Tailwind in `packages/ui` uses `ui:` prefix. |
+| Overlay chrome | `@cio/ui/custom/video-checkpoint` (new). Host passes prompt, renderer slot, labels. Slot the matching take renderer for the checkpoint type. **Storybook story required** (`packages/storybook/src/molecules/video-checkpoint/`) covering a compact RADIO overlay and a scrolling FILL_BLANK / ORDERING overlay. All Tailwind in `packages/ui` uses `ui:` prefix. |
 | Cue engine | `apps/dashboard/.../lesson/video/checkpoint-engine.svelte.ts` (plain module, not types). Driven by `onTimeUpdate` + `onPlayerReady`. |
 | Player mount | `lesson-video-player.svelte` wraps `MediaPlayer` in a relative box and slots the overlay **as a sibling covering the player**, including fullscreen (`:fullscreen` on that wrapper — may require putting the overlay *inside* `plyr-player.svelte` via a snippet/prop). Prefer a `checkpointOverlay` snippet/prop on `MediaPlayerOptions` so the overlay is a child of the same `ui:relative` div that already hosts loading/error overlays. |
-| Authoring | `apps/dashboard/.../lesson/video/checkpoint-timeline.svelte` + `checkpoint-editor-dialog.svelte` on the Video tab, edit mode, enforceable videos only. |
+| Authoring | `apps/dashboard/.../lesson/video/checkpoint-timeline.svelte` + `checkpoint-editor-dialog.svelte` on the Video tab, edit mode, enforceable videos only. Type control is `question-type-select` with `types` filtered to auto-gradable; body is the existing edit renderer. |
 | Public | `packages/ui/src/custom/public-course/lesson-view.svelte` — only if the public video source is HTML5; in-memory set of answered ids. |
 
 Do not statically import `@cio/ui/base/chart`. Overlay has no charts.
@@ -416,9 +422,9 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 
 ## Acceptance Criteria
 
-1. Teacher can add, edit, drag, and delete `RADIO` and `TRUE_FALSE` checkpoints on an uploaded lesson video from the Video tab without opening the Exercise editor.
-2. Learner playback pauses at each unanswered timestamp, shows the overlay inside the player (including fullscreen), and resumes from the same time after a valid answer.
-3. `resumePolicy: 'any'` resumes on the first option click/Continue; `'correct'` stays until the right option.
+1. Teacher can add, edit, drag, and delete a checkpoint of **any enabled auto-gradable type** on an uploaded lesson video from the Video tab without opening the Exercise editor. Premium types follow the existing plan gate.
+2. Learner playback pauses at each unanswered timestamp, shows the matching take renderer inside the player overlay (including fullscreen), and resumes from the same time after a valid answer.
+3. `resumePolicy: 'any'` resumes on Continue once the answer is complete; `'correct'` stays until the answer is a full mark.
 4. Forward seek and play cannot pass an unanswered checkpoint.
 5. A lesson with checkpoints does not complete (watch auto-complete or Mark as complete) until every checkpoint is satisfied.
 6. Sequential courses keep later lessons locked until that happens.
@@ -439,7 +445,8 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 | `timeupdate` granularity skips a short cue | Fire when `seconds >= timestamp` and unanswered, not only on an equality window; ceiling seek so the playhead cannot jump over it |
 | Teachers expect YouTube (the Reddit user’s likely source) | Blocked state with upload CTA; PRD is explicit that IFrame API is a later player upgrade, not v1 |
 | Using Exercise rows “to save time” | Forbidden in Confirmed Decisions; it would spam submissions and the contents tree |
-| Continue-on-select vs Continue button | Prototype uses an explicit Continue after selecting an option so mis-taps don’t burn a `correct` attempt; if engineering prefers RADIO’s native select-to-submit, update the prototype — prototype currently wins |
+| Continue-on-select vs Continue button | Prototype uses an explicit Continue after a complete answer so mis-taps don’t burn a `correct` attempt; if engineering prefers RADIO’s native select-to-submit, update the prototype — prototype currently wins |
+| Tall types in a 16:9 player | Overlay card scrolls inside the player wrapper; do not push the question onto a new route |
 | Duration unknown (upload still processing) | Disable Add question until `durationSeconds` is present; same as watch enforcement waiting on duration |
 | Multiple videos on one lesson | Checkpoints keyed by `assetId`; cue engine only inspects the player whose asset is playing |
 | Clone shares `assetId` across courses | Acceptable (assets are already shared via copied jsonb). Checkpoints are per `lessonId`, so answers do not leak across the clone |
@@ -448,7 +455,7 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 
 These came from the architecture discussion that preceded this PRD. Veto in review if needed:
 
-1. Explicit **Continue** button on the overlay (not submit-on-radio-select).
+1. Explicit **Continue** button on the overlay (not submit-on-radio-select). Continue stays disabled until the take renderer has a complete answer.
 2. Default resume policy **any**, not require-correct.
 3. No correctness reveal after `any` answers.
 4. Video-tab badge stays “number of videos,” not checkpoint count.

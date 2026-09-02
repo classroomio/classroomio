@@ -5,7 +5,7 @@ Companion to [`README.md`](./README.md). Tickets are ordered so each phase can m
 ## Scope lock (v1)
 
 1. Checkpoints are rows on `(lessonId, assetId)`, not Exercise / `question` / `submission` rows.
-2. Only `RADIO` and `TRUE_FALSE`.
+2. Every enabled auto-gradable type (`RADIO`, `CHECKBOX`, `TRUE_FALSE`, `NUMERIC`, `FILL_BLANK`, `WORD_BANK`, premium `ORDERING` / `STAR`). No manual, survey, or disabled types.
 3. Only enforceable uploaded videos (`type === 'upload'` + `assetId`).
 4. Formative answers only — no certificate score, no grading board.
 5. Resume policies: `any` (default) and `correct`.
@@ -19,8 +19,8 @@ Companion to [`README.md`](./README.md). Tickets are ordered so each phase can m
 
 | ID | Ticket | Done when |
 | --- | --- | --- |
-| A1 | Schema: `lessonVideoCheckpoint`, `lessonVideoCheckpointOption`, `lessonVideoCheckpointAnswer` + Drizzle types | Types export from `@cio/db/types` |
-| A2 | Zod: `ZCheckpointCreate`, `ZCheckpointUpdate`, `ZCheckpointAnswer` in `packages/utils/src/validation/lesson/` | RADIO 2–6 options / one correct; TRUE_FALSE two options; `resumePolicy` enum; timestamp ≥ 0 |
+| A1 | Schema: `lessonVideoCheckpoint` (`settings` jsonb), `lessonVideoCheckpointOption` (`value`, `settings`), `lessonVideoCheckpointAnswer` (`answerData` jsonb) + Drizzle types | Types export from `@cio/db/types` |
+| A2 | Zod: `ZCheckpointCreate`, `ZCheckpointUpdate`, `ZCheckpointAnswer` in `packages/utils/src/validation/lesson/` | `questionType` ∈ enabled auto-gradable keys; reuse exercise option/settings rules; `answerData` is `AnswerData`; `resumePolicy` enum; timestamp ≥ 0 |
 | A3 | Queries in `packages/db/src/queries/lesson/checkpoints.ts`: list by lesson, list by asset, insert/update/delete checkpoint+options in one helper, upsert answer, list answers for profile, delete answers for profile+lessonIds, clone rows to a new lessonId | Optional `DbOrTxClient` on every write |
 | A4 | `areLessonCheckpointsSatisfied(lessonId, profileId, client?)` | True when no rows; false when any unanswered; `correct` policy requires `isCorrect` |
 
@@ -30,7 +30,7 @@ Companion to [`README.md`](./README.md). Tickets are ordered so each phase can m
 
 | ID | Ticket | Done when |
 | --- | --- | --- |
-| B1 | Core services next to watch progress (`packages/core/src/services/lesson/`): staff CRUD, student list (strip `isCorrect`), answer, gap/max-20/enforceable-asset guards | `AppError` + `ErrorCodes` on all failure paths |
+| B1 | Core services next to watch progress (`packages/core/src/services/lesson/`): staff CRUD, student list (strip answer keys), answer via `@cio/question-types` scoring, gap/max-20/enforceable-asset/premium-type guards | `AppError` + `ErrorCodes` on all failure paths |
 | B2 | Routes on `apps/api/src/routes/course/lesson.ts` (table in the PRD) | Staff vs student payload split; `assertEnrolledStudentContentAccess` on answer + student GET |
 | B3 | Include `checkpoints` (+ student `answeredCheckpointIds`) on `GET /course/:courseId/lesson/:lessonId` | Player can boot from one payload |
 | B4 | Completion: `updateLessonWatchProgressService` and `upsertLessonCompletionService` call `areLessonCheckpointsSatisfied` | Manual complete rejected with a dedicated error code; `video_watch` waits on both watch + checkpoints |
@@ -49,7 +49,7 @@ Companion to [`README.md`](./README.md). Tickets are ordered so each phase can m
 | C3 | Cue engine in dashboard lesson video: subscribe to `onTimeUpdate`, pause, set active checkpoint, resume on Continue | Unanswered `seconds >= timestamp` fires; answered never re-fires |
 | C4 | Seek ceiling = `min(watchFurthest, nextUnanswered.timestampSeconds)` using the existing `seekPolicy` interceptor | Cannot drag past an unanswered marker |
 | C5 | Play lock while overlay open (ignore Space / Plyr play) | Overlay focus trap; Escape does not skip |
-| C6 | Wire `RADIO` / `TRUE_FALSE` take renderers from `@cio/ui/custom/exercise-question` with host-supplied labels | No English strings in `packages/ui` |
+| C6 | Wire every enabled auto-gradable take renderer from `@cio/ui/custom/exercise-question` with host-supplied labels; overlay card scrolls | No English strings in `packages/ui` |
 
 **Verify:** `pnpm --filter @cio/ui prefix` then `prefix:check`. Storybook story renders every overlay state.
 
@@ -59,7 +59,7 @@ Companion to [`README.md`](./README.md). Tickets are ordered so each phase can m
 | --- | --- | --- |
 | D1 | Types in `course/utils/types.ts` inferred from the new RPC paths; methods on `lesson.svelte.ts` via `this.execute` | No interfaces in `.svelte.ts` |
 | D2 | Timeline + marker list on Video tab (`checkpoint-timeline.svelte`) for enforceable uploads | Empty state + populated state match prototype |
-| D3 | Add/edit dialog (`checkpoint-editor-dialog.svelte`) with type picker subset, options, resume policy | `onOpenChange` resets fields in place (no `$effect` tied to `open === false`; no whole-object reassign) |
+| D3 | Add/edit dialog (`checkpoint-editor-dialog.svelte`) with `question-type-select` filtered to auto-gradable types, matching edit renderer, resume policy, premium gate on `ORDERING` / `STAR` | `onOpenChange` resets fields in place (no `$effect` tied to `open === false`; no whole-object reassign) |
 | D4 | YouTube / Drive / generic: helper + upload CTA, no timeline | `teacher-youtube-blocked.html` |
 | D5 | Contents-list optional question-count on the lesson row | Not a new tree node |
 | D6 | `en.json` keys + `cd apps/dashboard && pnpm translate`; fix any `{placeholder}` corruption | All locales updated before commit |
@@ -79,7 +79,8 @@ Companion to [`README.md`](./README.md). Tickets are ordered so each phase can m
 - YouTube IFrame API timeupdate + pause.
 - MCP / `update_lesson_content` checkpoint tools.
 - `checkpoint.answered` webhook.
-- Option images, extra question types, branching actions.
+- Manual / survey / disabled types in the overlay (`TEXTAREA`, `SHORT_ANSWER`, `FILE_UPLOAD`, `LINK`, `VIDEO_RECORDING`, `THUMBS`, `MATCHING`, `HOTSPOT`).
+- Branching actions (jump, open URL, skip remaining video).
 
 ## Suggested PR slices
 
