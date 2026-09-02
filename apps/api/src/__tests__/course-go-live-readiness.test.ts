@@ -1,4 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+// `vi.mock` factories are hoisted above imports, so this has to be a `var` to
+// be initialised by the time the factory runs.
+// eslint-disable-next-line no-var
+var TX = { __transaction: true };
 import { ContentType } from '@cio/utils/constants';
 import { getCourseById } from '@cio/db/queries/course';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
@@ -40,6 +45,12 @@ vi.mock('@cio/core/services/course/landing-page', () => ({
 
 vi.mock('@cio/core/services/lesson-version', () => ({
   sealLessonVersionsOnPublish: vi.fn()
+}));
+
+vi.mock('@cio/db/drizzle', () => ({
+  // Publishing and version sealing share one transaction; run the callback
+  // directly and hand it a marker the assertions can recognise.
+  db: { transaction: (run: (client: unknown) => unknown) => run(TX) }
 }));
 
 vi.mock('@cio/core/config/dashboard-url', () => ({
@@ -268,15 +279,17 @@ describe('course go-live service', () => {
     const result = await publishCourseWhenReady('course-1');
 
     expect(mockedEnsureCourseSlug).toHaveBeenCalledWith('course-1', course.title);
-    expect(mockedUpdateCourse).toHaveBeenCalledWith('course-1', {
-      slug: 'workplace-safety-essentials',
-      isPublished: true
-    });
+    // Both writes must run against the same transaction client.
+    expect(mockedUpdateCourse).toHaveBeenCalledWith(
+      'course-1',
+      { slug: 'workplace-safety-essentials', isPublished: true },
+      TX
+    );
     expect(result.course.isPublished).toBe(true);
     expect(result.readiness.ready).toBe(true);
     // Publishing is a version-history boundary: the snapshot students were
     // served is sealed so the next edit starts a fresh editing session.
-    expect(mockedSealLessonVersionsOnPublish).toHaveBeenCalledWith('course-1');
+    expect(mockedSealLessonVersionsOnPublish).toHaveBeenCalledWith('course-1', TX);
   });
 
   it('does not seal lesson versions when the course is not ready to publish', async () => {

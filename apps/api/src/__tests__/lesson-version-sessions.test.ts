@@ -4,8 +4,15 @@ vi.mock('@cio/db/queries/lesson/version', () => ({
   extendLessonLanguageVersion: vi.fn(),
   getLatestLessonLanguageVersion: vi.fn(),
   insertLessonLanguageVersion: vi.fn(),
+  lockLessonLanguageVersionSession: vi.fn(),
   promoteLessonLanguageVersion: vi.fn(),
   sealLatestLessonVersionsForCourse: vi.fn()
+}));
+
+vi.mock('@cio/db/drizzle', () => ({
+  // The service opens its own transaction when the caller supplies no client,
+  // so the advisory lock it takes is transaction-scoped.
+  db: { transaction: (run: (client: unknown) => unknown) => run(undefined) }
 }));
 
 import { LESSON_VERSION_SESSION_IDLE_MS, LESSON_VERSION_SESSION_MAX_MS } from '@cio/utils/constants/lesson-version';
@@ -14,6 +21,7 @@ import {
   extendLessonLanguageVersion,
   getLatestLessonLanguageVersion,
   insertLessonLanguageVersion,
+  lockLessonLanguageVersionSession,
   promoteLessonLanguageVersion
 } from '@cio/db/queries/lesson/version';
 
@@ -201,6 +209,54 @@ describe('recordLessonLanguageVersion', () => {
 
     expect(result).toBe(latest);
     expect(extendLessonLanguageVersion).not.toHaveBeenCalled();
+    expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
+  });
+
+  it('takes the per-lesson lock before reading the session', async () => {
+    await recordLessonLanguageVersion({
+      lessonLanguageId: LESSON_LANGUAGE_ID,
+      content: '<p>first</p>',
+      authorId: AUTHOR_ID,
+      intent: 'auto'
+    });
+
+    expect(lockLessonLanguageVersionSession).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, undefined);
+    expect(vi.mocked(lockLessonLanguageVersionSession).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(getLatestLessonLanguageVersion).mock.invocationCallOrder[0]
+    );
+  });
+
+  it('opens a new session when the open one was sealed mid-flight', async () => {
+    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(buildLatest());
+    // A concurrent publish sealed the row between the read and the update.
+    vi.mocked(extendLessonLanguageVersion).mockResolvedValue(null);
+
+    await recordLessonLanguageVersion({
+      lessonLanguageId: LESSON_LANGUAGE_ID,
+      content: '<p>raced</p>',
+      authorId: AUTHOR_ID,
+      intent: 'auto'
+    });
+
+    expect(extendLessonLanguageVersion).toHaveBeenCalledTimes(1);
+    expect(insertLessonLanguageVersion).toHaveBeenCalledTimes(1);
+  });
+
+  it('never downgrades a publish snapshot to a manual one', async () => {
+    const published = buildLatest({ kind: 'publish', isSealed: true, label: null });
+    vi.mocked(getLatestLessonLanguageVersion).mockResolvedValue(published);
+
+    const result = await recordLessonLanguageVersion({
+      lessonLanguageId: LESSON_LANGUAGE_ID,
+      content: published.newContent,
+      authorId: AUTHOR_ID,
+      intent: 'manual',
+      label: 'Reviewed'
+    });
+
+    // Promoting would erase the record of what students were served.
+    expect(result).toBe(published);
+    expect(promoteLessonLanguageVersion).not.toHaveBeenCalled();
     expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
   });
 

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, untrack } from 'svelte';
-  import { diffLines } from 'diff';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
@@ -13,8 +12,9 @@
     groupVersionsByDay,
     hasVersionSessionSpan
   } from '$features/course/utils/lesson-version-utils';
+  import { renderHtmlDiff } from '$features/course/utils/lesson-version-diff';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { t } from '$lib/utils/functions/translations';
+  import { locale, t } from '$lib/utils/functions/translations';
 
   import type { LessonVersionEntry } from '$features/course/utils/types';
   import type { TLocale } from '@cio/db/types';
@@ -47,20 +47,24 @@
     };
   });
 
+  // Dates follow the dashboard locale; a hardcoded `en-US` gave Danish and
+  // German readers English weekday names and a 12-hour clock. `hour12` is left
+  // to the locale for the same reason.
+  const dateLocale = $derived($locale || 'en');
+
   function formatTimestamp(timestamp: Date) {
     const options: Intl.DateTimeFormatOptions = {
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
-      minute: 'numeric',
-      hour12: true
+      minute: 'numeric'
     };
 
-    return new Intl.DateTimeFormat('en-US', options).format(timestamp);
+    return new Intl.DateTimeFormat(dateLocale, options).format(timestamp);
   }
 
   function formatTime(timestamp: Date) {
-    return new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }).format(timestamp);
+    return new Intl.DateTimeFormat(dateLocale, { hour: 'numeric', minute: 'numeric' }).format(timestamp);
   }
 
   function formatDayHeading(dayKey: number) {
@@ -69,7 +73,7 @@
       return t.get(`course.navItem.lessons.version_history.${relativeKey}`);
     }
 
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(dateLocale, {
       weekday: 'long',
       month: 'long',
       day: 'numeric'
@@ -105,23 +109,9 @@
   function renderSelectedVersion(version: LessonVersionEntry) {
     if (!displayElement) return;
 
-    const fragment = document.createDocumentFragment();
-    const diff = diffLines(version.oldContent, version.newContent);
-
-    for (const part of diff) {
-      const section = document.createElement('div');
-      section.innerHTML = part.value;
-
-      if (part.added) {
-        section.classList.add('version-added');
-      } else if (part.removed) {
-        section.classList.add('version-removed');
-      }
-
-      fragment.appendChild(section);
-    }
-
-    displayElement.replaceChildren(fragment);
+    // Content is sanitized server-side by `sanitizeOptionalHtml` before it is
+    // ever stored, and the diff only rewraps existing markup.
+    displayElement.innerHTML = renderHtmlDiff(version.oldContent, version.newContent);
   }
 
   async function fetchLessonHistory(currentLessonId: string, locale: TLocale, endRange: number) {
@@ -342,15 +332,19 @@
     line-height: 1.7;
   }
 
+  /* Markers are inline now, so they must not disturb the surrounding line. */
   :global(.lesson-version-content .version-added) {
     background: color-mix(in srgb, #14b8a6 16%, transparent);
     color: #0f766e;
+    text-decoration: none;
+    border-radius: 2px;
   }
 
   :global(.lesson-version-content .version-removed) {
     background: color-mix(in srgb, #ef4444 12%, transparent);
     color: #b91c1c;
     text-decoration: line-through;
+    border-radius: 2px;
   }
 
   :global(.dark .lesson-version-content .version-added) {

@@ -8,11 +8,12 @@ import {
   extendLessonLanguageVersion,
   getLatestLessonLanguageVersion,
   insertLessonLanguageVersion,
+  lockLessonLanguageVersionSession,
   promoteLessonLanguageVersion,
   sealLatestLessonVersionsForCourse
 } from '@cio/db/queries/lesson/version';
 
-import type { DbOrTxClient } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import type { LessonVersionSessionState } from '@cio/db/queries/lesson/version';
 import type { TLessonLanguageHistory } from '@cio/db/types';
 
@@ -81,20 +82,32 @@ export async function recordLessonLanguageVersion({
 }: RecordVersionInput): Promise<TLessonLanguageHistory | null> {
   if (intent === 'none') return null;
 
-  try {
-    const latest = await getLatestLessonLanguageVersion(lessonLanguageId, dbClient);
+  const record = async (client: DbOrTxClient): Promise<TLessonLanguageHistory | null> => {
+    // Serialize concurrent saves for this lesson language before reading the
+    // session, so two overlapping autosaves cannot both decide to open one.
+    await lockLessonLanguageVersionSession(lessonLanguageId, client);
 
-    // Content is unchanged since the last snapshot. An autosave has nothing to
-    // record; a save or publish still needs that row marked as a milestone so
-    // retention keeps it.
+    const latest = await getLatestLessonLanguageVersion(lessonLanguageId, client);
+
+    // Content is unchanged since the last snapshot.
     if (latest && latest.newContent === content) {
-      if (intent === 'auto') return latest;
+      const isOpenAutosave = latest.kind === 'auto' && !latest.isSealed;
 
-      return promoteLessonLanguageVersion(latest.id, { kind: intent, label }, dbClient);
+      // An autosave has nothing to record, and a milestone already records this
+      // content — promoting it would overwrite a publish snapshot's kind and
+      // label, erasing the record of what students were served. Only an open
+      // autosave is upgraded to the milestone the author just asked for.
+      if (intent === 'auto' || !isOpenAutosave) return latest;
+
+      return promoteLessonLanguageVersion(latest.id, { kind: intent, label }, client);
     }
 
     if (canExtendVersionSession(latest, { intent, authorId })) {
-      return extendLessonLanguageVersion(latest!.id, { newContent: content }, dbClient);
+      const extended = await extendLessonLanguageVersion(latest!.id, { newContent: content }, client);
+
+      // The session was sealed between the read and the update (a publish, or a
+      // save from elsewhere). Fall through and open a new one.
+      if (extended) return extended;
     }
 
     // `sessionStartedAt` and `timestamp` are left to their `CURRENT_TIMESTAMP`
@@ -111,8 +124,14 @@ export async function recordLessonLanguageVersion({
         // session stays open so the next few edits fold into it.
         isSealed: intent !== 'auto'
       },
-      dbClient
+      client
     );
+  };
+
+  try {
+    // The advisory lock is transaction-scoped, so open one when the caller has
+    // not already established a transaction boundary.
+    return dbClient ? await record(dbClient) : await db.transaction(record);
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to record lesson version',

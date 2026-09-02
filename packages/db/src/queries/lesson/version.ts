@@ -50,6 +50,26 @@ export async function getLatestLessonLanguageVersion(
   }
 }
 
+/**
+ * Transaction-scoped lock serializing version bookkeeping for one lesson
+ * language. Without it, two overlapping autosaves both read "no open session"
+ * (or the same open session) and each insert or extend independently, producing
+ * duplicate sessions or letting the later-committing statement win with stale
+ * content. Released automatically when the transaction ends.
+ */
+export async function lockLessonLanguageVersionSession(lessonLanguageId: number, dbClient?: DbOrTxClient) {
+  const client = dbClient ?? db;
+
+  try {
+    await client.execute(sql`select pg_advisory_xact_lock(hashtext(${`lesson_version:${lessonLanguageId}`}))`);
+  } catch (error) {
+    console.error('lockLessonLanguageVersionSession error:', error);
+    throw new Error(
+      `Failed to lock lesson language version session: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 /** Starts a new version session. */
 export async function insertLessonLanguageVersion(
   data: TNewLessonLanguageHistory,
@@ -76,12 +96,18 @@ export async function insertLessonLanguageVersion(
  * Folds another save into an existing session: the row keeps its
  * `sessionStartedAt` (so the diff still spans the whole session) while its
  * content, end time, and edit count move forward.
+ *
+ * The session must still be an open autosave at update time. A publish or an
+ * explicit save running in another transaction can seal it after the caller
+ * read it, and rewriting a sealed snapshot would mutate the version students
+ * were served. Returns null in that case so the caller opens a new session
+ * instead.
  */
 export async function extendLessonLanguageVersion(
   versionId: number,
   values: { newContent: string | null },
   dbClient?: DbOrTxClient
-): Promise<TLessonLanguageHistory> {
+): Promise<TLessonLanguageHistory | null> {
   const client = dbClient ?? db;
 
   try {
@@ -93,14 +119,16 @@ export async function extendLessonLanguageVersion(
         timestamp: sql`localtimestamp`,
         editCount: sql`${schema.lessonLanguageHistory.editCount} + 1`
       })
-      .where(eq(schema.lessonLanguageHistory.id, versionId))
+      .where(
+        and(
+          eq(schema.lessonLanguageHistory.id, versionId),
+          eq(schema.lessonLanguageHistory.kind, 'auto'),
+          eq(schema.lessonLanguageHistory.isSealed, false)
+        )
+      )
       .returning();
 
-    if (!version) {
-      throw new Error('Version not found');
-    }
-
-    return version;
+    return version ?? null;
   } catch (error) {
     console.error('extendLessonLanguageVersion error:', error);
     throw new Error(
@@ -157,7 +185,7 @@ export async function sealLatestLessonVersionsForCourse(courseId: string, dbClie
   const client = dbClient ?? db;
 
   try {
-    const rows = await client.execute(sql`
+    const sealed = await client.execute(sql`
       WITH latest AS (
         SELECT DISTINCT ON (llh.lesson_language_id) llh.id
         FROM lesson_language_history llh
@@ -173,7 +201,23 @@ export async function sealLatestLessonVersionsForCourse(courseId: string, dbClie
       RETURNING h.id
     `);
 
-    return rows.length;
+    // A lesson language can reach publication with no history at all: it
+    // predates versioning, or it was written by an importer that opted out.
+    // Snapshot its current content so every published lesson has an immutable
+    // record of what students received.
+    const created = await client.execute(sql`
+      INSERT INTO lesson_language_history (lesson_language_id, new_content, kind, is_sealed)
+      SELECT ll.id, ll.content, 'publish', true
+      FROM lesson_language ll
+      JOIN lesson l ON l.id = ll.lesson_id
+      WHERE l.course_id = ${courseId}
+        AND NOT EXISTS (
+          SELECT 1 FROM lesson_language_history h WHERE h.lesson_language_id = ll.id
+        )
+      RETURNING id
+    `);
+
+    return sealed.length + created.length;
   } catch (error) {
     console.error('sealLatestLessonVersionsForCourse error:', error);
     throw new Error(

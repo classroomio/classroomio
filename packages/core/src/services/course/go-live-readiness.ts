@@ -12,6 +12,7 @@ import { getDashboardBaseUrl } from '../../config/dashboard-url';
 import { updateCourse } from './course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
 import { sealLessonVersionsOnPublish } from '../lesson-version';
+import { db } from '@cio/db/drizzle';
 
 export type CourseGoLiveIssue = {
   code: string;
@@ -281,12 +282,18 @@ export async function publishCourseWhenReady(courseId: string) {
   }
 
   const slug = await ensureCourseSlug(courseId, course.title);
-  const publishedCourse = await updateCourse(courseId, { slug, isPublished: true });
 
-  // Publishing is a hard boundary for lesson version history: the snapshot that
+  // Publishing is a hard boundary for lesson version history: the snapshot
   // students were served becomes immutable, and the next edit opens a fresh
-  // editing session instead of extending across the publish.
-  await sealLessonVersionsOnPublish(courseId);
+  // editing session instead of extending across the publish. Both writes share
+  // one transaction — a course that went live while sealing failed would keep
+  // serving a snapshot the next autosave could still rewrite.
+  const publishedCourse = await db.transaction(async (tx) => {
+    const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
+    await sealLessonVersionsOnPublish(courseId, tx);
+
+    return updated;
+  });
 
   const publishedReadiness = await getCourseGoLiveReadiness(courseId);
 

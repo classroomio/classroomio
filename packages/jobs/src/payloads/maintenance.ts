@@ -18,16 +18,28 @@ export type TRetentionCompactPayload = z.infer<typeof ZRetentionCompactPayload>;
  * never pruned; autosave snapshots are kept at decreasing resolution as they age
  * so history stays useful without storing a full document copy per edit forever.
  */
-export const ZLessonVersionRetentionPayload = z.object({
-  /** Keep every autosave snapshot newer than this. */
-  keepAllHours: z.number().int().positive().default(24),
-  /** Between `keepAllHours` and here, keep the last snapshot of each hour. */
-  hourlyDays: z.number().int().positive().default(7),
-  /** Between `hourlyDays` and here, keep the last snapshot of each day. */
-  dailyDays: z.number().int().positive().default(30),
-  /** Hard cap on autosave snapshots per lesson language, regardless of age. */
-  maxAutoPerLanguage: z.number().int().positive().default(50)
-});
+export const ZLessonVersionRetentionPayload = z
+  .object({
+    /** Keep every autosave snapshot newer than this. */
+    keepAllHours: z.number().int().positive().default(24),
+    /** Between `keepAllHours` and here, keep the last snapshot of each hour. */
+    hourlyDays: z.number().int().positive().default(7),
+    /** Between `hourlyDays` and here, keep the last snapshot of each day. */
+    dailyDays: z.number().int().positive().default(30),
+    /** Hard cap on autosave snapshots per lesson language, regardless of age. */
+    maxAutoPerLanguage: z.number().int().positive().default(50)
+  })
+  // The tiers must widen as they age. The pruning predicate tests the hourly
+  // window before the daily one, so overlapping windows silently apply hourly
+  // resolution to the range the operator meant to thin to daily.
+  .refine((windows) => windows.keepAllHours <= windows.hourlyDays * 24, {
+    message: 'keepAllHours must not exceed hourlyDays',
+    path: ['keepAllHours']
+  })
+  .refine((windows) => windows.hourlyDays <= windows.dailyDays, {
+    message: 'hourlyDays must not exceed dailyDays',
+    path: ['hourlyDays']
+  });
 export type TLessonVersionRetentionPayload = z.infer<typeof ZLessonVersionRetentionPayload>;
 
 export const ZDeadLetterCleanupPayload = z.object({

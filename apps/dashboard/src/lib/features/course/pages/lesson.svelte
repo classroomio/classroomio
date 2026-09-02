@@ -97,11 +97,6 @@
     )
   );
   const lessonTitle = $derived(currentLessonContentItem?.title || lessonApi.lesson?.title || 'Lesson');
-  const showLessonComments = $derived(
-    Boolean($currentOrg.customization?.apps?.comments) &&
-      (courseApi.course?.metadata?.commentsEnabled ?? true) &&
-      (lessonApi.lesson?.commentsEnabled ?? true)
-  );
   const contentLockReason = $derived(getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson));
   const isStudentLessonStateReady = $derived.by(() => {
     if (!$isCourseLearnerView) {
@@ -145,7 +140,7 @@
     if (mode === MODES.edit && lessonApi.isDirty) {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = undefined;
-      saveLesson('manual');
+      queueSave('manual');
     }
     hasUnsavedChanges = false;
     setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
@@ -216,6 +211,20 @@
 
   let timeoutId: NodeJS.Timeout | undefined;
 
+  /**
+   * Saves run one at a time. Clearing the debounce timer only cancels a save
+   * that hasn't started; a request already in flight can still land after a
+   * manual save, overwriting it with older content and leaving an autosave
+   * version stacked on top of the checkpoint.
+   */
+  let saveQueue: Promise<unknown> = Promise.resolve();
+
+  function queueSave(versionIntent: TLessonVersionIntentRequest) {
+    saveQueue = saveQueue.catch(() => undefined).then(() => saveLesson(versionIntent));
+
+    return saveQueue;
+  }
+
   let isLoading = writable(false);
 
   function callAI(_type = '') {}
@@ -274,7 +283,6 @@
         isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
         completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
         videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
-        commentsEnabled: lessonApi.lesson.commentsEnabled ?? true,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || [],
@@ -322,7 +330,7 @@
       if (prevMode === MODES.edit) {
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = undefined;
-        saveLesson('manual');
+        queueSave('manual');
       }
     });
   }
@@ -334,8 +342,8 @@
     if (timeoutId) clearTimeout(timeoutId);
 
     untrack(() => {
-      timeoutId = setTimeout(async () => {
-        await saveLesson('auto');
+      timeoutId = setTimeout(() => {
+        void queueSave('auto');
       }, 2000);
     });
   }
@@ -523,7 +531,7 @@
                 <Component {mode} {lessonId} {courseId} />
               {/each}
 
-              {#if showLessonComments}
+              {#if $currentOrg.customization?.apps?.comments}
                 <hr class="my-2" />
 
                 <Comments {lessonId} />
@@ -606,7 +614,7 @@
               <Component {mode} {lessonId} {courseId} />
             {/each}
 
-            {#if showLessonComments}
+            {#if $currentOrg.customization?.apps?.comments}
               <hr class="my-2" />
 
               <Comments {lessonId} />

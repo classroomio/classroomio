@@ -15,6 +15,26 @@ UPDATE "lesson_language_history" SET "session_started_at" = "timestamp", "is_sea
 ALTER TABLE "lesson_language_history" ADD CONSTRAINT "lesson_language_history_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE cascade;--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "lesson_language_history_language_timestamp_idx" ON "lesson_language_history" USING btree ("lesson_language_id","timestamp" DESC NULLS LAST);--> statement-breakpoint
 
+-- The oldest row of a chain can carry an `old_content` that no other row
+-- records — content written before history existed, or by a bulk importer that
+-- never snapshotted. Deriving `old_content` from the preceding row would lose
+-- it, so promote it to a snapshot of its own first. Marked `manual` so
+-- retention keeps the baseline that gives the oldest diff its meaning.
+INSERT INTO "lesson_language_history" ("lesson_language_id", "new_content", "kind", "session_started_at", "timestamp", "edit_count", "is_sealed")
+SELECT oldest."lesson_language_id",
+       oldest."old_content",
+       'manual',
+       oldest."timestamp" - interval '1 second',
+       oldest."timestamp" - interval '1 second',
+       1,
+       true
+FROM (
+  SELECT DISTINCT ON ("lesson_language_id") "lesson_language_id", "old_content", "timestamp"
+  FROM "lesson_language_history"
+  ORDER BY "lesson_language_id", "timestamp" ASC, "id" ASC
+) oldest
+WHERE oldest."old_content" IS NOT NULL;--> statement-breakpoint
+
 -- `old_content` duplicated the whole document on every write: the previous
 -- snapshot's `new_content` is already the old content. Drop the column and let
 -- the view derive it with a window function. The view has to go first because
