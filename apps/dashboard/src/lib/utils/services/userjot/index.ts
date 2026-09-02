@@ -2,8 +2,9 @@ import { dev } from '$app/environment';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { get } from 'svelte/store';
 import { globalStore } from '$lib/utils/store/app';
+import { isOrgManagerRole, orgs } from '$lib/utils/store/org';
 
-const USERJOT_PROJECT_ID = 'cm4a6vcmp00jpmdb5n66rmkzz';
+const USERJOT_APP_ID = 'cm4a6vcmp00jpmdb5n66rmkzz';
 
 let isInitialized = false;
 
@@ -12,6 +13,12 @@ function isWidgetAllowed(): boolean {
   if (PUBLIC_IS_SELFHOSTED === 'true') return false;
   if (get(globalStore).isOrgSite) return false;
   if (window.location.pathname === '/widget-preview') return false;
+
+  // Only org managers (admins/tutors) belong in UserJot — student-only users
+  // are never identified and never see the widget. The `orgs` store is empty
+  // before account data loads, so early init calls are simply skipped and
+  // retried once stores are populated.
+  if (!get(orgs).some((org) => isOrgManagerRole(org.roleId))) return false;
 
   return true;
 }
