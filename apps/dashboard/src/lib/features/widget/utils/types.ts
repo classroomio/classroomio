@@ -14,6 +14,7 @@ export type CreateWidgetRequest = (typeof classroomio.organization)['widgets']['
 export type UpdateWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['$put'];
 export type PublishWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['publish']['$post'];
 export type RollbackWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['rollback']['$post'];
+export type ArchiveWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['archive']['$post'];
 export type RestoreWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['restore']['$post'];
 export type DeleteWidgetRequest = (typeof classroomio.organization)['widgets'][':widgetId']['$delete'];
 

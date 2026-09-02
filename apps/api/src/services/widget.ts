@@ -3,6 +3,7 @@ import {
   archiveWidget,
   createWidget,
   createWidgetVersion,
+  deleteArchivedWidget,
   getArchivedWidgetById,
   getWidgetListItemById,
   getNextWidgetVersion,
@@ -197,7 +198,7 @@ export async function updateOrganizationWidget(orgId: string, widgetId: string, 
   }
 }
 
-export async function deleteOrganizationWidget(orgId: string, widgetId: string, userId: string) {
+export async function archiveOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
     const archivedWidget = await archiveWidget(orgId, widgetId, userId);
     if (!archivedWidget) {
@@ -205,6 +206,27 @@ export async function deleteOrganizationWidget(orgId: string, widgetId: string, 
     }
 
     return archivedWidget;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to archive widget',
+      ErrorCodes.WIDGET_ARCHIVE_FAILED,
+      500
+    );
+  }
+}
+
+export async function deleteOrganizationWidget(orgId: string, widgetId: string, userId: string) {
+  try {
+    const deletedWidget = await deleteArchivedWidget(orgId, widgetId, userId);
+    if (!deletedWidget) {
+      throw new AppError('Archived widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    return deletedWidget;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

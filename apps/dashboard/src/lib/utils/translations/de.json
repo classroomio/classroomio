@@ -4423,7 +4423,8 @@
     "empty_state": "Noch keine Widgets. Erstellen Sie einen, um einen einbettbaren Kursblock zu generieren.",
     "archived": {
       "heading": "Archivierte Widgets",
-      "empty": "Keine archivierten Widgets"
+      "empty": "Keine archivierten Widgets",
+      "empty_description": "Archivierte Widgets werden hier angezeigt. Sie können sie jederzeit wiederherstellen."
     },
     "filter": {
       "status": "Status",
@@ -4436,11 +4437,14 @@
       "saved": "Widget gespeichert",
       "published": "Widget veröffentlicht",
       "rolled_back": "Widget wiederhergestellt",
-      "deleted": "Widget archiviert",
       "restored": "Widget wiederhergestellt",
       "archived_load_failed": "Archivierte Widgets konnten nicht geladen werden",
       "restore_failed": "Widget konnte nicht wiederhergestellt werden",
-      "validation_failed": "Einige Felder sind ungültig. Überprüfen Sie die hervorgehobenen Eingaben."
+      "validation_failed": "Einige Felder sind ungültig. Überprüfen Sie die hervorgehobenen Eingaben.",
+      "archived": "Widget archiviert",
+      "archive_failed": "Widget konnte nicht archiviert werden",
+      "permanently_deleted": "Widget endgültig gelöscht",
+      "delete_failed": "Widget konnte nicht gelöscht werden"
     },
     "form": {
       "name": "Widget-Name",
@@ -4490,7 +4494,7 @@
       "copy_embed": "Einbetten kopieren",
       "copy_url": "URL kopieren",
       "rename": "Umbenennen",
-      "delete": "Löschen"
+      "delete_permanently": "Endgültig löschen"
     },
     "embed": {
       "tabs": {
@@ -4631,7 +4635,9 @@
       "select_courses": "Wählen Sie Kurse aus",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Code einbetten"
+      "embed": "Code einbetten",
+      "active": "Aktiv",
+      "archived": "Archiviert"
     },
     "defaults": {
       "name_prefix": "Kurs-Widget"
@@ -4639,6 +4645,10 @@
     "empty": {
       "heading": "Noch keine Widgets",
       "description": "Erstellen Sie ein Widget, um einen einbettbaren Kursblock für externe Websites zu generieren."
+    },
+    "delete_modal": {
+      "title": "Widget endgültig löschen",
+      "description": "Möchten Sie \"{name}\" wirklich endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden."
     }
   },
   "side_panel": {

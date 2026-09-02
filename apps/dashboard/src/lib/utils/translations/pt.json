@@ -4423,7 +4423,8 @@
     "empty_state": "Ainda não há widgets. Crie um para gerar um bloco de curso incorporável.",
     "archived": {
       "heading": "Widgets arquivados",
-      "empty": "Nenhum widget arquivado"
+      "empty": "Nenhum widget arquivado",
+      "empty_description": "Os widgets que você arquivar aparecerão aqui. Você pode restaurá-los a qualquer momento."
     },
     "filter": {
       "status": "Status",
@@ -4436,11 +4437,14 @@
       "saved": "Widget salvo",
       "published": "Widget publicado",
       "rolled_back": "Widget restaurado",
-      "deleted": "Widget arquivado",
       "restored": "Widget restaurado",
       "archived_load_failed": "Não foi possível carregar os widgets arquivados",
       "restore_failed": "Não foi possível restaurar o widget",
-      "validation_failed": "Alguns campos são inválidos. Verifique as entradas destacadas."
+      "validation_failed": "Alguns campos são inválidos. Verifique as entradas destacadas.",
+      "archived": "Widget arquivado",
+      "archive_failed": "Não foi possível arquivar o widget",
+      "permanently_deleted": "Widget excluído permanentemente",
+      "delete_failed": "Não foi possível excluir o widget"
     },
     "form": {
       "name": "Nome do widget",
@@ -4490,7 +4494,7 @@
       "copy_embed": "Copiar incorporação",
       "copy_url": "Copiar URL",
       "rename": "Renomear",
-      "delete": "Excluir"
+      "delete_permanently": "Excluir permanentemente"
     },
     "embed": {
       "tabs": {
@@ -4631,7 +4635,9 @@
       "select_courses": "Selecione os cursos",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Código incorporado"
+      "embed": "Código incorporado",
+      "active": "Ativos",
+      "archived": "Arquivados"
     },
     "defaults": {
       "name_prefix": "Widget do curso"
@@ -4639,6 +4645,10 @@
     "empty": {
       "heading": "Nenhum widget ainda",
       "description": "Crie um widget para gerar um bloco de curso incorporável para sites externos."
+    },
+    "delete_modal": {
+      "title": "Excluir widget permanentemente",
+      "description": "Tem certeza de que deseja excluir permanentemente \"{name}\"? Esta ação não pode ser desfeita."
     }
   },
   "side_panel": {

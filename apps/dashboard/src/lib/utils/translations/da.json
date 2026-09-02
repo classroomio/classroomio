@@ -4423,7 +4423,8 @@
     "empty_state": "Ingen widgets endnu. Opret en for at generere en indlejrbar kursusblok.",
     "archived": {
       "heading": "Arkiverede widgets",
-      "empty": "Ingen arkiverede widgets"
+      "empty": "Ingen arkiverede widgets",
+      "empty_description": "Widgets, du arkiverer, vises her. Du kan gendanne dem når som helst."
     },
     "filter": {
       "status": "Status",
@@ -4436,11 +4437,14 @@
       "saved": "Widget er gemt",
       "published": "Widget offentliggjort",
       "rolled_back": "Widget gendannet",
-      "deleted": "Widget arkiveret",
       "restored": "Widget gendannet",
       "archived_load_failed": "Kunne ikke indlæse arkiverede widgets",
       "restore_failed": "Kunne ikke gendanne widget",
-      "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange."
+      "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange.",
+      "archived": "Widget arkiveret",
+      "archive_failed": "Widget kunne ikke arkiveres",
+      "permanently_deleted": "Widget slettet permanent",
+      "delete_failed": "Widget kunne ikke slettes"
     },
     "form": {
       "name": "Widget navn",
@@ -4490,7 +4494,7 @@
       "copy_embed": "Kopiér indlejring",
       "copy_url": "Kopiér URL",
       "rename": "Omdøb",
-      "delete": "Slet"
+      "delete_permanently": "Slet permanent"
     },
     "embed": {
       "tabs": {
@@ -4631,7 +4635,9 @@
       "select_courses": "Vælg Kurser",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Integrer kode"
+      "embed": "Integrer kode",
+      "active": "Aktiv",
+      "archived": "Arkiveret"
     },
     "defaults": {
       "name_prefix": "Kursus-widget"
@@ -4639,6 +4645,10 @@
     "empty": {
       "heading": "Ingen widgets endnu",
       "description": "Opret en widget for at generere en indlejrbar kursusblok til eksterne websteder."
+    },
+    "delete_modal": {
+      "title": "Slet widget permanent",
+      "description": "Er du sikker på, at du vil slette \"{name}\" permanent? Denne handling kan ikke fortrydes."
     }
   },
   "side_panel": {

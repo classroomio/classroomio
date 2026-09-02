@@ -1,5 +1,6 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  ArchiveWidgetRequest,
   CreateWidgetInput,
   CreateWidgetRequest,
   DeleteWidgetRequest,
@@ -135,16 +136,41 @@ class WidgetApi extends BaseApiWithErrors {
     });
   }
 
+  async archiveWidget(widgetId: string) {
+    return this.execute<ArchiveWidgetRequest>({
+      requestFn: () =>
+        classroomio.organization.widgets[':widgetId'].archive.$post({
+          param: { widgetId }
+        }),
+      logContext: 'archiving widget',
+      onSuccess: (response) => {
+        const archivedTarget = this.widgets.find((widget) => widget.id === widgetId);
+        if (archivedTarget) {
+          const updatedArchivedWidget = { ...archivedTarget, ...response.data };
+          this.archivedWidgets = [updatedArchivedWidget, ...this.archivedWidgets.filter((w) => w.id !== widgetId)];
+        }
+        this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
+        snackbar.success('widgets.notifications.archived');
+      },
+      onError: () => {
+        snackbar.error('widgets.notifications.archive_failed');
+      }
+    });
+  }
+
   async deleteWidget(widgetId: string) {
     return this.execute<DeleteWidgetRequest>({
       requestFn: () =>
         classroomio.organization.widgets[':widgetId'].$delete({
           param: { widgetId }
         }),
-      logContext: 'deleting widget',
+      logContext: 'permanently deleting widget',
       onSuccess: () => {
-        this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
-        snackbar.success('widgets.notifications.deleted');
+        this.archivedWidgets = this.archivedWidgets.filter((widget) => widget.id !== widgetId);
+        snackbar.success('widgets.notifications.permanently_deleted');
+      },
+      onError: () => {
+        snackbar.error('widgets.notifications.delete_failed');
       }
     });
   }
@@ -158,7 +184,7 @@ class WidgetApi extends BaseApiWithErrors {
       logContext: 'restoring widget',
       onSuccess: (response) => {
         this.archivedWidgets = this.archivedWidgets.filter((widget) => widget.id !== widgetId);
-        this.widgets = [response.data, ...this.widgets];
+        this.widgets = [response.data, ...this.widgets.filter((w) => w.id !== widgetId)];
         snackbar.success('widgets.notifications.restored');
       },
       onError: () => {

@@ -1386,6 +1386,8 @@
       "name_prefix": "Course Widget"
     },
     "tabs": {
+      "active": "Active",
+      "archived": "Archived",
       "select_courses": "Select Courses",
       "layout": "Layout",
       "design": "Design",
@@ -1530,7 +1532,11 @@
       "copy_embed": "Copy embed",
       "copy_url": "Copy URL",
       "rename": "Rename",
-      "delete": "Delete"
+      "delete_permanently": "Delete permanently"
+    },
+    "delete_modal": {
+      "title": "Delete widget permanently",
+      "description": "Are you sure you want to permanently delete \"{name}\"? This action cannot be undone."
     },
     "embed": {
       "tabs": {
@@ -1581,7 +1587,10 @@
       "saved": "Widget saved",
       "published": "Widget published",
       "rolled_back": "Widget restored",
-      "deleted": "Widget archived",
+      "archived": "Widget archived",
+      "archive_failed": "Couldn't archive widget",
+      "permanently_deleted": "Widget permanently deleted",
+      "delete_failed": "Couldn't delete widget",
       "restored": "Widget restored",
       "archived_load_failed": "Couldn't load archived widgets",
       "restore_failed": "Couldn't restore widget",
@@ -1589,7 +1598,8 @@
     },
     "archived": {
       "heading": "Archived widgets",
-      "empty": "No archived widgets"
+      "empty": "No archived widgets",
+      "empty_description": "Widgets you archive will appear here. You can restore them at any time."
     },
     "filter": {
       "status": "Status",

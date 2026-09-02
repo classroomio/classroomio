@@ -4423,7 +4423,8 @@
     "empty_state": "Chưa có vật dụng nào. Tạo một cái để tạo khối khóa học có thể nhúng.",
     "archived": {
       "heading": "Tiện ích đã lưu trữ",
-      "empty": "Không có tiện ích đã lưu trữ"
+      "empty": "Không có tiện ích đã lưu trữ",
+      "empty_description": "Các tiện ích bạn lưu trữ sẽ xuất hiện ở đây. Bạn có thể khôi phục chúng bất cứ lúc nào."
     },
     "filter": {
       "status": "Trạng thái",
@@ -4436,11 +4437,14 @@
       "saved": "Đã lưu tiện ích",
       "published": "Đã xuất bản tiện ích",
       "rolled_back": "Đã khôi phục tiện ích",
-      "deleted": "Đã lưu trữ tiện ích",
       "restored": "Đã khôi phục tiện ích",
       "archived_load_failed": "Không thể tải tiện ích đã lưu trữ",
       "restore_failed": "Không thể khôi phục tiện ích",
-      "validation_failed": "Một số trường không hợp lệ. Kiểm tra các đầu vào được đánh dấu."
+      "validation_failed": "Một số trường không hợp lệ. Kiểm tra các đầu vào được đánh dấu.",
+      "archived": "Tiện ích đã được lưu trữ",
+      "archive_failed": "Không thể lưu trữ tiện ích",
+      "permanently_deleted": "Tiện ích đã bị xóa vĩnh viễn",
+      "delete_failed": "Không thể xóa tiện ích"
     },
     "form": {
       "name": "Tên tiện ích",
@@ -4490,7 +4494,7 @@
       "copy_embed": "Sao chép nhúng",
       "copy_url": "Sao chép URL",
       "rename": "Đổi tên",
-      "delete": "Xóa"
+      "delete_permanently": "Xóa vĩnh viễn"
     },
     "embed": {
       "tabs": {
@@ -4631,7 +4635,9 @@
       "select_courses": "Chọn khóa học",
       "layout": "Bố cục",
       "design": "Thiết kế",
-      "embed": "Mã nhúng"
+      "embed": "Mã nhúng",
+      "active": "Đang hoạt động",
+      "archived": "Đã lưu trữ"
     },
     "defaults": {
       "name_prefix": "Tiện ích khóa học"
@@ -4639,6 +4645,10 @@
     "empty": {
       "heading": "Chưa có tiện ích nào",
       "description": "Tạo một tiện ích để tạo khối khóa học có thể nhúng cho các trang web bên ngoài."
+    },
+    "delete_modal": {
+      "title": "Xóa tiện ích vĩnh viễn",
+      "description": "Bạn có chắc chắn muốn xóa vĩnh viễn \"{name}\" không? Hành động này không thể hoàn tác."
     }
   },
   "side_panel": {

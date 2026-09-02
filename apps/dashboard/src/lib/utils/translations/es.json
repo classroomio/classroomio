@@ -4423,7 +4423,8 @@
     "empty_state": "Aún no hay widgets. Cree uno para generar un bloque de curso integrable.",
     "archived": {
       "heading": "Widgets archivados",
-      "empty": "No hay widgets archivados"
+      "empty": "No hay widgets archivados",
+      "empty_description": "Los widgets que archives aparecerán aquí. Puedes restaurarlos cuando quieras."
     },
     "filter": {
       "status": "Estado",
@@ -4436,11 +4437,14 @@
       "saved": "Widget guardado",
       "published": "Widget publicado",
       "rolled_back": "Widget restaurado",
-      "deleted": "Widget archivado",
       "restored": "Widget restaurado",
       "archived_load_failed": "No se pudieron cargar los widgets archivados",
       "restore_failed": "No se pudo restaurar el widget",
-      "validation_failed": "Algunos campos no son válidos. Verifique las entradas resaltadas."
+      "validation_failed": "Algunos campos no son válidos. Verifique las entradas resaltadas.",
+      "archived": "Widget archivado",
+      "archive_failed": "No se pudo archivar el widget",
+      "permanently_deleted": "Widget eliminado permanentemente",
+      "delete_failed": "No se pudo eliminar el widget"
     },
     "form": {
       "name": "Nombre del widget",
@@ -4490,7 +4494,7 @@
       "copy_embed": "Copiar incrustado",
       "copy_url": "Copiar URL",
       "rename": "Cambiar nombre",
-      "delete": "Eliminar"
+      "delete_permanently": "Eliminar permanentemente"
     },
     "embed": {
       "tabs": {
@@ -4631,7 +4635,9 @@
       "select_courses": "Seleccionar cursos",
       "layout": "Disposición",
       "design": "Diseño",
-      "embed": "Código para insertar"
+      "embed": "Código para insertar",
+      "active": "Activos",
+      "archived": "Archivados"
     },
     "defaults": {
       "name_prefix": "Widget del curso"
@@ -4639,6 +4645,10 @@
     "empty": {
       "heading": "Aún no hay widgets",
       "description": "Cree un widget para generar un bloque de curso integrable para sitios web externos."
+    },
+    "delete_modal": {
+      "title": "Eliminar widget permanentemente",
+      "description": "¿Está seguro de que desea eliminar permanentemente \"{name}\"? Esta acción no se puede deshacer."
     }
   },
   "side_panel": {

@@ -1,4 +1,4 @@
-import type { GetWidgetsSuccess } from '$features/widget/utils/types';
+import type { GetArchivedWidgetsSuccess, GetWidgetsSuccess } from '$features/widget/utils/types';
 import { classroomio, getApiHeaders } from '$lib/utils/services/api';
 import { safeServerApi } from '$lib/utils/services/api/server';
 import { redirect } from '@sveltejs/kit';
@@ -8,19 +8,30 @@ export const load = async ({ parent, cookies, params }) => {
 
   if (!orgId) {
     return {
-      initialWidgets: []
+      initialWidgets: [],
+      initialArchivedWidgets: []
     };
   }
 
-  const result = await safeServerApi<GetWidgetsSuccess>(() =>
-    classroomio.organization.widgets.$get({}, getApiHeaders(cookies, orgId))
-  );
+  const apiHeaders = getApiHeaders(cookies, orgId);
 
-  if (!result.ok && (result.status === 401 || result.status === 403)) {
+  const [activeResult, archivedResult] = await Promise.all([
+    safeServerApi<GetWidgetsSuccess>(() => classroomio.organization.widgets.$get({}, apiHeaders)),
+    safeServerApi<GetArchivedWidgetsSuccess>(() => classroomio.organization.widgets.archived.$get({}, apiHeaders))
+  ]);
+
+  if (
+    (!activeResult.ok && (activeResult.status === 401 || activeResult.status === 403)) ||
+    (!archivedResult.ok && (archivedResult.status === 401 || archivedResult.status === 403))
+  ) {
     throw redirect(302, `/org/${params.slug}`);
   }
 
+  const initialWidgets = activeResult.ok ? activeResult.body.data : [];
+  const initialArchivedWidgets = archivedResult.ok ? archivedResult.body.data : [];
+
   return {
-    initialWidgets: result.ok ? result.body.data : []
+    initialWidgets,
+    initialArchivedWidgets
   };
 };

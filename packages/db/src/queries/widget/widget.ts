@@ -268,6 +268,36 @@ export async function restoreArchivedWidget(
   }
 }
 
+export async function deleteArchivedWidget(
+  orgId: string,
+  widgetId: string,
+  updatedByUserId: string
+): Promise<TWidget | null> {
+  try {
+    const [result] = await db
+      .update(schema.widget)
+      .set({
+        deletedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        updatedByUserId
+      })
+      .where(
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          eq(schema.widget.status, 'ARCHIVED')
+        )
+      )
+      .returning();
+
+    return result ?? null;
+  } catch (error) {
+    console.error('deleteArchivedWidget error:', error);
+    throw new Error('Failed to delete archived widget');
+  }
+}
+
 export async function listWidgetCourses(widgetId: string): Promise<TWidgetCourse[]> {
   try {
     return db

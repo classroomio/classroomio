@@ -147,7 +147,7 @@
             <EmbedPanel
               detail={store.detail}
               onRollback={(versionId) => store.rollback(versionId)}
-              onDelete={() => store.deleteWidget()}
+              onArchive={() => store.archiveWidget()}
             />
           {/if}
         </div>

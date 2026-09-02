@@ -5,6 +5,7 @@ import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { ZCreateWidget, ZRollbackWidget, ZUpdateWidget, ZWidgetIdParams } from '@cio/utils/validation/widget';
 import {
+  archiveOrganizationWidget,
   createOrganizationWidget,
   deleteOrganizationWidget,
   getOrganizationWidgetDetail,
@@ -79,6 +80,18 @@ export const widgetsRouter = new Hono()
       }
     }
   )
+  .post('/:widgetId/archive', authMiddleware, orgAdminMiddleware, zValidator('param', ZWidgetIdParams), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
+      const { widgetId } = c.req.valid('param');
+      const widget = await archiveOrganizationWidget(orgId, widgetId, user.id);
+
+      return c.json({ success: true, data: widget });
+    } catch (error) {
+      return handleError(c, error, 'Failed to archive widget');
+    }
+  })
   .delete('/:widgetId', authMiddleware, orgAdminMiddleware, zValidator('param', ZWidgetIdParams), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;

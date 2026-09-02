@@ -4423,7 +4423,8 @@
     "empty_state": "Nie ma jeszcze widżetów. Utwórz go, aby wygenerować osadzony blok kursu.",
     "archived": {
       "heading": "Zarchiwizowane widżety",
-      "empty": "Brak zarchiwizowanych widżetów"
+      "empty": "Brak zarchiwizowanych widżetów",
+      "empty_description": "Zarchiwizowane widżety pojawią się tutaj. Możesz je przywrócić w dowolnym momencie."
     },
     "filter": {
       "status": "Status",
@@ -4436,11 +4437,14 @@
       "saved": "Widżet został zapisany",
       "published": "Widżet opublikowany",
       "rolled_back": "Widżet przywrócony",
-      "deleted": "Widżet zarchiwizowany",
       "restored": "Widżet przywrócony",
       "archived_load_failed": "Nie udało się wczytać zarchiwizowanych widżetów",
       "restore_failed": "Nie udało się przywrócić widżetu",
-      "validation_failed": "Niektóre pola są nieprawidłowe. Sprawdź wyróżnione wejścia."
+      "validation_failed": "Niektóre pola są nieprawidłowe. Sprawdź wyróżnione wejścia.",
+      "archived": "Widżet zarchiwizowany",
+      "archive_failed": "Nie można zarchiwizować widżetu",
+      "permanently_deleted": "Widżet trwale usunięty",
+      "delete_failed": "Nie można usunąć widżetu"
     },
     "form": {
       "name": "Nazwa widgetu",
@@ -4490,7 +4494,7 @@
       "copy_embed": "Skopiuj osadzenie",
       "copy_url": "Kopiuj URL",
       "rename": "Zmień nazwę",
-      "delete": "Usuń"
+      "delete_permanently": "Usuń trwale"
     },
     "embed": {
       "tabs": {
@@ -4631,7 +4635,9 @@
       "select_courses": "Wybierz Kursy",
       "layout": "Układ",
       "design": "Projekt",
-      "embed": "Wstaw kod"
+      "embed": "Wstaw kod",
+      "active": "Aktywne",
+      "archived": "Zarchiwizowane"
     },
     "defaults": {
       "name_prefix": "Widżet kursu"
@@ -4639,6 +4645,10 @@
     "empty": {
       "heading": "Nie ma jeszcze widżetów",
       "description": "Utwórz widżet, aby wygenerować osadzony blok kursu dla zewnętrznych stron internetowych."
+    },
+    "delete_modal": {
+      "title": "Usuń widżet trwale",
+      "description": "Czy na pewno chcesz trwale usunąć „{name}”? Tej czynności nie można cofnąć."
     }
   },
   "side_panel": {
