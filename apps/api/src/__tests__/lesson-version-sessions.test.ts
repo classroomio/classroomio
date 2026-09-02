@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// `vi.mock` factories are hoisted above imports, so this has to be a `var` to
+// be initialised by the time the factory runs.
+// eslint-disable-next-line no-var
+var TX = { __transaction: true };
+
 vi.mock('@cio/db/queries/lesson/version', () => ({
   extendLessonLanguageVersion: vi.fn(),
   getLatestLessonLanguageVersion: vi.fn(),
@@ -11,8 +16,10 @@ vi.mock('@cio/db/queries/lesson/version', () => ({
 
 vi.mock('@cio/db/drizzle', () => ({
   // The service opens its own transaction when the caller supplies no client,
-  // so the advisory lock it takes is transaction-scoped.
-  db: { transaction: (run: (client: unknown) => unknown) => run(undefined) }
+  // so the advisory lock it takes is transaction-scoped. The callback receives a
+  // sentinel rather than undefined, so the assertions below fail if any
+  // transaction-scoped call runs outside it.
+  db: { transaction: (run: (client: unknown) => unknown) => run(TX) }
 }));
 
 import { LESSON_VERSION_SESSION_IDLE_MS, LESSON_VERSION_SESSION_MAX_MS } from '@cio/utils/constants/lesson-version';
@@ -193,6 +200,7 @@ describe('recordLessonLanguageVersion', () => {
     expect(vi.mocked(extendLessonLanguageVersion).mock.calls[0]?.[1]).toEqual({
       newContent: '<p>a few more words</p>'
     });
+    expect(vi.mocked(extendLessonLanguageVersion).mock.calls[0]?.[2]).toBe(TX);
     expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
   });
 
@@ -220,10 +228,15 @@ describe('recordLessonLanguageVersion', () => {
       intent: 'auto'
     });
 
-    expect(lockLessonLanguageVersionSession).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, undefined);
+    expect(lockLessonLanguageVersionSession).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, TX);
     expect(vi.mocked(lockLessonLanguageVersionSession).mock.invocationCallOrder[0]).toBeLessThan(
       vi.mocked(getLatestLessonLanguageVersion).mock.invocationCallOrder[0]
     );
+
+    // Every transaction-scoped call must share the one client, or a regression
+    // that moved work outside the transaction would go undetected.
+    expect(getLatestLessonLanguageVersion).toHaveBeenCalledWith(LESSON_LANGUAGE_ID, TX);
+    expect(vi.mocked(insertLessonLanguageVersion).mock.calls[0]?.[1]).toBe(TX);
   });
 
   it('opens a new session when the open one was sealed mid-flight', async () => {
@@ -272,11 +285,7 @@ describe('recordLessonLanguageVersion', () => {
       label: 'Reviewed'
     });
 
-    expect(promoteLessonLanguageVersion).toHaveBeenCalledWith(
-      latest.id,
-      { kind: 'manual', label: 'Reviewed' },
-      undefined
-    );
+    expect(promoteLessonLanguageVersion).toHaveBeenCalledWith(latest.id, { kind: 'manual', label: 'Reviewed' }, TX);
     expect(insertLessonLanguageVersion).not.toHaveBeenCalled();
   });
 });
