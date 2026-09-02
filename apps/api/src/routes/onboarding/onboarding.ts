@@ -1,5 +1,5 @@
 import { ZOnboardingCreateOrg, ZOnboardingUpdateMetadata } from '@cio/utils/validation/onboarding';
-import { completeOnboarding, createOrganizationWithOwner, updateUserOnboarding } from '@api/services/onboarding';
+import { createOrganizationWithOwner, updateUserOnboarding } from '@api/services/onboarding';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -29,16 +29,5 @@ export const onboardingRouter = new Hono()
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to update onboarding data');
-    }
-  })
-  .post('/complete', authMiddleware, async (c) => {
-    try {
-      const user = c.get('user')!;
-
-      await completeOnboarding(user);
-
-      return c.json({ success: true }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to complete onboarding');
     }
   });

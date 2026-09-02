@@ -1,6 +1,8 @@
 import { type BetterAuthOptions } from 'better-auth';
 import { buildEmailBranding, buildEmailFromName, sendEmail } from '@cio/email';
+import { enqueueEmailSend } from '@cio/jobs';
 
+import { getProfileById } from '../queries/auth/profile';
 import { resolveVerificationOrg } from './resolve-verification-org';
 
 type EmailVerificationOptions = Parameters<
@@ -10,6 +12,16 @@ type EmailVerificationOptions = Parameters<
 type ChangeEmailConfirmationOptions = Parameters<
   NonNullable<NonNullable<NonNullable<BetterAuthOptions['user']>['changeEmail']>['sendChangeEmailConfirmation']>
 >[0];
+
+export interface WelcomeEmailDependencies {
+  enqueueEmailSend: typeof enqueueEmailSend;
+  getProfileById: typeof getProfileById;
+}
+
+const welcomeEmailDependencies: WelcomeEmailDependencies = {
+  enqueueEmailSend,
+  getProfileById
+};
 
 /**
  * Email verification flow.
@@ -83,6 +95,65 @@ export const sendVerificationEmail = async (options: EmailVerificationOptions) =
     userName: user.name
   });
 };
+
+function isOnboardingVerification(request?: Request): boolean {
+  if (!request) {
+    return false;
+  }
+
+  try {
+    const verificationUrl = new URL(request.url);
+    const callbackUrlValue = verificationUrl.searchParams.get('callbackURL');
+    if (!callbackUrlValue) {
+      return false;
+    }
+
+    const callbackUrl = new URL(callbackUrlValue, verificationUrl.origin);
+
+    return callbackUrl.searchParams.get('welcomePopup') === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Queues the account welcome email from Better Auth's successful verification
+ * lifecycle. The callback marker limits this to dashboard onboarding and keeps
+ * profile email changes and learner verification flows from sending it.
+ */
+export async function sendWelcomeEmailAfterVerification(
+  user: { id: string; email: string },
+  request?: Request,
+  dependencies: WelcomeEmailDependencies = welcomeEmailDependencies
+): Promise<void> {
+  if (!isOnboardingVerification(request)) {
+    return;
+  }
+
+  try {
+    const profile = await dependencies.getProfileById(user.id);
+    if (!profile) {
+      console.error('sendWelcomeEmailAfterVerification error: profile not found', { userId: user.id });
+      return;
+    }
+
+    await dependencies.enqueueEmailSend(
+      {
+        kind: 'template',
+        template: 'welcome',
+        to: user.email,
+        fields: {
+          name: profile.fullname
+        }
+      },
+      { idempotencyKey: `onboarding:welcome:${user.id}` }
+    );
+  } catch (error) {
+    // Verification has already succeeded at this point. Log queue failures
+    // without turning a valid verification link into an error response.
+    console.error('sendWelcomeEmailAfterVerification error:', error);
+  }
+}
 
 /**
  * Sends a confirmation email to the user when they change their email address.

@@ -6,42 +6,12 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { classroomio } from '$lib/utils/services/api';
 
   const open = $derived(page.url.searchParams.get('welcomePopup') === 'true' && !!$profile.isEmailVerified);
 
-  let completionTriggered = $state(false);
-  let isCompleting = $state(false);
-
-  async function completeOnboarding() {
-    if (isCompleting) return;
-
-    try {
-      isCompleting = true;
-      const response = await classroomio.onboarding.complete.$post({});
-
-      if (!response.ok) {
-        throw new Error('Failed to complete onboarding');
-      }
-    } catch (error) {
-      console.error('Failed to complete onboarding:', error);
-    } finally {
-      isCompleting = false;
-    }
-  }
-
   function closeModal() {
-    if (isCompleting) return;
-
     goto(resolve(`${$currentOrgPath}/courses?create=true`, {}));
   }
-
-  $effect(() => {
-    if (!open || completionTriggered) return;
-
-    completionTriggered = true;
-    void completeOnboarding();
-  });
 </script>
 
 <Dialog.Root

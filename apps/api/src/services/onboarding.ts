@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TProfile, TUser } from '@cio/db/types';
+import type { TProfile } from '@cio/db/types';
 import {
   checkSiteNameExists,
   createOrganization,
@@ -8,13 +8,12 @@ import {
   getOrganizationByProfileId,
   getOrganizationCount
 } from '@cio/db/queries';
-import { getProfileById, updateProfile } from '@cio/db/queries/auth';
+import { updateProfile } from '@cio/db/queries/auth';
 
 import { env } from '@cio/core/config/env';
 import { ROLE } from '@cio/utils/constants';
 import { PLAN } from '@cio/utils/plans';
 import { db } from '@cio/db/drizzle';
-import { enqueueTransactionalEmail } from '@api/services/jobs';
 
 export async function createOrganizationWithOwner(
   profileId: string,
@@ -114,27 +113,5 @@ export async function updateUserOnboarding(userId: string, data: Partial<TProfil
       ErrorCodes.PROFILE_UPDATE_FAILED,
       500
     );
-  }
-}
-
-export async function completeOnboarding(user: Partial<TUser> & { id: string; email: string }) {
-  try {
-    const profile = await getProfileById(user.id);
-    if (!profile) {
-      throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
-    }
-
-    await enqueueTransactionalEmail('welcome', {
-      to: user.email,
-      fields: {
-        name: profile.fullname
-      },
-      idempotencyKey: `onboarding:welcome:${user.id}`
-    });
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(error instanceof Error ? error : new Error('Unknown error'), ErrorCodes.INTERNAL_ERROR, 500);
   }
 }

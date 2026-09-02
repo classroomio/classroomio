@@ -2,7 +2,11 @@ import * as CONSTANTS from './constants';
 import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
-import { sendChangeEmailConfirmation, sendVerificationEmail } from './auth/email-verification';
+import {
+  sendChangeEmailConfirmation,
+  sendVerificationEmail,
+  sendWelcomeEmailAfterVerification
+} from './auth/email-verification';
 
 import { betterAuth } from 'better-auth/minimal';
 import { createProfileHook } from './auth/hooks/create-profile';
@@ -53,7 +57,8 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   },
   emailVerification: {
     enabled: true,
-    sendVerificationEmail
+    sendVerificationEmail,
+    afterEmailVerification: sendWelcomeEmailAfterVerification
   },
   socialProviders: {
     google: {
