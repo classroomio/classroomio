@@ -20,31 +20,14 @@ name: Railway Preview Environment
 # migrations + essential seed). The optional organization seed adds only that demo
 # organization's users, memberships, and content.
 #
-# mode: frontend
-#   Instead of duplicating the whole `staging` environment, this creates ONE new service
-#   (`<prname>-dashboard`) directly inside `staging`, wired via Railway reference variables
-#   to staging's already-running cio-api/cio-minio. No new project/environment/DB. Use this
-#   when you only need to test dashboard UI and are fine sharing staging's data/auth.
-#   The workflow trusts this preview's EXACT dashboard origin on staging cio-api's
-#   TRUSTED_ORIGINS at deploy time and untrusts it at destroy time (comma-append/remove, no
-#   wildcard — an origin-suffix wildcard here would trust every app on that shared Railway
-#   domain, not just ours). No manual setup needed, but each deploy/destroy redeploys the
-#   shared staging cio-api (variable changes redeploy by default), briefly affecting anyone
-#   else on staging at that moment.
+# mode: frontend — one <prname>-dashboard service inside staging, wired to staging's
+# shared cio-api/cio-minio. Its exact origin gets trusted on cio-api's TRUSTED_ORIGINS at
+# deploy and untrusted at destroy (not a wildcard — see PREVIEW_ENV.md).
 #
-# mode: frontend_backend
-#   Like `frontend`, but creates a fresh `<prname>-fb-api` inside `staging`, paired with a
-#   `<prname>-fb-dashboard` (not staging's shared cio-api, and NOT the same dashboard
-#   `frontend` mode would create for this branch — distinct names so the two modes never
-#   collide or silently reconfigure each other's service) — for testing a change that
-#   touches both dashboard and API code. Still shares staging's Postgres/Redis/MinIO (and
-#   its existing cio-jobs worker, since jobs reads off the shared Redis queue regardless of
-#   which api enqueued the work — this does assume the branch's job names/payloads stay
-#   compatible with whatever cio-jobs is currently running from `staging`). The api runs
-#   with SKIP_DB_SETUP=true (staging's own cio-api remains the one that migrates), so a PR
-#   needing a new, unapplied DB migration should use `full_deploy` instead. No
-#   TRUSTED_ORIGINS change needed — this pair trusts each other directly via
-#   DASHBOARD_ORIGIN, the same way `full_deploy` previews do.
+# mode: frontend_backend — like frontend, but pairs a fresh <prname>-fb-api with a
+# <prname>-fb-dashboard (own names so it never collides with frontend mode). Still shares
+# staging's Postgres/Redis/MinIO/cio-jobs; api runs SKIP_DB_SETUP=true. See PREVIEW_ENV.md
+# for the full trade-offs of both modes.
 
 on:
   workflow_dispatch:
@@ -87,12 +70,9 @@ on:
           - skillshare-test
           - none
 
-# full_deploy/frontend_backend: one run per branch+mode at a time, newer supersedes an
-# in-flight one — different branches touch independent Railway resources, safe to run in
-# parallel. frontend: ALL runs (any branch) share one group and never cancel each other —
-# every frontend-mode run reads-modifies-writes the SAME shared cio-api TRUSTED_ORIGINS
-# variable, so concurrent runs for different branches must queue, not race (and cancelling
-# one mid-write would be worse than the race itself).
+# frontend mode shares one global, non-cancelling group (also shared with
+# railway-preview-teardown.yml) since it read-modify-writes cio-api's TRUSTED_ORIGINS —
+# concurrent writers must queue, not race. Other modes stay isolated per branch+mode.
 concurrency:
   group: ${{ inputs.mode == 'frontend' && 'railway-preview-frontend-trusted-origins' || format('railway-preview-{0}-{1}', inputs.branch, inputs.mode) }}
   cancel-in-progress: ${{ inputs.mode != 'frontend' }}
@@ -125,27 +105,22 @@ jobs:
 
       - name: Derive a safe environment name
         id: env
-        # BRANCH is bound via env (not interpolated into the script) so an attacker-supplied
-        # value can't be executed as shell. "feat/foo_bar" -> "pr-feat-foo-bar-<hash>" — the
-        # slug alone is lossy (e.g. "foo/bar" and "foo_bar" both slug to "foo-bar"), so a
-        # hash of the original branch string disambiguates collisions. Slug is capped at 18
-        # chars so "pr-<slug>-<hash>" stays under Railway's ~32-char environment name limit
-        # even for long auto-generated branch names — the hash (not the slug) is what
-        # actually guarantees uniqueness, so truncating the slug is safe.
+        # BRANCH bound via env, not interpolated — avoids script injection. Slug is lossy
+        # (capped at 18 chars, under Railway's ~32-char limit) so the hash is what actually
+        # guarantees uniqueness. Hash covers repo+branch, not just branch — otherwise a
+        # fork could open a same-named branch and its PR closing would compute the same
+        # name as a real preview, letting teardown delete someone else's resources.
         env:
           BRANCH: ${{ inputs.branch }}
+          REPO: ${{ inputs.repo != '' && inputs.repo || github.repository }}
           MODE: ${{ inputs.mode }}
         run: |
           slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//' | cut -c1-18 | sed 's/-$//')
-          hash=$(echo -n "$BRANCH" | sha256sum | cut -c1-8)
+          hash=$(echo -n "${REPO}#${BRANCH}" | sha256sum | cut -c1-8)
           name="pr-${slug}-${hash}"
           echo "name=${name}" >> "$GITHUB_OUTPUT"
-          # frontend/frontend_backend modes create services inside staging itself rather
-          # than a new environment. Same slug+hash as the full_deploy env name, but with a
-          # mode-specific suffix so the two modes never collide on the same service for a
-          # branch — running frontend then frontend_backend (or vice versa) for the same
-          # branch must not silently reconfigure the other mode's service, or leave one
-          # orphaned when destroyed with the wrong mode.
+          # frontend_backend gets its own "-fb-" names so it never collides with frontend
+          # mode's dashboard for the same branch.
           if [ "$MODE" = "frontend_backend" ]; then
             echo "dashboard_service_name=${name}-fb-dashboard" >> "$GITHUB_OUTPUT"
             echo "backend_service_name=${name}-fb-api" >> "$GITHUB_OUTPUT"
@@ -172,19 +147,9 @@ jobs:
 
       - name: Destroy dashboard-only preview
         if: ${{ inputs.action == 'destroy' && inputs.mode == 'frontend' }}
-        # No environment to delete here — just the one service inside staging. `service
-        # delete` runs against the linked project/environment established above, same as
-        # `environment delete`.
-        #
-        # Before deleting, untrust this preview's exact origin from staging cio-api's
-        # TRUSTED_ORIGINS (added at deploy time — see "Trust this preview's origin on
-        # staging cio-api"). Read the service's own RAILWAY_PUBLIC_DOMAIN first: it still
-        # exists at this point, so there's no need to reconstruct the Railway-generated
-        # domain string. Fail-closed: if the untrust call fails, stop here and do NOT
-        # delete the service — a stale trusted-origin entry with no live service behind it
-        # could later be inherited by an unrelated app that gets assigned that same
-        # now-freed Railway subdomain, which is worse than a service that keeps costing
-        # money until destroy is re-run.
+        # Untrust the exact origin (added at deploy) before deleting — fail-closed: if
+        # untrust fails, stop and leave the service running rather than risk a stale
+        # trusted-origin entry with nothing live behind it.
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
         run: |
@@ -291,23 +256,10 @@ jobs:
           done
 
       # ------------------------------------------------------ frontend / frontend_backend
-      # Stays linked to staging (from "Link to base project" above) — no new environment.
-      # Both modes need the same dashboard service + domain, created the same way; they
-      # only differ in what the dashboard's PRIVATE_SERVER_URL points at (see the
-      # "Configure dashboard-only preview variables" step below) and whether a paired
-      # <prname>-api also gets created.
       - name: Create dashboard-only preview service
         if: ${{ inputs.action == 'deploy' && (inputs.mode == 'frontend' || inputs.mode == 'frontend_backend') }}
-        # `railway add --service` has no "already exists" upsert behavior, so check first
-        # (a rerun for the same branch should redeploy the existing service, not fail or
-        # create a second one). Then poll until it's queryable — a freshly created
-        # ServiceInstance can take a moment to become visible, same propagation lag as the
-        # cio-minio race further down.
-        #
-        # The check itself distinguishes a genuine "not found" from any other probe failure
-        # (auth hiccup, transient API error, rate limit) — the latter must NOT be treated as
-        # "doesn't exist," since that would call `railway add` on a service that may already
-        # exist. Ambiguous failures get a few retries before the step gives up loudly.
+        # Check-then-create (railway add has no upsert), distinguishing a real "not found"
+        # from other probe failures so a transient error can't cause a duplicate create.
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
         run: |
@@ -378,15 +330,9 @@ jobs:
 
       - name: Trust this preview's origin on staging cio-api
         if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend' }}
-        # `frontend` mode's dashboard talks directly to staging's shared cio-api, so its
-        # exact origin must be trusted for CORS/session cookies (cio-api's TRUSTED_ORIGINS,
-        # read once at boot — see apps/api/src/constants). Deliberately NOT a
-        # `*.up.railway.app` wildcard: that would trust every app on that shared Railway
-        # domain suffix, not just this one. Read-then-append only, never overwrite, so
-        # staging's existing trusted origins (localhost, *.classroomio.com, etc.) survive —
-        # same pattern already used for ALLOWED_EXTERNAL_DOMAINS in the full_deploy MinIO
-        # step below. Setting this variable redeploys cio-api (accepted cost for exact-match
-        # trust instead of a standing wildcard); untrusted again on destroy.
+        # Read-then-append cio-api's TRUSTED_ORIGINS (never overwrite, so staging's other
+        # trusted origins survive) with this dashboard's exact origin — not a wildcard, see
+        # PREVIEW_ENV.md. Redeploys cio-api; untrusted again on destroy.
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
         run: |
@@ -417,9 +363,7 @@ jobs:
 
       - name: Create backend preview service
         if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend_backend' }}
-        # Same check-then-create + poll pattern as the dashboard service above (including
-        # the not-found-vs-other-failure distinction), targeting the paired <prname>-api
-        # instead.
+        # Same check-then-create pattern as the dashboard service above, for the paired api.
         env:
           BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
         run: |
@@ -464,16 +408,10 @@ jobs:
 
       - name: Configure backend preview variables
         if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend_backend' }}
-        # Pairs this api with <prname>-dashboard (created above) rather than staging's
-        # shared cio-api, but still points at staging's Postgres/Redis/cio-minio — see the
-        # plan's "frontend_backend design" section for why. SKIP_DB_SETUP=true because this
-        # is a second api instance against staging's live Postgres: running migrations from
-        # two instances concurrently risks a race, and staging's own cio-api already keeps
-        # the shared schema current (same rule docker/docs/SELF_HOST.md documents for
-        # multiple API replicas). BETTER_AUTH_SECRET/PRIVATE_SERVER_KEY are generated fresh
-        # here since this is a new service, not a duplicate — cio-dashboard picks up
-        # PRIVATE_SERVER_KEY via a reference in the next step, so the value is never passed
-        # around outside Railway.
+        # Pairs with <prname>-dashboard, not staging's shared cio-api. SKIP_DB_SETUP=true
+        # avoids a migration race against staging's live Postgres (docker/docs/SELF_HOST.md
+        # documents the same rule for multiple API replicas). Fresh auth secrets — dashboard
+        # picks up PRIVATE_SERVER_KEY via reference in the next step.
         env:
           BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
           DASHBOARD_SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
@@ -516,17 +454,10 @@ jobs:
 
       - name: Configure dashboard-only preview variables
         if: ${{ inputs.action == 'deploy' && (inputs.mode == 'frontend' || inputs.mode == 'frontend_backend') }}
-        # Wires this standalone service to cio-minio (always staging's shared one) and to an
-        # api — staging's shared cio-api in `frontend` mode, or the freshly paired
-        # <prname>-api in `frontend_backend` mode — via Railway reference variables
-        # (${{ Service.VAR }}), same pattern documented in RAILWAY_SETUP_GUIDE.md's
-        # cio-dashboard step. No dynamic-domain propagation dance needed here (unlike the
-        # full_deploy MinIO step below) because these are already stable, long-lived
-        # services by the time this step runs.
-        #
-        # The `${{ }}` reference syntax is Railway's, not GitHub Actions' — building it via
-        # a `$` variable + printf (rather than writing "${{" literally in this YAML) keeps
-        # the runner from trying to evaluate it as its own expression.
+        # Wires to cio-minio and an api — staging's shared cio-api in frontend mode, or the
+        # paired <prname>-api in frontend_backend — via Railway reference variables.
+        # ref() builds the "${{ }}" reference syntax via a `$` var + printf rather than a
+        # literal in this YAML, so GitHub Actions doesn't try to evaluate it as its own.
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
           MODE: ${{ inputs.mode }}
@@ -731,8 +662,7 @@ jobs:
         # output, so it can never match a stale, unrelated deployment. A failure with no id
         # means nothing was created yet and fails immediately.
         #
-        # frontend/frontend_backend modes deploy a shorter list than the usual three — the
-        # script itself is unchanged either way.
+        # frontend/frontend_backend just deploy a shorter APP_SERVICES list.
         env:
           APP_SERVICES: ${{ inputs.mode == 'frontend' && steps.env.outputs.dashboard_service_name || inputs.mode == 'frontend_backend' && format('{0} {1}', steps.env.outputs.backend_service_name, steps.env.outputs.dashboard_service_name) || env.APP_SERVICES }}
         run: bash .github/scripts/railway-preview-deploy.sh
