@@ -51,6 +51,9 @@ export async function listOrganizationWidgets(orgId: string) {
   }
 }
 
+/**
+ * Gets all archived widgets for an organization.
+ */
 export async function listArchivedOrganizationWidgets(orgId: string) {
   try {
     return await listArchivedWidgetsByOrganization(orgId);
@@ -198,6 +201,9 @@ export async function updateOrganizationWidget(orgId: string, widgetId: string, 
   }
 }
 
+/**
+ * Archives an active widget.
+ */
 export async function archiveOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
     const archivedWidget = await archiveWidget(orgId, widgetId, userId);
@@ -219,6 +225,9 @@ export async function archiveOrganizationWidget(orgId: string, widgetId: string,
   }
 }
 
+/**
+ * Permanently soft-deletes an archived widget.
+ */
 export async function deleteOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
     const deletedWidget = await deleteArchivedWidget(orgId, widgetId, userId);
@@ -240,11 +249,17 @@ export async function deleteOrganizationWidget(orgId: string, widgetId: string, 
   }
 }
 
-// Only widgets that were live before archiving come back published; a never-published draft stays a draft.
+/**
+ * Resolves the target status when restoring an archived widget.
+ * Only widgets that had a published version return as PUBLISHED; otherwise DRAFT.
+ */
 export function resolveRestoredWidgetStatus(latestPublishedVersionId: string | null): 'DRAFT' | 'PUBLISHED' {
   return latestPublishedVersionId ? 'PUBLISHED' : 'DRAFT';
 }
 
+/**
+ * Restores an archived widget to its status before the archiving.
+ */
 export async function restoreOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
     const archivedWidget = await getArchivedWidgetById(orgId, widgetId);

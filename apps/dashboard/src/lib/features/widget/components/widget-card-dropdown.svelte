@@ -27,7 +27,7 @@
     onClick: () => void;
   }
 
-  let { id, name, mode = 'active', isAdmin = true }: Props = $props();
+  let { id, name, mode = 'active', isAdmin = false }: Props = $props();
 
   let renameOpen = $state(false);
   let deleteOpen = $state(false);

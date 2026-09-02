@@ -57,6 +57,9 @@ export async function listWidgetsByOrganization(orgId: string): Promise<TWidgetL
   }
 }
 
+/**
+ * Gets all archived widgets for an organization.
+ */
 export async function listArchivedWidgetsByOrganization(orgId: string): Promise<TWidgetListItem[]> {
   try {
     return db
@@ -149,6 +152,9 @@ export async function getWidgetById(orgId: string, widgetId: string): Promise<TW
   }
 }
 
+/**
+ * Retrieves an archived widget by its ID.
+ */
 export async function getArchivedWidgetById(orgId: string, widgetId: string): Promise<TWidget | null> {
   try {
     const [result] = await db
@@ -196,6 +202,9 @@ export async function createWidget(data: TNewWidget): Promise<TWidget> {
   }
 }
 
+/**
+ * Updates an active widget.
+ */
 export async function updateWidget(orgId: string, widgetId: string, data: Partial<TWidget>): Promise<TWidget | null> {
   try {
     const [result] = await db
@@ -205,7 +214,12 @@ export async function updateWidget(orgId: string, widgetId: string, data: Partia
         updatedAt: new Date().toISOString()
       })
       .where(
-        and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
       )
       .returning();
 
@@ -216,6 +230,9 @@ export async function updateWidget(orgId: string, widgetId: string, data: Partia
   }
 }
 
+/**
+ * Archives an active widget by setting status to ARCHIVED.
+ */
 export async function archiveWidget(orgId: string, widgetId: string, updatedByUserId: string): Promise<TWidget | null> {
   try {
     const [result] = await db
@@ -226,7 +243,12 @@ export async function archiveWidget(orgId: string, widgetId: string, updatedByUs
         updatedByUserId
       })
       .where(
-        and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
       )
       .returning();
 
@@ -237,6 +259,9 @@ export async function archiveWidget(orgId: string, widgetId: string, updatedByUs
   }
 }
 
+/**
+ * Atomically restores an archived widget by updating status.
+ */
 export async function restoreArchivedWidget(
   orgId: string,
   widgetId: string,
@@ -268,6 +293,9 @@ export async function restoreArchivedWidget(
   }
 }
 
+/**
+ * Permanently soft-deletes an archived widget by setting deletedAt.
+ */
 export async function deleteArchivedWidget(
   orgId: string,
   widgetId: string,
@@ -336,6 +364,9 @@ export async function replaceWidgetCourses(widgetId: string, courseIds: string[]
   }
 }
 
+/**
+ * Updates an active widget and replaces its associated courses in a transaction.
+ */
 export async function updateWidgetWithCourses(
   orgId: string,
   widgetId: string,
@@ -353,7 +384,12 @@ export async function updateWidgetWithCourses(
           updatedAt: new Date().toISOString()
         })
         .where(
-          and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+          and(
+            eq(schema.widget.organizationId, orgId),
+            eq(schema.widget.id, widgetId),
+            isNull(schema.widget.deletedAt),
+            ne(schema.widget.status, 'ARCHIVED')
+          )
         )
         .returning();
 

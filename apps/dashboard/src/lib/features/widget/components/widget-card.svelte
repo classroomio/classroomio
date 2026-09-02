@@ -21,7 +21,7 @@
     isAdmin?: boolean | null;
   }
 
-  let { widget, mode = 'active', isAdmin = true }: Props = $props();
+  let { widget, mode = 'active', isAdmin = false }: Props = $props();
 
   const isArchived = $derived(mode === 'archived');
   const widgetHref = $derived(resolve(`/widgets/${widget.id}`, {}));
@@ -121,16 +121,20 @@
   </div>
 {/snippet}
 
-{#if isArchived}
-  <Item.Root variant="outline" class="group ui:bg-card relative cursor-default overflow-hidden rounded-2xl border p-0">
-    {@render cardContent()}
-  </Item.Root>
-{:else}
-  <Item.Root variant="outline" class="group ui:bg-card relative overflow-hidden rounded-2xl border p-0">
-    {#snippet child({ props })}
-      <a href={widgetHref} {...props} class={cn('block h-full w-full', props.class as string)}>
+<Item.Root
+  variant="outline"
+  class={cn('group ui:bg-card relative overflow-hidden rounded-2xl border p-0', isArchived && 'cursor-default')}
+>
+  {#snippet child({ props })}
+    {@const rootClassName = cn('block h-full w-full', props.class as string)}
+    {#if isArchived}
+      <div {...props} class={rootClassName}>
+        {@render cardContent()}
+      </div>
+    {:else}
+      <a href={widgetHref} {...props} class={rootClassName}>
         {@render cardContent()}
       </a>
-    {/snippet}
-  </Item.Root>
-{/if}
+    {/if}
+  {/snippet}
+</Item.Root>
