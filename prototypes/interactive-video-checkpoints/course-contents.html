@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Course contents — Interactive Video Checkpoints</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="checkpoints.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="course-app">
+      <aside class="course-side">
+        <a class="back-link" href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg>
+          Prototypes
+        </a>
+        <div class="path-id">
+          <div class="ico" style="background: var(--primary); color: var(--primary-foreground); width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-weight: 700;">IC</div>
+          <div>
+            <div class="nm" style="font-weight: 600; font-size: 13.5px;">Infection Control Basics</div>
+            <div class="rl" style="font-size: 12px; color: var(--muted-foreground);">Self-paced · sequential</div>
+          </div>
+        </div>
+        <div class="section-label">Contents</div>
+        <a class="tree-item active" href="course-contents.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h10"/></svg> All contents</a>
+        <div class="section-label">Module 1</div>
+        <a class="tree-item" href="teacher-video-tab.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Why hand hygiene matters <span class="qcount">2</span></a>
+        <div class="tree-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> The 5 moments</div>
+        <div class="tree-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> PPE sequence</div>
+        <div class="section-label">Module 2</div>
+        <div class="tree-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Sharps safety <span class="qcount">1</span></div>
+        <div class="tree-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Spill response</div>
+        <div class="tree-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Recap</div>
+        <div class="section-label">Assessment</div>
+        <a class="tree-item" href="student-exam.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Final exam</a>
+      </aside>
+      <div class="course-main">
+        <header class="course-header">
+          <h1>Course contents</h1>
+          <span class="badge badge-secondary">Teacher</span>
+          <span class="badge badge-outline" style="margin-left: auto;">Sequential</span>
+        </header>
+        <div class="course-body">
+          <div class="course-col">
+            <p class="text-muted" style="margin-top: 0; line-height: 1.6;">
+              This is the course the Reddit user described, built with what ClassroomIO already has: six short lessons, one graded exercise, certificates on. In-video questions hang off lessons that already exist — they do not add rows here.
+            </p>
+            <div style="display: grid; gap: 8px; margin-top: 20px;">
+              <a class="marker-row" href="teacher-video-tab.html" style="grid-template-columns: 28px 1fr auto; text-decoration: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                <div><div class="prompt">Why hand hygiene matters</div><div class="meta">Uploaded video · 6:12 · Watch to complete</div></div>
+                <span class="badge badge-primary-soft">2 questions</span>
+              </a>
+              <div class="marker-row" style="grid-template-columns: 28px 1fr auto;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                <div><div class="prompt">The 5 moments</div><div class="meta">Uploaded video · 4:40 · Watch to complete</div></div>
+              </div>
+              <div class="marker-row" style="grid-template-columns: 28px 1fr auto;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                <div><div class="prompt">PPE sequence</div><div class="meta">Uploaded video · 8:05 · Watch to complete</div></div>
+              </div>
+              <div class="marker-row" style="grid-template-columns: 28px 1fr auto;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                <div><div class="prompt">Sharps safety</div><div class="meta">Uploaded video · 5:18 · Watch to complete</div></div>
+                <span class="badge badge-primary-soft">1 question</span>
+              </div>
+              <div class="marker-row" style="grid-template-columns: 28px 1fr auto;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                <div><div class="prompt">Spill response</div><div class="meta">Uploaded video · 3:50 · Watch to complete</div></div>
+              </div>
+              <div class="marker-row" style="grid-template-columns: 28px 1fr auto;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                <div><div class="prompt">Recap</div><div class="meta">Uploaded video · 3:12 · Watch to complete</div></div>
+              </div>
+              <a class="marker-row" href="student-exam.html" style="grid-template-columns: 28px 1fr auto;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <div><div class="prompt">Final exam</div><div class="meta">Exercise · Pass at 70% · Required for certificate</div></div>
+                <span class="badge badge-warning">Exam</span>
+              </a>
+            </div>
+            <p class="text-muted" style="font-size: 13px; margin-top: 22px;">
+              Open <a href="teacher-video-tab.html" class="text-primary">Why hand hygiene matters</a> to add timeline questions, or
+              <a href="student-playing.html" class="text-primary">preview as a student</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="icon-btn theme-fab" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

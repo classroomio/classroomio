@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learner player — Interactive Video Checkpoints</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="checkpoints.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="course-app">
+      <aside class="course-side">
+        <a class="back-link" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg> Prototypes</a>
+        <div class="section-label">Module 1</div>
+        <div class="tree-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Why hand hygiene matters <span class="qcount">2</span></div>
+        <div class="tree-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> The 5 moments <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+        <div class="tree-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/></svg> Final exam <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      </aside>
+      <div class="course-main">
+        <header class="course-header">
+          <h1>Why hand hygiene matters</h1>
+          <span class="badge badge-outline">Learner</span>
+        </header>
+        <div class="course-body">
+          <div class="course-col">
+            <p class="text-muted" style="margin-top:0;font-size:13.5px;">Click play. The video pauses at 0:45 and 2:14. The second question requires the correct answer (the statement is false).</p>
+            <div class="player" id="player">
+              <div class="player-stage">
+                <div class="player-meta">hand-hygiene.mp4</div>
+                <button class="play-glyph" id="bigPlay" type="button" aria-label="Play">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+              </div>
+              <div class="overlay" id="overlay1" hidden>
+                <div class="overlay-card">
+                  <div class="overlay-kicker">Question · 0:45</div>
+                  <h2>When must you wash your hands?</h2>
+                  <label class="option"><input type="radio" name="q1" value="a" /><span class="option-label">Before and after every patient contact</span></label>
+                  <label class="option"><input type="radio" name="q1" value="b" /><span class="option-label">Only at the start of a shift</span></label>
+                  <label class="option"><input type="radio" name="q1" value="c" /><span class="option-label">Only when hands look dirty</span></label>
+                  <div class="overlay-actions"><button class="btn btn-primary" type="button" id="cont1">Continue</button></div>
+                </div>
+              </div>
+              <div class="overlay" id="overlay2" hidden>
+                <div class="overlay-card">
+                  <div class="overlay-kicker">Question · 2:14</div>
+                  <h2>Alcohol rub replaces soap and water when hands are visibly soiled.</h2>
+                  <label class="option"><input type="radio" name="q2" value="true" /><span class="option-label">True</span></label>
+                  <label class="option"><input type="radio" name="q2" value="false" /><span class="option-label">False</span></label>
+                  <p class="overlay-error" id="err2" hidden>Not quite. Try again — the video stays here until this is right.</p>
+                  <div class="overlay-actions"><button class="btn btn-primary" type="button" id="cont2">Continue</button></div>
+                </div>
+              </div>
+              <div class="player-controls">
+                <div class="scrub" id="scrub">
+                  <div class="fill" id="fill"></div>
+                  <span class="marker" style="left: 12%"></span>
+                  <span class="marker" style="left: 36%"></span>
+                </div>
+                <div class="scrub-row">
+                  <button type="button" id="playBtn" aria-label="Play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+                  <span id="clock">0:00 / 6:12</span>
+                </div>
+              </div>
+            </div>
+            <div class="nav-footer">
+              <button class="btn btn-secondary" type="button" disabled>Previous</button>
+              <span class="text-muted" id="status">Watch the video and answer both questions to continue.</span>
+              <a class="btn btn-primary disabled" id="next" href="student-exam.html" style="pointer-events:none;opacity:.5;">Next</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="icon-btn theme-fab" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+
+      const DURATION = 372;
+      const CUES = [
+        { at: 45, overlay: 'overlay1', done: false },
+        { at: 134, overlay: 'overlay2', done: false }
+      ];
+      let t = 0;
+      let playing = false;
+      let overlayOpen = false;
+      let timer = null;
+
+      const fill = document.getElementById('fill');
+      const clock = document.getElementById('clock');
+      const bigPlay = document.getElementById('bigPlay');
+
+      function fmt(s) {
+        const m = Math.floor(s / 60);
+        const r = Math.floor(s % 60);
+        return m + ':' + String(r).padStart(2, '0');
+      }
+      function render() {
+        fill.style.width = (t / DURATION) * 100 + '%';
+        clock.textContent = fmt(t) + ' / 6:12';
+      }
+      function pause() {
+        playing = false;
+        clearInterval(timer);
+        timer = null;
+        bigPlay.style.display = overlayOpen ? 'none' : 'grid';
+      }
+      function play() {
+        if (overlayOpen) return;
+        playing = true;
+        bigPlay.style.display = 'none';
+        timer = setInterval(() => {
+          t = Math.min(DURATION, t + 1);
+          const cue = CUES.find((c) => !c.done && t >= c.at);
+          if (cue) {
+            t = cue.at;
+            overlayOpen = true;
+            document.getElementById(cue.overlay).hidden = false;
+            pause();
+            render();
+            return;
+          }
+          render();
+          if (t >= DURATION) {
+            pause();
+            if (CUES.every((c) => c.done)) unlock();
+          }
+        }, 80);
+      }
+      function unlock() {
+        document.getElementById('status').textContent = 'Lesson complete. The next item is unlocked.';
+        const next = document.getElementById('next');
+        next.style.pointerEvents = '';
+        next.style.opacity = '1';
+        next.classList.remove('disabled');
+        document.querySelectorAll('.tree-item.locked')[0]?.classList.remove('locked');
+      }
+
+      document.getElementById('playBtn').onclick = () => (playing ? pause() : play());
+      bigPlay.onclick = play;
+
+      document.querySelectorAll('.option').forEach((el) => {
+        el.addEventListener('click', () => {
+          el.parentElement.querySelectorAll('.option').forEach((o) => o.classList.remove('selected'));
+          el.classList.add('selected');
+          el.querySelector('input').checked = true;
+        });
+      });
+
+      document.getElementById('cont1').onclick = () => {
+        if (!document.querySelector('input[name="q1"]:checked')) return;
+        CUES[0].done = true;
+        overlayOpen = false;
+        document.getElementById('overlay1').hidden = true;
+        play();
+      };
+      document.getElementById('cont2').onclick = () => {
+        const v = document.querySelector('input[name="q2"]:checked');
+        if (!v) return;
+        if (v.value !== 'false') {
+          document.getElementById('err2').hidden = false;
+          return;
+        }
+        CUES[1].done = true;
+        overlayOpen = false;
+        document.getElementById('overlay2').hidden = true;
+        play();
+      };
+
+      document.getElementById('scrub').onclick = () => {
+        // Seek-forward is locked past the next unanswered cue.
+      };
+
+      render();
+    </script>
+  </body>
+</html>

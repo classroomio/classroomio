@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add question — Interactive Video Checkpoints</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="checkpoints.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="course-app">
+      <aside class="course-side">
+        <a class="back-link" href="teacher-video-tab.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg> Video tab</a>
+        <div class="section-label">Module 1</div>
+        <a class="tree-item active" href="teacher-video-tab.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/></svg> Why hand hygiene matters <span class="qcount">2</span></a>
+      </aside>
+      <div class="course-main">
+        <header class="course-header"><h1>Why hand hygiene matters</h1></header>
+        <div class="course-body"><div class="course-col">
+          <div class="player" style="filter: blur(2px);">
+            <div class="player-stage"><div class="play-glyph"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="dialog-scrim" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+      <form class="dialog" action="teacher-video-tab.html">
+        <h2 id="dlg-title">Add a question</h2>
+        <p class="hint">The video pauses here. After they answer, it continues from this time.</p>
+
+        <div class="field">
+          <label for="ts">Time in video</label>
+          <input id="ts" type="text" value="0:45" />
+        </div>
+
+        <div class="field">
+          <label>Question type</label>
+          <div class="seg">
+            <button class="btn btn-outline btn-sm" type="button" aria-pressed="true">Single answer</button>
+            <button class="btn btn-outline btn-sm" type="button" aria-pressed="false" id="tf">True / false</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="prompt">Question</label>
+          <textarea id="prompt" rows="2">When must you wash your hands?</textarea>
+        </div>
+
+        <div class="field" id="radio-opts">
+          <label>Answers — mark the correct one</label>
+          <div class="opt-edit"><input type="radio" name="correct" checked /><input type="text" value="Before and after every patient contact" /><button class="btn btn-ghost btn-sm" type="button">Remove</button></div>
+          <div class="opt-edit"><input type="radio" name="correct" /><input type="text" value="Only at the start of a shift" /><button class="btn btn-ghost btn-sm" type="button">Remove</button></div>
+          <div class="opt-edit"><input type="radio" name="correct" /><input type="text" value="Only when hands look dirty" /><button class="btn btn-ghost btn-sm" type="button">Remove</button></div>
+          <button class="btn btn-secondary btn-sm" type="button">Add option</button>
+        </div>
+
+        <div class="field">
+          <label>When they answer</label>
+          <label class="option" style="margin:0 0 8px;"><input type="radio" name="resume" value="any" checked /><span class="option-label"><b>Continue after they answer</b><br /><span class="text-muted">Playback resumes as soon as they pick an option. Recommended for short teaching videos.</span></span></label>
+          <label class="option" style="margin:0;"><input type="radio" name="resume" value="correct" /><span class="option-label"><b>Require the correct answer</b><br /><span class="text-muted">Wrong answers stay on this screen with Try again. The video does not move on until they get it right.</span></span></label>
+        </div>
+
+        <div class="dialog-foot">
+          <a class="btn btn-secondary" href="teacher-video-tab.html">Cancel</a>
+          <a class="btn btn-primary" href="teacher-video-tab.html">Save question</a>
+        </div>
+      </form>
+    </div>
+
+    <button class="icon-btn theme-fab" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      document.getElementById('tf').onclick = function () {
+        this.setAttribute('aria-pressed', 'true');
+        this.previousElementSibling.setAttribute('aria-pressed', 'false');
+        document.getElementById('radio-opts').innerHTML =
+          '<label>Answers — mark the correct one</label>' +
+          '<div class="opt-edit"><input type="radio" name="correct" checked /><input type="text" value="True" /><span></span></div>' +
+          '<div class="opt-edit"><input type="radio" name="correct" /><input type="text" value="False" /><span></span></div>';
+      };
+    </script>
+  </body>
+</html>
