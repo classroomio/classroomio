@@ -801,6 +801,12 @@
         "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej treści, czy muszą kończyć elementy po kolei.",
         "progression_mode_free": "Wolny — odblokowana treść jest dostępna",
         "progression_mode_sequential": "Sekwencyjny — ukończ poprzednie elementy, aby odblokować następny",
+        "comments": {
+          "title": "Komentarze do lekcji",
+          "description": "Zezwól uczniom na wyświetlanie i dodawanie komentarzy w lekcjach tego kursu. Komentarze można nadal wyłączyć dla poszczególnych lekcji.",
+          "enabled": "Komentarze włączone dla tego kursu",
+          "disabled": "Komentarze wyłączone dla tego kursu"
+        },
         "lesson_download": "Lekcje do pobrania",
         "available": "Udostępnij lekcję do pobrania w formacie PDF zarejestrowanym studentom",
         "course_download": "Pobieranie kursu",
@@ -2224,6 +2230,14 @@
           "watch_threshold": "Próg obejrzenia (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Komentarze do lekcji",
+            "description": "Wybierz, czy uczniowie mogą wyświetlać i dodawać komentarze do tej lekcji.",
+            "enabled": "Komentarze włączone",
+            "disabled": "Komentarze wyłączone",
+            "disabled_by_course": "Komentarze są wyłączone dla całego kursu, więc nie można zmienić tego ustawienia lekcji.",
+            "change_course_setting": "Zmień w ustawieniach kursu"
+          },
           "progression": {
             "heading": "Postęp",
             "intro": "Wybierz, jak uczniowie kończą tę lekcję i przechodzą przez kurs.",
@@ -2283,7 +2297,9 @@
           "starts_in": "Zaczyna się w",
           "session_ended": "Sesja zakończona",
           "link_copied": "Link skopiowany"
-        }
+        },
+        "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
+        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później."
       },
       "news_feed": {
         "heading": "Kanał wiadomości",
@@ -2349,7 +2365,8 @@
           "description": "Czy na pewno chcesz usunąć ten kanał?",
           "no": "Nie",
           "yes": "Tak"
-        }
+        },
+        "student_body_content": "Do tej klasy nie dodano jeszcze żadnych wpisów."
       },
       "compliance": {
         "title": "Zgodność",
@@ -2654,6 +2671,8 @@
       },
       "due_date": "Termin",
       "valid_until": "Ważne do",
+      "student_empty_title": "Brak kursów",
+      "student_empty_description": "W tej organizacji nie ma jeszcze dostępnych kursów. Sprawdź później.",
       "updated_at": "Zaktualizowano {date}",
       "lessons_count": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
       "exercises_count": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}"

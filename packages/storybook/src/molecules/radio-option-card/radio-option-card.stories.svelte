@@ -75,76 +75,71 @@
 
 <Story name="Course Type Selector (Group)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
-      <Field.Description class="ui:mb-4 ui:block">
-        Choose how your course will be delivered to students.
-      </Field.Description>
+    <div class="w-full max-w-xl">
+      <Field.Description class="mb-4 block">Choose how your course will be delivered to students.</Field.Description>
       <RadioOptionCardGroup options={courseTypeOptions} bind:value={courseType} />
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {courseType}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {courseType}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="Add Content Type (Group, 3 columns)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-2xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-2xl">
+      <Field.Description class="mb-4 block">
         Add a new item to your course. Sections group lessons and exercises.
       </Field.Description>
-      <RadioOptionCardGroup options={contentTypeOptions} bind:value={contentType} class="ui:md:grid-cols-3" />
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {contentType}</p>
+      <RadioOptionCardGroup options={contentTypeOptions} bind:value={contentType} class="md:grid-cols-3" />
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {contentType}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="With Disabled Option and Title Suffix (Group)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-xl">
+      <Field.Description class="mb-4 block">
         How would you like to create your exercise? Use the <code>titleSuffix(option)</code> snippet to render per-option
         content (e.g. Coming soon for disabled).
       </Field.Description>
       <RadioOptionCardGroup options={exerciseCreateOptions} bind:value={exerciseCreateType}>
         {#snippet titleSuffix(option)}
           {#if option.disabled}
-            <Badge variant="secondary" class="ui:text-xs">Coming soon</Badge>
+            <Badge variant="secondary" class="text-xs">Coming soon</Badge>
           {/if}
         {/snippet}
       </RadioOptionCardGroup>
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {exerciseCreateType}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {exerciseCreateType}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="Custom Columns (Group class override)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-3xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-3xl">
+      <Field.Description class="mb-4 block">
         Override grid with the <code>class</code> prop on <code>RadioOptionCardGroup</code> (uses <code>cn</code> so your
         classes win).
       </Field.Description>
       <RadioOptionCardGroup
         options={deliveryOptions}
         bind:value={deliveryMethod}
-        class="ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-4"
+        class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
       />
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {deliveryMethod}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {deliveryMethod}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="Individual cards (card class prop)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-3xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-3xl">
+      <Field.Description class="mb-4 block">
         When using <code>RadioOptionCard</code> inside <code>RadioGroup.Root</code>, override per card with the card
         <code>class</code>
-        prop (e.g. <code>ui:lg:col-span-2</code>).
+        prop (e.g. <code>lg:col-span-2</code>).
       </Field.Description>
-      <RadioGroup.Root
-        bind:value={deliveryMethod}
-        class="ui:grid ui:gap-3 ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-4"
-      >
+      <RadioGroup.Root bind:value={deliveryMethod} class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <RadioOptionCard id="live" title="Live" description="Real-time sessions with your students." value="live" />
         <RadioOptionCard
           id="async"
@@ -158,10 +153,10 @@
           title="On-demand"
           description="Fully self-paced, no fixed schedule."
           value="ondemand"
-          class="ui:lg:col-span-2"
+          class="lg:col-span-2"
         />
       </RadioGroup.Root>
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {deliveryMethod}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {deliveryMethod}</p>
     </div>
   {/snippet}
 </Story>

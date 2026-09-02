@@ -70,7 +70,7 @@
 
 <Story name="Summary">
   {#snippet template()}
-    <div class="ui:w-[360px] ui:rounded-2xl ui:border ui:bg-background ui:p-4">
+    <div class="ui:bg-background w-[360px] rounded-2xl border p-4">
       <NewsfeedReactions reactionCounts={summaryReactionCounts} selectedReactionType={summarySelectedReaction} />
     </div>
   {/snippet}
@@ -78,7 +78,7 @@
 
 <Story name="Popover Open">
   {#snippet template()}
-    <div class="ui:w-[360px] ui:rounded-2xl ui:border ui:bg-background ui:p-4">
+    <div class="ui:bg-background w-[360px] rounded-2xl border p-4">
       <NewsfeedReactions
         bind:open={openPopover}
         reactionCounts={openReactionCounts}
@@ -90,7 +90,7 @@
 
 <Story name="Interactive">
   {#snippet template()}
-    <div class="ui:w-[360px] ui:rounded-2xl ui:border ui:bg-background ui:p-4">
+    <div class="ui:bg-background w-[360px] rounded-2xl border p-4">
       <NewsfeedReactions
         bind:open={interactivePopover}
         reactionCounts={interactiveReactionCounts}
@@ -104,7 +104,7 @@
           interactiveSelectedReaction = interactiveSelectedReaction === reactionType ? null : reactionType;
         }}
       />
-      <p class="ui:mt-3 ui:text-sm ui:text-muted-foreground">
+      <p class="ui:text-muted-foreground mt-3 text-sm">
         Click the trigger, pick a reaction, then click the active reaction again to clear it.
       </p>
     </div>

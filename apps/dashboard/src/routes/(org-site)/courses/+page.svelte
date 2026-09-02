@@ -241,14 +241,14 @@
 </script>
 
 {#snippet searchField()}
-  <div class="ui:relative ui:mx-auto ui:w-full ui:max-w-xl">
+  <div class="relative mx-auto w-full max-w-xl">
     <Input
       type="text"
       value={searchInput}
       oninput={(e) => onSearchInput(e.currentTarget.value)}
       onkeydown={onSearchKeydown}
       placeholder={$t('public_courses.filters.search_placeholder')}
-      class="ui:pr-8"
+      class="ui:text-foreground pr-8!"
     />
     {#if searchInput}
       <button
@@ -257,7 +257,7 @@
         class="ui:text-muted-foreground ui:hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
         aria-label={$t('public_courses.filters.clear_search')}
       >
-        <XIcon class="ui:size-4" />
+        <XIcon class="size-4" />
       </button>
     {/if}
   </div>
@@ -267,9 +267,9 @@
   {#if showHeader}
     <div class="p-4 pb-3">
       <h2 class="text-base font-semibold">{$t('public_courses.filters.title')}</h2>
-      <p class="ui:text-[var(--landing-fg-muted)] text-xs">{$t('public_courses.filters.help')}</p>
+      <p class="text-xs text-(--landing-fg-muted)">{$t('public_courses.filters.help')}</p>
     </div>
-    <Separator class="ui:bg-[var(--landing-border)]" />
+    <Separator class="bg-(--landing-border)" />
   {/if}
 
   <div class="px-2 pb-2">
@@ -277,7 +277,7 @@
       <Accordion.Root type={isDesktop ? 'multiple' : 'single'} bind:value={openFilterSection as never} class="w-full">
         <!-- TYPES -->
         <Accordion.Item value="types" class="ui:border-border">
-          <Accordion.Trigger class="ui:px-2 ui:text-sm ui:font-semibold ui:uppercase ui:tracking-wide">
+          <Accordion.Trigger class="px-2 text-sm font-semibold tracking-wide uppercase">
             {$t('public_courses.filters.types_title')}
           </Accordion.Trigger>
           <Accordion.Content>
@@ -299,7 +299,7 @@
 
         <!-- PRICING -->
         <Accordion.Item value="pricing" class="ui:border-border">
-          <Accordion.Trigger class="ui:px-2 ui:text-sm ui:font-semibold ui:uppercase ui:tracking-wide">
+          <Accordion.Trigger class="px-2 text-sm font-semibold tracking-wide uppercase">
             {$t('public_courses.filters.pricing_title')}
           </Accordion.Trigger>
           <Accordion.Content>
@@ -323,7 +323,7 @@
         <!-- TAGS -->
         {#if displayTagGroups.length > 0}
           <Accordion.Item value="tags" class="ui:border-border">
-            <Accordion.Trigger class="ui:px-2 ui:text-sm ui:font-semibold ui:uppercase ui:tracking-wide">
+            <Accordion.Trigger class="px-2 text-sm font-semibold tracking-wide uppercase">
               {$t('public_courses.filters.tags_title')}
             </Accordion.Trigger>
             <Accordion.Content>
@@ -371,7 +371,7 @@
 
 <PoweredBy />
 
-<LandingThemeScope theme={landingSettings.theme} class="ui:font-sans">
+<LandingThemeScope theme={landingSettings.theme} class="font-sans">
   <main>
     {#if navInsideHero}
       <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
@@ -407,7 +407,7 @@
         <!-- Mobile only -->
         <div class="lg:hidden">
           <LandingButton variant="secondary" onclick={() => (filterSheetOpen = true)}>
-            <FilterIcon class="ui:size-4" />
+            <FilterIcon class="size-4" />
             {$t('public_courses.filters.title')}
             {#if activeFilterCount > 0}
               <span
@@ -430,7 +430,7 @@
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8">
         <!-- Desktop sidebar -->
         <aside
-          class="ui:bg-[var(--landing-card)] ui:text-[var(--landing-fg)] ui:border-[var(--landing-border)] sticky top-4 hidden max-h-[calc(100dvh-2rem)] flex-col self-start overflow-hidden rounded-lg border lg:flex"
+          class="sticky top-4 hidden max-h-[calc(100dvh-2rem)] flex-col self-start overflow-hidden rounded-lg border border-(--landing-border) bg-(--landing-card) text-(--landing-fg) lg:flex"
         >
           <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
             {@render filtersContent(true)}
@@ -493,12 +493,8 @@
 
     <!-- Mobile filter sheet -->
     <Sheet.Root bind:open={filterSheetOpen}>
-      <Sheet.Content
-        side="right"
-        portalProps={{ disabled: true }}
-        class="ui:flex ui:w-full ui:flex-col ui:p-0 ui:sm:max-w-md"
-      >
-        <Sheet.Header class="ui:border-b ui:px-4 ui:py-4">
+      <Sheet.Content side="right" portalProps={{ disabled: true }} class="flex w-full flex-col p-0 sm:max-w-md">
+        <Sheet.Header class="border-b">
           <Sheet.Title>{$t('public_courses.filters.title')}</Sheet.Title>
           <Sheet.Description>
             {$t('public_courses.filters.selected')}
@@ -510,15 +506,15 @@
           </Sheet.Description>
         </Sheet.Header>
 
-        <div class="ui:min-h-0 ui:flex-1 ui:overflow-y-auto">
+        <div class="min-h-0 flex-1 overflow-y-auto">
           {@render filtersContent(false)}
         </div>
 
-        <div class="ui:flex ui:gap-3 ui:border-t ui:p-4">
-          <LandingButton variant="secondary" class="ui:flex-1" onclick={clearFilters}>
+        <div class="flex gap-3 border-t p-4">
+          <LandingButton variant="secondary" class="flex-1" onclick={clearFilters}>
             {$t('public_courses.clear_filters')}
           </LandingButton>
-          <LandingButton class="ui:flex-1" onclick={() => (filterSheetOpen = false)}
+          <LandingButton class="flex-1" onclick={() => (filterSheetOpen = false)}
             >{$t('public_courses.filters.save_changes')}</LandingButton
           >
         </div>

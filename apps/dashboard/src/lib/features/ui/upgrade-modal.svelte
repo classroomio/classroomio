@@ -130,7 +130,7 @@
 
 <Dialog.Root open={$isUpgradeModalOpen} onOpenChange={handleOpenChange}>
   <Dialog.Content
-    class="top-[4dvh]! max-h-[92dvh] w-[96vw] translate-y-0! overflow-y-auto p-4 sm:top-[50%]! sm:max-h-none sm:translate-y-[-50%]! sm:p-6 {upgraded ||
+    class="top-[4dvh]! max-h-[92dvh] w-[96vw] translate-y-0! overflow-y-auto p-4 sm:top-[50%]! sm:max-h-[92dvh] sm:translate-y-[-50%]! sm:p-6 {upgraded ||
     isConfirming
       ? 'max-w-[min(600px,96vw)]!'
       : 'max-w-5xl!'}"
@@ -142,7 +142,7 @@
       <div class="animate-icon flex w-full flex-col items-center justify-center gap-4 px-1">
         <RocketIcon class="rocket-launch my-3 size-6" color="var(--primary)" />
         <p class="text-center text-lg">{$t('pricing.modal.thanks')}</p>
-        <p class="ui:mb-4 ui:text-center">
+        <p class="mb-4 text-center">
           {$t('pricing.modal.plan')}
         </p>
         <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
@@ -162,7 +162,7 @@
       </div>
     {:else}
       <div class="flex flex-col items-center">
-        <div class="ui:mb-4 ui:w-full ui:max-w-sm ui:px-2 ui:sm:mb-6 ui:sm:max-w-none ui:sm:px-4">
+        <div class="mb-4 w-full max-w-sm px-2 sm:mb-6 sm:max-w-none sm:px-4">
           <PricingToggle
             bind:isYearly={isYearlyPlan}
             monthlyLabel={$t('pricing.modal.monthly')}

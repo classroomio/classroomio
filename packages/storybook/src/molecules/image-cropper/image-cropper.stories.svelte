@@ -42,7 +42,7 @@
 
 <Story name="Default">
   {#snippet template(args)}
-    <div class="ui:flex ui:flex-col ui:items-center ui:gap-4">
+    <div class="flex flex-col items-center gap-4">
       <ImageCropper.Root
         {...args}
         accept="image/*"
@@ -68,7 +68,7 @@
 
 <Story name="Square Preview">
   {#snippet template(args)}
-    <div class="ui:flex ui:flex-col ui:items-center ui:gap-4">
+    <div class="flex flex-col items-center gap-4">
       <ImageCropper.Root
         {...args}
         accept="image/*"
@@ -78,7 +78,7 @@
         }}
       >
         <ImageCropper.UploadTrigger>
-          <ImageCropper.Preview class="ui:rounded-md" />
+          <ImageCropper.Preview class="rounded-md" />
         </ImageCropper.UploadTrigger>
         <ImageCropper.Dialog>
           <ImageCropper.Cropper cropShape="rect" />
@@ -122,7 +122,7 @@
 
 <Story name="Custom Preview">
   {#snippet template(args)}
-    <div class="ui:flex ui:flex-col ui:items-center ui:gap-4">
+    <div class="flex flex-col items-center gap-4">
       <ImageCropper.Root
         src="https://github.com/shadcn.png"
         onUnsupportedFile={(file) => {
@@ -132,7 +132,7 @@
         <ImageCropper.UploadTrigger>
           <ImageCropper.Preview>
             {#snippet child({ src })}
-              <img {src} alt="your avatar" class="ui:size-32 ui:border-2 ui:border-blue-500" />
+              <img {src} alt="your avatar" class="size-32 border-2 border-blue-500" />
             {/snippet}
           </ImageCropper.Preview>
         </ImageCropper.UploadTrigger>

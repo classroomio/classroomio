@@ -801,6 +801,12 @@
         "progression_mode_description": "Styr om elever kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge.",
         "progression_mode_free": "Fri — ulåst indhold er tilgængeligt",
         "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
+        "comments": {
+          "title": "Lektionskommentarer",
+          "description": "Tillad elever at se og tilføje kommentarer i lektionerne på dette kursus. Kommentarer kan stadig deaktiveres for enkelte lektioner.",
+          "enabled": "Kommentarer aktiveret for dette kursus",
+          "disabled": "Kommentarer deaktiveret for dette kursus"
+        },
         "lesson_download": "Hent lektioner",
         "available": "Gør lektionen tilgængelig til download i pdf for tilmeldte studerende",
         "course_download": "Kursusdownload",
@@ -2224,6 +2230,14 @@
           "watch_threshold": "Segrænse (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Lektionskommentarer",
+            "description": "Vælg, om elever kan se og tilføje kommentarer til denne lektion.",
+            "enabled": "Kommentarer aktiveret",
+            "disabled": "Kommentarer deaktiveret",
+            "disabled_by_course": "Kommentarer er deaktiveret for hele kurset, så denne lektionsindstilling kan ikke ændres.",
+            "change_course_setting": "Skift dette i kursusindstillingerne"
+          },
           "progression": {
             "heading": "Progression",
             "intro": "Vælg hvordan elever fuldfører denne lektion og bevæger sig gennem kurset.",
@@ -2283,7 +2297,9 @@
           "starts_in": "Starter i",
           "session_ended": "Session afsluttet",
           "link_copied": "Linket er kopieret"
-        }
+        },
+        "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -2349,7 +2365,8 @@
           "description": "Er du sikker på, at du vil slette dette feed?",
           "no": "Nej",
           "yes": "Ja"
-        }
+        },
+        "student_body_content": "Der er endnu ikke oprettet nogen opslag til dette kursus."
       },
       "compliance": {
         "title": "Overholdelse",
@@ -2654,6 +2671,8 @@
       },
       "due_date": "Forfalder",
       "valid_until": "Gælder indtil kl",
+      "student_empty_title": "Ingen kurser endnu",
+      "student_empty_description": "Der er endnu ingen kurser tilgængelige i denne organisation. Tjek venligst tilbage senere.",
       "updated_at": "Opdateret {date}",
       "lessons_count": "{count, plural, one {# lektion} other {# lektioner}}",
       "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}"

@@ -175,7 +175,7 @@
 
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
-      <div class="ui:border-t ui:border-border flex flex-col items-center p-10">
+      <div class="ui:border-border flex flex-col items-center border-t p-10">
         <HTMLRender className="text-sm font-light leading-relaxed">
           <SafeHtmlContent content={get(courseData, 'metadata.reward.description', '') as string} />
         </HTMLRender>

@@ -27,11 +27,11 @@
 
   /** Text and background classes for grade cells (faint tint + matching text) */
   function gradeCellClass(percent: number | null): string {
-    if (percent == null) return 'ui:bg-transparent ui:text-muted-foreground';
-    if (percent >= 90) return 'ui:bg-green-50 ui:text-green-700 dark:ui:bg-green-950/30 dark:ui:text-green-400';
-    if (percent >= 80) return 'ui:bg-blue-50 ui:text-blue-700 dark:ui:bg-blue-950/30 dark:ui:text-blue-400';
-    if (percent >= 70) return 'ui:bg-amber-50 ui:text-amber-800 dark:ui:bg-amber-950/30 dark:ui:text-amber-400';
-    return 'ui:bg-red-50 ui:text-red-700 dark:ui:bg-red-950/30 dark:ui:text-red-400';
+    if (percent == null) return 'bg-transparent ui:text-muted-foreground';
+    if (percent >= 90) return 'bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400';
+    if (percent >= 80) return 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400';
+    if (percent >= 70) return 'bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400';
+    return 'bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400';
   }
 </script>
 
@@ -40,7 +40,7 @@
     <Tooltip.Provider>
       <Table.Root class="">
         <Table.Header>
-          <Table.Row class="ui:border-gray-200 dark:ui:border-neutral-700 border-b-2">
+          <Table.Row class="border-b-2 border-gray-200 dark:border-neutral-700">
             <Table.Head
               class="ui:text-foreground sticky left-0 z-100! min-w-[200px] border-r border-gray-200 bg-gray-50 px-3 py-3 text-left text-sm font-semibold dark:border-neutral-700 dark:bg-neutral-800/80"
             >
@@ -64,7 +64,7 @@
           {#each students as student}
             {@const marks = studentMarksByExerciseId[student.id]}
             {@const avg = calculateStudentAverage(marks, exercises)}
-            <Table.Row class="ui:border-b ui:border-gray-100 dark:ui:border-neutral-800">
+            <Table.Row class="border-b border-gray-100 dark:border-neutral-800">
               <Table.Cell
                 class="sticky left-0 min-w-[200px] border-r border-gray-200 bg-gray-50 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-800/80"
               >
