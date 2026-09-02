@@ -619,10 +619,20 @@ In every `catch` block, log the original error with the function name so logs ar
 ```
 
 ### Transactions
+
+When a service operation performs multiple related writes, establish one transaction at the service orchestration boundary and keep every database operation in that transaction. Do not commit a primary row update before a related write such as tags, memberships, or assignments can fail.
+
+- Routes must delegate transaction ownership to services; routes should not perform direct database transactions.
+- Query helpers that participate in composed operations must accept an optional `DbOrTxClient` and pass it to every read and write in the operation.
+- A query helper may open its own transaction only when no client is supplied. When a transaction client is supplied, use it directly and never open a nested transaction.
+- Validate all related identifiers and authorization requirements within the same transaction boundary before committing any writes.
+- Add a database-backed integration test for rollback-sensitive flows where possible. At minimum, test that a failure in a later operation cannot leave an earlier operation persisted.
+- Defer cache invalidation, notifications, and other non-transactional side effects until after the transaction commits.
+
 ```typescript
 const result = await db.transaction(async (tx) => {
-  const org = await createOrganization({ name, siteName });
-  const member = await createOrganizationMember({ orgId: org.id, userId });
+  const org = await createOrganization({ name, siteName }, tx);
+  const member = await createOrganizationMember({ orgId: org.id, userId }, tx);
   return { org, member };
 });
 ```
