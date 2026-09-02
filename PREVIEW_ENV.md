@@ -57,6 +57,10 @@ streams its build logs and blocks until that service passes its deploy/healthche
 waits for all of them — so the printed URL is live the moment the run finishes, and a failed
 healthcheck fails the run rather than reporting a broken preview.
 
+Re-running the workflow for a branch+mode that already has a run in flight **queues** behind
+it rather than cancelling it — if you dispatched with a wrong input and want the corrected
+run to start immediately, cancel the earlier run yourself from the Actions tab.
+
 #### `frontend` mode
 
 Most changes only touch dashboard UI, so most previews don't need a whole duplicated stack.

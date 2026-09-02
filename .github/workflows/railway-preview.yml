@@ -70,12 +70,17 @@ on:
           - skillshare-test
           - none
 
-# frontend mode shares one global, non-cancelling group (also shared with
-# railway-preview-teardown.yml) since it read-modify-writes cio-api's TRUSTED_ORIGINS —
-# concurrent writers must queue, not race. Other modes stay isolated per branch+mode.
+# frontend mode shares one global group (also shared with railway-preview-teardown.yml)
+# since it read-modify-writes cio-api's TRUSTED_ORIGINS. Every mode queues rather than
+# cancels — queue: max requires cancel-in-progress: false, and using one flat policy for
+# all modes (instead of cancel-in-progress only for full_deploy/frontend_backend) is
+# simpler than splitting queue behavior per mode. Re-triggering a full_deploy/
+# frontend_backend run for the same branch now waits for the stale run instead of killing
+# it.
 concurrency:
   group: ${{ inputs.mode == 'frontend' && 'railway-preview-frontend-trusted-origins' || format('railway-preview-{0}-{1}', inputs.branch, inputs.mode) }}
-  cancel-in-progress: ${{ inputs.mode != 'frontend' }}
+  cancel-in-progress: false
+  queue: max
 
 env:
   RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
@@ -105,19 +110,16 @@ jobs:
 
       - name: Derive a safe environment name
         id: env
-        # BRANCH bound via env, not interpolated — avoids script injection. Slug is lossy
-        # (capped at 18 chars, under Railway's ~32-char limit) so the hash is what actually
-        # guarantees uniqueness. Hash covers repo+branch, not just branch — otherwise a
-        # fork could open a same-named branch and its PR closing would compute the same
-        # name as a real preview, letting teardown delete someone else's resources.
+        # BRANCH/REPO bound via env, not interpolated — avoids script injection. Naming
+        # logic itself lives in .github/scripts/railway-preview-name.sh, shared with
+        # railway-preview-teardown.yml, so the two can't drift out of sync with each other.
         env:
           BRANCH: ${{ inputs.branch }}
           REPO: ${{ inputs.repo != '' && inputs.repo || github.repository }}
           MODE: ${{ inputs.mode }}
         run: |
-          slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//' | cut -c1-18 | sed 's/-$//')
-          hash=$(echo -n "${REPO}#${BRANCH}" | sha256sum | cut -c1-8)
-          name="pr-${slug}-${hash}"
+          source .github/scripts/railway-preview-name.sh
+          name=$(preview_base_name "$REPO" "$BRANCH")
           echo "name=${name}" >> "$GITHUB_OUTPUT"
           # frontend_backend gets its own "-fb-" names so it never collides with frontend
           # mode's dashboard for the same branch.
@@ -193,6 +195,8 @@ jobs:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
           BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
         run: |
+          failed=false
+
           delete_service() {
             local service="$1"
             if ! output=$(railway service delete --service "$service" --yes 2>&1); then
@@ -200,7 +204,7 @@ jobs:
               if echo "$output" | grep -qi "not found"; then
                 echo "No matching $service (or already deleted) — nothing to do."
               else
-                return 1
+                failed=true
               fi
             else
               echo "$output"
@@ -210,6 +214,9 @@ jobs:
           delete_service "$SERVICE_NAME"
           delete_service "$BACKEND_SERVICE_NAME"
           echo "Deleted services $SERVICE_NAME and $BACKEND_SERVICE_NAME." >> "$GITHUB_STEP_SUMMARY"
+
+          [ "$failed" = true ] && exit 1
+          exit 0
 
       # ---------------------------------------------------------------- deploy
       - name: Create preview environment (duplicate base)
@@ -336,11 +343,17 @@ jobs:
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
         run: |
-          DASHBOARD_URL=$(railway variables --service "$SERVICE_NAME" --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
-          if [ -z "$DASHBOARD_URL" ]; then
-            echo "::error::$SERVICE_NAME has no public domain yet — 'railway domain' may have failed."
-            exit 1
-          fi
+          DASHBOARD_URL=""
+          for attempt in $(seq 1 10); do
+            DASHBOARD_URL=$(railway variables --service "$SERVICE_NAME" --kv 2>/dev/null | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2- || true)
+            [ -n "$DASHBOARD_URL" ] && break
+            if [ "$attempt" -eq 10 ]; then
+              echo "::error::$SERVICE_NAME has no public domain after 10 attempts — 'railway domain' may have failed."
+              exit 1
+            fi
+            echo "$SERVICE_NAME has no public domain yet (attempt $attempt/10) — retrying in 5s..."
+            sleep 5
+          done
           NEW_ORIGIN="https://${DASHBOARD_URL}"
 
           API_VARS=$(railway variables --service cio-api --kv)
@@ -353,12 +366,20 @@ jobs:
             else
               UPDATED_TRUSTED="${CURRENT_TRUSTED},${NEW_ORIGIN}"
             fi
-            if ! output=$(railway variables --service cio-api --set "TRUSTED_ORIGINS=${UPDATED_TRUSTED}" 2>&1); then
-              echo "::error::Failed to trust ${NEW_ORIGIN} on cio-api's TRUSTED_ORIGINS. $output"
-              exit 1
-            fi
-            echo "$output"
-            echo "Trusted ${NEW_ORIGIN} on cio-api."
+            for attempt in $(seq 1 3); do
+              if output=$(railway variables --service cio-api --set "TRUSTED_ORIGINS=${UPDATED_TRUSTED}" 2>&1); then
+                echo "$output"
+                echo "Trusted ${NEW_ORIGIN} on cio-api."
+                break
+              fi
+              echo "$output"
+              if [ "$attempt" -eq 3 ]; then
+                echo "::error::Failed to trust ${NEW_ORIGIN} on cio-api's TRUSTED_ORIGINS after 3 attempts."
+                exit 1
+              fi
+              echo "Variable update failed (attempt $attempt/3) — retrying in 5s..."
+              sleep 5
+            done
           fi
 
       - name: Create backend preview service
