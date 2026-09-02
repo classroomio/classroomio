@@ -11,12 +11,16 @@
   import { calculateProgress, setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { getSetupPagePath, goToSetupItem } from '$features/setup/utils/setup-navigation';
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
 
   function handleRefresh() {
     if ($currentOrg.siteName) {
       setupProgressApi.fetchSetupProgress($currentOrg.siteName);
     }
   }
+
+  const setupSiteName = $derived($currentOrg.siteName || page.params.slug);
+  const setupPageHref = $derived(setupSiteName ? getSetupPagePath(setupSiteName) : undefined);
 
   function handleSetupIconClick(event: MouseEvent) {
     if (!setupPageHref || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -39,7 +43,6 @@
     })
   );
   const progressPercentage = $derived(calculateProgress(setupList));
-  const setupPageHref = $derived($currentOrg.siteName ? getSetupPagePath($currentOrg.siteName) : undefined);
 </script>
 
 {#if progressPercentage < 100}
