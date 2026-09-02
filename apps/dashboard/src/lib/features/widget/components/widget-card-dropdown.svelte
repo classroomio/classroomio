@@ -92,7 +92,12 @@
 
 {#if visibleActions.length > 0}
   <DropdownMenu.Root>
-    <DropdownMenu.Trigger onclick={(e) => e.preventDefault()}>
+    <DropdownMenu.Trigger
+      onclick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
       {#snippet child({ props })}
         <Button
           {...props}
