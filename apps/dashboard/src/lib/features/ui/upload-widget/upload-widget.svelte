@@ -26,6 +26,7 @@
     imageURL = url;
     onchange?.(url);
     snackbar.success('snackbar.landing_page_settings.success.complete');
+    $handleOpenWidget.open = false;
   }
 
   async function handleUpload(file: File): Promise<string> {
@@ -36,12 +37,7 @@
 
     isUploading = true;
     try {
-      const url = await uploadImage(file);
-      imageURL = url;
-      onchange?.(url);
-      snackbar.success('snackbar.landing_page_settings.success.complete');
-      $handleOpenWidget.open = false;
-      return url;
+      return await uploadImage(file);
     } finally {
       isUploading = false;
     }

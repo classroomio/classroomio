@@ -13,7 +13,7 @@ export interface EdraEditorProps {
   onUpdate?: (args: { editor: Editor; transaction: Transaction }) => void;
   class?: string;
   onImageUpload?: (file: File) => Promise<string>;
-  onSearchUnsplash?: (query: string) => Promise<any[]>;
+  onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
 }
 
 export interface EditorProps {
@@ -55,4 +55,11 @@ export interface ShouldShowProps {
   oldState?: EditorState;
   from: number;
   to: number;
+}
+
+export interface UnsplashPhoto {
+  id: string | number;
+  user: { name: string; username: string };
+  urls: { regular: string };
+  alt_description: string;
 }

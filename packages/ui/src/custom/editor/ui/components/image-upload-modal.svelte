@@ -8,13 +8,7 @@
   import UploadCloudIcon from '@lucide/svelte/icons/upload-cloud';
   import LoaderCircle from '@lucide/svelte/icons/loader-circle';
   import SearchIcon from '@lucide/svelte/icons/search';
-
-  interface UnsplashPhoto {
-    id: string | number;
-    user: { name: string; username: string };
-    urls: { regular: string };
-    alt_description: string;
-  }
+  import type { UnsplashPhoto } from '../../types';
 
   interface Props {
     editor?: Editor;

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { HTMLContent, Content, Editor } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
+  import type { UnsplashPhoto } from './types';
   import { EdraEditor, EdraToolBar, EdraBubbleMenu, EdraDragHandleExtended } from './ui';
   import { slide } from 'svelte/transition';
   import { cn } from '$src/tools';
@@ -29,7 +30,7 @@
     onEditorReady?: (editor: Editor) => void;
     onEditorDestroy?: () => void;
     onImageUpload?: (file: File) => Promise<string>;
-    onSearchUnsplash?: (query: string) => Promise<any[]>;
+    onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
   }
 
   let {
