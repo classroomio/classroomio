@@ -1395,11 +1395,11 @@ export async function deleteCourseSection(sectionId: string, dbClient: DbOrTxCli
  * @param courseIds Array of course IDs
  * @returns Array of { courseId, groupId } mappings
  */
-export async function getCourseGroupIds(courseIds: string[]) {
+export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxClient = db) {
   try {
     if (courseIds.length === 0) return [];
 
-    return db
+    return dbClient
       .select({ courseId: schema.course.id, groupId: schema.course.groupId })
       .from(schema.course)
       .where(inArray(schema.course.id, courseIds));

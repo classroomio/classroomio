@@ -275,8 +275,12 @@ export const getOrganizationByCustomDomain = async (customDomain: string): Promi
  * @param id Organization ID
  * @returns Organization or null if not found
  */
-export const getOrganizationById = async (id: string): Promise<TOrganization | null> => {
-  const [organization] = await db.select().from(schema.organization).where(eq(schema.organization.id, id)).limit(1);
+export const getOrganizationById = async (id: string, dbClient: DbOrTxClient = db): Promise<TOrganization | null> => {
+  const [organization] = await dbClient
+    .select()
+    .from(schema.organization)
+    .where(eq(schema.organization.id, id))
+    .limit(1);
 
   return organization || null;
 };
@@ -659,9 +663,18 @@ export const getOrganizationTeam = async (orgId: string) => {
 /**
  * Counts active organization members with the student role. Used to enforce per-plan student caps.
  */
-export async function countActiveStudents(orgId: string): Promise<number> {
+export async function lockOrganizationForStudentCapacity(orgId: string, dbClient: DbOrTxClient = db): Promise<void> {
+  await dbClient
+    .select({ id: schema.organization.id })
+    .from(schema.organization)
+    .where(eq(schema.organization.id, orgId))
+    .for('update')
+    .limit(1);
+}
+
+export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ count: count(schema.organizationmember.id) })
       .from(schema.organizationmember)
       .where(
@@ -678,9 +691,12 @@ export async function countActiveStudents(orgId: string): Promise<number> {
 /**
  * Gets verified admin emails for an organization. Used to notify admins about plan-limit events.
  */
-export async function getOrganizationAdminEmails(orgId: string): Promise<Array<{ email: string; fullname: string }>> {
+export async function getOrganizationAdminEmails(
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<Array<{ email: string; fullname: string }>> {
   try {
-    const result = await db
+    const result = await dbClient
       .select({
         email: schema.organizationmember.email,
         profileEmail: schema.profile.email,
@@ -1178,11 +1194,15 @@ export const cancelOrganizationPlan = async (
  * @param data Partial organization data to update. When `settings` is provided, it is deep-merged with existing settings.
  * @returns Updated organization record
  */
-export const updateOrganization = async (id: string, data: Partial<TOrganization>): Promise<TOrganization> => {
+export const updateOrganization = async (
+  id: string,
+  data: Partial<TOrganization>,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganization> => {
   let setData = { ...data };
 
   if (data.settings !== undefined) {
-    const [existing] = await db
+    const [existing] = await dbClient
       .select({ settings: schema.organization.settings })
       .from(schema.organization)
       .where(eq(schema.organization.id, id))
@@ -1212,7 +1232,7 @@ export const updateOrganization = async (id: string, data: Partial<TOrganization
     setData = { ...setData, settings: mergedSettings as TOrganization['settings'] };
   }
 
-  const [organization] = await db
+  const [organization] = await dbClient
     .update(schema.organization)
     .set(setData)
     .where(eq(schema.organization.id, id))
@@ -1238,8 +1258,8 @@ export const getOrganizationPlanStatus = async (orgId: string) => {
   return result;
 };
 
-export const getActiveOrganizationPlan = async (orgId: string) => {
-  const [plan] = await db
+export const getActiveOrganizationPlan = async (orgId: string, dbClient: DbOrTxClient = db) => {
+  const [plan] = await dbClient
     .select()
     .from(schema.organizationPlan)
     .where(and(eq(schema.organizationPlan.orgId, orgId), eq(schema.organizationPlan.isActive, true)))
@@ -1248,7 +1268,7 @@ export const getActiveOrganizationPlan = async (orgId: string) => {
   if (plan) return plan;
 
   // Secondary workspaces inherit their primary's plan.
-  const [org] = await db
+  const [org] = await dbClient
     .select({ parentOrganizationId: schema.organization.parentOrganizationId })
     .from(schema.organization)
     .where(eq(schema.organization.id, orgId))
@@ -1256,7 +1276,7 @@ export const getActiveOrganizationPlan = async (orgId: string) => {
 
   if (!org?.parentOrganizationId) return null;
 
-  const [parentPlan] = await db
+  const [parentPlan] = await dbClient
     .select()
     .from(schema.organizationPlan)
     .where(and(eq(schema.organizationPlan.orgId, org.parentOrganizationId), eq(schema.organizationPlan.isActive, true)))
