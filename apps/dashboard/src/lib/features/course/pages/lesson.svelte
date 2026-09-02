@@ -445,16 +445,6 @@
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <div class="flex flex-row items-center gap-2 lg:flex">
-          {#if mode === MODES.edit && window.innerWidth >= 1024}
-            <IconButton
-              onclick={() => (isVersionDrawerOpen = true)}
-              aria-label={$t('course.navItem.lessons.version_history.title')}
-              tooltip={$t('course.navItem.lessons.version_history.title')}
-            >
-              <HistoryIcon size={20} />
-            </IconButton>
-          {/if}
-
           {#if mode === MODES.edit}
             <span class="ui:text-muted-foreground text-sm" aria-live="polite">
               {#if lessonApi.isSaving}
@@ -471,6 +461,15 @@
               <Pencil size={20} />
             {/if}
           </IconButton>
+          {#if mode === MODES.edit && window.innerWidth >= 1024}
+            <IconButton
+              onclick={() => (isVersionDrawerOpen = true)}
+              aria-label={$t('course.navItem.lessons.version_history.title')}
+              tooltip={$t('course.navItem.lessons.version_history.title')}
+            >
+              <HistoryIcon size={20} />
+            </IconButton>
+          {/if}
         </div>
 
         <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
