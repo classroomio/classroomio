@@ -6,15 +6,21 @@ name: Railway Preview Teardown
 # envs/services made by the manual workflow.) This workflow has no record of which `mode`
 # created a given branch's preview (workflow_dispatch inputs aren't queryable from here),
 # so it attempts every possible deletion — a full_deploy environment, a frontend dashboard
-# service, and a frontend_backend api service — tolerating "not found" for whichever
+# service, and a frontend_backend dashboard+api pair — tolerating "not found" for whichever
 # wasn't created.
 #
 # Uses the same RAILWAY_API_TOKEN + RAILWAY_PROJECT_ID secrets as the deploy workflow.
-# Note: secrets are unavailable to PRs from forks, so this only tears down previews for
-# same-repo branches (which is where manual previews come from anyway).
-
+#
+# Trigger is `pull_request_target`, not `pull_request`: GitHub withholds repo secrets from
+# `pull_request`-triggered runs on fork PRs, which would otherwise mean a preview created
+# against a fork branch (railway-preview.yml's `repo` input explicitly supports this) never
+# gets torn down automatically. `pull_request_target` gets secrets even for fork PRs, and
+# the usual danger of that trigger — a fork's own workflow content or checked-out code
+# running with those secrets — doesn't apply here: this job has no `actions/checkout` step
+# and never executes any repository code, only reads `github.event.pull_request.head.ref`
+# and calls Railway's API.
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
 
 concurrency:
@@ -24,7 +30,6 @@ concurrency:
 jobs:
   teardown:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository
     env:
       RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
       RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
@@ -42,9 +47,11 @@ jobs:
           railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$BASE_ENV"
 
       - name: Delete the preview environment and/or preview service(s)
-        # Mirror the name derivation in railway-preview.yml so the names match (the
-        # full_deploy env name and the frontend/frontend_backend service names all share
-        # the same slug+hash).
+        # Mirror the name derivation in railway-preview.yml so the names match: the
+        # full_deploy env name and the frontend/frontend_backend service names all share the
+        # same slug+hash, but frontend_backend's pair carries a "-fb-" infix so it never
+        # collides with frontend's dashboard for the same branch (see railway-preview.yml's
+        # "Derive a safe environment name" step for why).
         # HEAD_REF is bound via env (not interpolated into the script) so a malicious
         # branch name can never be executed as shell — Actions expands ${{ }} as text
         # BEFORE bash parses it, so a raw `${{ ...head.ref }}` here is a script-injection hole.
@@ -55,7 +62,8 @@ jobs:
           hash=$(echo -n "$HEAD_REF" | sha256sum | cut -c1-8)
           env_name="pr-${slug}-${hash}"
           dashboard_service_name="${env_name}-dashboard"
-          backend_service_name="${env_name}-api"
+          fb_dashboard_service_name="${env_name}-fb-dashboard"
+          fb_backend_service_name="${env_name}-fb-api"
 
           echo "Attempting to delete environment: ${env_name}"
           if ! output=$(railway environment delete "${env_name}" --yes 2>&1); then
@@ -69,11 +77,13 @@ jobs:
             echo "$output"
           fi
 
-          # Untrust the dashboard's exact origin from cio-api's TRUSTED_ORIGINS before
-          # deleting it (mirrors railway-preview.yml's "Destroy dashboard-only preview" —
-          # see that step for why this is exact-origin, not a wildcard). Read the domain
-          # while the service still exists; best-effort, since this workflow doesn't know
-          # whether a `frontend`-mode preview for this branch ever existed.
+          # Untrust the frontend-mode dashboard's exact origin from cio-api's
+          # TRUSTED_ORIGINS before deleting it (mirrors railway-preview.yml's "Destroy
+          # dashboard-only preview" — see that step for why this is exact-origin, not a
+          # wildcard, and why a failed untrust must block deletion rather than warn and
+          # continue). Only frontend mode ever touches TRUSTED_ORIGINS — frontend_backend's
+          # pair trusts each other directly via DASHBOARD_ORIGIN, so its services need no
+          # untrust step here.
           dashboard_url=$(railway variables --service "${dashboard_service_name}" --kv 2>/dev/null | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2- || true)
           if [ -n "$dashboard_url" ]; then
             origin_to_remove="https://${dashboard_url}"
@@ -82,8 +92,11 @@ jobs:
             if echo "$current_trusted" | tr ',' '\n' | grep -qxF "$origin_to_remove"; then
               new_trusted=$(echo "$current_trusted" | tr ',' '\n' | grep -vxF "$origin_to_remove" | tr '\n' ',' | sed 's/,$//')
               if ! output=$(railway variables --service cio-api --set "TRUSTED_ORIGINS=${new_trusted}" 2>&1); then
-                echo "::warning::Failed to untrust ${origin_to_remove} from cio-api's TRUSTED_ORIGINS — continuing to delete the service anyway. $output"
+                echo "$output"
+                echo "::error::Failed to untrust ${origin_to_remove} from cio-api's TRUSTED_ORIGINS — refusing to delete ${dashboard_service_name} while its origin may still be trusted. Fix cio-api's reachability and re-run teardown (or action=destroy)."
+                exit 1
               else
+                echo "$output"
                 echo "Untrusted ${origin_to_remove} from cio-api."
               fi
             fi
@@ -101,11 +114,23 @@ jobs:
             echo "$output"
           fi
 
-          echo "Attempting to delete backend preview service: ${backend_service_name}"
-          if ! output=$(railway service delete --service "${backend_service_name}" --yes 2>&1); then
+          echo "Attempting to delete frontend_backend dashboard service: ${fb_dashboard_service_name}"
+          if ! output=$(railway service delete --service "${fb_dashboard_service_name}" --yes 2>&1); then
             echo "$output"
             if echo "$output" | grep -qi "not found"; then
-              echo "No matching backend preview service (or already deleted) — nothing to do."
+              echo "No matching frontend_backend dashboard service (or already deleted) — nothing to do."
+            else
+              exit 1
+            fi
+          else
+            echo "$output"
+          fi
+
+          echo "Attempting to delete frontend_backend api service: ${fb_backend_service_name}"
+          if ! output=$(railway service delete --service "${fb_backend_service_name}" --yes 2>&1); then
+            echo "$output"
+            if echo "$output" | grep -qi "not found"; then
+              echo "No matching frontend_backend api service (or already deleted) — nothing to do."
             else
               exit 1
             fi

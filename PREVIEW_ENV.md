@@ -37,15 +37,20 @@ Two mechanisms, both enabled:
   fresh dashboard+api pair inside `staging`, sharing its DB/Redis/MinIO; `frontend` creates
   just a dashboard service inside `staging`, wired to `staging`'s shared api (see below).
 - `action` — `deploy` (create/update) or `destroy` (delete).
-- `seed` — also load the full demo dataset (`admin@test.com` etc.); migrations + essential
-  seed always run on api boot regardless. Ignored outside `full_deploy` mode.
+- `seed` — also load the full demo dataset (`admin@test.com` etc.); ignored outside
+  `full_deploy` mode. Migrations + essential seed run on **that mode's own api boot**
+  regardless of this input — but that only happens for `full_deploy` (a fresh duplicated
+  `cio-api`) and doesn't apply to `frontend` (no new api boots at all) or `frontend_backend`
+  (its api boots with `SKIP_DB_SETUP=true`, so migrations are explicitly skipped — see that
+  mode's section below).
 
 The run prints the preview **Dashboard URL** in its job **summary**. Everything is named off
 `pr-<branch-slug>-<hash>` — an 8-character hash of the branch name is appended because the
 slug alone is lossy (e.g. `foo/bar` and `foo_bar` both slug to `foo-bar`) — as an
 **environment** for `full_deploy`, a `pr-<branch-slug>-<hash>-dashboard` **service** for
-`frontend`, or both `pr-<branch-slug>-<hash>-dashboard` and `pr-<branch-slug>-<hash>-api`
-**services** for `frontend_backend`.
+`frontend`, or both `pr-<branch-slug>-<hash>-fb-dashboard` and `pr-<branch-slug>-<hash>-fb-api`
+**services** for `frontend_backend` (the `-fb-` infix keeps it from colliding with a
+`frontend`-mode preview for the same branch).
 
 The deploy step starts the app-service build(s) **in parallel** (each `railway up --ci`
 streams its build logs and blocks until that service passes its deploy/healthcheck), then
@@ -80,11 +85,20 @@ Tear down with `action = destroy`, `mode = frontend`, and the same branch.
 
 For a change that touches both dashboard and API code but doesn't need its own isolated
 database. With `mode = frontend_backend`, the workflow creates **two new services**,
-`pr-<branch-slug>-<hash>-dashboard` and `pr-<branch-slug>-<hash>-api`, paired with each
-other — built from `docker/Dockerfile.dashboard`/`docker/Dockerfile.api` — but still
-pointed at `staging`'s shared Postgres, Redis, and MinIO. `staging`'s existing `cio-jobs`
-keeps handling background work for this preview too, since it reads off the same shared
-Redis queue regardless of which api enqueued a job — no dedicated jobs service is created.
+`pr-<branch-slug>-<hash>-fb-dashboard` and `pr-<branch-slug>-<hash>-fb-api`, paired with
+each other — built from `docker/Dockerfile.dashboard`/`docker/Dockerfile.api` — but still
+pointed at `staging`'s shared Postgres, Redis, and MinIO. The `-fb-` infix keeps these
+distinct from `frontend` mode's `...-dashboard`, so running one mode then the other for the
+same branch never collides with or reconfigures the other's service.
+
+`staging`'s existing `cio-jobs` keeps handling background work for this preview too, since
+it reads off the same shared Redis queue regardless of which api enqueued a job — no
+dedicated jobs service is created. This assumes job compatibility: if your branch renames a
+BullMQ job or changes its payload shape, `staging`'s `cio-jobs` (running whatever's
+currently on the `staging` branch) may not pick up the renamed job at all, or may mishandle
+the new payload. If your change touches job names/payloads, verify against `staging`'s
+current `cio-jobs` code, or use `full_deploy` instead (its duplicated environment gets its
+own `cio-jobs` built from the same branch).
 
 Because the new api and dashboard trust each other directly (`DASHBOARD_ORIGIN` on the new
 api references the new dashboard, the same way `full_deploy` previews' duplicated `cio-api`

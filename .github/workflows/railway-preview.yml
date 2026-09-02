@@ -33,14 +33,18 @@ name: Railway Preview Environment
 #   else on staging at that moment.
 #
 # mode: frontend_backend
-#   Like `frontend`, but also creates a fresh `<prname>-api` inside `staging`, paired with
-#   `<prname>-dashboard` (not staging's shared cio-api) — for testing a change that touches
-#   both dashboard and API code. Still shares staging's Postgres/Redis/MinIO (and its
-#   existing cio-jobs worker, since jobs reads off the shared Redis queue regardless of
-#   which api enqueued the work). `<prname>-api` runs with SKIP_DB_SETUP=true (staging's own
-#   cio-api remains the one that migrates), so a PR needing a new, unapplied DB migration
-#   should use `full_deploy` instead. No TRUSTED_ORIGINS change needed — this pair trusts
-#   each other directly via DASHBOARD_ORIGIN, the same way `full_deploy` previews do.
+#   Like `frontend`, but creates a fresh `<prname>-fb-api` inside `staging`, paired with a
+#   `<prname>-fb-dashboard` (not staging's shared cio-api, and NOT the same dashboard
+#   `frontend` mode would create for this branch — distinct names so the two modes never
+#   collide or silently reconfigure each other's service) — for testing a change that
+#   touches both dashboard and API code. Still shares staging's Postgres/Redis/MinIO (and
+#   its existing cio-jobs worker, since jobs reads off the shared Redis queue regardless of
+#   which api enqueued the work — this does assume the branch's job names/payloads stay
+#   compatible with whatever cio-jobs is currently running from `staging`). The api runs
+#   with SKIP_DB_SETUP=true (staging's own cio-api remains the one that migrates), so a PR
+#   needing a new, unapplied DB migration should use `full_deploy` instead. No
+#   TRUSTED_ORIGINS change needed — this pair trusts each other directly via
+#   DASHBOARD_ORIGIN, the same way `full_deploy` previews do.
 
 on:
   workflow_dispatch:
@@ -83,12 +87,15 @@ on:
           - skillshare-test
           - none
 
-# One run per branch+mode at a time; a newer run supersedes an in-flight one. Split by mode
-# so runs in different modes for the same branch don't cancel each other — they touch
-# different Railway resources (a whole environment vs. one or two services).
+# full_deploy/frontend_backend: one run per branch+mode at a time, newer supersedes an
+# in-flight one — different branches touch independent Railway resources, safe to run in
+# parallel. frontend: ALL runs (any branch) share one group and never cancel each other —
+# every frontend-mode run reads-modifies-writes the SAME shared cio-api TRUSTED_ORIGINS
+# variable, so concurrent runs for different branches must queue, not race (and cancelling
+# one mid-write would be worse than the race itself).
 concurrency:
-  group: railway-preview-${{ inputs.branch }}-${{ inputs.mode }}
-  cancel-in-progress: true
+  group: ${{ inputs.mode == 'frontend' && 'railway-preview-frontend-trusted-origins' || format('railway-preview-{0}-{1}', inputs.branch, inputs.mode) }}
+  cancel-in-progress: ${{ inputs.mode != 'frontend' }}
 
 env:
   RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
@@ -127,15 +134,25 @@ jobs:
         # actually guarantees uniqueness, so truncating the slug is safe.
         env:
           BRANCH: ${{ inputs.branch }}
+          MODE: ${{ inputs.mode }}
         run: |
           slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//' | cut -c1-18 | sed 's/-$//')
           hash=$(echo -n "$BRANCH" | sha256sum | cut -c1-8)
           name="pr-${slug}-${hash}"
           echo "name=${name}" >> "$GITHUB_OUTPUT"
           # frontend/frontend_backend modes create services inside staging itself rather
-          # than a new environment. Same slug+hash as the full_deploy env name.
-          echo "dashboard_service_name=${name}-dashboard" >> "$GITHUB_OUTPUT"
-          echo "backend_service_name=${name}-api" >> "$GITHUB_OUTPUT"
+          # than a new environment. Same slug+hash as the full_deploy env name, but with a
+          # mode-specific suffix so the two modes never collide on the same service for a
+          # branch — running frontend then frontend_backend (or vice versa) for the same
+          # branch must not silently reconfigure the other mode's service, or leave one
+          # orphaned when destroyed with the wrong mode.
+          if [ "$MODE" = "frontend_backend" ]; then
+            echo "dashboard_service_name=${name}-fb-dashboard" >> "$GITHUB_OUTPUT"
+            echo "backend_service_name=${name}-fb-api" >> "$GITHUB_OUTPUT"
+          else
+            echo "dashboard_service_name=${name}-dashboard" >> "$GITHUB_OUTPUT"
+            echo "backend_service_name=${name}-api" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Link to base project
         # `railway environment new`/`delete` take no --project/--workspace/--environment
@@ -163,9 +180,11 @@ jobs:
         # TRUSTED_ORIGINS (added at deploy time — see "Trust this preview's origin on
         # staging cio-api"). Read the service's own RAILWAY_PUBLIC_DOMAIN first: it still
         # exists at this point, so there's no need to reconstruct the Railway-generated
-        # domain string. Best-effort — an untrust failure warns but doesn't block deleting
-        # the service (a stale trusted-origin entry is harmless residue; an orphaned
-        # Railway service is not).
+        # domain string. Fail-closed: if the untrust call fails, stop here and do NOT
+        # delete the service — a stale trusted-origin entry with no live service behind it
+        # could later be inherited by an unrelated app that gets assigned that same
+        # now-freed Railway subdomain, which is worse than a service that keeps costing
+        # money until destroy is re-run.
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
         run: |
@@ -177,7 +196,9 @@ jobs:
             if echo "$CURRENT_TRUSTED" | tr ',' '\n' | grep -qxF "$ORIGIN_TO_REMOVE"; then
               NEW_TRUSTED=$(echo "$CURRENT_TRUSTED" | tr ',' '\n' | grep -vxF "$ORIGIN_TO_REMOVE" | tr '\n' ',' | sed 's/,$//')
               if ! output=$(railway variables --service cio-api --set "TRUSTED_ORIGINS=${NEW_TRUSTED}" 2>&1); then
-                echo "::warning::Failed to untrust ${ORIGIN_TO_REMOVE} from cio-api's TRUSTED_ORIGINS — continuing to delete the service anyway. $output"
+                echo "$output"
+                echo "::error::Failed to untrust ${ORIGIN_TO_REMOVE} from cio-api's TRUSTED_ORIGINS — refusing to delete $SERVICE_NAME while its origin may still be trusted. Fix cio-api's reachability and re-run destroy."
+                exit 1
               else
                 echo "$output"
                 echo "Untrusted ${ORIGIN_TO_REMOVE} from cio-api."
