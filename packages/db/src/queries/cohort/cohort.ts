@@ -335,6 +335,26 @@ export async function insertCohortMemberIfAbsent(
   }
 }
 
+/** Locks the cohort row so a concurrent status change can't slip past an accept in progress. */
+export async function lockCohortStatusForAccept(
+  dbClient: DbOrTxClient,
+  cohortId: string
+): Promise<{ status: string } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ status: schema.cohort.status })
+      .from(schema.cohort)
+      .where(eq(schema.cohort.id, cohortId))
+      .limit(1)
+      .for('update');
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockCohortStatusForAccept error:', error);
+    throw new Error(`Failed to lock cohort: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function removeCohortMember(memberId: string): Promise<TCohortMember | null> {
   try {
     const [deleted] = await db.delete(schema.cohortMember).where(eq(schema.cohortMember.id, memberId)).returning();
@@ -535,11 +555,11 @@ export async function getCoursesByCohort(
   }
 }
 
-export async function getCourseIdsByCohortIds(cohortIds: string[]): Promise<string[]> {
+export async function getCourseIdsByCohortIds(cohortIds: string[], dbClient: DbOrTxClient = db): Promise<string[]> {
   try {
     if (cohortIds.length === 0) return [];
 
-    const rows = await db
+    const rows = await dbClient
       .selectDistinct({ courseId: schema.cohortCourse.courseId })
       .from(schema.cohortCourse)
       .where(inArray(schema.cohortCourse.cohortId, cohortIds));

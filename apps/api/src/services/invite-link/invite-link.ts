@@ -190,8 +190,10 @@ export async function previewInviteLink(token: string): Promise<InviteLinkPrevie
 }
 
 /**
- * Joins the authenticated user to the link's resource. The link is never consumed,
- * and joining is idempotent. Only the enrollment step is delegated to the handler.
+ * Joins the authenticated user to the link's resource. The link is never consumed
+ * and joining is idempotent. Org membership, the resource re-check, and the
+ * enrollment write all commit in one transaction; only best-effort side effects
+ * (compliance backfill, cache invalidation, email) run after it commits.
  */
 export async function acceptInviteLink(token: string, user: TAuthUser, context: TInviteRequestContext = {}) {
   if (!user.id || !user.email) {
@@ -207,6 +209,7 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
   }
 
+  // Fast-fail before opening a transaction; re-checked under lock below.
   if (inviteContext.invite.isRevoked) {
     throw new AppError('This invite link has been disabled', ErrorCodes.UNAUTHORIZED, 403);
   }
@@ -221,7 +224,7 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
   const organizationId = inviteContext.organization.id;
   const inviteId = inviteContext.invite.id;
 
-  const wasAlreadyOrgMember = await db.transaction(async (tx) => {
+  const { wasAlreadyOrgMember, enrollResult } = await db.transaction(async (tx) => {
     // Re-read under lock: without this a revoke landing mid-request still grants access.
     const locked = await lockInviteLinkForAccept(tx, inviteId);
 
@@ -254,13 +257,14 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     // Unlike email invites, a share link proves nothing about the address, so the
     // email is left unverified and the dashboard's verify-email modal prompts them.
 
-    return Boolean(orgMemberId);
+    const enrollResult = await handler.enrollMembership(tx, inviteContext, user.id, normalizedEmail);
+
+    await incrementInviteLinkJoinCount(tx, inviteId);
+
+    return { wasAlreadyOrgMember: Boolean(orgMemberId), enrollResult };
   });
 
-  await handler.enroll(inviteContext, user.id, normalizedEmail);
-
-  // Counted only after enrollment succeeds, so a failed join isn't recorded as one.
-  await incrementInviteLinkJoinCount(db, inviteId);
+  await handler.afterCommit(inviteContext, user.id, normalizedEmail, enrollResult);
 
   console.info('acceptInviteLink joined', {
     inviteId,

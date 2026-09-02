@@ -1,12 +1,18 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
-import { getCourseGroupIds, getCourseWithOrgData } from '@cio/db/queries/course';
-import { getCohortById, getCourseIdsByCohortIds, insertCohortMemberIfAbsent } from '@cio/db/queries/cohort';
+import { getCourseGroupIds, getCourseWithOrgData, lockCourseStatusForAccept } from '@cio/db/queries/course';
+import {
+  getCohortById,
+  getCourseIdsByCohortIds,
+  insertCohortMemberIfAbsent,
+  lockCohortStatusForAccept
+} from '@cio/db/queries/cohort';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import type { DbOrTxClient } from '@cio/db/drizzle';
 import type { TInviteLinkWithContext } from '@cio/db/queries/invite-link';
 import type { TInviteLinkResourceType } from '@cio/utils/validation/invite-link';
 
@@ -20,11 +26,31 @@ export type InviteLinkPreview = {
   isResourceOpen: boolean;
 };
 
+export type InviteLinkEnrollResult = {
+  isFreshJoin: boolean;
+};
+
 type InviteLinkHandler = {
   resolveOrganizationId(resourceId: string): Promise<string>;
   preview(context: TInviteLinkWithContext): InviteLinkPreview;
-  /** Runs after the generic accept has committed org membership. */
-  enroll(context: TInviteLinkWithContext, profileId: string, email: string): Promise<void>;
+  /**
+   * Runs inside the accept transaction, after org membership is written. Re-locks and
+   * re-validates the resource so a concurrent close/archive can't slip past this
+   * accept, then performs the durable membership write. Throws if no longer open.
+   */
+  enrollMembership(
+    tx: DbOrTxClient,
+    context: TInviteLinkWithContext,
+    profileId: string,
+    email: string
+  ): Promise<InviteLinkEnrollResult>;
+  /** Runs after the transaction commits. Best-effort: compliance backfill, cache invalidation, email. */
+  afterCommit(
+    context: TInviteLinkWithContext,
+    profileId: string,
+    email: string,
+    result: InviteLinkEnrollResult
+  ): Promise<void>;
   redirectTo(context: TInviteLinkWithContext): string;
 };
 
@@ -98,24 +124,38 @@ const courseHandler: InviteLinkHandler = {
     };
   },
 
-  async enroll(context, profileId, email) {
+  async enrollMembership(tx, context, profileId, email) {
     const course = requireCourse(context);
-    const [groupMapping] = await getCourseGroupIds([course.id]);
+    const locked = await lockCourseStatusForAccept(tx, course.id);
 
-    if (!groupMapping?.groupId) {
+    if (!locked || locked.status !== 'ACTIVE') {
+      throw new AppError('This invite is no longer accepting new members', ErrorCodes.VALIDATION_ERROR, 403);
+    }
+
+    if (!locked.groupId) {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const existingMemberId = await getGroupMemberIdByGroupAndProfile(groupMapping.groupId, profileId);
+    const existingMemberId = await getGroupMemberIdByGroupAndProfile(locked.groupId, profileId, tx);
+    const isFreshJoin = !existingMemberId;
 
-    if (!existingMemberId) {
-      await addGroupMember({
-        groupId: groupMapping.groupId,
-        roleId: context.invite.roleId,
-        profileId,
-        email
-      });
+    if (isFreshJoin) {
+      await addGroupMember(
+        {
+          groupId: locked.groupId,
+          roleId: context.invite.roleId,
+          profileId,
+          email
+        },
+        tx
+      );
     }
+
+    return { isFreshJoin };
+  },
+
+  async afterCommit(context, profileId) {
+    const course = requireCourse(context);
 
     await ensureComplianceEnrollmentRecordsForProfiles([course.id], [profileId]);
     await invalidateOrgStats(context.organization.id);
@@ -149,23 +189,39 @@ const cohortHandler: InviteLinkHandler = {
     };
   },
 
-  async enroll(context, profileId, email) {
+  async enrollMembership(tx, context, profileId, email) {
     const cohort = requireCohort(context);
+    const locked = await lockCohortStatusForAccept(tx, cohort.id);
+
+    if (!locked || locked.status !== 'ACTIVE') {
+      throw new AppError('This invite is no longer accepting new members', ErrorCodes.VALIDATION_ERROR, 403);
+    }
+
     const roleId = context.invite.roleId;
 
     // Not `assignAudienceToCourses`: it filters to org-role STUDENT, silently skipping
     // org admins/tutors. Cohort role is independent of org role.
-    const createdMember = await insertCohortMemberIfAbsent({ cohortId: cohort.id, roleId, profileId, email });
+    const createdMember = await insertCohortMemberIfAbsent({ cohortId: cohort.id, roleId, profileId, email }, tx);
     const isFreshJoin = createdMember !== null;
 
     // Runs for existing members too, so re-opening the link repairs a partial join.
+    const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id], tx);
+
+    if (cohortCourseIds.length > 0) {
+      const courseGroups = await getCourseGroupIds(cohortCourseIds, tx);
+      const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+
+      await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId, tx);
+    }
+
+    return { isFreshJoin };
+  },
+
+  async afterCommit(context, profileId, email, { isFreshJoin }) {
+    const cohort = requireCohort(context);
     const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id]);
 
     if (cohortCourseIds.length > 0) {
-      const courseGroups = await getCourseGroupIds(cohortCourseIds);
-      const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
-
-      await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId);
       await ensureComplianceEnrollmentRecordsForProfiles(cohortCourseIds, [profileId]);
     }
 
