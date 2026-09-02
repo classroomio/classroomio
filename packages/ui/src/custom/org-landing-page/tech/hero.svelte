@@ -86,7 +86,7 @@
           <img
             src={hero.image}
             alt=""
-            class="ui:relative ui:w-full ui:h-[460px] ui:object-cover ui:border ui:border-[var(--landing-accent-fg)]/20"
+            class="ui:relative ui:w-full ui:h-auto ui:object-contain ui:border ui:border-[var(--landing-accent-fg)]/20"
           />
         </div>
       {/if}
