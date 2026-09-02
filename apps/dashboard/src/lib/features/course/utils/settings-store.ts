@@ -14,6 +14,7 @@ type CourseSettings = {
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
   progressionMode: 'free' | 'sequential';
+  commentsEnabled: boolean;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
   certificate: {
@@ -41,6 +42,7 @@ export const settings = writable<CourseSettings>({
   isPublished: false,
   isContentGroupingEnabled: true,
   progressionMode: 'free',
+  commentsEnabled: true,
   callout: null,
   welcomeEmailMessage: '',
   certificate: {
