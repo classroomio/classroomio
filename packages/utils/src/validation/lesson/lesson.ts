@@ -31,6 +31,7 @@ export const ZLessonUpdate = z.object({
   isComplete: z.boolean().optional(),
   completionPolicy: z.enum(['manual', 'video_watch', 'none']).optional(),
   videoWatchThreshold: z.number().int().min(1).max(100).optional(),
+  commentsEnabled: z.boolean().optional(),
   videoUrl: z.url().optional(),
   slideUrl: z.url().optional(),
   videos: z

@@ -96,6 +96,11 @@
     )
   );
   const lessonTitle = $derived(currentLessonContentItem?.title || lessonApi.lesson?.title || 'Lesson');
+  const showLessonComments = $derived(
+    Boolean($currentOrg.customization?.apps?.comments) &&
+      (courseApi.course?.metadata?.commentsEnabled ?? true) &&
+      (lessonApi.lesson?.commentsEnabled ?? true)
+  );
   const contentLockReason = $derived(getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson));
   const isStudentLessonStateReady = $derived.by(() => {
     if (!$isCourseLearnerView) {
@@ -259,6 +264,7 @@
         isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
         completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
         videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
+        commentsEnabled: lessonApi.lesson.commentsEnabled ?? true,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || [],
@@ -505,7 +511,7 @@
                 <Component {mode} {lessonId} {courseId} />
               {/each}
 
-              {#if $currentOrg.customization?.apps?.comments}
+              {#if showLessonComments}
                 <hr class="my-2" />
 
                 <Comments {lessonId} />
@@ -588,7 +594,7 @@
               <Component {mode} {lessonId} {courseId} />
             {/each}
 
-            {#if $currentOrg.customization?.apps?.comments}
+            {#if showLessonComments}
               <hr class="my-2" />
 
               <Comments {lessonId} />

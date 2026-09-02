@@ -2198,6 +2198,14 @@
           "watch_threshold": "Watch threshold (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Lesson comments",
+            "description": "Choose whether students can view and add comments on this lesson.",
+            "enabled": "Comments enabled",
+            "disabled": "Comments disabled",
+            "disabled_by_course": "Comments are disabled for the entire course, so this lesson setting cannot be changed.",
+            "change_course_setting": "Change this in course settings"
+          },
           "progression": {
             "heading": "Progression",
             "intro": "Choose how students complete this lesson and move through the course.",
@@ -3686,6 +3694,12 @@
         "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order.",
         "progression_mode_free": "Free — unlocked content is accessible",
         "progression_mode_sequential": "Sequential — complete prior items to unlock next",
+        "comments": {
+          "title": "Lesson comments",
+          "description": "Allow students to view and add comments across lessons in this course. Individual lessons can still disable comments.",
+          "enabled": "Comments enabled for this course",
+          "disabled": "Comments disabled for this course"
+        },
         "lesson_download": "Lesson download",
         "available": "Let registered students download lessons as PDF.",
         "course_download": "Course download",

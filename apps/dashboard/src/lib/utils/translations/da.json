@@ -801,6 +801,12 @@
         "progression_mode_description": "Styr om elever kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge.",
         "progression_mode_free": "Fri — ulåst indhold er tilgængeligt",
         "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
+        "comments": {
+          "title": "Lektionskommentarer",
+          "description": "Tillad elever at se og tilføje kommentarer i lektionerne på dette kursus. Kommentarer kan stadig deaktiveres for enkelte lektioner.",
+          "enabled": "Kommentarer aktiveret for dette kursus",
+          "disabled": "Kommentarer deaktiveret for dette kursus"
+        },
         "lesson_download": "Hent lektioner",
         "available": "Gør lektionen tilgængelig til download i pdf for tilmeldte studerende",
         "course_download": "Kursusdownload",
@@ -2218,6 +2224,14 @@
           "watch_threshold": "Segrænse (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Lektionskommentarer",
+            "description": "Vælg, om elever kan se og tilføje kommentarer til denne lektion.",
+            "enabled": "Kommentarer aktiveret",
+            "disabled": "Kommentarer deaktiveret",
+            "disabled_by_course": "Kommentarer er deaktiveret for hele kurset, så denne lektionsindstilling kan ikke ændres.",
+            "change_course_setting": "Skift dette i kursusindstillingerne"
+          },
           "progression": {
             "heading": "Progression",
             "intro": "Vælg hvordan elever fuldfører denne lektion og bevæger sig gennem kurset.",

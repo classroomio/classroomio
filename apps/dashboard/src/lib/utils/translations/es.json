@@ -801,6 +801,12 @@
         "progression_mode_description": "Controla si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden.",
         "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
         "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
+        "comments": {
+          "title": "Comentarios de las lecciones",
+          "description": "Permite que los estudiantes vean y añadan comentarios en las lecciones de este curso. También puedes desactivar los comentarios en lecciones individuales.",
+          "enabled": "Comentarios activados para este curso",
+          "disabled": "Comentarios desactivados para este curso"
+        },
         "lesson_download": "Descarga de lecciones",
         "available": "Haga que la lección esté disponible para descargar en pdf para estudiantes registrados",
         "course_download": "Descarga del curso",
@@ -2218,6 +2224,14 @@
           "watch_threshold": "Umbral de visualización (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Comentarios de la lección",
+            "description": "Elige si los estudiantes pueden ver y añadir comentarios en esta lección.",
+            "enabled": "Comentarios activados",
+            "disabled": "Comentarios desactivados",
+            "disabled_by_course": "Los comentarios están desactivados para todo el curso, por lo que no se puede cambiar esta configuración de la lección.",
+            "change_course_setting": "Cambiar en la configuración del curso"
+          },
           "progression": {
             "heading": "Progresión",
             "intro": "Elige cómo los estudiantes completan esta lección y avanzan en el curso.",

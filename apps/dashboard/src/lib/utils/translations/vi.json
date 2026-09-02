@@ -801,6 +801,12 @@
         "progression_mode_description": "Kiểm soát học viên có thể truy cập mọi nội dung đã mở khóa hay phải hoàn thành theo thứ tự.",
         "progression_mode_free": "Tự do — nội dung đã mở khóa có thể truy cập",
         "progression_mode_sequential": "Tuần tự — hoàn thành mục trước để mở mục tiếp theo",
+        "comments": {
+          "title": "Bình luận bài học",
+          "description": "Cho phép học viên xem và thêm bình luận trong các bài học của khóa học này. Bạn vẫn có thể tắt bình luận cho từng bài học.",
+          "enabled": "Đã bật bình luận cho khóa học này",
+          "disabled": "Đã tắt bình luận cho khóa học này"
+        },
         "lesson_download": "Bài học Tải về",
         "available": "Cung cấp Bài học để tải xuống dưới dạng pdf cho học viên đã đăng ký",
         "course_download": "Tải xuống khóa học",
@@ -2218,6 +2224,14 @@
           "watch_threshold": "Ngưỡng xem (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Bình luận bài học",
+            "description": "Chọn xem học viên có thể xem và thêm bình luận trong bài học này hay không.",
+            "enabled": "Đã bật bình luận",
+            "disabled": "Đã tắt bình luận",
+            "disabled_by_course": "Bình luận đã bị tắt cho toàn bộ khóa học, vì vậy không thể thay đổi cài đặt của bài học này.",
+            "change_course_setting": "Thay đổi trong cài đặt khóa học"
+          },
           "progression": {
             "heading": "Tiến trình",
             "intro": "Chọn cách học viên hoàn thành bài học này và đi qua khóa học.",

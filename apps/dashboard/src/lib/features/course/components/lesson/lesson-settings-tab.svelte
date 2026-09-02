@@ -2,6 +2,7 @@
   import { lessonApi, courseApi } from '$features/course/api';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Checkbox } from '@cio/ui/base/checkbox';
+  import { Switch } from '@cio/ui/base/switch';
   import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Field from '@cio/ui/base/field';
@@ -11,6 +12,8 @@
   import { toast } from '@cio/ui/base/sonner';
   import { classroomio } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
+  import { goAndHighlight } from '$lib/routing/go-and-highlight';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
   import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
 
@@ -119,6 +122,8 @@
   }
 
   const completionPolicy = $derived(lessonApi.lesson?.completionPolicy ?? 'manual');
+  const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
+  const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
   const videoWatchThreshold = $derived(lessonApi.lesson?.videoWatchThreshold ?? 95);
   const videos = $derived(lessonApi.lesson?.videos ?? []);
 
@@ -167,6 +172,21 @@
 
   function isVideoWatchEnforced(video: LessonVideo): boolean {
     return Boolean(video.watchEnforced);
+  }
+
+  function handleLessonCommentsChange(checked: boolean) {
+    if (!courseCommentsEnabled) return;
+
+    lessonApi.updateLessonState('commentsEnabled', checked);
+  }
+
+  function goToCourseCommentsSettings() {
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    goAndHighlight(ROUTE_NAME.COURSE_SETTINGS, ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS, {
+      id: courseId
+    });
   }
 </script>
 
@@ -340,6 +360,36 @@
           </Field.Field>
         {/if}
       </Field.Group>
+    </Field.Set>
+
+    <Field.Separator />
+
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.lessons.settings.comments.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.lessons.settings.comments.description')}</Field.Description>
+
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="lesson-comments"
+          checked={courseCommentsEnabled && lessonCommentsEnabled}
+          disabled={!courseCommentsEnabled}
+          onCheckedChange={handleLessonCommentsChange}
+        />
+        <Field.Label for="lesson-comments">
+          {courseCommentsEnabled && lessonCommentsEnabled
+            ? $t('course.navItem.lessons.settings.comments.enabled')
+            : $t('course.navItem.lessons.settings.comments.disabled')}
+        </Field.Label>
+      </Field.Field>
+
+      {#if !courseCommentsEnabled}
+        <Field.Description>
+          {$t('course.navItem.lessons.settings.comments.disabled_by_course')}
+          <Button variant="link" class="h-auto p-0" onclick={goToCourseCommentsSettings}>
+            {$t('course.navItem.lessons.settings.comments.change_course_setting')}
+          </Button>
+        </Field.Description>
+      {/if}
     </Field.Set>
   </Field.Group>
 </div>

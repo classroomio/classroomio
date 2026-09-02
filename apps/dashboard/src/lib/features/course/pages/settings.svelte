@@ -245,6 +245,7 @@
         allowSelfEnrollment: $settings.allowSelfEnrollment,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
+        commentsEnabled: $settings.commentsEnabled,
         welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
       } as NonNullable<Course['metadata']>;
 
@@ -334,6 +335,7 @@
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
+        commentsEnabled: course.metadata?.commentsEnabled ?? true,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
         certificate: {
@@ -914,6 +916,30 @@
       </RadioGroup.Root>
     </Field.Field>
   </Field.Set>
+
+  <Field.Separator />
+
+  <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS}>
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.settings.comments.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.settings.comments.description')}</Field.Description>
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="course-comments"
+          checked={$settings.commentsEnabled}
+          onCheckedChange={(checked) => {
+            $settings.commentsEnabled = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+        <Label for="course-comments">
+          {$settings.commentsEnabled
+            ? $t('course.navItem.settings.comments.enabled')
+            : $t('course.navItem.settings.comments.disabled')}
+        </Label>
+      </Field.Field>
+    </Field.Set>
+  </AttentionHighlight>
 
   <Field.Separator />
 
