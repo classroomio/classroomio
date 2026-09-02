@@ -97,6 +97,14 @@ pnpm dashboard:dev    # dashboard UI (port 5173)
 > Don't use `pnpm dev` — it tries to start the whole monorepo (~20 services) and
 > currently trips a turbo concurrency limit. The two scoped commands above are the
 > day-to-day workflow.
+> Before starting the dashboard, kill leftover watchers from previous sessions
+> (`pnpm api:dev` alone leaves ~10: `tsc --watch` x3 + `tsx watch` x7). macOS caps
+> concurrent FSEvents streams system-wide, and past that cap the `@cio/ui` CSS
+> watcher crashes with `Error: Error starting FSEvents stream`, taking
+> `pnpm dashboard:dev` down with it. Use `pnpm dashboard:dev:fresh` (kills this
+> checkout's leftover watchers, then starts the dashboard), `pnpm dev:kill-watchers`
+> on its own, or `pnpm dev:kill-watchers --all` to also stop other projects'/checkouts'
+> watchers.
 
 ### Step 7 — Log in
 Open http://localhost:5173/login → `admin@test.com` / `123456`.
