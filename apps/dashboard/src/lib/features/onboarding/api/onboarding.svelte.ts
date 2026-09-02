@@ -13,6 +13,13 @@ import { authClient } from '$lib/utils/services/auth/client';
 export class OnboardingApi extends BaseApiWithErrors {
   step: OnboardingStep = $state(ONBOARDING_STEPS.ORG_SETUP);
 
+  async markWelcomeEmailPending() {
+    await this.execute<(typeof classroomio.onboarding)['welcome-email-pending']['$post']>({
+      requestFn: () => classroomio.onboarding['welcome-email-pending'].$post({}),
+      logContext: 'marking welcome email pending'
+    });
+  }
+
   async submit(data: OnboardingField) {
     if (this.step === ONBOARDING_STEPS.ORG_SETUP) {
       return this.submitOrgSetup(data);

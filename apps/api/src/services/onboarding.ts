@@ -8,7 +8,7 @@ import {
   getOrganizationByProfileId,
   getOrganizationCount
 } from '@cio/db/queries';
-import { updateProfile } from '@cio/db/queries/auth';
+import { markWelcomeEmailPending, updateProfile } from '@cio/db/queries/auth';
 
 import { env } from '@cio/core/config/env';
 import { ROLE } from '@cio/utils/constants';
@@ -114,4 +114,8 @@ export async function updateUserOnboarding(userId: string, data: Partial<TProfil
       500
     );
   }
+}
+
+export async function markOnboardingWelcomeEmailPending(userId: string) {
+  await markWelcomeEmailPending(userId);
 }

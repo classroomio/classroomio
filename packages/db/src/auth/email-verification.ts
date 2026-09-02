@@ -2,7 +2,7 @@ import { type BetterAuthOptions } from 'better-auth';
 import { buildEmailBranding, buildEmailFromName, sendEmail } from '@cio/email';
 import { enqueueEmailSend } from '@cio/jobs';
 
-import { getProfileById } from '../queries/auth/profile';
+import { getProfileById, markWelcomeEmailSent } from '../queries/auth/profile';
 import { resolveVerificationOrg } from './resolve-verification-org';
 
 type EmailVerificationOptions = Parameters<
@@ -16,11 +16,13 @@ type ChangeEmailConfirmationOptions = Parameters<
 export interface WelcomeEmailDependencies {
   enqueueEmailSend: typeof enqueueEmailSend;
   getProfileById: typeof getProfileById;
+  markWelcomeEmailSent: typeof markWelcomeEmailSent;
 }
 
 const welcomeEmailDependencies: WelcomeEmailDependencies = {
   enqueueEmailSend,
-  getProfileById
+  getProfileById,
+  markWelcomeEmailSent
 };
 
 /**
@@ -96,44 +98,19 @@ export const sendVerificationEmail = async (options: EmailVerificationOptions) =
   });
 };
 
-function isOnboardingVerification(request?: Request): boolean {
-  if (!request) {
-    return false;
-  }
-
-  try {
-    const verificationUrl = new URL(request.url);
-    const callbackUrlValue = verificationUrl.searchParams.get('callbackURL');
-    if (!callbackUrlValue) {
-      return false;
-    }
-
-    const callbackUrl = new URL(callbackUrlValue, verificationUrl.origin);
-
-    return callbackUrl.searchParams.get('welcomePopup') === 'true';
-  } catch {
-    return false;
-  }
-}
-
 /**
  * Queues the account welcome email from Better Auth's successful verification
- * lifecycle. The callback marker limits this to dashboard onboarding and keeps
- * profile email changes and learner verification flows from sending it.
+ * lifecycle. The persisted onboarding flag limits this to dashboard signups
+ * and keeps profile email changes and learner verification flows from sending it.
  */
 export async function sendWelcomeEmailAfterVerification(
   user: { id: string; email: string },
-  request?: Request,
+  _request?: Request,
   dependencies: WelcomeEmailDependencies = welcomeEmailDependencies
 ): Promise<void> {
-  if (!isOnboardingVerification(request)) {
-    return;
-  }
-
   try {
     const profile = await dependencies.getProfileById(user.id);
-    if (!profile) {
-      console.error('sendWelcomeEmailAfterVerification error: profile not found', { userId: user.id });
+    if (!profile || !profile.welcomeEmailPending || profile.welcomeEmailSentAt) {
       return;
     }
 
@@ -148,6 +125,7 @@ export async function sendWelcomeEmailAfterVerification(
       },
       { idempotencyKey: `onboarding:welcome:${user.id}` }
     );
+    await dependencies.markWelcomeEmailSent(user.id);
   } catch (error) {
     // Verification has already succeeded at this point. Log queue failures
     // without turning a valid verification link into an error response.

@@ -1,5 +1,9 @@
 import { ZOnboardingCreateOrg, ZOnboardingUpdateMetadata } from '@cio/utils/validation/onboarding';
-import { createOrganizationWithOwner, updateUserOnboarding } from '@api/services/onboarding';
+import {
+  createOrganizationWithOwner,
+  markOnboardingWelcomeEmailPending,
+  updateUserOnboarding
+} from '@api/services/onboarding';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -29,5 +33,13 @@ export const onboardingRouter = new Hono()
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to update onboarding data');
+    }
+  })
+  .post('/welcome-email-pending', authMiddleware, async (c) => {
+    try {
+      await markOnboardingWelcomeEmailPending(c.get('user')!.id);
+      return c.json({ success: true, data: null }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to prepare welcome email');
     }
   });

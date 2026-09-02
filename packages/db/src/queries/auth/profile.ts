@@ -95,6 +95,17 @@ export const getProfileById = async (id: string) => {
   return profile;
 };
 
+export async function markWelcomeEmailPending(userId: string) {
+  await db.update(schema.profile).set({ welcomeEmailPending: true }).where(eq(schema.profile.id, userId));
+}
+
+export async function markWelcomeEmailSent(userId: string) {
+  await db
+    .update(schema.profile)
+    .set({ welcomeEmailPending: false, welcomeEmailSentAt: new Date().toISOString() })
+    .where(eq(schema.profile.id, userId));
+}
+
 export const getProfileByEmail = async (email: string) => {
   const [profile] = await db.select().from(schema.profile).where(eq(schema.profile.email, email)).limit(1);
 
