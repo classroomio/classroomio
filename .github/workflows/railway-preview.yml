@@ -20,15 +20,25 @@ name: Railway Preview Environment
 # migrations + essential seed). The optional organization seed adds only that demo
 # organization's users, memberships, and content.
 #
-# mode: frontend-only (extra one-time prerequisite)
+# mode: frontend (extra one-time prerequisite)
 #   Instead of duplicating the whole `staging` environment, this creates ONE new service
 #   (`<prname>-dashboard`) directly inside `staging`, wired via Railway reference variables
 #   to staging's already-running cio-api/cio-minio. No new project/environment/DB. Use this
 #   when you only need to test dashboard UI and are fine sharing staging's data/auth.
 #   One-time setup: add `https://*.up.railway.app` to staging cio-api's TRUSTED_ORIGINS
-#   variable (comma-append) so every frontend-only preview's Railway-generated domain is
+#   variable (comma-append) so every `frontend` preview's Railway-generated domain is
 #   trusted for CORS/session cookies without touching cio-api per PR (TRUSTED_ORIGINS is
 #   read once at boot and already supports `*` wildcards — see apps/api/src/constants).
+#
+# mode: frontend_backend
+#   Like `frontend`, but also creates a fresh `<prname>-api` inside `staging`, paired with
+#   `<prname>-dashboard` (not staging's shared cio-api) — for testing a change that touches
+#   both dashboard and API code. Still shares staging's Postgres/Redis/MinIO (and its
+#   existing cio-jobs worker, since jobs reads off the shared Redis queue regardless of
+#   which api enqueued the work). `<prname>-api` runs with SKIP_DB_SETUP=true (staging's own
+#   cio-api remains the one that migrates), so a PR needing a new, unapplied DB migration
+#   should use `full-deploy` instead. No TRUSTED_ORIGINS change needed — this pair trusts
+#   each other directly via DASHBOARD_ORIGIN, the same way `full-deploy` previews do.
 
 on:
   workflow_dispatch:
@@ -43,13 +53,14 @@ on:
         required: true
         type: string
       mode:
-        description: "full-stack = duplicate all of staging; frontend-only = one dashboard-only service inside staging, wired to staging's shared backend"
+        description: "full-deploy = duplicate all of staging; frontend_backend = fresh dashboard+api pair inside staging, sharing its DB/Redis/MinIO; frontend = dashboard only, wired to staging's shared api"
         required: true
         type: choice
-        default: full-stack
+        default: full-deploy
         options:
-          - full-stack
-          - frontend-only
+          - full-deploy
+          - frontend_backend
+          - frontend
       action:
         description: "deploy = create/update the preview; destroy = delete it"
         required: true
@@ -71,8 +82,8 @@ on:
           - none
 
 # One run per branch+mode at a time; a newer run supersedes an in-flight one. Split by mode
-# so a full-stack run and a frontend-only run for the same branch don't cancel each other —
-# they touch different Railway resources (a whole environment vs. one service).
+# so runs in different modes for the same branch don't cancel each other — they touch
+# different Railway resources (a whole environment vs. one or two services).
 concurrency:
   group: railway-preview-${{ inputs.branch }}-${{ inputs.mode }}
   cancel-in-progress: true
@@ -119,10 +130,10 @@ jobs:
           hash=$(echo -n "$BRANCH" | sha256sum | cut -c1-8)
           name="pr-${slug}-${hash}"
           echo "name=${name}" >> "$GITHUB_OUTPUT"
-          # frontend-only mode's dashboard-only service, created inside staging itself
-          # rather than a new environment. Same slug+hash as the full-stack env name, so
-          # it stays collision-safe and teardown can reconstruct it the same way.
+          # frontend/frontend_backend modes create services inside staging itself rather
+          # than a new environment. Same slug+hash as the full-deploy env name.
           echo "dashboard_service_name=${name}-dashboard" >> "$GITHUB_OUTPUT"
+          echo "backend_service_name=${name}-api" >> "$GITHUB_OUTPUT"
 
       - name: Link to base project
         # `railway environment new`/`delete` take no --project/--workspace/--environment
@@ -133,7 +144,7 @@ jobs:
 
       # ---------------------------------------------------------------- destroy
       - name: Destroy preview environment
-        if: ${{ inputs.action == 'destroy' && inputs.mode == 'full-stack' }}
+        if: ${{ inputs.action == 'destroy' && inputs.mode == 'full-deploy' }}
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
@@ -141,7 +152,7 @@ jobs:
           echo "Deleted environment $ENV_NAME." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Destroy dashboard-only preview
-        if: ${{ inputs.action == 'destroy' && inputs.mode == 'frontend-only' }}
+        if: ${{ inputs.action == 'destroy' && inputs.mode == 'frontend' }}
         # No environment to delete here — just the one service inside staging. `service
         # delete` runs against the linked project/environment established above, same as
         # `environment delete`.
@@ -160,9 +171,33 @@ jobs:
           fi
           echo "Deleted service $SERVICE_NAME." >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Destroy frontend_backend preview
+        if: ${{ inputs.action == 'destroy' && inputs.mode == 'frontend_backend' }}
+        env:
+          SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
+          BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
+        run: |
+          delete_service() {
+            local service="$1"
+            if ! output=$(railway service delete --service "$service" --yes 2>&1); then
+              echo "$output"
+              if echo "$output" | grep -qi "not found"; then
+                echo "No matching $service (or already deleted) — nothing to do."
+              else
+                return 1
+              fi
+            else
+              echo "$output"
+            fi
+          }
+
+          delete_service "$SERVICE_NAME"
+          delete_service "$BACKEND_SERVICE_NAME"
+          echo "Deleted services $SERVICE_NAME and $BACKEND_SERVICE_NAME." >> "$GITHUB_STEP_SUMMARY"
+
       # ---------------------------------------------------------------- deploy
       - name: Create preview environment (duplicate base)
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
         # `--duplicate` copies service config and variables but not public domains (see
         # domain-generation steps below). Only "already exists" is swallowed here — any
         # other failure must surface, not silently continue into a "Link" step that can't
@@ -182,7 +217,7 @@ jobs:
           fi
 
       - name: Link project + preview environment
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
         # A brand-new environment (first run for a branch) can take a moment to become
         # visible to `railway link` right after `railway environment new` returns — same
         # duplication-propagation lag as the cio-minio ServiceInstance race below. Retry
@@ -204,10 +239,14 @@ jobs:
             sleep 5
           done
 
-      # ------------------------------------------------------ frontend-only
+      # ------------------------------------------------------ frontend / frontend_backend
       # Stays linked to staging (from "Link to base project" above) — no new environment.
+      # Both modes need the same dashboard service + domain, created the same way; they
+      # only differ in what the dashboard's PRIVATE_SERVER_URL points at (see the
+      # "Configure dashboard-only preview variables" step below) and whether a paired
+      # <prname>-api also gets created.
       - name: Create dashboard-only preview service
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend-only' }}
+        if: ${{ inputs.action == 'deploy' && (inputs.mode == 'frontend' || inputs.mode == 'frontend_backend') }}
         # `railway add --service` has no "already exists" upsert behavior, so check first
         # (a rerun for the same branch should redeploy the existing service, not fail or
         # create a second one). Then poll until it's queryable — a freshly created
@@ -237,7 +276,7 @@ jobs:
           done
 
       - name: Generate domain for dashboard-only preview
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend-only' }}
+        if: ${{ inputs.action == 'deploy' && (inputs.mode == 'frontend' || inputs.mode == 'frontend_backend') }}
         # Must happen BEFORE the variables step below sets ORIGIN/PRIVATE_APP_HOST from
         # RAILWAY_PUBLIC_DOMAIN — same ordering requirement documented for DASHBOARD_ORIGIN
         # in RAILWAY_SETUP_GUIDE.md (an empty reference at boot crashes SvelteKit/better-auth
@@ -262,19 +301,102 @@ jobs:
             sleep 5
           done
 
+      - name: Create backend preview service
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend_backend' }}
+        # Same check-then-create + poll pattern as the dashboard service above, targeting
+        # the paired <prname>-api instead.
+        env:
+          BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
+        run: |
+          if railway variables --service "$BACKEND_SERVICE_NAME" --kv >/dev/null 2>&1; then
+            echo "Service $BACKEND_SERVICE_NAME already exists in $BASE_ENV; reusing it."
+          else
+            echo "Creating service $BACKEND_SERVICE_NAME in $BASE_ENV..."
+            railway add --service "$BACKEND_SERVICE_NAME"
+          fi
+
+          for attempt in $(seq 1 10); do
+            if railway variables --service "$BACKEND_SERVICE_NAME" --kv >/dev/null 2>&1; then
+              echo "Service $BACKEND_SERVICE_NAME is queryable."
+              break
+            fi
+            if [ "$attempt" -eq 10 ]; then
+              echo "::error::Service $BACKEND_SERVICE_NAME never became queryable after 10 attempts."
+              exit 1
+            fi
+            echo "Service not ready yet (attempt $attempt/10) — retrying in 5s..."
+            sleep 5
+          done
+
+      - name: Configure backend preview variables
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend_backend' }}
+        # Pairs this api with <prname>-dashboard (created above) rather than staging's
+        # shared cio-api, but still points at staging's Postgres/Redis/cio-minio — see the
+        # plan's "frontend_backend design" section for why. SKIP_DB_SETUP=true because this
+        # is a second api instance against staging's live Postgres: running migrations from
+        # two instances concurrently risks a race, and staging's own cio-api already keeps
+        # the shared schema current (same rule docker/docs/SELF_HOST.md documents for
+        # multiple API replicas). BETTER_AUTH_SECRET/PRIVATE_SERVER_KEY are generated fresh
+        # here since this is a new service, not a duplicate — cio-dashboard picks up
+        # PRIVATE_SERVER_KEY via a reference in the next step, so the value is never passed
+        # around outside Railway.
+        env:
+          BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
+          DASHBOARD_SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
+        run: |
+          D='$'
+          ref() { printf '%s{{%s}}' "$D" "$1"; }
+
+          set_var() {
+            local kv="$1"
+            local attempt output
+            for attempt in $(seq 1 3); do
+              if output=$(railway variables --service "$BACKEND_SERVICE_NAME" --set "$kv" 2>&1); then
+                echo "$output"
+                return 0
+              fi
+              echo "$output"
+              if [ "$attempt" -eq 3 ]; then
+                echo "::error::Setting '$kv' on $BACKEND_SERVICE_NAME failed after 3 attempts."
+                return 1
+              fi
+              echo "Variable update failed (attempt $attempt/3) — retrying in 5s..."
+              sleep 5
+            done
+          }
+
+          set_var "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.api"
+          set_var "PUBLIC_IS_SELFHOSTED=true"
+          set_var "SKIP_DB_SETUP=true"
+          set_var "DATABASE_URL=$(ref Postgres.DATABASE_URL)"
+          set_var "REDIS_URL=$(ref Redis.REDIS_URL)"
+          set_var "DASHBOARD_ORIGIN=https://$(ref "${DASHBOARD_SERVICE_NAME}.RAILWAY_PUBLIC_DOMAIN")"
+          set_var "BETTER_AUTH_SECRET=$(openssl rand -hex 32)"
+          set_var "PRIVATE_SERVER_KEY=$(openssl rand -hex 32)"
+          set_var "OBJECT_STORAGE_ENDPOINT=http://$(ref cio-minio.RAILWAY_PRIVATE_DOMAIN):9000"
+          set_var "OBJECT_STORAGE_PUBLIC_ENDPOINT=https://$(ref cio-minio.RAILWAY_PUBLIC_DOMAIN)"
+          set_var "OBJECT_STORAGE_ACCESS_KEY_ID=$(ref cio-minio.MINIO_ROOT_USER)"
+          set_var "OBJECT_STORAGE_SECRET_ACCESS_KEY=$(ref cio-minio.MINIO_ROOT_PASSWORD)"
+          set_var "OBJECT_STORAGE_FORCE_PATH_STYLE=true"
+          set_var "OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://$(ref cio-minio.RAILWAY_PUBLIC_DOMAIN)/media"
+
       - name: Configure dashboard-only preview variables
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend-only' }}
-        # Wires this standalone service to staging's already-running cio-api/cio-minio via
-        # Railway reference variables (${{ Service.VAR }}), same pattern documented in
-        # RAILWAY_SETUP_GUIDE.md's cio-dashboard step. No dynamic-domain propagation dance
-        # needed here (unlike the full-stack MinIO step below) because staging's
-        # cio-api/cio-minio domains are already stable, long-lived services.
+        if: ${{ inputs.action == 'deploy' && (inputs.mode == 'frontend' || inputs.mode == 'frontend_backend') }}
+        # Wires this standalone service to cio-minio (always staging's shared one) and to an
+        # api — staging's shared cio-api in `frontend` mode, or the freshly paired
+        # <prname>-api in `frontend_backend` mode — via Railway reference variables
+        # (${{ Service.VAR }}), same pattern documented in RAILWAY_SETUP_GUIDE.md's
+        # cio-dashboard step. No dynamic-domain propagation dance needed here (unlike the
+        # full-deploy MinIO step below) because these are already stable, long-lived
+        # services by the time this step runs.
         #
         # The `${{ }}` reference syntax is Railway's, not GitHub Actions' — building it via
         # a `$` variable + printf (rather than writing "${{" literally in this YAML) keeps
         # the runner from trying to evaluate it as its own expression.
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
+          MODE: ${{ inputs.mode }}
+          BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
         run: |
           D='$'
           ref() { printf '%s{{%s}}' "$D" "$1"; }
@@ -297,17 +419,23 @@ jobs:
             done
           }
 
+          if [ "$MODE" = "frontend_backend" ]; then
+            API_REF="$BACKEND_SERVICE_NAME"
+          else
+            API_REF="cio-api"
+          fi
+
           set_var "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.dashboard"
           set_var "PUBLIC_IS_SELFHOSTED=true"
           set_var "ORIGIN=https://$(ref RAILWAY_PUBLIC_DOMAIN)"
           set_var "PRIVATE_APP_HOST=$(ref RAILWAY_PUBLIC_DOMAIN)"
           set_var "PRIVATE_APP_SUBDOMAINS=app"
-          set_var "PRIVATE_SERVER_URL=http://$(ref cio-api.RAILWAY_PRIVATE_DOMAIN):$(ref cio-api.PORT)"
-          set_var "PRIVATE_SERVER_KEY=$(ref cio-api.PRIVATE_SERVER_KEY)"
+          set_var "PRIVATE_SERVER_URL=http://$(ref "${API_REF}.RAILWAY_PRIVATE_DOMAIN"):$(ref "${API_REF}.PORT")"
+          set_var "PRIVATE_SERVER_KEY=$(ref "${API_REF}.PRIVATE_SERVER_KEY")"
           set_var "CSP_MEDIA_SRC_DOMAINS=https://$(ref cio-minio.RAILWAY_PUBLIC_DOMAIN)"
 
       - name: Pin the Dockerfile per service
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
         # `railway up` uploads local source but does NOT carry the dashboard's "Dockerfile
         # Path" build setting, so without this Railway falls back to Railpack and builds
         # the whole monorepo as a generic Node app. (Same gotcha documented in the setup guide.)
@@ -317,7 +445,7 @@ jobs:
           railway variables --service cio-jobs       --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.jobs"
 
       - name: Seed MinIO buckets (fresh volume starts empty)
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
         # Railway has no minio-init sidecar and a duplicated env's MinIO volume is empty,
         # so create the buckets the app expects. Root creds carry over via duplication,
         # but the public domain doesn't, so generate one here (same as "Report the preview
@@ -469,38 +597,38 @@ jobs:
         # output, so it can never match a stale, unrelated deployment. A failure with no id
         # means nothing was created yet and fails immediately.
         #
-        # frontend-only mode deploys just the one dashboard-only service instead of the
-        # usual three — the script itself is unchanged, it just takes a shorter list.
+        # frontend/frontend_backend modes deploy a shorter list than the usual three — the
+        # script itself is unchanged either way.
         env:
-          APP_SERVICES: ${{ inputs.mode == 'frontend-only' && steps.env.outputs.dashboard_service_name || env.APP_SERVICES }}
+          APP_SERVICES: ${{ inputs.mode == 'frontend' && steps.env.outputs.dashboard_service_name || inputs.mode == 'frontend_backend' && format('{0} {1}', steps.env.outputs.backend_service_name, steps.env.outputs.dashboard_service_name) || env.APP_SERVICES }}
         run: bash .github/scripts/railway-preview-deploy.sh
 
       - name: Setup pnpm
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
         run: pnpm install --frozen-lockfile
 
       - name: Build workspace dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
         # @cio/db imports compiled output (e.g. @cio/utils/dist/...) from its workspace
         # deps, not source — they must be built before the seed script can import them.
         run: pnpm --filter @cio/db^... build
 
       - name: Seed the selected demo data (optional)
         id: seed
-        # frontend-only mode never seeds — it shares staging's own Postgres, which already
-        # has its own data; seeding it here would mutate the shared staging dataset.
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' && inputs.seed_organization != 'none' }}
+        # frontend/frontend_backend modes never seed — they share staging's own Postgres,
+        # which already has its own data; seeding it here would mutate the shared dataset.
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
         # GitHub runner, so seeding needs Postgres's own DATABASE_PUBLIC_URL instead
         # (railway.internal isn't reachable from here).
@@ -529,7 +657,7 @@ jobs:
           fi
 
       - name: Report the preview URL
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-stack' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
         # BRANCH / ENV_NAME bound via env (never interpolated into the script).
         env:
           BRANCH: ${{ inputs.branch }}
@@ -557,7 +685,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Report the dashboard-only preview URL
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend-only' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend' }}
         env:
           BRANCH: ${{ inputs.branch }}
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
@@ -578,5 +706,32 @@ jobs:
             echo "> it isn't isolated. Anything created while testing (users, uploads, org data)"
             echo "> lands in the shared \`$BASE_ENV\` dataset, not a private sandbox."
             echo ""
-            echo "Tear down with this workflow using **action = destroy**, **mode = frontend-only**, and the same branch."
+            echo "Tear down with this workflow using **action = destroy**, **mode = frontend**, and the same branch."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report the frontend_backend preview URL
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend_backend' }}
+        env:
+          BRANCH: ${{ inputs.branch }}
+          SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
+          BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
+        run: |
+          URL=$(railway variables --service "$SERVICE_NAME" --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+          if [ -z "$URL" ]; then
+            echo "::error::$SERVICE_NAME has no public domain — 'railway domain' may have failed."
+            exit 1
+          fi
+
+          {
+            echo "### frontend_backend Railway preview ready :rocket:"
+            echo ""
+            echo "- Services: \`$SERVICE_NAME\` + \`$BACKEND_SERVICE_NAME\` (branch \`$BRANCH\`), running inside \`$BASE_ENV\`"
+            echo "- Dashboard: https://${URL}"
+            echo ""
+            echo "> This preview has its own api ($BACKEND_SERVICE_NAME), but it shares staging's"
+            echo "> Postgres, Redis, and MinIO — not isolated. \`$BACKEND_SERVICE_NAME\` runs with"
+            echo "> SKIP_DB_SETUP=true, so it does NOT apply new migrations; if this branch adds one,"
+            echo "> use **mode = full-deploy** instead."
+            echo ""
+            echo "Tear down with this workflow using **action = destroy**, **mode = frontend_backend**, and the same branch."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -33,45 +33,71 @@ Two mechanisms, both enabled:
 
 **Actions → "Railway Preview Environment" → Run workflow:**
 - `branch` — the branch/PR head to deploy.
-- `mode` — `full-stack` (default) duplicates all of `staging`; `frontend-only` creates just
-  one dashboard-only service inside `staging` itself (see below).
+- `mode` — `full-deploy` (default) duplicates all of `staging`; `frontend_backend` creates a
+  fresh dashboard+api pair inside `staging`, sharing its DB/Redis/MinIO; `frontend` creates
+  just a dashboard service inside `staging`, wired to `staging`'s shared api (see below).
 - `action` — `deploy` (create/update) or `destroy` (delete).
 - `seed` — also load the full demo dataset (`admin@test.com` etc.); migrations + essential
-  seed always run on api boot regardless. Ignored in `frontend-only` mode.
+  seed always run on api boot regardless. Ignored outside `full-deploy` mode.
 
-The run prints the preview **Dashboard URL** in its job **summary**. The env (or, in
-`frontend-only` mode, the service) is named `pr-<branch-slug>-<hash>` — an 8-character hash
-of the branch name is appended because the slug alone is lossy (e.g. `foo/bar` and
-`foo_bar` both slug to `foo-bar`).
+The run prints the preview **Dashboard URL** in its job **summary**. The env (`full-deploy`)
+or service(s) (`frontend`/`frontend_backend`) are named `pr-<branch-slug>-<hash>[-suffix]` —
+an 8-character hash of the branch name is appended because the slug alone is lossy (e.g.
+`foo/bar` and `foo_bar` both slug to `foo-bar`).
 
 The deploy step starts the app-service build(s) **in parallel** (each `railway up --ci`
 streams its build logs and blocks until that service passes its deploy/healthcheck), then
 waits for all of them — so the printed URL is live the moment the run finishes, and a failed
 healthcheck fails the run rather than reporting a broken preview.
 
-#### `frontend-only` mode
+#### `frontend` mode
 
 Most changes only touch dashboard UI, so most previews don't need a whole duplicated stack.
-With `mode = frontend-only`, the workflow skips environment duplication entirely and
-instead creates **one new service**, `pr-<branch-slug>-<hash>-dashboard`, directly inside
-`staging` — built from the branch's `docker/Dockerfile.dashboard` and wired via Railway
-reference variables to `staging`'s already-running `cio-api` and `cio-minio`. No new
-project, environment, Postgres, Redis, or MinIO volume.
+With `mode = frontend`, the workflow skips environment duplication entirely and instead
+creates **one new service**, `pr-<branch-slug>-<hash>-dashboard`, directly inside `staging`
+— built from the branch's `docker/Dockerfile.dashboard` and wired via Railway reference
+variables to `staging`'s already-running `cio-api` and `cio-minio`. No new project,
+environment, Postgres, Redis, or MinIO volume.
 
 Trade-off: this preview is **not isolated**. It shares staging's Postgres, Redis, MinIO,
 and auth session store with `cio-api` — anything created while testing (users, uploads, org
-data) lands in the shared `staging` dataset, not a private sandbox. Use `full-stack` mode
+data) lands in the shared `staging` dataset, not a private sandbox. Use `full-deploy` mode
 instead when a change needs its own isolated backend/data.
 
 **One-time prerequisite:** `cio-api`'s `TRUSTED_ORIGINS` (read once at boot, comma-separated,
 supports `*` wildcards — see `apps/api/src/constants`) must include
-`https://*.up.railway.app` so every `frontend-only` preview's Railway-generated domain is
+`https://*.up.railway.app` so every `frontend` preview's Railway-generated domain is
 trusted for CORS/session cookies. Add this once to staging's `cio-api` service (Railway
 dashboard, or `railway variables --service cio-api --set 'TRUSTED_ORIGINS=...'` appended to
-whatever's already set) — it's never touched per-PR, so creating/destroying a
-`frontend-only` preview never mutates or restarts the shared `cio-api`.
+whatever's already set) — it's never touched per-PR, so creating/destroying a `frontend`
+preview never mutates or restarts the shared `cio-api`.
 
-Tear down with `action = destroy`, `mode = frontend-only`, and the same branch.
+Tear down with `action = destroy`, `mode = frontend`, and the same branch.
+
+#### `frontend_backend` mode
+
+For a change that touches both dashboard and API code but doesn't need its own isolated
+database. With `mode = frontend_backend`, the workflow creates **two new services**,
+`pr-<branch-slug>-<hash>-dashboard` and `pr-<branch-slug>-<hash>-api`, paired with each
+other — built from `docker/Dockerfile.dashboard`/`docker/Dockerfile.api` — but still
+pointed at `staging`'s shared Postgres, Redis, and MinIO. `staging`'s existing `cio-jobs`
+keeps handling background work for this preview too, since it reads off the same shared
+Redis queue regardless of which api enqueued a job — no dedicated jobs service is created.
+
+Because the new api and dashboard trust each other directly (`DASHBOARD_ORIGIN` on the new
+api references the new dashboard, the same way `full-deploy` previews' duplicated `cio-api`
+trusts its own duplicated dashboard), this mode needs **none** of `frontend` mode's
+`TRUSTED_ORIGINS` wildcard prerequisite.
+
+Trade-offs:
+- **Not isolated**: same shared-Postgres/Redis/MinIO caveat as `frontend` mode — signups,
+  uploads, and org data land in `staging`'s shared dataset.
+- **No new migrations**: the new api runs with `SKIP_DB_SETUP=true` (staging's own `cio-api`
+  remains the one that migrates the shared schema — running migrations from two instances
+  against the same live Postgres concurrently risks a race). **If your branch adds a new,
+  not-yet-applied DB migration, use `full-deploy` instead** — this mode won't apply it.
+
+Tear down with `action = destroy`, `mode = frontend_backend`, and the same branch.
 
 ## MinIO Storage
 
@@ -90,11 +116,14 @@ Tear down with `action = destroy`, `mode = frontend-only`, and the same branch.
 
 ## Database behavior
 
-- Each environment has its **own isolated Postgres** — previews start fresh.
-- `cio-api` **self-migrates on boot** (`docker/entrypoint-api.sh` → `pnpm --filter @cio/db
-  db:setup` → `drizzle-kit migrate` + essential seed). No manual migrate step needed.
-- **The branch must include a committed Drizzle migration** (`pnpm --filter @cio/db
-  db:generate`) — the boot path runs committed migrations only, not schema `push`.
+- **`full-deploy` previews** get their **own isolated Postgres** — they start fresh.
+  `cio-api` **self-migrates on boot** (`docker/entrypoint-api.sh` → `pnpm --filter @cio/db
+  db:setup` → `drizzle-kit migrate` + essential seed). No manual migrate step needed. The
+  branch must include a committed Drizzle migration (`pnpm --filter @cio/db db:generate`) —
+  the boot path runs committed migrations only, not schema `push`.
+- **`frontend`/`frontend_backend` previews share `staging`'s own Postgres** — no isolation,
+  and (for `frontend_backend`) the new api runs with `SKIP_DB_SETUP=true` so it never
+  migrates that shared schema itself. See each mode's section above for the trade-offs.
 
 ## Verify before relying on it (spike, do on a throwaway env)
 
@@ -111,8 +140,8 @@ Railway's docs are thin on a couple of points the workflow depends on — confir
 
 ## Cost
 
-Every full-stack environment (staging + each preview) runs the full 6 services incl. a
+Every `full-deploy` environment (staging + each preview) runs the full 6 services incl. a
 MinIO volume, so previews are not free while alive. Destroy them promptly — the teardown
 workflow handles PR close automatically; use `action = destroy` for previews whose PR is
-still open. `frontend-only` previews are much cheaper — just one extra service — since they
-share staging's Postgres/Redis/MinIO instead of duplicating them.
+still open. `frontend`/`frontend_backend` previews are much cheaper — one or two extra
+services — since they share staging's Postgres/Redis/MinIO instead of duplicating them.
