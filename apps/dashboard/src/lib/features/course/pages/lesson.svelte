@@ -97,6 +97,11 @@
     )
   );
   const lessonTitle = $derived(currentLessonContentItem?.title || lessonApi.lesson?.title || 'Lesson');
+  const showLessonComments = $derived(
+    Boolean($currentOrg.customization?.apps?.comments) &&
+      (courseApi.course?.metadata?.commentsEnabled ?? true) &&
+      (lessonApi.lesson?.commentsEnabled ?? true)
+  );
   const contentLockReason = $derived(getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson));
   const isStudentLessonStateReady = $derived.by(() => {
     if (!$isCourseLearnerView) {
@@ -211,12 +216,8 @@
 
   let timeoutId: NodeJS.Timeout | undefined;
 
-  /**
-   * Saves run one at a time. Clearing the debounce timer only cancels a save
-   * that hasn't started; a request already in flight can still land after a
-   * manual save, overwriting it with older content and leaving an autosave
-   * version stacked on top of the checkpoint.
-   */
+  // Saves run one at a time: clearing the debounce only cancels a save that has
+  // not started, so an in-flight autosave could still land after a manual one.
   let saveQueue: Promise<unknown> = Promise.resolve();
 
   function queueSave(versionIntent: TLessonVersionIntentRequest) {
@@ -269,11 +270,6 @@
     });
   }
 
-  /**
-   * @param versionIntent `auto` for the debounced autosave, which folds into the
-   *   author's open version session; `manual` when the author explicitly saves or
-   *   leaves edit mode, which cuts a checkpoint kept forever.
-   */
   async function saveLesson(versionIntent: TLessonVersionIntentRequest = 'auto') {
     if (!lessonApi.lesson) return false;
 
@@ -283,6 +279,7 @@
         isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
         completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
         videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
+        commentsEnabled: lessonApi.lesson.commentsEnabled ?? true,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || [],
@@ -531,7 +528,7 @@
                 <Component {mode} {lessonId} {courseId} />
               {/each}
 
-              {#if $currentOrg.customization?.apps?.comments}
+              {#if showLessonComments}
                 <hr class="my-2" />
 
                 <Comments {lessonId} />
@@ -614,7 +611,7 @@
               <Component {mode} {lessonId} {courseId} />
             {/each}
 
-            {#if $currentOrg.customization?.apps?.comments}
+            {#if showLessonComments}
               <hr class="my-2" />
 
               <Comments {lessonId} />
