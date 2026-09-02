@@ -146,7 +146,17 @@
           onSuccess: async (ctx) => {
             console.log('Signup successful');
             if (!$globalStore.isOrgSite) {
-              await onboardingApi.markWelcomeEmailPending();
+              let welcomeEmailPending = false;
+              for (let attempt = 0; attempt < 3 && !welcomeEmailPending; attempt++) {
+                welcomeEmailPending = await onboardingApi.markWelcomeEmailPending();
+                if (!welcomeEmailPending) {
+                  await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+                }
+              }
+
+              if (!welcomeEmailPending) {
+                throw new Error('Unable to prepare welcome email');
+              }
             }
             capturePosthogEvent('user_signed_up', {
               distinct_id: ctx.data.user.id || '',

@@ -117,5 +117,8 @@ export async function updateUserOnboarding(userId: string, data: Partial<TProfil
 }
 
 export async function markOnboardingWelcomeEmailPending(userId: string) {
-  await markWelcomeEmailPending(userId);
+  const updatedProfile = await markWelcomeEmailPending(userId);
+  if (!updatedProfile) {
+    throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+  }
 }

@@ -2,7 +2,7 @@ import { type BetterAuthOptions } from 'better-auth';
 import { buildEmailBranding, buildEmailFromName, sendEmail } from '@cio/email';
 import { enqueueEmailSend } from '@cio/jobs';
 
-import { getProfileById, markWelcomeEmailSent } from '../queries/auth/profile';
+import { clearWelcomeEmailPending, getProfileById, markWelcomeEmailSent } from '../queries/auth/profile';
 import { resolveVerificationOrg } from './resolve-verification-org';
 
 type EmailVerificationOptions = Parameters<
@@ -141,6 +141,8 @@ export async function sendWelcomeEmailAfterVerification(
 export const sendChangeEmailConfirmation = async (options: ChangeEmailConfirmationOptions) => {
   const { user, newEmail, url } = options;
   console.log('\nsendChangeEmailConfirmation', options);
+
+  await clearWelcomeEmailPending(user.id);
 
   await sendOrgAwareVerifyEmail({
     to: user.email,
