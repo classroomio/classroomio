@@ -36,7 +36,8 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
-import { assertStudentCapacityOrThrow } from '../organization/student-limit';
+import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
+import type { StudentMilestoneNotification } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
 import { db } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
@@ -993,7 +994,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         orgCustomDomain: organization.customDomain,
         orgIsCustomDomainVerified: organization.isCustomDomainVerified,
         orgAvatarUrl: organization.avatarUrl,
-        orgTheme: organization.theme
+        orgTheme: organization.theme,
+        studentMilestoneNotification: null
       };
     }
 
@@ -1027,9 +1029,12 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     }
 
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organization.id, user.id, tx);
+    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
 
     if (!orgMemberId) {
-      await assertStudentCapacityOrThrow(organization.id, 1);
+      studentMilestoneNotification = await assertStudentCapacityOrThrow(organization.id, 1, tx, {
+        deferNotification: true
+      });
 
       await createOrganizationMember(
         {
@@ -1080,6 +1085,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       orgIsCustomDomainVerified: organization.isCustomDomainVerified,
       orgAvatarUrl: organization.avatarUrl,
       orgTheme: organization.theme,
+      studentMilestoneNotification,
       welcomeEmailMessage:
         (course.metadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
     };
@@ -1087,6 +1093,12 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
   if (!result.alreadyJoined) {
     await invalidateOrgStats(result.organizationId);
+  }
+
+  if (result.studentMilestoneNotification) {
+    notifyStudentMilestone(result.studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
   }
 
   await ensureComplianceEnrollmentRecordsForProfiles([result.courseId], [user.id]);

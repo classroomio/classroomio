@@ -153,7 +153,7 @@
   {hideGoogleAuth}
   getPasswordAuthAlternative={ssoState.available ? getPasswordAuthAlternative : undefined}
 >
-  <div class="ui:flex ui:flex-col ui:gap-6">
+  <div class="flex flex-col gap-6">
     <Field.Field>
       <Field.Label for="email">{$t('login.email')}</Field.Label>
       <Field.Content>
@@ -178,9 +178,9 @@
     <!-- Password Section (when not force SSO and email/password not disabled) -->
     {#if !ssoState.required && !($globalStore.isOrgSite && $currentOrg.disableEmailPassword)}
       <Field.Field>
-        <div class="ui:flex ui:items-center ui:justify-between">
+        <div class="flex items-center justify-between">
           <Field.Label for="password">{$t('login.password')}</Field.Label>
-          <a class="ui:text-sm ui:text-primary ui:hover:underline" href={resolve('/forgot', {})}>
+          <a class="ui:text-primary text-sm hover:underline" href={resolve('/forgot', {})}>
             {$t('login.forgot')}
           </a>
         </div>
@@ -200,17 +200,15 @@
       </Field.Field>
 
       {#if submitError}
-        <p class="ui:text-sm ui:text-destructive">{submitError}</p>
+        <p class="ui:text-destructive text-sm">{submitError}</p>
       {/if}
 
-      <Button type="submit" disabled={loading} {loading} class="ui:w-full">
+      <Button type="submit" disabled={loading} {loading} class="w-full">
         {$t('login.login')}
       </Button>
     {:else if $globalStore.isOrgSite && $currentOrg.disableEmailPassword && !ssoState.available}
-      <div
-        class="ui:p-4 ui:bg-amber-50 ui:dark:bg-amber-900/20 ui:rounded-lg ui:border ui:border-amber-200 ui:dark:border-amber-800"
-      >
-        <p class="ui:text-sm ui:text-amber-800 ui:dark:text-amber-200">
+      <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
+        <p class="text-sm text-amber-800 dark:text-amber-200">
           {$t('settings.auth.login.email_password_disabled_message')}
         </p>
       </div>

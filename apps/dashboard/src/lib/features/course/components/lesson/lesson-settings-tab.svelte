@@ -193,7 +193,7 @@
             <input
               id="session-datetime"
               type="datetime-local"
-              class="ui:border-input ui:bg-background ui:text-foreground ui:shadow-xs ui:flex ui:h-9 ui:w-full ui:rounded-md ui:border ui:px-3 ui:py-1 ui:text-sm ui:outline-none"
+              class="ui:border-input ui:bg-background ui:text-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none"
               value={sessionWallClock}
               oninput={(e) => (sessionWallClock = (e.currentTarget as HTMLInputElement).value)}
             />
@@ -203,7 +203,7 @@
             <Field.Label for="session-timezone">{$t('course.navItem.lessons.session.timezone_label')}</Field.Label>
             <select
               id="session-timezone"
-              class="ui:border-input ui:bg-background ui:text-foreground ui:shadow-xs ui:flex ui:h-9 ui:w-full ui:rounded-md ui:border ui:px-3 ui:py-1 ui:text-sm ui:outline-none"
+              class="ui:border-input ui:bg-background ui:text-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none"
               value={sessionTimezone}
               onchange={(e) => (sessionTimezone = (e.currentTarget as HTMLSelectElement).value)}
             >

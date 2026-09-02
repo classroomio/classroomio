@@ -2277,7 +2277,9 @@
           "starts_in": "Zaczyna się w",
           "session_ended": "Sesja zakończona",
           "link_copied": "Link skopiowany"
-        }
+        },
+        "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
+        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później."
       },
       "news_feed": {
         "heading": "Kanał wiadomości",
@@ -2343,7 +2345,8 @@
           "description": "Czy na pewno chcesz usunąć ten kanał?",
           "no": "Nie",
           "yes": "Tak"
-        }
+        },
+        "student_body_content": "Do tej klasy nie dodano jeszcze żadnych wpisów."
       },
       "compliance": {
         "title": "Zgodność",
@@ -2647,7 +2650,12 @@
         "copy_course_url": "Kopiuj adres URL kursu"
       },
       "due_date": "Termin",
-      "valid_until": "Ważne do"
+      "valid_until": "Ważne do",
+      "student_empty_title": "Brak kursów",
+      "student_empty_description": "W tej organizacji nie ma jeszcze dostępnych kursów. Sprawdź później.",
+      "updated_at": "Zaktualizowano {date}",
+      "lessons_count": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
+      "exercises_count": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}"
     },
     "course_filter": {
       "date_created_newest": "Data utworzenia: od najnowszych",

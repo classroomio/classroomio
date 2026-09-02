@@ -2277,7 +2277,9 @@
           "starts_in": "Bắt đầu vào",
           "session_ended": "Phiên kết thúc",
           "link_copied": "Đã sao chép liên kết"
-        }
+        },
+        "student_share_your_knowledge": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
+        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau."
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -2343,7 +2345,8 @@
           "description": "Bạn có chắc chắn muốn xóa nguồn cấp dữ liệu này không?",
           "no": "Không",
           "yes": "Có"
-        }
+        },
+        "student_body_content": "Chưa có bài đăng nào được thực hiện cho lớp học này."
       },
       "compliance": {
         "title": "Tuân thủ",
@@ -2647,7 +2650,12 @@
         "copy_course_url": "Sao chép URL khóa học"
       },
       "due_date": "Hạn",
-      "valid_until": "Có hiệu lực cho đến khi"
+      "valid_until": "Có hiệu lực cho đến khi",
+      "student_empty_title": "Chưa có khóa học nào",
+      "student_empty_description": "Hiện chưa có khóa học nào trong tổ chức này. Vui lòng kiểm tra lại sau.",
+      "updated_at": "Đã cập nhật {date}",
+      "lessons_count": "{count, plural, other {# bài học}}",
+      "exercises_count": "{count, plural, other {# bài tập}}"
     },
     "course_filter": {
       "date_created_newest": "Ngày tạo: Mới nhất trước",

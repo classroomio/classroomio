@@ -94,7 +94,7 @@
             />
           </div>
           <Textarea
-            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
+            class="box-border [field-sizing:fixed] w-full max-w-full min-w-0 resize-y"
             value={settings.callout.description}
             placeholder={$t('settings.landing_page.editor.callout.description_placeholder')}
             oninput={(event) => setter(event.currentTarget.value, 'callout.description')}

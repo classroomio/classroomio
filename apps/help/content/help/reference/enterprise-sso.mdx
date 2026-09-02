@@ -1,0 +1,81 @@
+---
+title: Enterprise SSO
+description: Configure Single Sign-On (SSO) with OIDC for your organization.
+---
+
+ClassroomIO supports Single Sign-On (SSO) via OpenID Connect (OIDC), allowing your organization members to sign in using your existing identity provider (IdP). For step-by-step setup, start with [Set Up Enterprise SSO](/organization-and-team/enterprise-sso-setup).
+
+:::info[Enterprise Feature]
+SSO requires an **Enterprise** plan.
+
+**Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
+
+**Self-hosted:** requires an Enterprise license key. See [Self-Hosting → Enterprise & licensing](https://classroomio.com/docs/self-hosted/enterprise) for how to set it up.
+[Book a call](http://cal.com/classroomio/enterprise) to get your license.
+:::
+
+## Supported Providers
+
+We support OIDC-based SSO with the following identity providers:
+
+- **Okta**
+- **Google Workspace**
+- **Auth0**
+
+## How It Works
+
+### Academy Login
+When users visit your organization's custom domain (e.g., `yourorg.classroomio.com`), SSO is automatically detected and they can sign in directly with your IdP.
+
+### Shared App Login
+On the main ClassroomIO app (`app.classroomio.com`), users enter their email address first. If their email domain matches your configured SSO domain, they'll be prompted to sign in via SSO.
+
+## Access Policies
+
+### Force SSO
+When enabled, all users must sign in via SSO. Email/password login is disabled for your organization. This is recommended for security compliance.
+
+### Auto-Join
+When enabled, users who sign in via SSO with a matching email domain are automatically added to your organization. Otherwise, they must be invited first.
+
+:::note[Users can't auto-join]
+If a user isn't joining automatically, check that the email domain matches exactly (`company.com`, not `@company.com`), that Auto-Join is enabled in your SSO policy, and that the user has a verified email from your domain.
+:::
+
+### Break-Glass Access
+Allows organization admins to bypass SSO with email/password in case of emergency (e.g., IdP outage). Keep this enabled for safety.
+
+## User Provisioning
+
+### JIT (Just-In-Time) Provisioning
+Users are automatically provisioned when they first sign in via SSO:
+
+1. If the user has a pending invitation, they join with the invited role
+2. If auto-join is enabled, they join with the default role (typically Student)
+3. If neither, they can join later via invitation
+
+### Role Mapping
+Map IdP groups to ClassroomIO roles:
+
+- Admins → `ROLE.ADMIN` (1)
+- Tutors → `ROLE.TUTOR` (2)
+- Students → `ROLE.STUDENT` (3)
+
+Configure this in your SSO policy settings.
+
+## Security Notes
+
+- SSO secrets (client credentials) are encrypted at rest
+- All SSO login attempts are logged for audit purposes
+- Force SSO is enforced server-side, not just UI-level
+- Session management follows your IdP's policies
+
+## SAML Support
+
+SAML 2.0 support is planned for a future release. Currently, only OIDC is supported.
+
+## Related guides
+
+- [Set Up Enterprise SSO](/organization-and-team/enterprise-sso-setup) — connect Google Workspace, Okta, or Auth0
+- [Roles and Permissions](/organization-and-team/roles-and-permissions) — how ClassroomIO roles map to SSO role mapping
+- [Enterprise & licensing](https://classroomio.com/docs/self-hosted/enterprise) — setting `LICENSE_KEY` on self-hosted deployments

@@ -96,7 +96,7 @@
 
       <!-- DROPDOWN CONTENT -->
       <DropdownMenu.Content
-        class="ui:w-(--bits-dropdown-menu-anchor-width) ui:min-w-56 ui:rounded-lg"
+        class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
         side={sidebar.isMobile ? 'bottom' : 'right'}
         align="end"
         sideOffset={4}
