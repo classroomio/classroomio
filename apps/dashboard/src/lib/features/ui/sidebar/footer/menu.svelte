@@ -85,6 +85,7 @@
         {#snippet child({ props })}
           <Sidebar.MenuButton
             size="lg"
+            data-testid="app-user-menu-trigger"
             class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
             {...props}
           >

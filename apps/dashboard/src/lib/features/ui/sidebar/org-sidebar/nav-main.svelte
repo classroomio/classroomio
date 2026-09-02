@@ -21,7 +21,7 @@
       <Sidebar.GroupLabel>{$t(group.labelKey)}</Sidebar.GroupLabel>
     {/if}
     <Sidebar.Menu>
-      {#each group.items as item (item.title)}
+      {#each group.items as item (item.testId)}
         <Collapsible.Root open={item.isActive || item.isExpanded} class="group/collapsible">
           {#snippet child({ props })}
             <Sidebar.MenuItem {...props}>
@@ -43,7 +43,7 @@
                                 {/if}
                               </span>
                             {:else}
-                              <a href={item.url} {...props}>
+                              <a href={item.url} {...props} data-testid={item.testId}>
                                 {#if item.icon}
                                   {@const Icon = item.icon}
                                   <Icon {isHovered} size={16} class="custom" />
@@ -78,7 +78,7 @@
                             {/if}
                           </span>
                         {:else}
-                          <a href={item.url} {...props}>
+                          <a href={item.url} {...props} data-testid={item.testId}>
                             {#if item.icon}
                               {@const Icon = item.icon}
                               <Icon {isHovered} size={16} class="custom" />
@@ -99,11 +99,11 @@
               {#if item.items}
                 <Collapsible.Content>
                   <Sidebar.MenuSub>
-                    {#each item.items ?? [] as subItem (subItem.title)}
+                    {#each item.items ?? [] as subItem (subItem.testId)}
                       <Sidebar.MenuSubItem>
                         <Sidebar.MenuSubButton isActive={subItem.isActive}>
                           {#snippet child({ props })}
-                            <a href={subItem.url} {...props}>
+                            <a href={subItem.url} {...props} data-testid={subItem.testId}>
                               <span>{subItem.title}</span>
                               {#if subItem.isPaid && $isFreePlan}
                                 <PremiumIcon size={16} class="ui:text-primary ml-auto" />

@@ -25,6 +25,8 @@
     errorMessage?: string;
     helperMessage?: string;
     autoComplete?: boolean;
+    /** Stable hook for Playwright (`data-testid`). Prefer over CSS classes or translated labels. */
+    testId?: string;
     onchange?: (e: InputOnChangeEvent) => void;
     onInputChange?: (e: InputOnChangeEvent) => void;
     labelAction?: import('svelte').Snippet;
@@ -50,6 +52,7 @@
     errorMessage = '',
     helperMessage = '',
     autoComplete = true,
+    testId,
     onchange = () => {},
     onInputChange = () => {},
     labelAction
@@ -88,6 +91,7 @@
     class={inputClassName}
     bind:ref={inputRef}
     id={name || 'input-field'}
+    data-testid={testId}
     {type}
     {placeholder}
     bind:value
