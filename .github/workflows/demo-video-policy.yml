@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
 
@@ -36,6 +36,9 @@ jobs:
             const closeAfterMilliseconds = 3 * 24 * 60 * 60 * 1000;
             const videoHosts = new Set([
               'awesomescreenshot.com',
+              'cleanshot.com',
+              'share.cleanshot.com',
+              'cln.sh',
               'loom.com',
               'youtu.be',
               'youtube.com',
@@ -44,7 +47,10 @@ jobs:
               'screencastify.com',
               'screenpal.com',
               'screen.studio',
-              'share.descript.com'
+              'share.descript.com',
+              // CleanShot custom domains use the same share-page format without
+              // a media-file extension.
+              'shots.classai.work'
             ]);
 
             function extractDemoSection(body) {
@@ -85,9 +91,17 @@ jobs:
               if (hostname === 'github.com' && /\/(?:user-attachments\/assets|[^/]+\/[^/]+\/(?:assets|files))\//i.test(pathname)) return true;
               if (hostname === 'user-images.githubusercontent.com') return true;
               if ((hostname === 'zoom.us' || hostname.endsWith('.zoom.us')) && pathname.startsWith('/rec/')) return true;
+              if (hostname === 'cursor.com') {
+                const artifactPath = parsedUrl.searchParams.get('path') || '';
+
+                return /^\/agents\/[^/]+\/artifacts\/?$/i.test(pathname) &&
+                  /\.(?:mp4|mov|m4v|webm)(?:$|[/?#])/i.test(artifactPath);
+              }
               if (!videoHosts.has(hostname)) return false;
 
               if (hostname === 'awesomescreenshot.com') return pathname.startsWith('/video/');
+              if (hostname === 'cleanshot.com') return /^\/share\/[^/]+\/?$/i.test(pathname);
+              if (hostname === 'share.cleanshot.com' || hostname === 'cln.sh') return pathname !== '/';
               if (hostname === 'loom.com') return /^\/(?:share|embed)\//.test(pathname);
 
               return true;
