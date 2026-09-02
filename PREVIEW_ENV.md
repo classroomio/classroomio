@@ -33,18 +33,45 @@ Two mechanisms, both enabled:
 
 **Actions → "Railway Preview Environment" → Run workflow:**
 - `branch` — the branch/PR head to deploy.
+- `mode` — `full-stack` (default) duplicates all of `staging`; `frontend-only` creates just
+  one dashboard-only service inside `staging` itself (see below).
 - `action` — `deploy` (create/update) or `destroy` (delete).
 - `seed` — also load the full demo dataset (`admin@test.com` etc.); migrations + essential
-  seed always run on api boot regardless.
+  seed always run on api boot regardless. Ignored in `frontend-only` mode.
 
-The run prints the preview **Dashboard URL** in its job **summary**. The env is named
-`pr-<branch-slug>-<hash>` — an 8-character hash of the branch name is appended because the
-slug alone is lossy (e.g. `foo/bar` and `foo_bar` both slug to `foo-bar`).
+The run prints the preview **Dashboard URL** in its job **summary**. The env (or, in
+`frontend-only` mode, the service) is named `pr-<branch-slug>-<hash>` — an 8-character hash
+of the branch name is appended because the slug alone is lossy (e.g. `foo/bar` and
+`foo_bar` both slug to `foo-bar`).
 
-The deploy step starts the three app-service builds **in parallel** (each `railway up --ci`
+The deploy step starts the app-service build(s) **in parallel** (each `railway up --ci`
 streams its build logs and blocks until that service passes its deploy/healthcheck), then
 waits for all of them — so the printed URL is live the moment the run finishes, and a failed
 healthcheck fails the run rather than reporting a broken preview.
+
+#### `frontend-only` mode
+
+Most changes only touch dashboard UI, so most previews don't need a whole duplicated stack.
+With `mode = frontend-only`, the workflow skips environment duplication entirely and
+instead creates **one new service**, `pr-<branch-slug>-<hash>-dashboard`, directly inside
+`staging` — built from the branch's `docker/Dockerfile.dashboard` and wired via Railway
+reference variables to `staging`'s already-running `cio-api` and `cio-minio`. No new
+project, environment, Postgres, Redis, or MinIO volume.
+
+Trade-off: this preview is **not isolated**. It shares staging's Postgres, Redis, MinIO,
+and auth session store with `cio-api` — anything created while testing (users, uploads, org
+data) lands in the shared `staging` dataset, not a private sandbox. Use `full-stack` mode
+instead when a change needs its own isolated backend/data.
+
+**One-time prerequisite:** `cio-api`'s `TRUSTED_ORIGINS` (read once at boot, comma-separated,
+supports `*` wildcards — see `apps/api/src/constants`) must include
+`https://*.up.railway.app` so every `frontend-only` preview's Railway-generated domain is
+trusted for CORS/session cookies. Add this once to staging's `cio-api` service (Railway
+dashboard, or `railway variables --service cio-api --set 'TRUSTED_ORIGINS=...'` appended to
+whatever's already set) — it's never touched per-PR, so creating/destroying a
+`frontend-only` preview never mutates or restarts the shared `cio-api`.
+
+Tear down with `action = destroy`, `mode = frontend-only`, and the same branch.
 
 ## MinIO Storage
 
@@ -84,6 +111,8 @@ Railway's docs are thin on a couple of points the workflow depends on — confir
 
 ## Cost
 
-Every environment (staging + each preview) runs the full 6 services incl. a MinIO volume, so
-previews are not free while alive. Destroy them promptly — the teardown workflow handles PR
-close automatically; use `action = destroy` for previews whose PR is still open.
+Every full-stack environment (staging + each preview) runs the full 6 services incl. a
+MinIO volume, so previews are not free while alive. Destroy them promptly — the teardown
+workflow handles PR close automatically; use `action = destroy` for previews whose PR is
+still open. `frontend-only` previews are much cheaper — just one extra service — since they
+share staging's Postgres/Redis/MinIO instead of duplicating them.
