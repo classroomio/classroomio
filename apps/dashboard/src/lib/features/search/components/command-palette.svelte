@@ -92,10 +92,10 @@
 >
   <Command.Input bind:value={query} {placeholder} />
 
-  <Command.List class="ui:max-h-[460px] ui:p-2">
+  <Command.List class="max-h-[460px] p-2">
     {#if searchApi.isLoading}
-      <div class="ui:text-muted-foreground ui:flex ui:items-center ui:gap-2 ui:px-3 ui:py-3 ui:text-sm">
-        <Spinner class="ui:size-4" />
+      <div class="ui:text-muted-foreground flex items-center gap-2 px-3 py-3 text-sm">
+        <Spinner class="size-4" />
         {$t('app.search.command_palette.loading')}
       </div>
     {/if}
@@ -106,18 +106,18 @@
 
     {#if !hasQuery && filteredRecents.length > 0}
       <Command.Group heading={$t('app.search.command_palette.groups.recent')}>
-        <div class="ui:flex ui:items-center ui:justify-end ui:px-2 ui:pb-1">
-          <Button variant="ghost" size="sm" class="ui:h-6 ui:px-2 ui:text-xs" onclick={handleClearRecents}>
+        <div class="flex items-center justify-end px-2 pb-1">
+          <Button variant="ghost" size="sm" class="h-6 px-2 text-xs" onclick={handleClearRecents}>
             {$t('app.search.command_palette.clear_recents')}
           </Button>
         </div>
         {#each filteredRecents as item (item.kind + item.id)}
           <Command.Item value={`${item.kind}:${item.id}`} onSelect={() => handleSelect(item)}>
-            <Clock class="ui:size-4" />
-            <div class="ui:min-w-0 ui:flex-1">
-              <div class="ui:truncate ui:font-medium">{item.title}</div>
+            <Clock class="size-4" />
+            <div class="min-w-0 flex-1">
+              <div class="truncate font-medium">{item.title}</div>
               {#if item.subtitle}
-                <div class="ui:text-muted-foreground ui:truncate ui:text-xs">{item.subtitle}</div>
+                <div class="ui:text-muted-foreground truncate text-xs">{item.subtitle}</div>
               {/if}
             </div>
           </Command.Item>

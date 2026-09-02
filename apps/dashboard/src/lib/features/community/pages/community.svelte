@@ -104,7 +104,7 @@
               href={resolve(`/courses/[id]`, { id: question.courseId })}
               variant="ghost"
             >
-              <span class="text-muted-foreground p-0 text-xs">
+              <span class="ui:text-muted-foreground p-0 text-xs">
                 #{question?.courseTitle}
               </span>
             </Button>

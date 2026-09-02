@@ -26,7 +26,7 @@
 
 <div>
   <div class="mb-2 flex items-center justify-between">
-    <span class="ui:text-sm ui:font-medium">{$t('course.navItem.landing_page.editor.title.description')}</span>
+    <span class="text-sm font-medium">{$t('course.navItem.landing_page.editor.title.description')}</span>
     <AIGenerateButton
       courseId={course.id}
       format="html"

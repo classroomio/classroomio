@@ -26,6 +26,8 @@ export interface NavItem {
   title: string;
   url: string;
   path: string; // Actual path (e.g., '/settings') for breadcrumb generation
+  /** Stable Playwright hook, e.g. org-nav-courses */
+  testId: string;
   icon?: Component;
   isActive?: boolean;
   isExpanded?: boolean;
@@ -56,6 +58,8 @@ export interface NavItemConfig {
   isPaid?: boolean; // Show upgrade indicator for free plan users
   /** Plan-limited resource this item represents; when that resource is at its cap, `upgrade` is set. */
   upgradeResource?: PlanLimitResource;
+  /** Override the default org-nav-* test id derived from `path`. */
+  testId?: string;
   group?: string | null; // Group label key for sidebar grouping
 }
 
@@ -67,6 +71,20 @@ export interface NavGroup {
 export interface NestedRouteConfig {
   path: string; // Relative to parent (e.g., 'ask', 'customize-lms')
   titleKey: string; // Translation key or plain text
+}
+
+/** Stable sidebar nav hook from a route path segment (locale-independent). */
+export function orgNavTestId(path: string): string {
+  if (!path) {
+    return 'org-nav-home';
+  }
+
+  const slug = path.replace(/^\//, '').replace(/\//g, '-');
+  return `org-nav-${slug}`;
+}
+
+function resolveNavTestId(path: string, testId?: string): string {
+  return testId ?? orgNavTestId(path);
 }
 
 // Base navigation configuration structure
@@ -361,6 +379,7 @@ export function getOrgNavigationItems(
       title: t(config.titleKey),
       url: config.useHashUrl ? '#' : url,
       path: config.path, // Store actual path for breadcrumb generation
+      testId: resolveNavTestId(config.path, config.testId),
       icon: config.icon,
       matchPattern,
       isActive: isActive(pagePathname, fullPath, matchPattern),
@@ -386,6 +405,7 @@ export function getOrgNavigationItems(
           isActive: isActive(pagePathname, subUrl, subMatchPattern, true),
           url: subUrl,
           path: subConfig.path,
+          testId: resolveNavTestId(subConfig.path, subConfig.testId),
           matchPattern: subMatchPattern,
           isPaid: subConfig.isPaid,
           nestedRoutes: subConfig.nestedRoutes
@@ -445,6 +465,7 @@ export function getOrgNavigationGroups(
       title: t(config.titleKey),
       url: config.useHashUrl ? '#' : url,
       path: config.path,
+      testId: resolveNavTestId(config.path, config.testId),
       icon: config.icon,
       matchPattern,
       isActive: isActive(pathnameOnly, fullPath, matchPattern),
@@ -469,6 +490,7 @@ export function getOrgNavigationGroups(
           isActive: isActive(pathnameOnly, subUrl, subMatchPattern, true),
           url: subUrl,
           path: subConfig.path,
+          testId: resolveNavTestId(subConfig.path, subConfig.testId),
           matchPattern: subMatchPattern,
           isPaid: subConfig.isPaid,
           nestedRoutes: subConfig.nestedRoutes

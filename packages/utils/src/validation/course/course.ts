@@ -383,7 +383,8 @@ const ZCourseMetadataFields = z.object({
   sessionTimezone: z.string().max(64).nullish(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
-  progressionMode: z.enum(['free', 'sequential']).optional()
+  progressionMode: z.enum(['free', 'sequential']).optional(),
+  commentsEnabled: z.boolean().optional()
 });
 
 // Course metadata schema matching the database structure

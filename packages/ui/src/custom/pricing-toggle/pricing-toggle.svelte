@@ -28,7 +28,7 @@
   <button
     type="button"
     class="ui:cursor-pointer ui:rounded-full ui:px-3 ui:py-1 ui:text-sm ui:font-medium ui:transition-all ui:duration-500 ui:ease-in-out {isActive
-      ? 'ui:bg-gray-200 ui:text-secondary-foreground'
+      ? 'ui:bg-gray-200 ui:text-gray-900'
       : 'ui:text-muted-foreground ui:hover:text-accent-foreground'}"
     onclick={() => handleToggle(isMonth ? false : true)}
   >

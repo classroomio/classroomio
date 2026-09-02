@@ -54,19 +54,14 @@
 
 {#await loadEditor()}
   <div
-    class={cn(
-      'ui:relative ui:bg-background ui:flex ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
-      className
-    )}
+    class={cn('ui:bg-background relative flex w-full flex-col rounded-md border border-dashed', className)}
     aria-busy="true"
     aria-hidden="true"
   >
     {#if showToolBar}
-      <div class="ui:h-9 ui:shrink-0 ui:border-b ui:border-dashed ui:bg-muted/50" />
+      <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed" />
     {/if}
-    <div
-      class={cn('ui:relative ui:h-128 ui:w-full ui:overflow-auto ui:p-4 ui:animate-pulse ui:bg-muted/50', editorClass)}
-    />
+    <div class={cn('ui:bg-muted/50 relative h-128 w-full animate-pulse overflow-auto p-4', editorClass)} />
   </div>
 {:then { Editor }}
   <Editor

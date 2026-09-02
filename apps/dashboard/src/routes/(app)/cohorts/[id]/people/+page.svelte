@@ -197,7 +197,7 @@
                             />
                           {/if}
                           <Avatar.Fallback>
-                            <UserIcon class="ui:size-4 ui:text-muted-foreground" />
+                            <UserIcon class="ui:text-muted-foreground size-4" />
                           </Avatar.Fallback>
                         </Avatar.Root>
                         <div class="flex flex-col items-start lg:flex-row lg:items-center">

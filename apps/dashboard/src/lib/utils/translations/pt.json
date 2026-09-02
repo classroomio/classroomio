@@ -801,6 +801,12 @@
         "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou devem concluir os itens em ordem.",
         "progression_mode_free": "Livre — conteúdo desbloqueado é acessível",
         "progression_mode_sequential": "Sequencial — concluir itens anteriores para desbloquear o próximo",
+        "comments": {
+          "title": "Comentários das aulas",
+          "description": "Permita que os alunos vejam e adicionem comentários nas aulas deste curso. Os comentários ainda podem ser desativados em aulas individuais.",
+          "enabled": "Comentários ativados para este curso",
+          "disabled": "Comentários desativados para este curso"
+        },
         "lesson_download": "Download das lições",
         "available": "Disponibilizar a Lição para Download em PDF para alunos matriculados",
         "course_download": "Download do curso",
@@ -2218,6 +2224,14 @@
           "watch_threshold": "Limite de visualização (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Comentários da aula",
+            "description": "Escolha se os alunos podem ver e adicionar comentários nesta aula.",
+            "enabled": "Comentários ativados",
+            "disabled": "Comentários desativados",
+            "disabled_by_course": "Os comentários estão desativados para todo o curso, portanto esta configuração da aula não pode ser alterada.",
+            "change_course_setting": "Alterar nas configurações do curso"
+          },
           "progression": {
             "heading": "Progressão",
             "intro": "Escolha como os alunos concluem esta lição e avançam no curso.",
@@ -2277,7 +2291,9 @@
           "starts_in": "Começa em",
           "session_ended": "Sessão encerrada",
           "link_copied": "Link copiado"
-        }
+        },
+        "student_share_your_knowledge": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
+        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde."
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -2343,7 +2359,8 @@
           "description": "Tem certeza de que deseja excluir este feed?",
           "no": "Não",
           "yes": "Sim"
-        }
+        },
+        "student_body_content": "Nenhuma publicação foi feita nesta turma ainda."
       },
       "compliance": {
         "title": "Conformidade",
@@ -2647,7 +2664,12 @@
         "copy_course_url": "Copiar URL do curso"
       },
       "due_date": "Vencimento",
-      "valid_until": "Válido até"
+      "valid_until": "Válido até",
+      "student_empty_title": "Nenhum curso ainda",
+      "student_empty_description": "Ainda não há cursos disponíveis nesta organização. Volte mais tarde.",
+      "updated_at": "Atualizado em {date}",
+      "lessons_count": "{count, plural, one {# lição} other {# lições}}",
+      "exercises_count": "{count, plural, one {# exercício} other {# exercícios}}"
     },
     "course_filter": {
       "date_created_newest": "Data de criação: mais recentes primeiro",

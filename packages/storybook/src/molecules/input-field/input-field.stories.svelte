@@ -29,21 +29,21 @@
 
 <Story name="Default">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Student Name"
         placeholder="Enter student's full name"
         bind:value={studentName}
         name="student-name"
       />
-      <p class="ui:text-sm ui:text-muted-foreground">Value: {studentName || '(empty)'}</p>
+      <p class="ui:text-muted-foreground text-sm">Value: {studentName || '(empty)'}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="With Label and Helper">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Student Email"
         placeholder="student@example.com"
@@ -58,7 +58,7 @@
 
 <Story name="Required Field">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Course Title"
         placeholder="Introduction to Web Development"
@@ -73,7 +73,7 @@
 
 <Story name="Password Field">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <Field.Field>
         <Field.Label for="password">Password</Field.Label>
         <Field.Content>
@@ -81,14 +81,14 @@
           <Field.Description>Must be at least 8 characters long</Field.Description>
         </Field.Content>
       </Field.Field>
-      <p class="ui:text-sm ui:text-muted-foreground">Value: {password ? '•'.repeat(password.length) : '(empty)'}</p>
+      <p class="ui:text-muted-foreground text-sm">Value: {password ? '•'.repeat(password.length) : '(empty)'}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="With Error">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Student Email"
         placeholder="student@example.com"
@@ -103,7 +103,7 @@
 
 <Story name="Disabled">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Student Email"
         placeholder="student@example.com"
@@ -119,7 +119,7 @@
 
 <Story name="Number Input">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Course Price"
         placeholder="0.00"
@@ -135,7 +135,7 @@
 
 <Story name="Date Input">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Enrollment Date"
         bind:value={enrollmentDate}
@@ -149,7 +149,7 @@
 
 <Story name="Auto Focus">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Course Title"
         placeholder="Introduction to Web Development"
@@ -164,23 +164,39 @@
 
 <Story name="Custom Styling">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputField
         label="Student Name"
         placeholder="Enter student's full name"
         bind:value={studentName}
         name="student-name-custom"
-        className="ui:border ui:border-primary ui:rounded-lg ui:p-4"
+        className="border ui:border-primary rounded-lg p-4"
         inputClassName="ui:bg-primary/5"
-        labelClassName="ui:font-semibold ui:text-primary"
+        labelClassName="font-semibold ui:text-primary"
       />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="With testId">
+  {#snippet template()}
+    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+      <InputField
+        label="Student Email"
+        placeholder="student@example.com"
+        bind:value={studentEmail}
+        name="student-email-testid"
+        type="email"
+        testId="storybook-input-email"
+      />
+      <p class="ui:text-sm ui:text-muted-foreground">Playwright: page.getByTestId('storybook-input-email')</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="Form Example">
   {#snippet template()}
-    <form class="ui:flex ui:flex-col ui:gap-4 ui:w-96" onsubmit={(e) => e.preventDefault()}>
+    <form class="flex w-96 flex-col gap-4" onsubmit={(e) => e.preventDefault()}>
       <InputField
         label="Full Name"
         placeholder="John Doe"
@@ -206,7 +222,7 @@
       </Field.Field>
       <button
         type="submit"
-        class="ui:mt-2 ui:rounded-md ui:bg-primary ui:px-4 ui:py-2 ui:text-primary-foreground ui:hover:bg-primary/90"
+        class="ui:bg-primary ui:text-primary-foreground ui:hover:bg-primary/90 mt-2 rounded-md px-4 py-2"
       >
         Enroll Student
       </button>
