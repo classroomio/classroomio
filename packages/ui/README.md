@@ -244,6 +244,19 @@ This ensures that styles don't conflict with other Tailwind configurations in co
 
 **Note:** When adding new components or styles, always use the `ui:` prefix for all Tailwind classes.
 
+## Test hooks (`testId`)
+
+Optional `testId` props on form wrappers and buttons render `data-testid` for Playwright. Prefer roles/labels first; use `testId` when a flow needs a stable, locale-independent hook.
+
+Supported today: `InputField`, `TextareaField`, `CheckboxField`, `Button`. Fixed ids on `Page.SettingsActions` (`page-settings-save`, `page-settings-discard`).
+
+```svelte
+<InputField testId="course-settings-title" label="Title" bind:value={title} />
+<Button testId="course-create-submit">Create</Button>
+```
+
+Registry and naming rules: `e2e/README.md` and AGENTS.md § E2E test hooks.
+
 ## Component Exports
 
 Components are exported from the main `src/index.ts` file in an alphabetical order. There are two main export patterns:

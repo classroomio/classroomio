@@ -18,11 +18,11 @@ import { loginAsAdmin, openOrgCatalog, DEMO_ADMIN, DEFAULT_ORG_SITE_NAME } from 
 
 ## Rules
 
-- Use `getByRole`, `getByLabel`, or stable `#id` selectors (`#email`, `#password` on login).
+- Use `getByRole`, `getByLabel`, or `getByTestId` (see `e2e/README.md` for stable hooks like `auth-login-email`, `org-nav-courses`, `app-sidebar-trigger`).
 - Prefer the PR author's test plan; cover the main happy path only (keep the test under ~40 lines).
 - Start with `loginAsAdmin(page)` when testing authenticated dashboard flows.
 - For org public-site flows, call `openOrgCatalog(page)` before navigating.
-- Use relative paths for navigation (e.g. `await page.goto('/courses')`) — baseURL is `http://localhost:4173`.
+- Use relative paths for navigation (e.g. `await page.goto('/courses')`) — baseURL is `http://127.0.0.1:4173`.
 - Do not import `fs`, `child_process`, or call external URLs.
 - Export exactly one `test('...', async ({ page }) => { ... })`.
 

@@ -178,6 +178,22 @@
   {/snippet}
 </Story>
 
+<Story name="With testId">
+  {#snippet template()}
+    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+      <InputField
+        label="Student Email"
+        placeholder="student@example.com"
+        bind:value={studentEmail}
+        name="student-email-testid"
+        type="email"
+        testId="storybook-input-email"
+      />
+      <p class="ui:text-sm ui:text-muted-foreground">Playwright: page.getByTestId('storybook-input-email')</p>
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Form Example">
   {#snippet template()}
     <form class="ui:flex ui:flex-col ui:gap-4 ui:w-96" onsubmit={(e) => e.preventDefault()}>

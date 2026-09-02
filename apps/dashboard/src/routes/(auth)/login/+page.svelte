@@ -161,6 +161,7 @@
           id="email"
           type="email"
           bind:value={fields.email}
+          data-testid="auth-login-email"
           oninput={handleEmailChange}
           placeholder="you@domain.com"
           disabled={loading || isEmailPrefilled}
@@ -188,6 +189,7 @@
           <Password
             id="password"
             bind:value={fields.password}
+            data-testid="auth-login-password"
             placeholder="************"
             disabled={loading}
             aria-invalid={errors.password ? 'true' : undefined}
@@ -203,7 +205,7 @@
         <p class="ui:text-destructive text-sm">{submitError}</p>
       {/if}
 
-      <Button type="submit" disabled={loading} {loading} class="w-full">
+      <Button type="submit" disabled={loading} {loading} class="w-full" testId="auth-login-submit">
         {$t('login.login')}
       </Button>
     {:else if $globalStore.isOrgSite && $currentOrg.disableEmailPassword && !ssoState.available}

@@ -11,6 +11,7 @@ e2e/test-results/
 e2e/playwright-report/
 playwright-report/
 test-results/
+.github/demo-runs/pr-*.spec.ts
 
 # next.js
 .next/

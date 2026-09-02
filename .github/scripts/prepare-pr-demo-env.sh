@@ -15,7 +15,7 @@ cat > apps/api/.env <<EOF
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/classroomio
 REDIS_URL=redis://localhost:6379
 PUBLIC_SERVER_URL=http://localhost:3002
-TRUSTED_ORIGINS=http://localhost:4173
+TRUSTED_ORIGINS=http://localhost:4173,http://127.0.0.1:4173
 BETTER_AUTH_SECRET=${AUTH_SECRET}
 PRIVATE_SERVER_KEY=${SERVER_KEY}
 PUBLIC_IS_SELFHOSTED=false

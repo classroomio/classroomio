@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export const DEMO_ADMIN = {
   email: 'admin@test.com',
@@ -10,10 +10,10 @@ export const DEFAULT_ORG_SITE_NAME = 'udemy-test';
 /** Admin app login (cloud mode, localhost preview). */
 export async function loginAsAdmin(page: Page) {
   await page.goto('/login');
-  await page.locator('#email').fill(DEMO_ADMIN.email);
-  await page.locator('#password').fill(DEMO_ADMIN.password);
-  await page.getByRole('button', { name: 'Log In' }).click();
-  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 60_000 });
+  await page.getByTestId('auth-login-email').fill(DEMO_ADMIN.email);
+  await page.getByTestId('auth-login-password').fill(DEMO_ADMIN.password);
+  await page.getByTestId('auth-login-submit').click();
+  await expect(page.getByTestId('app-sidebar-trigger')).toBeVisible({ timeout: 60_000 });
 }
 
 /** Org public site (simulates tenant subdomain via ?org= locally). */

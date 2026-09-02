@@ -18,19 +18,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  demo:
-    name: Generate and run PR demo
+  generate:
+    name: Generate Playwright spec
     if: |
       github.event.label.name == 'demo-pr' &&
       github.event.sender.login == 'rotimi-best'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - name: Checkout PR head
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify checkout SHA
+        run: |
+          EXPECTED="${{ github.event.pull_request.head.sha }}"
+          ACTUAL="$(git rev-parse HEAD)"
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "::error::Expected ${EXPECTED} but checked out ${ACTUAL}"
+            exit 1
+          fi
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -41,8 +52,9 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      # Skip lifecycle scripts so PR-controlled postinstall cannot run before OpenCode.
+      - name: Install dependencies (no lifecycle scripts)
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Build OpenCode prompt
         id: demo-prompt
@@ -57,7 +69,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Generate Playwright spec (OpenCode)
-        uses: anomalyco/opencode/github@latest
+        uses: anomalyco/opencode/github@2410593023d2c61f05123c9b0faf189a28dfbeee
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
@@ -70,20 +82,71 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           SPEC=".github/demo-runs/pr-${PR_NUMBER}.spec.ts"
+          bash .github/scripts/validate-pr-demo-spec.sh "$SPEC"
+          echo "path=${SPEC}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload generated spec
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-demo-spec-${{ github.event.pull_request.number }}
+          path: ${{ steps.spec.outputs.path }}
+          retention-days: 1
+
+  run:
+    name: Run PR demo
+    needs: generate
+    if: |
+      github.event.label.name == 'demo-pr' &&
+      github.event.sender.login == 'rotimi-best'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify checkout SHA
+        run: |
+          EXPECTED="${{ github.event.pull_request.head.sha }}"
+          ACTUAL="$(git rev-parse HEAD)"
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "::error::Expected ${EXPECTED} but checked out ${ACTUAL}"
+            exit 1
+          fi
+
+      - name: Download generated spec
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-demo-spec-${{ github.event.pull_request.number }}
+          path: .github/demo-runs
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve spec path
+        id: spec
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          SPEC=".github/demo-runs/pr-${PR_NUMBER}.spec.ts"
           if [ ! -f "$SPEC" ]; then
-            echo "::error::OpenCode did not create ${SPEC}"
-            exit 1
-          fi
-          if ! grep -q 'test(' "$SPEC"; then
-            echo "::error::Generated spec is missing a Playwright test()"
-            exit 1
-          fi
-          if grep -Eq "require\\(['\"]child_process|from ['\"]fs['\"]|from ['\"]node:fs['\"]" "$SPEC"; then
-            echo "::error::Generated spec contains disallowed imports"
+            echo "::error::Downloaded spec missing at ${SPEC}"
             exit 1
           fi
           echo "path=${SPEC}" >> "$GITHUB_OUTPUT"
-          echo "Validated ${SPEC}"
 
       - name: Start Postgres and Redis
         run: docker compose -f docker-compose.yaml up -d postgres redis

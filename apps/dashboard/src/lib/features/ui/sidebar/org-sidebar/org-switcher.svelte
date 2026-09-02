@@ -94,7 +94,7 @@
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>
       {#snippet child({ props })}
-        <Breadcrumb.Link {...props} href="##" class="flex items-center gap-2">
+        <Breadcrumb.Link {...props} href="##" class="flex items-center gap-2" data-testid="org-switcher-trigger">
           {#if $currentOrg.name}
             <Avatar.Root class="flex size-6! items-center justify-center rounded-md!">
               <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
@@ -168,6 +168,7 @@
             <Sidebar.MenuButton
               {...props}
               size="lg"
+              data-testid="org-switcher-trigger"
               class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
             >
               {#if $currentOrg.name}
