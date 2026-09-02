@@ -431,6 +431,16 @@ export type TPaidCourseIssue = {
 };
 
 /**
+ * Whether a course is paid. An explicit `paymentEnabled` flag wins; otherwise
+ * a course is paid once it has a positive cost. Kept as a single shared helper
+ * so the dashboard/API/widget all compute "is paid" the same way.
+ */
+export function isCoursePaid(cost: number | null | undefined, metadata: TPaidCoursePayload['metadata']): boolean {
+  const paidFlag = metadata?.paymentEnabled;
+  return typeof paidFlag === 'boolean' ? paidFlag : typeof cost === 'number' && cost > 0;
+}
+
+/**
  * Validates the payment state of a single course, so callers can check the
  * final merged state (persisted course + pending update) and not just a
  * partial request payload.
@@ -441,9 +451,7 @@ export function validatePaidCourseState(
 ): TPaidCourseIssue[] {
   const issues: TPaidCourseIssue[] = [];
 
-  const paidFlag = metadata?.paymentEnabled;
-  const isPaid = typeof paidFlag === 'boolean' ? paidFlag : typeof cost === 'number' && cost > 0;
-  if (!isPaid) return issues;
+  if (!isCoursePaid(cost, metadata)) return issues;
 
   const paymentLink = typeof metadata?.paymentLink === 'string' ? metadata.paymentLink.trim() : '';
   if (!paymentLink) {

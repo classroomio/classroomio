@@ -12,11 +12,7 @@ import {
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
-import {
-  ZCourseLandingPageUpdate,
-  ZCourseLandingPageMetadataUpdateFields,
-  superRefinePaidCourse
-} from '@cio/utils/validation/course';
+import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdateFields } from '@cio/utils/validation/course';
 
 // courseId is NOT a parameter — it's injected from the authenticated request context.
 

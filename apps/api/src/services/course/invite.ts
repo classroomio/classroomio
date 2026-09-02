@@ -24,6 +24,7 @@ import {
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
+import { isCoursePaid } from '@cio/utils/validation/course';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
@@ -638,9 +639,10 @@ export async function enrollInCourse(
   }
 
   const { groupId, cost: courseCost, status, isPublished, title } = courseWithRelations;
-  const cost = Number(courseCost ?? 0);
-  const isPaidFlag = (courseWithRelations.metadata as { paymentEnabled?: boolean } | null | undefined)?.paymentEnabled;
-  const isPaidCourse = typeof isPaidFlag === 'boolean' ? isPaidFlag : cost > 0;
+  const isPaidCourse = isCoursePaid(
+    courseCost,
+    courseWithRelations.metadata as { paymentEnabled?: boolean; paymentLink?: string | null } | null | undefined
+  );
   if (isPaidCourse) {
     throw new AppError('Paid courses require an invite or payment', ErrorCodes.VALIDATION_ERROR, 400);
   }

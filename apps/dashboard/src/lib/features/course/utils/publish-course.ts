@@ -9,6 +9,34 @@ import { isCourseMissingComplianceDeadline } from './compliance-deadline';
 
 export type PublishCourseResult = { ok: true } | { ok: false; reason: 'missing_deadline' | 'failed' };
 
+/**
+ * Checks whether a paid course is missing the details required to go live
+ * (a payment link and a cost greater than 0). Returns a translation key for
+ * the error message and a `hasError` boolean so callers can show the message
+ * and stop the publish. Free courses always pass.
+ */
+export function validatePaidCourseForPublish(course: Course): { hasError: boolean; messageKey?: string } {
+  if (!isCoursePaid(course)) {
+    return { hasError: false };
+  }
+
+  const paymentLink = (course.metadata?.paymentLink ?? '').trim();
+
+  if (!paymentLink) {
+    return { hasError: true, messageKey: 'course.navItem.landing_page.editor.pricing_form.payment_required' };
+  }
+
+  if (!ZPaymentLink.safeParse(paymentLink).success) {
+    return { hasError: true, messageKey: 'course.navItem.landing_page.editor.pricing_form.payment_invalid_url' };
+  }
+
+  if (Number(course.cost ?? 0) <= 0) {
+    return { hasError: true, messageKey: 'course.navItem.landing_page.editor.pricing_form.payment_cost_required' };
+  }
+
+  return { hasError: false };
+}
+
 export async function publishCourse(course: Course): Promise<PublishCourseResult> {
   if (!course?.id) {
     return { ok: false, reason: 'failed' };
@@ -18,28 +46,10 @@ export async function publishCourse(course: Course): Promise<PublishCourseResult
     return { ok: false, reason: 'missing_deadline' };
   }
 
-  if (Number(course.cost) > 0 && !(course.metadata?.paymentLink ?? '').trim()) {
-    snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
-    return false;
-  }
-
-  if (isCoursePaid(course)) {
-    const paymentLink = (course.metadata?.paymentLink ?? '').trim();
-
-    if (!paymentLink) {
-      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
-      return false;
-    }
-
-    if (!ZPaymentLink.safeParse(paymentLink).success) {
-      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
-      return false;
-    }
-
-    if (Number(course.cost ?? 0) <= 0) {
-      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_cost_required');
-      return false;
-    }
+  const paidCourseCheck = validatePaidCourseForPublish(course);
+  if (paidCourseCheck.hasError && paidCourseCheck.messageKey) {
+    snackbar.error(paidCourseCheck.messageKey);
+    return { ok: false, reason: 'failed' };
   }
 
   let slug = course.slug?.trim() ? course.slug : undefined;
