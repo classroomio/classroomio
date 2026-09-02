@@ -1,0 +1,149 @@
+name: 'Draft changelog'
+
+# When a feature PR merges, opencode drafts a UserJot changelog post (status:
+# draft). A human reviews it in the UserJot dashboard, adds images/videos, and
+# publishes — publishing notifies subscribers (in-app widget + email).
+
+on:
+  pull_request:
+    types:
+      - closed
+
+env:
+  # Only user-facing feature/perf work gets a changelog draft.
+  TITLE_PATTERN: '^(feat|perf)(\([a-z0-9_-]+\))?(!)?:'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  draft-changelog:
+    name: Draft UserJot changelog
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.merged == true &&
+      (github.event.pull_request.user.login != 'dependabot[bot]')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check whether this PR needs a changelog
+        id: check
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          if echo "$PR_LABELS" | grep -qE '(^|,)changelog(,|$)'; then
+            echo "needs_changelog=true" >> "$GITHUB_OUTPUT"
+          elif echo "$PR_TITLE" | grep -qiE "$TITLE_PATTERN"; then
+            echo "needs_changelog=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_changelog=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify automation config
+        if: steps.check.outputs.needs_changelog == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENCODE_MODEL: ${{ vars.OPENCODE_MODEL }}
+          USERJOT_API_TOKEN: ${{ secrets.USERJOT_API_TOKEN }}
+        run: |
+          missing=()
+          [ -z "$ANTHROPIC_API_KEY" ] && missing+=('ANTHROPIC_API_KEY secret')
+          [ -z "$OPENCODE_MODEL" ] && missing+=('OPENCODE_MODEL repository variable (e.g. anthropic/claude-sonnet-4-6)')
+          [ -z "$USERJOT_API_TOKEN" ] && missing+=('USERJOT_API_TOKEN secret')
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "Missing GitHub config: ${missing[*]}"
+            echo "Set them under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Collect PR context
+        if: steps.check.outputs.needs_changelog == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          gh pr diff "$PR_NUMBER" > pr-diff.txt || echo '(diff unavailable)' > pr-diff.txt
+
+          {
+            echo "PR title: $PR_TITLE"
+            echo
+            echo "PR description:"
+            echo "${PR_BODY:-'(no description)'}"
+            echo
+            echo 'PR diff (may be truncated):'
+            head -c 60000 pr-diff.txt
+          } > pr-context.txt
+
+      - name: Draft changelog with opencode
+        if: steps.check.outputs.needs_changelog == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENCODE_MODEL: ${{ vars.OPENCODE_MODEL }}
+          # Keep CI drafting deterministic: no project config/MCP, no tools.
+          OPENCODE_DISABLE_PROJECT_CONFIG: '1'
+        run: |
+          npx -y opencode-ai@latest run \
+            --model "$OPENCODE_MODEL" \
+            --file pr-context.txt \
+            "$(cat .github/changelog-draft-prompt.md)" > changelog-draft.md
+
+          # Strip a whole-response code fence if the model added one.
+          first_line=$(head -n1 changelog-draft.md)
+          if [ "$first_line" = '```' ] || [ "$first_line" = '```markdown' ]; then
+            sed -i '1d;$d' changelog-draft.md
+          fi
+
+          if grep -qx 'SKIP' changelog-draft.md || [ ! -s changelog-draft.md ]; then
+            echo 'opencode decided this PR is not user-facing — no changelog draft.'
+            echo "skipped=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Expose draft text
+        id: output_draft
+        if: |
+          steps.check.outputs.needs_changelog == 'true' &&
+          env.skipped != 'true'
+        run: |
+          {
+            echo 'draft<<EOF'
+            head -c 4000 changelog-draft.md
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create UserJot draft
+        if: |
+          steps.check.outputs.needs_changelog == 'true' &&
+          env.skipped != 'true'
+        env:
+          USERJOT_API_TOKEN: ${{ secrets.USERJOT_API_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          node scripts/userjot-create-changelog.mjs \
+            --title "$PR_TITLE" \
+            --markdown-file changelog-draft.md
+
+      - name: Comment draft on the PR
+        if: |
+          steps.check.outputs.needs_changelog == 'true' &&
+          env.skipped != 'true'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: userjot-changelog-draft
+          message: |
+            📣 A **changelog draft** for this feature was created in UserJot.
+
+            Review it in the UserJot dashboard → Changelog, add screenshots/demo media, then publish. Publishing notifies customers in-app (widget) and by email.
+
+            Draft:
+
+            ---
+
+            ${{ steps.output_draft.outputs.draft }}

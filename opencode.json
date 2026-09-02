@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "userjot": {
+      "type": "remote",
+      "url": "https://api.userjot.com/v1/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer {env:USERJOT_API_TOKEN}"
+      }
+    }
+  }
+}
