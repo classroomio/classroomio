@@ -20,15 +20,17 @@ name: Railway Preview Environment
 # migrations + essential seed). The optional organization seed adds only that demo
 # organization's users, memberships, and content.
 #
-# mode: frontend (extra one-time prerequisite)
+# mode: frontend
 #   Instead of duplicating the whole `staging` environment, this creates ONE new service
 #   (`<prname>-dashboard`) directly inside `staging`, wired via Railway reference variables
 #   to staging's already-running cio-api/cio-minio. No new project/environment/DB. Use this
 #   when you only need to test dashboard UI and are fine sharing staging's data/auth.
-#   One-time setup: add `https://*.up.railway.app` to staging cio-api's TRUSTED_ORIGINS
-#   variable (comma-append) so every `frontend` preview's Railway-generated domain is
-#   trusted for CORS/session cookies without touching cio-api per PR (TRUSTED_ORIGINS is
-#   read once at boot and already supports `*` wildcards — see apps/api/src/constants).
+#   The workflow trusts this preview's EXACT dashboard origin on staging cio-api's
+#   TRUSTED_ORIGINS at deploy time and untrusts it at destroy time (comma-append/remove, no
+#   wildcard — an origin-suffix wildcard here would trust every app on that shared Railway
+#   domain, not just ours). No manual setup needed, but each deploy/destroy redeploys the
+#   shared staging cio-api (variable changes redeploy by default), briefly affecting anyone
+#   else on staging at that moment.
 #
 # mode: frontend_backend
 #   Like `frontend`, but also creates a fresh `<prname>-api` inside `staging`, paired with
@@ -156,9 +158,37 @@ jobs:
         # No environment to delete here — just the one service inside staging. `service
         # delete` runs against the linked project/environment established above, same as
         # `environment delete`.
+        #
+        # Before deleting, untrust this preview's exact origin from staging cio-api's
+        # TRUSTED_ORIGINS (added at deploy time — see "Trust this preview's origin on
+        # staging cio-api"). Read the service's own RAILWAY_PUBLIC_DOMAIN first: it still
+        # exists at this point, so there's no need to reconstruct the Railway-generated
+        # domain string. Best-effort — an untrust failure warns but doesn't block deleting
+        # the service (a stale trusted-origin entry is harmless residue; an orphaned
+        # Railway service is not).
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
         run: |
+          DASHBOARD_URL=$(railway variables --service "$SERVICE_NAME" --kv 2>/dev/null | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2- || true)
+          if [ -n "$DASHBOARD_URL" ]; then
+            ORIGIN_TO_REMOVE="https://${DASHBOARD_URL}"
+            API_VARS=$(railway variables --service cio-api --kv 2>/dev/null || true)
+            CURRENT_TRUSTED=$(echo "$API_VARS" | grep '^TRUSTED_ORIGINS=' | cut -d= -f2- || true)
+            if echo "$CURRENT_TRUSTED" | tr ',' '\n' | grep -qxF "$ORIGIN_TO_REMOVE"; then
+              NEW_TRUSTED=$(echo "$CURRENT_TRUSTED" | tr ',' '\n' | grep -vxF "$ORIGIN_TO_REMOVE" | tr '\n' ',' | sed 's/,$//')
+              if ! output=$(railway variables --service cio-api --set "TRUSTED_ORIGINS=${NEW_TRUSTED}" 2>&1); then
+                echo "::warning::Failed to untrust ${ORIGIN_TO_REMOVE} from cio-api's TRUSTED_ORIGINS — continuing to delete the service anyway. $output"
+              else
+                echo "$output"
+                echo "Untrusted ${ORIGIN_TO_REMOVE} from cio-api."
+              fi
+            else
+              echo "${ORIGIN_TO_REMOVE} was not in cio-api's TRUSTED_ORIGINS — nothing to untrust."
+            fi
+          else
+            echo "$SERVICE_NAME has no recorded domain (or doesn't exist) — nothing to untrust."
+          fi
+
           if ! output=$(railway service delete --service "$SERVICE_NAME" --yes 2>&1); then
             echo "$output"
             if echo "$output" | grep -qi "not found"; then
@@ -252,10 +282,34 @@ jobs:
         # create a second one). Then poll until it's queryable — a freshly created
         # ServiceInstance can take a moment to become visible, same propagation lag as the
         # cio-minio race further down.
+        #
+        # The check itself distinguishes a genuine "not found" from any other probe failure
+        # (auth hiccup, transient API error, rate limit) — the latter must NOT be treated as
+        # "doesn't exist," since that would call `railway add` on a service that may already
+        # exist. Ambiguous failures get a few retries before the step gives up loudly.
         env:
           SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
         run: |
-          if railway variables --service "$SERVICE_NAME" --kv >/dev/null 2>&1; then
+          exists=""
+          for attempt in $(seq 1 3); do
+            if output=$(railway variables --service "$SERVICE_NAME" --kv 2>&1); then
+              exists="yes"
+              break
+            fi
+            if echo "$output" | grep -qi "not found"; then
+              exists="no"
+              break
+            fi
+            echo "$output"
+            if [ "$attempt" -eq 3 ]; then
+              echo "::error::Could not determine whether $SERVICE_NAME exists after 3 attempts (last error above, not a 'not found')."
+              exit 1
+            fi
+            echo "Probe failed with an unexpected error (attempt $attempt/3) — retrying in 5s..."
+            sleep 5
+          done
+
+          if [ "$exists" = "yes" ]; then
             echo "Service $SERVICE_NAME already exists in $BASE_ENV; reusing it."
           else
             echo "Creating service $SERVICE_NAME in $BASE_ENV..."
@@ -301,14 +355,73 @@ jobs:
             sleep 5
           done
 
+      - name: Trust this preview's origin on staging cio-api
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend' }}
+        # `frontend` mode's dashboard talks directly to staging's shared cio-api, so its
+        # exact origin must be trusted for CORS/session cookies (cio-api's TRUSTED_ORIGINS,
+        # read once at boot — see apps/api/src/constants). Deliberately NOT a
+        # `*.up.railway.app` wildcard: that would trust every app on that shared Railway
+        # domain suffix, not just this one. Read-then-append only, never overwrite, so
+        # staging's existing trusted origins (localhost, *.classroomio.com, etc.) survive —
+        # same pattern already used for ALLOWED_EXTERNAL_DOMAINS in the full_deploy MinIO
+        # step below. Setting this variable redeploys cio-api (accepted cost for exact-match
+        # trust instead of a standing wildcard); untrusted again on destroy.
+        env:
+          SERVICE_NAME: ${{ steps.env.outputs.dashboard_service_name }}
+        run: |
+          DASHBOARD_URL=$(railway variables --service "$SERVICE_NAME" --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+          if [ -z "$DASHBOARD_URL" ]; then
+            echo "::error::$SERVICE_NAME has no public domain yet — 'railway domain' may have failed."
+            exit 1
+          fi
+          NEW_ORIGIN="https://${DASHBOARD_URL}"
+
+          API_VARS=$(railway variables --service cio-api --kv)
+          CURRENT_TRUSTED=$(echo "$API_VARS" | grep '^TRUSTED_ORIGINS=' | cut -d= -f2- || true)
+          if echo "$CURRENT_TRUSTED" | tr ',' '\n' | grep -qxF "$NEW_ORIGIN"; then
+            echo "${NEW_ORIGIN} is already trusted on cio-api."
+          else
+            if [ -z "$CURRENT_TRUSTED" ]; then
+              UPDATED_TRUSTED="$NEW_ORIGIN"
+            else
+              UPDATED_TRUSTED="${CURRENT_TRUSTED},${NEW_ORIGIN}"
+            fi
+            if ! output=$(railway variables --service cio-api --set "TRUSTED_ORIGINS=${UPDATED_TRUSTED}" 2>&1); then
+              echo "::error::Failed to trust ${NEW_ORIGIN} on cio-api's TRUSTED_ORIGINS. $output"
+              exit 1
+            fi
+            echo "$output"
+            echo "Trusted ${NEW_ORIGIN} on cio-api."
+          fi
+
       - name: Create backend preview service
         if: ${{ inputs.action == 'deploy' && inputs.mode == 'frontend_backend' }}
-        # Same check-then-create + poll pattern as the dashboard service above, targeting
-        # the paired <prname>-api instead.
+        # Same check-then-create + poll pattern as the dashboard service above (including
+        # the not-found-vs-other-failure distinction), targeting the paired <prname>-api
+        # instead.
         env:
           BACKEND_SERVICE_NAME: ${{ steps.env.outputs.backend_service_name }}
         run: |
-          if railway variables --service "$BACKEND_SERVICE_NAME" --kv >/dev/null 2>&1; then
+          exists=""
+          for attempt in $(seq 1 3); do
+            if output=$(railway variables --service "$BACKEND_SERVICE_NAME" --kv 2>&1); then
+              exists="yes"
+              break
+            fi
+            if echo "$output" | grep -qi "not found"; then
+              exists="no"
+              break
+            fi
+            echo "$output"
+            if [ "$attempt" -eq 3 ]; then
+              echo "::error::Could not determine whether $BACKEND_SERVICE_NAME exists after 3 attempts (last error above, not a 'not found')."
+              exit 1
+            fi
+            echo "Probe failed with an unexpected error (attempt $attempt/3) — retrying in 5s..."
+            sleep 5
+          done
+
+          if [ "$exists" = "yes" ]; then
             echo "Service $BACKEND_SERVICE_NAME already exists in $BASE_ENV; reusing it."
           else
             echo "Creating service $BACKEND_SERVICE_NAME in $BASE_ENV..."

@@ -40,10 +40,12 @@ Two mechanisms, both enabled:
 - `seed` — also load the full demo dataset (`admin@test.com` etc.); migrations + essential
   seed always run on api boot regardless. Ignored outside `full_deploy` mode.
 
-The run prints the preview **Dashboard URL** in its job **summary**. The env (`full_deploy`)
-or service(s) (`frontend`/`frontend_backend`) are named `pr-<branch-slug>-<hash>[-suffix]` —
-an 8-character hash of the branch name is appended because the slug alone is lossy (e.g.
-`foo/bar` and `foo_bar` both slug to `foo-bar`).
+The run prints the preview **Dashboard URL** in its job **summary**. Everything is named off
+`pr-<branch-slug>-<hash>` — an 8-character hash of the branch name is appended because the
+slug alone is lossy (e.g. `foo/bar` and `foo_bar` both slug to `foo-bar`) — as an
+**environment** for `full_deploy`, a `pr-<branch-slug>-<hash>-dashboard` **service** for
+`frontend`, or both `pr-<branch-slug>-<hash>-dashboard` and `pr-<branch-slug>-<hash>-api`
+**services** for `frontend_backend`.
 
 The deploy step starts the app-service build(s) **in parallel** (each `railway up --ci`
 streams its build logs and blocks until that service passes its deploy/healthcheck), then
@@ -64,13 +66,13 @@ and auth session store with `cio-api` — anything created while testing (users,
 data) lands in the shared `staging` dataset, not a private sandbox. Use `full_deploy` mode
 instead when a change needs its own isolated backend/data.
 
-**One-time prerequisite:** `cio-api`'s `TRUSTED_ORIGINS` (read once at boot, comma-separated,
-supports `*` wildcards — see `apps/api/src/constants`) must include
-`https://*.up.railway.app` so every `frontend` preview's Railway-generated domain is
-trusted for CORS/session cookies. Add this once to staging's `cio-api` service (Railway
-dashboard, or `railway variables --service cio-api --set 'TRUSTED_ORIGINS=...'` appended to
-whatever's already set) — it's never touched per-PR, so creating/destroying a `frontend`
-preview never mutates or restarts the shared `cio-api`.
+**No manual setup needed.** The workflow trusts this preview's *exact* dashboard origin on
+staging `cio-api`'s `TRUSTED_ORIGINS` (comma-append, read once at boot — see
+`apps/api/src/constants`) when it deploys, and untrusts that exact origin again when it's
+destroyed. Deliberately not a `*.up.railway.app` wildcard — that would trust every app on
+that shared Railway domain suffix, not just this one. Cost: each `frontend` deploy/destroy
+redeploys the shared staging `cio-api` (variable changes redeploy by default), briefly
+affecting anyone else on staging at that moment.
 
 Tear down with `action = destroy`, `mode = frontend`, and the same branch.
 
@@ -86,8 +88,9 @@ Redis queue regardless of which api enqueued a job — no dedicated jobs service
 
 Because the new api and dashboard trust each other directly (`DASHBOARD_ORIGIN` on the new
 api references the new dashboard, the same way `full_deploy` previews' duplicated `cio-api`
-trusts its own duplicated dashboard), this mode needs **none** of `frontend` mode's
-`TRUSTED_ORIGINS` wildcard prerequisite.
+trusts its own duplicated dashboard), this mode never touches staging's shared `cio-api`
+`TRUSTED_ORIGINS` at all — no redeploy of shared staging on create/destroy, unlike
+`frontend` mode.
 
 Trade-offs:
 - **Not isolated**: same shared-Postgres/Redis/MinIO caveat as `frontend` mode — signups,

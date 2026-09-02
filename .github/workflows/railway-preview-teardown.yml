@@ -69,6 +69,26 @@ jobs:
             echo "$output"
           fi
 
+          # Untrust the dashboard's exact origin from cio-api's TRUSTED_ORIGINS before
+          # deleting it (mirrors railway-preview.yml's "Destroy dashboard-only preview" —
+          # see that step for why this is exact-origin, not a wildcard). Read the domain
+          # while the service still exists; best-effort, since this workflow doesn't know
+          # whether a `frontend`-mode preview for this branch ever existed.
+          dashboard_url=$(railway variables --service "${dashboard_service_name}" --kv 2>/dev/null | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2- || true)
+          if [ -n "$dashboard_url" ]; then
+            origin_to_remove="https://${dashboard_url}"
+            api_vars=$(railway variables --service cio-api --kv 2>/dev/null || true)
+            current_trusted=$(echo "$api_vars" | grep '^TRUSTED_ORIGINS=' | cut -d= -f2- || true)
+            if echo "$current_trusted" | tr ',' '\n' | grep -qxF "$origin_to_remove"; then
+              new_trusted=$(echo "$current_trusted" | tr ',' '\n' | grep -vxF "$origin_to_remove" | tr '\n' ',' | sed 's/,$//')
+              if ! output=$(railway variables --service cio-api --set "TRUSTED_ORIGINS=${new_trusted}" 2>&1); then
+                echo "::warning::Failed to untrust ${origin_to_remove} from cio-api's TRUSTED_ORIGINS — continuing to delete the service anyway. $output"
+              else
+                echo "Untrusted ${origin_to_remove} from cio-api."
+              fi
+            fi
+          fi
+
           echo "Attempting to delete dashboard preview service: ${dashboard_service_name}"
           if ! output=$(railway service delete --service "${dashboard_service_name}" --yes 2>&1); then
             echo "$output"
