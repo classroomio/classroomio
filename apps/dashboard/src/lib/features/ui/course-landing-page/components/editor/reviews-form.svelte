@@ -102,7 +102,7 @@
                 <Avatar.Image src={review.avatar_url} alt={review.name ? review.name : 'Reviewer'} />
               {/if}
               <Avatar.Fallback>
-                <UserIcon class="ui:size-5 ui:text-muted-foreground" />
+                <UserIcon class="ui:text-muted-foreground size-5" />
               </Avatar.Fallback>
             </Avatar.Root>
             <p class="text-sm">{review.name}</p>

@@ -8,6 +8,8 @@ import {
   deleteLesson,
   deleteLessonComment,
   getLessonById,
+  getLessonCommentsAvailability,
+  getLessonCommentsAvailabilityByCommentId,
   getLessonCommentsByLessonId,
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
@@ -246,6 +248,36 @@ export async function reorderLessons(lessons: TLessonReorder['lessons']): Promis
 
 // Lesson Comment Services
 
+async function assertLessonCommentsEnabled(lessonId: string) {
+  const availability = await getLessonCommentsAvailability(lessonId);
+  if (!availability) {
+    throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+  }
+
+  if (
+    !availability.organizationCommentsEnabled ||
+    !availability.courseCommentsEnabled ||
+    !availability.lessonCommentsEnabled
+  ) {
+    throw new AppError('Comments are disabled for this lesson', ErrorCodes.COMMENTS_DISABLED, 403);
+  }
+}
+
+async function assertLessonCommentsEnabledForComment(commentId: number) {
+  const availability = await getLessonCommentsAvailabilityByCommentId(commentId);
+  if (!availability) {
+    throw new AppError('Comment not found', ErrorCodes.COMMENT_NOT_FOUND, 404);
+  }
+
+  if (
+    !availability.organizationCommentsEnabled ||
+    !availability.courseCommentsEnabled ||
+    !availability.lessonCommentsEnabled
+  ) {
+    throw new AppError('Comments are disabled for this lesson', ErrorCodes.COMMENTS_DISABLED, 403);
+  }
+}
+
 /**
  * Gets comments for a lesson
  * @param lessonId Lesson ID
@@ -253,8 +285,14 @@ export async function reorderLessons(lessons: TLessonReorder['lessons']): Promis
  */
 export async function getLessonComments(lessonId: string) {
   try {
+    await assertLessonCommentsEnabled(lessonId);
+
     return getLessonCommentsByLessonId(lessonId);
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to get lesson comments',
       ErrorCodes.INTERNAL_ERROR,
@@ -271,6 +309,8 @@ export async function getLessonComments(lessonId: string) {
  */
 export async function getLessonCommentsPaginated(lessonId: string, options: { cursor?: string; limit: number }) {
   try {
+    await assertLessonCommentsEnabled(lessonId);
+
     return getLessonCommentsByLessonIdPaginated(lessonId, options);
   } catch (error) {
     if (error instanceof AppError) {
@@ -294,6 +334,8 @@ export async function getLessonCommentsPaginated(lessonId: string, options: { cu
  */
 export async function createLessonCommentService(lessonId: string, groupMemberId: string, comment: string) {
   try {
+    await assertLessonCommentsEnabled(lessonId);
+
     const commentData: TNewLessonComment = {
       lessonId,
       groupmemberId: groupMemberId,
@@ -302,7 +344,10 @@ export async function createLessonCommentService(lessonId: string, groupMemberId
 
     return await createLessonComment(commentData);
   } catch (error) {
-    console.log('error', error);
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create lesson comment',
       ErrorCodes.INTERNAL_ERROR,
@@ -319,6 +364,8 @@ export async function createLessonCommentService(lessonId: string, groupMemberId
  */
 export async function updateLessonCommentService(commentId: number, comment: string) {
   try {
+    await assertLessonCommentsEnabledForComment(commentId);
+
     const updated = await updateLessonComment(commentId, sanitizeHtml(comment));
     if (!updated) {
       throw new AppError('Comment not found', ErrorCodes.LESSON_COMMENT_UPDATE_FAILED, 404);
@@ -345,6 +392,8 @@ export async function updateLessonCommentService(commentId: number, comment: str
  */
 export async function deleteLessonCommentService(commentId: number) {
   try {
+    await assertLessonCommentsEnabledForComment(commentId);
+
     const deleted = await deleteLessonComment(commentId);
     if (!deleted) {
       throw new AppError('Comment not found', ErrorCodes.COMMENT_NOT_FOUND, 404);

@@ -243,7 +243,7 @@
           <span class="min-w-0 flex-1 truncate">{uploadedDocument.name}</span>
           <button
             onclick={onRemoveDocument}
-            class="ui:text-muted-foreground hover:ui:text-foreground shrink-0 rounded p-0.5 transition-colors"
+            class="ui:text-muted-foreground ui:hover:text-foreground shrink-0 rounded p-0.5 transition-colors"
           >
             <XIcon size={12} />
           </button>
@@ -278,7 +278,7 @@
               <button
                 onclick={handlePaperclipClick}
                 disabled={isUploading}
-                class="ui:text-muted-foreground hover:ui:bg-muted shrink-0 rounded-md p-1.5 transition-colors disabled:pointer-events-none disabled:opacity-40"
+                class="ui:text-muted-foreground ui:hover:bg-muted shrink-0 rounded-md p-1.5 transition-colors disabled:pointer-events-none disabled:opacity-40"
                 title={$isFreePlan ? $t('ai_assistant.upgrade_to_upload') : $t('ai_assistant.attach_document')}
               >
                 <PaperclipIcon size={16} />

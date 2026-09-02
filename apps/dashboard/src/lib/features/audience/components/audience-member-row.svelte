@@ -73,12 +73,12 @@
     {#if showRowActions}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger
-          class="hover:ui:bg-muted inline-flex items-center justify-center rounded-md p-1.5"
+          class="ui:hover:bg-muted inline-flex items-center justify-center rounded-md p-1.5"
           aria-label={$t('audience.invite.row_actions_aria')}
           disabled={isActionDisabled}
           onclick={(e) => e.stopPropagation()}
         >
-          <EllipsisVerticalIcon class="ui:size-4 ui:text-muted-foreground" />
+          <EllipsisVerticalIcon class="ui:text-muted-foreground size-4" />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
           {#if canResendAudienceInvite(row.status)}
@@ -88,7 +88,7 @@
           {/if}
           {#if canRevokeAudienceInvite(row.status)}
             <DropdownMenu.Item
-              class="ui:text-destructive focus:ui:text-destructive"
+              class="ui:text-destructive ui:focus:text-destructive"
               disabled={isActionDisabled}
               onclick={() => onRevokeInvite(row.email)}
             >
@@ -97,7 +97,7 @@
           {/if}
           {#if canDeleteMembers}
             <DropdownMenu.Item
-              class="ui:text-destructive focus:ui:text-destructive"
+              class="ui:text-destructive ui:focus:text-destructive"
               disabled={isActionDisabled}
               onclick={onDelete}
             >

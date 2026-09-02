@@ -177,7 +177,7 @@
             <div class="mb-4">
               <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>
               {#if sectionFromContext}
-                <p class="text-muted-foreground text-sm">
+                <p class="ui:text-muted-foreground text-sm">
                   {$t('course.navItem.lessons.add_content_adding_to')}
                   <strong>
                     {sections.find((s) => s.id === sectionId)?.title ??

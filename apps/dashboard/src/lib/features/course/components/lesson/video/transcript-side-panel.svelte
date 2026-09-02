@@ -110,7 +110,7 @@
 </script>
 
 <div class="flex min-h-0 flex-1 flex-col">
-  <header class="border-border flex items-center justify-between gap-2 border-b px-4 py-3">
+  <header class="ui:border-border flex items-center justify-between gap-2 border-b px-4 py-3">
     <div class="flex min-w-0 items-center gap-2">
       <CaptionsIcon size={18} class="ui:text-primary shrink-0" />
       <div class="min-w-0">
@@ -156,7 +156,7 @@
   </header>
 
   {#if showVideoNavigation && !editing}
-    <div class="border-border flex items-center justify-between gap-2 border-b px-4 py-2">
+    <div class="ui:border-border flex items-center justify-between gap-2 border-b px-4 py-2">
       <IconButton
         onclick={goToPreviousVideo}
         variant="outline"
@@ -209,8 +209,8 @@
         {@const active = isActiveSegment(segment, index)}
         <button
           type="button"
-          class="ui:text-foreground hover:ui:bg-muted/80 focus-visible:ui:ring-ring mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm leading-snug transition-colors last:mb-0 focus:outline-none focus-visible:ring-2 {active
-            ? 'ui:bg-primary/10 ui:font-medium'
+          class="ui:text-foreground ui:hover:bg-muted/80 ui:focus-visible:ring-ring mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm leading-snug transition-colors last:mb-0 focus:outline-none focus-visible:ring-2 {active
+            ? 'ui:bg-primary/10 font-medium'
             : ''}"
           data-active={active ? 'true' : undefined}
           onclick={() => lessonVideoBus.seek(segment.start)}

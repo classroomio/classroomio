@@ -136,7 +136,7 @@
   <Page.Body>
     {#snippet child()}
       <section class="space-y-6 px-4">
-        <Item.Root variant="outline" class="ui:cursor-default">
+        <Item.Root variant="outline" class="cursor-default">
           <Item.Content>
             <Item.Description class="mb-4">
               {$t('setup.description')}

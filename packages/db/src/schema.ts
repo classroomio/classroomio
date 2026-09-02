@@ -701,6 +701,8 @@ export const course = pgTable(
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
       progressionMode?: 'free' | 'sequential';
+      /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
+      commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
       aiTutor?: {
         inheritFromOrg?: boolean;
@@ -992,6 +994,7 @@ export const lesson = pgTable(
     isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
+    commentsEnabled: boolean('comments_enabled').default(true).notNull(),
     videos: jsonb().default([]).$type<
       {
         type: 'youtube' | 'generic' | 'upload' | 'google_drive';

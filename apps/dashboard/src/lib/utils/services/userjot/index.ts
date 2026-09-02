@@ -11,6 +11,7 @@ function isWidgetAllowed(): boolean {
   if (dev) return false;
   if (PUBLIC_IS_SELFHOSTED === 'true') return false;
   if (get(globalStore).isOrgSite) return false;
+  if (window.location.pathname === '/widget-preview') return false;
 
   return true;
 }

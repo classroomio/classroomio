@@ -33,13 +33,15 @@
     "embeds:dev": "pnpm --filter=@cio/embeds --filter=@cio/ui run dev",
     "storybook:dev": "pnpm --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types run dev",
     "mcp:build": "pnpm --filter @cio/question-types build && pnpm --filter @cio/utils build && pnpm --filter @classroomio/mcp build",
-    "db:push": "pnpm --filter @cio/db db push"
+    "db:push": "pnpm --filter @cio/db db push",
+    "demo:playwright": "playwright test --config e2e/playwright.config.ts"
   },
   "license": "MIT",
   "dependencies": {
     "turbo": "^1.10.16"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.2",
     "@babel/plugin-syntax-jsx": "^7.28.6",
     "@babel/preset-typescript": "^7.28.5",
     "@cio/tsconfig": "workspace:*",

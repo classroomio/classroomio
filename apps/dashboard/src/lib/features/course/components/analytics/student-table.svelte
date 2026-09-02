@@ -78,7 +78,7 @@
         {#each paginatedStudents as student (student.id)}
           <Table.Row class="group h-[100px]">
             <Table.Cell
-              class="ui:bg-card group-hover:ui:bg-muted/50 sticky left-0 z-10 min-w-[200px] px-4 py-3 transition-colors"
+              class="ui:bg-card ui:group-hover:bg-muted/50 sticky left-0 z-10 min-w-[200px] px-4 py-3 transition-colors"
             >
               <div class="flex items-center gap-3">
                 <UserAvatar
