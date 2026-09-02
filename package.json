@@ -16,7 +16,6 @@
     "db:reset": "pnpm --filter @cio/db db:reset",
     "db:studio": "pnpm --filter @cio/db db:studio",
     "db:backfill-profile-email-verification": "pnpm --filter @cio/db db:backfill-profile-email-verification",
-    "db:export-userjot-managers": "pnpm --filter @cio/db db:export-userjot-managers",
     "dashboard:dev:full": "pnpm turbo run build --filter=@cio/dashboard^... --filter=@cio/ui^... && pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
     "dashboard:dev": "pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
     "dashboard:dev:fresh": "pnpm dev:kill-watchers && pnpm dashboard:dev",

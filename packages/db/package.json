@@ -87,8 +87,7 @@
     "db:restore-lesson-section-from-dump": "tsx src/scripts/restore-lesson-section-from-dump.ts",
     "db:restore-organizationmember-from-dump": "tsx src/scripts/restore-organizationmember-from-dump.ts",
     "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts",
-    "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
-    "db:export-userjot-managers": "tsx src/scripts/export-userjot-managers.ts"
+    "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts"
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",
