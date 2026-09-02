@@ -1,0 +1,239 @@
+name: PR demo (Playwright)
+
+# Label `demo-pr` (by rotimi-best) → OpenCode writes an ephemeral Playwright spec,
+# CI runs preview build + Playwright, uploads video artifacts, comments on the PR.
+# Policy B: demo failures warn but do not fail the workflow.
+
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: pr-demo-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  demo:
+    name: Generate and run PR demo
+    if: |
+      github.event.label.name == 'demo-pr' &&
+      github.event.sender.login == 'rotimi-best'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build OpenCode prompt
+        id: demo-prompt
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          PROMPT=$(sed "s/{{PR_NUMBER}}/${PR_NUMBER}/g" .github/prompts/pr-demo-playwright.md)
+          {
+            echo 'prompt<<EOF'
+            echo "$PROMPT"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate Playwright spec (OpenCode)
+        uses: anomalyco/opencode/github@latest
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        with:
+          model: opencode-go/gpt-5.6-luna
+          prompt: ${{ steps.demo-prompt.outputs.prompt }}
+
+      - name: Verify generated spec
+        id: spec
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          SPEC=".github/demo-runs/pr-${PR_NUMBER}.spec.ts"
+          if [ ! -f "$SPEC" ]; then
+            echo "::error::OpenCode did not create ${SPEC}"
+            exit 1
+          fi
+          if ! grep -q 'test(' "$SPEC"; then
+            echo "::error::Generated spec is missing a Playwright test()"
+            exit 1
+          fi
+          if grep -Eq "require\\(['\"]child_process|from ['\"]fs['\"]|from ['\"]node:fs['\"]" "$SPEC"; then
+            echo "::error::Generated spec contains disallowed imports"
+            exit 1
+          fi
+          echo "path=${SPEC}" >> "$GITHUB_OUTPUT"
+          echo "Validated ${SPEC}"
+
+      - name: Start Postgres and Redis
+        run: docker compose -f docker-compose.yaml up -d postgres redis
+
+      - name: Wait for Postgres
+        run: |
+          for attempt in $(seq 1 30); do
+            if docker exec cio-postgres pg_isready -U postgres -d classroomio >/dev/null 2>&1; then
+              echo "Postgres is ready."
+              exit 0
+            fi
+            echo "Waiting for Postgres (${attempt}/30)..."
+            sleep 2
+          done
+          echo "::error::Postgres did not become ready in time."
+          exit 1
+
+      - name: Prepare demo env files
+        run: bash .github/scripts/prepare-pr-demo-env.sh
+
+      - name: Build workspace for db seed
+        run: pnpm --filter @cio/db^... build
+
+      - name: Seed database
+        run: pnpm --filter @cio/db db:setup:seed -- --organization udemy-test
+
+      - name: Build dashboard and API
+        run: |
+          pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
+          pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
+
+      - name: Start API
+        run: |
+          pnpm --filter @cio/api start > /tmp/cio-api.log 2>&1 &
+          echo $! > /tmp/cio-api.pid
+
+      - name: Start dashboard preview
+        run: |
+          pnpm --filter @cio/dashboard exec vite preview --port 4173 --host 127.0.0.1 > /tmp/cio-dashboard.log 2>&1 &
+          echo $! > /tmp/cio-dashboard.pid
+
+      - name: Wait for API and dashboard
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:3002/ >/dev/null 2>&1; then
+              echo "API is ready."
+              break
+            fi
+            if [ "$attempt" -eq 60 ]; then
+              echo "::error::API did not start. Log tail:"
+              tail -n 80 /tmp/cio-api.log || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          for attempt in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:4173/ >/dev/null 2>&1; then
+              echo "Dashboard preview is ready."
+              exit 0
+            fi
+            if [ "$attempt" -eq 60 ]; then
+              echo "::error::Dashboard preview did not start. Log tail:"
+              tail -n 80 /tmp/cio-dashboard.log || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Run Playwright demo
+        id: playwright
+        continue-on-error: true
+        env:
+          DEMO_BASE_URL: http://127.0.0.1:4173
+          CI: true
+        run: pnpm exec playwright test --config e2e/playwright.config.ts "${{ steps.spec.outputs.path }}"
+
+      - name: Upload demo artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-demo-${{ github.event.pull_request.number }}
+          path: |
+            e2e/test-results/
+            e2e/playwright-report/
+          retention-days: 14
+
+      - name: Comment on pull request
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          PLAYWRIGHT_OUTCOME: ${{ steps.playwright.outcome || 'skipped' }}
+          SPEC_PATH: ${{ steps.spec.outputs.path || 'generation failed' }}
+        with:
+          script: |
+            const marker = '<!-- pr-demo-playwright -->';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const passed = process.env.PLAYWRIGHT_OUTCOME === 'success';
+            const specPath = process.env.SPEC_PATH ?? '(unknown)';
+            const skipped = process.env.PLAYWRIGHT_OUTCOME === 'skipped';
+
+            let statusLine;
+            if (skipped) {
+              statusLine = 'Demo did not run (spec generation or setup failed).';
+            } else if (passed) {
+              statusLine = 'The demo test finished successfully.';
+            } else {
+              statusLine =
+                'The demo test did not pass (policy B — this does not block merge). Check logs and the screen recording in artifacts.';
+            }
+
+            const body = `${marker}
+            ### PR demo ${passed ? 'passed' : skipped ? 'did not run' : 'completed with warnings'}
+
+            Ephemeral Playwright spec: \`${specPath}\` (not committed).
+
+            ${statusLine}
+
+            **Artifacts:** [workflow run](${runUrl}) (video, screenshots, HTML report when present; retained 14 days).`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              per_page: 100
+            });
+
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body
+              });
+            }
+
+      - name: Stop background services
+        if: always()
+        run: |
+          if [ -f /tmp/cio-api.pid ]; then kill "$(cat /tmp/cio-api.pid)" 2>/dev/null || true; fi
+          if [ -f /tmp/cio-dashboard.pid ]; then kill "$(cat /tmp/cio-dashboard.pid)" 2>/dev/null || true; fi
+          docker compose -f docker-compose.yaml down || true
