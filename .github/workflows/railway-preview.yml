@@ -99,6 +99,18 @@ jobs:
     # builds + polling, which finishes well under this cap.
     timeout-minutes: 90
     steps:
+      - name: Checkout workflow repo
+        # No repository/ref override — this is the branch the workflow_dispatch run was
+        # actually launched from, always guaranteed to have .github/scripts/*. NOT the same
+        # as "Checkout target branch" below, which checks out the arbitrary branch being
+        # previewed and would wipe these scripts if that branch predates them.
+        uses: actions/checkout@v4
+
+      - name: Preserve helper scripts
+        # Copied outside the git-managed workspace so they survive "Checkout target branch"
+        # overwriting everything below with inputs.repo/inputs.branch's own tree.
+        run: cp .github/scripts/railway-preview-name.sh .github/scripts/railway-preview-deploy.sh "$RUNNER_TEMP/"
+
       - name: Checkout target branch
         uses: actions/checkout@v4
         with:
@@ -111,14 +123,15 @@ jobs:
       - name: Derive a safe environment name
         id: env
         # BRANCH/REPO bound via env, not interpolated — avoids script injection. Naming
-        # logic itself lives in .github/scripts/railway-preview-name.sh, shared with
-        # railway-preview-teardown.yml, so the two can't drift out of sync with each other.
+        # logic itself lives in railway-preview-name.sh (see "Preserve helper scripts"
+        # above), shared with railway-preview-teardown.yml, so the two can't drift out of
+        # sync with each other.
         env:
           BRANCH: ${{ inputs.branch }}
           REPO: ${{ inputs.repo != '' && inputs.repo || github.repository }}
           MODE: ${{ inputs.mode }}
         run: |
-          source .github/scripts/railway-preview-name.sh
+          source "$RUNNER_TEMP/railway-preview-name.sh"
           name=$(preview_base_name "$REPO" "$BRANCH")
           echo "name=${name}" >> "$GITHUB_OUTPUT"
           # frontend_backend gets its own "-fb-" names so it never collides with frontend
@@ -686,7 +699,7 @@ jobs:
         # frontend/frontend_backend just deploy a shorter APP_SERVICES list.
         env:
           APP_SERVICES: ${{ inputs.mode == 'frontend' && steps.env.outputs.dashboard_service_name || inputs.mode == 'frontend_backend' && format('{0} {1}', steps.env.outputs.backend_service_name, steps.env.outputs.dashboard_service_name) || env.APP_SERVICES }}
-        run: bash .github/scripts/railway-preview-deploy.sh
+        run: bash "$RUNNER_TEMP/railway-preview-deploy.sh"
 
       - name: Setup pnpm
         if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' && inputs.seed_organization != 'none' }}
