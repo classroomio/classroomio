@@ -37,32 +37,32 @@ name: Railway Preview Environment
 #   existing cio-jobs worker, since jobs reads off the shared Redis queue regardless of
 #   which api enqueued the work). `<prname>-api` runs with SKIP_DB_SETUP=true (staging's own
 #   cio-api remains the one that migrates), so a PR needing a new, unapplied DB migration
-#   should use `full-deploy` instead. No TRUSTED_ORIGINS change needed — this pair trusts
-#   each other directly via DASHBOARD_ORIGIN, the same way `full-deploy` previews do.
+#   should use `full_deploy` instead. No TRUSTED_ORIGINS change needed — this pair trusts
+#   each other directly via DASHBOARD_ORIGIN, the same way `full_deploy` previews do.
 
 on:
   workflow_dispatch:
     inputs:
       repo:
-        description: "Repo to deploy from (leave blank for classroomio/classroomio; set to e.g. Arun5768/classroomio for a fork)"
+        description: "Fork to deploy from (blank = classroomio/classroomio)"
         required: false
         type: string
         default: ""
       branch:
-        description: "Branch (or PR head ref) to deploy into the preview env"
+        description: "Branch or PR head ref to deploy"
         required: true
         type: string
       mode:
-        description: "full-deploy = duplicate all of staging; frontend_backend = fresh dashboard+api pair inside staging, sharing its DB/Redis/MinIO; frontend = dashboard only, wired to staging's shared api"
+        description: "Deploy scope — see PREVIEW_ENV.md"
         required: true
         type: choice
-        default: full-deploy
+        default: full_deploy
         options:
-          - full-deploy
+          - full_deploy
           - frontend_backend
           - frontend
       action:
-        description: "deploy = create/update the preview; destroy = delete it"
+        description: "Deploy or destroy the preview"
         required: true
         type: choice
         default: deploy
@@ -131,7 +131,7 @@ jobs:
           name="pr-${slug}-${hash}"
           echo "name=${name}" >> "$GITHUB_OUTPUT"
           # frontend/frontend_backend modes create services inside staging itself rather
-          # than a new environment. Same slug+hash as the full-deploy env name.
+          # than a new environment. Same slug+hash as the full_deploy env name.
           echo "dashboard_service_name=${name}-dashboard" >> "$GITHUB_OUTPUT"
           echo "backend_service_name=${name}-api" >> "$GITHUB_OUTPUT"
 
@@ -144,7 +144,7 @@ jobs:
 
       # ---------------------------------------------------------------- destroy
       - name: Destroy preview environment
-        if: ${{ inputs.action == 'destroy' && inputs.mode == 'full-deploy' }}
+        if: ${{ inputs.action == 'destroy' && inputs.mode == 'full_deploy' }}
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
@@ -197,7 +197,7 @@ jobs:
 
       # ---------------------------------------------------------------- deploy
       - name: Create preview environment (duplicate base)
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' }}
         # `--duplicate` copies service config and variables but not public domains (see
         # domain-generation steps below). Only "already exists" is swallowed here — any
         # other failure must surface, not silently continue into a "Link" step that can't
@@ -217,7 +217,7 @@ jobs:
           fi
 
       - name: Link project + preview environment
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' }}
         # A brand-new environment (first run for a branch) can take a moment to become
         # visible to `railway link` right after `railway environment new` returns — same
         # duplication-propagation lag as the cio-minio ServiceInstance race below. Retry
@@ -387,7 +387,7 @@ jobs:
         # <prname>-api in `frontend_backend` mode — via Railway reference variables
         # (${{ Service.VAR }}), same pattern documented in RAILWAY_SETUP_GUIDE.md's
         # cio-dashboard step. No dynamic-domain propagation dance needed here (unlike the
-        # full-deploy MinIO step below) because these are already stable, long-lived
+        # full_deploy MinIO step below) because these are already stable, long-lived
         # services by the time this step runs.
         #
         # The `${{ }}` reference syntax is Railway's, not GitHub Actions' — building it via
@@ -435,7 +435,7 @@ jobs:
           set_var "CSP_MEDIA_SRC_DOMAINS=https://$(ref cio-minio.RAILWAY_PUBLIC_DOMAIN)"
 
       - name: Pin the Dockerfile per service
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' }}
         # `railway up` uploads local source but does NOT carry the dashboard's "Dockerfile
         # Path" build setting, so without this Railway falls back to Railpack and builds
         # the whole monorepo as a generic Node app. (Same gotcha documented in the setup guide.)
@@ -445,7 +445,7 @@ jobs:
           railway variables --service cio-jobs       --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.jobs"
 
       - name: Seed MinIO buckets (fresh volume starts empty)
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' }}
         # Railway has no minio-init sidecar and a duplicated env's MinIO volume is empty,
         # so create the buckets the app expects. Root creds carry over via duplication,
         # but the public domain doesn't, so generate one here (same as "Report the preview
@@ -604,22 +604,22 @@ jobs:
         run: bash .github/scripts/railway-preview-deploy.sh
 
       - name: Setup pnpm
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' && inputs.seed_organization != 'none' }}
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' && inputs.seed_organization != 'none' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' && inputs.seed_organization != 'none' }}
         run: pnpm install --frozen-lockfile
 
       - name: Build workspace dependencies
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' && inputs.seed_organization != 'none' }}
         # @cio/db imports compiled output (e.g. @cio/utils/dist/...) from its workspace
         # deps, not source — they must be built before the seed script can import them.
         run: pnpm --filter @cio/db^... build
@@ -628,7 +628,7 @@ jobs:
         id: seed
         # frontend/frontend_backend modes never seed — they share staging's own Postgres,
         # which already has its own data; seeding it here would mutate the shared dataset.
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' && inputs.seed_organization != 'none' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' && inputs.seed_organization != 'none' }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
         # GitHub runner, so seeding needs Postgres's own DATABASE_PUBLIC_URL instead
         # (railway.internal isn't reachable from here).
@@ -657,7 +657,7 @@ jobs:
           fi
 
       - name: Report the preview URL
-        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full-deploy' }}
+        if: ${{ inputs.action == 'deploy' && inputs.mode == 'full_deploy' }}
         # BRANCH / ENV_NAME bound via env (never interpolated into the script).
         env:
           BRANCH: ${{ inputs.branch }}
@@ -731,7 +731,7 @@ jobs:
             echo "> This preview has its own api ($BACKEND_SERVICE_NAME), but it shares staging's"
             echo "> Postgres, Redis, and MinIO — not isolated. \`$BACKEND_SERVICE_NAME\` runs with"
             echo "> SKIP_DB_SETUP=true, so it does NOT apply new migrations; if this branch adds one,"
-            echo "> use **mode = full-deploy** instead."
+            echo "> use **mode = full_deploy** instead."
             echo ""
             echo "Tear down with this workflow using **action = destroy**, **mode = frontend_backend**, and the same branch."
           } >> "$GITHUB_STEP_SUMMARY"

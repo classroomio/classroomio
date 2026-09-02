@@ -33,14 +33,14 @@ Two mechanisms, both enabled:
 
 **Actions → "Railway Preview Environment" → Run workflow:**
 - `branch` — the branch/PR head to deploy.
-- `mode` — `full-deploy` (default) duplicates all of `staging`; `frontend_backend` creates a
+- `mode` — `full_deploy` (default) duplicates all of `staging`; `frontend_backend` creates a
   fresh dashboard+api pair inside `staging`, sharing its DB/Redis/MinIO; `frontend` creates
   just a dashboard service inside `staging`, wired to `staging`'s shared api (see below).
 - `action` — `deploy` (create/update) or `destroy` (delete).
 - `seed` — also load the full demo dataset (`admin@test.com` etc.); migrations + essential
-  seed always run on api boot regardless. Ignored outside `full-deploy` mode.
+  seed always run on api boot regardless. Ignored outside `full_deploy` mode.
 
-The run prints the preview **Dashboard URL** in its job **summary**. The env (`full-deploy`)
+The run prints the preview **Dashboard URL** in its job **summary**. The env (`full_deploy`)
 or service(s) (`frontend`/`frontend_backend`) are named `pr-<branch-slug>-<hash>[-suffix]` —
 an 8-character hash of the branch name is appended because the slug alone is lossy (e.g.
 `foo/bar` and `foo_bar` both slug to `foo-bar`).
@@ -61,7 +61,7 @@ environment, Postgres, Redis, or MinIO volume.
 
 Trade-off: this preview is **not isolated**. It shares staging's Postgres, Redis, MinIO,
 and auth session store with `cio-api` — anything created while testing (users, uploads, org
-data) lands in the shared `staging` dataset, not a private sandbox. Use `full-deploy` mode
+data) lands in the shared `staging` dataset, not a private sandbox. Use `full_deploy` mode
 instead when a change needs its own isolated backend/data.
 
 **One-time prerequisite:** `cio-api`'s `TRUSTED_ORIGINS` (read once at boot, comma-separated,
@@ -85,7 +85,7 @@ keeps handling background work for this preview too, since it reads off the same
 Redis queue regardless of which api enqueued a job — no dedicated jobs service is created.
 
 Because the new api and dashboard trust each other directly (`DASHBOARD_ORIGIN` on the new
-api references the new dashboard, the same way `full-deploy` previews' duplicated `cio-api`
+api references the new dashboard, the same way `full_deploy` previews' duplicated `cio-api`
 trusts its own duplicated dashboard), this mode needs **none** of `frontend` mode's
 `TRUSTED_ORIGINS` wildcard prerequisite.
 
@@ -95,7 +95,7 @@ Trade-offs:
 - **No new migrations**: the new api runs with `SKIP_DB_SETUP=true` (staging's own `cio-api`
   remains the one that migrates the shared schema — running migrations from two instances
   against the same live Postgres concurrently risks a race). **If your branch adds a new,
-  not-yet-applied DB migration, use `full-deploy` instead** — this mode won't apply it.
+  not-yet-applied DB migration, use `full_deploy` instead** — this mode won't apply it.
 
 Tear down with `action = destroy`, `mode = frontend_backend`, and the same branch.
 
@@ -116,7 +116,7 @@ Tear down with `action = destroy`, `mode = frontend_backend`, and the same branc
 
 ## Database behavior
 
-- **`full-deploy` previews** get their **own isolated Postgres** — they start fresh.
+- **`full_deploy` previews** get their **own isolated Postgres** — they start fresh.
   `cio-api` **self-migrates on boot** (`docker/entrypoint-api.sh` → `pnpm --filter @cio/db
   db:setup` → `drizzle-kit migrate` + essential seed). No manual migrate step needed. The
   branch must include a committed Drizzle migration (`pnpm --filter @cio/db db:generate`) —
@@ -140,7 +140,7 @@ Railway's docs are thin on a couple of points the workflow depends on — confir
 
 ## Cost
 
-Every `full-deploy` environment (staging + each preview) runs the full 6 services incl. a
+Every `full_deploy` environment (staging + each preview) runs the full 6 services incl. a
 MinIO volume, so previews are not free while alive. Destroy them promptly — the teardown
 workflow handles PR close automatically; use `action = destroy` for previews whose PR is
 still open. `frontend`/`frontend_backend` previews are much cheaper — one or two extra

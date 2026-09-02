@@ -5,7 +5,7 @@ name: Railway Preview Teardown
 # (Native Railway PR environments clean themselves up; this covers the pr-<branch>
 # envs/services made by the manual workflow.) This workflow has no record of which `mode`
 # created a given branch's preview (workflow_dispatch inputs aren't queryable from here),
-# so it attempts every possible deletion — a full-deploy environment, a frontend dashboard
+# so it attempts every possible deletion — a full_deploy environment, a frontend dashboard
 # service, and a frontend_backend api service — tolerating "not found" for whichever
 # wasn't created.
 #
@@ -43,7 +43,7 @@ jobs:
 
       - name: Delete the preview environment and/or preview service(s)
         # Mirror the name derivation in railway-preview.yml so the names match (the
-        # full-deploy env name and the frontend/frontend_backend service names all share
+        # full_deploy env name and the frontend/frontend_backend service names all share
         # the same slug+hash).
         # HEAD_REF is bound via env (not interpolated into the script) so a malicious
         # branch name can never be executed as shell — Actions expands ${{ }} as text
