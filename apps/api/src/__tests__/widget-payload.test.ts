@@ -131,7 +131,7 @@ describe('formatCourseForWidget price', () => {
   };
 
   function format(overrides: Record<string, unknown>) {
-    const course = { ...baseCourse, ...overrides } as Parameters<typeof formatCourseForWidget>[0];
+    const course = { ...baseCourse, ...overrides } as unknown as Parameters<typeof formatCourseForWidget>[0];
     return formatCourseForWidget(course, []);
   }
 
