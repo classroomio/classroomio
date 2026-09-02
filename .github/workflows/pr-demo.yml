@@ -43,18 +43,8 @@ jobs:
             exit 1
           fi
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      # Skip lifecycle scripts so PR-controlled postinstall cannot run before OpenCode.
-      - name: Install dependencies (no lifecycle scripts)
-        run: pnpm install --frozen-lockfile --ignore-scripts
+      # No pnpm install in this job — OpenCode only needs the checked-out tree.
+      # Keeps PR-controlled lifecycle scripts (postinstall) from running before OPENCODE_API_KEY is injected.
 
       - name: Build OpenCode prompt
         id: demo-prompt
