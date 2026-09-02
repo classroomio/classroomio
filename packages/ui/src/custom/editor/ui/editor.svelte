@@ -50,7 +50,8 @@
     autofocus = false,
     class: className,
     placeholder = '',
-    onImageUpload
+    onImageUpload,
+    onSearchUnsplash
   }: EdraEditorProps = $props();
 
   let isImageModalOpen = $state(false);
@@ -117,5 +118,5 @@
 ></div>
 
 {#if editor && !editor.isDestroyed}
-  <ImageUploadModal {editor} bind:open={isImageModalOpen} {onImageUpload} />
+  <ImageUploadModal {editor} bind:open={isImageModalOpen} {onImageUpload} {onSearchUnsplash} />
 {/if}

@@ -29,6 +29,7 @@
     onEditorReady?: (editor: Editor) => void;
     onEditorDestroy?: () => void;
     onImageUpload?: (file: File) => Promise<string>;
+    onSearchUnsplash?: (query: string) => Promise<any[]>;
   }
 
   let {
@@ -43,7 +44,8 @@
     placeholder,
     onContentChange,
     onEditorReady,
-    onImageUpload
+    onImageUpload,
+    onSearchUnsplash
   }: Props = $props();
 
   let editor = $state<Editor>();
@@ -154,6 +156,7 @@
       {onUpdate}
       {placeholder}
       {onImageUpload}
+      {onSearchUnsplash}
     />
   </div>
 {/if}

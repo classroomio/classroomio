@@ -13,6 +13,7 @@ export interface EdraEditorProps {
   onUpdate?: (args: { editor: Editor; transaction: Transaction }) => void;
   class?: string;
   onImageUpload?: (file: File) => Promise<string>;
+  onSearchUnsplash?: (query: string) => Promise<any[]>;
 }
 
 export interface EditorProps {
