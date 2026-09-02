@@ -121,13 +121,17 @@
   {@const isActive = isContentItemInPath(contentItem.id, currentPath)}
   {@const rowClass =
     'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ' +
-    (isActive
-      ? 'ui:bg-sidebar-accent ui:text-sidebar-accent-foreground font-medium'
-      : 'ui:text-foreground hover:ui:bg-muted') +
+    (isActive ? 'ui:text-primary font-medium' : 'ui:text-foreground hover:ui:bg-muted') +
     (isLockedForStudent ? ' cursor-not-allowed opacity-50' : '')}
 
   {#if isLockedForStudent}
-    <span title={contentItem.title} data-sidebar-content-id={contentItem.id} class={rowClass} aria-disabled="true">
+    <span
+      title={contentItem.title}
+      data-sidebar-content-id={contentItem.id}
+      class={rowClass}
+      aria-disabled="true"
+      aria-current={isActive ? 'page' : undefined}
+    >
       <CourseContentIcon type={contentItem.type} size={14} />
       <span class="min-w-0 flex-1 truncate">{contentItem.title}</span>
       <div class="ml-auto flex items-center gap-1">
@@ -140,6 +144,7 @@
       title={contentItem.title}
       data-sidebar-content-id={contentItem.id}
       class={rowClass}
+      aria-current={isActive ? 'page' : undefined}
       onclick={() => {
         if (contentData.grouped) {
           const sectionId = getSectionIdForContentItem(courseApi.course, contentItem.id);

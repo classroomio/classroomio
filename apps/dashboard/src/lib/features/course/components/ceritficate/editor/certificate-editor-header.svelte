@@ -38,7 +38,7 @@
       variant="ghost"
       size="icon"
       href={resolve('/courses/[id]/certificates', { id: courseId })}
-      class="ui:size-8 shrink-0"
+      class="size-8 shrink-0"
       aria-label={$t('course.navItem.certificates.editor.back')}
     >
       <ArrowLeftIcon class="size-4" />

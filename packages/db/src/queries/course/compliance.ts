@@ -38,7 +38,8 @@ export type CourseComplianceReminderRow = {
 
 export async function getStudentCourseMembersForCompliance(
   courseId: string,
-  profileIds?: string[]
+  profileIds?: string[],
+  dbClient: DbOrTxClient = db
 ): Promise<Array<{ member: TGroupmember; profile: CourseMemberProfile | null }>> {
   try {
     const conditions = [
@@ -51,7 +52,7 @@ export async function getStudentCourseMembersForCompliance(
       conditions.push(inArray(schema.groupmember.profileId, profileIds));
     }
 
-    const result = await db
+    const result = await dbClient
       .select({
         member: schema.groupmember,
         profile: {
@@ -201,14 +202,15 @@ export async function getCourseComplianceHistoryRows(
 
 export async function getLatestComplianceRecordsByProfiles(
   courseId: string,
-  profileIds: string[]
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
 ): Promise<TCourseCompletionRecord[]> {
   try {
     if (profileIds.length === 0) {
       return [];
     }
 
-    const latestCycles = db
+    const latestCycles = dbClient
       .select({
         courseId: schema.courseCompletionRecord.courseId,
         profileId: schema.courseCompletionRecord.profileId,
@@ -224,7 +226,7 @@ export async function getLatestComplianceRecordsByProfiles(
       .groupBy(schema.courseCompletionRecord.courseId, schema.courseCompletionRecord.profileId)
       .as('latest_course_compliance_cycles_by_profile');
 
-    return await db
+    return await dbClient
       .select({
         id: schema.courseCompletionRecord.id,
         courseId: schema.courseCompletionRecord.courseId,

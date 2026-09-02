@@ -1,10 +1,47 @@
 import * as schema from '@db/schema';
 
 import { TGroupmember, TNewGroupmember } from '@db/types';
-import { and, eq, isNull, or } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, isNull, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
+
+export type CourseMemberWithProfile = TGroupmember & {
+  profile: {
+    id: string;
+    fullname: string | null;
+    username: string | null;
+    avatarUrl: string | null;
+    email: string | null;
+  } | null;
+};
+
+export interface PaginatedCourseMembersOptions {
+  page: number;
+  limit: number;
+  search?: string;
+  roleId?: number;
+}
+
+export interface PaginatedCourseMembersResult {
+  items: CourseMemberWithProfile[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+function mapCourseMemberRows(
+  rows: Array<{
+    member: TGroupmember;
+    profile: CourseMemberWithProfile['profile'];
+  }>
+): CourseMemberWithProfile[] {
+  return rows.map((row) => ({
+    ...row.member,
+    profile: row.profile || null
+  }));
+}
 
 /**
  * Gets all course members (people) for a course
@@ -12,19 +49,7 @@ import { db } from '@db/drizzle';
  * @param courseId Course ID
  * @returns Array of course members with profile data
  */
-export async function getCourseMembers(courseId: string): Promise<
-  Array<
-    TGroupmember & {
-      profile: {
-        id: string;
-        fullname: string | null;
-        username: string | null;
-        avatarUrl: string | null;
-        email: string | null;
-      } | null;
-    }
-  >
-> {
+export async function getCourseMembers(courseId: string): Promise<CourseMemberWithProfile[]> {
   try {
     const result = await db
       .select({
@@ -42,13 +67,79 @@ export async function getCourseMembers(courseId: string): Promise<
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
       .where(eq(schema.course.id, courseId));
 
-    return result.map((row) => ({
-      ...row.member,
-      profile: row.profile || null
-    }));
+    return mapCourseMemberRows(result);
   } catch (error) {
     console.error('getCourseMembers error:', error);
     throw new Error(`Failed to get course members: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Gets one filtered page of course members with profile data.
+ */
+export async function getPaginatedCourseMembers(
+  courseId: string,
+  { page, limit, search, roleId }: PaginatedCourseMembersOptions
+): Promise<PaginatedCourseMembersResult> {
+  try {
+    const conditions = [eq(schema.course.id, courseId)];
+
+    if (roleId) {
+      conditions.push(eq(schema.groupmember.roleId, roleId));
+    }
+
+    if (search) {
+      const searchPattern = `%${search}%`;
+      const searchCondition = or(
+        ilike(schema.profile.fullname, searchPattern),
+        ilike(schema.profile.email, searchPattern),
+        ilike(schema.groupmember.email, searchPattern)
+      );
+
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
+    }
+
+    const [countRow] = await db
+      .select({ count: count(schema.groupmember.id) })
+      .from(schema.groupmember)
+      .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+      .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+      .where(and(...conditions));
+
+    const total = Number(countRow?.count ?? 0);
+    const rows = await db
+      .select({
+        member: schema.groupmember,
+        profile: {
+          id: schema.profile.id,
+          fullname: schema.profile.fullname,
+          username: schema.profile.username,
+          avatarUrl: schema.profile.avatarUrl,
+          email: schema.profile.email
+        }
+      })
+      .from(schema.groupmember)
+      .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+      .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+      .where(and(...conditions))
+      .orderBy(asc(schema.groupmember.roleId), asc(schema.groupmember.createdAt), asc(schema.groupmember.id))
+      .limit(limit)
+      .offset((page - 1) * limit);
+
+    return {
+      items: mapCourseMemberRows(rows),
+      page,
+      limit,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit)
+    };
+  } catch (error) {
+    console.error('getPaginatedCourseMembers error:', error);
+    throw new Error(
+      `Failed to get paginated course members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

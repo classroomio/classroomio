@@ -31,7 +31,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { generateSlug, isPublishedComplianceMissingDeadline } from '@cio/utils/functions';
+  import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
@@ -187,7 +187,7 @@
 
     // Otherwise, publish normally
     $settings.isPublished = true;
-    $settings.allowNewStudents = true;
+    $settings.allowSelfEnrollment = true;
     hasUnsavedChanges = true;
   }
 
@@ -204,6 +204,11 @@
 
     if (!$settings.courseDescription) {
       errors.description = $t('snackbar.course_settings.error.description');
+      return;
+    }
+
+    if (Number(courseApi.course?.cost) > 0 && !(courseApi.course?.metadata?.paymentLink ?? '').trim()) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       return;
     }
 
@@ -237,7 +242,7 @@
         lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
-        allowNewStudent: $settings.allowNewStudents ?? false,
+        allowSelfEnrollment: $settings.allowSelfEnrollment,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
         welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
@@ -326,7 +331,7 @@
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
         isPublished: !!course.isPublished,
-        allowNewStudents: !!course.metadata?.allowNewStudent,
+        allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         callout: normalizeCallout(course.callout),
@@ -638,7 +643,7 @@
     <Field.Description>
       {$t('course.navItem.settings.course_type_desc')}
       <a
-        href="https://classroomio.com/docs/guides/course-types"
+        href="https://classroomio.com/help/build-a-course/course-types"
         target="_blank"
         rel="noopener noreferrer"
         class="ui:text-primary underline"
@@ -1059,15 +1064,15 @@
     <Field.Description>{$t('course.navItem.settings.access')}</Field.Description>
     <Field.Field orientation="horizontal">
       <Switch
-        id="allow-new-students"
-        checked={$settings.allowNewStudents}
+        id="allow-self-enrollment"
+        checked={$settings.allowSelfEnrollment}
         onCheckedChange={(checked) => {
-          $settings.allowNewStudents = checked;
+          $settings.allowSelfEnrollment = checked;
           hasUnsavedChanges = true;
         }}
       />
-      <Label for="allow-new-student">
-        {$settings.allowNewStudents ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      <Label for="allow-self-enrollment">
+        {$settings.allowSelfEnrollment ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
       </Label>
     </Field.Field>
   </Field.Set>

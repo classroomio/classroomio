@@ -114,9 +114,9 @@
 
     {#if generatedSecret}
       <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
-        <p class="ui:text-amber-800 text-sm font-medium">{$t('automation.api.keys.secret_once')}</p>
+        <p class="text-sm font-medium text-amber-800">{$t('automation.api.keys.secret_once')}</p>
         <div class="mt-3">
-          <Code.Root code={generatedSecret} hideLines={true} class="ui:break-all ui:text-xs">
+          <Code.Root code={generatedSecret} hideLines={true} class="text-xs break-all">
             <Code.CopyButton />
           </Code.Root>
         </div>

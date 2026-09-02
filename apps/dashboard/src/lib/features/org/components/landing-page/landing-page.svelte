@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { resolve } from '$app/paths';
   import type { Component } from 'svelte';
 
   import { orgApi } from '$features/org/api/org.svelte';
@@ -12,9 +11,8 @@
     importThemeComponent,
     normalizeLandingPageSettings
   } from '$features/org/utils/landing-page';
-  import { basePath } from '$lib/utils/store/app';
-  import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
+  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
 
   interface Props {
     orgSiteName?: string;
@@ -24,24 +22,17 @@
   let { orgSiteName = '', org }: Props = $props();
 
   let hasLoadedCourses = $state(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let ThemeComponent = $state<Component<any> | null>(null);
+  let ThemeComponent = $state<Component | null>(null);
 
-  const authAction = $derived.by(() => {
-    if (!$user.isLoggedIn) {
-      return { label: t.get('navigation.login'), href: '/login' };
-    }
-
-    if (!appInitApi.isInitializedAndReady) {
-      return { label: '', href: '#', loading: true };
-    }
-
-    const goToLms = $basePath === '/lms' || $basePath === '#';
-    return {
-      label: t.get(goToLms ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-      href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-    };
-  });
+  const authAction = $derived(
+    getOrgLandingAuthAction({
+      isLoggedIn: $user.isLoggedIn,
+      isInitialized: appInitApi.isInitializedAndReady,
+      org,
+      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
+      hasPendingInvite: !!appInitApi.pendingOrgInvite
+    })
+  );
 
   const landingPageProps = $derived(
     buildOrgLandingPageProps(

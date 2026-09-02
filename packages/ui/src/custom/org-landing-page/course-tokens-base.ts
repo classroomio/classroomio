@@ -80,6 +80,9 @@ export type CourseLandingTokens = {
   pricingSavingsBadge: string;
 };
 
+/** Child selectors that make author-written rich text (paragraphs, lists) readable inside a body block. */
+export const richTextChildren = 'ui:[&_p]:mb-2 ui:[&_ul]:list-disc ui:[&_ul]:pl-5 ui:[&_li]:mb-1';
+
 export const baseCourseTokens: CourseLandingTokens = {
   sectionShell: 'ui:py-12 ui:md:py-14 ui:px-4',
   sectionInner: 'ui:max-w-[1200px] ui:mx-auto',
@@ -113,9 +116,7 @@ export const baseCourseTokens: CourseLandingTokens = {
     'ui:text-2xl ui:text-[var(--landing-fg)]' +
     ' ui:[font-weight:var(--landing-heading-weight)]' +
     ' ui:[letter-spacing:var(--landing-heading-tracking)]',
-  infoBlockBody:
-    'ui:text-base ui:text-[var(--landing-fg-muted)] ui:leading-relaxed' +
-    ' ui:[&_p]:mb-2 ui:[&_ul]:list-disc ui:[&_ul]:pl-5 ui:[&_li]:mb-1',
+  infoBlockBody: 'ui:text-base ui:text-[var(--landing-fg-muted)] ui:leading-relaxed' + ` ${richTextChildren}`,
   infoCertificateFrame:
     'ui:overflow-hidden ui:border ui:border-[var(--landing-border)]' + ' ui:[border-radius:var(--landing-radius-card)]',
   certificateShell:
@@ -174,7 +175,7 @@ export const baseCourseTokens: CourseLandingTokens = {
   instructorName: 'ui:text-xl ui:text-[var(--landing-fg)]' + ' ui:[font-weight:var(--landing-heading-weight)]',
   instructorRole: 'ui:text-sm ui:text-[var(--landing-fg-muted)]',
   instructorMeta: 'ui:text-xs ui:text-[var(--landing-fg-faint)] ui:mt-1',
-  instructorBody: 'ui:text-sm ui:text-[var(--landing-fg-muted)] ui:leading-relaxed ui:mt-3',
+  instructorBody: 'ui:text-sm ui:text-[var(--landing-fg-muted)] ui:leading-relaxed ui:mt-3' + ` ${richTextChildren}`,
 
   reviewsAverage: 'ui:flex ui:items-center ui:gap-3 ui:mb-8 ui:text-[var(--landing-fg)]',
   reviewsAverageValue: 'ui:text-3xl ui:[font-weight:var(--landing-heading-weight)]',

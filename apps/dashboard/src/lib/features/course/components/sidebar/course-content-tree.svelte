@@ -164,7 +164,7 @@
                         <span
                           class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
                           sectionProgress.total
-                            ? 'ui:text-green-600'
+                            ? 'text-green-600'
                             : 'ui:text-muted-foreground'}"
                         >
                           {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}

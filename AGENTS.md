@@ -703,6 +703,8 @@ A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self
   - The license gate is a **no-op**, so all enterprise features are unlocked **without** a `LICENSE_KEY` — i.e. cloud mode is the easiest way to exercise SSO/token-auth/multi-org in dev.
   - Polar billing and analytics activate but are themselves gated by their own keys (absent keys just no-op), so they don't block startup.
 
+**Org membership invariant — admins/tutors vs students.** Self-hosted is single-org/single-domain, so one person must never hold a STUDENT membership in one org and an ADMIN/TUTOR membership in another. Concretely: the self-hosted auto-enroll path (`getAccountData` in `apps/api/src/services/account/profile.ts`) skips enrolling a user as STUDENT if `getUserOrgRolesMap` shows they are ADMIN/TUTOR anywhere. Cloud does **not** enforce this: multi-domain tenancy means the same person can legitimately be an admin of their own org and a student in someone else's, so the explicit signup/Join Academy service (`joinOrganization` in `apps/api/src/services/organization/join.ts`) intentionally has no such guard. When changing enrollment logic, keep this asymmetry deliberate.
+
 Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both files. The flag is read at process start, so restart the dev servers after editing it.
 
 ### Seeded tenants (good for multi-tenant testing)

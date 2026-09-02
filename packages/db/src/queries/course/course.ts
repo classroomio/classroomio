@@ -312,9 +312,9 @@ export const getCoursesBySiteNameForSetup = async (siteName: string) => {
     ...row.course
   }));
 };
-export async function getCourseById(courseId: string) {
+export async function getCourseById(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return await db.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
   } catch (error) {
     console.error('getCourseById error:', error);
     throw new Error(
@@ -504,9 +504,9 @@ export async function createCourseNewsfeed(newsfeed: TNewCourseNewsfeed, dbClien
  * @param data Partial course data to update
  * @returns Updated course
  */
-export async function updateCourse(courseId: string, data: Partial<TCourse>) {
+export async function updateCourse(courseId: string, data: Partial<TCourse>, dbClient: DbOrTxClient = db) {
   try {
-    const [updated] = await db
+    const [updated] = await dbClient
       .update(schema.course)
       .set({ ...data, updatedAt: new Date().toISOString() })
       .where(eq(schema.course.id, courseId))
@@ -1108,10 +1108,10 @@ export const getExploreCourses = async ({
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
       isNull(schema.groupmember.id),
-      or(
-        sql`${schema.course.metadata}->>'allowNewStudent' IS NULL`,
-        sql`${schema.course.metadata}->>'allowNewStudent' != 'false'`
-      )
+      // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
+      // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,
+      // so COALESCE falls through exactly as `??` does.
+      sql`COALESCE(${schema.course.metadata}->>'allowSelfEnrollment', ${schema.course.metadata}->>'allowNewStudent', 'true') != 'false'`
     );
 
     const courseSelect = {
@@ -1170,9 +1170,9 @@ export const getExploreCourses = async ({
 /**
  * Resolves the organization ID for a course via its group.
  */
-export async function getOrgIdByCourseId(courseId: string): Promise<string | null> {
+export async function getOrgIdByCourseId(courseId: string, dbClient: DbOrTxClient = db): Promise<string | null> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ orgId: schema.group.organizationId })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -1280,10 +1280,10 @@ export async function getOrganizationByCourseId(courseId: string): Promise<{ org
 export async function updateLessonsSectionId(
   courseId: string,
   sectionId: string,
-  tx?: Parameters<Parameters<typeof db.transaction>[0]>[0]
+  dbClient?: DbOrTxClient
 ): Promise<number> {
   try {
-    const dbInstance = tx || db;
+    const dbInstance = dbClient || db;
     const updated = await dbInstance
       .update(schema.lesson)
       .set({ sectionId })
@@ -1395,11 +1395,11 @@ export async function deleteCourseSection(sectionId: string, dbClient: DbOrTxCli
  * @param courseIds Array of course IDs
  * @returns Array of { courseId, groupId } mappings
  */
-export async function getCourseGroupIds(courseIds: string[]) {
+export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxClient = db) {
   try {
     if (courseIds.length === 0) return [];
 
-    return db
+    return dbClient
       .select({ courseId: schema.course.id, groupId: schema.course.groupId })
       .from(schema.course)
       .where(inArray(schema.course.id, courseIds));

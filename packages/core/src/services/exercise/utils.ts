@@ -377,7 +377,7 @@ export async function createNewQuestionsWithOptions(
       exerciseId,
       title: q.question,
       questionTypeId: q.questionTypeId || 1,
-      points: q.points || 0,
+      points: q.points ?? 1,
       order: typeof q.order === 'number' ? q.order : undefined,
       exerciseSectionId: q.exerciseSectionId ?? null,
       settings: normalizeSettings(q.settings)
@@ -460,7 +460,7 @@ export function transformQuestion(
     name: question.name || '',
     title: question.title,
     type: questionTypeId, // type field (same as questionTypeId)
-    points: question.points || 0,
+    points: question.points ?? 1,
     order: question.order || 0,
     questionType: questionType
       ? {

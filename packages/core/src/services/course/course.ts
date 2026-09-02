@@ -5,8 +5,9 @@ import {
   createCourse as createCourseQuery,
   createCourseSections,
   deleteCourse as deleteCourseQuery,
-  getCourseProgress as getCourseProgressQuery,
   getCourseById,
+  getCourseContentItems,
+  getCourseProgress as getCourseProgressQuery,
   getCourseWithRelations,
   getOrgIdByCourseId,
   updateCourse as updateCourseQuery,
@@ -31,6 +32,7 @@ import { getCourseGroupId } from '@cio/db/queries/course/people';
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
+import type { DbOrTxClient } from '@cio/db/drizzle';
 import type { TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
@@ -126,6 +128,10 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   }
 
   return true;
+}
+
+function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {
+  return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined)) as T;
 }
 
 function sanitizeCourseMetadata(metadata: TCourse['metadata'] | undefined) {
@@ -335,19 +341,32 @@ export async function createCourse(
  * @param data Course update data
  * @returns Updated course
  */
-export async function updateCourse(courseId: string, data: Partial<TCourse>) {
+export async function updateCourse(courseId: string, data: Partial<TCourse>, dbClient: DbOrTxClient = db) {
   try {
+    const [existingCourse] = await getCourseById(courseId, dbClient);
+
+    const effectiveCost = data.cost !== undefined ? data.cost : (existingCourse?.cost ?? 0);
+    const effectivePaymentLink =
+      data.metadata?.paymentLink !== undefined ? data.metadata.paymentLink : existingCourse?.metadata?.paymentLink;
+
+    if (Number(effectiveCost) > 0 && !effectivePaymentLink?.trim()) {
+      throw new AppError('Paid courses require a payment link', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const existingMetadata = existingCourse?.metadata;
+    const mergedMetadata = data.metadata ? { ...existingMetadata, ...omitUndefinedValues(data.metadata) } : undefined;
+
     const sanitizedData: Partial<TCourse> = {
       ...data,
       description: sanitizeOptionalHtml(data.description),
       overview: sanitizeOptionalHtml(data.overview),
-      metadata: sanitizeCourseMetadata(data.metadata),
+      metadata: sanitizeCourseMetadata(mergedMetadata),
       certificate: sanitizeCourseCertificate(data.certificate),
       logo: data.logo,
       slug: data.slug
     };
 
-    const [currentCourse] = await getCourseById(courseId);
+    const [currentCourse] = await getCourseById(courseId, dbClient);
     if (!currentCourse) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
@@ -356,7 +375,8 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       await guardCourseTypeTransition({
         courseId,
         currentType: currentCourse.type ?? null,
-        nextType: data.type
+        nextType: data.type,
+        dbClient
       });
     }
 
@@ -380,15 +400,15 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
     }
 
     if (data.certificate?.requiredExerciseId) {
-      const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId);
+      const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId, dbClient);
       if (!ok) {
         throw new AppError('Certification exercise must belong to this course', ErrorCodes.VALIDATION_ERROR, 400);
       }
 
-      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true });
+      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true }, dbClient);
     }
 
-    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData));
+    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData), dbClient);
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
@@ -396,16 +416,20 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
     const isContentGroupingEnabled = (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) === true;
 
     if (isContentGroupingEnabled) {
-      const courseWithRelations = await getCourseWithRelations(courseId);
-      if (courseWithRelations) {
-        const contentItems = courseWithRelations.contentItems;
+      const courseWithRelations = dbClient === db ? await getCourseWithRelations(courseId) : null;
+      const contentItems =
+        dbClient === db
+          ? courseWithRelations?.contentItems
+          : await getCourseContentItems(courseId, undefined, dbClient);
+
+      if (contentItems) {
         const hasSections = contentItems.some((item) => item.type === ContentType.Section);
         const hasUngroupedItems = contentItems.some(
           (item) => (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === null
         );
 
         if (!hasSections && hasUngroupedItems) {
-          await db.transaction(async (tx) => {
+          const createSectionAndMoveContent = async (transactionClient: DbOrTxClient) => {
             const [section] = await createCourseSections(
               [
                 {
@@ -414,22 +438,28 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
                   courseId
                 }
               ],
-              tx
+              transactionClient
             );
 
             if (!section) {
               throw new AppError('Failed to create course section', ErrorCodes.COURSE_SECTION_NOT_FOUND, 500);
             }
 
-            await updateLessonsSectionId(courseId, section.id, tx);
-            await updateExercisesSectionId(courseId, section.id, tx);
-          });
+            await updateLessonsSectionId(courseId, section.id, transactionClient);
+            await updateExercisesSectionId(courseId, section.id, transactionClient);
+          };
+
+          if (dbClient === db) {
+            await db.transaction((tx) => createSectionAndMoveContent(tx));
+          } else {
+            await createSectionAndMoveContent(dbClient);
+          }
         }
       }
     }
 
     if (data.status !== undefined) {
-      const statsOrgId = await getOrgIdByCourseId(courseId);
+      const statsOrgId = await getOrgIdByCourseId(courseId, dbClient);
       await invalidateOrgStats(statsOrgId);
     }
 

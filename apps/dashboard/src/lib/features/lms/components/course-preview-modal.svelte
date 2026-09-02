@@ -9,6 +9,7 @@
   import XIcon from '@lucide/svelte/icons/x';
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+  import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import type { RecommendedCourses } from '$features/course/types';
   import pluralize from 'pluralize';
@@ -21,6 +22,7 @@
   let { course, open = $bindable(false) }: Props = $props();
 
   type CourseMetadata = {
+    allowSelfEnrollment?: boolean;
     allowNewStudent?: boolean;
     discount?: number;
     showDiscount?: boolean;
@@ -31,7 +33,7 @@
   const discount = $derived(metadata?.discount ?? 0);
   const calculatedCost = $derived(calcCourseDiscount(discount, course.cost || 0, !!metadata?.showDiscount));
   const isFree = $derived(isCourseFree(calculatedCost));
-  const allowNewStudent = $derived(metadata?.allowNewStudent !== false);
+  const selfEnrollmentAllowed = $derived(isSelfEnrollmentAllowed(metadata));
   const requirements = $derived(metadata?.requirements?.trim() || null);
   const formatter = $derived(getCurrencyFormatter(course.currency ?? 'USD'));
 
@@ -47,7 +49,7 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="ui:p-0 overflow-hidden sm:max-w-2xl" showCloseButton={false}>
+  <Dialog.Content class="overflow-hidden p-0 sm:max-w-2xl" showCloseButton={false}>
     <div class="relative overflow-hidden rounded-md">
       <img
         src={course.logo || DEFAULT_COURSE_BANNER_IMAGE}
@@ -55,10 +57,10 @@
         class="aspect-video w-full object-cover"
       />
       <Dialog.Close
-        class="ui:absolute ui:top-3 ui:right-3 ui:inline-flex ui:size-8 ui:items-center ui:justify-center ui:rounded-md ui:bg-secondary ui:text-secondary-foreground ui:hover:bg-secondary/80 ui:transition-colors ui:cursor-pointer"
+        class="ui:bg-secondary ui:text-secondary-foreground ui:hover:bg-secondary/80 absolute top-3 right-3 inline-flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors"
       >
-        <XIcon class="ui:size-4" />
-        <span class="ui:sr-only">Close</span>
+        <XIcon class="size-4" />
+        <span class="sr-only">Close</span>
       </Dialog.Close>
     </div>
 
@@ -90,9 +92,9 @@
       {/if}
     </div>
 
-    <div class="ui:border-t ui:bg-card sticky bottom-0 flex items-center justify-between px-6 py-4" data-sticky="true">
+    <div class="ui:bg-card sticky bottom-0 flex items-center justify-between border-t px-6 py-4" data-sticky="true">
       <div>
-        {#if allowNewStudent}
+        {#if selfEnrollmentAllowed}
           <p class="text-lg font-bold">
             {formatter.format(calculatedCost)}
             {#if isFree}
@@ -113,7 +115,7 @@
         {/if}
       </div>
 
-      <Button onclick={handleJoinCourse} disabled={!allowNewStudent}>
+      <Button onclick={handleJoinCourse} disabled={!selfEnrollmentAllowed}>
         {isFree
           ? $t('course.navItem.landing_page.pricing_section.enroll')
           : $t('course.navItem.landing_page.pricing_section.buy')}

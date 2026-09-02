@@ -76,10 +76,10 @@
 </div>
 
 <Dialog.Root {open} {onOpenChange}>
-  <Dialog.Content class="ui:max-w-md">
+  <Dialog.Content class="max-w-md">
     {#if activeStep === 'checking'}
       <div class="flex flex-col items-center justify-center gap-4 py-8">
-        <Spinner class="ui:size-8" />
+        <Spinner class="size-8" />
         <p class="ui:text-muted-foreground text-sm">{$t('course.completion.modal.checking')}</p>
       </div>
     {:else if activeStep === 'eligible'}
@@ -89,7 +89,7 @@
           {$isFreePlan ? $t('course.completion.modal.subtitle_no_certificate') : $t('course.completion.modal.subtitle')}
         </Dialog.Description>
       </Dialog.Header>
-      <Dialog.Footer class="ui:gap-2">
+      <Dialog.Footer class="gap-2">
         <Button variant="outline" onclick={() => onOpenChange(false)}>{$t('course.completion.modal.later')}</Button>
         {#if !$isFreePlan}
           <Button onclick={goToCertificate}>{$t('course.completion.modal.view_certificate')}</Button>
@@ -102,7 +102,7 @@
       <div class="ui:text-muted-foreground px-6 pb-4 text-center text-sm">
         <p>{formatSingleBlocker()}</p>
       </div>
-      <Dialog.Footer class="ui:gap-2">
+      <Dialog.Footer class="gap-2">
         <Button variant="outline" onclick={() => onOpenChange(false)}>{$t('course.completion.modal.later')}</Button>
         {#if activeExerciseId}
           <Button onclick={goToExercise}>{$t('course.completion.modal.retake_exercise')}</Button>
