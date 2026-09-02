@@ -12,8 +12,8 @@ release is still in active use.
 
 | Version | Support |
 | --- | --- |
-| Latest `vX.Y.Z` release | Supported |
-| Previous `vX.Y.Z` release | Best effort |
+| Latest stable release | Supported |
+| Previous stable release | Best effort |
 | `main` | Development only; reports are welcome |
 | Older releases | Unsupported; upgrade before reporting a version-specific issue |
 
