@@ -10,7 +10,7 @@
   import { fade } from 'svelte/transition';
   import Save from '@lucide/svelte/icons/save';
   import Pencil from '@lucide/svelte/icons/pencil';
-  // import HistoryIcon from '@lucide/svelte/icons/history';
+  import HistoryIcon from '@lucide/svelte/icons/history';
   import VideoIcon from '@lucide/svelte/icons/video';
   import SettingsIcon from '@lucide/svelte/icons/settings';
 
@@ -445,13 +445,15 @@
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <div class="flex flex-row items-center gap-2 lg:flex">
-          <!--
           {#if mode === MODES.edit && window.innerWidth >= 1024}
-            <IconButton onclick={() => (isVersionDrawerOpen = true)}>
+            <IconButton
+              onclick={() => (isVersionDrawerOpen = true)}
+              aria-label={$t('course.navItem.lessons.version_history.title')}
+              tooltip={$t('course.navItem.lessons.version_history.title')}
+            >
               <HistoryIcon size={20} />
             </IconButton>
           {/if}
-          -->
 
           {#if mode === MODES.edit}
             <span class="ui:text-muted-foreground text-sm" aria-live="polite">
