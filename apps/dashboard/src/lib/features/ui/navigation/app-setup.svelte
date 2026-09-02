@@ -9,11 +9,22 @@
   import { t } from '$lib/utils/functions/translations';
   import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
   import { calculateProgress, setupProgressApi } from '$features/setup/api/setup-progress.svelte';
+  import { getSetupPagePath, goToSetupItem } from '$features/setup/utils/setup-navigation';
+  import { goto } from '$app/navigation';
 
   function handleRefresh() {
     if ($currentOrg.siteName) {
       setupProgressApi.fetchSetupProgress($currentOrg.siteName);
     }
+  }
+
+  function handleSetupIconClick(event: MouseEvent) {
+    if (!setupPageHref || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    event.preventDefault();
+    goto(setupPageHref);
   }
 
   const setupList = $derived(
@@ -28,11 +39,18 @@
     })
   );
   const progressPercentage = $derived(calculateProgress(setupList));
+  const setupPageHref = $derived($currentOrg.siteName ? getSetupPagePath($currentOrg.siteName) : undefined);
 </script>
 
 {#if progressPercentage < 100}
   <HoverCard.Root openDelay={200}>
-    <HoverCard.Trigger class="hidden md:block">
+    <HoverCard.Trigger
+      href={setupPageHref}
+      class="hidden md:block"
+      aria-label={$t('org_navigation.setup')}
+      data-testid="app-setup-trigger"
+      onclick={handleSetupIconClick}
+    >
       <SetupProgress size="small" setupItems={setupList} />
     </HoverCard.Trigger>
     <HoverCard.Content class="hidden w-80 md:block">
@@ -47,15 +65,22 @@
           </div>
 
           {#each setupList as item (item.id)}
-            <div class="flex items-center gap-2 text-sm">
-              {#if item.is_completed}
+            {#if item.is_completed}
+              <div class="flex items-center gap-2 text-sm">
                 <BadgeCheckIcon class="custom size-4 shrink-0 text-green-600! opacity-50" />
                 <span class="ui:text-muted-foreground line-through opacity-50">{$t(item.title)}</span>
-              {:else}
+              </div>
+            {:else}
+              <button
+                type="button"
+                class="ui:hover:bg-accent flex w-full items-center gap-2 rounded-md px-1 py-1 text-left text-sm"
+                data-testid="app-setup-item-{item.id}"
+                onclick={() => goToSetupItem(item.id)}
+              >
                 <CircleIcon class="size-4 shrink-0 text-gray-400" />
                 <span>{$t(item.title)}</span>
-              {/if}
-            </div>
+              </button>
+            {/if}
           {/each}
         </div>
       {/if}

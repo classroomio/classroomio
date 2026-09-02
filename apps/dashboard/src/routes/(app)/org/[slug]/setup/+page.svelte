@@ -11,19 +11,14 @@
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import SetupProgress from '$features/setup/components/setup-progress.svelte';
 
-  import { currentOrg } from '$lib/utils/store/org';
-  import { goto } from '$app/navigation';
-  import { snackbar } from '$features/ui/snackbar/store';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
-  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
-  import { goAndHighlight } from '$lib/routing/go-and-highlight';
+  import { goToSetupItem, SETUP_STEPS } from '$features/setup/utils/setup-navigation';
 
   let { data } = $props();
 
   $effect(() => {
-    console.log('data', data);
     if (data.setupProgress && data.orgSiteName) {
       setupProgressApi.initializeFromServerData(data.setupProgress, data.orgSiteName);
     }
@@ -41,81 +36,8 @@
     })
   );
 
-  $effect(() => {
-    console.log('setup list', setupList);
-  });
-
   const completed = $derived(setupList.filter((list) => list.is_completed).length);
   const total = $derived(setupList.length);
-
-  const StepsEnum = {
-    UPDATE_PROFILE: 'profile',
-    UPDATE_ORG_PROFILE: 'organization',
-    CREATE_COURSE: 'course',
-    CREATE_LESSON: 'lesson',
-    CREATE_EXERCISE: 'exercise',
-    PUBLISH_COURSE: 'publish'
-  };
-
-  const isCompleted = (id: string) => {
-    return setupList?.find((c) => c.id === id)?.is_completed == true;
-  };
-
-  const handleClick = (id: string) => {
-    switch (id) {
-      case StepsEnum.CREATE_COURSE:
-        goto(`/org/${$currentOrg.siteName}/courses?create=true`);
-        break;
-
-      case StepsEnum.CREATE_LESSON:
-        if (isCompleted('course')) {
-          const courses = setupProgressApi.progress.courses || [];
-          const courseId = courses[0]?.id;
-          if (courseId) {
-            goto(`/courses/${courseId}/lessons`);
-          }
-        } else {
-          snackbar.info('setup.info_course');
-        }
-        break;
-
-      case StepsEnum.CREATE_EXERCISE:
-        if (isCompleted('lesson')) {
-          const courses = setupProgressApi.progress.courses || [];
-          const lessons = setupProgressApi.progress.lessons || [];
-          const courseId = courses[0]?.id;
-          const lessonId = lessons[0]?.id;
-          if (courseId && lessonId) {
-            goto(`/courses/${courseId}/lessons/${lessonId}`);
-          }
-        } else {
-          snackbar.info('setup.info_lesson');
-        }
-        break;
-
-      case StepsEnum.PUBLISH_COURSE:
-        if (isCompleted('course')) {
-          const courses = setupProgressApi.progress.courses || [];
-          const courseId = courses[0]?.id;
-          if (courseId) {
-            goAndHighlight(ROUTE_NAME.COURSE_SETTINGS, ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].PUBLISH, {
-              id: courseId
-            });
-          }
-        } else {
-          snackbar.info('setup.info_course');
-        }
-        break;
-
-      case StepsEnum.UPDATE_PROFILE:
-        goto(`/org/${$currentOrg.siteName}/settings`);
-        break;
-
-      case StepsEnum.UPDATE_ORG_PROFILE:
-        goto(`/org/${$currentOrg.siteName}/settings/org`);
-        break;
-    }
-  };
 </script>
 
 <svelte:head>
@@ -147,7 +69,7 @@
                 {$t('setup.completed')}
               </Item.Description>
               <div class="flex gap-1">
-                {#each Array(total) as _, i}
+                {#each Array(total) as _, i (i)}
                   <div
                     class="size-2 rounded-full {i < completed ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'}"
                   ></div>
@@ -159,22 +81,32 @@
 
         <!-- Setup Items -->
         <Item.Group class="space-y-2">
-          {#each setupList as list}
-            <Item.Root variant="muted" class={list.is_completed ? 'opacity-60' : ''}>
+          {#each setupList as list (list.id)}
+            <Item.Root
+              variant="muted"
+              class={list.is_completed ? 'opacity-60' : ''}
+              onclick={() => {
+                if (list.is_completed) {
+                  return;
+                }
+
+                goToSetupItem(list.id);
+              }}
+            >
               <Item.Media variant="icon">
                 {#if list.is_completed}
                   <div class="flex size-5 items-center justify-center rounded">
                     <BadgeCheckIcon class="size-5 text-white" />
                   </div>
-                {:else if list.id === StepsEnum.CREATE_COURSE}
+                {:else if list.id === SETUP_STEPS.CREATE_COURSE}
                   <BookOpenIcon class="size-5 text-gray-600" />
-                {:else if list.id === StepsEnum.CREATE_LESSON || list.id === StepsEnum.CREATE_EXERCISE}
+                {:else if list.id === SETUP_STEPS.CREATE_LESSON || list.id === SETUP_STEPS.CREATE_EXERCISE}
                   <FileTextIcon class="size-5 text-gray-600" />
-                {:else if list.id === StepsEnum.PUBLISH_COURSE}
+                {:else if list.id === SETUP_STEPS.PUBLISH_COURSE}
                   <GlobeIcon class="size-5 text-gray-600" />
-                {:else if list.id === StepsEnum.UPDATE_PROFILE}
+                {:else if list.id === SETUP_STEPS.UPDATE_PROFILE}
                   <UserPlusIcon class="size-5 text-gray-600" />
-                {:else if list.id === StepsEnum.UPDATE_ORG_PROFILE}
+                {:else if list.id === SETUP_STEPS.UPDATE_ORG_PROFILE}
                   <UsersIcon class="size-5 text-gray-600" />
                 {:else}
                   <BookOpenIcon class="size-5 text-gray-600" />
@@ -194,7 +126,7 @@
                     {$t('setup.done')}
                   </Button>
                 {:else}
-                  <Button variant="outline" size="sm" onclick={() => handleClick(list.id)} class="w-full sm:w-auto">
+                  <Button variant="outline" size="sm" type="button" class="w-full sm:w-auto">
                     {$t('setup.todo')}
                     <ChevronRightIcon class="ml-2 size-4" />
                   </Button>
