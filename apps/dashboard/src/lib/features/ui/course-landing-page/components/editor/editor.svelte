@@ -71,9 +71,11 @@
   let hasUnsavedChanges = $state(false);
 
   const paymentLink = $derived((course.metadata?.paymentLink ?? '').trim());
-  const isPaidWithoutPaymentLink = $derived(isCoursePaid(course) && !paymentLink);
-  const isPaidWithInvalidPaymentLink = $derived(
-    isCoursePaid(course) && !!paymentLink && !ZPaymentLink.safeParse(paymentLink).success
+  const courseIsPaid = $derived(isCoursePaid(course));
+
+  const isPaymentLinkEmpty = $derived(courseIsPaid && !paymentLink);
+  const isPaymentLinkInvalid = $derived(
+    courseIsPaid && !isPaymentLinkEmpty && !ZPaymentLink.safeParse(paymentLink).success
   );
 
   interface Section {
@@ -151,13 +153,13 @@
     }
 
     if (selectedSectionKey === 'pricing') {
-      if (isPaidWithoutPaymentLink) {
+      if (isPaymentLinkEmpty) {
         showPaymentError = true;
         snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
         return;
       }
 
-      if (isPaidWithInvalidPaymentLink) {
+      if (isPaymentLinkInvalid) {
         showPaymentError = true;
         snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
         return;
@@ -190,7 +192,7 @@
   });
 
   async function handleSave() {
-    if (isPaidWithoutPaymentLink) {
+    if (isPaymentLinkEmpty) {
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       selectedSectionKey = 'pricing';
       return;
@@ -257,13 +259,7 @@
       <CloseButton onClick={handleClose} />
 
       <div class="flex items-center gap-1" data-open={sidebar.open} data-mobile={sidebar.isMobile}>
-        <Button
-          type="button"
-          variant="outline"
-          onclick={handleSave}
-          {loading}
-          disabled={loading || isPaidWithoutPaymentLink}
-        >
+        <Button type="button" variant="outline" onclick={handleSave} {loading} disabled={loading || isPaymentLinkEmpty}>
           {$t('course.navItem.landing_page.editor.save')}
         </Button>
         <HoverableItem>
