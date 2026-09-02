@@ -3122,7 +3122,17 @@
           "title": "Version history",
           "fetch_more_versions": "Fetch more versions",
           "current_version": "Current version",
-          "restore_version": "Restore this version"
+          "restore_version": "Restore this version",
+          "edit_count": "{count, plural, one {# edit} other {# edits}}",
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "kind": {
+            "auto": "Autosave",
+            "manual": "Saved version",
+            "publish": "Published"
+          },
+          "by_author": "by {name}",
+          "empty": "No versions yet"
         }
       },
       "attendance": {
@@ -3722,7 +3732,7 @@
         "certificate_deadline_required": "Set Certificate Deadline First",
         "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
-        "completion_deadline_label": "Course completion deadline",
+        "completion_deadline_label": "Course Completion Deadline",
         "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
@@ -3733,8 +3743,6 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
-        "completion_deadline_label": "Course Completion Deadline",
-        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",

@@ -1395,7 +1395,17 @@
           "title": "Versionshistorik",
           "fetch_more_versions": "Hent flere versioner",
           "current_version": "Nuværende version",
-          "restore_version": "Gendan denne version"
+          "restore_version": "Gendan denne version",
+          "edit_count": "{count, plural, one {# redigering} other {# redigeringer}}",
+          "today": "I dag",
+          "yesterday": "I går",
+          "by_author": "af {name}",
+          "empty": "Ingen versioner endnu",
+          "kind": {
+            "auto": "Automatisk gemning",
+            "manual": "Gemt version",
+            "publish": "Udgivet"
+          }
         },
         "poll": {
           "voted": "Stemte",

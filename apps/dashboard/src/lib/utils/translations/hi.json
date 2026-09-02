@@ -1395,7 +1395,17 @@
           "title": "संस्करण इतिहास",
           "fetch_more_versions": "अधिक संस्करण प्राप्त करें",
           "current_version": "वर्तमान संस्करण",
-          "restore_version": "इस संस्करण को पुनर्स्थापित करें"
+          "restore_version": "इस संस्करण को पुनर्स्थापित करें",
+          "edit_count": "{count, plural, one {# संपादन} other {# संपादन}}",
+          "today": "आज",
+          "yesterday": "कल",
+          "by_author": "द्वारा {name}",
+          "empty": "अभी तक कोई संस्करण उपलब्ध नहीं",
+          "kind": {
+            "auto": "स्वचालित रूप से सहेजें",
+            "manual": "सहेजा गया संस्करण",
+            "publish": "प्रकाशित"
+          }
         },
         "poll": {
           "voted": "मतदान किया",

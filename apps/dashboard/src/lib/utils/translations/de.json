@@ -1395,7 +1395,17 @@
           "title": "Versionsgeschichte",
           "fetch_more_versions": "Weitere Versionen abrufen",
           "current_version": "Aktuelle Version",
-          "restore_version": "Stellen Sie diese Version wieder her"
+          "restore_version": "Stellen Sie diese Version wieder her",
+          "edit_count": "{count, plural, one {# Bearbeitung} other {# Bearbeitungen}}",
+          "today": "Heute",
+          "yesterday": "Gestern",
+          "by_author": "von {name}",
+          "empty": "Noch keine Versionen",
+          "kind": {
+            "auto": "Automatisch speichern",
+            "manual": "Gespeicherte Version",
+            "publish": "Veröffentlicht"
+          }
         },
         "poll": {
           "voted": "Abgestimmt",

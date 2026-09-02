@@ -64,6 +64,13 @@
       "when": 1788108878281,
       "tag": "0008_add_lesson_comments_setting",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788388971877,
+      "tag": "0009_lesson_version_sessions",
+      "breakpoints": true
     }
   ]
 }

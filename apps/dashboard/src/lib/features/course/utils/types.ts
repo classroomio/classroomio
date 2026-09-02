@@ -1,4 +1,5 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
+import type { TLocale } from '@cio/db/types';
 
 // List lessons types
 export type ListLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['$get'];
@@ -148,6 +149,33 @@ export type GetLessonHistoryRequest =
 export type GetLessonHistoryResponse = InferResponseType<GetLessonHistoryRequest> | null;
 export type GetLessonHistorySuccess = Extract<InferResponseType<GetLessonHistoryRequest>, { success: true }>;
 export type LessonHistory = GetLessonHistorySuccess['data'];
+export type LessonHistoryRow = LessonHistory[number];
+
+/**
+ * A history row with its timestamps parsed, as the version history panel renders
+ * it. One entry is one *editing session*, not one save — `editCount` says how
+ * many saves the API coalesced into it.
+ */
+export interface LessonVersionEntry {
+  id: number;
+  newContent: string;
+  oldContent: string;
+  kind: NonNullable<LessonHistoryRow['kind']>;
+  label: string | null;
+  sessionStartedAt: Date;
+  timestamp: Date;
+  editCount: number;
+  authorName: string | null;
+  locale: TLocale;
+  lessonId: string;
+}
+
+/** Version entries bucketed into calendar days, newest day first. */
+export interface LessonVersionDayGroup {
+  /** Midnight of the day, used as the group key. */
+  dayKey: number;
+  versions: LessonVersionEntry[];
+}
 
 // Lesson language types
 export type GetLessonLanguageRequest =

@@ -1393,9 +1393,19 @@
         "disabled": "Функция отключена",
         "version_history": {
           "title": "История версий",
-          "fetch_more_versions": "Получить больше версий",
+          "fetch_more_versions": "Загрузить больше версий",
           "current_version": "Текущая версия",
-          "restore_version": "Восстановить эту версию"
+          "restore_version": "Восстановить эту версию",
+          "edit_count": "{count, plural, one {# редактирование} few {# редактирования} many {# редактирований} other {# редактирования}}",
+          "today": "Сегодня",
+          "yesterday": "Вчера",
+          "kind": {
+            "auto": "Автосохранение",
+            "manual": "Сохраненная версия",
+            "publish": "Опубликовано"
+          },
+          "by_author": "Автор: {name}",
+          "empty": "Версий пока нет"
         },
         "poll": {
           "voted": "Проголосовали",
