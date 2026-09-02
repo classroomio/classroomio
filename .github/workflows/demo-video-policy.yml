@@ -34,24 +34,6 @@ jobs:
             const noticeMarker = '<!-- demo-video-policy -->';
             const closedMarker = '<!-- demo-video-policy-closed -->';
             const closeAfterMilliseconds = 3 * 24 * 60 * 60 * 1000;
-            const videoHosts = new Set([
-              'awesomescreenshot.com',
-              'cleanshot.com',
-              'share.cleanshot.com',
-              'cln.sh',
-              'loom.com',
-              'youtu.be',
-              'youtube.com',
-              'vimeo.com',
-              'vidyard.com',
-              'screencastify.com',
-              'screenpal.com',
-              'screen.studio',
-              'share.descript.com',
-              // CleanShot custom domains use the same share-page format without
-              // a media-file extension.
-              'shots.classai.work'
-            ]);
 
             function extractDemoSection(body) {
               const lines = (body || '').split(/\r?\n/);
@@ -74,46 +56,13 @@ jobs:
               return sectionLines.join('\n').replace(/<!--[\s\S]*?-->/g, '').trim();
             }
 
-            function isVideoUrl(rawUrl) {
-              const normalizedUrl = rawUrl.replace(/[)>\],.!?]+$/g, '');
-
-              let parsedUrl;
-              try {
-                parsedUrl = new URL(normalizedUrl);
-              } catch {
-                return false;
-              }
-
-              const hostname = parsedUrl.hostname.toLowerCase().replace(/^www\./, '');
-              const pathname = parsedUrl.pathname.toLowerCase();
-
-              if (/\.(?:mp4|mov|m4v|webm)(?:$|\/)/i.test(pathname)) return true;
-              if (hostname === 'github.com' && /\/(?:user-attachments\/assets|[^/]+\/[^/]+\/(?:assets|files))\//i.test(pathname)) return true;
-              if (hostname === 'user-images.githubusercontent.com') return true;
-              if ((hostname === 'zoom.us' || hostname.endsWith('.zoom.us')) && pathname.startsWith('/rec/')) return true;
-              if (hostname === 'cursor.com') {
-                const artifactPath = parsedUrl.searchParams.get('path') || '';
-
-                return /^\/agents\/[^/]+\/artifacts\/?$/i.test(pathname) &&
-                  /\.(?:mp4|mov|m4v|webm)(?:$|[/?#])/i.test(artifactPath);
-              }
-              if (!videoHosts.has(hostname)) return false;
-
-              if (hostname === 'awesomescreenshot.com') return pathname.startsWith('/video/');
-              if (hostname === 'cleanshot.com') return /^\/share\/[^/]+\/?$/i.test(pathname);
-              if (hostname === 'share.cleanshot.com' || hostname === 'cln.sh') return pathname !== '/';
-              if (hostname === 'loom.com') return /^\/(?:share|embed)\//.test(pathname);
-
-              return true;
-            }
-
-            function hasDemoVideo(body) {
+            function hasDemoLink(body) {
               const demoSection = extractDemoSection(body);
               if (!demoSection) return false;
 
               const urls = demoSection.match(/https?:\/\/[^\s<>"']+/gi) || [];
 
-              return urls.some(isVideoUrl);
+              return urls.length > 0;
             }
 
             async function listPolicyComments(pullNumber) {
@@ -129,9 +78,9 @@ jobs:
 
             async function createNotice(pullNumber) {
               const body = `${noticeMarker}
-            A demo video is required before this PR can be tested and approved. Please add a working video link or GitHub-uploaded video under the **Demo** section of the PR description (for example, Awesome Screenshot, Loom, or Zoom).
+            A demo link is required before this PR can be tested and approved. Please add a working link under the **Demo** section of the PR description.
 
-            This PR is being kept/returned to draft until the walkthrough is added. If no demo video is added within 3 days of this notice, the PR will be closed.`;
+            This PR is being kept/returned to draft until the walkthrough is added. If no demo link is added within 3 days of this notice, the PR will be closed.`;
 
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -159,7 +108,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pullRequest.number,
-                body: `${closedMarker}\nClosing this PR because a demo video was not added within 3 days of the policy notice. Add the walkthrough under **Demo**, then reopen the PR when it is ready for review.`
+                body: `${closedMarker}\nClosing this PR because a demo link was not added within 3 days of the policy notice. Add the walkthrough under **Demo**, then reopen the PR when it is ready for review.`
               });
 
               await github.rest.pulls.update({
@@ -172,8 +121,8 @@ jobs:
 
             async function enforcePolicy(pullRequest, options) {
               if (pullRequest.base.ref !== targetBranch || pullRequest.state !== 'open') return;
-              if (hasDemoVideo(pullRequest.body)) {
-                core.info(`#${pullRequest.number} has a demo video.`);
+              if (hasDemoLink(pullRequest.body)) {
+                core.info(`#${pullRequest.number} has a demo link.`);
                 return;
               }
 
