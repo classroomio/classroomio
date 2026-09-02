@@ -11,7 +11,7 @@ export const isCoursePaid = (course: CoursePaidSource) => {
   return !isCourseFree(Number(course?.cost ?? 0));
 };
 
-export function calcCourseEffectiveCost(course: CoursePaidSource): number {
+export function calcCourseCost(course: CoursePaidSource): number {
   if (!isCoursePaid(course)) return 0;
 
   const cost = Number(course?.cost ?? 0);

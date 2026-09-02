@@ -1,7 +1,7 @@
 import type { CourseBySlugWithOrg, GetCourseBySlugRequest } from '$features/course/utils/types';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
-import { calcCourseEffectiveCost } from '$lib/utils/functions/course';
+import { calcCourseCost } from '$lib/utils/functions/course';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { error } from '@sveltejs/kit';
 
@@ -69,7 +69,7 @@ export const load = async ({ params, url }) => {
   }
 
   const courseData = courseResult.body.data as CourseBySlugWithOrg;
-  const calculatedCost = calcCourseEffectiveCost(courseData);
+  const calculatedCost = calcCourseCost(courseData);
   const isFree = calculatedCost <= 0;
 
   const currentOrg = courseData.org

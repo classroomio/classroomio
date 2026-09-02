@@ -2,7 +2,7 @@
   import get from 'lodash/get';
   import { Button } from '@cio/ui/base/button';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { isCourseFree, calcCourseEffectiveCost, isCoursePaid } from '$lib/utils/functions/course';
+  import { isCourseFree, calcCourseCost, isCoursePaid } from '$lib/utils/functions/course';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
@@ -33,7 +33,7 @@
   let formatter: Intl.NumberFormat | undefined = $state();
 
   const discount = $derived(get(courseData, 'metadata.discount', 0));
-  const calculatedCost = $derived(calcCourseEffectiveCost(courseData));
+  const calculatedCost = $derived(calcCourseCost(courseData));
   const isFree = $derived(isCourseFree(calculatedCost));
   const isPaid = $derived(isCoursePaid(courseData));
   const selfEnrollmentAllowed = $derived(isSelfEnrollmentAllowed(courseData?.metadata));
