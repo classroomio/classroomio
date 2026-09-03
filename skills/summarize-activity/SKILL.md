@@ -11,13 +11,15 @@ Produces a dated markdown report of everything that happened in `classroomio/cla
 
 Confirm `start` and `end` dates (ISO `YYYY-MM-DD`) with the user if not given. `end` defaults to today.
 
+**Validate before use:** both `start` and `end` must match `^\d{4}-\d{2}-\d{2}$` exactly — four digits, hyphen, two digits, hyphen, two digits, nothing else. If either value fails this check (wrong format, extra characters, shell metacharacters, anything that isn't a plain `YYYY-MM-DD` string), do not use it to construct any `gh` command. Reject it and re-ask the user for a corrected date instead of attempting to sanitize, escape, or otherwise pass the suspicious value through.
+
 For the recurring weekly digest, the window is **Sunday through Friday**, published Fridays — not a Monday-start week. Some contributors (e.g. rotimi) ship on Sundays, and a Monday-start window would drop that day's work. If it's ambiguous which Friday is meant, confirm with the user rather than guessing.
 
 ## 2. Merged PRs in range
 
 ```bash
 gh pr list --repo classroomio/classroomio --state merged --base main \
-  --search "merged:{start}..{end}" --limit 200 \
+  --search "merged:{start}..{end}" --limit 1000 \
   --json number,title,url,mergedAt,author,body,baseRefName
 ```
 
@@ -25,15 +27,26 @@ gh pr list --repo classroomio/classroomio --state merged --base main \
 
 ```bash
 gh pr list --repo classroomio/classroomio --state open --base main \
-  --search "created:{start}..{end}" --limit 200 \
+  --search "created:{start}..{end}" --limit 1000 \
   --json number,title,url,createdAt,author,body,isDraft
 ```
 
 These represent in-flight work started in the window but not yet shipped — call this section out separately in the report so it isn't confused with completed work.
 
+**Truncation check:** `--limit 1000` is a practical ceiling on this search, not a guarantee the range only contains that many PRs. If either query returns exactly 1000 results, treat that count as an undercount rather than the true total — do not silently report it as complete. Carry a "results may be truncated, narrow the date range" flag forward and surface it as a visible warning in the report's **Summary** section (step 7), naming which of merged/in-flight hit the cap. Do not attempt cursor-based pagination to work around the cap.
+
 ## 4. Extract each PR's demo link
 
-For each PR body, find the `## Demo` (or `### Demo Video` / `### Demo Recording`) section — same heading match `.github/workflows/demo-video-policy.yml` uses: a markdown heading whose text is `demo`, `demo video`, or `demo recording`, case-insensitive. Take the first `http(s)://` URL inside that section, before the next heading of equal-or-lesser depth. If none, note "no demo link".
+For each PR body, find the `## Demo` (or `### Demo Video` / `### Demo Recording`) section — same heading match `.github/workflows/demo-video-policy.yml` uses: a markdown heading whose text is `demo`, `demo video`, or `demo recording`, case-insensitive. The section runs from that heading down to the next heading of equal-or-lesser depth, or the end of the body if there is none.
+
+Extract the link from that section using the same normalization `.github/workflows/demo-video-policy.yml` applies, in this exact order:
+
+1. **Strip HTML comments** out of the matched section text first, so a commented-out URL is never picked up. Reference: `.replace(/<!--[\s\S]*?-->/g, '')`.
+2. **Find URL candidates**: every run of characters starting with `http://` or `https://` and continuing until whitespace or one of `< > " '`. Reference: `/https?:\/\/[^\s<>"']+/gi`.
+3. **Strip trailing punctuation** from each candidate — remove any trailing run of `)`, `>`, `]`, `,`, `.`, `!`, `?` characters (this handles a URL that closes a Markdown `[text](url)` link, or that ends a sentence). Reference: `.replace(/[)>\],.!?]+$/g, '')`.
+4. **Take the first cleaned candidate** that parses as a valid URL with protocol `http:` or `https:`. Any hostname is acceptable — this extraction, like the workflow it mirrors, has no domain allowlist.
+
+If no candidate survives all four steps, note "no demo link".
 
 ## 5. Best-effort transcript/summary per demo link
 
