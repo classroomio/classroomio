@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.awesomescreenshot.com)",
+      "WebFetch(domain:cursor.com)",
+      "WebFetch(domain:shots.classai.work)"
+    ]
+  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true
   }
