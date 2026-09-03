@@ -4628,7 +4628,8 @@
       },
       "current_version": "Aktualna wersja",
       "active_badge": "Aktywny",
-      "active_badge_description": "Ta wersja jest obecnie dostępna na Twoim osadzeniu"
+      "active_badge_description": "Ta wersja jest obecnie dostępna na Twoim osadzeniu",
+      "upgrade_callout": "Zaktualizuj, aby odblokować niestandardowe motywy, kolory, typografię i styl."
     },
     "tabs": {
       "select_courses": "Wybierz Kursy",

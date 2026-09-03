@@ -4628,7 +4628,8 @@
       },
       "current_version": "Phiên bản hiện tại",
       "active_badge": "Đang hoạt động",
-      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn"
+      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn",
+      "upgrade_callout": "Nâng cấp để mở khóa các chủ đề, màu sắc, kiểu chữ và phong cách tùy chỉnh."
     },
     "tabs": {
       "select_courses": "Chọn khóa học",
