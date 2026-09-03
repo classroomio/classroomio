@@ -71,6 +71,20 @@
       "when": 1788388971877,
       "tag": "0009_lesson_version_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788389000010,
+      "tag": "0010_add_missing_unique_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788389000011,
+      "tag": "0011_drop_lesson_language_history_trigger",
+      "breakpoints": true
     }
   ]
 }
