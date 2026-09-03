@@ -1,15 +1,4 @@
--- Unique constraints that `schema.ts` and the migration snapshots have always
--- declared, but which are absent from databases created before the schema was
--- managed by migrations (adopted via `drizzle-kit push` or the original Supabase
--- setup, then baselined). Baselining records migrations as applied, so nothing
--- else will ever create these.
---
--- Every statement is guarded: environments that already have the constraint are
--- unaffected, so this is safe to run everywhere.
---
--- A UNIQUE constraint cannot be added while duplicate rows exist. Run
--- `check-constraints.mjs` against the target database first — if it reports any
--- constraint as BLOCKED, resolve those rows before applying this migration.
+-- Guarded: these exist in schema.ts but not in databases adopted before migrations.
 
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'program_course_program_id_course_id_unique') THEN
