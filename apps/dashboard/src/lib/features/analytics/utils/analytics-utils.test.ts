@@ -41,7 +41,7 @@ describe('bucketSparkline', () => {
       { date: '2026-09-03', views: 30, enrollments: 6 }
     ];
 
-    const filled = zeroFillRange(raw, 5, new Date(2026, 8, 5));
+    const filled = zeroFillRange(raw, 5, new Date(Date.UTC(2026, 8, 5, 12)));
 
     expect(filled).toHaveLength(5);
     expect(filled.map((p) => p.date)).toEqual(['2026-09-01', '2026-09-02', '2026-09-03', '2026-09-04', '2026-09-05']);
@@ -53,7 +53,7 @@ describe('bucketSparkline', () => {
   });
 
   it('returns a single all-zero day when no data is provided', () => {
-    const filled = zeroFillRange(null, 1, new Date(2026, 8, 5));
+    const filled = zeroFillRange(null, 1, new Date(Date.UTC(2026, 8, 5, 12)));
     expect(filled).toEqual([{ date: '2026-09-05', views: 0, enrollments: 0 }]);
   });
 

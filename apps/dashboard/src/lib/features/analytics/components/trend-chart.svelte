@@ -77,51 +77,49 @@
 </script>
 
 <AnalyticsPanelCard title={$t('analytics.trend.heading')} description={$t('analytics.trend.description')}>
-  {#snippet children()}
-    <div bind:this={containerRef} class="w-full">
-      {#if loading && !chartData}
-        <div class="flex h-[280px] items-center justify-center">
-          <Spinner class="ui:text-muted-foreground size-6" />
-        </div>
-      {:else if browser && hasData && chartData}
-        {#await loadChart() then C}
-          <C.ChartContainer class="h-[280px] w-full" config={chartConfig}>
-            <C.BarChart
-              data={chartData}
-              xScale={C.scaleBand().padding(0.25)}
-              x="date"
-              axis="x"
-              seriesLayout="stack"
-              legend
-              {series}
-              props={{
-                xAxis: {
-                  format: (d: Date) =>
-                    d.toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric'
-                    })
-                }
-              }}
-            >
-              {#snippet tooltip()}
-                <C.Tooltip
-                  labelFormatter={(d: Date) => {
-                    const point = chartData?.find((p) => p.date.getTime() === d.getTime());
-                    return formatChartTooltipDate(d, point);
-                  }}
-                />
-              {/snippet}
-            </C.BarChart>
-          </C.ChartContainer>
-        {/await}
-      {:else if hasData && chartData}
-        <div class="flex h-[280px] items-center justify-center">
-          <Spinner class="ui:text-muted-foreground size-6" />
-        </div>
-      {:else}
-        <Empty icon={TrendingUpIcon} title={$t('analytics.trend.empty')} class="h-[280px]" />
-      {/if}
-    </div>
-  {/snippet}
+  <div bind:this={containerRef} class="w-full">
+    {#if loading && !hasData}
+      <div class="flex h-[280px] items-center justify-center">
+        <Spinner class="ui:text-muted-foreground size-6" />
+      </div>
+    {:else if browser && hasData && chartData}
+      {#await loadChart() then C}
+        <C.ChartContainer class="h-[280px] w-full" config={chartConfig}>
+          <C.BarChart
+            data={chartData}
+            xScale={C.scaleBand().padding(0.25)}
+            x="date"
+            axis="x"
+            seriesLayout="stack"
+            legend
+            {series}
+            props={{
+              xAxis: {
+                format: (d: Date) =>
+                  d.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                  })
+              }
+            }}
+          >
+            {#snippet tooltip()}
+              <C.Tooltip
+                labelFormatter={(d: Date) => {
+                  const point = chartData?.find((p) => p.date.getTime() === d.getTime());
+                  return formatChartTooltipDate(d, point);
+                }}
+              />
+            {/snippet}
+          </C.BarChart>
+        </C.ChartContainer>
+      {/await}
+    {:else if hasData && chartData}
+      <div class="flex h-[280px] items-center justify-center">
+        <Spinner class="ui:text-muted-foreground size-6" />
+      </div>
+    {:else}
+      <Empty icon={TrendingUpIcon} title={$t('analytics.trend.empty')} class="h-[280px]" />
+    {/if}
+  </div>
 </AnalyticsPanelCard>
