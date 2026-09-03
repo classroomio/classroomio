@@ -58,6 +58,12 @@ export default defineConfig({
     llmsTxt: true
   },
   seo: {
+    // Read directly from `public/` by Blume's OG renderer — unlike
+    // `logo.image` below, this is NOT rewritten with the `/docs` deployment
+    // base, so it must be the public-relative path, not the served URL.
+    og: {
+      logo: '/logo.svg'
+    },
     x: {
       creator: '@classroomio',
       handle: '@classroomio'
