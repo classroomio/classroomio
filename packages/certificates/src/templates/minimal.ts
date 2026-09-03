@@ -55,6 +55,7 @@ const FIELDS = {
     fontFamily: FONTS.serif,
     basePx: 68,
     lineHeight: 1.05,
+    letterSpacingEm: -0.01,
     allowWrap: true
   },
   recipient: {
@@ -63,6 +64,7 @@ const FIELDS = {
     fontFamily: FONTS.serif,
     basePx: 88,
     lineHeight: 0.95,
+    letterSpacingEm: -0.02,
     allowWrap: true
   },
   description: {
@@ -181,7 +183,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       font-weight: 300;
       font-style: italic;
       line-height: ${FIELDS.title.lineHeight};
-      letter-spacing: -0.01em;
+      letter-spacing: ${FIELDS.title.letterSpacingEm}em;
       margin-bottom: 50px;
       max-width: ${FIELDS.title.maxWidth}px;
       max-height: ${FIELDS.title.maxHeight}px;
@@ -215,7 +217,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       font-family: '${FIELDS.recipient.fontFamily}', serif;
       font-weight: 400;
       line-height: ${FIELDS.recipient.lineHeight};
-      letter-spacing: -0.02em;
+      letter-spacing: ${FIELDS.recipient.letterSpacingEm}em;
       max-width: ${FIELDS.recipient.maxWidth}px;
       max-height: ${FIELDS.recipient.maxHeight}px;
       overflow-wrap: break-word;

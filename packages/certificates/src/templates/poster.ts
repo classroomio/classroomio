@@ -44,6 +44,7 @@ const FIELDS = {
     fontFamily: FONTS.display,
     basePx: 140,
     lineHeight: 0.95,
+    letterSpacingEm: -0.03,
     allowWrap: true
   },
   subtitle: {
@@ -204,7 +205,7 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
       font-family: '${FIELDS.title.fontFamily}', serif;
       font-weight: 900;
       line-height: ${FIELDS.title.lineHeight};
-      letter-spacing: -0.03em;
+      letter-spacing: ${FIELDS.title.letterSpacingEm}em;
       color: #1a1a1a;
       margin-bottom: 20px;
       max-width: ${FIELDS.title.maxWidth}px;

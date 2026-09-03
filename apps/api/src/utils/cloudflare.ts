@@ -50,11 +50,13 @@ async function renderCloudflareBrowserDocument(
         timeout: 30000
       },
       actionTimeout: 30000,
-      viewport: {
-        width: options.viewport?.width ?? DEFAULT_VIEWPORT.width,
-        height: options.viewport?.height ?? DEFAULT_VIEWPORT.height,
-        deviceScaleFactor: options.viewport?.deviceScaleFactor ?? (endpoint === 'screenshot' ? 2 : 1)
-      }
+      viewport: options.viewport
+        ? {
+            width: options.viewport.width,
+            height: options.viewport.height,
+            deviceScaleFactor: options.viewport.deviceScaleFactor ?? (endpoint === 'screenshot' ? 2 : 1)
+          }
+        : undefined
     };
 
     switch (endpoint) {
@@ -123,7 +125,7 @@ export const getCloudflarePdfBuffer = async (
 export const getCloudflarePngBuffer = async (
   html: string,
   styles?: string,
-  viewport: RenderViewport = { ...DEFAULT_VIEWPORT, deviceScaleFactor: 2 }
+  viewport: RenderViewport = { width: 1100, height: 780, deviceScaleFactor: 2 }
 ): Promise<Buffer> => {
   return renderCloudflareBrowserDocument('screenshot', {
     html,

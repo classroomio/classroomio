@@ -574,7 +574,7 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 
 1. **Compute font sizes dynamically from font metrics — never hardcode fixed font sizes for dynamic text**:
    - All user-generated content must have its font size computed via `prepareCertificateRenderContext(design, data, FIELDS)` and the font metrics engine (`font-metrics.ts`).
-   - Define a `FIELDS` constant object declaring `maxWidth`, `maxHeight`, `fontFamily`, `basePx`, `lineHeight`, `allowWrap`, `letterSpacingPx`, and `textTransform` for each field.
+   - Define a `FIELDS` constant object declaring `maxWidth`, `maxHeight`, `fontFamily`, `basePx`, `lineHeight`, `allowWrap`, `letterSpacingEm`, and `textTransform` for each field.
    - Inject the computed font size via inline style in the HTML markup (e.g. `style="font-size: ${fontSizes.recipient}px;"`).
    - Wrap all interpolated user strings with `escapeHtml(...)`.
 

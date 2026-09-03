@@ -107,7 +107,39 @@ const FONT_PROFILES: Record<CertificateFontFamily, FontAdvanceProfile> = {
   }
 };
 
+interface GraphemeSegment {
+  segment: string;
+}
+
+interface GraphemeSegmenter {
+  segment(input: string): Iterable<GraphemeSegment>;
+}
+
+const graphemeSegmenter: GraphemeSegmenter | null =
+  typeof Intl !== 'undefined' && 'Segmenter' in Intl
+    ? new (
+        Intl as unknown as {
+          Segmenter: new (locales?: string | string[], options?: { granularity: string }) => GraphemeSegmenter;
+        }
+      ).Segmenter(undefined, { granularity: 'grapheme' })
+    : null;
+
+function splitGraphemes(text: string): string[] {
+  if (!text) return [];
+  if (graphemeSegmenter) {
+    return Array.from(graphemeSegmenter.segment(text), (s) => s.segment);
+  }
+  return Array.from(text);
+}
+
 function getCharAdvanceRatio(char: string, profile: FontAdvanceProfile): number {
+  const codePoint = char.codePointAt(0) ?? 0;
+  if (codePoint > 127) {
+    // Non-ASCII characters (e.g. CJK ideographs, fullwidth symbols, emojis) are rendered via fallback
+    // fonts where characters typically occupy ~1.0em (square em-box).
+    return Math.max(profile.defaultRatio, 1.0);
+  }
+
   if (profile.isMonospace) return profile.defaultRatio;
   if (char === ' ') return profile.space;
   if (WIDE_CHARS.has(char)) return profile.wide;
@@ -120,16 +152,18 @@ function getCharAdvanceRatio(char: string, profile: FontAdvanceProfile): number 
 }
 
 function measureTextWidth(text: string, fontSize: number, profile: FontAdvanceProfile, letterSpacingEm = 0): number {
-  if (text.length === 0) return 0;
+  if (!text) return 0;
+
+  const chars = splitGraphemes(text);
+  if (chars.length === 0) return 0;
 
   let total = 0;
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
+  for (const char of chars) {
     total += getCharAdvanceRatio(char, profile) * fontSize;
   }
 
   const trackingPerGap = letterSpacingEm * fontSize;
-  const totalTracking = Math.max(0, text.length - 1) * trackingPerGap;
+  const totalTracking = Math.max(0, chars.length - 1) * trackingPerGap;
 
   return total + totalTracking;
 }
@@ -189,6 +223,7 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
     const words = transformedText.split(/\s+/);
     let currentLineWidth = 0;
     let lineCount = 1;
+    const trackingPerGap = letterSpacingEm * fontSize;
     const spaceWidth = measureTextWidth(' ', fontSize, profile, letterSpacingEm);
 
     for (let i = 0; i < words.length; i++) {
@@ -196,8 +231,10 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
       const wordWidth = measureTextWidth(word, fontSize, profile, letterSpacingEm);
 
       if (currentLineWidth > 0) {
-        if (currentLineWidth + spaceWidth + wordWidth <= options.maxWidth) {
-          currentLineWidth += spaceWidth + wordWidth;
+        // Between words on the same line, account for tracking gaps around the space
+        const effectiveSpaceWidth = spaceWidth + 2 * trackingPerGap;
+        if (currentLineWidth + effectiveSpaceWidth + wordWidth <= options.maxWidth) {
+          currentLineWidth += effectiveSpaceWidth + wordWidth;
           continue;
         }
 
@@ -208,10 +245,21 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
       if (wordWidth <= options.maxWidth) {
         currentLineWidth = wordWidth;
       } else {
-        const fullLines = Math.floor(wordWidth / options.maxWidth);
-        const remainder = wordWidth % options.maxWidth;
-        lineCount += remainder === 0 ? fullLines - 1 : fullLines;
-        currentLineWidth = remainder === 0 ? options.maxWidth : remainder;
+        // Character-level wrapping simulation for long breakable words (overflow-wrap: break-word)
+        const chars = splitGraphemes(word);
+        let charLineWidth = 0;
+        for (let j = 0; j < chars.length; j++) {
+          const char = chars[j];
+          const charAdvance = getCharAdvanceRatio(char, profile) * fontSize;
+          const charGap = charLineWidth > 0 ? trackingPerGap : 0;
+          if (charLineWidth > 0 && charLineWidth + charGap + charAdvance > options.maxWidth) {
+            lineCount += 1;
+            charLineWidth = charAdvance;
+          } else {
+            charLineWidth += charGap + charAdvance;
+          }
+        }
+        currentLineWidth = charLineWidth;
       }
     }
 
@@ -230,6 +278,13 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
   let low = minPx;
   let high = basePx;
   let best = minPx;
+
+  if (!doesFit(minPx)) {
+    // If even minPx does not fit, search downwards to 0 so we always return a fit-safe size
+    low = 0;
+    high = minPx;
+    best = 0;
+  }
 
   for (let iter = 0; iter < 30; iter++) {
     const mid = (low + high) / 2;

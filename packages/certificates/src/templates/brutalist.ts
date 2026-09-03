@@ -63,6 +63,7 @@ const FIELDS = {
     fontFamily: FONTS.display,
     basePx: 88,
     lineHeight: 0.95,
+    letterSpacingEm: -0.03,
     allowWrap: true,
     textTransform: 'uppercase' as const
   },
@@ -72,6 +73,7 @@ const FIELDS = {
     fontFamily: FONTS.mono,
     basePx: 14,
     lineHeight: 1.35,
+    letterSpacingEm: 0.02,
     allowWrap: true
   }
 } as const;
@@ -79,6 +81,8 @@ const FIELDS = {
 export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
   const { accent, subtitle, description, signatoryOne, signatoryTwo, idDigits, fontSizes } =
     prepareCertificateRenderContext(design, data, FIELDS);
+
+  const metaRowFontSize = Math.min(fontSizes.date, fontSizes.course, fontSizes.subtitle);
 
   const body = `
     <div class="cert t-brutalist">
@@ -205,7 +209,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       margin-bottom: 10px;
     }
     .t-brutalist .meta-row .v {
-      font-size: ${fontSizes.course}px;
+      font-size: ${metaRowFontSize}px;
       font-weight: 500;
       text-transform: ${FIELDS.course.textTransform};
       letter-spacing: ${FIELDS.course.letterSpacingEm}em;
@@ -235,7 +239,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
     .t-brutalist .recipient {
       font-family: '${FIELDS.recipient.fontFamily}', sans-serif;
       line-height: ${FIELDS.recipient.lineHeight};
-      letter-spacing: -0.03em;
+      letter-spacing: ${FIELDS.recipient.letterSpacingEm}em;
       text-transform: ${FIELDS.recipient.textTransform};
       border-left: 5px solid ${accent};
       padding-left: ${recipientPaddingLeft}px;
@@ -255,7 +259,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       max-width: ${FIELDS.description.maxWidth}px;
       max-height: ${FIELDS.description.maxHeight}px;
       color: #333;
-      letter-spacing: 0.02em;
+      letter-spacing: ${FIELDS.description.letterSpacingEm}em;
       overflow-wrap: break-word;
       word-break: normal;
     }
