@@ -1,0 +1,112 @@
+name: Database migration check
+
+# Proves migrations apply to an empty database and that the journal, snapshots
+# and schema agree — before a migration can reach main. No production access.
+
+on:
+  pull_request:
+    paths:
+      - 'packages/db/src/migrations/**'
+      - 'packages/db/src/schema.ts'
+      - '.github/workflows/db-migration-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: migration_check
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/migration_check
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.3
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate the migration chain
+        working-directory: packages/db
+        run: pnpm exec drizzle-kit check
+
+      - name: Apply every migration to an empty database
+        working-directory: packages/db
+        run: pnpm db:migrate
+
+      - name: Applying twice must be a no-op
+        working-directory: packages/db
+        run: pnpm db:migrate
+
+      # A migration whose effects don't match `schema.ts` means the next
+      # `generate` produces a diff that re-applies work already done.
+      # `generate` prompts when a change is ambiguous (created vs renamed), which
+      # would hang with no TTY — so cap it and treat a hang as drift.
+      - name: Schema must match the migrations
+        working-directory: packages/db
+        timeout-minutes: 3
+        run: |
+          OUTPUT=$(pnpm exec drizzle-kit generate --name=ci_drift_probe < /dev/null 2>&1) || true
+          echo "$OUTPUT"
+          if ! echo "$OUTPUT" | grep -q "No schema changes"; then
+            echo "" >&2
+            echo "schema.ts has changes not captured by a migration." >&2
+            echo "Run: pnpm --filter @cio/db db:generate" >&2
+            exit 1
+          fi
+
+      - name: Ledger must match the journal
+        working-directory: packages/db
+        run: |
+          node -e "
+            const postgres = require('postgres');
+            const journal = require('./src/migrations/meta/_journal.json').entries;
+            (async () => {
+              const sql = postgres(process.env.DATABASE_URL, { max: 1 });
+              const [{ n }] = await sql\`select count(*)::int n from drizzle.__drizzle_migrations\`;
+              await sql.end();
+              console.log('journal entries:', journal.length, '| applied:', n);
+
+              if (n !== journal.length) {
+                console.error('Applied count does not match the journal.');
+                process.exit(1);
+              }
+
+              // drizzle applies only entries newer than the newest already
+              // applied, so a timestamp out of order is silently skipped.
+              const whens = journal.map((e) => e.when);
+              const newest = Math.max(...whens);
+              const last = whens[whens.length - 1];
+              if (last !== newest) {
+                console.error('The last journal entry is not the newest; later migrations would be skipped.');
+                process.exit(1);
+              }
+              if (last > Date.now()) {
+                console.error('The last journal entry is dated in the future; migrations authored before then would be skipped.');
+                process.exit(1);
+              }
+            })();
+          "

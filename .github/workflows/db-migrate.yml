@@ -1,0 +1,114 @@
+name: Apply database migrations
+
+# Applies pending drizzle migrations to production when a migration lands on main.
+# Gated by the `production` environment, so required reviewers (if configured)
+# must approve before it touches the database.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/db/src/migrations/**'
+      - '.github/workflows/db-migrate.yml'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Why this is being run manually'
+        required: false
+
+permissions:
+  contents: read
+
+# Never run two migrations at once, and never cancel one midway.
+concurrency:
+  group: db-migrate-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.3
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check the connection string is configured
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "PROD_DATABASE_URL is not set on the production environment." >&2
+            exit 1
+          fi
+
+      - name: Record migrations already applied
+        id: before
+        working-directory: packages/db
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          COUNT=$(node -e "
+            const postgres = require('postgres');
+            (async () => {
+              const sql = postgres(process.env.DATABASE_URL, { max: 1 });
+              const rows = await sql\`select count(*)::int n from drizzle.__drizzle_migrations\`.catch(() => [{ n: 0 }]);
+              process.stdout.write(String(rows[0].n));
+              await sql.end();
+            })();
+          ")
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "applied before: $COUNT"
+
+      - name: Apply migrations
+        working-directory: packages/db
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: pnpm db:migrate
+
+      # `drizzle-kit migrate` reports success even when it applied nothing, so
+      # compare the ledger before and after rather than trusting the exit code.
+      - name: Report what was applied
+        working-directory: packages/db
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          BEFORE: ${{ steps.before.outputs.count }}
+        run: |
+          AFTER=$(node -e "
+            const postgres = require('postgres');
+            (async () => {
+              const sql = postgres(process.env.DATABASE_URL, { max: 1 });
+              const rows = await sql\`select count(*)::int n from drizzle.__drizzle_migrations\`;
+              process.stdout.write(String(rows[0].n));
+              await sql.end();
+            })();
+          ")
+          JOURNAL=$(node -e "process.stdout.write(String(require('./src/migrations/meta/_journal.json').entries.length))")
+          echo "applied before: $BEFORE"
+          echo "applied after:  $AFTER"
+          echo "journal entries: $JOURNAL"
+          {
+            echo "### Database migrations"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| applied before | $BEFORE |"
+            echo "| applied after | $AFTER |"
+            echo "| journal entries | $JOURNAL |"
+            echo "| newly applied | $((AFTER - BEFORE)) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$AFTER" -ne "$JOURNAL" ]; then
+            echo "Ledger ($AFTER) does not match the journal ($JOURNAL) — some migrations did not apply." >&2
+            exit 1
+          fi
