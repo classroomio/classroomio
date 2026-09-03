@@ -63,7 +63,7 @@
           </Tabs.List>
 
           <Tabs.Content value="overview" class="space-y-4">
-            <TrendChart data={analyticsApi.landing} loading={analyticsApi.loadingLanding} />
+            <TrendChart data={analyticsApi.landing} loading={analyticsApi.loadingLanding} range={analyticsApi.range} />
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <Funnel data={analyticsApi.funnel} loading={analyticsApi.loadingFunnel} />
               <PopularTypes data={analyticsApi.popularTypes} loading={analyticsApi.loadingPopularTypes} />
