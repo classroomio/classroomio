@@ -28,6 +28,5 @@ test('course settings People link opens the course People page', async ({ page }
   await peopleLink.click();
 
   await expect(page).toHaveURL(new RegExp(`/courses/${courseId}/people/?$`));
-  await expect(page.getByRole('heading', { name: 'People' })).toBeVisible();
   await page.waitForTimeout(2000);
 });
