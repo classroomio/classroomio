@@ -85,3 +85,13 @@ export const ZAssetStorageCleanupPayload = z.object({
   keys: z.array(ZBucketKey).default([])
 });
 export type TAssetStorageCleanupPayload = z.infer<typeof ZAssetStorageCleanupPayload>;
+
+/**
+ * Re-align a person's course roles with the role they now hold in an organization. Carries
+ * no role: the worker re-reads it, so the job never acts on stale input.
+ */
+export const ZCourseRoleReconcilePayload = z.object({
+  organizationId: z.string().min(1),
+  profileId: z.string().min(1)
+});
+export type TCourseRoleReconcilePayload = z.infer<typeof ZCourseRoleReconcilePayload>;

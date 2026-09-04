@@ -4118,7 +4118,9 @@
         "joined": "Đã tham gia tổ chức",
         "join_failed": "Không thể tham gia tổ chức",
         "try_again": "Thử lại"
-      }
+      },
+      "not_found": "Lời mời này không còn hiệu lực.",
+      "loading": "Đang tải lời mời..."
     },
     "link": {
       "page_title": "Tham gia cùng {orgName} trên ClassroomIO",
@@ -5130,5 +5132,27 @@
   },
   "lms": {
     "view_landing_page": "Xem trang đích"
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "empty_title": "Không có thông báo",
+    "empty_description": "Bạn đã xem hết thông báo. Thông báo mới sẽ xuất hiện ở đây.",
+    "refresh": "Làm mới",
+    "pending_invite": {
+      "heading": "Lời mời tham gia tổ chức",
+      "body": "{orgName} đã mời bạn tham gia với tư cách là {role}.",
+      "action": "Xem lời mời"
+    },
+    "latest": "Mới nhất",
+    "only_show_unread": "Chỉ hiển thị tin chưa đọc",
+    "unread": "Chưa đọc",
+    "more_options": "Thêm tùy chọn",
+    "give_feedback": "Gửi phản hồi",
+    "watching_empty_title": "Chưa có gì để xem",
+    "watching_empty_description": "Thông tin cập nhật về các mục bạn theo dõi sẽ hiển thị ở đây.",
+    "tabs": {
+      "direct": "Trực tiếp",
+      "watching": "Đang xem"
+    }
   }
 }

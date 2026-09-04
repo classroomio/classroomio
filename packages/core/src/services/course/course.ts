@@ -16,7 +16,9 @@ import {
 import {
   addGroupMember,
   createGroup,
+  getCourseOrgAdminAccess,
   getCourseProgramAccess,
+  getGroupMemberIdByCourseAndProfile,
   insertGroupMembersOnConflictDoNothing
 } from '@cio/db/queries/group';
 import {
@@ -128,6 +130,27 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   }
 
   return true;
+}
+
+/**
+ * Resolves the `groupmember` row a user authors course content as, backfilling it for org
+ * admins who were never added to the course group. Email is left null so it cannot collide
+ * with `unique_group_email` on a pending invite.
+ *
+ * @returns the group member ID, or null when the user has no claim to the course
+ */
+export async function ensureCourseGroupMemberId(courseId: string, profileId: string): Promise<string | null> {
+  const existingGroupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, profileId);
+  if (existingGroupMemberId) return existingGroupMemberId;
+
+  const orgAdminAccess = await getCourseOrgAdminAccess(courseId, profileId);
+  if (!orgAdminAccess) return null;
+
+  await insertGroupMembersOnConflictDoNothing([
+    { groupId: orgAdminAccess.courseGroupId, roleId: ROLE.ADMIN, profileId }
+  ]);
+
+  return getGroupMemberIdByCourseAndProfile(courseId, profileId);
 }
 
 function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {

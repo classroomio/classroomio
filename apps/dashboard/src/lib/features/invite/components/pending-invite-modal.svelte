@@ -5,11 +5,11 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { ROLE } from '@cio/utils/constants';
-  import type { PendingOrgInvite } from '../utils/types';
+  import type { AcceptableOrgInvite } from '../utils/types';
 
   interface Props {
     open?: boolean;
-    invite: PendingOrgInvite;
+    invite: AcceptableOrgInvite;
     onAccepted?: (redirectTo?: string) => void;
   }
 
@@ -75,7 +75,11 @@
 
     <div class="mt-2 space-y-3 px-2 text-center">
       <p class="text-sm font-light dark:text-white">{getInvitationMessage()}</p>
-      <p class="text-sm font-light dark:text-white">{$t('invite.organization.email_line', { email: invite.email })}</p>
+      {#if invite.email}
+        <p class="text-sm font-light dark:text-white">
+          {$t('invite.organization.email_line', { email: invite.email })}
+        </p>
+      {/if}
     </div>
 
     <div class="mt-6 flex items-center justify-between">

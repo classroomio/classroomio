@@ -4118,7 +4118,9 @@
         "joined": "Organização aderida",
         "join_failed": "Falha ao ingressar na organização",
         "try_again": "Tentar novamente"
-      }
+      },
+      "not_found": "Este convite não está mais disponível.",
+      "loading": "Carregando convite..."
     },
     "link": {
       "page_title": "Junte-se a {orgName} no ClassroomIO",
@@ -5130,5 +5132,27 @@
   },
   "lms": {
     "view_landing_page": "Ver página inicial"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "empty_title": "Nenhuma notificação",
+    "empty_description": "Você está atualizado. Novas notificações aparecerão aqui.",
+    "refresh": "Atualizar",
+    "pending_invite": {
+      "heading": "Convite da organização",
+      "body": "A {orgName} convidou você para participar como {role}.",
+      "action": "Ver convite"
+    },
+    "latest": "Mais recentes",
+    "only_show_unread": "Mostrar apenas itens não lidos",
+    "unread": "Não lidos",
+    "more_options": "Mais opções",
+    "give_feedback": "Deixe seu feedback",
+    "watching_empty_title": "Ainda não há nada para assistir",
+    "watching_empty_description": "As atualizações dos itens que você segue serão exibidas aqui.",
+    "tabs": {
+      "direct": "Direto",
+      "watching": "Assistindo"
+    }
   }
 }

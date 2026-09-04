@@ -4118,7 +4118,9 @@
         "joined": "Der Organisation beigetreten",
         "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
         "try_again": "Erneut versuchen"
-      }
+      },
+      "not_found": "Diese Einladung ist nicht mehr verfügbar.",
+      "loading": "Einladung wird geladen…"
     },
     "link": {
       "page_title": "Treten Sie {orgName} auf ClassroomIO bei",
@@ -5130,5 +5132,27 @@
   },
   "lms": {
     "view_landing_page": "Landingpage ansehen"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "empty_title": "Keine Benachrichtigungen",
+    "empty_description": "Sie sind auf dem neuesten Stand. Neue Benachrichtigungen werden hier angezeigt.",
+    "refresh": "Aktualisieren",
+    "pending_invite": {
+      "heading": "Organisationseinladung",
+      "body": "{orgName} hat Sie als {role} eingeladen.",
+      "action": "Einladung ansehen"
+    },
+    "latest": "Neueste",
+    "only_show_unread": "Nur ungelesene Artikel anzeigen",
+    "unread": "Ungelesen",
+    "more_options": "Weitere Optionen",
+    "give_feedback": "Feedback geben",
+    "watching_empty_title": "Noch keine Artikel zum Ansehen",
+    "watching_empty_description": "Aktualisierungen zu Artikeln, denen Sie folgen, werden hier angezeigt.",
+    "tabs": {
+      "direct": "Direkt",
+      "watching": "Beobachtet"
+    }
   }
 }
