@@ -353,7 +353,7 @@ export class ExerciseApi extends BaseApiWithErrors {
   async createFromTemplate(
     courseId: string,
     templateId: number | string,
-    options: { lessonId?: string; sectionId?: string; order?: number } = {}
+    options: { lessonId?: string; sectionId?: string; order: number }
   ) {
     const templateIdValue = Number(templateId);
     await this.execute<CreateExerciseFromTemplateRequest>({
