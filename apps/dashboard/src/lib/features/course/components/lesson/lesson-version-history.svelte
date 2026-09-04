@@ -1,5 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, untrack } from 'svelte';
+  import { replaceState } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
@@ -25,13 +28,19 @@
 
   let { open = false }: Props = $props();
 
+  const PAGE_SIZE = 10;
+  const VERSION_PARAM = 'version';
+
   let lessonHistory = $state<LessonVersionEntry[]>([]);
   let selectedVersion = $state<LessonVersionEntry | null>(null);
   let selectedVersionIndex = $state(0);
   let contentRestoreLoading = $state(false);
-  let versionsToFetch = $state(9);
   let isHistoryLoading = $state(false);
   let displayElement = $state<HTMLDivElement | null>(null);
+  let nextCursor = $state<string | null>(null);
+
+  /** Only offer "load more" once the server has said there is a next page. */
+  const canLoadMore = $derived(nextCursor !== null);
 
   const lessonId = $derived(lessonApi.lesson?.id ?? '');
   const lessonTitle = $derived(lessonApi.lesson?.title ?? '');
@@ -92,6 +101,7 @@
   }
 
   function handleDrawerClose() {
+    // The parent owns closing and clears both params in one navigation.
     dispatch('close');
   }
 
@@ -101,9 +111,38 @@
     }
   }
 
+  function readVersionIdFromUrl(): number | null {
+    const raw = page.url.searchParams.get(VERSION_PARAM);
+    if (!raw) return null;
+
+    const parsed = Number(raw);
+
+    return Number.isInteger(parsed) ? parsed : null;
+  }
+
+  /**
+   * Mirrors the open version into the URL so a reload reopens on the same entry.
+   * `replaceState` because picking through versions is browsing, not navigation — each
+   * click should not cost a Back press.
+   */
+  function syncVersionToUrl(versionId: number | null) {
+    const url = new URL(page.url);
+
+    if (versionId === null) {
+      url.searchParams.delete(VERSION_PARAM);
+    } else {
+      url.searchParams.set(VERSION_PARAM, String(versionId));
+    }
+
+    if (url.search === page.url.search) return;
+
+    replaceState(resolve(`${url.pathname}${url.search}${url.hash}`, {}), page.state);
+  }
+
   function updateContentVersion(version: LessonVersionEntry, index: number) {
     selectedVersionIndex = index;
     selectedVersion = version;
+    syncVersionToUrl(version.id || null);
   }
 
   function renderSelectedVersion(version: LessonVersionEntry) {
@@ -114,19 +153,23 @@
     displayElement.innerHTML = renderHtmlDiff(version.oldContent, version.newContent);
   }
 
-  async function fetchLessonHistory(currentLessonId: string, locale: TLocale, endRange: number) {
+  /**
+   * Loads one keyset page. `cursor` omitted starts over from the newest entry, so this
+   * doubles as the reload path when the lesson or locale changes.
+   */
+  async function fetchLessonHistory(currentLessonId: string, locale: TLocale, cursor?: string) {
     if (!courseApi.course?.id || !currentLessonId) return;
 
     try {
       isHistoryLoading = true;
-      const response = await lessonApi.getHistory(courseApi.course.id, currentLessonId, locale, endRange);
+      const response = await lessonApi.getHistory(courseApi.course.id, currentLessonId, locale, PAGE_SIZE, cursor);
 
       if (!response || !lessonApi.success || !response.data) {
         throw new Error('Failed to fetch lesson history');
       }
 
       const previousVersionId = selectedVersion?.id;
-      lessonHistory = response.data.map((item) => {
+      const pageEntries = response.data.items.map((item) => {
         const timestamp = item.timestamp ? new Date(item.timestamp) : new Date();
 
         return {
@@ -144,14 +187,27 @@
         };
       });
 
-      const previousIndex = previousVersionId
-        ? lessonHistory.findIndex((version) => version.id === previousVersionId)
-        : -1;
-      const nextIndex = previousIndex >= 0 ? previousIndex : 0;
-      const nextVersion = lessonHistory[nextIndex];
+      // Append: earlier pages stay put, so paging never re-transfers what is on screen.
+      lessonHistory = cursor ? [...lessonHistory, ...pageEntries] : pageEntries;
+      nextCursor = response.data.nextCursor
+        ? `${response.data.nextCursor.timestamp}|${response.data.nextCursor.id}`
+        : null;
 
-      if (nextVersion) {
-        updateContentVersion(nextVersion, nextIndex);
+      // Keep the reader where they were: prefer the version in the URL on first load,
+      // then whatever was already selected, then the newest entry.
+      const urlVersionId = cursor ? null : readVersionIdFromUrl();
+      const targetId = urlVersionId ?? previousVersionId;
+      const targetIndex = targetId ? lessonHistory.findIndex((version) => version.id === targetId) : -1;
+
+      if (targetIndex >= 0) {
+        updateContentVersion(lessonHistory[targetIndex], targetIndex);
+        return;
+      }
+
+      // A deep-linked version deeper than the loaded pages cannot be resolved yet; fall
+      // back to newest rather than leaving the panel blank.
+      if (!cursor && lessonHistory[0]) {
+        updateContentVersion(lessonHistory[0], 0);
       }
     } catch (error) {
       console.error(error);
@@ -185,16 +241,21 @@
   }
 
   function loadMoreHistory() {
-    versionsToFetch += 10;
+    if (!nextCursor || isHistoryLoading) return;
+
+    void fetchLessonHistory(lessonId, lessonApi.currentLocale, nextCursor);
   }
 
+  // Reload from the newest page whenever the lesson or locale changes. Paging is driven by
+  // the button instead, so the cursor is deliberately not a dependency here.
   $effect(() => {
     const currentLessonId = lessonId;
     const currentLocale = lessonApi.currentLocale;
-    const endRange = versionsToFetch;
 
     untrack(() => {
-      void fetchLessonHistory(currentLessonId, currentLocale, endRange);
+      lessonHistory = [];
+      nextCursor = null;
+      void fetchLessonHistory(currentLessonId, currentLocale);
     });
   });
 
@@ -238,7 +299,7 @@
         </div>
 
         {#if selectedVersionIndex !== 0 && selectedVersion}
-          <Button loading={contentRestoreLoading} onclick={restoreSelectedVersion}>
+          <Button variant="secondary" loading={contentRestoreLoading} onclick={restoreSelectedVersion}>
             {$t('course.navItem.lessons.version_history.restore_version')}
           </Button>
         {/if}
@@ -277,20 +338,17 @@
             <div class="space-y-1">
               {#each day.versions as version (version.id)}
                 {@const index = lessonHistory.indexOf(version)}
-                <button
-                  type="button"
+                <Button
                   onclick={() => updateContentVersion(version, index)}
-                  class="ui:hover:bg-accent flex w-full items-start gap-2 rounded-lg px-3 py-3 text-left transition-colors {index ===
-                  selectedVersionIndex
-                    ? 'ui:bg-accent'
-                    : ''}"
+                  variant={index === selectedVersionIndex ? 'secondary' : 'ghost'}
+                  class="h-full w-full text-left"
                 >
                   <ChevronRightIcon class="mt-0.5 shrink-0" size={16} />
                   <span class="min-w-0 flex-1">
                     <span class="flex items-center gap-2">
                       <span class="truncate text-sm font-medium">{formatVersionLabel(version)}</span>
                       {#if version.kind !== 'auto'}
-                        <Badge variant={version.kind === 'publish' ? 'success' : 'secondary'}>
+                        <Badge variant={version.kind === 'publish' ? 'default' : 'secondary'}>
                           {$t(`course.navItem.lessons.version_history.kind.${version.kind}`)}
                         </Badge>
                       {/if}
@@ -311,18 +369,20 @@
                       {/if}
                     </span>
                   </span>
-                </button>
+                </Button>
               {/each}
             </div>
           </section>
         {/each}
       </div>
 
-      <div class="ui:border-border shrink-0 border-t p-4">
-        <Button class="w-full" variant="outline" loading={isHistoryLoading} onclick={loadMoreHistory}>
-          {$t('course.navItem.lessons.version_history.fetch_more_versions')}
-        </Button>
-      </div>
+      {#if canLoadMore}
+        <div class="ui:border-border shrink-0 border-t p-4">
+          <Button class="w-full" variant="outline" loading={isHistoryLoading} onclick={loadMoreHistory}>
+            {$t('course.navItem.lessons.version_history.fetch_more_versions')}
+          </Button>
+        </div>
+      {/if}
     </div>
   </aside>
 {/if}
