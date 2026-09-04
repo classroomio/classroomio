@@ -22,6 +22,7 @@
     showLogo?: boolean;
     hideGoogleAuth?: boolean;
     redirectPathname?: string;
+    newUserCallbackPathname?: string;
     handleSubmit?: () => void;
     children?: Snippet;
     getPasswordAuthAlternative?: Snippet;
@@ -34,6 +35,7 @@
     showLogo = false,
     hideGoogleAuth = false,
     redirectPathname = '',
+    newUserCallbackPathname,
     handleSubmit = () => {},
     children,
     getPasswordAuthAlternative
@@ -52,12 +54,16 @@
     const pathname = redirectPathname || params.get('redirect') || '';
     const redirectTo = `${window.location.origin + pathname}`;
     const errorCallbackURL = `${window.location.origin + ROUTE.AUTH_FAILED}`;
+    const newUserCallbackURL = newUserCallbackPathname
+      ? `${window.location.origin}${newUserCallbackPathname}`
+      : undefined;
 
     try {
       const result = await authClient.signIn.social({
         provider: 'google',
         callbackURL: redirectTo,
-        errorCallbackURL: errorCallbackURL
+        errorCallbackURL,
+        ...(newUserCallbackURL ? { newUserCallbackURL } : {})
       });
 
       if (result?.error) {
@@ -80,12 +86,12 @@
   {:else}
     <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="absolute inset-0 z-0 h-full w-full" />
   {/if}
-  <Card.Root class="ui:w-full relative z-10 max-w-[400px] shadow-sm">
+  <Card.Root class="relative z-10 w-full max-w-[400px] shadow-sm">
     {#if !showOnlyContent || showLogo}
-      <Card.Header class="ui:flex ui:flex-col ui:items-center ui:gap-4">
+      <Card.Header class="flex flex-col items-center gap-4">
         <a
           href={resolve(ROUTE.HOME, {})}
-          class="ui:inline-flex"
+          class="inline-flex"
           aria-label={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
         >
           <Avatar.Root>
@@ -99,12 +105,12 @@
 
         {#if !showOnlyContent}
           <a href="/">
-            <Card.Title class="ui:text-2xl font-normal!">
+            <Card.Title class="text-2xl font-normal!">
               {isLogin ? $t('login.welcome') : $t('login.create_account')}
             </Card.Title>
           </a>
           {#if isLogin}
-            <Card.Description class="ui:text-center">Sign in to continue</Card.Description>
+            <Card.Description class="text-center">Sign in to continue</Card.Description>
           {/if}
         {/if}
       </Card.Header>
@@ -137,13 +143,13 @@
     </Card.Content>
     {#if !showOnlyContent}
       <Card.Footer class="flex-col gap-2 border-t pt-6">
-        <p class="text-muted-foreground text-center text-sm">
+        <p class="ui:text-muted-foreground text-center text-sm">
           {#if isLogin}
             {$t('login.not_registered_yet')}
-            <a class="text-primary hover:underline" href="/signup{page.url.search}">{$t('login.signup')}</a>
+            <a class="ui:text-primary hover:underline" href="/signup{page.url.search}">{$t('login.signup')}</a>
           {:else}
             {$t('login.already_have_account')}
-            <a class="text-primary hover:underline" href="/login{page.url.search}">{$t('login.login')}</a>
+            <a class="ui:text-primary hover:underline" href="/login{page.url.search}">{$t('login.login')}</a>
           {/if}
         </p>
       </Card.Footer>

@@ -116,6 +116,49 @@ export async function getCohortsByOrg(
   }
 }
 
+/**
+ * Returns org cohorts the given profile can access.
+ * Org admins see all cohorts; other members see only cohorts they belong to.
+ */
+export async function getCohortsByOrgForProfile(
+  organizationId: string,
+  profileId: string
+): Promise<Array<TCohort & { courseCount: number; studentCount: number }>> {
+  try {
+    const [adminRow] = await db
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        )
+      )
+      .limit(1);
+
+    if (adminRow) {
+      return getCohortsByOrg(organizationId);
+    }
+
+    const memberRows = await db
+      .select({ cohortId: schema.cohortMember.cohortId })
+      .from(schema.cohortMember)
+      .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
+      .where(and(eq(schema.cohortMember.profileId, profileId), eq(schema.cohort.organizationId, organizationId)));
+
+    const cohortIds = memberRows.map((r) => r.cohortId);
+    if (cohortIds.length === 0) return [];
+
+    return getCohortsByOrg(organizationId, cohortIds);
+  } catch (error) {
+    console.error('getCohortsByOrgForProfile error:', error);
+    throw new Error(
+      `Failed to get cohorts for profile "${profileId}" in org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface TSearchOrgCohort {
   id: string;
   name: string;
@@ -188,7 +231,8 @@ export async function searchLmsCohorts(
 }
 
 export async function getExistingCohortMembers(
-  pairs: Array<{ cohortId: string; profileId: string }>
+  pairs: Array<{ cohortId: string; profileId: string }>,
+  dbClient: DbOrTxClient = db
 ): Promise<Set<string>> {
   if (pairs.length === 0) {
     return new Set();
@@ -198,7 +242,7 @@ export async function getExistingCohortMembers(
     const cohortIds = [...new Set(pairs.map((pair) => pair.cohortId))];
     const profileIds = [...new Set(pairs.map((pair) => pair.profileId))];
 
-    const rows = await db
+    const rows = await dbClient
       .select({ cohortId: schema.cohortMember.cohortId, profileId: schema.cohortMember.profileId })
       .from(schema.cohortMember)
       .where(and(inArray(schema.cohortMember.cohortId, cohortIds), inArray(schema.cohortMember.profileId, profileIds)));
@@ -510,6 +554,22 @@ export async function getCoursesByCohort(
     throw new Error(
       `Failed to get courses for cohort "${cohortId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+export async function getCourseIdsByCohortIds(cohortIds: string[], dbClient: DbOrTxClient = db): Promise<string[]> {
+  try {
+    if (cohortIds.length === 0) return [];
+
+    const rows = await dbClient
+      .selectDistinct({ courseId: schema.cohortCourse.courseId })
+      .from(schema.cohortCourse)
+      .where(inArray(schema.cohortCourse.cohortId, cohortIds));
+
+    return rows.map((row) => row.courseId).filter((courseId): courseId is string => !!courseId);
+  } catch (error) {
+    console.error('getCourseIdsByCohortIds error:', error);
+    throw new Error(`Failed to get cohort course IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

@@ -5,6 +5,11 @@
       "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?",
       "label": "Niezapisane zmiany"
     },
+    "app_update": {
+      "title": "Dostępna jest nowa wersja.",
+      "description": "Odśwież, aby uzyskać najnowsze funkcje i poprawki.",
+      "reload": "Odśwież"
+    },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Musi mieć 6 lub więcej znaków"
+        "min_char": "Musi mieć 8 lub więcej znaków"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Musi mieć 6 lub więcej znaków"
+        "min_char": "Musi mieć 8 lub więcej znaków"
       },
       "email": {
         "invalid_email": "Nieprawidłowy adres e-mail"
@@ -124,7 +129,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Punkty muszą wynosić co najmniej 0"
+        "too_small": "Punkty muszą wynosić co najmniej 1"
       },
       "label": {
         "too_small": "Etykieta opcji jest wymagana"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Oznaczono jako ukończone",
+        "complete_unmarked": "Oznaczono jako nieukończone",
         "complete_download": "Pobierz ukończono",
         "version_restored": "Wersja została przywrócona pomyślnie"
       },
@@ -295,7 +301,8 @@
         "unlocked_all_content": "Wszystkie elementy kursu odblokowane",
         "all_content_already_unlocked": "Cała treść jest już odblokowana",
         "content_grouping_enabled": "Grupowanie treści włączone",
-        "content_grouping_disabled": "Grupowanie treści wyłączone"
+        "content_grouping_disabled": "Grupowanie treści wyłączone",
+        "link_generated": "Link do kursu został pomyślnie zaktualizowany"
       }
     },
     "people": {
@@ -329,7 +336,8 @@
       "success": "Zapisano pomyślnie",
       "submission_updated": "Zgłoszenie zaktualizowane do",
       "error_fetching": "Pobieranie ćwiczeń nie powiodło się. Załaduj stronę ponownie",
-      "passed_requires_points": "Ukończenie przez zaliczenie wymaga co najmniej jednego dostępnego punktu."
+      "passed_requires_points": "Ukończenie przez zaliczenie wymaga co najmniej jednego dostępnego punktu.",
+      "draft_restored": "Przywróciliśmy niezapisane zmiany, które pozostawiłeś"
     },
     "poll": {
       "info": {
@@ -514,7 +522,8 @@
     "download_course": "Uaktualnij, aby pobrać kurs",
     "required": "Wymagana aktualizacja",
     "enterprise_required": "Ta funkcja wymaga planu Enterprise.",
-    "public_api_required": "Uaktualnij do Early Adopter lub Enterprise, aby uzyskać dostęp do publicznego API."
+    "public_api_required": "Uaktualnij do Early Adopter lub Enterprise, aby uzyskać dostęp do publicznego API.",
+    "unlock_field": "Uaktualnij, aby odblokować to ustawienie"
   },
   "analytics": {
     "title": "Analityka",
@@ -782,7 +791,7 @@
         "link": "Link do kursu",
         "grading": "Ocenianie",
         "reports": "Udostępnij raporty ocen na lekcjach",
-        "disabled": "Niepełnosprawny",
+        "disabled": "Wyłączone",
         "enabled": "Włączone",
         "order": "Zakładka Zamów Lekcje",
         "drag": "Przeciągnij i upuść etykiety, aby zmienić kolejność zakładek materiałów",
@@ -792,13 +801,19 @@
         "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej treści, czy muszą kończyć elementy po kolei.",
         "progression_mode_free": "Wolny — odblokowana treść jest dostępna",
         "progression_mode_sequential": "Sekwencyjny — ukończ poprzednie elementy, aby odblokować następny",
+        "comments": {
+          "title": "Komentarze do lekcji",
+          "description": "Zezwól uczniom na wyświetlanie i dodawanie komentarzy w lekcjach tego kursu. Komentarze można nadal wyłączyć dla poszczególnych lekcji.",
+          "enabled": "Komentarze włączone dla tego kursu",
+          "disabled": "Komentarze wyłączone dla tego kursu"
+        },
         "lesson_download": "Lekcje do pobrania",
         "available": "Udostępnij lekcję do pobrania w formacie PDF zarejestrowanym studentom",
         "course_download": "Pobieranie kursu",
         "course_avail": "Pobierz kopię tego kursu.",
         "download": "Pobierz",
-        "allow": "Zezwalaj na nowych uczniów",
-        "access": "Zezwól nowym studentom na dostęp do tego kursu",
+        "allow": "Uczniowie mogą zapisać się samodzielnie",
+        "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu w sekcji Osoby.",
         "publish": "Publikuj kurs",
         "determines": "Od tego zależy, czy Twój kurs wyświetli się na stronie docelowej",
         "published": "Opublikowano",
@@ -861,9 +876,13 @@
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
         "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
-        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
+        "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
         "completion_deadline_label": "Termin zakończenia kursu",
-        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
+        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
+        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
+        "generate_link": "Wygeneruj nowy link",
+        "open_link": "Otwórz link w nowej karcie",
+        "copy_link": "Skopiuj link"
       },
       "analytics": {
         "title": "Analityka"
@@ -917,7 +936,8 @@
           "join_course": "Dołącz do kursu",
           "enrolled_success": "Zapisano Cię na ten kurs.",
           "enrolled_verify_email": "Jesteś zapisany! Zweryfikuj swój e-mail, aby uzyskać dostęp do tego kursu.",
-          "student_limit_reached": "Organizacja {orgName} osiągnęła już limit uczniów. Skontaktuj się z administratorem organizacji."
+          "student_limit_reached": "Organizacja {orgName} osiągnęła już limit uczniów. Skontaktuj się z administratorem organizacji.",
+          "members_only": "Tylko członkowie tej organizacji mogą się zapisać. Poproś administratora o zaproszenie."
         },
         "pricing_section": {
           "free": "Bezpłatny",
@@ -948,7 +968,8 @@
             "no": "Nie",
             "yes": "Tak",
             "percent": "Procent rabatu",
-            "gift": "O prezencie"
+            "gift": "O prezencie",
+            "payment_required": "W przypadku kursów płatnych wymagany jest link do płatności"
           },
           "instructor_form": {
             "upload": "Logo instruktora",
@@ -1005,7 +1026,9 @@
             "curriculum": "Program nauczania",
             "chips": "Umiejętności i narzędzia",
             "skills": "Umiejętności, które zyskasz",
-            "tools": "Narzędzia, których się nauczysz"
+            "tools": "Narzędzia, których się nauczysz",
+            "navigation": "Nawigacja",
+            "footer": "Stopka"
           },
           "skills_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
           "tools_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
@@ -1108,6 +1131,13 @@
         "you": "Ty",
         "pending": "Oczekujące",
         "name": "Nazwa",
+        "learner": "Uczeń",
+        "progress": "Postęp",
+        "stage": "Etap",
+        "last_login_at": "Ostatnie logowanie",
+        "enrolled_at": "Zapisany",
+        "certificate_earned": "Certyfikat zdobyty",
+        "not_started": "Nie rozpoczęte",
         "role": "Rola",
         "action": "Akcja",
         "feedback": "Skopiowano wiadomość e-mail do schowka",
@@ -1365,7 +1395,17 @@
           "title": "Historia wersji",
           "fetch_more_versions": "Pobierz więcej wersji",
           "current_version": "Aktualna wersja",
-          "restore_version": "Przywróć tę wersję"
+          "restore_version": "Przywróć tę wersję",
+          "edit_count": "{count, plural, one {# edycja} few {# edycje} many {# edycji} other {# edycji}}",
+          "today": "Dzisiaj",
+          "yesterday": "Wczoraj",
+          "kind": {
+            "auto": "Automatyczne zapisywanie",
+            "manual": "Zapisana wersja",
+            "publish": "Opublikowano"
+          },
+          "by_author": "Autor: {name}",
+          "empty": "Brak wersji"
         },
         "poll": {
           "voted": "Zagłosowano",
@@ -2194,6 +2234,14 @@
           "watch_threshold": "Próg obejrzenia (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Komentarze do lekcji",
+            "description": "Wybierz, czy uczniowie mogą wyświetlać i dodawać komentarze do tej lekcji.",
+            "enabled": "Komentarze włączone",
+            "disabled": "Komentarze wyłączone",
+            "disabled_by_course": "Komentarze są wyłączone dla całego kursu, więc nie można zmienić tego ustawienia lekcji.",
+            "change_course_setting": "Zmień w ustawieniach kursu"
+          },
           "progression": {
             "heading": "Postęp",
             "intro": "Wybierz, jak uczniowie kończą tę lekcję i przechodzą przez kurs.",
@@ -2253,7 +2301,9 @@
           "starts_in": "Zaczyna się w",
           "session_ended": "Sesja zakończona",
           "link_copied": "Link skopiowany"
-        }
+        },
+        "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
+        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później."
       },
       "news_feed": {
         "heading": "Kanał wiadomości",
@@ -2291,14 +2341,20 @@
           "reply": "Odpowiedz",
           "replying_to": "Odpowiadanie na @{name}",
           "cancel_reply": "Anuluj",
-          "view_replies": "Wyświetl {count} {count, plural, =1 {odpowiedź} inne {replies}}",
+          "view_replies": "{count, plural, one {Wyświetl # odpowiedź} few {Wyświetl # odpowiedzi} many {Wyświetl # odpowiedzi} other {Wyświetl # odpowiedzi}}",
           "hide_replies": "Ukryj odpowiedzi",
           "view_more": "Wyświetl więcej komentarzy ({count})",
           "loading": "Ładowanie...",
           "save": "Zapisz",
           "saving": "Zapisywanie...",
           "send": "Wyślij",
-          "load_more_replies": "Załaduj więcej odpowiedzi"
+          "load_more_replies": "Załaduj więcej odpowiedzi",
+          "collapse_thread": "Zwiń wątek",
+          "expand_thread": "Rozwiń wątek",
+          "more_replies": "{count, plural, one {Jeszcze # odpowiedź} few {Jeszcze # odpowiedzi} many {Jeszcze # odpowiedzi} other {Jeszcze # odpowiedzi}}",
+          "continue_thread": "Kontynuuj ten wątek",
+          "collapsed_summary": "{count, plural, one {# odpowiedź ukryta} few {# odpowiedzi ukryte} many {# odpowiedzi ukrytych} other {# odpowiedzi ukrytych}}",
+          "back_to_comments": "Powrót do wszystkich komentarzy"
         },
         "card": {
           "pin": "Przypnij",
@@ -2313,7 +2369,8 @@
           "description": "Czy na pewno chcesz usunąć ten kanał?",
           "no": "Nie",
           "yes": "Tak"
-        }
+        },
+        "student_body_content": "Do tej klasy nie dodano jeszcze żadnych wpisów."
       },
       "compliance": {
         "title": "Zgodność",
@@ -2428,6 +2485,11 @@
         "completed": "Ukończono {completed} z {total}",
         "lessons": "{completed} z {total} lekcji",
         "exercises": "{completed} z {total} ćwiczeń"
+      },
+      "footer_nav": {
+        "label": "Nawigacja po treści kursu",
+        "previous": "Poprzedni",
+        "next": "Następny"
       }
     },
     "navItems": {
@@ -2443,7 +2505,8 @@
       "nav_landing_page": "Strona docelowa",
       "nav_settings": "Ustawienia",
       "nav_ai_assistant": "Asystent",
-      "nav_ai_tutor": "Nauczyciel AI"
+      "nav_ai_tutor": "Nauczyciel AI",
+      "exit_course": "Wyjdź z kursu"
     },
     "completion": {
       "modal": {
@@ -2611,7 +2674,12 @@
         "copy_course_url": "Kopiuj adres URL kursu"
       },
       "due_date": "Termin",
-      "valid_until": "Ważne do"
+      "valid_until": "Ważne do",
+      "student_empty_title": "Brak kursów",
+      "student_empty_description": "W tej organizacji nie ma jeszcze dostępnych kursów. Sprawdź później.",
+      "updated_at": "Zaktualizowano {date}",
+      "lessons_count": "{count, plural, one {# lekcja} few {# lekcje} many {# lekcji} other {# lekcji}}",
+      "exercises_count": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}"
     },
     "course_filter": {
       "date_created_newest": "Data utworzenia: od najnowszych",
@@ -2846,6 +2914,7 @@
     "discussion": "Dyskusja",
     "people": "Ludzie",
     "goto_lms": "Przejdź do LMS-a",
+    "join_academy": "Dołącz do akademii",
     "goto_home": "Przejdź do strony głównej ClassroomIO",
     "login": "Zaloguj się",
     "signup": "Zarejestruj się",
@@ -3608,16 +3677,16 @@
           "placeholder": "np. rejestracja jest wyłączona. Aby uzyskać dostęp, skontaktuj się z nami pod adresem Learn@domain.com"
         },
         "disable_signup": {
-          "label": "Wyłącz rejestrację",
-          "description": "Uniemożliwiaj rejestrację nowym użytkownikom. Tylko zaproszeni użytkownicy mogą dołączyć."
+          "label": "Zablokuj wszystkie nowe rejestracje",
+          "description": "Całkowicie uniemożliwiaj tworzenie nowych kont. Nikt nie może się zarejestrować — nawet zaproszeni użytkownicy. Istniejące konta nie są dotknięte."
         },
         "allow_public_signups": {
           "label": "Zezwalaj na publiczne rejestracje",
-          "description": "Gdy opcja jest wyłączona, rejestrować się mogą tylko użytkownicy posiadający link z zaproszeniem. Włącz, aby pozwolić każdemu na utworzenie konta."
+          "description": "Gdy włączone, każdy może utworzyć konto. Gdy wyłączone, tylko użytkownicy z prawidłowym linkiem zaproszenia mogą się zarejestrować."
         },
         "internal_enrollment_only": {
           "label": "Tylko rejestracja wewnętrzna",
-          "description": "Jeśli ta opcja jest włączona, każdy opublikowany kurs jest dostępny do samodzielnej rejestracji dla wszystkich uczniów w Twojej organizacji. Użyj opcji Wyłącz rejestrację, aby utworzyć zamkniętą akademię dostępną tylko dla zaproszonych, w której uczniowie mogą dołączać do dowolnego opublikowanego kursu bez konieczności konfigurowania poszczególnych kursów."
+          "description": "Po włączeniu tej opcji tylko obecni członkowie Twojej organizacji będą mogli zapisać się na Twoje kursy. Wszyscy pozostali muszą zostać zaproszeni — nie mogą zarejestrować się ze strony kursu, nawet jeśli kurs jest otwarty dla nowych studentów."
         }
       },
       "login": {
@@ -3811,13 +3880,17 @@
       "full_name": "Pełne imię i nazwisko",
       "password": "Twoje hasło",
       "confirm_password": "Potwierdź hasło",
-      "password_helper_message": "Hasło musi mieć więcej niż 8 znaków",
+      "password_helper_message": "Hasło musi mieć 8 lub więcej znaków",
       "create_account": "Utwórz konto"
     },
     "signup_disabled": {
       "title": "Rejestracja wyłączona",
       "invite_only_message": "Rejestracja jest dostępna tylko za zaproszeniem. Aby utworzyć konto, użyj linku z zaproszeniem.",
       "go_to_login": "Przejdź do logowania"
+    },
+    "reset_password": {
+      "heading": "Nowe hasło",
+      "description": "Wprowadź dane nowego hasła"
     },
     "continue_with": "Lub kontynuuj z"
   },
@@ -3941,7 +4014,11 @@
     "resend": "Wyślij ponownie kod weryfikacyjny",
     "resend_in": "Wyślij ponownie weryfikację w",
     "seconds": "sekundy",
-    "snackbar_error": "błąd podczas wysyłania kodu"
+    "snackbar_error": "błąd podczas wysyłania kodu",
+    "wrong_address": "Zarejestrowałeś się pod złym adresem?",
+    "switch_account": "Zmień konto",
+    "confirm_link_prefix": "Kliknij link, na który wysłaliśmy",
+    "confirm_link_suffix": "aby potwierdzić swój e-mail"
   },
   "public_courses": {
     "page_title": "Kursy — ClassroomIO",
@@ -3963,9 +4040,12 @@
       "tags_title": "Tagi",
       "types_title": "Typy",
       "search_placeholder": "Wyszukaj kursy...",
+      "clear_search": "Wyczyść szukanie",
       "pricing_title": "Ceny",
       "pricing_free": "Bezpłatny",
-      "pricing_paid": "Płatny"
+      "pricing_paid": "Płatny",
+      "selected": "Wybrane:",
+      "save_changes": "Zapisz zmiany"
     }
   },
   "tags_admin": {
@@ -4036,8 +4116,11 @@
         "accepted": "To zaproszenie zostało już wykorzystane.",
         "invalid": "Ten link z zaproszeniem jest nieprawidłowy.",
         "joined": "Dołączył do organizacji",
-        "join_failed": "Nie udało się dołączyć do organizacji"
-      }
+        "join_failed": "Nie udało się dołączyć do organizacji",
+        "try_again": "Spróbuj ponownie"
+      },
+      "not_found": "To zaproszenie nie jest już dostępne.",
+      "loading": "Ładowanie zaproszenia..."
     },
     "link": {
       "page_title": "Dołącz do organizacji {orgName} w ClassroomIO",
@@ -4081,16 +4164,15 @@
       },
       "usage": {
         "title": "Zastosowanie i ograniczenia",
-        "description": "MCP jest dostępne w każdym planie, ale wykorzystanie jest kontrolowane za pomocą miesięcznych kredytów automatyzacji i limitów kluczowych.",
-        "credits_title": "Pozostały kredyty",
-        "credits_description": "Mutowanie działań MCP zużywa kredyty. Czytanie akcji jest bezpłatne.",
+        "description": "MCP jest dostępne w każdym planie. Wykorzystanie jest kontrolowane przez limity kluczy i limity żądań.",
         "keys_title": "Aktywne klucze",
         "keys_description": "Użyj jednego klucza MCP na każdą integrację, aby umożliwić łatwą rotację lub cofnięcie dostępu.",
         "rate_limits_title": "Limity stawek",
         "rate_limits_description": "Żądania odczytu/zapisu/publikowania dozwolone na minutę.",
         "used_label": "Używane:"
       },
-      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić."
+      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić.",
+      "view_docs": "Zobacz dokumentację"
     },
     "api": {
       "subtitle": "Zarządzaj kluczami API, aby integrować się z publicznym API ClassroomIO.",
@@ -4545,7 +4627,11 @@
         "mobile": "Telefon",
         "tablet": "Tablet",
         "desktop": "Komputer"
-      }
+      },
+      "current_version": "Aktualna wersja",
+      "active_badge": "Aktywny",
+      "active_badge_description": "Ta wersja jest obecnie dostępna na Twoim osadzeniu",
+      "upgrade_callout": "Zaktualizuj, aby odblokować niestandardowe motywy, kolory, typografię i styl."
     },
     "tabs": {
       "select_courses": "Wybierz Kursy",
@@ -4632,7 +4718,7 @@
     },
     "powered_by": {
       "label": "Obsługiwane przez",
-      "brand": "KlasaIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Poprzedni",
@@ -5011,6 +5097,31 @@
         "save": "Zapisz",
         "cancel": "Anuluj"
       }
+    }
+  },
+  "lms": {
+    "view_landing_page": "Wyświetl stronę docelową"
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "empty_title": "Brak powiadomień",
+    "empty_description": "Jesteś na bieżąco. Nowe powiadomienia będą pojawiać się tutaj.",
+    "refresh": "Odśwież",
+    "pending_invite": {
+      "heading": "Zaproszenie do organizacji",
+      "body": "{orgName} zaprosiła Cię do dołączenia jako {role}.",
+      "action": "Wyświetl zaproszenie"
+    },
+    "latest": "Najnowsze",
+    "only_show_unread": "Pokaż tylko nieprzeczytane",
+    "unread": "Nieprzeczytane",
+    "more_options": "Więcej opcji",
+    "give_feedback": "Przekaż opinię",
+    "watching_empty_title": "Nic jeszcze do obejrzenia",
+    "watching_empty_description": "Aktualizacje obserwowanych przez Ciebie elementów będą się tutaj pojawiać.",
+    "tabs": {
+      "direct": "Bezpośrednio",
+      "watching": "Obserwowanie"
     }
   }
 }

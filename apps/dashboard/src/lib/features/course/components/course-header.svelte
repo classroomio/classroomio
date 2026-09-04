@@ -9,12 +9,16 @@
   import { Waves } from '@cio/ui/custom/animation';
   import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { isStudentExperience } from '$lib/utils/store/app';
+  import { isStudentExperience, isCourseLearnerView } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
   import { getActiveCourseNavKey } from '$features/course/utils/functions';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { openCoursePreview } from '$features/course/utils/course-preview';
   import { t } from '$lib/utils/functions/translations';
   import CourseProgressPopover from './course-progress-popover.svelte';
@@ -29,6 +33,16 @@
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeNavKey = $derived(getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? ''));
   const isPublished = $derived(courseApi.course?.isPublished ?? false);
+  const lessonId = $derived(page.params.lessonId as string | undefined);
+  const exerciseId = $derived(page.params.exerciseId as string | undefined);
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage: Boolean(lessonId || exerciseId),
+      courseProgress: getCourseProgress(courseApi.course)
+    })
+  );
 
   let viewAsStudentOpen = $state(false);
   let viewCourseSiteUnpublishedOpen = $state(false);
@@ -59,7 +73,7 @@
 </script>
 
 <header
-  class="border-border ui:bg-background ui:z-app-bar sticky top-0 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
+  class="ui:border-border ui:bg-background ui:z-app-bar sticky top-0 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -86,27 +100,29 @@
 
     <span class="grow"></span>
 
-    {#if $isStudentExperience}
+    {#if $isCourseLearnerView && !showMobileBottomNav}
       <CourseProgressPopover class="md:hidden" />
     {/if}
 
-    <Button
-      size="sm"
-      onclick={toggleAiAssistant}
-      class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
-    >
-      <Waves
-        lineColor="rgba(255,255,255,0.55)"
-        xGap={8}
-        yGap={12}
-        waveAmpX={18}
-        waveAmpY={9}
-        waveSpeedX={0.04}
-        waveSpeedY={0.02}
-      />
-      <SparklesIcon size={14} class="relative z-10" />
-      <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
-    </Button>
+    {#if IS_AI_ENABLED}
+      <Button
+        size="sm"
+        onclick={toggleAiAssistant}
+        class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
+      >
+        <Waves
+          lineColor="rgba(255,255,255,0.55)"
+          xGap={8}
+          yGap={12}
+          waveAmpX={18}
+          waveAmpY={9}
+          waveSpeedX={0.04}
+          waveSpeedY={0.02}
+        />
+        <SparklesIcon size={14} class="relative z-10" />
+        <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
+      </Button>
+    {/if}
 
     {#if !$isStudentExperience}
       <ButtonGroup.Root>

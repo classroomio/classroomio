@@ -6,6 +6,10 @@ This document collects implementation rules and workflow conventions for code ch
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
 
+## Out of scope paths
+
+The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
+
 ## Translation, Formatting, and Git Workflow
 
 - If `apps/dashboard/src/lib/utils/translations/en.json` changes, update the other dashboard locale files before staging or committing.
@@ -39,6 +43,12 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 
   ```bash
   pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
+  ```
+
+- **Certificate changes** (`packages/certificates/**`):
+
+  ```bash
+  pnpm --filter @cio/certificates build
   ```
 
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
@@ -467,7 +477,12 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Add new UI components under `packages/ui/src` following existing folder patterns.
 - **All Tailwind utility classes in `packages/ui/src/**` must use the `ui:` prefix** (see `packages/ui/README.md`). Pre-commit and CI run `pnpm --filter @cio/ui prefix:check` on touched UI files; fix with `pnpm --filter @cio/ui prefix`.
 - Document component usage and props in `packages/ui/README.md`.
-- Add example usages and variants in Storybook stories under `packages/storybook/src`.
+- **Every new component in `packages/ui/src` ships with a Storybook story in the same change.** A component without a story is incomplete — do not open the PR without one.
+  - Path: `packages/storybook/src/{atoms|molecules}/{component-name}/{component-name}.stories.svelte`, plus a `fields.ts` exporting the `FIELDS` array used by `parameters.controls.include`.
+  - Use `defineMeta` from `@storybook/addon-svelte-csf` with `tags: ['autodocs']`, and set `argTypes` callbacks to `{ control: false }`.
+  - Cover every state the component can be in, not just the happy path — each variant, each boolean prop, loading and empty states, and any recursive or nested rendering.
+  - When adding a component to an existing family (e.g. a new `comment-tree-*` part), extend that family's existing story file rather than creating a second one.
+  - `ui:` classes used inside a story must also exist somewhere under `packages/ui/src`, otherwise they emit no CSS — use unprefixed layout classes in story wrappers when in doubt.
 - See `packages/ui/README.md` and `packages/storybook/README.md` for full guidance.
 - For dashboard forms, prefer `@cio/ui/custom/*-field` wrappers (for example `InputField`, `TextareaField`, `CheckboxField`) so label/error/spacing behavior stays consistent.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
@@ -499,6 +514,33 @@ Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` �
 />
 ```
 
+### Scroll to top
+
+Any surface whose **main column can overflow the viewport** must use the shared `ScrollToTop` control. Do not invent a one-off back-to-top button, FAB, or “scroll up” link.
+
+Full behavior, threshold, clearance, and mount points: `prd/scroll-to-top/README.md`.
+
+**Rules:**
+
+- Implement and import from `@cio/ui/custom/scroll-to-top` (see that spec if the file is not there yet — add the shared component, do not inline a button in the page).
+- Hidden until the scroll container overflows **and** the user has scrolled at least **one viewport**. Hidden again below 0.8 viewports. Never visible at the top of the page.
+- Click only scrolls that container to `top: 0`. Prefer `behavior: 'smooth'`; use instant when `prefers-reduced-motion` is set.
+- Fixed to the **viewport**, bottom-right, icon-only `Button`/`IconButton` with `variant="secondary"`.
+- Pass `label` from the host (`$t('common.scroll_to_top')` in the dashboard). The UI package does not own copy.
+- Prefer **one mount per shell**, not per leaf page:
+  - Public lessons and exercises → `PublicCourse.PublicCourseShell` (`clearance="mobile-nav"`).
+  - Authenticated course contents list, lesson, and exercise → `routes/(app)/courses/[id]/+layout.svelte` (Ask AI clearance on lesson/exercise routes).
+- New long-read pages (community thread, public course landing, long catalogs, etc.) must include the same component. Do not mount it on `(app)/+layout.svelte` or inside dialogs/sheets/nested panes.
+
+```svelte
+<script lang="ts">
+  import { ScrollToTop } from '@cio/ui/custom/scroll-to-top';
+  import { t } from '$lib/utils/functions/translations';
+</script>
+
+<ScrollToTop label={$t('common.scroll_to_top')} />
+```
+
 ## Emails: system vs org-branded
 
 Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.
@@ -524,6 +566,92 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Teacher/tutor/admin dashboard actions** (course management, grading, team invites, auto-enroll): build URLs with `getAppBaseUrl()` from `@cio/core/config/dashboard-url`. This resolves to the admin app (`app.classroomio.com` in cloud, or `DASHBOARD_ORIGIN` / localhost in dev). Do **not** pass org `customDomain` or tenant `siteName` — staff sign in on the admin app, not the org public site.
 - **Student/learner-facing links** (course enroll, org audience invites, login): build URLs with `getDashboardBaseUrl(org)` so links land on the org's public site (verified custom domain, tenant subdomain, or platform fallback).
 
+## Certificate Templates & Dynamic Text Fitting (`packages/certificates`)
+
+Certificate templates in `packages/certificates/src/templates/` render fixed-dimension certificate layouts for preview and PDF export. Dynamic user-generated fields (such as `orgName`, `courseName`, `recipientName`, `subtitle`, `description`, `certificateId`, and `date`) vary in length and must dynamically fit within their assigned layout boundaries without text clipping or layout overflow.
+
+### Rules for Certificate Template Edits:
+
+1. **Compute font sizes dynamically from font metrics — never hardcode fixed font sizes for dynamic text**:
+   - All user-generated content must have its font size computed via `prepareCertificateRenderContext(design, data, FIELDS)` and the font metrics engine (`font-metrics.ts`).
+   - Define a `FIELDS` constant object declaring `maxWidth`, `maxHeight`, `fontFamily`, `basePx`, `lineHeight`, `allowWrap`, `letterSpacingEm`, and `textTransform` for each field.
+   - Inject the computed font size via inline style in the HTML markup (e.g. `style="font-size: ${fontSizes.recipient}px;"`).
+   - Wrap all interpolated user strings with `escapeHtml(...)`.
+
+2. **Define dedicated constants/variables for layout factors (e.g. paddings, gaps, borders, sibling columns, decorations) used in layout calculations**:
+   - Extract layout values into named constants when calculations or multiple dependent declarations use them (e.g. element paddings, flex/grid gaps, border widths, sibling column widths, or flanking decorations that reduce `FIELDS.maxWidth` or `FIELDS.maxHeight`, or values reused across CSS and FIELDS).
+   - Standalone, non-computed dimension literals (like fixed container limits) do not need redundant variable wrappers.
+
+   ```ts
+   const recipientPaddingBottom = 14;
+   const recipientRowPaddingBottom = 14;
+   const recipientNumColumnWidth = 120;
+   const recipientRowGap = 30;
+   const borderLeftWidth = 12;
+   const certIdPaddingHorizontal = 10;
+   const certIdPaddingVertical = 6;
+   const subtitleDecorationLineWidth = 50;
+   const subtitleDecorationGap = 14;
+   const subtitleTotalDecorationWidth = (subtitleDecorationLineWidth + subtitleDecorationGap) * 2;
+   ```
+
+3. **`FIELDS` must subtract layout factors (e.g. paddings, gaps, borders, sibling elements) before computing font size**:
+   - The sizing engine uses `maxWidth` and `maxHeight` in `FIELDS` to measure available space for text glyphs.
+   - If an element has layout factors (e.g. CSS padding, flanking decorations, border widths, or shares a row with sibling columns/gaps), **subtract those dimensions from `FIELDS.maxWidth` or `FIELDS.maxHeight`** so the font size calculation accounts for the exact available text area:
+
+   ```ts
+   const FIELDS = {
+     certId: {
+       maxWidth: 280 - certIdPaddingHorizontal * 2,
+       maxHeight: 60 - certIdPaddingVertical * 2,
+       fontFamily: FONTS.mono,
+       basePx: 11,
+       allowWrap: false,
+       textTransform: 'uppercase' as const
+     },
+     subtitle: {
+       maxWidth: 800 - subtitleTotalDecorationWidth,
+       maxHeight: 34,
+       fontFamily: FONTS.heading,
+       basePx: 13,
+       allowWrap: false,
+       letterSpacingEm: 0.35,
+       textTransform: 'uppercase' as const
+     },
+     recipient: {
+       maxWidth: 900 - borderLeftWidth - recipientNumColumnWidth - recipientRowGap,
+       maxHeight: 86 - recipientPaddingBottom,
+       fontFamily: FONTS.display,
+       basePx: 54,
+       lineHeight: 1.05,
+       allowWrap: true
+     }
+   } as const;
+   ```
+
+4. **CSS styles must use the dedicated layout variables**:
+   - Reference the same dedicated layout constants (e.g. paddings, gaps, column widths, border dimensions) in the template's CSS styles.
+   - Container max dimensions in CSS should reflect the total outer boundary where needed (e.g., inner width/height from `FIELDS` plus the padding):
+
+   ```css
+   .t-minimal .recipient-row {
+     display: grid;
+     grid-template-columns: ${recipientNumColumnWidth}px 1fr;
+     gap: ${recipientRowGap}px;
+     padding-bottom: ${recipientRowPaddingBottom}px;
+   }
+   .t-classique .recipient {
+     padding-bottom: ${recipientPaddingBottom}px;
+     max-width: ${FIELDS.recipient.maxWidth}px;
+     max-height: ${FIELDS.recipient.maxHeight + recipientPaddingBottom}px;
+     overflow-wrap: break-word;
+     word-break: normal;
+   }
+   ```
+
+5. **Keep `FIELDS` typography configuration and CSS declarations strictly synchronized**:
+   - If CSS applies `letter-spacing`, `text-transform: uppercase`, or a specific `line-height`, the same values must be declared in `FIELDS` (`letterSpacingEm`, `textTransform: 'uppercase'`, `lineHeight`) so the advance-width and line-wrap calculations match the browser rendering.
+
 ## Best Practices Summary
 
 ### ✅ DO
@@ -540,6 +668,10 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
+- Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
+- In certificate templates, compute font sizes for dynamic text using `FIELDS` and `prepareCertificateRenderContext` (`packages/certificates`)
+- In certificate templates, extract layout factors (e.g. paddings, gaps, borders, sibling columns, decorations) into dedicated constants, subtract them in `FIELDS` before computing font sizes, and reference those constants in CSS
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -557,6 +689,26 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
+- Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
+- Hardcode font sizes in CSS for user-generated certificate fields
+- Use magic padding numbers in certificate templates without subtracting them from `FIELDS` bounding boxes
+
+## E2E test hooks
+
+Playwright specs and PR demos should use stable, locale-independent selectors. Full registry: `e2e/README.md`.
+
+**Locator priority:** `getByRole` / `getByLabel` first, then legacy `#id`, then `getByTestId`. Never select by CSS class, Tailwind utility, or translated copy in CI.
+
+**Infrastructure ids** ship in the app shell (login, org sidebar, header, settings save bar). Org nav ids are derived by `orgNavTestId()` — e.g. `/courses` → `org-nav-courses`.
+
+**Call-site ids:** pass `testId` on `@cio/ui` field wrappers and `Button` when a feature needs a hook. Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{action}`.
+
+```svelte
+<InputField testId="course-settings-title" label={...} bind:value={...} />
+<Button testId="course-create-submit">Create</Button>
+```
+
+Do not annotate every control — add hooks only for high-impact flows (auth, nav, save bars, primary actions).
 
 ## Checklist for New Routes
 
@@ -581,10 +733,20 @@ In every `catch` block, log the original error with the function name so logs ar
 ```
 
 ### Transactions
+
+When a service operation performs multiple related writes, establish one transaction at the service orchestration boundary and keep every database operation in that transaction. Do not commit a primary row update before a related write such as tags, memberships, or assignments can fail.
+
+- Routes must delegate transaction ownership to services; routes should not perform direct database transactions.
+- Query helpers that participate in composed operations must accept an optional `DbOrTxClient` and pass it to every read and write in the operation.
+- A query helper may open its own transaction only when no client is supplied. When a transaction client is supplied, use it directly and never open a nested transaction.
+- Validate all related identifiers and authorization requirements within the same transaction boundary before committing any writes.
+- Add a database-backed integration test for rollback-sensitive flows where possible. At minimum, test that a failure in a later operation cannot leave an earlier operation persisted.
+- Defer cache invalidation, notifications, and other non-transactional side effects until after the transaction commits.
+
 ```typescript
 const result = await db.transaction(async (tx) => {
-  const org = await createOrganization({ name, siteName });
-  const member = await createOrganizationMember({ orgId: org.id, userId });
+  const org = await createOrganization({ name, siteName }, tx);
+  const member = await createOrganizationMember({ orgId: org.id, userId }, tx);
   return { org, member };
 });
 ```
@@ -664,6 +826,8 @@ A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self
   - Multi-tenant: multiple orgs per user, "add org" shown; org is resolved from the **subdomain** (`acme.<PRIVATE_APP_HOST>`) or a custom domain. Locally there are no subdomains, so an org public site is simulated with the `?org=<siteName>` query param (sets the `_orgSiteName` cookie — see `layout-setup.ts`).
   - The license gate is a **no-op**, so all enterprise features are unlocked **without** a `LICENSE_KEY` — i.e. cloud mode is the easiest way to exercise SSO/token-auth/multi-org in dev.
   - Polar billing and analytics activate but are themselves gated by their own keys (absent keys just no-op), so they don't block startup.
+
+**Org membership invariant — admins/tutors vs students.** Self-hosted is single-org/single-domain, so one person must never hold a STUDENT membership in one org and an ADMIN/TUTOR membership in another. Concretely: the self-hosted auto-enroll path (`getAccountData` in `apps/api/src/services/account/profile.ts`) skips enrolling a user as STUDENT if `getUserOrgRolesMap` shows they are ADMIN/TUTOR anywhere. Cloud does **not** enforce this: multi-domain tenancy means the same person can legitimately be an admin of their own org and a student in someone else's, so the explicit signup/Join Academy service (`joinOrganization` in `apps/api/src/services/organization/join.ts`) intentionally has no such guard. When changing enrollment logic, keep this asymmetry deliberate.
 
 Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both files. The flag is read at process start, so restart the dev servers after editing it.
 

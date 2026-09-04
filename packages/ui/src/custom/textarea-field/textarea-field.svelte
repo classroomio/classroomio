@@ -12,6 +12,8 @@
     isRequired?: boolean;
     className?: string;
     bgColor?: string;
+    /** Stable hook for Playwright (`data-testid`). */
+    testId?: string;
     labelAction?: import('svelte').Snippet;
     iconbutton?: import('svelte').Snippet;
   }
@@ -24,6 +26,7 @@
     isRequired = false,
     className = '',
     bgColor = '',
+    testId,
     labelAction,
     iconbutton,
     value = $bindable(),
@@ -48,6 +51,7 @@
     bind:value
     class={cn(bgColor, errorMessage ? 'ui:border-red-500' : '')}
     aria-invalid={errorMessage ? 'true' : undefined}
+    data-testid={testId}
     {...textareaProps}
   />
 

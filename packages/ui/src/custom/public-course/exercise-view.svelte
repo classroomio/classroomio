@@ -13,6 +13,7 @@
   import { QuestionList } from '../exercise-question';
   import { cn } from '../../tools';
   import Callout from './callout.svelte';
+  import { SafeHtmlContent } from '../safe-html-content';
   import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicExerciseViewData } from './types';
   import type { PublicExerciseStoredAttempt } from './public-exercise-attempts-storage';
   import {
@@ -401,7 +402,9 @@
     </h1>
 
     {#if exercise.description}
-      <p class="ui:mt-3 ui:text-muted-foreground">{exercise.description}</p>
+      <div class="prose ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
+        <SafeHtmlContent content={exercise.description} />
+      </div>
     {/if}
 
     <div class="ui:mt-8 ui:space-y-6">

@@ -10,6 +10,8 @@
     name?: string;
     isEditable?: boolean;
     disabled?: boolean;
+    /** Stable hook for Playwright (`data-testid`) on the checkbox control. */
+    testId?: string;
     className?: string;
     onchange?: (e: Event) => void;
     /** When set, the whole row handles the click (e.g. multi-select). Avoids nesting a native button inside the checkbox control. */
@@ -24,6 +26,7 @@
     name = '',
     isEditable = false,
     disabled = false,
+    testId,
     className = '',
     onchange = () => {},
     onclick,
@@ -62,7 +65,14 @@
     onclick={handleRowClick}
     onkeydown={handleRowKeydown}
   >
-    <Checkbox class="ui:pointer-events-none" {name} {value} disabled={disabled || isEditable} bind:checked />
+    <Checkbox
+      class="ui:pointer-events-none"
+      {name}
+      {value}
+      disabled={disabled || isEditable}
+      bind:checked
+      data-testid={testId}
+    />
     {#if isEditable}
       <!-- Isolate text field from the row button (rare: onclick + isEditable) -->
       <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -78,7 +88,7 @@
   </div>
 {:else if isEditable}
   <div class={rowClass}>
-    <Checkbox {name} {value} disabled={disabled || isEditable} bind:checked />
+    <Checkbox {name} {value} disabled={disabled || isEditable} bind:checked data-testid={testId} />
     <div class="ui:w-2/4">
       <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" {onchange} />
     </div>
@@ -87,7 +97,7 @@
   </div>
 {:else}
   <label class={rowClass}>
-    <Checkbox {name} {value} {disabled} bind:checked />
+    <Checkbox {name} {value} {disabled} bind:checked data-testid={testId} />
     <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
 
     {@render children?.()}

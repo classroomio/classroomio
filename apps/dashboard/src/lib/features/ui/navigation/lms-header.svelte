@@ -8,6 +8,7 @@
   import LmsBreadcrumbs from './lms-breadcrumbs.svelte';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import * as Empty from '@cio/ui/base/empty';
+  import VisitOrgSiteBtn from '../visit-org-site-btn.svelte';
 
   interface Props {
     hideSearch?: boolean;
@@ -17,7 +18,7 @@
 </script>
 
 <header
-  class="border-border ui:bg-background bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
+  class="ui:border-border ui:bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -31,6 +32,8 @@
     <span class="grow"></span>
 
     {#if !hideSearch}
+      <VisitOrgSiteBtn variant="outline" labelKey="lms.view_landing_page" pathname="/" />
+
       <Search scope="lms" />
 
       <Popover.Root>
@@ -40,7 +43,7 @@
           </Button>
         </Popover.Trigger>
         <Popover.Content>
-          <Empty.Root class="ui:from-muted/50 ui:to-background ui:h-full ui:bg-gradient-to-b ui:from-30%">
+          <Empty.Root class="ui:from-muted/50 ui:to-background h-full bg-gradient-to-b from-30%">
             <Empty.Header>
               <Empty.Media variant="icon">
                 <BellIcon />

@@ -12,7 +12,8 @@ import {
   listWidgetVersions,
   listWidgetsByOrganization,
   replaceWidgetCourses,
-  updateWidget
+  updateWidget,
+  updateWidgetWithCourses
 } from '@cio/db/queries/widget';
 import {
   ZWidgetPayload,
@@ -204,7 +205,7 @@ export async function deleteOrganizationWidget(orgId: string, widgetId: string, 
 
 export async function publishOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
-    const widget = await getWidgetById(orgId, widgetId);
+    const [widget, activePlan] = await Promise.all([getWidgetById(orgId, widgetId), getActiveOrganizationPlan(orgId)]);
     if (!widget) {
       throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
@@ -214,7 +215,7 @@ export async function publishOrganizationWidget(orgId: string, widgetId: string,
     const version = await createWidgetVersion({
       widgetId: widget.id,
       version: nextVersion,
-      configSnapshot: normalizeWidgetConfig(widget.config as Record<string, unknown>),
+      configSnapshot: normalizeWidgetConfig(widget.config as Record<string, unknown>, activePlan?.planName ?? null),
       payloadSnapshot: payload,
       runtimeManifest: {
         version: 'v1',
@@ -272,27 +273,30 @@ export async function rollbackOrganizationWidget(
       throw new AppError('Widget version not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
-    const nextVersion = await getNextWidgetVersion(widgetId);
-    const rollbackVersion = await createWidgetVersion({
-      widgetId: widget.id,
-      version: nextVersion,
-      configSnapshot: version.configSnapshot,
-      payloadSnapshot: version.payloadSnapshot,
-      runtimeManifest: version.runtimeManifest,
-      rolledBackFromVersionId: version.id,
-      publishedByUserId: userId
-    });
+    const restoredPayload = ZWidgetPayload.parse(version.payloadSnapshot);
 
-    const updatedWidget = await updateWidget(orgId, widgetId, {
-      status: 'PUBLISHED',
-      hasUnpublishedChanges: false,
-      latestPublishedVersionId: rollbackVersion.id,
-      updatedByUserId: userId
-    });
+    const updatedWidget = await updateWidgetWithCourses(
+      orgId,
+      widgetId,
+      {
+        config: version.configSnapshot,
+        layoutType: restoredPayload.layoutType,
+        selectionMode: restoredPayload.selectionMode,
+        status: 'PUBLISHED',
+        hasUnpublishedChanges: false,
+        latestPublishedVersionId: version.id,
+        updatedByUserId: userId
+      },
+      restoredPayload.courses.map((course) => course.id)
+    );
+
+    if (!updatedWidget) {
+      throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
 
     return {
       widget: updatedWidget,
-      version: rollbackVersion
+      version
     };
   } catch (error) {
     if (error instanceof AppError) {

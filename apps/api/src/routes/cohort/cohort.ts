@@ -102,8 +102,9 @@ export const cohortRouter = new Hono()
    */
   .get('/', authMiddleware, zValidator('query', ZOrgQuery), async (c) => {
     try {
+      const user = c.get('user')!;
       const { organizationId } = c.req.valid('query');
-      const cohorts = await listOrgCohorts(organizationId);
+      const cohorts = await listOrgCohorts(organizationId, user.id);
       return c.json({ success: true, data: cohorts }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list cohorts');

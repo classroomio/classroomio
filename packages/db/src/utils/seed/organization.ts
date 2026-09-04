@@ -3,11 +3,13 @@ import { db, organization } from '@db/drizzle';
 export async function seedOrganization({
   testOrgId,
   enterpriseOrgId,
-  earlyAdopterOrgId
+  earlyAdopterOrgId,
+  selectedOrganizationId
 }: {
   testOrgId: string;
   enterpriseOrgId: string;
   earlyAdopterOrgId: string;
+  selectedOrganizationId?: string;
 }) {
   const existingOrgs = await db.select().from(organization);
   const existingOrgIds = existingOrgs.map((o) => o.id);
@@ -52,7 +54,11 @@ export async function seedOrganization({
         dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
       }
     }
-  ].filter((o) => !existingOrgIds.includes(o.id));
+  ].filter(
+    (organizationToInsert) =>
+      (!selectedOrganizationId || organizationToInsert.id === selectedOrganizationId) &&
+      !existingOrgIds.includes(organizationToInsert.id)
+  );
 
   if (organizationsToInsert.length > 0) {
     await db.insert(organization).values(organizationsToInsert);

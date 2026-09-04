@@ -1,4 +1,5 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
+import type { TLocale } from '@cio/db/types';
 
 // List lessons types
 export type ListLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['$get'];
@@ -148,6 +149,33 @@ export type GetLessonHistoryRequest =
 export type GetLessonHistoryResponse = InferResponseType<GetLessonHistoryRequest> | null;
 export type GetLessonHistorySuccess = Extract<InferResponseType<GetLessonHistoryRequest>, { success: true }>;
 export type LessonHistory = GetLessonHistorySuccess['data'];
+export type LessonHistoryRow = LessonHistory[number];
+
+/**
+ * A history row with its timestamps parsed, as the version history panel renders
+ * it. One entry is one *editing session*, not one save — `editCount` says how
+ * many saves the API coalesced into it.
+ */
+export interface LessonVersionEntry {
+  id: number;
+  newContent: string;
+  oldContent: string;
+  kind: NonNullable<LessonHistoryRow['kind']>;
+  label: string | null;
+  sessionStartedAt: Date;
+  timestamp: Date;
+  editCount: number;
+  authorName: string | null;
+  locale: TLocale;
+  lessonId: string;
+}
+
+/** Version entries bucketed into calendar days, newest day first. */
+export interface LessonVersionDayGroup {
+  /** Midnight of the day, used as the group key. */
+  dayKey: number;
+  versions: LessonVersionEntry[];
+}
 
 // Lesson language types
 export type GetLessonLanguageRequest =
@@ -227,6 +255,29 @@ export type Feed = ListNewsfeed[number];
 
 export type NewsfeedComment = NewsfeedCommentsResponse['items'][number];
 export type Reaction = NonNullable<Feed['reaction']>;
+
+export type NewsfeedNodeState = {
+  depth: number;
+  parentId: number | null;
+  directReplyCount: number;
+  descendantCount: number;
+  loadedChildCount: number;
+  childCursor: string | null;
+  hasMoreChildren: boolean;
+  isLoading: boolean;
+  isOptimistic: boolean;
+};
+
+export type NewsfeedThreadState = {
+  rootIds: number[];
+  totalRootCount: number;
+  totalCommentCount: number;
+  hasMore: boolean;
+  cursor: string | null;
+  isLoading: boolean;
+};
+
+export type NewsfeedThreadIngestMode = 'replaceRoots' | 'appendRoots' | 'appendChildren' | 'replaceChildren';
 
 // Attendance types
 // Note: Only POST (upsert) route exists, no GET or PUT routes
@@ -356,8 +407,16 @@ export type CourseProgress = GetCourseProgressSuccess['data'];
 export type ListPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$get'];
 export type ListPeopleResponse = InferResponseType<ListPeopleRequest> | null;
 export type ListPeopleSuccess = Extract<InferResponseType<ListPeopleRequest>, { success: true }>;
+export type ListPeopleRequestQuery = NonNullable<InferRequestType<ListPeopleRequest>['query']>;
 export type CourseMembers = ListPeopleSuccess['data'];
 export type CourseMember = CourseMembers[number];
+export type CourseMembersPagination = ListPeopleSuccess['pagination'];
+export type ListPeopleQuery = {
+  page: number;
+  limit: number;
+  search?: string;
+  roleId?: number;
+};
 
 export type AddPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$post'];
 export type AddPeopleResponse = InferResponseType<AddPeopleRequest>;

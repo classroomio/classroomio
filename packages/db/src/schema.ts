@@ -22,10 +22,12 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
@@ -408,6 +410,8 @@ export const profile = pgTable(
     telegramChatId: bigint('telegram_chat_id', { mode: 'number' }),
     isEmailVerified: boolean('is_email_verified').default(false),
     verifiedAt: timestamp('verified_at', { withTimezone: true, mode: 'string' }),
+    welcomeEmailPending: boolean('welcome_email_pending').default(false).notNull(),
+    welcomeEmailSentAt: timestamp('welcome_email_sent_at', { withTimezone: true, mode: 'string' }),
     locale: locale().default('en'),
     isRestricted: boolean('is_restricted').default(false).notNull(),
     settings: jsonb().default({}).$type<Record<string, unknown>>()
@@ -612,7 +616,8 @@ export const submission = pgTable(
       columns: [table.submittedBy],
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
-    })
+    }),
+    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
   ]
 );
 
@@ -688,6 +693,8 @@ export const course = pgTable(
       }[];
       grading?: boolean;
       lessonDownload?: boolean;
+      allowSelfEnrollment?: boolean;
+      /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. Kept because there is no backfill. */
       allowNewStudent?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;
@@ -697,6 +704,8 @@ export const course = pgTable(
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
       progressionMode?: 'free' | 'sequential';
+      /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
+      commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
       aiTutor?: {
         inheritFromOrg?: boolean;
@@ -988,6 +997,7 @@ export const lesson = pgTable(
     isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
+    commentsEnabled: boolean('comments_enabled').default(true).notNull(),
     videos: jsonb().default([]).$type<
       {
         type: 'youtube' | 'generic' | 'upload' | 'google_drive';
@@ -1717,7 +1727,8 @@ export const courseNewsfeedComment = pgTable(
       foreignColumns: [table.id],
       name: 'course_newsfeed_comment_reply_to_comment_id_fkey'
     }).onDelete('set null'),
-    index('course_newsfeed_comment_parent_id_idx').on(table.parentId)
+    index('course_newsfeed_comment_parent_id_idx').on(table.parentId),
+    index('course_newsfeed_comment_course_newsfeed_id_idx').on(table.courseNewsfeedId)
   ]
 );
 
@@ -1791,16 +1802,39 @@ export const lessonLanguage = pgTable(
   ]
 );
 
+/**
+ * One row per *editing session*, not per save. Autosave coalesces consecutive
+ * edits by the same author into the newest unsealed row (see
+ * `recordLessonLanguageVersion` in `@cio/core/services/lesson-version`), so a
+ * long writing session produces one entry instead of one per keystroke pause.
+ *
+ * `old_content` is deliberately absent: the previous row's `new_content` is the
+ * old content, so storing both would persist every document twice. The
+ * `lesson_versions` view derives it with a window function.
+ */
 export const lessonLanguageHistory = pgTable(
   'lesson_language_history',
   {
     id: serial().primaryKey().notNull(),
     lessonLanguageId: integer('lesson_language_id'),
-    oldContent: text('old_content'),
     newContent: text('new_content'),
+    /** `auto` rows are prunable by retention; `manual` and `publish` are kept forever. */
+    kind: lessonVersionKind().default('auto').notNull(),
+    /** Optional author-supplied name for a milestone version. */
+    label: text(),
+    authorId: uuid('author_id'),
+    /** First edit in the session this row represents. */
+    sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    /** Last edit in the session; the row's user-visible time. */
     timestamp: timestamp({ mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull()
+      .notNull(),
+    /** How many saves were coalesced into this session. */
+    editCount: integer('edit_count').default(1).notNull(),
+    /** Sealed rows are never extended. Set by an explicit save and by publishing. */
+    isSealed: boolean('is_sealed').default(false).notNull()
   },
   (table) => [
     foreignKey({
@@ -1809,7 +1843,19 @@ export const lessonLanguageHistory = pgTable(
       name: 'public_lesson_language_history_lesson_language_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'lesson_language_history_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('lesson_language_history_language_timestamp_idx').using(
+      'btree',
+      table.lessonLanguageId.asc(),
+      table.timestamp.desc()
+    )
   ]
 );
 
@@ -2490,14 +2536,28 @@ export const dashOrgStats = pgView('dash_org_stats', {
   sql`SELECT gp.organization_id AS org_id, count(DISTINCT course.id) AS no_of_courses, count(DISTINCT gm.profile_id) AS enrolled_students FROM course JOIN "group" gp ON gp.id = course.group_id LEFT JOIN groupmember gm ON gm.group_id = gp.id AND gm.role_id = 3 WHERE course.status = 'ACTIVE'::text GROUP BY gp.organization_id`
 );
 
+/**
+ * Reader-facing shape of lesson version history. `old_content` is derived from
+ * the previous snapshot of the same lesson language rather than stored, and the
+ * author is joined in so the history panel doesn't need a second round trip.
+ */
 export const lessonVersions = pgView('lesson_versions', {
+  id: integer(),
   oldContent: text('old_content'),
   newContent: text('new_content'),
+  kind: lessonVersionKind(),
+  label: text(),
+  sessionStartedAt: timestamp('session_started_at', { mode: 'string' }),
   timestamp: timestamp({ mode: 'string' }),
+  editCount: integer('edit_count'),
+  isSealed: boolean('is_sealed'),
+  authorId: uuid('author_id'),
+  authorName: text('author_name'),
+  authorAvatarUrl: text('author_avatar_url'),
   locale: locale(),
   lessonId: uuid('lesson_id')
 }).as(
-  sql`SELECT llh.old_content, llh.new_content, llh."timestamp", ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id`
+  sql`SELECT llh.id, lag(llh.new_content) OVER (PARTITION BY llh.lesson_language_id ORDER BY llh."timestamp", llh.id) AS old_content, llh.new_content, llh.kind, llh.label, llh.session_started_at, llh."timestamp", llh.edit_count, llh.is_sealed, llh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id LEFT JOIN profile p ON p.id = llh.author_id`
 );
 
 export const exerciseTemplate = pgTable('exercise_template', {
