@@ -823,7 +823,7 @@
         "course_avail": "Pobierz kopię tego kursu.",
         "download": "Pobierz",
         "allow": "Uczniowie mogą zapisać się samodzielnie",
-        "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu w sekcji Osoby.",
+        "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu w sekcji {people}.",
         "publish": "Publikuj kurs",
         "determines": "Od tego zależy, czy Twój kurs wyświetli się na stronie docelowej",
         "published": "Opublikowano",
