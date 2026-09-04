@@ -504,7 +504,7 @@
     "go_to_my_learning": "मेरी सीख पर जाएँ"
   },
   "lms_navigation": {
-    "home": "घर",
+    "home": "डैशबोर्ड",
     "my_learning": "मेरी सीख",
     "certificates": "प्रमाणपत्र",
     "exercise": "व्यायाम",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "आमंत्रण लिंक अपडेट नहीं हो सका"
   },
   "lms": {
-    "view_landing_page": "लैंडिंग पेज देखें"
+    "view_landing_page": "मुखपृष्ठ"
   },
   "notifications": {
     "title": "सूचनाएं",

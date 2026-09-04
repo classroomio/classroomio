@@ -504,7 +504,7 @@
     "go_to_my_learning": "Aller à Mon apprentissage"
   },
   "lms_navigation": {
-    "home": "Accueil",
+    "home": "Tableau de bord",
     "my_learning": "Mon apprentissage",
     "certificates": "Certificats",
     "exercise": "Exercice",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "Impossible de mettre à jour le lien d'invitation"
   },
   "lms": {
-    "view_landing_page": "Afficher la page d'accueil"
+    "view_landing_page": "Accueil"
   },
   "notifications": {
     "title": "Notifications",
