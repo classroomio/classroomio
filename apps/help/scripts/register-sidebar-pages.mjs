@@ -32,7 +32,11 @@ const repoRoot = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: ap
 const contentRoot = resolve(appRoot, 'content/help');
 const configPath = resolve(appRoot, 'blume.config.ts');
 
-const baseRef = process.argv[2] ?? 'origin/main';
+// pnpm's `run <script> -- <args>` forwards the `--` itself through to the
+// underlying command rather than stripping it (confirmed in CI: argv came
+// through as ['--', '<sha>']), so the base ref has to be found by skipping
+// any literal '--' rather than assumed to be sitting at a fixed index.
+const baseRef = process.argv.slice(2).find((arg) => arg !== '--') ?? 'origin/main';
 
 function findAddedMdxFiles() {
   const contentRootFromRepoRoot = relative(repoRoot, contentRoot).split(sep).join('/');
