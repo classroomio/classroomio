@@ -4,6 +4,8 @@
   import { Input, type InputProps } from '../../base/input';
 
   type InputOnChangeEvent = Parameters<NonNullable<InputProps['onchange']>>[0];
+  type InputOnInputEvent = Parameters<NonNullable<InputProps['oninput']>>[0];
+  type InputOnBlurEvent = Parameters<NonNullable<InputProps['onblur']>>[0];
 
   interface Props {
     label?: string;
@@ -28,7 +30,9 @@
     /** Stable hook for Playwright (`data-testid`). Prefer over CSS classes or translated labels. */
     testId?: string;
     onchange?: (e: InputOnChangeEvent) => void;
-    onInputChange?: (e: InputOnChangeEvent) => void;
+    onblur?: (e: InputOnBlurEvent) => void;
+    oninput?: (e: InputOnInputEvent) => void;
+    onInputChange?: (e: InputOnInputEvent | InputOnChangeEvent) => void;
     labelAction?: import('svelte').Snippet;
   }
 
@@ -54,6 +58,8 @@
     autoComplete = true,
     testId,
     onchange = () => {},
+    onblur = () => {},
+    oninput = () => {},
     onInputChange = () => {},
     labelAction
   }: Props = $props();
@@ -66,14 +72,21 @@
     }
   });
 
-  // Handle input change event
-  function handleInputChange(e: InputOnChangeEvent) {
+  // Handle live input event (typing, pasting, speech-to-text)
+  function handleInput(e: InputOnInputEvent) {
+    oninput(e);
+    onInputChange(e);
+  }
+
+  // Handle commit / change event
+  function handleChange(e: InputOnChangeEvent) {
+    onchange(e);
     onInputChange(e);
   }
 
   // Handle blur event
-  function handleBlur(e: InputOnChangeEvent) {
-    onchange(e);
+  function handleBlur(e: InputOnBlurEvent) {
+    onblur(e);
   }
 </script>
 
@@ -105,7 +118,8 @@
     autocomplete={autoComplete ? 'on' : 'off'}
     aria-invalid={errorMessage ? 'true' : undefined}
     onkeydown={onKeyDown}
-    onchange={handleInputChange}
+    oninput={handleInput}
+    onchange={handleChange}
     onblur={handleBlur}
   />
 
