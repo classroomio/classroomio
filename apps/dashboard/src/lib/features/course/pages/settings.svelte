@@ -473,6 +473,8 @@
     return selected;
   });
 
+  const hasAnyTagsCreated = $derived(tagApi.tagGroups.some((group) => group.tags.length > 0));
+
   let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '#');
 
   const PEOPLE_LINK_MARKER = '@@people@@';
@@ -828,7 +830,9 @@
     <Field.Field>
       <div class="space-y-3">
         <div class="flex flex-wrap items-center gap-2">
-          {#if !selectedTagChips.length}
+          {#if !selectedTagChips.length && !hasAnyTagsCreated}
+            <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.none_created')}</p>
+          {:else if !selectedTagChips.length}
             <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.empty')}</p>
           {:else}
             {#each selectedTagChips as tag (tag.id)}
@@ -857,6 +861,7 @@
             {selectedTagIds}
             bind:open={isTagPopoverOpen}
             onTagToggle={toggleTagSelection}
+            onTagCreated={toggleTagSelection}
           />
         </div>
       </div>

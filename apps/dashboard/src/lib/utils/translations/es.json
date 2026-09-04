@@ -842,7 +842,11 @@
           "empty": "No hay etiquetas seleccionadas",
           "add": "Agregar etiqueta",
           "popover_title": "Seleccionar etiquetas",
-          "empty_groups": "Aún no hay etiquetas disponibles"
+          "empty_groups": "Aún no hay etiquetas disponibles",
+          "create_tag": "Crear etiqueta",
+          "none_created": "Aún no se han creado etiquetas",
+          "search_placeholder": "Buscar etiquetas...",
+          "no_results": "No se encontraron etiquetas"
         },
         "compliance": "Cumplimiento",
         "public": "Público",
@@ -4094,7 +4098,9 @@
       "color": "Color",
       "color_help": "Elige uno de los 10 colores",
       "select_category": "Selecciona una categoría",
-      "no_groups": "Cree un grupo de etiquetas antes de crear etiquetas"
+      "no_groups": "Cree un grupo de etiquetas antes de crear etiquetas",
+      "search_category": "Categoría de búsqueda",
+      "no_results": "No se encontraron categorías"
     },
     "group_modal": {
       "create_title": "Crear grupo de etiquetas",
