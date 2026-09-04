@@ -92,6 +92,7 @@
   "dependencies": {
     "@better-auth/sso": "^1.4.18",
     "@cio/email": "workspace:*",
+    "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",

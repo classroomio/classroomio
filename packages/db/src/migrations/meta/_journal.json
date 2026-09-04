@@ -61,6 +61,7 @@
     {
       "idx": 8,
       "version": "7",
+<<<<<<< HEAD
       "when": 1788108878281,
       "tag": "0008_add_lesson_comments_setting",
       "breakpoints": true
@@ -84,6 +85,13 @@
       "version": "7",
       "when": 1788389000011,
       "tag": "0011_drop_lesson_language_history_trigger",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1789000000000,
+      "tag": "0012_welcome_email_state",
       "breakpoints": true
     }
   ]
