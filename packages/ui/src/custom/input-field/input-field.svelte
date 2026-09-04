@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import * as Field from '../../base/field';
   import { Input, type InputProps } from '../../base/input';
-  import { cn } from '../../tools';
 
   type InputOnChangeEvent = Parameters<NonNullable<InputProps['onchange']>>[0];
 
@@ -76,11 +75,9 @@
   function handleBlur(e: InputOnChangeEvent) {
     onchange(e);
   }
-
-  const isDateTimeType = $derived(Boolean(type && ['date', 'datetime-local', 'time', 'month', 'week'].includes(type)));
 </script>
 
-<Field.Field class={cn(isDateTimeType && 'ui:w-fit ui:*:w-auto', className)}>
+<Field.Field class={className}>
   {#if label}
     <div class="ui:flex ui:items-center ui:justify-between">
       <Field.Label for={name || 'input-field'} class={labelClassName} required={isRequired}>
@@ -91,7 +88,7 @@
   {/if}
 
   <Input
-    class={cn(isDateTimeType && 'ui:w-auto', inputClassName)}
+    class={inputClassName}
     bind:ref={inputRef}
     id={name || 'input-field'}
     data-testid={testId}
