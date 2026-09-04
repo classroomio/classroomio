@@ -1,3 +1,4 @@
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { buildProxiedApiResponse, proxyRequestToApi, shouldForwardToApi } from './proxy-api-request';
 
 describe('shouldForwardToApi', () => {
@@ -78,7 +79,7 @@ describe('proxyRequestToApi', () => {
     }
 
     global.fetch = originalFetch;
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('returns 502 when PRIVATE_SERVER_URL is missing', async () => {
@@ -93,7 +94,7 @@ describe('proxyRequestToApi', () => {
   it('requests identity encoding and returns a stripped response', async () => {
     process.env.PRIVATE_SERVER_URL = 'http://api.internal:3081';
 
-    const fetchMock = jest.fn().mockResolvedValue(
+    const fetchMock = vi.fn().mockResolvedValue(
       new Response('{"session":null}', {
         status: 200,
         headers: {
