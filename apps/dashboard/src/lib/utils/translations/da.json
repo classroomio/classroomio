@@ -4628,7 +4628,8 @@
       },
       "current_version": "Nuværende version",
       "active_badge": "Aktiv",
-      "active_badge_description": "Denne version er i øjeblikket live på din indlejring"
+      "active_badge_description": "Denne version er i øjeblikket live på din indlejring",
+      "upgrade_callout": "Opgrader for at låse op for brugerdefinerede temaer, farver, typografi og styling."
     },
     "tabs": {
       "select_courses": "Vælg Kurser",

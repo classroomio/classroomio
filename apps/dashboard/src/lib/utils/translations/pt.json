@@ -4628,7 +4628,8 @@
       },
       "current_version": "Versão Atual",
       "active_badge": "Ativo",
-      "active_badge_description": "Esta versão está atualmente ativa em sua incorporação"
+      "active_badge_description": "Esta versão está atualmente ativa em sua incorporação",
+      "upgrade_callout": "Faça o upgrade para desbloquear temas, cores, tipografia e estilos personalizados."
     },
     "tabs": {
       "select_courses": "Selecione os cursos",
