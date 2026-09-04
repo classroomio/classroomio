@@ -504,7 +504,7 @@
     "go_to_my_learning": "Перейти к Моему обучению"
   },
   "lms_navigation": {
-    "home": "Главная",
+    "home": "Панель управления",
     "my_learning": "Мое обучение",
     "certificates": "Сертификаты",
     "exercise": "Упражнение",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "Не удалось обновить ссылку-приглашение"
   },
   "lms": {
-    "view_landing_page": "Посмотреть целевую страницу"
+    "view_landing_page": "Главная"
   },
   "notifications": {
     "title": "Уведомления",

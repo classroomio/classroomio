@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import { Button, type ButtonVariant } from '@cio/ui/base/button';
   import SquareArrowOutUpRight from '@lucide/svelte/icons/square-arrow-out-up-right';
+  import type { Component } from 'svelte';
 
   import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
@@ -16,6 +17,7 @@
     variant?: ButtonVariant;
     forceSubdomain?: boolean;
     pathname?: string;
+    icon?: Component;
   }
 
   let {
@@ -24,7 +26,8 @@
     labelKey = 'settings.subheadings.view_site',
     variant = 'default',
     forceSubdomain = false,
-    pathname
+    pathname,
+    icon: Icon = SquareArrowOutUpRight
   }: Props = $props();
 
   let href = $derived.by(() => {
@@ -58,5 +61,5 @@
       {/if}
     </span>
   {/if}
-  <SquareArrowOutUpRight class="custom" />
+  <Icon class="custom" />
 </Button>

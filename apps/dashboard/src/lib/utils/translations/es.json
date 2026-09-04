@@ -504,7 +504,7 @@
     "go_to_my_learning": "Ir a Mi aprendizaje"
   },
   "lms_navigation": {
-    "home": "Inicio",
+    "home": "Panel",
     "my_learning": "Mi aprendizaje",
     "certificates": "Certificados",
     "exercise": "Ejercicio",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "No se pudo actualizar el enlace de invitación"
   },
   "lms": {
-    "view_landing_page": "Ver página de inicio"
+    "view_landing_page": "Inicio"
   },
   "notifications": {
     "title": "Notificaciones",

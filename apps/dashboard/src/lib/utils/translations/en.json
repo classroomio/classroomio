@@ -4184,7 +4184,7 @@
     }
   },
   "lms_navigation": {
-    "home": "Home",
+    "home": "Dashboard",
     "my_learning": "My Learning",
     "certificates": "Certificates",
     "exercise": "Exercise",
@@ -4195,7 +4195,7 @@
     "cohorts": "Cohorts"
   },
   "lms": {
-    "view_landing_page": "View landing page"
+    "view_landing_page": "Home"
   },
   "my_learning": {
     "heading": "My Learning",

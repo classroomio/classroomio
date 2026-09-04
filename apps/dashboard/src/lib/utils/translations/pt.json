@@ -504,7 +504,7 @@
     "go_to_my_learning": "Ir para Meu aprendizado"
   },
   "lms_navigation": {
-    "home": "Página inicial",
+    "home": "Painel",
     "my_learning": "Meu aprendizado",
     "certificates": "Certificados",
     "exercise": "Exercício",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "Não foi possível atualizar o link de convite"
   },
   "lms": {
-    "view_landing_page": "Ver página inicial"
+    "view_landing_page": "Início"
   },
   "notifications": {
     "title": "Notificações",

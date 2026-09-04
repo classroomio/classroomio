@@ -504,7 +504,7 @@
     "go_to_my_learning": "Zu Mein Lernen"
   },
   "lms_navigation": {
-    "home": "Zuhause",
+    "home": "Dashboard",
     "my_learning": "Mein Lernen",
     "certificates": "Zertifikate",
     "exercise": "Übung",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "Der Einladungslink konnte nicht aktualisiert werden."
   },
   "lms": {
-    "view_landing_page": "Landingpage ansehen"
+    "view_landing_page": "Startseite"
   },
   "notifications": {
     "title": "Benachrichtigungen",
