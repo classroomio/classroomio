@@ -80,7 +80,9 @@ export type TLessonHistoryParam = z.infer<typeof ZLessonHistoryParam>;
 
 export const ZLessonHistoryQuery = z.object({
   locale: z.string().min(1),
-  endRange: z.string().transform(Number).pipe(z.number().int().min(0))
+  limit: z.string().transform(Number).pipe(z.number().int().min(1).max(50)).default(10),
+  /** Keyset cursor from the previous page, formatted `<iso timestamp>|<id>`. */
+  cursor: z.string().min(1).optional()
 });
 export type TLessonHistoryQuery = z.infer<typeof ZLessonHistoryQuery>;
 export type TLessonListQuery = z.infer<typeof ZLessonListQuery>;
