@@ -54,6 +54,8 @@
     {
       "idx": 7,
       "version": "7",
+      "when": 1787747036734,
+      "tag": "0007_add_display_order_to_course",
       "when": 1787821749538,
       "tag": "0007_add_submission_submitted_by_exercise_id_index",
       "breakpoints": true

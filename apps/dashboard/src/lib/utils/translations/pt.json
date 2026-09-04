@@ -259,14 +259,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Completo :)"
+        "complete": "Completo :)",
+        "courses_reordered": "Ordem dos cursos atualizada"
       },
       "error": {
         "file_size": "O tamanho do arquivo não deve ser superior a 500kb",
         "try_again": "Tente novamente",
         "label": "Carregar imagem",
         "fetch_error": "Erro ao buscar imagens do Unsplash",
-        "upload_failed": "Falha ao carregar a imagem. Por favor, tente novamente."
+        "upload_failed": "Falha ao carregar a imagem. Por favor, tente novamente.",
+        "courses_reorder_failed": "Falha ao atualizar a ordem dos cursos. Tente novamente."
       }
     },
     "team_members": {
@@ -3419,7 +3421,9 @@
           "footer": "Rodapé",
           "footer_desc": "Linha da marca, redes sociais, links em várias colunas e linha legal inferior.",
           "links": "Links",
-          "links_desc": "Bloco opcional de links externos (central de ajuda, comunidade, webinars) exibidos após os cursos."
+          "links_desc": "Bloco opcional de links externos (central de ajuda, comunidade, webinars) exibidos após os cursos.",
+          "courses": "Cursos",
+          "courses_desc": "Arraste para definir a ordem dos cursos publicados na página inicial."
         },
         "links": {
           "toggle": "Mostrar seção de links",
@@ -3457,6 +3461,16 @@
             "calendar": "Eventos",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Arraste os cursos para reordená-los na página inicial.",
+          "empty": "Ainda não há cursos publicados — publique um curso para visualizá-lo aqui.",
+          "load_failed": "Falha ao carregar os cursos publicados.",
+          "add_button": "Adicionar",
+          "popover_title": "Selecionar cursos",
+          "popover_empty": "Nenhum curso publicado disponível.",
+          "search_no_results": "Nenhum curso corresponde à sua pesquisa.",
+          "search_placeholder": "Buscar cursos..."
         }
       },
       "content": {
