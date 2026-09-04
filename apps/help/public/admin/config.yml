@@ -15,11 +15,12 @@
 
 backend:
   name: github
-  repo: buildwithhamzat/classroomio
+  repo: classroomio/classroomio
   branch: main
-  # Replace with the deployed apps/help-cms-auth Worker URL — see
-  # apps/help-cms-auth/README.md for how to deploy it.
-  base_url: http://localhost:8787
+  # apps/help-cms-auth's expected production URL, matching the cio-help/
+  # cio-docs Workers' account subdomain. Update if the Worker ends up
+  # deployed elsewhere — see apps/help-cms-auth/README.md.
+  base_url: https://cio-help-cms-auth.digdippa.workers.dev
   auth_endpoint: auth
 
 publish_mode: editorial_workflow
