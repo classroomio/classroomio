@@ -37,6 +37,39 @@ export const ZGetOrganizationCoursesQuery = z.object({
 
 export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
 
+export const ZCourseReorder = z.object({
+  courses: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        order: z.number().int().min(0)
+      })
+    )
+    .min(1)
+    .max(4)
+    .superRefine((courses, ctx) => {
+      const uniqueIds = new Set(courses.map((course) => course.id));
+      if (uniqueIds.size !== courses.length) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['courses'],
+          message: 'Course ids must be unique'
+        });
+      }
+
+      const expectedOrders = Array.from({ length: courses.length }, (_, index) => index);
+      const actualOrders = courses.map((course) => course.order).sort((a, b) => a - b);
+      if (actualOrders.some((order, index) => order !== expectedOrders[index])) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['courses'],
+          message: 'Orders must form a contiguous sequence starting at 0'
+        });
+      }
+    })
+});
+export type TCourseReorder = z.infer<typeof ZCourseReorder>;
+
 export const ZGetOrgSetup = z.object({
   siteName: z.string().min(1)
 });

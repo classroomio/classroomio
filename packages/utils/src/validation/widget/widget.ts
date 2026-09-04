@@ -569,19 +569,25 @@ export function resolveWidgetPlanGatedFields(
 export function normalizeWidgetConfig(config?: Partial<TWidgetConfig> | null, planName?: string | null): TWidgetConfig {
   const parsedConfig = ZWidgetConfig.parse(config ?? {});
   const planGatedFields = resolveWidgetPlanGatedFields(planName, parsedConfig.themePreset);
+  const defaultConfig = getDefaultWidgetConfig();
+  const isPaidPlan = planGatedFields.isPaidPlan;
 
   return {
     ...parsedConfig,
     themePreset: planGatedFields.selectedTheme,
     branding: {
       ...parsedConfig.branding,
-      showPoweredBy: planGatedFields.isBrandingForced ? true : parsedConfig.branding.showPoweredBy
+      showPoweredBy: isPaidPlan ? parsedConfig.branding.showPoweredBy : true
     },
     advanced: {
       ...parsedConfig.advanced,
-      customCss: planGatedFields.canUseCustomCss ? parsedConfig.advanced.customCss : ''
+      customCss: isPaidPlan ? parsedConfig.advanced.customCss : ''
     },
-    colors: planGatedFields.canUseCustomColors ? parsedConfig.colors : getDefaultWidgetConfig().colors
+    colors: isPaidPlan ? parsedConfig.colors : defaultConfig.colors,
+    typography: isPaidPlan ? parsedConfig.typography : defaultConfig.typography,
+    content: isPaidPlan
+      ? parsedConfig.content
+      : { ...parsedConfig.content, borderRadius: defaultConfig.content.borderRadius }
   };
 }
 

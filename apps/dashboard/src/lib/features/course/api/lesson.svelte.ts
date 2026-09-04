@@ -37,6 +37,7 @@ import type {
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
 import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
 import {
   ZCourseSectionCreate,
   ZCourseSectionPromoteUngrouped,
@@ -879,19 +880,15 @@ export class LessonApi extends BaseApiWithErrors {
   }
 
   /**
-   * Gets lesson version history for a lesson and locale
-   * @param courseId Course ID
-   * @param lessonId Lesson ID
-   * @param locale Locale
-   * @param endRange End range for pagination (0-indexed, inclusive)
-   * @returns Lesson history data or null on error
+   * Gets one page of lesson version history, newest first.
+   * @param cursor `nextCursor` from the previous page; omit for the first page.
    */
-  async getHistory(courseId: string, lessonId: string, locale: TLocale, endRange: number) {
+  async getHistory(courseId: string, lessonId: string, locale: TLocale, limit: number, cursor?: string) {
     return this.execute<GetLessonHistoryRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['lesson'][':lessonId']['history'].$get({
           param: { courseId, lessonId },
-          query: { locale, endRange: endRange.toString() }
+          query: { locale, limit: limit.toString(), ...(cursor ? { cursor } : {}) }
         }),
       logContext: 'fetching lesson history'
     });
@@ -903,13 +900,22 @@ export class LessonApi extends BaseApiWithErrors {
    * @param lessonId Lesson ID
    * @param locale Locale
    * @param content Translation content
+   * @param versionIntent How the write should appear in version history. `auto`
+   *   (the default) folds into the author's open editing session; `manual` cuts
+   *   a checkpoint that retention keeps forever.
    */
-  async upsertLanguage(courseId: string, lessonId: string, locale: TLocale, content: string) {
+  async upsertLanguage(
+    courseId: string,
+    lessonId: string,
+    locale: TLocale,
+    content: string,
+    versionIntent: TLessonVersionIntentRequest = 'auto'
+  ) {
     return this.execute<GetLessonLanguageRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].language.$post({
           param: { courseId, lessonId },
-          json: { locale, content }
+          json: { locale, content, versionIntent }
         }),
       logContext: 'upserting lesson language',
       onSuccess: () => {

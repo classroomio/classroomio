@@ -16,7 +16,9 @@ import {
 import {
   addGroupMember,
   createGroup,
+  getCourseOrgAdminAccess,
   getCourseProgramAccess,
+  getGroupMemberIdByCourseAndProfile,
   insertGroupMembersOnConflictDoNothing
 } from '@cio/db/queries/group';
 import {
@@ -33,7 +35,7 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
-import type { TCourseCreate } from '@cio/utils/validation/course';
+import { validatePaidCourseState, type TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
@@ -128,6 +130,27 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   }
 
   return true;
+}
+
+/**
+ * Resolves the `groupmember` row a user authors course content as, backfilling it for org
+ * admins who were never added to the course group. Email is left null so it cannot collide
+ * with `unique_group_email` on a pending invite.
+ *
+ * @returns the group member ID, or null when the user has no claim to the course
+ */
+export async function ensureCourseGroupMemberId(courseId: string, profileId: string): Promise<string | null> {
+  const existingGroupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, profileId);
+  if (existingGroupMemberId) return existingGroupMemberId;
+
+  const orgAdminAccess = await getCourseOrgAdminAccess(courseId, profileId);
+  if (!orgAdminAccess) return null;
+
+  await insertGroupMembersOnConflictDoNothing([
+    { groupId: orgAdminAccess.courseGroupId, roleId: ROLE.ADMIN, profileId }
+  ]);
+
+  return getGroupMemberIdByCourseAndProfile(courseId, profileId);
 }
 
 function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {
@@ -369,6 +392,15 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>, dbC
     const [currentCourse] = await getCourseById(courseId, dbClient);
     if (!currentCourse) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
+
+    if (data.cost !== undefined || data.metadata !== undefined) {
+      const nextCost = data.cost === undefined ? (currentCourse.cost ?? 0) : (data.cost ?? 0);
+      const nextMetadata = sanitizedData.metadata ?? currentCourse.metadata;
+      const paidCourseIssue = validatePaidCourseState(nextCost, nextMetadata)[0];
+      if (paidCourseIssue) {
+        throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
+      }
     }
 
     if (data.type !== undefined) {

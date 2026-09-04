@@ -9,11 +9,11 @@ ClassroomIO uses organization roles to control what each person can do. This gui
 
 ## Organization roles
 
-| Role | Typical use | Admin dashboard | Create courses | Edit course content |
-| --- | --- | --- | --- | --- |
-| **Admin** | Org owners, lead instructors | Yes | Yes | Yes (all org courses) |
-| **Tutor** | Instructors, content authors | Yes | No | Yes (courses they teach) |
-| **Student** | Learners | No (LMS only) | No | No |
+| Role        | Typical use                  | Admin dashboard | Create courses | Edit course content      |
+| ----------- | ---------------------------- | --------------- | -------------- | ------------------------ |
+| **Admin**   | Org owners, lead instructors | Yes             | Yes            | Yes (all org courses)    |
+| **Tutor**   | Instructors, content authors | Yes             | No             | Yes (courses they teach) |
+| **Student** | Learners                     | No (LMS only)   | No             | No                       |
 
 Admins have full control over organization settings, billing, domains, and all courses. Tutors can manage content for courses they are assigned to but cannot create new courses or change org-wide settings. Students use the [Student Dashboard](/reference/student-dashboard) to learn.
 
@@ -29,10 +29,10 @@ Tutors and students cannot create courses. If someone needs to author content, a
 
 ## Admin dashboard vs student LMS
 
-| Area | Who sees it | URL pattern |
-| --- | --- | --- |
-| **Admin dashboard** | Admins and Tutors | Course management, org settings, analytics |
-| **Student LMS** | All signed-in users | `/lms` and related paths |
+| Area                | Who sees it         | URL pattern                                |
+| ------------------- | ------------------- | ------------------------------------------ |
+| **Admin dashboard** | Admins and Tutors   | Course management, org settings, analytics |
+| **Student LMS**     | All signed-in users | `/lms` and related paths                   |
 
 Students sign in on your academy and land in the LMS. Admins and tutors can switch to the admin dashboard to manage courses and settings.
 
@@ -44,10 +44,10 @@ To add Admins or Tutors, use [Invite a Team Member](/organization-and-team/invit
 
 Two different gates often get mixed up:
 
-| Setting | Controls |
-| --- | --- |
+| Setting                 | Controls                                  |
+| ----------------------- | ----------------------------------------- |
 | **Organization signup** | Who can create an account on your academy |
-| **Course enrollment** | Who can join a specific course |
+| **Course enrollment**   | Who can join a specific course            |
 
 A person can be in your organization (org signup) without being enrolled in any course. Likewise, a course's self-enrollment setting, invites, and **People** only affect that course.
 

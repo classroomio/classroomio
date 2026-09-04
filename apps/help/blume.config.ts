@@ -52,6 +52,12 @@ export default defineConfig({
     llmsTxt: true
   },
   seo: {
+    // Read directly from `public/` by Blume's OG renderer — unlike
+    // `logo.image` below, this is NOT rewritten with the `/help` deployment
+    // base, so it must be the public-relative path, not the served URL.
+    og: {
+      logo: '/logo.svg'
+    },
     x: {
       creator: '@classroomio',
       handle: '@classroomio'
@@ -69,12 +75,7 @@ export default defineConfig({
         label: 'Get started',
         display: 'group',
         collapsed: false,
-        items: [
-          '/get-started',
-          '/get-started/signup',
-          '/get-started/onboarding',
-          '/get-started/create-first-course'
-        ]
+        items: ['/get-started', '/get-started/signup', '/get-started/onboarding', '/get-started/create-first-course']
       },
       {
         label: 'Build a course',

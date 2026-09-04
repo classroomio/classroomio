@@ -785,9 +785,14 @@
           "links": "Links",
           "links_desc": "Optional block of external links (help center, community, webinars) shown after courses.",
           "footer": "Footer",
-          "footer_desc": "Brand line, socials, multi-column links, and bottom legal row."
+          "footer_desc": "Brand line, socials, multi-column links, and bottom legal row.",
+          "courses": "Courses",
+          "courses_desc": "Drag to set the order of published courses on the landing page."
         },
         "hero": {
+          "eyebrow": "Eyebrow",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Optional label above the heading (used by templates that support it, e.g. Tech). Leave blank to hide.",
           "heading": "Heading",
           "subheading": "Subheading",
           "primary_label": "Primary Button Label",
@@ -930,6 +935,16 @@
             "legend": "Bottom row",
             "add_link": "Add bottom link"
           }
+        },
+        "courses": {
+          "drag_hint": "Drag to reorder the courses shown on your landing page.",
+          "empty": "No courses selected.",
+          "load_failed": "Failed to load courses.",
+          "add_button": "Add",
+          "popover_title": "Select courses",
+          "popover_empty": "No published courses available.",
+          "search_no_results": "No courses match your search.",
+          "search_placeholder": "Search courses..."
         }
       },
       "title": "Title",
@@ -1296,6 +1311,8 @@
       "color": "Color",
       "color_help": "Pick one of 10 colors",
       "select_category": "Select a category",
+      "search_category": "Search category",
+      "no_results": "No categories found",
       "no_groups": "Create a tag group before creating tags"
     }
   },
@@ -1408,6 +1425,7 @@
       "continue_to_layout": "Continue to layout",
       "pick_layout": "Choose a layout",
       "pick_design": "Appearance",
+      "upgrade_callout": "Upgrade to unlock custom themes, colors, typography, and styling.",
       "panel_subtitle": "Configure how your widget looks and behaves.",
       "embed_share": "Embed & share",
       "discard_short": "Discard",
@@ -3139,7 +3157,17 @@
           "title": "Version history",
           "fetch_more_versions": "Fetch more versions",
           "current_version": "Current version",
-          "restore_version": "Restore this version"
+          "restore_version": "Restore this version",
+          "edit_count": "{count, plural, one {# edit} other {# edits}}",
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "kind": {
+            "auto": "Autosave",
+            "manual": "Saved version",
+            "publish": "Published"
+          },
+          "by_author": "by {name}",
+          "empty": "No versions yet"
         }
       },
       "attendance": {
@@ -3603,14 +3631,20 @@
             "total": "Total number of courses"
           },
           "pricing_form": {
+            "enable_paid": "Enable Paid",
             "currency": "Currency",
             "cost": "Cost",
             "payment": "Payment Link",
             "payment_required": "A payment link is required for paid courses",
+            "payment_invalid_url": "Please enter a valid URL (e.g. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy or any payment link",
+            "payment_cost_required": "Paid courses must have a cost greater than 0",
             "discount": "Discount",
             "no": "No",
             "yes": "Yes",
             "percent": "Discount Percent",
+            "percentage_helper": "In Percentage %",
+            "gift_on_completion": "Gift on Completion",
             "gift": "About Gift"
           }
         },
@@ -3731,7 +3765,8 @@
         "course_avail": "Download a copy of this course.",
         "download": "Download",
         "allow": "Students can enroll themselves",
-        "access": "When off, students can only join through an invite link or by being added from People.",
+        "access": "When off, students can only join through an invite link or by being added from {people}.",
+        "access_people": "People",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
@@ -3739,7 +3774,7 @@
         "certificate_deadline_required": "Set Certificate Deadline First",
         "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
-        "completion_deadline_label": "Course completion deadline",
+        "completion_deadline_label": "Course Completion Deadline",
         "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
@@ -3750,8 +3785,6 @@
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
-        "completion_deadline_label": "Course Completion Deadline",
-        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
@@ -3787,9 +3820,13 @@
           "title": "Tags",
           "description": "Assign tags so students can discover this course with filters.",
           "empty": "No tags selected",
+          "none_created": "No tags created yet",
           "add": "Add tag",
           "popover_title": "Select tags",
-          "empty_groups": "No tags available yet"
+          "empty_groups": "No tags available yet",
+          "create_tag": "Create Tag",
+          "search_placeholder": "Search tags...",
+          "no_results": "No tags found"
         },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
@@ -4043,6 +4080,14 @@
         "COMPLIANCE": "Compliance",
         "PUBLIC": "Public"
       }
+    },
+    "topCourses": {
+      "heading": "Top courses by views",
+      "description": "Courses ranked by page views",
+      "subtitle": "Ranked by page views in this range",
+      "empty": "No course page views yet",
+      "course": "Course",
+      "views": "Views"
     }
   },
   "upgrade": {
@@ -4163,7 +4208,7 @@
     }
   },
   "lms_navigation": {
-    "home": "Home",
+    "home": "Dashboard",
     "my_learning": "My Learning",
     "certificates": "Certificates",
     "exercise": "Exercise",
@@ -4172,6 +4217,9 @@
     "help": "Help",
     "settings": "Settings",
     "cohorts": "Cohorts"
+  },
+  "lms": {
+    "view_landing_page": "Home"
   },
   "my_learning": {
     "heading": "My Learning",
@@ -4407,10 +4455,12 @@
         "try_again": "Try Again",
         "label": "Upload Image",
         "fetch_error": "Error fetching images from Unsplash",
-        "upload_failed": "Failed to upload image. Please try again."
+        "upload_failed": "Failed to upload image. Please try again.",
+        "courses_reorder_failed": "Failed to update course order. Please try again."
       },
       "success": {
-        "complete": "Complete :)"
+        "complete": "Complete :)",
+        "courses_reordered": "Course order updated"
       }
     },
     "attendance": {
@@ -4539,7 +4589,9 @@
         "joined": "Joined organization",
         "join_failed": "Failed to join organization",
         "try_again": "Try again"
-      }
+      },
+      "not_found": "This invite is no longer available.",
+      "loading": "Loading invite..."
     },
     "link": {
       "page_title": "Join {orgName} on ClassroomIO",
@@ -5093,5 +5145,58 @@
         "no_deadline": "No deadline"
       }
     }
+  },
+  "invite_link": {
+    "tab_label": "Invite link",
+    "title": "Invite link",
+    "description": "Anyone with this link can join. Share it instead of entering emails one by one.",
+    "course_description": "Anyone with this link can join this course as a student. Share it instead of entering emails one by one.",
+    "cohort_description": "Anyone with this link can join this cohort and every course in it. Share it instead of entering emails one by one.",
+    "generate": "Create invite link",
+    "copy": "Copy invite link",
+    "copied": "Invite link copied",
+    "copy_failed": "Could not copy the invite link",
+    "toggle_label": "Link is active",
+    "disabled_notice": "This link is disabled. Nobody can join with it until you turn it back on.",
+    "join_count": "{count} people have joined with this link",
+    "load_failed": "Could not load the invite link",
+    "generate_failed": "Could not create the invite link",
+    "toggle_failed": "Could not update the invite link",
+    "join": {
+      "page_title": "Join {resourceName} on ClassroomIO",
+      "invitation": "You've been invited to join {resourceName} at {orgName}.",
+      "course_button": "Join course",
+      "cohort_button": "Join cohort",
+      "disabled": "This invite link has been disabled.",
+      "closed": "This is no longer accepting new members.",
+      "succeeded": "You have joined",
+      "failed": "Could not join. Please try again."
+    },
+    "snackbar": {
+      "enabled": "Invite link enabled",
+      "disabled": "Invite link disabled"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty_title": "No Notifications",
+    "empty_description": "You're all caught up. New notifications will appear here.",
+    "refresh": "Refresh",
+    "pending_invite": {
+      "heading": "Organization invite",
+      "body": "{orgName} invited you to join as {role}.",
+      "action": "View invite"
+    },
+    "latest": "Latest",
+    "only_show_unread": "Only show unread",
+    "unread": "Unread",
+    "more_options": "More options",
+    "give_feedback": "Give feedback",
+    "tabs": {
+      "direct": "Direct",
+      "watching": "Watching"
+    },
+    "watching_empty_title": "Nothing to watch yet",
+    "watching_empty_description": "Updates on items you follow will show up here."
   }
 }

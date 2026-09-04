@@ -9,12 +9,16 @@
   import LayoutPanel from '../panels/layout-panel.svelte';
   import DesignPanel from '../panels/design-panel.svelte';
   import EmbedPanel from '../panels/embed-panel.svelte';
+  import { UpgradeBanner, UpgradeLock } from '$features/ui';
   import GraduationCapIcon from '@lucide/svelte/icons/graduation-cap';
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import PaletteIcon from '@lucide/svelte/icons/palette';
   import Share2Icon from '@lucide/svelte/icons/share-2';
 
   const store = widgetEditorStore;
+  const isPaidPlan = $derived(store.detail?.planGatedFields.isPaidPlan ?? false);
+  const isLockedPanel = $derived(store.activePanel === 'design');
+  const showUpgradeInfo = $derived(isLockedPanel && !isPaidPlan);
 
   let { detail: initialDetail }: { detail: WidgetDetail } = $props();
 
@@ -30,7 +34,7 @@
     <WidgetEditorHeader
       bind:draftName={store.draftName}
       status={store.detail.widget.status}
-      isPaidPlan={store.detail.planGatedFields.isPaidPlan}
+      {isPaidPlan}
       isDirty={store.isDirty}
       layoutValidationError={store.layoutValidationError}
       editingName={store.editingName}
@@ -98,19 +102,33 @@
       <!-- Settings panel -->
       <aside class="ui:border-border ui:bg-card flex w-[min(100%,380px)] shrink-0 flex-col border-r">
         <div class="ui:border-border border-b px-5 py-4">
-          {#if store.activePanel === 'select-courses'}
-            <h2 class="text-sm font-semibold">{$t('widgets.tabs.select_courses')}</h2>
-          {:else if store.activePanel === 'layout'}
-            <h2 class="text-sm font-semibold">{$t('widgets.editor.pick_layout')}</h2>
-          {:else if store.activePanel === 'design'}
-            <h2 class="text-sm font-semibold">{$t('widgets.editor.pick_design')}</h2>
-          {:else}
-            <h2 class="text-sm font-semibold">{$t('widgets.editor.embed_share')}</h2>
-          {/if}
+          <div class="flex items-center justify-between gap-2">
+            {#if store.activePanel === 'select-courses'}
+              <h2 class="text-sm font-semibold">{$t('widgets.tabs.select_courses')}</h2>
+            {:else if store.activePanel === 'layout'}
+              <h2 class="text-sm font-semibold">{$t('widgets.editor.pick_layout')}</h2>
+            {:else if store.activePanel === 'design'}
+              <h2 class="text-sm font-semibold">{$t('widgets.editor.pick_design')}</h2>
+            {:else}
+              <h2 class="text-sm font-semibold">{$t('widgets.editor.embed_share')}</h2>
+            {/if}
+
+            {#if showUpgradeInfo}
+              <UpgradeLock />
+            {/if}
+          </div>
           <p class="ui:text-muted-foreground mt-1 text-xs">{$t('widgets.editor.panel_subtitle')}</p>
         </div>
 
-        <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+        {#if showUpgradeInfo}
+          <div class="px-5 py-4">
+            <UpgradeBanner visible={true}>
+              {$t('widgets.editor.upgrade_callout')}
+            </UpgradeBanner>
+          </div>
+        {/if}
+
+        <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4 {showUpgradeInfo ? 'pt-0' : ''}">
           {#if store.activePanel === 'select-courses'}
             <SelectCoursesPanel
               detail={store.detail}
@@ -137,10 +155,7 @@
           {:else if store.activePanel === 'design'}
             <DesignPanel
               bind:draftConfig={store.draftConfig}
-              availableThemes={store.detail.planGatedFields.availableThemes}
-              canUseCustomColors={store.detail.planGatedFields.canUseCustomColors}
-              canUseCustomCss={store.detail.planGatedFields.canUseCustomCss}
-              isBrandingForced={store.detail.planGatedFields.isBrandingForced}
+              planGatedFields={store.detail.planGatedFields}
               errors={store.validationErrors}
             />
           {:else}

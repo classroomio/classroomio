@@ -74,8 +74,8 @@
       />
       <InputField
         label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
-        className="w-50"
         type="datetime-local"
+        className="w-fit"
         value={$questionnaire.dueBy ?? ''}
         onchange={(e) => {
           $questionnaire.dueBy = e.currentTarget.value;
