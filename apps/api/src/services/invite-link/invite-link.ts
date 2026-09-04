@@ -264,7 +264,22 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     return { wasAlreadyOrgMember: Boolean(orgMemberId), enrollResult };
   });
 
-  await handler.afterCommit(inviteContext, user.id, normalizedEmail, enrollResult);
+  // Membership already committed at this point, so a failure here must never
+  // surface as an accept failure — that would tell an already-joined user the
+  // join failed, inviting a retry that double-counts joinCount for no reason.
+  try {
+    await handler.afterCommit(inviteContext, user.id, normalizedEmail, enrollResult);
+  } catch (error) {
+    console.error(
+      'acceptInviteLink afterCommit error',
+      {
+        inviteId,
+        resourceType: inviteContext.invite.resourceType,
+        profileId: user.id
+      },
+      error
+    );
+  }
 
   console.info('acceptInviteLink joined', {
     inviteId,
