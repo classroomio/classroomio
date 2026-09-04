@@ -37,6 +37,7 @@ import type {
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
 import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
 import {
   ZCourseSectionCreate,
   ZCourseSectionPromoteUngrouped,
@@ -903,13 +904,22 @@ export class LessonApi extends BaseApiWithErrors {
    * @param lessonId Lesson ID
    * @param locale Locale
    * @param content Translation content
+   * @param versionIntent How the write should appear in version history. `auto`
+   *   (the default) folds into the author's open editing session; `manual` cuts
+   *   a checkpoint that retention keeps forever.
    */
-  async upsertLanguage(courseId: string, lessonId: string, locale: TLocale, content: string) {
+  async upsertLanguage(
+    courseId: string,
+    lessonId: string,
+    locale: TLocale,
+    content: string,
+    versionIntent: TLessonVersionIntentRequest = 'auto'
+  ) {
     return this.execute<GetLessonLanguageRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].language.$post({
           param: { courseId, lessonId },
-          json: { locale, content }
+          json: { locale, content, versionIntent }
         }),
       logContext: 'upserting lesson language',
       onSuccess: () => {

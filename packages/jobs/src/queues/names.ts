@@ -46,6 +46,7 @@ export const JOB_NAMES = {
   },
   maintenance: {
     retentionCompact: 'retention-compact',
+    lessonVersionRetention: 'lesson-version-retention',
     deadLetterCleanup: 'dead-letter-cleanup',
     mediaJobReap: 'media-job-reap',
     analyticsDailyRollup: 'analytics-daily-rollup',

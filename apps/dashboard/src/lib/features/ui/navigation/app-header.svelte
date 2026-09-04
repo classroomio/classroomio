@@ -32,7 +32,7 @@
   class="ui:border-border ui:bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
-    <Sidebar.Trigger />
+    <Sidebar.Trigger testId="app-sidebar-trigger" />
 
     <div class="h-4 w-2">
       <Separator orientation="vertical" />
@@ -51,7 +51,7 @@
       <Popover.Root>
         <Popover.Trigger>
           {#snippet child({ props })}
-            <Button {...props} variant="secondary" size="icon">
+            <Button {...props} variant="secondary" size="icon" testId="app-notifications-trigger">
               <BellIcon class="custom rounded-full" />
             </Button>
           {/snippet}

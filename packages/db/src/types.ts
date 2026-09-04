@@ -139,6 +139,8 @@ export type TNewLessonLanguage = typeof schema.lessonLanguage.$inferInsert;
 export type TLessonLanguageHistory = typeof schema.lessonLanguageHistory.$inferSelect;
 export type TNewLessonLanguageHistory = typeof schema.lessonLanguageHistory.$inferInsert;
 
+export type TLessonVersion = typeof schema.lessonVersions.$inferSelect;
+
 export type TOrganizationmember = typeof schema.organizationmember.$inferSelect;
 export type TNewOrganizationmember = typeof schema.organizationmember.$inferInsert;
 export type TOrganizationmemberEmailNotifications = typeof schema.organizationmemberEmailNotifications.$inferSelect;

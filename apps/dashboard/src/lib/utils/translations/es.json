@@ -801,6 +801,12 @@
         "progression_mode_description": "Controla si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden.",
         "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
         "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
+        "comments": {
+          "title": "Comentarios de las lecciones",
+          "description": "Permite que los estudiantes vean y añadan comentarios en las lecciones de este curso. También puedes desactivar los comentarios en lecciones individuales.",
+          "enabled": "Comentarios activados para este curso",
+          "disabled": "Comentarios desactivados para este curso"
+        },
         "lesson_download": "Descarga de lecciones",
         "available": "Haga que la lección esté disponible para descargar en pdf para estudiantes registrados",
         "course_download": "Descarga del curso",
@@ -1389,7 +1395,17 @@
           "title": "Historial de versiones",
           "fetch_more_versions": "Obtener más versiones",
           "current_version": "Versión actual",
-          "restore_version": "Restaurar esta versión"
+          "restore_version": "Restaurar esta versión",
+          "edit_count": "{count, plural, one {# edición} other {# ediciones}}",
+          "today": "Hoy",
+          "yesterday": "Ayer",
+          "by_author": "por {name}",
+          "empty": "Aún no hay versiones",
+          "kind": {
+            "auto": "Guardado automático",
+            "manual": "Versión guardada",
+            "publish": "Publicado"
+          }
         },
         "poll": {
           "voted": "Votado",
@@ -2218,6 +2234,14 @@
           "watch_threshold": "Umbral de visualización (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Comentarios de la lección",
+            "description": "Elige si los estudiantes pueden ver y añadir comentarios en esta lección.",
+            "enabled": "Comentarios activados",
+            "disabled": "Comentarios desactivados",
+            "disabled_by_course": "Los comentarios están desactivados para todo el curso, por lo que no se puede cambiar esta configuración de la lección.",
+            "change_course_setting": "Cambiar en la configuración del curso"
+          },
           "progression": {
             "heading": "Progresión",
             "intro": "Elige cómo los estudiantes completan esta lección y avanzan en el curso.",
@@ -4606,7 +4630,8 @@
       },
       "current_version": "Versión actual",
       "active_badge": "Activo",
-      "active_badge_description": "Esta versión está actualmente disponible en tu inserción."
+      "active_badge_description": "Esta versión está actualmente disponible en tu inserción.",
+      "upgrade_callout": "Actualiza tu cuenta para desbloquear temas, colores, tipografías y estilos personalizados."
     },
     "tabs": {
       "select_courses": "Seleccionar cursos",
@@ -5073,6 +5098,9 @@
         "cancel": "Cancelar"
       }
     }
+  },
+  "lms": {
+    "view_landing_page": "Ver página de inicio"
   },
   "notifications": {
     "title": "Notificaciones",

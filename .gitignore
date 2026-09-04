@@ -7,6 +7,9 @@ node_modules
 
 # testing
 coverage
+e2e/test-results/
+e2e/playwright-report/
+.github/demo-runs/pr-*.spec.ts
 
 # next.js
 .next/
@@ -61,6 +64,7 @@ company/
 # Claude Code local artifacts
 .claude/skills
 .claude/scheduled_tasks.lock
+.claude/settings.local.json
 
 # Local db-agent playground (not committed)
 apps/db-agent
@@ -70,3 +74,5 @@ apps/db-agent
 *.htpasswd
 
 output.css
+
+/reports

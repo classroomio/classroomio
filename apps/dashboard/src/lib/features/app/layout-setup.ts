@@ -6,6 +6,7 @@ import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { env } from '$env/dynamic/private';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import { isCustomDomainHost } from '$lib/utils/functions/custom-domain';
 
 export interface OrgSiteInfo {
   isOrgSite: boolean;
@@ -51,7 +52,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
   const subdomain = getSubdomain(url) || '';
 
   // Custom domain
-  if (isURLCustomDomain(url)) {
+  if (isCustomDomainHost(url)) {
     console.log('it is custom domain');
     const apiKeyHeaders = getApiKeyHeaders();
     const orgs = await getOrgsByCustomDomain(url.hostname, true, apiKeyHeaders);
@@ -93,16 +94,6 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
   }
 
   return response;
-}
-
-function isURLCustomDomain(url: URL) {
-  if (url.host.includes('localhost')) {
-    return false;
-  }
-
-  const notCustomDomainHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'myclassroomio.com'].filter(Boolean);
-
-  return !notCustomDomainHosts.some((host) => url.host.endsWith(host));
 }
 
 export function getSubdomain(url: URL) {
