@@ -21,4 +21,4 @@ export * from './tag';
 export * from './cohort';
 export * from './widget';
 export * from './jobs';
-export * from './notes';
+export * from './docs';

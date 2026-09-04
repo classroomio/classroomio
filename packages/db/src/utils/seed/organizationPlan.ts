@@ -27,6 +27,29 @@ export async function seedEnterpriseOrganizationPlan({ enterpriseOrgId }: { ente
   console.log('   ✓ Inserted enterprise organization plan');
 }
 
+export async function seedTestOrganizationPlan({ testOrgId }: { testOrgId: string }) {
+  const existing = await db
+    .select()
+    .from(organizationPlan)
+    .where(
+      and(eq(organizationPlan.orgId, testOrgId), eq(organizationPlan.planName, 'ENTERPRISE'), eq(organizationPlan.isActive, true))
+    );
+
+  if (existing.length > 0) {
+    console.log('   ✓ Test organization plan already exists, skipping');
+    return;
+  }
+
+  await db.insert(organizationPlan).values({
+    orgId: testOrgId,
+    planName: 'ENTERPRISE',
+    isActive: true,
+    subscriptionId: 'seed-udemy-test-enterprise',
+    provider: 'seed'
+  });
+  console.log('   ✓ Inserted test organization plan (ENTERPRISE for udemy-test demo)');
+}
+
 export async function seedEarlyAdopterOrganizationPlan({ earlyAdopterOrgId }: { earlyAdopterOrgId: string }) {
   const existing = await db
     .select()

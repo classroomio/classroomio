@@ -18,7 +18,7 @@ export type TutorAssessmentMode = (typeof TUTOR_ASSESSMENT_MODES)[number];
 export const TUTOR_CODE_POLICIES = ['allowed', 'hints_only', 'forbidden'] as const;
 export type TutorCodePolicy = (typeof TUTOR_CODE_POLICIES)[number];
 
-export const TUTOR_GROUNDING_SCOPES = ['lesson', 'course', 'workspace'] as const;
+export const TUTOR_GROUNDING_SCOPES = ['lesson', 'course', 'organization'] as const;
 export type TutorGroundingScope = (typeof TUTOR_GROUNDING_SCOPES)[number];
 
 export interface AiTutorEscalation {

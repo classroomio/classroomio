@@ -6,3 +6,4 @@ export * from './domains';
 export * from './embeds';
 export * from './error-codes';
 export * from './b64-envelope';
+export * from './note-course-templates';

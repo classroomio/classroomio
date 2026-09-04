@@ -1,1 +1,1 @@
-export { NoteCommentMark, default } from './note-comment-mark';
+export { DocCommentMark, default } from './note-comment-mark';
