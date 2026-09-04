@@ -52,9 +52,17 @@ function runPrettier(filePaths) {
 
   for (let index = 0; index < filePaths.length; index += chunkSize) {
     const chunk = filePaths.slice(index, index + chunkSize);
-    const result = spawnSync('prettier', [prettierMode, '--ignore-unknown', ...chunk], {
+    const quotedChunk = chunk.map((filePath) => `"${filePath}"`);
+    const result = spawnSync('prettier', [prettierMode, '--ignore-unknown', ...quotedChunk], {
       cwd: process.cwd(),
-      stdio: 'inherit'
+      stdio: 'inherit',
+      // On Windows, `prettier` resolves to a .cmd shim that spawnSync can't
+      // exec directly without shell resolution — without this, the process
+      // fails to launch at all (ENOENT) and exits non-zero with no output,
+      // indistinguishable from a real formatting failure. shell:true doesn't
+      // quote args for us, so paths are quoted manually below to survive a
+      // repo root containing spaces.
+      shell: true
     });
 
     if (result.status !== 0) {
