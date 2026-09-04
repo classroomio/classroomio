@@ -599,6 +599,14 @@
         "PUBLIC": "Offentlig"
       }
     },
+    "topCourses": {
+      "heading": "Topkurser efter visninger",
+      "description": "Kurser rangeret efter sidevisninger",
+      "subtitle": "Rangeret efter sidevisninger i dette interval",
+      "empty": "Ingen kursussidevisninger endnu",
+      "course": "Kursus",
+      "views": "Visninger"
+    },
     "countries": {
       "heading": "Toplande",
       "subtitle": "{total} besøgende i alt",

@@ -599,6 +599,14 @@
         "PUBLIC": "Öffentlich"
       }
     },
+    "topCourses": {
+      "heading": "Top-Kurse nach Aufrufen",
+      "description": "Kurse nach Seitenaufrufen sortiert",
+      "subtitle": "Rangfolge nach Seitenaufrufen in diesem Zeitraum",
+      "empty": "Noch keine Kursseitenaufrufe",
+      "course": "Kurs",
+      "views": "Aufrufe"
+    },
     "countries": {
       "heading": "Top-Länder",
       "subtitle": "{total} Besucher insgesamt",

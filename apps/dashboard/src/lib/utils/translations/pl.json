@@ -599,6 +599,14 @@
         "PUBLIC": "Publiczne"
       }
     },
+    "topCourses": {
+      "heading": "Najlepsze kursy według wyświetleń",
+      "description": "Kursy uszeregowane według wyświetleń strony",
+      "subtitle": "Ranking według wyświetleń strony w tym zakresie",
+      "empty": "Brak wyświetleń stron kursów",
+      "course": "Kurs",
+      "views": "Wyświetlenia"
+    },
     "countries": {
       "heading": "Najlepsze kraje",
       "subtitle": "Łączna liczba odwiedzających: {total}",
