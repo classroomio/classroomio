@@ -57,7 +57,12 @@ jobs:
           url=$(grep -Eo 'https://[a-zA-Z0-9.-]+\.workers\.dev' wrangler-output.txt | head -n1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # A dedicated secret, not the repo's existing CLOUDFLARE_API_TOKEN —
+          # that one is scoped to Zone: Cache Purge only (see deploy-embeds.yml
+          # / upload-openapi-spec.yml) and reusing the name here would mean
+          # whichever token gets saved last silently overwrites the other
+          # workflows' credential.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_HELP_PREVIEW_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       # apps/help/scripts/package-assets.mjs nests the build under build/help/,
