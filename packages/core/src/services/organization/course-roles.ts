@@ -17,27 +17,34 @@ export async function reconcileCourseRolesToOrgRole(organizationId: string, prof
 }
 
 /**
- * Queues a reconciliation without failing the caller. Falls back to running it inline
- * rather than skipping, since dropping it would leave privileges behind.
+ * Clamps inline so no window exists where a demoted admin still holds instructor access,
+ * then falls back to the queue as a retry if that throws. Never fails the caller.
  */
 export async function scheduleCourseRoleReconcile(organizationId: string, profileId: string): Promise<void> {
-  if (isRedisConfigured()) {
-    try {
-      await enqueueCourseRoleReconcile({ organizationId, profileId });
+  try {
+    await reconcileCourseRolesToOrgRole(organizationId, profileId);
 
-      return;
-    } catch (error) {
-      console.error('scheduleCourseRoleReconcile: enqueue failed, reconciling inline', {
-        organizationId,
-        profileId,
-        error
-      });
-    }
+    return;
+  } catch (error) {
+    console.error('scheduleCourseRoleReconcile: inline reconcile failed, queueing a retry', {
+      organizationId,
+      profileId,
+      error
+    });
+  }
+
+  if (!isRedisConfigured()) {
+    console.error('scheduleCourseRoleReconcile: reconcile failed and no queue is available', {
+      organizationId,
+      profileId
+    });
+
+    return;
   }
 
   try {
-    await reconcileCourseRolesToOrgRole(organizationId, profileId);
+    await enqueueCourseRoleReconcile({ organizationId, profileId });
   } catch (error) {
-    console.error('scheduleCourseRoleReconcile: inline reconcile failed', { organizationId, profileId, error });
+    console.error('scheduleCourseRoleReconcile: retry could not be queued', { organizationId, profileId, error });
   }
 }
