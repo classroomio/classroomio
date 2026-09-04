@@ -38,6 +38,7 @@
   let isHistoryLoading = $state(false);
   let displayElement = $state<HTMLDivElement | null>(null);
   let nextCursor = $state<string | null>(null);
+  let requestedVersionId: number | null = null;
   /**
    * Bumped on every reload so an in-flight request for a previous lesson or locale cannot
    * write its rows over the current ones when it lands late.
@@ -144,9 +145,14 @@
     replaceState(resolve(`${url.pathname}${url.search}${url.hash}`, {}), page.state);
   }
 
-  function updateContentVersion(version: LessonVersionEntry, index: number) {
+  function selectContentVersion(version: LessonVersionEntry, index: number) {
     selectedVersionIndex = index;
     selectedVersion = version;
+  }
+
+  function updateContentVersion(version: LessonVersionEntry, index: number) {
+    requestedVersionId = null;
+    selectContentVersion(version, index);
     syncVersionToUrl(version.id || null);
   }
 
@@ -204,11 +210,10 @@
         ? `${response.data.nextCursor.timestamp}|${response.data.nextCursor.id}`
         : null;
 
-      // Keep the reader where they were: prefer the version in the URL on first load,
-      // then whatever was already selected, then the newest entry.
-      const urlVersionId = cursor ? null : readVersionIdFromUrl();
-      const targetId = urlVersionId ?? previousVersionId;
-      const targetIndex = targetId ? lessonHistory.findIndex((version) => version.id === targetId) : -1;
+      // Keep searching appended pages for a deep-linked version. Until it is found,
+      // the newest entry is only a visual fallback and must not replace the requested ID.
+      const targetVersionId = requestedVersionId ?? previousVersionId;
+      const targetIndex = targetVersionId ? lessonHistory.findIndex((version) => version.id === targetVersionId) : -1;
 
       if (targetIndex >= 0) {
         updateContentVersion(lessonHistory[targetIndex], targetIndex);
@@ -218,7 +223,11 @@
       // A deep-linked version deeper than the loaded pages cannot be resolved yet; fall
       // back to newest rather than leaving the panel blank.
       if (!cursor && lessonHistory[0]) {
-        updateContentVersion(lessonHistory[0], 0);
+        if (requestedVersionId === null) {
+          updateContentVersion(lessonHistory[0], 0);
+        } else {
+          selectContentVersion(lessonHistory[0], 0);
+        }
       }
     } catch (error) {
       if (requestId !== historyRequestId) return;
@@ -273,6 +282,7 @@
       nextCursor = null;
       selectedVersion = null;
       selectedVersionIndex = 0;
+      requestedVersionId = readVersionIdFromUrl();
       void fetchLessonHistory(currentLessonId, currentLocale);
     });
   });

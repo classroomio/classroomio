@@ -152,7 +152,7 @@
     }
 
     const query = params.toString();
-    goto(resolve(query ? `${$page.url.pathname}?${query}` : $page.url.pathname, {}), { replaceState: false });
+    return goto(resolve(query ? `${$page.url.pathname}?${query}` : $page.url.pathname, {}), { replaceState: false });
   }
 
   function setTabQueryParam(value: string) {
@@ -172,7 +172,8 @@
   }
 
   const refetchDataAfterVersionRestore = async () => {
-    setHistoryQueryParam(false);
+    await setHistoryQueryParam(false);
+
     if (courseId && browser) {
       setModeQueryParam('view');
 
