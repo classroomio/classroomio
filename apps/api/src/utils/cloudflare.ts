@@ -1,5 +1,5 @@
 import { CLOUDFLARE } from '@api/constants';
-import { FONTS_READY_CLASS, FONTS_READY_SELECTOR } from '@cio/certificates';
+import { CERTIFICATE_VIEWPORT, FONTS_READY_CLASS, FONTS_READY_SELECTOR } from '@cio/certificates';
 
 export type RenderViewport = {
   width: number;
@@ -15,8 +15,6 @@ export type PdfPageOptions = {
   preferCSSPageSize?: boolean;
   margin?: { top?: string; right?: string; bottom?: string; left?: string };
 };
-
-const DEFAULT_VIEWPORT: RenderViewport = { width: 1100, height: 780 };
 
 interface CloudflareRenderPayload {
   html: string;
@@ -125,7 +123,7 @@ export const getCloudflarePdfBuffer = async (
 export const getCloudflarePngBuffer = async (
   html: string,
   styles?: string,
-  viewport: RenderViewport = { width: 1100, height: 780, deviceScaleFactor: 2 }
+  viewport: RenderViewport = { ...CERTIFICATE_VIEWPORT, deviceScaleFactor: 2 }
 ): Promise<Buffer> => {
   return renderCloudflareBrowserDocument('screenshot', {
     html,
