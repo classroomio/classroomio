@@ -5,12 +5,19 @@ export {
   type CertificateRenderResult,
   type CertificateSignatory,
   type CertificateTemplateId,
-  type CertificateTemplateMeta
+  type CertificateTemplateMeta,
+  type StoredCertificateDesign,
+  type StoredCertificateRecord,
+  type StoredCertificateSignatory
 } from './types';
 
 export {
   ACCENT_COLORS,
+  CERTIFICATE_HEIGHT,
+  CERTIFICATE_PDF_PAGE_OPTIONS,
   CERTIFICATE_TEMPLATES,
+  CERTIFICATE_VIEWPORT,
+  CERTIFICATE_WIDTH,
   DEFAULT_ACCENT_COLOR,
   DEFAULT_CERTIFICATE_DESIGN,
   FONTS_READY_CLASS,
@@ -19,7 +26,7 @@ export {
   type AccentColor
 } from './constants';
 
-export { renderCertificate, renderCertificateDocument, resolveTemplateId } from './render';
+export { renderCertificate, renderCertificateDocument, resolveCertificateDesign, resolveTemplateId } from './render';
 export {
   computeFitFontSize,
   computeFieldFontSizes,

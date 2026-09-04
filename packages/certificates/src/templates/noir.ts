@@ -1,3 +1,4 @@
+import { CERTIFICATE_WIDTH } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
@@ -17,7 +18,11 @@ const FONTS = {
 const subtitleDecorationLineWidth = 50;
 const subtitleDecorationGap = 14;
 const subtitleTotalDecorationWidth = (subtitleDecorationLineWidth + subtitleDecorationGap) * 2;
+const certPadding = 55;
 const recipientPaddingBottom = 14;
+const medalWidth = 108;
+const footerGap = 30;
+const signatoryColumnWidth = (CERTIFICATE_WIDTH - certPadding * 2 - footerGap * 2 - medalWidth) / 2;
 
 const FIELDS = {
   org: {
@@ -53,6 +58,8 @@ const FIELDS = {
     fontFamily: FONTS.display,
     basePx: 62,
     lineHeight: 1.15,
+    fontStyle: 'italic' as const,
+    fontWeight: 400 as const,
     allowWrap: true
   },
   subtitle: {
@@ -78,12 +85,31 @@ const FIELDS = {
     fontFamily: FONTS.serif,
     basePx: 16,
     lineHeight: 1.45,
+    fontStyle: 'italic' as const,
     allowWrap: true
+  },
+  signatoryName: {
+    maxWidth: signatoryColumnWidth,
+    maxHeight: 28,
+    fontFamily: FONTS.display,
+    basePx: 18,
+    fontStyle: 'italic' as const,
+    allowWrap: false
+  },
+  signatoryRole: {
+    maxWidth: signatoryColumnWidth,
+    maxHeight: 26,
+    fontFamily: FONTS.heading,
+    basePx: 10,
+    lineHeight: 1.2,
+    letterSpacingEm: 0.25,
+    allowWrap: true,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderNoir: TemplateRenderer = ({ design, data }) => {
-  const { accent, subtitle, description, signatoryOne, signatoryTwo, year, fontSizes } =
+  const { accent, subtitle, description, signatoryOne, signatoryTwo, year, fontSizes, roleMinHeight } =
     prepareCertificateRenderContext(design, data, FIELDS);
 
   const accentDeep = shadeColor(accent, -30);
@@ -135,7 +161,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
     .t-noir {
       background: #0e0e0e;
       color: #f5f1e8;
-      padding: 55px;
+      padding: ${certPadding}px;
       font-family: '${FONTS.serif}', serif;
       background-image:
         radial-gradient(circle at 30% 20%, ${accent}14, transparent 50%),
@@ -241,8 +267,8 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
     .t-noir .title {
       text-align: center;
       font-family: '${FIELDS.title.fontFamily}', serif;
-      font-weight: 400;
-      font-style: italic;
+      font-weight: ${FIELDS.title.fontWeight};
+      font-style: ${FIELDS.title.fontStyle};
       line-height: ${FIELDS.title.lineHeight};
       color: #f5f1e8;
       max-width: ${FIELDS.title.maxWidth}px;
@@ -312,7 +338,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
     .t-noir .description {
       text-align: center;
       font-family: '${FIELDS.description.fontFamily}', serif;
-      font-style: italic;
+      font-style: ${FIELDS.description.fontStyle};
       color: #c9b88c;
       margin-top: 6px;
       line-height: ${FIELDS.description.lineHeight};
@@ -327,8 +353,8 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       width: 100%;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
-      align-items: end;
-      gap: 30px;
+      align-items: start;
+      gap: ${footerGap}px;
       position: relative;
       z-index: 1;
       margin-bottom: 52px;
@@ -340,24 +366,35 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       padding-top: 4px;
     }
     .t-noir .sig .name {
-      font-family: '${FONTS.display}', serif;
-      font-size: 18px;
-      font-style: italic;
+      font-family: '${FIELDS.signatoryName.fontFamily}', serif;
+      font-size: ${fontSizes.signatoryName}px;
+      font-style: ${FIELDS.signatoryName.fontStyle};
       color: #f5f1e8;
+      min-height: ${FIELDS.signatoryName.maxHeight}px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: ${signatoryColumnWidth}px;
       overflow-wrap: break-word;
+      word-break: normal;
     }
     .t-noir .sig .label {
-      font-family: '${FONTS.heading}', serif;
-      font-size: 10px;
-      letter-spacing: 0.25em;
+      font-family: '${FIELDS.signatoryRole.fontFamily}', serif;
+      font-size: ${fontSizes.signatoryRole}px;
+      line-height: ${FIELDS.signatoryRole.lineHeight};
+      letter-spacing: ${FIELDS.signatoryRole.letterSpacingEm}em;
       color: ${accent};
-      text-transform: uppercase;
-      margin-top: 2px;
+      text-transform: ${FIELDS.signatoryRole.textTransform};
+      margin-top: 4px;
+      max-width: ${signatoryColumnWidth}px;
+      min-height: ${roleMinHeight}px;
+      max-height: ${FIELDS.signatoryRole.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-noir .medal {
-      width: 108px;
-      height: 108px;
+      align-self: center;
+      width: ${medalWidth}px;
+      height: ${medalWidth}px;
       border-radius: 50%;
       background: radial-gradient(circle, ${accent} 0%, ${accentDeep} 100%);
       display: flex;

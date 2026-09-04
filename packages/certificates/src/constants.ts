@@ -1,5 +1,22 @@
 import type { CertificateDesign, CertificateTemplateId, CertificateTemplateMeta } from './types';
 
+export const CERTIFICATE_WIDTH = 1100;
+export const CERTIFICATE_HEIGHT = 780;
+
+export const CERTIFICATE_VIEWPORT = {
+  width: CERTIFICATE_WIDTH,
+  height: CERTIFICATE_HEIGHT
+} as const;
+
+export const CERTIFICATE_PDF_PAGE_OPTIONS = {
+  width: `${CERTIFICATE_WIDTH}px`,
+  height: `${CERTIFICATE_HEIGHT}px`,
+  landscape: true,
+  printBackground: true,
+  preferCSSPageSize: true,
+  margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' }
+} as const;
+
 export const ACCENT_COLORS = ['#7a1f1f', '#1e3a8a', '#ff4500', '#d4af37', '#0a0a0a', '#065f46'] as const;
 
 export type AccentColor = (typeof ACCENT_COLORS)[number];

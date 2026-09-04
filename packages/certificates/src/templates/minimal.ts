@@ -1,3 +1,4 @@
+import { CERTIFICATE_WIDTH } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import {
   escapeHtml,
@@ -20,6 +21,9 @@ const subtitleTotalDecorationWidth = (subtitleDecorationLineWidth + subtitleDeco
 const recipientRowPaddingBottom = 14;
 const recipientNumColumnWidth = 120;
 const recipientRowGap = 30;
+const certPaddingHorizontal = 100;
+const footerGap = 30;
+const footerColumnWidth = (CERTIFICATE_WIDTH - certPaddingHorizontal * 2 - borderLeftWidth - footerGap * 3) / 4;
 
 const FIELDS = {
   org: {
@@ -56,7 +60,17 @@ const FIELDS = {
     basePx: 68,
     lineHeight: 1.05,
     letterSpacingEm: -0.01,
+    fontStyle: 'italic' as const,
+    fontWeight: 300 as const,
     allowWrap: true
+  },
+  recipientNum: {
+    maxWidth: recipientNumColumnWidth,
+    maxHeight: 20,
+    fontFamily: FONTS.mono,
+    basePx: 14,
+    allowWrap: false,
+    letterSpacingEm: 0.1
   },
   recipient: {
     maxWidth: 900 - borderLeftWidth - recipientNumColumnWidth - recipientRowGap,
@@ -74,15 +88,31 @@ const FIELDS = {
     basePx: 16,
     lineHeight: 1.6,
     allowWrap: true
+  },
+  footerValue: {
+    maxWidth: footerColumnWidth,
+    maxHeight: 40,
+    fontFamily: FONTS.serif,
+    basePx: 20,
+    lineHeight: 1.1,
+    fontWeight: 500 as const,
+    allowWrap: true
+  },
+  signatoryRole: {
+    maxWidth: footerColumnWidth,
+    maxHeight: 24,
+    fontFamily: FONTS.mono,
+    basePx: 9,
+    lineHeight: 1.2,
+    letterSpacingEm: 0.25,
+    allowWrap: true,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderMinimal: TemplateRenderer = ({ design, data }) => {
-  const { accent, subtitle, description, signatoryOne, signatoryTwo, fontSizes } = prepareCertificateRenderContext(
-    design,
-    data,
-    FIELDS
-  );
+  const { accent, subtitle, description, signatoryOne, signatoryTwo, fontSizes, roleMinHeight } =
+    prepareCertificateRenderContext(design, data, FIELDS);
 
   const body = `
     <div class="cert t-minimal">
@@ -116,7 +146,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
     .t-minimal {
       background: #fff;
       color: #0a0a0a;
-      padding: 80px 100px;
+      padding: 80px ${certPaddingHorizontal}px;
       font-family: '${FONTS.sans}', sans-serif;
       display: flex;
       flex-direction: column;
@@ -180,11 +210,11 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
     }
     .t-minimal .title {
       font-family: '${FIELDS.title.fontFamily}', serif;
-      font-weight: 300;
-      font-style: italic;
+      font-weight: ${FIELDS.title.fontWeight};
+      font-style: ${FIELDS.title.fontStyle};
       line-height: ${FIELDS.title.lineHeight};
       letter-spacing: ${FIELDS.title.letterSpacingEm}em;
-      margin-bottom: 50px;
+      margin-bottom: 38px;
       max-width: ${FIELDS.title.maxWidth}px;
       max-height: ${FIELDS.title.maxHeight}px;
       overflow-wrap: break-word;
@@ -206,11 +236,13 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       margin-bottom: 14px;
     }
     .t-minimal .recipient-row .num {
-      font-family: '${FONTS.mono}', monospace;
-      font-size: 14px;
+      font-family: '${FIELDS.recipientNum.fontFamily}', monospace;
+      font-size: ${fontSizes.recipientNum}px;
       color: ${accent};
       padding-bottom: ${recipientRowPaddingBottom}px;
-      letter-spacing: 0.1em;
+      letter-spacing: ${FIELDS.recipientNum.letterSpacingEm}em;
+      max-width: ${recipientNumColumnWidth}px;
+      max-height: ${FIELDS.recipientNum.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-minimal .recipient {
@@ -237,8 +269,8 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       flex-shrink: 0;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
-      align-items: end;
-      gap: 30px;
+      align-items: start;
+      gap: ${footerGap}px;
       padding-top: 20px;
       border-top: 1px solid #0a0a0a;
       font-family: '${FONTS.mono}', monospace;
@@ -252,18 +284,28 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       justify-content: flex-start;
     }
     .t-minimal .footer .k {
-      font-size: 9px;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
+      font-family: '${FIELDS.signatoryRole.fontFamily}', monospace;
+      font-size: ${fontSizes.signatoryRole}px;
+      line-height: ${FIELDS.signatoryRole.lineHeight};
+      letter-spacing: ${FIELDS.signatoryRole.letterSpacingEm}em;
+      text-transform: ${FIELDS.signatoryRole.textTransform};
       color: #999;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      max-width: ${footerColumnWidth}px;
+      min-height: ${roleMinHeight}px;
+      max-height: ${FIELDS.signatoryRole.maxHeight}px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
       overflow-wrap: break-word;
     }
     .t-minimal .footer .v {
-      font-family: '${FONTS.serif}', serif;
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 1.1;
+      font-family: '${FIELDS.footerValue.fontFamily}', serif;
+      font-size: ${fontSizes.footerValue}px;
+      font-weight: ${FIELDS.footerValue.fontWeight};
+      line-height: ${FIELDS.footerValue.lineHeight};
+      max-width: ${footerColumnWidth}px;
+      max-height: ${FIELDS.footerValue.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-minimal .footer .ref .k { color: ${accent}; }
