@@ -16,6 +16,7 @@
   import { profile } from '$lib/utils/store/user';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
+  import { buildResourceInviteLink } from '$features/people/utils/invite-link-utils';
   import {
     TutorSelectSection,
     ExistingStudentsSection,
@@ -43,6 +44,7 @@
   let isLoadingStudents = $state(false);
   let activeTab = $state<'tutors' | 'students' | 'link'>('students');
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, courseApi.group.people));
+  const inviteLink = $derived(buildResourceInviteLink(peopleApi.inviteLink?.token, $currentOrg));
 
   function getTutors(team: OrgTeamMember[]) {
     const existingTutors = courseApi?.group?.tutors || [];
@@ -255,7 +257,7 @@
       <UnderlineTabs.Content value="link">
         <div class="space-y-6">
           <InviteLinkSection
-            link={peopleApi.inviteLink?.inviteLink ?? ''}
+            link={inviteLink}
             isRevoked={peopleApi.inviteLink?.isRevoked ?? false}
             isLoading={peopleApi.isLoading}
             joinCount={peopleApi.inviteLink?.joinCount}
