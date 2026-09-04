@@ -28,6 +28,7 @@ import {
   getCohortNewsfeedCommentById,
   getCohortNewsfeedComments,
   getCohortsByOrg,
+  getCohortsByOrgForProfile,
   getCoursesByCohort,
   getCohortMemberRole,
   isCohortCourse,
@@ -49,7 +50,8 @@ import {
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
-import { assertStudentCapacityOrThrow } from '../organization/student-limit';
+import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
+import type { StudentMilestoneNotification } from '../organization/student-limit';
 
 type CohortMemberEnrollment = {
   profileId: string;
@@ -78,8 +80,6 @@ async function enrollCohortStudentsInGroups(
     studentProfileIds.filter((profileId) => !existingMemberProfileIds.has(profileId))
   );
 
-  await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size);
-
   const organizationMemberRows = studentMembers.map((member) => ({
     organizationId,
     roleId: ROLE.STUDENT,
@@ -97,10 +97,21 @@ async function enrollCohortStudentsInGroups(
     }))
   );
 
+  let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+
   await db.transaction(async (tx) => {
+    studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
+      deferNotification: true
+    });
     await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
     await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
   });
+
+  if (studentMilestoneNotification) {
+    notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+      console.error('notifyStudentMilestone error:', error);
+    });
+  }
 
   return groupMemberRows.length;
 }
@@ -148,9 +159,9 @@ export async function getCohort(cohortId: string) {
   }
 }
 
-export async function listOrgCohorts(organizationId: string) {
+export async function listOrgCohorts(organizationId: string, profileId: string) {
   try {
-    return getCohortsByOrg(organizationId);
+    return getCohortsByOrgForProfile(organizationId, profileId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -243,7 +254,8 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
           );
         }
 
-        return db.transaction(async (tx) => {
+        const transactionResult = await db.transaction(async (tx) => {
+          let studentMilestoneNotification: StudentMilestoneNotification | null = null;
           const member = await addCohortMember(
             {
               cohortId,
@@ -263,7 +275,9 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
               tx
             );
             if (!existingOrgMemberId) {
-              await assertStudentCapacityOrThrow(cohort.organizationId, 1);
+              studentMilestoneNotification = await assertStudentCapacityOrThrow(cohort.organizationId, 1, tx, {
+                deferNotification: true
+              });
             }
 
             await insertOrganizationMembersOnConflictDoNothing(
@@ -290,8 +304,16 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
             );
           }
 
-          return member;
+          return { member, studentMilestoneNotification };
         });
+
+        if (transactionResult.studentMilestoneNotification) {
+          notifyStudentMilestone(transactionResult.studentMilestoneNotification).catch((error) => {
+            console.error('notifyStudentMilestone error:', error);
+          });
+        }
+
+        return transactionResult.member;
       })
     );
 

@@ -1,0 +1,45 @@
+---
+title: AI features
+description: Enable or disable AI features across the ClassroomIO dashboard for self-hosted deployments.
+---
+
+ClassroomIO includes several AI-powered features — course generation, lesson summarisation, an AI tutor, and an in-app assistant. If you run a self-hosted instance and prefer not to use these, you can hide every AI surface in the dashboard with a single environment variable.
+
+## Environment variable
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PUBLIC_IS_AI_ENABLED` | `true` | Set to `false` to hide all AI features in the dashboard |
+
+The variable is read at runtime via `$env/dynamic/public`, so you can change it without rebuilding the app. Restart the dashboard container (or the dev server) after updating your `.env` file.
+
+```bash title=".env"
+PUBLIC_IS_AI_ENABLED=false
+```
+
+:::note[Value matching]
+Only the exact string `false` disables AI. Any other value — including `true`, an empty string, or a typo like `FALSE` — keeps AI enabled.
+:::
+
+## What gets disabled
+
+When `PUBLIC_IS_AI_ENABLED` is set to `false`:
+
+| Area | Change |
+|------|--------|
+| **Home page** | The AI course-creator page is hidden; admins are redirected to the dashboard (`/dash`) instead |
+| **Sidebar navigation** | The "Home" nav item is removed |
+| **Course header** | The "AI Assistant" button (sparkles icon) is removed |
+| **Course sidebar** | The "AI Tutor" nav item is hidden for tutors and admins |
+| **Lesson actions** | The "Summarize lesson" button and the "Quote in chat" text selection overlay are removed |
+| **Floating AI bar** | The "Ask AI" bar at the bottom of lesson and exercise pages is not rendered |
+| **Settings** | The "AI Credits" and "AI Tutor" tabs are removed from Settings |
+
+:::info[Backend note]
+This flag controls the **UI only**. Backend API routes that power AI features still exist but are unreachable from the dashboard when AI is hidden.
+:::
+
+## Related
+
+- To connect an OpenAI API key for transcription and course generation, see [Integrations](/self-hosted/configuration/integrations).
+- To configure enterprise features like SSO, see [Enterprise & licensing](/self-hosted/enterprise).

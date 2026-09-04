@@ -108,7 +108,7 @@
               />
             </div>
             <Textarea
-              class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
+              class="box-border [field-sizing:fixed] w-full max-w-full min-w-0 resize-y overflow-x-auto break-all"
               value={settings.embed.description ?? ''}
               placeholder={$t('settings.landing_page.editor.embed.description_placeholder')}
               oninput={(event) => setter(event.currentTarget.value, 'embed.description')}
@@ -119,7 +119,7 @@
             <Field.Label>{$t('settings.landing_page.editor.embed.code')}</Field.Label>
             <Field.Description>{$t('settings.landing_page.editor.embed.code_description')}</Field.Description>
             <Textarea
-              class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
+              class="box-border [field-sizing:fixed] w-full max-w-full min-w-0 resize-y overflow-x-auto break-all"
               value={settings.embed.code}
               placeholder={$t('settings.landing_page.editor.embed.code_placeholder')}
               oninput={(event) => setter(event.currentTarget.value, 'embed.code')}

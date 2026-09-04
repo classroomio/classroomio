@@ -47,6 +47,7 @@ export const defaultCourse: Course = {
     videoUrl: '',
     showDiscount: false,
     discount: 0,
+    paymentEnabled: false,
     paymentLink: '',
     reward: {
       show: false,
@@ -62,7 +63,7 @@ export const defaultCourse: Course = {
     lessonTabsOrder: defaultLessonTabsOrder,
     grading: false,
     lessonDownload: true,
-    allowNewStudent: false,
+    allowSelfEnrollment: true,
     isContentGroupingEnabled: true
   }
 };

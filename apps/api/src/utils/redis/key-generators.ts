@@ -80,6 +80,20 @@ export const apiKeyGenerator = (c: Context): string => {
   return `ip:${extractClientIp(c)}`;
 };
 
+export const publicApiKeyGenerator = (c: Context): string => {
+  const automationKey = c.get('automationKey') as { id: string } | undefined;
+
+  if (automationKey?.id) {
+    return `automation_key:${automationKey.id}`;
+  }
+
+  return `ip:${extractClientIp(c)}`;
+};
+
+export const publicApiFailedAuthKeyGenerator = (c: Context): string => {
+  return `public_api_failed_auth:${extractClientIp(c)}`;
+};
+
 /**
  * Generate rate limit key based on IP only
  */
@@ -135,7 +149,7 @@ export const agentUploadKeyGenerator = (c: Context): string => {
 
 /**
  * Redis keys for engagement analytics read endpoints (landing-stats, funnel,
- * country breakdown, time-to-enrollment). Value: JSON.
+ * country breakdown, popular types, top courses). Value: JSON.
  */
 export function dashAnalyticsKey(route: string, orgId: string, days: number, extra?: string): string {
   const suffix = extra ? `:${extra}` : '';

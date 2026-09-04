@@ -5,6 +5,11 @@
       "message": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie gehen möchten?",
       "label": "Nicht gespeicherte Änderungen"
     },
+    "app_update": {
+      "title": "Eine neue Version ist verfügbar.",
+      "description": "Laden Sie neu, um die neuesten Funktionen und Korrekturen zu erhalten.",
+      "reload": "Neu laden"
+    },
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Muss mindestens 6 Zeichen lang sein"
+        "min_char": "Muss mindestens 8 Zeichen lang sein"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Muss mindestens 6 Zeichen lang sein"
+        "min_char": "Muss mindestens 8 Zeichen lang sein"
       },
       "email": {
         "invalid_email": "Ungültige E-Mail-Adresse"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Als abgeschlossen markiert",
+        "complete_unmarked": "Als unvollständig markiert",
         "complete_download": "Download abgeschlossen",
         "version_restored": "Version erfolgreich wiederhergestellt"
       },
@@ -253,14 +259,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Komplett :)"
+        "complete": "Komplett :)",
+        "courses_reordered": "Kursreihenfolge aktualisiert"
       },
       "error": {
         "file_size": "Die Dateigröße darf 500 KB nicht überschreiten",
         "try_again": "Versuchen Sie es erneut",
         "label": "Bild hochladen",
         "fetch_error": "Fehler beim Abrufen von Bildern von Unsplash",
-        "upload_failed": "Bild konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
+        "upload_failed": "Bild konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.",
+        "courses_reorder_failed": "Fehler beim Aktualisieren der Kursreihenfolge. Bitte versuchen Sie es erneut."
       }
     },
     "team_members": {
@@ -496,7 +504,7 @@
     "go_to_my_learning": "Zu Mein Lernen"
   },
   "lms_navigation": {
-    "home": "Zuhause",
+    "home": "Dashboard",
     "my_learning": "Mein Lernen",
     "certificates": "Zertifikate",
     "exercise": "Übung",
@@ -516,7 +524,8 @@
     "download_course": "Upgrade zum Download-Kurs",
     "required": "Upgrade erforderlich",
     "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
-    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen."
+    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen.",
+    "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten"
   },
   "analytics": {
     "title": "Analysen",
@@ -591,6 +600,14 @@
         "COMPLIANCE": "Compliance",
         "PUBLIC": "Öffentlich"
       }
+    },
+    "topCourses": {
+      "heading": "Top-Kurse nach Aufrufen",
+      "description": "Kurse nach Seitenaufrufen sortiert",
+      "subtitle": "Rangfolge nach Seitenaufrufen in diesem Zeitraum",
+      "empty": "Noch keine Kursseitenaufrufe",
+      "course": "Kurs",
+      "views": "Aufrufe"
     },
     "countries": {
       "heading": "Top-Länder",
@@ -794,13 +811,19 @@
         "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen.",
         "progression_mode_free": "Frei — freigeschaltete Inhalte sind zugänglich",
         "progression_mode_sequential": "Sequenziell — vorherige Elemente abschließen, um das nächste freizuschalten",
+        "comments": {
+          "title": "Lektionskommentare",
+          "description": "Erlauben Sie Schülern, Kommentare in den Lektionen dieses Kurses anzusehen und hinzuzufügen. Kommentare können weiterhin für einzelne Lektionen deaktiviert werden.",
+          "enabled": "Kommentare für diesen Kurs aktiviert",
+          "disabled": "Kommentare für diesen Kurs deaktiviert"
+        },
         "lesson_download": "Lektionen herunterladen",
         "available": "Stellen Sie die Lektion für registrierte Studierende zum Download im PDF-Format zur Verfügung",
         "course_download": "Kurs-Download",
         "course_avail": "Laden Sie eine Kopie dieses Kurses herunter.",
         "download": "Herunterladen",
-        "allow": "Erlauben Sie neue Studenten",
-        "access": "Ermöglichen Sie neuen Studierenden den Zugang zu diesem Kurs",
+        "allow": "Studierende können sich selbst einschreiben",
+        "access": "Wenn deaktiviert, können Studierende nur über einen Einladungslink beitreten oder indem sie unter Personen hinzugefügt werden.",
         "publish": "Kurs veröffentlichen",
         "determines": "Dies bestimmt, ob Ihr Kurs auf Ihrer Zielseite angezeigt wird",
         "published": "Veröffentlicht",
@@ -865,14 +888,15 @@
           "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
           "unlock_all": "Schalte alle frei"
         },
-        "generate_link": "Neuen Link generieren",
-        "open_link": "Link in neuem Tab öffnen",
-        "copy_link": "Link kopieren",
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
-        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
-        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
+        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "generate_link": "Neuen Link generieren",
+        "open_link": "Link in neuem Tab öffnen",
+        "copy_link": "Link kopieren"
       },
       "analytics": {
         "title": "Analysen"
@@ -926,7 +950,8 @@
           "join_course": "Nehmen Sie am Kurs teil",
           "enrolled_success": "Sie sind für diesen Kurs eingeschrieben.",
           "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen.",
-          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation."
+          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation.",
+          "members_only": "Nur Mitglieder dieser Organisation können sich einschreiben. Bitten Sie einen Administrator um eine Einladung."
         },
         "pricing_section": {
           "free": "Kostenlos",
@@ -958,7 +983,13 @@
             "yes": "Ja",
             "percent": "Rabattprozentsatz",
             "gift": "Über Geschenk",
-            "payment_required": "Für kostenpflichtige Kurse ist ein Zahlungslink erforderlich"
+            "payment_required": "Für kostenpflichtige Kurse ist ein Zahlungslink erforderlich",
+            "enable_paid": "Bezahlt aktivieren",
+            "payment_invalid_url": "Bitte geben Sie eine gültige URL ein (z. B. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy oder ein beliebiger Zahlungslink",
+            "percentage_helper": "In Prozent %",
+            "gift_on_completion": "Geschenk bei Fertigstellung",
+            "payment_cost_required": "Bezahlte Kurse müssen Kosten von mehr als 0 haben."
           },
           "instructor_form": {
             "upload": "Lehrerlogo",
@@ -1015,7 +1046,9 @@
             "curriculum": "Lehrplan",
             "chips": "Fähigkeiten und Werkzeuge",
             "skills": "Fähigkeiten, die Sie erwerben werden",
-            "tools": "Werkzeuge, die Sie lernen werden"
+            "tools": "Werkzeuge, die Sie lernen werden",
+            "navigation": "Navigation",
+            "footer": "Fußzeile"
           },
           "skills_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
           "tools_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
@@ -1118,6 +1151,13 @@
         "you": "Du",
         "pending": "Ausstehend",
         "name": "Name",
+        "learner": "Lernender",
+        "progress": "Fortschritt",
+        "stage": "Phase",
+        "last_login_at": "Letzte Anmeldung",
+        "enrolled_at": "Eingeschrieben am",
+        "certificate_earned": "Zertifikat erhalten",
+        "not_started": "Nicht gestartet",
         "role": "Rolle",
         "action": "Aktion",
         "feedback": "E-Mail in die Zwischenablage kopiert",
@@ -1375,7 +1415,17 @@
           "title": "Versionsgeschichte",
           "fetch_more_versions": "Weitere Versionen abrufen",
           "current_version": "Aktuelle Version",
-          "restore_version": "Stellen Sie diese Version wieder her"
+          "restore_version": "Stellen Sie diese Version wieder her",
+          "edit_count": "{count, plural, one {# Bearbeitung} other {# Bearbeitungen}}",
+          "today": "Heute",
+          "yesterday": "Gestern",
+          "by_author": "von {name}",
+          "empty": "Noch keine Versionen",
+          "kind": {
+            "auto": "Automatisch speichern",
+            "manual": "Gespeicherte Version",
+            "publish": "Veröffentlicht"
+          }
         },
         "poll": {
           "voted": "Abgestimmt",
@@ -2204,6 +2254,14 @@
           "watch_threshold": "Wiedergabeschwelle (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Lektionskommentare",
+            "description": "Legen Sie fest, ob Schüler Kommentare zu dieser Lektion ansehen und hinzufügen können.",
+            "enabled": "Kommentare aktiviert",
+            "disabled": "Kommentare deaktiviert",
+            "disabled_by_course": "Kommentare sind für den gesamten Kurs deaktiviert. Daher kann diese Lektionseinstellung nicht geändert werden.",
+            "change_course_setting": "In den Kurseinstellungen ändern"
+          },
           "progression": {
             "heading": "Fortschritt",
             "intro": "Wählen Sie, wie Schüler diese Lektion abschließen und durch den Kurs gehen.",
@@ -2263,7 +2321,9 @@
           "starts_in": "Beginnt in",
           "session_ended": "Sitzung beendet",
           "link_copied": "Link kopiert"
-        }
+        },
+        "student_share_your_knowledge": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
+        "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei."
       },
       "news_feed": {
         "heading": "Newsfeed",
@@ -2329,7 +2389,8 @@
           "description": "Möchten Sie diesen Feed wirklich löschen?",
           "no": "Nein",
           "yes": "Ja"
-        }
+        },
+        "student_body_content": "In diesem Kurs wurden noch keine Beiträge veröffentlicht."
       },
       "compliance": {
         "title": "Compliance",
@@ -2464,7 +2525,8 @@
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "KI-Tutor"
+      "nav_ai_tutor": "KI-Tutor",
+      "exit_course": "Kurs verlassen"
     },
     "completion": {
       "modal": {
@@ -2632,7 +2694,12 @@
         "copy_course_url": "Kurs-URL kopieren"
       },
       "due_date": "Fällig",
-      "valid_until": "Gültig bis"
+      "valid_until": "Gültig bis",
+      "student_empty_title": "Noch keine Kurse verfügbar",
+      "student_empty_description": "In dieser Organisation sind derzeit keine Kurse verfügbar. Bitte schauen Sie später wieder vorbei.",
+      "updated_at": "Aktualisiert am {date}",
+      "lessons_count": "{count, plural, one {# Lektion} other {# Lektionen}}",
+      "exercises_count": "{count, plural, one {# Übung} other {# Übungen}}"
     },
     "course_filter": {
       "date_created_newest": "Erstellungsdatum: Neueste zuerst",
@@ -2867,6 +2934,7 @@
     "discussion": "Diskussion",
     "people": "Menschen",
     "goto_lms": "Gehen Sie zu LMS",
+    "join_academy": "Akademie beitreten",
     "goto_home": "Gehen Sie zur ClassroomIO-Startseite",
     "login": "Anmelden",
     "signup": "Melden Sie sich an",
@@ -3324,6 +3392,9 @@
           "remove": "Navigationslink entfernen"
         },
         "hero": {
+          "eyebrow": "Dachzeile",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Optionales Label über der Überschrift (wird von Templates verwendet, die es unterstützen, z. B. Tech). Leer lassen, um es auszublenden.",
           "heading": "Überschrift",
           "subheading": "Unterüberschrift",
           "primary_label": "Beschriftung der primären Schaltfläche",
@@ -3357,7 +3428,9 @@
           "footer": "Fußzeile",
           "footer_desc": "Markenzeile, Social Media, mehrspaltige Links und untere Rechtszeile.",
           "links": "Links",
-          "links_desc": "Optionaler Block externer Links (Hilfecenter, Community, Webinare), die nach den Kursen angezeigt werden."
+          "links_desc": "Optionaler Block externer Links (Hilfecenter, Community, Webinare), die nach den Kursen angezeigt werden.",
+          "courses": "Kurse",
+          "courses_desc": "Ziehen Sie die Reihenfolge der veröffentlichten Kurse auf der Startseite per Drag & Drop."
         },
         "links": {
           "toggle": "Linkbereich anzeigen",
@@ -3395,6 +3468,16 @@
             "calendar": "Veranstaltungen",
             "mail": "E-Mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Ziehen Sie die Kurse per Drag & Drop auf der Startseite neu an.",
+          "empty": "Noch keine veröffentlichten Kurse – veröffentlichen Sie einen Kurs, um ihn hier in der Vorschau anzuzeigen.",
+          "load_failed": "Veröffentlichte Kurse konnten nicht geladen werden.",
+          "add_button": "Hinzufügen",
+          "popover_title": "Kurse auswählen",
+          "popover_empty": "Es sind keine Kurse verfügbar.",
+          "search_no_results": "Keine Kurse entsprechen Ihrer Suche.",
+          "search_placeholder": "Kurse suchen..."
         }
       },
       "content": {
@@ -3629,16 +3712,16 @@
           "placeholder": "Wenn beispielsweise Anmeldungen deaktiviert sind, wenden Sie sich bitte an learn@domain.com, um Zugriff zu erhalten"
         },
         "disable_signup": {
-          "label": "Deaktivieren Sie die Anmeldung",
-          "description": "Verhindern Sie, dass sich neue Benutzer anmelden. Nur eingeladene Benutzer können beitreten."
+          "label": "Alle neuen Registrierungen blockieren",
+          "description": "Vollständig die Erstellung neuer Konten verhindern. Niemand kann sich registrieren — auch eingeladene Benutzer nicht. Bestehende Konten sind nicht betroffen."
         },
         "allow_public_signups": {
           "label": "Öffentliche Anmeldungen zulassen",
-          "description": "Wenn die Funktion deaktiviert ist, können sich nur Benutzer mit einem Einladungslink anmelden. Aktivieren Sie diese Option, damit jeder ein Konto erstellen kann."
+          "description": "Wenn aktiviert, kann jeder ein Konto erstellen. Wenn deaktiviert, können sich nur Benutzer mit einem gültigen Einladungslink anmelden."
         },
         "internal_enrollment_only": {
           "label": "Nur interne Anmeldung",
-          "description": "Wenn diese Option aktiviert ist, steht jeder veröffentlichte Kurs allen Studierenden in Ihrer Organisation zur Selbsteinschreibung offen. Verwenden Sie die Option „Anmeldung deaktivieren“, um eine geschlossene, nur auf Einladung zugängliche Akademie zu erstellen, in der Studierende jedem veröffentlichten Kurs ohne kursspezifische Einrichtung beitreten können."
+          "description": "Wenn diese Option aktiviert ist, können sich nur bestehende Mitglieder Ihrer Organisation für Ihre Kurse anmelden. Alle anderen müssen eingeladen werden – sie können sich nicht über eine Kursseite anmelden, auch wenn der Kurs für neue Studierende offen ist."
         }
       },
       "login": {
@@ -3832,13 +3915,17 @@
       "full_name": "Vollständiger Name",
       "password": "Ihr Passwort",
       "confirm_password": "Passwort bestätigen",
-      "password_helper_message": "Das Passwort muss mehr als 8 Zeichen lang sein",
+      "password_helper_message": "Das Passwort muss 8 oder mehr Zeichen lang sein",
       "create_account": "Konto erstellen"
     },
     "signup_disabled": {
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
+    },
+    "reset_password": {
+      "heading": "Neues Passwort",
+      "description": "Geben Sie Ihre neuen Passwortdaten ein"
     },
     "continue_with": "Oder fahren Sie mit fort"
   },
@@ -3962,7 +4049,11 @@
     "resend": "Bestätigungscode erneut senden",
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
-    "snackbar_error": "Fehler beim Senden des Codes"
+    "snackbar_error": "Fehler beim Senden des Codes",
+    "wrong_address": "Mit der falschen Adresse angemeldet?",
+    "switch_account": "Konto wechseln",
+    "confirm_link_prefix": "Klicken Sie auf den Link, an den wir gesendet haben",
+    "confirm_link_suffix": "um Ihre E-Mail zu bestätigen"
   },
   "public_courses": {
     "page_title": "Kurse - ClassroomIO",
@@ -4062,8 +4153,11 @@
         "accepted": "Diese Einladung wurde bereits verwendet.",
         "invalid": "Dieser Einladungslink ist ungültig.",
         "joined": "Der Organisation beigetreten",
-        "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen"
-      }
+        "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
+        "try_again": "Erneut versuchen"
+      },
+      "not_found": "Diese Einladung ist nicht mehr verfügbar.",
+      "loading": "Einladung wird geladen…"
     },
     "link": {
       "page_title": "Treten Sie {orgName} auf ClassroomIO bei",
@@ -4570,7 +4664,11 @@
         "mobile": "Mobil",
         "tablet": "Tablet",
         "desktop": "Desktop"
-      }
+      },
+      "current_version": "Aktuelle Version",
+      "active_badge": "Aktiv",
+      "active_badge_description": "Diese Version ist derzeit auf Ihrer Einbettung verfügbar",
+      "upgrade_callout": "Führen Sie ein Upgrade durch, um benutzerdefinierte Designs, Farben, Schriftarten und Stile freizuschalten."
     },
     "tabs": {
       "select_courses": "Wählen Sie Kurse aus",
@@ -5036,6 +5134,62 @@
         "save": "Speichern",
         "cancel": "Abbrechen"
       }
+    }
+  },
+  "invite_link": {
+    "tab_label": "Einladungslink",
+    "title": "Einladungslink",
+    "description": "Mit diesem Link kann jeder beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "course_description": "Mit diesem Link kann jeder als Teilnehmer an diesem Kurs teilnehmen. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "cohort_description": "Mit diesem Link kann jeder dieser Gruppe und allen darin enthaltenen Kursen beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "generate": "Einladungslink erstellen",
+    "copy": "Einladungslink kopieren",
+    "copied": "Einladungslink kopiert",
+    "copy_failed": "Der Einladungslink konnte nicht kopiert werden.",
+    "toggle_label": "Der Link ist aktiv.",
+    "disabled_notice": "Dieser Link ist deaktiviert. Niemand kann mit diesem Link beitreten, bis Sie ihn wieder aktivieren.",
+    "join_count": "{count} Personen sind über diesen Link beigetreten.",
+    "snackbar": {
+      "enabled": "Einladungslink aktiviert",
+      "disabled": "Einladungslink deaktiviert"
+    },
+    "join": {
+      "page_title": "Treten Sie {resourceName} auf ClassroomIO bei",
+      "invitation": "Sie wurden eingeladen, {resourceName} bei {orgName} beizutreten.",
+      "course_button": "Kurs beitreten",
+      "cohort_button": "Gruppe beitreten",
+      "disabled": "Dieser Einladungslink wurde deaktiviert.",
+      "closed": "Es werden keine neuen Mitglieder mehr aufgenommen.",
+      "succeeded": "Sie sind beigetreten.",
+      "failed": "Beitritt fehlgeschlagen. Bitte versuchen Sie es erneut."
+    },
+    "load_failed": "Der Einladungslink konnte nicht geladen werden.",
+    "generate_failed": "Der Einladungslink konnte nicht erstellt werden.",
+    "toggle_failed": "Der Einladungslink konnte nicht aktualisiert werden."
+  },
+  "lms": {
+    "view_landing_page": "Startseite"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "empty_title": "Keine Benachrichtigungen",
+    "empty_description": "Sie sind auf dem neuesten Stand. Neue Benachrichtigungen werden hier angezeigt.",
+    "refresh": "Aktualisieren",
+    "pending_invite": {
+      "heading": "Organisationseinladung",
+      "body": "{orgName} hat Sie als {role} eingeladen.",
+      "action": "Einladung ansehen"
+    },
+    "latest": "Neueste",
+    "only_show_unread": "Nur ungelesene Artikel anzeigen",
+    "unread": "Ungelesen",
+    "more_options": "Weitere Optionen",
+    "give_feedback": "Feedback geben",
+    "watching_empty_title": "Noch keine Artikel zum Ansehen",
+    "watching_empty_description": "Aktualisierungen zu Artikeln, denen Sie folgen, werden hier angezeigt.",
+    "tabs": {
+      "direct": "Direkt",
+      "watching": "Beobachtet"
     }
   }
 }

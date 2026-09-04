@@ -57,3 +57,6 @@ export const DEFAULT_CERTIFICATE_DESIGN: CertificateDesign = {
   ],
   idFormat: 'N° {seq}'
 };
+
+export const FONTS_READY_CLASS = 'fonts-ready';
+export const FONTS_READY_SELECTOR = `.${FONTS_READY_CLASS}`;

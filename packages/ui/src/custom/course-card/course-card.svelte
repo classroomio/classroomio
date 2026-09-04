@@ -54,7 +54,14 @@
   const resolvedBannerImage = $derived(bannerImage?.trim() ? bannerImage : DEFAULT_COURSE_BANNER_IMAGE);
 </script>
 
-<Item.Root variant="outline" class={cn('ui:group ui:relative ui:max-w-[320px] ui:p-3!', className)} {onclick}>
+<Item.Root
+  variant="outline"
+  class={cn(
+    'ui:group ui:relative ui:w-full ui:max-w-full ui:sm:max-w-[320px] ui:mx-auto ui:sm:mx-0 ui:p-3!',
+    className
+  )}
+  {onclick}
+>
   {#snippet child({ props })}
     {#if href}
       <a {href} {...props} class={cn('ui:block', props.class as string)}>
@@ -99,12 +106,14 @@
           </Item.Media>
         </Item.Header>
 
-        <Item.Content>
-          <Item.Title class="ui:flex ui:w-full ui:min-h-14 ui:items-center ui:text-base!">
+        <Item.Content class="ui:min-w-0">
+          <Item.Title class="ui:flex ui:min-h-14 ui:items-center ui:text-base! ui:wrap-anywhere">
             <span class="ui:line-clamp-2">{title}</span>
           </Item.Title>
 
-          <Item.Description class="ui:min-h-[63px]">{description}</Item.Description>
+          <Item.Description class="ui:min-h-15.75 ui:wrap-break-word">
+            {description}
+          </Item.Description>
 
           {#if tags}
             {@render tags()}
@@ -159,12 +168,14 @@
           </Item.Media>
         </Item.Header>
 
-        <Item.Content>
-          <Item.Title class="ui:flex ui:w-full ui:min-h-14 ui:items-center ui:text-base!">
+        <Item.Content class="ui:min-w-0">
+          <Item.Title class="ui:flex ui:min-h-14 ui:items-center ui:text-base! ui:wrap-anywhere">
             <span class="ui:line-clamp-2">{title}</span>
           </Item.Title>
 
-          <Item.Description class="ui:min-h-[63px]">{description}</Item.Description>
+          <Item.Description class="ui:min-h-15.75 ui:wrap-break-word">
+            {description}
+          </Item.Description>
 
           {#if tags}
             {@render tags()}

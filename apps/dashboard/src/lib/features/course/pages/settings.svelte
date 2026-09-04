@@ -31,7 +31,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { generateSlug, isPublishedComplianceMissingDeadline } from '@cio/utils/functions';
+  import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
@@ -187,7 +187,7 @@
 
     // Otherwise, publish normally
     $settings.isPublished = true;
-    $settings.allowNewStudents = true;
+    $settings.allowSelfEnrollment = true;
     hasUnsavedChanges = true;
   }
 
@@ -242,9 +242,10 @@
         lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
-        allowNewStudent: $settings.allowNewStudents ?? false,
+        allowSelfEnrollment: $settings.allowSelfEnrollment,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
+        commentsEnabled: $settings.commentsEnabled,
         welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
       } as NonNullable<Course['metadata']>;
 
@@ -331,9 +332,10 @@
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
         isPublished: !!course.isPublished,
-        allowNewStudents: !!course.metadata?.allowNewStudent,
+        allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
+        commentsEnabled: course.metadata?.commentsEnabled ?? true,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
         certificate: {
@@ -645,7 +647,7 @@
     <Field.Description>
       {$t('course.navItem.settings.course_type_desc')}
       <a
-        href="https://classroomio.com/docs/guides/course-types"
+        href="https://classroomio.com/help/build-a-course/course-types"
         target="_blank"
         rel="noopener noreferrer"
         class="ui:text-primary underline"
@@ -922,6 +924,30 @@
 
   <Field.Separator />
 
+  <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS}>
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.settings.comments.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.settings.comments.description')}</Field.Description>
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="course-comments"
+          checked={$settings.commentsEnabled}
+          onCheckedChange={(checked) => {
+            $settings.commentsEnabled = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+        <Label for="course-comments">
+          {$settings.commentsEnabled
+            ? $t('course.navItem.settings.comments.enabled')
+            : $t('course.navItem.settings.comments.disabled')}
+        </Label>
+      </Field.Field>
+    </Field.Set>
+  </AttentionHighlight>
+
+  <Field.Separator />
+
   <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.lesson_download')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
@@ -1069,15 +1095,15 @@
     <Field.Description>{$t('course.navItem.settings.access')}</Field.Description>
     <Field.Field orientation="horizontal">
       <Switch
-        id="allow-new-students"
-        checked={$settings.allowNewStudents}
+        id="allow-self-enrollment"
+        checked={$settings.allowSelfEnrollment}
         onCheckedChange={(checked) => {
-          $settings.allowNewStudents = checked;
+          $settings.allowSelfEnrollment = checked;
           hasUnsavedChanges = true;
         }}
       />
-      <Label for="allow-new-student">
-        {$settings.allowNewStudents ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      <Label for="allow-self-enrollment">
+        {$settings.allowSelfEnrollment ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
       </Label>
     </Field.Field>
   </Field.Set>

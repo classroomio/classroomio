@@ -57,7 +57,7 @@
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <p class="text-muted-foreground px-4 text-sm">© 2024 My App</p>
+          <p class="ui:text-muted-foreground px-4 text-sm">© 2024 My App</p>
         </SidebarFooter>
       </Sidebar>
       <main class="flex-1 p-4">

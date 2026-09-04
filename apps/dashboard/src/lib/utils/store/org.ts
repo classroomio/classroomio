@@ -4,7 +4,15 @@ import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
-import { canUsePublicApi, getStudentLimit, isOrgOnFreePlan, isResourceLimitReached, PLAN } from '@cio/utils/plans';
+import {
+  canUseBasicAuthSettings,
+  canUsePublicApi,
+  getActiveOrgPlan,
+  getStudentLimit,
+  isOrgOnFreePlan,
+  isResourceLimitReached,
+  PLAN
+} from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { BRAND_ROOT_DOMAIN, ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
@@ -82,11 +90,7 @@ export const isOrgTeamMember = derived(currentOrg, ($currentOrg) => {
   return isOrgManagerRole($currentOrg.roleId);
 });
 
-const getActivePlan = (org: AccountOrg) => {
-  return org.plans.find((p) => p.isActive);
-};
-
-export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
+export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActiveOrgPlan($currentOrg.plans));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '#'
@@ -164,15 +168,21 @@ export const isFreePlan = derived(currentOrg, ($currentOrg) =>
 export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
   if (PUBLIC_IS_SELFHOSTED === 'true') return true;
 
-  const plan = getActivePlan($currentOrg);
+  const plan = getActiveOrgPlan($currentOrg.plans);
 
   return plan?.planName === PLAN.ENTERPRISE;
 });
 
 export const hasPublicApiAccess = derived(currentOrg, ($currentOrg) => {
-  const plan = getActivePlan($currentOrg);
+  const plan = getActiveOrgPlan($currentOrg.plans);
 
   return canUsePublicApi(plan?.planName, PUBLIC_IS_SELFHOSTED === 'true');
+});
+
+export const hasBasicAuthSettingsAccess = derived(currentOrg, ($currentOrg) => {
+  const plan = getActiveOrgPlan($currentOrg.plans);
+
+  return canUseBasicAuthSettings(plan?.planName, PUBLIC_IS_SELFHOSTED === 'true');
 });
 
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) => {

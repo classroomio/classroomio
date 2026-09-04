@@ -1,76 +1,136 @@
 import { CLOUDFLARE } from '@api/constants';
+import { FONTS_READY_CLASS, FONTS_READY_SELECTOR } from '@cio/certificates';
 
-export type ScreenshotViewport = {
+export type RenderViewport = {
   width: number;
   height: number;
   deviceScaleFactor?: number;
 };
 
-export const getCloudflarePdfBuffer = async (html: string, styles?: string) => {
-  console.log('Generating PDF with Cloudflare API...');
+export type PdfPageOptions = {
+  width?: string;
+  height?: string;
+  landscape?: boolean;
+  printBackground?: boolean;
+  preferCSSPageSize?: boolean;
+  margin?: { top?: string; right?: string; bottom?: string; left?: string };
+};
+
+const DEFAULT_VIEWPORT: RenderViewport = { width: 1100, height: 780 };
+
+interface CloudflareRenderPayload {
+  html: string;
+  styles?: string;
+  viewport?: RenderViewport;
+  pdfOptions?: PdfPageOptions;
+  screenshotOptions?: { type: 'png'; omitBackground?: boolean; fullPage?: boolean };
+}
+
+const DEFAULT_SCREENSHOT_OPTIONS: NonNullable<CloudflareRenderPayload['screenshotOptions']> = {
+  type: 'png',
+  omitBackground: false,
+  fullPage: false
+};
+
+async function renderCloudflareBrowserDocument(
+  endpoint: 'pdf' | 'screenshot',
+  options: CloudflareRenderPayload
+): Promise<Buffer> {
+  let label: string | undefined;
+
   try {
-    const pdfResponse = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE.CONFIGS.ACCOUNT_ID}/browser-rendering/pdf`,
+    const requestBody: Record<string, unknown> = {
+      html: options.html,
+      addStyleTag: options.styles ? [{ content: options.styles }] : undefined,
+      waitForSelector: options.html.includes(FONTS_READY_CLASS)
+        ? { selector: FONTS_READY_SELECTOR, timeout: 10000 }
+        : undefined,
+      gotoOptions: {
+        waitUntil: 'networkidle0',
+        timeout: 30000
+      },
+      actionTimeout: 30000,
+      viewport: options.viewport
+        ? {
+            width: options.viewport.width,
+            height: options.viewport.height,
+            deviceScaleFactor: options.viewport.deviceScaleFactor ?? (endpoint === 'screenshot' ? 2 : 1)
+          }
+        : undefined
+    };
+
+    switch (endpoint) {
+      case 'pdf': {
+        if (options.pdfOptions) {
+          requestBody.pdfOptions = options.pdfOptions;
+        }
+        label = 'PDF';
+        break;
+      }
+      case 'screenshot': {
+        const screenshotOptions = options.screenshotOptions ?? DEFAULT_SCREENSHOT_OPTIONS;
+        requestBody.screenshotOptions = screenshotOptions;
+        label = screenshotOptions.type.toUpperCase();
+        break;
+      }
+    }
+    console.log(`Generating ${label} with Cloudflare API...`);
+
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE.CONFIGS.ACCOUNT_ID}/browser-rendering/${endpoint}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${CLOUDFLARE.CONFIGS.RENDERING_API_KEY}`
         },
-        body: JSON.stringify({
-          html: html,
-          addStyleTag: [{ content: `${styles}` }]
-        })
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(60000)
       }
     );
 
-    console.log('PDF response status:', pdfResponse.status);
-    const arrayBuffer = await pdfResponse.arrayBuffer();
+    console.log(`${label} response status:`, response.status);
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(`Cloudflare ${label} generation error:`, response.status, errorBody);
+      throw new Error(`Cloudflare ${label} rendering failed with status ${response.status}: ${errorBody}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer);
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to generate PDF');
+    console.error(`Error generating ${label ?? 'document'}:`, error);
+    if (error instanceof Error) throw error;
+    throw new Error(`Failed to generate ${label ?? 'document'}`, { cause: error });
   }
+}
+
+/**
+ * Renders HTML to a PDF via Cloudflare Browser Rendering's `/pdf` endpoint.
+ * Pass custom viewport / pdfOptions if specific page dimensions are needed (e.g. certificates).
+ */
+export const getCloudflarePdfBuffer = async (
+  html: string,
+  styles?: string,
+  viewport?: RenderViewport,
+  pdfOptions?: PdfPageOptions
+): Promise<Buffer> => {
+  return renderCloudflareBrowserDocument('pdf', { html, styles, viewport, pdfOptions });
 };
 
 /**
  * Renders HTML to a PNG via Cloudflare Browser Rendering's `/screenshot` endpoint.
- * Defaults to 1100x780 for certificate canvases; pass a custom viewport for other assets.
+ * Defaults to 1100×780 for certificate canvases; pass a custom viewport for other assets.
  */
 export const getCloudflarePngBuffer = async (
   html: string,
   styles?: string,
-  viewport: ScreenshotViewport = { width: 1100, height: 780, deviceScaleFactor: 2 }
-) => {
-  console.log('Generating PNG with Cloudflare API...');
-  try {
-    const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE.CONFIGS.ACCOUNT_ID}/browser-rendering/screenshot`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${CLOUDFLARE.CONFIGS.RENDERING_API_KEY}`
-        },
-        body: JSON.stringify({
-          html,
-          addStyleTag: styles ? [{ content: styles }] : undefined,
-          viewport: {
-            width: viewport.width,
-            height: viewport.height,
-            deviceScaleFactor: viewport.deviceScaleFactor ?? 2
-          },
-          screenshotOptions: { type: 'png', omitBackground: false, fullPage: false }
-        })
-      }
-    );
-
-    console.log('PNG response status:', response.status);
-    const arrayBuffer = await response.arrayBuffer();
-
-    return Buffer.from(arrayBuffer);
-  } catch (error) {
-    console.error('Error generating PNG:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to generate PNG');
-  }
+  viewport: RenderViewport = { width: 1100, height: 780, deviceScaleFactor: 2 }
+): Promise<Buffer> => {
+  return renderCloudflareBrowserDocument('screenshot', {
+    html,
+    styles,
+    viewport: { ...viewport, deviceScaleFactor: viewport.deviceScaleFactor ?? 2 },
+    screenshotOptions: { type: 'png', omitBackground: false, fullPage: false }
+  });
 };

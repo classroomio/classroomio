@@ -1,6 +1,10 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
-import type { TGetAudienceQuery, TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type {
+  TCourseReorder,
+  TGetAudienceQuery,
+  TGetOrganizationCoursesQuery
+} from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
   cancelOrganizationPlan,
@@ -34,14 +38,16 @@ import {
   getExploreCourses,
   getLessonsBySiteName,
   getOrgCourses,
-  getPublishedCoursesBySiteName
+  getPublishedCoursesBySiteName,
+  reorderOrgCourses as reorderOrgCoursesQuery
 } from '@cio/db/queries/course';
 import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
-import { PLAN } from '@cio/utils/plans';
+import { canUseBasicAuthSettings, PLAN } from '@cio/utils/plans';
+import { env } from '@cio/core/config/env';
 import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
@@ -327,6 +333,27 @@ export async function getPublicCourses(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch public courses',
       ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Reorders courses for an organization (manual display order on public surfaces)
+ * @param orgId - The organization ID
+ * @param orders - Array of course IDs with their new display positions
+ */
+export async function reorderOrgCourses(orgId: string, orders: TCourseReorder['courses']) {
+  try {
+    await reorderOrgCoursesQuery(orgId, orders);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('does not belong')) {
+      throw new AppError(error.message, ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to reorder courses',
+      ErrorCodes.INTERNAL_ERROR,
       500
     );
   }
@@ -647,6 +674,74 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
  * @param data - Partial organization data to update
  * @returns Updated organization
  */
+
+/** Nullable boolean columns, so an unset legacy row must compare equal to `false`. */
+const ENTERPRISE_AUTH_FLAGS = ['disableSignup', 'disableEmailPassword', 'disableGoogleAuth'] as const;
+
+type OrgAuthSettings = {
+  signup?: { inviteOnly?: boolean };
+  internalEnrollmentOnly?: boolean;
+};
+
+function hasEnterpriseAuthChange(existing: TOrganization, data: Partial<TOrganization>) {
+  const flagChanged = ENTERPRISE_AUTH_FLAGS.some((key) => {
+    if (!(key in data)) return false;
+
+    return Boolean(data[key]) !== Boolean(existing[key]);
+  });
+
+  if (flagChanged) return true;
+
+  if (!('disableSignupMessage' in data)) return false;
+
+  return (data.disableSignupMessage ?? '') !== (existing.disableSignupMessage ?? '');
+}
+
+function hasBasicAuthChange(existing: TOrganization, data: Partial<TOrganization>) {
+  const incoming = data.settings as OrgAuthSettings | null | undefined;
+  if (!incoming) return false;
+
+  const current = (existing.settings ?? {}) as OrgAuthSettings;
+
+  const inviteOnlyChanged =
+    incoming.signup !== undefined && Boolean(incoming.signup?.inviteOnly) !== Boolean(current.signup?.inviteOnly);
+  const internalEnrollmentChanged =
+    incoming.internalEnrollmentOnly !== undefined &&
+    Boolean(incoming.internalEnrollmentOnly) !== Boolean(current.internalEnrollmentOnly);
+
+  return inviteOnlyChanged || internalEnrollmentChanged;
+}
+
+/**
+ * Plan gate for the Settings > Authentication > General controls. The dashboard
+ * disables the switches an org cannot use, but the same fields are writable
+ * through `PUT /organization`, so the entitlement is enforced here too.
+ *
+ * Only *changes* are gated. The dashboard sends the whole organization on every
+ * save, so an unchanged locked field must never block an otherwise allowed edit.
+ */
+async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrganization>) {
+  const existing = await getOrganizationById(orgId);
+  if (!existing) return;
+
+  const enterpriseChanged = hasEnterpriseAuthChange(existing, data);
+  const basicChanged = hasBasicAuthChange(existing, data);
+
+  if (!enterpriseChanged && !basicChanged) return;
+
+  const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+  const activePlan = await getActiveOrganizationPlan(orgId);
+  const planName = activePlan?.planName ?? PLAN.BASIC;
+
+  if (enterpriseChanged && !isSelfHosted && planName !== PLAN.ENTERPRISE) {
+    throw new AppError('These authentication settings require an Enterprise plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+  }
+
+  if (basicChanged && !canUseBasicAuthSettings(planName, isSelfHosted)) {
+    throw new AppError('These authentication settings require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+  }
+}
+
 export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
   try {
     if (data.siteName) {
@@ -669,6 +764,8 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
         }
       }
     }
+
+    await assertAuthSettingsEntitlement(orgId, data);
 
     let previousCustomDomainHostname: string | undefined;
 

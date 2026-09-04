@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  check,
   date,
   doublePrecision,
   foreignKey,
@@ -22,10 +23,12 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
@@ -408,6 +411,8 @@ export const profile = pgTable(
     telegramChatId: bigint('telegram_chat_id', { mode: 'number' }),
     isEmailVerified: boolean('is_email_verified').default(false),
     verifiedAt: timestamp('verified_at', { withTimezone: true, mode: 'string' }),
+    welcomeEmailPending: boolean('welcome_email_pending').default(false).notNull(),
+    welcomeEmailSentAt: timestamp('welcome_email_sent_at', { withTimezone: true, mode: 'string' }),
     locale: locale().default('en'),
     isRestricted: boolean('is_restricted').default(false).notNull(),
     settings: jsonb().default({}).$type<Record<string, unknown>>()
@@ -612,7 +617,8 @@ export const submission = pgTable(
       columns: [table.submittedBy],
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
-    })
+    }),
+    index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
   ]
 );
 
@@ -656,6 +662,7 @@ export const course = pgTable(
       videoUrl?: string;
       showDiscount?: boolean;
       discount?: number;
+      paymentEnabled?: boolean;
       paymentLink?: string;
       reward?: {
         show: boolean;
@@ -688,6 +695,8 @@ export const course = pgTable(
       }[];
       grading?: boolean;
       lessonDownload?: boolean;
+      allowSelfEnrollment?: boolean;
+      /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. Kept because there is no backfill. */
       allowNewStudent?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;
@@ -697,6 +706,8 @@ export const course = pgTable(
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
       progressionMode?: 'free' | 'sequential';
+      /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
+      commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
       aiTutor?: {
         inheritFromOrg?: boolean;
@@ -724,6 +735,8 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
+    /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
+    displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
       isDownloadable?: boolean;
       /** @deprecated Use `design.templateId`. Legacy 6-theme id; mapped on read via LEGACY_THEME_MAP. */
@@ -988,6 +1001,7 @@ export const lesson = pgTable(
     isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
+    commentsEnabled: boolean('comments_enabled').default(true).notNull(),
     videos: jsonb().default([]).$type<
       {
         type: 'youtube' | 'generic' | 'upload' | 'google_drive';
@@ -1792,16 +1806,39 @@ export const lessonLanguage = pgTable(
   ]
 );
 
+/**
+ * One row per *editing session*, not per save. Autosave coalesces consecutive
+ * edits by the same author into the newest unsealed row (see
+ * `recordLessonLanguageVersion` in `@cio/core/services/lesson-version`), so a
+ * long writing session produces one entry instead of one per keystroke pause.
+ *
+ * `old_content` is deliberately absent: the previous row's `new_content` is the
+ * old content, so storing both would persist every document twice. The
+ * `lesson_versions` view derives it with a window function.
+ */
 export const lessonLanguageHistory = pgTable(
   'lesson_language_history',
   {
     id: serial().primaryKey().notNull(),
     lessonLanguageId: integer('lesson_language_id'),
-    oldContent: text('old_content'),
     newContent: text('new_content'),
+    /** `auto` rows are prunable by retention; `manual` and `publish` are kept forever. */
+    kind: lessonVersionKind().default('auto').notNull(),
+    /** Optional author-supplied name for a milestone version. */
+    label: text(),
+    authorId: uuid('author_id'),
+    /** First edit in the session this row represents. */
+    sessionStartedAt: timestamp('session_started_at', { mode: 'string' })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    /** Last edit in the session; the row's user-visible time. */
     timestamp: timestamp({ mode: 'string' })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull()
+      .notNull(),
+    /** How many saves were coalesced into this session. */
+    editCount: integer('edit_count').default(1).notNull(),
+    /** Sealed rows are never extended. Set by an explicit save and by publishing. */
+    isSealed: boolean('is_sealed').default(false).notNull()
   },
   (table) => [
     foreignKey({
@@ -1810,7 +1847,19 @@ export const lessonLanguageHistory = pgTable(
       name: 'public_lesson_language_history_lesson_language_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'lesson_language_history_author_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('lesson_language_history_language_timestamp_idx').using(
+      'btree',
+      table.lessonLanguageId.asc(),
+      table.timestamp.desc()
+    )
   ]
 );
 
@@ -2491,14 +2540,28 @@ export const dashOrgStats = pgView('dash_org_stats', {
   sql`SELECT gp.organization_id AS org_id, count(DISTINCT course.id) AS no_of_courses, count(DISTINCT gm.profile_id) AS enrolled_students FROM course JOIN "group" gp ON gp.id = course.group_id LEFT JOIN groupmember gm ON gm.group_id = gp.id AND gm.role_id = 3 WHERE course.status = 'ACTIVE'::text GROUP BY gp.organization_id`
 );
 
+/**
+ * Reader-facing shape of lesson version history. `old_content` is derived from
+ * the previous snapshot of the same lesson language rather than stored, and the
+ * author is joined in so the history panel doesn't need a second round trip.
+ */
 export const lessonVersions = pgView('lesson_versions', {
+  id: integer(),
   oldContent: text('old_content'),
   newContent: text('new_content'),
+  kind: lessonVersionKind(),
+  label: text(),
+  sessionStartedAt: timestamp('session_started_at', { mode: 'string' }),
   timestamp: timestamp({ mode: 'string' }),
+  editCount: integer('edit_count'),
+  isSealed: boolean('is_sealed'),
+  authorId: uuid('author_id'),
+  authorName: text('author_name'),
+  authorAvatarUrl: text('author_avatar_url'),
   locale: locale(),
   lessonId: uuid('lesson_id')
 }).as(
-  sql`SELECT llh.old_content, llh.new_content, llh."timestamp", ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id`
+  sql`SELECT llh.id, lag(llh.new_content) OVER (PARTITION BY llh.lesson_language_id ORDER BY llh."timestamp", llh.id) AS old_content, llh.new_content, llh.kind, llh.label, llh.session_started_at, llh."timestamp", llh.edit_count, llh.is_sealed, llh.author_id, p.fullname AS author_name, p.avatar_url AS author_avatar_url, ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id LEFT JOIN profile p ON p.id = llh.author_id`
 );
 
 export const exerciseTemplate = pgTable('exercise_template', {
@@ -3111,6 +3174,76 @@ export const cohortMember = pgTable(
     unique('cohort_member_cohort_id_profile_id_unique').on(table.cohortId, table.profileId),
     index('idx_cohort_member_cohort_id').on(table.cohortId),
     index('idx_cohort_member_profile_id').on(table.profileId)
+  ]
+);
+
+export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
+
+/**
+ * Permanent, revocable share links for resource invites (course, cohort, ...).
+ * Separate from `organization_invite`, which owns platform invites.
+ */
+export const inviteLink = pgTable(
+  'invite_link',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    resourceType: inviteLinkResourceType('resource_type').notNull(),
+    courseId: uuid('course_id'),
+    cohortId: uuid('cohort_id'),
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    /** Raw token, kept so staff can re-copy the link. */
+    token: text().notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    joinCount: integer('join_count').default(0).notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'invite_link_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'invite_link_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'invite_link_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'invite_link_role_id_fkey'
+    }),
+    unique('invite_link_token_hash_key').on(table.tokenHash),
+    // One link per (resource, role); NULLs are distinct so the two never collide.
+    unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
+    unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
+    check(
+      'invite_link_resource_target_check',
+      sql`(
+        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL)
+        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL)
+      )`
+    ),
+    index('idx_invite_link_organization_id').on(table.organizationId)
   ]
 );
 

@@ -5,6 +5,11 @@
       "message": "Du har ikke-gemte ændringer. Er du sikker på, at du vil tage afsted?",
       "label": "Ikke-gemte ændringer"
     },
+    "app_update": {
+      "title": "En ny version er tilgængelig.",
+      "description": "Genindlæs for at få de nyeste funktioner og rettelser.",
+      "reload": "Genindlæs"
+    },
     "discard": "Kassér",
     "save_changes": "Gem ændringer"
   },
@@ -55,12 +60,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Skal være 6 eller flere tegn lange"
+        "min_char": "Skal være 8 eller flere tegn lange"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Skal være på 6 eller flere tegn"
+        "min_char": "Skal være på 8 eller flere tegn"
       },
       "email": {
         "invalid_email": "Ugyldig e-mailadresse"
@@ -220,6 +225,7 @@
       },
       "success": {
         "complete_marked": "Markeret som komplet",
+        "complete_unmarked": "Markeret som ufuldstændig",
         "complete_download": "Download fuldført",
         "version_restored": "Version blev gendannet"
       },
@@ -253,14 +259,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Komplet :)"
+        "complete": "Komplet :)",
+        "courses_reordered": "Kursusrækkefølge opdateret"
       },
       "error": {
         "file_size": "Filstørrelsen må ikke være større end 500 kb",
         "try_again": "Prøv igen",
         "label": "Upload billede",
         "fetch_error": "Fejl ved hentning af billeder fra Unsplash",
-        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen."
+        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen.",
+        "courses_reorder_failed": "Kunne ikke opdatere kursusrækkefølgen. Prøv igen."
       }
     },
     "team_members": {
@@ -496,7 +504,7 @@
     "go_to_my_learning": "Gå til Min Læring"
   },
   "lms_navigation": {
-    "home": "Hjem",
+    "home": "Dashboard",
     "my_learning": "Min Læring",
     "certificates": "Certifikater",
     "exercise": "Motion",
@@ -516,7 +524,8 @@
     "download_course": "Opgrader for at downloade kursus",
     "required": "Opgradering påkrævet",
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
-    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API."
+    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
+    "unlock_field": "Opgrader for at låse denne indstilling op"
   },
   "analytics": {
     "title": "Analyse",
@@ -591,6 +600,14 @@
         "COMPLIANCE": "Overholdelse",
         "PUBLIC": "Offentlig"
       }
+    },
+    "topCourses": {
+      "heading": "Topkurser efter visninger",
+      "description": "Kurser rangeret efter sidevisninger",
+      "subtitle": "Rangeret efter sidevisninger i dette interval",
+      "empty": "Ingen kursussidevisninger endnu",
+      "course": "Kursus",
+      "views": "Visninger"
     },
     "countries": {
       "heading": "Toplande",
@@ -794,13 +811,19 @@
         "progression_mode_description": "Styr om elever kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge.",
         "progression_mode_free": "Fri — ulåst indhold er tilgængeligt",
         "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
+        "comments": {
+          "title": "Lektionskommentarer",
+          "description": "Tillad elever at se og tilføje kommentarer i lektionerne på dette kursus. Kommentarer kan stadig deaktiveres for enkelte lektioner.",
+          "enabled": "Kommentarer aktiveret for dette kursus",
+          "disabled": "Kommentarer deaktiveret for dette kursus"
+        },
         "lesson_download": "Hent lektioner",
         "available": "Gør lektionen tilgængelig til download i pdf for tilmeldte studerende",
         "course_download": "Kursusdownload",
         "course_avail": "Download en kopi af dette kursus.",
         "download": "Download",
-        "allow": "Tillad nye studerende",
-        "access": "Tillad nye studerende at få adgang til dette kursus",
+        "allow": "Studerende kan tilmelde sig selv",
+        "access": "Når det er slået fra, kan studerende kun deltage via et invitationslink eller ved at blive tilføjet under Personer.",
         "publish": "Udgiv kursus",
         "determines": "Dette afgør, om dit kursus vises på din landingsside",
         "published": "Udgivet",
@@ -865,14 +888,15 @@
           "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
           "unlock_all": "Lås alle op"
         },
-        "generate_link": "Generer nyt link",
-        "open_link": "Åbn link i ny fane",
-        "copy_link": "Kopiér link",
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
-        "go_to_completion_deadline": "Gå til fuldførelsesfristen",
+        "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
-        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline."
+        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "go_to_completion_deadline": "Gå til fuldførelsesfristen",
+        "generate_link": "Generer nyt link",
+        "open_link": "Åbn link i ny fane",
+        "copy_link": "Kopiér link"
       },
       "analytics": {
         "title": "Analyse"
@@ -926,7 +950,8 @@
           "join_course": "Deltag i kursus",
           "enrolled_success": "Du er tilmeldt dette kursus.",
           "enrolled_verify_email": "Du er tilmeldt! Bekræft din e-mail for at få adgang til dette kursus.",
-          "student_limit_reached": "{orgName} har nået sin elevkapacitet. Kontakt venligst din organisations administrator."
+          "student_limit_reached": "{orgName} har nået sin elevkapacitet. Kontakt venligst din organisations administrator.",
+          "members_only": "Kun medlemmer af denne organisation kan tilmelde sig. Bed en administrator om en invitation."
         },
         "pricing_section": {
           "free": "Gratis",
@@ -958,7 +983,13 @@
             "yes": "Ja",
             "percent": "Rabatprocent",
             "gift": "Om gave",
-            "payment_required": "Et betalingslink er påkrævet for betalte kurser"
+            "payment_required": "Et betalingslink er påkrævet for betalte kurser",
+            "enable_paid": "Aktiver betalt",
+            "payment_invalid_url": "Indtast venligst en gyldig webadresse (f.eks. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy eller et hvilket som helst betalingslink",
+            "percentage_helper": "I procent %",
+            "gift_on_completion": "Gave ved færdiggørelse",
+            "payment_cost_required": "Betalte kurser skal have en pris på over 0"
           },
           "instructor_form": {
             "upload": "Instruktør logo",
@@ -1015,7 +1046,9 @@
             "curriculum": "Læreplan",
             "chips": "Færdigheder og værktøjer",
             "skills": "Færdigheder du får",
-            "tools": "Værktøjer du lærer"
+            "tools": "Værktøjer du lærer",
+            "navigation": "Navigation",
+            "footer": "Sidefod"
           },
           "skills_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
           "tools_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
@@ -1118,6 +1151,13 @@
         "you": "Dig",
         "pending": "Afventer",
         "name": "Navn",
+        "learner": "Deltager",
+        "progress": "Fremskridt",
+        "stage": "Fase",
+        "last_login_at": "Sidste login",
+        "enrolled_at": "Tilmeldt",
+        "certificate_earned": "Certifikat opnået",
+        "not_started": "Ikke startet",
         "role": "Rolle",
         "action": "Handling",
         "feedback": "Kopieret e-mail til udklipsholder",
@@ -1375,7 +1415,17 @@
           "title": "Versionshistorik",
           "fetch_more_versions": "Hent flere versioner",
           "current_version": "Nuværende version",
-          "restore_version": "Gendan denne version"
+          "restore_version": "Gendan denne version",
+          "edit_count": "{count, plural, one {# redigering} other {# redigeringer}}",
+          "today": "I dag",
+          "yesterday": "I går",
+          "by_author": "af {name}",
+          "empty": "Ingen versioner endnu",
+          "kind": {
+            "auto": "Automatisk gemning",
+            "manual": "Gemt version",
+            "publish": "Udgivet"
+          }
         },
         "poll": {
           "voted": "Stemte",
@@ -2204,6 +2254,14 @@
           "watch_threshold": "Segrænse (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Lektionskommentarer",
+            "description": "Vælg, om elever kan se og tilføje kommentarer til denne lektion.",
+            "enabled": "Kommentarer aktiveret",
+            "disabled": "Kommentarer deaktiveret",
+            "disabled_by_course": "Kommentarer er deaktiveret for hele kurset, så denne lektionsindstilling kan ikke ændres.",
+            "change_course_setting": "Skift dette i kursusindstillingerne"
+          },
           "progression": {
             "heading": "Progression",
             "intro": "Vælg hvordan elever fuldfører denne lektion og bevæger sig gennem kurset.",
@@ -2263,7 +2321,9 @@
           "starts_in": "Starter i",
           "session_ended": "Session afsluttet",
           "link_copied": "Linket er kopieret"
-        }
+        },
+        "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -2329,7 +2389,8 @@
           "description": "Er du sikker på, at du vil slette dette feed?",
           "no": "Nej",
           "yes": "Ja"
-        }
+        },
+        "student_body_content": "Der er endnu ikke oprettet nogen opslag til dette kursus."
       },
       "compliance": {
         "title": "Overholdelse",
@@ -2464,7 +2525,8 @@
       "nav_landing_page": "Landingsside",
       "nav_settings": "Indstillinger",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "AI underviser"
+      "nav_ai_tutor": "AI underviser",
+      "exit_course": "Forlad kursus"
     },
     "completion": {
       "modal": {
@@ -2632,7 +2694,12 @@
         "copy_course_url": "Kopiér kursus-URL"
       },
       "due_date": "Forfalder",
-      "valid_until": "Gælder indtil kl"
+      "valid_until": "Gælder indtil kl",
+      "student_empty_title": "Ingen kurser endnu",
+      "student_empty_description": "Der er endnu ingen kurser tilgængelige i denne organisation. Tjek venligst tilbage senere.",
+      "updated_at": "Opdateret {date}",
+      "lessons_count": "{count, plural, one {# lektion} other {# lektioner}}",
+      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}"
     },
     "course_filter": {
       "date_created_newest": "Oprettelsesdato: Nyeste først",
@@ -2867,6 +2934,7 @@
     "discussion": "Diskussion",
     "people": "Mennesker",
     "goto_lms": "Gå til LMS",
+    "join_academy": "Tilmeld dig akademiet",
     "goto_home": "Gå til ClassroomIO Home",
     "login": "Log ind",
     "signup": "Tilmeld dig",
@@ -3324,6 +3392,9 @@
           "remove": "Fjern navigationslink"
         },
         "hero": {
+          "eyebrow": "Overlinje",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Valgfri etiket over overskriften (bruges af skabeloner, der understøtter det, f.eks. Tech). Lad feltet være tomt for at skjule det.",
           "heading": "Overskrift",
           "subheading": "Underoverskrift",
           "primary_label": "Etiket med primær knap",
@@ -3357,7 +3428,9 @@
           "footer": "Sidefod",
           "footer_desc": "Brandlinje, sociale medier, linkkolonner og juridisk bundrække.",
           "links": "Links",
-          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser."
+          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser.",
+          "courses": "Kurser",
+          "courses_desc": "Træk for at indstille rækkefølgen af ​​offentliggjorte kurser på landingssiden."
         },
         "links": {
           "toggle": "Vis linksafsnittet",
@@ -3395,6 +3468,16 @@
             "calendar": "Begivenheder",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Træk kurser for at ændre deres rækkefølge på landingssiden.",
+          "empty": "Ingen kurser valgt.",
+          "load_failed": "Kunne ikke indlæse offentliggjorte kurser.",
+          "add_button": "Tilføj",
+          "popover_title": "Vælg kurser",
+          "popover_empty": "Ingen offentliggjorte kurser tilgængelige.",
+          "search_no_results": "Ingen kurser matcher din søgning.",
+          "search_placeholder": "Søg efter kurser..."
         }
       },
       "content": {
@@ -3629,16 +3712,16 @@
           "placeholder": "tilmeldinger er f.eks. deaktiveret, kontakt venligst learn@domain.com for at få adgang"
         },
         "disable_signup": {
-          "label": "Deaktiver tilmelding",
-          "description": "Forhindre nye brugere i at tilmelde sig. Kun inviterede brugere kan deltage."
+          "label": "Bloker alle nye tilmeldinger",
+          "description": "Forhindre helt oprettelse af nye konti. Ingen kan tilmelde sig — heller ikke inviterede brugere. Eksisterende konti påvirkes ikke."
         },
         "allow_public_signups": {
           "label": "Tillad offentlige tilmeldinger",
-          "description": "Når den er deaktiveret, kan kun brugere med et invitationslink tilmelde sig. Aktiver for at tillade alle at oprette en konto."
+          "description": "Når aktiveret, kan alle oprette en konto. Når deaktiveret, kan kun brugere med et gyldigt invitationslink tilmelde sig."
         },
         "internal_enrollment_only": {
           "label": "Kun intern tilmelding",
-          "description": "Når det er aktiveret, er ethvert offentliggjort kursus åbent for selvtilmelding for alle studerende i din organisation. Brug med Disable Signup til at oprette et lukket, kun for inviterede akademi, hvor elever kan deltage i ethvert offentliggjort kursus uden opsætning pr. kursus."
+          "description": "Når det er aktiveret, kan kun eksisterende medlemmer af din organisation tilmelde sig dine kurser. Alle andre skal inviteres - de kan ikke selv tilmelde sig fra en kursusside, selv når kurset er åbent for nye studerende."
         }
       },
       "login": {
@@ -3832,13 +3915,17 @@
       "full_name": "Fuldt navn",
       "password": "Din adgangskode",
       "confirm_password": "Bekræft adgangskode",
-      "password_helper_message": "Adgangskoden skal være på mere end 8 tegn",
+      "password_helper_message": "Adgangskoden skal være på 8 eller flere tegn",
       "create_account": "Opret konto"
     },
     "signup_disabled": {
       "title": "Tilmelding deaktiveret",
       "invite_only_message": "Tilmelding er kun for invitationer. Brug venligst et invitationslink til at oprette en konto.",
       "go_to_login": "Gå til Login"
+    },
+    "reset_password": {
+      "heading": "Ny adgangskode",
+      "description": "Indtast dine nye adgangskodeoplysninger"
     },
     "continue_with": "Eller fortsæt med"
   },
@@ -3962,7 +4049,11 @@
     "resend": "Send bekræftelseskode igen",
     "resend_in": "Send bekræftelse ind igen",
     "seconds": "sekunder",
-    "snackbar_error": "fejl under afsendelse af kode"
+    "snackbar_error": "fejl under afsendelse af kode",
+    "wrong_address": "Tilmeldt med den forkerte adresse?",
+    "switch_account": "Skift konto",
+    "confirm_link_prefix": "Klik på linket, vi sendte til",
+    "confirm_link_suffix": "for at bekræfte din e-mail"
   },
   "public_courses": {
     "page_title": "Kurser - ClassroomIO",
@@ -4062,8 +4153,11 @@
         "accepted": "Denne invitation er allerede blevet brugt.",
         "invalid": "Dette invitationslink er ikke gyldigt.",
         "joined": "Tilsluttet organisation",
-        "join_failed": "Kunne ikke deltage i organisationen"
-      }
+        "join_failed": "Kunne ikke deltage i organisationen",
+        "try_again": "Prøv igen"
+      },
+      "not_found": "Denne invitation er ikke længere tilgængelig.",
+      "loading": "Indlæser invitation..."
     },
     "link": {
       "page_title": "Tilmeld dig {orgName} på ClassroomIO",
@@ -4570,7 +4664,11 @@
         "mobile": "Mobil",
         "tablet": "Tablet",
         "desktop": "Desktop"
-      }
+      },
+      "current_version": "Nuværende version",
+      "active_badge": "Aktiv",
+      "active_badge_description": "Denne version er i øjeblikket live på din indlejring",
+      "upgrade_callout": "Opgrader for at låse op for brugerdefinerede temaer, farver, typografi og styling."
     },
     "tabs": {
       "select_courses": "Vælg Kurser",
@@ -5036,6 +5134,62 @@
         "save": "Gem",
         "cancel": "Annuller"
       }
+    }
+  },
+  "invite_link": {
+    "tab_label": "Invitationslink",
+    "title": "Invitationslink",
+    "description": "Alle med dette link kan deltage. Del det i stedet for at indtaste e-mails én efter én.",
+    "course_description": "Alle med dette link kan deltage i dette kursus som studerende. Del det i stedet for at indtaste e-mails én efter én.",
+    "cohort_description": "Alle med dette link kan deltage i denne kohorte og alle kurser i den. Del det i stedet for at indtaste e-mails én efter én.",
+    "generate": "Opret invitationslink",
+    "copy": "Kopier invitationslink",
+    "copied": "Invitationslink kopieret",
+    "copy_failed": "Kunne ikke kopiere invitationslinket",
+    "toggle_label": "Linket er aktivt",
+    "disabled_notice": "Dette link er deaktiveret. Ingen kan deltage med det, før du aktiverer det igen.",
+    "join_count": "{count} personer har tilmeldt sig via dette link",
+    "snackbar": {
+      "enabled": "Invitationslink aktiveret",
+      "disabled": "Invitationslink deaktiveret"
+    },
+    "join": {
+      "page_title": "Tilmeld dig {resourceName} på ClassroomIO",
+      "invitation": "Du er blevet inviteret til at deltage i {resourceName} på {orgName}.",
+      "course_button": "Tilmeld dig kurset",
+      "cohort_button": "Tilmeld dig kohorte",
+      "disabled": "Dette invitationslink er blevet deaktiveret.",
+      "closed": "Dette accepterer ikke længere nye medlemmer.",
+      "succeeded": "Du er tilmeldt",
+      "failed": "Kunne ikke deltage. Prøv igen."
+    },
+    "load_failed": "Kunne ikke indlæse invitationslinket",
+    "generate_failed": "Kunne ikke oprette invitationslinket",
+    "toggle_failed": "Kunne ikke opdatere invitationslinket"
+  },
+  "lms": {
+    "view_landing_page": "Hjem"
+  },
+  "notifications": {
+    "title": "Notifikationer",
+    "empty_title": "Ingen notifikationer",
+    "empty_description": "Du er helt opdateret. Nye notifikationer vises her.",
+    "refresh": "Opdater",
+    "pending_invite": {
+      "heading": "Organisationsinvitation",
+      "body": "{orgName} inviterede dig til at deltage som {role}.",
+      "action": "Se invitation"
+    },
+    "latest": "Seneste",
+    "only_show_unread": "Vis kun ulæste",
+    "unread": "Ulæste",
+    "more_options": "Flere muligheder",
+    "give_feedback": "Giv feedback",
+    "watching_empty_title": "Intet at se endnu",
+    "watching_empty_description": "Opdateringer om elementer, du følger, vises her.",
+    "tabs": {
+      "direct": "Direkte",
+      "watching": "Ser"
     }
   }
 }

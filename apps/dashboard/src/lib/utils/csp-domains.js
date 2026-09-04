@@ -33,6 +33,7 @@ const saasDefaults = {
     'wss://*.classroomio.com',
     'https://assets.cdn.clsrio.com',
     'https://cdn.plyr.io',
+    'https://widget.userjot.com',
     'https://*.posthog.com',
     'https://umami.hz.oncws.com',
     'https://*.r2.cloudflarestorage.com',
@@ -49,7 +50,8 @@ const saasDefaults = {
     'https://www.google.com',
     'https://google.com',
     'https://drive.google.com',
-    'https://docs.google.com'
+    'https://docs.google.com',
+    'https://widget.userjot.com'
   ],
   fontSrc: ['https://fonts.gstatic.com', 'https://cdn.plyr.io'],
   mediaSrc: ['https:']

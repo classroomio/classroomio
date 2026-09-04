@@ -13,11 +13,17 @@
   interface Props {
     /** Width classes matching the page content column (e.g. mx-auto w-full max-w-3xl). */
     class?: string;
-    /** Tailwind bottom offset class for the collapsed bar (e.g. bottom-4, bottom-16). */
+    /** Tailwind bottom offset class for the collapsed bar (e.g. bottom-4, bottom-24). */
     bottomClass?: string;
+    /** Tailwind bottom offset class for the expanded input dock (e.g. bottom-0, bottom-24). */
+    expandedBottomClass?: string;
   }
 
-  let { class: contentClass = 'mx-auto w-full max-w-3xl', bottomClass = 'bottom-4' }: Props = $props();
+  let {
+    class: contentClass = 'mx-auto w-full max-w-3xl',
+    bottomClass = 'bottom-4',
+    expandedBottomClass = 'bottom-0'
+  }: Props = $props();
 
   const pageShellClass = 'mx-auto w-[90%] max-w-4xl px-3 sm:px-4 lg:max-w-5xl';
 
@@ -116,7 +122,7 @@
 
 {#if expanded}
   <div
-    class="ui:bg-background ui:border-border fixed right-0 bottom-0 left-0 z-40 border-t py-3 shadow-sm md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
+    class="ui:bg-background ui:border-border fixed right-0 {expandedBottomClass} left-0 z-50 border-t py-3 shadow-sm md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
     in:fly={expandIn}
     out:fly={expandOut}
   >
@@ -128,7 +134,7 @@
           rows={1}
           placeholder={$t('ai_assistant.content_input_placeholder')}
           aria-label={$t('ai_assistant.ask_ai_input_aria')}
-          class="ui:min-h-10 ui:max-h-64 ui:resize-none ui:rounded-none ui:shadow-none"
+          class="max-h-64 min-h-10 resize-none rounded-none shadow-none"
           onkeydown={handleTextareaKeydown}
           onblur={handleTextareaBlur}
         />
@@ -137,7 +143,7 @@
   </div>
 {:else}
   <div
-    class="pointer-events-none fixed right-0 {bottomClass} left-0 z-40 md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
+    class="pointer-events-none fixed right-0 {bottomClass} left-0 z-50 md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
     in:fade={collapseIn}
     out:fade={collapseOut}
   >
@@ -145,13 +151,13 @@
       <div class={`flex justify-center ${contentClass}`}>
         <Button
           variant="outline"
-          class="ui:bg-background ui:dark:bg-background ui:shadow-sm pointer-events-auto"
+          class="ui:bg-background ui:dark:bg-background pointer-events-auto shadow-sm"
           aria-label={$t('ai_assistant.ask_ai_expand_aria')}
           onclick={() => expand()}
           onmouseenter={() => expand()}
         >
           {$t('ai_assistant.ask_ai')}
-          <Separator orientation="vertical" class="ui:!h-4" />
+          <Separator orientation="vertical" class="h-4!" />
           <span class="ui:text-muted-foreground flex items-center gap-0.5 font-normal">
             {#if isMac}
               <Kbd.Root>⌘</Kbd.Root>

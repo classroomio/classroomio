@@ -72,9 +72,9 @@ export function createDefaultFooterConfig(): OrgLandingPageFooterConfig {
     bottom: {
       text: '',
       links: [
-        { id: newFooterLinkId(), label: 'Terms', href: '/terms' },
-        { id: newFooterLinkId(), label: 'Privacy', href: '/privacy' },
-        { id: newFooterLinkId(), label: 'Contact', href: '#contact' }
+        { id: newFooterLinkId(), label: 'Terms', href: '#' },
+        { id: newFooterLinkId(), label: 'Privacy', href: '#' },
+        { id: newFooterLinkId(), label: 'Contact', href: '#' }
       ]
     }
   };
@@ -519,8 +519,17 @@ function normalizeHero(hero: NonNullable<LegacyLandingPageJson['hero']>): OrgLan
         }
       : undefined,
     image: normalizeText(hero.image, ''),
-    stats: normalizeHeroStats((hero as { stats?: unknown }).stats)
+    stats: normalizeHeroStats((hero as { stats?: unknown }).stats),
+    eyebrow: normalizeHeroEyebrow(hero.eyebrow)
   };
+}
+
+function normalizeHeroEyebrow(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  return value.trim();
 }
 
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
@@ -655,6 +664,10 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       : undefined;
     const courseSlug = typeof courseRecord.slug === 'string' && courseRecord.slug.length > 0 ? courseRecord.slug : '';
     const courseCost = typeof courseRecord.cost === 'number' ? courseRecord.cost : undefined;
+    const courseIsPaid =
+      typeof metadataRecord?.paymentEnabled === 'boolean'
+        ? metadataRecord.paymentEnabled
+        : typeof courseCost === 'number' && courseCost > 0;
     const courseCurrency = typeof courseRecord.currency === 'string' ? courseRecord.currency : undefined;
     const lessonCount = typeof courseRecord.lessonCount === 'number' ? courseRecord.lessonCount : undefined;
     const exerciseCount = typeof courseRecord.exerciseCount === 'number' ? courseRecord.exerciseCount : undefined;
@@ -676,7 +689,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       description,
       type,
       isPublished,
-      cost: courseCost,
+      cost: courseIsPaid ? courseCost : 0,
       currency: courseCurrency,
       lessonCount,
       exerciseCount,
@@ -690,7 +703,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       tags,
       image,
       link: courseSlug ? `/course/${courseSlug}` : undefined,
-      price,
+      price: courseIsPaid ? price : undefined,
       duration,
       level
     };
@@ -769,20 +782,44 @@ const NAV_SNIPPET_THEMES: ReadonlySet<LandingPageThemeKey> = new Set([
   'vibrant'
 ]);
 
+/**
+ * Checks whether a landing page theme renders its navigation inside the hero component.
+ *
+ * @param theme - The landing page theme key.
+ * @returns `true` if navigation is rendered inside the hero section.
+ */
 export function themeRendersNavInsideHero(theme: LandingPageThemeKey): boolean {
   return NAV_SNIPPET_THEMES.has(theme);
 }
 
+/**
+ * Resolves the CSS class string for the landing page header shell container.
+ *
+ * @param _theme - The landing page theme key.
+ * @returns Tailwind CSS utility class string for header background, foreground, and font.
+ */
 export function themeHeaderShellClass(_theme: LandingPageThemeKey): string {
-  return 'ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans';
+  return 'bg-[var(--landing-bg)] text-[var(--landing-fg)] font-sans';
 }
 
 export { themeStyle } from '@cio/ui/custom/org-landing-page/theme-style';
 
+/**
+ * Dynamically imports the course card component for a given landing page theme.
+ *
+ * @param theme - The landing page theme key.
+ * @returns A promise resolving to the theme's course card component.
+ */
 export async function importThemeCourseCard(theme: LandingPageThemeKey) {
   return (await importThemeBundle(theme)).courseCard;
 }
 
+/**
+ * Dynamically imports the navigation and hero components for a given landing page theme.
+ *
+ * @param theme - The landing page theme key.
+ * @returns A promise resolving to an object containing NavComponent and HeroComponent.
+ */
 export async function importThemeNavHero(theme: LandingPageThemeKey) {
   const mod = await importThemeBundle(theme);
   return { NavComponent: mod.nav, HeroComponent: mod.hero };

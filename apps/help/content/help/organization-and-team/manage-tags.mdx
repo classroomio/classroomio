@@ -1,0 +1,119 @@
+---
+title: Manage Tags
+description: Create tag groups and tags, assign them to courses, and filter your catalog by tag in ClassroomIO.
+sidebar:
+  order: 6
+---
+
+Tags let you label courses so admins, tutors, and students can filter and find them faster. This guide covers creating tag groups and tags, assigning tags to a course, and filtering your course list by tag. For what tags are and how scope and permissions work, see [Tags](/reference/tags).
+
+## Who does what
+
+- **Admin** — creates and edits tag groups and tags, and sets each tag's color.
+- **Tutor** — assigns existing tags to courses they manage.
+- **Student** — filters and discovers courses using tags; no setup needed.
+
+See [Roles and Permissions](/organization-and-team/roles-and-permissions) for how these roles work elsewhere in the dashboard.
+
+## Create a tag group
+
+Tags are organized into groups, for example `Difficulty`, `Technology`, or `Job Offering`. ClassroomIO's own create-tag form calls this a tag's **Category**. You need at least one tag group before you can create a tag.
+
+<Steps>
+<Step>
+### Open Tags
+
+From the admin dashboard sidebar, under **Content**, click **Tags**. This opens `/org/[slug]/tags`.
+
+</Step>
+
+<Step>
+### Create the group
+
+If you don't have a tag group yet, click **Create Tag Group** in the empty state. Otherwise, open the dropdown next to **Create Tag** and choose **Create Tag Group**. Fill in **Group Name** and an optional **Description**, then click **Save**.
+
+</Step>
+</Steps>
+
+Repeat for each category you want to filter by. A course can carry tags from more than one group at once, for example one `Technology` tag and one `Difficulty` tag.
+
+## Create a tag
+
+<Steps>
+<Step>
+### Open the create-tag form
+
+Click **Create Tag** in the top right of the Tags page. This button stays disabled until at least one tag group exists.
+
+</Step>
+
+<Step>
+### Fill in the tag
+
+Enter a **Tag Name** and an optional **Description**. Use the **Category** dropdown to choose which tag group this tag belongs to.
+
+</Step>
+
+<Step>
+### Pick a color
+
+Click the color swatch and choose one of the 10 preset colors from the popover. The color follows the tag everywhere it shows up: the Tags table, the course settings tag picker, and course cards.
+
+</Step>
+
+<Step>
+### Save
+
+Click **Save**. The tag appears in its group's rows on the Tags page.
+
+</Step>
+</Steps>
+
+To change a tag or group later, hover its row and open the actions menu, then choose **Edit Tag** or **Edit Group**.
+
+## Assign tags to a course
+
+Tags aren't attached to a course automatically. You assign them per course.
+
+<Steps>
+<Step>
+### Open the course's Settings tab
+
+From the **Courses** list, open a course, then go to **Settings**.
+
+</Step>
+
+<Step>
+### Add tags
+
+Scroll to the **Tags** section and click **Add tag**. A popover lists every tag grouped by category. Click a tag to add it, click it again to remove it. Selected tags show as chips above the picker; you can also remove one directly from its chip.
+
+</Step>
+
+<Step>
+### Save changes
+
+Click **Save Changes**. This is the same screen a Tutor uses to tag a course they're assigned to. No separate admin action is needed for that step.
+
+</Step>
+</Steps>
+
+## Filter courses by tag
+
+Once courses are tagged, filter by tag using the same URL query pattern anywhere in the app: `?tags=<comma-separated-tag-slugs>`.
+
+- Single tag: `/org/acme/courses?tags=beginner`
+- Multiple tags: `/org/acme/courses?tags=beginner,react`
+- Public catalog (your academy's `/courses` page): `/courses?tags=beginner,react`
+
+You don't have to build the URL by hand. On the admin **Courses** list, use the tag filter control above the course list to check one or more tags. ClassroomIO updates the `?tags=` parameter and reloads the filtered list for you. The public course catalog has its own **Filter** panel with a **Tags** section that works the same way for visitors browsing your academy.
+
+### Deep-link from the Tags page
+
+The **Total Courses** column on the Tags page is a link: click the number next to any tag to jump straight to the admin course list pre-filtered to that tag (`/org/[slug]/courses?tags=<tagSlug>`). Use this to see what's tagged with something before renaming or deleting a tag group.
+
+## Related guides
+
+- [Tags](/reference/tags) — scope, ownership, and where tag filtering shows up
+- [Course](/reference/course) — course settings and admin areas
+- [Roles and Permissions](/organization-and-team/roles-and-permissions) — who can manage tags vs. assign them

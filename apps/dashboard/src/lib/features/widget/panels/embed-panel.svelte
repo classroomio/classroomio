@@ -4,6 +4,7 @@
   import * as Tabs from '@cio/ui/base/tabs';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { t } from '$lib/utils/functions/translations';
+  import WidgetVersionHistory from '../components/widget-version-history.svelte';
   import type { WidgetDetail } from '../utils/types';
 
   interface Props {
@@ -44,30 +45,7 @@
     </Tabs.Content>
   </Tabs.Root>
 
-  {#if detail.versions.length > 0}
-    <div class="space-y-2">
-      <h3 class="text-sm font-semibold">{$t('widgets.editor.version_history')}</h3>
-      {#each detail.versions as version (version.id)}
-        <div class="ui:border-border ui:bg-card/50 flex items-center justify-between rounded-2xl border p-3">
-          <div>
-            <div class="font-medium">v{version.version}</div>
-            <div class="ui:text-muted-foreground text-xs">
-              {new Date(version.publishedAt).toLocaleString(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit'
-              })}
-            </div>
-          </div>
-          <Button variant="outline" size="sm" onclick={() => onRollback(version.id)}>
-            {$t('widgets.actions.restore')}
-          </Button>
-        </div>
-      {/each}
-    </div>
-  {/if}
+  <WidgetVersionHistory {detail} {onRollback} />
 
   <div class="ui:border-border border-t pt-4">
     <Button variant="outline" class="w-full" onclick={onDelete}>

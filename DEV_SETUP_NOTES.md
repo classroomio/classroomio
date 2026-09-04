@@ -98,6 +98,15 @@ pnpm dashboard:dev    # dashboard UI (port 5173)
 > currently trips a turbo concurrency limit. The two scoped commands above are the
 > day-to-day workflow.
 
+> Before starting the dashboard, kill leftover watchers from previous sessions
+> (`pnpm api:dev` alone leaves ~10: `tsc --watch` ×3 + `tsx watch` ×7). macOS caps
+> concurrent FSEvents streams system-wide, and past that cap the `@cio/ui` CSS
+> watcher crashes with `Error: Error starting FSEvents stream`, taking
+> `pnpm dashboard:dev` down with it. Use `pnpm dashboard:dev:fresh` (kills this
+> checkout's leftover watchers, then starts the dashboard), `pnpm dev:kill-watchers`
+> on its own, or `pnpm dev:kill-watchers --all` to also stop other projects'/checkouts'
+> watchers.
+
 ### Step 7 — Log in
 Open http://localhost:5173/login → `admin@test.com` / `123456`.
 
@@ -158,6 +167,7 @@ Seeded accounts use password **`123456`** (verified against the seed's bcrypt ha
 | Login `Invalid email or password` | wrong demo password | Use `admin@test.com` / **`123456`** |
 | Login still fails after upstream fix | API auth env empty | Fill `BETTER_AUTH_SECRET`, `TRUSTED_ORIGINS=http://localhost:5173`, `PUBLIC_SERVER_URL` in `apps/api/.env`, restart API |
 | Changed a `.env` but nothing changed | env is read at process start | Restart the affected `*:dev` server |
+| `[Error: Error starting FSEvents stream]` — `@cio/ui` CSS watcher crashes, `pnpm dashboard:dev` exits | macOS cap on concurrent FSEvents streams hit (stale `api:dev` watchers, other projects' dev servers, editors) | `pnpm dashboard:dev:fresh` (or `pnpm dev:kill-watchers [--all]`, then retry `pnpm dashboard:dev`) |
 
 > After editing any `.env`, **restart** the relevant dev server.
 

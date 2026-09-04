@@ -4,7 +4,7 @@
 
   import { Snackbar } from '$features/ui';
   import { appInitApi } from '$features/app/init.svelte';
-  import PendingInviteModal from '$features/lms/components/pending-invite-modal.svelte';
+  import PendingInviteModal from '$features/invite/components/pending-invite-modal.svelte';
   import { resolveAppOrgParams } from '$features/app/resolve-app-org-params';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
@@ -16,6 +16,7 @@
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
   import AppModeWatcher from '$features/app/app-mode-watcher.svelte';
+  import AppVersionNotifier from '$features/app/app-version-notifier.svelte';
   import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
 
   import '../app.css';
@@ -33,7 +34,8 @@
 
     const sessionUser = data?.locals?.user;
     setupCloudAnalytics(
-      sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined
+      sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined,
+      data.isOrgSite
     );
 
     if (data?.locals?.user) {
@@ -109,6 +111,7 @@
   <MetaTags {...metaTags} />
 
   <Snackbar />
+  <AppVersionNotifier />
 
   {#if appInitApi.pendingOrgInvite}
     <PendingInviteModal
