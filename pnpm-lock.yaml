@@ -1162,6 +1162,9 @@ importers:
       '@cio/email':
         specifier: workspace:*
         version: link:../email
+      '@cio/jobs':
+        specifier: workspace:*
+        version: link:../jobs
       '@cio/question-types':
         specifier: workspace:*
         version: link:../question-types
