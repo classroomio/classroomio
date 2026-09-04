@@ -53,6 +53,7 @@
       try {
         await result;
       } finally {
+        return;
         isPending = false;
       }
     }
