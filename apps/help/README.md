@@ -32,11 +32,19 @@ trailing-slash handling — only `preview` runs the site the way production does
 
 ## Navigation
 
-Unlike `apps/docs`, this app has **no explicit `navigation.sidebar`** in `blume.config.ts`. The
-sidebar is generated from the `content/help` folder tree: one folder per group, each `.mdx` file a
-page. To control a group's label or order, add a `meta.ts` in that folder
-(`export default defineMeta({ title, order })`, from `blume`). To control a page's order within its
-group, set `sidebar: { order: N }` in that page's frontmatter.
+`blume.config.ts` defines an **explicit `navigation.sidebar` array**, which controls group
+membership and order and overrides Blume's default folder-tree/`meta.ts` inference entirely.
+A page must be listed in that array to appear in the sidebar at all — adding a new `.mdx` file
+under `content/help` is not enough by itself. Within a group, page order still comes from each
+page's `sidebar: { order: N }` frontmatter.
+
+## Editing docs without a repo clone
+
+Non-technical writers can edit existing pages through a browser-based CMS (Sveltia) at
+`classroomio.com/help/admin` instead of cloning the repo — see `CMS_GUIDE.md` for how to log in,
+edit, and submit changes for review. Editing existing pages needs no config change; adding a new
+page or reordering groups still needs the `navigation.sidebar` follow-up described above, which
+stays a developer task.
 
 ## How it's served
 

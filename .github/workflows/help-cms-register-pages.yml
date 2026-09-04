@@ -1,0 +1,69 @@
+name: Help CMS register new pages
+
+# Plain pull_request, not pull_request_target — see help-cms-preview.yml for
+# why that's safe here: CMS-authored PRs are always same-repo branches (the
+# `github` backend needs push access to open them at all), so the `if:`
+# below excludes any stray fork PR before this job's write-permission steps
+# ever run.
+#
+# Why this workflow exists: apps/help/blume.config.ts's navigation.sidebar is
+# an explicit array, not inferred from the content folder tree — a page the
+# CMS adds is otherwise invisible in navigation until someone manually adds
+# its path here (see apps/help/scripts/register-sidebar-pages.mjs's own
+# header comment for the full reasoning). This job does that automatically,
+# as an extra commit on the same PR, so the maintainer reviews the content
+# change and its navigation registration together in one diff.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/help/content/help/**'
+      - 'apps/help/scripts/register-sidebar-pages.mjs'
+      - '.github/workflows/help-cms-register-pages.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: help-cms-register-pages-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  register:
+    name: Register new pages in navigation.sidebar
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      # Fetching just the base commit (rather than the whole repo's history
+      # with fetch-depth: 0) is enough for the script's git diff to work.
+      - run: git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: apps/help/.nvmrc
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run register-sidebar-pages
+        id: register
+        run: |
+          pnpm --filter @cio/help run register-sidebar-pages -- "${{ github.event.pull_request.base.sha }}"
+          if [ -n "$(git status --porcelain apps/help/blume.config.ts)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.register.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/help/blume.config.ts
+          git commit -m "chore(help): register new page(s) in navigation.sidebar"
+          git push origin HEAD:"${{ github.event.pull_request.head.ref }}"

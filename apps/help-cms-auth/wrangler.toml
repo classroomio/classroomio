@@ -1,0 +1,16 @@
+name = "cio-help-cms-auth"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+workers_dev = true
+
+# GITHUB_CLIENT_ID is the OAuth App's public client ID — safe as a plain var,
+# it's visible in every authorize-URL redirect anyway. GITHUB_CLIENT_SECRET is
+# NOT set here — run `wrangler secret put GITHUB_CLIENT_SECRET` after deploy.
+[vars]
+GITHUB_CLIENT_ID = ""
+# Comma-separated origins allowed to initiate /auth (defense-in-depth via
+# Referer/Origin check, not the sole boundary — see src/index.ts).
+ALLOWED_ORIGINS = "https://classroomio.com"
+
+[observability]
+enabled = true

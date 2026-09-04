@@ -722,6 +722,21 @@ importers:
         specifier: 4.1.18
         version: 4.1.18
     devDependencies:
+      ts-morph:
+        specifier: 28.0.0
+        version: 28.0.0
+      wrangler:
+        specifier: 4.86.0
+        version: 4.86.0(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+
+  apps/help-cms-auth:
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250109.0
+        version: 4.20260511.1
+      typescript:
+        specifier: ^5.5.2
+        version: 5.9.3
       wrangler:
         specifier: 4.86.0
         version: 4.86.0(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6)
@@ -7737,6 +7752,9 @@ packages:
       '@tiptap/core': ^3.14.0
       '@tiptap/pm': ^3.14.0
 
+  '@ts-morph/common@0.29.0':
+    resolution: {integrity: sha512-35oUmphHbJvQ/+UTwFNme/t2p3FoKiGJ5auTjjpNTop2dyREspirjMy82PLSC1pnDJ8ah1GU98hwpVt64YXQsg==}
+
   '@tsconfig/node10@1.0.12':
     resolution: {integrity: sha512-UCYBaeFvM11aU2y3YPZ//O5Rhj+xKyzy7mvcIoAjASbigy8mHMryP5cK7dgjlz2hWxh1g5pLw084E0a/wlUSFQ==}
 
@@ -9180,6 +9198,9 @@ packages:
   co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
+
+  code-block-writer@13.0.3:
+    resolution: {integrity: sha512-Oofo0pq3IKnsFtuHqSF7TqBfr71aeyZDVJ0HpmqB7FBM2qEigL0iPONSCZSO9pE9dZTAxANe5XHG9Uy0YMv8cg==}
 
   collapse-white-space@2.1.0:
     resolution: {integrity: sha512-loKTxY1zCOuG4j9f6EPnuyyYkf58RnhhWTvRoZEokgB+WbdXehfjFviyOVYkqzEWz1Q5kRiZdBYS5SwxbQYwzw==}
@@ -14693,6 +14714,9 @@ packages:
       jest-util:
         optional: true
 
+  ts-morph@28.0.0:
+    resolution: {integrity: sha512-Wp3tnZ2bzwxyTZMtgWVzXDfm7lB1Drz+y9DmmYH/L702PQhPyVrp3pkou3yIz4qjS14GY9kcpmLiOOMvl8oG1g==}
+
   ts-node@10.9.2:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
@@ -14888,10 +14912,6 @@ packages:
   undici@5.29.0:
     resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
     engines: {node: '>=14.0'}
-
-  undici@7.24.6:
-    resolution: {integrity: sha512-Xi4agocCbRzt0yYMZGMA6ApD7gvtUFaxm4ZmeacWI4cZxaF6C+8I8QfofC20NAePiB/IcvZmzkJ7XPa471AEtA==}
-    engines: {node: '>=20.18.1'}
 
   undici@7.24.8:
     resolution: {integrity: sha512-6KQ/+QxK49Z/p3HO6E5ZCZWNnCasyZLa5ExaVYyvPxUwKtbCPMKELJOqh7EqOle0t9cH/7d2TaaTRRa6Nhs4YQ==}
@@ -22777,6 +22797,12 @@ snapshots:
       '@tiptap/core': 3.14.0(@tiptap/pm@3.14.0)
       '@tiptap/pm': 3.14.0
 
+  '@ts-morph/common@0.29.0':
+    dependencies:
+      minimatch: 10.2.5
+      path-browserify: 1.0.1
+      tinyglobby: 0.2.17
+
   '@tsconfig/node10@1.0.12': {}
 
   '@tsconfig/node12@1.0.11': {}
@@ -24702,6 +24728,8 @@ snapshots:
   cluster-key-slot@1.1.2: {}
 
   co@4.6.0: {}
+
+  code-block-writer@13.0.3: {}
 
   collapse-white-space@2.1.0: {}
 
@@ -27639,7 +27667,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.1
-      undici: 7.24.6
+      undici: 7.24.8
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -31277,6 +31305,11 @@ snapshots:
       babel-jest: 29.7.0(@babel/core@7.28.5)
       jest-util: 29.7.0
 
+  ts-morph@28.0.0:
+    dependencies:
+      '@ts-morph/common': 0.29.0
+      code-block-writer: 13.0.3
+
   ts-node@10.9.2(@types/node@20.19.27)(typescript@5.9.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
@@ -31517,8 +31550,6 @@ snapshots:
   undici@5.29.0:
     dependencies:
       '@fastify/busboy': 2.1.1
-
-  undici@7.24.6: {}
 
   undici@7.24.8: {}
 

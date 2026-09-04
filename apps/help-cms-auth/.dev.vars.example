@@ -1,0 +1,8 @@
+# Copy to .dev.vars (gitignored) for local `wrangler dev`.
+# .dev.vars values override wrangler.toml's [vars] for local runs only.
+
+GITHUB_CLIENT_ID=your-dev-oauth-app-client-id
+GITHUB_CLIENT_SECRET=your-dev-oauth-app-client-secret
+# Overrides the production-only value in wrangler.toml so /auth accepts
+# requests from the local apps/help dev server instead of classroomio.com.
+ALLOWED_ORIGINS=http://localhost:4321
