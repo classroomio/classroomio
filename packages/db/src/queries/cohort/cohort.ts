@@ -188,7 +188,8 @@ export async function searchLmsCohorts(
 }
 
 export async function getExistingCohortMembers(
-  pairs: Array<{ cohortId: string; profileId: string }>
+  pairs: Array<{ cohortId: string; profileId: string }>,
+  dbClient: DbOrTxClient = db
 ): Promise<Set<string>> {
   if (pairs.length === 0) {
     return new Set();
@@ -198,7 +199,7 @@ export async function getExistingCohortMembers(
     const cohortIds = [...new Set(pairs.map((pair) => pair.cohortId))];
     const profileIds = [...new Set(pairs.map((pair) => pair.profileId))];
 
-    const rows = await db
+    const rows = await dbClient
       .select({ cohortId: schema.cohortMember.cohortId, profileId: schema.cohortMember.profileId })
       .from(schema.cohortMember)
       .where(and(inArray(schema.cohortMember.cohortId, cohortIds), inArray(schema.cohortMember.profileId, profileIds)));

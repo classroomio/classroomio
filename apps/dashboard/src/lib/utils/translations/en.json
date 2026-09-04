@@ -1406,6 +1406,7 @@
       "continue_to_layout": "Continue to layout",
       "pick_layout": "Choose a layout",
       "pick_design": "Appearance",
+      "upgrade_callout": "Upgrade to unlock custom themes, colors, typography, and styling.",
       "panel_subtitle": "Configure how your widget looks and behaves.",
       "embed_share": "Embed & share",
       "discard_short": "Discard",
@@ -1887,6 +1888,8 @@
     "course_card": {
       "empty_title": "No Courses Created",
       "empty_description": "Share your knowledge with the world by creating engaging courses for your students.",
+      "student_empty_title": "No Courses Yet",
+      "student_empty_description": "There are no courses available in this organization yet. Please check back later.",
       "context_menu": {
         "open": "Open",
         "clone": "Clone",
@@ -1910,6 +1913,9 @@
       "actions_menu_aria": "Course actions",
       "due_date": "Due",
       "valid_until": "Valid until",
+      "updated_at": "Updated {date}",
+      "lessons_count": "{count, plural, one {# lesson} other {# lessons}}",
+      "exercises_count": "{count, plural, one {# exercise} other {# exercises}}",
       "tags_overflow_aria": "{count} more tags",
       "list_view": {
         "title": "Title",
@@ -2117,6 +2123,7 @@
         },
         "body_header": "No post yet",
         "body_content": "Make a post to your class. Start by clicking on the Add button.",
+        "student_body_content": "No posts have been made to this class yet.",
         "pinned": "Pinned",
         "other_posts": "Other Posts",
         "user": "User",
@@ -2198,6 +2205,14 @@
           "watch_threshold": "Watch threshold (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Lesson comments",
+            "description": "Choose whether students can view and add comments on this lesson.",
+            "enabled": "Comments enabled",
+            "disabled": "Comments disabled",
+            "disabled_by_course": "Comments are disabled for the entire course, so this lesson setting cannot be changed.",
+            "change_course_setting": "Change this in course settings"
+          },
           "progression": {
             "heading": "Progression",
             "intro": "Choose how students complete this lesson and move through the course.",
@@ -2251,6 +2266,7 @@
           "link_copied": "Link copied"
         },
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
+        "student_share_your_knowledge": "No lessons have been added to this course yet. Please check back later.",
         "section_prompt": {
           "cta": "Enable Sections",
           "header": "Enable Sections",
@@ -2312,6 +2328,7 @@
         "no_tutor": "No tutor added",
         "body_header": "No lessons yet",
         "body_content": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
+        "student_body_content": "No lessons have been added to this course yet. Check back later.",
         "lesson_nav": {
           "materials": "Materials",
           "exercises": "Exercises"
@@ -3106,7 +3123,17 @@
           "title": "Version history",
           "fetch_more_versions": "Fetch more versions",
           "current_version": "Current version",
-          "restore_version": "Restore this version"
+          "restore_version": "Restore this version",
+          "edit_count": "{count, plural, one {# edit} other {# edits}}",
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "kind": {
+            "auto": "Autosave",
+            "manual": "Saved version",
+            "publish": "Published"
+          },
+          "by_author": "by {name}",
+          "empty": "No versions yet"
         }
       },
       "attendance": {
@@ -3686,6 +3713,12 @@
         "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order.",
         "progression_mode_free": "Free — unlocked content is accessible",
         "progression_mode_sequential": "Sequential — complete prior items to unlock next",
+        "comments": {
+          "title": "Lesson comments",
+          "description": "Allow students to view and add comments across lessons in this course. Individual lessons can still disable comments.",
+          "enabled": "Comments enabled for this course",
+          "disabled": "Comments disabled for this course"
+        },
         "lesson_download": "Lesson download",
         "available": "Let registered students download lessons as PDF.",
         "course_download": "Course download",
@@ -4131,6 +4164,9 @@
     "help": "Help",
     "settings": "Settings",
     "cohorts": "Cohorts"
+  },
+  "lms": {
+    "view_landing_page": "View landing page"
   },
   "my_learning": {
     "heading": "My Learning",

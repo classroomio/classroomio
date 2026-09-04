@@ -1,0 +1,118 @@
+name: Docs review label
+
+# pull_request_target so labeling/commenting works on fork PRs (plain
+# pull_request gives forks a read-only token). Safe here because we only
+# check out the base branch to read the glob config below, never PR head
+# code.
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  docs-label:
+    name: Check for user-facing changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filters: .github/docs-review/globs.yml
+
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const label = 'needs-docs-review';
+            const marker = '<!-- classroomio-docs-review -->';
+            const guideUrl = `https://github.com/${{ github.repository }}/blob/main/apps/docs/CONTRIBUTING.md`;
+            const pr = context.payload.pull_request;
+            const isUserFacing = '${{ steps.filter.outputs.user_facing }}' === 'true';
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
+            });
+            const existingComment = comments.find(
+              (c) => c.user.type === 'Bot' && c.body.includes(marker)
+            );
+
+            try {
+              const hasLabel = pr.labels.some((l) => l.name === label);
+
+              if (isUserFacing) {
+                if (!hasLabel) {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    labels: [label],
+                  });
+                }
+
+                const body = `${marker}
+            This PR changes a route, nav item, component, or user-visible string, so it's labeled \`${label}\`.
+
+            Please add a [user guide, feature reference, or changelog line](${guideUrl}) before merging, whichever fits. If nothing here needs docs, a maintainer can remove the label.
+
+            This is advisory only. It won't block your merge.`;
+
+                if (existingComment) {
+                  await github.rest.issues.updateComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: existingComment.id,
+                    body,
+                  });
+                } else {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    body,
+                  });
+                }
+
+                // TODO(make-blocking): change core.notice below to core.setFailed
+                // once `needs-docs-review` is a required status check. Don't add
+                // docs-validate.yml to required checks when you do this.
+                // See apps/docs/WORKFLOW.md.
+                core.notice('needs-docs-review applied.');
+              } else {
+                if (hasLabel) {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    name: label,
+                  });
+                }
+
+                if (existingComment) {
+                  await github.rest.issues.updateComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: existingComment.id,
+                    body: `${marker}\nThe user-facing changes that triggered this were removed. \`${label}\` no longer applies.`,
+                  });
+                }
+
+                core.notice('No user-facing changes.');
+              }
+            } catch (error) {
+              core.warning(`docs-label failed to update label/comment: ${error.message}`);
+            }

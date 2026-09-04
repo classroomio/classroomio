@@ -61,8 +61,36 @@
     {
       "idx": 8,
       "version": "7",
-      "when": 1787953674643,
-      "tag": "0008_invite_link",
+      "when": 1788108878281,
+      "tag": "0008_add_lesson_comments_setting",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788388971877,
+      "tag": "0009_lesson_version_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788389000010,
+      "tag": "0010_add_missing_unique_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788389000011,
+      "tag": "0011_drop_lesson_language_history_trigger",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1788485223099,
+      "tag": "0012_invite_link",
       "breakpoints": true
     }
   ]

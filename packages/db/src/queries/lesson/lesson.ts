@@ -53,6 +53,87 @@ export async function getLessonById(lessonId: string): Promise<LessonById | null
   }
 }
 
+export interface LessonCommentsAvailability {
+  lessonId: string;
+  courseId: string;
+  organizationCommentsEnabled: boolean;
+  lessonCommentsEnabled: boolean;
+  courseCommentsEnabled: boolean;
+}
+
+type LessonCommentsAvailabilityRow = Omit<
+  LessonCommentsAvailability,
+  'courseCommentsEnabled' | 'organizationCommentsEnabled'
+> & {
+  courseMetadata: typeof schema.course.$inferSelect.metadata;
+  organizationCustomization: typeof schema.organization.$inferSelect.customization | null;
+};
+
+function mapLessonCommentsAvailability(row: LessonCommentsAvailabilityRow): LessonCommentsAvailability {
+  return {
+    lessonId: row.lessonId,
+    courseId: row.courseId,
+    organizationCommentsEnabled: row.organizationCustomization?.apps?.comments === true,
+    lessonCommentsEnabled: row.lessonCommentsEnabled,
+    courseCommentsEnabled: row.courseMetadata.commentsEnabled ?? true
+  };
+}
+
+export async function getLessonCommentsAvailability(lessonId: string): Promise<LessonCommentsAvailability | null> {
+  try {
+    const [row] = await db
+      .select({
+        lessonId: schema.lesson.id,
+        courseId: schema.lesson.courseId,
+        organizationCustomization: schema.organization.customization,
+        lessonCommentsEnabled: schema.lesson.commentsEnabled,
+        courseMetadata: schema.course.metadata
+      })
+      .from(schema.lesson)
+      .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(eq(schema.lesson.id, lessonId))
+      .limit(1);
+
+    return row ? mapLessonCommentsAvailability(row) : null;
+  } catch (error) {
+    console.error('getLessonCommentsAvailability error:', error);
+    throw new Error(
+      `Failed to get lesson comments availability for lesson "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getLessonCommentsAvailabilityByCommentId(
+  commentId: number
+): Promise<LessonCommentsAvailability | null> {
+  try {
+    const [row] = await db
+      .select({
+        lessonId: schema.lesson.id,
+        courseId: schema.lesson.courseId,
+        organizationCustomization: schema.organization.customization,
+        lessonCommentsEnabled: schema.lesson.commentsEnabled,
+        courseMetadata: schema.course.metadata
+      })
+      .from(schema.lessonComment)
+      .innerJoin(schema.lesson, eq(schema.lessonComment.lessonId, schema.lesson.id))
+      .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(eq(schema.lessonComment.id, commentId))
+      .limit(1);
+
+    return row ? mapLessonCommentsAvailability(row) : null;
+  } catch (error) {
+    console.error('getLessonCommentsAvailabilityByCommentId error:', error);
+    throw new Error(
+      `Failed to get lesson comments availability for comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface LessonNavInfo {
   id: string;
   courseId: string;
@@ -344,42 +425,5 @@ export async function createLessonLanguages(values: TNewLessonLanguage[]) {
   } catch (error) {
     console.error('createLessonLanguages error:', error);
     throw new Error(`Failed to create lesson languages: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
-
-/**
- * Gets lesson version history for a lesson and locale
- * @param lessonId Lesson ID
- * @param locale Locale
- * @param endRange End range for pagination (0-indexed, inclusive)
- * @returns Array of lesson version history entries
- */
-export async function getLessonVersionHistory(
-  lessonId: string,
-  locale: string,
-  endRange: number
-): Promise<
-  Array<{
-    oldContent: string | null;
-    newContent: string | null;
-    timestamp: string | null;
-    locale: string | null;
-    lessonId: string | null;
-  }>
-> {
-  try {
-    const result = await db
-      .select()
-      .from(schema.lessonVersions)
-      .where(and(eq(schema.lessonVersions.lessonId, lessonId), eq(schema.lessonVersions.locale, locale as any)))
-      .orderBy(desc(schema.lessonVersions.timestamp))
-      .limit(endRange + 1);
-
-    return result;
-  } catch (error) {
-    console.error('getLessonVersionHistory error:', error);
-    throw new Error(
-      `Failed to get lesson version history: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
   }
 }

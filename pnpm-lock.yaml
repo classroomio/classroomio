@@ -29,6 +29,9 @@ importers:
       '@evilmartians/lefthook':
         specifier: ^1.13.6
         version: 1.13.6
+      '@playwright/test':
+        specifier: ^1.48.2
+        version: 1.57.0
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
@@ -692,6 +695,37 @@ importers:
         specifier: ^3.5.2
         version: 3.5.2(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
 
+  apps/help:
+    dependencies:
+      '@astrojs/mdx':
+        specifier: 7.0.3
+        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@astrojs/markdown-remark@7.2.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.6.1)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      '@tailwindcss/typography':
+        specifier: 0.5.19
+        version: 0.5.19(tailwindcss@4.1.18)
+      '@tailwindcss/vite':
+        specifier: 4.1.18
+        version: 4.1.18(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.6.1)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+      astro:
+        specifier: 7.0.9
+        version: 7.0.9(@astrojs/markdown-remark@7.2.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.6.1)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
+      blume:
+        specifier: 1.2.0
+        version: 1.2.0(d3f8375b6e3f03057eb24d94660d2dc0)
+      mermaid:
+        specifier: ^11.16.0
+        version: 11.16.0
+      tailwindcss:
+        specifier: 4.1.18
+        version: 4.1.18
+    devDependencies:
+      wrangler:
+        specifier: 4.86.0
+        version: 4.86.0(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+
   apps/jobs:
     dependencies:
       '@aws-sdk/client-s3':
@@ -1310,6 +1344,9 @@ importers:
       '@cio/utils':
         specifier: workspace:*
         version: link:../utils
+      '@lucide/svelte':
+        specifier: ^0.562.0
+        version: 0.562.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))
       svelte-inview:
         specifier: ^4.0.4
         version: 4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))
@@ -10264,6 +10301,7 @@ packages:
   eslint@9.39.2:
     resolution: {integrity: sha512-LEyamqS7W5HB3ujJyvi0HQK/dtVINZvd5mAAp9eT5S/ujByGjiZLCzPcHVzuXbpJDJF/cxwHlfceVUDZ2lnSTw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -28341,7 +28379,7 @@ snapshots:
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.14
       dayjs: 1.11.21
-      dompurify: 3.3.3
+      dompurify: 3.4.12
       es-toolkit: 1.49.0
       katex: 0.16.47
       khroma: 2.1.0

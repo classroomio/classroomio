@@ -39,7 +39,7 @@
       <button
         {...props}
         type="button"
-        class="ui:border-border ui:bg-background ui:text-foreground ui:hover:bg-muted focus-visible:ui:ring-primary/40 relative inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border px-2.5 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
+        class="ui:border-border ui:bg-background ui:text-foreground ui:hover:bg-muted ui:focus-visible:ring-primary/40 relative inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border px-2.5 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
         aria-label={$t('courses.tag_filters.filter')}
       >
         <FilterIcon class="size-3.5 shrink-0" />

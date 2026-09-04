@@ -1,5 +1,5 @@
 {
-  "id": "3158dfad-befb-48f3-acbd-9058082141ca",
+  "id": "661a6063-8ab3-4079-bf26-edae142b24f9",
   "prevId": "2fea49d3-beb7-4eb8-b1ea-c799f47d1301",
   "version": "7",
   "dialect": "postgresql",
@@ -6164,195 +6164,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.invite_link": {
-      "name": "invite_link",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "resource_type": {
-          "name": "resource_type",
-          "type": "INVITE_LINK_RESOURCE_TYPE",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "course_id": {
-          "name": "course_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cohort_id": {
-          "name": "cohort_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "role_id": {
-          "name": "role_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "token_hash": {
-          "name": "token_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_by_profile_id": {
-          "name": "created_by_profile_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "revoked_by_profile_id": {
-          "name": "revoked_by_profile_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "revoked_at": {
-          "name": "revoked_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_revoked": {
-          "name": "is_revoked",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "join_count": {
-          "name": "join_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "last_used_at": {
-          "name": "last_used_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        }
-      },
-      "indexes": {
-        "idx_invite_link_organization_id": {
-          "name": "idx_invite_link_organization_id",
-          "columns": [
-            {
-              "expression": "organization_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "invite_link_organization_id_fkey": {
-          "name": "invite_link_organization_id_fkey",
-          "tableFrom": "invite_link",
-          "tableTo": "organization",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "invite_link_course_id_fkey": {
-          "name": "invite_link_course_id_fkey",
-          "tableFrom": "invite_link",
-          "tableTo": "course",
-          "columnsFrom": ["course_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "invite_link_cohort_id_fkey": {
-          "name": "invite_link_cohort_id_fkey",
-          "tableFrom": "invite_link",
-          "tableTo": "cohort",
-          "columnsFrom": ["cohort_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "invite_link_role_id_fkey": {
-          "name": "invite_link_role_id_fkey",
-          "tableFrom": "invite_link",
-          "tableTo": "role",
-          "columnsFrom": ["role_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "invite_link_token_hash_key": {
-          "name": "invite_link_token_hash_key",
-          "nullsNotDistinct": false,
-          "columns": ["token_hash"]
-        },
-        "invite_link_course_id_role_id_unique": {
-          "name": "invite_link_course_id_role_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["course_id", "role_id"]
-        },
-        "invite_link_cohort_id_role_id_unique": {
-          "name": "invite_link_cohort_id_role_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["cohort_id", "role_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {
-        "invite_link_resource_target_check": {
-          "name": "invite_link_resource_target_check",
-          "value": "(\n        (\"invite_link\".\"resource_type\" = 'COURSE' AND \"invite_link\".\"course_id\" IS NOT NULL AND \"invite_link\".\"cohort_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\" = 'COHORT' AND \"invite_link\".\"cohort_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL)\n      )"
-        }
-      },
-      "isRLSEnabled": false
-    },
     "public.job_step": {
       "name": "job_step",
       "schema": "",
@@ -6598,6 +6409,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": 95
+        },
+        "comments_enabled": {
+          "name": "comments_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         },
         "videos": {
           "name": "videos",
@@ -12347,11 +12165,6 @@
       "name": "COURSE_TYPE",
       "schema": "public",
       "values": ["SELF_PACED", "LIVE_CLASS", "COMPLIANCE", "PUBLIC"]
-    },
-    "public.INVITE_LINK_RESOURCE_TYPE": {
-      "name": "INVITE_LINK_RESOURCE_TYPE",
-      "schema": "public",
-      "values": ["COURSE", "COHORT"]
     },
     "public.JOB_STATUS": {
       "name": "JOB_STATUS",

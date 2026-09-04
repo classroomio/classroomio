@@ -801,6 +801,12 @@
         "progression_mode_description": "Kiểm soát học viên có thể truy cập mọi nội dung đã mở khóa hay phải hoàn thành theo thứ tự.",
         "progression_mode_free": "Tự do — nội dung đã mở khóa có thể truy cập",
         "progression_mode_sequential": "Tuần tự — hoàn thành mục trước để mở mục tiếp theo",
+        "comments": {
+          "title": "Bình luận bài học",
+          "description": "Cho phép học viên xem và thêm bình luận trong các bài học của khóa học này. Bạn vẫn có thể tắt bình luận cho từng bài học.",
+          "enabled": "Đã bật bình luận cho khóa học này",
+          "disabled": "Đã tắt bình luận cho khóa học này"
+        },
         "lesson_download": "Bài học Tải về",
         "available": "Cung cấp Bài học để tải xuống dưới dạng pdf cho học viên đã đăng ký",
         "course_download": "Tải xuống khóa học",
@@ -1389,7 +1395,17 @@
           "title": "Lịch sử phiên bản",
           "fetch_more_versions": "Tìm nạp thêm phiên bản",
           "current_version": "Phiên bản hiện tại",
-          "restore_version": "Khôi phục phiên bản này"
+          "restore_version": "Khôi phục phiên bản này",
+          "edit_count": "{count, plural, one {# chỉnh sửa} other {# chỉnh sửa}}",
+          "today": "Hôm nay",
+          "yesterday": "Hôm qua",
+          "by_author": "bởi {name}",
+          "empty": "Chưa có phiên bản nào",
+          "kind": {
+            "auto": "Tự động lưu",
+            "manual": "Phiên bản đã lưu",
+            "publish": "Đã xuất bản"
+          }
         },
         "poll": {
           "voted": "Đã bình chọn",
@@ -2218,6 +2234,14 @@
           "watch_threshold": "Ngưỡng xem (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Bình luận bài học",
+            "description": "Chọn xem học viên có thể xem và thêm bình luận trong bài học này hay không.",
+            "enabled": "Đã bật bình luận",
+            "disabled": "Đã tắt bình luận",
+            "disabled_by_course": "Bình luận đã bị tắt cho toàn bộ khóa học, vì vậy không thể thay đổi cài đặt của bài học này.",
+            "change_course_setting": "Thay đổi trong cài đặt khóa học"
+          },
           "progression": {
             "heading": "Tiến trình",
             "intro": "Chọn cách học viên hoàn thành bài học này và đi qua khóa học.",
@@ -2277,7 +2301,9 @@
           "starts_in": "Bắt đầu vào",
           "session_ended": "Phiên kết thúc",
           "link_copied": "Đã sao chép liên kết"
-        }
+        },
+        "student_share_your_knowledge": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
+        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau."
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -2343,7 +2369,8 @@
           "description": "Bạn có chắc chắn muốn xóa nguồn cấp dữ liệu này không?",
           "no": "Không",
           "yes": "Có"
-        }
+        },
+        "student_body_content": "Chưa có bài đăng nào được thực hiện cho lớp học này."
       },
       "compliance": {
         "title": "Tuân thủ",
@@ -2647,7 +2674,12 @@
         "copy_course_url": "Sao chép URL khóa học"
       },
       "due_date": "Hạn",
-      "valid_until": "Có hiệu lực cho đến khi"
+      "valid_until": "Có hiệu lực cho đến khi",
+      "student_empty_title": "Chưa có khóa học nào",
+      "student_empty_description": "Hiện chưa có khóa học nào trong tổ chức này. Vui lòng kiểm tra lại sau.",
+      "updated_at": "Đã cập nhật {date}",
+      "lessons_count": "{count, plural, other {# bài học}}",
+      "exercises_count": "{count, plural, other {# bài tập}}"
     },
     "course_filter": {
       "date_created_newest": "Ngày tạo: Mới nhất trước",
@@ -4596,7 +4628,8 @@
       },
       "current_version": "Phiên bản hiện tại",
       "active_badge": "Đang hoạt động",
-      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn"
+      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn",
+      "upgrade_callout": "Nâng cấp để mở khóa các chủ đề, màu sắc, kiểu chữ và phong cách tùy chỉnh."
     },
     "tabs": {
       "select_courses": "Chọn khóa học",
@@ -5094,5 +5127,8 @@
     "load_failed": "Không thể tải liên kết mời",
     "generate_failed": "Không thể tạo liên kết mời",
     "toggle_failed": "Không thể cập nhật liên kết mời"
+  },
+  "lms": {
+    "view_landing_page": "Xem trang đích"
   }
 }

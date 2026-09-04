@@ -221,18 +221,18 @@
 
 {#if signupRestricted}
   <div
-    class="ui:p-6 ui:bg-amber-50 ui:dark:bg-amber-900/20 ui:rounded-lg ui:border ui:border-amber-200 ui:dark:border-amber-800 ui:text-center"
+    class="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-800 dark:bg-amber-900/20"
   >
-    <h2 class="ui:text-lg ui:font-semibold ui:text-amber-800 ui:dark:text-amber-200">
+    <h2 class="text-lg font-semibold text-amber-800 dark:text-amber-200">
       {$t('login.signup_disabled.title')}
     </h2>
-    <p class="ui:mt-2 ui:text-sm ui:text-amber-700 ui:dark:text-amber-300">
+    <p class="mt-2 text-sm text-amber-700 dark:text-amber-300">
       {org.disableSignupMessage ||
         (inviteOnly
           ? $t('login.signup_disabled.invite_only_message')
           : $t('settings.auth.login.signup_disabled_error'))}
     </p>
-    <Button variant="outline" class="ui:mt-4" onclick={() => goto(resolve('/login', {}))}>
+    <Button variant="outline" class="mt-4" onclick={() => goto(resolve('/login', {}))}>
       {$t('login.signup_disabled.go_to_login')}
     </Button>
   </div>
@@ -263,7 +263,7 @@
     {newUserCallbackPathname}
     getPasswordAuthAlternative={ssoState.available ? getPasswordAuthAlternative : undefined}
   >
-    <div class="ui:flex ui:flex-col ui:gap-6">
+    <div class="flex flex-col gap-6">
       <Field.Field>
         <Field.Label for="email">{$t('login.fields.email')}</Field.Label>
         <Field.Content>
@@ -325,10 +325,10 @@
         </Field.Field>
 
         {#if submitError}
-          <p class="ui:text-sm ui:text-destructive">{submitError}</p>
+          <p class="ui:text-destructive text-sm">{submitError}</p>
         {/if}
 
-        <Button type="submit" disabled={disableSubmit || loading} {loading} class="ui:w-full">
+        <Button type="submit" disabled={disableSubmit || loading} {loading} class="w-full">
           {$t('login.create_account')}
         </Button>
       {/if}

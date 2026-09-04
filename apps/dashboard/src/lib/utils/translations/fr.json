@@ -801,6 +801,12 @@
         "progression_mode_description": "Contrôlez si les étudiants peuvent accéder à tout le contenu débloqué ou doivent terminer les éléments dans l'ordre.",
         "progression_mode_free": "Libre — le contenu débloqué est accessible",
         "progression_mode_sequential": "Séquentiel — terminer les éléments précédents pour débloquer le suivant",
+        "comments": {
+          "title": "Commentaires des leçons",
+          "description": "Autorisez les étudiants à consulter et ajouter des commentaires dans les leçons de ce cours. Les commentaires peuvent toujours être désactivés pour chaque leçon.",
+          "enabled": "Commentaires activés pour ce cours",
+          "disabled": "Commentaires désactivés pour ce cours"
+        },
         "lesson_download": "Téléchargement des leçons",
         "available": "Rendre la leçon disponible en téléchargement en pdf pour les étudiants inscrits",
         "course_download": "Téléchargement du cours",
@@ -1389,7 +1395,17 @@
           "title": "Historique des versions",
           "fetch_more_versions": "Récupérer plus de versions",
           "current_version": "Version actuelle",
-          "restore_version": "Restaurer cette version"
+          "restore_version": "Restaurer cette version",
+          "edit_count": "{count, plural, one {# modification} other {# modifications}}",
+          "today": "Aujourd'hui",
+          "yesterday": "Hier",
+          "by_author": "Par {name}",
+          "empty": "Aucune version pour l'instant",
+          "kind": {
+            "auto": "Sauvegarde automatique",
+            "manual": "Version enregistrée",
+            "publish": "Publié"
+          }
         },
         "poll": {
           "voted": "A voté",
@@ -2218,6 +2234,14 @@
           "watch_threshold": "Seuil de visionnage (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Commentaires de la leçon",
+            "description": "Choisissez si les étudiants peuvent consulter et ajouter des commentaires à cette leçon.",
+            "enabled": "Commentaires activés",
+            "disabled": "Commentaires désactivés",
+            "disabled_by_course": "Les commentaires sont désactivés pour tout le cours. Ce paramètre de leçon ne peut donc pas être modifié.",
+            "change_course_setting": "Modifier dans les paramètres du cours"
+          },
           "progression": {
             "heading": "Progression",
             "intro": "Choisissez comment les étudiants terminent cette leçon et avancent dans le cours.",
@@ -2277,7 +2301,9 @@
           "starts_in": "Commence dans",
           "session_ended": "Séance terminée",
           "link_copied": "Lien copié"
-        }
+        },
+        "student_share_your_knowledge": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard.",
+        "student_body_content": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard."
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -2343,7 +2369,8 @@
           "description": "Êtes-vous sûr de vouloir supprimer ce flux ?",
           "no": "Non",
           "yes": "Oui"
-        }
+        },
+        "student_body_content": "Aucun message n'a encore été publié dans ce cours."
       },
       "compliance": {
         "title": "Conformité",
@@ -2647,7 +2674,12 @@
         "copy_course_url": "Copier l’URL du cours"
       },
       "due_date": "Échéance",
-      "valid_until": "Valable jusqu'au"
+      "valid_until": "Valable jusqu'au",
+      "student_empty_title": "Aucun cours disponible pour le moment",
+      "student_empty_description": "Aucun cours n'est disponible pour le moment dans cet organisme. Veuillez réessayer plus tard.",
+      "updated_at": "Mise à jour : {date}",
+      "lessons_count": "{count, plural, one {# leçon} other {# leçons}}",
+      "exercises_count": "{count, plural, one {# exercice} other {# exercices}}"
     },
     "course_filter": {
       "date_created_newest": "Date de création : plus récent d'abord",
@@ -4596,7 +4628,8 @@
       },
       "current_version": "Version actuelle",
       "active_badge": "Actif",
-      "active_badge_description": "Cette version est actuellement en ligne sur votre intégration"
+      "active_badge_description": "Cette version est actuellement en ligne sur votre intégration",
+      "upgrade_callout": "Passez à la version supérieure pour débloquer des thèmes, des couleurs, des typographies et des styles personnalisés."
     },
     "tabs": {
       "select_courses": "Sélectionnez des cours",
@@ -5094,5 +5127,8 @@
     "load_failed": "Impossible de charger le lien d'invitation",
     "generate_failed": "Impossible de créer le lien d'invitation",
     "toggle_failed": "Impossible de mettre à jour le lien d'invitation"
+  },
+  "lms": {
+    "view_landing_page": "Afficher la page d'accueil"
   }
 }

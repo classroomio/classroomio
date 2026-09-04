@@ -49,22 +49,22 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="ui:p-0 overflow-hidden sm:max-w-2xl" showCloseButton={false}>
-    <div class="relative overflow-hidden rounded-md">
+  <Dialog.Content class="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0" showCloseButton={false}>
+    <div class="relative shrink-0 overflow-hidden">
       <img
         src={course.logo || DEFAULT_COURSE_BANNER_IMAGE}
         alt={course.title}
         class="aspect-video w-full object-cover"
       />
       <Dialog.Close
-        class="ui:absolute ui:top-3 ui:right-3 ui:inline-flex ui:size-8 ui:items-center ui:justify-center ui:rounded-md ui:bg-secondary ui:text-secondary-foreground ui:hover:bg-secondary/80 ui:transition-colors ui:cursor-pointer"
+        class="ui:bg-secondary ui:text-secondary-foreground ui:hover:bg-secondary/80 absolute top-3 right-3 inline-flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors"
       >
-        <XIcon class="ui:size-4" />
-        <span class="ui:sr-only">Close</span>
+        <XIcon class="size-4" />
+        <span class="sr-only">Close</span>
       </Dialog.Close>
     </div>
 
-    <div class="max-h-72 overflow-y-auto px-6 py-4">
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-4">
       <h2 class="text-xl font-semibold tracking-tight">{course.title}</h2>
 
       {#if course.description}
@@ -92,7 +92,7 @@
       {/if}
     </div>
 
-    <div class="ui:border-t ui:bg-card sticky bottom-0 flex items-center justify-between px-6 py-4" data-sticky="true">
+    <Dialog.Footer class="flex shrink-0 flex-row items-center justify-between border-t px-6 py-4 sm:justify-between">
       <div>
         {#if selfEnrollmentAllowed}
           <p class="text-lg font-bold">
@@ -120,6 +120,6 @@
           ? $t('course.navItem.landing_page.pricing_section.enroll')
           : $t('course.navItem.landing_page.pricing_section.buy')}
       </Button>
-    </div>
+    </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

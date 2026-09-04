@@ -11,6 +11,7 @@ function isWidgetAllowed(): boolean {
   if (dev) return false;
   if (PUBLIC_IS_SELFHOSTED === 'true') return false;
   if (get(globalStore).isOrgSite) return false;
+  if (window.location.pathname === '/widget-preview') return false;
 
   return true;
 }
@@ -41,15 +42,16 @@ function ensureSdkLoaded(): void {
   document.head.appendChild(script);
 }
 
-export function initUserJot(): void {
+export function initUserJot(isOrgSite: boolean): void {
   if (isInitialized) return;
+  if (isOrgSite) return;
   if (!isWidgetAllowed()) return;
 
   ensureSdkLoaded();
 
   window.uj.init(USERJOT_PROJECT_ID, {
     widget: {
-      launcher: false,
+      launcher: true,
       position: 'right',
       theme: 'auto'
     }
@@ -66,9 +68,8 @@ type UserJotIdentity = {
 };
 
 export function identifyUserJotUser({ id, email, fullname, avatarUrl }: UserJotIdentity): void {
+  if (!isInitialized) return;
   if (!isWidgetAllowed()) return;
-
-  ensureSdkLoaded();
 
   const [firstName, ...rest] = (fullname ?? '').trim().split(/\s+/);
   const lastName = rest.join(' ');
@@ -85,9 +86,8 @@ export function identifyUserJotUser({ id, email, fullname, avatarUrl }: UserJotI
 }
 
 export function clearUserJotUser(): void {
+  if (!isInitialized) return;
   if (!isWidgetAllowed()) return;
-
-  ensureSdkLoaded();
 
   window.uj.logout();
 }
@@ -95,9 +95,8 @@ export function clearUserJotUser(): void {
 export type UserJotWidgetSection = 'feedback' | 'roadmap' | 'updates';
 
 export function showUserJotWidget(section: UserJotWidgetSection): void {
+  if (!isInitialized) return;
   if (!isWidgetAllowed()) return;
-
-  ensureSdkLoaded();
 
   window.uj.open({ to: section });
 }
