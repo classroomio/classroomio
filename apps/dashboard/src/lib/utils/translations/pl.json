@@ -593,7 +593,7 @@
     "topCourses": {
       "heading": "Najlepsze kursy według wyświetleń",
       "description": "Kursy uszeregowane według wyświetleń strony",
-      "subtitle": "{total} wyświetleń strony w tym zakresie",
+      "subtitle": "Ranking według wyświetleń strony w tym zakresie",
       "empty": "Brak wyświetleń stron kursów",
       "course": "Kurs",
       "views": "Wyświetlenia"

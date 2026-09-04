@@ -593,7 +593,7 @@
     "topCourses": {
       "heading": "Khóa học hàng đầu theo lượt xem",
       "description": "Khóa học xếp hạng theo lượt xem trang",
-      "subtitle": "{total} lượt xem trang trong khoảng này",
+      "subtitle": "Xếp hạng theo lượt xem trang trong khoảng này",
       "empty": "Chưa có lượt xem trang khóa học",
       "course": "Khóa học",
       "views": "Lượt xem"

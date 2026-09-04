@@ -593,7 +593,7 @@
     "topCourses": {
       "heading": "Principais cursos por visualizações",
       "description": "Cursos classificados por visualizações de página",
-      "subtitle": "{total} visualizações de página neste intervalo",
+      "subtitle": "Classificados por visualizações de página neste intervalo",
       "empty": "Ainda não há visualizações de páginas de cursos",
       "course": "Curso",
       "views": "Visualizações"

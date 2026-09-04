@@ -29,6 +29,7 @@ class AnalyticsApi extends BaseApi {
   range = $state<7 | 30 | 90>(30);
   lastFetchedOrgId = $state<string | null>(null);
   lastFetchedRange = $state<7 | 30 | 90 | null>(null);
+  private topCoursesRequestSeq = 0;
 
   get loading() {
     return (
@@ -93,15 +94,21 @@ class AnalyticsApi extends BaseApi {
   }
 
   async fetchTopCourses(orgId: string, bust = false) {
+    const requestSeq = ++this.topCoursesRequestSeq;
+    const query = this.query(orgId, bust);
     this.loadingTopCourses = true;
     await this.execute<TopCoursesRequest>({
-      requestFn: () => classroomio.dash['top-courses'].$get({ query: this.query(orgId, bust) }),
+      requestFn: () => classroomio.dash['top-courses'].$get({ query }),
       logContext: 'fetching analytics top courses',
       onSuccess: (response) => {
+        if (requestSeq !== this.topCoursesRequestSeq) return;
+
         this.topCourses = response.data;
       }
     });
-    this.loadingTopCourses = false;
+    if (requestSeq === this.topCoursesRequestSeq) {
+      this.loadingTopCourses = false;
+    }
   }
 
   /** Fire all cards in parallel; each card shows its own spinner. */

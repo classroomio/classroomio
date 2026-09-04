@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -700,7 +700,7 @@ export async function selectTopCoursesByViews(orgId: string, fromDate: string, t
       )
       .groupBy(schema.analyticsCourseDaily.courseId, schema.course.title)
       .having(sql`SUM(${schema.analyticsCourseDaily.views}) > 0`)
-      .orderBy(desc(sql`SUM(${schema.analyticsCourseDaily.views})`))
+      .orderBy(desc(sql`SUM(${schema.analyticsCourseDaily.views})`), asc(schema.analyticsCourseDaily.courseId))
       .limit(limit);
   } catch (error) {
     console.error('selectTopCoursesByViews error:', error);

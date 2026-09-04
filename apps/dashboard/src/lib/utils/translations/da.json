@@ -593,7 +593,7 @@
     "topCourses": {
       "heading": "Topkurser efter visninger",
       "description": "Kurser rangeret efter sidevisninger",
-      "subtitle": "{total} sidevisninger i dette interval",
+      "subtitle": "Rangeret efter sidevisninger i dette interval",
       "empty": "Ingen kursussidevisninger endnu",
       "course": "Kursus",
       "views": "Visninger"

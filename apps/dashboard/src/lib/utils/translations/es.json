@@ -593,7 +593,7 @@
     "topCourses": {
       "heading": "Cursos principales por vistas",
       "description": "Cursos clasificados por vistas de página",
-      "subtitle": "{total} vistas de página en este rango",
+      "subtitle": "Clasificados por vistas de página en este rango",
       "empty": "Aún no hay vistas de páginas de cursos",
       "course": "Curso",
       "views": "Vistas"
