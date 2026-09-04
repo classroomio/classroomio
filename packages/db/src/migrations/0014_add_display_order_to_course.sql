@@ -1,1 +1,1 @@
-ALTER TABLE "course" ADD COLUMN "display_order" integer;
+ALTER TABLE "course" ADD COLUMN IF NOT EXISTS "display_order" integer;

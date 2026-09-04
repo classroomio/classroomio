@@ -504,7 +504,7 @@
     "go_to_my_learning": "Gå til Min Læring"
   },
   "lms_navigation": {
-    "home": "Hjem",
+    "home": "Dashboard",
     "my_learning": "Min Læring",
     "certificates": "Certifikater",
     "exercise": "Motion",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "Kunne ikke opdatere invitationslinket"
   },
   "lms": {
-    "view_landing_page": "Se landingssiden"
+    "view_landing_page": "Hjem"
   },
   "notifications": {
     "title": "Notifikationer",

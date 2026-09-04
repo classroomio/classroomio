@@ -144,10 +144,7 @@
         url: getNavItemRoute(id, 'marks'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'marks'),
         show() {
-          if (courseApi.course?.type === 'LIVE_CLASS') {
-            return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
-          }
-          return false;
+          return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
         },
         icon: getNavIcon(NAV_IDS.MARKS)
       },

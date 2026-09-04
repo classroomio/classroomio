@@ -504,7 +504,7 @@
     "go_to_my_learning": "Đi tới Học tập của tôi"
   },
   "lms_navigation": {
-    "home": "Trang chủ",
+    "home": "Bảng điều khiển",
     "my_learning": "Học tập của tôi",
     "certificates": "Chứng chỉ",
     "exercise": "tập thể dục",
@@ -5162,7 +5162,7 @@
     "toggle_failed": "Không thể cập nhật liên kết mời"
   },
   "lms": {
-    "view_landing_page": "Xem trang đích"
+    "view_landing_page": "Trang chủ"
   },
   "notifications": {
     "title": "Thông báo",
