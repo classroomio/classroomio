@@ -2,6 +2,15 @@ import type Plyr from 'plyr';
 
 export type VideoType = 'youtube' | 'generic' | 'upload' | 'muse' | 'google_drive';
 
+/**
+ * Result of attempting to start playback programmatically (autoplay).
+ * - `played`: playback actually started.
+ * - `blocked`: the browser refused autoplay (e.g. `NotAllowedError`); needs a user gesture.
+ * - `not-ready`: the player wasn't ready in time (or was torn down).
+ * - `error`: some other failure occurred while starting playback.
+ */
+export type PlaybackResult = 'played' | 'blocked' | 'not-ready' | 'error';
+
 export interface VideoTextTrack {
   src: string;
   srclang: string;
@@ -79,4 +88,8 @@ export interface MediaPlayerOptions {
     onProgress?: (payload: { positionSeconds: number; playedDeltaSeconds: number; durationSeconds: number }) => void;
     onSeekBlocked?: () => void;
   };
+  onEnded?: () => void;
+  onAutoplayToggle?: () => void;
+  autoplayEnabled?: boolean;
+  autoplayToggleLabel?: string;
 }

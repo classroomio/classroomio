@@ -2626,6 +2626,13 @@
       "description": "Bạn sắp biết học viên sẽ thấy gì khi họ đăng ký khóa học này",
       "copy_link": "Sao chép liên kết",
       "go_to_lms": "Đi tới LMS"
+    },
+    "autoplay": {
+      "toggle_tooltip": "Tự động phát video tiếp theo",
+      "up_next": "Video tiếp theo",
+      "cancel": "Hủy",
+      "play_next": "Phát tiếp theo",
+      "blocked_label": "Tính năng tự động phát đã bị chặn. Nhấn để tiếp tục."
     }
   },
   "courses": {

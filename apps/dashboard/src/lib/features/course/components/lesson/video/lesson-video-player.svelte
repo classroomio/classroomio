@@ -125,6 +125,7 @@
   let jobPoller: JobPoller<MediaJobEnvelope> | null = null;
 
   let localSeekFn: (seconds: number) => void = () => {};
+  let playerRef: ReturnType<typeof MediaPlayer> | null = $state(null);
 
   function ownsPlaybackBus(): boolean {
     return uploadAssetId !== null && lessonVideoBus.assetId === uploadAssetId;
@@ -400,6 +401,8 @@
       });
     }
 
+    lessonVideoBus.registerPlayer(videoIndex, () => playerRef?.play() ?? Promise.resolve('not-ready'));
+
     if (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId) {
       syncPlaybackBus();
     }
@@ -421,6 +424,8 @@
     stopJobPoller();
     revokeBlobTrackUrl?.();
     revokeBlobTrackUrl = null;
+
+    lessonVideoBus.unregisterPlayer(videoIndex);
 
     if (uploadAssetId) {
       lessonVideoBus.unregisterTranscriptSource(uploadAssetId);
@@ -459,6 +464,14 @@
     lessonVideoBus.hasPlayed = true;
   }
 
+  function handleVideoEnded() {
+    if (!lessonVideoBus.autoplayEnabled) return;
+
+    lessonVideoBus.playNextVideo(videoIndex);
+  }
+
+  const isOnlyVideo = $derived((lessonApi.lesson?.videos?.length ?? 0) <= 1);
+
   function openTranscriptPanel() {
     if (!uploadAssetId) return;
 
@@ -476,8 +489,9 @@
   );
 </script>
 
-<div class="w-full">
+<div class="w-full" data-video-index={videoIndex}>
   <MediaPlayer
+    bind:this={playerRef}
     source={{
       type: video.type,
       url: playbackUrl,
@@ -512,6 +526,10 @@
       onSourceLoaded: handleSourceLoaded,
       onBeforeHlsLoad: isHls && uploadAssetId ? () => mintHlsCookie(uploadAssetId) : undefined,
       transcriptPanelControl,
+      onEnded: handleVideoEnded,
+      onAutoplayToggle: isOnlyVideo ? undefined : () => lessonVideoBus.toggleAutoplay(),
+      autoplayEnabled: isOnlyVideo ? undefined : lessonVideoBus.autoplayEnabled,
+      autoplayToggleLabel: isOnlyVideo ? undefined : t.get('course.autoplay.toggle_tooltip'),
       loadingLabel: $t('course.navItem.lessons.materials.tabs.video.loading'),
       playbackErrorLabel: $t('course.navItem.lessons.materials.tabs.video.playback_error'),
       playbackReloadLabel: $t('course.navItem.lessons.materials.tabs.video.playback_reload'),

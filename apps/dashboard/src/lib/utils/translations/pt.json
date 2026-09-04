@@ -2626,6 +2626,13 @@
       "description": "Você está prestes a ver o que um aluno verá ao se inscrever neste curso",
       "copy_link": "Copiar link",
       "go_to_lms": "Acesse o LMS"
+    },
+    "autoplay": {
+      "toggle_tooltip": "Reproduzir o próximo vídeo automaticamente",
+      "up_next": "A seguir",
+      "cancel": "Cancelar",
+      "play_next": "Reproduzir a seguir",
+      "blocked_label": "A reprodução automática foi bloqueada. Pressione para continuar."
     }
   },
   "courses": {

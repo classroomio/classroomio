@@ -2,8 +2,9 @@
   import { onDestroy, onMount } from 'svelte';
   import 'plyr/dist/plyr.css';
   import CaptionsIcon from '@lucide/svelte/icons/captions';
+  import RepeatIcon from '@lucide/svelte/icons/repeat';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
-  import type { MediaPlayerOptions, VideoTextTrack } from '../types';
+  import type { MediaPlayerOptions, PlaybackResult, VideoTextTrack } from '../types';
   import { getYoutubeVideoId, isYoutubeUrl } from '../utils';
   import { PLYR_DEFAULT_CONTROLS } from './constants';
   import { Button } from '../../../base/button';
@@ -31,6 +32,7 @@
   let containerElement = $state<HTMLDivElement | null>(null);
   let playerInstance = $state<Plyr | null>(null);
   let transcriptButtonElement = $state<HTMLButtonElement | null>(null);
+  let autoplayButtonElement = $state<HTMLButtonElement | null>(null);
   let playbackFailed = $state(false);
   let playbackAuthExpired = $state(false);
   let isPlayerReady = $state(false);
@@ -38,6 +40,7 @@
   let timeupdateCleanup: (() => void) | undefined;
   let firstPlayCleanup: (() => void) | undefined;
   let transcriptPanelCleanup: (() => void) | undefined;
+  let autoplayControlCleanup: (() => void) | undefined;
   let mediaErrorCleanup: (() => void) | undefined;
   let plyrErrorCleanup: (() => void) | undefined;
   let loadedSrc = $state<string | null>(null);
@@ -109,9 +112,12 @@
     }
 
     const handler = () => options.onTimeUpdate?.(player.currentTime);
+    const onEnded = () => options.onEnded?.();
     player.on('timeupdate', handler);
+    player.on('ended', onEnded);
     return () => {
       player.off('timeupdate', handler);
+      player.off('ended', onEnded);
     };
   }
 
@@ -222,6 +228,7 @@
       }
 
       flushProgress(true);
+      options.onEnded?.();
     };
 
     player.on('seeking', onSeeking);
@@ -362,15 +369,61 @@
     };
   }
 
+  function attachAutoplayControl(
+    player: Plyr,
+    template: HTMLButtonElement,
+    label: string,
+    enabled: boolean,
+    onToggle: () => void
+  ): () => void {
+    type PlyrElements = { controls?: HTMLElement | null };
+    const controls = (player as unknown as { elements: PlyrElements }).elements?.controls;
+
+    if (!controls) return () => {};
+
+    controls.querySelector('[data-cio-autoplay-toggle]')?.remove();
+
+    const button = template.cloneNode(true) as HTMLButtonElement;
+    button.removeAttribute('hidden');
+    button.setAttribute('aria-label', label);
+    button.setAttribute('title', label);
+
+    if (enabled) {
+      button.classList.add('is-active');
+    } else {
+      button.classList.remove('is-active');
+    }
+
+    const onClick = (event: MouseEvent) => {
+      event.stopPropagation();
+      onToggle();
+    };
+    button.addEventListener('click', onClick);
+
+    const fullscreen = controls.querySelector('[data-plyr="fullscreen"]');
+    if (fullscreen) {
+      fullscreen.insertAdjacentElement('beforebegin', button);
+    } else {
+      controls.appendChild(button);
+    }
+
+    return () => {
+      button.removeEventListener('click', onClick);
+      button.remove();
+    };
+  }
+
   function teardownPlyrInstance(): void {
     timeupdateCleanup?.();
     firstPlayCleanup?.();
     transcriptPanelCleanup?.();
+    autoplayControlCleanup?.();
     plyrErrorCleanup?.();
     mediaErrorCleanup?.();
     timeupdateCleanup = undefined;
     firstPlayCleanup = undefined;
     transcriptPanelCleanup = undefined;
+    autoplayControlCleanup = undefined;
     plyrErrorCleanup = undefined;
     mediaErrorCleanup = undefined;
     isPlayerReady = false;
@@ -532,6 +585,111 @@
     }
   }
 
+  /**
+   * Imperative play. Used by autoplay to start the next video when the
+   * previous one ends. Exposed through `bind:this` on `MediaPlayer`.
+   * Browsers may reject programmatic `play()` (autoplay policy), so the
+   * rejection is caught to avoid an unhandled promise rejection.
+   */
+  export function play(): void {
+    const result = playerInstance?.play();
+    if (result instanceof Promise) {
+      result.catch((error: unknown) => {
+        console.warn('Autoplay was blocked by the browser:', error);
+      });
+    }
+  }
+
+  /**
+   * Imperative play that resolves once playback actually starts (or fails).
+   * Used by autoplay's decision engine so a blocked/not-ready player can be
+   * surfaced with a user-gesture fallback instead of silently stalling.
+   * - `played`    → playback transitioned to playing.
+   * - `blocked`   → the browser refused autoplay (NotAllowedError, a pending
+   *                 play() promise, or the element stayed paused).
+   * - `error`     → some other play() rejection.
+   * - `not-ready` → the player wasn't ready within the timeout window.
+   * Always settles within the timeout so the caller can decide on a
+   * fallback regardless of browser autoplay behavior.
+   */
+  export function playWhenReady(): Promise<PlaybackResult> {
+    const TIMEOUT_MS = 2500;
+
+    return new Promise<PlaybackResult>((resolve) => {
+      let settled = false;
+      let playRejectedAs: PlaybackResult | null = null;
+
+      const settle = (result: PlaybackResult) => {
+        if (settled) return;
+        settled = true;
+        resolve(result);
+      };
+
+      const attempt = () => {
+        const player = playerInstance;
+        if (!player) {
+          settle('not-ready');
+          return;
+        }
+
+        // `play()` may resolve a void (Plyr: Promise<void> | void), so the
+        // resolved promise can't be trusted to confirm playback. We nudge
+        // with play() and confirm actual playback by polling `paused`. If
+        // the promise rejects, remember that as the fallback result.
+        const result = player.play();
+        if (result instanceof Promise) {
+          result.catch((error: unknown) => {
+            const name = (error as { name?: string })?.name;
+            playRejectedAs = name === 'NotAllowedError' ? 'blocked' : 'error';
+          });
+        }
+      };
+
+      const startWatching = () => {
+        attempt();
+
+        const watch = setInterval(() => {
+          const player = playerInstance;
+          if (!player) {
+            settle('not-ready');
+            return;
+          }
+          if (!player.paused) {
+            settle('played');
+          }
+        }, 100);
+
+        setTimeout(() => {
+          clearInterval(watch);
+          const player = playerInstance;
+          if (player && !player.paused) {
+            settle('played');
+          } else {
+            settle(playRejectedAs ?? 'blocked');
+          }
+        }, TIMEOUT_MS);
+      };
+
+      if (playerInstance && isPlayerReady) {
+        startWatching();
+        return;
+      }
+
+      let started = Date.now();
+      const readyPoll = setInterval(() => {
+        if (playerInstance && isPlayerReady) {
+          clearInterval(readyPoll);
+          startWatching();
+          return;
+        }
+        if (Date.now() - started > TIMEOUT_MS) {
+          clearInterval(readyPoll);
+          settle('not-ready');
+        }
+      }, 100);
+    });
+  }
+
   $effect(() => {
     const element = videoElement;
     const nextSrc = src;
@@ -686,6 +844,23 @@
     };
   });
 
+  $effect(() => {
+    const player = playerInstance;
+    const template = autoplayButtonElement;
+    const label = options.autoplayToggleLabel;
+    const onToggle = options.onAutoplayToggle;
+    const enabled = options.autoplayEnabled;
+    if (!player || !template || !label || !onToggle) return;
+
+    autoplayControlCleanup?.();
+    autoplayControlCleanup = attachAutoplayControl(player, template, label, enabled ?? true, onToggle);
+
+    return () => {
+      autoplayControlCleanup?.();
+      autoplayControlCleanup = undefined;
+    };
+  });
+
   onDestroy(() => {
     isMounted = false;
     youtubeInitGeneration += 1;
@@ -797,6 +972,20 @@
       <span class="plyr__tooltip" role="tooltip">{options.transcriptPanelControl.label}</span>
     </button>
   {/if}
+
+  {#if options.onAutoplayToggle}
+    <button
+      bind:this={autoplayButtonElement}
+      type="button"
+      class="plyr__control"
+      data-cio-autoplay-toggle
+      aria-label={options.autoplayToggleLabel}
+      hidden
+    >
+      <RepeatIcon class="custom" aria-hidden="true" focusable="false" size={18} />
+      <span class="plyr__tooltip" role="tooltip">{options.autoplayToggleLabel}</span>
+    </button>
+  {/if}
 </div>
 
 <style>
@@ -813,5 +1002,22 @@
     height: 18px;
     fill: none;
     stroke: currentColor;
+  }
+  :global(.plyr__control[data-cio-autoplay-toggle][hidden]) {
+    display: none !important;
+  }
+  :global(.plyr__control[data-cio-autoplay-toggle] svg.custom) {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+  }
+  :global(.plyr__control[data-cio-autoplay-toggle].is-active) {
+    background: var(--plyr-video-control-background-hover, var(--plyr-color-main, #00b2ff));
+    color: var(--plyr-video-control-color-hover, #fff);
+  }
+  :global(.plyr__control[data-cio-autoplay-toggle].is-active svg.custom) {
+    color: var(--plyr-video-control-color-hover, #fff);
+    opacity: 1;
   }
 </style>

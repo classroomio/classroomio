@@ -1,5 +1,8 @@
 <script lang="ts">
-  import { lessonApi } from '$features/course/api';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/stores';
+  import { lessonApi, courseApi } from '$features/course/api';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
@@ -10,8 +13,12 @@
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import VideoIcon from '@lucide/svelte/icons/video';
+  import PlayIcon from '@lucide/svelte/icons/play';
+  import { getNextIncompleteNavigableContent } from '$features/course/utils/content-navigation';
+  import { getContentRoute } from '$features/course/utils/content';
   import LessonVideoSimpleCard from './lesson-video-simple-card.svelte';
   import LessonVideoPlayer from './lesson-video-player.svelte';
+  import AutoplayNextOverlay from './autoplay-next-overlay.svelte';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
 
@@ -29,6 +36,24 @@
     lessonVideoBus.transcriptSources;
     return lessonVideoBus.hasTranscriptAvailable();
   });
+
+  const nextContentItem = $derived.by(() => {
+    if (!lessonVideoBus.lastVideoEnded) return null;
+    return getNextIncompleteNavigableContent(courseApi.course, $page.url.pathname) ?? null;
+  });
+
+  const nextLessonTitle = $derived(nextContentItem?.title ?? '');
+
+  function handleOverlayNavigate() {
+    if (!nextContentItem || !courseId) return;
+    lessonVideoBus.cancelLastVideoEnded();
+    const path = getContentRoute(courseId, nextContentItem);
+    if (path) goto(resolve(path, {}));
+  }
+
+  function handleOverlayCancel() {
+    lessonVideoBus.cancelLastVideoEnded();
+  }
 
   let openDeleteVideoModal = $state(false);
   let videoIndexToDelete = $state<number | null>(null);
@@ -97,8 +122,25 @@
   {#if videos.length}
     <div class="w-full">
       {#each videos as video, index}
-        <div class="{index < videos.length - 1 ? 'mb-5' : ''} w-full overflow-hidden">
+        <div class="{index < videos.length - 1 ? 'mb-5' : ''} relative w-full overflow-hidden">
           {@render content(video, index)}
+
+          {#if lessonVideoBus.pendingAutoplayIndex === index}
+            <div
+              class="absolute inset-0 z-30 flex items-center justify-center rounded-md bg-black/50"
+              role="group"
+              aria-label={$t('course.autoplay.blocked_label')}
+            >
+              <Button variant="secondary" onclick={() => lessonVideoBus.playPendingNow()}>
+                <PlayIcon size={16} />
+                {$t('course.autoplay.play_next')}
+              </Button>
+            </div>
+          {/if}
+
+          {#if lessonVideoBus.lastVideoEnded && index === videos.length - 1 && nextContentItem}
+            <AutoplayNextOverlay {nextLessonTitle} onCancel={handleOverlayCancel} onNavigate={handleOverlayNavigate} />
+          {/if}
         </div>
       {/each}
 

@@ -2626,6 +2626,13 @@
       "description": "Du er ved at se, hvad en studerende vil se, når de tilmelder sig dette kursus",
       "copy_link": "Kopiér link",
       "go_to_lms": "Gå til LMS"
+    },
+    "autoplay": {
+      "toggle_tooltip": "Automatisk afspilning af næste video",
+      "up_next": "Næste",
+      "cancel": "Annuller",
+      "play_next": "Afspil næste",
+      "blocked_label": "Automatisk afspilning blev blokeret. Tryk for at fortsætte."
     }
   },
   "courses": {

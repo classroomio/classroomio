@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { MediaPlayerOptions, VideoSource } from './types';
+  import type { MediaPlayerOptions, PlaybackResult, VideoSource } from './types';
   import PlyrPlayer from './players/plyr-player.svelte';
   import MusePlayer from './players/muse-player.svelte';
-  import { formatYoutubeEmbedUrl } from './utils';
+  import YoutubePlayer from './players/youtube-player.svelte';
+  import { getYoutubeVideoId, isYoutubeUrl } from './utils';
 
   interface Props {
     source: VideoSource;
@@ -13,6 +14,7 @@
   let { source, options = {}, class: className = '' }: Props = $props();
 
   let plyrRef: ReturnType<typeof PlyrPlayer> | null = $state(null);
+  let youtubeRef: ReturnType<typeof YoutubePlayer> | null = $state(null);
 
   /**
    * Update the player's poster image after construction. Plyr doesn't
@@ -24,16 +26,40 @@
     plyrRef?.setPoster(url);
   }
 
+  /**
+   * Imperative play. Used by autoplay to start the next video when the
+   * previous one ends. Works for both Plyr (`<video>`) and YouTube embeds.
+   */
+  export function play(): void {
+    if (isYouTube) {
+      youtubeRef?.play();
+    } else {
+      plyrRef?.play();
+    }
+  }
+
+  /**
+   * Autoplay-aware play. Resolves once playback actually starts (or fails)
+   * so the caller can decide whether the user needs a fallback affordance.
+   * See {@link PlaybackResult}.
+   */
+  export function playWhenReady(): Promise<PlaybackResult> {
+    if (isYouTube) {
+      return youtubeRef?.playWhenReady() ?? Promise.resolve('not-ready');
+    }
+    return plyrRef?.playWhenReady() ?? Promise.resolve('not-ready');
+  }
+
   const tracks = $derived(source.tracks ?? []);
   const isMuse = $derived.by(() => source.type === 'muse' && source.metadata?.svid);
   const isGoogleDrive = $derived(source.type === 'google_drive');
-  const isYouTube = $derived(source.type === 'youtube');
+  const isYouTube = $derived(source.type === 'youtube' || (typeof source.url === 'string' && isYoutubeUrl(source.url)));
   const poster = $derived(source.type === 'upload' ? source.metadata?.thumbnailUrl : undefined);
 
   const iframeTitle = $derived(source.metadata?.title?.trim() || 'Video');
   const iframeMaxHeight = $derived(options.maxHeight ?? '400px');
   const iframeWidth = $derived(options.width ?? '100%');
-  const youtubeEmbedUrl = $derived(isYouTube ? formatYoutubeEmbedUrl(source.url) : '');
+  const youtubeVideoId = $derived(isYouTube ? (getYoutubeVideoId(source.url) ?? '') : '');
 </script>
 
 <div class={className}>
@@ -55,22 +81,7 @@
       ></iframe>
     </div>
   {:else if isYouTube}
-    <!-- Native embed avoids Plyr's async noembed/setAspectRatio race on teardown. -->
-    <div
-      class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:rounded-md"
-      style:max-height={iframeMaxHeight}
-      style:width={iframeWidth}
-      style:min-height={options.minHeight}
-      style:height={options.height}
-    >
-      <iframe
-        src={youtubeEmbedUrl}
-        title={iframeTitle}
-        class="ui:block ui:h-full ui:w-full ui:border-0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
-      ></iframe>
-    </div>
+    <YoutubePlayer bind:this={youtubeRef} videoId={youtubeVideoId} {options} onFirstPlay={options.onFirstPlay} />
   {:else}
     <PlyrPlayer bind:this={plyrRef} src={source.url} {poster} hls={source.hls === true} {options} {tracks} />
   {/if}

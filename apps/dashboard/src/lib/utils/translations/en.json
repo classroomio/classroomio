@@ -3813,6 +3813,13 @@
       "header": "No Permission",
       "body": "Unfortunately you don't have access to this course.",
       "button": "Go home"
+    },
+    "autoplay": {
+      "toggle_tooltip": "Autoplay next video",
+      "up_next": "Up Next",
+      "cancel": "Cancel",
+      "play_next": "Play next",
+      "blocked_label": "Autoplay was blocked. Press to continue."
     }
   },
   "community": {
