@@ -519,8 +519,17 @@ function normalizeHero(hero: NonNullable<LegacyLandingPageJson['hero']>): OrgLan
         }
       : undefined,
     image: normalizeText(hero.image, ''),
-    stats: normalizeHeroStats((hero as { stats?: unknown }).stats)
+    stats: normalizeHeroStats((hero as { stats?: unknown }).stats),
+    eyebrow: normalizeHeroEyebrow(hero.eyebrow)
   };
+}
+
+function normalizeHeroEyebrow(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  return value.trim();
 }
 
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {

@@ -3388,6 +3388,9 @@
           "remove": "Xóa liên kết điều hướng"
         },
         "hero": {
+          "eyebrow": "Nhãn phụ",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Nhãn tùy chọn phía trên tiêu đề (dùng bởi các mẫu hỗ trợ, ví dụ Tech). Để trống để ẩn.",
           "heading": "tiêu đề",
           "subheading": "Tiêu đề phụ",
           "primary_label": "Nhãn nút chính",

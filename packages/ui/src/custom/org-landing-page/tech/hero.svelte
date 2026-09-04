@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { OrgLandingPageProps } from '../types';
+  import { DEFAULT_TECH_HERO_EYEBROW, type OrgLandingPageProps } from '../types';
   import type { Snippet } from 'svelte';
   import SecondaryActionButton from '../secondary-action-button.svelte';
   import CoursePrimaryAction from '../course-primary-action.svelte';
@@ -14,6 +14,8 @@
   }
 
   let { hero, navigation, showActions = true, compact = false, children }: Props = $props();
+
+  const eyebrow = $derived(hero.eyebrow === undefined ? DEFAULT_TECH_HERO_EYEBROW : hero.eyebrow.trim());
 </script>
 
 <EditableLandingSection sectionKey="hero">
@@ -39,11 +41,13 @@
         : 'ui:py-16 ui:lg:py-24'} ui:grid ui:lg:grid-cols-2 ui:gap-12 ui:items-center"
     >
       <div>
-        <p
-          class="ui:inline-block ui:font-mono ui:text-xs ui:tracking-widest ui:uppercase ui:text-[var(--landing-accent-fg)]/80 ui:bg-[var(--landing-accent-fg)]/10 ui:px-3 ui:py-1.5 ui:mb-6"
-        >
-          // engineering academy
-        </p>
+        {#if eyebrow}
+          <p
+            class="ui:inline-block ui:font-mono ui:text-xs ui:tracking-widest ui:uppercase ui:text-[var(--landing-accent-fg)]/80 ui:bg-[var(--landing-accent-fg)]/10 ui:px-3 ui:py-1.5 ui:mb-6"
+          >
+            {eyebrow}
+          </p>
+        {/if}
         <h1 class="ui:text-5xl ui:lg:text-7xl ui:font-extrabold ui:tracking-tight ui:leading-[0.95] ui:mb-6">
           {hero.heading}
         </h1>
@@ -82,7 +86,7 @@
           <img
             src={hero.image}
             alt=""
-            class="ui:relative ui:w-full ui:h-[460px] ui:object-cover ui:border ui:border-[var(--landing-accent-fg)]/20"
+            class="ui:relative ui:w-full ui:h-auto ui:object-contain ui:border ui:border-[var(--landing-accent-fg)]/20"
           />
         </div>
       {/if}

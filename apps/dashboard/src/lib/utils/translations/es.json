@@ -3388,6 +3388,9 @@
           "remove": "Eliminar enlace de navegación"
         },
         "hero": {
+          "eyebrow": "Antetítulo",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Etiqueta opcional encima del título (la usan las plantillas que la admiten, p. ej. Tech). Déjala en blanco para ocultarla.",
           "heading": "rumbo",
           "subheading": "Subtítulo",
           "primary_label": "Etiqueta del botón principal",

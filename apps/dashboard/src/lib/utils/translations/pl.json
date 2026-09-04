@@ -3388,6 +3388,9 @@
           "remove": "Usuń link nawigacyjny"
         },
         "hero": {
+          "eyebrow": "Nadtytuł",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Opcjonalna etykieta nad nagłówkiem (używana przez szablony, które ją obsługują, np. Tech). Pozostaw puste, aby ukryć.",
           "heading": "Nagłówek",
           "subheading": "Podtytuł",
           "primary_label": "Etykieta przycisku głównego",
