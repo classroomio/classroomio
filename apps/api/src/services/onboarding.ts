@@ -117,6 +117,15 @@ export async function updateUserOnboarding(userId: string, data: Partial<TProfil
 }
 
 export async function markOnboardingWelcomeEmailPending(userId: string) {
+  const organizations = await getOrganizationByProfileId(userId);
+  if (organizations.length > 0) {
+    throw new AppError(
+      'Welcome email onboarding is only available for new dashboard accounts',
+      ErrorCodes.VALIDATION_ERROR,
+      403
+    );
+  }
+
   const updatedProfile = await markWelcomeEmailPending(userId);
   if (!updatedProfile) {
     throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);

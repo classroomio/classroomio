@@ -133,6 +133,19 @@ export async function sendWelcomeEmailAfterVerification(
   }
 }
 
+export async function retryPendingWelcomeEmail(userId: string): Promise<void> {
+  try {
+    const profile = await getProfileById(userId);
+    if (!profile?.email) {
+      return;
+    }
+
+    await sendWelcomeEmailAfterVerification({ id: userId, email: profile.email });
+  } catch (error) {
+    console.error('retryPendingWelcomeEmail error:', error);
+  }
+}
+
 /**
  * Sends a confirmation email to the user when they change their email address.
  * @param options - The options for sending the change email confirmation.

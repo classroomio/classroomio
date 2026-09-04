@@ -4,6 +4,7 @@ import * as schema from '@db/schema';
 import { admin, anonymous } from 'better-auth/plugins';
 import {
   sendChangeEmailConfirmation,
+  retryPendingWelcomeEmail,
   sendVerificationEmail,
   sendWelcomeEmailAfterVerification
 } from './auth/email-verification';
@@ -119,12 +120,14 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
         after: async (session) => {
           await trackLoginHook(session);
           await syncProfileEmailVerificationFromAuthUser(session.userId);
+          await retryPendingWelcomeEmail(session.userId);
         }
       },
       update: {
         after: async (session) => {
           await trackLoginHook(session);
           await syncProfileEmailVerificationFromAuthUser(session.userId);
+          await retryPendingWelcomeEmail(session.userId);
         }
       }
     }

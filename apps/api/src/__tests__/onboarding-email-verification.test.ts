@@ -7,15 +7,18 @@ vi.mock('@cio/email', () => ({
 }));
 
 vi.mock('../../../../packages/db/src/queries/auth/profile', () => ({
+  clearWelcomeEmailPending: vi.fn(),
   getProfileById: vi.fn(),
   markWelcomeEmailSent: vi.fn()
 }));
 vi.mock('../../../../packages/db/src/auth/resolve-verification-org', () => ({ resolveVerificationOrg: vi.fn() }));
 
 import {
+  sendChangeEmailConfirmation,
   sendWelcomeEmailAfterVerification,
   type WelcomeEmailDependencies
 } from '../../../../packages/db/src/auth/email-verification';
+import { clearWelcomeEmailPending } from '../../../../packages/db/src/queries/auth/profile';
 
 const user = {
   id: 'user-1',
@@ -72,5 +75,15 @@ describe('sendWelcomeEmailAfterVerification', () => {
     expect(consoleError).toHaveBeenCalledWith('sendWelcomeEmailAfterVerification error:', expect.any(Error));
 
     consoleError.mockRestore();
+  });
+
+  it('clears onboarding state when an email change starts', async () => {
+    await sendChangeEmailConfirmation({
+      user: { id: user.id, email: user.email, name: 'Ada' },
+      newEmail: 'new@example.com',
+      url: 'https://app.example.com/verify'
+    } as never);
+
+    expect(clearWelcomeEmailPending).toHaveBeenCalledWith(user.id);
   });
 });
