@@ -1,0 +1,186 @@
+# Sveltia CMS config for the ClassroomIO Help Center (apps/help).
+# Docs: https://github.com/sveltia/sveltia-cms#configuration
+#
+# One collection per top-level content/help section. Adding a page here does
+# NOT add it to the site's sidebar — that's a separate, explicit
+# navigation.sidebar array in apps/help/blume.config.ts (a TypeScript file,
+# deliberately not CMS-editable). Registering new/reordered pages there stays
+# a small developer follow-up step. See apps/help/CMS_GUIDE.md.
+#
+# Every collection has the same field shape, mirroring the one frontmatter
+# schema apps/help/blume.config.ts defines for all of content/help (title,
+# description, sidebar.*, last_reviewed, Blume's native draft). Written out
+# per collection rather than via a YAML anchor, since it's not confirmed that
+# Sveltia's config schema tolerates an extra top-level anchor-holder key.
+
+backend:
+  name: github
+  repo: classroomio/classroomio
+  branch: main
+  # apps/help-cms-auth's expected production URL, matching the cio-help/
+  # cio-docs Workers' account subdomain. Update if the Worker ends up
+  # deployed elsewhere — see apps/help-cms-auth/README.md.
+  base_url: https://cio-help-cms-auth.digdippa.workers.dev
+  auth_endpoint: auth
+
+publish_mode: editorial_workflow
+
+# Matches the existing convention: images live flat under apps/help/public
+# and are referenced in content as absolute /help/<file> paths.
+media_folder: apps/help/public
+public_folder: /help
+
+collections:
+  - name: get_started
+    label: 'Get Started'
+    folder: apps/help/content/help/get-started
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: build_a_course
+    label: 'Build a Course'
+    folder: apps/help/content/help/build-a-course
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: live_classes
+    label: 'Live Classes'
+    folder: apps/help/content/help/live-classes
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: enrollment_and_students
+    label: 'Enrollment & Students'
+    folder: apps/help/content/help/enrollment-and-students
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: publish_your_academy
+    label: 'Publish Your Academy'
+    folder: apps/help/content/help/publish-your-academy
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: organization_and_team
+    label: 'Organization & Team'
+    folder: apps/help/content/help/organization-and-team
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: reference
+    label: 'Reference'
+    folder: apps/help/content/help/reference
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }

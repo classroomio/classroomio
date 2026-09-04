@@ -1,0 +1,78 @@
+name: Help CMS preview
+
+# Plain pull_request, not pull_request_target — this job checks out and
+# builds PR-head code, which pull_request_target must never do (see root
+# CONTRIBUTING.md's warning against pull_request_target workflows that check
+# out or build untrusted PR code).
+#
+# Safe here because CMS-authored PRs are always same-repo branches: Sveltia's
+# `github` backend needs push access to open/update a branch directly in
+# classroomio/classroomio, so it can only be used by repo collaborators, never
+# from a fork. The `if:` below makes that assumption explicit and keeps any
+# stray fork PR from ever reaching the build/deploy steps, rather than relying
+# on it implicitly.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/help/**'
+      - '.github/workflows/help-cms-preview.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: help-cms-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build and deploy preview
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      # apps/help requires Node >=22.12 (see apps/help/.nvmrc) — different
+      # from the rest of the monorepo, which is pinned to Node 20.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: apps/help/.nvmrc
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @cio/help build
+
+      - name: Upload Workers preview version
+        id: deploy
+        working-directory: apps/help
+        run: |
+          pnpm exec wrangler versions upload \
+            --preview-alias "pr-${{ github.event.pull_request.number }}" \
+            | tee wrangler-output.txt
+          url=$(grep -Eo 'https://[a-zA-Z0-9.-]+\.workers\.dev' wrangler-output.txt | head -n1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+        env:
+          # A dedicated secret, not the repo's existing CLOUDFLARE_API_TOKEN —
+          # that one is scoped to Zone: Cache Purge only (see deploy-embeds.yml
+          # / upload-openapi-spec.yml) and reusing the name here would mean
+          # whichever token gets saved last silently overwrites the other
+          # workflows' credential.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_HELP_PREVIEW_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # apps/help/scripts/package-assets.mjs nests the build under build/help/,
+      # so the site (and thus the preview) is only reachable at <url>/help.
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: always() && steps.deploy.outputs.url != ''
+        with:
+          header: help-cms-preview
+          message: |
+            ### Help docs preview 🚀
+            ${{ steps.deploy.outputs.url }}/help
+
+            Cloudflare Workers *version* preview — separate from production traffic, not promoted, and expires when this PR closes or updates.
