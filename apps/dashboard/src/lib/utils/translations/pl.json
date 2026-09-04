@@ -4118,7 +4118,9 @@
         "joined": "Dołączył do organizacji",
         "join_failed": "Nie udało się dołączyć do organizacji",
         "try_again": "Spróbuj ponownie"
-      }
+      },
+      "not_found": "To zaproszenie nie jest już dostępne.",
+      "loading": "Ładowanie zaproszenia..."
     },
     "link": {
       "page_title": "Dołącz do organizacji {orgName} w ClassroomIO",
@@ -5099,5 +5101,27 @@
   },
   "lms": {
     "view_landing_page": "Wyświetl stronę docelową"
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "empty_title": "Brak powiadomień",
+    "empty_description": "Jesteś na bieżąco. Nowe powiadomienia będą pojawiać się tutaj.",
+    "refresh": "Odśwież",
+    "pending_invite": {
+      "heading": "Zaproszenie do organizacji",
+      "body": "{orgName} zaprosiła Cię do dołączenia jako {role}.",
+      "action": "Wyświetl zaproszenie"
+    },
+    "latest": "Najnowsze",
+    "only_show_unread": "Pokaż tylko nieprzeczytane",
+    "unread": "Nieprzeczytane",
+    "more_options": "Więcej opcji",
+    "give_feedback": "Przekaż opinię",
+    "watching_empty_title": "Nic jeszcze do obejrzenia",
+    "watching_empty_description": "Aktualizacje obserwowanych przez Ciebie elementów będą się tutaj pojawiać.",
+    "tabs": {
+      "direct": "Bezpośrednio",
+      "watching": "Obserwowanie"
+    }
   }
 }

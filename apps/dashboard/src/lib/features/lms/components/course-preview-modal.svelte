@@ -49,10 +49,7 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content
-    class="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0"
-    showCloseButton={false}
-  >
+  <Dialog.Content class="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0" showCloseButton={false}>
     <div class="relative shrink-0 overflow-hidden">
       <img
         src={course.logo || DEFAULT_COURSE_BANNER_IMAGE}
@@ -95,9 +92,7 @@
       {/if}
     </div>
 
-    <Dialog.Footer
-      class="flex shrink-0 flex-row items-center justify-between border-t px-6 py-4 sm:justify-between"
-    >
+    <Dialog.Footer class="flex shrink-0 flex-row items-center justify-between border-t px-6 py-4 sm:justify-between">
       <div>
         {#if selfEnrollmentAllowed}
           <p class="text-lg font-bold">

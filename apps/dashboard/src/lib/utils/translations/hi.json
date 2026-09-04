@@ -4118,7 +4118,9 @@
         "joined": "संगठन से जुड़े",
         "join_failed": "संगठन में शामिल होने में विफल",
         "try_again": "फिर से प्रयास करें"
-      }
+      },
+      "not_found": "यह आमंत्रण अब उपलब्ध नहीं है।",
+      "loading": "आमंत्रण लोड हो रहा है..."
     },
     "link": {
       "page_title": "ClassroomIO पर {orgName} से जुड़ें",
@@ -5099,5 +5101,27 @@
   },
   "lms": {
     "view_landing_page": "लैंडिंग पेज देखें"
+  },
+  "notifications": {
+    "title": "सूचनाएं",
+    "empty_title": "कोई सूचना नहीं",
+    "empty_description": "आप सभी सूचनाओं से अवगत हैं। नई सूचनाएं यहां दिखाई देंगी।",
+    "refresh": "रिफ्रेश करें",
+    "pending_invite": {
+      "heading": "संगठन का आमंत्रण",
+      "body": "{orgName} ने आपको {role} के रूप में शामिल होने के लिए आमंत्रित किया है।",
+      "action": "आमंत्रण देखें"
+    },
+    "latest": "नवीनतम",
+    "only_show_unread": "केवल अपठित दिखाएँ",
+    "unread": "अपठित",
+    "more_options": "अधिक विकल्प",
+    "give_feedback": "प्रतिक्रिया दें",
+    "watching_empty_title": "अभी देखने के लिए कुछ नहीं है",
+    "watching_empty_description": "आपके द्वारा फ़ॉलो किए गए आइटमों के अपडेट यहां दिखाई देंगे।",
+    "tabs": {
+      "direct": "सीधा",
+      "watching": "देख रहे हैं"
+    }
   }
 }

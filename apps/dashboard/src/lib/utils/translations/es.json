@@ -4118,7 +4118,9 @@
         "joined": "Organización unida",
         "join_failed": "No se pudo unir a la organización",
         "try_again": "Intentar de nuevo"
-      }
+      },
+      "not_found": "Esta invitación ya no está disponible.",
+      "loading": "Cargando invitación..."
     },
     "link": {
       "page_title": "Únase a {orgName} en ClassroomIO",
@@ -5099,5 +5101,27 @@
   },
   "lms": {
     "view_landing_page": "Ver página de inicio"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty_title": "Sin notificaciones",
+    "empty_description": "Ya estás al día. Las nuevas notificaciones aparecerán aquí.",
+    "refresh": "Actualizar",
+    "pending_invite": {
+      "heading": "Invitación a la organización",
+      "body": "{orgName} te invitó a unirte como {role}.",
+      "action": "Ver invitación"
+    },
+    "latest": "Últimos",
+    "only_show_unread": "Mostrar solo los no leídos",
+    "unread": "No leídos",
+    "more_options": "Más opciones",
+    "give_feedback": "Enviar comentarios",
+    "watching_empty_title": "Aún no hay nada que ver",
+    "watching_empty_description": "Las actualizaciones de los elementos que sigues aparecerán aquí.",
+    "tabs": {
+      "direct": "Directo",
+      "watching": "Siguiendo"
+    }
   }
 }
