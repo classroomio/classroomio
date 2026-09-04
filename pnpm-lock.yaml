@@ -917,6 +917,9 @@ importers:
 
   packages/analytics:
     dependencies:
+      '@cio/core':
+        specifier: workspace:*
+        version: link:../core
       '@cio/db':
         specifier: workspace:*
         version: link:../db

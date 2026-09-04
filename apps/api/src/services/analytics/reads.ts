@@ -5,8 +5,7 @@ import {
   selectPopularCourseTypes
 } from '@cio/db/queries/analytics';
 import { DASH_ANALYTICS_TTL_SECONDS, dashAnalyticsKey } from '@api/utils/redis/key-generators';
-import { env } from '@cio/core/config/env';
-import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
+import { readVersionedOrgCache, writeVersionedOrgCache } from '@cio/core/utils/redis/org-stats-cache';
 
 export type LandingStats = {
   totals: {
@@ -48,33 +47,21 @@ function computeRange(days: number): { fromDate: string; toDate: string } {
   return { fromDate: toDateString(from), toDate: toDateString(today) };
 }
 
-async function readCache<T>(key: string): Promise<T | null> {
-  if (!env.REDIS_URL) return null;
-  try {
-    const raw = await redis.get(key);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch (error) {
-    logRedisUnavailableOnce('Redis get failed for analytics cache, using database', error);
-    return null;
-  }
+async function readCache<T>(orgId: string, key: string, bustCache: boolean) {
+  const cachedResult = await readVersionedOrgCache<T>(orgId, key);
+  const cached = bustCache ? null : cachedResult.data;
+
+  return { version: cachedResult.version, cached };
 }
 
-async function writeCache(key: string, value: unknown): Promise<void> {
-  if (!env.REDIS_URL) return;
-  try {
-    await redis.setEx(key, DASH_ANALYTICS_TTL_SECONDS, JSON.stringify(value));
-  } catch (error) {
-    logRedisUnavailableOnce('Redis set failed for analytics cache, continuing', error);
-  }
+function writeCache(key: string, version: string, value: unknown): Promise<void> {
+  return writeVersionedOrgCache(key, DASH_ANALYTICS_TTL_SECONDS, version, value);
 }
 
 export async function getLandingStats(orgId: string, days: number, bustCache = false): Promise<LandingStats> {
   const key = dashAnalyticsKey('landing', orgId, days);
-  if (!bustCache) {
-    const cached = await readCache<LandingStats>(key);
-    if (cached) return cached;
-  }
+  const { version, cached } = await readCache<LandingStats>(orgId, key, bustCache);
+  if (cached) return cached;
 
   const { fromDate, toDate } = computeRange(days);
   const rows = await selectOrgDailyRange(orgId, fromDate, toDate);
@@ -97,16 +84,14 @@ export async function getLandingStats(orgId: string, days: number, bustCache = f
   }));
 
   const result: LandingStats = { totals, sparkline };
-  await writeCache(key, result);
+  await writeCache(key, version, result);
   return result;
 }
 
 export async function getCountryBreakdown(orgId: string, days: number, bustCache = false): Promise<CountryBreakdown> {
   const key = dashAnalyticsKey('country', orgId, days);
-  if (!bustCache) {
-    const cached = await readCache<CountryBreakdown>(key);
-    if (cached) return cached;
-  }
+  const { version, cached } = await readCache<CountryBreakdown>(orgId, key, bustCache);
+  if (cached) return cached;
 
   const { fromDate, toDate } = computeRange(days);
   const rows = await selectCountryBreakdown(orgId, fromDate, toDate);
@@ -115,7 +100,7 @@ export async function getCountryBreakdown(orgId: string, days: number, bustCache
     views: row.views,
     enrollments: row.enrollments
   }));
-  await writeCache(key, result);
+  await writeCache(key, version, result);
   return result;
 }
 
@@ -126,10 +111,8 @@ export async function getCourseFunnel(
   bustCache = false
 ): Promise<CourseFunnel> {
   const key = dashAnalyticsKey('funnel', orgId, days, courseId);
-  if (!bustCache) {
-    const cached = await readCache<CourseFunnel>(key);
-    if (cached) return cached;
-  }
+  const { version, cached } = await readCache<CourseFunnel>(orgId, key, bustCache);
+  if (cached) return cached;
 
   const { fromDate, toDate } = computeRange(days);
 
@@ -167,16 +150,14 @@ export async function getCourseFunnel(
     });
 
   const result: CourseFunnel = { steps };
-  await writeCache(key, result);
+  await writeCache(key, version, result);
   return result;
 }
 
 export async function getPopularTypes(orgId: string, days: number, bustCache = false): Promise<PopularTypes> {
   const key = dashAnalyticsKey('popular-types', orgId, days);
-  if (!bustCache) {
-    const cached = await readCache<PopularTypes>(key);
-    if (cached) return cached;
-  }
+  const { version, cached } = await readCache<PopularTypes>(orgId, key, bustCache);
+  if (cached) return cached;
 
   const { fromDate, toDate } = computeRange(days);
   const rows = await selectPopularCourseTypes(orgId, fromDate, toDate);
@@ -189,6 +170,6 @@ export async function getPopularTypes(orgId: string, days: number, bustCache = f
       completions: row.completions,
       courseCount: row.courseCount
     }));
-  await writeCache(key, result);
+  await writeCache(key, version, result);
   return result;
 }

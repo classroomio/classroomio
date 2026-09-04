@@ -132,14 +132,6 @@ export const agentChatKeyGenerator = (c: Context): string => {
 // ─── Dashboard / analytics cache ─────────────────────────────────────────────
 
 /**
- * Redis key for `getStudentLoginActivity` (day-of-week chart per org and window).
- * Value: JSON array `{ day, count }[]`. TTL: 24h.
- */
-export function dashLoginActivityKey(orgId: string, days: number): string {
-  return `dash:login-activity:${orgId}:${days}`;
-}
-
-/**
  * Rate limit key for agent upload endpoint (per-user).
  */
 export const agentUploadKeyGenerator = (c: Context): string => {

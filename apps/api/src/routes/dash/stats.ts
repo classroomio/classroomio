@@ -73,8 +73,7 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/landing-stats', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
     try {
-      const { orgId, days } = c.req.valid('query');
-      const bust = c.req.query('bust') === '1';
+      const { orgId, days, bust } = c.req.valid('query');
       const result = await getLandingStats(orgId, days, bust);
 
       return c.json({ success: true, data: result }, 200);
@@ -89,8 +88,7 @@ export const dashAnalyticsRouter = new Hono()
     zValidator('query', ZDashAnalyticsRange),
     async (c) => {
       try {
-        const { orgId, days } = c.req.valid('query');
-        const bust = c.req.query('bust') === '1';
+        const { orgId, days, bust } = c.req.valid('query');
         const result = await getCountryBreakdown(orgId, days, bust);
 
         return c.json({ success: true, data: result }, 200);
@@ -101,8 +99,7 @@ export const dashAnalyticsRouter = new Hono()
   )
   .get('/course-funnel', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashCourseFunnel), async (c) => {
     try {
-      const { orgId, days, courseId } = c.req.valid('query');
-      const bust = c.req.query('bust') === '1';
+      const { orgId, days, courseId, bust } = c.req.valid('query');
       const result = await getCourseFunnel(orgId, days, courseId, bust);
 
       return c.json({ success: true, data: result }, 200);
@@ -112,8 +109,7 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/popular-types', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
     try {
-      const { orgId, days } = c.req.valid('query');
-      const bust = c.req.query('bust') === '1';
+      const { orgId, days, bust } = c.req.valid('query');
       const result = await getPopularTypes(orgId, days, bust);
 
       return c.json({ success: true, data: result }, 200);

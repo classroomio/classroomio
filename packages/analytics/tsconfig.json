@@ -16,6 +16,8 @@
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
     "types": ["node"],
     "paths": {
+      "@cio/core": ["./node_modules/@cio/core/dist/index.d.ts"],
+      "@cio/core/*": ["./node_modules/@cio/core/dist/*"],
       "@cio/db": ["./node_modules/@cio/db/dist/index.d.ts"],
       "@cio/db/*": ["./node_modules/@cio/db/dist/*"],
       "@cio/utils": ["./node_modules/@cio/utils/dist/index.d.ts"],
@@ -24,7 +26,7 @@
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
-  "references": [{ "path": "../db" }, { "path": "../utils" }],
+  "references": [{ "path": "../core" }, { "path": "../db" }, { "path": "../utils" }],
   "tsc-alias": {
     "resolveFullPaths": true,
     "verbose": false

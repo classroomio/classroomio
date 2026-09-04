@@ -32,10 +32,12 @@ vi.mock('@cio/db/queries', () => ({
 import {
   getCourseStats,
   getDashOrgStats,
+  getOrgStudentLoginsByDayOfWeek,
   getRecentCertifications,
   getTotalCertificatesIssued
 } from '@cio/db/queries/dash';
-import { getOrganisationAnalytics } from '@api/services/dash';
+import { getOrganisationAnalytics, getStudentLoginActivity } from '@api/services/dash';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 
 const sampleAnalytics = {
   totalCertificates: 2,
@@ -129,5 +131,31 @@ describe('getOrganisationAnalytics cache', () => {
 
     expect(result.numberOfCourses).toBe(8);
     expect(getDashOrgStats).toHaveBeenCalledTimes(1);
+  });
+
+  it('increments the version shared by dashboard and engagement analytics caches', async () => {
+    await invalidateOrgStats('org-1');
+
+    expect(redisMocks.incr).toHaveBeenCalledWith('dash:stats:ver:org-1');
+    expect(redisMocks.del).toHaveBeenCalledWith('dash:stats:v1:org-1');
+  });
+});
+
+describe('getStudentLoginActivity', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('reads fresh login activity on every request', async () => {
+    vi.mocked(getOrgStudentLoginsByDayOfWeek)
+      .mockResolvedValueOnce([{ dayOfWeek: 1, count: 2 }])
+      .mockResolvedValueOnce([{ dayOfWeek: 1, count: 3 }]);
+
+    const firstResult = await getStudentLoginActivity('org-1', 30);
+    const secondResult = await getStudentLoginActivity('org-1', 30);
+
+    expect(firstResult[1]).toEqual({ day: 'Mon', count: 2 });
+    expect(secondResult[1]).toEqual({ day: 'Mon', count: 3 });
+    expect(getOrgStudentLoginsByDayOfWeek).toHaveBeenCalledTimes(2);
   });
 });

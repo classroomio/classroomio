@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
+  import { untrack } from 'svelte';
   import * as Page from '@cio/ui/base/page';
   import * as Tabs from '@cio/ui/custom/underline-tabs';
   import {
@@ -15,7 +16,8 @@
   } from '$features/analytics';
 
   $effect(() => {
-    analyticsApi.ensureFetched($currentOrg.id);
+    const orgId = $currentOrg.id;
+    void untrack(() => analyticsApi.fetchAll(orgId));
   });
 
   function handleRangeChange(days: 7 | 30 | 90) {

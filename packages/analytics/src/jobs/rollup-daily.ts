@@ -6,6 +6,7 @@ import {
   upsertCourseDailyRows,
   upsertOrgDailyRows
 } from '@cio/db/queries/analytics';
+import { invalidateOrgStatsForIds } from '@cio/core/utils/redis/org-stats-cache';
 
 type RollupResult = {
   windowStart: string;
@@ -83,6 +84,14 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
     upsertCourseDailyRows(courseRows),
     upsertCountryDailyRows(countryRows)
   ]);
+  const updatedOrgIds = [
+    ...new Set([
+      ...orgRows.map((row) => row.orgId),
+      ...courseRows.map((row) => row.orgId),
+      ...countryRows.map((row) => row.orgId)
+    ])
+  ];
+  await invalidateOrgStatsForIds(updatedOrgIds);
 
   return {
     windowStart: startIso,
