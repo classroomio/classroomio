@@ -31,11 +31,13 @@ jobs:
     timeout-minutes: 20
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20.19.3
           cache: 'pnpm'
@@ -58,15 +60,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
         run: |
-          COUNT=$(node -e "
-            const postgres = require('postgres');
-            (async () => {
-              const sql = postgres(process.env.DATABASE_URL, { max: 1 });
-              const rows = await sql\`select count(*)::int n from drizzle.__drizzle_migrations\`.catch(() => [{ n: 0 }]);
-              process.stdout.write(String(rows[0].n));
-              await sql.end();
-            })();
-          ")
+          COUNT=$(pnpm --silent db:ledger count)
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
           echo "applied before: $COUNT"
 
@@ -76,27 +70,17 @@ jobs:
           DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
         run: pnpm db:migrate
 
-      # `drizzle-kit migrate` reports success even when it applied nothing, so
-      # compare the ledger before and after rather than trusting the exit code.
-      - name: Report what was applied
+      # `drizzle-kit migrate` reports success even when it applied nothing, and
+      # equal row counts can still be different migrations — so compare the
+      # recorded hashes against the journal.
+      - name: Verify every migration is recorded
         working-directory: packages/db
         env:
           DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
           BEFORE: ${{ steps.before.outputs.count }}
         run: |
-          AFTER=$(node -e "
-            const postgres = require('postgres');
-            (async () => {
-              const sql = postgres(process.env.DATABASE_URL, { max: 1 });
-              const rows = await sql\`select count(*)::int n from drizzle.__drizzle_migrations\`;
-              process.stdout.write(String(rows[0].n));
-              await sql.end();
-            })();
-          ")
-          JOURNAL=$(node -e "process.stdout.write(String(require('./src/migrations/meta/_journal.json').entries.length))")
-          echo "applied before: $BEFORE"
-          echo "applied after:  $AFTER"
-          echo "journal entries: $JOURNAL"
+          pnpm --silent db:ledger verify | tee ledger.txt
+          AFTER=$(pnpm --silent db:ledger count)
           {
             echo "### Database migrations"
             echo ""
@@ -104,11 +88,10 @@ jobs:
             echo "|---|---|"
             echo "| applied before | $BEFORE |"
             echo "| applied after | $AFTER |"
-            echo "| journal entries | $JOURNAL |"
             echo "| newly applied | $((AFTER - BEFORE)) |"
+            echo ""
+            echo '```'
+            cat ledger.txt
+            echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-
-          if [ "$AFTER" -ne "$JOURNAL" ]; then
-            echo "Ledger ($AFTER) does not match the journal ($JOURNAL) — some migrations did not apply." >&2
-            exit 1
-          fi
+          rm -f ledger.txt

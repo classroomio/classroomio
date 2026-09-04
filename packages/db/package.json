@@ -58,6 +58,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:baseline": "tsx src/scripts/baseline.ts",
+    "db:ledger": "tsx src/scripts/migration-ledger.ts",
+    "db:journal-check": "tsx src/scripts/check-journal-order.ts",
     "db:reset": "tsx src/scripts/db-reset.ts --skip-seed",
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",

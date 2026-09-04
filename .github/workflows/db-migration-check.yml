@@ -8,6 +8,7 @@ on:
     paths:
       - 'packages/db/src/migrations/**'
       - 'packages/db/src/schema.ts'
+      - 'packages/db/drizzle.config.ts'
       - '.github/workflows/db-migration-check.yml'
 
 permissions:
@@ -37,11 +38,13 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/migration_check
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20.19.3
           cache: 'pnpm'
@@ -80,33 +83,16 @@ jobs:
 
       - name: Ledger must match the journal
         working-directory: packages/db
+        run: pnpm --silent db:ledger verify
+
+      # drizzle applies only entries newer than the newest already applied, so a
+      # journal entry dated before one that precedes it is silently skipped.
+      # `main` carries one such inversion from before this was checked, so only
+      # entries added by this PR are enforced.
+      - name: New journal entries must be newest and not future-dated
+        working-directory: packages/db
         run: |
-          node -e "
-            const postgres = require('postgres');
-            const journal = require('./src/migrations/meta/_journal.json').entries;
-            (async () => {
-              const sql = postgres(process.env.DATABASE_URL, { max: 1 });
-              const [{ n }] = await sql\`select count(*)::int n from drizzle.__drizzle_migrations\`;
-              await sql.end();
-              console.log('journal entries:', journal.length, '| applied:', n);
-
-              if (n !== journal.length) {
-                console.error('Applied count does not match the journal.');
-                process.exit(1);
-              }
-
-              // drizzle applies only entries newer than the newest already
-              // applied, so a timestamp out of order is silently skipped.
-              const whens = journal.map((e) => e.when);
-              const newest = Math.max(...whens);
-              const last = whens[whens.length - 1];
-              if (last !== newest) {
-                console.error('The last journal entry is not the newest; later migrations would be skipped.');
-                process.exit(1);
-              }
-              if (last > Date.now()) {
-                console.error('The last journal entry is dated in the future; migrations authored before then would be skipped.');
-                process.exit(1);
-              }
-            })();
-          "
+          git fetch --no-tags --depth=1 origin "$GITHUB_BASE_REF"
+          git show "FETCH_HEAD:packages/db/src/migrations/meta/_journal.json" > "$RUNNER_TEMP/base-journal.json" \
+            || echo '{"entries":[]}' > "$RUNNER_TEMP/base-journal.json"
+          pnpm --silent db:journal-check "$RUNNER_TEMP/base-journal.json"
