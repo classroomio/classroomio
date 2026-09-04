@@ -969,7 +969,13 @@
             "yes": "Да",
             "percent": "Процент скидки",
             "gift": "О подарке",
-            "payment_required": "Для платных курсов необходима ссылка для оплаты."
+            "payment_required": "Для платных курсов необходима ссылка для оплаты.",
+            "enable_paid": "Включить платную",
+            "payment_invalid_url": "Введите действительный URL-адрес (например, https://pay.example.com).",
+            "payment_helper": "Stripe, Lemon Squeezy или любая ссылка для оплаты.",
+            "percentage_helper": "В процентах %",
+            "gift_on_completion": "Подарок по завершении",
+            "payment_cost_required": "Стоимость платных курсов должна быть больше 0."
           },
           "instructor_form": {
             "upload": "Логотип инструктора",

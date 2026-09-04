@@ -969,7 +969,13 @@
             "yes": "Có",
             "percent": "Phần trăm chiết khấu",
             "gift": "Về quà tặng",
-            "payment_required": "Cần có liên kết thanh toán cho các khóa học trả phí"
+            "payment_required": "Cần có liên kết thanh toán cho các khóa học trả phí",
+            "enable_paid": "Bật trả phí",
+            "payment_invalid_url": "Vui lòng nhập URL hợp lệ (ví dụ: https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy hoặc bất kỳ liên kết thanh toán nào",
+            "percentage_helper": "Trong phần trăm %",
+            "gift_on_completion": "Quà tặng khi hoàn thành",
+            "payment_cost_required": "Các khóa học trả phí phải có giá lớn hơn 0."
           },
           "instructor_form": {
             "upload": "Logo giảng viên",

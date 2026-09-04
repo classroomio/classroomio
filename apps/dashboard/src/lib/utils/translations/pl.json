@@ -969,7 +969,13 @@
             "yes": "Tak",
             "percent": "Procent rabatu",
             "gift": "O prezencie",
-            "payment_required": "W przypadku kursów płatnych wymagany jest link do płatności"
+            "payment_required": "W przypadku kursów płatnych wymagany jest link do płatności",
+            "enable_paid": "Włącz Płatne",
+            "payment_invalid_url": "Wprowadź prawidłowy adres URL (np. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy lub dowolny link do płatności",
+            "percentage_helper": "W procentach%",
+            "gift_on_completion": "Prezent po ukończeniu",
+            "payment_cost_required": "Kursy płatne muszą mieć koszt wyższy niż 0"
           },
           "instructor_form": {
             "upload": "Logo instruktora",

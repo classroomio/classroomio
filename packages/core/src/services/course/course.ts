@@ -35,7 +35,7 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
-import type { TCourseCreate } from '@cio/utils/validation/course';
+import { validatePaidCourseState, type TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
@@ -392,6 +392,15 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>, dbC
     const [currentCourse] = await getCourseById(courseId, dbClient);
     if (!currentCourse) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
+
+    if (data.cost !== undefined || data.metadata !== undefined) {
+      const nextCost = data.cost === undefined ? (currentCourse.cost ?? 0) : (data.cost ?? 0);
+      const nextMetadata = sanitizedData.metadata ?? currentCourse.metadata;
+      const paidCourseIssue = validatePaidCourseState(nextCost, nextMetadata)[0];
+      if (paidCourseIssue) {
+        throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
+      }
     }
 
     if (data.type !== undefined) {

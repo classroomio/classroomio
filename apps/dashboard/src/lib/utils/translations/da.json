@@ -969,7 +969,13 @@
             "yes": "Ja",
             "percent": "Rabatprocent",
             "gift": "Om gave",
-            "payment_required": "Et betalingslink er påkrævet for betalte kurser"
+            "payment_required": "Et betalingslink er påkrævet for betalte kurser",
+            "enable_paid": "Aktiver betalt",
+            "payment_invalid_url": "Indtast venligst en gyldig webadresse (f.eks. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy eller et hvilket som helst betalingslink",
+            "percentage_helper": "I procent %",
+            "gift_on_completion": "Gave ved færdiggørelse",
+            "payment_cost_required": "Betalte kurser skal have en pris på over 0"
           },
           "instructor_form": {
             "upload": "Instruktør logo",

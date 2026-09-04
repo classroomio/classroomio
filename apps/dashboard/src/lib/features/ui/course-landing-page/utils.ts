@@ -7,7 +7,7 @@ import get from 'lodash/get';
 import type { AccountOrg } from '$features/app/types';
 import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
 import type { CourseLandingPageProps, OrgLandingPageTheme } from '@cio/ui/custom/org-landing-page';
-import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
 import { t } from '$lib/utils/functions/translations';
 
 export type LandingPageLesson = {
@@ -164,9 +164,7 @@ export function buildCourseLandingPageProps(
     hasCertificate ? { label: 'Certificate', value: 'Included' } : null
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
-  const discount = metadata?.discount ?? 0;
-  const showDiscount = metadata?.showDiscount ?? false;
-  const calculatedCost = calcCourseDiscount(discount, course.cost ?? 0, !!showDiscount);
+  const calculatedCost = calcCourseCost(course);
   const isFree = isCourseFree(calculatedCost);
   const pricingCtaLabel = isFree
     ? t.get('course.navItem.landing_page.pricing_section.enroll')
@@ -243,7 +241,7 @@ export function buildCourseLandingPageProps(
       averageRating
     },
     pricing: {
-      cost: course.cost ?? 0,
+      cost: calcCourseCost(course),
       currency: course.currency ?? 'USD',
       discount: metadata?.discount,
       showDiscount: metadata?.showDiscount,
