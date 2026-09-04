@@ -824,6 +824,7 @@
         "download": "Télécharger",
         "allow": "Les étudiants peuvent s'inscrire eux-mêmes",
         "access": "Lorsque cette option est désactivée, les étudiants ne peuvent rejoindre le cours que via un lien d'invitation ou en étant ajoutés depuis {people}.",
+        "access_people": "Personnes",
         "publish": "Publier un cours",
         "determines": "Cela détermine si votre cours s'affiche sur votre page de destination",
         "published": "Publié",

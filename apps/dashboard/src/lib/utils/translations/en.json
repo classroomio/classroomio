@@ -3747,6 +3747,7 @@
         "download": "Download",
         "allow": "Students can enroll themselves",
         "access": "When off, students can only join through an invite link or by being added from {people}.",
+        "access_people": "People",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",

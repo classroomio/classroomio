@@ -1103,7 +1103,7 @@
       {selfEnrollmentAccessParts.before}<a
         href={peoplePageHref}
         data-testid="course-settings-people-link"
-        class="ui:text-primary">{$t('course.navItems.nav_people')}</a
+        class="ui:text-primary">{$t('course.navItem.settings.access_people')}</a
       >{selfEnrollmentAccessParts.after}
     </Field.Description>
     <Field.Field orientation="horizontal">
