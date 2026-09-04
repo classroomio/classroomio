@@ -41,7 +41,7 @@ export type TCourseImportDraftCourse = z.infer<typeof ZCourseImportDraftCourse>;
 export const ZCourseImportDraftSection = z.object({
   externalId: z.string().min(1),
   title: z.string().min(1),
-  order: z.number().int().min(0)
+  order: z.number().int().min(1)
 });
 export type TCourseImportDraftSection = z.infer<typeof ZCourseImportDraftSection>;
 
@@ -49,7 +49,7 @@ export const ZCourseImportDraftLesson = z.object({
   externalId: z.string().min(1),
   sectionExternalId: z.string().min(1),
   title: z.string().min(1),
-  order: z.number().int().min(0),
+  order: z.number().int().min(1),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional()
 });
@@ -85,7 +85,7 @@ export const ZCourseImportDraftExercise = z.object({
   sectionExternalId: z.string().min(1).optional(),
   title: z.string().min(1),
   description: z.string().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1),
   dueBy: z.string().optional(),
   questions: z.array(ZCourseImportDraftExerciseQuestion).optional()
 });
@@ -128,6 +128,15 @@ export const ZCourseImportDraftPayload = z
       sectionIds.add(section.externalId);
     });
 
+    const sectionOrders = value.sections.map((section) => section.order).sort((a, b) => a - b);
+    if (sectionOrders.length > 0 && sectionOrders.some((order, i) => order !== i + 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['sections'],
+        message: 'Section orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
+      });
+    }
+
     const lessonIds = new Set<string>();
     value.lessons.forEach((lesson, index) => {
       if (lessonIds.has(lesson.externalId)) {
@@ -147,6 +156,15 @@ export const ZCourseImportDraftPayload = z
         });
       }
     });
+
+    const lessonOrders = value.lessons.map((lesson) => lesson.order).sort((a, b) => a - b);
+    if (lessonOrders.length > 0 && lessonOrders.some((order, i) => order !== i + 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['lessons'],
+        message: 'Lesson orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
+      });
+    }
 
     value.lessonLanguages.forEach((lessonLanguage, index) => {
       if (!lessonIds.has(lessonLanguage.lessonExternalId)) {
@@ -185,6 +203,17 @@ export const ZCourseImportDraftPayload = z
         });
       }
     });
+
+    if (value.exercises) {
+      const exerciseOrders = value.exercises.map((exercise) => exercise.order).sort((a, b) => a - b);
+      if (exerciseOrders.length > 0 && exerciseOrders.some((order, i) => order !== i + 1)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['exercises'],
+          message: 'Exercise orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
+        });
+      }
+    }
   });
 export type TCourseImportDraftPayload = z.infer<typeof ZCourseImportDraftPayload>;
 

@@ -554,8 +554,8 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
 
   // 4. Sections + lessons + exercises
   const sectionsToInsert: TNewCourseSection[] = [
-    { id: HIPAA_SECTION_ID, courseId: HIPAA_COURSE_ID, title: 'Compliance Module', order: 0 },
-    { id: SOC2_SECTION_ID, courseId: SOC2_COURSE_ID, title: 'Security Fundamentals', order: 0 }
+    { id: HIPAA_SECTION_ID, courseId: HIPAA_COURSE_ID, title: 'Compliance Module', order: 1 },
+    { id: SOC2_SECTION_ID, courseId: SOC2_COURSE_ID, title: 'Security Fundamentals', order: 1 }
   ];
   const existingSections = await db
     .select({ id: courseSection.id })
@@ -577,7 +577,8 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       sectionId: HIPAA_SECTION_ID,
       title: 'What HIPAA actually requires of you',
       note: '<p>Plain-English summary of the privacy rule, security rule, and breach notification obligations.</p>',
-      isUnlocked: true
+      isUnlocked: true,
+      order: 1
     },
     {
       id: HIPAA_LESSON_IDS[1],
@@ -585,7 +586,8 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       sectionId: HIPAA_SECTION_ID,
       title: 'Handling PHI: the everyday rules',
       note: '<p>Minimum necessary access, secure messaging, faxing rules, and what to do if you spot a breach.</p>',
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     },
     {
       id: SOC2_LESSON_IDS[0],
@@ -593,7 +595,8 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       sectionId: SOC2_SECTION_ID,
       title: 'Passwords, MFA, and not getting phished',
       note: '<p>Strong-credential hygiene + recognizing the four most common phishing patterns we see at Coursera Test.</p>',
-      isUnlocked: true
+      isUnlocked: true,
+      order: 1
     },
     {
       id: SOC2_LESSON_IDS[1],
@@ -601,7 +604,8 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       sectionId: SOC2_SECTION_ID,
       title: 'Data classification & incident response',
       note: '<p>What counts as confidential, who to call when something goes wrong, and how we record an incident.</p>',
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     }
   ];
   const existingLessons = await db
@@ -628,14 +632,16 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       title: 'HIPAA: end-of-course quiz',
       description: '<p>Pass this short quiz to mark the course complete.</p>',
       lessonId: HIPAA_LESSON_IDS[1],
-      sectionId: HIPAA_SECTION_ID
+      sectionId: HIPAA_SECTION_ID,
+      order: 1
     },
     {
       id: SOC2_EXERCISE_ID,
       title: 'SOC 2: end-of-course quiz',
       description: '<p>Pass this short quiz to mark the course complete.</p>',
       lessonId: SOC2_LESSON_IDS[1],
-      sectionId: SOC2_SECTION_ID
+      sectionId: SOC2_SECTION_ID,
+      order: 1
     }
   ];
   const existingExercises = await db

@@ -8,7 +8,7 @@ export const ZLessonCreate = z.object({
   note: z.string().optional(),
   courseId: z.string().min(1),
   sectionId: z.string().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1),
   lessonAt: z.string().optional(),
   teacherId: z.string().optional(),
   isUnlocked: z.boolean().optional(),
@@ -85,17 +85,28 @@ export const ZLessonHistoryQuery = z.object({
 export type TLessonHistoryQuery = z.infer<typeof ZLessonHistoryQuery>;
 export type TLessonListQuery = z.infer<typeof ZLessonListQuery>;
 
-export const ZLessonReorder = z.object({
-  lessons: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        order: z.number().int().min(0),
-        sectionId: z.string().optional()
-      })
-    )
-    .min(1)
-});
+export const ZLessonReorder = z
+  .object({
+    lessons: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          order: z.number().int().min(1),
+          sectionId: z.string().optional()
+        })
+      )
+      .min(1)
+  })
+  .superRefine((value, ctx) => {
+    const orders = value.lessons.map((lesson) => lesson.order).sort((a, b) => a - b);
+    if (orders.some((order, index) => order !== index + 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['lessons'],
+        message: 'Lesson orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
+      });
+    }
+  });
 export type TLessonReorder = z.infer<typeof ZLessonReorder>;
 
 // Lesson Comment Schemas
