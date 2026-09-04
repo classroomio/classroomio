@@ -5105,6 +5105,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Lien d'invitation",
+    "title": "Lien d'invitation",
+    "description": "Toute personne disposant de ce lien peut s'inscrire. Partagez-le plutôt que de saisir les adresses e-mail une par une.",
+    "course_description": "Toute personne disposant de ce lien peut s'inscrire à ce cours en tant qu'étudiant. Partagez-le plutôt que de saisir les adresses e-mail une par une.",
+    "cohort_description": "Toute personne disposant de ce lien peut rejoindre cette cohorte et tous les cours qui la composent. Partagez-le plutôt que de saisir les adresses e-mail une par une.",
+    "generate": "Créer un lien d'invitation",
+    "copy": "Copier le lien d'invitation",
+    "copied": "Lien d'invitation copié",
+    "copy_failed": "Impossible de copier le lien d'invitation",
+    "toggle_label": "Lien actif",
+    "disabled_notice": "Ce lien est désactivé. Personne ne peut s'inscrire avec ce lien tant que vous ne l'aurez pas réactivé.",
+    "join_count": "{count} personnes se sont inscrites via ce lien",
+    "snackbar": {
+      "enabled": "Lien d'invitation activé",
+      "disabled": "Lien d'invitation désactivé"
+    },
+    "join": {
+      "page_title": "Rejoindre {resourceName} sur ClassroomIO",
+      "invitation": "Vous avez été invité(e) à rejoindre {resourceName} sur {orgName}.",
+      "course_button": "Rejoindre le cours",
+      "cohort_button": "Rejoindre la cohorte",
+      "disabled": "Ce lien d'invitation est désactivé.",
+      "closed": "Les nouvelles inscriptions ne sont plus acceptées.",
+      "succeeded": "Vous vous êtes inscrit(e)",
+      "failed": "Impossible de vous inscrire. Veuillez réessayer."
+    },
+    "load_failed": "Impossible de charger le lien d'invitation",
+    "generate_failed": "Impossible de créer le lien d'invitation",
+    "toggle_failed": "Impossible de mettre à jour le lien d'invitation"
+  },
   "lms": {
     "view_landing_page": "Afficher la page d'accueil"
   },

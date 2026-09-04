@@ -5105,6 +5105,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Link z zaproszeniem",
+    "title": "Link z zaproszeniem",
+    "description": "Każda osoba z tym linkiem może dołączyć. Udostępnij go zamiast wpisywać adresy e-mail pojedynczo.",
+    "course_description": "Każda osoba z tym linkiem może dołączyć do tego kursu jako student. Udostępnij go zamiast wpisywać adresy e-mail pojedynczo.",
+    "cohort_description": "Każda osoba z tym linkiem może dołączyć do tej grupy i każdego kursu w niej zawartego. Udostępnij go zamiast wpisywać adresy e-mail pojedynczo.",
+    "generate": "Utwórz link z zaproszeniem",
+    "copy": "Kopiuj link z zaproszeniem",
+    "copied": "Link z zaproszeniem został skopiowany",
+    "copy_failed": "Nie można skopiować linku z zaproszeniem",
+    "toggle_label": "Link jest aktywny",
+    "disabled_notice": "Ten link jest wyłączony. Nikt nie będzie mógł dołączyć, dopóki go ponownie nie włączysz.",
+    "join_count": "{count} osób dołączyło za pomocą tego linku",
+    "snackbar": {
+      "enabled": "Link z zaproszeniem włączony",
+      "disabled": "Link z zaproszeniem wyłączony"
+    },
+    "join": {
+      "page_title": "Dołącz do {resourceName} w ClassroomIO",
+      "invitation": "Zostałeś zaproszony do dołączenia do {resourceName} w {orgName}.",
+      "course_button": "Dołącz do kursu",
+      "cohort_button": "Dołącz do grupy",
+      "disabled": "Ten link z zaproszeniem został wyłączony.",
+      "closed": "Nowi członkowie nie są już przyjmowani.",
+      "succeeded": "Dołączyłeś",
+      "failed": "Nie udało się dołączyć. Spróbuj ponownie."
+    },
+    "load_failed": "Nie można załadować linku z zaproszeniem",
+    "generate_failed": "Nie można utworzyć linku z zaproszeniem",
+    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem"
+  },
   "lms": {
     "view_landing_page": "Wyświetl stronę docelową"
   },

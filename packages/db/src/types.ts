@@ -103,6 +103,9 @@ export type TNewCourseInvite = typeof schema.courseInvite.$inferInsert;
 export type TCourseInviteAudit = typeof schema.courseInviteAudit.$inferSelect;
 export type TNewCourseInviteAudit = typeof schema.courseInviteAudit.$inferInsert;
 
+export type TInviteLink = typeof schema.inviteLink.$inferSelect;
+export type TNewInviteLink = typeof schema.inviteLink.$inferInsert;
+
 export type TOrganizationInvite = typeof schema.organizationInvite.$inferSelect;
 export type TNewOrganizationInvite = typeof schema.organizationInvite.$inferInsert;
 

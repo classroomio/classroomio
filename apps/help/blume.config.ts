@@ -69,12 +69,7 @@ export default defineConfig({
         label: 'Get started',
         display: 'group',
         collapsed: false,
-        items: [
-          '/get-started',
-          '/get-started/signup',
-          '/get-started/onboarding',
-          '/get-started/create-first-course'
-        ]
+        items: ['/get-started', '/get-started/signup', '/get-started/onboarding', '/get-started/create-first-course']
       },
       {
         label: 'Build a course',

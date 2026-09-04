@@ -5105,6 +5105,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Invitationslink",
+    "title": "Invitationslink",
+    "description": "Alle med dette link kan deltage. Del det i stedet for at indtaste e-mails én efter én.",
+    "course_description": "Alle med dette link kan deltage i dette kursus som studerende. Del det i stedet for at indtaste e-mails én efter én.",
+    "cohort_description": "Alle med dette link kan deltage i denne kohorte og alle kurser i den. Del det i stedet for at indtaste e-mails én efter én.",
+    "generate": "Opret invitationslink",
+    "copy": "Kopier invitationslink",
+    "copied": "Invitationslink kopieret",
+    "copy_failed": "Kunne ikke kopiere invitationslinket",
+    "toggle_label": "Linket er aktivt",
+    "disabled_notice": "Dette link er deaktiveret. Ingen kan deltage med det, før du aktiverer det igen.",
+    "join_count": "{count} personer har tilmeldt sig via dette link",
+    "snackbar": {
+      "enabled": "Invitationslink aktiveret",
+      "disabled": "Invitationslink deaktiveret"
+    },
+    "join": {
+      "page_title": "Tilmeld dig {resourceName} på ClassroomIO",
+      "invitation": "Du er blevet inviteret til at deltage i {resourceName} på {orgName}.",
+      "course_button": "Tilmeld dig kurset",
+      "cohort_button": "Tilmeld dig kohorte",
+      "disabled": "Dette invitationslink er blevet deaktiveret.",
+      "closed": "Dette accepterer ikke længere nye medlemmer.",
+      "succeeded": "Du er tilmeldt",
+      "failed": "Kunne ikke deltage. Prøv igen."
+    },
+    "load_failed": "Kunne ikke indlæse invitationslinket",
+    "generate_failed": "Kunne ikke oprette invitationslinket",
+    "toggle_failed": "Kunne ikke opdatere invitationslinket"
+  },
   "lms": {
     "view_landing_page": "Se landingssiden"
   },

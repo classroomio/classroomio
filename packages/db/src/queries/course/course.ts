@@ -1409,6 +1409,26 @@ export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxCli
   }
 }
 
+/** Locks the course row so a concurrent status change can't slip past an accept in progress. */
+export async function lockCourseStatusForAccept(
+  dbClient: DbOrTxClient,
+  courseId: string
+): Promise<{ status: string; groupId: string | null } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ status: schema.course.status, groupId: schema.course.groupId })
+      .from(schema.course)
+      .where(eq(schema.course.id, courseId))
+      .limit(1)
+      .for('update');
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockCourseStatusForAccept error:', error);
+    throw new Error(`Failed to lock course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 /**
  * Gets course group mappings for an organization, including course title
  * @param orgId Organization ID

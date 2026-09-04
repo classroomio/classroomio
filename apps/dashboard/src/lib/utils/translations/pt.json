@@ -5105,6 +5105,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Link de convite",
+    "title": "Link de convite",
+    "description": "Qualquer pessoa com este link pode participar. Compartilhe-o em vez de inserir e-mails um por um.",
+    "course_description": "Qualquer pessoa com este link pode participar deste curso como aluno. Compartilhe-o em vez de inserir e-mails um por um.",
+    "cohort_description": "Qualquer pessoa com este link pode participar desta turma e de todos os cursos nela contidos. Compartilhe-o em vez de inserir e-mails um por um.",
+    "generate": "Criar link de convite",
+    "copy": "Copiar link de convite",
+    "copied": "Link de convite copiado",
+    "copy_failed": "Não foi possível copiar o link de convite",
+    "toggle_label": "Link ativo",
+    "disabled_notice": "Este link está desativado. Ninguém poderá participar com ele até que você o ative novamente.",
+    "join_count": "{count} pessoas se inscreveram por meio deste link",
+    "snackbar": {
+      "enabled": "Link de convite ativado",
+      "disabled": "Link de convite desativado"
+    },
+    "join": {
+      "page_title": "Inscreva-se no {resourceName} no ClassroomIO",
+      "invitation": "Você foi convidado(a) a se inscrever no {resourceName} na {orgName}.",
+      "course_button": "Inscreva-se no curso",
+      "cohort_button": "Inscreva-se na turma",
+      "disabled": "Este link de convite foi desativado.",
+      "closed": "Não estamos mais aceitando novos membros.",
+      "succeeded": "Você se inscreveu",
+      "failed": "Não foi possível se inscrever. Tente novamente."
+    },
+    "load_failed": "Não foi possível carregar o link de convite",
+    "generate_failed": "Não foi possível criar o link de convite",
+    "toggle_failed": "Não foi possível atualizar o link de convite"
+  },
   "lms": {
     "view_landing_page": "Ver página inicial"
   },

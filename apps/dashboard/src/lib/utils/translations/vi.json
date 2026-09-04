@@ -5105,6 +5105,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Liên kết mời",
+    "title": "Liên kết mời",
+    "description": "Bất kỳ ai có liên kết này đều có thể tham gia. Hãy chia sẻ liên kết này thay vì nhập email từng người một.",
+    "course_description": "Bất kỳ ai có liên kết này đều có thể tham gia khóa học này với tư cách học viên. Hãy chia sẻ liên kết này thay vì nhập email từng người một.",
+    "cohort_description": "Bất kỳ ai có liên kết này đều có thể tham gia nhóm học này và mọi khóa học trong đó. Hãy chia sẻ liên kết này thay vì nhập email từng người một.",
+    "generate": "Tạo liên kết mời",
+    "copy": "Sao chép liên kết mời",
+    "copied": "Đã sao chép liên kết mời",
+    "copy_failed": "Không thể sao chép liên kết mời",
+    "toggle_label": "Liên kết đang hoạt động",
+    "disabled_notice": "Liên kết này đã bị vô hiệu hóa. Không ai có thể tham gia bằng liên kết này cho đến khi bạn kích hoạt lại.",
+    "join_count": "{count} người đã tham gia bằng liên kết này",
+    "snackbar": {
+      "enabled": "Liên kết mời đã được kích hoạt",
+      "disabled": "Liên kết mời đã bị vô hiệu hóa"
+    },
+    "join": {
+      "page_title": "Tham gia {resourceName} trên ClassroomIO",
+      "invitation": "Bạn đã được mời tham gia {resourceName} tại {orgName}.",
+      "course_button": "Tham gia khóa học",
+      "cohort_button": "Tham gia nhóm",
+      "disabled": "Liên kết mời này đã bị vô hiệu hóa.",
+      "closed": "Hiện không còn nhận thêm thành viên mới.",
+      "succeeded": "Bạn đã tham gia",
+      "failed": "Không thể tham gia. Vui lòng thử lại."
+    },
+    "load_failed": "Không thể tải liên kết mời",
+    "generate_failed": "Không thể tạo liên kết mời",
+    "toggle_failed": "Không thể cập nhật liên kết mời"
+  },
   "lms": {
     "view_landing_page": "Xem trang đích"
   },

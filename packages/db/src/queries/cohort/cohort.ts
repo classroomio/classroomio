@@ -357,6 +357,48 @@ export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxCl
   }
 }
 
+/**
+ * Inserts a cohort member if absent, relying on the unique constraint rather than a
+ * read-then-write. Returns null when the membership already existed.
+ */
+export async function insertCohortMemberIfAbsent(
+  data: TNewCohortMember,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
+  try {
+    const [member] = await dbClient
+      .insert(schema.cohortMember)
+      .values(data)
+      .onConflictDoNothing({ target: [schema.cohortMember.cohortId, schema.cohortMember.profileId] })
+      .returning();
+
+    return member ?? null;
+  } catch (error) {
+    console.error('insertCohortMemberIfAbsent error:', error);
+    throw new Error(`Failed to add cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Locks the cohort row so a concurrent status change can't slip past an accept in progress. */
+export async function lockCohortStatusForAccept(
+  dbClient: DbOrTxClient,
+  cohortId: string
+): Promise<{ status: string } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ status: schema.cohort.status })
+      .from(schema.cohort)
+      .where(eq(schema.cohort.id, cohortId))
+      .limit(1)
+      .for('update');
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockCohortStatusForAccept error:', error);
+    throw new Error(`Failed to lock cohort: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function removeCohortMember(memberId: string): Promise<TCohortMember | null> {
   try {
     const [deleted] = await db.delete(schema.cohortMember).where(eq(schema.cohortMember.id, memberId)).returning();

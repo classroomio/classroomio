@@ -5105,6 +5105,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Enlace de invitación",
+    "title": "Enlace de invitación",
+    "description": "Cualquiera con este enlace puede unirse. Compártelo en lugar de ingresar los correos electrónicos uno por uno.",
+    "course_description": "Cualquiera con este enlace puede unirse a este curso como estudiante. Compártelo en lugar de ingresar los correos electrónicos uno por uno.",
+    "cohort_description": "Cualquiera con este enlace puede unirse a este grupo y a todos los cursos que lo componen. Compártelo en lugar de ingresar los correos electrónicos uno por uno.",
+    "generate": "Crear enlace de invitación",
+    "copy": "Copiar enlace de invitación",
+    "copied": "Enlace de invitación copiado",
+    "copy_failed": "No se pudo copiar el enlace de invitación",
+    "toggle_label": "El enlace está activo",
+    "disabled_notice": "Este enlace está desactivado. Nadie puede unirse con él hasta que lo actives.",
+    "join_count": "{count} personas se han unido con este enlace",
+    "snackbar": {
+      "enabled": "Enlace de invitación habilitado",
+      "disabled": "Enlace de invitación deshabilitado"
+    },
+    "join": {
+      "page_title": "Únete a {resourceName} en ClassroomIO",
+      "invitation": "Te han invitado a unirte a {resourceName} en {orgName}.",
+      "course_button": "Unirse al curso",
+      "cohort_button": "Unirse al grupo",
+      "disabled": "Este enlace de invitación se ha deshabilitado.",
+      "closed": "Ya no se aceptan nuevos miembros.",
+      "succeeded": "Te has unido",
+      "failed": "No se pudo unir. Inténtalo de nuevo."
+    },
+    "load_failed": "No se pudo cargar el enlace de invitación",
+    "generate_failed": "No se pudo crear el enlace de invitación",
+    "toggle_failed": "No se pudo actualizar el enlace de invitación"
+  },
   "lms": {
     "view_landing_page": "Ver página de inicio"
   },

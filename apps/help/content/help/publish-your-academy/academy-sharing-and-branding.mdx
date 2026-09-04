@@ -27,12 +27,14 @@ The favicon is the small icon shown in the browser tab when someone opens your p
 Expand **Settings** in the sidebar, click **Organization**, then open the **Custom Domain** tab.
 
 ![Custom favicon settings](/help/custom-favicon-setup.webp)
+
 </Step>
 
 <Step>
 ### Upload under Custom favicon
 
 Use the image picker in the **Custom favicon** section and click **Save favicon**.
+
 </Step>
 </Steps>
 
@@ -48,11 +50,11 @@ The academy favicon is shown on **public org-site pages** (landing page, course 
 
 When your academy homepage is shared, ClassroomIO provides:
 
-| Meta field | Source |
-| --- | --- |
-| **Title** | Organization name + hero heading (from your landing page), e.g. `AI Academy \| Become a Certified AI Engineer` |
-| **Description** | Hero subheading, or footer tagline if no subheading |
-| **Preview image** | A generated **Academy** card with your logo, org name, theme colors, and (on paid plans) your tagline |
+| Meta field        | Source                                                                                                         |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Title**         | Organization name + hero heading (from your landing page), e.g. `AI Academy \| Become a Certified AI Engineer` |
+| **Description**   | Hero subheading, or footer tagline if no subheading                                                            |
+| **Preview image** | A generated **Academy** card with your logo, org name, theme colors, and (on paid plans) your tagline          |
 
 Free-plan academies include a small **Powered by ClassroomIO** watermark on the generated image. Paid plans show your tagline and no watermark.
 
@@ -67,12 +69,12 @@ The generated card includes:
 
 ## When you change name, theme, or tagline
 
-| Change | Page title & description | Preview image |
-| --- | --- | --- |
-| **Organization name** | Updates on next page load | Regenerated when the image is next requested |
-| **Brand / theme color** | Unchanged | Regenerated — colors on the card update |
+| Change                                | Page title & description              | Preview image                                                           |
+| ------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
+| **Organization name**                 | Updates on next page load             | Regenerated when the image is next requested                            |
+| **Brand / theme color**               | Unchanged                             | Regenerated — colors on the card update                                 |
 | **Hero subheading or footer tagline** | Description updates on next page load | Regenerated on paid plans (free plans do not show tagline on the image) |
-| **Organization logo** | Unchanged | Regenerated |
+| **Organization logo**                 | Unchanged                             | Regenerated                                                             |
 
 :::warning[Previews can lag behind saves]
 Text meta tags (title and description) update as soon as someone loads your site. The **thumbnail image** is cached for performance. After a branding change, visit your public academy URL once, then share the link again as a **new message** in Discord or Slack if the old preview still appears.

@@ -5097,6 +5097,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Invite link",
+    "title": "Invite link",
+    "description": "Anyone with this link can join. Share it instead of entering emails one by one.",
+    "course_description": "Anyone with this link can join this course as a student. Share it instead of entering emails one by one.",
+    "cohort_description": "Anyone with this link can join this cohort and every course in it. Share it instead of entering emails one by one.",
+    "generate": "Create invite link",
+    "copy": "Copy invite link",
+    "copied": "Invite link copied",
+    "copy_failed": "Could not copy the invite link",
+    "toggle_label": "Link is active",
+    "disabled_notice": "This link is disabled. Nobody can join with it until you turn it back on.",
+    "join_count": "{count} people have joined with this link",
+    "load_failed": "Could not load the invite link",
+    "generate_failed": "Could not create the invite link",
+    "toggle_failed": "Could not update the invite link",
+    "join": {
+      "page_title": "Join {resourceName} on ClassroomIO",
+      "invitation": "You've been invited to join {resourceName} at {orgName}.",
+      "course_button": "Join course",
+      "cohort_button": "Join cohort",
+      "disabled": "This invite link has been disabled.",
+      "closed": "This is no longer accepting new members.",
+      "succeeded": "You have joined",
+      "failed": "Could not join. Please try again."
+    },
+    "snackbar": {
+      "enabled": "Invite link enabled",
+      "disabled": "Invite link disabled"
+    }
+  },
   "notifications": {
     "title": "Notifications",
     "empty_title": "No Notifications",

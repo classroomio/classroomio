@@ -1,4 +1,5 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
+import type { TCourseInvitePreset } from '@cio/utils/validation/course/invite';
 import type { TLocale } from '@cio/db/types';
 
 // List lessons types
@@ -427,6 +428,25 @@ export type CreateStudentInviteRequest = (typeof classroomio.course)[':courseId'
 export type CreateStudentInviteResponse = InferResponseType<CreateStudentInviteRequest>;
 export type CreateStudentInviteSuccess = Extract<CreateStudentInviteResponse, { success: true }>;
 export type CreateStudentInviteData = CreateStudentInviteSuccess['data'];
+
+/** Payload accepted by `POST /course/:courseId/invites` (the email-invite path). */
+export type CreateStudentInvitePayload = {
+  preset?: TCourseInvitePreset;
+  expiresAt?: string;
+  maxUses?: number;
+  allowedEmails?: string[];
+  allowedDomains?: string[];
+  recipientEmails?: string[];
+  recipientCsv?: string;
+  sendEmail?: boolean;
+  metadata?: Record<string, unknown>;
+};
+
+export type GetCourseInviteLinkRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$get'];
+export type CreateCourseInviteLinkRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$post'];
+export type ToggleCourseInviteLinkRequest = (typeof classroomio.course)[':courseId']['invites']['link']['$patch'];
+type GetCourseInviteLinkSuccess = Extract<InferResponseType<GetCourseInviteLinkRequest>, { success: true }>;
+export type CourseInviteLink = GetCourseInviteLinkSuccess['data'];
 
 export type ListStudentInvitesRequest = (typeof classroomio.course)[':courseId']['invites']['$get'];
 export type ListStudentInvitesResponse = InferResponseType<ListStudentInvitesRequest>;

@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  check,
   date,
   doublePrecision,
   foreignKey,
@@ -3171,6 +3172,76 @@ export const cohortMember = pgTable(
     unique('cohort_member_cohort_id_profile_id_unique').on(table.cohortId, table.profileId),
     index('idx_cohort_member_cohort_id').on(table.cohortId),
     index('idx_cohort_member_profile_id').on(table.profileId)
+  ]
+);
+
+export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
+
+/**
+ * Permanent, revocable share links for resource invites (course, cohort, ...).
+ * Separate from `organization_invite`, which owns platform invites.
+ */
+export const inviteLink = pgTable(
+  'invite_link',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    resourceType: inviteLinkResourceType('resource_type').notNull(),
+    courseId: uuid('course_id'),
+    cohortId: uuid('cohort_id'),
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    /** Raw token, kept so staff can re-copy the link. */
+    token: text().notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    joinCount: integer('join_count').default(0).notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'invite_link_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'invite_link_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'invite_link_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'invite_link_role_id_fkey'
+    }),
+    unique('invite_link_token_hash_key').on(table.tokenHash),
+    // One link per (resource, role); NULLs are distinct so the two never collide.
+    unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
+    unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
+    check(
+      'invite_link_resource_target_check',
+      sql`(
+        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL)
+        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL)
+      )`
+    ),
+    index('idx_invite_link_organization_id').on(table.organizationId)
   ]
 );
 

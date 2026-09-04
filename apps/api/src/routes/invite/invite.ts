@@ -1,4 +1,6 @@
 import { ZCourseInviteTokenParam } from '@cio/utils/validation/course/invite';
+import { ZInviteLinkTokenParam } from '@cio/utils/validation/invite-link';
+import { acceptInviteLink, previewInviteLink } from '@api/services/invite-link';
 import { previewStudentInvite } from '@api/services/course/invite';
 import { ZOrganizationInviteTokenParam } from '@cio/utils/validation/organization/invite';
 import {
@@ -41,6 +43,24 @@ const acceptOrganizationInviteRateLimit = createRateLimiter({
     const user = c.get('user');
     const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
     return `org_invite_accept:${actor}:${c.req.param('token')}`;
+  }
+});
+
+const previewResourceInviteRateLimit = createRateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 30,
+  message: 'Too many invite preview requests. Please try again later.',
+  keyGenerator: (c) => `resource_invite_preview:${extractClientIp(c)}:${c.req.param('token')}`
+});
+
+const acceptResourceInviteRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Too many invite join attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `resource_invite_accept:${actor}:${c.req.param('token')}`;
   }
 });
 
@@ -267,6 +287,51 @@ export const inviteRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to accept link invite');
+      }
+    }
+  )
+  /**
+   * GET /invite/r/:token/preview
+   * Server-only preview for resource share links (course, cohort, ...).
+   */
+  .get(
+    '/r/:token/preview',
+    apiKeyMiddleware,
+    previewResourceInviteRateLimit,
+    zValidator('param', ZInviteLinkTokenParam),
+    async (c) => {
+      try {
+        const { token } = c.req.valid('param');
+        const preview = await previewInviteLink(token);
+
+        return c.json({ success: true, data: preview }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load invite');
+      }
+    }
+  )
+  /**
+   * POST /invite/r/:token/accept
+   * Authenticated resource share-link acceptance.
+   */
+  .post(
+    '/r/:token/accept',
+    authMiddleware,
+    acceptResourceInviteRateLimit,
+    zValidator('param', ZInviteLinkTokenParam),
+    async (c) => {
+      try {
+        const { token } = c.req.valid('param');
+        const user = c.get('user')!;
+        const result = await acceptInviteLink(
+          token,
+          { id: user.id, email: user.email },
+          { ipAddress: extractClientIp(c), userAgent: c.req.header('user-agent') || null }
+        );
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to accept invite');
       }
     }
   );

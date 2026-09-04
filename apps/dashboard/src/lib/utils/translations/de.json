@@ -5105,6 +5105,37 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Einladungslink",
+    "title": "Einladungslink",
+    "description": "Mit diesem Link kann jeder beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "course_description": "Mit diesem Link kann jeder als Teilnehmer an diesem Kurs teilnehmen. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "cohort_description": "Mit diesem Link kann jeder dieser Gruppe und allen darin enthaltenen Kursen beitreten. Teilen Sie ihn, anstatt die E-Mail-Adressen einzeln einzugeben.",
+    "generate": "Einladungslink erstellen",
+    "copy": "Einladungslink kopieren",
+    "copied": "Einladungslink kopiert",
+    "copy_failed": "Der Einladungslink konnte nicht kopiert werden.",
+    "toggle_label": "Der Link ist aktiv.",
+    "disabled_notice": "Dieser Link ist deaktiviert. Niemand kann mit diesem Link beitreten, bis Sie ihn wieder aktivieren.",
+    "join_count": "{count} Personen sind über diesen Link beigetreten.",
+    "snackbar": {
+      "enabled": "Einladungslink aktiviert",
+      "disabled": "Einladungslink deaktiviert"
+    },
+    "join": {
+      "page_title": "Treten Sie {resourceName} auf ClassroomIO bei",
+      "invitation": "Sie wurden eingeladen, {resourceName} bei {orgName} beizutreten.",
+      "course_button": "Kurs beitreten",
+      "cohort_button": "Gruppe beitreten",
+      "disabled": "Dieser Einladungslink wurde deaktiviert.",
+      "closed": "Es werden keine neuen Mitglieder mehr aufgenommen.",
+      "succeeded": "Sie sind beigetreten.",
+      "failed": "Beitritt fehlgeschlagen. Bitte versuchen Sie es erneut."
+    },
+    "load_failed": "Der Einladungslink konnte nicht geladen werden.",
+    "generate_failed": "Der Einladungslink konnte nicht erstellt werden.",
+    "toggle_failed": "Der Einladungslink konnte nicht aktualisiert werden."
+  },
   "lms": {
     "view_landing_page": "Landingpage ansehen"
   },
