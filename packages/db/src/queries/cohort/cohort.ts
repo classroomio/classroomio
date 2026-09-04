@@ -116,6 +116,49 @@ export async function getCohortsByOrg(
   }
 }
 
+/**
+ * Returns org cohorts the given profile can access.
+ * Org admins see all cohorts; other members see only cohorts they belong to.
+ */
+export async function getCohortsByOrgForProfile(
+  organizationId: string,
+  profileId: string
+): Promise<Array<TCohort & { courseCount: number; studentCount: number }>> {
+  try {
+    const [adminRow] = await db
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        )
+      )
+      .limit(1);
+
+    if (adminRow) {
+      return getCohortsByOrg(organizationId);
+    }
+
+    const memberRows = await db
+      .select({ cohortId: schema.cohortMember.cohortId })
+      .from(schema.cohortMember)
+      .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
+      .where(and(eq(schema.cohortMember.profileId, profileId), eq(schema.cohort.organizationId, organizationId)));
+
+    const cohortIds = memberRows.map((r) => r.cohortId);
+    if (cohortIds.length === 0) return [];
+
+    return getCohortsByOrg(organizationId, cohortIds);
+  } catch (error) {
+    console.error('getCohortsByOrgForProfile error:', error);
+    throw new Error(
+      `Failed to get cohorts for profile "${profileId}" in org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface TSearchOrgCohort {
   id: string;
   name: string;
@@ -311,6 +354,48 @@ export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxCl
   } catch (error) {
     console.error('addCohortMember error:', error);
     throw new Error(`Failed to add cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Inserts a cohort member if absent, relying on the unique constraint rather than a
+ * read-then-write. Returns null when the membership already existed.
+ */
+export async function insertCohortMemberIfAbsent(
+  data: TNewCohortMember,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
+  try {
+    const [member] = await dbClient
+      .insert(schema.cohortMember)
+      .values(data)
+      .onConflictDoNothing({ target: [schema.cohortMember.cohortId, schema.cohortMember.profileId] })
+      .returning();
+
+    return member ?? null;
+  } catch (error) {
+    console.error('insertCohortMemberIfAbsent error:', error);
+    throw new Error(`Failed to add cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Locks the cohort row so a concurrent status change can't slip past an accept in progress. */
+export async function lockCohortStatusForAccept(
+  dbClient: DbOrTxClient,
+  cohortId: string
+): Promise<{ status: string } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ status: schema.cohort.status })
+      .from(schema.cohort)
+      .where(eq(schema.cohort.id, cohortId))
+      .limit(1)
+      .for('update');
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockCohortStatusForAccept error:', error);
+    throw new Error(`Failed to lock cohort: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

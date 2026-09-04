@@ -3,6 +3,7 @@
   import { toast } from '@cio/ui/base/sonner';
   import { t } from '$lib/utils/functions/translations';
   import { onMount } from 'svelte';
+  import AppVersionReloadButton from './app-version-reload-button.svelte';
 
   const UPDATE_TOAST_ID = 'app-version-update';
 
@@ -12,11 +13,7 @@
       duration: Number.POSITIVE_INFINITY,
       position: 'bottom-right',
       description: t.get('common.app_update.description'),
-      actionButtonStyle: 'background: var(--primary); color: var(--primary-foreground);',
-      action: {
-        label: t.get('common.app_update.reload'),
-        onClick: () => location.reload()
-      }
+      action: AppVersionReloadButton
     });
   }
 

@@ -25,17 +25,21 @@ We support OIDC-based SSO with the following identity providers:
 ## How It Works
 
 ### Academy Login
+
 When users visit your organization's custom domain (e.g., `yourorg.classroomio.com`), SSO is automatically detected and they can sign in directly with your IdP.
 
 ### Shared App Login
+
 On the main ClassroomIO app (`app.classroomio.com`), users enter their email address first. If their email domain matches your configured SSO domain, they'll be prompted to sign in via SSO.
 
 ## Access Policies
 
 ### Force SSO
+
 When enabled, all users must sign in via SSO. Email/password login is disabled for your organization. This is recommended for security compliance.
 
 ### Auto-Join
+
 When enabled, users who sign in via SSO with a matching email domain are automatically added to your organization. Otherwise, they must be invited first.
 
 :::note[Users can't auto-join]
@@ -43,11 +47,13 @@ If a user isn't joining automatically, check that the email domain matches exact
 :::
 
 ### Break-Glass Access
+
 Allows organization admins to bypass SSO with email/password in case of emergency (e.g., IdP outage). Keep this enabled for safety.
 
 ## User Provisioning
 
 ### JIT (Just-In-Time) Provisioning
+
 Users are automatically provisioned when they first sign in via SSO:
 
 1. If the user has a pending invitation, they join with the invited role
@@ -55,6 +61,7 @@ Users are automatically provisioned when they first sign in via SSO:
 3. If neither, they can join later via invitation
 
 ### Role Mapping
+
 Map IdP groups to ClassroomIO roles:
 
 - Admins → `ROLE.ADMIN` (1)

@@ -259,14 +259,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Hoàn thành :)"
+        "complete": "Hoàn thành :)",
+        "courses_reordered": "Đã cập nhật thứ tự khóa học"
       },
       "error": {
         "file_size": "Kích thước tệp không được lớn hơn 500kb",
         "try_again": "Thử lại",
         "label": "Tải hình ảnh lên",
         "fetch_error": "Lỗi tìm nạp hình ảnh từ Unsplash",
-        "upload_failed": "Không thể tải lên hình ảnh. Vui lòng thử lại."
+        "upload_failed": "Không thể tải lên hình ảnh. Vui lòng thử lại.",
+        "courses_reorder_failed": "Không thể cập nhật thứ tự khóa học. Vui lòng thử lại."
       }
     },
     "team_members": {
@@ -502,7 +504,7 @@
     "go_to_my_learning": "Đi tới Học tập của tôi"
   },
   "lms_navigation": {
-    "home": "Trang chủ",
+    "home": "Bảng điều khiển",
     "my_learning": "Học tập của tôi",
     "certificates": "Chứng chỉ",
     "exercise": "tập thể dục",
@@ -598,6 +600,14 @@
         "COMPLIANCE": "Tuân thủ",
         "PUBLIC": "công cộng"
       }
+    },
+    "topCourses": {
+      "heading": "Khóa học hàng đầu theo lượt xem",
+      "description": "Khóa học xếp hạng theo lượt xem trang",
+      "subtitle": "Xếp hạng theo lượt xem trang trong khoảng này",
+      "empty": "Chưa có lượt xem trang khóa học",
+      "course": "Khóa học",
+      "views": "Lượt xem"
     },
     "countries": {
       "heading": "Các quốc gia hàng đầu",
@@ -813,7 +823,8 @@
         "course_avail": "Tải xuống một bản sao của khóa học này.",
         "download": "Tải xuống",
         "allow": "Học viên có thể tự đăng ký",
-        "access": "Khi tắt, học viên chỉ có thể tham gia qua liên kết mời hoặc khi được thêm từ mục Mọi người.",
+        "access": "Khi tắt, học viên chỉ có thể tham gia qua liên kết mời hoặc khi được thêm từ mục {people}.",
+        "access_people": "Mọi người",
         "publish": "Xuất bản khóa học",
         "determines": "Điều này xác định xem khóa học của bạn có hiển thị trên trang đích hay không",
         "published": "Đã xuất bản",
@@ -831,7 +842,11 @@
           "empty": "Không có thẻ nào được chọn",
           "add": "Thêm thẻ",
           "popover_title": "Chọn thẻ",
-          "empty_groups": "Chưa có thẻ nào"
+          "empty_groups": "Chưa có thẻ nào",
+          "create_tag": "Tạo thẻ",
+          "none_created": "Chưa có thẻ nào được tạo",
+          "search_placeholder": "Tìm kiếm thẻ...",
+          "no_results": "Không tìm thấy thẻ nào"
         },
         "compliance": "Tuân thủ",
         "public": "công cộng",
@@ -969,7 +984,13 @@
             "yes": "Có",
             "percent": "Phần trăm chiết khấu",
             "gift": "Về quà tặng",
-            "payment_required": "Cần có liên kết thanh toán cho các khóa học trả phí"
+            "payment_required": "Cần có liên kết thanh toán cho các khóa học trả phí",
+            "enable_paid": "Bật trả phí",
+            "payment_invalid_url": "Vui lòng nhập URL hợp lệ (ví dụ: https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy hoặc bất kỳ liên kết thanh toán nào",
+            "percentage_helper": "Trong phần trăm %",
+            "gift_on_completion": "Quà tặng khi hoàn thành",
+            "payment_cost_required": "Các khóa học trả phí phải có giá lớn hơn 0."
           },
           "instructor_form": {
             "upload": "Logo giảng viên",
@@ -3372,6 +3393,9 @@
           "remove": "Xóa liên kết điều hướng"
         },
         "hero": {
+          "eyebrow": "Nhãn phụ",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Nhãn tùy chọn phía trên tiêu đề (dùng bởi các mẫu hỗ trợ, ví dụ Tech). Để trống để ẩn.",
           "heading": "tiêu đề",
           "subheading": "Tiêu đề phụ",
           "primary_label": "Nhãn nút chính",
@@ -3405,7 +3429,9 @@
           "footer": "Chân trang",
           "footer_desc": "Dòng thương hiệu, mạng xã hội, liên kết nhiều cột và hàng pháp lý phía dưới.",
           "links": "Liên kết",
-          "links_desc": "Khối liên kết bên ngoài tùy chọn (trung tâm trợ giúp, cộng đồng, hội thảo trên web) được hiển thị sau các khóa học."
+          "links_desc": "Khối liên kết bên ngoài tùy chọn (trung tâm trợ giúp, cộng đồng, hội thảo trên web) được hiển thị sau các khóa học.",
+          "courses": "Các khóa học",
+          "courses_desc": "Kéo để thiết lập thứ tự các khóa học đã xuất bản trên trang chủ."
         },
         "links": {
           "toggle": "Hiển thị phần liên kết",
@@ -3443,6 +3469,16 @@
             "calendar": "Sự kiện",
             "mail": "Email"
           }
+        },
+        "courses": {
+          "drag_hint": "Kéo các khóa học để sắp xếp lại thứ tự trên trang chủ.",
+          "empty": "Chưa có khóa học nào được xuất bản — hãy xuất bản một khóa học để xem trước tại đây.",
+          "load_failed": "Không thể tải các khóa học đã xuất bản.",
+          "add_button": "Thêm",
+          "popover_title": "Chọn khóa học",
+          "popover_empty": "Hiện không có khóa học nào được đăng tải.",
+          "search_no_results": "Không có khóa học nào khớp với tìm kiếm của bạn.",
+          "search_placeholder": "Tìm khóa học..."
         }
       },
       "content": {
@@ -4062,7 +4098,9 @@
       "color": "Màu",
       "color_help": "Chọn một trong 10 màu",
       "select_category": "Chọn một danh mục",
-      "no_groups": "Tạo nhóm thẻ trước khi tạo thẻ"
+      "no_groups": "Tạo nhóm thẻ trước khi tạo thẻ",
+      "search_category": "Tìm kiếm danh mục",
+      "no_results": "Không tìm thấy danh mục nào"
     },
     "group_modal": {
       "create_title": "Tạo nhóm thẻ",
@@ -4118,7 +4156,9 @@
         "joined": "Đã tham gia tổ chức",
         "join_failed": "Không thể tham gia tổ chức",
         "try_again": "Thử lại"
-      }
+      },
+      "not_found": "Lời mời này không còn hiệu lực.",
+      "loading": "Đang tải lời mời..."
     },
     "link": {
       "page_title": "Tham gia cùng {orgName} trên ClassroomIO",
@@ -4628,7 +4668,8 @@
       },
       "current_version": "Phiên bản hiện tại",
       "active_badge": "Đang hoạt động",
-      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn"
+      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn",
+      "upgrade_callout": "Nâng cấp để mở khóa các chủ đề, màu sắc, kiểu chữ và phong cách tùy chỉnh."
     },
     "tabs": {
       "select_courses": "Chọn khóa học",
@@ -5096,7 +5137,60 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Liên kết mời",
+    "title": "Liên kết mời",
+    "description": "Bất kỳ ai có liên kết này đều có thể tham gia. Hãy chia sẻ liên kết này thay vì nhập email từng người một.",
+    "course_description": "Bất kỳ ai có liên kết này đều có thể tham gia khóa học này với tư cách học viên. Hãy chia sẻ liên kết này thay vì nhập email từng người một.",
+    "cohort_description": "Bất kỳ ai có liên kết này đều có thể tham gia nhóm học này và mọi khóa học trong đó. Hãy chia sẻ liên kết này thay vì nhập email từng người một.",
+    "generate": "Tạo liên kết mời",
+    "copy": "Sao chép liên kết mời",
+    "copied": "Đã sao chép liên kết mời",
+    "copy_failed": "Không thể sao chép liên kết mời",
+    "toggle_label": "Liên kết đang hoạt động",
+    "disabled_notice": "Liên kết này đã bị vô hiệu hóa. Không ai có thể tham gia bằng liên kết này cho đến khi bạn kích hoạt lại.",
+    "join_count": "{count} người đã tham gia bằng liên kết này",
+    "snackbar": {
+      "enabled": "Liên kết mời đã được kích hoạt",
+      "disabled": "Liên kết mời đã bị vô hiệu hóa"
+    },
+    "join": {
+      "page_title": "Tham gia {resourceName} trên ClassroomIO",
+      "invitation": "Bạn đã được mời tham gia {resourceName} tại {orgName}.",
+      "course_button": "Tham gia khóa học",
+      "cohort_button": "Tham gia nhóm",
+      "disabled": "Liên kết mời này đã bị vô hiệu hóa.",
+      "closed": "Hiện không còn nhận thêm thành viên mới.",
+      "succeeded": "Bạn đã tham gia",
+      "failed": "Không thể tham gia. Vui lòng thử lại."
+    },
+    "load_failed": "Không thể tải liên kết mời",
+    "generate_failed": "Không thể tạo liên kết mời",
+    "toggle_failed": "Không thể cập nhật liên kết mời"
+  },
   "lms": {
-    "view_landing_page": "Xem trang đích"
+    "view_landing_page": "Trang chủ"
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "empty_title": "Không có thông báo",
+    "empty_description": "Bạn đã xem hết thông báo. Thông báo mới sẽ xuất hiện ở đây.",
+    "refresh": "Làm mới",
+    "pending_invite": {
+      "heading": "Lời mời tham gia tổ chức",
+      "body": "{orgName} đã mời bạn tham gia với tư cách là {role}.",
+      "action": "Xem lời mời"
+    },
+    "latest": "Mới nhất",
+    "only_show_unread": "Chỉ hiển thị tin chưa đọc",
+    "unread": "Chưa đọc",
+    "more_options": "Thêm tùy chọn",
+    "give_feedback": "Gửi phản hồi",
+    "watching_empty_title": "Chưa có gì để xem",
+    "watching_empty_description": "Thông tin cập nhật về các mục bạn theo dõi sẽ hiển thị ở đây.",
+    "tabs": {
+      "direct": "Trực tiếp",
+      "watching": "Đang xem"
+    }
   }
 }

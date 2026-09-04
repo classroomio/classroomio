@@ -10,6 +10,7 @@ Reference products:
 
 - OpenAI Academy events: <https://academy.openai.com/public/events> — one `/events` catalog filtered by `All / Upcoming / Now / Past`, format badges (`LIVESTREAM`), topic tags, and a detail page with countdown, time range with timezone, delivery ("Online"), organizer, Register, and Add to calendar. Past events keep their page and gain slides/handouts.
 - Cursor Workshops: <https://cursor.com/workshops> — card grid with title, host ("By AJ Valenty" + headshot), upcoming date or duration; grouped into "Upcoming events" (Luma registration) and "On-demand sessions" (YouTube links, grouped by topic).
+- Zoho Writer webinars: <https://www.zoho.com/writer/webinars.html?src=workflow_webinar_wms_eu_banner> — a dedicated webinar library split into `Upcoming` and `Completed`, with region selection for localized scheduling. Completed webinar cards pair a concise outcome-focused summary with presenter names/headshots, recording duration, expandable details, and a direct `Watch Now` CTA; learn from this transition from scheduled programming to a browsable replay archive.
 - Ona's webinar pages: public event detail plus a lead-capture form before an on-demand recording.
 - Our differentiation: cards link to an **internal** event page (video + text + callout on the org's branded site) instead of sending visitors to YouTube/Luma. Admins can make the recording public or gate it with a native ClassroomIO Form; verified registration grants LMS access.
 

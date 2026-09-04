@@ -11,6 +11,7 @@ import {
 } from '@cio/db/queries/organization/invite';
 
 import { ROLE } from '@cio/utils/constants';
+import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { getProfileById } from '@cio/db/queries/auth';
 import { db } from '@cio/db/drizzle';
 import { env } from '@cio/core/config/env';
@@ -120,6 +121,9 @@ export async function joinOrganization(userId: string, orgId: string): Promise<J
     roleId: ROLE.STUDENT,
     verified: true
   });
+
+  // A course team role from a previous membership must not come back on rejoin.
+  await scheduleCourseRoleReconcile(orgId, userId);
 
   return { alreadyMember: false, linkedExistingMember: false };
 }

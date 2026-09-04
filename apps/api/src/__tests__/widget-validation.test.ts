@@ -363,6 +363,85 @@ describe('normalizeWidgetConfig', () => {
     expect(config.colors.primaryColor).toBe('#ff0000');
   });
 
+  it('should reset typography and borderRadius to defaults for free plan while preserving non-gated content', () => {
+    const config = normalizeWidgetConfig(
+      {
+        typography: {
+          fontFamily: 'Custom Font, sans-serif',
+          fontSizeScale: 1.3
+        },
+        content: {
+          borderRadius: 28,
+          showRating: false,
+          showPrice: false
+        }
+      } as Partial<TWidgetConfig>,
+      PLAN.BASIC
+    );
+    const defaultConfig = getDefaultWidgetConfig();
+    expect(config.typography).toEqual(defaultConfig.typography);
+    expect(config.content.borderRadius).toBe(defaultConfig.content.borderRadius);
+    expect(config.content.showRating).toBe(false);
+    expect(config.content.showPrice).toBe(false);
+  });
+
+  it('should preserve typography and borderRadius for paid plan', () => {
+    const config = normalizeWidgetConfig(
+      {
+        typography: {
+          fontFamily: 'Custom Font, sans-serif',
+          fontSizeScale: 1.3
+        },
+        content: {
+          borderRadius: 28,
+          showRating: false,
+          showPrice: false
+        }
+      } as Partial<TWidgetConfig>,
+      PLAN.EARLY_ADOPTER
+    );
+    expect(config.typography.fontFamily).toBe('Custom Font, sans-serif');
+    expect(config.typography.fontSizeScale).toBe(1.3);
+    expect(config.content.borderRadius).toBe(28);
+    expect(config.content.showRating).toBe(false);
+    expect(config.content.showPrice).toBe(false);
+  });
+
+  it('should normalize themePreset in normalizeWidgetConfig', () => {
+    const freeConfig = normalizeWidgetConfig({ themePreset: 'spruce' }, PLAN.BASIC);
+    expect(freeConfig.themePreset).toBe('classroomio');
+
+    const paidConfig = normalizeWidgetConfig({ themePreset: 'spruce' }, PLAN.EARLY_ADOPTER);
+    expect(paidConfig.themePreset).toBe('spruce');
+  });
+
+  it('should treat missing or null planName as free plan', () => {
+    const config = normalizeWidgetConfig(
+      {
+        colors: {
+          primaryColor: '#ff0000',
+          backgroundColor: '#ffffff',
+          textColor: '#111827',
+          badgeColor: '#e2e8f0',
+          borderColor: '#e5e7eb',
+          highlightColor: '#dbeafe'
+        },
+        typography: {
+          fontFamily: 'Custom Font, sans-serif',
+          fontSizeScale: 1.3
+        },
+        advanced: {
+          customCss: '.foo { color: red; }'
+        }
+      } as Partial<TWidgetConfig>,
+      null
+    );
+    const defaultConfig = getDefaultWidgetConfig();
+    expect(config.colors).toEqual(defaultConfig.colors);
+    expect(config.typography).toEqual(defaultConfig.typography);
+    expect(config.advanced.customCss).toBe('');
+  });
+
   it('should handle null/undefined config input', () => {
     const config = normalizeWidgetConfig(null);
     expect(config).toBeDefined();

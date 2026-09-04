@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  check,
   date,
   doublePrecision,
   foreignKey,
@@ -410,6 +411,8 @@ export const profile = pgTable(
     telegramChatId: bigint('telegram_chat_id', { mode: 'number' }),
     isEmailVerified: boolean('is_email_verified').default(false),
     verifiedAt: timestamp('verified_at', { withTimezone: true, mode: 'string' }),
+    welcomeEmailPending: boolean('welcome_email_pending').default(false).notNull(),
+    welcomeEmailSentAt: timestamp('welcome_email_sent_at', { withTimezone: true, mode: 'string' }),
     locale: locale().default('en'),
     isRestricted: boolean('is_restricted').default(false).notNull(),
     settings: jsonb().default({}).$type<Record<string, unknown>>()
@@ -659,6 +662,7 @@ export const course = pgTable(
       videoUrl?: string;
       showDiscount?: boolean;
       discount?: number;
+      paymentEnabled?: boolean;
       paymentLink?: string;
       reward?: {
         show: boolean;
@@ -731,6 +735,8 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
+    /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
+    displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
       isDownloadable?: boolean;
       /** @deprecated Use `design.templateId`. Legacy 6-theme id; mapped on read via LEGACY_THEME_MAP. */
@@ -3168,6 +3174,76 @@ export const cohortMember = pgTable(
     unique('cohort_member_cohort_id_profile_id_unique').on(table.cohortId, table.profileId),
     index('idx_cohort_member_cohort_id').on(table.cohortId),
     index('idx_cohort_member_profile_id').on(table.profileId)
+  ]
+);
+
+export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
+
+/**
+ * Permanent, revocable share links for resource invites (course, cohort, ...).
+ * Separate from `organization_invite`, which owns platform invites.
+ */
+export const inviteLink = pgTable(
+  'invite_link',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    resourceType: inviteLinkResourceType('resource_type').notNull(),
+    courseId: uuid('course_id'),
+    cohortId: uuid('cohort_id'),
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    /** Raw token, kept so staff can re-copy the link. */
+    token: text().notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    joinCount: integer('join_count').default(0).notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'invite_link_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'invite_link_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'invite_link_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'invite_link_role_id_fkey'
+    }),
+    unique('invite_link_token_hash_key').on(table.tokenHash),
+    // One link per (resource, role); NULLs are distinct so the two never collide.
+    unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
+    unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
+    check(
+      'invite_link_resource_target_check',
+      sql`(
+        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL)
+        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL)
+      )`
+    ),
+    index('idx_invite_link_organization_id').on(table.organizationId)
   ]
 );
 

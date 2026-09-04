@@ -259,14 +259,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Komplet :)"
+        "complete": "Komplet :)",
+        "courses_reordered": "Kursusrækkefølge opdateret"
       },
       "error": {
         "file_size": "Filstørrelsen må ikke være større end 500 kb",
         "try_again": "Prøv igen",
         "label": "Upload billede",
         "fetch_error": "Fejl ved hentning af billeder fra Unsplash",
-        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen."
+        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen.",
+        "courses_reorder_failed": "Kunne ikke opdatere kursusrækkefølgen. Prøv igen."
       }
     },
     "team_members": {
@@ -502,7 +504,7 @@
     "go_to_my_learning": "Gå til Min Læring"
   },
   "lms_navigation": {
-    "home": "Hjem",
+    "home": "Dashboard",
     "my_learning": "Min Læring",
     "certificates": "Certifikater",
     "exercise": "Motion",
@@ -598,6 +600,14 @@
         "COMPLIANCE": "Overholdelse",
         "PUBLIC": "Offentlig"
       }
+    },
+    "topCourses": {
+      "heading": "Topkurser efter visninger",
+      "description": "Kurser rangeret efter sidevisninger",
+      "subtitle": "Rangeret efter sidevisninger i dette interval",
+      "empty": "Ingen kursussidevisninger endnu",
+      "course": "Kursus",
+      "views": "Visninger"
     },
     "countries": {
       "heading": "Toplande",
@@ -813,7 +823,8 @@
         "course_avail": "Download en kopi af dette kursus.",
         "download": "Download",
         "allow": "Studerende kan tilmelde sig selv",
-        "access": "Når det er slået fra, kan studerende kun deltage via et invitationslink eller ved at blive tilføjet under Personer.",
+        "access": "Når det er slået fra, kan studerende kun deltage via et invitationslink eller ved at blive tilføjet under {people}.",
+        "access_people": "Personer",
         "publish": "Udgiv kursus",
         "determines": "Dette afgør, om dit kursus vises på din landingsside",
         "published": "Udgivet",
@@ -831,7 +842,11 @@
           "empty": "Ingen tags valgt",
           "add": "Tilføj tag",
           "popover_title": "Vælg tags",
-          "empty_groups": "Ingen tags tilgængelige endnu"
+          "empty_groups": "Ingen tags tilgængelige endnu",
+          "create_tag": "Opret tag",
+          "none_created": "Ingen tags oprettet endnu",
+          "search_placeholder": "Søg tags...",
+          "no_results": "Ingen tags fundet"
         },
         "compliance": "Overholdelse",
         "public": "Offentlig",
@@ -969,7 +984,13 @@
             "yes": "Ja",
             "percent": "Rabatprocent",
             "gift": "Om gave",
-            "payment_required": "Et betalingslink er påkrævet for betalte kurser"
+            "payment_required": "Et betalingslink er påkrævet for betalte kurser",
+            "enable_paid": "Aktiver betalt",
+            "payment_invalid_url": "Indtast venligst en gyldig webadresse (f.eks. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy eller et hvilket som helst betalingslink",
+            "percentage_helper": "I procent %",
+            "gift_on_completion": "Gave ved færdiggørelse",
+            "payment_cost_required": "Betalte kurser skal have en pris på over 0"
           },
           "instructor_form": {
             "upload": "Instruktør logo",
@@ -3372,6 +3393,9 @@
           "remove": "Fjern navigationslink"
         },
         "hero": {
+          "eyebrow": "Overlinje",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Valgfri etiket over overskriften (bruges af skabeloner, der understøtter det, f.eks. Tech). Lad feltet være tomt for at skjule det.",
           "heading": "Overskrift",
           "subheading": "Underoverskrift",
           "primary_label": "Etiket med primær knap",
@@ -3405,7 +3429,9 @@
           "footer": "Sidefod",
           "footer_desc": "Brandlinje, sociale medier, linkkolonner og juridisk bundrække.",
           "links": "Links",
-          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser."
+          "links_desc": "Valgfri blok af eksterne links (hjælpecenter, fællesskab, webinarer) vist efter kurser.",
+          "courses": "Kurser",
+          "courses_desc": "Træk for at indstille rækkefølgen af ​​offentliggjorte kurser på landingssiden."
         },
         "links": {
           "toggle": "Vis linksafsnittet",
@@ -3443,6 +3469,16 @@
             "calendar": "Begivenheder",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Træk kurser for at ændre deres rækkefølge på landingssiden.",
+          "empty": "Ingen kurser valgt.",
+          "load_failed": "Kunne ikke indlæse offentliggjorte kurser.",
+          "add_button": "Tilføj",
+          "popover_title": "Vælg kurser",
+          "popover_empty": "Ingen offentliggjorte kurser tilgængelige.",
+          "search_no_results": "Ingen kurser matcher din søgning.",
+          "search_placeholder": "Søg efter kurser..."
         }
       },
       "content": {
@@ -4062,7 +4098,9 @@
       "color": "Farve",
       "color_help": "Vælg en af 10 farver",
       "select_category": "Vælg en kategori",
-      "no_groups": "Opret en tag-gruppe, før du opretter tags"
+      "no_groups": "Opret en tag-gruppe, før du opretter tags",
+      "search_category": "Søg kategori",
+      "no_results": "Ingen kategorier fundet"
     },
     "group_modal": {
       "create_title": "Opret taggruppe",
@@ -4118,7 +4156,9 @@
         "joined": "Tilsluttet organisation",
         "join_failed": "Kunne ikke deltage i organisationen",
         "try_again": "Prøv igen"
-      }
+      },
+      "not_found": "Denne invitation er ikke længere tilgængelig.",
+      "loading": "Indlæser invitation..."
     },
     "link": {
       "page_title": "Tilmeld dig {orgName} på ClassroomIO",
@@ -4628,7 +4668,8 @@
       },
       "current_version": "Nuværende version",
       "active_badge": "Aktiv",
-      "active_badge_description": "Denne version er i øjeblikket live på din indlejring"
+      "active_badge_description": "Denne version er i øjeblikket live på din indlejring",
+      "upgrade_callout": "Opgrader for at låse op for brugerdefinerede temaer, farver, typografi og styling."
     },
     "tabs": {
       "select_courses": "Vælg Kurser",
@@ -5096,7 +5137,60 @@
       }
     }
   },
+  "invite_link": {
+    "tab_label": "Invitationslink",
+    "title": "Invitationslink",
+    "description": "Alle med dette link kan deltage. Del det i stedet for at indtaste e-mails én efter én.",
+    "course_description": "Alle med dette link kan deltage i dette kursus som studerende. Del det i stedet for at indtaste e-mails én efter én.",
+    "cohort_description": "Alle med dette link kan deltage i denne kohorte og alle kurser i den. Del det i stedet for at indtaste e-mails én efter én.",
+    "generate": "Opret invitationslink",
+    "copy": "Kopier invitationslink",
+    "copied": "Invitationslink kopieret",
+    "copy_failed": "Kunne ikke kopiere invitationslinket",
+    "toggle_label": "Linket er aktivt",
+    "disabled_notice": "Dette link er deaktiveret. Ingen kan deltage med det, før du aktiverer det igen.",
+    "join_count": "{count} personer har tilmeldt sig via dette link",
+    "snackbar": {
+      "enabled": "Invitationslink aktiveret",
+      "disabled": "Invitationslink deaktiveret"
+    },
+    "join": {
+      "page_title": "Tilmeld dig {resourceName} på ClassroomIO",
+      "invitation": "Du er blevet inviteret til at deltage i {resourceName} på {orgName}.",
+      "course_button": "Tilmeld dig kurset",
+      "cohort_button": "Tilmeld dig kohorte",
+      "disabled": "Dette invitationslink er blevet deaktiveret.",
+      "closed": "Dette accepterer ikke længere nye medlemmer.",
+      "succeeded": "Du er tilmeldt",
+      "failed": "Kunne ikke deltage. Prøv igen."
+    },
+    "load_failed": "Kunne ikke indlæse invitationslinket",
+    "generate_failed": "Kunne ikke oprette invitationslinket",
+    "toggle_failed": "Kunne ikke opdatere invitationslinket"
+  },
   "lms": {
-    "view_landing_page": "Se landingssiden"
+    "view_landing_page": "Hjem"
+  },
+  "notifications": {
+    "title": "Notifikationer",
+    "empty_title": "Ingen notifikationer",
+    "empty_description": "Du er helt opdateret. Nye notifikationer vises her.",
+    "refresh": "Opdater",
+    "pending_invite": {
+      "heading": "Organisationsinvitation",
+      "body": "{orgName} inviterede dig til at deltage som {role}.",
+      "action": "Se invitation"
+    },
+    "latest": "Seneste",
+    "only_show_unread": "Vis kun ulæste",
+    "unread": "Ulæste",
+    "more_options": "Flere muligheder",
+    "give_feedback": "Giv feedback",
+    "watching_empty_title": "Intet at se endnu",
+    "watching_empty_description": "Opdateringer om elementer, du følger, vises her.",
+    "tabs": {
+      "direct": "Direkte",
+      "watching": "Ser"
+    }
   }
 }

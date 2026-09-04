@@ -45,7 +45,7 @@
         <div
           class="ui:absolute ui:inset-0 ui:bg-[var(--landing-accent)]/5 ui:rounded-3xl ui:translate-x-4 ui:translate-y-4"
         ></div>
-        <img src={hero.image} alt="Hero" class="ui:relative ui:rounded-3xl ui:w-full ui:h-[500px] ui:object-cover" />
+        <img src={hero.image} alt="Hero" class="ui:relative ui:rounded-3xl ui:w-full ui:h-auto ui:object-contain" />
       </div>
     {/if}
   </section>

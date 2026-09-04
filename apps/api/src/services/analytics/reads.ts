@@ -2,7 +2,8 @@ import {
   selectCountryBreakdown,
   selectCourseDailyRange,
   selectOrgDailyRange,
-  selectPopularCourseTypes
+  selectPopularCourseTypes,
+  selectTopCoursesByViews
 } from '@cio/db/queries/analytics';
 import { DASH_ANALYTICS_TTL_SECONDS, dashAnalyticsKey } from '@api/utils/redis/key-generators';
 import { env } from '@cio/core/config/env';
@@ -35,6 +36,12 @@ export type PopularTypes = Array<{
   views: number;
   completions: number;
   courseCount: number;
+}>;
+
+export type TopCoursesByViews = Array<{
+  courseId: string;
+  title: string;
+  views: number;
 }>;
 
 function toDateString(date: Date): string {
@@ -189,6 +196,24 @@ export async function getPopularTypes(orgId: string, days: number, bustCache = f
       completions: row.completions,
       courseCount: row.courseCount
     }));
+  await writeCache(key, result);
+  return result;
+}
+
+export async function getTopCoursesByViews(orgId: string, days: number, bustCache = false): Promise<TopCoursesByViews> {
+  const key = dashAnalyticsKey('top-courses', orgId, days);
+  if (!bustCache) {
+    const cached = await readCache<TopCoursesByViews>(key);
+    if (cached) return cached;
+  }
+
+  const { fromDate, toDate } = computeRange(days);
+  const rows = await selectTopCoursesByViews(orgId, fromDate, toDate);
+  const result: TopCoursesByViews = rows.map((row) => ({
+    courseId: row.courseId,
+    title: row.title,
+    views: row.views
+  }));
   await writeCache(key, result);
   return result;
 }

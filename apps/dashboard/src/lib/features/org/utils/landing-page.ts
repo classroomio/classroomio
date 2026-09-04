@@ -519,8 +519,17 @@ function normalizeHero(hero: NonNullable<LegacyLandingPageJson['hero']>): OrgLan
         }
       : undefined,
     image: normalizeText(hero.image, ''),
-    stats: normalizeHeroStats((hero as { stats?: unknown }).stats)
+    stats: normalizeHeroStats((hero as { stats?: unknown }).stats),
+    eyebrow: normalizeHeroEyebrow(hero.eyebrow)
   };
+}
+
+function normalizeHeroEyebrow(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  return value.trim();
 }
 
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
@@ -655,6 +664,10 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       : undefined;
     const courseSlug = typeof courseRecord.slug === 'string' && courseRecord.slug.length > 0 ? courseRecord.slug : '';
     const courseCost = typeof courseRecord.cost === 'number' ? courseRecord.cost : undefined;
+    const courseIsPaid =
+      typeof metadataRecord?.paymentEnabled === 'boolean'
+        ? metadataRecord.paymentEnabled
+        : typeof courseCost === 'number' && courseCost > 0;
     const courseCurrency = typeof courseRecord.currency === 'string' ? courseRecord.currency : undefined;
     const lessonCount = typeof courseRecord.lessonCount === 'number' ? courseRecord.lessonCount : undefined;
     const exerciseCount = typeof courseRecord.exerciseCount === 'number' ? courseRecord.exerciseCount : undefined;
@@ -676,7 +689,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       description,
       type,
       isPublished,
-      cost: courseCost,
+      cost: courseIsPaid ? courseCost : 0,
       currency: courseCurrency,
       lessonCount,
       exerciseCount,
@@ -690,7 +703,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       tags,
       image,
       link: courseSlug ? `/course/${courseSlug}` : undefined,
-      price,
+      price: courseIsPaid ? price : undefined,
       duration,
       level
     };

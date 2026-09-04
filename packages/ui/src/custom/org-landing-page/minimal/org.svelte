@@ -10,6 +10,7 @@
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import LandingThemeScope from '../landing-theme-scope.svelte';
+  import EditableLandingSection from '../editable-section.svelte';
 
   let {
     orgName,
@@ -37,33 +38,35 @@
       {/snippet}
     </MinimalHero>
 
-    <section class="ui:py-20 ui:px-4">
-      <div class="ui:max-w-[1200px] ui:mx-auto">
-        <h2 class="ui:text-2xl ui:font-semibold ui:mb-8">{labels?.catalogHeading ?? 'Our Courses'}</h2>
-        {#if coursesLoaded && courses.length === 0}
-          <OrgLandingPageCoursesEmpty {labels} />
-        {:else}
-          <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-6">
-            {#each courses as course, index (course.id)}
-              <MinimalCourseCard {course} {disableCourseLinks} {labels} />
-            {/each}
-          </div>
-
-          {#if hasMoreCourses}
-            <div class="ui:mt-10 ui:flex ui:justify-center">
-              <Button
-                href={disableCourseLinks ? undefined : '/courses'}
-                variant="outline"
-                size="lg"
-                disabled={disableCourseLinks}
-              >
-                {labels?.browseCoursesLabel ?? 'View more courses'}
-              </Button>
+    <EditableLandingSection sectionKey="courses">
+      <section class="ui:py-20 ui:px-4">
+        <div class="ui:max-w-[1200px] ui:mx-auto">
+          <h2 class="ui:text-2xl ui:font-semibold ui:mb-8">{labels?.catalogHeading ?? 'Our Courses'}</h2>
+          {#if coursesLoaded && courses.length === 0}
+            <OrgLandingPageCoursesEmpty {labels} />
+          {:else}
+            <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-6">
+              {#each courses as course, index (course.id)}
+                <MinimalCourseCard {course} {disableCourseLinks} {labels} />
+              {/each}
             </div>
+
+            {#if hasMoreCourses}
+              <div class="ui:mt-10 ui:flex ui:justify-center">
+                <Button
+                  href={disableCourseLinks ? undefined : '/courses'}
+                  variant="outline"
+                  size="lg"
+                  disabled={disableCourseLinks}
+                >
+                  {labels?.browseCoursesLabel ?? 'View more courses'}
+                </Button>
+              </div>
+            {/if}
           {/if}
-        {/if}
-      </div>
-    </section>
+        </div>
+      </section>
+    </EditableLandingSection>
   </main>
 
   <OrgLandingPageLinks {links} {labels} variant="minimal" />
