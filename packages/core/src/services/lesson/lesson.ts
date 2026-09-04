@@ -713,6 +713,11 @@ function parseLessonVersionCursor(cursor?: string): TLessonVersionCursor | undef
 
   if (!timestamp || !Number.isInteger(id)) return undefined;
 
+  // The timestamp is interpolated into a Postgres timestamp comparison, so it has to be a
+  // real date here. Without this check a cursor like `garbage|5` reaches the driver and
+  // fails the query with a 500 instead of restarting at the newest page.
+  if (Number.isNaN(new Date(timestamp).getTime())) return undefined;
+
   return { timestamp, id };
 }
 

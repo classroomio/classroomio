@@ -38,6 +38,11 @@
   let isHistoryLoading = $state(false);
   let displayElement = $state<HTMLDivElement | null>(null);
   let nextCursor = $state<string | null>(null);
+  /**
+   * Bumped on every reload so an in-flight request for a previous lesson or locale cannot
+   * write its rows over the current ones when it lands late.
+   */
+  let historyRequestId = 0;
 
   /** Only offer "load more" once the server has said there is a next page. */
   const canLoadMore = $derived(nextCursor !== null);
@@ -160,9 +165,15 @@
   async function fetchLessonHistory(currentLessonId: string, locale: TLocale, cursor?: string) {
     if (!courseApi.course?.id || !currentLessonId) return;
 
+    const requestId = historyRequestId;
+
     try {
       isHistoryLoading = true;
       const response = await lessonApi.getHistory(courseApi.course.id, currentLessonId, locale, PAGE_SIZE, cursor);
+
+      // The lesson or locale changed while this was in flight; its rows belong to a list
+      // the reader has already left.
+      if (requestId !== historyRequestId) return;
 
       if (!response || !lessonApi.success || !response.data) {
         throw new Error('Failed to fetch lesson history');
@@ -210,10 +221,14 @@
         updateContentVersion(lessonHistory[0], 0);
       }
     } catch (error) {
+      if (requestId !== historyRequestId) return;
+
       console.error(error);
       snackbar.error('Failed to fetch history');
     } finally {
-      isHistoryLoading = false;
+      if (requestId === historyRequestId) {
+        isHistoryLoading = false;
+      }
     }
   }
 
@@ -253,8 +268,11 @@
     const currentLocale = lessonApi.currentLocale;
 
     untrack(() => {
+      historyRequestId += 1;
       lessonHistory = [];
       nextCursor = null;
+      selectedVersion = null;
+      selectedVersionIndex = 0;
       void fetchLessonHistory(currentLessonId, currentLocale);
     });
   });
