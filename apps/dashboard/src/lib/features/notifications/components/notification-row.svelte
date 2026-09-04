@@ -3,7 +3,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { shortenName } from '$lib/utils/functions/string';
   import { t } from '$lib/utils/functions/translations';
-  import type { NotificationItem } from '../utils/types';
+  import type { NotificationItem, NotificationText } from '../utils/types';
 
   interface Props {
     item: NotificationItem;
@@ -11,6 +11,17 @@
   }
 
   let { item, onSelect }: Props = $props();
+
+  /** Resolves key-valued params so nested labels follow the active locale too. */
+  function resolveText(text: NotificationText): string {
+    const keyParams = Object.entries(text.keyParams ?? {}).reduce<Record<string, string>>((acc, [name, key]) => {
+      acc[name] = $t(key);
+
+      return acc;
+    }, {});
+
+    return $t(text.key, { ...text.params, ...keyParams });
+  }
 </script>
 
 <button
@@ -26,8 +37,8 @@
   </Avatar.Root>
 
   <div class="min-w-0 space-y-0.5">
-    <p class="text-sm font-medium">{$t(item.title.key, item.title.params)}</p>
-    <p class="ui:text-muted-foreground text-xs">{$t(item.body.key, item.body.params)}</p>
+    <p class="text-sm font-medium">{resolveText(item.title)}</p>
+    <p class="ui:text-muted-foreground text-xs">{resolveText(item.body)}</p>
     <p class="ui:text-muted-foreground text-xs">{calDateDiff(item.createdAt)}</p>
   </div>
 

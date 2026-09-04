@@ -75,7 +75,11 @@
 
     <div class="mt-2 space-y-3 px-2 text-center">
       <p class="text-sm font-light dark:text-white">{getInvitationMessage()}</p>
-      <p class="text-sm font-light dark:text-white">{$t('invite.organization.email_line', { email: invite.email })}</p>
+      {#if invite.email}
+        <p class="text-sm font-light dark:text-white">
+          {$t('invite.organization.email_line', { email: invite.email })}
+        </p>
+      {/if}
     </div>
 
     <div class="mt-6 flex items-center justify-between">

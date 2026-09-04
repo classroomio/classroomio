@@ -128,6 +128,10 @@ export const accountRouter = new Hono()
 
       const invites = await listPendingInvitesForAccount(user.email);
 
+      // Account-scoped data: keep it out of the shared browser cache so it cannot be
+      // replayed after a different user signs in to the same profile.
+      c.header('Cache-Control', 'no-store');
+
       return c.json({ success: true, data: invites }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to load pending invites');
