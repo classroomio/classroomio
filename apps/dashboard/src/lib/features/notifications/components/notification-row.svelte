@@ -27,13 +27,15 @@
 <button
   type="button"
   onclick={() => onSelect(item)}
-  class="ui:hover:bg-muted grid w-full grid-cols-[auto_1fr_auto] items-start gap-3 px-4 py-3 text-left transition-colors"
+  class="ui:hover:bg-muted grid w-full cursor-pointer grid-cols-[auto_1fr_auto] items-start gap-3 px-4 py-3 text-left transition-colors"
 >
-  <Avatar.Root class="size-8">
+  <!-- Squared like the org switcher: these are organizations, not people. Prefixed so it
+       dedupes against the `ui:rounded-full` baked into Avatar.Root. -->
+  <Avatar.Root class="ui:flex ui:size-8 ui:items-center ui:justify-center ui:rounded-lg">
     {#if item.avatarUrl}
       <Avatar.Image src={item.avatarUrl} alt={item.avatarName} />
     {/if}
-    <Avatar.Fallback class="text-xs">{shortenName(item.avatarName)}</Avatar.Fallback>
+    <Avatar.Fallback class="ui:rounded-lg text-xs">{shortenName(item.avatarName)}</Avatar.Fallback>
   </Avatar.Root>
 
   <div class="min-w-0 space-y-0.5">

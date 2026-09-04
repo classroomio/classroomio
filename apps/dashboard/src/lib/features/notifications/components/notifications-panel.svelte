@@ -37,7 +37,14 @@
    */
   function handleAccepted(redirectTo?: string) {
     const siteName = selectedInvite?.organization.siteName;
+    const acceptedId = selectedInviteId;
     selectedInviteId = null;
+
+    // The modal posts the acceptance itself, so drop the invite here too. Without this the
+    // badge keeps counting it until a full page load replaces the list.
+    if (acceptedId) {
+      pendingInvitesApi.removeInvite(acceptedId);
+    }
 
     if (siteName) {
       localStorage.setItem('classroomio_org_sitename', siteName);
@@ -66,7 +73,7 @@
   </UnderlineTabs.Content>
 
   <UnderlineTabs.Content value={WATCHING_TAB}>
-    <Empty.Root class="ui:from-muted/50 ui:to-background ui:bg-gradient-to-b ui:from-30%">
+    <Empty.Root>
       <Empty.Header>
         <Empty.Media variant="icon">
           <EyeIcon />

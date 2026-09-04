@@ -32,7 +32,7 @@
     {/each}
   </div>
 {:else if items.length === 0}
-  <Empty.Root class="ui:from-muted/50 ui:to-background ui:bg-gradient-to-b ui:from-30%">
+  <Empty.Root>
     <Empty.Header>
       <Empty.Media variant="icon">
         <BellIcon />

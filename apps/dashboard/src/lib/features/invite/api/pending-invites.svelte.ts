@@ -37,6 +37,14 @@ class PendingInvitesApi extends BaseApiWithErrors {
     this.hasLoaded = true;
   }
 
+  /**
+   * Drops an invite that was accepted elsewhere (the shared modal posts directly), so the
+   * bell count is right immediately instead of waiting on the next page load.
+   */
+  removeInvite(inviteId: string) {
+    this.invites = this.invites.filter((invite) => invite.id !== inviteId);
+  }
+
   /** Accepts an invite and returns where the caller should navigate, if anywhere. */
   async acceptInvite(inviteId: string): Promise<string | null> {
     this.acceptingInviteId = inviteId;
