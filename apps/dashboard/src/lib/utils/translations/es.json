@@ -908,10 +908,10 @@
         "fix_in_exercise": "Corregir en el ejercicio",
         "cancel_conversion": "Cancelar conversión",
         "public_conversion": {
-          "banner_title": "Convertir curso a público",
+          "banner_title": "Convertir el curso en público",
           "exercise_fixed": "Este ejercicio está listo.",
           "back_to_settings": "Volver a configuración",
-          "complete_conversion": "Completar conversión a público",
+          "complete_conversion": "Completar la conversión a curso público",
           "jump_to": "Saltar a",
           "blocks_public_conversion": "No calificable automáticamente",
           "blocks_public_conversion_desc": "Los cursos públicos solo admiten preguntas calificables automáticamente. Cambie el tipo de esta pregunta o elimínela para continuar con la conversión.",
