@@ -894,6 +894,8 @@
         "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
         "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
+        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
@@ -4782,6 +4784,30 @@
     "header": {
       "explore_courses": "Udforsk kurser",
       "sign_in": "Log ind"
+    },
+    "copy_page": {
+      "copy": "Kopiér side",
+      "copied": "Kopieret",
+      "view_as_markdown": "Vis som Markdown",
+      "open_in_chatgpt": "Åbn i ChatGPT",
+      "open_in_claude": "Åbn i Claude",
+      "more_actions": "Flere handlinger til kopi af siden",
+      "copy_failed": "Kunne ikke kopiere denne lektion som Markdown"
+    },
+    "outline": {
+      "label": "På denne side"
+    },
+    "rail": {
+      "copy_as_markdown": "Kopiér som Markdown",
+      "open_in_chat": "Åbn i chat"
+    },
+    "share": {
+      "label": "Del på sociale medier",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link kopieret. Indsæt det i Instagram."
     }
   },
   "account": {

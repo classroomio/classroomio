@@ -894,6 +894,8 @@
         "go_to_certificate_settings": "Зайдите в настройки сертификата",
         "completion_deadline_label": "Срок завершения курса",
         "completion_deadline_helper": "Учащиеся должны достичь процента завершения до этой даты и времени (по местному времени). Оставьте пустым, если срок не установлен.",
+        "allow_markdown_export": "Разрешить учащимся копировать страницы уроков как Markdown",
+        "allow_markdown_export_description": "Если включено, на публичных страницах уроков появляется кнопка «Копировать страницу», которая экспортирует содержимое урока (без видео) в Markdown. Также публикуется общедоступный URL Markdown для каждого разблокированного урока.",
         "go_to_completion_deadline": "Перейти к сроку завершения",
         "generate_link": "Создать новую ссылку",
         "open_link": "Открыть ссылку в новой вкладке",
@@ -4782,6 +4784,30 @@
     "header": {
       "explore_courses": "Изучите курсы",
       "sign_in": "Войти"
+    },
+    "copy_page": {
+      "copy": "Копировать страницу",
+      "copied": "Скопировано",
+      "view_as_markdown": "Открыть как Markdown",
+      "open_in_chatgpt": "Открыть в ChatGPT",
+      "open_in_claude": "Открыть в Claude",
+      "more_actions": "Дополнительные действия копирования страницы",
+      "copy_failed": "Не удалось скопировать этот урок как Markdown"
+    },
+    "outline": {
+      "label": "На этой странице"
+    },
+    "rail": {
+      "copy_as_markdown": "Копировать как Markdown",
+      "open_in_chat": "Открыть в чате"
+    },
+    "share": {
+      "label": "Поделиться в соцсетях",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Ссылка скопирована. Вставьте её в Instagram."
     }
   },
   "account": {

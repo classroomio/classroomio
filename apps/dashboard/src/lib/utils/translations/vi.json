@@ -894,6 +894,8 @@
         "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
         "completion_deadline_label": "Thời hạn hoàn thành khóa học",
         "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
+        "allow_markdown_export": "Cho phép học viên sao chép trang bài học dưới dạng Markdown",
+        "allow_markdown_export_description": "Khi bật, các trang bài học công khai sẽ hiện nút Sao chép trang để xuất nội dung bài học (không gồm video) dưới dạng Markdown. Thao tác này cũng công khai một URL Markdown cho mỗi bài học đã mở khóa.",
         "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
@@ -4782,6 +4784,30 @@
     "header": {
       "explore_courses": "Khám phá các khóa học",
       "sign_in": "Đăng nhập"
+    },
+    "copy_page": {
+      "copy": "Sao chép trang",
+      "copied": "Đã sao chép",
+      "view_as_markdown": "Xem dạng Markdown",
+      "open_in_chatgpt": "Mở trong ChatGPT",
+      "open_in_claude": "Mở trong Claude",
+      "more_actions": "Thêm thao tác sao chép trang",
+      "copy_failed": "Không thể sao chép bài học này dưới dạng Markdown"
+    },
+    "outline": {
+      "label": "Trên trang này"
+    },
+    "rail": {
+      "copy_as_markdown": "Sao chép dạng Markdown",
+      "open_in_chat": "Mở trong chat"
+    },
+    "share": {
+      "label": "Chia sẻ trên mạng xã hội",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Đã sao chép liên kết. Dán vào Instagram."
     }
   },
   "account": {

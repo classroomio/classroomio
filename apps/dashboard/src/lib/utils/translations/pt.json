@@ -894,6 +894,8 @@
         "go_to_certificate_settings": "Vá para configurações de certificado",
         "completion_deadline_label": "Prazo para conclusão do curso",
         "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+        "allow_markdown_export": "Permitir que os alunos copiem as páginas das lições como Markdown",
+        "allow_markdown_export_description": "Quando ativado, as páginas públicas das lições mostram um botão Copiar página que exporta o conteúdo da lição (excluindo vídeos) como Markdown. Isso também publica um URL público de Markdown para cada lição desbloqueada.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
@@ -4782,6 +4784,30 @@
     "header": {
       "explore_courses": "Explorar cursos",
       "sign_in": "Faça login"
+    },
+    "copy_page": {
+      "copy": "Copiar página",
+      "copied": "Copiado",
+      "view_as_markdown": "Ver como Markdown",
+      "open_in_chatgpt": "Abrir no ChatGPT",
+      "open_in_claude": "Abrir no Claude",
+      "more_actions": "Mais ações para copiar a página",
+      "copy_failed": "Não foi possível copiar esta lição como Markdown"
+    },
+    "outline": {
+      "label": "Nesta página"
+    },
+    "rail": {
+      "copy_as_markdown": "Copiar como Markdown",
+      "open_in_chat": "Abrir no chat"
+    },
+    "share": {
+      "label": "Partilhar nas redes sociais",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Ligação copiada. Cole-a no Instagram."
     }
   },
   "account": {

@@ -8,6 +8,12 @@ export { default as PublicCourseMobileSheet } from './mobile-sheet.svelte';
 export { default as PublicLessonView } from './lesson-view.svelte';
 export { default as PublicExerciseView } from './exercise-view.svelte';
 export { default as PublicCourseCallout } from './callout.svelte';
+export { default as CopyPageButton } from './copy-page-button.svelte';
+export { default as OutlineRailActions } from './outline-rail-actions.svelte';
+export { buildChatGptUrl, buildClaudeUrl, buildStudyPrompt, fetchLessonMarkdown } from './copy-page-utils';
+export type { CopyPageLabels } from './copy-page-utils';
+export { buildFacebookShareUrl, buildLinkedInShareUrl, buildXShareUrl, openShareWindow } from './share-utils';
+export type { OutlineRailActionLabels } from './share-utils';
 
 export {
   PUBLIC_EXERCISE_ATTEMPTS_STORE_VERSION,

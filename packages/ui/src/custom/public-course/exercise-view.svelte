@@ -8,10 +8,12 @@
     type ExerciseQuestionLabels,
     type ExerciseQuestionModel
   } from '@cio/question-types';
-  import { untrack } from 'svelte';
+  import { untrack, type Snippet } from 'svelte';
   import { Button } from '../../base/button';
   import { QuestionList } from '../exercise-question';
   import { cn } from '../../tools';
+  import { PageOutline } from '../page-outline';
+  import { outlineFromSections } from '../page-outline/heading-utils';
   import Callout from './callout.svelte';
   import { SafeHtmlContent } from '../safe-html-content';
   import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicExerciseViewData } from './types';
@@ -36,6 +38,11 @@
     tryAgainLabel?: string;
     privacyHint?: string;
     summaryTemplate?: string;
+    /** Actions rendered beside the exercise title (e.g. Copy Page). */
+    titleActions?: Snippet;
+    /** Actions rendered under the page outline (share, open in chat). */
+    outlineActions?: Snippet;
+    outlineLabel?: string;
     class?: string;
   }
 
@@ -52,6 +59,9 @@
     tryAgainLabel = 'Practice again',
     privacyHint = 'Graded instantly in your browser — nothing is submitted.',
     summaryTemplate = 'You got [[correct]] / [[total]] correct.',
+    titleActions,
+    outlineActions,
+    outlineLabel = 'On this page',
     class: className
   }: Props = $props();
 
@@ -342,94 +352,132 @@
   const tryAgainButtonLabel = $derived(
     showAttemptsPicker && selectValue !== 'live' ? newAttemptOptionLabel : tryAgainLabel
   );
+
+  const outlineItems = $derived(
+    exercise.isUnlocked
+      ? outlineFromSections(
+          exercise.title,
+          exercise.questions.map((question, index) => ({
+            id: `question-${getExerciseQuestionContractKey(question, index)}`,
+            title: question.title
+          }))
+        )
+      : []
+  );
+  const titleId = $derived(outlineItems[0]?.id);
 </script>
 
-<article class={cn('ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10', className)}>
-  {#if !exercise.isUnlocked}
-    <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
-  {:else}
-    {#if exercise.sectionTitle}
-      <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
-        {exercise.sectionTitle}
-      </div>
-    {/if}
-
-    {#if showAttemptsPicker}
-      <div class="ui:mt-4 ui:flex ui:flex-wrap ui:items-center ui:gap-2">
-        <span class="ui:sr-only" id="public-exercise-attempts-select-label">{attemptsSelectAriaLabel}</span>
-        <Select.Root
-          type="single"
-          value={selectValue}
-          onValueChange={(nextValue) => nextValue && handleAttemptSelect(nextValue)}
-        >
-          <Select.Trigger
-            class="ui:min-w-[min(24rem,calc(100vw-5rem))] ui:max-w-full"
-            aria-labelledby="public-exercise-attempts-select-label"
-          >
-            <span class="ui:truncate">
-              {selectValue === 'live'
-                ? newAttemptOptionLabel
-                : formatAttemptOption({
-                    attemptNumber: Number(selectValue) + 1,
-                    correct: persistedAttempts[Number(selectValue)]?.correctCount ?? 0,
-                    total: persistedAttempts[Number(selectValue)]?.totalGradable ?? totalGradable
-                  })}
-            </span>
-          </Select.Trigger>
-          <Select.Content>
-            {#each persistedAttempts as _, attemptIdx (attemptIdx)}
-              {@const stored = persistedAttempts[attemptIdx]}
-              {@const attemptLabel = formatAttemptOption({
-                attemptNumber: attemptIdx + 1,
-                correct: stored.correctCount,
-                total: stored.totalGradable
-              })}
-              <Select.Item value={String(attemptIdx)} label={attemptLabel}>{attemptLabel}</Select.Item>
-            {/each}
-            <Select.Item value="live" label={newAttemptOptionLabel}>{newAttemptOptionLabel}</Select.Item>
-          </Select.Content>
-        </Select.Root>
-      </div>
-    {/if}
-
-    <h1
-      class={cn(
-        'ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl',
-        showAttemptsPicker ? 'ui:mt-4' : 'ui:mt-2'
-      )}
-    >
-      {exercise.title}
-    </h1>
-
-    {#if exercise.description}
-      <div class="prose ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
-        <SafeHtmlContent content={exercise.description} />
-      </div>
-    {/if}
-
-    <div class="ui:mt-8 ui:space-y-6">
-      <QuestionList
-        contract={{
-          mode,
-          questions: exercise.questions,
-          answersByKey: answers,
-          disabled: submitted,
-          labels
-        }}
-        onAnswerChange={handleAnswerChange}
-      />
-    </div>
-
-    <div class="ui:mt-10 ui:flex ui:items-center ui:justify-between ui:gap-4">
-      {#if submitted}
-        <div class="ui:text-sm ui:text-muted-foreground">{summaryText}</div>
-        <Button variant="outline" onclick={handleReset}>{tryAgainButtonLabel}</Button>
+<article class={cn('ui:flex ui:w-full', className)}>
+  <div class="ui:min-w-0 ui:flex-1">
+    <div class="ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10">
+      {#if !exercise.isUnlocked}
+        <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
       {:else}
-        <span class="ui:text-sm ui:text-muted-foreground">{privacyHint}</span>
-        <Button disabled={!canSubmitAnswers} onclick={handleSubmit}>{submitLabel}</Button>
+        {#if exercise.sectionTitle}
+          <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
+            {exercise.sectionTitle}
+          </div>
+        {/if}
+
+        {#if showAttemptsPicker}
+          <div class="ui:mt-4 ui:flex ui:flex-wrap ui:items-center ui:gap-2">
+            <span class="ui:sr-only" id="public-exercise-attempts-select-label">{attemptsSelectAriaLabel}</span>
+            <Select.Root
+              type="single"
+              value={selectValue}
+              onValueChange={(nextValue) => nextValue && handleAttemptSelect(nextValue)}
+            >
+              <Select.Trigger
+                class="ui:min-w-[min(24rem,calc(100vw-5rem))] ui:max-w-full"
+                aria-labelledby="public-exercise-attempts-select-label"
+              >
+                <span class="ui:truncate">
+                  {selectValue === 'live'
+                    ? newAttemptOptionLabel
+                    : formatAttemptOption({
+                        attemptNumber: Number(selectValue) + 1,
+                        correct: persistedAttempts[Number(selectValue)]?.correctCount ?? 0,
+                        total: persistedAttempts[Number(selectValue)]?.totalGradable ?? totalGradable
+                      })}
+                </span>
+              </Select.Trigger>
+              <Select.Content>
+                {#each persistedAttempts as _, attemptIdx (attemptIdx)}
+                  {@const stored = persistedAttempts[attemptIdx]}
+                  {@const attemptLabel = formatAttemptOption({
+                    attemptNumber: attemptIdx + 1,
+                    correct: stored.correctCount,
+                    total: stored.totalGradable
+                  })}
+                  <Select.Item value={String(attemptIdx)} label={attemptLabel}>{attemptLabel}</Select.Item>
+                {/each}
+                <Select.Item value="live" label={newAttemptOptionLabel}>{newAttemptOptionLabel}</Select.Item>
+              </Select.Content>
+            </Select.Root>
+          </div>
+        {/if}
+
+        <div
+          class={cn(
+            'ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-3',
+            showAttemptsPicker ? 'ui:mt-4' : 'ui:mt-2'
+          )}
+        >
+          <h1
+            id={titleId}
+            class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
+          >
+            {exercise.title}
+          </h1>
+          {@render titleActions?.()}
+        </div>
+
+        {#if exercise.description}
+          <p class="ui:mt-3 ui:text-muted-foreground">{exercise.description}</p>
+        {/if}
+
+        <div class="ui:mt-8 ui:space-y-6">
+          <QuestionList
+            contract={{
+              mode,
+              questions: exercise.questions,
+              answersByKey: answers,
+              disabled: submitted,
+              labels
+            }}
+            onAnswerChange={handleAnswerChange}
+          />
+        </div>
+
+        <div class="ui:mt-10 ui:flex ui:items-center ui:justify-between ui:gap-4">
+          {#if submitted}
+            <div class="ui:text-sm ui:text-muted-foreground">{summaryText}</div>
+            <Button variant="outline" onclick={handleReset}>{tryAgainButtonLabel}</Button>
+          {:else}
+            <span class="ui:text-sm ui:text-muted-foreground">{privacyHint}</span>
+            <Button disabled={!canSubmitAnswers} onclick={handleSubmit}>{submitLabel}</Button>
+          {/if}
+        </div>
+
+        <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
       {/if}
     </div>
+  </div>
 
-    <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
+  {#if outlineItems.length > 0 || outlineActions}
+    <aside
+      class="ui:sticky ui:top-12 ui:z-10 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-56 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:lg:block"
+    >
+      <div class="ui:px-4 ui:py-8">
+        {#if outlineItems.length > 0}
+          <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />
+        {/if}
+        {#if outlineActions}
+          <div class={outlineItems.length > 0 ? 'ui:mt-6 ui:border-t ui:border-border ui:pt-4' : ''}>
+            {@render outlineActions()}
+          </div>
+        {/if}
+      </div>
+    </aside>
   {/if}
 </article>
