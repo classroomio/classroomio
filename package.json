@@ -43,7 +43,7 @@
     "turbo": "^1.10.16"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.2",
+    "@playwright/test": "^1.57.0",
     "@babel/plugin-syntax-jsx": "^7.28.6",
     "@babel/preset-typescript": "^7.28.5",
     "@cio/tsconfig": "workspace:*",

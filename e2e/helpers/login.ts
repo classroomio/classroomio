@@ -25,7 +25,7 @@ export async function loginAsAdmin(page: Page) {
   }).toPass({ timeout: 10_000 });
 
   await page.getByTestId('auth-login-submit').click();
-  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 60_000 });
+  await expect(page.getByTestId('app-sidebar-trigger')).toBeVisible({ timeout: 60_000 });
 }
 
 /** Org public site (simulates tenant subdomain via ?org= locally). */
