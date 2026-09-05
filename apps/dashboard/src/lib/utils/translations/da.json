@@ -903,18 +903,18 @@
         "copy_link": "Kopiér link",
         "question_in_exercise": "I \"{exercise}\"",
         "fix_question": "Rediger",
-        "convert_to_public_blocked": "Offentlige kurser kræver kun autogradable spørgsmål.",
-        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter autogradable spørgsmål. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:",
-        "fix_in_exercise": "Fix i træning",
+        "convert_to_public_blocked": "Offentlige kurser kræver udelukkende spørgsmål, der bedømmes automatisk.",
+        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter spørgsmål med automatisk bedømmelse. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:",
+        "fix_in_exercise": "Ret i øvelse",
         "cancel_conversion": "Annuller konvertering",
         "public_conversion": {
           "banner_title": "Konvertering af kursus til offentlig",
           "exercise_fixed": "Denne øvelse er klar",
           "back_to_settings": "Tilbage til Indstillinger",
-          "complete_conversion": "Komplet offentlig konvertering",
+          "complete_conversion": "Gennemfør offentlig konvertering",
           "jump_to": "Hop til",
-          "blocks_public_conversion": "Ikke autograderbar",
-          "blocks_public_conversion_desc": "Offentlige kurser understøtter kun autogradable spørgsmål. Skift dette spørgsmåls type eller slet det for at fortsætte med konverteringen.",
+          "blocks_public_conversion": "Ikke automatisk bedømmelig",
+          "blocks_public_conversion_desc": "Offentlige kurser understøtter kun spørgsmål med automatisk bedømmelse. Skift dette spørgsmåls type eller slet det for at fortsætte med konverteringen.",
           "blocks_public_conversion_title": "Manuel karaktergivning understøttes ikke i offentlige kurser",
           "aria_label": "Status for konvertering af offentlige kurser",
           "all_exercises_fixed": "Alle {total} øvelser rettet",
@@ -934,7 +934,7 @@
           "questions_left_singular": "rettet · {count} spørgsmål tilbage",
           "questions_left_plural": "rettet · {count} spørgsmål tilbage"
         },
-        "fix": "Lave",
+        "fix": "Ret",
         "save_changes_to_fix_questions": "Gem dine ikke-gemte ændringer, før du navigerer for at rette spørgsmål."
       },
       "analytics": {

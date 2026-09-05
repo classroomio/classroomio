@@ -687,7 +687,7 @@
           {$t('course.navItem.settings.course_type_learn_more')}
         </a>
       </Field.Description>
-      <Field.Field>
+      <Field.Field class="mt-4">
         <Select.Root
           type="single"
           value={$settings.type}
