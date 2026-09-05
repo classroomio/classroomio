@@ -27,7 +27,7 @@
 </script>
 
 <div class="mb-5 {!preview ? 'px-6' : 'px-2'}">
-  <QuestionContainer isTitle={true}>
+  <QuestionContainer isTitle={true} class="mb-6">
     {#if preview}
       <h2 class="my-1">{$questionnaire.title}</h2>
       <div class="flex items-center">

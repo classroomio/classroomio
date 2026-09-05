@@ -304,7 +304,11 @@
         "all_content_already_unlocked": "Весь контент уже разблокирован",
         "content_grouping_enabled": "Группировка контента включена",
         "content_grouping_disabled": "Группировка контента отключена",
-        "link_generated": "Ссылка на курс успешно обновлена"
+        "link_generated": "Ссылка на курс успешно обновлена",
+        "converted_to_public": "Курс успешно преобразован в общедоступный курс"
+      },
+      "info": {
+        "conversion_blocked": "Исправьте вопросы ниже, чтобы завершить преобразование в публичный доступ."
       }
     },
     "people": {
@@ -850,7 +854,6 @@
         },
         "compliance": "Соответствие требованиям",
         "public": "Общественный",
-        "convert_to_public_blocked": "В этом курсе есть вопросы, которые нельзя оценить автоматически, поэтому его пока нельзя опубликовать.",
         "fix_blocking_questions": "Исправить блокирующие вопросы",
         "slug": {
           "label": "URL-адрес",
@@ -897,7 +900,42 @@
         "go_to_completion_deadline": "Перейти к сроку завершения",
         "generate_link": "Создать новую ссылку",
         "open_link": "Открыть ссылку в новой вкладке",
-        "copy_link": "Скопировать ссылку"
+        "copy_link": "Скопировать ссылку",
+        "question_in_exercise": "В «{exercise}»",
+        "fix_question": "Редактировать",
+        "convert_to_public_blocked": "Открытые курсы требуют только вопросов, оцениваемых автоматически.",
+        "convert_to_public_blocked_desc": "Упражнения в общедоступном курсе оцениваются автоматически в браузере, поэтому мы поддерживаем только вопросы с автоматической оценкой. Прежде чем сделать этот курс общедоступным, удалите или замените следующие вопросы:",
+        "fix_in_exercise": "Исправить в упражнении",
+        "cancel_conversion": "Отменить преобразование",
+        "public_conversion": {
+          "banner_title": "Преобразование курса в общедоступный",
+          "exercise_fixed": "Это упражнение готово",
+          "back_to_settings": "Вернуться к настройкам",
+          "complete_conversion": "Завершить преобразование в общедоступный",
+          "jump_to": "Перейти к",
+          "blocks_public_conversion": "Без автопроверки",
+          "blocks_public_conversion_desc": "Открытые курсы поддерживают только вопросы, оцениваемые автоматически. Измените тип этого вопроса или удалите его, чтобы продолжить преобразование.",
+          "blocks_public_conversion_title": "В открытых курсах ручная проверка работ не поддерживается.",
+          "aria_label": "Прогресс преобразования публичного курса",
+          "all_exercises_fixed": "{total, plural, one {Исправлено # упражнение} few {Все # упражнения исправлены} many {Все # упражнений исправлены} other {Все # упражнений исправлены}}",
+          "ready_to_convert": "Готово к преобразованию!",
+          "questions_left_other_singular": "· {count} вопрос остался в других упражнениях",
+          "questions_left_other_plural": "{count, plural, one {· # вопрос остался в других упражнениях} few {· # вопроса осталось в других упражнениях} many {· # вопросов осталось в других упражнениях} other {· # вопроса осталось в других упражнениях}}",
+          "progress_summary_singular": "{resolved}/{total} исправлено · остался {remaining} вопрос",
+          "progress_summary_plural": "{resolved}/{total} исправлено · {remaining, plural, one {остался # вопрос} few {осталось # вопроса} many {осталось # вопросов} other {осталось # вопроса}}",
+          "next_exercise": "Далее: {exercise}",
+          "next": "Далее",
+          "question_fallback": "Вопрос {number}",
+          "question_count_singular": "{count} вопрос",
+          "question_count_plural": "{count, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}}",
+          "exercise_count_singular": "{count} упражнение",
+          "exercise_count_plural": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнения}}",
+          "exercises_fixed": "{resolved}/{total} исправлено",
+          "questions_left_singular": "исправлено · остался {count} вопрос",
+          "questions_left_plural": "{count, plural, one {исправлено · остался # вопрос} few {исправлено · осталось # вопроса} many {исправлено · осталось # вопросов} other {исправлено · осталось # вопроса}}"
+        },
+        "fix": "Исправить",
+        "save_changes_to_fix_questions": "Сохраните несохраненные изменения, прежде чем переходить к исправлению вопросов."
       },
       "analytics": {
         "title": "Аналитика"

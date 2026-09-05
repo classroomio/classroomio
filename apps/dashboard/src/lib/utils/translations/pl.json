@@ -304,7 +304,11 @@
         "all_content_already_unlocked": "Cała treść jest już odblokowana",
         "content_grouping_enabled": "Grupowanie treści włączone",
         "content_grouping_disabled": "Grupowanie treści wyłączone",
-        "link_generated": "Link do kursu został pomyślnie zaktualizowany"
+        "link_generated": "Link do kursu został pomyślnie zaktualizowany",
+        "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny"
+      },
+      "info": {
+        "conversion_blocked": "Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
       }
     },
     "people": {
@@ -850,7 +854,6 @@
         },
         "compliance": "Zgodność",
         "public": "Publiczne",
-        "convert_to_public_blocked": "Ten kurs zawiera pytania, których nie można oceniać automatycznie, dlatego nie można go jeszcze udostępnić publicznie.",
         "fix_blocking_questions": "Napraw blokujące pytania",
         "slug": {
           "label": "Błąd adresu URL",
@@ -897,7 +900,42 @@
         "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
-        "copy_link": "Skopiuj link"
+        "copy_link": "Skopiuj link",
+        "question_in_exercise": "W „{exercise}”",
+        "fix_question": "Edytuj",
+        "convert_to_public_blocked": "W kursach publicznych wymagane są wyłącznie pytania, które podlegają automatycznej ocenie.",
+        "convert_to_public_blocked_desc": "Ćwiczenia na kursie publicznym są oceniane automatycznie w przeglądarce, dlatego obsługujemy tylko pytania z automatyczną oceną. Usuń lub zastąp następujące pytania przed konwersją tego kursu na publiczny:",
+        "fix_in_exercise": "Popraw w ćwiczeniu",
+        "cancel_conversion": "Anuluj konwersję",
+        "public_conversion": {
+          "banner_title": "Konwersja kursu na publiczny",
+          "exercise_fixed": "To ćwiczenie jest gotowe",
+          "back_to_settings": "Powrót do Ustawień",
+          "complete_conversion": "Dokończ konwersję do wersji publicznej",
+          "jump_to": "Skocz do",
+          "blocks_public_conversion": "Brak automatycznego oceniania",
+          "blocks_public_conversion_desc": "Kursy publiczne obsługują wyłącznie pytania, które podlegają automatycznej ocenie. Zmień typ tego pytania lub usuń je, aby kontynuować konwersję.",
+          "blocks_public_conversion_title": "Ocenianie ręczne nie jest obsługiwane w kursach publicznych",
+          "aria_label": "Postęp konwersji kursu publicznego",
+          "all_exercises_fixed": "{total, plural, one {Poprawiono # ćwiczenie} few {Wszystkie # ćwiczenia poprawione} many {Wszystkie # ćwiczeń poprawione} other {Wszystkie # ćwiczeń poprawione}}",
+          "ready_to_convert": "Gotowy do konwersji!",
+          "questions_left_other_singular": "· pozostało {count} pytanie w innych ćwiczeniach",
+          "questions_left_other_plural": "{count, plural, one {· pozostało # pytanie w innych ćwiczeniach} few {· pozostały # pytania w innych ćwiczeniach} many {· pozostało # pytań w innych ćwiczeniach} other {· pozostało # pytań w innych ćwiczeniach}}",
+          "progress_summary_singular": "{resolved}/{total} naprawiono · pozostało {remaining} pytanie",
+          "progress_summary_plural": "{resolved}/{total} naprawiono · {remaining, plural, one {pozostało # pytanie} few {pozostały # pytania} many {pozostało # pytań} other {pozostało # pytań}}",
+          "next_exercise": "Następne: {exercise}",
+          "next": "Następny",
+          "question_fallback": "Pytanie {number}",
+          "question_count_singular": "{count} pytanie",
+          "question_count_plural": "{count, plural, one {# pytanie} few {# pytania} many {# pytań} other {# pytań}}",
+          "exercise_count_singular": "{count} ćwiczenie",
+          "exercise_count_plural": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}",
+          "exercises_fixed": "{resolved}/{total} naprawione",
+          "questions_left_singular": "naprawiono · pozostało {count} pytanie",
+          "questions_left_plural": "{count, plural, one {naprawiono · pozostało # pytanie} few {naprawiono · pozostały # pytania} many {naprawiono · pozostało # pytań} other {naprawiono · pozostało # pytań}}"
+        },
+        "fix": "Popraw",
+        "save_changes_to_fix_questions": "Zapisz niezapisane zmiany przed przejściem do poprawiania pytań."
       },
       "analytics": {
         "title": "Analityka"

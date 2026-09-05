@@ -62,11 +62,27 @@ const CourseStudentsResponse = {
   required: ['success', 'data']
 };
 
+const NonAutoGradableQuestionOffenderSchema = {
+  type: 'object' as const,
+  properties: {
+    questionId: { type: 'number' as const },
+    questionTitle: { type: 'string' as const },
+    exerciseId: { type: 'string' as const },
+    exerciseTitle: { type: 'string' as const },
+    typeId: { type: 'number' as const }
+  },
+  required: ['questionId', 'questionTitle', 'exerciseId', 'exerciseTitle', 'typeId']
+};
+
 const CourseDetailResponse = {
   type: 'object' as const,
   properties: {
     success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
+    data: { type: 'object' as const },
+    conversionBlocked: {
+      type: 'array' as const,
+      items: NonAutoGradableQuestionOffenderSchema
+    }
   },
   required: ['success', 'data']
 };
@@ -371,12 +387,13 @@ export const v1CoursesRouter = new Hono()
         const orgId = c.get('orgId')!;
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const course = await updatePublicApiCourseService(orgId, params, payload);
+        const { course, conversionOffenders } = await updatePublicApiCourseService(orgId, params, payload);
 
         return c.json(
           {
             success: true,
-            data: course
+            data: course,
+            ...(conversionOffenders && conversionOffenders.length > 0 ? { conversionBlocked: conversionOffenders } : {})
           },
           200
         );

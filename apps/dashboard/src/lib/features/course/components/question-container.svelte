@@ -5,56 +5,46 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     isTitle?: boolean;
-    onClose?: any;
-    scrollToQuestion?: boolean;
-    points?: any;
+    onClose?: () => void;
+    points?: number | string;
     hasError?: boolean;
     errorMsg?: string | null;
     /** Hint shown next to the points input while points is 0 (e.g. auto-grade requires non-zero points) */
     pointsHint?: string | null;
-    onPointsChange?: any;
+    onPointsChange?: (value?: unknown) => void;
     elementId?: string;
+    class?: string;
     key?: string;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
   }
 
   let {
     isTitle = false,
     onClose = () => {},
-    scrollToQuestion = false,
     points = $bindable(undefined),
     hasError = false,
     errorMsg = null,
     pointsHint = null,
     onPointsChange = () => {},
     elementId,
+    class: className = '',
     children
   }: Props = $props();
-
-  let ref: HTMLDivElement | undefined = $state();
 
   // `points` is often bound to a plain store object property, which is not deeply
   // reactive — a local reactive owner keeps the zero-points warning live while typing.
   let pointsValue = $state(points);
-
-  $effect(() => {
-    if (ref && scrollToQuestion) {
-      ref.scrollIntoView({
-        block: 'start',
-        behavior: 'smooth',
-        inline: 'nearest'
-      });
-    }
-  });
 </script>
 
 <div
   id={elementId}
-  bind:this={ref}
-  class="border-border border bg-white dark:bg-black {hasError ? 'border-red-700' : ''} root relative mb-6 rounded-md"
+  class="{hasError
+    ? 'ui:border-destructive ui:dark:border-destructive'
+    : 'ui:border-border'} root relative rounded-md border bg-white dark:bg-black {className}"
 >
   {#if isTitle}
     <div class="title bg-primary-700 absolute"></div>

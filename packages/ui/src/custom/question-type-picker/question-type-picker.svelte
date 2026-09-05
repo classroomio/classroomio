@@ -3,45 +3,11 @@
   import { QUESTION_TYPE_KEY, type QuestionTypeKey } from '@cio/question-types';
   import { cubicOut } from 'svelte/easing';
   import { fly } from 'svelte/transition';
-  import ArrowUpDownIcon from '@lucide/svelte/icons/arrow-up-down';
-  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
-  import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
-  import Link2Icon from '@lucide/svelte/icons/link-2';
-  import SquareCheckIcon from '@lucide/svelte/icons/square-check';
-  import StarIcon from '@lucide/svelte/icons/star';
-  import ThumbsUpIcon from '@lucide/svelte/icons/thumbs-up';
-  import UploadIcon from '@lucide/svelte/icons/upload';
-  import VideoIcon from '@lucide/svelte/icons/video';
   import { QuestionRenderer } from '../exercise-question';
   import { QUESTION_TYPE_PICKER_EXERCISE_LABELS } from './exercise-labels';
   import { QUESTION_TYPE_PICKER_ITEMS, getQuestionTypePickerItem } from './picker-data';
+  import QuestionTypeIcon from './question-type-icon.svelte';
   import { cn } from '../../tools';
-
-  /** Lucide icons for types without `sidebarGlyph` in picker data. */
-  function iconForKey(key: QuestionTypeKey): typeof CircleDotIcon {
-    switch (key) {
-      case QUESTION_TYPE_KEY.RADIO:
-        return CircleDotIcon;
-      case QUESTION_TYPE_KEY.CHECKBOX:
-        return SquareCheckIcon;
-      case QUESTION_TYPE_KEY.WORD_BANK:
-        return LayoutGridIcon;
-      case QUESTION_TYPE_KEY.ORDERING:
-        return ArrowUpDownIcon;
-      case QUESTION_TYPE_KEY.FILE_UPLOAD:
-        return UploadIcon;
-      case QUESTION_TYPE_KEY.LINK:
-        return Link2Icon;
-      case QUESTION_TYPE_KEY.STAR:
-        return StarIcon;
-      case QUESTION_TYPE_KEY.THUMBS:
-        return ThumbsUpIcon;
-      case QUESTION_TYPE_KEY.VIDEO_RECORDING:
-        return VideoIcon;
-      default:
-        return CircleDotIcon;
-    }
-  }
 
   let selectedKey = $state<QuestionTypeKey>(QUESTION_TYPE_PICKER_ITEMS[0]!.key);
   let answer = $state<AnswerData | null>(null);
@@ -129,19 +95,7 @@
         aria-current={isActive ? 'true' : undefined}
         onclick={() => selectItem(item.key)}
       >
-        <span
-          class={cn(
-            'ui:flex ui:size-8 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-md ui:bg-muted ui:text-foreground'
-          )}
-          aria-hidden="true"
-        >
-          {#if item.sidebarGlyph}
-            <span class="ui:text-[13px] ui:font-semibold ui:leading-none">{item.sidebarGlyph}</span>
-          {:else}
-            {@const Icon = iconForKey(item.key)}
-            <Icon class="ui:size-4 ui:opacity-90" aria-hidden="true" />
-          {/if}
-        </span>
+        <QuestionTypeIcon key={item.key} class="ui:size-8" />
         <span class="ui:leading-tight">{item.displayLabel}</span>
       </button>
     {/each}

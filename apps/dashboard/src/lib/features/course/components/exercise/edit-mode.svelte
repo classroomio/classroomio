@@ -2,6 +2,7 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
   import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
   import InfoIcon from '@lucide/svelte/icons/info';
+  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { dndzone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
   import { tick } from 'svelte';
@@ -35,6 +36,9 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
   import { QuestionContainer } from '$features/course/components';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { isQuestionAutoGradable } from '$features/course/utils/public-conversion-utils';
+  import { AttentionHighlight } from '$features/ui';
   import { uploadImage } from '$lib/utils/services/upload';
   import {
     getExerciseEditorQuestionTypeLabel,
@@ -43,12 +47,7 @@
     questionTypeSupportsOptions,
     toExerciseQuestionModel
   } from './question-type-utils';
-  import {
-    QUESTION_TYPE_KEY,
-    isAutoGradableQuestionTypeId,
-    resolveTrueFalseCorrectValue,
-    syncTrueFalseOptions
-  } from '@cio/question-types';
+  import { QUESTION_TYPE_KEY, resolveTrueFalseCorrectValue, syncTrueFalseOptions } from '@cio/question-types';
   import { getExerciseQuestionLabels } from './question-labels';
   import SectionEditor from './section-editor.svelte';
   import type { Question } from '$features/course/types';
@@ -58,7 +57,6 @@
   const flipDurationMs = 200;
   const uploadLimits = getResolvedUploadLimits();
   const platformMaxFileSizeMb = uploadLimits.exerciseFileMb;
-  const initialQuestionsLength = $questionnaire.questions.length;
   type QuestionDndEvent = CustomEvent<{ items: Question[] }>;
 
   interface Props {
@@ -67,7 +65,6 @@
     goBack?: () => void;
     /** All auto-gradable question types (any course): enforce points &gt; 0 for scoring */
     requiresPositivePointsForAutoGrade?: boolean;
-    selfPacedCourse?: boolean;
     /** Public course restricts picker to auto-gradable question types only. */
     isPublicCourse?: boolean;
     reorderQuestions?: boolean;
@@ -78,7 +75,6 @@
     exerciseId: _exerciseId,
     goBack: _goBack = () => {},
     requiresPositivePointsForAutoGrade = false,
-    selfPacedCourse = false,
     isPublicCourse = false,
     reorderQuestions = false
   }: Props = $props();
@@ -117,14 +113,6 @@
     submit: t.get('course.navItem.lessons.exercises.all_exercises.section.submit')
   });
 
-  function shouldScrollToLast(questionId, questions) {
-    const [lastQuestion] = questions.slice(-1);
-    const currentQuestionsLength = questions.length;
-    const isLast = lastQuestion.id === questionId;
-
-    return isLast && initialQuestionsLength !== currentQuestionsLength;
-  }
-
   async function scrollToExerciseElement(elementId: string) {
     await tick();
     requestAnimationFrame(() => {
@@ -136,8 +124,11 @@
     });
   }
 
-  function getQuestionElementId(questionId: string | number) {
-    return `exercise-question-${questionId}`;
+  function getQuestionElementId(questionId: string | number | undefined, index?: number) {
+    if (questionId != null && questionId !== '') {
+      return `exercise-question-${questionId}`;
+    }
+    return `exercise-question-idx-${index ?? 0}`;
   }
 
   async function addQuestionToSection(sectionId: string) {
@@ -362,13 +353,6 @@
     return questions.filter((question) => toExerciseQuestionModel(question).required !== false).length;
   }
 
-  function isQuestionAutoGradable(question: Question) {
-    const questionTypeId = Number(question.questionTypeId ?? question.questionType?.id);
-    if (!Number.isFinite(questionTypeId)) return false;
-
-    return isAutoGradableQuestionTypeId(questionTypeId);
-  }
-
   $effect(() => {
     if (reorderQuestions && !previousReorderQuestions) {
       syncReorderQuestionItems();
@@ -424,68 +408,85 @@
 
 {#snippet questionEditor(question, index)}
   {@const questionStoreIndex = $questionnaire.questions.findIndex((item) => item.id === question.id)}
-  <QuestionContainer
-    elementId={getQuestionElementId(question.id)}
-    key={String(question.id ?? `new-${index}`)}
-    onClose={onInitDeleteClicked(question.id)}
-    scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
-    bind:points={$questionnaire.questions[questionStoreIndex].points}
-    hasError={!!errors[question.id]}
-    errorMsg={getQuestionErrorMsg(errors, question, 'points')}
-    pointsHint={isQuestionAutoGradable(question) && requiresPositivePointsForAutoGrade
-      ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
-      : null}
-    onPointsChange={() => {
-      question.isDirty = true;
-    }}
-  >
-    {#if typeof question.code === 'string'}
-      <div class="my-3 flex w-3/5 items-center justify-between">
-        <TextareaField
-          bind:value={question.code}
-          rows={2}
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
-        />
-        <IconButton onclick={() => handleCode(question.id, false)}>
-          <TrashIcon size={16} />
-        </IconButton>
-      </div>
-    {/if}
-
-    {@render gradingBadge(question)}
-
-    <div class="mt-2 flex flex-col">
-      <ExerciseQuestion.QuestionRenderer
-        showContainer={false}
-        titleError={getQuestionErrorMsg(errors, question, 'title')}
-        contract={{
-          mode: 'edit',
-          question: toExerciseQuestionModel(question),
-          labels: questionLabels,
-          platformMaxFileSizeMb,
-          onImageUpload: uploadImage
-        }}
-        onQuestionChange={(nextQuestion) => onSharedQuestionChange(question.id, nextQuestion)}
-      >
-        {#snippet questionTypeSelect()}
-          <QuestionTypeSelect
-            value={question.questionTypeId?.toString()}
-            onValueChange={(nextValue) => onQuestionTypeChange(question.id, nextValue)}
-            triggerQuestionType={question?.questionType}
-            types={availableQuestionTypes}
+  {@const isNonAutoGradableInConversion = !isQuestionAutoGradable(question) && publicConversionFlow.isActive}
+  <AttentionHighlight id={getQuestionElementId(question.id, index)} scrollBlock="start" class="mb-6 scroll-mt-36">
+    <QuestionContainer
+      key={String(question.id ?? `new-${index}`)}
+      onClose={onInitDeleteClicked(question.id)}
+      bind:points={$questionnaire.questions[questionStoreIndex].points}
+      hasError={!!errors[question.id] || isNonAutoGradableInConversion}
+      errorMsg={getQuestionErrorMsg(errors, question, 'points')}
+      pointsHint={isQuestionAutoGradable(question) && requiresPositivePointsForAutoGrade
+        ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
+        : null}
+      onPointsChange={() => {
+        question.isDirty = true;
+      }}
+    >
+      {#if typeof question.code === 'string'}
+        <div class="my-3 flex w-3/5 items-center justify-between">
+          <TextareaField
+            bind:value={question.code}
+            rows={2}
+            placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
           />
-        {/snippet}
-      </ExerciseQuestion.QuestionRenderer>
-
-      {#if getQuestionErrorMsg(errors, question, 'option')}
-        <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
+          <IconButton onclick={() => handleCode(question.id, false)}>
+            <TrashIcon size={16} />
+          </IconButton>
+        </div>
       {/if}
-    </div>
-  </QuestionContainer>
+
+      {@render gradingBadge(question)}
+
+      {#if isNonAutoGradableInConversion}
+        <div
+          class="ui:border-border ui:text-foreground dark:ui:bg-muted/30 mt-2 mb-3 flex items-start gap-2.5 rounded-md border p-2.5 text-xs"
+        >
+          <TriangleAlertIcon class="ui:text-muted-foreground mt-0.5 size-4 shrink-0" />
+          <div class="min-w-0 flex-1">
+            <p class="font-medium">
+              {$t('course.navItem.settings.public_conversion.blocks_public_conversion_title')}
+            </p>
+            <p class="ui:text-muted-foreground mt-0.5 text-[11px] leading-relaxed">
+              {$t('course.navItem.settings.public_conversion.blocks_public_conversion_desc')}
+            </p>
+          </div>
+        </div>
+      {/if}
+
+      <div class="mt-2 flex flex-col">
+        <ExerciseQuestion.QuestionRenderer
+          showContainer={false}
+          titleError={getQuestionErrorMsg(errors, question, 'title')}
+          contract={{
+            mode: 'edit',
+            question: toExerciseQuestionModel(question),
+            labels: questionLabels,
+            platformMaxFileSizeMb,
+            onImageUpload: uploadImage
+          }}
+          onQuestionChange={(nextQuestion) => onSharedQuestionChange(question.id, nextQuestion)}
+        >
+          {#snippet questionTypeSelect()}
+            <QuestionTypeSelect
+              value={question.questionTypeId?.toString()}
+              onValueChange={(nextValue) => onQuestionTypeChange(question.id, nextValue)}
+              triggerQuestionType={question?.questionType}
+              types={availableQuestionTypes}
+            />
+          {/snippet}
+        </ExerciseQuestion.QuestionRenderer>
+
+        {#if getQuestionErrorMsg(errors, question, 'option')}
+          <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
+        {/if}
+      </div>
+    </QuestionContainer>
+  </AttentionHighlight>
 {/snippet}
 
 {#snippet compactQuestionRow(question, index)}
-  <div class="border-border flex items-center gap-3 rounded-md border bg-white px-4 py-3 dark:bg-black">
+  <div class="ui:border-border flex items-center gap-3 rounded-md border bg-white px-4 py-3 dark:bg-black">
     <span class="ui:text-muted-foreground w-6 text-sm font-medium tabular-nums">{index + 1}</span>
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-semibold">
