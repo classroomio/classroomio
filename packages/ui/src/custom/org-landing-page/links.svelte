@@ -366,6 +366,73 @@
           </div>
         </div>
       </section>
+    {:else if variant === 'quartz'}
+      {@const quartzCols =
+        links.cards.length >= 4
+          ? 'ui:lg:grid-cols-4'
+          : links.cards.length === 3
+            ? 'ui:lg:grid-cols-3'
+            : links.cards.length === 2
+              ? 'ui:lg:grid-cols-2'
+              : 'ui:lg:grid-cols-1'}
+      <section class="ui:bg-[var(--landing-card)] ui:border-t ui:border-[var(--landing-border)]">
+        <div class="ui:max-w-[1200px] ui:mx-auto">
+          <div class="ui:px-5 ui:md:px-8 ui:pt-14 ui:pb-6">
+            <p
+              class="ui:m-0 ui:mb-2 ui:text-xs ui:text-[var(--landing-fg-faint)] ui:[letter-spacing:var(--landing-eyebrow-tracking)] ui:[text-transform:var(--landing-eyebrow-case)]"
+            >
+              {resolvedResourcesEyebrow}
+            </p>
+            <h2
+              class="ui:m-0 ui:text-[28px] ui:text-[var(--landing-fg)] ui:[font-weight:var(--landing-heading-weight)] ui:[letter-spacing:var(--landing-heading-tracking)]"
+            >
+              {links.heading}
+            </h2>
+            {#if links.description?.trim()}
+              <p
+                class="ui:m-0 ui:mt-3 ui:max-w-[54ch] ui:text-[15px] ui:leading-relaxed ui:text-[var(--landing-fg-muted)]"
+              >
+                {links.description}
+              </p>
+            {/if}
+          </div>
+          <div
+            class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 {quartzCols} ui:border-t ui:border-l ui:border-[var(--landing-border)]"
+          >
+            {#each links.cards as card, index (index)}
+              {@const IconComponent = landingPageLinkIconMap[card.icon]}
+              <a
+                href={card.href}
+                target="_blank"
+                rel="noreferrer"
+                class="ui:group ui:flex ui:flex-col ui:min-h-[190px] ui:p-6 ui:no-underline ui:border-r ui:border-b ui:border-[var(--landing-border)] ui:transition-colors ui:hover:bg-[var(--landing-card-soft)]"
+                aria-label={`${card.title} (opens in new tab)`}
+              >
+                <span
+                  class="ui:inline-flex ui:items-center ui:justify-center ui:size-8 ui:mb-5 ui:border ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)]"
+                >
+                  <IconComponent class="ui:size-4" aria-hidden="true" />
+                </span>
+                <h3
+                  class="ui:m-0 ui:mb-1.5 ui:text-base ui:text-[var(--landing-fg)] ui:[font-weight:var(--landing-heading-weight)] ui:[letter-spacing:var(--landing-heading-tracking)]"
+                >
+                  {card.title}
+                </h3>
+                <p class="ui:m-0 ui:text-sm ui:leading-relaxed ui:text-[var(--landing-fg-muted)] ui:line-clamp-3">
+                  {card.description}
+                </p>
+                <span
+                  class="ui:mt-auto ui:pt-5 ui:inline-flex ui:items-center ui:gap-1.5 ui:text-[13px] ui:font-medium ui:text-[var(--landing-fg)]"
+                  aria-hidden="true"
+                >
+                  {labels?.learnMoreLabel ?? 'Learn more'}
+                  <ArrowRightIcon class="ui:size-3.5 ui:transition-transform ui:group-hover:translate-x-0.5" />
+                </span>
+              </a>
+            {/each}
+          </div>
+        </div>
+      </section>
     {:else if variant === 'editorial'}
       {@const cardCount = links.cards.length}
       {@const lgColsClass =

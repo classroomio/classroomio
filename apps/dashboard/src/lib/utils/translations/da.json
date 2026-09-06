@@ -3529,6 +3529,10 @@
           "editorial": {
             "title": "Redaktionel",
             "description": "Varm cremepalette, malerisk helt, raffineret magasinfølelse"
+          },
+          "quartz": {
+            "title": "Kvarts",
+            "description": "Monokromt fint gitter, linjerede rækker, fastlåst indskrivningsskinne"
           }
         }
       },
