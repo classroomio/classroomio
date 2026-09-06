@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exercise player · Embedded Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="host">
+      <aside class="host-side">
+        <div class="host-brand"><span class="mk">N</span>Northwind</div>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <div class="host-sec">Resources</div>
+        <a class="host-nav on" href="embed-learn.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Learn</a>
+        <div class="host-foot"><span class="av">RA</span><div><div class="nm">Ruth Adeyemi</div><div class="rl">Engineering</div></div></div>
+      </aside>
+
+      <main class="host-main">
+        <div class="embed-wrap" id="embed">
+          <div class="ac">
+            <div class="ac-page" style="max-width: 1080px; padding-top: 34px">
+              <a class="ac-back" href="embed-course.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Automations for Support Teams</a>
+
+              <div class="ac-shell">
+                <aside class="ac-side">
+                  <div class="ac-side-head">
+                    <div class="t">Automations for Support Teams</div>
+                    <div class="ac-prog"><span style="width: 62%"></span></div>
+                    <div class="ac-pmeta">5 of 8 complete</div>
+                  </div>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>What automations can do</a>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Anatomy of a workflow</a>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Your first routing rule</a>
+                  <a class="ac-srow done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Matching on customer tier</a>
+                  <a class="ac-srow on" href="embed-exercise.html"><span class="ic"></span>Knowledge check — conditions</a>
+                  <a class="ac-srow" href="embed-lesson.html"><span class="ic"></span>Branching on ticket priority</a>
+                  <a class="ac-srow" href="embed-lesson.html"><span class="ic"></span>Business hours and time zones</a>
+                  <a class="ac-srow" href="embed-lesson.html"><span class="ic"></span>Reading the automation report</a>
+                </aside>
+
+                <div class="ac-body">
+                  <div class="ac-eyebrow">Exercise · 3 questions · no time limit</div>
+                  <h1>Knowledge check — conditions</h1>
+                  <p id="ex-status" style="font-size: 13.5px; color: var(--ac-muted); margin: -10px 0 24px">Answer all three, then submit. You can retake this as many times as you like.</p>
+
+                  <div class="ac-q">
+                    <div class="qn">Question 1</div>
+                    <div class="qt">A ticket arrives with customer-set priority "Urgent" from a Starter-tier account. Which source should an escalation branch trust?</div>
+                    <label class="ac-opt" onclick="pick(this)"><span class="rd"></span>The customer-set priority, because the customer knows their situation</label>
+                    <label class="ac-opt sel" data-chosen="true" data-correct onclick="pick(this)"><span class="rd"></span>The tier-derived priority, because escalation paths need predictable input</label>
+                    <label class="ac-opt" onclick="pick(this)"><span class="rd"></span>Whichever value arrived most recently</label>
+                  </div>
+
+                  <div class="ac-q">
+                    <div class="qn">Question 2</div>
+                    <div class="qt">What is the risk of using a single catch-all path instead of one path per priority level?</div>
+                    <label class="ac-opt" onclick="pick(this)"><span class="rd"></span>The workflow runs more slowly</label>
+                    <label class="ac-opt" data-correct onclick="pick(this)"><span class="rd"></span>Low-priority tickets inherit escalation behaviour meant for urgent ones</label>
+                    <label class="ac-opt" onclick="pick(this)"><span class="rd"></span>Conditions stop evaluating after the first match</label>
+                  </div>
+
+                  <div class="ac-q">
+                    <div class="qn">Question 3</div>
+                    <div class="qt">In one or two sentences, describe when you would deliberately ignore triage-set priority.</div>
+                    <textarea class="textarea" rows="3" style="width: 100%; font-family: inherit" placeholder="Your answer"></textarea>
+                  </div>
+
+                  <div class="ac-footnav">
+                    <a class="ac-btn ac-btn-ghost" href="embed-lesson.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back to lesson</a>
+                    <button class="ac-btn ac-btn-primary" id="submit" onclick="submitExercise()">Submit exercise</button>
+                  </div>
+                  <p style="font-size: 12px; color: var(--ac-muted); text-align: right; margin: 10px 0 0" id="write-note">Signed in — this posts to the same submission record the LMS uses.</p>
+                </div>
+              </div>
+
+              <div class="ac-sec" style="text-align: center; font-size: 12px; color: var(--ac-muted)">Powered by ClassroomIO</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on" onclick="setState('progress', this)">In progress</button>
+      <button onclick="setState('graded', this)">Graded</button>
+      <button onclick="setState('anon', this)">Anonymous attempt</button>
+      <span class="lbl">View</span>
+      <button onclick="document.getElementById('embed').classList.toggle('show-bounds')">Bounds</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+
+    <script>
+      function pick(el) {
+        el.parentElement.querySelectorAll('.ac-opt').forEach((o) => {
+          o.classList.remove('sel');
+          delete o.dataset.chosen;
+        });
+        el.classList.add('sel');
+        el.dataset.chosen = 'true';
+      }
+      function submitExercise() {
+        setGraded();
+        document.querySelector('.proto-bar button.on')?.classList.remove('on');
+        document.querySelectorAll('.proto-bar button')[1].classList.add('on');
+      }
+      function setGraded() {
+        document.querySelectorAll('.ac-q').forEach((q) => {
+          q.querySelectorAll('.ac-opt').forEach((opt) => {
+            opt.classList.remove('sel');
+            if (opt.hasAttribute('data-correct')) opt.classList.add('right');
+            else if (opt.dataset.chosen) opt.classList.add('wrong');
+          });
+        });
+        document.getElementById('ex-status').innerHTML = '<b style="color:#3f9c6d">Submitted · 2 of 3 auto-graded correct.</b> Question 3 is awaiting review by your instructor.';
+        document.getElementById('submit').textContent = 'Retake exercise';
+        document.querySelector('.ac-srow.on').classList.add('done');
+        document.querySelector('.ac-srow.on .ic').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>';
+      }
+      function setState(key, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        if (key === 'graded') return setGraded();
+        if (key === 'anon') {
+          document.getElementById('write-note').innerHTML = 'No identity supplied — this attempt is kept in the browser only, exactly as the public course page does today.';
+          document.getElementById('ex-status').textContent = 'Answer all three to check yourself. Your attempt stays in this browser until you sign in.';
+        } else {
+          document.getElementById('write-note').textContent = 'Signed in — this posts to the same submission record the LMS uses.';
+          document.getElementById('ex-status').textContent = 'Answer all three, then submit. You can retake this as many times as you like.';
+        }
+        document.querySelectorAll('.ac-opt').forEach((o) => o.classList.remove('right', 'wrong'));
+        document.getElementById('submit').textContent = 'Submit exercise';
+      }
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>
