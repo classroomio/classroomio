@@ -35,7 +35,8 @@
         {/if}
         {#if instructor.coursesNo}
           <p class="ui:m-0 ui:mt-1 ui:text-[13.5px] ui:text-[var(--landing-fg-faint)]">
-            {labels?.instructorCoursesLabel?.(instructor.coursesNo) ?? `${instructor.coursesNo} courses`}
+            {labels?.instructorCoursesLabel?.(instructor.coursesNo) ??
+              `${instructor.coursesNo} ${instructor.coursesNo === 1 ? 'course' : 'courses'}`}
           </p>
         {/if}
         {#if instructor.description}

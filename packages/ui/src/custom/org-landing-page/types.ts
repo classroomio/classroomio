@@ -318,6 +318,12 @@ export interface CourseLandingPageLabels {
   navInstructorLabel?: string;
   navReviewsLabel?: string;
   navPricingLabel?: string;
+  /** Lesson duration shown on a curriculum row. Default: `${minutes} min`. */
+  lessonDurationLabel?: (minutes: number) => string;
+  /** Row label for the exercise count in a facts table. Default: "Exercises". */
+  factExercisesLabel?: string;
+  /** Value shown when a course includes a certificate. Default: "Included". */
+  factIncludedLabel?: string;
 }
 
 export interface CourseLandingPageProps {

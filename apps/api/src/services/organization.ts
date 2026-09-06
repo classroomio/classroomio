@@ -48,7 +48,7 @@ import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
 import { canUseBasicAuthSettings, PLAN } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
-import { ROLE } from '@cio/utils/constants';
+import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
@@ -755,7 +755,7 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       const landingpage = data.landingpage as Record<string, unknown>;
       const theme = landingpage.theme;
 
-      if (typeof theme === 'string' && theme !== 'minimal') {
+      if (typeof theme === 'string' && !isFreeLandingPageTheme(theme)) {
         const activePlan = await getActiveOrganizationPlan(orgId);
         const planName = activePlan?.planName ?? PLAN.BASIC;
 

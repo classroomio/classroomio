@@ -41,13 +41,16 @@
   const facts = $derived(
     [
       lessonCount > 0 ? { label: labels?.socialProofLessonsLabel ?? 'Lessons', value: String(lessonCount) } : null,
-      exerciseCount > 0 ? { label: 'Exercises', value: String(exerciseCount) } : null,
+      exerciseCount > 0 ? { label: labels?.factExercisesLabel ?? 'Exercises', value: String(exerciseCount) } : null,
       socialProof.type ? { label: labels?.socialProofTypeLabel ?? 'Format', value: socialProof.type } : null,
       socialProof.rating
         ? { label: labels?.socialProofRatingLabel ?? 'Rating', value: String(socialProof.rating) }
         : null,
       socialProof.hasCertificate
-        ? { label: labels?.socialProofCertificateLabel ?? 'Certificate', value: 'Included' }
+        ? {
+            label: labels?.socialProofCertificateLabel ?? 'Certificate',
+            value: labels?.factIncludedLabel ?? 'Included'
+          }
         : null
     ].filter((fact) => fact !== null)
   );
@@ -119,12 +122,15 @@
     {/if}
 
     {#if pricing.reward?.show}
-      <p
-        class="ui:mt-6 ui:m-0 ui:flex ui:items-start ui:gap-2.5 ui:text-[13.5px] ui:leading-relaxed ui:text-[var(--landing-fg-muted)]"
+      <!-- Reward copy is authored rich text, so it needs flow containers rather than a <p>/<span>. -->
+      <div
+        class="ui:mt-6 ui:flex ui:items-start ui:gap-2.5 ui:text-[13.5px] ui:leading-relaxed ui:text-[var(--landing-fg-muted)]"
       >
         <GiftIcon class="ui:size-4 ui:shrink-0 ui:mt-0.5 ui:text-[var(--landing-fg)]" aria-hidden="true" />
-        <span><SafeHtmlContent content={pricing.reward.description} /></span>
-      </p>
+        <div class="ui:min-w-0 ui:[&_p]:m-0 ui:[&_p+p]:mt-2">
+          <SafeHtmlContent content={pricing.reward.description} />
+        </div>
+      </div>
     {/if}
   </aside>
 </EditableLandingSection>

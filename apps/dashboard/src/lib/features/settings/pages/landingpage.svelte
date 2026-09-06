@@ -8,6 +8,7 @@
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import PaintbrushIcon from '@lucide/svelte/icons/paintbrush';
   import ZapIcon from '@lucide/svelte/icons/zap';
+  import { isFreeLandingPageTheme } from '@cio/utils/constants';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
@@ -128,11 +129,8 @@
   const currentThemeCard = $derived(themeCards.find((card) => card.value === currentTheme) ?? themeCards[0]);
   const otherThemeCards = $derived(themeCards.filter((card) => card.value !== currentTheme));
 
-  /** Quartz is the only theme on the free plan; minimal reads too plain to represent the product. */
-  const freeThemes: ReadonlySet<LandingPageTheme> = new Set(['quartz']);
-
   function isPaidTheme(theme: LandingPageTheme): boolean {
-    return !freeThemes.has(theme);
+    return !isFreeLandingPageTheme(theme);
   }
 
   const authAction = $derived(

@@ -12,12 +12,10 @@
 
   const lessonTotal = $derived(curriculum.sections.reduce((total, section) => total + section.lessons.length, 0));
 
-  const heading = $derived.by(() => {
-    const lessons = labels?.lessonsLabel?.(lessonTotal) ?? `${lessonTotal} ${lessonTotal === 1 ? 'lesson' : 'lessons'}`;
-    const moduleCount = curriculum.sections.length;
-
-    return `${lessons} across ${moduleCount} ${moduleCount === 1 ? 'module' : 'modules'}`;
-  });
+  /** The lesson-count callback is already localized; no extra English connective is added. */
+  const heading = $derived(
+    labels?.lessonsLabel?.(lessonTotal) ?? `${lessonTotal} ${lessonTotal === 1 ? 'lesson' : 'lessons'}`
+  );
 
   function sectionMeta(lessonCount: number, exerciseCount?: number): string {
     const lessons = labels?.lessonsLabel?.(lessonCount) ?? `${lessonCount} ${lessonCount === 1 ? 'lesson' : 'lessons'}`;
@@ -68,7 +66,7 @@
                 <span class="ui:min-w-0 ui:truncate">{lesson.title}</span>
                 {#if lesson.durationMinutes}
                   <span class="ui:ml-auto ui:shrink-0 ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
-                    {lesson.durationMinutes} min
+                    {labels?.lessonDurationLabel?.(lesson.durationMinutes) ?? `${lesson.durationMinutes} min`}
                   </span>
                 {/if}
               </div>

@@ -17,12 +17,11 @@
         : null)
   );
 
-  const heading = $derived.by(() => {
-    const count = reviews.items.length;
-    const countLabel = labels?.reviewsAverageLabel?.(count) ?? `${count} ${count === 1 ? 'review' : 'reviews'}`;
-
-    return average !== null ? `${average.toFixed(1)} out of 5 · ${countLabel}` : countLabel;
-  });
+  /** Score and count render separately so no English phrase is baked into the heading. */
+  const countLabel = $derived(
+    labels?.reviewsAverageLabel?.(reviews.items.length) ??
+      `${reviews.items.length} ${reviews.items.length === 1 ? 'review' : 'reviews'}`
+  );
 
   function dateLabel(value?: string): string | undefined {
     if (!value) return undefined;
@@ -35,7 +34,28 @@
 </script>
 
 {#if reviews.items.length > 0}
-  <QuartzCourseSection id="reviews" sectionKey="reviews" eyebrow={labels?.reviewsEyebrow ?? 'Reviews'} {heading}>
+  <QuartzCourseSection
+    id="reviews"
+    sectionKey="reviews"
+    eyebrow={labels?.reviewsEyebrow ?? 'Reviews'}
+    heading={labels?.reviewsHeading}
+  >
+    <div class="ui:flex ui:items-baseline ui:gap-3 ui:mb-5">
+      {#if average !== null}
+        <span
+          class="ui:text-4xl ui:leading-none ui:text-[var(--landing-fg)] ui:[font-weight:var(--landing-heading-weight)] ui:[letter-spacing:var(--landing-heading-tracking)]"
+        >
+          {average.toFixed(1)}
+        </span>
+        <span class="ui:flex ui:gap-0.5 ui:text-[var(--landing-fg)]">
+          {#each Array(5) as _, star (star)}
+            <StarIcon class="ui:size-4 {star < Math.round(average) ? 'ui:fill-current' : 'ui:opacity-25'}" />
+          {/each}
+        </span>
+      {/if}
+      <span class="ui:text-[13.5px] ui:text-[var(--landing-fg-muted)]">{countLabel}</span>
+    </div>
+
     <div class="ui:grid ui:grid-cols-1 ui:@2xl:grid-cols-2">
       {#each reviews.items as review, index (review.id)}
         <figure
