@@ -62,7 +62,7 @@
 </script>
 
 <div class="space-y-4">
-  <Button type="button" class="ui:justify-between w-full" onclick={onContinueToLayout}>
+  <Button type="button" class="w-full justify-between" onclick={onContinueToLayout}>
     {$t('widgets.editor.continue_to_layout')}
     <ChevronRightIcon class="size-4" />
   </Button>
@@ -89,7 +89,7 @@
     <Field.Set>
       <Field.Legend>{$t('widgets.editor.available_courses')}</Field.Legend>
       <div class="flex items-center gap-2">
-        <Search class="ui:max-w-none flex-1" placeholder={$t('widgets.form.course_search')} bind:value={courseSearch} />
+        <Search class="max-w-none flex-1" placeholder={$t('widgets.form.course_search')} bind:value={courseSearch} />
         <CourseFilterPopover
           {activeFilterCount}
           {filterPublished}
@@ -109,7 +109,7 @@
           {$t('widgets.preview.empty')}
         </p>
       {:else}
-        <CheckboxOptionCardGroup options={courseOptions} bind:value={selectedCourseIds} class="ui:grid-cols-1">
+        <CheckboxOptionCardGroup options={courseOptions} bind:value={selectedCourseIds} class="grid-cols-1">
           {#snippet titleSuffix(option)}
             {@const course = filteredCourses.find((entry) => entry.id === option.id)}
             {#if course?.courseType && courseTypeLabels[course.courseType]}

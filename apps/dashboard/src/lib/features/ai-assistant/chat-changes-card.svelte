@@ -41,7 +41,7 @@
   <button
     type="button"
     onclick={toggle}
-    class="hover:ui:bg-muted/40 flex w-full cursor-pointer items-center gap-2 rounded-t-lg px-3 py-1.5 text-left"
+    class="ui:hover:bg-muted/40 flex w-full cursor-pointer items-center gap-2 rounded-t-lg px-3 py-1.5 text-left"
     aria-expanded={isExpanded}
     aria-label={isExpanded ? $t('ai_assistant.changes_card.collapse') : $t('ai_assistant.changes_card.expand')}
   >
@@ -65,7 +65,7 @@
           <button
             type="button"
             onclick={() => onNavigate(pathFor(item))}
-            class="hover:ui:bg-muted/40 flex w-full cursor-pointer items-center gap-2 px-3 py-1 text-left"
+            class="ui:hover:bg-muted/40 flex w-full cursor-pointer items-center gap-2 px-3 py-1 text-left"
           >
             {#if item.targetType === 'lesson'}
               <LessonIcon size={12} />

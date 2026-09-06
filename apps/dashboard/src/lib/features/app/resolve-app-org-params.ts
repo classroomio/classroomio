@@ -1,7 +1,7 @@
 export type AppOrgParams = {
   isOrgSite: boolean;
   orgSiteName: string;
-  /** Tenant org id from `getOrgSiteInfo`; used to auto-join on org sites. */
+  /** Tenant identity used for pending invite checks and explicit academy joining. */
   orgId?: string | null;
 };
 

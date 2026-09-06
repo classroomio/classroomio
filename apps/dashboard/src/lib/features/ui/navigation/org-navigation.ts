@@ -19,12 +19,15 @@ import type { AccountOrg } from '$features/app/types';
 import BotIcon from '@lucide/svelte/icons/bot';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
+import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
 import type { PlanLimitResource } from '@cio/utils/plans';
 
 export interface NavItem {
   title: string;
   url: string;
   path: string; // Actual path (e.g., '/settings') for breadcrumb generation
+  /** Stable Playwright hook, e.g. org-nav-courses */
+  testId: string;
   icon?: Component;
   isActive?: boolean;
   isExpanded?: boolean;
@@ -55,6 +58,8 @@ export interface NavItemConfig {
   isPaid?: boolean; // Show upgrade indicator for free plan users
   /** Plan-limited resource this item represents; when that resource is at its cap, `upgrade` is set. */
   upgradeResource?: PlanLimitResource;
+  /** Override the default org-nav-* test id derived from `path`. */
+  testId?: string;
   group?: string | null; // Group label key for sidebar grouping
 }
 
@@ -66,6 +71,20 @@ export interface NavGroup {
 export interface NestedRouteConfig {
   path: string; // Relative to parent (e.g., 'ask', 'customize-lms')
   titleKey: string; // Translation key or plain text
+}
+
+/** Stable sidebar nav hook from a route path segment (locale-independent). */
+export function orgNavTestId(path: string): string {
+  if (!path) {
+    return 'org-nav-home';
+  }
+
+  const slug = path.replace(/^\//, '').replace(/\//g, '-');
+  return `org-nav-${slug}`;
+}
+
+function resolveNavTestId(path: string, testId?: string): string {
+  return testId ?? orgNavTestId(path);
 }
 
 // Base navigation configuration structure
@@ -302,6 +321,29 @@ export const baseNavConfig: NavItemConfig[] = [
   }
 ];
 
+function isAiSettingsPath(path: string | undefined): boolean {
+  if (!path) return false;
+
+  return path.includes('ai-tutor') || path.includes('ai-credits');
+}
+
+function isHomePath(path: string): boolean {
+  return path === '';
+}
+
+/**
+ * Nav config with the Home item and AI-related settings tabs removed when AI is turned off.
+ */
+const resolvedNavConfig = IS_AI_ENABLED
+  ? baseNavConfig
+  : baseNavConfig
+      .filter((config) => !isHomePath(config.path))
+      .map((config) => ({
+        ...config,
+        items: config.items?.filter((sub) => !isAiSettingsPath(sub.path)),
+        nestedRoutes: config.nestedRoutes?.filter((route) => !isAiSettingsPath(route.path))
+      }));
+
 /**
  * Get navigation items based on organization context and permissions
  */
@@ -314,7 +356,7 @@ export function getOrgNavigationItems(
 ): NavItem[] {
   const items: NavItem[] = [];
 
-  for (const config of baseNavConfig) {
+  for (const config of resolvedNavConfig) {
     // Skip admin-only items if user is not admin
     if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
       continue;
@@ -337,6 +379,7 @@ export function getOrgNavigationItems(
       title: t(config.titleKey),
       url: config.useHashUrl ? '#' : url,
       path: config.path, // Store actual path for breadcrumb generation
+      testId: resolveNavTestId(config.path, config.testId),
       icon: config.icon,
       matchPattern,
       isActive: isActive(pagePathname, fullPath, matchPattern),
@@ -362,6 +405,7 @@ export function getOrgNavigationItems(
           isActive: isActive(pagePathname, subUrl, subMatchPattern, true),
           url: subUrl,
           path: subConfig.path,
+          testId: resolveNavTestId(subConfig.path, subConfig.testId),
           matchPattern: subMatchPattern,
           isPaid: subConfig.isPaid,
           nestedRoutes: subConfig.nestedRoutes
@@ -401,7 +445,7 @@ export function getOrgNavigationGroups(
     groupedMap.set(groupDef.key, []);
   }
 
-  for (const config of baseNavConfig) {
+  for (const config of resolvedNavConfig) {
     if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
       continue;
     }
@@ -421,6 +465,7 @@ export function getOrgNavigationGroups(
       title: t(config.titleKey),
       url: config.useHashUrl ? '#' : url,
       path: config.path,
+      testId: resolveNavTestId(config.path, config.testId),
       icon: config.icon,
       matchPattern,
       isActive: isActive(pathnameOnly, fullPath, matchPattern),
@@ -445,6 +490,7 @@ export function getOrgNavigationGroups(
           isActive: isActive(pathnameOnly, subUrl, subMatchPattern, true),
           url: subUrl,
           path: subConfig.path,
+          testId: resolveNavTestId(subConfig.path, subConfig.testId),
           matchPattern: subMatchPattern,
           isPaid: subConfig.isPaid,
           nestedRoutes: subConfig.nestedRoutes

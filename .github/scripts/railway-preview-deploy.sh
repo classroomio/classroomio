@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Deploy Railway preview app services concurrently and recover from the known
-# `railway up --ci` log-streaming false negative (railwayapp/cli#696).
+# Deploy Railway preview app services concurrently and recover from `railway up --ci`
+# false negatives — the known log-streaming glitch (railwayapp/cli#696) and transient
+# network/API failures against backboard.railway.com — by verifying the deployment
+# Railway actually created.
 #
 # Required env:
 #   APP_SERVICES  — space-separated service names (e.g. "cio-api cio-dashboard cio-jobs")
@@ -30,7 +32,7 @@ poll_deployment_status() {
 
     case "$status" in
       SUCCESS)
-        echo "Deployment $deploy_id for $service actually succeeded (status: SUCCESS) — the CLI error was just a log-streaming glitch. Continuing."
+        echo "Deployment $deploy_id for $service actually succeeded (status: SUCCESS) — the CLI error did not affect the deployment. Continuing."
         return 0
         ;;
       FAILED|CRASHED|REMOVED)
@@ -52,25 +54,30 @@ poll_deployment_status() {
 }
 
 # Resolve a non-zero `railway up` exit using the captured log.
-# Only the known log-streaming glitch is eligible for status polling.
+#
+# The CLI can exit non-zero after Railway has already accepted the upload and started a
+# deployment: the log-streaming glitch (railwayapp/cli#696), and plain network failures
+# such as a `reqwest` timeout against backboard.railway.com. Rather than enumerate every
+# transient error string, gate on the deployment id: `railway up` only prints one once
+# Railway has created the deployment for *this* invocation, so its presence is the proof
+# that a fresh (never stale) deployment exists and is safe to poll. No id means nothing
+# was created yet, so the failure is real and reported as-is.
+#
 # Returns 0 on recovered SUCCESS, 1 on failure.
 resolve_railway_up_failure() {
   local service="$1"
   local deployment_log="$2"
   local deploy_id
 
-  if ! grep -q "Failed to stream build logs:" "$deployment_log"; then
-    echo "::error::railway up failed for $service for a reason other than the known log-streaming glitch — not polling stale deployment status."
-    return 1
-  fi
-
-  deploy_id=$(grep -oP '(?<=[?&]id=)[0-9a-fA-F-]+' "$deployment_log" | head -n1)
+  # `grep -oE` + `cut` rather than a `-P` lookbehind: BSD grep has no -P, so this keeps
+  # the script (and its test suite) runnable outside the GNU-grep CI runner.
+  deploy_id=$(grep -oE '[?&]id=[0-9a-fA-F-]+' "$deployment_log" | head -n1 | cut -d= -f2)
   if [ -z "$deploy_id" ]; then
-    echo "::error::railway up failed for $service and no deployment id could be recovered from its output — cannot verify actual status."
+    echo "::error::railway up failed for $service before any deployment id was published — no deployment exists to verify."
     return 1
   fi
 
-  echo "railway up reported failure for $service due to the known log-streaming glitch; checking status of deployment $deploy_id..."
+  echo "railway up reported failure for $service, but deployment $deploy_id was already created — checking its real status..."
   poll_deployment_status "$service" "$deploy_id"
 }
 

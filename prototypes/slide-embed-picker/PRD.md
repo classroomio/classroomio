@@ -64,7 +64,7 @@ Replace the bare input with a small, guided flow:
 3. **Paste normalization.** Accepts a share link _or_ a full `<iframe>` embed code and resolves it to a valid embed `src` (extract-src or link-transform per §4).
 4. **Live preview.** A 16:9 preview renders the resolved embed before saving, with an explicit **"Embed ready"** confirmation, so failures are caught at author time, not by students.
 5. **Inline validation.** If the pasted value doesn't match the chosen platform (e.g. an `/edit` link that was never published), show a specific, fixable message ("This looks like an edit link — publish to the web first").
-6. **"How to embed" docs button.** Every platform has a deep link to `classroomio.com/docs/guides/embed-slides#<platform>` for step-by-step help.
+6. **"How to embed" docs button.** Every platform has a deep link to `classroomio.com/help/build-a-course/embed-slides#<platform>` for step-by-step help.
 7. **Auto-detect (accelerator).** When a teacher pastes first, detect the platform from the URL/host and pre-select it, so an expert can skip the gallery.
 8. **Change / clear.** Easy path back to the gallery to switch platforms or remove the deck.
 9. **Accessibility & i18n.** Keyboard-navigable tiles, labelled controls, all copy in `en.json` (no hardcoded strings), reduced-motion respected.
@@ -96,7 +96,7 @@ Unhappy path: pasted an unpublished `/edit` link → inline message + **How to e
 
 - **No schema change.** Continue to persist `slideUrl` (resolved embed `src`). Do not store the raw `<iframe>` markup in the content column — extract and store only the `src` (repo rule: persisted columns store data, not presentation).
 - **Where the logic lives.** Platform configs (id, brand, input kind, placeholder, docs link, `test`, `resolve`) belong in a pure util, e.g. `apps/dashboard/src/lib/features/course/utils/slide-embed.ts`, so both detection and transform are unit-testable and reused by the view-mode `getUrl()` normalizer that today only special-cases Canva.
-- **Docs.** Add `apps/docs/content/docs/guides/embed-slides.mdx` with a section per platform and stable `#<platform>` anchors matching the `docs` links.
+- **Docs.** Add `apps/help/content/help/build-a-course/embed-slides.mdx` with a section per platform and stable `#<platform>` anchors matching the `docs` links.
 - **Copy.** New keys under `course.navItem.lessons.materials.tabs.slide.*` in `en.json`; translate to the other locales before commit.
 - **Component.** Keep the component thin; put resolve/validate logic in the util and (if any request is added) an API class — no business logic in the `.svelte` file.
 

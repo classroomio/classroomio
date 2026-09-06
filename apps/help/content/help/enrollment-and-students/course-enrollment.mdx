@@ -1,0 +1,103 @@
+---
+title: How Course Enrollment Works
+description: The ways students can join a course in ClassroomIO—public enrollment, invite links, direct add, and paid access—and what happens once they are enrolled.
+sidebar:
+  order: 1
+---
+
+Enrollment is how a student becomes a member of a course group and gets access to lessons, exercises, and the LMS. ClassroomIO supports several enrollment paths. Which ones are available depends on your course price, publish status, and settings.
+
+This page covers **how** a student joins. For the settings that decide **who is allowed** to join, see [Control Who Can Enroll](/enrollment-and-students/enrollment-access-control).
+
+## Enrollment paths at a glance
+
+| Path                       | Who initiates it                  | Typical use                                                                                     |
+| -------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Public self-enrollment** | Student                           | Open free courses on your landing page                                                          |
+| **Email invite**           | You (admin)                       | Enter email addresses; ClassroomIO sends each recipient a unique enrollment link                |
+| **Direct add**             | You (admin)                       | Pick existing students from a list; they are enrolled instantly with no action needed from them |
+| **Paid enrollment**        | Student (after payment) or invite | Courses with a price set                                                                        |
+
+All paths end at the same place: the student is added to the course **group** and can open the course in the LMS.
+
+## Public self-enrollment (free courses)
+
+On a **free** course (`cost` is 0) with **Students can enroll themselves** enabled, anyone who finds your course landing page can enroll:
+
+1. They open the course landing page on your academy
+2. They click **Enroll**
+3. They sign in or sign up
+4. They land on `/course/[slug]/enroll` and click **Join course**
+5. They are enrolled and redirected to the LMS
+
+No invite token is required. This is the default for free, published courses.
+
+:::info[Students can enroll themselves]
+In the course dashboard, go to **Settings** and find **Students can enroll themselves**. When enabled, anyone can self-enroll from the course landing page. When disabled, the public **Enroll** button is hidden and open self-enrollment is blocked — but **course invite links** and **People → Add people** still work.
+:::
+
+## Email invites
+
+From **People → Add people**, you enter one or more email addresses and ClassroomIO sends each recipient a unique enrollment link. Each invite can have:
+
+- An **expiry** (e.g. 24 hours, 7 days)
+- A **max use** count (one-time or reusable)
+- **Allowed emails** or domains (optional restriction)
+
+When a student opens the link, they sign in (or sign up) and click **Join course**. ClassroomIO validates the token, expiry, and usage limit before enrolling them.
+
+For step-by-step instructions, see [Invite Students](/enrollment-and-students/invite-students).
+
+:::info[Email invites work on closed courses]
+You can switch **Students can enroll themselves** off and email invites still work. The toggle only blocks unsolicited self-enrollment from the landing page; it does not block people you explicitly invited. Invites do require the course to be **published**, so unpublishing a course stops outstanding invite links from admitting anyone.
+:::
+
+## Direct add (People)
+
+If a student already has an account, you can add them to the course directly — no email, no link, no action needed from them. They appear in the course immediately.
+
+From the course dashboard, open **People → Add people**, select the students you want, and confirm. They are enrolled right away.
+
+This does **not** require **Students can enroll themselves** to be on. Use it for closed courses where you control exactly who gets access.
+
+:::note[Already enrolled students]
+Revoking an invite or turning off public enrollment does not remove students who have already joined. It only blocks future enrollments through that path.
+:::
+
+## Paid courses
+
+When a course has a **price** set, open self-enrollment from the landing page is blocked unless the student pays or uses a valid invite (depending on your setup). Visitors who open the enrollment page without payment or a token see a message that they need to pay or be invited.
+
+Paid courses are useful when you want to prevent casual sign-ups on a free landing page while still selling access or issuing invites to specific buyers.
+
+## People and membership
+
+When a student enrolls or you add them from **People**, they become a member of the course **group** right away. They do not need to open a lesson first.
+
+| State             | What it means                                                |
+| ----------------- | ------------------------------------------------------------ |
+| **Active member** | Linked to a profile; appears in **People** with full details |
+| **Pending**       | Added by email before they sign in or finish onboarding      |
+
+The **People** tab in the course dashboard is the source of truth for course membership.
+
+:::info[People vs Compliance status]
+**Compliance** courses also track completion status (for example **not started**). That is separate from membership. A student can appear in **People** as soon as they are enrolled while still showing **not started** on the Compliance dashboard until they begin the course.
+:::
+
+## What students see after enrolling
+
+Once enrolled, the course appears in the student LMS (home/dashboard). They can open lessons, submit exercises, and download materials according to course settings (for example, lesson download or certificate rules).
+
+If a student follows an invite or enrollment link while logged out, ClassroomIO sends them through sign-in or sign-up first, then returns them to the enrollment page so they can finish joining.
+
+## Related guides
+
+- [Control Who Can Enroll](/enrollment-and-students/enrollment-access-control) — course and org settings that decide who may join
+- [How to Invite Students](/enrollment-and-students/invite-students) — create, send, and revoke course invite links
+- [Customize the Welcome Email](/enrollment-and-students/welcome-email): the message students get when they enroll
+- [Roles and Permissions](/organization-and-team/roles-and-permissions) — who can create courses and access the admin dashboard
+- [Student Dashboard](/reference/student-dashboard) — Home, My Learning, Explore, and Cohorts
+- [Set Up a Custom Domain](/publish-your-academy/custom-domain) — org URLs used in enrollment links
+- [Create a Course Landing Page](/publish-your-academy/course-landingpage) — pricing, publish state, and what prospects see before enrolling
+- [Create Your First Course](/get-started/create-first-course) — create and publish a course

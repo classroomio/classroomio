@@ -1,6 +1,10 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
-import type { TGetAudienceQuery, TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type {
+  TCourseReorder,
+  TGetAudienceQuery,
+  TGetOrganizationCoursesQuery
+} from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
   cancelOrganizationPlan,
@@ -34,7 +38,8 @@ import {
   getExploreCourses,
   getLessonsBySiteName,
   getOrgCourses,
-  getPublishedCoursesBySiteName
+  getPublishedCoursesBySiteName,
+  reorderOrgCourses as reorderOrgCoursesQuery
 } from '@cio/db/queries/course';
 import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
@@ -328,6 +333,27 @@ export async function getPublicCourses(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch public courses',
       ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Reorders courses for an organization (manual display order on public surfaces)
+ * @param orgId - The organization ID
+ * @param orders - Array of course IDs with their new display positions
+ */
+export async function reorderOrgCourses(orgId: string, orders: TCourseReorder['courses']) {
+  try {
+    await reorderOrgCoursesQuery(orgId, orders);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('does not belong')) {
+      throw new AppError(error.message, ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to reorder courses',
+      ErrorCodes.INTERNAL_ERROR,
       500
     );
   }

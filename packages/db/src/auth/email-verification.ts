@@ -1,6 +1,8 @@
 import { type BetterAuthOptions } from 'better-auth';
 import { buildEmailBranding, buildEmailFromName, sendEmail } from '@cio/email';
+import { enqueueEmailSend } from '@cio/jobs';
 
+import { clearWelcomeEmailPending, getProfileById, markWelcomeEmailSent } from '../queries/auth/profile';
 import { resolveVerificationOrg } from './resolve-verification-org';
 
 type EmailVerificationOptions = Parameters<
@@ -10,6 +12,18 @@ type EmailVerificationOptions = Parameters<
 type ChangeEmailConfirmationOptions = Parameters<
   NonNullable<NonNullable<NonNullable<BetterAuthOptions['user']>['changeEmail']>['sendChangeEmailConfirmation']>
 >[0];
+
+export interface WelcomeEmailDependencies {
+  enqueueEmailSend: typeof enqueueEmailSend;
+  getProfileById: typeof getProfileById;
+  markWelcomeEmailSent: typeof markWelcomeEmailSent;
+}
+
+const welcomeEmailDependencies: WelcomeEmailDependencies = {
+  enqueueEmailSend,
+  getProfileById,
+  markWelcomeEmailSent
+};
 
 /**
  * Email verification flow.
@@ -85,6 +99,54 @@ export const sendVerificationEmail = async (options: EmailVerificationOptions) =
 };
 
 /**
+ * Queues the account welcome email from Better Auth's successful verification
+ * lifecycle. The persisted onboarding flag limits this to dashboard signups
+ * and keeps profile email changes and learner verification flows from sending it.
+ */
+export async function sendWelcomeEmailAfterVerification(
+  user: { id: string; email: string },
+  _request?: Request,
+  dependencies: WelcomeEmailDependencies = welcomeEmailDependencies
+): Promise<void> {
+  try {
+    const profile = await dependencies.getProfileById(user.id);
+    if (!profile || !profile.welcomeEmailPending || profile.welcomeEmailSentAt) {
+      return;
+    }
+
+    await dependencies.enqueueEmailSend(
+      {
+        kind: 'template',
+        template: 'welcome',
+        to: user.email,
+        fields: {
+          name: profile.fullname
+        }
+      },
+      { idempotencyKey: `onboarding:welcome:${user.id}` }
+    );
+    await dependencies.markWelcomeEmailSent(user.id);
+  } catch (error) {
+    // Verification has already succeeded at this point. Log queue failures
+    // without turning a valid verification link into an error response.
+    console.error('sendWelcomeEmailAfterVerification error:', error);
+  }
+}
+
+export async function retryPendingWelcomeEmail(userId: string): Promise<void> {
+  try {
+    const profile = await getProfileById(userId);
+    if (!profile?.email) {
+      return;
+    }
+
+    await sendWelcomeEmailAfterVerification({ id: userId, email: profile.email });
+  } catch (error) {
+    console.error('retryPendingWelcomeEmail error:', error);
+  }
+}
+
+/**
  * Sends a confirmation email to the user when they change their email address.
  * @param options - The options for sending the change email confirmation.
  * @returns The confirmation email.
@@ -92,6 +154,8 @@ export const sendVerificationEmail = async (options: EmailVerificationOptions) =
 export const sendChangeEmailConfirmation = async (options: ChangeEmailConfirmationOptions) => {
   const { user, newEmail, url } = options;
   console.log('\nsendChangeEmailConfirmation', options);
+
+  await clearWelcomeEmailPending(user.id);
 
   await sendOrgAwareVerifyEmail({
     to: user.email,

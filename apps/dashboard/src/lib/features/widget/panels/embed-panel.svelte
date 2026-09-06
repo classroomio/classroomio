@@ -4,15 +4,17 @@
   import * as Tabs from '@cio/ui/base/tabs';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { t } from '$lib/utils/functions/translations';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import WidgetVersionHistory from '../components/widget-version-history.svelte';
   import type { WidgetDetail } from '../utils/types';
 
   interface Props {
     detail: WidgetDetail;
     onRollback: (versionId: string) => void;
-    onDelete: () => void;
+    onArchive: () => void;
   }
 
-  let { detail, onRollback, onDelete }: Props = $props();
+  let { detail, onRollback, onArchive }: Props = $props();
 
   let activeFormat = $state<'html' | 'url'>('html');
 </script>
@@ -44,34 +46,13 @@
     </Tabs.Content>
   </Tabs.Root>
 
-  {#if detail.versions.length > 0}
-    <div class="space-y-2">
-      <h3 class="text-sm font-semibold">{$t('widgets.editor.version_history')}</h3>
-      {#each detail.versions as version (version.id)}
-        <div class="ui:border-border ui:bg-card/50 flex items-center justify-between rounded-2xl border p-3">
-          <div>
-            <div class="font-medium">v{version.version}</div>
-            <div class="ui:text-muted-foreground text-xs">
-              {new Date(version.publishedAt).toLocaleString(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit'
-              })}
-            </div>
-          </div>
-          <Button variant="outline" size="sm" onclick={() => onRollback(version.id)}>
-            {$t('widgets.actions.restore')}
-          </Button>
-        </div>
-      {/each}
+  <WidgetVersionHistory {detail} {onRollback} />
+
+  {#if $isOrgAdmin}
+    <div class="ui:border-border border-t pt-4">
+      <Button variant="outline" class="w-full" onclick={onArchive}>
+        {$t('widgets.actions.archive')}
+      </Button>
     </div>
   {/if}
-
-  <div class="ui:border-border border-t pt-4">
-    <Button variant="outline" class="w-full" onclick={onDelete}>
-      {$t('widgets.actions.archive')}
-    </Button>
-  </div>
 </div>

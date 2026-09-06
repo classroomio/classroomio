@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
-  import { renderMathInElement } from '@cio/ui/tools';
+  import { renderMathInElement } from '@cio/ui/tools/render-math';
 
   let { children, className = '', id = '', disableMaxWidth = false } = $props();
   let container: HTMLElement | undefined;

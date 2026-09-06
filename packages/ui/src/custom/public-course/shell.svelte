@@ -136,6 +136,7 @@
   <!--
     Top header. Sticky so it stays visible as guests scroll long lessons.
     Layout: [org logo · org name | course title]  ··· [Explore courses] [Sign in] [Theme]
+    On mobile: org name and Sign in are hidden; Explore courses stays visible.
     Height intentionally compact (h-12) to maximize content vertical space.
   -->
   <header
@@ -144,6 +145,7 @@
     <div class="ui:flex ui:h-12 ui:items-center ui:gap-3 ui:px-4 ui:lg:px-6">
       <a
         href={homeHref}
+        aria-label={org?.name || undefined}
         class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:rounded-md ui:focus-visible:outline-none ui:focus-visible:ring-2 ui:focus-visible:ring-ring"
       >
         {#if org?.avatarUrl}
@@ -163,12 +165,12 @@
             {orgInitial}
           </span>
         {/if}
-        <span class="ui:truncate ui:text-sm ui:font-medium ui:text-foreground">
+        <span class="ui:hidden ui:truncate ui:text-sm ui:font-medium ui:text-foreground ui:sm:inline">
           {org?.name ?? ''}
         </span>
       </a>
 
-      <span aria-hidden="true" class="ui:text-muted-foreground/60">|</span>
+      <span aria-hidden="true" class="ui:hidden ui:text-muted-foreground/60 ui:sm:inline">|</span>
 
       <span class="ui:min-w-0 ui:flex-1 ui:truncate ui:text-sm ui:text-muted-foreground" title={courseTitle}>
         {courseTitle}
@@ -178,10 +180,12 @@
         {#if topRight}
           {@render topRight()}
         {:else}
-          <Button href={exploreHref} variant="secondary" size="sm" class="ui:hidden ui:sm:inline-flex">
+          <Button href={exploreHref} variant="secondary" size="sm">
             {exploreLabel}
           </Button>
-          <Button href={signInHref} variant="default" size="sm">{signInLabel}</Button>
+          <Button href={signInHref} variant="default" size="sm" class="ui:hidden ui:sm:inline-flex">
+            {signInLabel}
+          </Button>
         {/if}
         <ModeSwitcher />
       </div>

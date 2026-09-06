@@ -117,6 +117,8 @@ export interface OrgLandingPageHero {
   };
   image?: string;
   stats?: OrgLandingPageHeroStat[];
+  /** Small kicker above the heading. Used by templates that render one (e.g. Tech). */
+  eyebrow?: string;
 }
 
 export interface OrgLandingPageJson {

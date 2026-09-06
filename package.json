@@ -18,23 +18,32 @@
     "db:backfill-profile-email-verification": "pnpm --filter @cio/db db:backfill-profile-email-verification",
     "dashboard:dev:full": "pnpm turbo run build --filter=@cio/dashboard^... --filter=@cio/ui^... && pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
     "dashboard:dev": "pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
+    "dashboard:dev:fresh": "pnpm dev:kill-watchers && pnpm dashboard:dev",
+    "dev:kill-watchers": "node scripts/kill-watchers.mjs",
     "api:dev:full": "pnpm turbo run build --filter=@cio/api^... --filter=@cio/jobs-worker^... && pnpm concurrently -n api,core,jobs -c blue,red,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/core run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "api:dev": "pnpm concurrently -n api,core,jobs -c blue,red,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/core run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "jobs:dev": "pnpm --filter=@cio/jobs-worker run dev",
     "docs:dev": "pnpm --filter @cio/docs dev",
     "docs:build": "pnpm --filter @cio/docs build",
     "docs:validate": "pnpm --filter @cio/docs validate",
+    "docs:check-stale": "pnpm --filter @cio/docs check-stale",
+    "help:dev": "pnpm --filter @cio/help dev",
+    "help:build": "pnpm --filter @cio/help build",
+    "help:validate": "pnpm --filter @cio/help validate",
+    "help:check-stale": "pnpm --filter @cio/help check-stale",
     "website:dev": "pnpm --filter=@cio/website run dev",
     "embeds:dev": "pnpm --filter=@cio/embeds --filter=@cio/ui run dev",
     "storybook:dev": "pnpm --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types run dev",
     "mcp:build": "pnpm --filter @cio/question-types build && pnpm --filter @cio/utils build && pnpm --filter @classroomio/mcp build",
-    "db:push": "pnpm --filter @cio/db db push"
+    "db:push": "pnpm --filter @cio/db db push",
+    "demo:playwright": "playwright test --config e2e/playwright.config.ts"
   },
   "license": "MIT",
   "dependencies": {
     "turbo": "^1.10.16"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.2",
     "@babel/plugin-syntax-jsx": "^7.28.6",
     "@babel/preset-typescript": "^7.28.5",
     "@cio/tsconfig": "workspace:*",

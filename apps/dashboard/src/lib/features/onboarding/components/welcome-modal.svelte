@@ -1,36 +1,23 @@
-<script>
+<script lang="ts">
   import * as Dialog from '@cio/ui/base/dialog';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { classroomio } from '$lib/utils/services/api';
 
-  let query = new URLSearchParams(page.url.search);
-  let welcomePopup = query.get('welcomePopup');
-  let open = $derived(welcomePopup === 'true' && !!$profile.isEmailVerified);
+  const open = $derived(page.url.searchParams.get('welcomePopup') === 'true' && !!$profile.isEmailVerified);
 
-  let isLoading = $state(false);
-
-  const closeModal = async () => {
-    if (isLoading) return;
-
-    try {
-      isLoading = true;
-      await classroomio.onboarding.complete.$post({});
-
-      goto($currentOrgPath + '/courses?create=true');
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  function closeModal() {
+    goto(resolve(`${$currentOrgPath}/courses?create=true`, {}));
+  }
 </script>
 
 <Dialog.Root
   {open}
   onOpenChange={(isOpen) => {
-    if (!isOpen && !isLoading) closeModal();
+    if (!isOpen) closeModal();
   }}
 >
   <Dialog.Content class="w-[700px]! max-w-none!">

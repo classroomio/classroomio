@@ -64,26 +64,26 @@
 </Story>
 
 <Story name="Gallery · all themes">
-  <div class="ui:flex ui:flex-col">
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Minimal</div>
+  <div class="flex flex-col">
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Minimal</div>
     <MinimalCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Bold</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Bold</div>
     <BoldCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Classic</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Classic</div>
     <ClassicCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">SaaS</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">SaaS</div>
     <SaasCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Tech</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Tech</div>
     <TechCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Studio</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Studio</div>
     <StudioCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Corporate</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Corporate</div>
     <CorporateCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Terminal</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Terminal</div>
     <TerminalCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Editorial</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Editorial</div>
     <EditorialCourseLanding {...mockProps} />
-    <div class="ui:sticky ui:top-0 ui:z-50 ui:bg-black/85 ui:text-white ui:text-xs ui:px-4 ui:py-2">Vibrant</div>
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Vibrant</div>
     <VibrantCourseLanding {...mockProps} />
   </div>
 </Story>

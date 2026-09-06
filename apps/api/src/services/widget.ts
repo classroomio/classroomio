@@ -3,15 +3,20 @@ import {
   archiveWidget,
   createWidget,
   createWidgetVersion,
+  deleteArchivedWidget,
+  getArchivedWidgetById,
   getWidgetListItemById,
   getNextWidgetVersion,
   getPublishedWidgetPayloadByPublicKey,
   getWidgetById,
   getWidgetVersionById,
+  listArchivedWidgetsByOrganization,
   listWidgetCourses,
   listWidgetVersions,
   listWidgetsByOrganization,
   replaceWidgetCourses,
+  updateWidgetWithCourses,
+  restoreArchivedWidget,
   updateWidget
 } from '@cio/db/queries/widget';
 import {
@@ -40,6 +45,21 @@ export async function listOrganizationWidgets(orgId: string) {
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list widgets',
+      ErrorCodes.WIDGET_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets all archived widgets for an organization.
+ */
+export async function listArchivedOrganizationWidgets(orgId: string) {
+  try {
+    return await listArchivedWidgetsByOrganization(orgId);
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list archived widgets',
       ErrorCodes.WIDGET_FETCH_FAILED,
       500
     );
@@ -181,7 +201,10 @@ export async function updateOrganizationWidget(orgId: string, widgetId: string, 
   }
 }
 
-export async function deleteOrganizationWidget(orgId: string, widgetId: string, userId: string) {
+/**
+ * Archives an active widget.
+ */
+export async function archiveOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
     const archivedWidget = await archiveWidget(orgId, widgetId, userId);
     if (!archivedWidget) {
@@ -195,6 +218,30 @@ export async function deleteOrganizationWidget(orgId: string, widgetId: string, 
     }
 
     throw new AppError(
+      error instanceof Error ? error.message : 'Failed to archive widget',
+      ErrorCodes.WIDGET_ARCHIVE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Permanently soft-deletes an archived widget.
+ */
+export async function deleteOrganizationWidget(orgId: string, widgetId: string, userId: string) {
+  try {
+    const deletedWidget = await deleteArchivedWidget(orgId, widgetId, userId);
+    if (!deletedWidget) {
+      throw new AppError('Archived widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    return deletedWidget;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
       error instanceof Error ? error.message : 'Failed to delete widget',
       ErrorCodes.WIDGET_DELETE_FAILED,
       500
@@ -202,9 +249,54 @@ export async function deleteOrganizationWidget(orgId: string, widgetId: string, 
   }
 }
 
+/**
+ * Resolves the target status when restoring an archived widget.
+ * Only widgets that had a published version return as PUBLISHED; otherwise DRAFT.
+ */
+export function resolveRestoredWidgetStatus(latestPublishedVersionId: string | null): 'DRAFT' | 'PUBLISHED' {
+  return latestPublishedVersionId ? 'PUBLISHED' : 'DRAFT';
+}
+
+/**
+ * Restores an archived widget to its status before the archiving.
+ */
+export async function restoreOrganizationWidget(orgId: string, widgetId: string, userId: string) {
+  try {
+    const archivedWidget = await getArchivedWidgetById(orgId, widgetId);
+    if (!archivedWidget) {
+      throw new AppError('Archived widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    const restoredStatus = resolveRestoredWidgetStatus(archivedWidget.latestPublishedVersionId);
+    const restoredWidget = await restoreArchivedWidget(orgId, widgetId, restoredStatus, userId);
+
+    if (!restoredWidget) {
+      throw new AppError('Widget is no longer archived', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    const listItem = await getWidgetListItemById(orgId, widgetId);
+
+    if (!listItem) {
+      throw new AppError('Widget not found after restore', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    return listItem;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to restore widget',
+      ErrorCodes.WIDGET_RESTORE_FAILED,
+      500
+    );
+  }
+}
+
 export async function publishOrganizationWidget(orgId: string, widgetId: string, userId: string) {
   try {
-    const widget = await getWidgetById(orgId, widgetId);
+    const [widget, activePlan] = await Promise.all([getWidgetById(orgId, widgetId), getActiveOrganizationPlan(orgId)]);
     if (!widget) {
       throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
@@ -214,7 +306,7 @@ export async function publishOrganizationWidget(orgId: string, widgetId: string,
     const version = await createWidgetVersion({
       widgetId: widget.id,
       version: nextVersion,
-      configSnapshot: normalizeWidgetConfig(widget.config as Record<string, unknown>),
+      configSnapshot: normalizeWidgetConfig(widget.config as Record<string, unknown>, activePlan?.planName ?? null),
       payloadSnapshot: payload,
       runtimeManifest: {
         version: 'v1',
@@ -272,27 +364,30 @@ export async function rollbackOrganizationWidget(
       throw new AppError('Widget version not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
-    const nextVersion = await getNextWidgetVersion(widgetId);
-    const rollbackVersion = await createWidgetVersion({
-      widgetId: widget.id,
-      version: nextVersion,
-      configSnapshot: version.configSnapshot,
-      payloadSnapshot: version.payloadSnapshot,
-      runtimeManifest: version.runtimeManifest,
-      rolledBackFromVersionId: version.id,
-      publishedByUserId: userId
-    });
+    const restoredPayload = ZWidgetPayload.parse(version.payloadSnapshot);
 
-    const updatedWidget = await updateWidget(orgId, widgetId, {
-      status: 'PUBLISHED',
-      hasUnpublishedChanges: false,
-      latestPublishedVersionId: rollbackVersion.id,
-      updatedByUserId: userId
-    });
+    const updatedWidget = await updateWidgetWithCourses(
+      orgId,
+      widgetId,
+      {
+        config: version.configSnapshot,
+        layoutType: restoredPayload.layoutType,
+        selectionMode: restoredPayload.selectionMode,
+        status: 'PUBLISHED',
+        hasUnpublishedChanges: false,
+        latestPublishedVersionId: version.id,
+        updatedByUserId: userId
+      },
+      restoredPayload.courses.map((course) => course.id)
+    );
+
+    if (!updatedWidget) {
+      throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
 
     return {
       widget: updatedWidget,
-      version: rollbackVersion
+      version
     };
   } catch (error) {
     if (error instanceof AppError) {

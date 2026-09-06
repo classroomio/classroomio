@@ -50,7 +50,7 @@
       <p class="font-semibold">
         {$t(title)}
       </p>
-      <p class="ui:text-muted-foreground ui:mt-1 ui:text-xs">
+      <p class="ui:text-muted-foreground mt-1 text-xs">
         {$t(description)}
       </p>
     </Select.Label>
@@ -60,12 +60,12 @@
 {#snippet upgradeButton({ typeEntry })}
   <button
     type="button"
-    class="ui:relative ui:flex ui:w-full ui:cursor-pointer ui:select-none ui:items-center ui:justify-between ui:gap-2 ui:rounded-sm ui:px-2 ui:py-1.5 ui:text-sm ui:outline-hidden ui:hover:bg-accent ui:hover:text-accent-foreground"
+    class="ui:hover:bg-accent ui:hover:text-accent-foreground relative flex w-full cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
     onclick={handlePremiumTypeClick}
     title={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.premium_question_type')}
   >
     <span>{getExerciseEditorQuestionTypeLabel(typeEntry)}</span>
-    <PremiumIcon size={16} class="ui:ml-auto ui:shrink-0 ui:text-blue-700 ui:dark:text-white" />
+    <PremiumIcon size={16} class="ml-auto shrink-0 text-blue-700 dark:text-white" />
   </button>
 {/snippet}
 

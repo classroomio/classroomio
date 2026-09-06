@@ -65,7 +65,7 @@
 
 <Story name="Default">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-md">
+    <div class="w-full max-w-md">
       <FileDropZone.Root onUpload={handleUpload} onFileRejected={handleFileRejected}>
         <FileDropZone.Trigger />
       </FileDropZone.Root>
@@ -75,7 +75,7 @@
 
 <Story name="With Limits">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-md">
+    <div class="w-full max-w-md">
       <FileDropZone.Root
         maxFiles={3}
         fileCount={0}
@@ -91,7 +91,7 @@
 
 <Story name="Images Only">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-md">
+    <div class="w-full max-w-md">
       <FileDropZone.Root accept={ACCEPT_IMAGE} onUpload={handleUpload} onFileRejected={handleFileRejected}>
         <FileDropZone.Trigger />
       </FileDropZone.Root>
@@ -101,11 +101,11 @@
 
 <Story name="With Textarea">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-md">
+    <div class="w-full max-w-md">
       <FileDropZone.Root onUpload={handleUpload} onFileRejected={handleFileRejected}>
         <FileDropZone.Textarea
           placeholder="Paste or drag and drop files here to attach to your submission..."
-          class="ui:min-h-24 ui:w-full ui:resize-none ui:rounded-md ui:border ui:border-input ui:bg-background ui:px-3 ui:py-2 ui:text-sm ui:ring-offset-background placeholder:ui:text-muted-foreground focus-visible:ui:outline-none focus-visible:ui:ring-2 focus-visible:ui:ring-ring focus-visible:ui:ring-offset-2"
+          class="ui:border-input ui:bg-background ui:ring-offset-background ui:placeholder:text-muted-foreground ui:focus-visible:ring-ring min-h-24 w-full resize-none rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         />
       </FileDropZone.Root>
     </div>

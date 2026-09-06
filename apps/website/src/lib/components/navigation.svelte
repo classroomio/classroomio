@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BookOpen from '@lucide/svelte/icons/book-open';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
   import Gamepad from '@lucide/svelte/icons/gamepad';
   import Github from '@lucide/svelte/icons/github';
@@ -97,6 +98,12 @@
       title: 'Self-hosting & Docs',
       subtitle: 'Run ClassroomIO in your own VPC.',
       href: 'https://classroomio.com/docs'
+    },
+    {
+      key: 'help',
+      title: 'Help Center',
+      subtitle: 'Guides for running your academy.',
+      href: 'https://classroomio.com/help'
     },
     {
       key: 'mcp-recipes',
@@ -217,6 +224,8 @@
               <Webhook size={24} />
             {:else if key === 'self-hosting'}
               <Server size={24} />
+            {:else if key === 'help'}
+              <BookOpen size={24} />
             {:else if key === 'mcp-recipes'}
               <Sparkles size={24} />
             {:else if key === 'github'}

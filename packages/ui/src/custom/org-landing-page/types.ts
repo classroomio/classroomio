@@ -224,6 +224,20 @@ export type LandingPrimaryAction = {
   onclick?: (event: MouseEvent) => void;
 };
 
+/** Fallback kicker for the Tech template when `hero.eyebrow` is unset. */
+export const DEFAULT_TECH_HERO_EYEBROW = '// engineering academy';
+
+export type LandingPageHero = {
+  heading: string;
+  subheading: string;
+  primaryAction: LandingPrimaryAction;
+  secondaryAction?: { label: string; href: string };
+  image?: string;
+  stats?: Array<{ label: string; value: string }>;
+  /** Small kicker above the heading. Used by templates that render one (e.g. Tech). */
+  eyebrow?: string;
+};
+
 export type CoursePricing = {
   cost: number;
   currency: string;
@@ -316,14 +330,7 @@ export interface CourseLandingPageProps {
     loading?: boolean;
     disabled?: boolean;
   };
-  hero: {
-    heading: string;
-    subheading: string;
-    primaryAction: LandingPrimaryAction;
-    secondaryAction?: { label: string; href: string };
-    image?: string;
-    stats?: Array<{ label: string; value: string }>;
-  };
+  hero: LandingPageHero;
   socialProof: CourseSocialProof;
   info: CourseInfoBlocks;
   curriculum: CourseCurriculum;
@@ -348,14 +355,7 @@ export interface OrgLandingPageProps {
     loading?: boolean;
     disabled?: boolean;
   };
-  hero: {
-    heading: string;
-    subheading: string;
-    primaryAction: LandingPrimaryAction;
-    secondaryAction?: { label: string; href: string };
-    image?: string;
-    stats?: Array<{ label: string; value: string }>;
-  };
+  hero: LandingPageHero;
   courses: CourseItem[];
   hasMoreCourses?: boolean;
   /** When false, templates suppress the empty catalog state while courses are still loading. */

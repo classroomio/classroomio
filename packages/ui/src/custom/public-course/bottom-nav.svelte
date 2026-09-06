@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import ListIcon from '@lucide/svelte/icons/list';
@@ -23,6 +24,8 @@
     centerVariant?: 'list' | 'ring';
     /** 0–100 progress for the ring variant. */
     progressPercent?: number;
+    /** Optional control rendered between the title button and next, e.g. mark-complete. */
+    completeToggle?: Snippet;
     class?: string;
   }
 
@@ -40,6 +43,7 @@
     nextLabel = 'Next lesson',
     centerVariant = 'list',
     progressPercent = 0,
+    completeToggle,
     class: className
   }: Props = $props();
 
@@ -47,7 +51,7 @@
     'ui:inline-flex ui:items-center ui:justify-center ui:rounded-md ui:px-3 ui:py-3 ui:text-foreground ui:transition-[background,transform] ui:duration-100 ui:hover:bg-muted ui:active:scale-[0.94] ui:active:bg-muted ui:disabled:opacity-30 ui:disabled:active:scale-100';
 
   const centerButtonClass =
-    'ui:flex ui:flex-1 ui:items-center ui:justify-center ui:gap-2 ui:rounded-md ui:px-3 ui:py-2 ui:text-center ui:transition-[background,transform] ui:duration-100 ui:hover:bg-muted ui:active:scale-[0.98] ui:active:bg-muted';
+    'ui:flex ui:flex-1 ui:min-w-0 ui:items-center ui:justify-center ui:gap-2 ui:rounded-md ui:px-3 ui:py-2 ui:text-center ui:transition-[background,transform] ui:duration-100 ui:hover:bg-muted ui:active:scale-[0.98] ui:active:bg-muted';
 
   const ringCircumference = 94.2;
   const ringOffset = $derived(
@@ -119,6 +123,10 @@
       {/if}
     </span>
   </button>
+
+  {#if completeToggle}
+    {@render completeToggle()}
+  {/if}
 
   <button type="button" class={navButtonClass} aria-label={nextLabel} disabled={!hasNext} onclick={onNext}>
     <ChevronRightIcon class="ui:size-5" />

@@ -50,6 +50,62 @@
       "when": 1786924444436,
       "tag": "0006_add_reply_to_comment_id_to_course_newsfeed_comment",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1787821749538,
+      "tag": "0007_add_submission_submitted_by_exercise_id_index",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788108878281,
+      "tag": "0008_add_lesson_comments_setting",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788388971877,
+      "tag": "0009_lesson_version_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788389000010,
+      "tag": "0010_add_missing_unique_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788389000011,
+      "tag": "0011_drop_lesson_language_history_trigger",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1788485941835,
+      "tag": "0012_welcome_email_state",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1788486027571,
+      "tag": "0013_invite_link",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1788526220000,
+      "tag": "0014_add_display_order_to_course",
+      "breakpoints": true
     }
   ]
 }

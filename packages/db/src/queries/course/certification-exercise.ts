@@ -2,14 +2,18 @@ import * as schema from '@db/schema';
 
 import { and, asc, eq, or, sql } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 /**
  * Whether an exercise is part of a course (direct course_id or via lesson).
  */
-export async function exerciseBelongsToCourse(exerciseId: string, courseId: string): Promise<boolean> {
+export async function exerciseBelongsToCourse(
+  exerciseId: string,
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ id: schema.exercise.id })
       .from(schema.exercise)
       .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))

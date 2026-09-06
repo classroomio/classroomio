@@ -21,12 +21,12 @@
     <div class="w-96 space-y-4">
       <div>
         <h4 class="text-sm font-medium">Section 1</h4>
-        <p class="text-muted-foreground text-sm">Content for the first section</p>
+        <p class="ui:text-muted-foreground text-sm">Content for the first section</p>
       </div>
       <Separator />
       <div>
         <h4 class="text-sm font-medium">Section 2</h4>
-        <p class="text-muted-foreground text-sm">Content for the second section</p>
+        <p class="ui:text-muted-foreground text-sm">Content for the second section</p>
       </div>
     </div>
   {/snippet}

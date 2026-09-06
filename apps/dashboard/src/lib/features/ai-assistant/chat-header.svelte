@@ -180,7 +180,7 @@
               <Input
                 bind:ref={titleInputRef}
                 bind:value={draftConversationTitle}
-                class="ui:h-7 ui:min-h-0 ui:px-1.5 ui:py-0 text-xs"
+                class="h-7 min-h-0 px-1.5 py-0 text-xs"
                 placeholder={$t('ai_assistant.rename_chat_placeholder')}
                 aria-label={$t('ai_assistant.rename_chat_input_aria')}
                 onkeydown={handleTitleKeydown}
@@ -193,7 +193,7 @@
           {:else}
             <button
               type="button"
-              class="ui:text-muted-foreground ui:max-w-full ui:cursor-pointer ui:rounded-md ui:border ui:border-transparent ui:px-1.5 ui:py-0.5 hover:ui:bg-muted/40 hover:ui:border-border truncate text-left text-xs"
+              class="ui:text-muted-foreground ui:hover:bg-muted/40 ui:hover:border-border max-w-full cursor-pointer truncate rounded-md border border-transparent px-1.5 py-0.5 text-left text-xs"
               aria-label={$t('ai_assistant.rename_chat_aria')}
               disabled={!canRenameConversation}
               onclick={startRenameConversation}
@@ -229,7 +229,7 @@
             </Button>
           {/snippet}
         </Popover.Trigger>
-        <Popover.Content class="ui:p-0! w-72" align="center">
+        <Popover.Content class="w-72 p-0!" align="center">
           <ChatHistoryPopover
             {conversations}
             {activeConversationId}

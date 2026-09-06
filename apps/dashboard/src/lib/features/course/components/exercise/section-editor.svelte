@@ -151,7 +151,7 @@
       {#each COLOR_THEMES as theme (theme)}
         <button
           type="button"
-          class={`ui:border h-3 w-3 cursor-pointer rounded-full ${COLOR_CLASSES[theme]} ${theme === colorTheme ? 'ring-2 ring-offset-2 dark:ring-offset-zinc-900' : ''}`}
+          class={`h-3 w-3 cursor-pointer rounded-full border ${COLOR_CLASSES[theme]} ${theme === colorTheme ? 'ring-2 ring-offset-2 dark:ring-offset-zinc-900' : ''}`}
           title={`${labels.color ?? 'Section color'}: ${theme}`}
           onclick={() => onColorThemeChange?.(theme)}
         ></button>

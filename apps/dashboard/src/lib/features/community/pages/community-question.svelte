@@ -196,7 +196,7 @@
                   />
                 {/if}
                 <Avatar.Fallback>
-                  <UserIcon class="ui:size-3.5 ui:text-muted-foreground" />
+                  <UserIcon class="ui:text-muted-foreground size-3.5" />
                 </Avatar.Fallback>
               </Avatar.Root>
               <p class="ml-2 text-sm dark:text-white">{communityApi.question?.authorFullname}</p>

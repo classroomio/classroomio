@@ -51,23 +51,23 @@
           <UnderlineTabs.Trigger value="video">Video</UnderlineTabs.Trigger>
         </UnderlineTabs.List>
         <UnderlineTabs.Content value="note">
-          <div class="ui:py-4">
-            <h3 class="ui:mb-2 ui:text-lg ui:font-semibold">Note Content</h3>
-            <p class="ui:text-muted-foreground ui:text-sm">
+          <div class="py-4">
+            <h3 class="mb-2 text-lg font-semibold">Note Content</h3>
+            <p class="ui:text-muted-foreground text-sm">
               Welcome to the note tab. This is where your note content lives.
             </p>
           </div>
         </UnderlineTabs.Content>
         <UnderlineTabs.Content value="slides">
-          <div class="ui:py-4">
-            <h3 class="ui:mb-2 ui:text-lg ui:font-semibold">Slides Content</h3>
-            <p class="ui:text-muted-foreground ui:text-sm">Manage your slides content and personal information here.</p>
+          <div class="py-4">
+            <h3 class="mb-2 text-lg font-semibold">Slides Content</h3>
+            <p class="ui:text-muted-foreground text-sm">Manage your slides content and personal information here.</p>
           </div>
         </UnderlineTabs.Content>
         <UnderlineTabs.Content value="video">
-          <div class="ui:py-4">
-            <h3 class="ui:mb-2 ui:text-lg ui:font-semibold">Video Content</h3>
-            <p class="ui:text-muted-foreground ui:text-sm">Configure your video content and preferences.</p>
+          <div class="py-4">
+            <h3 class="mb-2 text-lg font-semibold">Video Content</h3>
+            <p class="ui:text-muted-foreground text-sm">Configure your video content and preferences.</p>
           </div>
         </UnderlineTabs.Content>
       </UnderlineTabs.Root>
@@ -86,17 +86,17 @@
         </UnderlineTabs.List>
         <UnderlineTabs.Content value="home">
           <div class="py-4">
-            <p class="text-muted-foreground text-sm">Home content is shown here.</p>
+            <p class="ui:text-muted-foreground text-sm">Home content is shown here.</p>
           </div>
         </UnderlineTabs.Content>
         <UnderlineTabs.Content value="profile">
           <div class="py-4">
-            <p class="text-muted-foreground text-sm">Profile content is shown here.</p>
+            <p class="ui:text-muted-foreground text-sm">Profile content is shown here.</p>
           </div>
         </UnderlineTabs.Content>
         <UnderlineTabs.Content value="settings">
           <div class="py-4">
-            <p class="text-muted-foreground text-sm">Settings content (disabled).</p>
+            <p class="ui:text-muted-foreground text-sm">Settings content (disabled).</p>
           </div>
         </UnderlineTabs.Content>
       </UnderlineTabs.Root>

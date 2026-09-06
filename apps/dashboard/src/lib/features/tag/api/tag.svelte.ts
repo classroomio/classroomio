@@ -2,6 +2,8 @@ import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   CreateTagGroupRequest,
   CreateTagRequest,
+  CreatedTag,
+  CreatedTagGroup,
   GetCourseTagsRequest,
   GetTagGroupsRequest,
   OrganizationCourseTags,
@@ -39,14 +41,14 @@ class TagApi extends BaseApiWithErrors {
     });
   }
 
-  async createTagGroup(fields: TTagGroupCreate): Promise<boolean> {
+  async createTagGroup(fields: TTagGroupCreate): Promise<CreatedTagGroup | null> {
     const parsed = ZTagGroupCreate.safeParse(fields);
     if (!parsed.success) {
       this.errors = mapZodErrorsToTranslations(parsed.error);
-      return false;
+      return null;
     }
 
-    let created = false;
+    let created: CreatedTagGroup | null = null;
 
     await this.execute<CreateTagGroupRequest>({
       requestFn: () =>
@@ -54,8 +56,8 @@ class TagApi extends BaseApiWithErrors {
           json: parsed.data
         }),
       logContext: 'creating tag group',
-      onSuccess: () => {
-        created = true;
+      onSuccess: (response) => {
+        created = response.data;
         snackbar.success('snackbar.tags.group_created');
       },
       onError: (result) => {
@@ -120,14 +122,14 @@ class TagApi extends BaseApiWithErrors {
     return updated;
   }
 
-  async createTag(fields: TTagCreate): Promise<boolean> {
+  async createTag(fields: TTagCreate): Promise<CreatedTag | null> {
     const parsed = ZTagCreate.safeParse(fields);
     if (!parsed.success) {
       this.errors = mapZodErrorsToTranslations(parsed.error);
-      return false;
+      return null;
     }
 
-    let created = false;
+    let created: CreatedTag | null = null;
 
     await this.execute<CreateTagRequest>({
       requestFn: () =>
@@ -135,8 +137,8 @@ class TagApi extends BaseApiWithErrors {
           json: parsed.data
         }),
       logContext: 'creating tag',
-      onSuccess: () => {
-        created = true;
+      onSuccess: (response) => {
+        created = response.data;
         snackbar.success('snackbar.tags.tag_created');
       },
       onError: (result) => {

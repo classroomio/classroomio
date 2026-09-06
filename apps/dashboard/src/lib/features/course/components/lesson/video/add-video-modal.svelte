@@ -51,7 +51,7 @@
           <UnderlineTabs.Trigger
             value={String(item.value)}
             disabled={$lessonVideoUpload.isUploading && currentTab !== String(item.value)}
-            class="ui:flex ui:items-center ui:gap-2"
+            class="flex items-center gap-2"
           >
             {#if $isFreePlan && item.value === 3}
               <ZapIcon size={16} class="filled" />

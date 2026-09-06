@@ -1,0 +1,105 @@
+---
+title: Developers Guide
+description: Run the ClassroomIO monorepo locally — prerequisites, install, environment setup, and the apps you can start.
+last_reviewed: "2026-08-31"
+---
+
+This page gets the ClassroomIO monorepo running on your machine. If you'd rather skip local setup
+entirely, see [Gitpod Setup](/contributing/gitpod) for a ready-made cloud workspace.
+
+## Prerequisites
+
+- **[Node.js](https://nodejs.org/)** (>=20.19.3) — required
+- **[pnpm](https://pnpm.io/installation)** (v10) — required; the package scripts call `pnpm` directly, so npm/yarn are not substitutes
+- **[Docker](https://docs.docker.com/engine/install/)** — required; runs Postgres + Redis, no local install of those needed
+
+The monorepo's primary apps are `website` (marketing site), `api` (backend: PDF/video processing, email, notifications), `dashboard` (the LMS web app), and `docs`/`help` (this documentation). Shared code lives under `packages/` (`packages/db`, `packages/utils`, `packages/ui`).
+
+<Steps>
+<Step>
+### Fork and clone the repository
+
+```bash
+git clone https://github.com/classroomio/classroomio.git
+cd classroomio
+```
+
+</Step>
+
+<Step>
+### Set up Node and install dependencies
+
+```bash
+nvm install && nvm use
+pnpm i
+```
+
+</Step>
+
+<Step>
+### Configure environment variables
+
+Each app reads its own `.env`. In `apps/api`, `apps/jobs`, and `apps/dashboard`, duplicate `.env.example` to `.env` and fill in the values. Generate every secret with `openssl rand -hex 32` rather than copying the example text — and generate `PRIVATE_SERVER_KEY` **once**, then paste the identical value into both `apps/api/.env` and `apps/dashboard/.env`. It authenticates the dashboard's server-to-server calls to the API; a mismatch is the most common cause of a dashboard that renders but can't load any data.
+
+`apps/dashboard/.env` also needs `PRIVATE_SERVER_URL` set (used by the SSR auth proxy) — without it, login fails with "API upstream not configured."
+
+For background workers, copy the API env too: `cp apps/api/.env apps/jobs/.env`.
+
+</Step>
+
+<Step>
+### Start Postgres and Redis, then seed the database
+
+```bash
+docker compose -f docker-compose.yaml up -d postgres redis
+cp packages/db/.env.example packages/db/.env
+pnpm --filter @cio/db db:setup:seed
+```
+
+The db scripts run with their own working directory and read `DATABASE_URL` from `packages/db/.env`, not `apps/api/.env` — both need to point at the same database.
+
+</Step>
+
+<Step>
+### Run the app services
+
+In separate terminals:
+
+```bash
+pnpm api:dev
+```
+
+```bash
+pnpm dashboard:dev
+```
+
+If you see `Failed to resolve entry for package "@cio/..."`, the shared workspace packages haven't been built yet — run `pnpm build` once, then retry.
+
+Default local URLs: API at `http://localhost:3002`, dashboard at `http://localhost:5173`.
+
+Optional: `pnpm website:dev` for the marketing site, `pnpm dev --filter=@cio/docs` for these docs.
+
+</Step>
+
+<Step>
+### Log in
+
+Visit `http://localhost:5173/login` and sign in with the seeded demo account — see
+[Login with Demo Accounts](/contributing/demo-accounts) for credentials.
+
+</Step>
+</Steps>
+
+## Object storage (optional)
+
+Media uploads (video, documents, images) need S3-compatible storage. Run MinIO locally with `docker compose -f docker-compose.yaml --profile minio up -d minio minio-init`, then point `apps/api/.env`'s `OBJECT_STORAGE_*` variables at it. See the full variable list in the root [README](https://github.com/classroomio/classroomio#getting-started).
+
+## Contributing your changes
+
+Once your local setup is working:
+
+1. **Found a bug or have feedback?** [Raise an issue](https://github.com/classroomio/classroomio/issues/new/choose) — the fastest way to flag it.
+2. **Have a feature idea?** Open an issue with the "Enhancement" label and a short rationale.
+3. **Ready to submit code?** Implement, test, and open a pull request against the ClassroomIO repository, following the PR template.
+
+Prefer to talk it through first? Our [Discord server](https://dub.sh/ciodiscord) is the place — we're responsive and friendly.

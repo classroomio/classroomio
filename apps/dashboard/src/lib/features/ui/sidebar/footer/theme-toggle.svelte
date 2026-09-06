@@ -26,11 +26,7 @@
     {#each themes as theme (theme.mode)}
       <Button
         size="icon-sm"
-        variant={activeMode === theme.mode ? 'outline' : 'ghost'}
-        class={[
-          'size-4 rounded-md p-1 transition-all duration-200',
-          activeMode === theme.mode && 'shadow-primary/20 shadow-lg'
-        ]}
+        variant={activeMode === theme.mode ? 'secondary' : 'outline'}
         title={theme.mode}
         onclick={() => handleThemeChange(theme.mode)}
       >

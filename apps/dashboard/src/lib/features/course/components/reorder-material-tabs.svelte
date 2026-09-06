@@ -41,7 +41,7 @@
       animate:flip={{ duration: flipDurationMs }}
       class="ui:bg-background ui:dark:text-foreground ui:border-input flex h-[calc(100%-3px)] items-center justify-start gap-2 rounded-md px-3 py-1 text-sm font-medium transition-[color,box-shadow]"
     >
-      <GripVerticalIcon size={16} class="custom text-primary" />
+      <GripVerticalIcon size={16} class="custom ui:text-primary" />
       {$t(item.name)}
     </div>
   {/each}

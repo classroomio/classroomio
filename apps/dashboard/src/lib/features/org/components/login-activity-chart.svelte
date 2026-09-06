@@ -37,7 +37,7 @@
   const hasData = $derived(data !== null && data.some((d) => d.count > 0));
 </script>
 
-<div class="bg-card flex min-h-[45vh] w-full flex-col rounded-xl border p-3 md:p-5 dark:text-white">
+<div class="ui:bg-card flex min-h-[45vh] w-full flex-col rounded-xl border p-3 md:p-5 dark:text-white">
   <div class="mb-4">
     <h3 class="text-lg font-semibold tracking-tight">
       {$t('dashboard.login_activity_title')}

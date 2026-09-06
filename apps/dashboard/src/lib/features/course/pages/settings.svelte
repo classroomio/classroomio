@@ -1,6 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { Badge } from '@cio/ui/base/badge';
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
@@ -245,6 +246,7 @@
         allowSelfEnrollment: $settings.allowSelfEnrollment,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
+        commentsEnabled: $settings.commentsEnabled,
         welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
       } as NonNullable<Course['metadata']>;
 
@@ -334,6 +336,7 @@
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
+        commentsEnabled: course.metadata?.commentsEnabled ?? true,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
         certificate: {
@@ -470,7 +473,20 @@
     return selected;
   });
 
+  const hasAnyTagsCreated = $derived(tagApi.tagGroups.some((group) => group.tags.length > 0));
+
   let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '#');
+
+  const PEOPLE_LINK_MARKER = '@@people@@';
+
+  const peoplePageHref = $derived(courseApi.course?.id ? resolve(`/courses/${courseApi.course.id}/people`, {}) : '#');
+
+  const selfEnrollmentAccessParts = $derived.by(() => {
+    const accessText = $t('course.navItem.settings.access', { people: PEOPLE_LINK_MARKER });
+    const [before = '', after = ''] = accessText.split(PEOPLE_LINK_MARKER);
+
+    return { before, after };
+  });
 
   const certExercises = $derived(
     getOrderedNavigableContent(courseApi.course).filter((item) => item.type === ContentType.Exercise)
@@ -643,7 +659,7 @@
     <Field.Description>
       {$t('course.navItem.settings.course_type_desc')}
       <a
-        href="https://classroomio.com/docs/guides/course-types"
+        href="https://classroomio.com/help/build-a-course/course-types"
         target="_blank"
         rel="noopener noreferrer"
         class="ui:text-primary underline"
@@ -814,7 +830,9 @@
     <Field.Field>
       <div class="space-y-3">
         <div class="flex flex-wrap items-center gap-2">
-          {#if !selectedTagChips.length}
+          {#if !selectedTagChips.length && !hasAnyTagsCreated}
+            <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.none_created')}</p>
+          {:else if !selectedTagChips.length}
             <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.empty')}</p>
           {:else}
             {#each selectedTagChips as tag (tag.id)}
@@ -843,6 +861,7 @@
             {selectedTagIds}
             bind:open={isTagPopoverOpen}
             onTagToggle={toggleTagSelection}
+            onTagCreated={toggleTagSelection}
           />
         </div>
       </div>
@@ -914,6 +933,30 @@
       </RadioGroup.Root>
     </Field.Field>
   </Field.Set>
+
+  <Field.Separator />
+
+  <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS}>
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.settings.comments.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.settings.comments.description')}</Field.Description>
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="course-comments"
+          checked={$settings.commentsEnabled}
+          onCheckedChange={(checked) => {
+            $settings.commentsEnabled = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+        <Label for="course-comments">
+          {$settings.commentsEnabled
+            ? $t('course.navItem.settings.comments.enabled')
+            : $t('course.navItem.settings.comments.disabled')}
+        </Label>
+      </Field.Field>
+    </Field.Set>
+  </AttentionHighlight>
 
   <Field.Separator />
 
@@ -1061,7 +1104,13 @@
 
   <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.allow')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.access')}</Field.Description>
+    <Field.Description>
+      {selfEnrollmentAccessParts.before}<a
+        href={peoplePageHref}
+        data-testid="course-settings-people-link"
+        class="ui:text-primary">{$t('course.navItem.settings.access_people')}</a
+      >{selfEnrollmentAccessParts.after}
+    </Field.Description>
     <Field.Field orientation="horizontal">
       <Switch
         id="allow-self-enrollment"

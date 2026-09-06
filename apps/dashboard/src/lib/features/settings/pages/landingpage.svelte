@@ -218,7 +218,7 @@
   <section>
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div
-        class="ui:border-border bg-background relative aspect-[16/10] w-full overflow-hidden rounded-xl border select-none"
+        class="ui:border-border ui:bg-background relative aspect-[16/10] w-full overflow-hidden rounded-xl border select-none"
         bind:clientWidth={previewWidth}
       >
         <div
@@ -294,7 +294,7 @@
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {#each otherThemeCards as themeCard (themeCard.value)}
         {@const isLocked = $isFreePlan && isPaidTheme(themeCard.value)}
-        <div class="ui:border-border bg-background relative overflow-hidden rounded-xl border">
+        <div class="ui:border-border ui:bg-background relative overflow-hidden rounded-xl border">
           {#if isLocked}
             <div
               class="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white shadow-sm"
@@ -322,7 +322,7 @@
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <div class="bg-background aspect-[4/3] w-full overflow-hidden">
+          <div class="ui:bg-background aspect-[4/3] w-full overflow-hidden">
             <img
               src={themeCard.preview}
               alt={$t(themeCard.titleKey)}
