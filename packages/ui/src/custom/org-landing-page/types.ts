@@ -318,6 +318,8 @@ export interface CourseLandingPageLabels {
   navInstructorLabel?: string;
   navReviewsLabel?: string;
   navPricingLabel?: string;
+  /** Curriculum heading combining both counts. Default: `${lessons} across ${modules} modules`. */
+  curriculumSummaryLabel?: (lessonCount: number, moduleCount: number) => string;
   /** Lesson duration shown on a curriculum row. Default: `${minutes} min`. */
   lessonDurationLabel?: (minutes: number) => string;
   /** Row label for the exercise count in a facts table. Default: "Exercises". */

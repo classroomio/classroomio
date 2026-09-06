@@ -12,10 +12,16 @@
 
   const lessonTotal = $derived(curriculum.sections.reduce((total, section) => total + section.lessons.length, 0));
 
-  /** The lesson-count callback is already localized; no extra English connective is added. */
-  const heading = $derived(
-    labels?.lessonsLabel?.(lessonTotal) ?? `${lessonTotal} ${lessonTotal === 1 ? 'lesson' : 'lessons'}`
-  );
+  const moduleTotal = $derived(curriculum.sections.length);
+
+  /** Both counts are useful, so the whole phrase is localizable rather than composed here. */
+  const heading = $derived.by(() => {
+    if (labels?.curriculumSummaryLabel) return labels.curriculumSummaryLabel(lessonTotal, moduleTotal);
+
+    const lessons = labels?.lessonsLabel?.(lessonTotal) ?? `${lessonTotal} ${lessonTotal === 1 ? 'lesson' : 'lessons'}`;
+
+    return `${lessons} across ${moduleTotal} ${moduleTotal === 1 ? 'module' : 'modules'}`;
+  });
 
   function sectionMeta(lessonCount: number, exerciseCount?: number): string {
     const lessons = labels?.lessonsLabel?.(lessonCount) ?? `${lessonCount} ${lessonCount === 1 ? 'lesson' : 'lessons'}`;
