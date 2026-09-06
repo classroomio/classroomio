@@ -46,7 +46,7 @@
     {#if authAction}
       <LandingButton variant="primary" size="sm" href={authAction.href} disabled={authAction.disabled}>
         {authAction.label}
-        <ArrowRightIcon class="ui:size-3.5" aria-hidden="true" />
+        <ArrowRightIcon class="ui:size-3.5 custom" aria-hidden="true" />
       </LandingButton>
     {/if}
   </div>
