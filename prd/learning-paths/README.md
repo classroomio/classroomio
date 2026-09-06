@@ -228,7 +228,7 @@ Public (org-site loaders, no auth): list ACTIVE paths for landing/catalog; get p
 
 Follow CLAUDE.md conventions: types in `features/learning-path/utils/types.ts` inferred from the API, API classes in `features/learning-path/api/*.svelte.ts`, thin components, all copy in `en.json` under `"learningPath"`, `ui:` prefix for theme colors.
 
-- **Admin**: nav item in `org-navigation.ts` after Courses; routes `org/[slug]/paths/+page.svelte` and `paths/[id]/{setup,courses,people,analytics,landing,certificate,settings}` with a `PathSidebar` mirroring the course sidebar pattern. Reuse `Item.*`, `PercentRingProgress`, `Field.*`, existing drag-reorder approach from lesson ordering if present.
+- **Admin**: nav item in `org-navigation.ts` after Courses using `PathIcon` from `@cio/ui/custom/moving-icons`; routes `org/[slug]/paths/+page.svelte` and `paths/[id]/{setup,courses,people,analytics,landing,certificate,settings}` with a `PathSidebar` mirroring the course sidebar pattern. Reuse `Item.*`, `PercentRingProgress`, `Field.*`, existing drag-reorder approach from lesson ordering if present.
 - **LMS**: `lms/paths` + `lms/paths/[id]`; path ribbon injected in the course layout when course ∈ caller's path; reuse `course-progress-card` math for per-course %.
 - **Public**: paths section added to org landing themes (start `minimal`), `(org-site)/paths` and `(org-site)/path/[slug]` mirroring the courses equivalents; reuse `CourseSectionNav`, `CourseSocialProof`, `CourseCurriculum`-style rows, `CoursePricing` card, `LandingButton`, footer.
 
