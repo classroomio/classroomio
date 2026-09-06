@@ -329,14 +329,20 @@
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <div class="ui:bg-background aspect-[4/3] w-full overflow-hidden">
+          <!-- The preview image doubles as the card's click target, matching the menu's Preview action. -->
+          <button
+            type="button"
+            class="ui:bg-background block aspect-[4/3] w-full cursor-pointer overflow-hidden"
+            onclick={() => handlePreviewTheme(themeCard.value)}
+            aria-label={`${$t('settings.landing_page.gallery.preview')}: ${$t(themeCard.titleKey)}`}
+          >
             <img
               src={themeCard.preview}
               alt={$t(themeCard.titleKey)}
               class="h-full w-full object-cover object-top"
               loading="lazy"
             />
-          </div>
+          </button>
           <div class="flex items-center justify-between gap-3 px-4 py-3">
             <div class="min-w-0">
               <p class="ui:text-primary truncate text-sm font-semibold">{$t(themeCard.titleKey)}</p>
