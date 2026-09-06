@@ -72,7 +72,14 @@ Other reporting surfaces with no export: org compliance, course analytics, org a
 
 ## 2. Phase 1 — Foundation (blocks everything)
 
-Migration `packages/db/src/migrations/0015_learner_lifecycle.sql` (0014 is latest); mirror into `packages/db/src/schema.ts`.
+Migration `packages/db/src/migrations/<next>_learner_lifecycle.sql`; mirror into `packages/db/src/schema.ts`.
+
+**Do not copy a migration number from this document.** Take the next free number at implementation time by
+checking both `packages/db/src/migrations/` **and any in-flight branch that has already claimed one**. This
+plan originally pinned `0015`; #1064 took it before the plan was even reviewed, which is the whole argument
+for not pinning. Collisions are a recurring cost here (see `fix(db): renumber display_order migration after
+0007 collision`, #1053) and need both the file and `packages/db/src/migrations/meta/_journal.json` repaired
+by hand.
 
 ```sql
 CREATE TYPE "ORGANIZATION_MEMBER_STATUS" AS ENUM ('ACTIVE', 'DEACTIVATED', 'ARCHIVED');
