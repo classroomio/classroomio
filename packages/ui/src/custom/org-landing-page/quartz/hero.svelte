@@ -13,10 +13,20 @@
     compact?: boolean;
     /** Org pages read left-aligned; the course page centres the same hero. */
     align?: 'start' | 'center';
+    /** `cover` crops to a consistent 4:3; `natural` keeps the asset's own aspect (course covers). */
+    imageFit?: 'cover' | 'natural';
     children?: Snippet;
   }
 
-  let { hero, navigation, showActions = true, compact = false, align = 'start', children }: Props = $props();
+  let {
+    hero,
+    navigation,
+    showActions = true,
+    compact = false,
+    align = 'start',
+    imageFit = 'cover',
+    children
+  }: Props = $props();
 
   const centered = $derived(align === 'center');
   /** The org hero sets its image beside the copy; the centred course hero renders media separately. */
@@ -51,11 +61,15 @@
 {#snippet image()}
   {#if hero.image}
     <figure
-      class="ui:m-0 ui:w-full {sideBySide
+      class="ui:m-0 {imageFit === 'natural' ? 'ui:w-fit ui:mx-auto' : 'ui:w-full'} {sideBySide
         ? ''
         : 'ui:max-w-[720px]'} ui:border ui:border-[var(--landing-border)] ui:bg-[var(--landing-card-soft)]"
     >
-      <img src={hero.image} alt="" class="ui:block ui:w-full ui:aspect-[4/3] ui:object-cover" />
+      {#if imageFit === 'natural'}
+        <img src={hero.image} alt="" class="ui:block ui:mx-auto ui:h-auto ui:max-h-[420px] ui:w-auto ui:max-w-full" />
+      {:else}
+        <img src={hero.image} alt="" class="ui:block ui:w-full ui:aspect-[4/3] ui:object-cover" />
+      {/if}
     </figure>
   {/if}
 {/snippet}

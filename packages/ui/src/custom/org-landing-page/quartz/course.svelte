@@ -31,28 +31,15 @@
   }: CourseLandingPageProps = $props();
 
   const heroProps = $derived(alignHeroCtaWithPricing(hero, pricing));
-  /**
-   * The hero image is rendered below in a frame whose aspect follows the asset, and the stats are
-   * already covered by the byline row — so both are stripped before the hero renders.
-   */
-  const heroForCourse = $derived({ ...heroProps, image: undefined, stats: undefined });
+  /** Stats are already covered by the byline row, so they are stripped before the hero renders. */
+  const heroForCourse = $derived({ ...heroProps, stats: undefined });
 </script>
 
 <LandingThemeScope theme="quartz" class="ui:font-sans">
   <QuartzNav {orgName} {logoUrl} {navItems} {authAction} />
 
   <main class="ui:@container ui:max-w-[1200px] ui:mx-auto ui:border-x ui:border-[var(--landing-border)]">
-    <QuartzHero hero={heroForCourse} align="center" compact />
-
-    {#if hero.image}
-      <div class="ui:bg-[var(--landing-bg)] ui:px-5 ui:md:px-8 ui:pb-12 ui:flex ui:justify-center">
-        <figure
-          class="ui:m-0 ui:inline-flex ui:max-w-[720px] ui:border ui:border-[var(--landing-border)] ui:bg-[var(--landing-card-soft)]"
-        >
-          <img src={hero.image} alt="" class="ui:block ui:h-auto ui:max-h-[420px] ui:w-auto ui:max-w-full" />
-        </figure>
-      </div>
-    {/if}
+    <QuartzHero hero={heroForCourse} imageFit="natural" compact />
 
     <QuartzCourseByline {instructor} {socialProof} {curriculum} {labels} />
 
