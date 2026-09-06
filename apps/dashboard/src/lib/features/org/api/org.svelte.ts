@@ -464,20 +464,6 @@ class OrgApi extends BaseApiWithErrors {
           return;
         }
 
-        if (options.onSuccess) {
-          return options.onSuccess({
-            name: response.data.name,
-            avatarUrl: response.data.avatarUrl ?? undefined,
-            favicon: response.data.favicon ?? undefined,
-            theme: response.data.theme ?? undefined,
-            landingpage: response.data.landingpage ?? undefined,
-            siteName: response.data.siteName ?? undefined,
-            customDomain: response.data.customDomain,
-            isCustomDomainVerified: response.data.isCustomDomainVerified ?? undefined,
-            customization: response.data.customization ?? undefined
-          });
-        }
-
         orgs.update((_orgs) =>
           _orgs.map((org) => {
             if (org.id === orgId) {
@@ -493,10 +479,28 @@ class OrgApi extends BaseApiWithErrors {
           currentOrg.update((org) => mergeAccountOrgFromServer({ ...org, ...response.data } as AccountOrg));
         }
 
-        snackbar.success('snackbar.course_settings.success.update_successful');
-
         this.success = true;
         this.errors = {};
+
+        // Custom onSuccess replaces the default toast, not the store sync.
+        // Auth settings derive dirty state from `$currentOrg`, so skipping this
+        // left Save/Cancel visible after a successful public-signups toggle.
+        if (options.onSuccess) {
+          options.onSuccess({
+            name: response.data.name,
+            avatarUrl: response.data.avatarUrl ?? undefined,
+            favicon: response.data.favicon ?? undefined,
+            theme: response.data.theme ?? undefined,
+            landingpage: response.data.landingpage ?? undefined,
+            siteName: response.data.siteName ?? undefined,
+            customDomain: response.data.customDomain,
+            isCustomDomainVerified: response.data.isCustomDomainVerified ?? undefined,
+            customization: response.data.customization ?? undefined
+          });
+          return;
+        }
+
+        snackbar.success('snackbar.course_settings.success.update_successful');
       },
       onError: (error) => {
         console.error('Error updating organization:', error);
