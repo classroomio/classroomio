@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en" data-landing-theme="quartz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learner menu — every state</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <style>
+      body {
+        padding: 40px 0 120px;
+      }
+      .page-head {
+        max-width: 760px;
+        margin-bottom: 40px;
+      }
+      .page-head h1 {
+        font-size: 30px;
+      }
+      .page-head p {
+        margin-top: 12px;
+        color: var(--landing-fg-muted);
+        font-size: 14.5px;
+      }
+      .board {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 28px;
+        align-items: start;
+      }
+      .state {
+        border: 1px solid var(--landing-border);
+        background: var(--landing-bg-section);
+        border-radius: var(--landing-radius-card);
+        padding: 20px;
+      }
+      .state h2 {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .state .why {
+        margin: 6px 0 18px;
+        font-size: 12.5px;
+        color: var(--landing-fg-muted);
+        line-height: 1.5;
+      }
+      .state .ac {
+        margin-top: 14px;
+        font-size: 11.5px;
+        color: var(--landing-fg-faint);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .navstrip {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 10px 12px;
+        border: 1px dashed var(--landing-border);
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .phone {
+        width: 300px;
+        border: 1px solid var(--landing-border);
+        border-radius: 20px;
+        overflow: hidden;
+        background: var(--landing-bg);
+      }
+      .phone .nav-in {
+        padding: 0 14px;
+        gap: 10px;
+      }
+      .phone .lm-panel.static {
+        margin: 10px 14px 14px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="page-head">
+        <h1>Learner menu — every state</h1>
+        <p>
+          One shared component. What changes between states is the item list and the CTA, never the
+          shell. Panels here are rendered statically so all states are visible at once; in the product
+          they are popovers anchored to the avatar.
+        </p>
+      </div>
+
+      <div class="board">
+        <!-- 1. member -->
+        <section class="state">
+          <h2>1 · Member of this academy</h2>
+          <p class="why">Signed in and enrolled. Full item list, CTA goes to the LMS.</p>
+          <div class="navstrip">
+            <a class="btn btn-sm btn-primary" href="#">Continue Learning</a>
+            <span class="lm-avatar"><img class="lm-avatar" src="avatar.svg" alt="" /></span>
+          </div>
+          <div class="lm">
+            <div class="lm-panel static">
+              <div class="lm-identity">
+                <div class="lm-name">Rotimi Best</div>
+                <div class="lm-email">rotimi@northwind.com</div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">My Courses</a>
+              <a class="lm-item" href="#">My Certificates</a>
+              <a class="lm-item" href="#">Account Settings</a>
+              <div class="lm-sep"></div>
+              <div class="lm-theme-row">
+                <span>Theme</span>
+                <div class="lm-seg">
+                  <button type="button" aria-pressed="true">☀</button>
+                  <button type="button" aria-pressed="false">☾</button>
+                  <button type="button" aria-pressed="false">▭</button>
+                </div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">Log Out</a>
+              <div class="lm-cta"><a class="btn btn-primary btn-full" href="#">Continue Learning</a></div>
+            </div>
+          </div>
+          <div class="ac">AC-2</div>
+        </section>
+
+        <!-- 2. non-member, open academy -->
+        <section class="state">
+          <h2>2 · Not a member · open academy</h2>
+          <p class="why">
+            Learner destinations are absent, not disabled. CTA switches to Join Academy.
+          </p>
+          <div class="navstrip">
+            <a class="btn btn-sm btn-primary" href="#">Join Academy</a>
+            <img class="lm-avatar" src="avatar.svg" alt="" />
+          </div>
+          <div class="lm">
+            <div class="lm-panel static">
+              <div class="lm-identity">
+                <div class="lm-name">Dayo Adeyemi</div>
+                <div class="lm-email">dayo@contoso.com</div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">Account Settings</a>
+              <div class="lm-sep"></div>
+              <div class="lm-theme-row">
+                <span>Theme</span>
+                <div class="lm-seg">
+                  <button type="button" aria-pressed="true">☀</button>
+                  <button type="button" aria-pressed="false">☾</button>
+                  <button type="button" aria-pressed="false">▭</button>
+                </div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">Log Out</a>
+              <div class="lm-note">Not enrolled in this academy yet.</div>
+              <div class="lm-cta"><a class="btn btn-primary btn-full" href="#">Join Academy</a></div>
+            </div>
+          </div>
+          <div class="ac">AC-3</div>
+        </section>
+
+        <!-- 3. non-member, invite-only -->
+        <section class="state">
+          <h2>3 · Not a member · invite-only</h2>
+          <p class="why">
+            <code>inviteOnly</code>, <code>disableSignup</code>, or a pending invite: no CTA anywhere.
+            The panel ends at Log Out — existing gating preserved exactly.
+          </p>
+          <div class="navstrip">
+            <img class="lm-avatar" src="avatar.svg" alt="" />
+          </div>
+          <div class="lm">
+            <div class="lm-panel static">
+              <div class="lm-identity">
+                <div class="lm-name">Dayo Adeyemi</div>
+                <div class="lm-email">dayo@contoso.com</div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">Account Settings</a>
+              <div class="lm-sep"></div>
+              <div class="lm-theme-row">
+                <span>Theme</span>
+                <div class="lm-seg">
+                  <button type="button" aria-pressed="false">☀</button>
+                  <button type="button" aria-pressed="true">☾</button>
+                  <button type="button" aria-pressed="false">▭</button>
+                </div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">Log Out</a>
+            </div>
+          </div>
+          <div class="ac">AC-4</div>
+        </section>
+
+        <!-- 4. loading -->
+        <section class="state">
+          <h2>4 · Loading</h2>
+          <p class="why">
+            Signed in, <code>appInitApi</code> not ready. A 32px skeleton holds the avatar's final
+            size so the nav does not reflow when data lands. Panel cannot open.
+          </p>
+          <div class="navstrip">
+            <a class="btn btn-sm btn-primary" href="#" style="opacity: 0.5; pointer-events: none">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+            <span class="lm-skeleton"></span>
+          </div>
+          <div class="ac">AC-9</div>
+        </section>
+
+        <!-- 5. no avatar / no fullname -->
+        <section class="state">
+          <h2>5 · No avatar, no full name</h2>
+          <p class="why">
+            <code>avatarUrl</code> empty falls back to initials. Empty <code>fullname</code> promotes
+            the email to the first line and drops the muted line.
+          </p>
+          <div class="navstrip">
+            <a class="btn btn-sm btn-primary" href="#">Continue Learning</a>
+            <span class="lm-avatar-fallback">AK</span>
+          </div>
+          <div class="lm">
+            <div class="lm-panel static">
+              <div class="lm-identity">
+                <div class="lm-name">amaka.k@verylongcompanydomainname.example</div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">My Courses</a>
+              <a class="lm-item" href="#">My Certificates</a>
+              <a class="lm-item" href="#">Account Settings</a>
+              <div class="lm-sep"></div>
+              <div class="lm-theme-row">
+                <span>Theme</span>
+                <div class="lm-seg">
+                  <button type="button" aria-pressed="false">☀</button>
+                  <button type="button" aria-pressed="false">☾</button>
+                  <button type="button" aria-pressed="true">▭</button>
+                </div>
+              </div>
+              <div class="lm-sep"></div>
+              <a class="lm-item" href="#">Log Out</a>
+              <div class="lm-cta"><a class="btn btn-primary btn-full" href="#">Continue Learning</a></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. editor preview -->
+        <section class="state">
+          <h2>6 · Landing-page editor preview</h2>
+          <p class="why">
+            In settings the avatar renders so the owner sees the real nav, but the popover never
+            opens — same treatment <code>disableCourseLinks</code> gives course links today.
+          </p>
+          <div class="navstrip" style="border-style: solid; border-color: var(--landing-accent); position: relative">
+            <span
+              style="
+                position: absolute;
+                top: -10px;
+                left: 10px;
+                font-size: 10.5px;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                background: var(--landing-accent);
+                color: var(--landing-accent-fg);
+                padding: 1px 7px;
+                border-radius: 4px;
+              "
+              >Navigation</span
+            >
+            <a class="btn btn-sm btn-primary" href="#">Continue Learning</a>
+            <div class="lm">
+              <button class="lm-trigger" aria-disabled="true" aria-expanded="false" aria-label="Account menu">
+                <img src="avatar.svg" alt="" />
+              </button>
+            </div>
+          </div>
+          <div class="ac">AC-10</div>
+        </section>
+
+        <!-- 7. mobile -->
+        <section class="state">
+          <h2>7 · Mobile</h2>
+          <p class="why">
+            Centre links already hide below 768px. The avatar stays; the CTA collapses to its icon;
+            the panel anchors right with an 8px viewport inset.
+          </p>
+          <div class="phone">
+            <div class="nav-in">
+              <a class="logo" href="#"><i></i> SMI</a>
+              <div class="nav-right">
+                <a class="btn btn-sm btn-primary" href="#" style="padding: 0 10px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </a>
+                <img class="lm-avatar" src="avatar.svg" alt="" />
+              </div>
+            </div>
+            <div class="lm">
+              <div class="lm-panel static">
+                <div class="lm-identity">
+                  <div class="lm-name">Rotimi Best</div>
+                  <div class="lm-email">rotimi@northwind.com</div>
+                </div>
+                <div class="lm-sep"></div>
+                <a class="lm-item" href="#">My Courses</a>
+                <a class="lm-item" href="#">My Certificates</a>
+                <a class="lm-item" href="#">Account Settings</a>
+                <div class="lm-sep"></div>
+                <div class="lm-theme-row">
+                  <span>Theme</span>
+                  <div class="lm-seg">
+                    <button type="button" aria-pressed="true">☀</button>
+                    <button type="button" aria-pressed="false">☾</button>
+                    <button type="button" aria-pressed="false">▭</button>
+                  </div>
+                </div>
+                <div class="lm-sep"></div>
+                <a class="lm-item" href="#">Log Out</a>
+                <div class="lm-cta"><a class="btn btn-primary btn-full" href="#">Continue Learning</a></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="proto-bar">
+      <span class="proto-tag">All states</span>
+      <a href="index.html">Map</a>
+      <a href="learner-member.html">Member</a>
+      <a href="themes.html">Themes</a>
+      <select data-proto-theme aria-label="Landing theme">
+        <option value="quartz">quartz</option>
+        <option value="bold">bold</option>
+        <option value="terminal">terminal</option>
+        <option value="editorial">editorial</option>
+        <option value="vibrant">vibrant</option>
+      </select>
+    </div>
+
+    <script src="menu.js"></script>
+  </body>
+</html>

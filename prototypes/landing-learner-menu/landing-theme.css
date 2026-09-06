@@ -1,0 +1,583 @@
+/*
+  Landing theme tokens for the learner-menu prototypes.
+
+  Mirrors packages/ui/src/custom/org-landing-page/theme-vars-base.ts and the
+  per-theme vars.ts files. `data-landing-theme` on <html> swaps the palette the
+  same way `themeStyle(theme)` does at runtime.
+
+  Landing themes have NO light/dark variants — each theme is one fixed palette.
+  That is the constraint this whole feature has to live inside.
+*/
+
+/* ---------- quartz (default) ---------- */
+:root,
+[data-landing-theme='quartz'] {
+  --landing-bg: #f3f3f4;
+  --landing-bg-section: #ffffff;
+  --landing-card: #ffffff;
+  --landing-card-soft: #fafafb;
+  --landing-fg: #111114;
+  --landing-fg-muted: #6e6e77;
+  --landing-fg-faint: #9a9aa3;
+  --landing-border: #e3e3e6;
+  --landing-border-soft: #ededf0;
+  --landing-accent: #111114;
+  --landing-accent-fg: #ffffff;
+  --landing-button-primary-bg: #111114;
+  --landing-button-primary-fg: #ffffff;
+  --landing-button-primary-bg-hover: #2b2b33;
+  --landing-button-secondary-bg: #ffffff;
+  --landing-button-secondary-fg: #111114;
+  --landing-button-secondary-border: #e3e3e6;
+  --landing-button-secondary-bg-hover: #fafafb;
+  --landing-button-tertiary-fg: #111114;
+  --landing-button-tertiary-bg-hover: #ededf0;
+  --landing-heading-weight: 600;
+  --landing-heading-tracking: -0.032em;
+  --landing-radius-card: 0px;
+  --landing-radius-pill: 9999px;
+  --landing-shadow-card: 0 18px 46px -22px rgba(17, 17, 20, 0.3);
+  --landing-divider: 1px solid #e3e3e6;
+  --landing-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --landing-mono-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---------- bold ---------- */
+[data-landing-theme='bold'] {
+  --landing-bg: #fffdf7;
+  --landing-bg-section: #ffffff;
+  --landing-card: #ffffff;
+  --landing-card-soft: #fff8e6;
+  --landing-fg: #0a0a0a;
+  --landing-fg-muted: #4d4d4d;
+  --landing-fg-faint: #7a7a7a;
+  --landing-border: #0a0a0a;
+  --landing-border-soft: #d6d2c4;
+  --landing-accent: #ff5c26;
+  --landing-accent-fg: #ffffff;
+  --landing-button-primary-bg: #0a0a0a;
+  --landing-button-primary-fg: #ffffff;
+  --landing-button-primary-bg-hover: #ff5c26;
+  --landing-button-tertiary-fg: #0a0a0a;
+  --landing-button-tertiary-bg-hover: #ffe9c9;
+  --landing-heading-weight: 800;
+  --landing-heading-tracking: -0.04em;
+  --landing-radius-card: 14px;
+  --landing-shadow-card: 6px 6px 0 #0a0a0a;
+  --landing-divider: 2px solid #0a0a0a;
+  --landing-font: 'Inter', system-ui, sans-serif;
+}
+
+/* ---------- terminal ---------- */
+[data-landing-theme='terminal'] {
+  --landing-bg: #0b0f0c;
+  --landing-bg-section: #0e1310;
+  --landing-card: #0e1310;
+  --landing-card-soft: #121814;
+  --landing-fg: #d7f5df;
+  --landing-fg-muted: #7fa98c;
+  --landing-fg-faint: #557a61;
+  --landing-border: #1e2b22;
+  --landing-border-soft: #17211b;
+  --landing-accent: #4ade80;
+  --landing-accent-fg: #05130a;
+  --landing-button-primary-bg: #4ade80;
+  --landing-button-primary-fg: #05130a;
+  --landing-button-primary-bg-hover: #86efac;
+  --landing-button-tertiary-fg: #d7f5df;
+  --landing-button-tertiary-bg-hover: #16211a;
+  --landing-heading-weight: 500;
+  --landing-heading-tracking: -0.01em;
+  --landing-radius-card: 4px;
+  --landing-shadow-card: none;
+  --landing-divider: 1px solid #1e2b22;
+  --landing-font: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --landing-mono-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ---------- editorial ---------- */
+[data-landing-theme='editorial'] {
+  --landing-bg: #fbf9f4;
+  --landing-bg-section: #ffffff;
+  --landing-card: #ffffff;
+  --landing-card-soft: #f6f2e9;
+  --landing-fg: #1c1a17;
+  --landing-fg-muted: #6b6459;
+  --landing-fg-faint: #989184;
+  --landing-border: #ddd6c8;
+  --landing-border-soft: #ebe5da;
+  --landing-accent: #7a2e2e;
+  --landing-accent-fg: #ffffff;
+  --landing-button-primary-bg: #1c1a17;
+  --landing-button-primary-fg: #fbf9f4;
+  --landing-button-primary-bg-hover: #7a2e2e;
+  --landing-button-tertiary-fg: #1c1a17;
+  --landing-button-tertiary-bg-hover: #f0ebe0;
+  --landing-heading-weight: 500;
+  --landing-heading-tracking: -0.02em;
+  --landing-radius-card: 2px;
+  --landing-shadow-card: none;
+  --landing-divider: 1px solid #ddd6c8;
+  --landing-font: 'Georgia', 'Times New Roman', serif;
+}
+
+/* ---------- vibrant ---------- */
+[data-landing-theme='vibrant'] {
+  --landing-bg: #0f0524;
+  --landing-bg-section: #17082f;
+  --landing-card: #1c0a38;
+  --landing-card-soft: #24104a;
+  --landing-fg: #f6f0ff;
+  --landing-fg-muted: #b9a6d9;
+  --landing-fg-faint: #8b78ad;
+  --landing-border: #34195e;
+  --landing-border-soft: #2a1350;
+  --landing-accent: #c084fc;
+  --landing-accent-fg: #16062b;
+  --landing-button-primary-bg: linear-gradient(92deg, #c084fc, #f472b6);
+  --landing-button-primary-fg: #16062b;
+  --landing-button-primary-bg-hover: linear-gradient(92deg, #d8b4fe, #f9a8d4);
+  --landing-button-tertiary-fg: #f6f0ff;
+  --landing-button-tertiary-bg-hover: #2a1350;
+  --landing-heading-weight: 700;
+  --landing-heading-tracking: -0.035em;
+  --landing-radius-card: 18px;
+  --landing-shadow-card: 0 24px 60px -24px rgba(192, 132, 252, 0.5);
+  --landing-divider: 1px solid #34195e;
+  --landing-font: 'Inter', system-ui, sans-serif;
+}
+
+/* =======================================================================
+   Base page
+   ======================================================================= */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: var(--landing-bg);
+  color: var(--landing-fg);
+  font-family: var(--landing-font);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: var(--landing-heading-weight);
+  letter-spacing: var(--landing-heading-tracking);
+  line-height: 1.08;
+}
+p {
+  margin: 0;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+img,
+svg {
+  display: block;
+}
+
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* =======================================================================
+   Nav — mirrors quartz/nav.svelte
+   ======================================================================= */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: color-mix(in oklab, var(--landing-bg) 85%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--landing-border-soft);
+}
+.nav-in {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 58px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.022em;
+}
+.logo i {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--landing-fg);
+  position: relative;
+  flex: none;
+}
+.logo i::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 3px;
+  background: var(--landing-bg);
+}
+.nav-mid {
+  display: flex;
+  gap: 28px;
+}
+.nav-mid a {
+  font-size: 14px;
+  color: var(--landing-fg-muted);
+  transition: color 0.15s;
+}
+.nav-mid a:hover {
+  color: var(--landing-fg);
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* =======================================================================
+   Buttons — mirrors landing-button.svelte
+   ======================================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+}
+.btn-lg {
+  height: 44px;
+  padding: 0 22px;
+}
+.btn-primary {
+  background: var(--landing-button-primary-bg);
+  color: var(--landing-button-primary-fg);
+}
+.btn-primary:hover {
+  background: var(--landing-button-primary-bg-hover);
+}
+.btn-secondary {
+  background: var(--landing-button-secondary-bg, var(--landing-card));
+  color: var(--landing-button-secondary-fg, var(--landing-fg));
+  border-color: var(--landing-button-secondary-border, var(--landing-border));
+}
+.btn-full {
+  width: 100%;
+}
+
+/* =======================================================================
+   Learner menu — the feature
+   ======================================================================= */
+.lm {
+  position: relative;
+}
+
+.lm-trigger {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.lm-trigger img,
+.lm-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  object-fit: cover;
+  display: block;
+}
+.lm-trigger:hover,
+.lm-trigger[aria-expanded='true'] {
+  border-color: var(--landing-border);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--landing-fg) 8%, transparent);
+}
+.lm-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--landing-accent) 45%, transparent);
+}
+.lm-trigger[aria-disabled='true'] {
+  cursor: default;
+}
+
+/* fallback avatar (no avatarUrl) */
+.lm-avatar-fallback {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: var(--landing-card-soft);
+  border: 1px solid var(--landing-border);
+  display: grid;
+  place-items: center;
+  color: var(--landing-fg-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* loading skeleton — same 32px so the nav never reflows */
+.lm-skeleton {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: var(--landing-border-soft);
+  animation: lm-pulse 1.4s ease-in-out infinite;
+}
+@keyframes lm-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.lm-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--landing-card);
+  border: 1px solid var(--landing-border);
+  border-radius: var(--landing-radius-card);
+  box-shadow: var(--landing-shadow-card);
+  padding: 6px;
+  z-index: 80;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.lm.open .lm-panel {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+/* static panels (menu-states.html, themes.html) render open, no animation */
+.lm-panel.static {
+  position: static;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  width: 280px;
+}
+
+.lm-identity {
+  padding: 10px 10px 12px;
+}
+.lm-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--landing-fg);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lm-email {
+  font-size: 13px;
+  color: var(--landing-fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lm-sep {
+  height: 0;
+  border-top: var(--landing-divider);
+  margin: 4px -6px;
+}
+
+.lm-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: calc(var(--landing-radius-card) + 4px);
+  font-size: 14px;
+  color: var(--landing-fg);
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  transition: background 0.12s;
+}
+.lm-item:hover {
+  background: var(--landing-button-tertiary-bg-hover);
+}
+.lm-item:focus-visible {
+  outline: none;
+  background: var(--landing-button-tertiary-bg-hover);
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--landing-accent) 40%, transparent);
+}
+.lm-item svg {
+  color: var(--landing-fg-muted);
+  flex: none;
+}
+
+/* theme row */
+.lm-theme-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+.lm-seg {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--landing-border);
+  border-radius: 9999px;
+  background: var(--landing-card-soft);
+}
+.lm-seg button {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  border-radius: 9999px;
+  color: var(--landing-fg-muted);
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+.lm-seg button:hover {
+  color: var(--landing-fg);
+}
+.lm-seg button[aria-pressed='true'] {
+  background: var(--landing-card);
+  color: var(--landing-fg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.lm-cta {
+  padding: 6px 4px 4px;
+}
+
+.lm-note {
+  padding: 0 10px 8px;
+  font-size: 12px;
+  color: var(--landing-fg-faint);
+  line-height: 1.4;
+}
+
+/* =======================================================================
+   Prototype chrome — not part of the product
+   ======================================================================= */
+.proto-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 9999px;
+  background: rgba(16, 16, 20, 0.92);
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  box-shadow: 0 12px 34px -12px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+}
+.proto-bar a,
+.proto-bar button,
+.proto-bar select {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.proto-bar a:hover,
+.proto-bar button:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+.proto-bar select option {
+  color: #111;
+}
+.proto-tag {
+  opacity: 0.55;
+  padding-left: 4px;
+}
+
+@media (max-width: 768px) {
+  .nav-mid {
+    display: none;
+  }
+  .shell,
+  .nav-in {
+    padding: 0 18px;
+  }
+  .lm-panel {
+    right: -8px;
+    width: min(280px, calc(100vw - 32px));
+  }
+  .nav-right .btn-label {
+    display: none;
+  }
+  .nav-right .btn {
+    padding: 0 10px;
+  }
+}

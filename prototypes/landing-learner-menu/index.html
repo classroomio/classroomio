@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en" data-landing-theme="quartz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Landing learner menu — prototype map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <style>
+      body {
+        padding: 0 0 120px;
+      }
+      .head {
+        border-bottom: 1px solid var(--landing-border);
+        padding: 64px 0 44px;
+      }
+      .head .eyebrow {
+        font-size: 11.5px;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--landing-fg-faint);
+      }
+      .head h1 {
+        margin-top: 12px;
+        font-size: 42px;
+        max-width: 760px;
+      }
+      .head p {
+        margin-top: 16px;
+        max-width: 660px;
+        color: var(--landing-fg-muted);
+        font-size: 15.5px;
+      }
+      .head .prd {
+        margin-top: 22px;
+        display: inline-flex;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--landing-fg-muted);
+      }
+      .head .prd code {
+        background: var(--landing-card);
+        border: 1px solid var(--landing-border);
+        padding: 3px 8px;
+        border-radius: 5px;
+        font-size: 12.5px;
+      }
+      .group {
+        padding: 40px 0 0;
+      }
+      .group h2 {
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--landing-fg-faint);
+        font-weight: 600;
+      }
+      .cards {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        display: block;
+        background: var(--landing-card);
+        border: 1px solid var(--landing-border);
+        border-radius: var(--landing-radius-card);
+        padding: 20px;
+        transition:
+          transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.1),
+          border-color 0.16s;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: var(--landing-fg);
+      }
+      .card h3 {
+        font-size: 16.5px;
+      }
+      .card p {
+        margin-top: 8px;
+        font-size: 13.5px;
+        color: var(--landing-fg-muted);
+      }
+      .card .file {
+        margin-top: 14px;
+        font-size: 11.5px;
+        color: var(--landing-fg-faint);
+        font-family: ui-monospace, monospace;
+      }
+      .decisions {
+        margin-top: 44px;
+        border-top: 1px solid var(--landing-border);
+        padding-top: 28px;
+      }
+      .decisions ol {
+        margin: 16px 0 0;
+        padding-left: 20px;
+        max-width: 760px;
+        font-size: 14px;
+        color: var(--landing-fg-muted);
+        line-height: 1.7;
+      }
+      .decisions ol b {
+        color: var(--landing-fg);
+        font-weight: 600;
+      }
+      @media (max-width: 700px) {
+        .head h1 {
+          font-size: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <div class="shell">
+        <div class="eyebrow">Prototype · UX source of truth</div>
+        <h1>Learner account menu on the academy landing page</h1>
+        <p>
+          A signed-in learner arriving at an academy's front door should be able to see who they are
+          signed in as, reach their courses and certificates, set their theme, and sign out — without
+          entering the LMS first.
+        </p>
+        <div class="prd"><span>Spec:</span> <code>prd/landing-learner-menu/README.md</code></div>
+      </div>
+    </div>
+
+    <div class="shell">
+      <section class="group">
+        <h2>Learner journey</h2>
+        <div class="cards">
+          <a class="card" href="learner-member.html">
+            <h3>Signed in · member →</h3>
+            <p>
+              The main screen. Nav shows Continue Learning plus the avatar; the popover opens on load
+              so the whole card is visible.
+            </p>
+            <div class="file">learner-member.html</div>
+          </a>
+          <a class="card" href="learner-non-member.html">
+            <h3>Signed in · not a member →</h3>
+            <p>
+              Avatar still renders. Learner destinations drop out, CTA becomes Join Academy.
+            </p>
+            <div class="file">learner-non-member.html</div>
+          </a>
+          <a class="card" href="learner-logged-out.html">
+            <h3>Logged out →</h3>
+            <p>The unchanged baseline. No avatar, no skeleton, no reserved slot.</p>
+            <div class="file">learner-logged-out.html</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Component reference</h2>
+        <div class="cards">
+          <a class="card" href="menu-states.html">
+            <h3>Every state →</h3>
+            <p>
+              Member, non-member, invite-only, loading skeleton, missing avatar and name, editor
+              preview, and mobile — side by side.
+            </p>
+            <div class="file">menu-states.html</div>
+          </a>
+          <a class="card" href="themes.html">
+            <h3>Theme fidelity →</h3>
+            <p>
+              The same component in quartz, bold, terminal, editorial and vibrant, driven entirely by
+              <code>--landing-*</code> variables.
+            </p>
+            <div class="file">themes.html</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="decisions">
+        <h2 style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--landing-fg-faint)">
+          Decisions these screens encode
+        </h2>
+        <ol>
+          <li><b>CTA button + avatar</b> — the avatar does not replace the nav button.</li>
+          <li><b>The CTA repeats</b> at the bottom of the card, filled and full width.</li>
+          <li><b>Continue Learning goes to /lms</b> — no resume-last-lesson, no progress fetch in v1.</li>
+          <li><b>Items:</b> My Courses, My Certificates, Account Settings, Theme, Log Out.</li>
+          <li><b>Non-members keep the avatar</b> and get Join Academy, subject to existing invite-only gating.</li>
+          <li><b>Staff see what learners see</b> — no Dashboard or edit shortcuts.</li>
+          <li>
+            <b>Theme sets the app/LMS preference</b>, not this page. Landing themes are fixed
+            palettes with no dark variant.
+          </li>
+          <li><b>One shared component</b> dropped into all 11 theme navs.</li>
+        </ol>
+      </section>
+    </div>
+
+    <div class="proto-bar">
+      <span class="proto-tag">Start page</span>
+      <a href="learner-member.html">Member</a>
+      <a href="learner-non-member.html">Non-member</a>
+      <a href="learner-logged-out.html">Logged out</a>
+      <a href="menu-states.html">States</a>
+      <a href="themes.html">Themes</a>
+    </div>
+
+    <script src="menu.js"></script>
+  </body>
+</html>
