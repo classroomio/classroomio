@@ -1,6 +1,12 @@
 # UI Behavior Spec — Learner Usage & Lifecycle
 
-Companion to `README.md`, which covers data, API, and sequencing. This file covers **what the admin sees and what happens when they click.** Where the two disagree, this file wins on behavior.
+Companion to `README.md`, which covers data, API, and sequencing. This file covers **what the admin sees and
+what happens when they click.**
+
+**Precedence, one rule:** `prototypes/learner-lifecycle/` → this file → `README.md`. The prototype is the UX
+source of truth; where it and this file disagree on behavior, the prototype wins and this file gets updated.
+Where this file and `README.md` disagree on behavior, this file wins. `README.md` remains authoritative for
+data, API contracts and sequencing.
 
 Everything here composes existing components (`Page.*`, `Table.*`, `Popover`, `DropdownMenu`, `Dialog`, `Sheet`, `Chip`, `Badge`, `Skeleton`, `Empty`, `TablePagination`, `Search`, `SortPopover`). No new visual language.
 
@@ -191,14 +197,14 @@ Appears in place of the control row the moment `selectedCount > 0`, using the sa
 ☑ 42 selected   Select all 3,214 matching       [Assign courses] [Actions ▾]   ×
 ```
 
-- **"Select all N matching"** appears only when every row on the page is selected, and it is the piece that makes this usable at scale. Clicking it switches to filter mode and the bar restates itself: `All 3,214 learners matching these filters are selected  ·  Clear selection`.
+- **"Select all N matching"** appears once every **selectable** row on the page is selected — compared against the selectable set, not the raw row set. Rows without a `profileId` are disabled (§4.1), so a page containing one invited learner could never satisfy an all-rows test and filter-mode selection would be unreachable on that page, and it is the piece that makes this usable at scale. Clicking it switches to filter mode and the bar restates itself: `All 3,214 learners matching these filters are selected  ·  Clear selection`.
 - In filter mode, individual checkboxes deselect back into id mode with a confirmation-free downgrade — the count updates and the banner disappears.
 - The × clears selection and restores the control row.
 - **Actions ▾** ordering, with Archive first and visually emphasised:
   - **Archive** — "Frees a seat · reversible"
   - **Deactivate** — "Blocks access · keeps the seat · reversible"
   - separator
-  - **Delete permanently** — destructive styling (`ui:text-destructive focus:ui:text-destructive`), disabled with an explanatory tooltip unless every selected member is already `ARCHIVED`
+  - **Delete permanently** — destructive styling (`ui:text-destructive focus:ui:text-destructive`), disabled with an explanatory tooltip unless every selected member is already `ARCHIVED`. The server enforces the same rule (`README` §4), so this is a helpful pre-check, not the safeguard itself; type-to-confirm sits on top of the archive requirement, never in place of it
   - Contextual `Reactivate` / `Unarchive` appear when the selection contains such members.
 - The one-line descriptions are the difference between an admin archiving and an admin deleting. They belong in the menu, not in a help doc.
 
@@ -221,13 +227,13 @@ Dialog state resets in `onOpenChange`. Focus lands on Cancel, not the action.
 
 **Under ~1 000 rows** — synchronous. Action button shows a spinner; dialog stays open and blocks; closes on success.
 
-**Over ~1 000 rows** — queued. The dialog closes immediately and a persistent bar appears under the header: `Archiving 3,214 learners… 1,240 done` with a determinate `Progress`. The admin can navigate away and come back; the bar is driven by job status, not page state. On completion it becomes a dismissible success summary and the list refreshes.
+**Over ~1 000 rows** — queued, signalled by `mode: 'queued'` in the response rather than by the client guessing from the count. The dialog closes immediately and a persistent bar appears under the header: `Archiving 3,214 learners… 1,240 done` with a determinate `Progress`, driven by polling the job endpoint. The admin can navigate away and come back; the bar is driven by job state, not page state. On a terminal state the job returns the *same* completed payload the synchronous path returns, so the success and partial-failure UI below is identical either way.
 
-**Count drift** — if the live count no longer matches what was shown (`409`), do not act. Reopen the dialog with the new count and a short note: "This list changed while you were reviewing it — 3,209 learners now match." Re-confirm from there.
+**Target drift** — the server rejects with `409` when either the exact count **or** the checksum of the matched member ids differs from what the admin approved (`README` §4). Both matter: people can churn in and out leaving the count identical but the set different. Do not act. Reopen the dialog with the freshly resolved set and a short note — "This list changed while you were reviewing it — 3,209 learners now match." — and re-confirm from there.
 
 ### 4.5 Results
 
-- **Full success, reversible action** — snackbar with **Undo**, live for 10 seconds, that calls the inverse action on the same ids. Archive and deactivate only.
+- **Full success, reversible action** — snackbar with **Undo**, live for 10 seconds, that spends the `undoToken` the action returned. It applies the inverse change to exactly the members that succeeded — never by re-running the filter, which would now match a different population precisely because the action changed who matches. Archive and deactivate only.
 - **Full success, delete** — plain confirmation snackbar. No undo, and the dialog said so.
 - **Partial failure** — a summary `Dialog`, not a snackbar: "3,180 archived · 34 failed", a scrollable table of failures with reasons, and **Download failures as CSV**. A snackbar cannot carry 34 rows of detail.
 - After any action the list refetches, preset counts refresh, and selection clears. Because the default view filters to `ACTIVE`, archived rows leave the list — the result snackbar names how many, so their disappearance is explained rather than startling.
@@ -275,8 +281,8 @@ Course and cohort assignment moves into the Preview step, grouped in `Field.Set`
 
 ## 8. Prototype
 
-**Built: `prototypes/learner-lifecycle/`** — this is now the UX source of truth. Where this file and the
-prototype disagree, the prototype wins; update this file to match.
+**Built: `prototypes/learner-lifecycle/`** — the UX source of truth, per the precedence rule at the top of
+this file.
 
 - `audience.html` — the whole loop, live over 2,400 synthetic learners. Filters, paging, view counts and
   select-all-matching are really computed, so the scale behaviors are reviewable rather than described.

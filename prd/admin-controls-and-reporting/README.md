@@ -130,11 +130,31 @@ Rewrite `getOrganizationAudience` (line 740). Same shape out, new predicates in:
 - `lastActiveAt` — read `organizationmember.last_active_at` directly.
 - `inviteStatus` — join the latest `organization_invite` per email so status filters **in SQL**; keep `deriveAudienceMemberStatus` for the final mapping so one function still owns the rule.
 - `enrollment` — `EXISTS (SELECT 1 FROM groupmember gm JOIN "group" g ON g.id = gm.group_id WHERE gm.profile_id = profile.id AND g.organization_id = :orgId)`.
-- `completion` — aggregate `course_completion_record` per profile scoped to this org's courses. `completed` = ≥1 enrolment and every record `completed`; `in_progress` = ≥1 started; `not_started` = enrolled, nothing started.
+- `completion` — aggregate `course_completion_record` per profile scoped to this org's courses. Define the
+  **per-course** state first, then fold it into **one exclusive learner state by precedence**, because the
+  naive phrasing is not exclusive: "every record is completed" is vacuously true for a learner with no
+  records at all, so they would match `completed` and `not_started` simultaneously.
+
+  Per course: `completed` when a record exists with `status = 'completed'`; `in_progress` when a record
+  exists that is started but not completed; otherwise `not_started` (including no record).
+
+  Per learner, first match wins:
+  1. `not_started` — enrolled in ≥1 course and **no** course is `completed` or `in_progress`.
+  2. `completed` — enrolled in ≥1 course and **every** enrolled course is `completed`.
+  3. `in_progress` — everything else with ≥1 enrolment.
+
+  Learners with no enrolment at all match none of the three and are reachable only via
+  `enrollment=not_enrolled`. Encode this precedence in SQL as a single `CASE`, not three independent
+  predicates, so the buckets provably partition the population and the view counts sum to the total.
 
 New item fields: `lastLoginAt`, `lastActiveAt`, `status`, `enrolledCount`, `completedCount`, `progressPercent`. The count query and the row query must keep sharing one `whereClause`, as they do today.
 
-**Verify the plan on a seeded 20 000-row org before shipping.** Two lateral joins and two `EXISTS` subqueries per page is the kind of thing that is fine at 200 rows and not at 20 000. If the count query is the bottleneck, an approximate count above a threshold is an acceptable trade — but measure first.
+**Verify the plan on a seeded 20 000-row org before shipping.** Two lateral joins and two `EXISTS` subqueries per page is the kind of thing that is fine at 200 rows and not at 20 000. If the count query is the bottleneck, an approximate count is an acceptable trade **for the paginated list's own "N learners" display only** — measure first.
+
+**Approximation must never reach an authoritative count.** `GET /organization/audience/view-counts`, the
+"Select all N matching" affordance, the confirmation preview, and `expectedCount` are all exact, computed
+with the same `whereClause` as the action itself. An approximate `expectedCount` would either understate the
+blast radius the admin approved or fail the server's live-count check and `409` a legitimate action.
 
 No new route: `organization.ts:263` already validates with `ZGetAudienceQuery`, so widening the schema suffices.
 
@@ -161,7 +181,9 @@ const ZBulkAudienceTarget = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('filter'),
     filter: ZGetAudienceQuery.omit({ page: true, limit: true, sortBy: true, sortOrder: true }),
-    expectedCount: z.number().int().positive()
+    // exact count AND a checksum of the ordered member ids the admin was shown
+    expectedCount: z.number().int().positive(),
+    expectedTargetHash: z.string().length(64)
   })
 ]);
 
@@ -173,22 +195,56 @@ export const ZBulkAudienceAction = z.object({
 ```
 
 - **`ids`** — explicit tick-box selection on the current page, capped at 500. Unchanged from what the UI does today.
-- **`filter`** — "apply to all N learners matching these filters". This is the mode this customer needs. `expectedCount` is what the admin was shown at confirmation time; if the server's live count differs (someone logged in between preview and apply), reject with a `409` and re-prompt rather than silently acting on a different set. That check is the difference between a safe bulk tool and an incident.
+- **`filter`** — "apply to all N learners matching these filters". This is the mode this customer needs.
+
+  **A matching count does not prove a matching target.** If one learner logs in and another goes dormant
+  between preview and apply, the count is identical and the *set* is not — the admin would silently act on
+  someone they never reviewed. So the preview returns both the exact `expectedCount` **and**
+  `expectedTargetHash`, a SHA-256 over the sorted member ids in the matched set. The action re-derives both
+  inside the transaction and rejects with `409` if either differs, returning the new count so the UI can
+  re-prompt. The hash is what makes the guarantee real; the count is what makes the error message readable.
 
 ### Service — `apps/api/src/services/organization/audience.ts`
 
 `applyBulkAudienceAction(orgId, data, actorProfileId)`:
 
 1. One `db.transaction` at this boundary.
-2. Resolve the target to member ids inside the transaction — for `filter` mode, run the same `whereClause` builder the list uses, so preview and apply cannot diverge. Re-check `expectedCount`.
+2. Resolve the target to member ids inside the transaction — for `filter` mode, run the same `whereClause` builder the list uses, so preview and apply cannot diverge. Re-check **both** `expectedCount` and `expectedTargetHash`; mismatch on either is a `409`, never a silent proceed.
 3. Reject any member that is not `roleId = STUDENT` in this org — authorization validated before any write.
-4. Apply the status change, or delete (also clearing the orphan `groupmember` rows, per Finding 2).
+4. Apply the status change, or remove the membership (also clearing the orphan `groupmember` rows, per
+   Finding 2).
 5. For `delete` and `deactivate`, revoke active invites via the existing `revokeActiveOrganizationInvitesByEmails`.
 6. Write `organization_member_audit` rows with the actor, action, reason, and filter snapshot.
 7. Commit, **then** fire side effects (notifications, cache invalidation).
-8. Return one shape: `{ requested, succeeded, failed: [{ memberId, reason }] }`. `AppError` with `ORG_AUDIENCE_BULK_*` codes.
+8. Return the contract below. `AppError` with `ORG_AUDIENCE_BULK_*` codes.
 
-**Above ~1 000 affected rows, enqueue instead of blocking.** A new `audience-bulk-action` job in `packages/jobs`, following the `enqueue/emails.ts` + `apps/jobs/src/workers` pattern, chunking into transactional batches and reporting progress. The route returns a job id the page polls. At this customer's scale this is not optional — a 12 000-row archive is not an HTTP request.
+**One response contract covers both the synchronous and the queued path**, so the client has a single branch
+rather than guessing from the status code:
+
+```ts
+type BulkAudienceActionResult =
+  | { mode: 'completed'; requested: number; succeeded: number; failed: { memberId: number; reason: string }[] }
+  | { mode: 'queued'; jobId: string; requested: number };
+```
+
+- **Threshold:** resolve the target inside the transaction, then take the queued path when the resolved
+  target exceeds **1 000 members**. The threshold is on the *resolved* count, not the requested one, so
+  `filter` mode cannot sneak past it. Define it as a single exported constant shared by API and dashboard.
+- **Queued path:** a new `audience-bulk-action` job in `packages/jobs`, following the `enqueue/emails.ts` +
+  `apps/jobs/src/workers` pattern, chunking into transactional batches. `GET /organization/audience/bulk-action/:jobId`
+  returns `{ state: 'queued' | 'running' | 'succeeded' | 'failed'; processed: number; total: number; result?: ... }`
+  where `result` on a terminal state is **the same `mode: 'completed'` payload** the synchronous path returns.
+  The UI renders the identical partial-failure summary either way.
+- At this customer's scale the queued path is not optional — a 12 000-row archive is not an HTTP request.
+
+**`delete` means "remove from this organization", not "erase this person".** It removes `organizationmember`
+and `groupmember` rows, revokes invites and writes audit rows. It deliberately leaves the `profile`, analytics
+events, submissions and completion records intact — the person may be a member of other orgs, and their
+submissions are referenced by other people's records. Say so in the confirmation copy and in the docs, so
+nobody reads it as a GDPR erasure. Account-level erasure is a different feature with a different design
+(`prd/account-deletion`); note that `deidentifyPageEventsForUser` anonymises page events only and is currently
+unused, so it is not a shortcut to erasure either. If this customer actually needs erasure, that is open
+question 1 and it routes elsewhere.
 
 **Queries** — `bulkUpdateOrganizationMemberStatus(orgId, memberIds, status, actorProfileId, tx?)`, `bulkDeleteOrganizationAudienceMembers(orgId, memberIds, tx?)`, `deleteGroupMembershipsForOrgMembers(orgId, profileIds, tx?)`. All take an optional `DbOrTxClient`, use it for every read and write, and never open a nested transaction when one is supplied. `catch` blocks log `console.error('<fn> error:', error)`.
 
@@ -197,10 +253,20 @@ export const ZBulkAudienceAction = z.object({
 ### Safety rails — part of the feature, not polish
 
 - **Archive-first.** Order the menu Archive → Deactivate → Delete, with Archive as the default emphasis. Archive is reversible, frees the seat (Finding 1), and preserves history; it is the right answer for almost every "remove them" instinct. Copy should say so.
-- **Delete is gated.** Permanent delete requires the member to already be `ARCHIVED`, or an explicit type-the-count confirmation. Do not let a mis-set filter plus one click destroy records.
+- **Delete is gated, and the server owns the gate.** Permanent delete requires **every** resolved member to
+  already be `ARCHIVED`; the service rejects the batch with `ORG_AUDIENCE_DELETE_NOT_ARCHIVED` otherwise, and
+  the check runs inside the transaction on the resolved set. Type-the-count confirmation is a **client-side
+  addition on top**, never an alternative to it — an "either/or" reading lets the UI permit a deletion the
+  service will refuse, or worse, lets typed confirmation stand in for the archive requirement. Archive first,
+  then delete, is the only path.
 - **Preview before apply.** For `filter` mode, the confirmation dialog states the exact count, shows a sample of affected learners, and offers **"Export this list first"** (reusing Phase 4) so the admin can circulate it for sign-off. This is the step that makes the loop safe, and it is the natural place export earns its keep.
 - **Guard the obvious mistake.** Never let "never logged in" silently sweep up learners invited in the last N days. Exclude recent joiners by default with a visible, overridable toggle.
-- **Undo window for archive.** Archive is reversible by design; surface a snackbar undo and keep `unarchive` a first-class action.
+- **Undo acts on the exact set that succeeded, never on the filter.** Re-running a filter to undo would hit a
+  different population — the action itself just changed who matches. The service persists the succeeded member
+  ids and returns an `undoToken` (opaque, single-use, expiring in ~15 minutes, scoped to actor and org) on
+  every reversible action. `POST /organization/audience/bulk-action/undo` takes that token and applies the
+  inverse status change to precisely those ids. Archive and deactivate are reversible; delete returns no
+  token, and the dialog says so.
 
 ### Frontend
 
@@ -246,7 +312,26 @@ Lifted from `features/course/utils/marks-utils.ts:151,190` and generalised: `dow
 
 The page holds 20 rows; the export needs all of them, and "all of them" here may be tens of thousands. A JSON-to-client round trip with a 5 000-row cap does not serve this customer.
 
-**`GET /organization/audience/export.csv` streams `text/csv` directly from the API** — same filter schema as the list minus pagination, keyset-paginated internally, `authMiddleware, orgTeamMemberMiddleware`. No row cap, constant memory, and the browser gets a real download. This is deliberately **not** an RPC data route (it returns a file, not a typed JSON envelope), so the single-return-type rule does not apply; it lives beside the RPC routes as a download endpoint.
+**`GET /organization/audience/export.csv` streams `text/csv` directly from the API** — keyset-paginated
+internally, `authMiddleware, orgTeamMemberMiddleware`. No row cap, constant memory, and the browser gets a
+real download. This is deliberately **not** an RPC data route (it returns a file, not a typed JSON envelope),
+so the single-return-type rule does not apply; it lives beside the RPC routes as a download endpoint.
+
+**Three export scopes, three explicit request shapes** — a filter-only endpoint cannot express "the 42 rows I
+ticked", and silently widening that to the whole filtered set would hand someone a different list than the
+one they asked for:
+
+| Scope | Request | Notes |
+| --- | --- | --- |
+| Selected | `memberIds` (repeated query param, capped at 500) | Takes precedence over any filter params present |
+| Filtered | the list's filter params, minus pagination | The current view |
+| All | no filter params | The whole roster |
+
+Precedence is server-side and explicit: if `memberIds` is present, filters are ignored entirely rather than
+intersected. Above the 500-id cap the UI must offer the filtered scope instead — that is exactly the case
+where the admin is in `filter` selection mode anyway, so the same filter is already to hand. The
+confirmation dialog's "export this list first" uses the scope matching the pending action, so the exported
+list and the acted-on list are the same list.
 
 PDF stays client-side and **is** capped — a 20 000-row PDF helps nobody. Offer PDF only below ~2 000 rows and say why in the menu.
 
