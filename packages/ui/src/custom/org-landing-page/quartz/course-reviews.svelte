@@ -35,7 +35,7 @@
 </script>
 
 {#if reviews.items.length > 0}
-  <QuartzCourseSection id="reviews" eyebrow={labels?.reviewsEyebrow ?? 'Reviews'} {heading}>
+  <QuartzCourseSection id="reviews" sectionKey="reviews" eyebrow={labels?.reviewsEyebrow ?? 'Reviews'} {heading}>
     <div class="ui:grid ui:grid-cols-1 ui:@2xl:grid-cols-2">
       {#each reviews.items as review, index (review.id)}
         <figure

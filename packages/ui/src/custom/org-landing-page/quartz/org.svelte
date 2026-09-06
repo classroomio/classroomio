@@ -7,6 +7,7 @@
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import LandingButton from '../landing-button.svelte';
+  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import QuartzNav from './nav.svelte';
   import QuartzHero from './hero.svelte';
   import QuartzCourseRow from './course-row.svelte';
@@ -72,17 +73,7 @@
               disabled={disableCourseLinks}
             >
               {labels?.browseCoursesLabel ?? 'View more courses'}
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                aria-hidden="true"
-              >
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
+              <ArrowRightIcon class="ui:size-3.5" aria-hidden="true" />
             </LandingButton>
           </div>
         {/if}

@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
   import { getCourseTypeLandingMeta, getPrimaryCourseTag } from '../landing-page-utils';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import ImageIcon from '@lucide/svelte/icons/image';
 
   interface Props {
     course: CourseItem;
@@ -61,19 +63,7 @@
       <img src={cover} alt="" class="ui:h-full ui:w-full ui:object-cover" />
     {:else}
       <span class="ui:flex ui:flex-col ui:items-center ui:gap-2 ui:text-[var(--landing-fg-faint)]">
-        <svg
-          width="26"
-          height="26"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          aria-hidden="true"
-        >
-          <rect x="3" y="4" width="18" height="16" rx="2" />
-          <path d="m5 17 5-5 4 4 2-2 3 3" />
-          <circle cx="9" cy="9" r="1.4" />
-        </svg>
+        <ImageIcon class="ui:size-6" aria-hidden="true" />
       </span>
     {/if}
   </div>
@@ -113,17 +103,7 @@
           class="ui:inline-flex ui:items-center ui:gap-1.5 ui:text-[13.5px] ui:font-medium ui:text-[var(--landing-fg)]"
         >
           {labels?.enrollLabel ?? 'View course'}
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-          >
-            <path d="m9 6 6 6-6 6" />
-          </svg>
+          <ChevronRightIcon class="ui:size-3.5" aria-hidden="true" />
         </span>
       </span>
     </div>

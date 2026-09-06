@@ -33,6 +33,7 @@
 {#if curriculum.sections.length > 0}
   <QuartzCourseSection
     id="curriculum"
+    sectionKey="curriculum"
     eyebrow={labels?.curriculumEyebrow ?? 'Curriculum'}
     heading={labels?.curriculumHeading ?? heading}
   >

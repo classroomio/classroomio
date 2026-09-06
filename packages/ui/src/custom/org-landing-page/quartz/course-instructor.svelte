@@ -14,6 +14,7 @@
 {#if instructor.name}
   <QuartzCourseSection
     id="instructor"
+    sectionKey="instructor"
     eyebrow={labels?.instructorEyebrow ?? 'Your instructor'}
     heading={labels?.instructorHeading ?? 'Taught by a practitioner'}
   >

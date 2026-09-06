@@ -32,7 +32,7 @@
 </script>
 
 {#each groups as group (group.id)}
-  <QuartzCourseSection id={group.id} eyebrow={group.eyebrow} heading={group.heading}>
+  <QuartzCourseSection id={group.id} sectionKey="chips" eyebrow={group.eyebrow} heading={group.heading}>
     <ul class="ui:m-0 ui:p-0 ui:list-none ui:flex ui:flex-wrap ui:gap-2">
       {#each group.items as item (item)}
         <li

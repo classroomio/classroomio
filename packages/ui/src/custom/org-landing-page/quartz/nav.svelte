@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { OrgLandingPageProps } from '../types';
   import LandingButton from '../landing-button.svelte';
+  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
   type Props = {
     orgName?: string;
@@ -45,17 +46,7 @@
     {#if authAction}
       <LandingButton variant="primary" size="sm" href={authAction.href} disabled={authAction.disabled}>
         {authAction.label}
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
+        <ArrowRightIcon class="ui:size-3.5" aria-hidden="true" />
       </LandingButton>
     {/if}
   </div>

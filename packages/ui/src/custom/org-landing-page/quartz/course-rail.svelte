@@ -6,6 +6,7 @@
   import LandingButton from '../landing-button.svelte';
   import CheckIcon from '@lucide/svelte/icons/check';
   import GiftIcon from '@lucide/svelte/icons/gift';
+  import SafeHtmlContent from '../../safe-html-content/safe-html-content.svelte';
 
   interface Props {
     pricing: CoursePricing;
@@ -122,7 +123,7 @@
         class="ui:mt-6 ui:m-0 ui:flex ui:items-start ui:gap-2.5 ui:text-[13.5px] ui:leading-relaxed ui:text-[var(--landing-fg-muted)]"
       >
         <GiftIcon class="ui:size-4 ui:shrink-0 ui:mt-0.5 ui:text-[var(--landing-fg)]" aria-hidden="true" />
-        <span>{pricing.reward.description}</span>
+        <span><SafeHtmlContent content={pricing.reward.description} /></span>
       </p>
     {/if}
   </aside>
