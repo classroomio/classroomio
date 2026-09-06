@@ -8,7 +8,7 @@
 
 UX for this feature comes from the prototype folder, not from prose. Where this document and a prototype disagree on a UI detail, **the prototype wins** and this document must be corrected.
 
-```
+```text
 prototypes/landing-learner-menu/index.html
 ```
 
@@ -92,10 +92,11 @@ Prototype: `learner-member.html`, `themes.html`.
 
 - The avatar renders as the last element in the landing nav's right-hand cluster, after the CTA button, with a `12px` gap.
 - Trigger is a `32px` circular button showing `UserAvatar`; on hover and on open it gains a ring in `--landing-border`; focus-visible gets a `--landing-accent` ring, matching `LandingButton`.
-- Accessible name comes from a translation key, not the person's name: `landing.learner_menu.trigger_label` → "Account menu". `aria-haspopup="menu"`, `aria-expanded` reflects open state.
+- Accessible name comes from a translation key with the account interpolated, so a screen-reader user learns which account is signed in without opening the card: `landing.learner_menu.trigger_label` → "Account menu, signed in as {email}" (falls back to "Account menu" when the email is null). `aria-haspopup="menu"`, `aria-expanded` reflects open state.
 - The trigger renders **only** when the learner is signed in and `appInitApi` has initialised. States:
   - **Logged out** — no avatar, nav is byte-identical to today.
   - **Signed in, not yet initialised** — a `32px` skeleton circle in `--landing-border-soft` occupies the slot, so the nav does not reflow when data lands. The existing loading behaviour of the CTA button (`authAction.loading`) is unchanged.
+    **This state must be driven by the server-known session, not by `$user.isLoggedIn`.** `defaultUserState.isLoggedIn` is `false` and root `+layout.svelte` only flips it inside `onMount`, independently of `appInitApi`. Keying off the store would render three successive nav layouts for a signed-in learner — nothing, then skeleton, then avatar — which violates AC-9. The builder takes the session from `data.locals.user` (available on the first server render) and uses `appInitApi.isInitializedAndReady` only to decide skeleton vs. avatar.
   - **Signed in, initialised** — avatar renders.
 - On mobile (`< 768px`) the nav's centre links are already hidden; the avatar stays visible and the CTA button collapses to icon-only. The popover anchors to the right edge with an `8px` viewport inset.
 
@@ -116,11 +117,16 @@ Card is `280px` wide, `--landing-card` background, `--landing-border` hairline, 
 | Theme | `landing.learner_menu.theme` label left, 3-button segmented control right (light / dark / system) | Sets app/LMS preference; popover stays open on click |
 | Divider | | |
 | Log Out | `settings.profile.logout` (existing key) with a `log-out` icon on the right | → `/logout` |
-| CTA | Full-width filled `LandingButton variant="primary"`, label `navigation.goto_lms` rendered as "Continue Learning" | → `/lms` |
+| CTA | Full-width filled `LandingButton variant="primary"`, label and href taken verbatim from `authAction` (`landing.learner_menu.continue_learning` → "Continue Learning") | → `/lms` |
 
 - Every row except Theme closes the popover on activation.
 - Item rows are `36px` tall, `14px` text in `--landing-fg`, hover background `--landing-button-tertiary-bg-hover`.
-- Keyboard: `Escape` closes and returns focus to the trigger; `Tab` moves through rows in visual order; arrow keys move between rows.
+- **Focus model.** The card is a `menu`, but it also contains two controls that are not destinations, so the two mechanisms are scoped rather than mixed:
+  - The link rows (`My Courses`, `My Certificates`, `Account Settings`, `Log Out`) are `role="menuitem"` and form a **single roving-tabindex group**: exactly one carries `tabindex="0"`, arrow keys move between them and wrap, `Home`/`End` jump to the ends.
+  - The theme segmented control and the CTA button are **not** menu items. They sit outside the roving group as ordinary tab stops, in visual order: roving group → theme control (its three buttons are a `radiogroup`, arrow keys move within it) → CTA.
+  - So `Tab` moves *between* those three zones, and arrow keys move *within* whichever zone has focus. `Tab` does not step through every link row.
+  - The identity block is presentational: `aria-hidden` from the menu's perspective, not focusable, and announced instead through the trigger's `aria-label` (`Account menu, signed in as <email>`).
+  - `Escape` closes from anywhere in the card and returns focus to the trigger. Focus is trapped inside the card while open.
 
 ### FR-3 — Popover content, signed in but not a member
 
@@ -143,7 +149,8 @@ Prototype: `themes.html`.
 ### FR-5 — Landing page editor preview
 
 - In the settings landing-page preview and the `/settings/landingpage/edit` screen, the avatar renders (so the academy owner sees the real nav) but the popover does **not** open, matching how `disableCourseLinks` neutralises course links today.
-- The trigger is `aria-disabled` and non-focusable in that context; the `navigation` editable section cap continues to select the nav as a whole.
+- `aria-disabled` and non-focusability are **not** sufficient — they do not block pointer, `Enter`, `Space`, or programmatic activation. When `account.inert` is true the component must additionally: never mount `Popover.Root` in an openable state (render the trigger as a plain `<span>`, not a `<button>`), and render every row and the CTA as non-interactive elements rather than `<a href>`/`<button>` — so no code path can reach `/logout` or `/lms` from a preview.
+- The `navigation` editable section cap continues to select the nav as a whole.
 
 ### FR-6 — Coverage
 
@@ -219,12 +226,29 @@ export function getOrgLandingLearnerAccount({
 }
 ```
 
-- `getOrgLandingAuthAction()` is **not modified**. The CTA label and href the popover renders are the ones it already returns, passed straight through — so the menu can never disagree with the nav button.
-- Both helpers are called from the four call sites that already build `authAction`, and the result is threaded through `buildOrgLandingPageProps()` as a new optional argument.
+- **`authAction` stays the single source of truth for the CTA.** The popover renders the label and href `getOrgLandingAuthAction()` returns, passed straight through, so the nav button and the popover CTA can never diverge by locale or by state.
+- `getOrgLandingAuthAction()` changes in exactly one place: the member branch returns `t.get('landing.learner_menu.continue_learning')` instead of `t.get('navigation.goto_lms')`. `navigation.goto_lms` keeps its current copy ("Go to LMS") and its other consumers — `components/Navigation/index.svelte` and `routes/invite/[hash]/+page.svelte` — are untouched.
+- The three call sites that build an `authAction` inline for the `/lms` case (`course-landing-page.svelte`, `settings/pages/landingpage.svelte`, `settings/landingpage/edit/+page.svelte`) switch to the same key, so every landing surface says "Continue Learning".
+- **`profile.email` may be `null`** (`TProfile.email` is nullable). The builder coerces to `''` and the component omits the muted line, the same fallback the missing-`fullname` case uses.
+
+#### Producer paths
+
+There are **six** places that build landing props, and only four go through `buildOrgLandingPageProps()`. The two that bypass it need the same wiring or the menu silently disappears from surfaces FR-6 requires:
+
+| # | Call site | Builder | `learnerAccount` |
+| --- | --- | --- | --- |
+| 1 | `routes/+page.svelte` (org-site root) | `buildOrgLandingPageProps()` | live |
+| 2 | `features/org/components/landing-page/landing-page.svelte` | `buildOrgLandingPageProps()` | live |
+| 3 | `features/settings/pages/landingpage.svelte` (preview) | `buildOrgLandingPageProps()` | `inert: true` |
+| 4 | `routes/(app)/org/[slug]/settings/landingpage/edit/+page.svelte` (preview) | `buildOrgLandingPageProps()` | `inert: true` |
+| 5 | `routes/(org-site)/courses/+page.svelte` (public catalog) | **none** — passes `authAction` straight into `NavComponent` | live, passed directly as a new `NavComponent` prop |
+| 6 | `features/ui/course-landing-page/course-landing-page.svelte` | **`buildCourseLandingPageProps()`** (separate builder in `course-landing-page/utils.ts`) | live, via a new optional argument on that builder |
+
+`buildOrgLandingPageProps()` and `buildCourseLandingPageProps()` each take `learnerAccount` as a new optional argument; paths 5 and 6 are the ones an implementer is most likely to miss.
 
 ### Component
 
-```
+```text
 packages/ui/src/custom/org-landing-page/learner-menu.svelte
 ```
 
@@ -241,7 +265,7 @@ Every `nav.svelte` gains the same two lines: accept `learnerAccount` and render 
 
 ### Translations
 
-New keys under `landing.learner_menu` in `apps/dashboard/src/lib/utils/translations/en.json`: `trigger_label`, `my_courses`, `my_certificates`, `account_settings`, `theme`, `continue_learning`. Existing keys reused: `settings.profile.logout`, `navigation.join_academy`, `navigation.goto_dashboard`. All other locale files updated via `cd apps/dashboard && pnpm translate`.
+New keys under `landing.learner_menu` in `apps/dashboard/src/lib/utils/translations/en.json`: `trigger_label` (takes an `{email}` placeholder), `trigger_label_anonymous`, `my_courses`, `my_certificates`, `account_settings`, `theme`, `continue_learning`. Existing keys reused: `settings.profile.logout`, `navigation.join_academy`, `navigation.goto_dashboard`. All other locale files updated via `cd apps/dashboard && pnpm translate`.
 
 ## Implementation Order
 
@@ -250,8 +274,9 @@ New keys under `landing.learner_menu` in `apps/dashboard/src/lib/utils/translati
 3. **Storybook.** Add the story file and `fields.ts` in the same change.
 4. **Quartz wiring.** Thread `learnerAccount` through `buildOrgLandingPageProps()` and into `quartz/nav.svelte`. Verify against `prototypes/landing-learner-menu/learner-member.html`.
 5. **Remaining 10 themes.** Same two lines per `nav.svelte`; check each against `themes.html`.
-6. **Call sites.** Wire `+page.svelte`, `landing-page.svelte`, `(org-site)/courses/+page.svelte`, `course-landing-page.svelte`, and the two settings preview screens (with `inert: true`).
+6. **Call sites.** Wire all six producer paths from the table in Technical Design → Builder, including the two that bypass `buildOrgLandingPageProps()` (`(org-site)/courses/+page.svelte`, which passes props straight to `NavComponent`, and `course-landing-page.svelte`, which uses `buildCourseLandingPageProps()`). Both settings previews get `inert: true`.
 7. **Verify.**
+
    ```bash
    export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
    test -f apps/dashboard/.env || cp apps/dashboard/.env.example apps/dashboard/.env
@@ -259,24 +284,30 @@ New keys under `landing.learner_menu` in `apps/dashboard/src/lib/utils/translati
    pnpm --filter @cio/ui prefix:check
    pnpm format:check
    ```
+
 8. **Manual pass** in cloud mode against the seeded tenants: `?org=udemy-test` as `student@test.com` (member), as `enterprise-student@test.com` (non-member), and logged out.
 
 ## Acceptance Criteria
 
 1. Logged out, the landing nav renders exactly as it does today in all 11 themes — no avatar, no skeleton, no layout shift.
-2. Signed in as a member, the nav shows the CTA button and an avatar; the popover opens with identity, three learner items, theme row, log out, and a `Continue Learning` CTA to `/lms`.
+2. Signed in as a member, the nav shows the CTA button and an avatar; the popover opens with identity, three learner items, theme row, log out, and a `Continue Learning` CTA (`landing.learner_menu.continue_learning`) to `/lms`.
 3. Signed in as a non-member of an open academy, the popover omits `My Courses` and `My Certificates` and the CTA reads `Join Academy` → `/join-academy`.
 4. Signed in as a non-member of an invite-only academy, or with `disableSignup`, or with a pending invite: no CTA renders in the nav or the popover; the popover still offers Account Settings, Theme and Log Out.
-5. Self-hosted admin/tutor behaviour from `getOrgLandingAuthAction()` is unchanged.
+5. Self-hosted admin/tutor behaviour from `getOrgLandingAuthAction()` is unchanged; the helper's only change is the member branch's label key.
 6. `Log Out` navigates to `/logout` and the subsequent landing render shows the logged-out nav.
 7. Changing the theme in the popover persists and is in effect on arrival in `/lms`; the landing page's own appearance does not change.
 8. The popover's colours, radii and typography match the surrounding theme in all 11 themes, with no app-token or hex colour in the component.
 9. Between page load and `appInitApi` initialisation, the nav does not reflow — the skeleton occupies the avatar's final size.
 10. In the settings landing-page preview the avatar renders and the popover does not open.
-11. Keyboard: the trigger is reachable by `Tab`, `Enter` opens, arrows move between rows, `Escape` closes and restores focus.
-12. All copy resolves through translation keys; no literal strings in components; every locale file updated.
-13. A Storybook story exists covering all states listed in the Component section.
-14. Zero regression on existing features: public catalog, public course landing page, landing-page editor, `authAction` behaviour, and the LMS sidebar menu are unaffected.
+11. Keyboard, per the FR-2 focus model: the trigger is reachable by `Tab` and opens on `Enter` or `Space`; inside the card `Tab` moves between the three zones (link rows → theme control → CTA) and never steps row by row; arrow keys move within the focused zone and wrap; `Home`/`End` jump to the ends of the link group; focus stays trapped in the card; `Escape` closes from anywhere and restores focus to the trigger.
+12. A screen reader announces the trigger as "Account menu, signed in as <email>", the link rows as menu items, and the theme control as a radio group. The identity block is not announced twice.
+13. The menu renders on all six producer paths in the Builder table — including the public catalog and the public course landing page, which bypass `buildOrgLandingPageProps()`.
+14. In both settings previews the trigger is not a button, no row is a link, and no interaction — pointer, `Enter`, `Space`, or programmatic `.click()` — can navigate or reach `/logout`.
+15. A signed-in learner's nav renders at most two states between first paint and ready (skeleton, then avatar), never a logged-out nav first.
+16. The nav CTA and the popover CTA always show identical label and href, in every locale and every state.
+17. All copy resolves through translation keys; no literal strings in components; every locale file updated.
+18. A Storybook story exists covering all states listed in the Component section.
+19. Zero regression on existing features: public catalog, public course landing page, landing-page editor, `authAction` behaviour, and the LMS sidebar menu are unaffected.
 
 ## Risks and Mitigations
 

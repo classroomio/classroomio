@@ -21,12 +21,9 @@
     var panel = menu.querySelector('.lm-panel');
     if (!trigger || !panel || panel.classList.contains('static')) return;
 
-    if (trigger.getAttribute('aria-disabled') === 'true') {
-      trigger.addEventListener('click', function (event) {
-        event.preventDefault();
-      });
-      return;
-    }
+    // Inert (settings preview): the trigger is a <span>, never a <button>, so there is
+    // no activation path at all — aria-disabled alone would still fire on click/Enter.
+    if (trigger.tagName !== 'BUTTON') return;
 
     trigger.addEventListener('click', function (event) {
       event.stopPropagation();

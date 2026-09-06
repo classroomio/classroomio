@@ -269,9 +269,10 @@
             >
             <a class="btn btn-sm btn-primary" href="#">Continue Learning</a>
             <div class="lm">
-              <button class="lm-trigger" aria-disabled="true" aria-expanded="false" aria-label="Account menu">
+              <!-- inert: a span, not a button — aria-disabled alone would still be clickable -->
+              <span class="lm-trigger" aria-hidden="true">
                 <img src="avatar.svg" alt="" />
-              </button>
+              </span>
             </div>
           </div>
           <div class="ac">AC-10</div>
