@@ -174,6 +174,10 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating lesson',
       onSuccess: () => {
         this.errors = {};
+
+        if (this.lesson?.id === lessonId) {
+          this.lesson = { ...this.lesson, ...result.data } as Lesson;
+        }
       },
       onError: (result) => {
         if (typeof result === 'string') {
