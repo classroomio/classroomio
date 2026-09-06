@@ -13,11 +13,6 @@ declare global {
         ASSETS: {
           fetch: typeof fetch;
         };
-        /**
-         * Cloudflare KV namespace bound in `wrangler.jsonc`.
-         * Create with: `pnpm exec wrangler kv namespace create CACHE`
-         * then set the returned id on the `CACHE` binding.
-         */
         CACHE: StarsKvNamespace;
       };
     }
