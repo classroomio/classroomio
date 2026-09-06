@@ -24,7 +24,8 @@ export type OrgLandingPageTheme =
   | 'corporate'
   | 'terminal'
   | 'editorial'
-  | 'vibrant';
+  | 'vibrant'
+  | 'quartz';
 
 export type CourseItem = {
   id: string;

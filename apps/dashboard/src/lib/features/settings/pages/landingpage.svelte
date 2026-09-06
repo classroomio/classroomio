@@ -53,6 +53,12 @@
 
   const themeCards = [
     {
+      value: 'quartz',
+      preview: `${CDN_BASE}/quartz.png`,
+      titleKey: 'settings.landing_page.theme.cards.quartz.title',
+      descriptionKey: 'settings.landing_page.theme.cards.quartz.description'
+    },
+    {
       value: 'minimal',
       preview: `${CDN_BASE}/minimal.png`,
       titleKey: 'settings.landing_page.theme.cards.minimal.title',
@@ -122,8 +128,11 @@
   const currentThemeCard = $derived(themeCards.find((card) => card.value === currentTheme) ?? themeCards[0]);
   const otherThemeCards = $derived(themeCards.filter((card) => card.value !== currentTheme));
 
+  /** Quartz is the only theme on the free plan; minimal reads too plain to represent the product. */
+  const freeThemes: ReadonlySet<LandingPageTheme> = new Set(['quartz']);
+
   function isPaidTheme(theme: LandingPageTheme): boolean {
-    return theme !== 'minimal';
+    return !freeThemes.has(theme);
   }
 
   const authAction = $derived(

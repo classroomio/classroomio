@@ -65,6 +65,11 @@
       className:
         'ui:rounded-md ui:px-6 ui:py-3 ui:text-base ui:font-medium ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:transition-colors',
       variant: 'outline'
+    },
+    quartz: {
+      className:
+        'ui:rounded-md ui:px-5 ui:font-medium ui:bg-[var(--landing-card)] ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:transition-colors',
+      variant: 'outline'
     }
   };
 </script>

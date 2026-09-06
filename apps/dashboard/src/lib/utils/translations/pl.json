@@ -3529,6 +3529,10 @@
           "editorial": {
             "title": "Redakcja",
             "description": "Ciepła kremowa paleta, malarski bohater, wyrafinowany klimat magazynu"
+          },
+          "quartz": {
+            "title": "Kwarc",
+            "description": "Monochromatyczna siatka z włoskami, liniowane rzędy kursów, samoprzylepna listwa rejestracyjna"
           }
         }
       },

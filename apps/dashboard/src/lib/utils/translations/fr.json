@@ -3529,6 +3529,10 @@
           "editorial": {
             "title": "Éditorial",
             "description": "Palette de crème chaude, héros pictural, sensation de magazine raffinée"
+          },
+          "quartz": {
+            "title": "Quartz",
+            "description": "Grille monochrome à traits fins, rangées de cours lignées, rail d'inscription adhésif"
           }
         }
       },

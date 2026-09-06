@@ -735,6 +735,10 @@
           "vibrant": {
             "title": "Vibrant",
             "description": "Bold primary panels, sunset gradient hero, energetic poster look"
+          },
+          "quartz": {
+            "title": "Quartz",
+            "description": "Monochrome hairline grid, ruled course rows, sticky enrolment rail"
           }
         }
       },

@@ -62,6 +62,13 @@ export {
   courseCard as EditorialLandingCourseCard
 } from './editorial';
 export {
+  org as QuartzLandingPage,
+  course as QuartzCourseLanding,
+  nav as QuartzLandingNav,
+  hero as QuartzLandingHero,
+  courseCard as QuartzLandingCourseCard
+} from './quartz';
+export {
   org as VibrantLandingPage,
   course as VibrantCourseLanding,
   nav as VibrantLandingNav,
