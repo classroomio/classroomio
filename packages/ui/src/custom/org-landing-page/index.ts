@@ -104,3 +104,4 @@ export * from './landing-page-link-icons';
 export * from './theme-style';
 export * from './types';
 export { mockOrgLandingPageProps, mockCourseLandingPageProps } from './fixtures';
+export { safeHref } from './safe-href';

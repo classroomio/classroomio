@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { OrgLandingPageTheme } from './types';
+  import { safeHref } from './safe-href';
   import { Button } from '../../base/button';
 
   interface Props {
@@ -74,6 +75,11 @@
   };
 </script>
 
-<Button {href} variant={themeButtonClasses[variant].variant} size="lg" class={themeButtonClasses[variant].className}>
+<Button
+  href={safeHref(href)}
+  variant={themeButtonClasses[variant].variant}
+  size="lg"
+  class={themeButtonClasses[variant].className}
+>
   {label}
 </Button>

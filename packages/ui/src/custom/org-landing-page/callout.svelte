@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { LandingPageCallout, OrgLandingPageLabels, OrgLandingPageTheme } from './types';
+  import { safeHref } from './safe-href';
   import { Button } from '../../base/button';
   import EditableLandingSection from './editable-section.svelte';
 
@@ -156,7 +157,7 @@
         {/if}
 
         <Button
-          href={callout.action.href}
+          href={safeHref(callout.action.href)}
           size="lg"
           class={buttonClasses[variant]}
           variant={variant === 'bold' || variant === 'classic' || variant === 'tech' ? 'secondary' : 'default'}

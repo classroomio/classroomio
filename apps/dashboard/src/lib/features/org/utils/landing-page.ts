@@ -159,8 +159,14 @@ function normalizeText(value: unknown, fallback = '') {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
 }
 
+import { isAllowedHref } from '@cio/utils/validation/shared';
+
 function normalizeHref(value: unknown, fallback = '#') {
-  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+  if (typeof value !== 'string') return fallback;
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return fallback;
+  if (!isAllowedHref(trimmed)) return fallback;
+  return trimmed;
 }
 
 function isLegacyFooterSocialBlock(value: Record<string, unknown>): boolean {
@@ -449,8 +455,8 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
       }
 
       const title = normalizeText(item.title, '');
-      const hrefSource = typeof item.href === 'string' ? item.href.trim() : '';
-      if (!title || !hrefSource) {
+      const href = normalizeHref(item.href, '');
+      if (!title || !href) {
         return null;
       }
 
@@ -458,7 +464,7 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
         icon: resolveLandingPageLinkIcon(item.icon),
         title,
         description: normalizeText(item.description, ''),
-        href: hrefSource
+        href
       };
     })
     .filter((card): card is NonNullable<typeof card> => card !== null);
