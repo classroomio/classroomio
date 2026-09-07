@@ -73,7 +73,7 @@ export const ZCourseImportDraftExerciseQuestion = z.object({
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
   points: z.number().int().min(1),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   options: z.array(ZCourseImportDraftExerciseOption).optional()
 });
@@ -157,13 +157,21 @@ export const ZCourseImportDraftPayload = z
       }
     });
 
-    const lessonOrders = value.lessons.map((lesson) => lesson.order).sort((a, b) => a - b);
-    if (lessonOrders.length > 0 && lessonOrders.some((order, i) => order !== i + 1)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['lessons'],
-        message: 'Lesson orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
-      });
+    const lessonsBySection = new Map<string, number[]>();
+    for (const lesson of value.lessons) {
+      const orders = lessonsBySection.get(lesson.sectionExternalId) ?? [];
+      orders.push(lesson.order);
+      lessonsBySection.set(lesson.sectionExternalId, orders);
+    }
+    for (const [, orders] of lessonsBySection) {
+      const sorted = [...orders].sort((a, b) => a - b);
+      if (sorted.some((order, i) => order !== i + 1)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['lessons'],
+          message: 'Lesson orders within each section must be a contiguous 1-based sequence (1, 2, 3, ...)'
+        });
+      }
     }
 
     value.lessonLanguages.forEach((lessonLanguage, index) => {
@@ -205,13 +213,27 @@ export const ZCourseImportDraftPayload = z
     });
 
     if (value.exercises) {
-      const exerciseOrders = value.exercises.map((exercise) => exercise.order).sort((a, b) => a - b);
-      if (exerciseOrders.length > 0 && exerciseOrders.some((order, i) => order !== i + 1)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['exercises'],
-          message: 'Exercise orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
-        });
+      const lessonsByExternalId = new Map(value.lessons.map((l) => [l.externalId, l]));
+      const exercisesByGroup = new Map<string, number[]>();
+      for (const exercise of value.exercises) {
+        let groupKey = exercise.sectionExternalId ?? '';
+        if (exercise.lessonExternalId) {
+          const parentLesson = lessonsByExternalId.get(exercise.lessonExternalId);
+          groupKey = parentLesson?.sectionExternalId ?? exercise.lessonExternalId;
+        }
+        const orders = exercisesByGroup.get(groupKey) ?? [];
+        orders.push(exercise.order);
+        exercisesByGroup.set(groupKey, orders);
+      }
+      for (const [, orders] of exercisesByGroup) {
+        const sorted = [...orders].sort((a, b) => a - b);
+        if (sorted.some((order, i) => order !== i + 1)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['exercises'],
+            message: 'Exercise orders within each group must be a contiguous 1-based sequence (1, 2, 3, ...)'
+          });
+        }
       }
     }
   });

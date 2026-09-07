@@ -150,7 +150,7 @@ export const ZCourseContentUpdateItem = z.object({
   id: z.string().min(1),
   type: z.enum(['LESSON', 'EXERCISE']),
   isUnlocked: z.boolean().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1).optional(),
   sectionId: z.string().nullable().optional()
 });
 export type TCourseContentUpdateItem = z.infer<typeof ZCourseContentUpdateItem>;
@@ -209,7 +209,7 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
   }
 
   const itemKeys = new Set<string>();
-  const itemOrders: number[] = [];
+  const itemsBySection = new Map<string, { orders: number[]; total: number; withOrder: number }>();
   data.items?.forEach((item, index) => {
     if (item.order === undefined && item.sectionId === undefined) {
       ctx.addIssue({
@@ -219,9 +219,14 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
       });
     }
 
+    const sectionId = item.sectionId ?? '__unsectioned__';
+    const entry = itemsBySection.get(sectionId) ?? { orders: [], total: 0, withOrder: 0 };
+    entry.total += 1;
     if (item.order !== undefined) {
-      itemOrders.push(item.order);
+      entry.orders.push(item.order);
+      entry.withOrder += 1;
     }
+    itemsBySection.set(sectionId, entry);
 
     const itemKey = `${item.type}:${item.id}`;
     if (itemKeys.has(itemKey)) {
@@ -235,16 +240,17 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
     itemKeys.add(itemKey);
   });
 
-  const allItemsProvideOrder = data.items
-    ? data.items.length > 0 && data.items.every((item) => item.order !== undefined)
-    : false;
-  const sortedItemOrders = [...itemOrders].sort((a, b) => a - b);
-  if (allItemsProvideOrder && itemOrders.length > 0 && sortedItemOrders.some((order, index) => order !== index + 1)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['items'],
-      message: 'Item orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
-    });
+  for (const [, entry] of itemsBySection) {
+    if (entry.withOrder > 0 && entry.withOrder === entry.total) {
+      const sorted = [...entry.orders].sort((a, b) => a - b);
+      if (sorted.some((order, index) => order !== index + 1)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['items'],
+          message: 'Item orders within each section must be a contiguous 1-based sequence (1, 2, 3, ...)'
+        });
+      }
+    }
   }
 });
 export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;

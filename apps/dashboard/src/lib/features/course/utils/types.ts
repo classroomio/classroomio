@@ -207,6 +207,12 @@ export type Exercise = Omit<ApiExercise, 'courseId' | 'sectionId' | 'order'>;
 export type CreateExerciseRequest = (typeof classroomio.course)[':courseId']['exercise']['$post'];
 export type CreateExerciseFromTemplateRequest =
   (typeof classroomio.course)[':courseId']['exercise']['from-template']['$post'];
+
+export type CreateExerciseFromTemplateOptions = {
+  lessonId?: string;
+  sectionId?: string;
+  order: number;
+};
 export type CreateExerciseFromTemplateResponse = InferResponseType<CreateExerciseFromTemplateRequest>;
 export type CreateExerciseFromTemplateSuccess = Extract<CreateExerciseFromTemplateResponse, { success: true }>;
 export type CreateExerciseFromTemplateData = CreateExerciseFromTemplateSuccess['data'];

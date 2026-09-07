@@ -229,7 +229,7 @@ export const ZExerciseUpdate = z.object({
   description: z.string().optional(),
   lessonId: z.string().optional(),
   sectionId: z.string().optional(),
-  order: z.number().int().optional(),
+  order: z.number().int().min(1).optional(),
   isUnlocked: z.boolean().optional(),
   dueBy: z.string().optional(), // Changed from iso.datetime() to string to match frontend format
   allowMultipleAttempts: z.boolean().optional(),

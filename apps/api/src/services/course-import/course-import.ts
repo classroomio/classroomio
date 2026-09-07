@@ -969,11 +969,25 @@ export async function publishCourseImportDraftToExistingCourseService(
       const note = getPrimaryLessonContent(lesson.externalId, draft.lessonLanguages, preferredLocale);
 
       if (existingLessonIds.has(lesson.externalId)) {
+        const originalLesson = existingLessons.find((el) => el.id === lesson.externalId);
+        const sectionChanged = Boolean(originalLesson && originalLesson.sectionId !== sectionId);
+
+        let mergedOrder: number | undefined;
+        if (isMerge) {
+          if (sectionChanged) {
+            const nextOrder = (nextLessonOrderBySection.get(sectionId) ?? 0) + 1;
+            nextLessonOrderBySection.set(sectionId, nextOrder);
+            mergedOrder = nextOrder;
+          }
+        } else {
+          mergedOrder = lesson.order;
+        }
+
         const updatedLesson = await updateLessonService(lesson.externalId, {
           title: lesson.title,
           note,
           sectionId,
-          ...(isMerge ? {} : { order: lesson.order }),
+          ...(mergedOrder !== undefined ? { order: mergedOrder } : {}),
           isUnlocked: lesson.isUnlocked,
           public: lesson.public
         });
@@ -1052,16 +1066,33 @@ export async function publishCourseImportDraftToExistingCourseService(
       const payload = buildExercisePublishPayload(exercise, lessonIdMap, sectionIdMap);
 
       if (existingExerciseIds.has(exercise.externalId)) {
-        const updatePayload = isMerge
-          ? {
-              title: payload.title,
-              description: payload.description,
-              lessonId: payload.lessonId,
-              sectionId: payload.sectionId,
-              dueBy: payload.dueBy,
-              questions: payload.questions
-            }
-          : payload;
+        const destGroupKey = groupKeyForExercise(payload.lessonId, payload.sectionId);
+        const originalExercise = existingExercises.find((existing) => existing.id === exercise.externalId);
+        const originalGroupKey = originalExercise
+          ? groupKeyForExercise(originalExercise.lessonId, originalExercise.sectionId)
+          : destGroupKey;
+        const groupChanged = destGroupKey !== originalGroupKey;
+
+        let exerciseOrder: number | undefined;
+        if (isMerge) {
+          if (groupChanged) {
+            const nextOrder = (nextExerciseOrderByGroup.get(destGroupKey) ?? 0) + 1;
+            nextExerciseOrderByGroup.set(destGroupKey, nextOrder);
+            exerciseOrder = nextOrder;
+          }
+        } else {
+          exerciseOrder = payload.order;
+        }
+
+        const updatePayload = {
+          title: payload.title,
+          description: payload.description,
+          lessonId: payload.lessonId,
+          sectionId: payload.sectionId,
+          dueBy: payload.dueBy,
+          questions: payload.questions,
+          ...(exerciseOrder !== undefined ? { order: exerciseOrder } : {})
+        };
 
         await replaceExerciseService(exercise.externalId, updatePayload);
         updatedExercises += 1;

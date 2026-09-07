@@ -10,7 +10,7 @@ export type TCourseSectionCreate = z.infer<typeof ZCourseSectionCreate>;
 
 export const ZCourseSectionUpdate = z.object({
   title: z.string().min(1).optional(),
-  order: z.number().int().min(0).optional()
+  order: z.number().int().min(1).optional()
 });
 export type TCourseSectionUpdate = z.infer<typeof ZCourseSectionUpdate>;
 

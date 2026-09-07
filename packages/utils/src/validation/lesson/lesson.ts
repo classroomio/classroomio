@@ -21,7 +21,7 @@ export const ZLessonUpdate = z.object({
   title: z.string().min(1).optional(),
   note: z.string().optional(),
   sectionId: z.string().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1).optional(),
   callUrl: z.string().optional(),
   lessonAt: z.string().optional(),
   teacherId: z.string().optional(),
