@@ -55,6 +55,7 @@ export const JOB_NAMES = {
     mediaJobReap: 'media-job-reap',
     analyticsDailyRollup: 'analytics-daily-rollup',
     assetStorageCleanup: 'asset-storage-cleanup',
-    courseRoleReconcile: 'course-role-reconcile'
+    courseRoleReconcile: 'course-role-reconcile',
+    memberActivityReconcile: 'member-activity-reconcile'
   }
 } as const;

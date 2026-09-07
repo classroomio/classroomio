@@ -140,7 +140,10 @@ export const isUserCourseMember = async (
  * - a member of the course's group (any role), OR
  * - an ADMIN of the organization that owns the course's group.
  *
- * Both require live org membership: a `groupmember` row outlives removal from the org.
+ * Both require live, `ACTIVE` org membership: a `groupmember` row outlives
+ * removal from the org, and a deactivated or archived member is not "live"
+ * either. This join is the single place course access is revoked, so
+ * deactivate/archive take effect here rather than through scattered guards.
  *
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
@@ -163,12 +166,17 @@ export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: 
       and(
         eq(schema.organizationmember.organizationId, schema.group.organizationId),
         eq(schema.organizationmember.profileId, profileId),
-        eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        eq(schema.organizationmember.roleId, ROLE.ADMIN),
+        eq(schema.organizationmember.status, 'ACTIVE')
       )
     )
     .leftJoin(
       orgMembership,
-      and(eq(orgMembership.organizationId, schema.group.organizationId), eq(orgMembership.profileId, profileId))
+      and(
+        eq(orgMembership.organizationId, schema.group.organizationId),
+        eq(orgMembership.profileId, profileId),
+        eq(orgMembership.status, 'ACTIVE')
+      )
     )
     .where(
       and(
@@ -204,7 +212,7 @@ export const getUserCourseRole = async (courseId: string, profileId: string): Pr
  * - a team member (ADMIN or TUTOR) of the course's group, OR
  * - an ADMIN of the organization that owns the course's group.
  *
- * Requires live org membership, as `isUserCourseMemberOrOrgAdmin` does.
+ * Requires live, `ACTIVE` org membership, as `isUserCourseMemberOrOrgAdmin` does.
  *
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
@@ -231,12 +239,17 @@ export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: 
       and(
         eq(schema.organizationmember.organizationId, schema.group.organizationId),
         eq(schema.organizationmember.profileId, profileId),
-        eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        eq(schema.organizationmember.roleId, ROLE.ADMIN),
+        eq(schema.organizationmember.status, 'ACTIVE')
       )
     )
     .leftJoin(
       orgMembership,
-      and(eq(orgMembership.organizationId, schema.group.organizationId), eq(orgMembership.profileId, profileId))
+      and(
+        eq(orgMembership.organizationId, schema.group.organizationId),
+        eq(orgMembership.profileId, profileId),
+        eq(orgMembership.status, 'ACTIVE')
+      )
     )
     .where(
       and(

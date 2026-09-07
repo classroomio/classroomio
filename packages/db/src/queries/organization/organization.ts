@@ -75,7 +75,13 @@ export const getOrganizationByProfileId = async (
     .from(schema.organization)
     .leftJoin(schema.organizationmember, eq(schema.organization.id, schema.organizationmember.organizationId))
     .leftJoin(schema.organizationPlan, eq(schema.organization.id, schema.organizationPlan.orgId))
-    .where(eq(schema.organizationmember.profileId, profileId));
+    .where(
+      and(
+        eq(schema.organizationmember.profileId, profileId),
+        // Deactivated and archived members keep their row but lose the org.
+        eq(schema.organizationmember.status, 'ACTIVE')
+      )
+    );
 
   // Group by organization and collect plans into an array
   const organizationMap = new Map<
@@ -450,24 +456,80 @@ export const deleteOrganizationMember = async (orgId: string, memberId: number) 
 };
 
 /**
- * Deletes a student organization member by ID
+ * Deletes a student organization member by ID, together with their course
+ * enrolments inside this organization.
+ *
+ * The enrolment cleanup is not cosmetic: `groupmember` rows outlive the org
+ * membership, and while access is correctly denied while they are gone, re-adding
+ * the same person later would silently resurrect every old enrolment.
+ *
+ * Both writes share one transaction so a failure cannot leave the membership
+ * deleted and the enrolments behind.
+ *
  * @param orgId Organization ID
  * @param memberId Member ID to delete
  * @returns Deleted member or null if not found
  */
 export const deleteOrganizationAudienceMember = async (orgId: string, memberId: number) => {
-  const [deleted] = await db
-    .delete(schema.organizationmember)
-    .where(
-      and(
-        eq(schema.organizationmember.organizationId, orgId),
-        eq(schema.organizationmember.id, memberId),
-        eq(schema.organizationmember.roleId, ROLE.STUDENT)
-      )
-    )
-    .returning();
+  try {
+    return await db.transaction(async (tx) => {
+      const [deleted] = await tx
+        .delete(schema.organizationmember)
+        .where(
+          and(
+            eq(schema.organizationmember.organizationId, orgId),
+            eq(schema.organizationmember.id, memberId),
+            eq(schema.organizationmember.roleId, ROLE.STUDENT)
+          )
+        )
+        .returning();
 
-  return deleted || null;
+      if (!deleted) {
+        return null;
+      }
+
+      if (deleted.profileId) {
+        await deleteGroupMembershipsForOrgProfiles(orgId, [deleted.profileId], tx);
+      }
+
+      return deleted;
+    });
+  } catch (error) {
+    console.error('deleteOrganizationAudienceMember error:', error);
+    throw new Error('Failed to delete organization audience member');
+  }
+};
+
+/**
+ * Removes course enrolments held by the given profiles inside one organization.
+ * Scoped through `group.organization_id` so enrolments in other organizations,
+ * and in personal courses, are left alone.
+ */
+export const deleteGroupMembershipsForOrgProfiles = async (
+  orgId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> => {
+  if (profileIds.length === 0) {
+    return 0;
+  }
+
+  try {
+    const orgGroupIds = dbClient
+      .select({ id: schema.group.id })
+      .from(schema.group)
+      .where(eq(schema.group.organizationId, orgId));
+
+    const removed = await dbClient
+      .delete(schema.groupmember)
+      .where(and(inArray(schema.groupmember.profileId, profileIds), inArray(schema.groupmember.groupId, orgGroupIds)))
+      .returning({ id: schema.groupmember.id });
+
+    return removed.length;
+  } catch (error) {
+    console.error('deleteGroupMembershipsForOrgProfiles error:', error);
+    throw new Error('Failed to delete group memberships for organization profiles');
+  }
 };
 
 export const getOrganizationAudienceMember = async (orgId: string, memberId: number) => {
@@ -574,9 +636,15 @@ export const getUserOrgRole = async (orgId: string, profileId: string): Promise<
 };
 
 /**
- * Gets all org memberships for a user as { [orgId]: roleId }.
+ * Gets all `ACTIVE` org memberships for a user as { [orgId]: roleId }.
  * Used to attach org roles to the Better Auth session so middleware can
  * read membership/role from the session cookie cache instead of hitting the DB.
+ *
+ * Every org middleware reads that session map rather than querying, so
+ * excluding non-`ACTIVE` memberships here is what makes deactivate and archive
+ * revoke org access everywhere at once. Note the map is cached on the session:
+ * a status change takes effect when the session cache next refreshes, so
+ * anything needing immediate revocation must also invalidate the session.
  */
 export const getUserOrgRolesMap = async (profileId: string): Promise<Record<string, number>> => {
   try {
@@ -586,7 +654,7 @@ export const getUserOrgRolesMap = async (profileId: string): Promise<Record<stri
         roleId: schema.organizationmember.roleId
       })
       .from(schema.organizationmember)
-      .where(eq(schema.organizationmember.profileId, profileId));
+      .where(and(eq(schema.organizationmember.profileId, profileId), eq(schema.organizationmember.status, 'ACTIVE')));
 
     const map: Record<string, number> = {};
     for (const row of rows) {
@@ -672,13 +740,25 @@ export async function lockOrganizationForStudentCapacity(orgId: string, dbClient
     .limit(1);
 }
 
+/**
+ * Counts the student memberships that occupy a plan seat.
+ *
+ * `ARCHIVED` members are excluded and `DEACTIVATED` members are not: archiving
+ * is the action that reclaims a seat, deactivating is the reversible suspension
+ * that keeps one. Without the exclusion, archiving thousands of dormant
+ * learners would free nothing and the lifecycle feature would miss its point.
+ */
 export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {
     const [row] = await dbClient
       .select({ count: count(schema.organizationmember.id) })
       .from(schema.organizationmember)
       .where(
-        and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.roleId, ROLE.STUDENT))
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          ne(schema.organizationmember.status, 'ARCHIVED')
+        )
       );
 
     return Number(row?.count ?? 0);

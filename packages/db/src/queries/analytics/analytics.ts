@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -447,10 +447,81 @@ export async function insertPageEvents(events: PageEventInsert[]) {
       .insert(schema.analyticsPageEvent)
       .values(events)
       .returning({ id: schema.analyticsPageEvent.id });
+
+    await bumpMemberLastActiveFromEvents(events);
+
     return inserted.length;
   } catch (error) {
     console.error('insertPageEvents error:', error);
     throw new Error('Failed to insert page events');
+  }
+}
+
+export type MemberActivity = { orgId: string; userId: string; occurredAt: string };
+
+/**
+ * Reduces a batch of page events to the latest activity per (org, user).
+ *
+ * Events without an org, user or timestamp carry no membership signal and are
+ * dropped. Writing one row per member instead of one per event is what keeps
+ * ingest cheap on a busy org.
+ */
+export function collapseLatestActivityByMember(events: PageEventInsert[]): MemberActivity[] {
+  const latestByMember = new Map<string, MemberActivity>();
+
+  for (const event of events) {
+    const { orgId, userId, occurredAt } = event;
+    if (!orgId || !userId || !occurredAt) continue;
+
+    const key = `${orgId}:${userId}`;
+    const seen = latestByMember.get(key);
+
+    if (!seen || occurredAt > seen.occurredAt) {
+      latestByMember.set(key, { orgId, userId, occurredAt });
+    }
+  }
+
+  return [...latestByMember.values()];
+}
+
+/**
+ * Keeps `organizationmember.last_active_at` current from the page events just
+ * ingested. Denormalized on purpose: filtering and sorting a 20k-learner roster
+ * against the raw event table does not hold up, so the roster reads one indexed
+ * column instead.
+ *
+ * Only ever moves the timestamp forward (the `lastActiveAt < occurredAt` guard),
+ * so out-of-order or replayed batches cannot walk a member's activity backwards.
+ * Best-effort: a failure here must not fail analytics ingest, since the nightly
+ * reconcile repairs any gap.
+ */
+async function bumpMemberLastActiveFromEvents(events: PageEventInsert[]): Promise<void> {
+  const activities = collapseLatestActivityByMember(events);
+
+  if (activities.length === 0) {
+    return;
+  }
+
+  try {
+    await Promise.all(
+      activities.map((activity) =>
+        db
+          .update(schema.organizationmember)
+          .set({ lastActiveAt: activity.occurredAt })
+          .where(
+            and(
+              eq(schema.organizationmember.organizationId, activity.orgId),
+              eq(schema.organizationmember.profileId, activity.userId),
+              or(
+                isNull(schema.organizationmember.lastActiveAt),
+                lt(schema.organizationmember.lastActiveAt, activity.occurredAt)
+              )
+            )
+          )
+      )
+    );
+  } catch (error) {
+    console.error('bumpMemberLastActiveFromEvents error:', error);
   }
 }
 
