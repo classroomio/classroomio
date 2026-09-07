@@ -18,6 +18,7 @@ import {
   labelMatchesSocialPlatform,
   resolveFooterSocialPlatform
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
+import { isAllowedHref } from '@cio/utils/validation/shared';
 import { t } from '$lib/utils/functions/translations';
 
 export const landingPageThemes = [
@@ -159,14 +160,29 @@ function normalizeText(value: unknown, fallback = '') {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
 }
 
-import { isAllowedHref } from '@cio/utils/validation/shared';
+function stripAccidentalFragmentPrefix(href: string): string {
+  const withoutHash = href.replace(/^#+/, '');
+  const isAbsolute = /^(https?:\/\/|mailto:|tel:|\/\/)/i.test(withoutHash);
+
+  return isAbsolute ? withoutHash : href;
+}
 
 function normalizeHref(value: unknown, fallback = '#') {
-  if (typeof value !== 'string') return fallback;
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
   const trimmed = value.trim();
-  if (trimmed.length === 0) return fallback;
-  if (!isAllowedHref(trimmed)) return fallback;
-  return trimmed;
+  if (trimmed.length === 0) {
+    return fallback;
+  }
+
+  const repaired = stripAccidentalFragmentPrefix(trimmed);
+  if (!isAllowedHref(repaired)) {
+    return fallback;
+  }
+
+  return repaired;
 }
 
 function isLegacyFooterSocialBlock(value: Record<string, unknown>): boolean {
