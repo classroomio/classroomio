@@ -48,8 +48,8 @@ is reflected on an actual GitHub pull request against `main`, not just inside th
 
 After you submit:
 - A comment appears on the pull request with a **preview link** — open it and check your change
-  renders correctly before it's merged. This matters especially for pages with call-out boxes or
-  step-by-step components, since the CMS's own editor can't always render those.
+  renders correctly before it's merged. This matters especially for pages with call-out boxes,
+  since the CMS's own editor can't always render those.
 - Some automated checks run and post comments (spelling/style suggestions, a "needs docs review"
   label). These are **advisory, not blocking**, and will follow up with you if a change is
   actually needed.
@@ -71,12 +71,30 @@ independently. If a set of changes truly needs to land together atomically (for 
 coordinated rename referenced across several pages), that's better done by a developer directly in
 the repo rather than through the CMS.
 
+## Writing step-by-step instructions
+
+Don't use a "Steps" component for numbered instructions — write them as headings instead, numbered
+in order:
+
+```
+### 1. Go to the signup page
+
+...
+
+### 2. Fill in the form
+
+...
+```
+
+This isn't a style preference — a step component is invisible to the CMS editor (you'd see raw,
+unformatted tags while writing), while a numbered heading is plain text that always looks right,
+both while editing and on the live page.
+
 ## Two things the CMS can't do yet
 
 - **Adding a brand-new page, or reordering entire sections, needs a developer follow-up.** The
   CMS can edit any existing page freely, but a new page won't show up in the site's sidebar until
   a developer adds it to `navigation.sidebar` in `blume.config.ts`. Mention this when you submit a
   new page so someone picks it up.
-- **Pages with custom components** (step-by-step guides, call-out boxes) may not render fully
-  inside the CMS's editor. Always check the pull request's preview link rather than trusting the
-  in-CMS preview for these pages.
+- **Pages with call-out boxes** may not render fully inside the CMS's editor. Always check the
+  pull request's preview link rather than trusting the in-CMS preview for these pages.

@@ -31,7 +31,7 @@ This split happened in four stages, and it's worth knowing the history so the cu
 - **Stage 3**: the Help Center tab moved out of this app entirely, into the standalone `apps/help`. It had grown a duplicated, self-nested sidebar (several groups defined twice, once at the top level and once nested inside a "Build a course" wrapper) — reason enough on its own, plus giving user help its own top-level URL and search scope, independent from developer docs.
 - **Stage 4**: Platform was dropped and Self-Hosting was folded into Developers as a nested section, collapsing four developer/product-facing tabs down to two (Developers, API) plus the external Help Center link. A Glossary replaced Platform's role as the place terminology lives, moved into Help's Reference section since it serves the same broad audience Help already targets.
 
-Token Auth and MCP still don't live inside the API tab itself. Blume's Scalar-rendered API tab (`openapi.renderer: 'scalar'` in `blume.config.ts`) is a sealed, single-route embed: it cannot hold extra sidebar pages, so there's no way to put a hand-authored MDX page literally inside it. Developers is the correct zone for them regardless: rule 5 asks for developer surfaces to live in Developers, not specifically inside the API tab. If Blume ever supports content pages alongside an OpenAPI source, that's a reason to reconsider, not the current state.
+Token Auth and MCP still don't live inside the API tab itself, even though the API tab now renders with Blume's native OpenAPI renderer (switched from `openapi.renderer: 'scalar'`), which generates a real page per operation and does support other sidebar entries alongside them — the sealed-single-route limitation this paragraph used to describe no longer applies technically. Developers stays the correct zone for them regardless: rule 5 asks for developer surfaces to live in Developers, not specifically inside the API tab, and mixing hand-authored guides into a generated operation-reference sidebar would blur what's spec-derived from what's authored.
 
 ## How rule 10 actually works here
 
@@ -62,6 +62,8 @@ The API reference is generated from the OpenAPI spec (`upload-openapi-spec.yml` 
 Second person, present tense. Headings name what the reader does, not the feature's internal name: "See your food," not "Food viewing feature."
 
 Vale (`docs-validate.yml`) checks prose for passive voice and wordiness on every PR touching `apps/docs/**`, advisory only. It doesn't check the heading rule above yet: that's still a review call, not a lint rule.
+
+**Don't use the `<Steps>`/`<Step>` components for step-by-step instructions.** Use numbered headings instead (`### 1. Do the first thing`, `### 2. Do the next thing`), following the pattern in `cal.com`'s developer docs. `Steps`/`Step` are Blume-framework JSX components with no plain-Markdown equivalent, so the browser-based CMS editor (Sveltia, `apps/help/public/admin`) can't render them while a writer is editing — the raw tags show instead of a formatted step. Numbered headings are ordinary Markdown, so they render correctly everywhere, including in that editor. This was a deliberate content-format decision (not a limitation to work around), made after checking how Cal.com, Linear, and Dub render step-by-step guides in their own docs.
 
 ## Staying current
 
