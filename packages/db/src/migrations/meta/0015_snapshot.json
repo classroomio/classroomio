@@ -1,5 +1,5 @@
 {
-  "id": "a63cb324-aae8-486d-b698-686861dbedc0",
+  "id": "1bd91cac-b97d-4094-b413-c8ef5ae05b87",
   "prevId": "a4c8e91b-2f3d-4b7a-9c1e-6d5f8a0b3e12",
   "version": "7",
   "dialect": "postgresql",
@@ -5361,7 +5361,7 @@
           "name": "order",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "'1'"
         },
         "course_id": {
@@ -5601,7 +5601,7 @@
           "name": "order",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -6582,7 +6582,7 @@
           "name": "order",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "is_unlocked": {
           "name": "is_unlocked",

@@ -1,0 +1,1 @@
+ALTER TABLE "course_section" ALTER COLUMN "order" SET DEFAULT '1';

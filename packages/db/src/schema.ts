@@ -292,9 +292,7 @@ export const courseSection = pgTable('course_section', {
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
   title: varchar(),
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  order: bigint({ mode: 'number' })
-    .notNull()
-    .default(sql`'1'`),
+  order: bigint({ mode: 'number' }).default(sql`'1'`),
   courseId: uuid('course_id').references(() => course.id, {
     onDelete: 'cascade',
     onUpdate: 'cascade'
@@ -999,7 +997,7 @@ export const lesson = pgTable(
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }).notNull(),
+    order: bigint({ mode: 'number' }),
     isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
@@ -1210,7 +1208,7 @@ export const exercise = pgTable(
     courseId: uuid('course_id'),
     sectionId: uuid('section_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }).notNull(),
+    order: bigint({ mode: 'number' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
