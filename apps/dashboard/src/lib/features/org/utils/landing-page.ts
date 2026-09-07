@@ -455,8 +455,8 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
       }
 
       const title = normalizeText(item.title, '');
-      const hrefSource = typeof item.href === 'string' ? item.href.trim() : '';
-      if (!title || !hrefSource) {
+      const href = normalizeHref(item.href, '');
+      if (!title || !href) {
         return null;
       }
 
@@ -464,7 +464,7 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
         icon: resolveLandingPageLinkIcon(item.icon),
         title,
         description: normalizeText(item.description, ''),
-        href: hrefSource
+        href
       };
     })
     .filter((card): card is NonNullable<typeof card> => card !== null);
