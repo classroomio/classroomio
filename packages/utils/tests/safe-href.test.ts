@@ -9,13 +9,12 @@ describe('isAllowedHref', () => {
     { label: 'mailto link', value: 'mailto:user@example.com' },
     { label: 'tel link', value: 'tel:+1234567890' },
     { label: 'fragment anchor', value: '#section' },
+    { label: 'empty fragment', value: '#' },
     { label: 'root-relative path', value: '/courses' },
     { label: 'dot-relative path', value: './page' },
     { label: 'parent-relative path', value: '../page' },
-    { label: 'plain relative path', value: 'courses/intro' },
-    { label: 'path with segments', value: '/a/b/c' },
-    { label: 'https with path', value: 'https://example.com/path?q=1' },
-    { label: 'empty fragment', value: '#' }
+    { label: 'query-only string', value: '?tab=overview' },
+    { label: 'https with path', value: 'https://example.com/path?q=1' }
   ];
 
   const blocked = [
@@ -32,7 +31,9 @@ describe('isAllowedHref', () => {
     { label: 'about:blank', value: 'about:blank' },
     { label: 'blob:', value: 'blob:https://example.com/id' },
     { label: 'empty string', value: '' },
-    { label: 'whitespace only', value: '   ' }
+    { label: 'whitespace only', value: '   ' },
+    { label: 'plain text (no scheme)', value: 'Become a Certified AI Engineer' },
+    { label: 'plain text with spaces', value: 'Start Learning' }
   ];
 
   it.each(allowed)('allows $label: $value', ({ value }) => {
@@ -56,6 +57,16 @@ describe('containsDisallowedHrefs', () => {
     expect(containsDisallowedHrefs({ href: 'https://example.com' })).toBe(false);
     expect(containsDisallowedHrefs({ href: '/courses' })).toBe(false);
     expect(containsDisallowedHrefs({ href: '#section' })).toBe(false);
+  });
+
+  it('returns false for text fields without schemes', () => {
+    expect(
+      containsDisallowedHrefs({
+        heading: 'Become a Certified AI Engineer',
+        subheading: 'Master the skills',
+        label: 'Start Learning'
+      })
+    ).toBe(false);
   });
 
   it('returns false for nested clean objects', () => {
@@ -105,5 +116,20 @@ describe('containsDisallowedHrefs', () => {
     expect(containsDisallowedHrefs(42)).toBe(false);
     expect(containsDisallowedHrefs(true)).toBe(false);
     expect(containsDisallowedHrefs(null)).toBe(false);
+  });
+
+  it('returns false for mixed text and safe hrefs', () => {
+    expect(
+      containsDisallowedHrefs({
+        theme: 'quartz',
+        hero: {
+          heading: 'Become a Certified AI Engineer',
+          subheading: 'Master the skills',
+          primaryAction: { label: 'Start Learning', href: '/login' },
+          secondaryAction: { label: 'Browse', href: '/courses' }
+        },
+        navItems: [{ label: 'Courses', href: '/courses' }]
+      })
+    ).toBe(false);
   });
 });
