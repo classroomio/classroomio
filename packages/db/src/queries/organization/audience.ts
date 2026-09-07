@@ -5,7 +5,7 @@ import type { SQL } from 'drizzle-orm';
 
 import { AUDIENCE_ACTIVITY_WINDOW_DAYS } from '@cio/utils/validation/organization';
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { type DbOrTxClient, db } from '@db/drizzle';
 import type {
   TAudienceActivityWindow,
   TAudienceCompletion,
@@ -257,26 +257,30 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
  * bulk action resolved from a filter cannot target a different set than the one
  * the admin was shown.
  */
-export const getOrganizationAudience = async (orgId: string, options: GetOrganizationAudienceOptions = {}) => {
-  const page = options.page && options.page > 0 ? options.page : 1;
-  const limit = options.limit && options.limit > 0 ? Math.min(options.limit, 100) : 20;
-  const offset = (page - 1) * limit;
+/**
+ * The single source of truth for "which learners match these filters".
+ *
+ * The list, the count, and bulk-action target resolution all go through this,
+ * which is what guarantees a filter-mode bulk action cannot act on a different
+ * set than the admin was shown. Do not reimplement these predicates anywhere.
+ *
+ * `needsEnrolmentJoin` tells the caller whether the returned clause references
+ * the enrolment lateral, so a query that does not need it can skip the join.
+ */
+export function buildAudienceWhereClause(
+  orgId: string,
+  options: GetOrganizationAudienceOptions = {}
+): { whereClause: SQL; needsEnrolmentJoin: boolean } {
   const search = options.search?.trim();
-  const sortBy = options.sortBy ?? 'createdAt';
-  const sortOrder = options.sortOrder ?? 'desc';
   const status = options.status ?? 'ACTIVE';
   const excludeRecentJoiners = options.excludeRecentJoiners ?? true;
 
-  const audienceNameSql = sql<string>`COALESCE(NULLIF(${schema.profile.fullname}, ''), ${schema.profile.email}, ${schema.organizationmember.email})`;
-  const audienceEmailSql = sql<string>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`;
-  const audienceCreatedAtSql = sql<string>`COALESCE(${schema.profile.createdAt}, ${schema.organizationmember.createdAt})`;
   // The dormancy grace period keys off when they joined *this organization*,
   // not when their account was created. A long-standing account invited here
   // last week is still a recent joiner, and an account created moments ago can
   // be backfilled into an org it has belonged to for a year.
   const joinedOrgAtSql = sql<string>`${schema.organizationmember.createdAt}`;
   const lastActiveAtSql = sql<string | null>`${schema.organizationmember.lastActiveAt}`;
-  const enrolmentLateral = enrolmentSummaryLateral(orgId);
 
   const conditions: SQL[] = [
     eq(schema.organizationmember.organizationId, orgId),
@@ -317,13 +321,64 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
     );
   }
 
-  const whereClause = and(...conditions)!;
+  return {
+    whereClause: and(...conditions)!,
+    needsEnrolmentJoin: Boolean(options.enrollment || options.completion)
+  };
+}
+
+/**
+ * Every member id matching the filters, ordered by id so the result is stable.
+ *
+ * Used to resolve a filter-mode bulk action inside its transaction, and to
+ * compute the target hash the admin's preview is checked against. Deliberately
+ * uncapped: at this customer's scale the matched set is the point.
+ */
+export async function resolveAudienceMemberIds(
+  orgId: string,
+  options: GetOrganizationAudienceOptions = {},
+  dbClient: DbOrTxClient = db
+): Promise<number[]> {
+  try {
+    const { whereClause, needsEnrolmentJoin } = buildAudienceWhereClause(orgId, options);
+
+    const query = dbClient
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .$dynamic();
+
+    if (needsEnrolmentJoin) {
+      query.leftJoinLateral(enrolmentSummaryLateral(orgId), sql`true`);
+    }
+
+    const rows = await query.where(whereClause).orderBy(asc(schema.organizationmember.id));
+
+    return rows.map((row) => row.id);
+  } catch (error) {
+    console.error('resolveAudienceMemberIds error:', error);
+    throw new Error('Failed to resolve audience members for the given filters');
+  }
+}
+
+export const getOrganizationAudience = async (orgId: string, options: GetOrganizationAudienceOptions = {}) => {
+  const page = options.page && options.page > 0 ? options.page : 1;
+  const limit = options.limit && options.limit > 0 ? Math.min(options.limit, 100) : 20;
+  const offset = (page - 1) * limit;
+  const sortBy = options.sortBy ?? 'createdAt';
+  const sortOrder = options.sortOrder ?? 'desc';
+
+  const audienceNameSql = sql<string>`COALESCE(NULLIF(${schema.profile.fullname}, ''), ${schema.profile.email}, ${schema.organizationmember.email})`;
+  const audienceEmailSql = sql<string>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`;
+  const audienceCreatedAtSql = sql<string>`COALESCE(${schema.profile.createdAt}, ${schema.organizationmember.createdAt})`;
+  const lastActiveAtSql = sql<string | null>`${schema.organizationmember.lastActiveAt}`;
+  const enrolmentLateral = enrolmentSummaryLateral(orgId);
 
   // The enrolment lateral is the expensive part of this query, and only the
   // enrolment and completion filters make the count depend on it. Joining it
   // unconditionally would pay for per-learner lesson counts on every page load
   // of every org, including the common unfiltered one.
-  const countNeedsEnrolment = Boolean(options.enrollment || options.completion);
+  const { whereClause, needsEnrolmentJoin: countNeedsEnrolment } = buildAudienceWhereClause(orgId, options);
 
   const countQuery = db
     .select({ count: count(schema.organizationmember.id) })

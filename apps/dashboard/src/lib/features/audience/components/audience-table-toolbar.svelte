@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { Button } from '@cio/ui/base/button';
   import { Search } from '@cio/ui/custom/search';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
+  import AudienceBulkBar from './audience-bulk-bar.svelte';
   import AudienceFilterPopover from './audience-filter-popover.svelte';
   import AudienceViewSwitcher from './audience-view-switcher.svelte';
   import type {
+    AudienceBulkAction,
     OrganizationAudienceQuery,
     OrganizationAudienceSortBy,
     OrganizationAudienceSortOrder,
@@ -15,6 +16,8 @@
   interface Props {
     hasSelection: boolean;
     selectedCount: number;
+    allMatchingSelected: boolean;
+    isApplyingBulkAction?: boolean;
     searchValue?: string;
     query: OrganizationAudienceQuery;
     activeView: OrganizationAudienceView | null;
@@ -25,11 +28,16 @@
     onClearFilters: () => void;
     onSelectView: (view: OrganizationAudienceView) => void;
     onOpenAssign: () => void;
+    onSelectAllMatching: () => void;
+    onClearSelection: () => void;
+    onBulkAction: (action: AudienceBulkAction) => void;
   }
 
   let {
     hasSelection,
     selectedCount,
+    allMatchingSelected,
+    isApplyingBulkAction = false,
     searchValue = $bindable(''),
     query,
     activeView,
@@ -39,20 +47,25 @@
     onFilterChange,
     onClearFilters,
     onSelectView,
-    onOpenAssign
+    onOpenAssign,
+    onSelectAllMatching,
+    onClearSelection,
+    onBulkAction
   }: Props = $props();
 </script>
 
 <Page.BodyHeader>
   {#if hasSelection}
-    <div class="flex items-center gap-3 rounded-md border px-4 py-2">
-      <span class="ui:text-muted-foreground text-sm">
-        {$t('audience.selected_count', { count: selectedCount })}
-      </span>
-      <Button variant="secondary" size="sm" onclick={onOpenAssign}>
-        {$t('audience.assign_courses')}
-      </Button>
-    </div>
+    <AudienceBulkBar
+      {selectedCount}
+      totalMatching={totalCount}
+      {allMatchingSelected}
+      isApplying={isApplyingBulkAction}
+      {onSelectAllMatching}
+      {onClearSelection}
+      {onOpenAssign}
+      onAction={onBulkAction}
+    />
   {:else}
     <div class="flex w-full flex-col gap-2 md:flex-row md:items-center md:justify-end">
       <!-- The learner count lives here as muted subtitle text rather than as a

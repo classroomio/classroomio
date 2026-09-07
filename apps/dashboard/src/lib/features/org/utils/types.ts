@@ -98,6 +98,20 @@ export type InviteTeamData = InviteTeamSuccess['data'];
 
 export type DeleteTeamRequest = (typeof classroomio.organization)['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { success: true }>;
+export type BulkAudienceActionRequest = (typeof classroomio.organization)['audience']['bulk-action']['$post'];
+export type BulkAudienceActionSuccess = Extract<InferResponseType<BulkAudienceActionRequest>, { success: true }>;
+export type BulkAudienceActionResult = BulkAudienceActionSuccess['data'];
+
+export type BulkAudiencePreviewRequest = (typeof classroomio.organization)['audience']['bulk-preview']['$get'];
+export type BulkAudiencePreviewSuccess = Extract<InferResponseType<BulkAudiencePreviewRequest>, { success: true }>;
+export type BulkAudiencePreview = BulkAudiencePreviewSuccess['data'];
+
+export type UndoBulkAudienceActionRequest =
+  (typeof classroomio.organization)['audience']['bulk-action']['undo']['$post'];
+
+/** The lifecycle actions the bulk bar offers. `delete` requires every target to be ARCHIVED. */
+export type AudienceBulkAction = 'deactivate' | 'reactivate' | 'archive' | 'unarchive' | 'delete';
+
 export type DeleteAudienceMemberRequest = (typeof classroomio.organization)['audience'][':memberId']['$delete'];
 export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudienceMemberRequest>, { success: true }>;
 

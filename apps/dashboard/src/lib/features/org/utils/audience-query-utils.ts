@@ -118,6 +118,25 @@ export function toAudienceRequestQuery(
 }
 
 /**
+ * The filter half of a query, shaped for the bulk preview and bulk action
+ * endpoints. Pagination and sort are deliberately dropped: they change what the
+ * admin *sees*, never who a filter *matches*, and including them would make two
+ * identical targets hash differently.
+ */
+export function toAudienceBulkFilterQuery(query: OrganizationAudienceQuery) {
+  return {
+    status: query.status,
+    inviteStatus: query.inviteStatus,
+    enrollment: query.enrollment,
+    completion: query.completion,
+    lastLoginBefore: query.lastLoginBefore,
+    lastActiveBefore: query.lastActiveBefore,
+    excludeRecentJoiners: String(query.excludeRecentJoiners),
+    search: query.search
+  };
+}
+
+/**
  * The filter combination behind each saved view.
  *
  * Views are a presentation of filters, never a parallel state: resolving one

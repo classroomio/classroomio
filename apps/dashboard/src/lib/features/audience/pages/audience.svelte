@@ -26,9 +26,12 @@
     clearAudienceFilters,
     countActiveAudienceFilters,
     getAudienceSearchParams,
-    matchAudienceView
+    matchAudienceView,
+    toAudienceBulkFilterQuery
   } from '$features/org/utils/audience-query-utils';
-  import type { OrganizationAudienceView } from '$features/org/utils/types';
+  import AudienceBulkConfirmation from '$features/audience/components/audience-bulk-confirmation.svelte';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import type { AudienceBulkAction, BulkAudiencePreview, OrganizationAudienceView } from '$features/org/utils/types';
 
   interface Course {
     id: string;
@@ -47,7 +50,11 @@
   $effect(() => {
     orgApi.audience = audience ?? [];
     orgApi.audiencePagination = pagination;
+    // Selection is per-result-set: a new page or filter is a different
+    // population, and carrying a pending destructive selection across it is how
+    // people act on rows they never saw.
     selectedIds.clear();
+    allMatchingSelected = false;
   });
 
   const headers = $derived([
@@ -109,7 +116,7 @@
   const somePageSelected = $derived(
     selectablePageRows.some((row) => selectedIds.has(String(row.id))) && !allPageSelected
   );
-  const hasSelection = $derived(selectedIds.size > 0);
+  const hasSelection = $derived(selectedIds.size > 0 || allMatchingSelected);
 
   function toggleSelectAll() {
     if (allPageSelected) {
@@ -215,6 +222,96 @@
     void navigateAudience(clearAudienceFilters(query));
   }
 
+  // "All matching" is a mode, not 12,000 ids in a Set. It resolves server-side
+  // from the same filters the list used.
+  let allMatchingSelected = $state(false);
+  let bulkAction = $state<AudienceBulkAction | null>(null);
+  let bulkDialogOpen = $state(false);
+  let bulkPreview = $state<BulkAudiencePreview | null>(null);
+  let isApplyingBulkAction = $state(false);
+  let lastUndoToken = $state<string | null>(null);
+
+  const bulkTargetCount = $derived(allMatchingSelected ? totalCount : selectedIds.size);
+
+  function clearSelection() {
+    selectedIds.clear();
+    allMatchingSelected = false;
+  }
+
+  async function handleBulkAction(action: AudienceBulkAction) {
+    bulkAction = action;
+    bulkPreview = null;
+
+    // Filter mode needs the server's exact count and target hash before the
+    // admin can approve anything; ids mode already knows precisely who it hits.
+    if (allMatchingSelected) {
+      const response = await orgApi.previewBulkAudienceAction(query);
+      if (!response) {
+        bulkAction = null;
+        return;
+      }
+
+      bulkPreview = response.data;
+    }
+
+    bulkDialogOpen = true;
+  }
+
+  async function handleBulkConfirm(reason: string | undefined) {
+    if (!bulkAction) return;
+
+    const target = allMatchingSelected
+      ? bulkPreview
+        ? ({
+            mode: 'filter' as const,
+            filter: toAudienceBulkFilterQuery(query),
+            expectedCount: bulkPreview.count,
+            expectedTargetHash: bulkPreview.targetHash
+          } as never)
+        : null
+      : ({ mode: 'ids' as const, memberIds: [...selectedIds].map(Number) } as never);
+
+    if (!target) return;
+
+    isApplyingBulkAction = true;
+
+    try {
+      const response = await orgApi.bulkAudienceAction({ target, action: bulkAction, reason });
+      if (!response) return;
+
+      const result = response.data;
+      lastUndoToken = 'undoToken' in result ? (result.undoToken ?? null) : null;
+
+      if (result.mode === 'completed' && result.failed.length > 0) {
+        snackbar.success(
+          t.get('audience.bulk.partial_success', { succeeded: result.succeeded, failed: result.failed.length })
+        );
+      } else {
+        snackbar.success('audience.bulk.success');
+      }
+
+      bulkDialogOpen = false;
+      bulkAction = null;
+      clearSelection();
+      await refreshAudience();
+    } finally {
+      isApplyingBulkAction = false;
+    }
+  }
+
+  async function handleUndo() {
+    if (!lastUndoToken) return;
+
+    const token = lastUndoToken;
+    // Single-use server-side; drop it here too so the affordance disappears.
+    lastUndoToken = null;
+
+    const response = await orgApi.undoBulkAudienceAction(token);
+    if (response) {
+      await refreshAudience();
+    }
+  }
+
   function openDeleteConfirmation(member: OrganizationAudienceMember) {
     deleteCandidate = member;
     deleteDialogOpen = true;
@@ -252,6 +349,8 @@
 <AudienceTableToolbar
   {hasSelection}
   selectedCount={selectedIds.size}
+  {allMatchingSelected}
+  {isApplyingBulkAction}
   bind:searchValue
   {query}
   {activeView}
@@ -262,7 +361,17 @@
   onClearFilters={handleClearFilters}
   onSelectView={handleSelectView}
   onOpenAssign={() => (assignModalOpen = true)}
+  onSelectAllMatching={() => (allMatchingSelected = true)}
+  onClearSelection={clearSelection}
+  onBulkAction={handleBulkAction}
 />
+
+{#if lastUndoToken}
+  <div class="flex items-center gap-2 rounded-md border px-4 py-2">
+    <span class="ui:text-muted-foreground text-sm">{$t('audience.bulk.undo_available')}</span>
+    <Button variant="secondary" size="sm" onclick={handleUndo}>{$t('audience.bulk.undo')}</Button>
+  </div>
+{/if}
 
 {#if totalCount > 0}
   <div class="w-full space-y-4">
@@ -312,4 +421,13 @@
   member={deleteCandidate}
   isDeleting={deletingMemberId !== null}
   onDelete={handleDeleteAudienceMember}
+/>
+
+<AudienceBulkConfirmation
+  bind:open={bulkDialogOpen}
+  action={bulkAction}
+  count={bulkTargetCount}
+  preview={bulkPreview}
+  isApplying={isApplyingBulkAction}
+  onConfirm={handleBulkConfirm}
 />

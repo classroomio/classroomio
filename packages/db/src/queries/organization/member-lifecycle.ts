@@ -1,8 +1,170 @@
 import * as schema from '@db/schema';
 
-import { sql } from 'drizzle-orm';
+import { and, eq, inArray, ne, sql } from 'drizzle-orm';
 
+import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
+
+export type OrganizationMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+export type OrganizationMemberAuditEvent = 'DEACTIVATED' | 'REACTIVATED' | 'ARCHIVED' | 'UNARCHIVED' | 'REMOVED';
+
+export type BulkAudienceMemberRow = {
+  id: number;
+  profileId: string | null;
+  email: string | null;
+  status: OrganizationMemberStatus;
+};
+
+/**
+ * Resolves member ids to the rows a bulk action may touch, restricted to
+ * students in this organization.
+ *
+ * Authorization is enforced here rather than trusted from the caller: an id
+ * belonging to another org, or to an admin, simply does not come back, so it
+ * can never be acted on.
+ */
+export async function getBulkAudienceMembersByIds(
+  orgId: string,
+  memberIds: number[],
+  dbClient: DbOrTxClient = db
+): Promise<BulkAudienceMemberRow[]> {
+  if (memberIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await dbClient
+      .select({
+        id: schema.organizationmember.id,
+        profileId: schema.organizationmember.profileId,
+        email: schema.organizationmember.email,
+        status: schema.organizationmember.status
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          inArray(schema.organizationmember.id, memberIds)
+        )
+      );
+
+    return rows;
+  } catch (error) {
+    console.error('getBulkAudienceMembersByIds error:', error);
+    throw new Error('Failed to resolve audience members for bulk action');
+  }
+}
+
+/**
+ * Applies a lifecycle status to a set of members, recording who changed it and
+ * when. Returns the rows that actually changed.
+ *
+ * Rows already in the target status are excluded, so re-running an action is a
+ * no-op rather than a pile of misleading audit entries.
+ */
+export async function bulkUpdateOrganizationMemberStatus(
+  orgId: string,
+  memberIds: number[],
+  status: OrganizationMemberStatus,
+  actorProfileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number[]> {
+  if (memberIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const updated = await dbClient
+      .update(schema.organizationmember)
+      .set({ status, statusChangedAt: new Date().toISOString(), statusChangedBy: actorProfileId })
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          inArray(schema.organizationmember.id, memberIds),
+          ne(schema.organizationmember.status, status)
+        )
+      )
+      .returning({ id: schema.organizationmember.id });
+
+    return updated.map((row) => row.id);
+  } catch (error) {
+    console.error('bulkUpdateOrganizationMemberStatus error:', error);
+    throw new Error('Failed to update organization member status');
+  }
+}
+
+/**
+ * Removes memberships outright. Course enrolments inside this org are cleared
+ * by the caller in the same transaction — see `deleteGroupMembershipsForOrgProfiles`.
+ */
+export async function bulkDeleteOrganizationAudienceMembers(
+  orgId: string,
+  memberIds: number[],
+  dbClient: DbOrTxClient = db
+): Promise<number[]> {
+  if (memberIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const deleted = await dbClient
+      .delete(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          inArray(schema.organizationmember.id, memberIds)
+        )
+      )
+      .returning({ id: schema.organizationmember.id });
+
+    return deleted.map((row) => row.id);
+  } catch (error) {
+    console.error('bulkDeleteOrganizationAudienceMembers error:', error);
+    throw new Error('Failed to delete organization audience members');
+  }
+}
+
+export type MemberAuditEntry = {
+  memberId: number;
+  profileId: string | null;
+  targetEmail: string | null;
+  eventType: OrganizationMemberAuditEvent;
+  actorProfileId: string;
+  reason?: string;
+  /** The filter the action was launched from, so a bulk change stays replayable. */
+  filterSnapshot?: Record<string, unknown>;
+};
+
+export async function recordOrganizationMemberAudit(
+  orgId: string,
+  entries: MemberAuditEntry[],
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  if (entries.length === 0) {
+    return;
+  }
+
+  try {
+    await dbClient.insert(schema.organizationMemberAudit).values(
+      entries.map((entry) => ({
+        organizationId: orgId,
+        memberId: entry.memberId,
+        profileId: entry.profileId,
+        targetEmail: entry.targetEmail,
+        eventType: entry.eventType,
+        actorProfileId: entry.actorProfileId,
+        reason: entry.reason ?? null,
+        filterSnapshot: entry.filterSnapshot ?? {}
+      }))
+    );
+  } catch (error) {
+    console.error('recordOrganizationMemberAudit error:', error);
+    throw new Error('Failed to record organization member audit entries');
+  }
+}
 
 /**
  * Recomputes `organizationmember.last_active_at` from the two signals that

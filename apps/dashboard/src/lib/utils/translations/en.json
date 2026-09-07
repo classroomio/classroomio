@@ -4046,6 +4046,53 @@
       "clear": "Clear filters",
       "empty_title": "No learners match these filters",
       "empty_description": "Try widening the date range or clearing a filter."
+    },
+    "bulk": {
+      "actions": "Actions",
+      "select_all_matching": "Select all {count} matching",
+      "all_matching_selected": "All {count} matching learners selected",
+      "clear_selection": "Clear selection",
+      "action": {
+        "archive": "Archive {count} learners",
+        "deactivate": "Deactivate {count} learners",
+        "reactivate": "Reactivate {count} learners",
+        "unarchive": "Unarchive {count} learners",
+        "delete": "Delete {count} learners"
+      },
+      "confirm_title": {
+        "archive": "Archive {count} learners?",
+        "deactivate": "Deactivate {count} learners?",
+        "reactivate": "Reactivate {count} learners?",
+        "unarchive": "Unarchive {count} learners?",
+        "delete": "Permanently remove {count} learners?"
+      },
+      "confirm_body": {
+        "archive": "They lose access and free up a seat on your plan. You can unarchive them at any time.",
+        "deactivate": "They lose access but keep their seat on your plan. You can reactivate them at any time.",
+        "reactivate": "They regain access to your organization and its courses.",
+        "unarchive": "They regain access and take a seat on your plan again.",
+        "delete": "This removes them from this organization and cannot be undone. Their account, submissions and results are kept."
+      },
+      "confirm_action": {
+        "archive": "Archive",
+        "deactivate": "Deactivate",
+        "reactivate": "Reactivate",
+        "unarchive": "Unarchive",
+        "delete": "Delete permanently"
+      },
+      "sample_heading": "Includes",
+      "sample_more": "and {count} more",
+      "export_first": "Export this list first",
+      "reason_label": "Reason (optional)",
+      "reason_hint": "Recorded on the audit trail so this is answerable later.",
+      "type_count_label": "Type {count} to confirm",
+      "delete_is_permanent": "Deleting cannot be undone.",
+      "not_archived_blocker": "{count} of these learners are not archived. Archive them first.",
+      "success": "Learners updated",
+      "partial_success": "{succeeded} updated, {failed} skipped",
+      "undo_available": "Applied. You can still undo this.",
+      "undo": "Undo",
+      "undo_success": "Reverted"
     }
   },
   "analytics": {
