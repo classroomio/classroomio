@@ -60,6 +60,7 @@ import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
+import { audienceExportRouter } from '@api/routes/organization/audience-export';
 import { joinOrganization } from '@api/services/organization/join';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
@@ -884,6 +885,7 @@ export const organizationRouter = new Hono()
       }
     }
   )
+  .route('/audience/export.csv', audienceExportRouter)
   .route('/automation', automationRouter)
   .route('/course-import', courseImportRouter)
   .route('/search', searchRouter)

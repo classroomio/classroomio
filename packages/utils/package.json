@@ -21,6 +21,10 @@
       "types": "./dist/plans/index.d.ts",
       "default": "./dist/plans/index.js"
     },
+    "./export": {
+      "types": "./dist/export/index.d.ts",
+      "default": "./dist/export/index.js"
+    },
     "./senja": {
       "types": "./dist/senja/index.d.ts",
       "default": "./dist/senja/index.js"

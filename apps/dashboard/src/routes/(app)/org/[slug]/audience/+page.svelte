@@ -9,15 +9,13 @@
   import { resolve } from '$app/paths';
 
   let { data } = $props();
-  let isLoading = $state(false);
-
-  function exportAudience() {
-    isLoading = true;
-    alert('This feature is coming soon');
-    isLoading = false;
-  }
 
   const audienceLength = $derived(data.pagination?.total || 0);
+
+  // The export honours whatever the admin is currently looking at, so the file
+  // matches the list they just reviewed. Filters live in the URL, so forwarding
+  // the query string is all it takes.
+  const exportHref = $derived(`${page.url.pathname}/export${page.url.search}`);
   const atStudentLimit = $derived(audienceLength >= $currentOrgMaxAudience);
 </script>
 
@@ -39,7 +37,7 @@
       <Page.Subtitle>{$t('audience.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" onclick={exportAudience} disabled={isLoading} loading={isLoading}>
+      <Button variant="outline" href={exportHref} download>
         {$t('audience.export')}
       </Button>
       <Button
