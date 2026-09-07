@@ -6,7 +6,6 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
   navItems: [
     { label: 'Courses', href: '/courses' },
     { label: 'About', href: '#about' },
-    { label: 'Contact', href: '#contact' },
     { label: 'Sign In', href: '#signin' }
   ],
   hero: {
