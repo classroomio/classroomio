@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 const AssetKind = z.enum(['video', 'document', 'image', 'audio', 'other']);
-const AssetProvider = z.enum(['upload', 'youtube', 'generic', 'external_url', 'google_drive']);
+const AssetProvider = z.enum(['upload', 'youtube', 'vimeo', 'generic', 'external_url', 'google_drive']);
 export type TAssetProvider = z.infer<typeof AssetProvider>;
 const AssetStatus = z.enum(['active', 'archived']);
 const AssetTargetType = z.enum(['lesson', 'exercise', 'question']);
@@ -120,6 +120,11 @@ export const ZYouTubeMetadataQuery = z.object({
   url: z.string().url()
 });
 export type TYouTubeMetadataQuery = z.infer<typeof ZYouTubeMetadataQuery>;
+
+export const ZVimeoMetadataQuery = z.object({
+  url: z.string().url()
+});
+export type TVimeoMetadataQuery = z.infer<typeof ZVimeoMetadataQuery>;
 
 export const ZAssetThumbnailSelect = z.object({
   thumbnailUrl: z.string().url()

@@ -13,7 +13,7 @@
   import { Input } from '../../base/input';
   import { Textarea } from '../../base/textarea';
   import { IconButton } from '../icon-button';
-  import { MediaPlayer, isYoutubeUrl } from '../media-player';
+  import { MediaPlayer, isYoutubeUrl, isVimeoUrl } from '../media-player';
   import NumberBadge from '$src/base/number-badge/number-badge.svelte';
   import QuestionTitle from './question-title.svelte';
   import { YoutubeLinkForm } from '../youtube-link-form';
@@ -99,7 +99,7 @@
           : null;
       })
       .filter((entry): entry is { key: string; sourceIndex: number; sourceUrl: string } =>
-        Boolean(entry && isYoutubeUrl(entry.sourceUrl))
+        Boolean(entry && (isYoutubeUrl(entry.sourceUrl) || isVimeoUrl(entry.sourceUrl)))
       )
   );
 
@@ -381,7 +381,7 @@
             <div class="ui:group ui:relative ui:max-w-xl ui:rounded-md ui:border">
               <MediaPlayer
                 source={{
-                  type: 'youtube',
+                  type: isVimeoUrl(video.sourceUrl) ? 'vimeo' : 'youtube',
                   url: video.sourceUrl
                 }}
                 options={{
@@ -458,7 +458,7 @@
             <div class="ui:max-w-xl ui:overflow-hidden ui:rounded-md ui:border">
               <MediaPlayer
                 source={{
-                  type: 'youtube',
+                  type: isVimeoUrl(video.sourceUrl) ? 'vimeo' : 'youtube',
                   url: video.sourceUrl
                 }}
                 options={{

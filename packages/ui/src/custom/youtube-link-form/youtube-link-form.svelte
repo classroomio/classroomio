@@ -3,7 +3,7 @@
   import { Input } from '../../base/input';
   import { Label } from '../../base/label';
   import { cn } from '../../tools';
-  import { normalizeYoutubeLink, splitYoutubeLinks, toCanonicalYoutubeLink } from './youtube-link-utils';
+  import { splitLinks, toCanonicalYoutubeUrl } from '@cio/utils';
 
   interface Props {
     inputLabel: string;
@@ -40,9 +40,8 @@
   async function addYoutubeLink() {
     if (disabled || isSubmitting) return;
 
-    const links = splitYoutubeLinks(rawInput)
-      .map(normalizeYoutubeLink)
-      .map(toCanonicalYoutubeLink)
+    const links = splitLinks(rawInput)
+      .map(toCanonicalYoutubeUrl)
       .filter((entry): entry is string => Boolean(entry));
 
     const dedupedLinks = Array.from(new Set(links));
@@ -78,6 +77,7 @@
       value={rawInput}
       disabled={disabled || isSubmitting}
       placeholder={inputPlaceholder}
+      oninput={handleInputChange}
       onchange={handleInputChange}
     />
     {#if validationError}

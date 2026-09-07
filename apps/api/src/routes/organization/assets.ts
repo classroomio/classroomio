@@ -14,7 +14,8 @@ import {
   ZFinalizeHls1080,
   ZFinalizeHlsAsset,
   ZInitHlsAsset,
-  ZYouTubeMetadataQuery
+  ZYouTubeMetadataQuery,
+  ZVimeoMetadataQuery
 } from '@cio/utils/validation/assets';
 import { ZUpdateTranscript } from '@cio/utils/validation/media';
 import {
@@ -34,6 +35,7 @@ import {
   getOrganizationAssetStorageService,
   getTranscriptForOrganizationAssetService,
   getYouTubeMetadataService,
+  getVimeoMetadataService,
   initHlsAssetService,
   issueHlsCookieService,
   listOrganizationAssetsService,
@@ -344,6 +346,27 @@ export const assetsRouter = new Hono()
       }
     }
   )
+  /**
+   * GET /organization/assets/vimeo-metadata
+   * Resolve Vimeo metadata (title, duration, thumbnail, videoId, hash) for a URL
+   */
+  .get('/vimeo-metadata', authMiddleware, orgMemberMiddleware, zValidator('query', ZVimeoMetadataQuery), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const query = c.req.valid('query');
+      const metadata = await getVimeoMetadataService(orgId, query);
+
+      return c.json(
+        {
+          success: true,
+          data: metadata
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to resolve Vimeo metadata');
+    }
+  })
   /**
    * GET /organization/assets/:assetId/transcript
    * Whisper transcript + presigned VTT URL for captions (or null if none).

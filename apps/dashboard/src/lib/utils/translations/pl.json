@@ -2141,7 +2141,26 @@
                   "completed": "Przetwarzanie zakończone",
                   "failed": "Przetwarzanie nie powiodło się",
                   "canceled": "Przetwarzanie anulowane"
-                }
+                },
+                "vimeo_link": "Link do Vimeo",
+                "invalid_vimeo": "Nieprawidłowy link(i) do Vimeo",
+                "vimeo_privacy_hint_prefix": "W przypadku filmów z ograniczeniami domeny dodaj",
+                "vimeo_privacy_hint_suffix": "do ustawień prywatności Vimeo.",
+                "vimeo_privacy_error_title": "Osadzanie ograniczone przez ustawienia prywatności Vimeo",
+                "vimeo_privacy_error_prefix": "Ten film ma ograniczenia prywatności na poziomie domeny. Aby zezwolić na odtwarzanie, dodaj",
+                "vimeo_privacy_error_suffix": "do dozwolonych domen filmu w ustawieniach wideo Vimeo.",
+                "vimeo_retry_label": "Spróbuj ponownie odtworzyć",
+                "vimeo_learner_error_title": "Film niedostępny",
+                "vimeo_learner_error_description": "Ten film jest tymczasowo niedostępny. Poinformuj o tym swojego instruktora.",
+                "duplicate_video_error": "Ten film został już dodany do tej lekcji.",
+                "duplicates_skipped": "Duplikaty filmów zostały pominięte.",
+                "add_video_failed": "Nie udało się dodać filmu. Spróbuj ponownie.",
+                "some_videos_failed": "Niektórych filmów nie udało się dodać. Spróbuj ponownie.",
+                "vimeo_privacy_error_description": "Odtwarzanie zostało zablokowane przez ustawienia prywatności Vimeo. Możliwe przyczyny sprawdzenia:",
+                "vimeo_privacy_error_unlisted_hint": "Link do filmu nieudostępnionego publicznie może nie mieć klucza prywatności (hasha).",
+                "vimeo_privacy_error_domain_prefix": "Ograniczenia domeny w Vimeo (upewnij się, że",
+                "vimeo_privacy_error_domain_suffix": "jest dozwolone w ustawieniach wideo).",
+                "vimeo_privacy_error_other_hint": "Inne ustawienia prywatności Vimeo"
               },
               "empty_title": "Nie ma jeszcze filmów",
               "empty_description": "Dodaj filmy z YouTube, prześlij lub ze swojej biblioteki multimediów",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Wbudowany",
                 "course_fallback": "Kurs",
                 "menu_aria": "Opcje wideo",
-                "transcription_in_progress": "(Trwa generowanie transkrypcji)"
+                "transcription_in_progress": "(Trwa generowanie transkrypcji)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Zobacz transkrypcję",
               "playback_error": "Ładowanie tego filmu nie powiodło się.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "Rozdzielczość 1080p jest niedostępna dla tego wideo źródłowego",
               "loading": "Ładowanie wideo…",
               "playback_auth_error": "Twoja sesja wygasła. Aby obejrzeć ten film, zaloguj się ponownie.",
-              "playback_auth_action": "Zalogować się"
+              "playback_auth_action": "Zalogować się",
+              "vimeo_link": "Link do Vimeo"
             },
             "slide": {
               "title": "Slajd",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Ogólne",
       "external_url": "Zewnętrzny adres URL",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Wideo",

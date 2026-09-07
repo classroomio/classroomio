@@ -14,6 +14,7 @@
     type LessonVideo
   } from './video-card-utils';
   import { t } from '$lib/utils/functions/translations';
+  import { isValidYoutubeUrl as isYoutubeUrl, isValidVimeoUrl as isVimeoUrl } from '@cio/utils';
 
   interface Props {
     video: LessonVideo;
@@ -33,7 +34,9 @@
   const createdAtIso = $derived(getVideoCreatedAt(video));
   const createdAtFormatted = $derived(formatVideoCreatedAt(createdAtIso ?? undefined));
 
-  const isYoutubeWithLink = $derived(video.type === 'youtube' && !!video.link);
+  const isYoutube = $derived(video.type === 'youtube' || (video.link ? isYoutubeUrl(video.link) : false));
+  const isVimeo = $derived(video.type === 'vimeo' || (video.link ? isVimeoUrl(video.link) : false));
+  const isExternalWithLink = $derived((isYoutube || isVimeo) && !!video.link);
 
   const channelLine = $derived.by(() => {
     const courseTitle = courseApi.course?.title?.trim();
@@ -46,9 +49,10 @@
   });
 
   const sourceKindLabel = $derived.by(() => {
-    const key =
-      video.type === 'youtube'
-        ? 'kind_youtube'
+    const key = isYoutube
+      ? 'kind_youtube'
+      : isVimeo
+        ? 'kind_vimeo'
         : video.type === 'upload'
           ? 'kind_upload'
           : video.type === 'google_drive'
@@ -96,7 +100,7 @@
     <div class="min-w-0 flex-1">
       <div class="flex items-start gap-1">
         <div class="ui:text-foreground min-w-0 flex-1 text-base leading-snug font-semibold" {title}>
-          {#if isYoutubeWithLink}
+          {#if isExternalWithLink}
             <HoverableItem class="block min-w-0">
               {#snippet children(isHovered)}
                 <a

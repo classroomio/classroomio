@@ -2141,7 +2141,26 @@
                   "completed": "Behandling afsluttet",
                   "failed": "Behandlingen mislykkedes",
                   "canceled": "Behandlingen blev annulleret"
-                }
+                },
+                "vimeo_link": "Vimeo-link",
+                "invalid_vimeo": "Ugyldige Vimeo-link(er)",
+                "vimeo_privacy_hint_prefix": "For domænebegrænsede videoer skal du tilføje",
+                "vimeo_privacy_hint_suffix": "til Vimeos privatlivsindstillinger.",
+                "vimeo_privacy_error_title": "Indlejring begrænset af Vimeos privatlivsindstillinger",
+                "vimeo_privacy_error_prefix": "Denne video har privatlivsbegrænsninger på domæneniveau. For at tillade afspilning skal du tilføje",
+                "vimeo_privacy_error_suffix": "til videoens tilladte domæner i dine Vimeo-videoindstillinger.",
+                "vimeo_retry_label": "Prøv at afspille igen",
+                "vimeo_learner_error_title": "Video utilgængelig",
+                "vimeo_learner_error_description": "Denne video er midlertidigt utilgængelig. Giv venligst din instruktør besked.",
+                "duplicate_video_error": "Denne video er allerede blevet tilføjet til denne lektion.",
+                "duplicates_skipped": "Duplikerede videoer blev sprunget over.",
+                "add_video_failed": "Kunne ikke tilføje video. Prøv igen.",
+                "some_videos_failed": "Nogle videoer kunne ikke tilføjes. Prøv igen.",
+                "vimeo_privacy_error_description": "Afspilning blev blokeret af Vimeos privatlivsindstillinger. Mulige årsager til at kontrollere inkluderer:",
+                "vimeo_privacy_error_unlisted_hint": "Ikke-listet videolink mangler muligvis sin privatlivsnøgle (hash)",
+                "vimeo_privacy_error_domain_prefix": "Domænebegrænsninger på Vimeo (sørg for",
+                "vimeo_privacy_error_domain_suffix": "at det er tilladt i videoindstillingerne)",
+                "vimeo_privacy_error_other_hint": "Andre Vimeo-privatlivsindstillinger"
               },
               "empty_title": "Ingen videoer endnu",
               "empty_description": "Tilføj videoer fra YouTube, upload eller dit mediebibliotek",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Indlejret",
                 "course_fallback": "Kursus",
                 "menu_aria": "Video muligheder",
-                "transcription_in_progress": "(Transskriptionsgenerering i gang)"
+                "transcription_in_progress": "(Transskriptionsgenerering i gang)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Se transskription",
               "playback_error": "Indlæsningen af denne video mislykkedes.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "1080p ikke tilgængelig for denne kildevideo",
               "loading": "Indlæser video...",
               "playback_auth_error": "Din session udløb. Log venligst ind igen for at se denne video.",
-              "playback_auth_action": "Log ind"
+              "playback_auth_action": "Log ind",
+              "vimeo_link": "Vimeo-link"
             },
             "slide": {
               "title": "Dias",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Generisk",
       "external_url": "Ekstern URL",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Video",

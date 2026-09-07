@@ -1,7 +1,7 @@
 import { t } from '$lib/utils/functions/translations';
 import type { OrganizationAsset } from './types';
 
-type LessonVideoType = 'upload' | 'youtube' | 'generic' | 'google_drive';
+type LessonVideoType = 'upload' | 'youtube' | 'vimeo' | 'generic' | 'google_drive';
 
 export function formatBytes(bytes: number | null | undefined): string {
   if (bytes == null || Number.isNaN(bytes) || bytes < 0) {
@@ -57,6 +57,7 @@ function formatNumber(value: number, fractionDigits: number): string {
 
 export function mapAssetProviderToLessonVideoType(provider: string): LessonVideoType {
   if (provider === 'youtube') return 'youtube';
+  if (provider === 'vimeo') return 'vimeo';
   if (provider === 'google_drive') return 'google_drive';
   if (provider === 'generic' || provider === 'external_url') return 'generic';
   return 'upload';

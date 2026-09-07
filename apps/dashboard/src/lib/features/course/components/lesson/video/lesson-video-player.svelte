@@ -490,6 +490,28 @@
       width: '100%',
       controls: true,
       playsinline: true,
+      isLearnerView: $isCourseLearnerView,
+      vimeoPrivacyErrorTitle: $t('course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_title'),
+      vimeoPrivacyErrorDescription: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_description'
+      ),
+      vimeoPrivacyErrorUnlistedHint: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_unlisted_hint'
+      ),
+      vimeoPrivacyErrorDomainPrefix: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_domain_prefix'
+      ),
+      vimeoPrivacyErrorDomainSuffix: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_domain_suffix'
+      ),
+      vimeoPrivacyErrorOtherHint: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_privacy_error_other_hint'
+      ),
+      vimeoRetryLabel: $t('course.navItem.lessons.materials.tabs.video.add_video.vimeo_retry_label'),
+      vimeoLearnerErrorTitle: $t('course.navItem.lessons.materials.tabs.video.add_video.vimeo_learner_error_title'),
+      vimeoLearnerErrorDescription: $t(
+        'course.navItem.lessons.materials.tabs.video.add_video.vimeo_learner_error_description'
+      ),
       onTimeUpdate: (seconds) => {
         if (uploadAssetId) {
           lessonVideoBus.updateTranscriptSource(uploadAssetId, { currentTimeSeconds: seconds });

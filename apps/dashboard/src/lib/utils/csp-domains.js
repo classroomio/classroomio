@@ -41,12 +41,18 @@ const saasDefaults = {
     'https://*.ytimg.com',
     'https://noembed.com',
     'https://www.googleapis.com',
-    'https://o476906.ingest.us.sentry.io'
+    'https://o476906.ingest.us.sentry.io',
+    'https://*.vimeo.com',
+    'https://vimeo.com',
+    'https://*.vimeocdn.com'
   ],
   frameSrc: [
     'https://www.youtube.com',
     'https://youtube.com',
     'https://www.youtube-nocookie.com',
+    'https://player.vimeo.com',
+    'https://*.vimeo.com',
+    'https://vimeo.com',
     'https://www.google.com',
     'https://google.com',
     'https://drive.google.com',

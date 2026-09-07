@@ -9,3 +9,6 @@ export * from './sanitize';
 export * from './slug';
 export * from './transcript-vtt';
 export * from './network';
+export * from './links';
+export * from './vimeo';
+export * from './youtube';

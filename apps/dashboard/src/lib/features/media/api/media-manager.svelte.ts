@@ -9,6 +9,7 @@ import type {
   DeleteAssetRequest,
   GetAssetTranscriptRequest,
   GetAssetUsageRequest,
+  GetVimeoMetadataRequest,
   GetYouTubeMetadataRequest,
   ListAssetsRequest,
   OrganizationAsset,
@@ -18,6 +19,7 @@ import type {
   UpdateAssetData,
   UpdateAssetRequest,
   UpdateAssetTranscriptRequest,
+  VimeoMetadata,
   YouTubeMetadata
 } from '../utils/types';
 import type {
@@ -27,6 +29,7 @@ import type {
   TAssetListQuery,
   TAssetStorageQuery,
   TAssetUpdate,
+  TVimeoMetadataQuery,
   TYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
 import {
@@ -36,6 +39,7 @@ import {
   ZAssetListQuery,
   ZAssetStorageQuery,
   ZAssetUpdate,
+  ZVimeoMetadataQuery,
   ZYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
 import { getAssetHlsManifestLink, isHlsAsset, mapAssetToLessonVideo } from '../utils/media-manager-utils';
@@ -133,6 +137,29 @@ export class MediaApi extends BaseApiWithErrors {
           query: result.data
         }),
       logContext: 'resolving YouTube metadata',
+      onSuccess: (response) => {
+        metadata = response.data;
+      }
+    });
+
+    return metadata;
+  }
+
+  async getVimeoMetadata(url: string): Promise<VimeoMetadata | null> {
+    const query: TVimeoMetadataQuery = { url };
+    const result = ZVimeoMetadataQuery.safeParse(query);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error);
+      return null;
+    }
+
+    let metadata: VimeoMetadata | null = null;
+    await this.execute<GetVimeoMetadataRequest>({
+      requestFn: () =>
+        classroomio.organization.assets['vimeo-metadata'].$get({
+          query: result.data
+        }),
+      logContext: 'resolving Vimeo metadata',
       onSuccess: (response) => {
         metadata = response.data;
       }

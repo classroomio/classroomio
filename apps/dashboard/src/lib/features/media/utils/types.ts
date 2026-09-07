@@ -52,6 +52,11 @@ export type GetYouTubeMetadataResponse = InferResponseType<GetYouTubeMetadataReq
 export type GetYouTubeMetadataSuccess = Extract<GetYouTubeMetadataResponse, { success: true }>;
 export type YouTubeMetadata = GetYouTubeMetadataSuccess['data'];
 
+export type GetVimeoMetadataRequest = (typeof classroomio.organization)['assets']['vimeo-metadata']['$get'];
+export type GetVimeoMetadataResponse = InferResponseType<GetVimeoMetadataRequest>;
+export type GetVimeoMetadataSuccess = Extract<GetVimeoMetadataResponse, { success: true }>;
+export type VimeoMetadata = GetVimeoMetadataSuccess['data'];
+
 export type GetAssetTranscriptRequest = (typeof classroomio.organization)['assets'][':assetId']['transcript']['$get'];
 export type GetAssetTranscriptResponse = InferResponseType<GetAssetTranscriptRequest>;
 export type GetAssetTranscriptSuccess = Extract<GetAssetTranscriptResponse, { success: true }>;

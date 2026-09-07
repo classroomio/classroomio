@@ -1,15 +1,9 @@
 <script lang="ts">
-  import { Badge } from '@cio/ui/base/badge';
-  import CopyIcon from '@lucide/svelte/icons/copy';
-  import TrashIcon from '@lucide/svelte/icons/trash';
-
   import { t } from '$lib/utils/functions/translations';
-  import type { LessonVideoType } from '$features/course/utils/types';
-  import { lessonApi } from '$features/course/api';
-  import { mediaApi } from '$features/media/api';
-  import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+  import { normalizeHttpUrl, splitLinks } from '@cio/utils';
+  import { addExternalVideosToLesson } from './video-card-utils';
+  import AddedVideoList from './added-video-list.svelte';
 
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
 
@@ -21,105 +15,79 @@
 
   let genericLinks = $state('');
   let error = $state('');
+  let isSubmitting = $state(false);
 
-  async function addVideo() {
-    const links = getVideoUrls(genericLinks);
-    const validLinks = links.filter(isValidLink);
+  function isValidLink(link = ''): boolean {
+    const trimmed = link.trim();
+    if (!trimmed) return false;
 
-    if (validLinks.length === 0) {
-      error = $t('course.navItem.lessons.materials.tabs.video.add_video.invalid_link');
-    } else {
-      if (!lessonApi.lesson) return;
-
-      const existingCount = Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0;
-      const newVideos = await Promise.all(
-        validLinks.map(async (link = '', index) => {
-          const createdAt = new Date().toISOString();
-          const asset = await mediaApi.createAsset({
-            kind: 'video',
-            provider: 'generic',
-            storageProvider: 'external',
-            sourceUrl: link,
-            isExternal: true,
-            title: link,
-            metadata: { createdAt }
-          });
-
-          if (asset && lessonId) {
-            await mediaApi.attachAsset(asset.id, {
-              targetType: 'lesson',
-              targetId: lessonId,
-              slotType: 'lesson_video',
-              position: existingCount + index
-            });
-          }
-
-          return {
-            type: 'generic' as LessonVideoType,
-            link,
-            assetId: asset?.id,
-            metadata: { createdAt } as { svid?: string; createdAt?: string }
-          };
-        })
+    try {
+      const url = new URL(
+        trimmed.startsWith('http://') || trimmed.startsWith('https://') ? trimmed : `https://${trimmed}`
       );
-
-      lessonApi.updateLessonState('videos', newVideos, { append: true });
-      genericLinks = '';
-      error = '';
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
     }
   }
 
-  function isValidLink(link = '') {
-    // Basic URL validation
-    if (!link) return false;
+  async function addVideo() {
+    if (isSubmitting) return;
+
+    const rawLinks = splitLinks(genericLinks);
+    const validLinks = rawLinks.filter(isValidLink).map((link) => normalizeHttpUrl(link));
+    const dedupedValidLinks = Array.from(new Set(validLinks));
+
+    if (dedupedValidLinks.length === 0) {
+      error = $t('course.navItem.lessons.materials.tabs.video.add_video.invalid_link');
+
+      return;
+    }
+
+    isSubmitting = true;
 
     try {
-      const url = new URL(link.trim());
-      return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch {
-      // If URL construction fails, try prepending https://
-      try {
-        return !!new URL(`https://${link.trim()}`);
-      } catch {
-        return false;
-      }
+      await addExternalVideosToLesson({
+        links: dedupedValidLinks,
+        type: 'generic',
+        lessonId
+      });
+
+      genericLinks = '';
+      error = '';
+    } finally {
+      isSubmitting = false;
+    }
+  }
+
+  function handleInputChange() {
+    if (error) {
+      error = '';
     }
   }
 </script>
 
-<div class="flex w-full items-{error ? 'center' : 'end'} justify-between gap-5">
+<form
+  class="flex w-full items-end justify-between gap-4"
+  onsubmit={(event) => {
+    event.preventDefault();
+    void addVideo();
+  }}
+>
   <InputField
     label={$t('course.navItem.lessons.materials.tabs.video.embed_link')}
     bind:value={genericLinks}
     className="flex-1"
-    onchange={() => (lessonApi.isDirty = true)}
+    isDisabled={isSubmitting}
+    oninput={handleInputChange}
+    onchange={handleInputChange}
+    onInputChange={handleInputChange}
     placeholder="https://www.videoplayer.com/"
     errorMessage={error}
   />
-  <Button onclick={addVideo}>
+  <Button type="submit" disabled={isSubmitting}>
     {$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
   </Button>
-</div>
-<p class="mt-4 pl-2 text-sm">
-  {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
-  <strong>
-    {lessonApi.lesson?.videos?.filter((v) => v.type === 'generic').length || 0}
-  </strong>
-</p>
-<div class="">
-  {#each lessonApi.lesson?.videos || [] as video, index}
-    {#if video.type === 'generic'}
-      <div class="flex items-center gap-1">
-        <Badge class="max-w-md truncate" variant="secondary">
-          {video.link}
-        </Badge>
-        <IconButton onclick={() => copyToClipboard(video.link)}>
-          <CopyIcon size={16} />
-        </IconButton>
-        <IconButton onclick={() => removeVideo(index)}>
-          <TrashIcon size={16} />
-        </IconButton>
-      </div>
-    {/if}
-  {/each}
-</div>
+</form>
+
+<AddedVideoList type="generic" />

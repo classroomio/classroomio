@@ -2141,7 +2141,26 @@
                   "completed": "प्रसंस्करण पूर्ण",
                   "failed": "प्रसंस्करण विफल रहा",
                   "canceled": "प्रसंस्करण रद्द कर दिया गया"
-                }
+                },
+                "vimeo_link": "विमियो लिंक",
+                "invalid_vimeo": "अमान्य विमियो लिंक",
+                "vimeo_privacy_hint_prefix": "डोमेन-प्रतिबंधित वीडियो के लिए, जोड़ें",
+                "vimeo_privacy_hint_suffix": "Vimeo की गोपनीयता सेटिंग में जाएं।",
+                "vimeo_privacy_error_title": "Vimeo की गोपनीयता सेटिंग्स के कारण एम्बेडिंग प्रतिबंधित है।",
+                "vimeo_privacy_error_prefix": "इस वीडियो पर डोमेन-स्तर की गोपनीयता संबंधी पाबंदियाँ हैं। इसे चलाने की अनुमति देने के लिए, कृपया जोड़ें",
+                "vimeo_privacy_error_suffix": "अपने Vimeo वीडियो सेटिंग में वीडियो के लिए अनुमत डोमेन चुनें।",
+                "vimeo_retry_label": "प्लेबैक पुनः प्रयास करें",
+                "vimeo_learner_error_title": "वीडियो उपलब्ध नहीं है",
+                "vimeo_learner_error_description": "यह वीडियो फिलहाल अनुपलब्ध है। कृपया अपने प्रशिक्षक को सूचित करें।",
+                "duplicate_video_error": "यह वीडियो पहले ही इस पाठ में जोड़ दिया गया है।",
+                "duplicates_skipped": "दोहराए गए वीडियो हटा दिए गए हैं।",
+                "add_video_failed": "वीडियो जोड़ने में विफलता। कृपया पुनः प्रयास करें।",
+                "some_videos_failed": "कुछ वीडियो नहीं जोड़े जा सके। कृपया पुनः प्रयास करें।",
+                "vimeo_privacy_error_description": "Vimeo की गोपनीयता सेटिंग्स के कारण प्लेबैक अवरुद्ध हो गया था। जाँच करने के लिए संभावित कारण निम्नलिखित हैं:",
+                "vimeo_privacy_error_unlisted_hint": "अनलिस्टेड वीडियो लिंक में उसकी प्राइवेसी की (हैश) मौजूद नहीं हो सकती है।",
+                "vimeo_privacy_error_domain_prefix": "Vimeo पर डोमेन प्रतिबंध (सुनिश्चित करें)",
+                "vimeo_privacy_error_domain_suffix": "वीडियो सेटिंग में इसकी अनुमति है)",
+                "vimeo_privacy_error_other_hint": "अन्य Vimeo गोपनीयता सेटिंग्स"
               },
               "empty_title": "अभी तक कोई वीडियो नहीं",
               "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "एंबेडेड",
                 "course_fallback": "पाठ्यक्रम",
                 "menu_aria": "वीडियो विकल्प",
-                "transcription_in_progress": "(प्रतिलेख निर्माण प्रगति पर है)"
+                "transcription_in_progress": "(प्रतिलेख निर्माण प्रगति पर है)",
+                "kind_vimeo": "विमियो"
               },
               "view_transcript": "प्रतिलेखन देखें",
               "playback_error": "इस वीडियो को लोड करना विफल रहा.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "इस स्रोत वीडियो के लिए 1080p अनुपलब्ध है",
               "loading": "वीडियो लोड हो रहा है...",
               "playback_auth_error": "आपका सत्र समाप्त हो गया. कृपया इस वीडियो को देखने के लिए फिर से साइन इन करें।",
-              "playback_auth_action": "दाखिल करना"
+              "playback_auth_action": "दाखिल करना",
+              "vimeo_link": "विमियो लिंक"
             },
             "slide": {
               "title": "फिसल पट्टी",
@@ -3119,7 +3140,8 @@
       "youtube": "यूट्यूब",
       "generic": "सामान्य",
       "external_url": "बाहरी यूआरएल",
-      "google_drive": "गूगल ड्राइव"
+      "google_drive": "गूगल ड्राइव",
+      "vimeo": "विमियो"
     },
     "kind": {
       "video": "वीडियो",

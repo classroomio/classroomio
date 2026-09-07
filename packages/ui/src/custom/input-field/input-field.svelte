@@ -29,6 +29,7 @@
     testId?: string;
     onchange?: (e: InputOnChangeEvent) => void;
     onInputChange?: (e: InputOnChangeEvent) => void;
+    oninput?: (e: Event) => void;
     labelAction?: import('svelte').Snippet;
   }
 
@@ -55,6 +56,7 @@
     testId,
     onchange = () => {},
     onInputChange = () => {},
+    oninput = () => {},
     labelAction
   }: Props = $props();
 
@@ -107,6 +109,10 @@
     onkeydown={onKeyDown}
     onchange={handleInputChange}
     onblur={handleBlur}
+    oninput={(e) => {
+      oninput(e);
+      onInputChange(e);
+    }}
   />
 
   {#if errorMessage}
