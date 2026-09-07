@@ -1,5 +1,21 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'blume';
+import { extractOperations, type ApiDocument } from 'blume/openapi/model.ts';
 import { z } from 'zod';
+
+const API_ROUTE = '/api';
+const apiSpec = JSON.parse(
+  readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')
+) as ApiDocument;
+const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_ROUTE);
+const apiSidebarGroups = apiTags.map((tag) => ({
+  label: tag.name,
+  display: 'group' as const,
+  collapsed: false,
+  items: Object.values(apiOperations)
+    .filter((operation) => operation.tagSlug === tag.slug)
+    .map((operation) => operation.route)
+}));
 
 /**
  * The site is served at classroomio.com/docs, proxied to this worker by the
@@ -71,8 +87,7 @@ export default defineConfig({
   },
   openapi: {
     enabled: true,
-    renderer: 'scalar',
-    route: '/api',
+    route: API_ROUTE,
     sources: [{ label: 'API', spec: './openapi/public-api.json' }]
   },
   navigation: {
@@ -83,7 +98,7 @@ export default defineConfig({
       // explicit href still sends clicks to the actual Developers overview page
       // instead of falling back to the site root.
       { label: 'Developers', path: '/', href: '/developers', icon: 'terminal' },
-      { label: 'API', path: '/api', icon: 'code' }
+      { label: 'API', path: API_ROUTE, icon: 'code' }
     ],
     sidebar: [
       // Explicit '/developers' (not the bare '/' shorthand): a bare '/' item
@@ -161,6 +176,11 @@ export default defineConfig({
           '/contributing/student-dashboard',
           '/contributing/adding-translation-to-code'
         ]
+      },
+      {
+        label: 'API',
+        root: API_ROUTE,
+        items: [API_ROUTE, ...apiSidebarGroups]
       }
     ]
   }
