@@ -5,7 +5,26 @@ import GraduationCapIcon from '@lucide/svelte/icons/graduation-cap';
 import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 import UserIcon from '@lucide/svelte/icons/user';
 
+import { DEFAULT_COURSE_BANNER_IMAGE } from '../course-card/constants';
 import type { CourseItem } from './types';
+
+/**
+ * Cover art for a course card. Falls back to the shared ClassroomIO banner so
+ * catalogs never render a hole where a course has no uploaded image.
+ */
+export function getCourseCoverImage(course: CourseItem): string {
+  const logo = course.logo?.trim();
+  if (logo) {
+    return logo;
+  }
+
+  const image = course.image?.trim();
+  if (image) {
+    return image;
+  }
+
+  return DEFAULT_COURSE_BANNER_IMAGE;
+}
 
 export function getPrimaryCourseTag(course: CourseItem) {
   return course.tags?.[0];

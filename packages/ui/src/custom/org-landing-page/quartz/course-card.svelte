@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
-  import { getCourseTypeLandingMeta, getPrimaryCourseTag } from '../landing-page-utils';
+  import { getCourseCoverImage, getCourseTypeLandingMeta, getPrimaryCourseTag } from '../landing-page-utils';
 
   interface Props {
     course: CourseItem;
@@ -12,6 +12,7 @@
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
   const primaryTag = $derived(getPrimaryCourseTag(course));
+  const cover = $derived(getCourseCoverImage(course));
 
   const href = $derived.by(() => {
     if (disableCourseLinks) return undefined;
@@ -41,37 +42,51 @@
 <svelte:element
   this={href ? 'a' : 'div'}
   {href}
-  class="ui:flex ui:flex-col ui:min-h-[260px] ui:p-6 ui:no-underline ui:border-r ui:border-b ui:border-[var(--landing-border)] ui:bg-[var(--landing-card)] ui:transition-colors {disableCourseLinks
+  class="ui:group ui:flex ui:flex-col ui:min-h-[260px] ui:no-underline ui:border-r ui:border-b ui:border-[var(--landing-border)] ui:bg-[var(--landing-card)] ui:transition-colors {disableCourseLinks
     ? 'ui:cursor-default'
     : 'ui:cursor-pointer ui:hover:bg-[var(--landing-card-soft)]'}"
   aria-disabled={disableCourseLinks}
 >
-  {#if primaryTag}
-    <span
-      class="ui:inline-flex ui:items-center ui:gap-1.5 ui:self-start ui:mb-3 ui:px-2.5 ui:py-0.5 ui:rounded-[var(--landing-radius-pill)] ui:border ui:border-[var(--landing-border)] ui:text-xs ui:text-[var(--landing-fg-muted)]"
-    >
-      {#if primaryTag.color}
-        <span class="ui:h-1.5 ui:w-1.5 ui:rounded-full" style={`background-color: ${primaryTag.color}`}></span>
-      {/if}
-      {primaryTag.name}
-    </span>
-  {/if}
-
-  <h3
-    class="ui:m-0 ui:mb-2.5 ui:text-lg ui:leading-snug ui:text-[var(--landing-fg)] ui:[font-weight:var(--landing-heading-weight)] ui:[letter-spacing:var(--landing-heading-tracking)]"
+  <div
+    class="ui:aspect-[16/9] ui:w-full ui:overflow-hidden ui:bg-[var(--landing-card-soft)] ui:border-b ui:border-[var(--landing-border)]"
   >
-    {course.title}
-  </h3>
-  <p class="ui:m-0 ui:text-sm ui:leading-relaxed ui:text-[var(--landing-fg-muted)] ui:line-clamp-3">
-    {course.description}
-  </p>
+    <img
+      src={cover}
+      alt=""
+      class="ui:h-full ui:w-full ui:object-cover ui:transition-transform ui:duration-300 ui:group-hover:scale-[1.03]"
+    />
+  </div>
 
-  <div class="ui:mt-auto ui:pt-6 ui:flex ui:items-center ui:justify-between ui:gap-4">
-    <span class="ui:flex ui:flex-wrap ui:gap-x-3 ui:gap-y-1 ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
-      {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
-      {#if courseTypeMeta}<span>{courseTypeMeta.label}</span>{/if}
-      {#if course.duration}<span>{course.duration}</span>{/if}
-    </span>
-    <span class="ui:text-[13.5px] ui:font-semibold ui:text-[var(--landing-fg)] ui:whitespace-nowrap">{priceLabel}</span>
+  <div class="ui:flex ui:flex-1 ui:flex-col ui:p-6">
+    {#if primaryTag}
+      <span
+        class="ui:inline-flex ui:items-center ui:gap-1.5 ui:self-start ui:mb-3 ui:px-2.5 ui:py-0.5 ui:rounded-[var(--landing-radius-pill)] ui:border ui:border-[var(--landing-border)] ui:text-xs ui:text-[var(--landing-fg-muted)]"
+      >
+        {#if primaryTag.color}
+          <span class="ui:h-1.5 ui:w-1.5 ui:rounded-full" style={`background-color: ${primaryTag.color}`}></span>
+        {/if}
+        {primaryTag.name}
+      </span>
+    {/if}
+
+    <h3
+      class="ui:m-0 ui:mb-2.5 ui:text-lg ui:leading-snug ui:text-[var(--landing-fg)] ui:[font-weight:var(--landing-heading-weight)] ui:[letter-spacing:var(--landing-heading-tracking)]"
+    >
+      {course.title}
+    </h3>
+    <p class="ui:m-0 ui:text-sm ui:leading-relaxed ui:text-[var(--landing-fg-muted)] ui:line-clamp-3">
+      {course.description}
+    </p>
+
+    <div class="ui:mt-auto ui:pt-6 ui:flex ui:items-center ui:justify-between ui:gap-4">
+      <span class="ui:flex ui:flex-wrap ui:gap-x-3 ui:gap-y-1 ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
+        {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
+        {#if courseTypeMeta}<span>{courseTypeMeta.label}</span>{/if}
+        {#if course.duration}<span>{course.duration}</span>{/if}
+      </span>
+      <span class="ui:text-[13.5px] ui:font-semibold ui:text-[var(--landing-fg)] ui:whitespace-nowrap"
+        >{priceLabel}</span
+      >
+    </div>
   </div>
 </svelte:element>

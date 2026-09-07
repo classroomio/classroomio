@@ -38,7 +38,10 @@
       description: '',
       action: {
         label: t.get('settings.landing_page.editor.callout.action_label_default'),
-        href: '#'
+        // Left empty so the field shows its `https://...` placeholder. Pre-filling
+        // '#' made pasted URLs land as '#https://example.com', which the browser
+        // then resolves as a fragment on the current page.
+        href: ''
       }
     };
 

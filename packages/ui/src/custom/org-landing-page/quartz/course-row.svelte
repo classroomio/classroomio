@@ -1,8 +1,7 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
-  import { getCourseTypeLandingMeta, getPrimaryCourseTag } from '../landing-page-utils';
+  import { getCourseCoverImage, getCourseTypeLandingMeta, getPrimaryCourseTag } from '../landing-page-utils';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import ImageIcon from '@lucide/svelte/icons/image';
 
   interface Props {
     course: CourseItem;
@@ -14,7 +13,7 @@
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
   const primaryTag = $derived(getPrimaryCourseTag(course));
-  const cover = $derived(course.logo || course.image);
+  const cover = $derived(getCourseCoverImage(course));
 
   const href = $derived.by(() => {
     if (disableCourseLinks) return undefined;
@@ -59,13 +58,7 @@
   <div
     class="ui:grid ui:place-items-center ui:aspect-[4/3] ui:@2xl:aspect-auto ui:overflow-hidden ui:bg-[var(--landing-card-soft)] ui:border-b ui:@2xl:border-b-0 ui:@2xl:border-r ui:border-[var(--landing-border)]"
   >
-    {#if cover}
-      <img src={cover} alt="" class="ui:h-full ui:w-full ui:object-cover" />
-    {:else}
-      <span class="ui:flex ui:flex-col ui:items-center ui:gap-2 ui:text-[var(--landing-fg-faint)]">
-        <ImageIcon class="ui:size-6" aria-hidden="true" />
-      </span>
-    {/if}
+    <img src={cover} alt="" class="ui:h-full ui:w-full ui:object-cover" />
   </div>
 
   <div class="ui:flex ui:flex-col ui:p-7 ui:@2xl:px-8">

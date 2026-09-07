@@ -161,12 +161,36 @@ function normalizeText(value: unknown, fallback = '') {
 
 import { isAllowedHref } from '@cio/utils/validation/shared';
 
+/**
+ * Repairs an absolute URL that was accidentally saved behind a leading '#' — the
+ * shape you get when a URL is pasted into a link field pre-filled with '#'.
+ * Left as a fragment, the browser resolves it against the current org page
+ * (`https://org.example.com/#https://somewhere.com`) instead of navigating away.
+ */
+function stripAccidentalFragmentPrefix(href: string): string {
+  const withoutHash = href.replace(/^#+/, '');
+  const isAbsolute = /^(https?:\/\/|mailto:|tel:|\/\/)/i.test(withoutHash);
+
+  return isAbsolute ? withoutHash : href;
+}
+
 function normalizeHref(value: unknown, fallback = '#') {
-  if (typeof value !== 'string') return fallback;
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
   const trimmed = value.trim();
-  if (trimmed.length === 0) return fallback;
-  if (!isAllowedHref(trimmed)) return fallback;
-  return trimmed;
+  if (trimmed.length === 0) {
+    return fallback;
+  }
+
+  // Repair before validating, so the allowlist judges the URL the user meant.
+  const repaired = stripAccidentalFragmentPrefix(trimmed);
+  if (!isAllowedHref(repaired)) {
+    return fallback;
+  }
+
+  return repaired;
 }
 
 function isLegacyFooterSocialBlock(value: Record<string, unknown>): boolean {
