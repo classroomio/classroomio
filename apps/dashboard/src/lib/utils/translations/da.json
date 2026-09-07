@@ -4344,7 +4344,9 @@
         "generate_course_plan": "Genererer kursusplan",
         "ask_template_questions": "Udarbejdelse af skabelonformular",
         "fetch_documentation_url": "Læse dokumenter side",
-        "fetch_documentation_url_with_url": "Læser {url}"
+        "fetch_documentation_url_with_url": "Læser {url}",
+        "list_youtube_playlist_videos": "Viser afspilningslistens videoer",
+        "add_youtube_video_to_lesson": "Indlejret YouTube-video"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# tegn} other {# tegn}})",
@@ -4376,7 +4378,10 @@
         "go_live_not_published": "Kurset blev ikke publiceret",
         "generate_course_plan": "Kursusplan genereret",
         "ask_template_questions": "Skabelonformular klar",
-        "fetch_documentation_url": "Læs {url}"
+        "fetch_documentation_url": "Læs {url}",
+        "list_youtube_playlist_videos": "Fundet {count} videoer på afspilningslisten",
+        "list_youtube_playlist_videos_unavailable": "Kunne ikke vise afspilningslistens videoer",
+        "add_youtube_video_to_lesson": "Indlejret video: {title}"
       }
     },
     "student_empty_state": "Spørg mig om noget om dette kursus - få forklaringer, quiz dig selv, eller opsummer det, du læser.",

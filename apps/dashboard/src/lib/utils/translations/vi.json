@@ -4344,7 +4344,9 @@
         "generate_course_plan": "Đang tạo kế hoạch khóa học",
         "ask_template_questions": "Chuẩn bị mẫu biểu mẫu",
         "fetch_documentation_url": "Trang đọc tài liệu",
-        "fetch_documentation_url_with_url": "Đang đọc {url}"
+        "fetch_documentation_url_with_url": "Đang đọc {url}",
+        "list_youtube_playlist_videos": "Liệt kê các video trong danh sách phát",
+        "add_youtube_video_to_lesson": "Nhúng video YouTube"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# ký tự} other {# ký tự}})",
@@ -4376,7 +4378,10 @@
         "go_live_not_published": "Khóa học chưa được xuất bản",
         "generate_course_plan": "Đã tạo kế hoạch khóa học",
         "ask_template_questions": "Mẫu biểu đã sẵn sàng",
-        "fetch_documentation_url": "Đọc {url}"
+        "fetch_documentation_url": "Đọc {url}",
+        "list_youtube_playlist_videos": "Đã tìm thấy {count} video trong danh sách phát",
+        "list_youtube_playlist_videos_unavailable": "Không thể liệt kê các video trong danh sách phát",
+        "add_youtube_video_to_lesson": "Video nhúng: {title}"
       }
     },
     "student_empty_state": "Hãy hỏi tôi bất cứ điều gì về khóa học này - nhận lời giải thích, tự kiểm tra hoặc tóm tắt những gì bạn đang đọc.",

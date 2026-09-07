@@ -4344,7 +4344,9 @@
         "generate_course_plan": "Gerando plano do curso",
         "ask_template_questions": "Preparando modelo de formulário",
         "fetch_documentation_url": "Lendo a página de documentos",
-        "fetch_documentation_url_with_url": "Lendo {url}"
+        "fetch_documentation_url_with_url": "Lendo {url}",
+        "list_youtube_playlist_videos": "Listando vídeos da lista de reprodução",
+        "add_youtube_video_to_lesson": "Incorporando vídeo do YouTube"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# caractere} other {# caracteres}})",
@@ -4376,7 +4378,10 @@
         "go_live_not_published": "O curso não foi publicado",
         "generate_course_plan": "Plano do curso gerado",
         "ask_template_questions": "Formulário de modelo pronto",
-        "fetch_documentation_url": "Leia {url}"
+        "fetch_documentation_url": "Leia {url}",
+        "list_youtube_playlist_videos": "Foram encontrados {count} vídeos na lista de reprodução",
+        "list_youtube_playlist_videos_unavailable": "Não foi possível listar os vídeos da lista de reprodução",
+        "add_youtube_video_to_lesson": "Vídeo incorporado: {title}"
       }
     },
     "student_empty_state": "Pergunte-me qualquer coisa sobre este curso - obtenha explicações, faça testes ou resuma o que está lendo.",

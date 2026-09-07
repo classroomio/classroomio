@@ -8,7 +8,6 @@ import type { AiTutorSettings } from '@cio/ai-assistant';
 
 import { getLesson } from '@cio/core/services/lesson/lesson';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
-import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { listCourseSections } from '@cio/core/services/course/section';
 import { AppError } from '@api/utils/errors';
@@ -201,8 +200,7 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
         return executeStudentTool('read_lesson_transcript', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
 
-          const paid = await isOrgOnPaidPlan(orgId);
-          return getLessonVideoTranscript(args.lessonId, orgId, { isOrgOnPaidPlan: paid });
+          return getLessonVideoTranscript(args.lessonId, orgId, { userId, courseId });
         });
       }
     }),

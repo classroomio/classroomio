@@ -17,7 +17,10 @@ const TOOLS_WITH_FULL_OUTPUT = new Set([
   'ask_template_questions',
   'fetch_documentation_url',
   'get_course_structure',
-  'get_exercise_details'
+  'get_exercise_details',
+  // The playlist video list is what the next turn picks videos from — it must
+  // survive truncation or the ids are gone by the time the teacher chooses.
+  'list_youtube_playlist_videos'
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -4344,7 +4344,9 @@
         "generate_course_plan": "पाठ्यक्रम योजना बनाई जा रही है",
         "ask_template_questions": "टेम्प्लेट फॉर्म तैयार किया जा रहा है",
         "fetch_documentation_url": "दस्तावेज़ पृष्ठ पढ़ना",
-        "fetch_documentation_url_with_url": "पढ़ना {url}"
+        "fetch_documentation_url_with_url": "पढ़ना {url}",
+        "list_youtube_playlist_videos": "प्लेलिस्ट के वीडियो दिखाए जा रहे हैं",
+        "add_youtube_video_to_lesson": "YouTube वीडियो एम्बेड किया जा रहा है"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# अक्षर} other {# अक्षर}})",
@@ -4376,7 +4378,10 @@
         "go_live_not_published": "पाठ्यक्रम प्रकाशित नहीं किया गया",
         "generate_course_plan": "पाठ्यक्रम योजना बनाई गई",
         "ask_template_questions": "टेम्प्लेट फॉर्म तैयार",
-        "fetch_documentation_url": "पढ़ें {url}"
+        "fetch_documentation_url": "पढ़ें {url}",
+        "list_youtube_playlist_videos": "प्लेलिस्ट में {count} वीडियो मिले",
+        "list_youtube_playlist_videos_unavailable": "प्लेलिस्ट के वीडियो नहीं दिखाए जा सके",
+        "add_youtube_video_to_lesson": "एम्बेड किया गया वीडियो: {title}"
       }
     },
     "student_empty_state": "इस पाठ्यक्रम के बारे में मुझसे कुछ भी पूछें - स्पष्टीकरण प्राप्त करें, स्वयं प्रश्नोत्तरी करें, या आप जो पढ़ रहे हैं उसे संक्षेप में प्रस्तुत करें।",

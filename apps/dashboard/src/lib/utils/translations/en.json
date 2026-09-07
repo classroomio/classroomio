@@ -4880,7 +4880,9 @@
         "generate_course_plan": "Generating course plan",
         "ask_template_questions": "Preparing template form",
         "fetch_documentation_url": "Reading docs page",
-        "fetch_documentation_url_with_url": "Reading {url}"
+        "fetch_documentation_url_with_url": "Reading {url}",
+        "list_youtube_playlist_videos": "Listing playlist videos",
+        "add_youtube_video_to_lesson": "Embedding YouTube video"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -4912,7 +4914,10 @@
         "go_live_not_published": "Course was not published",
         "generate_course_plan": "Course plan generated",
         "ask_template_questions": "Template form ready",
-        "fetch_documentation_url": "Read {url}"
+        "fetch_documentation_url": "Read {url}",
+        "list_youtube_playlist_videos": "Found {count} videos in the playlist",
+        "list_youtube_playlist_videos_unavailable": "Could not list the playlist videos",
+        "add_youtube_video_to_lesson": "Embedded video: {title}"
       }
     },
     "mention_lesson": "Lesson",

@@ -4344,7 +4344,9 @@
         "generate_course_plan": "Генерация плана курса",
         "ask_template_questions": "Подготовка шаблонной формы",
         "fetch_documentation_url": "Чтение страницы документации",
-        "fetch_documentation_url_with_url": "Чтение {url}"
+        "fetch_documentation_url_with_url": "Чтение {url}",
+        "list_youtube_playlist_videos": "Вывод списка видео из плейлиста",
+        "add_youtube_video_to_lesson": "Встраивание видео с YouTube"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# символ} other {# символов}})",
@@ -4376,7 +4378,10 @@
         "go_live_not_published": "Курс не был опубликован",
         "generate_course_plan": "План курса сгенерирован",
         "ask_template_questions": "Шаблон формы готов.",
-        "fetch_documentation_url": "Прочитать {url}"
+        "fetch_documentation_url": "Прочитать {url}",
+        "list_youtube_playlist_videos": "Найдено {count} видео в плейлисте",
+        "list_youtube_playlist_videos_unavailable": "Не удалось вывести список видео из плейлиста",
+        "add_youtube_video_to_lesson": "Встроенное видео: {title}"
       }
     },
     "student_empty_state": "Спросите меня о чем-нибудь об этом курсе — получите объяснения, пройдите тест или подведите итог прочитанному.",
