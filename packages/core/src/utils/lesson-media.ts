@@ -135,11 +135,16 @@ export async function enrichLessonWithPresignedUrls(lesson: LessonById): Promise
     .filter((assetId): assetId is string => Boolean(assetId));
   const assetIds = Array.from(new Set([...videoAssetIds, ...documentAssetIds]));
   const canonicalAssets = assetIds.length ? await getAssetsByIds(assetIds) : [];
-  const enrichedAssets = await Promise.all(
-    canonicalAssets.map((asset) => (shouldBackfillVimeoAsset(asset) ? backfillVimeoAsset(asset) : asset))
-  );
-  const canonicalVideos = applyCanonicalVideoMetadata(videos, enrichedAssets);
-  const canonicalDocuments = applyCanonicalDocumentMetadata(documents, enrichedAssets);
+  for (const asset of canonicalAssets) {
+    if (shouldBackfillVimeoAsset(asset)) {
+      void backfillVimeoAsset(asset).catch((err) => {
+        console.warn(`[LessonMedia] Non-blocking Vimeo backfill failed for ${asset.id}:`, err);
+      });
+    }
+  }
+
+  const canonicalVideos = applyCanonicalVideoMetadata(videos, canonicalAssets);
+  const canonicalDocuments = applyCanonicalDocumentMetadata(documents, canonicalAssets);
 
   const videoKeys = extractKeysFromObjects(canonicalVideos.filter((video) => video.type === 'upload'));
   const docKeys = extractKeysFromObjects(canonicalDocuments);

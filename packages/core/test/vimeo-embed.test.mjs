@@ -52,6 +52,21 @@ test('Vimeo URL Parsing - showcase / album URL', () => {
   assert.equal(toCanonicalVimeoUrl(url), 'https://vimeo.com/987654');
 });
 
+test('Vimeo URL Parsing - group URL', () => {
+  const url = 'https://vimeo.com/groups/animation/videos/123456789';
+  const result = extractVimeoDetails(url);
+  assert.deepEqual(result, { videoId: '123456789' });
+  assert.equal(toCanonicalVimeoUrl(url), 'https://vimeo.com/123456789');
+  assert.equal(formatVimeoEmbedUrl(url), 'https://player.vimeo.com/video/123456789');
+});
+
+test('Vimeo URL Parsing - case-insensitive HTTP schemes', () => {
+  const url = 'HTTPS://VIMEO.COM/123456789';
+  const result = extractVimeoDetails(url);
+  assert.deepEqual(result, { videoId: '123456789' });
+  assert.equal(toCanonicalVimeoUrl(url), 'https://vimeo.com/123456789');
+});
+
 test('Vimeo URL Parsing - player.vimeo.com embed URL', () => {
   const url = 'https://player.vimeo.com/video/123456789?h=abcdef1234';
   const result = extractVimeoDetails(url);

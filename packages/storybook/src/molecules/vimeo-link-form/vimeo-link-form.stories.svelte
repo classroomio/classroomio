@@ -12,6 +12,7 @@
         include: FIELDS
       }
     },
+    args: { privacyHintPrefix: 'For domain-restricted videos, add', privacyHintSuffix: 'to Vimeo privacy settings.' },
     argTypes: {
       onSubmit: { control: false },
       onInputChange: { control: false }
@@ -60,11 +61,11 @@
   name="CustomHint"
   args={{
     inputLabel: 'Vimeo video URL',
-    inputPlaceholder: 'https://vimeo.com/76979871/d55f0535a3',
+    inputPlaceholder: 'https://vimeo.com/76979871/0000000000',
     addButtonLabel: 'Attach Vimeo video',
     invalidVimeoMessage: 'Invalid Vimeo URL format.',
     privacyHintPrefix: 'For domain-restricted videos, add',
-    privacyHintSuffix: 'to Vimeo privacy settings.'
+    privacyHintSuffix: 'to your Vimeo privacy settings.'
   }}
 >
   {#snippet template(args)}

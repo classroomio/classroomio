@@ -50,7 +50,7 @@
   args={{
     source: {
       type: 'vimeo',
-      url: 'https://player.vimeo.com/video/814386193?h=913cb168eb',
+      url: 'https://player.vimeo.com/video/76979871?h=0000000000',
       metadata: {
         title: 'Unlisted Vimeo Video with Privacy Hash'
       }
@@ -73,7 +73,7 @@
   args={{
     source: {
       type: 'vimeo',
-      url: 'https://player.vimeo.com/video/814386193',
+      url: 'https://player.vimeo.com/video/76979871',
       metadata: {
         title: 'Vimeo Video with Missing Privacy Hash'
       }

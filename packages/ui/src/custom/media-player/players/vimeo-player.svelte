@@ -52,19 +52,28 @@
     try {
       player = new Player(iframeElement);
 
+      const privacyErrorName = 'PrivacyError';
+
       player
         .ready()
         .then(() => {
           hasPrivacyError = false;
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.warn('[VimeoPlayer] player.ready() rejected:', error);
-          hasPrivacyError = true;
+          const isPrivacy =
+            typeof error === 'object' &&
+            error !== null &&
+            'name' in error &&
+            (error as { name?: string }).name === privacyErrorName;
+          if (isPrivacy) {
+            hasPrivacyError = true;
+          }
         });
 
       player.on('error', (data) => {
         console.warn('[VimeoPlayer] error event:', data);
-        if (data.name === 'PrivacyError') {
+        if (data.name === privacyErrorName) {
           hasPrivacyError = true;
         }
       });
@@ -173,7 +182,7 @@
     </div>
   {/if}
 
-  {#key reloadKey}
+  {#key `${url}:${reloadKey}`}
     <iframe
       bind:this={iframeElement}
       src={url}

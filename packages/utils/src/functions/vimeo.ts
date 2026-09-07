@@ -1,4 +1,4 @@
-import { extractIframeSrcOrUrl } from './links';
+import { normalizeHttpUrl } from './links';
 
 const VIMEO_ID_PATTERN = /^\d+$/;
 const VIMEO_HASH_PATTERN = /^[a-zA-Z0-9]+$/;
@@ -8,19 +8,6 @@ export interface VimeoVideoDetails {
   hash?: string;
 }
 
-function normalizeVimeoLink(rawLink = ''): string {
-  const extracted = extractIframeSrcOrUrl(rawLink);
-  if (!extracted) {
-    return '';
-  }
-
-  if (extracted.startsWith('http://') || extracted.startsWith('https://')) {
-    return extracted;
-  }
-
-  return `https://${extracted}`;
-}
-
 /**
  * Extracts the videoId and optional privacy hash from a Vimeo URL.
  * Accepts standard links, channels, showcases, albums, and player.vimeo.com URLs.
@@ -28,7 +15,7 @@ function normalizeVimeoLink(rawLink = ''): string {
  * and only accepts official Vimeo domains (vimeo.com, player.vimeo.com).
  */
 export function extractVimeoDetails(url = ''): VimeoVideoDetails | null {
-  const normalized = normalizeVimeoLink(url);
+  const normalized = normalizeHttpUrl(url);
   if (!normalized) {
     return null;
   }
@@ -60,8 +47,8 @@ export function extractVimeoDetails(url = ''): VimeoVideoDetails | null {
         candidateId = segments[2];
       }
       // https://vimeo.com/groups/{group}/videos/{videoId}
-      else if (segments[0] === 'groups' && segments[1] === 'videos' && segments[2]) {
-        candidateId = segments[2];
+      else if (segments[0] === 'groups' && segments[2] === 'videos' && segments[3]) {
+        candidateId = segments[3];
       }
       // https://vimeo.com/showcase/{id}/video/{videoId} or album/{id}/video/{videoId}
       else if ((segments[0] === 'showcase' || segments[0] === 'album') && segments[2] === 'video' && segments[3]) {

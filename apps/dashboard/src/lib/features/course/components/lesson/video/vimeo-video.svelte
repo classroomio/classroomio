@@ -11,12 +11,11 @@
   let { lessonId = '' }: Props = $props();
 
   async function addVideo(validLinks: string[]) {
-    const fallbackTitle = $t('media_manager.provider.vimeo');
     await addExternalVideosToLesson({
       links: validLinks,
       type: 'vimeo',
       lessonId,
-      fallbackTitle
+      fallbackTitle: 'Vimeo'
     });
   }
 </script>

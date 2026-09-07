@@ -26,8 +26,8 @@
     inputPlaceholder = '',
     addButtonLabel,
     invalidVimeoMessage,
-    privacyHintPrefix = 'If this video has domain privacy enabled, add',
-    privacyHintSuffix = 'to allowed domains on Vimeo.',
+    privacyHintPrefix = '',
+    privacyHintSuffix = '',
     disabled = false,
     class: className = '',
     onSubmit = () => {},
@@ -42,7 +42,10 @@
   const currentHost = $derived(typeof window !== 'undefined' ? window.location.host : '');
 
   function handleInputChange(event: Event) {
-    rawInput = (event.currentTarget as HTMLInputElement).value;
+    const nextValue = (event.currentTarget as HTMLInputElement).value;
+    if (nextValue === rawInput) return;
+
+    rawInput = nextValue;
     validationError = '';
     onInputChange(rawInput);
   }
@@ -82,6 +85,8 @@
       await onSubmit(dedupedLinks);
       rawInput = '';
       onInputChange('');
+    } catch (error) {
+      validationError = typeof error === 'string' ? error : (error as Error)?.message || 'Failed to add video';
     } finally {
       isSubmitting = false;
     }
@@ -103,7 +108,6 @@
         disabled={disabled || isSubmitting}
         placeholder={inputPlaceholder}
         oninput={handleInputChange}
-        onchange={handleInputChange}
       />
       {#if validationError}
         <p class="ui:text-destructive ui:text-xs">{validationError}</p>

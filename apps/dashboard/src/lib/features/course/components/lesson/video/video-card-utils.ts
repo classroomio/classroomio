@@ -281,19 +281,27 @@ export async function createExternalLessonVideo(options: CreateExternalLessonVid
     metadata: videoMetadata
   });
 
-  if (asset && lessonId) {
-    await mediaApi.attachAsset(asset.id, {
+  if (!asset) {
+    throw new Error('Failed to create external video asset');
+  }
+
+  if (lessonId) {
+    const attached = await mediaApi.attachAsset(asset.id, {
       targetType: 'lesson',
       targetId: lessonId,
       slotType: 'lesson_video',
       position
     });
+
+    if (!attached) {
+      throw new Error('Failed to attach video asset to lesson');
+    }
   }
 
   return {
     type: videoType as LessonVideoType,
     link: sourceUrl,
-    assetId: asset?.id,
+    assetId: asset.id,
     fileName: resolvedTitle,
     metadata: videoMetadata
   };

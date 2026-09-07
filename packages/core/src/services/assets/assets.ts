@@ -272,15 +272,24 @@ export function shouldBackfillVimeoAsset(asset: TAsset): boolean {
   return true;
 }
 
+const inFlightVimeoBackfills = new Set<string>();
+
 export async function backfillVimeoAsset(asset: TAsset): Promise<TAsset> {
   const rawUrl = asset.sourceUrl;
   if (!rawUrl) {
     return asset;
   }
 
+  if (inFlightVimeoBackfills.has(asset.id)) {
+    return asset;
+  }
+
+  inFlightVimeoBackfills.add(asset.id);
+
   const vimeoDetails = extractVimeoDetails(rawUrl);
   const sourceUrl = vimeoDetails ? toCanonicalVimeoUrl(vimeoDetails) : rawUrl;
   if (!sourceUrl) {
+    inFlightVimeoBackfills.delete(asset.id);
     return asset;
   }
 
@@ -336,25 +345,23 @@ export async function backfillVimeoAsset(asset: TAsset): Promise<TAsset> {
       ...asset,
       metadata: updatedMetadata
     };
+  } finally {
+    inFlightVimeoBackfills.delete(asset.id);
   }
 }
 
 export async function listOrganizationAssetsService(orgId: string, query: TAssetListQuery) {
   try {
     const result = await listAssetsByOrg(orgId, query);
-    const hasBackfillCandidates = result.items.some(shouldBackfillVimeoAsset);
-    if (!hasBackfillCandidates) {
-      return result;
+    for (const asset of result.items) {
+      if (shouldBackfillVimeoAsset(asset)) {
+        void backfillVimeoAsset(asset).catch((err) => {
+          console.warn(`[Assets] Non-blocking Vimeo backfill failed for ${asset.id}:`, err);
+        });
+      }
     }
 
-    const backfilledItems = await Promise.all(
-      result.items.map((asset) => (shouldBackfillVimeoAsset(asset) ? backfillVimeoAsset(asset) : asset))
-    );
-
-    return {
-      ...result,
-      items: backfilledItems
-    };
+    return result;
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list assets',

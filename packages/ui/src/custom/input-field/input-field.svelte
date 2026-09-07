@@ -109,10 +109,7 @@
     onkeydown={onKeyDown}
     onchange={handleInputChange}
     onblur={handleBlur}
-    oninput={(e) => {
-      oninput(e);
-      onInputChange(e);
-    }}
+    {oninput}
   />
 
   {#if errorMessage}

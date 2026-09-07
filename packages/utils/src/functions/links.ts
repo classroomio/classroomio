@@ -32,6 +32,19 @@ export function splitLinks(rawInput = ''): string[] {
 }
 
 /**
+ * Ensures an input string (or extracted iframe src) has an HTTP or HTTPS scheme.
+ * Defaults to https:// if no protocol is present.
+ */
+export function ensureHttpsProtocol(rawLink = ''): string {
+  const extracted = extractIframeSrcOrUrl(rawLink);
+  if (!extracted) {
+    return '';
+  }
+
+  return /^https?:\/\//i.test(extracted) ? extracted : `https://${extracted}`;
+}
+
+/**
  * Normalizes an HTTP/HTTPS URL:
  * 1. Ensures https:// protocol if missing
  * 2. Normalizes hostname (lowercased, www. stripped)
@@ -39,14 +52,12 @@ export function splitLinks(rawInput = ''): string[] {
  * 4. Sorts query parameters deterministically
  */
 export function normalizeHttpUrl(rawLink = ''): string {
-  const extracted = extractIframeSrcOrUrl(rawLink);
-  if (!extracted) {
+  const withProtocol = ensureHttpsProtocol(rawLink);
+  if (!withProtocol) {
     return '';
   }
 
   try {
-    const withProtocol =
-      extracted.startsWith('http://') || extracted.startsWith('https://') ? extracted : `https://${extracted}`;
     const parsed = new URL(withProtocol);
     const hostname = parsed.hostname.replace(/^www\./, '').toLowerCase();
 
@@ -62,10 +73,6 @@ export function normalizeHttpUrl(rawLink = ''): string {
 
     return `https://${hostname}${pathname}${search}`;
   } catch {
-    if (extracted.startsWith('http://') || extracted.startsWith('https://')) {
-      return extracted;
-    }
-
-    return `https://${extracted}`;
+    return withProtocol;
   }
 }
