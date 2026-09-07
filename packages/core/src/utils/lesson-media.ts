@@ -4,7 +4,7 @@ import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUr
 import { getAssetsByIds } from '@cio/db/queries/assets';
 import type { LessonById } from '@cio/db/queries/lesson';
 import type { TLesson } from '@cio/db/types';
-import { backfillVimeoAsset, shouldBackfillVimeoAsset } from '../services/assets/assets';
+import { queueVimeoBackfill } from '../services/assets/assets';
 
 // Extract types from schema
 type LessonVideo = NonNullable<TLesson['videos']>[number];
@@ -136,11 +136,7 @@ export async function enrichLessonWithPresignedUrls(lesson: LessonById): Promise
   const assetIds = Array.from(new Set([...videoAssetIds, ...documentAssetIds]));
   const canonicalAssets = assetIds.length ? await getAssetsByIds(assetIds) : [];
   for (const asset of canonicalAssets) {
-    if (shouldBackfillVimeoAsset(asset)) {
-      void backfillVimeoAsset(asset).catch((err) => {
-        console.warn(`[LessonMedia] Non-blocking Vimeo backfill failed for ${asset.id}:`, err);
-      });
-    }
+    queueVimeoBackfill(asset);
   }
 
   const canonicalVideos = applyCanonicalVideoMetadata(videos, canonicalAssets);

@@ -272,7 +272,48 @@ export function shouldBackfillVimeoAsset(asset: TAsset): boolean {
   return true;
 }
 
+const MAX_CONCURRENT_VIMEO_BACKFILLS = 3;
 const inFlightVimeoBackfills = new Set<string>();
+const queuedVimeoBackfillIds = new Set<string>();
+const vimeoBackfillQueue: TAsset[] = [];
+let activeVimeoBackfillCount = 0;
+
+function processVimeoBackfillQueue(): void {
+  while (activeVimeoBackfillCount < MAX_CONCURRENT_VIMEO_BACKFILLS && vimeoBackfillQueue.length > 0) {
+    const nextAsset = vimeoBackfillQueue.shift();
+    if (!nextAsset) break;
+
+    queuedVimeoBackfillIds.delete(nextAsset.id);
+    activeVimeoBackfillCount++;
+
+    backfillVimeoAsset(nextAsset)
+      .catch((err) => {
+        console.warn(`[Assets] Queued Vimeo backfill failed for ${nextAsset.id}:`, err);
+      })
+      .finally(() => {
+        activeVimeoBackfillCount = Math.max(0, activeVimeoBackfillCount - 1);
+        processVimeoBackfillQueue();
+      });
+  }
+}
+
+/**
+ * Enqueues a Vimeo asset for background metadata backfill with concurrency control
+ * and asset-ID deduplication across active and queued jobs. Non-blocking.
+ */
+export function queueVimeoBackfill(asset: TAsset): void {
+  if (!shouldBackfillVimeoAsset(asset)) {
+    return;
+  }
+
+  if (inFlightVimeoBackfills.has(asset.id) || queuedVimeoBackfillIds.has(asset.id)) {
+    return;
+  }
+
+  queuedVimeoBackfillIds.add(asset.id);
+  vimeoBackfillQueue.push(asset);
+  processVimeoBackfillQueue();
+}
 
 export async function backfillVimeoAsset(asset: TAsset): Promise<TAsset> {
   const rawUrl = asset.sourceUrl;
@@ -354,11 +395,7 @@ export async function listOrganizationAssetsService(orgId: string, query: TAsset
   try {
     const result = await listAssetsByOrg(orgId, query);
     for (const asset of result.items) {
-      if (shouldBackfillVimeoAsset(asset)) {
-        void backfillVimeoAsset(asset).catch((err) => {
-          console.warn(`[Assets] Non-blocking Vimeo backfill failed for ${asset.id}:`, err);
-        });
-      }
+      queueVimeoBackfill(asset);
     }
 
     return result;

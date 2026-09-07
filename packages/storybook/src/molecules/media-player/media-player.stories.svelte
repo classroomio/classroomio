@@ -50,7 +50,7 @@
   args={{
     source: {
       type: 'vimeo',
-      url: 'https://player.vimeo.com/video/76979871?h=0000000000',
+      url: 'https://player.vimeo.com/video/76979871?h=d55f0535a3',
       metadata: {
         title: 'Unlisted Vimeo Video with Privacy Hash'
       }
