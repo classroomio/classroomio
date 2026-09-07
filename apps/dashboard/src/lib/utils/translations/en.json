@@ -408,6 +408,16 @@
   },
   "settings": {
     "heading": "Settings",
+    "sidebar": {
+      "workspace": "Workspace",
+      "personal": "Personal",
+      "product": "Product",
+      "connections": "Connections",
+      "security": "Security",
+      "billing": "Billing",
+      "branding": "Branding",
+      "search": "Search settings..."
+    },
     "subheadings": {
       "view_site": "Open Academy"
     },

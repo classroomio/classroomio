@@ -3179,6 +3179,16 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Workspace",
+      "personal": "Personal",
+      "product": "Product",
+      "connections": "Connections",
+      "security": "Security",
+      "billing": "Billing",
+      "branding": "Branding",
+      "search": "Search settings..."
+    },
     "heading": "Configuración",
     "billing": {
       "sub_title": "Detalles de facturación",

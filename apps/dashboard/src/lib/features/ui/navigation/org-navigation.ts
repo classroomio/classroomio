@@ -1,5 +1,4 @@
 import {
-  ApiIcon,
   ChartColumnIcon,
   AttachmentIcon,
   CommunityIcon,
@@ -11,8 +10,7 @@ import {
   PeopleIcon,
   SettingsIcon,
   SetupIcon,
-  TagIcon,
-  ZapIcon
+  TagIcon
 } from '@cio/ui/custom/moving-icons';
 
 import type { AccountOrg } from '$features/app/types';
@@ -192,30 +190,17 @@ export const baseNavConfig: NavItemConfig[] = [
   },
   {
     group: 'automation',
-    titleKey: 'automation.tabs.mcp',
-    path: '/mcp',
+    titleKey: 'org_navigation.automation',
+    path: '/automation/mcp',
     icon: BotIcon,
     requiresAdmin: true,
     disableWhenNotAdmin: true,
-    matchPattern: '^/org/[^/]+/mcp(/.*)?$'
-  },
-  {
-    group: 'automation',
-    titleKey: 'automation.tabs.api',
-    path: '/api',
-    icon: ApiIcon,
-    requiresAdmin: true,
-    disableWhenNotAdmin: true,
-    matchPattern: '^/org/[^/]+/api(/.*)?$'
-  },
-  {
-    group: 'automation',
-    titleKey: 'automation.tabs.zapier',
-    path: '/zapier',
-    icon: ZapIcon,
-    requiresAdmin: true,
-    disableWhenNotAdmin: true,
-    matchPattern: '^/org/[^/]+/zapier(/.*)?$'
+    matchPattern: '^/org/[^/]+/(automation|mcp|api|zapier)(/.*)?$',
+    nestedRoutes: [
+      { path: 'mcp', titleKey: 'automation.tabs.mcp' },
+      { path: 'api', titleKey: 'automation.tabs.api' },
+      { path: 'zapier', titleKey: 'automation.tabs.zapier' }
+    ]
   },
   {
     titleKey: 'org_navigation.settings',
