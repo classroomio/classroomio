@@ -159,8 +159,14 @@ function normalizeText(value: unknown, fallback = '') {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
 }
 
+import { isAllowedHref } from '@cio/utils/validation/shared';
+
 function normalizeHref(value: unknown, fallback = '#') {
-  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+  if (typeof value !== 'string') return fallback;
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return fallback;
+  if (!isAllowedHref(trimmed)) return fallback;
+  return trimmed;
 }
 
 function isLegacyFooterSocialBlock(value: Record<string, unknown>): boolean {

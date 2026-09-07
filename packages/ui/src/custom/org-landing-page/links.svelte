@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { LandingPageLinks, OrgLandingPageLabels, OrgLandingPageTheme } from './types';
   import { landingPageLinkIconMap } from './landing-page-link-icons';
+  import { safeHref } from './safe-href';
   import { BorderBeam } from '../animation/border-beam';
   import { DotPattern } from '../animation/dot-pattern';
   import * as Card from '../../base/card';
@@ -50,7 +51,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:group ui:block ui:h-full ui:no-underline ui:cursor-pointer"
@@ -103,7 +104,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:group ui:block ui:h-full ui:p-8 ui:border-r ui:border-b ui:border-[var(--landing-accent-fg)]/15 ui:transition-colors ui:hover:bg-[var(--landing-accent-fg)]/5 ui:no-underline ui:text-[var(--landing-accent-fg)] ui:cursor-pointer"
@@ -144,7 +145,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:group ui:block ui:h-full ui:p-6 ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:rounded-xl ui:transition-colors ui:hover:border-[var(--landing-fg)]/30 ui:hover:bg-[var(--landing-card-soft)]/30 ui:no-underline ui:cursor-pointer"
@@ -207,7 +208,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:flex ui:flex-col ui:gap-3 ui:p-7 ui:no-underline ui:h-full ui:transition-colors ui:cursor-pointer"
@@ -248,7 +249,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:flex ui:gap-5 ui:items-start ui:p-7 ui:border-r ui:border-b ui:border-[var(--landing-border)] ui:bg-[var(--landing-bg)] ui:transition-colors ui:hover:bg-[var(--landing-card-soft)]/40 ui:no-underline ui:h-full ui:cursor-pointer"
@@ -295,7 +296,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:bg-[var(--landing-bg)] ui:p-7 ui:flex ui:flex-col ui:items-center ui:text-center ui:gap-3 ui:transition-colors ui:hover:bg-[var(--landing-card-soft)]/40 ui:no-underline ui:h-full ui:cursor-pointer"
@@ -335,7 +336,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:group ui:flex ui:flex-col ui:h-full ui:p-8 ui:rounded-[20px] ui:bg-[var(--landing-card-soft)]/60 ui:no-underline ui:transition-colors ui:hover:bg-[var(--landing-card-soft)] ui:cursor-pointer"
@@ -402,7 +403,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:group ui:flex ui:flex-col ui:min-h-[190px] ui:p-6 ui:no-underline ui:border-r ui:border-b ui:border-[var(--landing-border)] ui:transition-colors ui:hover:bg-[var(--landing-card-soft)]"
@@ -464,7 +465,7 @@
             {#each links.cards as card, index (index)}
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:group ui:flex ui:flex-col ui:h-full ui:p-7 ui:rounded-lg ui:bg-[#ecebe5] ui:no-underline ui:transition-colors ui:hover:bg-[#e2e1d9] ui:cursor-pointer"
@@ -508,7 +509,7 @@
               {@const IconComponent = landingPageLinkIconMap[card.icon]}
               {@const visitLabel = links.boldVisitLabel?.trim()}
               <a
-                href={card.href}
+                href={safeHref(card.href)}
                 target="_blank"
                 rel="noreferrer"
                 class="ui:group ui:block ui:h-full ui:no-underline ui:cursor-pointer"
@@ -567,7 +568,7 @@
             {@const IconComponent = landingPageLinkIconMap[card.icon]}
             {@const learnMoreLabel = links.classicLearnMoreLabel?.trim()}
             <a
-              href={card.href}
+              href={safeHref(card.href)}
               target="_blank"
               rel="noreferrer"
               class="ui:group ui:block ui:h-full ui:no-underline ui:cursor-pointer"

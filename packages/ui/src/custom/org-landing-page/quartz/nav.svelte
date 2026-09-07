@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { OrgLandingPageProps } from '../types';
+  import { safeHref } from '../safe-href';
   import LandingButton from '../landing-button.svelte';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
@@ -34,7 +35,7 @@
       <div class="ui:hidden ui:md:flex ui:items-center ui:gap-7">
         {#each navItems as item (item.href + item.label)}
           <a
-            href={item.href}
+            href={safeHref(item.href)}
             class="ui:text-sm ui:no-underline ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:transition-colors"
           >
             {item.label}

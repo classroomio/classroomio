@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { OrgLandingPageFooterConfig } from '../types';
+  import { safeHref } from '../safe-href';
   import FooterSocialIcon from '../footer-social-icon.svelte';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import EditableLandingSection from '../editable-section.svelte';
@@ -64,7 +65,7 @@
               {#each footer.brand.socials as social (social.href + social.platform)}
                 <li class="ui:list-none">
                   <a
-                    href={social.href}
+                    href={safeHref(social.href)}
                     class="ui:inline-flex ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:no-underline ui:cursor-pointer"
                     target="_blank"
                     rel="noreferrer noopener"
@@ -95,7 +96,7 @@
                   {#each column.links as link (link.id)}
                     <li class="ui:list-none">
                       <a
-                        href={link.href}
+                        href={safeHref(link.href)}
                         class="ui:block ui:py-1 ui:text-[13.5px] ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:no-underline ui:break-words"
                       >
                         {link.label}
@@ -105,7 +106,7 @@
                 </ul>
                 {#if hasCta(column)}
                   <a
-                    href={column.cta?.href}
+                    href={safeHref(column.cta?.href)}
                     class="ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3.5 ui:text-[13.5px] ui:font-medium ui:text-[var(--landing-fg)] ui:no-underline ui:hover:underline"
                   >
                     {column.cta?.label}
@@ -129,7 +130,7 @@
             <div class="ui:flex ui:flex-wrap ui:gap-x-6 ui:gap-y-2 ui:sm:justify-end">
               {#each bottomLinks as link (link.id)}
                 <a
-                  href={link.href}
+                  href={safeHref(link.href)}
                   class="ui:text-[13px] ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:no-underline"
                 >
                   {link.label}
