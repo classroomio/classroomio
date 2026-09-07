@@ -239,10 +239,6 @@ export const baseNavConfig: NavItemConfig[] = [
         ]
       },
       {
-        titleKey: 'settings.tabs.landing_page_tab',
-        path: '/settings/landingpage'
-      },
-      {
         titleKey: 'settings.tabs.billing_tab',
         path: '/settings/billing'
       },

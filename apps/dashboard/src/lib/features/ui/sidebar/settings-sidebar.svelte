@@ -26,10 +26,7 @@
     },
     {
       label: 'settings.sidebar.product',
-      items: [
-        { key: 'settings.tabs.customize_lms_tab', path: '/settings/customize-lms' },
-        { key: 'settings.tabs.landing_page_tab', path: '/settings/landingpage' }
-      ]
+      items: [{ key: 'settings.tabs.customize_lms_tab', path: '/settings/customize-lms' }]
     },
     ...(IS_AI_ENABLED
       ? [
