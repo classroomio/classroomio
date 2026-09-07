@@ -301,7 +301,8 @@
     },
     "discard": "Discard",
     "save_changes": "Save changes",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "scroll_to_top": "Scroll to top"
   },
   "compliance": {
     "title": "Compliance",
@@ -4005,6 +4006,46 @@
       "resend_snackbar_success": "Invitation email sent",
       "resend_snackbar_email_failed": "Invite was renewed but the email could not be sent",
       "revoke_snackbar_success": "Pending invitation revoked"
+    },
+    "never": "Never",
+    "progress": "Progress",
+    "learner_count": "{count} learners",
+    "enrolled_ratio": "{completed} / {total}",
+    "views": {
+      "all": "All learners",
+      "never_logged_in": "Never logged in",
+      "inactive_90d": "Inactive 90+ days",
+      "inactive_180d": "Inactive 180+ days",
+      "enrolled_not_started": "Enrolled, never started",
+      "archived": "Archived",
+      "custom": "Custom filters"
+    },
+    "filter": {
+      "status": "Member status",
+      "status_active": "Active",
+      "status_deactivated": "Deactivated",
+      "status_archived": "Archived",
+      "last_login": "Last login",
+      "last_activity": "Last activity",
+      "no_login_since": "No login in",
+      "no_activity_since": "No activity in",
+      "window_7d": "7 days",
+      "window_30d": "30 days",
+      "window_90d": "90 days",
+      "window_180d": "180 days",
+      "window_never": "Never",
+      "enrollment": "Enrollment",
+      "enrolled": "Enrolled",
+      "not_enrolled": "Not enrolled",
+      "completion": "Completion",
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "exclude_recent_joiners": "Exclude recent joiners",
+      "exclude_recent_joiners_hint": "Leaves out learners who joined too recently to be judged inactive.",
+      "clear": "Clear filters",
+      "empty_title": "No learners match these filters",
+      "empty_description": "Try widening the date range or clearing a filter."
     }
   },
   "analytics": {

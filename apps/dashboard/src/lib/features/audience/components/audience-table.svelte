@@ -49,7 +49,9 @@
   }
 </script>
 
-<div class="rounded-md border">
+<!-- Eight columns overflow narrow viewports. The scroll is confined to this
+     wrapper so the page body itself never scrolls horizontally. -->
+<div class="overflow-x-auto rounded-md border">
   <Table.Root>
     <Table.Header>
       <Table.Row>

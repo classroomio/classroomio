@@ -7,9 +7,14 @@
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
   import {
     canResendAudienceInvite,
     canRevokeAudienceInvite,
+    formatActivityAge,
+    formatActivityExact,
+    memberStatusBadgeVariant,
+    memberStatusLabelKey,
     statusBadgeVariant,
     statusLabelKey
   } from '$features/audience/utils/audience-utils';
@@ -45,9 +50,15 @@
   );
   const isActionDisabled = $derived(inviteActionEmail === row.email || deletingMemberId === String(row.id));
   const showRowActions = $derived(showInviteActions || canDeleteMembers);
+
+  const lastLoginAge = $derived(formatActivityAge(row.lastLoginAt));
+  const lastActiveAge = $derived(formatActivityAge(row.lastActiveAt));
+  // Suspended learners read as muted so a filtered list makes their state
+  // obvious without needing the status column.
+  const isSuspended = $derived(row.memberStatus !== 'ACTIVE');
 </script>
 
-<Table.Row>
+<Table.Row class={isSuspended ? 'ui:text-muted-foreground' : undefined}>
   <Table.Cell class="w-10">
     <Checkbox disabled={!row.profileId} checked={selected} onCheckedChange={onToggleSelect} />
   </Table.Cell>
@@ -66,9 +77,27 @@
   </Table.Cell>
   <Table.Cell>{row.email}</Table.Cell>
   <Table.Cell>
-    <Badge variant={statusBadgeVariant(row.status)}>{$t(statusLabelKey(row.status))}</Badge>
+    {#if isSuspended}
+      <Badge variant={memberStatusBadgeVariant(row.memberStatus)}>
+        {$t(memberStatusLabelKey(row.memberStatus))}
+      </Badge>
+    {:else}
+      <Badge variant={statusBadgeVariant(row.status)}>{$t(statusLabelKey(row.status))}</Badge>
+    {/if}
   </Table.Cell>
-  <Table.Cell>{row.createdAt}</Table.Cell>
+  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastLoginAt)}>
+    {lastLoginAge ?? $t('audience.never')}
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastActiveAt)}>
+    {lastActiveAge ?? $t('audience.never')}
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap">
+    {$t('audience.enrolled_ratio', { completed: row.completedCount, total: row.enrolledCount })}
+  </Table.Cell>
+  <Table.Cell>
+    <PercentRingProgress value={row.progressPercent} />
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap">{row.createdAt}</Table.Cell>
   <Table.Cell class="text-right">
     {#if showRowActions}
       <DropdownMenu.Root>

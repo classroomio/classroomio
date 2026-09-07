@@ -3,16 +3,27 @@
   import { Search } from '@cio/ui/custom/search';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
-  import { SortPopover } from '$features/ui';
-  import type { OrganizationAudienceSortBy, OrganizationAudienceSortOrder } from '$features/org/utils/types';
+  import AudienceFilterPopover from './audience-filter-popover.svelte';
+  import AudienceViewSwitcher from './audience-view-switcher.svelte';
+  import type {
+    OrganizationAudienceQuery,
+    OrganizationAudienceSortBy,
+    OrganizationAudienceSortOrder,
+    OrganizationAudienceView
+  } from '$features/org/utils/types';
 
   interface Props {
     hasSelection: boolean;
     selectedCount: number;
     searchValue?: string;
-    sortBy: OrganizationAudienceSortBy;
-    sortOrder: OrganizationAudienceSortOrder;
+    query: OrganizationAudienceQuery;
+    activeView: OrganizationAudienceView | null;
+    activeFilterCount: number;
+    totalCount: number;
     onSortChange: (sortBy: OrganizationAudienceSortBy, sortOrder: OrganizationAudienceSortOrder) => void;
+    onFilterChange: (patch: Partial<OrganizationAudienceQuery>) => void;
+    onClearFilters: () => void;
+    onSelectView: (view: OrganizationAudienceView) => void;
     onOpenAssign: () => void;
   }
 
@@ -20,37 +31,16 @@
     hasSelection,
     selectedCount,
     searchValue = $bindable(''),
-    sortBy,
-    sortOrder,
+    query,
+    activeView,
+    activeFilterCount,
+    totalCount,
     onSortChange,
+    onFilterChange,
+    onClearFilters,
+    onSelectView,
     onOpenAssign
   }: Props = $props();
-
-  const sortOptions = [
-    { label: t.get('audience.date_joined'), value: 'createdAt' },
-    { label: t.get('audience.name'), value: 'name' },
-    { label: t.get('audience.email'), value: 'email' }
-  ];
-
-  let localSortKey = $state(sortBy);
-  let localSortOrder = $state(sortOrder);
-
-  $effect(() => {
-    localSortKey = sortBy;
-    localSortOrder = sortOrder;
-  });
-
-  function handleSortKeyChange(key: string) {
-    onSortChange(key as OrganizationAudienceSortBy, localSortOrder);
-  }
-
-  function handleOrderChange(order: 'asc' | 'desc') {
-    onSortChange(localSortKey, order);
-  }
-
-  function handleClearSort() {
-    onSortChange('createdAt', 'desc');
-  }
 </script>
 
 <Page.BodyHeader>
@@ -64,17 +54,22 @@
       </Button>
     </div>
   {:else}
-    <div class="flex w-full flex-col gap-2 md:flex-row md:items-center md:justify-between">
-      <Search placeholder={$t('audience.search_placeholder')} bind:value={searchValue} class="w-full md:max-w-sm" />
-      <SortPopover
-        {sortOptions}
-        bind:sortKey={localSortKey}
-        bind:selectedOrder={localSortOrder}
-        defaultSortKey="createdAt"
-        defaultSortOrder="desc"
-        onSortKeyChange={handleSortKeyChange}
-        onOrderChange={handleOrderChange}
-        onClearFilters={handleClearSort}
+    <div class="flex w-full flex-col gap-2 md:flex-row md:items-center md:justify-end">
+      <!-- The learner count lives here as muted subtitle text rather than as a
+           row of coloured chips, so the page stays quiet. -->
+      <p class="ui:text-muted-foreground mr-auto text-sm">
+        {$t('audience.learner_count', { count: totalCount })}
+      </p>
+      <AudienceViewSwitcher {activeView} {onSelectView} />
+      <Search placeholder={$t('audience.search_placeholder')} bind:value={searchValue} class="w-full md:max-w-xs" />
+      <AudienceFilterPopover
+        {query}
+        sortBy={query.sortBy}
+        sortOrder={query.sortOrder}
+        {activeFilterCount}
+        {onFilterChange}
+        {onClearFilters}
+        {onSortChange}
       />
     </div>
   {/if}

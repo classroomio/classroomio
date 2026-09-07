@@ -33,15 +33,41 @@ export type GetAudienceRequest = (typeof classroomio.organization)['audience']['
 export type OrganizationAudienceResponse = InferResponseType<GetAudienceRequest> | null;
 export type OrganizationAudienceSuccess = Extract<InferResponseType<GetAudienceRequest>, { success: true }>;
 export type OrganizationAudienceRequestQuery = NonNullable<InferRequestType<GetAudienceRequest>['query']>;
-export type OrganizationAudienceSortBy = 'createdAt' | 'name' | 'email';
+export type OrganizationAudienceSortBy = 'createdAt' | 'name' | 'email' | 'lastLoginAt' | 'lastActiveAt';
 export type OrganizationAudienceSortOrder = 'asc' | 'desc';
+export type OrganizationAudienceMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+export type OrganizationAudienceInviteStatus = 'active' | 'pending' | 'expired' | 'revoked';
+export type OrganizationAudienceEnrollment = 'enrolled' | 'not_enrolled';
+export type OrganizationAudienceCompletion = 'not_started' | 'in_progress' | 'completed';
+export type OrganizationAudienceActivityWindow = '7d' | '30d' | '90d' | '180d' | 'never';
+
 export type OrganizationAudienceQuery = {
   page: number;
   limit: number;
   search?: string;
   sortBy: OrganizationAudienceSortBy;
   sortOrder: OrganizationAudienceSortOrder;
+  status: OrganizationAudienceMemberStatus;
+  inviteStatus?: OrganizationAudienceInviteStatus;
+  enrollment?: OrganizationAudienceEnrollment;
+  completion?: OrganizationAudienceCompletion;
+  lastLoginBefore?: OrganizationAudienceActivityWindow;
+  lastActiveBefore?: OrganizationAudienceActivityWindow;
+  excludeRecentJoiners: boolean;
 };
+
+/**
+ * The one-click dormancy views. These are saved filter combinations, not a
+ * separate concept — each resolves to a plain `OrganizationAudienceQuery`, so a
+ * view is always representable as a shareable URL.
+ */
+export type OrganizationAudienceView =
+  | 'all'
+  | 'never_logged_in'
+  | 'inactive_90d'
+  | 'inactive_180d'
+  | 'enrolled_not_started'
+  | 'archived';
 
 export type OrganizationAudience = OrganizationAudienceSuccess['data'];
 export type OrganizationAudiencePagination = OrganizationAudienceSuccess['pagination'];

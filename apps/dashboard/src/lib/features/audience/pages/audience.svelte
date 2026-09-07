@@ -2,6 +2,8 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import UsersIcon from '@lucide/svelte/icons/users';
+  import SearchXIcon from '@lucide/svelte/icons/search-x';
+  import { Button } from '@cio/ui/base/button';
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
@@ -18,7 +20,15 @@
   import AudienceTableToolbar from '$features/audience/components/audience-table-toolbar.svelte';
   import AudienceTable from '$features/audience/components/audience-table.svelte';
   import { SvelteSet } from 'svelte/reactivity';
-  import { DEFAULT_ORG_AUDIENCE_QUERY, getAudienceSearchParams } from '$features/org/utils/audience-query-utils';
+  import {
+    DEFAULT_ORG_AUDIENCE_QUERY,
+    applyAudienceView,
+    clearAudienceFilters,
+    countActiveAudienceFilters,
+    getAudienceSearchParams,
+    matchAudienceView
+  } from '$features/org/utils/audience-query-utils';
+  import type { OrganizationAudienceView } from '$features/org/utils/types';
 
   interface Course {
     id: string;
@@ -41,11 +51,19 @@
   });
 
   const headers = $derived([
-    { key: 'name', value: t.get('audience.name') },
-    { key: 'email', value: t.get('audience.email') },
-    { key: 'status', value: t.get('audience.status') },
-    { key: 'date_joined', value: t.get('audience.date_joined') }
+    { key: 'name', value: $t('audience.name') },
+    { key: 'email', value: $t('audience.email') },
+    { key: 'status', value: $t('audience.status') },
+    { key: 'last_login', value: $t('audience.filter.last_login') },
+    { key: 'last_activity', value: $t('audience.filter.last_activity') },
+    { key: 'enrollment', value: $t('audience.filter.enrollment') },
+    { key: 'progress', value: $t('audience.progress') },
+    { key: 'date_joined', value: $t('audience.date_joined') }
   ]);
+
+  const activeView = $derived(matchAudienceView(query));
+  const activeFilterCount = $derived(countActiveAudienceFilters(query));
+  const isFiltered = $derived(activeFilterCount > 0 || Boolean(query.search));
 
   let inviteActionEmail = $state<string | null>(null);
   let deletingMemberId = $state<string | null>(null);
@@ -183,6 +201,20 @@
     void navigateAudience({ ...query, page: 1, sortBy, sortOrder });
   }
 
+  // Every filter change resets to page 1: staying on page 7 of a result set
+  // that just shrank to two pages shows an empty table.
+  function handleFilterChange(patch: Partial<OrganizationAudienceQuery>) {
+    void navigateAudience({ ...query, ...patch, page: 1 });
+  }
+
+  function handleSelectView(view: OrganizationAudienceView) {
+    void navigateAudience(applyAudienceView(view, query));
+  }
+
+  function handleClearFilters() {
+    void navigateAudience(clearAudienceFilters(query));
+  }
+
   function openDeleteConfirmation(member: OrganizationAudienceMember) {
     deleteCandidate = member;
     deleteDialogOpen = true;
@@ -221,9 +253,14 @@
   {hasSelection}
   selectedCount={selectedIds.size}
   bind:searchValue
-  sortBy={query.sortBy}
-  sortOrder={query.sortOrder}
+  {query}
+  {activeView}
+  {activeFilterCount}
+  {totalCount}
   onSortChange={handleSortChange}
+  onFilterChange={handleFilterChange}
+  onClearFilters={handleClearFilters}
+  onSelectView={handleSelectView}
   onOpenAssign={() => (assignModalOpen = true)}
 />
 
@@ -247,6 +284,17 @@
 
     <TablePagination count={totalCount} perPage={pageSize} page={currentPage} onPageChange={handlePageChange} />
   </div>
+{:else if isFiltered}
+  <!-- Distinct from the "no audience at all" state: here the roster has people,
+       the filters just exclude them, so the action is to clear the filters. -->
+  <Empty
+    title={$t('audience.filter.empty_title')}
+    description={$t('audience.filter.empty_description')}
+    icon={SearchXIcon}
+    variant="page"
+  >
+    <Button variant="secondary" onclick={handleClearFilters}>{$t('audience.filter.clear')}</Button>
+  </Empty>
 {:else}
   <Empty title={$t('audience.no_audience')} description={$t('audience.manage')} icon={UsersIcon} variant="page" />
 {/if}
