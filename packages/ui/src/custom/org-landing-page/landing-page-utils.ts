@@ -8,10 +8,6 @@ import UserIcon from '@lucide/svelte/icons/user';
 import { DEFAULT_COURSE_BANNER_IMAGE } from '../course-card/constants';
 import type { CourseItem } from './types';
 
-/**
- * Cover art for a course card. Falls back to the shared ClassroomIO banner so
- * catalogs never render a hole where a course has no uploaded image.
- */
 export function getCourseCoverImage(course: CourseItem): string {
   const logo = course.logo?.trim();
   if (logo) {

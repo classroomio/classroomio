@@ -18,6 +18,7 @@ import {
   labelMatchesSocialPlatform,
   resolveFooterSocialPlatform
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
+import { isAllowedHref } from '@cio/utils/validation/shared';
 import { t } from '$lib/utils/functions/translations';
 
 export const landingPageThemes = [
@@ -159,14 +160,6 @@ function normalizeText(value: unknown, fallback = '') {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
 }
 
-import { isAllowedHref } from '@cio/utils/validation/shared';
-
-/**
- * Repairs an absolute URL that was accidentally saved behind a leading '#' — the
- * shape you get when a URL is pasted into a link field pre-filled with '#'.
- * Left as a fragment, the browser resolves it against the current org page
- * (`https://org.example.com/#https://somewhere.com`) instead of navigating away.
- */
 function stripAccidentalFragmentPrefix(href: string): string {
   const withoutHash = href.replace(/^#+/, '');
   const isAbsolute = /^(https?:\/\/|mailto:|tel:|\/\/)/i.test(withoutHash);
@@ -184,7 +177,6 @@ function normalizeHref(value: unknown, fallback = '#') {
     return fallback;
   }
 
-  // Repair before validating, so the allowlist judges the URL the user meant.
   const repaired = stripAccidentalFragmentPrefix(trimmed);
   if (!isAllowedHref(repaired)) {
     return fallback;
