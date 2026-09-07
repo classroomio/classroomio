@@ -2,26 +2,43 @@ import { eq, isNotNull } from 'drizzle-orm';
 import { db } from '../drizzle';
 import { organization } from '../schema';
 
-function isContactNavItem(item: Record<string, unknown>): boolean {
+// Landing pages are stored as a loosely-typed JSON blob, so an old or
+// hand-edited row can hold anything in navItems/customLinks — a stray null,
+// a string, a number. Every predicate below must survive that before it
+// reads a property, or one bad org aborts the run for every org after it.
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isContactHref(value: unknown): boolean {
+  const href = typeof value === 'string' ? value.trim() : '';
+  return href === '#contact' || href === '/#contact';
+}
+
+function isContactNavItem(item: unknown): boolean {
+  if (!isRecord(item)) return false;
+
   const href = typeof item.href === 'string' ? item.href.trim() : '';
   const label = typeof item.label === 'string' ? item.label.trim().toLowerCase() : '';
 
-  if (href === '#contact' || href === '/#contact') return true;
+  if (isContactHref(href)) return true;
 
   const isContactLabel = label === 'contact' || label === 'contact us';
-  const isDeadOrAnchorHref = href === '#' || href === '' || href === '#contact' || href === '/#contact';
+  const isDeadOrAnchorHref = href === '#' || href === '' || isContactHref(href);
 
   return isContactLabel && isDeadOrAnchorHref;
 }
 
-function isContactCustomLink(link: Record<string, unknown>): boolean {
+function isContactCustomLink(link: unknown): boolean {
+  if (!isRecord(link)) return false;
+
   const url = typeof link.url === 'string' ? link.url.trim() : '';
   const label = typeof link.label === 'string' ? link.label.trim().toLowerCase() : '';
 
-  if (url === '#contact' || url === '/#contact') return true;
+  if (isContactHref(url)) return true;
 
   const isContactLabel = label === 'contact' || label === 'contact us';
-  const isDeadOrAnchorUrl = url === '#' || url === '' || url === '#contact' || url === '/#contact';
+  const isDeadOrAnchorUrl = url === '#' || url === '' || isContactHref(url);
 
   return isContactLabel && isDeadOrAnchorUrl;
 }
@@ -90,13 +107,13 @@ async function removeLandingPageContactNav() {
       if (hero && typeof hero === 'object') {
         const fixedHero = { ...hero };
         const primaryAction = fixedHero.primaryAction as Record<string, unknown> | undefined;
-        if (primaryAction && typeof primaryAction === 'object' && primaryAction.href === '#contact') {
+        if (isRecord(primaryAction) && isContactHref(primaryAction.href)) {
           fixedHero.primaryAction = { ...primaryAction, href: '/courses' };
           changes.push('hero primaryAction href #contact → /courses');
         }
 
         const secondaryAction = fixedHero.secondaryAction as Record<string, unknown> | undefined;
-        if (secondaryAction && typeof secondaryAction === 'object' && secondaryAction.href === '#contact') {
+        if (isRecord(secondaryAction) && isContactHref(secondaryAction.href)) {
           fixedHero.secondaryAction = { ...secondaryAction, href: '/courses' };
           changes.push('hero secondaryAction href #contact → /courses');
         }
@@ -109,7 +126,7 @@ async function removeLandingPageContactNav() {
       if (header && typeof header === 'object') {
         const fixedHeader = { ...header };
         const action = fixedHeader.action as Record<string, unknown> | undefined;
-        if (action && typeof action === 'object' && action.link === '#contact') {
+        if (isRecord(action) && isContactHref(action.link)) {
           fixedHeader.action = { ...action, link: '/courses' };
           changes.push('legacy header action link #contact → /courses');
         }
