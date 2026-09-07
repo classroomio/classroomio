@@ -49,7 +49,13 @@
   {/if}
 
   <Sidebar.Inset>
-    {#if !isSettingsRoute}<AppHeader />{/if}
+    {#if isSettingsRoute}
+      <header class="flex h-12 items-center border-b px-4">
+        <Sidebar.Trigger testId="settings-sidebar-trigger" />
+      </header>
+    {:else}
+      <AppHeader />
+    {/if}
 
     <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
       {#if data.orgName === '*'}

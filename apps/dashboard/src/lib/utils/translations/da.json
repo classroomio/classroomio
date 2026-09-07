@@ -3180,14 +3180,15 @@
   },
   "settings": {
     "sidebar": {
-      "workspace": "Workspace",
-      "personal": "Personal",
-      "product": "Product",
-      "connections": "Connections",
-      "security": "Security",
-      "billing": "Billing",
+      "workspace": "Arbejdsområde",
+      "personal": "Personlig",
+      "product": "Produkt",
+      "connections": "Forbindelser",
+      "security": "Sikkerhed",
+      "billing": "Fakturering",
       "branding": "Branding",
-      "search": "Search settings..."
+      "ai": "AI",
+      "search": "Søg i indstillinger..."
     },
     "heading": "Indstillinger",
     "billing": {

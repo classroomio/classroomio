@@ -3180,14 +3180,15 @@
   },
   "settings": {
     "sidebar": {
-      "workspace": "Workspace",
-      "personal": "Personal",
-      "product": "Product",
-      "connections": "Connections",
-      "security": "Security",
-      "billing": "Billing",
-      "branding": "Branding",
-      "search": "Search settings..."
+      "workspace": "Рабочая область",
+      "personal": "Личные настройки",
+      "product": "Продукт",
+      "connections": "Подключения",
+      "security": "Безопасность",
+      "billing": "Оплата",
+      "branding": "Брендинг",
+      "ai": "ИИ",
+      "search": "Поиск настроек..."
     },
     "heading": "Настройки",
     "billing": {

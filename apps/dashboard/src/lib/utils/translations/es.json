@@ -3180,14 +3180,15 @@
   },
   "settings": {
     "sidebar": {
-      "workspace": "Workspace",
+      "workspace": "Espacio de trabajo",
       "personal": "Personal",
-      "product": "Product",
-      "connections": "Connections",
-      "security": "Security",
-      "billing": "Billing",
-      "branding": "Branding",
-      "search": "Search settings..."
+      "product": "Producto",
+      "connections": "Conexiones",
+      "security": "Seguridad",
+      "billing": "Facturación",
+      "branding": "Marca",
+      "ai": "IA",
+      "search": "Buscar ajustes..."
     },
     "heading": "Configuración",
     "billing": {

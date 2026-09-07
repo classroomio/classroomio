@@ -6,6 +6,7 @@
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
   import { Input } from '@cio/ui/base/input';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
 
   const groups = [
     {
@@ -30,6 +31,17 @@
         { key: 'settings.tabs.landing_page_tab', path: '/settings/landingpage' }
       ]
     },
+    ...(IS_AI_ENABLED
+      ? [
+          {
+            label: 'settings.sidebar.ai',
+            items: [
+              { key: 'settings.tabs.ai_tutor_tab', path: '/settings/ai-tutor' },
+              { key: 'settings.tabs.ai_credits_tab', path: '/settings/ai-credits' }
+            ]
+          }
+        ]
+      : []),
     {
       label: 'settings.sidebar.connections',
       items: [
@@ -53,7 +65,7 @@
   );
 </script>
 
-<Sidebar.Root collapsible="none" class="border-r">
+<Sidebar.Root collapsible="offcanvas" class="border-r">
   <Sidebar.Header class="gap-3 p-4">
     <a href={currentPath} class="flex items-center gap-2 text-sm font-medium">
       <ArrowLeftIcon size={16} />
