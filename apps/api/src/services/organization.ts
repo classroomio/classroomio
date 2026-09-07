@@ -178,7 +178,14 @@ export async function getOrgAudience(
         limit: audienceResult.limit,
         search: query.search,
         sortBy: query.sortBy,
-        sortOrder: query.sortOrder
+        sortOrder: query.sortOrder,
+        status: query.status,
+        inviteStatus: query.inviteStatus,
+        enrollment: query.enrollment,
+        completion: query.completion,
+        lastLoginBefore: query.lastLoginBefore,
+        lastActiveBefore: query.lastActiveBefore,
+        excludeRecentJoiners: query.excludeRecentJoiners
       }
     };
   } catch (error) {

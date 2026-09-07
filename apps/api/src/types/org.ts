@@ -1,5 +1,13 @@
 import type { AudienceMemberStatus } from '@api/utils/audience-member-status';
-import type { TAudienceSortBy, TAudienceSortOrder } from '@cio/utils/validation/organization';
+import type {
+  TAudienceActivityWindow,
+  TAudienceCompletion,
+  TAudienceEnrollment,
+  TAudienceInviteStatus,
+  TAudienceMemberStatus,
+  TAudienceSortBy,
+  TAudienceSortOrder
+} from '@cio/utils/validation/organization';
 
 export type OrgAudienceMember = {
   id: number;
@@ -8,7 +16,15 @@ export type OrgAudienceMember = {
   email: string;
   avatarUrl: string;
   createdAt: string;
+  /** Derived invite state. Not the lifecycle state — that is `memberStatus`. */
   status: AudienceMemberStatus;
+  /** Lifecycle state of the membership: ACTIVE / DEACTIVATED / ARCHIVED. */
+  memberStatus: TAudienceMemberStatus;
+  lastLoginAt: string | null;
+  lastActiveAt: string | null;
+  enrolledCount: number;
+  completedCount: number;
+  progressPercent: number;
 };
 
 export type OrgAudiencePagination = {
@@ -24,4 +40,11 @@ export type OrgAudienceQuery = {
   search?: string;
   sortBy: TAudienceSortBy;
   sortOrder: TAudienceSortOrder;
+  status: TAudienceMemberStatus;
+  inviteStatus?: TAudienceInviteStatus;
+  enrollment?: TAudienceEnrollment;
+  completion?: TAudienceCompletion;
+  lastLoginBefore?: TAudienceActivityWindow;
+  lastActiveBefore?: TAudienceActivityWindow;
+  excludeRecentJoiners: boolean;
 };
