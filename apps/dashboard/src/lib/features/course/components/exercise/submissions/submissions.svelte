@@ -17,9 +17,10 @@
   interface Props {
     exerciseId: string;
     submissions: SubmissionListItem[];
+    enrolledStudentKeys?: string[];
   }
 
-  let { exerciseId = $bindable(''), submissions: submissionsData }: Props = $props();
+  let { exerciseId = $bindable(''), submissions: submissionsData, enrolledStudentKeys = [] }: Props = $props();
 
   type SubmissionTab = 'summary' | 'individual';
 
@@ -113,7 +114,7 @@
     </Tabs.Content>
 
     <Tabs.Content value="individual" class="pt-2">
-      <Individual isLoading={false} {submissionGroups} />
+      <Individual isLoading={false} {submissionGroups} {enrolledStudentKeys} />
     </Tabs.Content>
   </Tabs.Root>
 {:else}

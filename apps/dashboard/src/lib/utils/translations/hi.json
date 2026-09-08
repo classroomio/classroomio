@@ -662,7 +662,13 @@
       "kpi_lessons_exercises": "{count, plural, one {# अभ्यास} other {# अभ्यास}} पाठों के अनुसार मैप किया गया",
       "kpi_progress_grade": "नामांकित विद्यार्थियों में {ग्रेड}% औसत व्यायाम ग्रेड"
     },
-    "course_progress": "पाठ्यक्रम प्रगति"
+    "course_progress": "पाठ्यक्रम प्रगति",
+    "just_now": "अभी-अभी",
+    "minutes_ago": "{count, plural, one {# मिनट पहले} other {# मिनट पहले}}",
+    "hours_ago": "{count, plural, one {# घंटा पहले} other {# घंटे पहले}}",
+    "days_ago": "{count, plural, one {# दिन पहले} other {# दिन पहले}}",
+    "months_ago": "{count, plural, one {# महीना पहले} other {# महीने पहले}}",
+    "years_ago": "{count, plural, one {# वर्ष पहले} other {# वर्ष पहले}}"
   },
   "audience": {
     "title": "दर्शक",

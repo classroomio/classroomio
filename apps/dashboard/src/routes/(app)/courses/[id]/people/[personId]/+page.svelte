@@ -14,7 +14,11 @@
   let userCourseAnalytics = $derived(data.userCourseAnalytics as UserCourseAnalytics | null | undefined);
 
   async function handleRetry() {
-    await invalidateAll();
+    try {
+      await invalidateAll();
+    } catch (error) {
+      console.error('people personId handleRetry error:', error);
+    }
   }
 </script>
 

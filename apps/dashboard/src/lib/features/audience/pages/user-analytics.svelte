@@ -62,7 +62,11 @@
   });
 
   async function handleRetry() {
-    await invalidateAll();
+    try {
+      await invalidateAll();
+    } catch (error) {
+      console.error('user-analytics handleRetry error:', error);
+    }
   }
 </script>
 

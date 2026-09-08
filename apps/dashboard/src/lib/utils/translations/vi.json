@@ -662,7 +662,13 @@
       "kpi_lessons_exercises": "{count, plural, one {# bài tập} other {# bài tập}} được ánh xạ tới bài học",
       "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
     },
-    "course_progress": "Tiến độ khóa học"
+    "course_progress": "Tiến độ khóa học",
+    "just_now": "vừa mới đây",
+    "minutes_ago": "{count, plural, other {# phút trước}}",
+    "hours_ago": "{count, plural, other {# giờ trước}}",
+    "days_ago": "{count, plural, other {# ngày trước}}",
+    "months_ago": "{count, plural, other {# tháng trước}}",
+    "years_ago": "{count, plural, other {# năm trước}}"
   },
   "audience": {
     "title": "khán giả",

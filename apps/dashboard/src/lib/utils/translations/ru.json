@@ -662,7 +662,13 @@
       "kpi_lessons_exercises": "{count, plural, one {# упражнение} other {# упражнений}} сопоставлено с уроками",
       "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
     },
-    "course_progress": "Прогресс курса"
+    "course_progress": "Прогресс курса",
+    "just_now": "только что",
+    "minutes_ago": "{count, plural, one {# минуту назад} other {# минут назад}}",
+    "hours_ago": "{count, plural, one {# час назад} other {# часов назад}}",
+    "days_ago": "{count, plural, one {# день назад} other {# дней назад}}",
+    "months_ago": "{count, plural, one {# месяц назад} other {# месяцев назад}}",
+    "years_ago": "{count, plural, one {# год назад} other {# лет назад}}"
   },
   "audience": {
     "title": "Аудитория",

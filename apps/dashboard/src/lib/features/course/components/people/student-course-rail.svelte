@@ -8,6 +8,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import type { UserCourseAnalytics } from '$features/course/utils/types';
+  import { formatLastSeen } from '$lib/features/audience/utils/audience-utils';
 
   let {
     userCourseAnalytics
@@ -36,7 +37,7 @@
     <Badge variant="secondary">
       <ClockIcon />
       {$t('analytics.last_seen')}
-      {userCourseAnalytics.user.lastSeen ?? $t('analytics.a_while_ago')}
+      {formatLastSeen(userCourseAnalytics.user.lastSeen) ?? $t('analytics.a_while_ago')}
     </Badge>
   </Card.Content>
 

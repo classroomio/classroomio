@@ -27,9 +27,10 @@
   interface Props {
     isLoading?: boolean;
     submissionGroups?: ExerciseSubmissionStudentGroup[];
+    enrolledStudentKeys?: string[];
   }
 
-  let { isLoading = $bindable(false), submissionGroups = [] }: Props = $props();
+  let { isLoading = $bindable(false), submissionGroups = [], enrolledStudentKeys = [] }: Props = $props();
 
   let studentSelected = $state(0);
   let selectedAttemptByStudentKey = $state<Record<string, number>>({});
@@ -45,12 +46,22 @@
 
   function applyStudentParam(studentKeyParam: string | null) {
     const nextIndex = resolveStudentIndex(studentKeyParam);
-    if (nextIndex === null) {
+    if (nextIndex !== null) {
+      studentSelected = nextIndex;
+      hasNoSubmission = false;
+      return;
+    }
+
+    // A param that belongs to a real course student covers them only when they
+    // genuinely have no submission. Anything else (stale, malformed, or foreign
+    // profile IDs) falls back to the first submitter so the URL does not
+    // misreport a student as having no submission.
+    if (studentKeyParam && enrolledStudentKeys.includes(studentKeyParam)) {
       studentSelected = 0;
       hasNoSubmission = true;
       return;
     }
-    studentSelected = nextIndex;
+    studentSelected = 0;
     hasNoSubmission = false;
   }
 
@@ -58,7 +69,7 @@
     applyStudentParam(page.url.searchParams.get('student'));
   });
 
-  // URL -> state: hydrate when the student param changes externally.
+  // URL -> state: hydrate when the student param or the enrolled roster changes.
   $effect(() => {
     applyStudentParam(page.url.searchParams.get('student'));
   });

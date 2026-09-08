@@ -546,6 +546,9 @@
       (item) => item.type === ContentType.Exercise && item.id === exerciseId
     )
   );
+  const enrolledStudentKeys = $derived(
+    courseApi.group.students.map((student) => student.profileId).filter((profileId): profileId is string => !!profileId)
+  );
   const isCourseContentReady = $derived(courseApi.course?.id != null);
   const isExerciseTeacherLocked = $derived((exerciseContentItem?.isUnlocked ?? true) === false);
   const isExerciseProgressionLocked = $derived(
@@ -802,7 +805,7 @@
             />
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
-            <Submissions bind:exerciseId {submissions} />
+            <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
           </UnderlineTabs.Content>
         </UnderlineTabs.Root>
 

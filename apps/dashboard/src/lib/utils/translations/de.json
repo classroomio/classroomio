@@ -662,7 +662,13 @@
       "kpi_lessons_exercises": "{count, plural, one {# Übung} other {# Übungen}}, zugeordnet zu Lektionen",
       "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler"
     },
-    "course_progress": "Kursfortschritt"
+    "course_progress": "Kursfortschritt",
+    "just_now": "Gerade eben",
+    "minutes_ago": "{count, plural, one {vor # Minute} other {vor # Minuten}}",
+    "hours_ago": "{count, plural, one {vor # Stunde} other {vor # Stunden}}",
+    "days_ago": "{count, plural, one {vor # Tag} other {vor # Tagen}}",
+    "months_ago": "{count, plural, one {vor # Monat} other {vor # Monaten}}",
+    "years_ago": "{count, plural, one {vor # Jahr} other {vor # Jahren}}"
   },
   "audience": {
     "title": "Publikum",

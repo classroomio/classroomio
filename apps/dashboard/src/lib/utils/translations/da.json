@@ -662,7 +662,13 @@
       "kpi_lessons_exercises": "{count, plural, one {# øvelse} other {# øvelser}} knyttet til lektioner",
       "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
     },
-    "course_progress": "Kursusstatus"
+    "course_progress": "Kursusstatus",
+    "just_now": "lige nu",
+    "minutes_ago": "{count, plural, one {# minut siden} other {# minutter siden}}",
+    "hours_ago": "{count, plural, one {# time siden} other {# timer siden}}",
+    "days_ago": "{count, plural, one {# dag siden} other {# dage siden}}",
+    "months_ago": "{count, plural, one {# måned siden} other {# måneder siden}}",
+    "years_ago": "{count, plural, one {# år siden} other {# år siden}}"
   },
   "audience": {
     "title": "Publikum",

@@ -662,7 +662,13 @@
       "kpi_lessons_exercises": "{count, plural, one {# ćwiczenie} other {# ćwiczeń}} przypisane do lekcji",
       "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów"
     },
-    "course_progress": "Postęp kursu"
+    "course_progress": "Postęp kursu",
+    "just_now": "przed chwilą",
+    "minutes_ago": "{count, plural, one {# minutę temu} other {# minut temu}}",
+    "hours_ago": "{count, plural, one {# godzinę temu} other {# godzin temu}}",
+    "days_ago": "{count, plural, one {# dzień temu} other {# dni temu}}",
+    "months_ago": "{count, plural, one {# miesiąc temu} other {# miesięcy temu}}",
+    "years_ago": "{count, plural, one {# rok temu} other {# lat temu}}"
   },
   "audience": {
     "title": "Publiczność",
