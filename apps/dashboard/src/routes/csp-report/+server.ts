@@ -38,10 +38,33 @@ export const POST: RequestHandler = async ({ request }) => {
       return new Response(null, { status: 204 });
     }
 
-    const raw = await request.text();
-    if (!raw || raw.length > MAX_REPORT_BODY_BYTES) {
+    const reader = request.body?.getReader();
+    if (!reader) {
       return new Response(null, { status: 204 });
     }
+
+    const chunks: Uint8Array[] = [];
+    let totalBytes = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      totalBytes += value.byteLength;
+
+      if (totalBytes > MAX_REPORT_BODY_BYTES) {
+        await reader.cancel();
+        return new Response(null, { status: 204 });
+      }
+
+      chunks.push(value);
+    }
+
+    if (totalBytes === 0) {
+      return new Response(null, { status: 204 });
+    }
+
+    const raw = Buffer.concat(chunks.map((c) => Buffer.from(c))).toString('utf-8');
 
     const report = JSON.parse(raw);
     const cspData = report['csp-report'] ?? report;
