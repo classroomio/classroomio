@@ -281,16 +281,13 @@ export function buildAudienceWhereClause(
   const status = options.status ?? 'ACTIVE';
   const excludeRecentJoiners = options.excludeRecentJoiners ?? true;
 
-  // The dormancy grace period keys off when they joined *this organization*,
-  // not when their account was created. A long-standing account invited here
-  // last week is still a recent joiner, and an account created moments ago can
-  // be backfilled into an org it has belonged to for a year.
+  // Org join date, not account age: a long-standing account invited here last
+  // week is still a recent joiner.
   const joinedOrgAtSql = sql<string>`${schema.organizationmember.createdAt}`;
   const lastActiveAtSql = sql<string | null>`${schema.organizationmember.lastActiveAt}`;
 
-  // An explicit id selection is the whole predicate: the admin named these
-  // rows, so no filter — least of all the default ACTIVE status — may quietly
-  // remove any of them.
+  // An id selection is the whole predicate — no filter, least of all the
+  // default ACTIVE status, may quietly drop a row the admin named.
   if (options.memberIds?.length) {
     return {
       whereClause: and(
@@ -461,10 +458,8 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
   const lastActiveAtSql = sql<string | null>`${schema.organizationmember.lastActiveAt}`;
   const enrolmentLateral = enrolmentSummaryLateral(orgId);
 
-  // The enrolment lateral is the expensive part of this query, and only the
-  // enrolment and completion filters make the count depend on it. Joining it
-  // unconditionally would pay for per-learner lesson counts on every page load
-  // of every org, including the common unfiltered one.
+  // The lateral is the expensive part and only these two filters need it in
+  // the count; joining always would tax every unfiltered page load.
   const { whereClause, needsEnrolmentJoin: countNeedsEnrolment } = buildAudienceWhereClause(orgId, options);
 
   const countQuery = db

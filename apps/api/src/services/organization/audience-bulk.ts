@@ -93,8 +93,7 @@ export async function previewBulkAudienceAction(
   orgId: string,
   filter: Parameters<typeof resolveAudienceMemberIds>[1]
 ): Promise<BulkAudiencePreview> {
-  // The id list is materialized only for the hash, which by definition needs
-  // every id. The sample and the archive gate are derived from the filter, so
+  // Only the hash needs every id; sample and gate come from the filter so
   // neither builds an IN predicate over the whole matched set.
   const [matchedIds, sample, notArchivedCount] = await Promise.all([
     resolveAudienceMemberIds(orgId, filter),
@@ -207,9 +206,8 @@ async function resolveTarget(
     );
   }
 
-  // Reject on the id count before loading rows. Checking after would mean a
-  // 12,000-match filter pays for a 12,000-row load and a query listing every
-  // id, only to be turned away.
+  // Before loading rows: checking after would make a 12,000-match filter pay
+  // for the full load just to be refused.
   assertWithinSyncCeiling(matchedIds.length);
 
   return getBulkAudienceMembersByIds(orgId, matchedIds, tx);
@@ -234,8 +232,7 @@ export async function applyBulkAudienceAction(
       throw new AppError('No matching learners to act on', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 404);
     }
 
-    // Filter mode already checked this before loading rows; ids mode is capped
-    // at 500 by validation. This backstops both against a future caller.
+    // Backstop; both modes are already bounded before reaching here.
     assertWithinSyncCeiling(members.length);
 
     const requested = members.length;
@@ -337,9 +334,8 @@ async function changeStatus(
     }
   }
 
-  // Undo replays the exact ids that changed, never the filter: re-running the
-  // filter would hit a different population, because the action just changed
-  // who matches it.
+  // Over the ids that changed, never the filter — the action just changed who
+  // the filter matches.
   const undoStatus = action === 'deactivate' || action === 'archive' ? UNDO_STATUS[action] : undefined;
   const undoToken =
     undoStatus && changedIds.length > 0
@@ -403,10 +399,8 @@ export async function undoBulkAudienceAction(
   return db.transaction(async (tx) => {
     const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
 
-    // Only reverse members still in the state this action put them in. Another
-    // admin may have archived or reactivated someone during the 15-minute
-    // window, and blindly restoring ACTIVE would silently overturn that newer,
-    // more deliberate decision — handing back access someone had just removed.
+    // Only members still in the state this action applied. Another admin may
+    // have acted during the window, and that newer decision must win.
     const stillApplied = members.filter((member) => member.status === record.appliedStatus);
     const revertableIds = stillApplied.map((member) => member.id);
 
@@ -436,10 +430,8 @@ export async function undoBulkAudienceAction(
       mode: 'completed' as const,
       requested: record.memberIds.length,
       succeeded: changedIds.length,
-      // Iterate the token's own ids, not the rows that came back. A member
-      // another admin deleted during the window returns no row at all, and
-      // reporting only what was found would leave `requested` and
-      // `succeeded + failed` disagreeing with no explanation.
+      // The token's ids, not the rows returned: a deleted member yields no row,
+      // and would otherwise vanish from both succeeded and failed.
       failed: record.memberIds
         .filter((memberId) => !changedIds.includes(memberId))
         .map((memberId) => {
