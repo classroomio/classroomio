@@ -54,8 +54,18 @@ export function neutralizeFormula(value: string | number | null): string | numbe
     return value;
   }
 
-  return /^[=+\-@\t\r]/.test(value) ? `\t${value}` : value;
+  return FORMULA_PREFIX.test(value) ? `\t${value}` : value;
 }
+
+/**
+ * Characters that make a spreadsheet treat a cell as a formula.
+ *
+ * Beyond the obvious four: tab, CR and LF count because spreadsheets skip
+ * leading whitespace before deciding, so a payload prefixed with one slips
+ * past a naive check on `=` alone. The full-width variants are included
+ * because several applications normalize them to their ASCII equivalents.
+ */
+const FORMULA_PREFIX = /^[=+\-@\t\r\n＝＋－＠]/;
 
 /** Resolves one cell: empty placeholder, then formula neutralization. */
 function toExportCell<Row>(column: ExportColumn<Row>, row: Row): string | number {
@@ -78,7 +88,9 @@ function toExportCell<Row>(column: ExportColumn<Row>, row: Row): string | number
  */
 export function toExportMatrix<Row>(doc: ExportDocument<Row>): { head: string[]; body: (string | number)[][] } {
   return {
-    head: doc.columns.map((column) => column.header),
+    // Headers are user-controlled too: an exercise title becomes a column
+    // header, so it needs the same neutralization as a cell value.
+    head: doc.columns.map((column) => neutralizeFormula(column.header) as string),
     body: doc.rows.map((row) => doc.columns.map((column) => toExportCell(column, row)))
   };
 }

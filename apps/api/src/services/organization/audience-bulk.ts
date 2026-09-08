@@ -436,14 +436,24 @@ export async function undoBulkAudienceAction(
       mode: 'completed' as const,
       requested: record.memberIds.length,
       succeeded: changedIds.length,
-      // Members changed by someone else since are reported as skipped with a
-      // distinct reason, so the admin can see their undo was not total.
-      failed: members
-        .filter((member) => !changedIds.includes(member.id))
-        .map((member) => ({
-          memberId: member.id,
-          reason: member.status === record.appliedStatus ? 'ALREADY_IN_STATE' : 'CHANGED_SINCE'
-        }))
+      // Iterate the token's own ids, not the rows that came back. A member
+      // another admin deleted during the window returns no row at all, and
+      // reporting only what was found would leave `requested` and
+      // `succeeded + failed` disagreeing with no explanation.
+      failed: record.memberIds
+        .filter((memberId) => !changedIds.includes(memberId))
+        .map((memberId) => {
+          const member = members.find((candidate) => candidate.id === memberId);
+
+          if (!member) {
+            return { memberId, reason: 'CHANGED_SINCE' };
+          }
+
+          return {
+            memberId,
+            reason: member.status === record.appliedStatus ? 'ALREADY_IN_STATE' : 'CHANGED_SINCE'
+          };
+        })
     };
   });
 }

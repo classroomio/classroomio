@@ -93,6 +93,31 @@ describe('neutralizeFormula', () => {
     expect(neutralizeFormula(null)).toBeNull();
   });
 
+  it('defuses payloads hidden behind leading whitespace', () => {
+    // Spreadsheets skip leading whitespace before deciding whether a cell is a
+    // formula, so a naive check on `=` alone is bypassed by prefixing one.
+    for (const payload of ['\t=1+1', '\r=1+1', '\n=1+1']) {
+      expect(String(neutralizeFormula(payload)).startsWith('\t')).toBe(true);
+    }
+  });
+
+  it('defuses full-width variants that spreadsheets normalize', () => {
+    expect(neutralizeFormula('＝1+1')).toBe('\t＝1+1');
+    expect(neutralizeFormula('＠SUM(A1)')).toBe('\t＠SUM(A1)');
+  });
+
+  it('neutralizes a hostile column header, not just cell values', () => {
+    // Exercise titles become headers and are user-controlled.
+    const hostileHeader: ExportDocument<{ value: string }> = {
+      filename: 'f',
+      title: 't',
+      columns: [{ key: 'value', header: '=HYPERLINK("http://evil.test")', value: (row) => row.value }],
+      rows: [{ value: 'ok' }]
+    };
+
+    expect(toExportMatrix(hostileHeader).head[0]).toBe('\t=HYPERLINK("http://evil.test")');
+  });
+
   it('applies through the document pipeline, not just in isolation', () => {
     const hostile: ExportDocument<{ name: string }> = {
       filename: 'f',

@@ -225,6 +225,28 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
     });
   });
 
+  it('accounts for a member deleted during the undo window', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1), member(2)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2]);
+
+    const applied = await applyBulkAudienceAction(
+      ORG,
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'archive' },
+      ACTOR
+    );
+    const token = applied.mode === 'completed' ? applied.undoToken! : '';
+
+    // Learner 2 was deleted, so no row comes back for them at all.
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED')] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+
+    const result = await undoBulkAudienceAction(ORG, token, ACTOR);
+
+    // requested must equal succeeded + failed, or the summary is unexplainable.
+    expect(result).toMatchObject({ requested: 2, succeeded: 1 });
+    expect(result.mode === 'completed' && result.failed).toEqual([{ memberId: 2, reason: 'CHANGED_SINCE' }]);
+  });
+
   it('burns the undo token so it cannot be replayed', async () => {
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1)] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
