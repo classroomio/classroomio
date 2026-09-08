@@ -5,6 +5,10 @@ import tailwindcss from '@tailwindcss/vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
+import mkcert from 'vite-plugin-mkcert';
+
+const useHttps = process.env.HTTPS === 'true' || process.env.VITE_USE_HTTPS_ON_LOCALHOST === 'true';
+const host = process.env.HOST || (useHttps ? '0.0.0.0' : undefined);
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const devApiUrl = process.env.API_URL ?? 'http://localhost:3002';
@@ -87,6 +91,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       embedDevEntryPlugin(),
       ...(command === 'serve' ? [embedApiUrlInjectPlugin()] : []),
+      ...(useHttps ? [mkcert()] : []),
       tailwindcss(),
       svelte(),
       cssInjectedByJsPlugin()
@@ -124,6 +129,7 @@ export default defineConfig(({ command, mode }) => {
           }
         : {},
     server: {
+      host,
       port: 5180,
       cors: true
     },

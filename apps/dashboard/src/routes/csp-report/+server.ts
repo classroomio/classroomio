@@ -8,8 +8,8 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     const raw = await request.text();
     if (raw) {
-      JSON.parse(raw);
-      // Optional: log parsed report for monitoring (shape varies by directive)
+      const report = JSON.parse(raw);
+      console.warn('[csp-report]', JSON.stringify(report));
     }
   } catch (error) {
     console.error('csp-report: invalid JSON body', error);

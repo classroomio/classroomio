@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 5180",
+    "dev:https": "HTTPS=true pnpm run dev",
     "prebuild": "pnpm --filter @cio/ui run build",
     "build:question-type-picker": "vite build --mode question-type-picker",
     "build:course-widget": "vite build --mode course-widget && node --input-type=commonjs -e \"require('fs').copyFileSync('src/widgets/course-widget/embed.html','dist/course-widget/embed.html')\"",
@@ -25,7 +26,8 @@
     "tsx": "^4.7.1",
     "typescript": "^5.5.0",
     "vite": "^7.1.4",
-    "vite-plugin-css-injected-by-js": "^3.5.2"
+    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vite-plugin-mkcert": "^2.1.0"
   },
   "dependencies": {
     "@cio/question-types": "workspace:*",

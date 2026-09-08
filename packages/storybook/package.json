@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "storybook dev -p 6006",
+    "dev:https": "HTTPS=true pnpm run dev",
     "build": "storybook build",
     "preview": "storybook preview",
     "format": "prettier --write .",
@@ -45,6 +46,7 @@
     "tailwindcss": "^4.1.14",
     "tsx": "^4.7.1",
     "typescript-svelte-plugin": "^0.3.50",
-    "vite": "^7.1.4"
+    "vite": "^7.1.4",
+    "vite-plugin-mkcert": "^2.1.0"
   }
 }

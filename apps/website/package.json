@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite dev --port 5174",
+    "dev:https": "HTTPS=true pnpm run dev",
     "build": "vite build",
     "preview": "wrangler dev --port 4173",
     "start": "wrangler dev --port 3000",
@@ -26,6 +27,7 @@
     "tailwindcss": "^4.1.14",
     "typescript": "^5.5.0",
     "vite": "^5.4.4",
+    "vite-plugin-mkcert": "^2.1.0",
     "wrangler": "^4.21.2"
   },
   "type": "module",
