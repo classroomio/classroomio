@@ -5354,9 +5354,12 @@
     "watching_empty_description": "Updates on items you follow will show up here."
   },
   "export": {
-    "csv": "Download CSV",
-    "pdf": "Download PDF",
-    "pdf_too_many_rows": "Too many rows — use CSV above {limit}",
+    "as_csv": "Export as CSV",
+    "as_excel": "Export as Excel",
+    "as_pdf": "Export as PDF",
+    "as_html": "Export as HTML",
+    "more_formats": "More export formats",
+    "pdf_too_many_rows": "Too many rows — use CSV or Excel above {limit}",
     "nothing_to_export": "There is nothing to export",
     "failed": "Export failed"
   }

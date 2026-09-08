@@ -99,6 +99,33 @@ export const ZBulkAudienceAction = z.object({
 });
 export type TBulkAudienceAction = z.infer<typeof ZBulkAudienceAction>;
 
+/**
+ * Export scope: selected ids, the current filters, or everything. `memberIds`
+ * takes precedence and the filters are then ignored entirely, never intersected.
+ */
+export const ZAudienceExportQuery = ZGetAudienceQuery.omit({ page: true, limit: true }).extend({
+  memberIds: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((value) => {
+      if (value == null) return undefined;
+
+      const raw = Array.isArray(value) ? value : [value];
+      const ids = raw
+        .flatMap((entry) => entry.split(','))
+        .map((entry) => Number(entry.trim()))
+        .filter((id) => Number.isInteger(id) && id > 0);
+
+      // Dedupe before the cap, so repeats cannot push a valid selection over.
+      return ids.length > 0 ? [...new Set(ids)] : undefined;
+    })
+    // Refuse rather than truncate: a short export would look complete.
+    .refine((ids) => ids == null || ids.length <= AUDIENCE_BULK_IDS_MAX, {
+      message: `Select at most ${AUDIENCE_BULK_IDS_MAX} learners, or export the filtered view instead`
+    })
+});
+export type TAudienceExportQuery = z.infer<typeof ZAudienceExportQuery>;
+
 /** Undo acts on the ids that actually succeeded, never on a re-run of the filter. */
 export const ZUndoBulkAudienceAction = z.object({
   undoToken: z.string().min(1).max(200)

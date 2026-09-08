@@ -25,6 +25,10 @@
       "types": "./dist/export/index.d.ts",
       "default": "./dist/export/index.js"
     },
+    "./export/xlsx": {
+      "types": "./dist/export/xlsx.d.ts",
+      "default": "./dist/export/xlsx.js"
+    },
     "./senja": {
       "types": "./dist/senja/index.d.ts",
       "default": "./dist/senja/index.js"

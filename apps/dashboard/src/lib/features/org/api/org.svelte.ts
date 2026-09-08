@@ -2,6 +2,7 @@ import type {
   AssignAudienceCoursesRequest,
   CreateLinkInviteRequest,
   BulkAudienceActionRequest,
+  AudienceExportRequest,
   BulkAudiencePreviewRequest,
   DeleteAudienceMemberRequest,
   DeleteTeamRequest,
@@ -735,6 +736,23 @@ class OrgApi extends BaseApiWithErrors {
         if (typeof result === 'string') {
           snackbar.error(result);
         }
+      }
+    });
+  }
+
+  /** Every row matching the current scope, for a client-side export. */
+  async getAudienceExportRows(query: OrganizationAudienceQuery, memberIds?: number[]) {
+    return this.execute<AudienceExportRequest>({
+      requestFn: () =>
+        classroomio.organization.audience.export.$get({
+          query: {
+            ...toAudienceBulkFilterQuery(query),
+            memberIds: memberIds?.length ? memberIds.map(String) : undefined
+          }
+        }),
+      logContext: 'building audience export',
+      onError: (result) => {
+        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
       }
     });
   }

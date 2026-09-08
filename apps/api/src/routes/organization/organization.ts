@@ -6,6 +6,7 @@ import {
   ZCreateLinkInvite,
   ZCreateOrgPlan,
   ZCreateOrganization,
+  ZAudienceExportQuery,
   ZBulkAudienceAction,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
@@ -29,6 +30,7 @@ import {
   resendAudienceInvite,
   revokeAudiencePendingInvite
 } from '@api/services/organization/audience';
+import { getAudienceExportRows } from '@api/services/organization/audience-export';
 import {
   applyBulkAudienceAction,
   previewBulkAudienceAction,
@@ -60,7 +62,6 @@ import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
-import { audienceExportRouter } from '@api/routes/organization/audience-export';
 import { joinOrganization } from '@api/services/organization/join';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
@@ -289,6 +290,28 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch organization audience');
     }
   })
+  /**
+   * GET /organization/audience/export
+   * Every row matching the scope, for a client-side export. Not paginated —
+   * the caller builds the file in the browser, so it needs the whole set.
+   */
+  .get(
+    '/audience/export',
+    authMiddleware,
+    orgTeamMemberMiddleware,
+    zValidator('query', ZAudienceExportQuery),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const query = c.req.valid('query');
+        const rows = await getAudienceExportRows(orgId, query);
+
+        return c.json({ success: true, data: rows }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to build audience export');
+      }
+    }
+  )
   /**
    * GET /organization/audience/bulk-preview
    * Exact count, target hash and sample for a filter-mode bulk action.
@@ -885,7 +908,6 @@ export const organizationRouter = new Hono()
       }
     }
   )
-  .route('/audience/export.csv', audienceExportRouter)
   .route('/automation', automationRouter)
   .route('/course-import', courseImportRouter)
   .route('/search', searchRouter)

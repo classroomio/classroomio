@@ -865,7 +865,7 @@ importers:
         version: link:../../packages/tsconfig
       '@sveltejs/adapter-cloudflare':
         specifier: ^7.0.0
-        version: 7.2.8(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(wrangler@4.21.2(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+        version: 7.2.8(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(wrangler@4.21.2(@cloudflare/workers-types@4.20260511.1))
       '@sveltejs/kit':
         specifier: ^2.5.27
         version: 2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1))
@@ -21575,7 +21575,7 @@ snapshots:
       worktop: 0.8.0-next.18
       wrangler: 4.21.2(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
-  '@sveltejs/adapter-cloudflare@7.2.8(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(wrangler@4.21.2(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
+  '@sveltejs/adapter-cloudflare@7.2.8(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(wrangler@4.21.2(@cloudflare/workers-types@4.20260511.1))':
     dependencies:
       '@cloudflare/workers-types': 4.20260511.1
       '@sveltejs/kit': 2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.32.0)(sass@1.97.1))

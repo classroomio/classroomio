@@ -102,6 +102,10 @@ export type BulkAudienceActionRequest = (typeof classroomio.organization)['audie
 export type BulkAudienceActionSuccess = Extract<InferResponseType<BulkAudienceActionRequest>, { success: true }>;
 export type BulkAudienceActionResult = BulkAudienceActionSuccess['data'];
 
+export type AudienceExportRequest = (typeof classroomio.organization)['audience']['export']['$get'];
+export type AudienceExportSuccess = Extract<InferResponseType<AudienceExportRequest>, { success: true }>;
+export type AudienceExportRows = AudienceExportSuccess['data'];
+
 export type BulkAudiencePreviewRequest = (typeof classroomio.organization)['audience']['bulk-preview']['$get'];
 export type BulkAudiencePreviewSuccess = Extract<InferResponseType<BulkAudiencePreviewRequest>, { success: true }>;
 export type BulkAudiencePreview = BulkAudiencePreviewSuccess['data'];

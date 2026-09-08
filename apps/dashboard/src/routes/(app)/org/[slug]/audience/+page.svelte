@@ -1,5 +1,9 @@
 <script>
   import { Button } from '@cio/ui/base/button';
+  import { ExportMenu } from '$features/ui';
+  import { orgApi } from '$features/org/api/org.svelte';
+  import { buildAudienceExportDocument } from '$features/audience/utils/audience-export-utils';
+  import { currentOrg } from '$lib/utils/store/org';
   import { AudiencePage } from '$features/audience/pages';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
@@ -12,10 +16,25 @@
 
   const audienceLength = $derived(data.pagination?.total || 0);
 
-  // The export honours whatever the admin is currently looking at, so the file
-  // matches the list they just reviewed. Filters live in the URL, so forwarding
-  // the query string is all it takes.
-  const exportHref = $derived(`${page.url.pathname}/export${page.url.search}`);
+  // Built on demand from the current filters, so the file matches the list the
+  // admin just reviewed rather than the whole roster.
+  async function loadExportDocument() {
+    const response = await orgApi.getAudienceExportRows(data.query);
+    const rows = response?.data ?? [];
+
+    return buildAudienceExportDocument(rows, $currentOrg?.name ?? 'Organization', {
+      name: $t('audience.name'),
+      email: $t('audience.email'),
+      memberStatus: $t('audience.filter.status'),
+      inviteStatus: $t('audience.status'),
+      joined: $t('audience.date_joined'),
+      lastLogin: $t('audience.filter.last_login'),
+      lastActivity: $t('audience.filter.last_activity'),
+      enrolled: $t('audience.filter.enrollment'),
+      completed: $t('audience.filter.completed'),
+      progress: $t('audience.progress')
+    });
+  }
   const atStudentLimit = $derived(audienceLength >= $currentOrgMaxAudience);
 </script>
 
@@ -37,12 +56,12 @@
       <Page.Subtitle>{$t('audience.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <!-- No `download` attribute: Svelte would pass it as `download={true}`,
-           which the browser reads as the filename. The response's
-           Content-Disposition already names the file. -->
-      <Button variant="outline" href={exportHref}>
-        {$t('audience.export')}
-      </Button>
+      <ExportMenu
+        document={loadExportDocument}
+        estimatedRowCount={audienceLength}
+        disabled={audienceLength === 0}
+        testId="audience-export"
+      />
       <Button
         variant="secondary"
         disabled={atStudentLimit}
