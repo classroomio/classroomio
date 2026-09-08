@@ -38,17 +38,17 @@
     currentTab = normalizeSubmissionTab(page.url.searchParams.get('submission'));
   });
 
-  // URL -> state: hydrate when the submission param changes externally.
   $effect(() => {
     const nextTab = normalizeSubmissionTab(page.url.searchParams.get('submission'));
     if (nextTab === untrack(() => currentTab)) return;
     currentTab = nextTab;
   });
 
-  // state -> URL: keep ?submission= in sync without self-navigating.
   $effect(() => {
     const currentSubmission = page.url.searchParams.get('submission') ?? '';
     if (currentSubmission === currentTab) return;
+
+    if ((page.url.searchParams.get('tab') ?? '') !== 'submissions') return;
 
     untrack(() => {
       const url = new URL(page.url);
