@@ -19,21 +19,34 @@ ALTER TABLE "organizationmember"
   ADD COLUMN "status_changed_by" uuid,
   ADD COLUMN "last_active_at" timestamptz;
 
+--> NOT VALID so adding the constraint does not scan the whole table while
+--> holding a lock. The column is new and every existing row is NULL, so there
+--> is nothing to validate; new writes are checked from here on. Run
+--> `ALTER TABLE organizationmember VALIDATE CONSTRAINT
+--> organizationmember_status_changed_by_fkey;` out of band if a later audit
+--> wants the constraint marked validated.
 ALTER TABLE "organizationmember"
   ADD CONSTRAINT "organizationmember_status_changed_by_fkey"
-  FOREIGN KEY ("status_changed_by") REFERENCES "profile"("id") ON DELETE SET NULL;
+  FOREIGN KEY ("status_changed_by") REFERENCES "profile"("id") ON DELETE SET NULL
+  NOT VALID;
 
+--> These index builds take a write lock for the length of the scan, and
+--> `drizzle-kit migrate` runs inside a transaction so CONCURRENTLY is not
+--> available here. On a large `organizationmember` table, build them out of
+--> band with CREATE INDEX CONCURRENTLY before deploying and this migration
+--> becomes a no-op for them: the three index statements below are IF NOT
+--> EXISTS. See the PR description for the deploy note.
 --> Serves the audience list's default filter (org + student role + ACTIVE) and
 --> `countActiveStudents`, which now excludes ARCHIVED.
-CREATE INDEX "idx_orgmember_org_role_status"
+CREATE INDEX IF NOT EXISTS "idx_orgmember_org_role_status"
   ON "organizationmember" ("organization_id", "role_id", "status");
 
 --> Serves "inactive for N days" filtering and sorting by last activity.
-CREATE INDEX "idx_orgmember_org_last_active"
+CREATE INDEX IF NOT EXISTS "idx_orgmember_org_last_active"
   ON "organizationmember" ("organization_id", "last_active_at");
 
 --> Last login stays a lateral MAX(logged_in_at) per user; this makes it cheap.
-CREATE INDEX "idx_analytics_login_events_user_logged_in"
+CREATE INDEX IF NOT EXISTS "idx_analytics_login_events_user_logged_in"
   ON "analytics_login_events" ("user_id", "logged_in_at" DESC);
 
 --> Lifecycle history. `member_id` and `profile_id` are recorded values rather

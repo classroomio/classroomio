@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import {
   EXPORT_EMPTY_CELL,
   type ExportDocument,
+  neutralizeFormula,
   sanitizeExportFilename,
-  toExportMatrix,
-  toExportRecords
+  toExportMatrix
 } from '@cio/utils/export';
 
 type Learner = { name: string; email: string; score: number | null };
@@ -25,15 +25,7 @@ const doc: ExportDocument<Learner> = {
 };
 
 describe('export document', () => {
-  it('maps rows to records keyed by the translated header', () => {
-    expect(toExportRecords(doc)).toEqual([
-      { Name: 'Ada', Email: 'ada@test.dev', Score: 90 },
-      { Name: 'Grace', Email: 'grace@test.dev', Score: EXPORT_EMPTY_CELL }
-    ]);
-  });
-
-  it('renders CSV and PDF views from the same columns, so they cannot drift', () => {
-    const records = toExportRecords(doc);
+  it('renders header and body positionally', () => {
     const matrix = toExportMatrix(doc);
 
     expect(matrix.head).toEqual(['Name', 'Email', 'Score']);
@@ -41,8 +33,24 @@ describe('export document', () => {
       ['Ada', 'ada@test.dev', 90],
       ['Grace', 'grace@test.dev', EXPORT_EMPTY_CELL]
     ]);
-    // Same values, two shapes.
-    expect(matrix.body[0]).toEqual(Object.values(records[0]));
+  });
+
+  it('keeps both columns when two share a translated header', () => {
+    // Two exercises with the same title, or an exercise called "Email".
+    const duplicated: ExportDocument<{ a: string; b: string }> = {
+      filename: 'f',
+      title: 't',
+      columns: [
+        { key: 'a', header: 'Quiz', value: (row) => row.a },
+        { key: 'b', header: 'Quiz', value: (row) => row.b }
+      ],
+      rows: [{ a: 'first', b: 'second' }]
+    };
+
+    const matrix = toExportMatrix(duplicated);
+
+    expect(matrix.head).toEqual(['Quiz', 'Quiz']);
+    expect(matrix.body).toEqual([['first', 'second']]);
   });
 
   it('renders empty and null cells identically', () => {
@@ -53,7 +61,7 @@ describe('export document', () => {
       rows: [{ value: '' }]
     };
 
-    expect(toExportRecords(withEmptyString)[0].Value).toBe(EXPORT_EMPTY_CELL);
+    expect(toExportMatrix(withEmptyString).body[0][0]).toBe(EXPORT_EMPTY_CELL);
   });
 
   it('preserves zero rather than treating it as empty', () => {
@@ -64,7 +72,36 @@ describe('export document', () => {
       rows: [{ value: 0 }]
     };
 
-    expect(toExportRecords(withZero)[0].Value).toBe(0);
+    expect(toExportMatrix(withZero).body[0][0]).toBe(0);
+  });
+});
+
+describe('neutralizeFormula', () => {
+  // A learner controls their own display name; an admin opens the export on a
+  // trusted machine. Excel evaluates these prefixes as formulas.
+  it.each(['=HYPERLINK("http://evil.test")', '+1+1', '-1+1', '@SUM(A1)'])('defuses %s', (payload) => {
+    const defused = neutralizeFormula(payload);
+
+    expect(defused).toBe(`\t${payload}`);
+    expect(String(defused).startsWith('\t')).toBe(true);
+  });
+
+  it('leaves ordinary values untouched', () => {
+    expect(neutralizeFormula('Ada Lovelace')).toBe('Ada Lovelace');
+    expect(neutralizeFormula('ada@test.dev')).toBe('ada@test.dev');
+    expect(neutralizeFormula(90)).toBe(90);
+    expect(neutralizeFormula(null)).toBeNull();
+  });
+
+  it('applies through the document pipeline, not just in isolation', () => {
+    const hostile: ExportDocument<{ name: string }> = {
+      filename: 'f',
+      title: 't',
+      columns: [{ key: 'name', header: 'Name', value: (row) => row.name }],
+      rows: [{ name: '=cmd|calc' }]
+    };
+
+    expect(toExportMatrix(hostile).body[0][0]).toBe('\t=cmd|calc');
   });
 });
 

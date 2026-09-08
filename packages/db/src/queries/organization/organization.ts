@@ -588,7 +588,15 @@ export const getUserOrgRole = async (orgId: string, profileId: string): Promise<
   const result = await db
     .select({ roleId: schema.organizationmember.roleId })
     .from(schema.organizationmember)
-    .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.profileId, profileId)))
+    .where(
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        eq(schema.organizationmember.profileId, profileId),
+        // This gates the LMS organization route directly, so a deactivated or
+        // archived member would otherwise still pass the membership check.
+        eq(schema.organizationmember.status, 'ACTIVE')
+      )
+    )
     .limit(1);
 
   return result.length > 0 ? Number(result[0].roleId) : null;

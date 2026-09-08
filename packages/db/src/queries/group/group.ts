@@ -378,7 +378,11 @@ export async function getCourseOrgAdminAccess(
         and(
           eq(schema.organizationmember.organizationId, schema.group.organizationId),
           eq(schema.organizationmember.profileId, profileId),
-          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+          eq(schema.organizationmember.roleId, ROLE.ADMIN),
+          // Feeds `ensureCourseGroupMemberId`, which can create a group
+          // membership — so without this a suspended admin could still be
+          // granted course access rather than merely reading with it.
+          eq(schema.organizationmember.status, 'ACTIVE')
         )
       )
       .where(eq(schema.course.id, courseId))

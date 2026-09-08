@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/organization', () => ({
   getBulkAudienceMembersByIds: vi.fn(),
-  getBulkAudienceMemberSample: vi.fn(),
-  countBulkAudienceMembersNotArchived: vi.fn(),
+  getAudienceMatchSample: vi.fn(),
+  countAudienceMatchesNotArchived: vi.fn(),
   bulkUpdateOrganizationMemberStatus: vi.fn(),
   bulkDeleteOrganizationAudienceMembers: vi.fn(),
   deleteGroupMembershipsForOrgProfiles: vi.fn(),
@@ -21,9 +21,9 @@ vi.mock('@cio/db/drizzle', () => ({
 import {
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
-  countBulkAudienceMembersNotArchived,
+  countAudienceMatchesNotArchived,
   deleteGroupMembershipsForOrgProfiles,
-  getBulkAudienceMemberSample,
+  getAudienceMatchSample,
   getBulkAudienceMembersByIds,
   recordOrganizationMemberAudit,
   resolveAudienceMemberIds,
@@ -186,6 +186,8 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
     const token = applied.mode === 'completed' ? applied.undoToken : undefined;
     expect(token).toBeDefined();
 
+    // By undo time those two are archived — which is what makes them revertable.
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED'), member(3, 'ARCHIVED')] as never);
     vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 3]);
     await undoBulkAudienceAction(ORG, token!, ACTOR);
 
@@ -193,6 +195,34 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
     // The filter is never re-resolved during undo — it would match a different
     // population now that the action changed who is archived.
     expect(resolveAudienceMemberIds).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not overturn a newer decision made by another admin', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1), member(2)] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1, 2]);
+
+    const applied = await applyBulkAudienceAction(
+      ORG,
+      { target: { mode: 'ids', memberIds: [1, 2] }, action: 'deactivate' },
+      ACTOR
+    );
+    const token = applied.mode === 'completed' ? applied.undoToken! : '';
+
+    // Someone archived learner 2 during the undo window — a more deliberate
+    // decision than the one being undone, so undo must leave them alone.
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([
+      member(1, 'DEACTIVATED'),
+      member(2, 'ARCHIVED')
+    ] as never);
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockResolvedValue([1]);
+
+    const result = await undoBulkAudienceAction(ORG, token, ACTOR);
+
+    expect(bulkUpdateOrganizationMemberStatus).toHaveBeenLastCalledWith(ORG, [1], 'ACTIVE', ACTOR, {});
+    expect(result).toMatchObject({
+      succeeded: 1,
+      failed: [{ memberId: 2, reason: 'CHANGED_SINCE' }]
+    });
   });
 
   it('burns the undo token so it cannot be replayed', async () => {
@@ -242,24 +272,25 @@ describe('previewBulkAudienceAction — bounded work', () => {
   it('samples and counts with dedicated queries instead of loading the matched set', async () => {
     // A filter matching 20,000 learners must not pull 20,000 rows to show five.
     const matchedIds = Array.from({ length: 20_000 }, (_, index) => index + 1);
+    const filter = { status: 'ACTIVE' } as never;
     vi.mocked(resolveAudienceMemberIds).mockResolvedValue(matchedIds);
-    vi.mocked(getBulkAudienceMemberSample).mockResolvedValue([member(1), member(2)] as never);
-    vi.mocked(countBulkAudienceMembersNotArchived).mockResolvedValue(19_998);
+    vi.mocked(getAudienceMatchSample).mockResolvedValue([member(1), member(2)] as never);
+    vi.mocked(countAudienceMatchesNotArchived).mockResolvedValue(19_998);
 
-    const preview = await previewBulkAudienceAction(ORG, { status: 'ACTIVE' } as never);
+    const preview = await previewBulkAudienceAction(ORG, filter);
 
     expect(preview.count).toBe(20_000);
     expect(preview.sample).toHaveLength(2);
     expect(preview.notArchivedCount).toBe(19_998);
     // The full-row loader is never reached on this path.
     expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
-    expect(getBulkAudienceMemberSample).toHaveBeenCalledWith(ORG, matchedIds, 5);
+    expect(getAudienceMatchSample).toHaveBeenCalledWith(ORG, filter, 5);
   });
 
   it('hashes the whole matched set, not just the sample', async () => {
     vi.mocked(resolveAudienceMemberIds).mockResolvedValue([1, 2, 3]);
-    vi.mocked(getBulkAudienceMemberSample).mockResolvedValue([member(1)] as never);
-    vi.mocked(countBulkAudienceMembersNotArchived).mockResolvedValue(0);
+    vi.mocked(getAudienceMatchSample).mockResolvedValue([member(1)] as never);
+    vi.mocked(countAudienceMatchesNotArchived).mockResolvedValue(0);
 
     const preview = await previewBulkAudienceAction(ORG, { status: 'ACTIVE' } as never);
 

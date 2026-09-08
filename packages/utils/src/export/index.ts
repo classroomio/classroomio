@@ -36,32 +36,50 @@ export const PDF_EXPORT_ROW_LIMIT = 2000;
 /** Empty cells render as an en dash rather than "null" or a blank the reader has to interpret. */
 export const EXPORT_EMPTY_CELL = '–';
 
-/** Applies a document's columns to one row, in column order. */
-export function toExportRecord<Row>(doc: ExportDocument<Row>, row: Row): Record<string, string | number> {
-  const record: Record<string, string | number> = {};
-
-  for (const column of doc.columns) {
-    const value = column.value(row);
-    record[column.header] = value == null || value === '' ? EXPORT_EMPTY_CELL : value;
+/**
+ * Neutralizes spreadsheet formula injection.
+ *
+ * Excel, Sheets and LibreOffice evaluate a cell beginning `=`, `+`, `-` or `@`
+ * as a formula, so a learner who sets their display name to
+ * `=HYPERLINK(...)` can make a cell fire a request the moment an admin opens
+ * the export. Every value here is user-controlled, and the reader is an admin
+ * on a trusted machine, which is the worst combination.
+ *
+ * Prefixing with a tab keeps the text readable and stops evaluation. Applied
+ * before RFC 4180 quoting, never instead of it — quoting alone does not
+ * prevent evaluation.
+ */
+export function neutralizeFormula(value: string | number | null): string | number | null {
+  if (typeof value !== 'string' || value.length === 0) {
+    return value;
   }
 
-  return record;
+  return /^[=+\-@\t\r]/.test(value) ? `\t${value}` : value;
 }
 
-export function toExportRecords<Row>(doc: ExportDocument<Row>): Record<string, string | number>[] {
-  return doc.rows.map((row) => toExportRecord(doc, row));
+/** Resolves one cell: empty placeholder, then formula neutralization. */
+function toExportCell<Row>(column: ExportColumn<Row>, row: Row): string | number {
+  const value = column.value(row);
+
+  if (value == null || value === '') {
+    return EXPORT_EMPTY_CELL;
+  }
+
+  return neutralizeFormula(value) as string | number;
 }
 
-/** Header row and body cells for renderers that want positional data, such as PDF tables. */
+/**
+ * Header row and body cells, positionally.
+ *
+ * This is the canonical shape both renderers use. Keying cells by header text
+ * instead would silently drop a column whenever two share a translated header —
+ * which happens as soon as a course has two exercises with the same title, or
+ * an exercise is called "Email".
+ */
 export function toExportMatrix<Row>(doc: ExportDocument<Row>): { head: string[]; body: (string | number)[][] } {
   return {
     head: doc.columns.map((column) => column.header),
-    body: doc.rows.map((row) =>
-      doc.columns.map((column) => {
-        const value = column.value(row);
-        return value == null || value === '' ? EXPORT_EMPTY_CELL : value;
-      })
-    )
+    body: doc.rows.map((row) => doc.columns.map((column) => toExportCell(column, row)))
   };
 }
 

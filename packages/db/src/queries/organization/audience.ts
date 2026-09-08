@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, ne, or, sql } from 'drizzle-orm';
 import type { SQL } from 'drizzle-orm';
 
 import { AUDIENCE_ACTIVITY_WINDOW_DAYS } from '@cio/utils/validation/organization';
@@ -29,6 +29,12 @@ export type GetOrganizationAudienceOptions = {
   lastLoginBefore?: TAudienceActivityWindow;
   lastActiveBefore?: TAudienceActivityWindow;
   excludeRecentJoiners?: boolean;
+  /**
+   * Restrict to specific members, bypassing every other filter including the
+   * default status. Used by "export exactly the rows I ticked", where applying
+   * the ordinary filters would silently drop selected archived learners.
+   */
+  memberIds?: number[];
 };
 
 /**
@@ -282,6 +288,20 @@ export function buildAudienceWhereClause(
   const joinedOrgAtSql = sql<string>`${schema.organizationmember.createdAt}`;
   const lastActiveAtSql = sql<string | null>`${schema.organizationmember.lastActiveAt}`;
 
+  // An explicit id selection is the whole predicate: the admin named these
+  // rows, so no filter — least of all the default ACTIVE status — may quietly
+  // remove any of them.
+  if (options.memberIds?.length) {
+    return {
+      whereClause: and(
+        eq(schema.organizationmember.organizationId, orgId),
+        eq(schema.organizationmember.roleId, ROLE.STUDENT),
+        inArray(schema.organizationmember.id, options.memberIds)
+      )!,
+      needsEnrolmentJoin: false
+    };
+  }
+
   const conditions: SQL[] = [
     eq(schema.organizationmember.organizationId, orgId),
     eq(schema.organizationmember.roleId, ROLE.STUDENT),
@@ -325,6 +345,73 @@ export function buildAudienceWhereClause(
     whereClause: and(...conditions)!,
     needsEnrolmentJoin: Boolean(options.enrollment || options.completion)
   };
+}
+
+/**
+ * How many learners matching these filters are not yet ARCHIVED.
+ *
+ * Derived from the filter itself rather than from a list of ids, so the delete
+ * gate costs one aggregate no matter how large the match. Passing every matched
+ * id into an `IN` predicate instead would build an unbounded parameter list.
+ */
+export async function countAudienceMatchesNotArchived(
+  orgId: string,
+  options: GetOrganizationAudienceOptions = {},
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const { whereClause, needsEnrolmentJoin } = buildAudienceWhereClause(orgId, options);
+
+    const query = dbClient
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .$dynamic();
+
+    if (needsEnrolmentJoin) {
+      query.leftJoinLateral(enrolmentSummaryLateral(orgId), sql`true`);
+    }
+
+    const [row] = await query.where(and(whereClause, ne(schema.organizationmember.status, 'ARCHIVED')));
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countAudienceMatchesNotArchived error:', error);
+    throw new Error('Failed to count non-archived audience matches');
+  }
+}
+
+/**
+ * A few learners from the matched set, for a confirmation dialog's sample.
+ * Bounded by `LIMIT` against the filter, never by slicing a materialized list.
+ */
+export async function getAudienceMatchSample(
+  orgId: string,
+  options: GetOrganizationAudienceOptions = {},
+  sampleSize: number,
+  dbClient: DbOrTxClient = db
+): Promise<{ id: number; email: string | null }[]> {
+  try {
+    const { whereClause, needsEnrolmentJoin } = buildAudienceWhereClause(orgId, options);
+
+    const query = dbClient
+      .select({
+        id: schema.organizationmember.id,
+        email: sql<string | null>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`.as('email')
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .$dynamic();
+
+    if (needsEnrolmentJoin) {
+      query.leftJoinLateral(enrolmentSummaryLateral(orgId), sql`true`);
+    }
+
+    return await query.where(whereClause).orderBy(asc(schema.organizationmember.id)).limit(sampleSize);
+  } catch (error) {
+    console.error('getAudienceMatchSample error:', error);
+    throw new Error('Failed to sample audience matches');
+  }
 }
 
 /**

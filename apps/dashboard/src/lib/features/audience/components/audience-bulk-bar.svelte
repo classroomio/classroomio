@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import { AUDIENCE_BULK_SYNC_MAX } from '@cio/utils/validation/organization';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
   import type { AudienceBulkAction } from '$features/org/utils/types';
@@ -32,6 +33,10 @@
   const effectiveCount = $derived(allMatchingSelected ? totalMatching : selectedCount);
   // Only worth offering when it would actually widen the selection.
   const canSelectAllMatching = $derived(!allMatchingSelected && totalMatching > selectedCount);
+  // The server refuses a resolved target above this. Offering the selection
+  // anyway would walk the admin through a confirmation dialog to a guaranteed
+  // failure, so say so up front instead.
+  const exceedsSyncLimit = $derived(totalMatching > AUDIENCE_BULK_SYNC_MAX);
 
   // Archive leads: it is reversible, it frees a seat, and it is the right answer
   // to almost every "remove them" instinct. Delete sits last and apart.
@@ -52,10 +57,17 @@
         variant="ghost"
         size="sm"
         onclick={onSelectAllMatching}
-        disabled={isApplying}
+        disabled={isApplying || exceedsSyncLimit}
+        title={exceedsSyncLimit ? $t('audience.bulk.too_many_matching', { limit: AUDIENCE_BULK_SYNC_MAX }) : undefined}
       >
         {$t('audience.bulk.select_all_matching', { count: totalMatching })}
       </Button>
+    {/if}
+
+    {#if exceedsSyncLimit && !allMatchingSelected}
+      <span class="ui:text-muted-foreground text-xs">
+        {$t('audience.bulk.too_many_matching', { limit: AUDIENCE_BULK_SYNC_MAX })}
+      </span>
     {/if}
 
     <Button variant="ghost" size="sm" onclick={onClearSelection} disabled={isApplying}>

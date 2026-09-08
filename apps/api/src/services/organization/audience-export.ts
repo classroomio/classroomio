@@ -32,24 +32,24 @@ export async function* getAudienceExportRows(
   orgId: string,
   query: AudienceExportQuery
 ): AsyncGenerator<AudienceExportRow[]> {
+  // `memberIds` takes precedence over the filters *entirely*, and that has to
+  // happen before the query runs. Filtering the pages afterwards would apply
+  // the ordinary filters first — including the default `status=ACTIVE` — so
+  // exporting a hand-picked set that includes archived learners would silently
+  // drop them, handing the admin a shorter list than the one they ticked.
+  const { memberIds, ...filters } = query;
+  const listQuery = memberIds?.length ? { memberIds } : filters;
+
   let page = 1;
 
   for (;;) {
     const result = await getOrganizationAudience(orgId, {
-      ...query,
+      ...listQuery,
       page,
       limit: EXPORT_PAGE_SIZE
     });
 
-    let items = result.items;
-
-    // `memberIds` takes precedence over the filters entirely: the admin asked
-    // for the rows they ticked, and quietly returning the whole filtered set
-    // instead would hand them a different list than the one they approved.
-    if (query.memberIds?.length) {
-      const wanted = new Set(query.memberIds);
-      items = items.filter((item) => wanted.has(item.id));
-    }
+    const items = result.items;
 
     if (items.length > 0) {
       const emailsWithoutProfile = items

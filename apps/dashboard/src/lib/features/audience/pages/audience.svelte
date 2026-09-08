@@ -299,16 +299,24 @@
     }
   }
 
+  let isUndoing = $state(false);
+
   async function handleUndo() {
-    if (!lastUndoToken) return;
+    if (!lastUndoToken || isUndoing) return;
 
-    const token = lastUndoToken;
-    // Single-use server-side; drop it here too so the affordance disappears.
-    lastUndoToken = null;
+    isUndoing = true;
 
-    const response = await orgApi.undoBulkAudienceAction(token);
-    if (response) {
+    try {
+      const response = await orgApi.undoBulkAudienceAction(lastUndoToken);
+      if (!response) return;
+
+      // Cleared only once the server has actually consumed it. Dropping it up
+      // front would remove the retry affordance on a failed request, and the
+      // token is single-use anyway so a double-click cannot double-apply.
+      lastUndoToken = null;
       await refreshAudience();
+    } finally {
+      isUndoing = false;
     }
   }
 
@@ -369,7 +377,9 @@
 {#if lastUndoToken}
   <div class="flex items-center gap-2 rounded-md border px-4 py-2">
     <span class="ui:text-muted-foreground text-sm">{$t('audience.bulk.undo_available')}</span>
-    <Button variant="secondary" size="sm" onclick={handleUndo}>{$t('audience.bulk.undo')}</Button>
+    <Button variant="secondary" size="sm" onclick={handleUndo} loading={isUndoing} disabled={isUndoing}>
+      {$t('audience.bulk.undo')}
+    </Button>
   </div>
 {/if}
 

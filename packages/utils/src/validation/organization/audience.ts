@@ -45,8 +45,16 @@ export const ZGetAudienceQuery = z.object({
    * Excludes learners who joined inside the staleness window from
    * `lastLoginBefore` / `lastActiveBefore` results, so "never logged in" cannot
    * silently sweep up people invited last week.
+   *
+   * Parsed explicitly rather than with `z.coerce.boolean()`, which turns the
+   * non-empty string `"false"` into `true` — the query string always carries
+   * strings, so coercion would make the override impossible to turn off and
+   * silently narrow both the displayed and the acted-on set.
    */
-  excludeRecentJoiners: z.coerce.boolean().default(true)
+  excludeRecentJoiners: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .default(true)
+    .transform((value) => value === true || value === 'true')
 });
 
 export type TAudienceSortBy = z.infer<typeof AudienceSortBy>;

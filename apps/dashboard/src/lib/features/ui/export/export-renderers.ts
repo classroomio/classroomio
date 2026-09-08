@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
 
-import { type ExportDocument, sanitizeExportFilename, toExportMatrix, toExportRecords } from '@cio/utils/export';
+import { type ExportDocument, sanitizeExportFilename, toExportMatrix } from '@cio/utils/export';
 
 /**
  * Triggers a browser download for a generated blob.
@@ -21,7 +21,10 @@ function downloadBlob(blob: Blob, filename: string): void {
 }
 
 export function downloadCsv<Row>(doc: ExportDocument<Row>): void {
-  const csv = Papa.unparse(toExportRecords(doc));
+  const { head, body } = toExportMatrix(doc);
+  // Positional rather than keyed by header: two columns sharing a translated
+  // header would collapse into one if this went through objects.
+  const csv = Papa.unparse({ fields: head, data: body });
   // The BOM is what makes Excel open UTF-8 correctly on Windows; without it,
   // accented names in a learner roster arrive mangled.
   const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8;' });

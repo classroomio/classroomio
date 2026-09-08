@@ -10,9 +10,9 @@ import {
   type OrganizationMemberStatus,
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
-  countBulkAudienceMembersNotArchived,
+  countAudienceMatchesNotArchived,
   deleteGroupMembershipsForOrgProfiles,
-  getBulkAudienceMemberSample,
+  getAudienceMatchSample,
   getBulkAudienceMembersByIds,
   recordOrganizationMemberAudit,
   resolveAudienceMemberIds,
@@ -93,14 +93,13 @@ export async function previewBulkAudienceAction(
   orgId: string,
   filter: Parameters<typeof resolveAudienceMemberIds>[1]
 ): Promise<BulkAudiencePreview> {
-  const matchedIds = await resolveAudienceMemberIds(orgId, filter);
-
-  // Both values are answered by bounded queries rather than by loading the
-  // matched set. A filter can match tens of thousands of learners, and this
-  // dialog shows five of them and one number.
-  const [sample, notArchivedCount] = await Promise.all([
-    getBulkAudienceMemberSample(orgId, matchedIds, PREVIEW_SAMPLE_SIZE),
-    countBulkAudienceMembersNotArchived(orgId, matchedIds)
+  // The id list is materialized only for the hash, which by definition needs
+  // every id. The sample and the archive gate are derived from the filter, so
+  // neither builds an IN predicate over the whole matched set.
+  const [matchedIds, sample, notArchivedCount] = await Promise.all([
+    resolveAudienceMemberIds(orgId, filter),
+    getAudienceMatchSample(orgId, filter, PREVIEW_SAMPLE_SIZE),
+    countAudienceMatchesNotArchived(orgId, filter)
   ]);
 
   return {
@@ -119,7 +118,10 @@ type UndoRecord = {
   orgId: string;
   actorProfileId: string;
   memberIds: number[];
+  /** The status to restore. */
   status: OrganizationMemberStatus;
+  /** The status the original action applied — undo skips anyone no longer in it. */
+  appliedStatus: OrganizationMemberStatus;
   expiresAt: number;
 };
 
@@ -293,7 +295,9 @@ async function deleteMembers(
     .map((member) => member.email!.toLowerCase());
 
   if (emails.length > 0) {
-    await revokeActiveOrganizationInvitesByEmails(orgId, emails, actorProfileId);
+    // Inside the transaction: a rollback must not leave invites revoked for
+    // members whose removal was undone.
+    await revokeActiveOrganizationInvitesByEmails(orgId, emails, actorProfileId, tx);
   }
 
   return {
@@ -329,7 +333,7 @@ async function changeStatus(
     const emails = changed.filter((member) => member.email).map((member) => member.email!.toLowerCase());
 
     if (emails.length > 0) {
-      await revokeActiveOrganizationInvitesByEmails(orgId, emails, actorProfileId);
+      await revokeActiveOrganizationInvitesByEmails(orgId, emails, actorProfileId, tx);
     }
   }
 
@@ -339,7 +343,13 @@ async function changeStatus(
   const undoStatus = action === 'deactivate' || action === 'archive' ? UNDO_STATUS[action] : undefined;
   const undoToken =
     undoStatus && changedIds.length > 0
-      ? issueUndoToken({ orgId, actorProfileId, memberIds: changedIds, status: undoStatus })
+      ? issueUndoToken({
+          orgId,
+          actorProfileId,
+          memberIds: changedIds,
+          status: undoStatus,
+          appliedStatus: status
+        })
       : undefined;
 
   return {
@@ -392,14 +402,22 @@ export async function undoBulkAudienceAction(
 
   return db.transaction(async (tx) => {
     const members = await getBulkAudienceMembersByIds(orgId, record.memberIds, tx);
+
+    // Only reverse members still in the state this action put them in. Another
+    // admin may have archived or reactivated someone during the 15-minute
+    // window, and blindly restoring ACTIVE would silently overturn that newer,
+    // more deliberate decision — handing back access someone had just removed.
+    const stillApplied = members.filter((member) => member.status === record.appliedStatus);
+    const revertableIds = stillApplied.map((member) => member.id);
+
     const changedIds = await bulkUpdateOrganizationMemberStatus(
       orgId,
-      record.memberIds,
+      revertableIds,
       record.status,
       actorProfileId,
       tx
     );
-    const changed = members.filter((member) => changedIds.includes(member.id));
+    const changed = stillApplied.filter((member) => changedIds.includes(member.id));
 
     await recordOrganizationMemberAudit(
       orgId,
@@ -418,7 +436,14 @@ export async function undoBulkAudienceAction(
       mode: 'completed' as const,
       requested: record.memberIds.length,
       succeeded: changedIds.length,
-      failed: buildFailures(members, changedIds)
+      // Members changed by someone else since are reported as skipped with a
+      // distinct reason, so the admin can see their undo was not total.
+      failed: members
+        .filter((member) => !changedIds.includes(member.id))
+        .map((member) => ({
+          memberId: member.id,
+          reason: member.status === record.appliedStatus ? 'ALREADY_IN_STATE' : 'CHANGED_SINCE'
+        }))
     };
   });
 }

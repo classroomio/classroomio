@@ -467,21 +467,27 @@ export type MemberActivity = { orgId: string; userId: string; occurredAt: string
  * ingest cheap on a busy org.
  */
 export function collapseLatestActivityByMember(events: PageEventInsert[]): MemberActivity[] {
-  const latestByMember = new Map<string, MemberActivity>();
+  const latestByMember = new Map<string, MemberActivity & { at: number }>();
 
   for (const event of events) {
     const { orgId, userId, occurredAt } = event;
     if (!orgId || !userId || !occurredAt) continue;
 
+    // Compared as instants, not strings. `/track` accepts any ISO string, so a
+    // batch can mix offsets — and `2026-01-01T00:00:00+02:00` sorts after
+    // `2026-01-01T01:00:00Z` lexicographically while being the earlier moment.
+    const at = new Date(occurredAt).getTime();
+    if (Number.isNaN(at)) continue;
+
     const key = `${orgId}:${userId}`;
     const seen = latestByMember.get(key);
 
-    if (!seen || occurredAt > seen.occurredAt) {
-      latestByMember.set(key, { orgId, userId, occurredAt });
+    if (!seen || at > seen.at) {
+      latestByMember.set(key, { orgId, userId, occurredAt, at });
     }
   }
 
-  return [...latestByMember.values()];
+  return [...latestByMember.values()].map(({ orgId, userId, occurredAt }) => ({ orgId, userId, occurredAt }));
 }
 
 /**

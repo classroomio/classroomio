@@ -29,7 +29,14 @@ const ZAudienceExportQuery = ZGetAudienceQuery.omit({ page: true, limit: true })
         .map((entry) => Number(entry.trim()))
         .filter((id) => Number.isInteger(id) && id > 0);
 
-      return ids.length > 0 ? ids.slice(0, AUDIENCE_BULK_IDS_MAX) : undefined;
+      // Deduplicate before the cap, so repeating an id cannot push a legitimate
+      // selection over the limit.
+      return ids.length > 0 ? [...new Set(ids)] : undefined;
+    })
+    // Refuse rather than truncate. Silently dropping ids would return a
+    // successful, short export of a selection the admin believed was complete.
+    .refine((ids) => ids == null || ids.length <= AUDIENCE_BULK_IDS_MAX, {
+      message: `Select at most ${AUDIENCE_BULK_IDS_MAX} learners, or export the filtered view instead`
     })
 });
 

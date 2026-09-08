@@ -4092,7 +4092,8 @@
       "partial_success": "{succeeded} updated, {failed} skipped",
       "undo_available": "Applied. You can still undo this.",
       "undo": "Undo",
-      "undo_success": "Reverted"
+      "undo_success": "Reverted",
+      "too_many_matching": "Too many to apply at once — narrow the filters below {limit}"
     }
   },
   "analytics": {
