@@ -301,7 +301,11 @@ export async function getLessonsWithCompletion(courseId: string, userId: string)
  * @param profileId Profile ID
  * @returns Course progress data
  */
-export async function getProfileCourseProgress(courseId: string, profileId: string) {
+export async function getProfileCourseProgress(
+  courseId: string,
+  profileId: string,
+  options: { failOnError?: boolean } = {}
+) {
   try {
     // Get course group
     const course = await db
@@ -411,6 +415,9 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
     };
   } catch (error) {
     console.error('getProfileCourseProgress error:', error);
+    if (options.failOnError) {
+      throw new Error('Failed to fetch profile course progress');
+    }
     return {
       lessons_count: 0,
       lessons_completed: 0,

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { onMount, untrack } from 'svelte';
   import AwardIcon from '@lucide/svelte/icons/award';
@@ -47,13 +46,15 @@
   });
 
   $effect(() => {
-    const currentTab = page.url.searchParams.get('tab') ?? '';
-    if (currentTab === selectedTab) return;
+    const url = new URL(page.url);
+    url.searchParams.set('tab', selectedTab);
+
+    const targetUrl = `${url.pathname}${url.search}`;
+    const currentUrl = `${page.url.pathname}${page.url.search}`;
+    if (targetUrl === currentUrl) return;
 
     untrack(() => {
-      const url = new URL(page.url);
-      url.searchParams.set('tab', selectedTab);
-      goto(resolve(`${url.pathname}${url.search}`, {}), {
+      goto(targetUrl, {
         replaceState: true,
         keepFocus: true,
         noScroll: true

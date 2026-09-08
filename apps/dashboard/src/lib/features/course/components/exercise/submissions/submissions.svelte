@@ -6,7 +6,6 @@
   import Individual from './individual.svelte';
   import { submissions } from './store';
   import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { onMount, untrack } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -48,18 +47,19 @@
 
   // state -> URL: keep ?submission= in sync without self-navigating.
   $effect(() => {
-    const currentSubmission = page.url.searchParams.get('submission') ?? '';
-    if (currentSubmission === currentTab) return;
+    const url = new URL(page.url);
+    url.searchParams.set('submission', currentTab);
+
+    if (currentTab !== 'individual') {
+      url.searchParams.delete('student');
+    }
+
+    const targetUrl = `${url.pathname}${url.search}`;
+    const currentUrl = `${page.url.pathname}${page.url.search}`;
+    if (targetUrl === currentUrl) return;
 
     untrack(() => {
-      const url = new URL(page.url);
-      url.searchParams.set('submission', currentTab);
-
-      if (currentTab !== 'individual') {
-        url.searchParams.delete('student');
-      }
-
-      goto(resolve(`${url.pathname}${url.search}`, {}), {
+      goto(targetUrl, {
         replaceState: true,
         keepFocus: true,
         noScroll: true

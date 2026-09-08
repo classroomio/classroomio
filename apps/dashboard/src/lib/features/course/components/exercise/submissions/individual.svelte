@@ -7,7 +7,6 @@
   import { Empty } from '@cio/ui/custom/empty';
   import ClipboardListIcon from '@lucide/svelte/icons/clipboard-list';
   import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { onMount, untrack } from 'svelte';
 
@@ -78,15 +77,15 @@
   $effect(() => {
     if (hasNoSubmission) return;
 
-    const currentStudent = page.url.searchParams.get('student') ?? '';
-    const selectedStudent = submissionGroups[studentSelected]?.studentKey ?? '';
+    const url = new URL(page.url);
+    url.searchParams.set('student', submissionGroups[studentSelected]?.studentKey ?? '');
 
-    if (currentStudent === selectedStudent) return;
+    const targetUrl = `${url.pathname}${url.search}`;
+    const currentUrl = `${page.url.pathname}${page.url.search}`;
+    if (targetUrl === currentUrl) return;
 
     untrack(() => {
-      const url = new URL(page.url);
-      url.searchParams.set('student', selectedStudent);
-      goto(resolve(`${url.pathname}${url.search}`, {}), {
+      goto(targetUrl, {
         replaceState: true,
         keepFocus: true,
         noScroll: true

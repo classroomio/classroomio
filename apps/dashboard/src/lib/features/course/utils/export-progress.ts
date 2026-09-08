@@ -17,7 +17,7 @@ export interface ExportProgressExerciseRow {
 }
 
 function downloadCsv(filename: string, rows: Record<string, string | number>[]) {
-  const csv = Papa.unparse(rows);
+  const csv = Papa.unparse(rows, { escapeFormulae: true });
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
@@ -26,6 +26,7 @@ function downloadCsv(filename: string, rows: Record<string, string | number>[]) 
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 /**

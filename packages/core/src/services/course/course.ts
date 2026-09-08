@@ -713,7 +713,7 @@ export async function getUserCourseAnalytics(
     const [userExercisesStats, lessons, courseProgress] = await Promise.all([
       getUserExercisesStats(courseId, userId, { failOnError: true }),
       getLessonsWithCompletion(courseId, userId),
-      getProfileCourseProgress(courseId, userId)
+      getProfileCourseProgress(courseId, userId, { failOnError: true })
     ]);
 
     if (!userExercisesStats || !lessons || !courseProgress) {

@@ -955,7 +955,13 @@ export async function getUserAnalytics(userId: string, orgId: string) {
           userExercisesStats = null;
         }
 
-        const courseProgress = await getProfileCourseProgress(course.id, userId);
+        let courseProgress: Awaited<ReturnType<typeof getProfileCourseProgress>> | null;
+        try {
+          courseProgress = await getProfileCourseProgress(course.id, userId, { failOnError: true });
+        } catch (error) {
+          console.error('getUserAnalytics course progress error:', error);
+          courseProgress = null;
+        }
 
         // Only graded submissions produce a grade. Exercises the student has
         // not submitted, or submitted but not yet graded, are absence — they
@@ -970,13 +976,20 @@ export async function getUserAnalytics(userId: string, orgId: string) {
         const gradeablePoints = totalPoints > 0;
         const averageGrade = gradeablePoints ? calcPercentageWithRounding(totalEarnedPoints, totalPoints) : null;
 
-        const lessonsCompleted = courseProgress.lessons_completed || 0;
-        const lessonsCount = courseProgress.lessons_count || 0;
-        const progressPercentage = calcPercentageWithRounding(lessonsCompleted, lessonsCount);
+        const progressData = courseProgress ?? {
+          lessons_count: 0,
+          lessons_completed: 0,
+          exercises_count: 0,
+          exercises_completed: 0
+        };
+        const lessonsCompleted = progressData.lessons_completed || 0;
+        const lessonsCount = progressData.lessons_count || 0;
+        const progressPercentage = courseProgress ? calcPercentageWithRounding(lessonsCompleted, lessonsCount) : 0;
 
         return {
           ...course,
-          ...courseProgress,
+          ...progressData,
+          progress_failed: courseProgress === null,
           progress_percentage: progressPercentage,
           average_grade: averageGrade,
           exercises: userExercisesStats
@@ -985,8 +998,9 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     );
 
     // Calculate overall stats
-    const totalLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
-    const completedLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
+    const progressCourses = coursesWithStats.filter((course) => !course.progress_failed);
+    const totalLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
+    const completedLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
     const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
 
     // Overall average is a plain mean of gradeable course grades. Courses with

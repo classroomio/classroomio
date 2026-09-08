@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import * as ButtonGroup from '@cio/ui/base/button-group';
@@ -508,20 +507,20 @@
   });
 
   $effect(() => {
-    const currentTab = page.url.searchParams.get('tab') ?? '';
-    // Prevent self-navigation loops: only update URL when it actually changes.
-    if (currentTab === selectedTab) return;
+    const url = new URL(page.url);
+    url.searchParams.set('tab', selectedTab);
+
+    if (selectedTab !== 'submissions') {
+      url.searchParams.delete('submission');
+      url.searchParams.delete('student');
+    }
+
+    const targetUrl = `${url.pathname}${url.search}`;
+    const currentUrl = `${page.url.pathname}${page.url.search}`;
+    if (targetUrl === currentUrl) return;
 
     untrack(() => {
-      const url = new URL(page.url);
-      url.searchParams.set('tab', selectedTab);
-
-      if (selectedTab !== 'submissions') {
-        url.searchParams.delete('submission');
-        url.searchParams.delete('student');
-      }
-
-      goto(resolve(`${url.pathname}${url.search}`, {}), {
+      goto(targetUrl, {
         replaceState: true,
         keepFocus: true,
         noScroll: true
