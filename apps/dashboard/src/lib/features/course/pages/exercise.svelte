@@ -515,6 +515,12 @@
     untrack(() => {
       const url = new URL(page.url);
       url.searchParams.set('tab', selectedTab);
+
+      if (selectedTab !== 'submissions') {
+        url.searchParams.delete('submission');
+        url.searchParams.delete('student');
+      }
+
       goto(resolve(`${url.pathname}${url.search}`, {}), {
         replaceState: true,
         keepFocus: true,

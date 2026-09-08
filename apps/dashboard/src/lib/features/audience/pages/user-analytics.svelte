@@ -1,162 +1,141 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
-  import { Badge } from '@cio/ui/base/badge';
-  import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
-
+  import { goto, invalidateAll } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import { onMount, untrack } from 'svelte';
+  import AwardIcon from '@lucide/svelte/icons/award';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
-  import { Progress } from '@cio/ui/base/progress';
-  import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
+  import ClockIcon from '@lucide/svelte/icons/clock';
+  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
+  import { Badge } from '@cio/ui/base/badge';
+  import { Button } from '@cio/ui/base/button';
+  import { Empty } from '@cio/ui/custom/empty';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
 
   import { t } from '$lib/utils/functions/translations';
-  import type { UserAnalytics } from '$lib/utils/types/analytics';
+  import { StudentCourseCard, StudentGradesTable, StudentProfileRail } from '../components';
+  import type { AudienceAnalytics } from '../utils/types';
 
-  let { data } = $props();
+  type ProfileTab = 'courses' | 'grades' | 'activity';
 
-  // Use analytics data from server load function if available
-  const userAnalytics: UserAnalytics | undefined = $derived(data.analytics);
+  function normalizeTab(tabParam: string | null): ProfileTab {
+    if (tabParam === 'grades') return 'grades';
+    if (tabParam === 'activity') return 'activity';
 
-  let userMetrics = $derived([
-    {
-      icon: BookOpenIcon,
-      title: $t('analytics.enrolled_courses'),
-      description: $t('analytics.enrolled_courses_description'),
-      percentage: userAnalytics?.courses?.length || 0,
-      hidePercentage: true
-    },
-    {
-      icon: ChartLineIcon,
-      title: $t('analytics.overall_course_progress'),
-      description: $t('analytics.overall_course_progress_description'),
-      percentage: userAnalytics?.overallCourseProgress || 0
-    },
-    {
-      icon: UnfoldVerticalIcon,
-      title: $t('analytics.total_average_grade'),
-      description: $t('analytics.total_average_grade_description'),
-      percentage: userAnalytics?.overallAverageGrade || 0
-    }
-  ]);
+    return 'courses';
+  }
 
-  let completedCourses = $derived(
-    userAnalytics?.courses?.filter((course) => course.lessons_count === course.lessons_completed)?.length
-  );
-  let incompleteCourses = $derived(
-    userAnalytics?.courses?.filter((course) => course.lessons_count !== course.lessons_completed)?.length
-  );
+  let {
+    data
+  }: {
+    data: {
+      analytics: AudienceAnalytics | null;
+      loadFailed: boolean;
+    };
+  } = $props();
 
-  let courseFilter = $state('all');
+  let selectedTab: ProfileTab = $state('courses');
 
-  let filteredCourses = $derived(
-    userAnalytics?.courses?.filter((course) => {
-      if (courseFilter === 'all') {
-        return true;
-      }
-      return (course.lessons_count === course.lessons_completed) === (courseFilter === 'completed');
-    })
-  );
+  onMount(() => {
+    selectedTab = normalizeTab(page.url.searchParams.get('tab'));
+  });
+
+  $effect(() => {
+    const nextTab = normalizeTab(page.url.searchParams.get('tab'));
+    if (nextTab === untrack(() => selectedTab)) return;
+    selectedTab = nextTab;
+  });
+
+  $effect(() => {
+    const currentTab = page.url.searchParams.get('tab') ?? '';
+    if (currentTab === selectedTab) return;
+
+    untrack(() => {
+      const url = new URL(page.url);
+      url.searchParams.set('tab', selectedTab);
+      goto(resolve(`${url.pathname}${url.search}`, {}), {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true
+      });
+    });
+  });
+
+  async function handleRetry() {
+    await invalidateAll();
+  }
 </script>
 
-{#if userAnalytics}
-  <div class="px-5 py-1">
-    <HeroProfileCard user={userAnalytics!.user} />
+{#if data.loadFailed}
+  <Empty
+    variant="page"
+    icon={TriangleAlertIcon}
+    title={$t('audience.user_analytics.load_failed_title')}
+    description={$t('audience.user_analytics.load_failed_description')}
+  >
+    {#snippet children()}
+      <Button onclick={handleRetry}>{$t('audience.user_analytics.retry')}</Button>
+    {/snippet}
+  </Empty>
+{:else if data.analytics}
+  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-[19rem_1fr]">
+    <StudentProfileRail analytics={data.analytics} />
 
-    <div class="mt-5 px-0">
-      <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {#each userMetrics as activity (activity.title)}
-          <ActivityCard {activity} />
-        {/each}
-      </div>
-    </div>
+    <UnderlineTabs.Root bind:value={selectedTab}>
+      <UnderlineTabs.List>
+        <UnderlineTabs.Trigger value="courses">
+          <BookOpenIcon />
+          {$t('audience.user_analytics.tabs.courses')}
+          <Badge variant="secondary" class="ui:tabular-nums">{data.analytics.courses.length}</Badge>
+        </UnderlineTabs.Trigger>
+        <UnderlineTabs.Trigger value="grades">
+          <AwardIcon />
+          {$t('audience.user_analytics.tabs.grades')}
+        </UnderlineTabs.Trigger>
+        <UnderlineTabs.Trigger value="activity">
+          <ClockIcon />
+          {$t('audience.user_analytics.tabs.activity')}
+        </UnderlineTabs.Trigger>
+      </UnderlineTabs.List>
 
-    <div class="mt-5 rounded-md border p-3 md:p-5">
-      <h3 class="text-2xl">
-        {$t('analytics.courses')}
-      </h3>
-
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
-            {$t('analytics.progress')}
-          </p>
-          <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
-            {$t('analytics.progress_description', {
-              value: completedCourses,
-              total: userAnalytics!.courses.length
-            })}
-          </p>
-        </div>
-        <Progress value={userAnalytics!.overallCourseProgress} />
-        <div class="flex items-center justify-between">
-          <Badge
-            type={courseFilter === 'incomplete' ? 'secondary' : 'outline'}
-            class="text-yellow-700 dark:text-yellow-500"
-            onclick={() => (courseFilter = 'incomplete')}
-          >
-            {incompleteCourses}
-            {$t('analytics.incomplete')}
-          </Badge>
-          <Badge
-            type={courseFilter === 'completed' ? 'secondary' : 'outline'}
-            class="text-green-700 dark:text-green-500"
-            onclick={() => (courseFilter = 'completed')}
-          >
-            {completedCourses}
-            {$t('analytics.complete')}
-          </Badge>
-        </div>
-      </div>
-
-      {#each filteredCourses as course (course.id)}
-        <div
-          class={`mt-5 w-full rounded-md border border-gray-200 p-5 ${
-            course.lessons_count === course.lessons_completed
-              ? 'border-green-200 bg-green-50 dark:bg-green-100'
-              : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-100'
-          }`}
-          transition:fade={{ duration: 300 }}
-        >
-          <div class="flex items-center justify-between gap-4">
-            <div class="flex w-4/5 items-center gap-4">
-              <img
-                src={course.logo || '/images/classroomio-course-img-template.jpg'}
-                alt={course.title}
-                class="h-20 w-24 rounded-md"
-              />
-              <div class="mb-4 gap-4">
-                <a href={`/courses/${course.id}`}>
-                  <p class="text-lg font-semibold text-gray-600">
-                    {course.title}
-                  </p>
-                </a>
-
-                <p class="line-clamp-2 text-sm text-gray-600">
-                  {course.description}
-                </p>
-              </div>
-            </div>
-
-            <Badge
-              class={`${
-                course.lessons_count === course.lessons_completed
-                  ? 'bg-green-200 text-green-700'
-                  : 'bg-yellow-200 text-yellow-700'
-              }`}
-            >
-              {course.lessons_count === course.lessons_completed
-                ? $t('analytics.completed')
-                : $t('analytics.incomplete')}
-            </Badge>
+      <UnderlineTabs.Content value="courses" class="pt-3">
+        {#if data.analytics.courses.length === 0}
+          <Empty
+            variant="page"
+            icon={BookOpenIcon}
+            title={$t('audience.user_analytics.no_courses_title')}
+            description={$t('audience.user_analytics.no_courses_description')}
+          />
+        {:else}
+          <div class="grid grid-cols-1 gap-3 2xl:grid-cols-2">
+            {#each data.analytics.courses as course (course.id)}
+              <StudentCourseCard {course} />
+            {/each}
           </div>
+        {/if}
+      </UnderlineTabs.Content>
 
-          <div class="flex w-full items-center gap-1">
-            <Progress value={course.progress_percentage} />
-            <p>{course.progress_percentage}%</p>
-          </div>
-        </div>
-      {/each}
-    </div>
+      <UnderlineTabs.Content value="grades" class="pt-3">
+        {#if data.analytics.courses.length === 0}
+          <Empty
+            variant="page"
+            icon={AwardIcon}
+            title={$t('audience.user_analytics.no_grades_title')}
+            description={$t('audience.user_analytics.no_grades_description')}
+          />
+        {:else}
+          <StudentGradesTable courses={data.analytics.courses} studentId={data.analytics.user.id} />
+        {/if}
+      </UnderlineTabs.Content>
+
+      <UnderlineTabs.Content value="activity" class="pt-3">
+        <Empty
+          variant="page"
+          icon={ClockIcon}
+          title={$t('audience.user_analytics.activity_empty_title')}
+          description={$t('audience.user_analytics.activity_empty_description')}
+        />
+      </UnderlineTabs.Content>
+    </UnderlineTabs.Root>
   </div>
-{:else}
-  <LoadingPage />
 {/if}

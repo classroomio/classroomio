@@ -5,6 +5,10 @@
   import Summary from './summary.svelte';
   import Individual from './individual.svelte';
   import { submissions } from './store';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import { onMount, untrack } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseSubmissions } from './types';
   import type { SubmissionListItem } from '$features/course/utils/types';
@@ -18,8 +22,49 @@
   let { exerciseId = $bindable(''), submissions: submissionsData }: Props = $props();
 
   type SubmissionTab = 'summary' | 'individual';
+
+  function normalizeSubmissionTab(tabParam: string | null): SubmissionTab {
+    if (tabParam === 'individual') {
+      return 'individual';
+    }
+
+    return 'summary';
+  }
+
   let currentTab = $state<SubmissionTab>('summary');
   const submissionGroups = $derived(groupSubmissionsByStudentAndAttempt(submissionsData));
+
+  onMount(() => {
+    currentTab = normalizeSubmissionTab(page.url.searchParams.get('submission'));
+  });
+
+  // URL -> state: hydrate when the submission param changes externally.
+  $effect(() => {
+    const nextTab = normalizeSubmissionTab(page.url.searchParams.get('submission'));
+    if (nextTab === untrack(() => currentTab)) return;
+    currentTab = nextTab;
+  });
+
+  // state -> URL: keep ?submission= in sync without self-navigating.
+  $effect(() => {
+    const currentSubmission = page.url.searchParams.get('submission') ?? '';
+    if (currentSubmission === currentTab) return;
+
+    untrack(() => {
+      const url = new URL(page.url);
+      url.searchParams.set('submission', currentTab);
+
+      if (currentTab !== 'individual') {
+        url.searchParams.delete('student');
+      }
+
+      goto(resolve(`${url.pathname}${url.search}`, {}), {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true
+      });
+    });
+  });
 
   function normalizeSubmissions(items: SubmissionListItem[]): ExerciseSubmissions[] {
     return items.map(

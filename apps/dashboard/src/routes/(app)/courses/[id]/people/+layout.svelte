@@ -10,7 +10,7 @@
   import * as Page from '@cio/ui/base/page';
   import { courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
-  import ResetProgressButton from '$features/course/components/people/reset-progress-button.svelte';
+  import StudentActionsMenu from '$features/course/components/people/student-actions-menu.svelte';
   import type { UserCourseAnalytics } from '$features/course/utils/types';
 
   let { data = $bindable(), children } = $props();
@@ -44,22 +44,22 @@
 <Page.Root class="mx-auto w-[90%] px-4 md:max-w-5xl">
   <Page.Header>
     <Page.HeaderContent>
-      <Page.Title>
-        {#if data.personId}
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <IconButton onclick={handleBackNavigation}>
-              <ArrowLeftIcon size={16} />
-            </IconButton>
-          </RoleBasedSecurity>
-        {/if}
-        {$t('course.navItem.people.title')}
-      </Page.Title>
+      {#if data.personId}
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <IconButton onclick={handleBackNavigation}>
+            <ArrowLeftIcon size={16} />
+          </IconButton>
+        </RoleBasedSecurity>
+      {/if}
+      {#if !data.personId}
+        <Page.Title>{$t('course.navItem.people.title')}</Page.Title>
+      {/if}
     </Page.HeaderContent>
     <Page.Action>
       <div class="flex items-center gap-2">
         {#if data.personId && userCourseAnalytics}
           <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <ResetProgressButton
+            <StudentActionsMenu
               courseId={data.courseId}
               personId={data.personId}
               {userCourseAnalytics}

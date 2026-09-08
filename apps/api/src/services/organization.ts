@@ -945,22 +945,41 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     // Build analytics data for each course
     const coursesWithStats = await Promise.all(
       courses.map(async (course) => {
-        const [userExercisesStats, courseProgress] = await Promise.all([
-          getUserExercisesStats(course.id, userId),
-          getProfileCourseProgress(course.id, userId)
-        ]);
+        let userExercisesStats: Awaited<ReturnType<typeof getUserExercisesStats>> | null;
+        try {
+          // failOnError lets this page distinguish a failed query (exercises ===
+          // null) from a legitimately empty course (exercises === []).
+          userExercisesStats = await getUserExercisesStats(course.id, userId, { failOnError: true });
+        } catch (error) {
+          console.error('getUserAnalytics course exercises error:', error);
+          userExercisesStats = null;
+        }
 
-        const totalEarnedPoints = sumArrObject(userExercisesStats, 'score');
-        const totalPoints = sumArrObject(userExercisesStats, 'totalPoints');
-        const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
+        const courseProgress = await getProfileCourseProgress(course.id, userId);
+
+        // Only graded submissions produce a grade. Exercises the student has
+        // not submitted, or submitted but not yet graded, are absence — they
+        // must not drag the grade toward zero (an em-dash, never a 0).
+        const gradedExercises = (userExercisesStats ?? []).filter((exercises) => exercises.status === 3);
+        const totalEarnedPoints = sumArrObject(gradedExercises, 'score');
+        const totalPoints = sumArrObject(gradedExercises, 'totalPoints');
+
+        // A course is gradeable only if its graded exercises carry points.
+        // Authored exercises worth 0 points cannot produce a grade any more
+        // than no exercises can — so null is "no grade yet", not a grade of 0.
+        const gradeablePoints = totalPoints > 0;
+        const averageGrade = gradeablePoints ? calcPercentageWithRounding(totalEarnedPoints, totalPoints) : null;
+
         const lessonsCompleted = courseProgress.lessons_completed || 0;
         const lessonsCount = courseProgress.lessons_count || 0;
+        const progressPercentage = calcPercentageWithRounding(lessonsCompleted, lessonsCount);
 
         return {
           ...course,
           ...courseProgress,
-          progress_percentage: calcPercentageWithRounding(lessonsCompleted, lessonsCount),
-          average_grade: averageGrade
+          progress_percentage: progressPercentage,
+          average_grade: averageGrade,
+          exercises: userExercisesStats
         };
       })
     );
@@ -970,8 +989,14 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     const completedLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
     const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
 
-    const allGrades = sumArrObject(coursesWithStats, 'average_grade');
-    const overallAverageGrade = calcPercentageWithRounding(allGrades, coursesWithStats.length);
+    // Overall average is a plain mean of gradeable course grades. Courses with
+    // no grade contribute nothing (not a 0) — this also avoids double-scaling
+    // the already-percentage course grades into values like 5200.
+    const graded = coursesWithStats.filter(
+      (course): course is (typeof coursesWithStats)[number] & { average_grade: number } => course.average_grade !== null
+    );
+    const gradeTotal = graded.reduce((sum, course) => sum + course.average_grade, 0);
+    const overallAverageGrade = graded.length === 0 ? null : Math.round(gradeTotal / graded.length);
 
     return {
       user: {
