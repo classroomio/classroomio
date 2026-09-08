@@ -36,11 +36,12 @@
       ? subdomainOrigin || (browser ? window.location.origin : '')
       : $currentOrgDomain || (browser ? window.location.origin : '');
 
+    const target = pathname ?? (isLMS && $user.isLoggedIn ? '/home' : '/');
+
     if (!origin) {
-      return '';
+      return target;
     }
 
-    const target = pathname ?? (isLMS && $user.isLoggedIn ? '/home' : '/');
     const url = new URL(target, origin);
 
     if (browser && window.location.host.includes('localhost') && $currentOrg.siteName) {
