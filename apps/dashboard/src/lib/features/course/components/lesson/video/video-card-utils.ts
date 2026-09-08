@@ -1,10 +1,13 @@
 import {
   dedupe,
+  getVideoMediaType,
   getYoutubeVideoId,
   isValidYoutubeUrl as isYoutubeUrl,
   isValidVimeoUrl as isVimeoUrl,
   extractVimeoDetails as getVimeoVideoDetails,
-  normalizeHttpUrl
+  normalizeHttpUrl,
+  type TAssetCreateUpload,
+  type TAssetProvider
 } from '@cio/utils';
 import { lessonApi } from '$features/course/api';
 import { mediaApi } from '$features/media/api';
@@ -147,10 +150,11 @@ export function getVideoTitle(video: LessonVideo, index: number): string {
     if (fromKey) return fromKey;
   }
 
-  if (video.type === 'youtube' || isYoutubeUrl(video.link)) return 'YouTube video';
-  if (video.type === 'vimeo' || isVimeoUrl(video.link)) return 'Vimeo video';
-  if (video.type === 'generic') return 'Embedded video';
-  if (video.type === 'google_drive') return 'Google Drive video';
+  const mediaType = getVideoMediaType(video);
+  if (mediaType === 'youtube') return 'YouTube video';
+  if (mediaType === 'vimeo') return 'Vimeo video';
+  if (mediaType === 'generic') return 'Embedded video';
+  if (mediaType === 'google_drive') return 'Google Drive video';
 
   return `Video ${index + 1}`;
 }
@@ -228,7 +232,7 @@ export async function createExternalLessonVideo(options: CreateExternalLessonVid
   const createdAt = new Date().toISOString();
   const isVimeo = options.type === 'vimeo' || isVimeoUrl(link);
   const isYoutube = options.type === 'youtube' || isYoutubeUrl(link);
-  const provider = isVimeo ? 'vimeo' : isYoutube ? 'youtube' : 'generic';
+  const provider: TAssetProvider = isVimeo ? 'vimeo' : isYoutube ? 'youtube' : 'generic';
   const videoType = options.type ?? (provider as LessonVideoType);
 
   let resolvedTitle = fallbackTitle ?? link;
@@ -268,7 +272,7 @@ export async function createExternalLessonVideo(options: CreateExternalLessonVid
     ...(durationSeconds ? { duration: durationSeconds } : {})
   };
 
-  const asset = await mediaApi.createAsset({
+  const assetPayload: TAssetCreateUpload = {
     kind: 'video',
     provider,
     storageProvider: 'external',
@@ -278,29 +282,37 @@ export async function createExternalLessonVideo(options: CreateExternalLessonVid
     thumbnailUrl,
     durationSeconds,
     metadata: videoMetadata
-  });
+  };
 
-  if (!asset) {
-    throw new Error('Failed to create external video asset');
-  }
+  let assetId: string | undefined;
 
   if (lessonId) {
-    const attached = await mediaApi.attachAsset(asset.id, {
+    const createdAndAttached = await mediaApi.createAndAttachAsset(assetPayload, {
       targetType: 'lesson',
       targetId: lessonId,
       slotType: 'lesson_video',
       position
     });
 
-    if (!attached) {
-      throw new Error('Failed to attach video asset to lesson');
+    if (!createdAndAttached?.asset) {
+      throw new Error('Failed to create and attach external video asset');
     }
+
+    assetId = createdAndAttached.asset.id;
+  } else {
+    const asset = await mediaApi.createAsset(assetPayload);
+
+    if (!asset) {
+      throw new Error('Failed to create external video asset');
+    }
+
+    assetId = asset.id;
   }
 
   return {
     type: videoType as LessonVideoType,
     link: sourceUrl,
-    assetId: asset.id,
+    assetId,
     fileName: resolvedTitle,
     metadata: videoMetadata
   };

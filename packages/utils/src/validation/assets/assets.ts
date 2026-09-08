@@ -78,6 +78,12 @@ export const ZAssetAttach = z.object({
 });
 export type TAssetAttach = z.infer<typeof ZAssetAttach>;
 
+export const ZAssetCreateAndAttach = z.object({
+  asset: ZAssetCreateUpload,
+  attach: ZAssetAttach
+});
+export type TAssetCreateAndAttach = z.infer<typeof ZAssetCreateAndAttach>;
+
 export const ZAssetDetach = z
   .object({
     usageId: z.string().uuid().optional(),

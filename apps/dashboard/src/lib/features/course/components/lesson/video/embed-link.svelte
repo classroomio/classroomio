@@ -82,8 +82,6 @@
     className="flex-1"
     isDisabled={isSubmitting}
     oninput={handleInputChange}
-    onchange={handleInputChange}
-    onInputChange={handleInputChange}
     placeholder="https://www.videoplayer.com/"
     errorMessage={error}
   />

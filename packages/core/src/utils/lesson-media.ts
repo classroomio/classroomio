@@ -1,3 +1,4 @@
+import { dedupe } from '@cio/utils';
 import { enrichObjectsWithUrls, extractKeysFromObjects } from './presigned-urls';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from './s3';
 
@@ -133,7 +134,7 @@ export async function enrichLessonWithPresignedUrls(lesson: LessonById): Promise
   const documentAssetIds = documents
     .map((document) => document.assetId)
     .filter((assetId): assetId is string => Boolean(assetId));
-  const assetIds = Array.from(new Set([...videoAssetIds, ...documentAssetIds]));
+  const assetIds = dedupe([...videoAssetIds, ...documentAssetIds]);
   const canonicalAssets = assetIds.length ? await getAssetsByIds(assetIds) : [];
   for (const asset of canonicalAssets) {
     queueVimeoBackfill(asset);

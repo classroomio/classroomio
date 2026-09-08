@@ -32,7 +32,10 @@
   let isSubmitting = $state(false);
 
   function handleInputChange(event: Event) {
-    rawInput = (event.currentTarget as HTMLInputElement).value;
+    const nextValue = (event.currentTarget as HTMLInputElement).value;
+    if (nextValue === rawInput) return;
+
+    rawInput = nextValue;
     validationError = '';
     onInputChange(rawInput);
   }
@@ -76,7 +79,6 @@
       disabled={disabled || isSubmitting}
       placeholder={inputPlaceholder}
       oninput={handleInputChange}
-      onchange={handleInputChange}
     />
     {#if validationError}
       <p class="ui:text-destructive ui:text-xs">{validationError}</p>

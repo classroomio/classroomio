@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type {
   TAssetAttach,
+  TAssetCreateAndAttach,
   TAssetCreateUpload,
   TAssetDetach,
   TAssetExportQuery,
@@ -454,6 +455,32 @@ export async function createAssetFromUploadService(orgId: string, profileId: str
       ErrorCodes.ASSET_CREATE_FAILED,
       500
     );
+  }
+}
+
+export async function createAndAttachAssetService(orgId: string, profileId: string, input: TAssetCreateAndAttach) {
+  const asset = await createAssetFromUploadService(orgId, profileId, input.asset);
+
+  try {
+    const usage = await attachAssetService(orgId, asset.id, profileId, input.attach);
+
+    return { asset, usage };
+  } catch (error) {
+    try {
+      await deleteAsset(asset.id, orgId);
+    } catch (cleanupError) {
+      console.error('createAndAttachAssetService: failed to cleanup asset on attach failure', {
+        assetId: asset.id,
+        error: cleanupError
+      });
+    }
+
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    const errorMessage = error instanceof Error ? error.message : 'Failed to attach asset';
+    throw new AppError(errorMessage, ErrorCodes.ASSET_ATTACH_FAILED, 500);
   }
 }
 

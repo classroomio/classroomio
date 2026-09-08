@@ -1,5 +1,6 @@
 import {
   ZAssetAttach,
+  ZAssetCreateAndAttach,
   ZAssetCreateUpload,
   ZAssetDetach,
   ZAssetExportQuery,
@@ -24,6 +25,7 @@ import {
   attachAssetService,
   batchPresignHlsService,
   batchPresignHls1080Service,
+  createAndAttachAssetService,
   createAssetFromUploadService,
   deleteAssetService,
   detachAssetService,
@@ -102,6 +104,35 @@ export const assetsRouter = new Hono()
       return handleError(c, error, 'Failed to create asset');
     }
   })
+  /**
+   * POST /organization/assets/create-and-attach
+   * Create an asset and attach it to a target in one authorized operation.
+   * Rolls back the created asset if attachment fails.
+   */
+  .post(
+    '/create-and-attach',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('json', ZAssetCreateAndAttach),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const data = c.req.valid('json');
+        const result = await createAndAttachAssetService(orgId, user.id, data);
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          201
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to create and attach asset');
+      }
+    }
+  )
   /**
    * POST /organization/assets/hls/init
    * Reserve an assetId for an HLS upload. Returns the asset id and the

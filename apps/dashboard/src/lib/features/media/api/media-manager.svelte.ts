@@ -5,6 +5,8 @@ import type {
   AssetTranscriptPayload,
   AssetUsage,
   AssetUsageGraph,
+  CreateAndAttachAssetData,
+  CreateAndAttachAssetRequest,
   CreateAssetRequest,
   DeleteAssetRequest,
   GetAssetTranscriptRequest,
@@ -34,6 +36,7 @@ import type {
 } from '@cio/utils/validation/assets';
 import {
   ZAssetAttach,
+  ZAssetCreateAndAttach,
   ZAssetCreateUpload,
   ZAssetDetach,
   ZAssetListQuery,
@@ -196,6 +199,42 @@ export class MediaApi extends BaseApiWithErrors {
     });
 
     return asset;
+  }
+
+  async createAndAttachAsset(
+    assetFields: TAssetCreateUpload,
+    attachFields: TAssetAttach
+  ): Promise<CreateAndAttachAssetData | null> {
+    const normalizedFields = {
+      asset: {
+        ...assetFields,
+        durationSeconds: this.normalizeDurationSeconds(assetFields.durationSeconds)
+      },
+      attach: attachFields
+    };
+
+    const result = ZAssetCreateAndAttach.safeParse(normalizedFields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error);
+      return null;
+    }
+
+    let createdData: CreateAndAttachAssetData | null = null;
+    await this.execute<CreateAndAttachAssetRequest>({
+      requestFn: () =>
+        classroomio.organization.assets['create-and-attach'].$post({
+          json: result.data
+        }),
+      logContext: 'creating and attaching media asset',
+      onSuccess: (response) => {
+        createdData = response.data;
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.create_failed');
+      }
+    });
+
+    return createdData;
   }
 
   async updateAsset(assetId: string, fields: TAssetUpdate): Promise<UpdateAssetData | null> {

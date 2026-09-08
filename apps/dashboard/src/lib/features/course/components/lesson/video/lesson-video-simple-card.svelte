@@ -14,7 +14,7 @@
     type LessonVideo
   } from './video-card-utils';
   import { t } from '$lib/utils/functions/translations';
-  import { isValidYoutubeUrl as isYoutubeUrl, isValidVimeoUrl as isVimeoUrl } from '@cio/utils';
+  import { getVideoMediaType } from '@cio/utils';
 
   interface Props {
     video: LessonVideo;
@@ -34,8 +34,9 @@
   const createdAtIso = $derived(getVideoCreatedAt(video));
   const createdAtFormatted = $derived(formatVideoCreatedAt(createdAtIso ?? undefined));
 
-  const isYoutube = $derived(video.type === 'youtube' || (video.link ? isYoutubeUrl(video.link) : false));
-  const isVimeo = $derived(video.type === 'vimeo' || (video.link ? isVimeoUrl(video.link) : false));
+  const mediaType = $derived(getVideoMediaType(video));
+  const isYoutube = $derived(mediaType === 'youtube');
+  const isVimeo = $derived(mediaType === 'vimeo');
   const isExternalWithLink = $derived((isYoutube || isVimeo) && !!video.link);
 
   const channelLine = $derived.by(() => {
@@ -53,9 +54,9 @@
       ? 'kind_youtube'
       : isVimeo
         ? 'kind_vimeo'
-        : video.type === 'upload'
+        : mediaType === 'upload'
           ? 'kind_upload'
-          : video.type === 'google_drive'
+          : mediaType === 'google_drive'
             ? 'kind_google_drive'
             : 'kind_generic';
 
