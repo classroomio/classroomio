@@ -1,0 +1,975 @@
+/*
+ * lifecycle.css — components specific to the learner lifecycle prototype.
+ * Layers on app-theme.css (which mirrors packages/ui/src/index.css tokens).
+ * Everything here maps to a real @cio/ui primitive; the comment says which.
+ */
+
+[hidden] {
+  display: none !important;
+}
+
+/* ============ view switcher menu rows ============ */
+.menu .cnt {
+  margin-left: auto;
+  color: var(--muted-foreground);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.menu .tick {
+  width: 14px;
+  text-align: right;
+  color: var(--primary);
+  font-size: 12px;
+}
+.menu button {
+  align-items: center;
+}
+
+/* ============ control row ============ */
+/* Mirrors Page.BodyHeader: ui:flex ui:items-center ui:gap-2 ui:justify-end.
+   align="right" is the component default and what courses/cohorts use. */
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.controls .search-input {
+  /* @cio/ui Search is ui:w-fit ui:max-w-[200px] — it does not grow */
+  width: 200px;
+}
+@media (max-width: 640px) {
+  .controls {
+    justify-content: stretch;
+  }
+  .controls .search-input {
+    width: 100%;
+  }
+}
+.dot-flag {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--primary);
+  border: 2px solid var(--background);
+}
+.rel {
+  position: relative;
+  display: inline-flex;
+}
+
+/* ============ active filter chips (custom/chip) ============ */
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  /* sits under the Filter trigger it came from, so it reads as one cluster */
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+@media (max-width: 640px) {
+  .chips {
+    justify-content: flex-start;
+  }
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: var(--muted);
+  font-size: 12.5px;
+  color: var(--foreground);
+}
+.chip button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: var(--muted-foreground);
+  padding: 0;
+}
+.chip button:hover {
+  background: color-mix(in oklab, var(--foreground) 10%, transparent);
+  color: var(--foreground);
+}
+.chip button svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.5;
+}
+.link-btn {
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 0 4px;
+  font-weight: 500;
+}
+.link-btn:disabled {
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+}
+
+/* ============ result summary ============ */
+.summary {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+}
+.summary b {
+  color: var(--foreground);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ data table (base/table) ============ */
+.dt-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--card);
+  position: relative;
+}
+.dt-scroll {
+  overflow-x: auto;
+}
+.dt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  min-width: 940px;
+}
+.dt th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  white-space: nowrap;
+}
+.dt td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.dt tbody tr:last-child td {
+  border-bottom: none;
+}
+.dt tbody tr:hover td {
+  background: color-mix(in oklab, var(--accent) 45%, transparent);
+}
+.dt tbody tr.sel td {
+  background: color-mix(in oklab, var(--primary) 6%, transparent);
+}
+.dt .sticky-l {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--card);
+  box-shadow: 1px 0 0 var(--border);
+}
+.dt tbody tr:hover .sticky-l {
+  background: color-mix(in oklab, var(--accent) 45%, var(--card));
+}
+.dt tbody tr.sel .sticky-l {
+  background: color-mix(in oklab, var(--primary) 6%, var(--card));
+}
+.dt .c-check {
+  width: 38px;
+  padding-right: 0;
+}
+.dt th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+.dt th.sortable:hover {
+  color: var(--foreground);
+}
+.dt th .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  opacity: 0;
+  font-size: 10px;
+}
+.dt th.on {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.dt th.on .arrow {
+  opacity: 1;
+}
+.person {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.person .nm {
+  font-weight: 500;
+  white-space: nowrap;
+}
+.person .nm a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.em {
+  color: var(--muted-foreground);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.never {
+  color: var(--muted-foreground);
+}
+.dt tr.inactive td:not(.c-check) {
+  opacity: 0.55;
+}
+.prog {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.prog .p {
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+}
+
+/* checkbox (base/checkbox) */
+.cb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--input);
+  border-radius: 4px;
+  background: var(--background);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+.cb:checked,
+.cb:indeterminate {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.cb:checked::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: solid var(--primary-foreground);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translateY(-1px);
+}
+.cb:indeterminate::after {
+  content: '';
+  width: 8px;
+  height: 2px;
+  background: var(--primary-foreground);
+  border-radius: 1px;
+}
+.cb:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cb:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ============ stale-while-loading ============ */
+.dt-wrap.busy .dt-scroll {
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.12s;
+}
+.loadbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  overflow: hidden;
+  display: none;
+  z-index: 5;
+}
+.dt-wrap.busy .loadbar {
+  display: block;
+}
+.loadbar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 35%;
+  background: var(--primary);
+  animation: slide 1s ease-in-out infinite;
+}
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+.sk {
+  height: 13px;
+  border-radius: 5px;
+  background: var(--muted);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* ============ bulk bar ============ */
+.bulkbar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 9px 10px 9px 14px;
+  border: 1px solid color-mix(in oklab, var(--primary) 28%, var(--border));
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+}
+.bulkbar.on {
+  display: flex;
+}
+.bulkbar .count {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.bulkbar .spacer {
+  flex: 1;
+}
+.allmatch {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border: 1px solid color-mix(in oklab, var(--primary) 22%, var(--border));
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+.allmatch.on {
+  display: flex;
+}
+
+/* ============ popover / dropdown (base/popover, base/dropdown-menu) ============ */
+.pop {
+  position: absolute;
+  z-index: 60;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: none;
+}
+.pop.on {
+  display: block;
+}
+.menu {
+  min-width: 240px;
+  padding: 5px;
+}
+.menu button,
+.menu a {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 7px 9px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--foreground);
+}
+.menu button:hover:not(:disabled),
+.menu a:hover {
+  background: var(--accent);
+}
+.menu button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.menu .t {
+  font-weight: 500;
+}
+.menu .d {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  margin-top: 1px;
+}
+.menu .danger {
+  color: var(--destructive);
+}
+.menu .danger:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--destructive) 10%, transparent);
+}
+.menu-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 5px 4px;
+}
+.menu-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
+  padding: 6px 9px 3px;
+  font-weight: 600;
+}
+
+/* filter popover body */
+.filter-pop {
+  width: 340px;
+  padding: 0;
+  /* must fit under the trigger without pushing the Apply footer off-screen.
+     The trigger sits ~300px down the page, so cap against that, not 100vh. */
+  max-height: min(560px, calc(100vh - 300px));
+}
+.filter-pop.on {
+  display: flex;
+  flex-direction: column;
+}
+.filter-body {
+  padding: 14px;
+  overflow-y: auto;
+  min-height: 0; /* flex child must be shrinkable for overflow to engage */
+  display: grid;
+  gap: 16px;
+}
+.fset {
+  display: grid;
+  gap: 7px;
+}
+.fset > legend,
+.fset > .legend {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+  padding: 0;
+}
+.fopt {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.radio {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--input);
+  border-radius: 999px;
+  background: var(--background);
+  display: grid;
+  place-items: center;
+  margin: 0;
+  cursor: pointer;
+}
+.radio:checked {
+  border-color: var(--primary);
+  border-width: 4px;
+}
+.filter-foot {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ============ dialog (base/dialog) ============ */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.5);
+  z-index: 90;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.backdrop.on {
+  display: flex;
+}
+.dialog {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+.dialog-head {
+  padding: 20px 22px 0;
+}
+.dialog h2 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+.dialog .lede {
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  margin: 0;
+  line-height: 1.55;
+}
+.dialog-body {
+  padding: 16px 22px;
+  overflow-y: auto;
+  display: grid;
+  gap: 14px;
+}
+.dialog-foot {
+  padding: 14px 22px 20px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+}
+.sample {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.sample .r {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.sample .r:last-child {
+  border-bottom: none;
+}
+.sample .more {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 12.5px;
+  justify-content: center;
+}
+.recap {
+  background: var(--muted);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  line-height: 1.7;
+}
+.recap b {
+  color: var(--foreground);
+  font-weight: 500;
+}
+.export-first {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+.export-first.done {
+  border-style: solid;
+  border-color: color-mix(in oklab, var(--success) 40%, var(--border));
+  background: var(--success-soft);
+}
+.export-first svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+}
+.export-first.done svg {
+  color: var(--success);
+}
+
+/* ============ queued progress ============ */
+.jobbar {
+  display: none;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 16px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-2xs);
+}
+.jobbar.on {
+  display: flex;
+}
+.jobbar .lbl {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.jobbar .progress {
+  flex: 1;
+  min-width: 120px;
+}
+.jobbar .pct {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ============ toast (base/sonner) ============ */
+.toasts {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 120;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 11px 12px 11px 15px;
+  font-size: 13.5px;
+  max-width: 400px;
+  animation: rise 0.18s ease-out;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.toast.err {
+  border-color: color-mix(in oklab, var(--destructive) 40%, var(--border));
+}
+
+/* ============ empty (custom/empty) ============ */
+.empty {
+  text-align: center;
+  padding: 56px 24px;
+}
+.empty .ic {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 14px;
+  color: var(--muted-foreground);
+}
+.empty .ic svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.8;
+}
+.empty h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 5px;
+}
+.empty p {
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  margin: 0 0 16px;
+  max-width: 44ch;
+  margin-inline: auto;
+}
+
+/* ============ pagination (base/pagination) ============ */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.pager .pages {
+  display: flex;
+  gap: 4px;
+}
+.pgb {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.pgb:hover:not(:disabled) {
+  background: var(--accent);
+}
+.pgb.on {
+  border-color: var(--input);
+  background: var(--background);
+  font-weight: 600;
+  box-shadow: var(--shadow-2xs);
+}
+.pgb:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============ import stepper + tiles ============ */
+.steps {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 22px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.steps .s {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted-foreground);
+}
+.steps .s .n {
+  width: 21px;
+  height: 21px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.steps .s.on {
+  color: var(--foreground);
+  font-weight: 500;
+}
+.steps .s.on .n {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+.steps .s.done .n {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+.steps .bar {
+  width: 26px;
+  height: 1px;
+  background: var(--border);
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.tile {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  background: var(--card);
+}
+.tile .v {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.tile .k {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+.tile.ok .v {
+  color: var(--success);
+}
+.tile.warn .v {
+  color: var(--warning);
+}
+.tile.bad .v {
+  color: var(--destructive);
+}
+.drop {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 34px 20px;
+  text-align: center;
+  background: var(--card);
+}
+.drop.hot {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
+}
+.drop .ic {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+  color: var(--muted-foreground);
+}
+.drop .ic svg {
+  width: 19px;
+  height: 19px;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted-foreground);
+  font-size: 12.5px;
+  margin: 18px 0;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.banner svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.banner.warn {
+  background: var(--warning-soft);
+  border: 1px solid color-mix(in oklab, var(--warning) 30%, transparent);
+}
+.banner.warn svg {
+  color: var(--warning);
+}
+.banner.info {
+  background: color-mix(in oklab, var(--primary) 7%, transparent);
+  border: 1px solid color-mix(in oklab, var(--primary) 20%, transparent);
+}
+.banner.info svg {
+  color: var(--primary);
+}
+
+/* ============ annotation callouts (prototype only, not app UI) ============ */
+.note {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  background: var(--muted);
+  border-left: 2px solid var(--border);
+  padding: 9px 12px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 14px;
+}
+.note b {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.note code {
+  background: var(--muted);
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 11.5px;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ============ responsive ============ */
+@media (max-width: 820px) {
+  /* Filter popover becomes a bottom sheet (base/sheet) */
+  .pop.filter-pop.on {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: auto;
+    max-height: 82vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    z-index: 100;
+  }
+  .sheet-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgb(0 0 0 / 0.4);
+    z-index: 95;
+    display: none;
+  }
+  .sheet-scrim.on {
+    display: block;
+  }
+  .chip {
+    min-height: 44px;
+  }
+  .tiles {
+    grid-template-columns: 1fr;
+  }
+  .dialog {
+    max-width: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
