@@ -15,6 +15,7 @@ import {
 } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { BRAND_ROOT_DOMAIN, ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
@@ -148,7 +149,7 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 
   const url = new URL(pathname, origin);
 
-  if (window.location.host.includes('localhost') && org.siteName) {
+  if ((window.location.host.includes('localhost') || isLocalOrPrivateHost(window.location.hostname)) && org.siteName) {
     url.searchParams.set('org', org.siteName);
   }
 
