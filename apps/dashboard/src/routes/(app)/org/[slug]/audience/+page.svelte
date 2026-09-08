@@ -37,7 +37,10 @@
       <Page.Subtitle>{$t('audience.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" href={exportHref} download>
+      <!-- No `download` attribute: Svelte would pass it as `download={true}`,
+           which the browser reads as the filename. The response's
+           Content-Disposition already names the file. -->
+      <Button variant="outline" href={exportHref}>
         {$t('audience.export')}
       </Button>
       <Button

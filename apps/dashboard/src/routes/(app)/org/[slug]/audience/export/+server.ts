@@ -1,24 +1,33 @@
 import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { getApiHeaders } from '$lib/utils/services/api';
+import { getOrgBySiteName } from '$features/org/api/org.server';
 import type { RequestHandler } from './$types';
+
+const ORG_ID_COOKIE_PREFIX = 'cio_org_id_';
 
 /**
  * Streams the roster export from the API to the browser.
  *
- * This exists rather than linking straight at the API because the export
- * endpoint is org-scoped through the `cio-org-id` header, and a browser
- * navigation cannot set headers. Proxying here keeps the org id out of the URL
- * and still gives the user a real download.
- *
- * The body is piped through untouched, so a 20,000-row export never lands in
- * this process's memory.
+ * This proxy exists because the export endpoint is org-scoped through the
+ * `cio-org-id` header, and a browser navigation cannot set headers. The body is
+ * piped through untouched, so a large export never lands in this process.
  */
-export const GET: RequestHandler = async ({ parent, cookies, url, fetch }) => {
-  const { orgId } = await parent();
+export const GET: RequestHandler = async ({ params, cookies, url, fetch }) => {
+  const siteName = params.slug;
+  // Same cookie the org layout warms, falling back to the lookup it uses.
+  // A `+server.ts` handler has no `parent()`, so layout data is not available.
+  const cookieKey = `${ORG_ID_COOKIE_PREFIX}${siteName}`;
+  let orgId = cookies.get(cookieKey);
 
   if (!orgId) {
-    error(403, 'Organization not found');
+    const org = await getOrgBySiteName(siteName, getApiKeyHeaders());
+    orgId = org?.id;
+  }
+
+  if (!orgId) {
+    error(404, 'Organization not found');
   }
 
   const apiBase = env.PRIVATE_SERVER_URL;
@@ -28,8 +37,8 @@ export const GET: RequestHandler = async ({ parent, cookies, url, fetch }) => {
     error(502, 'Export is unavailable');
   }
 
-  // Forward the caller's filters verbatim; the API validates and applies them,
-  // and is the only place that decides what the scopes mean.
+  // Filters are forwarded verbatim; the API validates them and owns what the
+  // scopes mean.
   const upstream = new URL(`${apiBase.replace(/\/$/, '')}/organization/audience/export.csv`);
   upstream.search = url.search;
 
