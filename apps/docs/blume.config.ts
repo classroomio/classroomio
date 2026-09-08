@@ -9,7 +9,7 @@ const apiSpec = JSON.parse(
 ) as ApiDocument;
 const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_ROUTE);
 const apiSidebarGroups = apiTags.map((tag) => ({
-  label: tag.name,
+  label: tag.name.replace(/^Public API /, ''),
   display: 'group' as const,
   collapsed: false,
   items: Object.values(apiOperations)
