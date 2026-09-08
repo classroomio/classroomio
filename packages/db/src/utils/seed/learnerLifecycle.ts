@@ -21,8 +21,6 @@ interface SeedLearnerLifecycleArgs {
   reactCourseId: string;
 }
 
-const PASSWORD_HASH = '$2a$10$dgxySj.k12gDKhLx7X4x6./J.Nzhz7WQrwh5lkjLKwIwWW4o5GJcW';
-
 /**
  * Enough learners to make the dormancy views, the bulk bar and the roster
  * export show something. The default seed only creates a handful, all recently
