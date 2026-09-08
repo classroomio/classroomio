@@ -1,0 +1,43 @@
+---
+title: Tags
+description: Organize and filter courses with organization-scoped tags in ClassroomIO.
+---
+
+Tags in ClassroomIO help teams structure course catalogs and improve discovery across admin
+and student experiences. For step-by-step setup, see [Manage Tags](/organization-and-team/manage-tags).
+
+## Scope and Ownership
+
+- Tags are organization-scoped.
+- A tag cannot be shared across organizations.
+- Each tag belongs to a tag group (facet/category).
+
+## Roles and Permissions
+
+- Admin:
+  - Create and update tag groups.
+  - Create and update tags.
+  - Configure tag properties used for filtering.
+- Tutor:
+  - Assign existing tags to managed courses.
+- Student:
+  - Filter and discover courses using tags.
+
+## Filtering Surfaces
+
+- Org Courses:
+  - Supports URL-based filtering with `?tags=<comma-separated-tag-slugs>`.
+- Public `/courses` (your academy/custom domain):
+  - Displays published courses.
+  - Supports tag filtering with URL query params.
+
+:::note[In Progress]
+Archive/restore lifecycle, advanced facet semantics, and expanded LMS filtering UX are being
+incrementally rolled out.
+:::
+
+## Related guides
+
+- [Manage Tags](/organization-and-team/manage-tags) — create tag groups and tags, assign them to courses, and filter by tag
+- [Roles and Permissions](/organization-and-team/roles-and-permissions) — how these roles work elsewhere in the dashboard
+- [Course](/reference/course) — course settings and admin areas

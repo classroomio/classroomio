@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Decks · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="deck.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .stats { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
+      .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+      .kindtabs { display: grid; grid-auto-flow: column; background: var(--muted); border-radius: var(--radius-md); padding: 3px; gap: 2px; }
+      .kindtabs button { border: 0; background: none; font-family: inherit; font-size: 13px; padding: 5px 12px; border-radius: calc(var(--radius-md) - 2px); color: var(--muted-foreground); cursor: pointer; }
+      .kindtabs button.active { background: var(--background); color: var(--foreground); font-weight: 500; box-shadow: var(--shadow-2xs); }
+      .dgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .dcard { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; background: var(--card); display: grid; gap: 10px; align-content: start; position: relative; cursor: pointer; text-decoration: none; color: inherit; }
+      .dcard:hover { border-color: color-mix(in oklch, var(--primary) 45%, var(--border)); }
+      .dcard .well { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--muted); }
+      .dcard h3 { margin: 0; font-size: 14px; font-weight: 500; line-height: 1.4; }
+      .dcard .bl { display: flex; gap: 6px; flex-wrap: wrap; }
+      .dcard .stats2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; margin-top: 2px; }
+      .dcard .stats2 .k { font-size: 11px; text-transform: uppercase; color: var(--muted-foreground); letter-spacing: 0.04em; }
+      .dcard .stats2 .v { font-weight: 500; }
+      .dcard .more { position: absolute; top: 12px; right: 12px; opacity: 0; transition: opacity 0.15s; z-index: 3; }
+      .dcard:hover .more { opacity: 1; }
+      .gen { display: grid; place-items: center; gap: 10px; aspect-ratio: 16/9; background: var(--muted); text-align: center; padding: 14px; }
+      .genbar { width: 80%; height: 5px; border-radius: 999px; background: color-mix(in oklch, var(--primary) 20%, transparent); overflow: hidden; }
+      .genbar i { display: block; height: 100%; width: 45%; background: var(--primary); border-radius: 999px; animation: gwork 1.6s ease-in-out infinite; }
+      @keyframes gwork { 0% { transform: translateX(-90%); } 100% { transform: translateX(240%); } }
+      .empty-box { border: 1px dashed var(--border); border-radius: var(--radius-lg); padding: 48px 24px; text-align: center; display: grid; justify-items: center; gap: 14px; }
+      .empty-box .ei { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--muted); display: grid; place-items: center; }
+      @media (max-width: 1050px) { .dgrid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 700px) { .dgrid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="nav-label">Content</div>
+        <a class="nav-item" href="lesson-slide-tab.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+        <a class="nav-item active" href="deck-library.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20v12H2zM12 15v6M8 21h8"/></svg>Decks</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>Media</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="crumbs"><a href="#">Acme Academy</a><span class="sep">/</span><span>Decks</span></div>
+          <div class="top-actions">
+            <button class="btn btn-outline btn-sm" onclick="toggleEmpty()">Toggle empty state</button>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1150px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Decks</h1>
+                <p class="page-sub">Slide decks you own. Attach one to any lesson, or reuse it across courses.</p>
+              </div>
+              <div style="display: flex; gap: 8px">
+                <a class="btn btn-outline" href="deck-import.html">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Import .pptx
+                </a>
+                <a class="btn btn-primary" href="deck-editor.html">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+                  New deck
+                </a>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20v12H2zM12 15v6M8 21h8"/></svg>Decks</div><div class="v tnum">7</div></div>
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>Slides</div><div class="v tnum">104</div></div>
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19"/></svg>Attached to lessons</div><div class="v tnum">5</div></div>
+            </div>
+
+            <div class="filters">
+              <div class="kindtabs">
+                <button class="active">All</button><button>Attached</button><button>Unattached</button><button>Draft</button><button>Published</button>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center">
+                <input class="input" placeholder="Search decks" style="width: 180px" />
+                <select class="select"><option>All courses</option><option>Instructional Design 201</option><option>Assessment Clinic</option></select>
+                <button class="btn btn-primary btn-sm">Apply</button>
+              </div>
+            </div>
+
+            <div class="dgrid" id="grid"></div>
+
+            <div class="empty-box" id="empty" hidden>
+              <span class="ei"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"><path d="M2 3h20v12H2zM12 15v6M8 21h8"/></svg></span>
+              <div>
+                <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 500">No decks yet</h3>
+                <p class="hint" style="margin: 0; max-width: 420px">Build a deck from scratch, let the assistant draft one from a lesson, or bring the decks you already have.</p>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center">
+                <a class="btn btn-primary btn-sm" href="deck-editor.html">Start from blank</a>
+                <a class="btn btn-outline btn-sm" href="deck-ai.html">Generate with AI</a>
+                <a class="btn btn-outline btn-sm" href="deck-import.html">Import a .pptx</a>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="deck-data.js"></script>
+    <script>
+      const DECKS = [
+        { title: 'Designing Effective Assessments', slides: 8, theme: 'Classic', status: 'Published', lesson: 'Instructional Design 201', updated: '2 hours ago', cover: 0, href: 'deck-editor.html' },
+        { title: 'Writing Learning Outcomes', slides: 14, theme: 'Editorial', status: 'Published', lesson: 'Instructional Design 201', updated: 'Yesterday', cover: 2, href: 'deck-editor.html' },
+        { title: 'Rubric Clinic — Worked Examples', slides: 22, theme: 'Brand', status: 'Draft', lesson: 'Unattached', updated: '3 days ago', cover: 4, href: 'deck-editor.html' },
+        { generating: true, title: 'Cohort Kickoff — Autumn 2026', done: 9, total: 20 },
+        { title: 'Feedback That Changes Behaviour', slides: 11, theme: 'Bold', status: 'Published', lesson: 'Assessment Clinic', updated: 'Last week', cover: 5, href: 'deck-editor.html' },
+        { title: 'Question Types, Ranked', slides: 16, theme: 'Mono', status: 'Draft', lesson: 'Unattached', updated: 'Last week', cover: 6, href: 'deck-editor.html' }
+      ];
+
+      const THEME_ID = { Classic: 'classic', Editorial: 'editorial', Bold: 'bold', Mono: 'mono', Brand: 'brand' };
+
+      document.getElementById('grid').innerHTML = DECKS.map((deck) => {
+        if (deck.generating) {
+          return `<div class="dcard" style="cursor:default">
+            <div class="well"><div class="gen">
+              <span class="badge badge-primary-soft">Generating</span>
+              <div class="genbar"><i></i></div>
+              <p class="hint" style="margin:0">Slide ${deck.done} of ${deck.total}</p>
+            </div></div>
+            <h3>${deck.title}</h3>
+            <div class="bl"><span class="badge badge-muted">AI run</span><span class="badge badge-outline">Started 1 min ago</span></div>
+            <div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" style="flex:1">Cancel run</button><a class="btn btn-ghost btn-sm" href="deck-ai.html">View</a></div>
+          </div>`;
+        }
+
+        return `<a class="dcard" href="${deck.href}">
+          <span class="more"><span class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span></span>
+          <div class="well">${renderSlide(DECK.slides[deck.cover], { theme: THEME_ID[deck.theme], chrome: false })}</div>
+          <h3>${deck.title}</h3>
+          <div class="bl">
+            <span class="badge badge-outline">${deck.slides} slides</span>
+            <span class="badge badge-outline">${deck.theme}</span>
+            <span class="badge ${deck.status === 'Published' ? 'badge-success-soft' : 'badge-muted'}">${deck.status}</span>
+          </div>
+          <div class="stats2">
+            <div><div class="k">Used in</div><div class="v">${deck.lesson}</div></div>
+            <div><div class="k">Updated</div><div class="v">${deck.updated}</div></div>
+          </div>
+        </a>`;
+      }).join('');
+
+      function toggleEmpty() {
+        const grid = document.getElementById('grid');
+        const empty = document.getElementById('empty');
+        const showEmpty = grid.hidden === false;
+        grid.hidden = showEmpty;
+        empty.hidden = !showEmpty;
+      }
+
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

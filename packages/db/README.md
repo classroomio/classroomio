@@ -98,6 +98,24 @@ pnpm seed
 pnpm seed --all
 ```
 
+### Seed one demo organization
+
+Use the organization's `siteName` to insert only that organization's fixture users,
+memberships, groups, courses, and related content. Required global reference data is
+still inserted.
+
+```bash
+pnpm seed --organization udemy-test
+pnpm seed --organization coursera-test
+pnpm seed --organization skillshare-test
+```
+
+The same selector can be passed through database setup:
+
+```bash
+pnpm db:setup:seed -- --organization coursera-test
+```
+
 ### Run individual seeds
 
 Pass one or more flags to run only specific steps:

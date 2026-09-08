@@ -11,6 +11,10 @@ export type IsOrgOnFreePlanOptions = {
   orgId?: string | null;
 };
 
+export function getActiveOrgPlan<T extends OrgPlanLike>(plans?: readonly T[] | null): T | undefined {
+  return plans?.find((plan) => plan.isActive === true);
+}
+
 export function isOrgOnFreePlan({ plans, isSelfHosted, orgId }: IsOrgOnFreePlanOptions): boolean {
   if (!orgId) {
     return false;
@@ -20,7 +24,7 @@ export function isOrgOnFreePlan({ plans, isSelfHosted, orgId }: IsOrgOnFreePlanO
     return false;
   }
 
-  const activePlan = plans?.find((plan) => plan.isActive);
+  const activePlan = getActiveOrgPlan(plans);
 
   return !activePlan || activePlan.planName === PLAN.BASIC;
 }

@@ -9,6 +9,7 @@
     EXERCISE_FIXTURE,
     LESSON_FIXTURE,
     LESSON_LOCKED_FIXTURE,
+    LONG_SIDEBAR_FIXTURE,
     ORG_FIXTURE,
     SIDEBAR_FIXTURE
   } from './fixtures';
@@ -99,39 +100,90 @@
 
 <Story name="Sidebar · states only">
   {#snippet template()}
-    <div class="ui:mx-auto ui:max-w-xs ui:border-r ui:border-border">
+    <div class="ui:border-border mx-auto max-w-xs border-r">
       <PublicCourse.PublicCourseSidebar sections={SIDEBAR_FIXTURE} activeSlug="hallucination-and-limitations" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Bottom nav · ring variant">
+  {#snippet template()}
+    <div class="ui:relative ui:min-h-[200px] ui:bg-background">
+      <PublicCourse.PublicCourseBottomNav
+        positionLabel="3 / 12"
+        sublineLabel="Hallucination & limitations"
+        hasPrev
+        hasNext
+        centerVariant="ring"
+        progressPercent={42}
+        onPrev={() => console.log('prev')}
+        onNext={() => console.log('next')}
+        onOpenSheet={() => console.log('open sheet')}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Bottom nav · completed lesson">
+  {#snippet template()}
+    <div class="ui:relative ui:min-h-[200px] ui:bg-background">
+      <PublicCourse.PublicCourseBottomNav
+        positionLabel="2 / 6"
+        sublineLabel="Delving into Data Analysis with Pandas"
+        sublineComplete
+        hasPrev
+        hasNext
+        centerVariant="ring"
+        progressPercent={33}
+        onPrev={() => console.log('prev')}
+        onNext={() => console.log('next')}
+        onOpenSheet={() => console.log('open sheet')}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Mobile sheet · collapse + long course">
+  {#snippet template()}
+    {@const activeSlug = 'module-10-lesson-4'}
+    <div class="ui:mx-auto ui:max-w-sm ui:border ui:border-border">
+      <PublicCourse.PublicCourseMobileSheet
+        open
+        sections={LONG_SIDEBAR_FIXTURE}
+        {activeSlug}
+        collapseToSectionId="section-10"
+        title="Course outline"
+        onItemClick={(item: PublicCourseSidebarItem) => console.log('navigate', item.slug)}
+      />
     </div>
   {/snippet}
 </Story>
 
 <Story name="Callout · inline + full variants">
   {#snippet template()}
-    <div class="ui:mx-auto ui:max-w-2xl ui:space-y-8 ui:p-8">
+    <div class="mx-auto max-w-2xl space-y-8 p-8">
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Inline · waves (default)</h3>
+        <h3 class="ui:text-muted-foreground mb-2 text-sm font-semibold">Inline · waves (default)</h3>
         <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="inline" animation="waves" />
       </div>
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Inline · dotted</h3>
+        <h3 class="ui:text-muted-foreground mb-2 text-sm font-semibold">Inline · dotted</h3>
         <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="inline" animation="dotted" />
       </div>
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">
-          Full (locked item replacement) · waves
-        </h3>
+        <h3 class="ui:text-muted-foreground mb-2 text-sm font-semibold">Full (locked item replacement) · waves</h3>
         <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="full" animation="waves" />
       </div>
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Full · dotted</h3>
+        <h3 class="ui:text-muted-foreground mb-2 text-sm font-semibold">Full · dotted</h3>
         <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="full" animation="dotted" />
       </div>
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Inline · none (no motion)</h3>
+        <h3 class="ui:text-muted-foreground mb-2 text-sm font-semibold">Inline · none (no motion)</h3>
         <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="inline" animation="none" />
       </div>
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Full (no callout configured)</h3>
+        <h3 class="ui:text-muted-foreground mb-2 text-sm font-semibold">Full (no callout configured)</h3>
         <PublicCourse.PublicCourseCallout callout={null} variant="full" />
       </div>
     </div>

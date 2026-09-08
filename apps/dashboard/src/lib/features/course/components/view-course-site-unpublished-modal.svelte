@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
   import { courseApi } from '$features/course/api';
   import { publishCourse } from '$features/course/utils/publish-course';
   import { openCoursePreview } from '$features/course/utils/course-preview';
+  import { goToCourseCompletionDeadline } from '$features/course/utils/compliance-deadline';
   import { t } from '$lib/utils/functions/translations';
+  import CertificateDeadlineRequiredDialog from './certificate-deadline-required-dialog.svelte';
 
   interface Props {
     open?: boolean;
@@ -14,6 +17,7 @@
   let { open = $bindable(false), currentOrgDomain = '' }: Props = $props();
 
   let isPublishing = $state(false);
+  let openDeadlineDialog = $state(false);
 
   async function handlePublishCourse() {
     const course = courseApi.course;
@@ -23,10 +27,17 @@
 
     isPublishing = true;
 
-    const published = await publishCourse(course);
+    const result = await publishCourse(course);
     isPublishing = false;
 
-    if (!published) {
+    if (!result.ok && result.reason === 'missing_deadline') {
+      open = false;
+      await tick();
+      openDeadlineDialog = true;
+      return;
+    }
+
+    if (!result.ok) {
       return;
     }
 
@@ -38,6 +49,18 @@
       currentOrgDomain
     });
   }
+
+  async function goToCompletionDeadline() {
+    const courseId = courseApi.course?.id;
+    openDeadlineDialog = false;
+
+    if (!courseId) {
+      return;
+    }
+
+    await tick();
+    goToCourseCompletionDeadline(courseId);
+  }
 </script>
 
 <Dialog.Root
@@ -48,7 +71,7 @@
     }
   }}
 >
-  <Dialog.Content class="w-[calc(100%-2rem)] max-w-md! p-4">
+  <Dialog.Content class="w-[calc(100%-2rem)] max-w-md! p-4" onCloseAutoFocus={(e) => e.preventDefault()}>
     <Dialog.Header>
       <Dialog.Title>{$t('course.view_course_site.unpublished_title')}</Dialog.Title>
       <Dialog.Description>{$t('course.view_course_site.unpublished_description')}</Dialog.Description>
@@ -64,3 +87,5 @@
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
+
+<CertificateDeadlineRequiredDialog bind:open={openDeadlineDialog} onGoToDeadline={goToCompletionDeadline} />

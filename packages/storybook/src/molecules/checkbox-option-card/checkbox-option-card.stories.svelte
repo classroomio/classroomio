@@ -79,38 +79,38 @@
 
 <Story name="Course Picker (stacked horizontally)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-xl">
+      <Field.Description class="mb-4 block">
         Pick one or more courses. Each card stacks vertically and lays out title and checkbox horizontally.
       </Field.Description>
-      <CheckboxOptionCardGroup options={courseOptions} bind:value={selectedCourses} class="ui:grid-cols-1" />
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {selectedCourses.join(', ') || 'none'}</p>
+      <CheckboxOptionCardGroup options={courseOptions} bind:value={selectedCourses} class="grid-cols-1" />
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {selectedCourses.join(', ') || 'none'}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="Feature Toggles (Group)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-xl">
+      <Field.Description class="mb-4 block">
         Toggle one or more product features. Bound value is an array of selected option values.
       </Field.Description>
       <CheckboxOptionCardGroup options={featureOptions} bind:value={selectedFeatures} />
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {selectedFeatures.join(', ') || 'none'}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {selectedFeatures.join(', ') || 'none'}</p>
     </div>
   {/snippet}
 </Story>
 
 <Story name="With Disabled Option and Title Suffix">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-xl">
+      <Field.Description class="mb-4 block">
         Use the <code>titleSuffix(option)</code> snippet to render per-option content.
       </Field.Description>
       <CheckboxOptionCardGroup options={courseOptions} bind:value={selectedCourses}>
         {#snippet titleSuffix(option)}
           {#if option.disabled}
-            <Badge variant="secondary" class="ui:text-xs">Coming soon</Badge>
+            <Badge variant="secondary" class="text-xs">Coming soon</Badge>
           {/if}
         {/snippet}
       </CheckboxOptionCardGroup>
@@ -120,16 +120,16 @@
 
 <Story name="Custom Columns (Group class override)">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-3xl">
-      <Field.Description class="ui:mb-4 ui:block">
+    <div class="w-full max-w-3xl">
+      <Field.Description class="mb-4 block">
         Override grid with the <code>class</code> prop on <code>CheckboxOptionCardGroup</code>.
       </Field.Description>
       <CheckboxOptionCardGroup
         options={audienceOptions}
         bind:value={selectedAudiences}
-        class="ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-3"
+        class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       />
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {selectedAudiences.join(', ') || 'none'}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {selectedAudiences.join(', ') || 'none'}</p>
     </div>
   {/snippet}
 </Story>

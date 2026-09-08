@@ -13,7 +13,7 @@ import {
   shouldRewriteOAuthProxyCallbackLocation
 } from '@api/utils/oauth-proxy-redirect';
 import { Hono } from '@api/utils/hono';
-import { ErrorCodes } from '@api/utils/errors';
+import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
@@ -261,6 +261,11 @@ export const app = new Hono()
   .onError((err, c) => {
     Sentry.captureException(err);
     console.error('Error:', err);
+
+    if (c.req.path.startsWith('/public-api/v1/')) {
+      return handlePublicApiError(c, err, 'Internal Server Error', ErrorCodes.INTERNAL_ERROR);
+    }
+
     return c.json({ error: 'Internal Server Error' }, 500);
   });
 

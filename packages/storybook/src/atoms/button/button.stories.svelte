@@ -82,6 +82,12 @@
   {/snippet}
 </Story>
 
+<Story name="With testId">
+  {#snippet template(args)}
+    <Button {...args} testId="storybook-submit-button">Submit</Button>
+  {/snippet}
+</Story>
+
 <Story name="All Variants">
   {#snippet template()}
     <div class="flex flex-wrap gap-4">

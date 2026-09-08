@@ -340,7 +340,10 @@ export async function getMediaJobSteps(jobId: string, orgId: string) {
 export interface StartYoutubeCaptionsJobInput {
   organizationId: string;
   assetId: string;
-  triggeredByProfileId: string | null;
+  /** Billed for the provider call, so a real profile is required. */
+  triggeredByProfileId: string;
+  /** Course to attribute the spend to; `null` when the asset is not attached to one yet. */
+  courseId?: string | null;
   youtubeVideoId: string;
   canonicalUrl: string;
   preferredLanguages?: string[];
@@ -376,6 +379,8 @@ export async function startYoutubeCaptionsJob(input: StartYoutubeCaptionsJobInpu
       mediaJobId: job.id,
       assetId: input.assetId,
       organizationId: input.organizationId,
+      triggeredByProfileId: input.triggeredByProfileId,
+      courseId: input.courseId ?? null,
       youtubeVideoId: input.youtubeVideoId,
       canonicalUrl: input.canonicalUrl,
       preferredLanguages: input.preferredLanguages

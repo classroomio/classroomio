@@ -30,7 +30,7 @@
   }: Props = $props();
 
   const cardClass =
-    'ui:group ui:flex ui:flex-1 ui:items-center ui:gap-3 ui:rounded-lg ui:border ui:border-border ui:bg-background ui:px-4 ui:py-3 ui:text-left ui:transition-colors ui:hover:border-primary/40 ui:hover:bg-muted/50';
+    'ui:group ui:flex ui:min-w-0 ui:flex-1 ui:items-center ui:gap-3 ui:overflow-hidden ui:rounded-lg ui:border ui:border-border ui:bg-background ui:px-4 ui:py-3 ui:text-left ui:transition-colors ui:hover:border-primary/40 ui:hover:bg-muted/50';
 
   const prevHref = $derived(prev ? hrefFor?.(prev) : undefined);
   const nextHref = $derived(next ? hrefFor?.(next) : undefined);
@@ -54,8 +54,8 @@
 </script>
 
 {#snippet prevBody(item: PublicCourseSidebarItem, label: string)}
-  <ArrowLeftIcon class="ui:size-4 ui:text-muted-foreground ui:group-hover:text-primary" />
-  <div class="ui:flex ui:min-w-0 ui:flex-col">
+  <ArrowLeftIcon class="ui:size-4 ui:shrink-0 ui:text-muted-foreground ui:group-hover:text-primary" />
+  <div class="ui:flex ui:min-w-0 ui:flex-1 ui:flex-col">
     <span class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
       {label}
     </span>
@@ -66,15 +66,15 @@
 {/snippet}
 
 {#snippet nextBody(item: PublicCourseSidebarItem, label: string)}
-  <div class="ui:flex ui:min-w-0 ui:flex-col ui:items-end">
+  <div class="ui:flex ui:min-w-0 ui:flex-1 ui:flex-col ui:items-end">
     <span class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
       {label}
     </span>
-    <span class="ui:truncate ui:text-sm ui:font-medium ui:text-foreground ui:group-hover:text-primary">
+    <span class="ui:w-full ui:truncate ui:text-sm ui:font-medium ui:text-foreground ui:group-hover:text-primary">
       {item.title}
     </span>
   </div>
-  <ArrowRightIcon class="ui:size-4 ui:text-muted-foreground ui:group-hover:text-primary" />
+  <ArrowRightIcon class="ui:size-4 ui:shrink-0 ui:text-muted-foreground ui:group-hover:text-primary" />
 {/snippet}
 
 {#if prev || next}

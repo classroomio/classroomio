@@ -400,7 +400,7 @@
       </div>
     </div>
   {:else}
-    <div class="h-full w-full {isDisabled ? 'ui:opacity-50 ui:pointer-events-none' : ''}">
+    <div class="h-full w-full {isDisabled ? 'pointer-events-none opacity-50' : ''}">
       <FileDropZone.Root
         accept="video/*"
         maxFiles={1}

@@ -133,7 +133,7 @@
             </DropdownMenu.Group>
             <DropdownMenu.Separator />
             <DropdownMenu.Group>
-              <DropdownMenu.Item class="text-destructive focus:text-destructive">
+              <DropdownMenu.Item class="ui:text-destructive ui:focus:text-destructive">
                 <Trash2 />
                 Trash
               </DropdownMenu.Item>
@@ -268,7 +268,7 @@
                       onclick={() => (voiceEnabled = !voiceEnabled)}
                       size="icon-xs"
                       data-active={voiceEnabled}
-                      class="ui:data-[active=true]:bg-orange-100 ui:data-[active=true]:text-orange-700 ui:dark:data-[active=true]:bg-orange-800 ui:dark:data-[active=true]:text-orange-100"
+                      class="data-[active=true]:bg-orange-100 data-[active=true]:text-orange-700 dark:data-[active=true]:bg-orange-800 dark:data-[active=true]:text-orange-100"
                       aria-pressed={voiceEnabled}
                     >
                       <AudioLines />
@@ -349,7 +349,7 @@
             {#each CURRENCIES as currencyOption (currencyOption.value)}
               <Select.Item value={currencyOption.value}>
                 {currencyOption.value}
-                <span class="text-muted-foreground">{currencyOption.label}</span>
+                <span class="ui:text-muted-foreground">{currencyOption.label}</span>
               </Select.Item>
             {/each}
           </Select.Content>
@@ -388,7 +388,7 @@
           <div class="p-4 text-sm *:[p:not(:last-child)]:mb-2">
             <Textarea placeholder="Describe your task in natural language." class="mb-4 resize-none" />
             <p class="font-medium">Start a new task with Copilot</p>
-            <p class="text-muted-foreground">
+            <p class="ui:text-muted-foreground">
               Describe your task in natural language. Copilot will work in the background and open a pull request for
               your review.
             </p>

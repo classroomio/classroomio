@@ -39,6 +39,7 @@ services:
       - MINIO_ROOT_USER=$SERVICE_USER_MINIO
       - MINIO_ROOT_PASSWORD=$SERVICE_PASSWORD_MINIO
       - MINIO_SERVER_URL=$SERVICE_URL_MINIO
+      - MINIO_API_CORS_ALLOW_ORIGIN=*
     volumes:
       - minio-data:/data
     healthcheck:

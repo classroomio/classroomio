@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cio-help",
+  "compatibility_date": "2026-03-13",
+  // Static assets only — no Worker script. The site is prerendered by Blume and
+  // packaged into ./build by scripts/package-assets.mjs, which nests it under
+  // help/ so the paths the website proxies through (/help/*) resolve directly.
+  "assets": {
+    "directory": "./build",
+    "not_found_handling": "404-page",
+    // Blume's canonical URLs carry no trailing slash (/help/live-classes,
+    // not /help/live-classes/). Without this, Cloudflare's default
+    // auto-trailing-slash would 307 every one of them.
+    "html_handling": "drop-trailing-slash"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  }
+}

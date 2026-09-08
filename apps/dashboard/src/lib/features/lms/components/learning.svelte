@@ -11,7 +11,8 @@
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
     getStudentCourseComplianceStatusVariant,
-    getStudentCourseProgressPercent
+    getStudentCourseProgressPercent,
+    shouldShowStudentCourseComplianceStatusBadge
   } from '$features/course/utils/compliance-utils';
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
 
@@ -60,7 +61,7 @@
   >
     {#if highlightedCourses.length > 0}
       <div class="flex h-full w-full flex-col justify-start overflow-y-auto">
-        {#each highlightedCourses as course}
+        {#each highlightedCourses as course (course.id)}
           <div class="p-5">
             <span class="flex flex-col items-start gap-3 pb-5 lg:flex-row">
               <img
@@ -78,7 +79,7 @@
                   {@const complianceStatusKey = getStudentCourseComplianceStatusKey(course)}
                   {@const complianceDate = getStudentCourseComplianceDate(course)}
                   <div class="mt-2 flex flex-wrap items-center gap-2">
-                    {#if complianceStatusKey}
+                    {#if shouldShowStudentCourseComplianceStatusBadge(course) && complianceStatusKey}
                       <Badge variant={getStudentCourseComplianceStatusVariant(course)}>
                         {$t(complianceStatusKey)}
                       </Badge>
@@ -96,7 +97,7 @@
                 {$t('dashboard.continue')}
               </Button>
             </span>
-            <Progress value={getStudentCourseProgressPercent(course)} max={100} class="ui:h-1" />
+            <Progress value={getStudentCourseProgressPercent(course)} max={100} class="h-1" />
           </div>
         {/each}
       </div>

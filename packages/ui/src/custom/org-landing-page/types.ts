@@ -24,7 +24,8 @@ export type OrgLandingPageTheme =
   | 'corporate'
   | 'terminal'
   | 'editorial'
-  | 'vibrant';
+  | 'vibrant'
+  | 'quartz';
 
 export type CourseItem = {
   id: string;
@@ -224,6 +225,20 @@ export type LandingPrimaryAction = {
   onclick?: (event: MouseEvent) => void;
 };
 
+/** Fallback kicker for the Tech template when `hero.eyebrow` is unset. */
+export const DEFAULT_TECH_HERO_EYEBROW = '// engineering academy';
+
+export type LandingPageHero = {
+  heading: string;
+  subheading: string;
+  primaryAction: LandingPrimaryAction;
+  secondaryAction?: { label: string; href: string };
+  image?: string;
+  stats?: Array<{ label: string; value: string }>;
+  /** Small kicker above the heading. Used by templates that render one (e.g. Tech). */
+  eyebrow?: string;
+};
+
 export type CoursePricing = {
   cost: number;
   currency: string;
@@ -303,6 +318,14 @@ export interface CourseLandingPageLabels {
   navInstructorLabel?: string;
   navReviewsLabel?: string;
   navPricingLabel?: string;
+  /** Curriculum heading combining both counts. Default: `${lessons} across ${modules} modules`. */
+  curriculumSummaryLabel?: (lessonCount: number, moduleCount: number) => string;
+  /** Lesson duration shown on a curriculum row. Default: `${minutes} min`. */
+  lessonDurationLabel?: (minutes: number) => string;
+  /** Row label for the exercise count in a facts table. Default: "Exercises". */
+  factExercisesLabel?: string;
+  /** Value shown when a course includes a certificate. Default: "Included". */
+  factIncludedLabel?: string;
 }
 
 export interface CourseLandingPageProps {
@@ -316,14 +339,7 @@ export interface CourseLandingPageProps {
     loading?: boolean;
     disabled?: boolean;
   };
-  hero: {
-    heading: string;
-    subheading: string;
-    primaryAction: LandingPrimaryAction;
-    secondaryAction?: { label: string; href: string };
-    image?: string;
-    stats?: Array<{ label: string; value: string }>;
-  };
+  hero: LandingPageHero;
   socialProof: CourseSocialProof;
   info: CourseInfoBlocks;
   curriculum: CourseCurriculum;
@@ -348,14 +364,7 @@ export interface OrgLandingPageProps {
     loading?: boolean;
     disabled?: boolean;
   };
-  hero: {
-    heading: string;
-    subheading: string;
-    primaryAction: LandingPrimaryAction;
-    secondaryAction?: { label: string; href: string };
-    image?: string;
-    stats?: Array<{ label: string; value: string }>;
-  };
+  hero: LandingPageHero;
   courses: CourseItem[];
   hasMoreCourses?: boolean;
   /** When false, templates suppress the empty catalog state while courses are still loading. */

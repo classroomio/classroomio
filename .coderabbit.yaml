@@ -1,0 +1,5 @@
+# CodeRabbit configuration — https://docs.coderabbit.ai/reference/configuration
+reviews:
+  path_filters:
+    # Design/exploration HTML mocks — not shipped application code
+    - '!prototypes/**'

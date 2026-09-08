@@ -16,6 +16,7 @@
   import { setLandingPageEditContext, type LandingSectionKey } from '@cio/ui/custom/org-landing-page';
   import {
     ContentIcon,
+    CourseIcon,
     ExploreIcon,
     ExternalLinkIcon,
     GoalIcon,
@@ -29,6 +30,7 @@
   const sectionIcons: Record<LandingSectionKey, Component> = {
     navigation: ContentIcon,
     hero: HeaderIcon,
+    courses: CourseIcon,
     links: ExploreIcon,
     embed: ExternalLinkIcon,
     callout: GoalIcon,
@@ -134,7 +136,7 @@
 </svelte:head>
 
 <div
-  class="bg-background fixed inset-0 z-250 h-screen w-screen"
+  class="ui:bg-background fixed inset-0 z-250 h-screen w-screen"
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: 500, duration: 500 }}
 >

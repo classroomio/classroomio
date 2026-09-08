@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { NavItem } from '../types';
+  import { safeHref } from '../safe-href';
   import { Button } from '../../../base/button';
   import EditableLandingSection from '../editable-section.svelte';
 
@@ -18,7 +19,7 @@
   let { orgName, logoUrl, navItems, authAction }: Props = $props();
 </script>
 
-<EditableLandingSection sectionKey="navigation">
+<EditableLandingSection sectionKey="navigation" capPlacement="inside">
   <header class="ui:flex ui:items-center ui:justify-between ui:gap-6 ui:py-4 ui:text-[var(--landing-accent-fg)]">
     <a
       href="/"
@@ -34,7 +35,7 @@
       <nav class="ui:hidden ui:md:flex ui:gap-1.5 ui:font-mono ui:text-[13px]">
         {#each navItems as item (item.href + item.label)}
           <a
-            href={item.href}
+            href={safeHref(item.href)}
             class="ui:px-3 ui:py-1.5 ui:rounded-full ui:border ui:border-transparent ui:text-[var(--landing-accent-fg)]/85 ui:hover:text-[var(--landing-accent-fg)] ui:hover:border-[var(--landing-accent-fg)]/30 ui:hover:bg-[var(--landing-accent-fg)]/10 ui:transition-colors ui:no-underline ui:cursor-pointer"
           >
             ( {item.label.toLowerCase()} )
@@ -45,7 +46,7 @@
 
     {#if authAction}
       <Button
-        href={authAction.href}
+        href={safeHref(authAction.href)}
         loading={authAction.loading}
         disabled={authAction.disabled}
         size="sm"

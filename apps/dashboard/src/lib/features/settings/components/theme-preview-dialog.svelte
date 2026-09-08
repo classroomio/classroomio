@@ -72,11 +72,10 @@
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
   <Dialog.Content
     showCloseButton={false}
-    class="ui:w-[calc(100vw-2rem)] ui:h-[calc(100vh-2rem)] ui:max-w-[calc(100vw-2rem)] ui:max-h-[calc(100vh-2rem)] ui:overflow-hidden ui:p-0 ui:gap-0 ui:sm:max-w-[calc(100vw-2rem)]"
+    class="h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[calc(100vw-2rem)]"
   >
-    <Dialog.Title class="ui:sr-only">Theme preview</Dialog.Title>
-    <Dialog.Description class="ui:sr-only"
-      >Preview the selected landing page theme with sample content.</Dialog.Description
+    <Dialog.Title class="sr-only">Theme preview</Dialog.Title>
+    <Dialog.Description class="sr-only">Preview the selected landing page theme with sample content.</Dialog.Description
     >
 
     <div class="absolute top-3 right-3 z-[9999]">
@@ -95,16 +94,16 @@
 
     <Tabs.Root
       bind:value={previewView}
-      class="ui:pointer-events-none ui:absolute ui:bottom-6 ui:left-1/2 ui:z-[9999] ui:-translate-x-1/2"
+      class="pointer-events-none absolute bottom-6 left-1/2 z-[9999] -translate-x-1/2"
     >
       <Tabs.List
         aria-label={$t('settings.landing_page.preview_tabs.label')}
-        class="ui:pointer-events-auto ui:bg-background/90 ui:supports-[backdrop-filter]:bg-background/70 ui:h-10 ui:gap-1 ui:rounded-full ui:border ui:p-1 ui:shadow-lg ui:backdrop-blur"
+        class="ui:bg-background/90 ui:supports-[backdrop-filter]:bg-background/70 pointer-events-auto h-10 gap-1 rounded-full border p-1 shadow-lg backdrop-blur"
       >
-        <Tabs.Trigger value="home" class="ui:rounded-full ui:px-4">
+        <Tabs.Trigger value="home" class="rounded-full px-4">
           {$t('settings.landing_page.preview_tabs.home')}
         </Tabs.Trigger>
-        <Tabs.Trigger value="course" class="ui:rounded-full ui:px-4">
+        <Tabs.Trigger value="course" class="rounded-full px-4">
           {$t('settings.landing_page.preview_tabs.course')}
         </Tabs.Trigger>
       </Tabs.List>

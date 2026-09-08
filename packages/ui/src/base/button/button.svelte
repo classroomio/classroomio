@@ -49,6 +49,8 @@
     size?: ButtonSize;
     animate?: ButtonAnimate;
     loading?: boolean;
+    /** Stable hook for Playwright (`data-testid`). Also accepts `data-testid` via HTML attributes. */
+    testId?: string;
     onClickPromise?: (
       e: MouseEvent & {
         currentTarget: EventTarget & HTMLButtonElement;
@@ -86,6 +88,7 @@
     type = 'button',
     loading = false,
     disabled = false,
+    testId,
     tabindex = 0,
     onclick,
     onClickPromise,
@@ -106,6 +109,7 @@
   this={href ? 'a' : 'button'}
   {...rest}
   data-slot="button"
+  data-testid={testId}
   type={href ? undefined : type}
   href={href && !disabled ? href : undefined}
   disabled={href ? undefined : disabled || loading}

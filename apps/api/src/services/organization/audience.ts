@@ -8,7 +8,12 @@ import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } f
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { addCohortMember, getExistingCohortMembers, getCohortsByOrg } from '@cio/db/queries/cohort';
+import {
+  addCohortMember,
+  getCohortsByOrg,
+  getCourseIdsByCohortIds,
+  getExistingCohortMembers
+} from '@cio/db/queries/cohort';
 import {
   createOrganizationInvite,
   createOrganizationInviteAudits,
@@ -290,6 +295,26 @@ async function enrollAudienceStudentProfilesInCohorts(
         })
       )
     );
+  }
+
+  // Enrols every assigned profile, not only new memberships, so re-running repairs
+  // members added before cohort course enrolment existed.
+  const cohortCourseIds = await getCourseIdsByCohortIds(validCohortIds);
+
+  if (cohortCourseIds.length > 0 && validProfiles.length > 0) {
+    const courseGroups = await getCourseGroupIds(cohortCourseIds);
+    const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+    const users = validProfiles.map((profileId) => ({
+      profileId,
+      email: profileEmailMap.get(profileId) || undefined
+    }));
+    const enrolledCount = await enrollUsersInCourseGroups(groupIds, users, ROLE.STUDENT);
+
+    if (enrolledCount > 0) {
+      await invalidateOrgStats(orgId);
+    }
+
+    await ensureComplianceEnrollmentRecordsForProfiles(cohortCourseIds, validProfiles);
   }
 
   let emailsSent = 0;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { NavItem } from '../types';
+  import { safeHref } from '../safe-href';
   import { Button } from '../../../base/button';
   import EditableLandingSection from '../editable-section.svelte';
 
@@ -26,7 +27,7 @@
   `;
 </script>
 
-<EditableLandingSection sectionKey="navigation">
+<EditableLandingSection sectionKey="navigation" capPlacement="inside">
   <header
     class="ui:flex ui:items-center ui:justify-between ui:gap-6 ui:px-6 ui:py-4 ui:rounded-full ui:border ui:border-[var(--landing-border)]/60 ui:backdrop-blur-sm"
     style={`background: ${navigationGradientBackground};`}
@@ -41,7 +42,7 @@
       <nav class="ui:hidden ui:md:flex ui:gap-8">
         {#each navItems as item}
           <a
-            href={item.href}
+            href={safeHref(item.href)}
             class="ui:text-sm ui:text-[var(--landing-fg)]/70 ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:cursor-pointer"
             >{item.label}</a
           >
@@ -49,7 +50,7 @@
       </nav>
       {#if authAction}
         <Button
-          href={authAction.href}
+          href={safeHref(authAction.href)}
           loading={authAction.loading}
           disabled={authAction.disabled}
           variant="outline"

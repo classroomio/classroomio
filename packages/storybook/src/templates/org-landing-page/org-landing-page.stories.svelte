@@ -11,6 +11,7 @@
     TerminalLandingPage,
     EditorialLandingPage,
     VibrantLandingPage,
+    QuartzLandingPage,
     mockOrgLandingPageProps as mockProps
   } from '@cio/ui/custom/org-landing-page';
 
@@ -90,4 +91,8 @@
 -->
 <Story name="Editorial (localized labels)">
   <EditorialLandingPage {...mockProps} labels={localizedLabels} />
+</Story>
+
+<Story name="Quartz">
+  <QuartzLandingPage {...mockProps} authAction={{ label: 'Continue', href: '#signin' }} />
 </Story>

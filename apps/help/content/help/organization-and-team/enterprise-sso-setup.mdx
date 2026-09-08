@@ -1,0 +1,161 @@
+---
+title: Set Up Enterprise SSO
+description: Connect Google Workspace, Okta, or Auth0 to ClassroomIO and configure OIDC-based Single Sign-On for your organization.
+sidebar:
+  order: 5
+---
+
+This guide walks through connecting an identity provider (IdP) to ClassroomIO over OIDC. Pick the section for your provider (Google Workspace, Okta, or Auth0) and follow its steps. The ClassroomIO side of the setup is the same across all three; only the IdP-side steps differ.
+
+:::info[Enterprise feature]
+SSO requires an **Enterprise** plan. See [Enterprise SSO](/reference/enterprise-sso) for what SSO does and how access policies work before you start.
+:::
+
+## Google Workspace
+
+<Steps>
+<Step>
+### Create an OAuth app in Google Cloud Console
+
+Go to [Google Cloud Console](https://console.cloud.google.com/) and navigate to **APIs & Services** → **Credentials**. Click **Create Credentials** → **OAuth client ID**, then configure the OAuth consent screen (choose "External" for testing).
+
+Create the OAuth client ID with:
+
+- Application type: **Web application**
+- Name: `ClassroomIO SSO`
+- Authorized redirect URIs: leave empty for now. You'll add this after the next step
+  </Step>
+
+<Step>
+### Configure the connection in ClassroomIO
+
+Go to **Settings** → **SSO** and select **Google Workspace**. Fill in:
+
+- **Issuer URL**: `https://accounts.google.com`
+- **Email Domain**: your workspace domain (e.g. `yourcompany.com`)
+- **Client ID**: from Google Cloud Console
+- **Client Secret**: from Google Cloud Console
+
+Click **Create Connection**.
+
+</Step>
+
+<Step>
+### Complete the IdP configuration
+
+Copy the **Callback URL** shown in ClassroomIO. Back in Google Cloud Console, edit your OAuth client and add that Callback URL to **Authorized redirect URIs**, then save.
+
+</Step>
+
+<Step>
+### Activate the connection
+
+Return to **Settings** → **SSO** in ClassroomIO and activate the connection.
+
+</Step>
+</Steps>
+
+## Okta
+
+<Steps>
+<Step>
+### Create an OIDC app in Okta Admin
+
+In the Okta Admin Dashboard, go to **Applications** → **Create App Integration** and select **OIDC - OpenID Connect**. Choose **Web Application** as the type, leave sign-in redirect URIs empty for now, and set the grant type to **Authorization Code**.
+
+</Step>
+
+<Step>
+### Configure the connection in ClassroomIO
+
+Go to **Settings** → **SSO** and select **Okta**. Fill in:
+
+- **Issuer URL**: your Okta domain (e.g. `https://your-org.okta.com`)
+- **Email Domain**: your company domain
+- **Client ID**: from the Okta app
+- **Client Secret**: from the Okta app
+
+Click **Create Connection**.
+
+</Step>
+
+<Step>
+### Complete the IdP configuration
+
+Copy the **Callback URL** from ClassroomIO. In Okta, edit your app and add that URL to **Sign-in redirect URIs**. Confirm the app allows the `openid`, `email`, and `profile` scopes.
+
+</Step>
+
+<Step>
+### Activate the connection
+
+Return to **Settings** → **SSO** in ClassroomIO and activate the connection.
+
+</Step>
+</Steps>
+
+## Auth0
+
+<Steps>
+<Step>
+### Create an application in Auth0
+
+In the Auth0 Dashboard, go to **Applications** → **Create Application**. Name it `ClassroomIO SSO`, choose **Regular Web Application** as the type, and leave allowed callback URLs empty for now.
+
+</Step>
+
+<Step>
+### Configure the connection in ClassroomIO
+
+Go to **Settings** → **SSO** and select **Auth0**. Fill in:
+
+- **Issuer URL**: your Auth0 domain (e.g. `https://your-tenant.auth0.com`)
+- **Email Domain**: your company domain
+- **Client ID**: from the Auth0 app
+- **Client Secret**: from the Auth0 app
+
+Click **Create Connection**.
+
+</Step>
+
+<Step>
+### Complete the IdP configuration
+
+Copy the **Callback URL** from ClassroomIO. In Auth0, add that URL to **Allowed Callback URLs** and confirm **OIDC Conformant** is enabled.
+
+</Step>
+
+<Step>
+### Activate the connection
+
+Return to **Settings** → **SSO** in ClassroomIO and activate the connection.
+
+</Step>
+</Steps>
+
+## Configuration summary
+
+All three providers need the same scopes granted:
+
+- `openid`
+- `email`
+- `profile`
+
+## Troubleshooting
+
+### "Failed to register SSO provider"
+
+- Verify your Issuer URL is correct and reachable.
+- Check that your IdP supports OIDC, not just SAML.
+- Confirm the discovery endpoint exists at `{issuer}/.well-known/openid-configuration`.
+
+### Callback URL mismatch
+
+- Copy the exact callback URL from the SSO settings page.
+- Make sure it matches exactly in your IdP configuration. A trailing slash or an http/https mismatch is enough to break it.
+
+## Related guides
+
+- [Enterprise SSO](/reference/enterprise-sso) — what SSO does, access policies, and how JIT provisioning works
+- [Roles and Permissions](/organization-and-team/roles-and-permissions) — how role mapping fits into org access control
+- [Enterprise & licensing](https://classroomio.com/docs/self-hosted/enterprise) — setting `LICENSE_KEY` on self-hosted deployments

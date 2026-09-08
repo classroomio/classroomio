@@ -10,6 +10,8 @@ export type GetFirstOrganizationResponse = InferResponseType<GetFirstOrganizatio
 export type GetFirstOrganizationSuccess = Extract<InferResponseType<GetFirstOrganizationRequest>, { success: true }>;
 export type FirstOrganizationRecord = GetFirstOrganizationSuccess['data'][number];
 
+export type JoinAcademyRequest = typeof classroomio.organization.join.$post;
+
 // Team member types
 export type GetTeamRequest = (typeof classroomio.organization)['team']['$get'];
 export type OrganizationTeamResponse = InferResponseType<GetTeamRequest> | null;
@@ -51,6 +53,8 @@ export type OrgPublicCoursesResponse = InferResponseType<GetOrgPublicCoursesRequ
 export type OrgPublicCoursesSuccess = Extract<InferResponseType<GetOrgPublicCoursesRequest>, { success: true }>;
 export type OrgPublicCoursesData = OrgPublicCoursesSuccess['data'];
 export type OrgPublicCourses = OrgPublicCoursesData['courses'];
+export type ReorderOrgCoursesRequest = (typeof classroomio.organization.courses)['reorder']['$post'];
+export type ReorderOrgCoursesBody = InferRequestType<ReorderOrgCoursesRequest>;
 
 // dashboard analytics types
 export type GetDashStatsRequest = typeof classroomio.dash.stats.$get;

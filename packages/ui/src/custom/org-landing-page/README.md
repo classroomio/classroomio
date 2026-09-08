@@ -1,6 +1,6 @@
 # Org + Course landing pages
 
-This folder holds the entire landing-page system: the public org site (`{theme}.org`) and the per-course landing (`{theme}.course`), in 10 themes.
+This folder holds the entire landing-page system: the public org site (`{theme}.org`) and the per-course landing (`{theme}.course`), in 11 themes.
 
 Both surfaces share the same nav, hero, footer, tokens, and edit context. A course landing inherits its theme from the org's `landingpage.theme` — courses don't pick their own.
 
@@ -27,7 +27,7 @@ packages/ui/src/custom/org-landing-page/
 ├── landing-page-footer.tokens.ts
 │
 ├── {theme}/                       Everything for one theme (minimal, bold, classic, saas, tech,
-│   │                              studio, corporate, terminal, editorial, vibrant)
+│   │                              studio, corporate, terminal, editorial, vibrant, quartz)
 │   ├── index.ts                   re-exports { nav, hero, courseCard, org, course }
 │   ├── nav.svelte                 reused by both org and course
 │   ├── hero.svelte                reused; course populates with course-shaped hero data
@@ -60,7 +60,7 @@ The central registries (`theme-style.ts`, `course-landing-page.tokens.ts`, `inde
    ▼
 ┌────────────────────────────────────────┐
 │ course-*.svelte           (shared body) │  ← one component per section
-│   • course-section-nav                  │    used by all 10 themes
+│   • course-section-nav                  │    used by all 11 themes
 │   • course-social-proof                 │
 │   • course-info-blocks                  │
 │   • course-curriculum                   │
@@ -101,7 +101,9 @@ The composer wires nav/hero/footer (theme-specific files) around the shared body
 
 `EditableLandingSection sectionKey="…"` wraps every editable region. When a parent route calls `setLandingPageEditContext({ selectedKey, selectKey, labelFor, iconFor })`, clicking a section in the preview calls `selectKey(key)`. The Editor sidebar reads the same key from a bound prop and opens the matching form. Without a context, the wrapper is a transparent pass-through.
 
-Course `LandingSectionKey` values: `header`, `requirement`, `description`, `goals`, `certificate`, `curriculum`, `chips`, `instructor`, `reviews`, `pricing`.
+Course `LandingSectionKey` values: `header`, `requirement`, `description`, `goals`, `certificate`, `curriculum`, `chips`, `instructor`, `reviews`, `pricing`. The shared nav and footer add `navigation` and `footer`, so a host's `labelFor` must resolve those keys too.
+
+The cap (icon + label) hangs above the section's top-left edge by default. Sections flush against the top of the page — every theme's `nav.svelte` — pass `capPlacement="inside"` so the cap renders in the section's top-right corner instead of scrolling out of the preview.
 
 ---
 

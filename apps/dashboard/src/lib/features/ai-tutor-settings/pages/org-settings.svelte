@@ -28,9 +28,9 @@
     await aiTutorApi.fetchOrgSettings();
 
     applyOrgSettings(aiTutorApi.orgSettings ?? defaultAiTutorSettings);
-    
+
     captureSavedSnapshot();
-    
+
     initialized = true;
   }
 

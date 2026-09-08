@@ -202,7 +202,7 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
 
           const paid = await isOrgOnPaidPlan(orgId);
-          return getLessonVideoTranscript(args.lessonId, orgId, { isOrgOnPaidPlan: paid });
+          return getLessonVideoTranscript(args.lessonId, orgId, { userId, courseId, isOrgOnPaidPlan: paid });
         });
       }
     }),

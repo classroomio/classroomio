@@ -318,10 +318,6 @@ function preprocessCourseMetadata(value: unknown): unknown {
     metadata.instructor = instructor;
   }
 
-  if (metadata.allowNewStudent == null) {
-    metadata.allowNewStudent = true;
-  }
-
   if (metadata.discount === null || metadata.discount === '') {
     metadata.discount = undefined;
   } else if (typeof metadata.discount === 'string') {
@@ -370,6 +366,7 @@ const ZCourseMetadataFields = z.object({
   videoUrl: z.string().optional(),
   showDiscount: z.boolean().optional(),
   discount: z.number().optional(),
+  paymentEnabled: z.boolean().optional(),
   paymentLink: z.string().optional(),
   reward: ZCourseReward.optional(),
   instructor: ZCourseInstructor.optional(),
@@ -380,20 +377,22 @@ const ZCourseMetadataFields = z.object({
   lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
-  allowNewStudent: z.boolean().default(true),
+  allowSelfEnrollment: z.boolean().optional(),
+  /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. */
+  allowNewStudent: z.boolean().optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
-  progressionMode: z.enum(['free', 'sequential']).optional()
+  progressionMode: z.enum(['free', 'sequential']).optional(),
+  commentsEnabled: z.boolean().optional()
 });
 
 // Course metadata schema matching the database structure
 export const ZCourseMetadata = z.preprocess(preprocessCourseMetadata, ZCourseMetadataFields);
 export type TCourseMetadata = z.infer<typeof ZCourseMetadata>;
 
-export const ZCourseLandingPageMetadataUpdateFields = ZCourseMetadataFields.omit({ allowNewStudent: true }).extend({
-  allowNewStudent: z.boolean().optional(),
+export const ZCourseLandingPageMetadataUpdateFields = ZCourseMetadataFields.extend({
   reward: ZCourseReward.partial().optional(),
   instructor: ZCourseInstructor.partial().optional(),
   certificate: ZCourseCertificate.partial().optional()
@@ -420,6 +419,74 @@ export const ZCertificationSettings = z.object({
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
 
+export const ZPaymentLink = z.url({ protocol: /^https?$/ });
+
+type TPaidCoursePayload = {
+  cost?: number | null;
+  metadata?: { paymentEnabled?: boolean; paymentLink?: string | null } | null;
+};
+
+export type TPaidCourseIssue = {
+  message: string;
+  path: ('cost' | 'metadata' | 'paymentLink')[];
+};
+
+/**
+ * Whether a course is paid. An explicit `paymentEnabled` flag wins; otherwise
+ * a course is paid once it has a positive cost. Kept as a single shared helper
+ * so the dashboard/API/widget all compute "is paid" the same way.
+ */
+export function isCoursePaid(cost: number | null | undefined, metadata: TPaidCoursePayload['metadata']): boolean {
+  const paidFlag = metadata?.paymentEnabled;
+  return typeof paidFlag === 'boolean' ? paidFlag : typeof cost === 'number' && cost > 0;
+}
+
+/**
+ * Validates the payment state of a single course, so callers can check the
+ * final merged state (persisted course + pending update) and not just a
+ * partial request payload.
+ */
+export function validatePaidCourseState(
+  cost: number | null | undefined,
+  metadata: TPaidCoursePayload['metadata']
+): TPaidCourseIssue[] {
+  const issues: TPaidCourseIssue[] = [];
+
+  if (!isCoursePaid(cost, metadata)) return issues;
+
+  const paymentLink = typeof metadata?.paymentLink === 'string' ? metadata.paymentLink.trim() : '';
+  if (!paymentLink) {
+    issues.push({
+      message: 'A payment link is required for paid courses',
+      path: ['metadata', 'paymentLink']
+    });
+  } else if (!ZPaymentLink.safeParse(paymentLink).success) {
+    issues.push({
+      message: 'Payment link must be a valid http(s) URL',
+      path: ['metadata', 'paymentLink']
+    });
+  }
+
+  if (cost === undefined || cost === null || cost <= 0) {
+    issues.push({
+      message: 'Paid courses must have a cost greater than 0',
+      path: ['cost']
+    });
+  }
+
+  return issues;
+}
+
+export function superRefinePaidCourse(data: TPaidCoursePayload, ctx: z.RefinementCtx) {
+  for (const issue of validatePaidCourseState(data.cost, data.metadata)) {
+    ctx.addIssue({
+      code: 'custom',
+      message: issue.message,
+      path: issue.path
+    });
+  }
+}
+
 export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
@@ -444,7 +511,7 @@ export const ZCourseUpdate = ZCourseUpdateBase.refine(
     message: 'Compliance settings are required when changing a course to COMPLIANCE',
     path: ['compliance']
   }
-);
+).superRefine(superRefinePaidCourse);
 export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;
 
 export const ZCourseUpdateParam = z.object({
@@ -464,6 +531,8 @@ export const ZCourseLandingPageUpdate = z.object({
   metadata: ZCourseLandingPageMetadataUpdate.optional()
 });
 export type TCourseLandingPageUpdate = z.infer<typeof ZCourseLandingPageUpdate>;
+
+export const ZCourseLandingPageUpdateValidated = ZCourseLandingPageUpdate.superRefine(superRefinePaidCourse);
 
 export const ZCourseDeleteParam = z.object({
   courseId: z.string().min(1)

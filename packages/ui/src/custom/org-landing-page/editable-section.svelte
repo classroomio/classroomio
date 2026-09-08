@@ -7,10 +7,16 @@
     sectionKey: LandingSectionKey;
     /** Extra classes applied to the wrapper (only used when edit context is active). */
     class?: string;
+    /**
+     * Where the section cap sits. `above` hangs it over the section's top-left edge (the default),
+     * `inside` tucks it into the section's top-right corner — use it for sections flush against the
+     * top of the page (navigation), where a cap above would sit outside the visible preview.
+     */
+    capPlacement?: 'above' | 'inside';
     children: Snippet;
   }
 
-  let { sectionKey, class: className, children }: Props = $props();
+  let { sectionKey, class: className, capPlacement = 'above', children }: Props = $props();
 
   const ctx = getLandingPageEditContext();
   const selected = $derived(ctx?.selectedKey() === sectionKey);
@@ -24,6 +30,9 @@
 
   function handleKeydown(event: KeyboardEvent) {
     if (!ctx) return;
+    // Only the wrapper itself selects on Enter/Space; descendants such as a details/summary
+    // disclosure, button or link must keep their own keyboard behaviour.
+    if (event.target !== event.currentTarget) return;
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
     event.stopPropagation();
@@ -49,7 +58,8 @@
   >
     <div
       class={cn(
-        'ui:absolute ui:top-0 ui:left-0 ui:z-30 ui:-translate-y-full ui:flex ui:items-center ui:gap-1.5 ui:rounded-t-md ui:bg-primary ui:px-2 ui:py-1 ui:text-xs ui:font-medium ui:text-primary-foreground ui:shadow-sm ui:pointer-events-none ui:transition-opacity',
+        'ui:absolute ui:top-0 ui:z-30 ui:flex ui:items-center ui:gap-1.5 ui:bg-primary ui:px-2 ui:py-1 ui:text-xs ui:font-medium ui:text-primary-foreground ui:shadow-sm ui:pointer-events-none ui:transition-opacity',
+        capPlacement === 'inside' ? 'ui:right-0 ui:rounded-bl-md' : 'ui:left-0 ui:-translate-y-full ui:rounded-t-md',
         selected ? 'ui:opacity-100' : 'ui:opacity-0 ui:group-hover:opacity-100'
       )}
     >

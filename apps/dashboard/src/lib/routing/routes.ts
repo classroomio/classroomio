@@ -14,7 +14,9 @@ export const ROUTE_PATHS = {
 
 export const ROUTE_SECTIONS = {
   [ROUTE_NAME.COURSE_SETTINGS]: {
-    PUBLISH: 'publish'
+    PUBLISH: 'publish',
+    COMPLETION_DEADLINE: 'course-completion-deadline',
+    COURSE_COMMENTS: 'course-comments'
   },
 
   [ROUTE_NAME.COURSE_CERTIFICATE]: {

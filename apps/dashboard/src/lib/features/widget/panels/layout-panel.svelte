@@ -51,7 +51,7 @@
                   <button
                     type="button"
                     class={cn(
-                      'ui:bg-muted/40 group focus-visible:ui:ring-primary/40 flex w-full cursor-pointer flex-col overflow-hidden rounded-md border-2 p-2 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950',
+                      'ui:bg-muted/40 group ui:focus-visible:ring-primary/40 flex w-full cursor-pointer flex-col overflow-hidden rounded-md border-2 p-2 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950',
                       draftLayoutType === layoutId
                         ? 'ui:border-primary shadow-sm'
                         : 'ui:border-border ui:hover:border-foreground/20'
@@ -70,7 +70,7 @@
                 </div>
               {/snippet}
             </Tooltip.Trigger>
-            <Tooltip.Content side="right" sideOffset={16} class="ui:max-w-none h-50! w-60! p-3 text-left">
+            <Tooltip.Content side="right" sideOffset={16} class="h-50! w-60! max-w-none p-3 text-left">
               <div class="w-full space-y-1">
                 <p class="w-full text-center text-sm font-semibold">
                   {$t(`widgets.layout.${layoutId}`)}

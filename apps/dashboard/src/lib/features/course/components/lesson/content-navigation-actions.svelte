@@ -17,21 +17,19 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
-  import {
-    openCourseCompletionModal,
-    updateCourseCompletionModal,
-    closeCourseCompletionModal
-  } from '$features/course/store/course-completion-modal';
-  import { updateLessonCompletionInCourseContent } from '$features/course/utils/content-completion';
+  import { toggleLessonCompletion } from '$features/course/utils/toggle-lesson-completion';
+  import { getLessonCompletionState } from '$features/course/utils/lesson-completion-state';
 
   interface Props {
     lessonId?: string;
     courseId: string;
     /** When on an exercise page, pass this to show prev/next content in content order (no mark-complete). */
     exerciseId?: string;
+    /** When false, hide prev/next chevrons (mobile bottom nav already has them). */
+    showPrevNext?: boolean;
   }
 
-  let { lessonId, courseId, exerciseId }: Props = $props();
+  let { lessonId, courseId, exerciseId, showPrevNext = true }: Props = $props();
 
   let isMarkingComplete = $state(false);
 
@@ -92,26 +90,23 @@
       ? $t(getStudentContentLockTitleKey(nextNavLockReason))
       : $t('course.navItem.lessons.next_shortcut')
   );
-  const isLessonComplete = $derived.by(() => {
-    if (!lessonId) return false;
-    const lesson = lessonItems.find((l) => l.id === lessonId);
-    return lesson?.isComplete ?? false;
-  });
-
   const showMarkComplete = $derived(!!lessonId && !exerciseId);
 
-  const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
+  const currentLessonItem = $derived(lessonId ? (lessonItems.find((l) => l.id === lessonId) ?? null) : null);
   const contentLockReason = $derived(
     lessonId ? getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson) : null
   );
-  const isLessonLocked = $derived($isCourseLearnerView && contentLockReason !== null);
-  const isVideoWatchLesson = $derived.by(() => {
-    if (!lessonId) return false;
-
-    return (
-      lessonApi.lesson?.completionPolicy === 'video_watch' || currentLessonItem?.completionPolicy === 'video_watch'
-    );
-  });
+  const completionState = $derived(
+    getLessonCompletionState({
+      contentItem: currentLessonItem,
+      isLearnerView: $isCourseLearnerView,
+      lockReason: contentLockReason,
+      loadedLesson: lessonApi.lesson
+    })
+  );
+  const isLessonComplete = $derived(completionState.isLessonComplete);
+  const isLessonLocked = $derived(completionState.isLessonLocked);
+  const isVideoWatchLesson = $derived(completionState.isVideoWatchLesson);
   const watchedPercent = $derived.by(() => {
     const progress = lessonApi.lesson?.watchProgress;
     if (progress?.isComplete) return 100;
@@ -153,49 +148,8 @@
 
   async function markLessonComplete(currentLessonId: string) {
     isMarkingComplete = true;
-
-    const lesson = lessonItems.find((entry) => entry.id === currentLessonId);
-    const currentIsComplete = lesson?.isComplete ?? lessonApi.lesson?.isComplete ?? false;
-
-    const isComplete = !currentIsComplete;
-
-    await lessonApi.updateCompletion(courseId, currentLessonId, isComplete);
-
-    if (lessonApi.success) {
-      snackbar.success('snackbar.lessons.success.complete_marked');
-      updateCourseContentCompletion(currentLessonId, isComplete);
-
-      const allComplete =
-        isComplete && navigableContentItems.length > 0 && navigableContentItems.every((item) => item.isComplete);
-
-      if (allComplete) {
-        const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
-        openCourseCompletionModal(courseId);
-
-        const certRes = await courseApi.getCertificationEvaluation(courseId);
-        if (certRes?.data) {
-          const hasCompletedCourse = Boolean(certRes.data.eligibleForCertificate || certRes.data.certificateEarnedAt);
-          updateCourseCompletionModal(
-            courseId,
-            hasCompletedCourse ? 'eligible' : 'not-eligible',
-            certRes.data,
-            requiredExerciseId
-          );
-        } else {
-          closeCourseCompletionModal();
-        }
-      }
-    } else {
-      snackbar.error('snackbar.lessons.error.try_later');
-    }
-
+    await toggleLessonCompletion(courseId, currentLessonId);
     isMarkingComplete = false;
-  }
-
-  function updateCourseContentCompletion(currentLessonId: string, isComplete: boolean) {
-    if (!courseApi.course?.content) return;
-
-    courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, currentLessonId, isComplete);
   }
 
   const INTERACTIVE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
@@ -229,7 +183,7 @@
           {watchProgressTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
-    {:else if showMarkComplete && lessonId && !isLessonLocked && (showVideoWatchCompleteState || !isVideoWatchLesson)}
+    {:else if showPrevNext && showMarkComplete && lessonId && !isLessonLocked && !isLessonComplete && !isVideoWatchLesson}
       <Button
         size="sm"
         variant="secondary"
@@ -242,40 +196,42 @@
       </Button>
     {/if}
 
-    <div class="flex items-center gap-1">
-      <Tooltip.Root>
-        <Tooltip.Trigger>
-          <Button
-            size="icon-sm"
-            variant="outline"
-            onclick={() => goToContent(prevNextContent.prev)}
-            disabled={isPrevDisabled || isPrevNavBlocked}
-            aria-label={$t('course.navItem.lessons.prev')}
-          >
-            <ChevronLeftIcon size={14} />
-          </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="bottom" sideOffset={4}>
-          {prevNavTooltip}
-        </Tooltip.Content>
-      </Tooltip.Root>
+    {#if showPrevNext}
+      <div class="flex items-center gap-1">
+        <Tooltip.Root>
+          <Tooltip.Trigger>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onclick={() => goToContent(prevNextContent.prev)}
+              disabled={isPrevDisabled || isPrevNavBlocked}
+              aria-label={$t('course.navItem.lessons.prev')}
+            >
+              <ChevronLeftIcon size={14} />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content side="bottom" sideOffset={4}>
+            {prevNavTooltip}
+          </Tooltip.Content>
+        </Tooltip.Root>
 
-      <Tooltip.Root>
-        <Tooltip.Trigger>
-          <Button
-            size="icon-sm"
-            variant="outline"
-            onclick={() => goToContent(prevNextContent.next)}
-            disabled={isNextDisabled || isNextNavBlocked}
-            aria-label={$t('course.navItem.lessons.next')}
-          >
-            <ChevronRightIcon size={14} />
-          </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="bottom" sideOffset={4}>
-          {nextNavTooltip}
-        </Tooltip.Content>
-      </Tooltip.Root>
-    </div>
+        <Tooltip.Root>
+          <Tooltip.Trigger>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onclick={() => goToContent(prevNextContent.next)}
+              disabled={isNextDisabled || isNextNavBlocked}
+              aria-label={$t('course.navItem.lessons.next')}
+            >
+              <ChevronRightIcon size={14} />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content side="bottom" sideOffset={4}>
+            {nextNavTooltip}
+          </Tooltip.Content>
+        </Tooltip.Root>
+      </div>
+    {/if}
   </Tooltip.Provider>
 </div>

@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -673,6 +673,38 @@ export async function selectPopularCourseTypes(orgId: string, fromDate: string, 
   } catch (error) {
     console.error('selectPopularCourseTypes error:', error);
     throw new Error('Failed to select popular course types');
+  }
+}
+
+/**
+ * Top courses by page views for an org in a date range. Joins the daily
+ * course rollup with the canonical course row so the result includes the
+ * live title. Courses with zero views in the window are omitted.
+ */
+export async function selectTopCoursesByViews(orgId: string, fromDate: string, toDate: string, limit: number = 10) {
+  try {
+    return await db
+      .select({
+        courseId: schema.analyticsCourseDaily.courseId,
+        title: schema.course.title,
+        views: sql<number>`SUM(${schema.analyticsCourseDaily.views})::int`.as('views')
+      })
+      .from(schema.analyticsCourseDaily)
+      .innerJoin(schema.course, eq(schema.course.id, schema.analyticsCourseDaily.courseId))
+      .where(
+        and(
+          eq(schema.analyticsCourseDaily.orgId, orgId),
+          sql`${schema.analyticsCourseDaily.date} >= ${fromDate}`,
+          sql`${schema.analyticsCourseDaily.date} <= ${toDate}`
+        )
+      )
+      .groupBy(schema.analyticsCourseDaily.courseId, schema.course.title)
+      .having(sql`SUM(${schema.analyticsCourseDaily.views}) > 0`)
+      .orderBy(desc(sql`SUM(${schema.analyticsCourseDaily.views})`), asc(schema.analyticsCourseDaily.courseId))
+      .limit(limit);
+  } catch (error) {
+    console.error('selectTopCoursesByViews error:', error);
+    throw new Error('Failed to select top courses by views');
   }
 }
 

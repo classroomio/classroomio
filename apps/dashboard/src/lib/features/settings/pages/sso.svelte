@@ -187,7 +187,7 @@
               lang="bash"
               hideLines={true}
               variant="secondary"
-              class="ui:break-all ui:text-xs"
+              class="text-xs break-all"
             >
               <Code.CopyButton />
             </Code.Root>

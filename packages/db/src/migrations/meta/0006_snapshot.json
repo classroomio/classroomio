@@ -1,5 +1,5 @@
 {
-  "id": "cc3a48a3-ef8f-46f1-b15b-bf423c800537",
+  "id": "b201ac61-e28c-4e63-b327-52ccb6075530",
   "prevId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "version": "7",
   "dialect": "postgresql",
@@ -5259,6 +5259,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "course_newsfeed_comment_course_newsfeed_id_idx": {
+          "name": "course_newsfeed_comment_course_newsfeed_id_idx",
+          "columns": [
+            {
+              "expression": "course_newsfeed_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -6379,7 +6394,7 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
-          "default": true
+          "default": false
         },
         "completion_policy": {
           "name": "completion_policy",

@@ -287,6 +287,7 @@ ensure_minio_env() {
 
     upsert_env_value MINIO_ROOT_USER "${minio_user}"
     upsert_env_value MINIO_ROOT_PASSWORD "${minio_password}"
+    upsert_env_value MINIO_API_CORS_ALLOW_ORIGIN "*"
     upsert_env_value OBJECT_STORAGE_ENDPOINT "http://minio:9000"
     upsert_env_value OBJECT_STORAGE_ACCESS_KEY_ID "${minio_user}"
     upsert_env_value OBJECT_STORAGE_SECRET_ACCESS_KEY "${minio_password}"

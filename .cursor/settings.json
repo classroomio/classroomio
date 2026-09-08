@@ -5,6 +5,9 @@
     },
     "supabase": {
       "enabled": true
+    },
+    "pstack": {
+      "enabled": true
     }
   }
 }

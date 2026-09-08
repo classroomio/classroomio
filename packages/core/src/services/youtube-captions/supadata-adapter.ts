@@ -27,6 +27,9 @@ interface SupadataCaptionItem {
  * }
  * ```
  * `offset` and `duration` are in **milliseconds** — we convert to seconds.
+ * Exactly **one** provider call is made per invocation: Supadata bills per
+ * request, so trying several languages (or retrying without `lang`) would
+ * multiply the cost of a single caption fetch.
  */
 export class SupadataAdapter implements YoutubeCaptionAdapter {
   private apiKey: string;
@@ -38,36 +41,17 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
   async fetchNativeCaptions(input: {
     youtubeVideoId: string;
     canonicalUrl: string;
-    preferredLanguages: string[];
+    language: string;
   }): Promise<YoutubeCaptionFetchResult | { unavailable: true; reason: string }> {
-    const { youtubeVideoId, canonicalUrl, preferredLanguages } = input;
+    const { youtubeVideoId, canonicalUrl, language } = input;
 
-    const languagesToTry = preferredLanguages.length > 0 ? preferredLanguages : ['en'];
-    let lastUnavailable: { unavailable: true; reason: string } | null = null;
-
-    for (const lang of languagesToTry) {
-      const result = await this.fetchCaptionsForLanguage(youtubeVideoId, canonicalUrl, lang);
-      if (!('unavailable' in result)) {
-        return result;
-      }
-      lastUnavailable = result;
-    }
-
-    if (languagesToTry.length > 1) {
-      const fallbackResult = await this.fetchCaptionsForLanguage(youtubeVideoId, canonicalUrl);
-      if (!('unavailable' in fallbackResult)) {
-        return fallbackResult;
-      }
-      lastUnavailable = fallbackResult;
-    }
-
-    return lastUnavailable ?? { unavailable: true, reason: 'not_found' };
+    return this.fetchCaptionsForLanguage(youtubeVideoId, canonicalUrl, language);
   }
 
   private async fetchCaptionsForLanguage(
     youtubeVideoId: string,
     canonicalUrl: string,
-    lang?: string
+    lang: string
   ): Promise<YoutubeCaptionFetchResult | { unavailable: true; reason: string }> {
     try {
       const { Supadata } = await import('@supadata/js');
@@ -77,7 +61,7 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
         url: canonicalUrl,
         text: false,
         mode: 'native' as const,
-        ...(lang ? { lang } : {})
+        lang
       };
 
       const raw = await supadata.transcript(requestParams);

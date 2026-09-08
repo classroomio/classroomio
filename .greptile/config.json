@@ -1,0 +1,3 @@
+{
+  "ignorePatterns": "prototypes/**\n**/*.lock\n**/dist/**\n**/node_modules/**"
+}

@@ -11,8 +11,8 @@
 </script>
 
 <Tooltip.Root>
-  <Tooltip.Trigger>
-    <span class="block truncate px-1 {className}" style={maxWidth ? `max-width: ${maxWidth}` : undefined}>
+  <Tooltip.Trigger class="max-w-full min-w-0">
+    <span class="block min-w-0 truncate px-1 {className}" style={maxWidth ? `max-width: ${maxWidth}` : undefined}>
       {text}
     </span>
   </Tooltip.Trigger>

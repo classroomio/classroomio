@@ -14,20 +14,20 @@ function setupTracking(user?: PosthogBootstrapUser) {
   initUmami();
 }
 
-export function setupAnalytics(user?: PosthogBootstrapUser) {
-  initUserJot();
+export function setupAnalytics(user: PosthogBootstrapUser | undefined, isOrgSite: boolean) {
+  initUserJot(isOrgSite);
   setupTracking(user);
 }
 
 /** Checks if this is cloud deployment and initializes analytics */
-export function setupCloudAnalytics(user?: PosthogBootstrapUser) {
+export function setupCloudAnalytics(user: PosthogBootstrapUser | undefined, isOrgSite: boolean) {
   if (PUBLIC_IS_SELFHOSTED !== 'true') {
-    setupAnalytics(user);
+    setupAnalytics(user, isOrgSite);
   }
 }
 
-export function setupAnalyticsBasedOnLicense(user?: PosthogBootstrapUser) {
-  initUserJot();
+export function setupAnalyticsBasedOnLicense(user: PosthogBootstrapUser | undefined, isOrgSite: boolean) {
+  initUserJot(isOrgSite);
 
   if (licenseApi.hasAccess('no-tracking')) {
     return;

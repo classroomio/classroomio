@@ -40,15 +40,15 @@
       {:else}
         <Sidebar.Group class="pt-0!">
           <div class="flex h-8 items-center gap-2 rounded-md px-2">
-            <Skeleton class="ui:size-4 ui:rounded-md" />
-            <Skeleton class="ui:h-4 ui:w-24" />
+            <Skeleton class="size-4 rounded-md" />
+            <Skeleton class="h-4 w-24" />
           </div>
           <Sidebar.Menu>
             {#each Array(SIDEBAR_ITEM_SKELETON_COUNT) as _, i (i)}
               <Sidebar.MenuItem>
-                <div class="ui:flex ui:h-8 ui:items-center ui:gap-2 ui:rounded-md ui:px-2" data-sidebar="menu-skeleton">
-                  <Skeleton class="ui:size-4 ui:rounded-md" />
-                  <Skeleton class="ui:h-4 ui:max-w-32 ui:flex-1" />
+                <div class="flex h-8 items-center gap-2 rounded-md px-2" data-sidebar="menu-skeleton">
+                  <Skeleton class="size-4 rounded-md" />
+                  <Skeleton class="h-4 max-w-32 flex-1" />
                 </div>
               </Sidebar.MenuItem>
             {/each}

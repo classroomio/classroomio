@@ -31,7 +31,7 @@
         class="group flex items-center gap-2 border-b px-3 py-2 last:border-b-0 {conversation.id ===
         activeConversationId
           ? 'ui:bg-muted'
-          : 'hover:ui:bg-muted/50'} transition-colors"
+          : 'ui:hover:bg-muted/50'} transition-colors"
       >
         <button onclick={() => onLoad(conversation.id)} class="flex min-w-0 flex-1 items-center gap-2 text-left">
           <MessageSquareIcon size={14} class="ui:text-muted-foreground flex-shrink-0" />

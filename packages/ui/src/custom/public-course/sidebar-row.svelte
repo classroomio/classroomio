@@ -10,13 +10,15 @@
     active?: boolean;
     /** Locked rows show a lock icon and a muted treatment. */
     locked?: boolean;
+    /** Slug used for scroll-into-view targeting in mobile sheets. */
+    itemSlug?: string;
     /** Link href for the row. If omitted, the row renders as a button (story/testing). */
     href?: string;
     onClick?: () => void;
     class?: string;
   }
 
-  let { number, title, active = false, locked = false, href, onClick, class: className }: Props = $props();
+  let { number, title, active = false, locked = false, itemSlug, href, onClick, class: className }: Props = $props();
 
   const rowClass = $derived(
     cn(
@@ -60,7 +62,7 @@
 {/snippet}
 
 {#if href}
-  <a {href} class={rowClass} aria-current={active ? 'page' : undefined}>
+  <a {href} class={rowClass} aria-current={active ? 'page' : undefined} data-item-slug={itemSlug}>
     {@render body()}
   </a>
 {:else}
@@ -69,6 +71,7 @@
     class={rowClass}
     aria-current={active ? 'page' : undefined}
     aria-disabled={locked || undefined}
+    data-item-slug={itemSlug}
     onclick={onClick}
   >
     {@render body()}

@@ -8,6 +8,7 @@
   import { newsfeedApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
+  import { isStudentExperience } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$features/course/utils/types';
 
@@ -39,13 +40,14 @@
 
   const author = $derived({
     id: courseApi.group.memberId || '',
+    profileId: $profile.id || '',
     username: $profile.username || '',
     fullname: $profile.fullname || '',
     avatarUrl: $profile.avatarUrl || ''
   });
 
-  const deleteComment = async (feedId: string, commentId: string, parentId?: number) => {
-    await newsfeedApi.deleteComment(courseId, feedId, commentId, parentId);
+  const deleteComment = async (feedId: string, commentId: string) => {
+    await newsfeedApi.deleteComment(courseId, feedId, commentId);
   };
 
   const addNewReaction = async (reactionType: NewsfeedReactionType, feedId: string, authorId: string) => {
@@ -69,13 +71,8 @@
     }
   };
 
-  const addNewComment = async (
-    comment: string,
-    feedId: string,
-    parentId?: number,
-    replyTo?: { commentId: number; authorFullname: string }
-  ) => {
-    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId, replyTo);
+  const addNewComment = async (comment: string, feedId: string, parentId?: number) => {
+    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId);
 
     if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.commenting_error');
@@ -101,13 +98,21 @@
     await newsfeedApi.delete(courseId, id);
   };
 
-  const pinnedFeeds = $derived.by(() => {
-    return newsfeedApi.feeds.filter((feed) => feed.isPinned);
-  });
+  function compareFeedsByNewest(first: Feed, second: Feed) {
+    return Date.parse(second.createdAt) - Date.parse(first.createdAt);
+  }
 
-  const unpinnedFeeds = $derived.by(() => {
-    return newsfeedApi.feeds.filter((feed) => !feed.isPinned);
-  });
+  const pinnedFeeds = $derived(
+    newsfeedApi.feeds.filter((feed) => feed.isPinned).sort((first, second) => compareFeedsByNewest(first, second))
+  );
+
+  const unpinnedFeeds = $derived(
+    newsfeedApi.feeds.filter((feed) => !feed.isPinned).sort((first, second) => compareFeedsByNewest(first, second))
+  );
+
+  // One keyed each so a pin/unpin moves the existing card instead of leaving a
+  // ghost in the pinned list (sibling `{#each}` blocks sharing `feed.id` keys).
+  const orderedFeeds = $derived([...pinnedFeeds, ...unpinnedFeeds]);
 
   function getPageRoles(org: AccountOrg) {
     const roles: number[] = [ROLE.ADMIN, ROLE.TUTOR];
@@ -135,7 +140,9 @@
   }}
 >
   <RoleBasedSecurity allowedRoles={getPageRoles($currentOrg)}>
-    <NewFeedModal {courseId} bind:edit bind:editFeed />
+    {#if !$isStudentExperience}
+      <NewFeedModal {courseId} bind:edit bind:editFeed />
+    {/if}
   </RoleBasedSecurity>
   {#if isListing}
     <div class="flex w-full flex-col items-center">
@@ -146,21 +153,34 @@
   {:else if !pinnedFeeds.length && !unpinnedFeeds.length}
     <Empty
       title={$t('course.navItem.news_feed.body_header')}
-      description={$t('course.navItem.news_feed.body_content')}
+      description={$isStudentExperience
+        ? $t('course.navItem.news_feed.student_body_content')
+        : $t('course.navItem.news_feed.body_content')}
       icon={BookIcon}
       variant="page"
     />
   {:else}
-    {#if pinnedFeeds.length > 0}
-      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
-        <span class="text-xs font-medium tracking-wider uppercase">
-          {$t('course.navItem.news_feed.pinned') || 'Pinned'}
-        </span>
-      </div>
-      {#each pinnedFeeds as feed (feed.id)}
+    <!-- pt-4/pl-3 clear the pinned icon's negative offset, which Page.Body's overflow-x-hidden would otherwise clip -->
+    <div class="flex w-full flex-col pt-3 pl-2.5">
+      {#each orderedFeeds as feed, index (feed.id)}
+        {#if index === 0 && pinnedFeeds.length > 0}
+          <div class="ui:text-muted-foreground mb-5 flex items-center gap-1.5">
+            <span class="text-xs font-medium tracking-wider uppercase">
+              {$t('course.navItem.news_feed.pinned')}
+            </span>
+          </div>
+        {/if}
+
+        {#if index === pinnedFeeds.length && pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
+          <div class="ui:text-muted-foreground mb-1.5 flex items-center gap-1.5">
+            <span class="text-xs font-medium tracking-wider uppercase">
+              {$t('course.navItem.news_feed.other_posts')}
+            </span>
+          </div>
+        {/if}
+
         <NewsFeedCard
           {feed}
-          comments={newsfeedApi.commentsByFeedId[feed.id]}
           {courseId}
           {deleteFeed}
           {addNewComment}
@@ -174,34 +194,6 @@
           isReacting={Boolean(isReactingByFeedId[feed.id])}
         />
       {/each}
-    {/if}
-
-    {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
-      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
-        <span class="text-xs font-medium tracking-wider uppercase">
-          {$t('course.navItem.news_feed.other_posts')}
-        </span>
-      </div>
-    {/if}
-
-    {#if unpinnedFeeds.length > 0}
-      {#each unpinnedFeeds as feed (feed.id)}
-        <NewsFeedCard
-          {feed}
-          comments={newsfeedApi.commentsByFeedId[feed.id]}
-          {courseId}
-          {deleteFeed}
-          {addNewComment}
-          {deleteComment}
-          {addNewReaction}
-          {onPin}
-          {author}
-          bind:edit
-          bind:editFeed
-          isActive={feedId === feed.id}
-          isReacting={Boolean(isReactingByFeedId[feed.id])}
-        />
-      {/each}
-    {/if}
+    </div>
   {/if}
 </RoleBasedSecurity>

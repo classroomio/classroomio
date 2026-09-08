@@ -34,7 +34,7 @@
   {#snippet template()}
     <button
       type="button"
-      class="group hover:border-border flex cursor-pointer items-center gap-2 rounded-md border border-transparent px-2 py-1.5"
+      class="group ui:hover:border-border flex cursor-pointer items-center gap-2 rounded-md border border-transparent px-2 py-1.5"
     >
       <NumberBadge number={2} />
       <span class="text-sm">Hover the row to see badge emphasis</span>

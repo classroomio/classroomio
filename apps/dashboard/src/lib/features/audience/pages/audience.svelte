@@ -5,7 +5,7 @@
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
-  import { UpgradeBanner } from '$features/ui';
+  import { TablePagination, UpgradeBanner } from '$features/ui';
   import { currentOrgMaxAudience, isOrgAdmin } from '$lib/utils/store/org';
   import type {
     OrganizationAudience,
@@ -17,7 +17,6 @@
   import AudienceDeleteConfirmation from '$features/audience/components/audience-delete-confirmation.svelte';
   import AudienceTableToolbar from '$features/audience/components/audience-table-toolbar.svelte';
   import AudienceTable from '$features/audience/components/audience-table.svelte';
-  import AudiencePagination from '$features/audience/components/audience-pagination.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import { DEFAULT_ORG_AUDIENCE_QUERY, getAudienceSearchParams } from '$features/org/utils/audience-query-utils';
 
@@ -246,7 +245,7 @@
       onDeleteRow={openDeleteConfirmation}
     />
 
-    <AudiencePagination count={totalCount} perPage={pageSize} page={currentPage} onPageChange={handlePageChange} />
+    <TablePagination count={totalCount} perPage={pageSize} page={currentPage} onPageChange={handlePageChange} />
   </div>
 {:else}
   <Empty title={$t('audience.no_audience')} description={$t('audience.manage')} icon={UsersIcon} variant="page" />

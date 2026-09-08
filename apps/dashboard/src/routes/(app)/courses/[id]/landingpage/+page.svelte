@@ -48,7 +48,11 @@
     selectKey: (key) => (selectedSectionKey = key === 'hero' ? 'header' : key),
     labelFor: (key) => {
       const sectionKey = key === 'hero' ? 'header' : key;
-      return t.get(`course.navItem.landing_page.editor.title.${sectionKey}` as never) || key;
+      const translationKey = `course.navItem.landing_page.editor.title.${sectionKey}`;
+      const label = t.get(translationKey as never);
+
+      // svelte-i18n echoes the key path back when a translation is missing.
+      return label && label !== translationKey ? label : sectionKey;
     },
     iconFor: (key) => sectionIcons[key === 'hero' ? 'header' : key] ?? HeaderIcon
   });

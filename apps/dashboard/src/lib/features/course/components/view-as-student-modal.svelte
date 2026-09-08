@@ -49,7 +49,7 @@
     <img
       src="https://assets.cdn.clsrio.com/cio-lms-plain.png"
       alt=""
-      class="ui:border mx-auto my-4 w-full rounded-lg"
+      class="mx-auto my-4 w-full rounded-lg border"
       width="2095"
       height="1744"
       loading="lazy"

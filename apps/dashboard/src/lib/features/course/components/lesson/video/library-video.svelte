@@ -102,7 +102,7 @@
     <Empty
       description={$t('course.navItem.lessons.materials.tabs.video.add_video.loading_library')}
       icon={Spinner}
-      class="ui:max-h-40 py-6"
+      class="max-h-40 py-6"
     />
   {:else if visibleAssets.length === 0}
     <p class="ui:text-muted-foreground text-sm">

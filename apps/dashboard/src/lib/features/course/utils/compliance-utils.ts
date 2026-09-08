@@ -98,6 +98,12 @@ export function getStudentCourseComplianceStatusKey(course: StudentEnrolledCours
   return complianceStatus ? `course.navItem.compliance.status.${complianceStatus}` : null;
 }
 
+export function shouldShowStudentCourseComplianceStatusBadge(course: StudentEnrolledCourse) {
+  const complianceStatus = getStudentCourseComplianceStatus(course);
+
+  return !!complianceStatus && complianceStatus !== 'in_progress';
+}
+
 export function getStudentCourseComplianceStatusVariant(course: StudentEnrolledCourse) {
   const complianceStatus = getStudentCourseComplianceStatus(course);
   if (!complianceStatus) {

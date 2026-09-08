@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import * as Page from '@cio/ui/base/page';
@@ -10,9 +9,8 @@
   import { StatusTiles, CourseBreakdown, LearnersTable, complianceApi } from '$features/compliance';
   import type { ComplianceLearnerRow } from '$features/compliance/utils/types';
 
-  onMount(() => {
-    const orgId = $currentOrg.id;
-    if (orgId) complianceApi.ensureFetched(orgId);
+  $effect(() => {
+    complianceApi.ensureFetched($currentOrg.id);
   });
 
   function handleRefresh() {

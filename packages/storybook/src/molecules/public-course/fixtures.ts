@@ -93,6 +93,27 @@ export const SIDEBAR_FIXTURE: PublicCourseSidebarSection[] = [
   }
 ];
 
+export const LONG_SIDEBAR_FIXTURE: PublicCourseSidebarSection[] = Array.from({ length: 10 }, (_, sectionIndex) => {
+  const sectionNumber = sectionIndex + 1;
+
+  return {
+    id: `section-${sectionNumber}`,
+    title: `Module ${sectionNumber}`,
+    items: Array.from({ length: 4 }, (_, itemIndex) => {
+      const itemNumber = itemIndex + 1;
+      const slug = `module-${sectionNumber}-lesson-${itemNumber}`;
+
+      return {
+        kind: 'lesson' as const,
+        id: `lesson-${sectionNumber}-${itemNumber}`,
+        slug,
+        title: `Lesson ${itemNumber}: Topic ${sectionNumber}.${itemNumber}`,
+        isUnlocked: true
+      };
+    })
+  };
+});
+
 export const LESSON_FIXTURE: PublicLessonViewData = {
   kind: 'lesson',
   title: 'Hallucination & limitations',
