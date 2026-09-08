@@ -116,6 +116,9 @@ pnpm dashboard:dev:https:fresh
 ```
 This automatically sets `HTTPS=true`, provisions local certificates, and binds Vite to `0.0.0.0`, serving on both `https://localhost:5173` and `https://<lan-ip>:5173`. Other UIs also support this (e.g. `pnpm storybook:dev:https`, `pnpm website:dev:https`, `pnpm embeds:dev:https`).
 
+> [!NOTE]
+> On separate mobile or LAN devices, the browser will display an untrusted certificate warning since the `mkcert` CA is installed only on your development host machine. If you have the option, you can bypass the warning by selecting **Advanced → Proceed** (or **Show Details → visit this website** in Safari) to continue testing.
+
 ### Step 7 — Log in
 Open http://localhost:5173/login → `admin@test.com` / `123456`.
 

@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite dev --port 5173",
-    "dev:https": "HTTPS=true pnpm run dev",
+    "dev:https": "cross-env HTTPS=true pnpm run dev",
     "prebuild": "pnpm --filter @cio/ui run build",
     "build": "vite build",
     "preview": "vite preview",
@@ -107,6 +107,7 @@
     "@types/node": "^20",
     "all-object-keys": "^2.2.0",
     "babel-jest": "^29.7.0",
+    "cross-env": "^10.1.0",
     "diff": "^5.2.0",
     "dotenv": "^16.3.1",
     "eslint": "^9.36.0",

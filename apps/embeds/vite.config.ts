@@ -26,7 +26,10 @@ function embedApiUrlInjectPlugin() {
         return null;
       }
 
-      const snippet = `window.CIO=window.CIO||{};window.CIO.apiBaseUrl=${JSON.stringify(devApiUrl.replace(/\/$/, ''))};`;
+      // On LAN or mobile browsers, localhost:3002 points to the device itself and HTTPS-to-HTTP
+      // calls trigger mixed-content blocks. Default to same-origin on non-localhost hosts
+      // so requests route through the dev server's proxy.
+      const snippet = `window.CIO=window.CIO||{};window.CIO.apiBaseUrl=window.CIO.apiBaseUrl||((typeof window!=='undefined'&&window.location&&!['localhost','127.0.0.1','[::1]','::1'].includes(window.location.hostname))?window.location.origin:${JSON.stringify(devApiUrl.replace(/\/$/, ''))});`;
       return { code: `${snippet}\n${code}`, map: null };
     }
   };
@@ -131,7 +134,13 @@ export default defineConfig(({ command, mode }) => {
     server: {
       host,
       port: 5180,
-      cors: true
+      cors: true,
+      proxy: {
+        '/widgets': {
+          target: devApiUrl,
+          changeOrigin: true
+        }
+      }
     },
     preview: {
       port: 4180,

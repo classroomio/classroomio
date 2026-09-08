@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "storybook dev -p 6006",
-    "dev:https": "HTTPS=true pnpm run dev",
+    "dev:https": "cross-env HTTPS=true pnpm run dev",
     "build": "storybook build",
     "preview": "storybook preview",
     "format": "prettier --write .",
@@ -27,6 +27,7 @@
     "@cio/tsconfig": "workspace:*",
     "@storybook/addon-essentials": "^8.4.2",
     "@storybook/addon-interactions": "^8.4.2",
+    "cross-env": "^10.1.0",
     "@storybook/addon-links": "^8.4.2",
     "@storybook/addon-svelte-csf": "^5.0.6",
     "@storybook/blocks": "^8.4.2",

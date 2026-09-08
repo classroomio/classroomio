@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser, dev } from '$app/environment';
   import { Button } from '@cio/ui/base/button';
   import { CopyButton } from '@cio/ui/base/copy-button';
   import * as Tabs from '@cio/ui/base/tabs';
@@ -7,6 +8,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import WidgetVersionHistory from '../components/widget-version-history.svelte';
   import type { WidgetDetail } from '../utils/types';
+  import { adaptDevWidgetEmbedCode, adaptDevWidgetUrl } from '@cio/utils/constants';
 
   interface Props {
     detail: WidgetDetail;
@@ -17,6 +19,13 @@
   let { detail, onRollback, onArchive }: Props = $props();
 
   let activeFormat = $state<'html' | 'url'>('html');
+
+  const locationInfo = $derived(
+    browser && dev ? { hostname: window.location.hostname, protocol: window.location.protocol } : undefined
+  );
+
+  const displayEmbedCode = $derived(adaptDevWidgetEmbedCode(detail.widget.embedCode, locationInfo));
+  const displayHostedEmbedUrl = $derived(adaptDevWidgetUrl(detail.widget.hostedEmbedUrl, locationInfo));
 </script>
 
 <div class="space-y-6">
@@ -27,19 +36,19 @@
     </Tabs.List>
 
     <Tabs.Content value="html" class="mt-4 space-y-3">
-      <TextareaField label={$t('widgets.form.embed_code')} value={detail.widget.embedCode} rows={6} readonly />
+      <TextareaField label={$t('widgets.form.embed_code')} value={displayEmbedCode} rows={6} readonly />
       <div class="flex flex-wrap gap-2">
-        <CopyButton text={detail.widget.embedCode} variant="outline">
+        <CopyButton text={displayEmbedCode} variant="outline">
           {$t('widgets.actions.copy_embed')}
         </CopyButton>
       </div>
     </Tabs.Content>
 
     <Tabs.Content value="url" class="mt-4 space-y-3">
-      <TextareaField label={$t('widgets.embed.url_label')} value={detail.widget.hostedEmbedUrl} rows={2} readonly />
+      <TextareaField label={$t('widgets.embed.url_label')} value={displayHostedEmbedUrl} rows={2} readonly />
       <p class="ui:text-muted-foreground text-xs">{$t('widgets.embed.url_helper')}</p>
       <div class="flex flex-wrap gap-2">
-        <CopyButton text={detail.widget.hostedEmbedUrl} variant="outline">
+        <CopyButton text={displayHostedEmbedUrl} variant="outline">
           {$t('widgets.actions.copy_url')}
         </CopyButton>
       </div>

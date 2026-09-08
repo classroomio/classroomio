@@ -35,16 +35,33 @@ export function isLocalOrPrivateHost(input: string): boolean {
     return true;
   }
 
-  // IPv4 loopback (127.0.0.0/8)
-  if (/^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+  // IPv4 address classification with octet validation (0-255)
+  const ipv4Parts = host.split('.');
+  if (ipv4Parts.length === 4) {
+    const octets: number[] = [];
+    for (const part of ipv4Parts) {
+      if (!/^\d{1,3}$/.test(part)) return false;
+      const num = Number(part);
+      if (num < 0 || num > 255) return false;
+      octets.push(num);
+    }
 
-  // IPv4 private ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
-  if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
-  if (/^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
-  if (/^192\.168\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+    const [first, second] = octets as [number, number, number, number];
 
-  // IPv4 link-local (169.254.0.0/16)
-  if (/^169\.254\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+    // IPv4 loopback (127.0.0.0/8)
+    if (first === 127) return true;
+
+    // IPv4 private ranges (RFC 1918)
+    // 10.0.0.0/8
+    if (first === 10) return true;
+    // 172.16.0.0/12 (172.16.0.0 - 172.31.255.255)
+    if (first === 172 && second >= 16 && second <= 31) return true;
+    // 192.168.0.0/16
+    if (first === 192 && second === 168) return true;
+
+    // IPv4 link-local (RFC 3927: 169.254.0.0/16)
+    if (first === 169 && second === 254) return true;
+  }
 
   return false;
 }

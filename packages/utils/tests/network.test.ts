@@ -49,4 +49,14 @@ describe('isLocalOrPrivateHost', () => {
     expect(isLocalOrPrivateHost('1.1.1.1')).toBe(false);
     expect(isLocalOrPrivateHost('')).toBe(false);
   });
+
+  it('rejects malformed or out-of-range IPv4 addresses', () => {
+    expect(isLocalOrPrivateHost('10.999.0.1')).toBe(false);
+    expect(isLocalOrPrivateHost('169.254.999.1')).toBe(false);
+    expect(isLocalOrPrivateHost('127.999.0.1')).toBe(false);
+    expect(isLocalOrPrivateHost('192.168.999.1')).toBe(false);
+    expect(isLocalOrPrivateHost('172.20.999.1')).toBe(false);
+    expect(isLocalOrPrivateHost('172.999.0.1')).toBe(false);
+    expect(isLocalOrPrivateHost('192.168.1.256')).toBe(false);
+  });
 });
