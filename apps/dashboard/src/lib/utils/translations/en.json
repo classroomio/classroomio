@@ -1348,6 +1348,15 @@
       "description": "Check back soon for new courses."
     }
   },
+  "public_learning_paths": {
+    "page_title": "Learning Paths - ClassroomIO",
+    "heading": "Learning Paths",
+    "subtitle": "Guided, multi-course tracks — finish in order and earn a certificate at the end.",
+    "empty": {
+      "title": "No learning paths published yet",
+      "description": "Check back soon for new programs."
+    }
+  },
   "org_navigation": {
     "platform": "Platform",
     "home": "Home",
