@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/organization', () => ({
   getBulkAudienceMembersByIds: vi.fn(),
+  getBulkAudienceMemberSample: vi.fn(),
+  countBulkAudienceMembersNotArchived: vi.fn(),
   bulkUpdateOrganizationMemberStatus: vi.fn(),
   bulkDeleteOrganizationAudienceMembers: vi.fn(),
   deleteGroupMembershipsForOrgProfiles: vi.fn(),
@@ -19,7 +21,9 @@ vi.mock('@cio/db/drizzle', () => ({
 import {
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
+  countBulkAudienceMembersNotArchived,
   deleteGroupMembershipsForOrgProfiles,
+  getBulkAudienceMemberSample,
   getBulkAudienceMembersByIds,
   recordOrganizationMemberAudit,
   resolveAudienceMemberIds,
@@ -28,6 +32,7 @@ import {
 import {
   applyBulkAudienceAction,
   computeTargetHash,
+  previewBulkAudienceAction,
   undoBulkAudienceAction
 } from '@api/services/organization/audience-bulk';
 
@@ -230,5 +235,48 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
         ACTOR
       )
     ).rejects.toMatchObject({ statusCode: 413 });
+  });
+});
+
+describe('previewBulkAudienceAction — bounded work', () => {
+  it('samples and counts with dedicated queries instead of loading the matched set', async () => {
+    // A filter matching 20,000 learners must not pull 20,000 rows to show five.
+    const matchedIds = Array.from({ length: 20_000 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(matchedIds);
+    vi.mocked(getBulkAudienceMemberSample).mockResolvedValue([member(1), member(2)] as never);
+    vi.mocked(countBulkAudienceMembersNotArchived).mockResolvedValue(19_998);
+
+    const preview = await previewBulkAudienceAction(ORG, { status: 'ACTIVE' } as never);
+
+    expect(preview.count).toBe(20_000);
+    expect(preview.sample).toHaveLength(2);
+    expect(preview.notArchivedCount).toBe(19_998);
+    // The full-row loader is never reached on this path.
+    expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
+    expect(getBulkAudienceMemberSample).toHaveBeenCalledWith(ORG, matchedIds, 5);
+  });
+
+  it('hashes the whole matched set, not just the sample', async () => {
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue([1, 2, 3]);
+    vi.mocked(getBulkAudienceMemberSample).mockResolvedValue([member(1)] as never);
+    vi.mocked(countBulkAudienceMembersNotArchived).mockResolvedValue(0);
+
+    const preview = await previewBulkAudienceAction(ORG, { status: 'ACTIVE' } as never);
+
+    expect(preview.targetHash).toBe(computeTargetHash([1, 2, 3]));
+  });
+});
+
+describe('applyBulkAudienceAction — ceiling is checked before loading rows', () => {
+  it('rejects an oversized filter match without fetching its members', async () => {
+    const many = Array.from({ length: 5_000 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
+
+    await expect(
+      applyBulkAudienceAction(ORG, { target: filterTarget(many), action: 'archive' }, ACTOR)
+    ).rejects.toMatchObject({ statusCode: 413 });
+
+    // The point of the fix: no 5,000-id IN clause is issued just to be refused.
+    expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
   });
 });

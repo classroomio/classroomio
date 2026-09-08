@@ -10,7 +10,9 @@ import {
   type OrganizationMemberStatus,
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
+  countBulkAudienceMembersNotArchived,
   deleteGroupMembershipsForOrgProfiles,
+  getBulkAudienceMemberSample,
   getBulkAudienceMembersByIds,
   recordOrganizationMemberAudit,
   resolveAudienceMemberIds,
@@ -92,19 +94,24 @@ export async function previewBulkAudienceAction(
   filter: Parameters<typeof resolveAudienceMemberIds>[1]
 ): Promise<BulkAudiencePreview> {
   const matchedIds = await resolveAudienceMemberIds(orgId, filter);
-  // One pass over the matched set: the sample and the archive gate both come
-  // from it, so a large match is not fetched twice.
-  const members = await getBulkAudienceMembersByIds(orgId, matchedIds);
+
+  // Both values are answered by bounded queries rather than by loading the
+  // matched set. A filter can match tens of thousands of learners, and this
+  // dialog shows five of them and one number.
+  const [sample, notArchivedCount] = await Promise.all([
+    getBulkAudienceMemberSample(orgId, matchedIds, PREVIEW_SAMPLE_SIZE),
+    countBulkAudienceMembersNotArchived(orgId, matchedIds)
+  ]);
 
   return {
     count: matchedIds.length,
     targetHash: computeTargetHash(matchedIds),
-    sample: members.slice(0, 5).map((member) => ({
+    sample: sample.map((member) => ({
       id: member.id,
       name: member.email?.split('@')[0] ?? String(member.id),
       email: member.email ?? ''
     })),
-    notArchivedCount: members.filter((member) => member.status !== 'ARCHIVED').length
+    notArchivedCount
   };
 }
 
@@ -152,6 +159,25 @@ function consumeUndoToken(token: string, orgId: string, actorProfileId: string):
   return record;
 }
 
+/** How many affected learners the confirmation dialog lists by name. */
+const PREVIEW_SAMPLE_SIZE = 5;
+
+/**
+ * Guards the synchronous ceiling. Always checked against a count, never a
+ * loaded array, so the rejection costs nothing.
+ */
+function assertWithinSyncCeiling(targetSize: number): void {
+  if (targetSize <= AUDIENCE_BULK_SYNC_MAX) {
+    return;
+  }
+
+  throw new AppError(
+    `This action affects ${targetSize} learners, which exceeds the ${AUDIENCE_BULK_SYNC_MAX} that can be applied in one request.`,
+    ErrorCodes.ORG_AUDIENCE_BULK_FAILED,
+    413
+  );
+}
+
 /**
  * Resolves the target inside the caller's transaction.
  *
@@ -179,6 +205,11 @@ async function resolveTarget(
     );
   }
 
+  // Reject on the id count before loading rows. Checking after would mean a
+  // 12,000-match filter pays for a 12,000-row load and a query listing every
+  // id, only to be turned away.
+  assertWithinSyncCeiling(matchedIds.length);
+
   return getBulkAudienceMembersByIds(orgId, matchedIds, tx);
 }
 
@@ -201,15 +232,9 @@ export async function applyBulkAudienceAction(
       throw new AppError('No matching learners to act on', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 404);
     }
 
-    // The threshold is checked on the resolved target rather than the request,
-    // so filter mode cannot slip past it by naming no ids.
-    if (members.length > AUDIENCE_BULK_SYNC_MAX) {
-      throw new AppError(
-        `This action affects ${members.length} learners, which exceeds the ${AUDIENCE_BULK_SYNC_MAX} that can be applied in one request.`,
-        ErrorCodes.ORG_AUDIENCE_BULK_FAILED,
-        413
-      );
-    }
+    // Filter mode already checked this before loading rows; ids mode is capped
+    // at 500 by validation. This backstops both against a future caller.
+    assertWithinSyncCeiling(members.length);
 
     const requested = members.length;
     const filterSnapshot = data.target.mode === 'filter' ? { ...data.target.filter } : undefined;

@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, eq, inArray, ne, sql } from 'drizzle-orm';
+import { and, count, eq, inArray, ne, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
@@ -53,6 +53,79 @@ export async function getBulkAudienceMembersByIds(
   } catch (error) {
     console.error('getBulkAudienceMembersByIds error:', error);
     throw new Error('Failed to resolve audience members for bulk action');
+  }
+}
+
+/**
+ * A handful of members from a matched set, for a confirmation dialog's sample.
+ *
+ * Bounded by `LIMIT` in SQL rather than by slicing a fully-loaded array: the
+ * matched set can be tens of thousands of learners, and the dialog shows five.
+ */
+export async function getBulkAudienceMemberSample(
+  orgId: string,
+  memberIds: number[],
+  sampleSize: number,
+  dbClient: DbOrTxClient = db
+): Promise<BulkAudienceMemberRow[]> {
+  if (memberIds.length === 0) {
+    return [];
+  }
+
+  try {
+    return await dbClient
+      .select({
+        id: schema.organizationmember.id,
+        profileId: schema.organizationmember.profileId,
+        email: schema.organizationmember.email,
+        status: schema.organizationmember.status
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          inArray(schema.organizationmember.id, memberIds.slice(0, sampleSize))
+        )
+      )
+      .orderBy(schema.organizationmember.id)
+      .limit(sampleSize);
+  } catch (error) {
+    console.error('getBulkAudienceMemberSample error:', error);
+    throw new Error('Failed to sample audience members');
+  }
+}
+
+/**
+ * How many of a matched set are not yet ARCHIVED — the delete gate, answered as
+ * an aggregate instead of by counting a loaded array.
+ */
+export async function countBulkAudienceMembersNotArchived(
+  orgId: string,
+  memberIds: number[],
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  if (memberIds.length === 0) {
+    return 0;
+  }
+
+  try {
+    const [row] = await dbClient
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          inArray(schema.organizationmember.id, memberIds),
+          ne(schema.organizationmember.status, 'ARCHIVED')
+        )
+      );
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countBulkAudienceMembersNotArchived error:', error);
+    throw new Error('Failed to count non-archived audience members');
   }
 }
 
