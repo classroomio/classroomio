@@ -75,13 +75,7 @@ export const getOrganizationByProfileId = async (
     .from(schema.organization)
     .leftJoin(schema.organizationmember, eq(schema.organization.id, schema.organizationmember.organizationId))
     .leftJoin(schema.organizationPlan, eq(schema.organization.id, schema.organizationPlan.orgId))
-    .where(
-      and(
-        eq(schema.organizationmember.profileId, profileId),
-        // Deactivated and archived members keep their row but lose the org.
-        eq(schema.organizationmember.status, 'ACTIVE')
-      )
-    );
+    .where(and(eq(schema.organizationmember.profileId, profileId), eq(schema.organizationmember.status, 'ACTIVE')));
 
   // Group by organization and collect plans into an array
   const organizationMap = new Map<
@@ -456,19 +450,9 @@ export const deleteOrganizationMember = async (orgId: string, memberId: number) 
 };
 
 /**
- * Deletes a student organization member by ID, together with their course
- * enrolments inside this organization.
- *
- * The enrolment cleanup is not cosmetic: `groupmember` rows outlive the org
- * membership, and while access is correctly denied while they are gone, re-adding
- * the same person later would silently resurrect every old enrolment.
- *
- * Both writes share one transaction so a failure cannot leave the membership
- * deleted and the enrolments behind.
- *
- * @param orgId Organization ID
- * @param memberId Member ID to delete
- * @returns Deleted member or null if not found
+ * Deletes a student membership and their enrolments in this org, in one
+ * transaction. `groupmember` rows outlive the membership, so leaving them
+ * would silently resurrect old enrolments if the person were re-added.
  */
 export const deleteOrganizationAudienceMember = async (orgId: string, memberId: number) => {
   try {
@@ -500,11 +484,7 @@ export const deleteOrganizationAudienceMember = async (orgId: string, memberId: 
   }
 };
 
-/**
- * Removes course enrolments held by the given profiles inside one organization.
- * Scoped through `group.organization_id` so enrolments in other organizations,
- * and in personal courses, are left alone.
- */
+/** Scoped through `group.organization_id`, so other orgs are left alone. */
 export const deleteGroupMembershipsForOrgProfiles = async (
   orgId: string,
   profileIds: string[],
@@ -592,8 +572,7 @@ export const getUserOrgRole = async (orgId: string, profileId: string): Promise<
       and(
         eq(schema.organizationmember.organizationId, orgId),
         eq(schema.organizationmember.profileId, profileId),
-        // This gates the LMS organization route directly, so a deactivated or
-        // archived member would otherwise still pass the membership check.
+        // Gates the LMS org route directly, so status must be checked here.
         eq(schema.organizationmember.status, 'ACTIVE')
       )
     )
@@ -603,15 +582,12 @@ export const getUserOrgRole = async (orgId: string, profileId: string): Promise<
 };
 
 /**
- * Gets all `ACTIVE` org memberships for a user as { [orgId]: roleId }.
- * Used to attach org roles to the Better Auth session so middleware can
- * read membership/role from the session cookie cache instead of hitting the DB.
+ * `ACTIVE` org memberships as { [orgId]: roleId }, attached to the Better Auth
+ * session so middleware authorizes without a query. Excluding non-`ACTIVE`
+ * here is what revokes org access everywhere at once.
  *
- * Every org middleware reads that session map rather than querying, so
- * excluding non-`ACTIVE` memberships here is what makes deactivate and archive
- * revoke org access everywhere at once. Note the map is cached on the session:
- * a status change takes effect when the session cache next refreshes, so
- * anything needing immediate revocation must also invalidate the session.
+ * Cached on the session, so a status change lands on the next cache refresh —
+ * immediate revocation must also invalidate the session.
  */
 export const getUserOrgRolesMap = async (profileId: string): Promise<Record<string, number>> => {
   try {
@@ -708,12 +684,8 @@ export async function lockOrganizationForStudentCapacity(orgId: string, dbClient
 }
 
 /**
- * Counts the student memberships that occupy a plan seat.
- *
- * `ARCHIVED` members are excluded and `DEACTIVATED` members are not: archiving
- * is the action that reclaims a seat, deactivating is the reversible suspension
- * that keeps one. Without the exclusion, archiving thousands of dormant
- * learners would free nothing and the lifecycle feature would miss its point.
+ * Student memberships that occupy a plan seat. `ARCHIVED` is excluded and
+ * `DEACTIVATED` is not: archiving reclaims a seat, deactivating keeps one.
  */
 export async function countActiveStudents(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
   try {

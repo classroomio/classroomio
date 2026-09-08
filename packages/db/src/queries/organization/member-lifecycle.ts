@@ -16,12 +16,8 @@ export type BulkAudienceMemberRow = {
 };
 
 /**
- * Resolves member ids to the rows a bulk action may touch, restricted to
- * students in this organization.
- *
- * Authorization is enforced here rather than trusted from the caller: an id
- * belonging to another org, or to an admin, simply does not come back, so it
- * can never be acted on.
+ * Rows a bulk action may touch. Authorization lives here, not in the caller:
+ * an id from another org, or an admin's, simply does not come back.
  */
 export async function getBulkAudienceMembersByIds(
   orgId: string,
@@ -56,12 +52,7 @@ export async function getBulkAudienceMembersByIds(
   }
 }
 
-/**
- * A handful of members from a matched set, for a confirmation dialog's sample.
- *
- * Bounded by `LIMIT` in SQL rather than by slicing a fully-loaded array: the
- * matched set can be tens of thousands of learners, and the dialog shows five.
- */
+/** Bounded by `LIMIT`, not by slicing a fully-loaded array. */
 export async function getBulkAudienceMemberSample(
   orgId: string,
   memberIds: number[],
@@ -96,10 +87,7 @@ export async function getBulkAudienceMemberSample(
   }
 }
 
-/**
- * How many of a matched set are not yet ARCHIVED — the delete gate, answered as
- * an aggregate instead of by counting a loaded array.
- */
+/** The delete gate, as an aggregate rather than a loaded array. */
 export async function countBulkAudienceMembersNotArchived(
   orgId: string,
   memberIds: number[],
@@ -130,11 +118,8 @@ export async function countBulkAudienceMembersNotArchived(
 }
 
 /**
- * Applies a lifecycle status to a set of members, recording who changed it and
- * when. Returns the rows that actually changed.
- *
- * Rows already in the target status are excluded, so re-running an action is a
- * no-op rather than a pile of misleading audit entries.
+ * Applies a status and returns the rows that actually changed. Rows already in
+ * the target status are excluded, so re-running writes no misleading audit.
  */
 export async function bulkUpdateOrganizationMemberStatus(
   orgId: string,
@@ -168,10 +153,7 @@ export async function bulkUpdateOrganizationMemberStatus(
   }
 }
 
-/**
- * Removes memberships outright. Course enrolments inside this org are cleared
- * by the caller in the same transaction — see `deleteGroupMembershipsForOrgProfiles`.
- */
+/** Enrolments are cleared by the caller in the same transaction. */
 export async function bulkDeleteOrganizationAudienceMembers(
   orgId: string,
   memberIds: number[],
@@ -240,21 +222,10 @@ export async function recordOrganizationMemberAudit(
 }
 
 /**
- * Recomputes `organizationmember.last_active_at` from the two signals that
- * define "did something in this org": analytics page events and lesson
- * completions.
+ * Recomputes `last_active_at` from page events and lesson completions, which
+ * ingest alone misses — completions never flow through page events.
  *
- * The ingest path (`insertPageEvents`) keeps the column warm in real time; this
- * repairs whatever it missed — dropped batches, lesson completions, which never
- * flow through page events, and rows written before the column existed.
- *
- * Only moves timestamps forward (`GREATEST` against the current value), so a
- * short `lookbackDays` window can never walk a member's activity backwards, and
- * re-running it is always safe.
- *
- * @param lookbackDays Only consider activity newer than this. The nightly run
- *   uses a small window; pass a large one to repair history.
- * @returns Number of membership rows whose timestamp actually moved.
+ * Only moves timestamps forward, so re-running is always safe.
  */
 export async function reconcileMemberLastActive(lookbackDays: number, dbClient: DbOrTxClient = db): Promise<number> {
   try {

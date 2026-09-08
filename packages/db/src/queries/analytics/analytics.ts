@@ -459,13 +459,7 @@ export async function insertPageEvents(events: PageEventInsert[]) {
 
 export type MemberActivity = { orgId: string; userId: string; occurredAt: string };
 
-/**
- * Reduces a batch of page events to the latest activity per (org, user).
- *
- * Events without an org, user or timestamp carry no membership signal and are
- * dropped. Writing one row per member instead of one per event is what keeps
- * ingest cheap on a busy org.
- */
+/** Latest activity per (org, user), so ingest writes one row per member. */
 export function collapseLatestActivityByMember(events: PageEventInsert[]): MemberActivity[] {
   const latestByMember = new Map<string, MemberActivity & { at: number }>();
 
@@ -473,9 +467,7 @@ export function collapseLatestActivityByMember(events: PageEventInsert[]): Membe
     const { orgId, userId, occurredAt } = event;
     if (!orgId || !userId || !occurredAt) continue;
 
-    // Compared as instants, not strings. `/track` accepts any ISO string, so a
-    // batch can mix offsets — and `2026-01-01T00:00:00+02:00` sorts after
-    // `2026-01-01T01:00:00Z` lexicographically while being the earlier moment.
+    // Instants, not strings: `/track` accepts any ISO string, so offsets mix.
     const at = new Date(occurredAt).getTime();
     if (Number.isNaN(at)) continue;
 
@@ -491,15 +483,12 @@ export function collapseLatestActivityByMember(events: PageEventInsert[]): Membe
 }
 
 /**
- * Keeps `organizationmember.last_active_at` current from the page events just
- * ingested. Denormalized on purpose: filtering and sorting a 20k-learner roster
- * against the raw event table does not hold up, so the roster reads one indexed
- * column instead.
+ * Keeps `last_active_at` current from the events just ingested. Denormalized
+ * because filtering a 20k-learner roster against the raw event table does not
+ * hold up.
  *
- * Only ever moves the timestamp forward (the `lastActiveAt < occurredAt` guard),
- * so out-of-order or replayed batches cannot walk a member's activity backwards.
- * Best-effort: a failure here must not fail analytics ingest, since the nightly
- * reconcile repairs any gap.
+ * Only moves forward, so replayed batches cannot walk activity backwards.
+ * Best-effort — the nightly reconcile repairs any gap.
  */
 async function bumpMemberLastActiveFromEvents(events: PageEventInsert[]): Promise<void> {
   const activities = collapseLatestActivityByMember(events);

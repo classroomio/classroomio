@@ -29,19 +29,12 @@ export type GetOrganizationAudienceOptions = {
   lastLoginBefore?: TAudienceActivityWindow;
   lastActiveBefore?: TAudienceActivityWindow;
   excludeRecentJoiners?: boolean;
-  /**
-   * Restrict to specific members, bypassing every other filter including the
-   * default status. Used by "export exactly the rows I ticked", where applying
-   * the ordinary filters would silently drop selected archived learners.
-   */
+  /** Restrict to these members, bypassing every other filter including the default status. */
   memberIds?: number[];
 };
 
-/**
- * Last login for the row's profile. Login events are the durable source:
- * `session.updated_at` is pruned on expiry, so it cannot answer "never logged
- * in". Backed by `idx_analytics_login_events_user_logged_in`.
- */
+// Login events, not `session.updated_at`, which is pruned on expiry and so
+// cannot answer "never logged in".
 const lastLoginAtSql = sql<string | null>`(
   SELECT MAX(le.logged_in_at)
   FROM analytics_login_events le
@@ -49,20 +42,14 @@ const lastLoginAtSql = sql<string | null>`(
 )`;
 
 /**
- * Per-learner enrolment and progress across this organization's courses only,
- * joined LATERAL so it is evaluated once per row rather than once per column
- * that reads it.
+ * Per-learner enrolment and progress across this org's courses.
  *
- * Course completion is measured in completed lessons rather than
- * `course_completion_record`, which exists only for compliance-tracked courses
- * and would read as "not started" for everyone else.
+ * Measured in completed lessons, not `course_completion_record`, which only
+ * exists for compliance courses. The `total_lessons > 0` guard stops an empty
+ * course counting as completed.
  *
- * A course with no lessons can never be `completed` (the `total_lessons > 0`
- * guard). Without it, "every lesson completed" is vacuously true for an empty
- * course and an untouched learner would report as finished.
+ * `leftJoinLateral` emits the LATERAL keyword, so this is the subquery only.
  */
-// `leftJoinLateral` emits the LATERAL keyword itself, so this fragment is the
-// subquery and its alias only.
 const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
   SELECT
     COUNT(*)::int AS enrolled_count,
@@ -102,13 +89,9 @@ const completedLessonsSql = sql<number>`COALESCE(enrolment.completed_lessons, 0)
 const totalLessonsSql = sql<number>`COALESCE(enrolment.total_lessons, 0)`;
 
 /**
- * Latest invite for the row's email, used to filter on invite status in SQL
- * rather than after pagination.
- *
- * The states here mirror `deriveAudienceMemberStatus`
- * (`apps/api/src/utils/audience-member-status.ts`), which stays the single
- * owner of the rule for the value actually returned to the client. Keep the two
- * in step: this exists only so the filter can run before `LIMIT`.
+ * Mirrors `deriveAudienceMemberStatus` so invite status can be filtered before
+ * `LIMIT`. That function still owns the value returned to clients — keep both
+ * in step.
  */
 const inviteStatusSql = sql<string>`(
   CASE
@@ -133,12 +116,8 @@ const inviteStatusSql = sql<string>`(
 const RECENT_JOINER_GRACE_DAYS = 7;
 
 /**
- * Builds a staleness predicate: "this timestamp is older than the window, or
- * absent entirely". `never` matches only absence.
- *
- * `joinedAtSql` is passed so `excludeRecentJoiners` can drop learners who have
- * not existed long enough to be judged dormant — otherwise "never logged in"
- * sweeps up everyone invited last week.
+ * "Older than the window, or absent entirely". `never` matches only absence.
+ * `excludeRecentJoiners` drops learners too new to be judged dormant.
  */
 function stalenessCondition(
   activitySql: SQL<string | null>,
@@ -164,12 +143,9 @@ function stalenessCondition(
 }
 
 /**
- * Folds the per-course states into one exclusive learner state.
- *
- * The buckets are matched by precedence rather than as three independent
- * predicates, so they provably partition the enrolled population and the view
- * counts sum to the total. Learners with no enrolment at all match none of them
- * and are reachable only through `enrollment=not_enrolled`.
+ * Folds per-course states into one exclusive learner state, by precedence so
+ * the buckets partition the enrolled population. Learners with no enrolment
+ * match none of them — only `enrollment=not_enrolled` finds those.
  */
 function completionCondition(completion: TAudienceCompletion): SQL {
   if (completion === 'not_started') {
@@ -188,12 +164,8 @@ function completionCondition(completion: TAudienceCompletion): SQL {
 }
 
 /**
- * Single audience member, shaped exactly like a row from
- * `getOrganizationAudience` so the detail view and the list agree on every
- * lifecycle and progress field.
- *
- * Deliberately not filtered by status: an admin following a link to an archived
- * learner should still be able to see them.
+ * Same shape as a `getOrganizationAudience` row, so the detail view and list
+ * agree. Not status-filtered — a link to an archived learner should still work.
  */
 export const getOrganizationAudienceMember = async (orgId: string, memberId: number) => {
   const audienceEmailSql = sql<string>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`;
@@ -255,23 +227,12 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
 };
 
 /**
- * Gets organization audience (all organization members with student role).
- * Includes invited members without a profile (LEFT JOIN profile).
- * Row id is organizationmember.id; use profileId for profile-backed actions when present.
+ * The single source of truth for "which learners match these filters" — the
+ * list, the count and bulk-action target resolution all go through it, which is
+ * what stops a filter-mode action targeting a different set than was shown.
  *
- * The count query and the row query deliberately share one `whereClause`, so a
- * bulk action resolved from a filter cannot target a different set than the one
- * the admin was shown.
- */
-/**
- * The single source of truth for "which learners match these filters".
- *
- * The list, the count, and bulk-action target resolution all go through this,
- * which is what guarantees a filter-mode bulk action cannot act on a different
- * set than the admin was shown. Do not reimplement these predicates anywhere.
- *
- * `needsEnrolmentJoin` tells the caller whether the returned clause references
- * the enrolment lateral, so a query that does not need it can skip the join.
+ * `needsEnrolmentJoin` says whether the clause references the enrolment
+ * lateral, so callers that do not need it can skip the join.
  */
 export function buildAudienceWhereClause(
   orgId: string,
@@ -281,13 +242,11 @@ export function buildAudienceWhereClause(
   const status = options.status ?? 'ACTIVE';
   const excludeRecentJoiners = options.excludeRecentJoiners ?? true;
 
-  // Org join date, not account age: a long-standing account invited here last
-  // week is still a recent joiner.
+  // Org join date, not account age — an old account invited last week is new here.
   const joinedOrgAtSql = sql<string>`${schema.organizationmember.createdAt}`;
   const lastActiveAtSql = sql<string | null>`${schema.organizationmember.lastActiveAt}`;
 
-  // An id selection is the whole predicate — no filter, least of all the
-  // default ACTIVE status, may quietly drop a row the admin named.
+  // An id selection is the whole predicate: no filter may drop a named row.
   if (options.memberIds?.length) {
     return {
       whereClause: and(
@@ -345,11 +304,8 @@ export function buildAudienceWhereClause(
 }
 
 /**
- * How many learners matching these filters are not yet ARCHIVED.
- *
- * Derived from the filter itself rather than from a list of ids, so the delete
- * gate costs one aggregate no matter how large the match. Passing every matched
- * id into an `IN` predicate instead would build an unbounded parameter list.
+ * Non-archived count for the delete gate. Derived from the filter, not from an
+ * id list, which would build an unbounded `IN` predicate.
  */
 export async function countAudienceMatchesNotArchived(
   orgId: string,
@@ -412,11 +368,8 @@ export async function getAudienceMatchSample(
 }
 
 /**
- * Every member id matching the filters, ordered by id so the result is stable.
- *
- * Used to resolve a filter-mode bulk action inside its transaction, and to
- * compute the target hash the admin's preview is checked against. Deliberately
- * uncapped: at this customer's scale the matched set is the point.
+ * Every matching member id, ordered so the result is stable. Feeds filter-mode
+ * target resolution and the preview's target hash. Uncapped by design.
  */
 export async function resolveAudienceMemberIds(
   orgId: string,
@@ -458,8 +411,7 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
   const lastActiveAtSql = sql<string | null>`${schema.organizationmember.lastActiveAt}`;
   const enrolmentLateral = enrolmentSummaryLateral(orgId);
 
-  // The lateral is the expensive part and only these two filters need it in
-  // the count; joining always would tax every unfiltered page load.
+  // Only these filters make the count need the expensive lateral.
   const { whereClause, needsEnrolmentJoin: countNeedsEnrolment } = buildAudienceWhereClause(orgId, options);
 
   const countQuery = db
@@ -486,8 +438,7 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
             ? lastActiveAtSql
             : audienceCreatedAtSql;
 
-  // Dormancy sorting is the "worst offenders first" view, so a learner with no
-  // activity at all must sort as the stalest rather than drifting to the end.
+  // Nulls first: no activity is the stalest, not the least stale.
   const sortsOnActivity = sortBy === 'lastLoginAt' || sortBy === 'lastActiveAt';
   const orderedExpression = sortOrder === 'asc' ? asc(orderByExpression) : desc(orderByExpression);
   const orderBy = sortsOnActivity

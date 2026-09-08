@@ -20,11 +20,7 @@ import {
 } from '@cio/db/queries/organization';
 import type { TAudienceBulkAction, TBulkAudienceAction } from '@cio/utils/validation/organization';
 
-/**
- * One contract for both paths, so the client branches on `mode` rather than
- * guessing from a status code. The queued path's terminal payload is the same
- * `completed` shape, so the UI renders one partial-failure summary either way.
- */
+/** One contract for both paths, so the client branches on `mode` alone. */
 export type BulkAudienceActionResult =
   | {
       mode: 'completed';
@@ -61,11 +57,9 @@ const UNDO_STATUS: Record<
 };
 
 /**
- * Checksum over the ordered member ids a preview was computed from.
- *
- * A matching count does not prove a matching target: if one learner logs in and
- * another goes dormant between preview and apply, the count is identical while
- * the set is not. This is what turns that silent substitution into a 409.
+ * Checksum over the previewed member ids. A matching count does not prove a
+ * matching target — two learners swapping states leaves the count identical and
+ * the set different — so this is what makes the drift check real.
  */
 export function computeTargetHash(memberIds: number[]): string {
   return createHash('sha256')
@@ -74,27 +68,20 @@ export function computeTargetHash(memberIds: number[]): string {
 }
 
 export type BulkAudiencePreview = {
-  /** Exact, never approximate: this is what the admin approves and what the apply re-checks. */
+  /** Exact, never approximate — the apply step re-checks it. */
   count: number;
   targetHash: string;
-  /** A handful of affected learners, so the dialog can show who this hits. */
   sample: { id: number; name: string; email: string }[];
-  /** How many of the matched set are not archived — the delete gate, surfaced early. */
+  /** The delete gate, surfaced before the admin confirms. */
   notArchivedCount: number;
 };
 
-/**
- * Computes what a filter-mode action would affect, including the hash the apply
- * step verifies. Kept exact even when the list's own count is approximated: an
- * approximate `expectedCount` would either understate the blast radius the
- * admin approved, or 409 a legitimate action.
- */
+/** What a filter-mode action would affect, plus the hash the apply verifies. */
 export async function previewBulkAudienceAction(
   orgId: string,
   filter: Parameters<typeof resolveAudienceMemberIds>[1]
 ): Promise<BulkAudiencePreview> {
-  // Only the hash needs every id; sample and gate come from the filter so
-  // neither builds an IN predicate over the whole matched set.
+  // Only the hash needs every id; the rest derive from the filter.
   const [matchedIds, sample, notArchivedCount] = await Promise.all([
     resolveAudienceMemberIds(orgId, filter),
     getAudienceMatchSample(orgId, filter, PREVIEW_SAMPLE_SIZE),
@@ -125,12 +112,8 @@ type UndoRecord = {
 };
 
 /**
- * Single-use undo tokens, held in memory.
- *
- * In-memory is a deliberate limitation, not an oversight: an undo that silently
- * fails after a deploy or on another instance is worse than one the UI never
- * offered. Callers must treat a missing token as expired. Moving this to Redis
- * is the obvious upgrade when the API runs multi-instance.
+ * Single-use undo tokens, in memory. A known limitation: they do not survive a
+ * deploy or work across instances. Redis before the API runs multi-instance.
  */
 const UNDO_TOKEN_TTL_MS = 15 * 60 * 1000;
 const undoTokens = new Map<string, UndoRecord>();
@@ -145,14 +128,13 @@ function issueUndoToken(record: Omit<UndoRecord, 'expiresAt'>): string {
 function consumeUndoToken(token: string, orgId: string, actorProfileId: string): UndoRecord {
   const record = undoTokens.get(token);
 
-  // Single use: burn it before doing anything, so a double-click cannot apply twice.
+  // Burn before use, so a double-click cannot apply twice.
   undoTokens.delete(token);
 
   if (!record || record.expiresAt < Date.now()) {
     throw new AppError('This undo has expired', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 410);
   }
 
-  // Scoped to the actor and org that created it, so a leaked token is inert elsewhere.
   if (record.orgId !== orgId || record.actorProfileId !== actorProfileId) {
     throw new AppError('This undo is not available', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 403);
   }
@@ -160,13 +142,9 @@ function consumeUndoToken(token: string, orgId: string, actorProfileId: string):
   return record;
 }
 
-/** How many affected learners the confirmation dialog lists by name. */
 const PREVIEW_SAMPLE_SIZE = 5;
 
-/**
- * Guards the synchronous ceiling. Always checked against a count, never a
- * loaded array, so the rejection costs nothing.
- */
+/** Always checked against a count, never a loaded array, so refusing is cheap. */
 function assertWithinSyncCeiling(targetSize: number): void {
   if (targetSize <= AUDIENCE_BULK_SYNC_MAX) {
     return;
@@ -180,11 +158,8 @@ function assertWithinSyncCeiling(targetSize: number): void {
 }
 
 /**
- * Resolves the target inside the caller's transaction.
- *
- * For `filter` mode this runs the same `whereClause` builder the list uses, so
- * preview and apply cannot diverge, and re-checks both the count and the hash
- * the admin was shown.
+ * Resolves the target inside the caller's transaction. Filter mode reuses the
+ * list's `whereClause` builder, then re-checks the previewed count and hash.
  */
 async function resolveTarget(
   orgId: string,
@@ -206,19 +181,15 @@ async function resolveTarget(
     );
   }
 
-  // Before loading rows: checking after would make a 12,000-match filter pay
-  // for the full load just to be refused.
+  // Before loading rows, so a huge match is refused cheaply.
   assertWithinSyncCeiling(matchedIds.length);
 
   return getBulkAudienceMembersByIds(orgId, matchedIds, tx);
 }
 
 /**
- * Applies a lifecycle action to a set of learners.
- *
- * Everything happens in one transaction owned here: target resolution,
- * authorization, the writes, invite revocation and the audit rows. Side effects
- * that cannot be rolled back are deferred until after it commits.
+ * One transaction owned here: resolution, authorization, writes, invite
+ * revocation and audit rows.
  */
 export async function applyBulkAudienceAction(
   orgId: string,
@@ -232,7 +203,6 @@ export async function applyBulkAudienceAction(
       throw new AppError('No matching learners to act on', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 404);
     }
 
-    // Backstop; both modes are already bounded before reaching here.
     assertWithinSyncCeiling(members.length);
 
     const requested = members.length;
@@ -249,12 +219,8 @@ export async function applyBulkAudienceAction(
 }
 
 /**
- * Permanent removal, gated on the server.
- *
- * Every resolved member must already be ARCHIVED. Type-to-confirm in the UI
- * sits on top of this and never in place of it — otherwise the client could
- * permit a deletion the service refuses, or worse, let typed confirmation stand
- * in for the archive requirement.
+ * Permanent removal. Every resolved member must already be ARCHIVED; the UI's
+ * type-to-confirm sits on top of this gate, never in place of it.
  */
 async function deleteMembers(
   orgId: string,
@@ -277,8 +243,7 @@ async function deleteMembers(
   const memberIds = members.map((member) => member.id);
   const profileIds = members.map((member) => member.profileId).filter((id): id is string => Boolean(id));
 
-  // Audit rows are written before the delete so they capture the identity of
-  // members that are about to stop existing.
+  // Before the delete, while the identities still exist.
   await recordOrganizationMemberAudit(orgId, buildAuditEntries(members, data, actorProfileId, filterSnapshot), tx);
 
   if (profileIds.length > 0) {
@@ -292,8 +257,7 @@ async function deleteMembers(
     .map((member) => member.email!.toLowerCase());
 
   if (emails.length > 0) {
-    // Inside the transaction: a rollback must not leave invites revoked for
-    // members whose removal was undone.
+    // In-transaction: a rollback must not leave invites revoked.
     await revokeActiveOrganizationInvitesByEmails(orgId, emails, actorProfileId, tx);
   }
 
@@ -302,7 +266,6 @@ async function deleteMembers(
     requested: members.length,
     succeeded: deletedIds.length,
     failed: buildFailures(members, deletedIds),
-    // Removal is not reversible, so no token is issued and the dialog says so.
     undoToken: undefined
   };
 }
@@ -325,7 +288,6 @@ async function changeStatus(
 
   await recordOrganizationMemberAudit(orgId, buildAuditEntries(changed, data, actorProfileId, filterSnapshot), tx);
 
-  // Losing access should also close the door on a pending invite.
   if (action === 'deactivate' || action === 'archive') {
     const emails = changed.filter((member) => member.email).map((member) => member.email!.toLowerCase());
 
@@ -334,8 +296,7 @@ async function changeStatus(
     }
   }
 
-  // Over the ids that changed, never the filter — the action just changed who
-  // the filter matches.
+  // Over the ids that changed, never the filter — the action moved who matches.
   const undoStatus = action === 'deactivate' || action === 'archive' ? UNDO_STATUS[action] : undefined;
   const undoToken =
     undoStatus && changedIds.length > 0
@@ -357,11 +318,7 @@ async function changeStatus(
   };
 }
 
-/**
- * Members that resolved but did not change. Almost always because they were
- * already in the target state, which is reported rather than silently counted
- * as success.
- */
+/** Resolved but unchanged — usually already in the target state. Reported, not counted as success. */
 function buildFailures(
   members: BulkAudienceMemberRow[],
   succeededIds: number[]
@@ -430,8 +387,7 @@ export async function undoBulkAudienceAction(
       mode: 'completed' as const,
       requested: record.memberIds.length,
       succeeded: changedIds.length,
-      // The token's ids, not the rows returned: a deleted member yields no row,
-      // and would otherwise vanish from both succeeded and failed.
+      // The token's ids, not the rows returned: a deleted member yields no row.
       failed: record.memberIds
         .filter((memberId) => !changedIds.includes(memberId))
         .map((memberId) => {

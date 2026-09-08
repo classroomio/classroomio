@@ -28,11 +28,7 @@ const ENROLLMENT_VALUES: OrganizationAudienceEnrollment[] = ['enrolled', 'not_en
 const COMPLETION_VALUES: OrganizationAudienceCompletion[] = ['not_started', 'in_progress', 'completed'];
 const ACTIVITY_WINDOW_VALUES: OrganizationAudienceActivityWindow[] = ['7d', '30d', '90d', '180d', 'never'];
 
-/**
- * Reads a param only if it is one of the values we understand. A truncated or
- * hand-edited link falls back to the default rather than failing to load, which
- * matters because these URLs get pasted into chat for sign-off.
- */
+/** Unknown values fall back to the default, so a truncated link still loads. */
 function readEnum<T extends string>(value: string | null, allowed: T[]): T | undefined {
   return value && (allowed as string[]).includes(value) ? (value as T) : undefined;
 }
@@ -57,19 +53,14 @@ export function getAudienceQueryFromSearchParams(
     completion: readEnum(searchParams.get('completion'), COMPLETION_VALUES),
     lastLoginBefore: readEnum(searchParams.get('lastLoginBefore'), ACTIVITY_WINDOW_VALUES),
     lastActiveBefore: readEnum(searchParams.get('lastActiveBefore'), ACTIVITY_WINDOW_VALUES),
-    // Only an explicit "false" turns the guard off, so a missing param keeps
-    // the safe default rather than silently widening a destructive selection.
+    // Only an explicit "false" turns the guard off.
     excludeRecentJoiners:
       excludeRecentJoiners === null ? defaults.excludeRecentJoiners : excludeRecentJoiners !== 'false',
     search
   };
 }
 
-/**
- * Serializes a query back to the URL, omitting anything that matches the
- * default so a plain `/audience` stays clean and a shared link carries only
- * what the admin actually chose.
- */
+/** Omits defaults, so a plain `/audience` stays clean. */
 export function getAudienceSearchParams(
   query: OrganizationAudienceQuery,
   defaults: OrganizationAudienceQuery = DEFAULT_ORG_AUDIENCE_QUERY
@@ -118,10 +109,8 @@ export function toAudienceRequestQuery(
 }
 
 /**
- * The filter half of a query, shaped for the bulk preview and bulk action
- * endpoints. Pagination and sort are deliberately dropped: they change what the
- * admin *sees*, never who a filter *matches*, and including them would make two
- * identical targets hash differently.
+ * The filter half of a query, for the preview and bulk-action endpoints. Sort
+ * and pagination are dropped — they change what is shown, not what matches.
  */
 export function toAudienceBulkFilterQuery(query: OrganizationAudienceQuery) {
   return {
@@ -136,13 +125,7 @@ export function toAudienceBulkFilterQuery(query: OrganizationAudienceQuery) {
   };
 }
 
-/**
- * The filter combination behind each saved view.
- *
- * Views are a presentation of filters, never a parallel state: resolving one
- * produces an ordinary query, so the URL stays the single source of truth and
- * any view is reachable by link.
- */
+/** Views are a presentation of filters, never a parallel state. */
 const VIEW_FILTERS: Record<OrganizationAudienceView, Partial<OrganizationAudienceQuery>> = {
   all: {},
   never_logged_in: { lastLoginBefore: 'never' },
@@ -154,14 +137,14 @@ const VIEW_FILTERS: Record<OrganizationAudienceView, Partial<OrganizationAudienc
 
 export const ORG_AUDIENCE_VIEWS = Object.keys(VIEW_FILTERS) as OrganizationAudienceView[];
 
-/** Builds the full query for a view, resetting pagination as any filter change must. */
+/** Builds a view's query, resetting pagination as any filter change must. */
 export function applyAudienceView(
   view: OrganizationAudienceView,
   current: OrganizationAudienceQuery = DEFAULT_ORG_AUDIENCE_QUERY
 ): OrganizationAudienceQuery {
   return {
     ...DEFAULT_ORG_AUDIENCE_QUERY,
-    // Search and sort are the admin's, not the view's, so switching views keeps them.
+    // Search and sort belong to the admin, not the view.
     search: current.search,
     sortBy: current.sortBy,
     sortOrder: current.sortOrder,
@@ -172,9 +155,8 @@ export function applyAudienceView(
 }
 
 /**
- * Names the view a query represents, or `null` when the filters do not match
- * any saved view exactly. Derived from the query rather than stored, so the
- * switcher label stays correct when someone edits the URL by hand.
+ * The view a query represents, or `null` for a custom combination. Derived
+ * rather than stored, so a hand-edited URL still labels correctly.
  */
 export function matchAudienceView(query: OrganizationAudienceQuery): OrganizationAudienceView | null {
   for (const view of ORG_AUDIENCE_VIEWS) {
@@ -196,7 +178,7 @@ export function matchAudienceView(query: OrganizationAudienceQuery): Organizatio
   return null;
 }
 
-/** Number of filters active beyond the defaults — drives the filter button's dot. */
+/** Filters active beyond the defaults. Drives the filter button's dot. */
 export function countActiveAudienceFilters(query: OrganizationAudienceQuery): number {
   let active = 0;
 

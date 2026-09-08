@@ -17,26 +17,19 @@ export type AudienceExportRow = {
 
 type AudienceExportQuery = Omit<TGetAudienceQuery, 'page' | 'limit'> & { memberIds?: number[] };
 
-/** Page size for the internal walk. Large enough to be efficient, small enough to stay in constant memory. */
+/** Page size for the internal walk. */
 const EXPORT_PAGE_SIZE = 100;
 
 /**
- * Yields the roster in batches so the caller can stream it without ever holding
- * the whole set in memory.
- *
- * Invite status is resolved per batch rather than per row: a `Promise.all` of a
- * per-row lookup across 20,000 learners is exactly the shape that turns an
- * export into an outage.
+ * Yields the roster in batches so the caller can stream it. Invite status is
+ * resolved per batch, not per row.
  */
 export async function* getAudienceExportRows(
   orgId: string,
   query: AudienceExportQuery
 ): AsyncGenerator<AudienceExportRow[]> {
-  // `memberIds` takes precedence over the filters *entirely*, and that has to
-  // happen before the query runs. Filtering the pages afterwards would apply
-  // the ordinary filters first — including the default `status=ACTIVE` — so
-  // exporting a hand-picked set that includes archived learners would silently
-  // drop them, handing the admin a shorter list than the one they ticked.
+  // Ids must bypass the filters in the query itself. Filtering pages afterwards
+  // would apply `status=ACTIVE` first and silently drop selected archived rows.
   const { memberIds, ...filters } = query;
   const listQuery = memberIds?.length ? { memberIds } : filters;
 

@@ -136,16 +136,11 @@ export const isUserCourseMember = async (
 };
 
 /**
- * Checks if a user is either:
- * - a member of the course's group (any role), OR
- * - an ADMIN of the organization that owns the course's group.
+ * Course-group member (any role) or org ADMIN. Both require live, `ACTIVE` org
+ * membership — a `groupmember` row outlives removal from the org. This join is
+ * the single place course access is revoked.
  *
- * Both require live, `ACTIVE` org membership: a `groupmember` row outlives
- * removal from the org, and a deactivated or archived member is not "live"
- * either. This join is the single place course access is revoked, so
- * deactivate/archive take effect here rather than through scattered guards.
- *
- * This is designed for middleware use to avoid doing multiple DB queries.
+ * Designed for middleware use, to avoid multiple DB queries.
  */
 export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
   const orgMembership = alias(schema.organizationmember, 'org_membership');
@@ -379,9 +374,7 @@ export async function getCourseOrgAdminAccess(
           eq(schema.organizationmember.organizationId, schema.group.organizationId),
           eq(schema.organizationmember.profileId, profileId),
           eq(schema.organizationmember.roleId, ROLE.ADMIN),
-          // Feeds `ensureCourseGroupMemberId`, which can create a group
-          // membership — so without this a suspended admin could still be
-          // granted course access rather than merely reading with it.
+          // Feeds `ensureCourseGroupMemberId`, which can create a membership.
           eq(schema.organizationmember.status, 'ACTIVE')
         )
       )

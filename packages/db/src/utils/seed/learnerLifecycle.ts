@@ -21,12 +21,7 @@ interface SeedLearnerLifecycleArgs {
   reactCourseId: string;
 }
 
-/**
- * Enough learners to make the dormancy views, the bulk bar and the roster
- * export show something. The default seed only creates a handful, all recently
- * created with no login history, so every "inactive 90+ days" view came back
- * empty and the export was two rows.
- */
+/** Enough learners that every dormancy view and the export show something. */
 const LEARNER_COUNT = 140;
 
 /** Deterministic PRNG so re-seeding produces the same roster. */
@@ -86,13 +81,9 @@ const LAST_NAMES = [
 ];
 
 /**
- * The shape of a seeded roster, chosen so each saved view returns a non-trivial
- * number of rows and no view is a subset of another by accident.
- *
  * `lastLoginDaysAgo: null` means never logged in. `joinedDaysAgo` is always
- * older than the staleness window it is meant to match, otherwise the
- * recent-joiner guard would (correctly) filter the learner out and the view
- * would look broken.
+ * older than the window the cohort matches, or the recent-joiner guard would
+ * filter it out and the view would look broken.
  */
 type Cohort = {
   label: string;
@@ -230,8 +221,7 @@ function buildLearners(now: Date): SeededLearner[] {
 
   const pickInt = ([min, max]: [number, number]) => min + Math.floor(random() * (max - min + 1));
 
-  // Expand the cohort shares into a flat list, so the counts are proportional
-  // rather than random per learner.
+  // Flatten the shares, so counts are proportional rather than per-learner random.
   const plan: Cohort[] = [];
   for (const cohort of COHORTS) {
     const count = Math.max(1, Math.round(cohort.share * LEARNER_COUNT));
@@ -304,7 +294,6 @@ export async function seedLearnerLifecycle({ testOrgId, reactGroupId, reactCours
     console.log(`   ✓ Inserted ${profilesToInsert.length} lifecycle learner profile(s)`);
   }
 
-  // Org membership carries the lifecycle state the audience page filters on.
   const existingMembers = await db
     .select({ profileId: organizationmember.profileId })
     .from(organizationmember)
@@ -354,9 +343,7 @@ export async function seedLearnerLifecycle({ testOrgId, reactGroupId, reactCours
     console.log(`   ✓ Enrolled ${groupMembersToInsert.length} lifecycle learner(s) in the React course`);
   }
 
-  // Login events are what the "no login in N days" filter reads, via a lateral
-  // MAX(logged_in_at). The unique constraint is (user_id, logged_in_date), so
-  // each learner gets one row per distinct day.
+  // What the "no login in N days" filter reads. Unique on (user_id, date).
   const loginRows = learners
     .filter((learner) => learner.lastLoginDaysAgo != null)
     .flatMap((learner) => {
@@ -378,8 +365,7 @@ export async function seedLearnerLifecycle({ testOrgId, reactGroupId, reactCours
     console.log(`   ✓ Inserted ${loginRows.length} login event(s)`);
   }
 
-  // Page events keep the nightly reconcile consistent with `last_active_at`,
-  // so the column is not silently overwritten the first time the job runs.
+  // Keeps the nightly reconcile from overwriting `last_active_at`.
   const pageEventRows = learners
     .filter((learner) => learner.lastActiveDaysAgo != null)
     .flatMap((learner) =>
@@ -401,7 +387,6 @@ export async function seedLearnerLifecycle({ testOrgId, reactGroupId, reactCours
     console.log(`   ✓ Inserted ${pageEventRows.length} page event(s)`);
   }
 
-  // Lesson completions drive the progress column and the completion filter.
   const completionRows = learners.flatMap((learner) =>
     REACT_LESSON_IDS.slice(0, learner.lessonsCompleted).map((lessonId) => ({
       lessonId,

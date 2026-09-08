@@ -9,12 +9,8 @@ import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { zValidator } from '@hono/zod-validator';
 
 /**
- * Three export scopes, expressed explicitly rather than inferred.
- *
- * A filter-only endpoint cannot say "the 42 rows I ticked", and silently
- * widening that to the whole filtered set would hand someone a different list
- * than the one they asked for. So `memberIds` takes precedence and the filters
- * are ignored entirely when it is present, rather than intersected.
+ * Three scopes: selected ids, current filters, or everything. `memberIds` takes
+ * precedence and the filters are then ignored entirely, never intersected.
  */
 const ZAudienceExportQuery = ZGetAudienceQuery.omit({ page: true, limit: true }).extend({
   memberIds: z
@@ -29,12 +25,10 @@ const ZAudienceExportQuery = ZGetAudienceQuery.omit({ page: true, limit: true })
         .map((entry) => Number(entry.trim()))
         .filter((id) => Number.isInteger(id) && id > 0);
 
-      // Deduplicate before the cap, so repeating an id cannot push a legitimate
-      // selection over the limit.
+      // Dedupe before the cap, so repeats cannot push a valid selection over.
       return ids.length > 0 ? [...new Set(ids)] : undefined;
     })
-    // Refuse rather than truncate. Silently dropping ids would return a
-    // successful, short export of a selection the admin believed was complete.
+    // Refuse rather than truncate: a short export would look complete.
     .refine((ids) => ids == null || ids.length <= AUDIENCE_BULK_IDS_MAX, {
       message: `Select at most ${AUDIENCE_BULK_IDS_MAX} learners, or export the filtered view instead`
     })
@@ -50,15 +44,11 @@ function toCsvCell(value: string | number | null): string {
 }
 
 /**
- * Streams the roster as `text/csv` straight from the API.
+ * Streams the roster as `text/csv`. Not an RPC data route — it returns a file,
+ * so the single-return-type rule does not apply.
  *
- * Deliberately not an RPC data route: it returns a file rather than a typed
- * JSON envelope, so the single-return-type rule does not apply.
- *
- * There is no row cap. Instead the walk is demand-driven: one database page is
- * fetched and encoded per stream pull, so peak memory is one batch regardless
- * of roster size, and a client slower than Postgres throttles the query rather
- * than filling a queue.
+ * No row cap: one page is fetched per stream pull, so peak memory is one batch
+ * and a slow client throttles the query instead of filling a queue.
  */
 export const audienceExportRouter = new Hono().get(
   '/',
@@ -109,21 +99,12 @@ export const audienceExportRouter = new Hono().get(
 
       const stream = new ReadableStream({
         start(controller) {
-          // The BOM makes Excel on Windows read this as UTF-8, so accented
-          // learner names survive the round trip.
+          // BOM so Excel on Windows reads it as UTF-8.
           controller.enqueue(encoder.encode('﻿'));
           controller.enqueue(encoder.encode(`${headers.join(',')}\r\n`));
         },
 
-        /**
-         * One batch per pull, so the generator only advances when the consumer
-         * is ready for more.
-         *
-         * Doing this in `start` instead would run the whole walk as fast as the
-         * database answers, and every encoded row for a client slower than
-         * Postgres — which is every real client — would pile up in this
-         * stream's queue. Pulling keeps the peak at one batch.
-         */
+        /** One batch per pull. Doing this in `start` would buffer the whole export. */
         async pull(controller) {
           try {
             const { value, done } = await batches.next();
@@ -142,7 +123,7 @@ export const audienceExportRouter = new Hono().get(
           }
         },
 
-        /** Let the generator release its database page when the client disconnects mid-download. */
+        /** Release the generator if the client disconnects mid-download. */
         async cancel(reason) {
           await batches.return(undefined as never).catch(() => undefined);
           console.warn('audience export cancelled:', reason);

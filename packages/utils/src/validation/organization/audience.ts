@@ -11,19 +11,12 @@ export const AudienceInviteStatus = z.enum(['active', 'pending', 'expired', 'rev
 
 export const AudienceEnrollment = z.enum(['enrolled', 'not_enrolled']);
 
-/**
- * Learner-level completion state. Exclusive by precedence rather than three
- * independent predicates — see `getOrganizationAudience`, which encodes the
- * same precedence in one SQL CASE so the buckets provably partition the
- * enrolled population.
- */
+/** Exclusive by precedence, not three independent predicates. See `getOrganizationAudience`. */
 export const AudienceCompletion = z.enum(['not_started', 'in_progress', 'completed']);
 
 /**
- * Staleness thresholds, not recency windows: `90d` means "hasn't been seen in
- * 90 days". The polarity matters — an admin hunting dormant learners thinks in
- * "hasn't logged in for 90 days", and getting it right here keeps it right in
- * the UI. `never` means no event of that kind has ever been recorded.
+ * Staleness thresholds, not recency windows: `90d` means "not seen in 90 days".
+ * `never` means no such event was ever recorded.
  */
 export const AudienceActivityWindow = z.enum(['7d', '30d', '90d', '180d', 'never']);
 
@@ -33,8 +26,7 @@ export const ZGetAudienceQuery = z.object({
   search: z.string().trim().optional(),
   sortBy: AudienceSortBy.default('createdAt'),
   sortOrder: AudienceSortOrder.default('desc'),
-  // Defaults to ACTIVE server-side so archived learners drop out of the
-  // default view without the caller having to ask.
+  // ACTIVE by default, so archived learners drop out unasked.
   status: AudienceMemberStatus.default('ACTIVE'),
   inviteStatus: AudienceInviteStatus.optional(),
   enrollment: AudienceEnrollment.optional(),
@@ -42,14 +34,10 @@ export const ZGetAudienceQuery = z.object({
   lastLoginBefore: AudienceActivityWindow.optional(),
   lastActiveBefore: AudienceActivityWindow.optional(),
   /**
-   * Excludes learners who joined inside the staleness window from
-   * `lastLoginBefore` / `lastActiveBefore` results, so "never logged in" cannot
-   * silently sweep up people invited last week.
+   * Keeps learners who joined inside the staleness window out of the results.
    *
-   * Parsed explicitly rather than with `z.coerce.boolean()`, which turns the
-   * non-empty string `"false"` into `true` — the query string always carries
-   * strings, so coercion would make the override impossible to turn off and
-   * silently narrow both the displayed and the acted-on set.
+   * Parsed explicitly because `z.coerce.boolean()` turns the string `"false"`
+   * into `true`, which would make the override impossible to switch off.
    */
   excludeRecentJoiners: z
     .union([z.boolean(), z.enum(['true', 'false'])])
@@ -66,7 +54,7 @@ export type TAudienceCompletion = z.infer<typeof AudienceCompletion>;
 export type TAudienceActivityWindow = z.infer<typeof AudienceActivityWindow>;
 export type TGetAudienceQuery = z.infer<typeof ZGetAudienceQuery>;
 
-/** Days behind each staleness threshold. `never` is handled separately — it is an absence, not a cutoff. */
+/** Days behind each threshold. `never` is an absence, not a cutoff. */
 export const AUDIENCE_ACTIVITY_WINDOW_DAYS: Record<Exclude<TAudienceActivityWindow, 'never'>, number> = {
   '7d': 7,
   '30d': 30,
@@ -74,30 +62,21 @@ export const AUDIENCE_ACTIVITY_WINDOW_DAYS: Record<Exclude<TAudienceActivityWind
   '180d': 180
 };
 
-/** Explicit tick-box selection is capped; past this the admin is in filter mode anyway. */
+/** Cap on explicit tick-box selection. */
 export const AUDIENCE_BULK_IDS_MAX = 500;
 
-/**
- * Above this many resolved members the action is queued rather than run inside
- * the request. The threshold is checked against the *resolved* target, so
- * filter mode cannot slip past it by naming no ids.
- */
+/** Checked against the *resolved* target, so filter mode cannot slip past it. */
 export const AUDIENCE_BULK_SYNC_MAX = 1000;
 
 export const AudienceBulkAction = z.enum(['deactivate', 'reactivate', 'archive', 'unarchive', 'delete']);
 export type TAudienceBulkAction = z.infer<typeof AudienceBulkAction>;
 
 /**
- * Two selection modes, because tick-boxes do not scale to a filtered set of
- * several thousand learners.
+ * Two selection modes, because tick-boxes do not scale to thousands of rows.
  *
- * `filter` mode carries both an exact `expectedCount` and an
- * `expectedTargetHash` — a SHA-256 over the sorted member ids the admin was
- * actually shown. A matching count does not prove a matching target: if one
- * learner logs in and another goes dormant between preview and apply the count
- * is identical while the set is not, and the admin would silently act on
- * someone they never reviewed. The hash is what makes the guarantee real; the
- * count is what makes the error message readable.
+ * `filter` mode carries an exact count *and* a hash of the ids shown: a
+ * matching count alone does not prove a matching target, since two learners
+ * swapping states leaves the count identical and the set different.
  */
 export const ZBulkAudienceTarget = z.discriminatedUnion('mode', [
   z.object({
