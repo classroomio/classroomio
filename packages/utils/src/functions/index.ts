@@ -12,3 +12,4 @@ export * from './network';
 export * from './links';
 export * from './vimeo';
 export * from './youtube';
+export * from './video';

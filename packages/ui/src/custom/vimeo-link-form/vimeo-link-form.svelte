@@ -5,7 +5,7 @@
   import { cn } from '../../tools';
   import CopyIcon from '@lucide/svelte/icons/copy';
   import CheckIcon from '@lucide/svelte/icons/check';
-  import { splitLinks, toCanonicalVimeoUrl } from '@cio/utils';
+  import { extractUniqueLinks, toCanonicalVimeoUrl } from '@cio/utils';
   import { ExternalLinkIcon } from '../moving-icons';
 
   interface Props {
@@ -67,11 +67,7 @@
   async function addVimeoLink() {
     if (disabled || isSubmitting) return;
 
-    const links = splitLinks(rawInput)
-      .map(toCanonicalVimeoUrl)
-      .filter((entry): entry is string => Boolean(entry));
-
-    const dedupedLinks = Array.from(new Set(links));
+    const dedupedLinks = extractUniqueLinks(rawInput, toCanonicalVimeoUrl);
 
     if (dedupedLinks.length === 0) {
       validationError = invalidVimeoMessage;

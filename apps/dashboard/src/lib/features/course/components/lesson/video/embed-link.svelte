@@ -1,6 +1,6 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
-  import { normalizeHttpUrl, splitLinks } from '@cio/utils';
+  import { extractUniqueLinks, normalizeHttpUrl } from '@cio/utils';
   import { addExternalVideosToLesson } from './video-card-utils';
   import AddedVideoList from './added-video-list.svelte';
 
@@ -34,9 +34,9 @@
   async function addVideo() {
     if (isSubmitting) return;
 
-    const rawLinks = splitLinks(genericLinks);
-    const validLinks = rawLinks.filter(isValidLink).map((link) => normalizeHttpUrl(link));
-    const dedupedValidLinks = Array.from(new Set(validLinks));
+    const dedupedValidLinks = extractUniqueLinks(genericLinks, (link) =>
+      isValidLink(link) ? normalizeHttpUrl(link) : null
+    );
 
     if (dedupedValidLinks.length === 0) {
       error = $t('course.navItem.lessons.materials.tabs.video.add_video.invalid_link');
@@ -55,6 +55,8 @@
 
       genericLinks = '';
       error = '';
+    } catch (err) {
+      error = typeof err === 'string' ? err : (err as Error)?.message || 'Failed to add video';
     } finally {
       isSubmitting = false;
     }

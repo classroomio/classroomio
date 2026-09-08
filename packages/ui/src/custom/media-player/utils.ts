@@ -12,5 +12,9 @@ export {
   toCanonicalVimeoUrl,
   formatVimeoEmbedUrl,
   formatVimeoEmbedUrl as toVimeoEmbedUrl,
+  isGoogleDriveUrl,
+  getVideoMediaType,
+  getVideoType,
+  type VideoMediaType,
   type VimeoVideoDetails
 } from '@cio/utils';

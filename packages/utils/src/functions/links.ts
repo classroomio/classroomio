@@ -1,3 +1,5 @@
+import { dedupe } from './array';
+
 /**
  * Generic link utilities for extracting URLs from snippets, splitting user input,
  * and normalizing HTTP/HTTPS URLs.
@@ -75,4 +77,22 @@ export function normalizeHttpUrl(rawLink = ''): string {
   } catch {
     return withProtocol;
   }
+}
+
+/**
+ * Splits, optionally transforms (e.g. canonicalizes or validates), and deduplicates links from user input.
+ *
+ * @param rawInput - Comma-separated links string or iframe snippet
+ * @param transformFn - Optional transformation/normalization function; truthy returned strings are kept
+ * @returns Deduplicated array of processed links
+ */
+export function extractUniqueLinks(rawInput = '', transformFn?: (link: string) => string | null | undefined): string[] {
+  const rawLinks = splitLinks(rawInput);
+  if (!transformFn) {
+    return dedupe(rawLinks);
+  }
+
+  const transformed = rawLinks.map(transformFn).filter((entry): entry is string => Boolean(entry));
+
+  return dedupe(transformed);
 }

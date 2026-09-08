@@ -3,7 +3,7 @@
   import { Input } from '../../base/input';
   import { Label } from '../../base/label';
   import { cn } from '../../tools';
-  import { splitLinks, toCanonicalYoutubeUrl } from '@cio/utils';
+  import { extractUniqueLinks, toCanonicalYoutubeUrl } from '@cio/utils';
 
   interface Props {
     inputLabel: string;
@@ -40,11 +40,7 @@
   async function addYoutubeLink() {
     if (disabled || isSubmitting) return;
 
-    const links = splitLinks(rawInput)
-      .map(toCanonicalYoutubeUrl)
-      .filter((entry): entry is string => Boolean(entry));
-
-    const dedupedLinks = Array.from(new Set(links));
+    const dedupedLinks = extractUniqueLinks(rawInput, toCanonicalYoutubeUrl);
 
     if (dedupedLinks.length === 0) {
       validationError = invalidYoutubeMessage;
@@ -58,6 +54,8 @@
       await onSubmit(dedupedLinks);
       rawInput = '';
       onInputChange('');
+    } catch (error) {
+      validationError = typeof error === 'string' ? error : (error as Error)?.message || 'Failed to add video';
     } finally {
       isSubmitting = false;
     }

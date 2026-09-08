@@ -1,4 +1,5 @@
 import {
+  dedupe,
   getYoutubeVideoId,
   isValidYoutubeUrl as isYoutubeUrl,
   isValidVimeoUrl as isVimeoUrl,
@@ -196,19 +197,17 @@ export function resolveWatchEnforcedAssetIds(
     .map((video) => (video as LessonVideo & { assetId: string }).assetId);
 
   if (flaggedAssetIds.length > 0) {
-    return Array.from(new Set(flaggedAssetIds));
+    return dedupe(flaggedAssetIds);
   }
 
   if (completionPolicy !== 'video_watch') {
     return [];
   }
 
-  return Array.from(
-    new Set(
-      lessonVideos
-        .filter((video) => isEnforceableLessonVideo(video))
-        .map((video) => (video as LessonVideo & { assetId: string }).assetId)
-    )
+  return dedupe(
+    lessonVideos
+      .filter((video) => isEnforceableLessonVideo(video))
+      .map((video) => (video as LessonVideo & { assetId: string }).assetId)
   );
 }
 

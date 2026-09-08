@@ -13,5 +13,9 @@ export {
   extractVimeoDetails,
   getVimeoVideoDetails,
   isValidVimeoLink,
+  isGoogleDriveUrl,
+  getVideoMediaType,
+  getVideoType,
+  type VideoMediaType,
   type VimeoVideoDetails
 } from './utils';
