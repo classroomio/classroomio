@@ -77,15 +77,19 @@
   $effect(() => {
     if (hasNoSubmission) return;
 
-    const url = new URL(page.url);
-    url.searchParams.set('student', submissionGroups[studentSelected]?.studentKey ?? '');
+    // Don't touch the URL when on the summary tab — the parent
+    // component owns submission/student URL state for non-individual views.
+    const activeSubmission = page.url.searchParams.get('submission') ?? 'summary';
+    if (activeSubmission !== 'individual') return;
 
-    const targetUrl = `${url.pathname}${url.search}`;
-    const currentUrl = `${page.url.pathname}${page.url.search}`;
-    if (targetUrl === currentUrl) return;
+    const currentStudent = page.url.searchParams.get('student') ?? '';
+    const selectedStudent = submissionGroups[studentSelected]?.studentKey ?? '';
+    if (currentStudent === selectedStudent) return;
 
     untrack(() => {
-      goto(targetUrl, {
+      const url = new URL(page.url);
+      url.searchParams.set('student', selectedStudent);
+      goto(`${url.pathname}${url.search}`, {
         replaceState: true,
         keepFocus: true,
         noScroll: true

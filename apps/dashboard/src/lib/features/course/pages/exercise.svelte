@@ -507,20 +507,19 @@
   });
 
   $effect(() => {
-    const url = new URL(page.url);
-    url.searchParams.set('tab', selectedTab);
-
-    if (selectedTab !== 'submissions') {
-      url.searchParams.delete('submission');
-      url.searchParams.delete('student');
-    }
-
-    const targetUrl = `${url.pathname}${url.search}`;
-    const currentUrl = `${page.url.pathname}${page.url.search}`;
-    if (targetUrl === currentUrl) return;
+    const currentTab = page.url.searchParams.get('tab') ?? '';
+    if (currentTab === selectedTab) return;
 
     untrack(() => {
-      goto(targetUrl, {
+      const url = new URL(page.url);
+      url.searchParams.set('tab', selectedTab);
+
+      if (selectedTab !== 'submissions') {
+        url.searchParams.delete('submission');
+        url.searchParams.delete('student');
+      }
+
+      goto(`${url.pathname}${url.search}`, {
         replaceState: true,
         keepFocus: true,
         noScroll: true

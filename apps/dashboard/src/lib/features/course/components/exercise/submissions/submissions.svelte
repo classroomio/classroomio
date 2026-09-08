@@ -47,19 +47,18 @@
 
   // state -> URL: keep ?submission= in sync without self-navigating.
   $effect(() => {
-    const url = new URL(page.url);
-    url.searchParams.set('submission', currentTab);
-
-    if (currentTab !== 'individual') {
-      url.searchParams.delete('student');
-    }
-
-    const targetUrl = `${url.pathname}${url.search}`;
-    const currentUrl = `${page.url.pathname}${page.url.search}`;
-    if (targetUrl === currentUrl) return;
+    const currentSubmission = page.url.searchParams.get('submission') ?? '';
+    if (currentSubmission === currentTab) return;
 
     untrack(() => {
-      goto(targetUrl, {
+      const url = new URL(page.url);
+      url.searchParams.set('submission', currentTab);
+
+      if (currentTab !== 'individual') {
+        url.searchParams.delete('student');
+      }
+
+      goto(`${url.pathname}${url.search}`, {
         replaceState: true,
         keepFocus: true,
         noScroll: true
