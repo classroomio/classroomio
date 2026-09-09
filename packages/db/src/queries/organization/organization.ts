@@ -1158,7 +1158,12 @@ export const updateOrganizationPlan = async (
 ): Promise<TOrganizationPlan> => {
   const [plan] = await db
     .update(schema.organizationPlan)
-    .set({ payload, updatedAt: sql`timezone('utc'::text, now())` })
+    .set({
+      isActive: true,
+      deactivatedAt: null,
+      payload,
+      updatedAt: sql`timezone('utc'::text, now())`
+    })
     .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
     .returning();
   return plan;
