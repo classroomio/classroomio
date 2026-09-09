@@ -132,17 +132,6 @@ export const ZUndoBulkAudienceAction = z.object({
 });
 export type TUndoBulkAudienceAction = z.infer<typeof ZUndoBulkAudienceAction>;
 
-export const ZImportAudienceMembers = z.object({
-  recipientCsv: z.string().max(25000),
-  courseIds: z.array(z.string().uuid()).optional(),
-  cohortIds: z.array(z.string().uuid()).optional(),
-  allCourses: z.boolean().optional().default(false),
-  allCohorts: z.boolean().optional().default(false),
-  sendEmail: z.boolean().default(true)
-});
-
-export type TImportAudienceMembers = z.infer<typeof ZImportAudienceMembers>;
-
 export const ZAssignAudienceCourses = z
   .object({
     profileIds: z.array(z.uuid()).min(1).max(500),
