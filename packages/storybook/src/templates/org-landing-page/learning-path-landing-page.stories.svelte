@@ -12,7 +12,8 @@
     EditorialLandingPage,
     VibrantLandingPage,
     QuartzLandingPage,
-    mockOrgLandingPageProps as mockProps
+    mockOrgLandingPageProps as mockProps,
+    mockLearningPaths
   } from '@cio/ui/custom/org-landing-page';
 
   const { Story } = defineMeta({
@@ -23,60 +24,66 @@
     tags: ['autodocs']
   });
 
+  const learningPathProps = {
+    ...mockProps,
+    learningPaths: mockLearningPaths,
+    hasMoreLearningPaths: true
+  };
+
   /**
    * Every theme's org.svelte only renders its "Learning Paths" section when
    * `learningPaths` is a non-empty array (see OrgLandingPageProps) — real org
-   * home pages omit it entirely until a `learning_path` API exists. mockProps
-   * already carries `mockLearningPaths`, so every story below shows the full
-   * home page with that section rendered above Courses, per theme.
+   * home pages omit it entirely until a `learning_path` API exists. The
+   * `learningPathProps` fixture opts each story into the section explicitly,
+   * keeping shared preview fixtures unchanged.
    */
 </script>
 
 <Story name="Minimal">
-  <MinimalLandingPage {...mockProps} />
+  <MinimalLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Bold">
-  <BoldLandingPage {...mockProps} />
+  <BoldLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Classic">
-  <ClassicLandingPage {...mockProps} />
+  <ClassicLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="SaaS">
-  <SaasLandingPage {...mockProps} />
+  <SaasLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Tech">
-  <TechLandingPage {...mockProps} />
+  <TechLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Studio">
-  <StudioLandingPage {...mockProps} />
+  <StudioLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Corporate">
-  <CorporateLandingPage {...mockProps} />
+  <CorporateLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Terminal">
-  <TerminalLandingPage {...mockProps} />
+  <TerminalLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Editorial">
-  <EditorialLandingPage {...mockProps} />
+  <EditorialLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Vibrant">
-  <VibrantLandingPage {...mockProps} />
+  <VibrantLandingPage {...learningPathProps} />
 </Story>
 
 <Story name="Quartz">
-  <QuartzLandingPage {...mockProps} authAction={{ label: 'Continue', href: '#signin' }} />
+  <QuartzLandingPage {...learningPathProps} authAction={{ label: 'Continue', href: '#signin' }} />
 </Story>
 
 <!-- No Learning Paths data at all — every theme must omit the section entirely, not show an empty state. -->
 <Story name="No Learning Paths (section omitted)">
-  <MinimalLandingPage {...mockProps} learningPaths={[]} />
+  <MinimalLandingPage {...learningPathProps} learningPaths={[]} />
 </Story>

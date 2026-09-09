@@ -47,8 +47,6 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
     eyebrow: '// engineering academy'
   },
-  learningPaths: mockLearningPaths,
-  hasMoreLearningPaths: true,
   courses: [
     {
       id: '1',
