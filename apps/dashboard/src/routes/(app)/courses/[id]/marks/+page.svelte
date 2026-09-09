@@ -15,8 +15,7 @@
 
   const exercises = $derived(data.marksData?.exercises ?? []);
 
-  // Built from the shared export model, so CSV and PDF come from one column
-  // definition rather than two hand-maintained generators.
+  // One column definition drives every format.
   const exportDocument = $derived(
     buildMarksExportDocument(
       data.marksData?.students ?? [],
