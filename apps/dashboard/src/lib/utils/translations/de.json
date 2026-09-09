@@ -849,7 +849,6 @@
         "unarchive": "{count} Lernende aus dem Archiv entfernen",
         "delete": "{count} Lernende löschen"
       },
-      "queued": "Anwendung auf {count} Lernende im Hintergrund",
       "queued_running": "Anwendung auf {count} Lernende. Sie können weiterarbeiten – wir benachrichtigen Sie, sobald der Vorgang abgeschlossen ist.",
       "queued_failed": "Diese Massenaktion wurde nicht abgeschlossen. Es wurden keine weiteren Aktionen durchgeführt.",
       "queued_lost": "Der Status dieses Durchlaufs ist verloren gegangen. Laden Sie die Seite neu, um den aktuellen Stand anzuzeigen."
@@ -5122,8 +5121,8 @@
     },
     "stage": {
       "probing": "Video lesen…",
-      "encoding": "Codierung {rung} ({percent}%)",
-      "uploading": "Segmente werden hochgeladen ({uploaded}/{total})",
+      "encoding": "Video wird codiert…",
+      "uploading": "Wird hochgeladen…",
       "thumbnail": "Miniaturbild wird erstellt…",
       "finalizing": "Sparen…",
       "done": "Bereit",

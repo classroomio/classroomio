@@ -849,7 +849,6 @@
         "unarchive": "Usunąć z archiwum {count} uczniów",
         "delete": "Usuń {count} uczniów"
       },
-      "queued": "Aplikowanie do {count} uczniów w tle",
       "queued_running": "Aplikowanie do {count} uczniów. Możesz kontynuować pracę — powiadomimy Cię o jej zakończeniu.",
       "queued_failed": "Ta akcja zbiorcza nie została zakończona. Nic więcej nie zostało zastosowane.",
       "queued_lost": "Straciliśmy śledzenie tego uruchomienia. Odśwież, aby zobaczyć aktualny stan."
@@ -5122,8 +5121,8 @@
     },
     "stage": {
       "probing": "Czytanie wideo…",
-      "encoding": "Kodowanie {rung} ({percent}%)",
-      "uploading": "Przesyłanie segmentów ({uploaded}/{total})",
+      "encoding": "Kodowanie wideo…",
+      "uploading": "Przesyłanie…",
       "thumbnail": "Generuję miniaturę…",
       "finalizing": "Zapisuję…",
       "done": "Gotowy",

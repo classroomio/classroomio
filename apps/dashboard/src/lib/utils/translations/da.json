@@ -849,7 +849,6 @@
         "unarchive": "Afarkivér {count} elever",
         "delete": "Slet {count} elever"
       },
-      "queued": "Anvendes til {count} elever i baggrunden",
       "queued_running": "Anvendes til {count} elever. Du kan fortsætte med at arbejde — vi giver dig besked, når det er færdigt.",
       "queued_failed": "Denne massehandling blev ikke afsluttet. Intet yderligere blev anvendt.",
       "queued_lost": "Vi mistede overblikket over denne kørsel. Genindlæs for at se den aktuelle status."
@@ -5122,8 +5121,8 @@
     },
     "stage": {
       "probing": "Læser video...",
-      "encoding": "Kodning {rung} ({percent}%)",
-      "uploading": "Uploader segmenter ({uploaded}/{total})",
+      "encoding": "Koder video…",
+      "uploading": "Uploader…",
       "thumbnail": "Genererer thumbnail...",
       "finalizing": "Gemmer...",
       "done": "Klar",

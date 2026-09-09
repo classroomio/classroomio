@@ -17,17 +17,22 @@
 
   function showToast() {
     const message = $t($snackbarStore.message);
-    const { autoHideDuration } = $snackbarStore;
+    const { autoHideDuration, id, severity } = $snackbarStore;
 
     const options = {
       duration: autoHideDuration || 5000,
       onDismiss: handleClose,
-      onAutoClose: handleClose
+      onAutoClose: handleClose,
+      // Reusing an id swaps that toast's content instead of stacking a new one.
+      ...(id ? { id } : {})
     };
 
-    if ($snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS) {
+    if (severity === SNACKBAR_SEVERITY.LOADING) {
+      // Sonner draws the spinner; it stays until the caller resolves this id.
+      toast.loading(message, options);
+    } else if (severity === SNACKBAR_SEVERITY.SUCCESS) {
       toast.success(message, options);
-    } else if ($snackbarStore.severity === SNACKBAR_SEVERITY.ERROR) {
+    } else if (severity === SNACKBAR_SEVERITY.ERROR) {
       toast.error(message, options);
     } else {
       toast.info(message, options);

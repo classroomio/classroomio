@@ -849,7 +849,6 @@
         "unarchive": "Bỏ lưu trữ {count} học viên",
         "delete": "Xóa {count} học viên"
       },
-      "queued": "Đang áp dụng cho {count} học viên trong nền",
       "queued_running": "Đang áp dụng cho {count} học viên. Bạn có thể tiếp tục làm việc — chúng tôi sẽ thông báo cho bạn khi hoàn tất.",
       "queued_failed": "Thao tác hàng loạt này không hoàn tất. Không có gì khác được áp dụng.",
       "queued_lost": "Chúng tôi đã mất dấu vết của lần chạy này. Tải lại để xem trạng thái hiện tại."
@@ -5122,8 +5121,8 @@
     },
     "stage": {
       "probing": "Đang đọc video…",
-      "encoding": "Mã hóa {rung} ({percent}%)",
-      "uploading": "Đang tải lên các phân đoạn ({uploaded}/{total})",
+      "encoding": "Đang mã hóa video…",
+      "uploading": "Đang tải lên…",
       "thumbnail": "Đang tạo hình thu nhỏ…",
       "finalizing": "Đang lưu…",
       "done": "Sẵn sàng",

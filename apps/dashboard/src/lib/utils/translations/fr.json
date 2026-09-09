@@ -849,7 +849,6 @@
         "unarchive": "Désarchiver {count} apprenants",
         "delete": "Supprimer {count} apprenants"
       },
-      "queued": "Application en arrière-plan à {count} apprenants",
       "queued_running": "Application à {count} apprenants. Vous pouvez continuer à travailler ; nous vous informerons de la fin de l’opération.",
       "queued_failed": "Cette action groupée n’a pas abouti. Aucune autre action n’a été appliquée.",
       "queued_lost": "Cette exécution a été interrompue. Rechargez la page pour afficher l’état actuel."
@@ -5122,8 +5121,8 @@
     },
     "stage": {
       "probing": "Lecture de la vidéo…",
-      "encoding": "Encodage de {rung} ({percent} %)",
-      "uploading": "Segments en ligne ({uploaded}/{total})",
+      "encoding": "Encodage de la vidéo…",
+      "uploading": "Téléversement…",
       "thumbnail": "Générer une vignette…",
       "finalizing": "Sauvegarde…",
       "done": "Prêt",

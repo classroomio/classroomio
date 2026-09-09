@@ -849,7 +849,6 @@
         "unarchive": "Desarquivar {count} aprendizes",
         "delete": "Excluir {count} alunos"
       },
-      "queued": "Aplicando a {count} alunos em segundo plano",
       "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar.",
       "queued_failed": "Esta ação em lote não foi concluída. Nenhuma outra ação foi aplicada.",
       "queued_lost": "Perdemos o controle desta execução. Recarregue a página para ver o estado atual."
@@ -3210,7 +3209,7 @@
     "cohorts": "Coortes",
     "upgrade_now": "Atualize agora",
     "upgrade_students": "{studentCount} de {studentLimit} alunos",
-    "upgrade_left": "{contagem} restantes"
+    "upgrade_left": "{count} restantes"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -5122,8 +5121,8 @@
     },
     "stage": {
       "probing": "Lendo vídeo…",
-      "encoding": "Codificação {rung} ({percent}%)",
-      "uploading": "Fazendo upload de segmentos ({uploaded}/{total})",
+      "encoding": "Codificando vídeo…",
+      "uploading": "Enviando…",
       "thumbnail": "Gerando miniatura…",
       "finalizing": "Salvando…",
       "done": "Pronto",

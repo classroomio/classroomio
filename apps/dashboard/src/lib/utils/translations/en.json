@@ -4116,7 +4116,6 @@
       "undo_available": "Applied. You can still undo this.",
       "undo": "Undo",
       "undo_success": "Reverted",
-      "queued": "Applying to {count} learners in the background",
       "queued_running": "Applying to {count} learners. You can keep working — we will tell you when it finishes.",
       "queued_failed": "This bulk action did not finish. Nothing further was applied.",
       "queued_lost": "We lost track of this run. Reload to see the current state."

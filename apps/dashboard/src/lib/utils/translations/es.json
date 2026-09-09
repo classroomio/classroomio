@@ -849,7 +849,6 @@
         "unarchive": "Desarchivar {count} alumnos",
         "delete": "Eliminar {count} alumnos"
       },
-      "queued": "Aplicando cambios a {count} alumnos en segundo plano",
       "queued_running": "Aplicando cambios a {count} alumnos. Puedes seguir trabajando; te avisaremos cuando termine.",
       "queued_failed": "Esta acción masiva no ha finalizado. No se ha aplicado ningún otro cambio.",
       "queued_lost": "Hemos perdido el rastro de esta ejecución. Recarga la página para ver el estado actual."
@@ -5122,8 +5121,8 @@
     },
     "stage": {
       "probing": "Leyendo vídeo…",
-      "encoding": "Codificación {rung} ({percent}%)",
-      "uploading": "Subiendo segmentos ({uploaded}/{total})",
+      "encoding": "Codificando vídeo…",
+      "uploading": "Subiendo…",
       "thumbnail": "Generando miniatura…",
       "finalizing": "Guardando…",
       "done": "Listo",
