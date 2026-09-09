@@ -63,14 +63,16 @@
     allMatchingSelected = false;
   });
 
+  // Identity, then state, then stats, then dates. Order must match the cell
+  // order in `audience-member-row.svelte` — they are paired by position only.
   const headers = $derived([
     { key: 'name', value: $t('audience.name') },
     { key: 'email', value: $t('audience.email') },
     { key: 'status', value: $t('audience.status') },
-    { key: 'last_login', value: $t('audience.filter.last_login') },
-    { key: 'last_activity', value: $t('audience.filter.last_activity') },
     { key: 'enrollment', value: $t('audience.filter.enrollment') },
     { key: 'progress', value: $t('audience.progress') },
+    { key: 'last_login', value: $t('audience.filter.last_login') },
+    { key: 'last_activity', value: $t('audience.filter.last_activity') },
     { key: 'date_joined', value: $t('audience.date_joined') }
   ]);
 

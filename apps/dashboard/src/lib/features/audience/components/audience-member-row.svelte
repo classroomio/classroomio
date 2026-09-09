@@ -85,17 +85,17 @@
       <Badge variant={statusBadgeVariant(row.status)}>{$t(statusLabelKey(row.status))}</Badge>
     {/if}
   </Table.Cell>
-  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastLoginAt)}>
-    {lastLoginAge ?? $t('audience.never')}
-  </Table.Cell>
-  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastActiveAt)}>
-    {lastActiveAge ?? $t('audience.never')}
-  </Table.Cell>
   <Table.Cell class="whitespace-nowrap">
     {$t('audience.enrolled_ratio', { completed: row.completedCount, total: row.enrolledCount })}
   </Table.Cell>
   <Table.Cell>
     <PercentRingProgress value={row.progressPercent} />
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastLoginAt)}>
+    {lastLoginAge ?? $t('audience.never')}
+  </Table.Cell>
+  <Table.Cell class="whitespace-nowrap" title={formatActivityExact(row.lastActiveAt)}>
+    {lastActiveAge ?? $t('audience.never')}
   </Table.Cell>
   <Table.Cell class="whitespace-nowrap">{row.createdAt}</Table.Cell>
   <Table.Cell class="text-right">
