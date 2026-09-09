@@ -1,4 +1,16 @@
 {
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Account menu, signed in as {email}",
+      "trigger_label_anonymous": "Account menu",
+      "my_courses": "My Courses",
+      "my_certificates": "My Certificates",
+      "account_settings": "Account Settings",
+      "theme": "Theme",
+      "continue_learning": "Continue Learning",
+      "not_enrolled_note": "Not enrolled in this academy yet — learner destinations appear after joining."
+    }
+  },
   "aiTutor": {
     "page": {
       "org": {

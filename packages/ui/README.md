@@ -83,6 +83,7 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/course-creator/` - ChatGPT-style course creation input with level and type selects
 - `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
 - `custom/question-type-picker/` - Question type picker modal and QuestionTypeIcon glyph/icon component
+- `custom/org-landing-page/` - 11-theme org and course landing page system, including `LearnerMenu` authenticated popover
 
 ### Question type icon (`src/custom/question-type-picker/question-type-icon.svelte`)
 
