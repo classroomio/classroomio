@@ -41,6 +41,33 @@ isProject: true
 - **Depends on:** Docs workspace on `main` ([PR #699](https://github.com/classroomio/classroomio/pull/699))
 - **Related problem (cross-cutting, not unique to this PRD):** When the **product changes**, courses go stale. Docs-as-source-of-truth is how we attack that — one page, many courses.
 
+---
+
+## Marketing use case
+
+**Who:** Customer education, CS, and product marketing at a B2B SaaS company. They run an academy for customers (onboarding, product 101, admin/cert tracks) and also need help articles, changelog posts, and one-off guides.
+
+**The mess today:** Every time Billing or SSO changes, someone hunts through courses, Intercom, and a blog to paste the same update. The intro lesson is copy-pasted into five courses. A “how to invite your team” page either lives inside a full course nobody finishes, or in a help center the academy doesn’t know about.
+
+**The unlock:** **Write it once as a Doc. Use it everywhere. Change it once.**
+
+A Doc is the source of truth. Courses, the academy catalog, the blog, cohorts, and learning paths only *point* at it — they don’t own a copy.
+
+| They write | They place it |
+| --- | --- |
+| “Welcome to Acme” | Intro lesson in every course |
+| “Set up SSO” | Catalog lesson *and* step 3 in Admin Cert |
+| “What’s new in Billing” | Blog on the landing page *and* a lesson in Product 101 |
+| “How this cohort works” | Cohort materials, not a dummy course |
+
+When product ships, they edit the SSO Doc. Onboarding, the cert path, and the public article update together. No CMS, no duplicate lessons, no stale academy.
+
+**One line:** *Your academy stays current because the lesson, the help article, and the blog post are the same page.*
+
+**Not this:** A second wiki next to the LMS. Docs *are* the content layer the academy is built from.
+
+---
+
 ## Positioning
 
 ClassroomIO is a **customer academy** for SaaS, not a generic corporate LMS.
