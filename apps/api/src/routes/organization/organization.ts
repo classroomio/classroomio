@@ -584,7 +584,7 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/plan
    * Creates a new organization plan
-   * Requires authentication (user session or API key)
+   * Requires a server API key
    */
   .post('/plan', apiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
     try {
@@ -606,7 +606,7 @@ export const organizationRouter = new Hono()
    * POST /organization/plan/activate
    * Activates an existing organization plan or creates it when the initial
    * subscription event arrived before payment became active.
-   * Requires authentication (user session or API key)
+   * Requires a server API key
    */
   .post('/plan/activate', apiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
     try {
@@ -627,7 +627,7 @@ export const organizationRouter = new Hono()
   /**
    * PUT /organization/plan
    * Updates an organization plan by subscription ID
-   * Requires authentication (user session or API key)
+   * Requires a server API key
    */
   .put('/plan', apiKeyMiddleware, zValidator('json', ZUpdateOrgPlan), async (c) => {
     try {
@@ -648,7 +648,7 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/plan/cancel
    * Cancels an organization plan by subscription ID
-   * Requires authentication (user session or API key)
+   * Requires a server API key
    */
   .post('/plan/cancel', apiKeyMiddleware, zValidator('json', ZCancelOrgPlan), async (c) => {
     try {
