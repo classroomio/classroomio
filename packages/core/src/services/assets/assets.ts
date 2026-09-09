@@ -20,6 +20,7 @@ import type {
 import type { TTranscriptResponse, TUpdateTranscript } from '@cio/utils/validation/media';
 import {
   assetUsageExistsForTarget,
+  AssetUsageAlreadyExistsError,
   createAssetAndUsage,
   createAssetUsage,
   createHlsAssetPlaceholder,
@@ -482,6 +483,10 @@ export async function createAndAttachAssetService(orgId: string, profileId: stri
 
     return result;
   } catch (error) {
+    if (error instanceof AssetUsageAlreadyExistsError) {
+      throw new AppError('Asset is already attached to this target', ErrorCodes.ASSET_ALREADY_ATTACHED, 409);
+    }
+
     if (error instanceof AppError) {
       throw error;
     }

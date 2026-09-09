@@ -28,6 +28,13 @@ export interface AssetStorageSummary {
   bytesByKind: Record<string, number>;
 }
 
+export class AssetUsageAlreadyExistsError extends Error {
+  constructor() {
+    super('Asset is already attached to this target');
+    this.name = 'AssetUsageAlreadyExistsError';
+  }
+}
+
 export interface AssetDetachInput {
   usageId?: string;
   targetType?: string;
@@ -433,6 +440,18 @@ export async function createAssetAndUsage(
 ): Promise<{ asset: TAsset; usage: TAssetUsage }> {
   return db.transaction(async (tx) => {
     const asset = await createOrGetAssetByStorageKey(assetValues, tx);
+    const alreadyAttached = await assetUsageExistsForTarget(
+      asset.id,
+      assetValues.organizationId,
+      usageValues.targetType,
+      usageValues.targetId,
+      tx
+    );
+
+    if (alreadyAttached) {
+      throw new AssetUsageAlreadyExistsError();
+    }
+
     const usage = await createAssetUsage({ ...usageValues, assetId: asset.id }, tx);
 
     return { asset, usage };
@@ -528,10 +547,11 @@ export async function assetUsageExistsForTarget(
   assetId: string,
   orgId: string,
   targetType: string,
-  targetId: string
+  targetId: string,
+  dbClient: DbOrTxClient = db
 ): Promise<boolean> {
   try {
-    const [existing] = await db
+    const [existing] = await dbClient
       .select({ id: schema.assetUsage.id })
       .from(schema.assetUsage)
       .where(
