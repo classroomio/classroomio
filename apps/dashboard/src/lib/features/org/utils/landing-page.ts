@@ -40,7 +40,7 @@ export const defaultLandingPageHero: OrgLandingPageHero = {
   subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
   primaryAction: {
     label: 'Start Learning',
-    href: '/login'
+    href: '/lms'
   },
   secondaryAction: {
     label: 'Browse',
