@@ -4,6 +4,7 @@
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import AudienceMemberRow from './audience-member-row.svelte';
+  import AudienceSkeletonRow from './audience-skeleton-row.svelte';
   import { resolve } from '$app/paths';
 
   interface Header {
@@ -14,6 +15,8 @@
   interface Props {
     headers: Header[];
     rows: OrganizationAudienceMember[];
+    /** Replaces the rows with placeholders while a reload is in flight. */
+    loading?: boolean;
     allPageSelected: boolean;
     somePageSelected: boolean;
     onToggleSelectAll: () => void;
@@ -30,6 +33,7 @@
   let {
     headers,
     rows,
+    loading = false,
     allPageSelected,
     somePageSelected,
     onToggleSelectAll,
@@ -72,20 +76,28 @@
       </Table.Row>
     </Table.Header>
     <Table.Body>
-      {#each rows as row (String(row.id))}
-        <AudienceMemberRow
-          {row}
-          memberDetailHref={memberHref(row)}
-          selected={isRowSelected(String(row.id))}
-          onToggleSelect={() => onToggleRow(String(row.id))}
-          {inviteActionEmail}
-          {deletingMemberId}
-          {canDeleteMembers}
-          {onResendInvite}
-          {onRevokeInvite}
-          onDelete={() => onDeleteRow(row)}
-        />
-      {/each}
+      {#if loading}
+        <!-- As many placeholders as the page currently shows, so the table
+             keeps its height and the surrounding layout does not jump. -->
+        {#each Array(Math.max(rows.length, 1)) as _, index (index)}
+          <AudienceSkeletonRow />
+        {/each}
+      {:else}
+        {#each rows as row (String(row.id))}
+          <AudienceMemberRow
+            {row}
+            memberDetailHref={memberHref(row)}
+            selected={isRowSelected(String(row.id))}
+            onToggleSelect={() => onToggleRow(String(row.id))}
+            {inviteActionEmail}
+            {deletingMemberId}
+            {canDeleteMembers}
+            {onResendInvite}
+            {onRevokeInvite}
+            onDelete={() => onDeleteRow(row)}
+          />
+        {/each}
+      {/if}
     </Table.Body>
   </Table.Root>
 </div>

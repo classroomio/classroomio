@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/state';
+  import { navigating, page } from '$app/state';
   import UsersIcon from '@lucide/svelte/icons/users';
   import SearchXIcon from '@lucide/svelte/icons/search-x';
   import { Button } from '@cio/ui/base/button';
@@ -75,6 +75,28 @@
     { key: 'last_activity', value: $t('audience.filter.last_activity') },
     { key: 'date_joined', value: $t('audience.date_joined') }
   ]);
+
+  // Filters, sort and pagination re-run the server load in place, and SvelteKit
+  // keeps the current page rendered while it does — so without this the old
+  // rows sit there looking authoritative under a filter that has not applied
+  // yet. The delay matches PageLoadProgress: a fast load should not flash.
+  const SKELETON_DELAY_MS = 150;
+  let isReloading = $state(false);
+
+  $effect(() => {
+    // Same route only. Leaving the page replaces it anyway.
+    const isReloadingList = navigating.to?.route.id === page.route.id;
+
+    if (!isReloadingList) {
+      isReloading = false;
+
+      return;
+    }
+
+    const timer = setTimeout(() => (isReloading = true), SKELETON_DELAY_MS);
+
+    return () => clearTimeout(timer);
+  });
 
   const activeView = $derived(matchAudienceView(query));
   const activeFilterCount = $derived(countActiveAudienceFilters(query));
@@ -478,6 +500,7 @@
   <div class="w-full space-y-4">
     <AudienceTable
       {headers}
+      loading={isReloading}
       rows={orgApi.audience}
       {allPageSelected}
       {somePageSelected}
