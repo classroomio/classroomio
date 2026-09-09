@@ -92,6 +92,14 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 
 **Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
 
+### Video checkpoint overlay (`src/custom/video-checkpoint/`)
+
+In-player chrome for lesson video checkpoints. The overlay sits `absolute inset-0` inside the same relative player wrapper as the video (fullscreen-safe). Copy (`kicker`, `continueLabel`, `errorMessage`) is passed in by the host. The question body is a `questionBody` snippet — production and Storybook both mount `ExerciseQuestion.QuestionRenderer` there (`mode: 'take'` for learners, `mode: 'edit'` in the teacher dialog). Do not invent a second option editor.
+
+- **`Overlay`** — dimmed backdrop, scrollable card (`max-width: 520px`, `max-height: min(78%, 32.5rem)`), kicker, question slot, optional try-again error, **Continue** (disabled until the host says the take renderer has a complete answer). Backdrop blur is skipped when `prefers-reduced-motion` is set.
+
+See `Molecules/VideoCheckpoint` in Storybook.
+
 ### Question type picker (`src/custom/question-type-picker/`)
 
 Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).

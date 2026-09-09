@@ -76,6 +76,7 @@ export {
 export * as ResourceListRow from './custom/resource-list-row';
 export { DocumentCard } from './custom/document-card';
 export * as ExerciseQuestion from './custom/exercise-question';
+export * as VideoCheckpoint from './custom/video-checkpoint';
 export { QuestionTypePicker } from './custom/question-type-picker';
 export * as MediaPlayer from './custom/media-player';
 export { MultiSelectList, type MultiSelectListItem } from './custom/multi-select-list';
