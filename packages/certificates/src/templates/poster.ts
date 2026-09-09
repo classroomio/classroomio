@@ -18,6 +18,9 @@ const orgPillPaddingVertical = 5;
 const recipientBoxPaddingHorizontal = 30;
 const recipientBoxPaddingVertical = 24;
 const descriptionPaddingBottom = 8;
+const bottomGridMaxWidth = 780;
+const bottomGridGap = 30;
+const bottomGridColumnWidth = (bottomGridMaxWidth - bottomGridGap * 2) / 3;
 
 const FIELDS = {
   org: {
@@ -45,7 +48,8 @@ const FIELDS = {
     basePx: 140,
     lineHeight: 0.95,
     letterSpacingEm: -0.03,
-    allowWrap: true
+    allowWrap: true,
+    fontWeight: 900 as const
   },
   subtitle: {
     maxWidth: 800,
@@ -53,6 +57,7 @@ const FIELDS = {
     fontFamily: FONTS.display,
     basePx: 32,
     lineHeight: 1.0,
+    fontStyle: 'italic' as const,
     allowWrap: false
   },
   recipient: {
@@ -61,7 +66,8 @@ const FIELDS = {
     fontFamily: FONTS.display,
     basePx: 54,
     lineHeight: 1.0,
-    allowWrap: true
+    allowWrap: true,
+    fontWeight: 700 as const
   },
   description: {
     maxWidth: 720,
@@ -70,12 +76,31 @@ const FIELDS = {
     basePx: 15,
     lineHeight: 1.55,
     allowWrap: true
+  },
+  footerValue: {
+    maxWidth: bottomGridColumnWidth,
+    maxHeight: 52,
+    fontFamily: FONTS.display,
+    basePx: 22,
+    lineHeight: 1.1,
+    allowWrap: true,
+    fontWeight: 700 as const
+  },
+  signatoryRole: {
+    maxWidth: bottomGridColumnWidth,
+    maxHeight: 24,
+    fontFamily: FONTS.mono,
+    basePx: 9,
+    lineHeight: 1.2,
+    letterSpacingEm: 0.2,
+    allowWrap: true,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderPoster: TemplateRenderer = ({ design, data }) => {
   const certMeta = `${data.certificateId} / ${data.date}`;
-  const { accent, subtitle, description, signatoryOne, signatoryTwo, year, fontSizes } =
+  const { accent, subtitle, description, signatoryOne, signatoryTwo, year, fontSizes, roleMinHeight } =
     prepareCertificateRenderContext(design, data, FIELDS, {
       certMeta
     });
@@ -203,13 +228,12 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
     }
     .t-poster .title {
       font-family: '${FIELDS.title.fontFamily}', serif;
-      font-weight: 900;
+      font-weight: ${FIELDS.title.fontWeight};
       line-height: ${FIELDS.title.lineHeight};
       letter-spacing: ${FIELDS.title.letterSpacingEm}em;
       color: #1a1a1a;
       margin-bottom: 20px;
       max-width: ${FIELDS.title.maxWidth}px;
-      max-height: ${FIELDS.title.maxHeight}px;
       overflow-wrap: break-word;
       word-break: normal;
     }
@@ -220,13 +244,12 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
     }
     .t-poster .subtitle {
       font-family: '${FIELDS.subtitle.fontFamily}', serif;
-      font-style: italic;
+      font-style: ${FIELDS.subtitle.fontStyle};
       font-weight: 400;
       line-height: ${FIELDS.subtitle.lineHeight};
       margin-bottom: 30px;
       color: #1a1a1a;
       max-width: ${FIELDS.subtitle.maxWidth}px;
-      max-height: ${FIELDS.subtitle.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-poster .recipient-box {
@@ -251,7 +274,7 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
     }
     .t-poster .recipient {
       font-family: '${FIELDS.recipient.fontFamily}', serif;
-      font-weight: 700;
+      font-weight: ${FIELDS.recipient.fontWeight};
       line-height: ${FIELDS.recipient.lineHeight};
       letter-spacing: -0.02em;
       max-width: ${FIELDS.recipient.maxWidth}px;
@@ -282,10 +305,10 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
     .t-poster .bottom-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      align-items: end;
-      gap: 30px;
+      align-items: start;
+      gap: ${bottomGridGap}px;
       flex: 1;
-      max-width: 780px;
+      max-width: ${bottomGridMaxWidth}px;
       font-family: '${FONTS.mono}', monospace;
     }
     .t-poster .footer-section .sig-content,
@@ -297,18 +320,29 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
       justify-content: flex-start;
     }
     .t-poster .footer-section .k {
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
+      font-family: '${FIELDS.signatoryRole.fontFamily}', monospace;
+      font-size: ${fontSizes.signatoryRole}px;
+      line-height: ${FIELDS.signatoryRole.lineHeight};
+      letter-spacing: ${FIELDS.signatoryRole.letterSpacingEm}em;
+      text-transform: ${FIELDS.signatoryRole.textTransform};
       color: #4a4a4a;
-      margin-bottom: 2px;
+      margin-bottom: 6px;
+      max-width: ${bottomGridColumnWidth}px;
+      min-height: ${roleMinHeight}px;
+      max-height: ${FIELDS.signatoryRole.maxHeight}px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
       overflow-wrap: break-word;
     }
     .t-poster .footer-section .v {
-      font-family: '${FONTS.display}', serif;
-      font-size: 22px;
-      font-weight: 700;
+      font-family: '${FIELDS.footerValue.fontFamily}', serif;
+      font-size: ${fontSizes.footerValue}px;
+      font-weight: ${FIELDS.footerValue.fontWeight};
+      line-height: ${FIELDS.footerValue.lineHeight};
       color: #1a1a1a;
+      max-width: ${bottomGridColumnWidth}px;
+      max-height: ${FIELDS.footerValue.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-poster .corner-num {

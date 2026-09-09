@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Landing page · Videos section · Loopwise Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="video-proto.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .sec-nav { display: flex; flex-direction: column; gap: 1px; margin-bottom: 18px; }
+      .sec-nav a { font-size: 13.5px; padding: 7px 10px; border-radius: var(--radius-md); color: var(--muted-foreground); text-decoration: none; }
+      .sec-nav a:hover { background: var(--muted); color: var(--foreground); }
+      .sec-nav a.on { background: var(--muted); color: var(--foreground); font-weight: 500; }
+      .save-bar { position: sticky; bottom: 0; margin: 24px auto 0; max-width: 560px; display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 12px 32px -10px rgb(0 0 0 / .3); }
+      /* mini preview of the public section, using the landing tokens inline */
+      .mini-landing { --l-bg: oklch(1 0 0); --l-fg: oklch(.185 0 0); --l-muted: oklch(.5 0 0); --l-border: oklch(.9 0 0); --l-accent: oklch(.488 .243 264.376); background: var(--l-bg); color: var(--l-fg); }
+      .dark .mini-landing { --l-bg: oklch(.16 0 0); --l-fg: oklch(.96 0 0); --l-muted: oklch(.68 0 0); --l-border: oklch(1 0 0 / 14%); --l-accent: oklch(.623 .214 259.815); }
+      .mini-nav { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-bottom: 1px solid var(--l-border); font-size: 12px; }
+      .mini-nav .lg { width: 20px; height: 20px; border-radius: 5px; background: var(--l-accent); color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+      .mini-nav a { color: var(--l-muted); text-decoration: none; }
+      .mini-nav a.on { color: var(--l-fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--l-accent); padding-bottom: 2px; }
+      .mini-sec { padding: 20px 16px 22px; }
+      .mini-sec h3 { margin: 0 0 4px; font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
+      .mini-sec p { margin: 0 0 14px; font-size: 12.5px; color: var(--l-muted); }
+      .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .mini-card { border: 1px solid var(--l-border); overflow: hidden; }
+      .mini-card .th { aspect-ratio: 16/9; display: grid; place-items: center; position: relative; }
+      .mini-card .th .p { width: 24px; height: 24px; border-radius: 999px; background: var(--l-accent); color: #fff; display: grid; place-items: center; }
+      .mini-card .th .p svg { width: 10px; height: 10px; margin-left: 1px; }
+      .mini-card .th .d { position: absolute; right: 4px; bottom: 4px; font-size: 9.5px; background: oklch(0 0 0 / .74); color: #fff; padding: 0 4px; border-radius: 3px; }
+      .mini-card .b { padding: 8px 9px 10px; font-size: 11px; line-height: 1.35; font-weight: 500; }
+      .mini-card .b i { display: block; font-style: normal; font-weight: 400; color: var(--l-muted); font-size: 10px; margin-top: 3px; }
+      .mini-empty { border: 1px dashed var(--l-border); padding: 26px; text-align: center; font-size: 12px; color: var(--l-muted); }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">L</div><div class="brand-name">Loopwise Academy</div></div>
+        <div class="nav-label">Workspace</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Dashboard</a>
+        <a class="nav-item" href="media-library.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>Media</a>
+        <div class="nav-label">Settings</div>
+        <a class="nav-item active" href="settings-videos-section.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Landing page</a>
+        <div class="sidebar-foot"><div class="avatar">RB</div><div class="who"><div class="nm">Rotimi Best</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="crumbs"><a href="#">Settings</a><span class="sep">/</span><a href="#">Landing page</a><span class="sep">/</span><span class="here">Edit</span></div>
+          <div class="top-actions">
+            <a class="btn btn-outline btn-sm" href="landing-with-videos.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>Open live page</a>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1240px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Landing page</h1>
+                <p class="page-sub">Theme: <b>Minimal</b>. Sections render top to bottom in the order below.</p>
+              </div>
+            </div>
+
+            <div class="split">
+              <div>
+                <div class="sec-nav">
+                  <a href="#">Hero</a>
+                  <a href="#">Courses</a>
+                  <a class="on" href="#">Videos</a>
+                  <a href="#">Links</a>
+                  <a href="#">Embed</a>
+                  <a href="#">Callout</a>
+                  <a href="#">FAQ</a>
+                  <a href="#">Navigation</a>
+                  <a href="#">Footer</a>
+                </div>
+
+                <div class="card card-pad">
+                  <fieldset class="fset">
+                    <legend class="flegend">Videos section</legend>
+                    <p class="fdesc">A curated strip of published videos, with a nav entry that links to your full video library.</p>
+
+                    <div class="frow" style="margin-bottom: 14px">
+                      <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                      <span class="grow" style="font-size: 13.5px; font-weight: 500">Show this section</span>
+                    </div>
+
+                    <div class="field">
+                      <label class="label" for="navlabel">Nav label</label>
+                      <input class="input" id="navlabel" value="Product tours" />
+                      <p class="hint">Appears in your site's top navigation and links to <code>/videos</code>. Most teams rename this — Webinars, Release notes, Video library.</p>
+                    </div>
+
+                    <div class="field">
+                      <label class="label" for="heading">Heading</label>
+                      <input class="input" id="heading" value="Watch, then do" />
+                    </div>
+                    <div class="field">
+                      <label class="label" for="desc">Description</label>
+                      <textarea class="textarea" id="desc" rows="2">Short walkthroughs and webinar replays. No sign-up needed.</textarea>
+                    </div>
+                    <div class="frow">
+                      <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                      <span class="grow" style="font-size: 13.5px">Show a "See all videos" link</span>
+                    </div>
+                  </fieldset>
+
+                  <hr class="fsep" />
+
+                  <fieldset class="fset">
+                    <legend class="flegend">Pinned videos</legend>
+                    <p class="fdesc">Drag to reorder. Pinned videos always render first, in this exact order.</p>
+                    <div class="pin-list" id="pins">
+                      <div class="pin" draggable="true">
+                        <span class="grip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+                        <span class="mini" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span>
+                        <span class="nm">What's new in Loopwise 4.2</span>
+                        <span class="badge badge-muted tnum">4:12</span>
+                        <button class="icon-btn" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                      </div>
+                      <div class="pin" draggable="true">
+                        <span class="grip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+                        <span class="mini" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span>
+                        <span class="nm">Setting up SSO in four minutes</span>
+                        <span class="badge badge-muted tnum">3:48</span>
+                        <button class="icon-btn" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                      </div>
+                      <div class="pin gone" draggable="true">
+                        <span class="grip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+                        <span class="mini" style="background: var(--muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--muted-foreground)"><path d="M8 5v14l11-7z"/></svg></span>
+                        <span class="nm">Q4 roadmap review</span>
+                        <span class="badge badge-warning">Unpublished</span>
+                        <button class="icon-btn" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                      </div>
+                    </div>
+                    <button class="btn btn-outline btn-sm" style="margin-top: 10px" id="open-picker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add videos</button>
+                    <p class="hint" style="margin-top: 8px">An unpublished pin is kept but not rendered, so re-publishing restores it in place.</p>
+                  </fieldset>
+
+                  <hr class="fsep" />
+
+                  <fieldset class="fset">
+                    <legend class="flegend">Auto-fill</legend>
+                    <p class="fdesc">Fill the remaining slots with your newest published videos matching any of these tags. This is what keeps the section current after you stop editing it.</p>
+                    <div class="frow" style="margin-bottom: 12px">
+                      <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                      <span class="grow" style="font-size: 13.5px; font-weight: 500">Auto-fill from tags</span>
+                    </div>
+                    <div class="field">
+                      <span class="label">Tags</span>
+                      <div class="tag-opts" style="display: flex; gap: 6px; flex-wrap: wrap">
+                        <span class="tchip" style="color: oklch(0.546 0.245 262.881); background: oklch(0.546 0.245 262.881 / .12); border-color: oklch(0.546 0.245 262.881 / .35)"><span class="sw"></span>Release notes<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 11px; height: 11px; stroke-width: 2.6"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+                        <span class="tchip" style="color: oklch(0.596 0.145 163.225); background: oklch(0.596 0.145 163.225 / .12); border-color: oklch(0.596 0.145 163.225 / .35)"><span class="sw"></span>Getting started<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 11px; height: 11px; stroke-width: 2.6"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+                        <button class="tchip" style="border-style: dashed; color: var(--muted-foreground)">+ Add tag</button>
+                      </div>
+                      <p class="hint">Leave empty to auto-fill from all published videos.</p>
+                    </div>
+                    <div class="field" style="max-width: 190px">
+                      <label class="label" for="limit">Total videos in section</label>
+                      <select class="select" id="limit"><option>3</option><option selected>6</option><option>9</option><option>12</option></select>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div class="save-bar">
+                  <span class="badge badge-warning">Unsaved changes</span>
+                  <span style="margin-left: auto; display: flex; gap: 8px">
+                    <button class="btn btn-secondary btn-sm">Discard</button>
+                    <button class="btn btn-primary btn-sm">Save changes</button>
+                  </span>
+                </div>
+              </div>
+
+              <div class="preview-frame">
+                <div class="preview-bar">
+                  <span class="dots"><i></i><i></i><i></i></span>
+                  <span>academy.loopwise.com</span>
+                  <span style="margin-left: auto" class="badge badge-muted">Live preview</span>
+                </div>
+                <div class="mini-landing">
+                  <div class="mini-nav">
+                    <span class="lg">L</span>
+                    <a href="#">Courses</a>
+                    <a class="on" href="#">Product tours</a>
+                    <a href="#">Help centre</a>
+                    <span style="margin-left: auto; font-size: 11px; color: var(--l-muted)">Sign in</span>
+                  </div>
+                  <div class="mini-sec" style="border-bottom: 1px solid var(--l-border)">
+                    <h3 style="font-size: 13px; color: var(--l-muted); font-weight: 500">↑ Hero &amp; Courses sections</h3>
+                  </div>
+                  <div class="mini-sec" id="mini-videos">
+                    <h3>Watch, then do</h3>
+                    <p>Short walkthroughs and webinar replays. No sign-up needed.</p>
+                    <div class="mini-grid">
+                      <div class="mini-card"><div class="th" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))"><span class="p"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="d">4:12</span></div><div class="b">What's new in Loopwise 4.2<i>Pinned · 1</i></div></div>
+                      <div class="mini-card"><div class="th" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"><span class="p"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="d">3:48</span></div><div class="b">Setting up SSO in four minutes<i>Pinned · 2</i></div></div>
+                      <div class="mini-card"><div class="th" style="background: linear-gradient(135deg, oklch(0.55 0.21 22), oklch(0.62 0.2 30))"><span class="p"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="d">41:06</span></div><div class="b">Webinar: scaling to fifty workspaces<i>Auto-filled</i></div></div>
+                      <div class="mini-card"><div class="th" style="background: linear-gradient(135deg, oklch(0.62 0.16 40), oklch(0.7 0.15 55))"><span class="p"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="d">6:20</span></div><div class="b">Import your first dataset<i>Auto-filled</i></div></div>
+                      <div class="mini-card"><div class="th" style="background: linear-gradient(135deg, oklch(0.5 0.2 300), oklch(0.6 0.18 315))"><span class="p"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="d">2:55</span></div><div class="b">Saved views in 3 minutes<i>Auto-filled</i></div></div>
+                      <div class="mini-card"><div class="th" style="background: linear-gradient(135deg, oklch(0.45 0.12 200), oklch(0.58 0.13 210))"><span class="p"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="d">9:41</span></div><div class="b">Salesforce sync explained<i>Auto-filled</i></div></div>
+                    </div>
+                    <div style="margin-top: 12px; font-size: 11.5px; color: var(--l-accent); font-weight: 500">See all videos →</div>
+                  </div>
+                  <div class="mini-sec"><h3 style="font-size: 13px; color: var(--l-muted); font-weight: 500">↓ Links, Embed, Callout, FAQ, Footer</h3></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-pad" style="margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+              <span class="text-muted" style="font-size: 12.5px">States:</span>
+              <button class="btn btn-outline btn-sm" id="s-empty">On, resolves to zero videos</button>
+              <button class="btn btn-outline btn-sm" id="s-off">Section off</button>
+              <button class="btn btn-outline btn-sm" id="s-pins">Pins only</button>
+              <a class="btn btn-ghost btn-sm" href="index.html">← Map</a>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- video picker -->
+    <div class="scrim" id="picker" hidden>
+      <div class="dialog dialog-lg">
+        <div class="dialog-head">
+          <h2 class="dialog-title">Add videos to the section</h2>
+          <p class="dialog-desc">Only published videos can be pinned. Lesson usage is shown so you can see it — it is not a filter.</p>
+        </div>
+        <div class="dialog-body">
+          <div class="filters" style="display: flex; gap: 9px; margin-bottom: 14px">
+            <input class="input" placeholder="Search published videos…" style="flex: 1" />
+            <select class="select" style="width: auto"><option>All tags</option><option>Release notes</option><option>Getting started</option><option>Webinar</option></select>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 7px; max-height: 320px; overflow: auto">
+            <label class="pin" style="cursor: pointer"><input type="checkbox" style="accent-color: var(--primary); width: 15px; height: 15px" /><span class="mini" style="background: linear-gradient(135deg, oklch(0.55 0.21 22), oklch(0.62 0.2 30))"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="nm">Webinar replay: scaling from one workspace to fifty</span><span class="tchip" style="color: var(--muted-foreground); background: var(--muted)"><span class="sw"></span>Webinar</span><span class="badge badge-muted tnum">41:06</span></label>
+            <label class="pin" style="cursor: pointer"><input type="checkbox" style="accent-color: var(--primary); width: 15px; height: 15px" /><span class="mini" style="background: linear-gradient(135deg, oklch(0.62 0.16 40), oklch(0.7 0.15 55))"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="nm">Import your first dataset</span><span class="tchip" style="color: var(--muted-foreground); background: var(--muted)"><span class="sw"></span>Getting started</span><span class="badge badge-muted tnum">6:20</span></label>
+            <label class="pin" style="cursor: pointer"><input type="checkbox" style="accent-color: var(--primary); width: 15px; height: 15px" /><span class="mini" style="background: linear-gradient(135deg, oklch(0.45 0.12 200), oklch(0.58 0.13 210))"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span><span class="nm">Salesforce sync explained</span><span class="badge badge-warning">In 1 lesson</span><span class="badge badge-muted tnum">9:41</span></label>
+          </div>
+        </div>
+        <div class="dialog-foot"><button class="btn btn-ghost" id="close-picker">Cancel</button><button class="btn btn-primary" id="close-picker2">Add 0 videos</button></div>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      const picker = document.getElementById('picker');
+      document.getElementById('open-picker').onclick = () => (picker.hidden = false);
+      document.getElementById('close-picker').onclick = document.getElementById('close-picker2').onclick = () => (picker.hidden = true);
+
+      const mini = document.getElementById('mini-videos');
+      document.getElementById('s-empty').onclick = () => {
+        mini.innerHTML =
+          '<h3>Watch, then do</h3><p>Short walkthroughs and webinar replays.</p><div class="mini-empty">Nothing resolves yet — the section and its nav entry are both hidden on the live site until at least one published video matches.</div>';
+      };
+      document.getElementById('s-off').onclick = () => {
+        mini.innerHTML = '<h3 style="font-size:13px;color:var(--l-muted);font-weight:500">Videos section is off — nothing renders, and there is no nav entry.</h3>';
+      };
+      document.getElementById('s-pins').onclick = () => {
+        mini.querySelectorAll('.mini-card').forEach((c, i) => { if (i > 1) c.remove(); });
+        mini.querySelector('.mini-grid').style.gridTemplateColumns = 'repeat(3, 1fr)';
+      };
+
+      // drag reorder
+      let dragged = null;
+      document.querySelectorAll('#pins .pin').forEach((row) => {
+        row.addEventListener('dragstart', () => (dragged = row));
+        row.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (!dragged || dragged === row) return;
+          const list = document.getElementById('pins');
+          const rows = [...list.children];
+          list.insertBefore(dragged, rows.indexOf(dragged) < rows.indexOf(row) ? row.nextSibling : row);
+        });
+      });
+    </script>
+  </body>
+</html>

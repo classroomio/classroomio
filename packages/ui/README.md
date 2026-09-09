@@ -120,6 +120,31 @@ Presentational parts for an arbitrarily deep comment thread. All copy is passed 
 
 Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
 
+### Action popover (`src/custom/action-popover/`)
+
+Popover with a scrollable body, an optional search bar, and a pinned full-width action button in the footer. Import as `import { ActionPopover } from '@cio/ui/custom/action-popover'`. The default trigger is an outline icon `Button` with a plus icon; pass a `trigger` snippet (receives `{ props }` to spread on your own control) to replace it. Content is passed via the `children` snippet and scrolls at `max-h-64` (override with `bodyClass`). When `buttonText` is set, the footer renders below a border; clicking it awaits `onAction` (showing a spinner when it returns a Promise) and closes the popover unless `closeOnAction` is false. Omitting `buttonText` renders no footer. All copy comes from props, so dashboard wrappers supply translated strings.
+
+Passing `searchPlaceholder` renders a search input above the scrollable body — independent of `title`, so it works with or without a heading. The component does not filter content itself; bind `searchQuery` (cleared automatically when the popover closes) and filter your list in the consumer.
+
+| Prop                | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| `title`             | Optional heading rendered above the scrollable body          |
+| `buttonText`        | Footer button label; omit to render no footer                |
+| `onAction`          | Footer button handler; may return a Promise (shows loading)  |
+| `buttonDisabled`    | Disables the footer button                                   |
+| `buttonLoading`     | Forces the footer loading state                              |
+| `closeOnAction`     | Close the popover after the action resolves (default `true`) |
+| `align`             | Popover alignment (default `start`)                          |
+| `contentClass`      | Extra classes on `Popover.Content` (e.g. width)              |
+| `bodyClass`         | Extra classes on the padded body wrapper                     |
+| `searchPlaceholder` | Show a search bar when provided; used as its placeholder     |
+| `searchQuery`       | Bindable search query; cleared when the popover closes       |
+| `open`              | Bindable open state                                          |
+| `trigger`           | Optional snippet replacing the default plus-icon trigger     |
+| `children`          | Snippet with the popover body content                        |
+
+See `Molecules/ActionPopover` in Storybook.
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

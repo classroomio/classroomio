@@ -81,9 +81,14 @@
     })
   );
 
+  const HISTORY_PARAM = 'history';
+  const VERSION_PARAM = 'version';
+
   let prevModeParam = $state<string | null>(null);
   let isDeletingLesson = $state(false);
-  let isVersionDrawerOpen = $state(false);
+  // Derived from the URL so a reload reopens the drawer. The URL is the single source of
+  // truth; nothing sets this directly.
+  const isVersionDrawerOpen = $derived($page.url.searchParams.get(HISTORY_PARAM) === 'open');
   // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: cleared before intentional navigations and bound to UnsavedChanges
   let hasUnsavedChanges = $state(false);
 
@@ -135,6 +140,21 @@
     params.set('mode', value);
     goto(resolve(`${$page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
   }
+  /** Closing drops the selected version too, so both params move in one navigation. */
+  function setHistoryQueryParam(isOpen: boolean) {
+    const params = new SvelteURLSearchParams($page.url.searchParams);
+
+    if (isOpen) {
+      params.set(HISTORY_PARAM, 'open');
+    } else {
+      params.delete(HISTORY_PARAM);
+      params.delete(VERSION_PARAM);
+    }
+
+    const query = params.toString();
+    return goto(resolve(query ? `${$page.url.pathname}?${query}` : $page.url.pathname, {}), { replaceState: false });
+  }
+
   function setTabQueryParam(value: string) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
     params.set('tab', value);
@@ -152,7 +172,8 @@
   }
 
   const refetchDataAfterVersionRestore = async () => {
-    isVersionDrawerOpen = false;
+    await setHistoryQueryParam(false);
+
     if (courseId && browser) {
       setModeQueryParam('view');
 
@@ -479,8 +500,8 @@
         </div>
 
         <IconButton
-          class="hidden lg:inline-flex"
-          onclick={() => (isVersionDrawerOpen = true)}
+          class="inline-flex"
+          onclick={() => setHistoryQueryParam(true)}
           aria-label={$t('course.navItem.lessons.version_history.title')}
           tooltip={$t('course.navItem.lessons.version_history.title')}
           tooltipSide="bottom"
@@ -488,7 +509,7 @@
           <HistoryIcon size={20} />
         </IconButton>
 
-        <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
+        <RefreshPageData class="hidden lg:inline-flex" onRefresh={() => lessonApi.get(courseId, lessonId)} />
       </RoleBasedSecurity>
 
       <LanguageSelector />
@@ -645,7 +666,7 @@
 {#if isVersionDrawerOpen}
   <LessonVersionHistory
     open={isVersionDrawerOpen}
-    on:close={() => (isVersionDrawerOpen = false)}
+    on:close={() => setHistoryQueryParam(false)}
     on:restore={refetchDataAfterVersionRestore}
   />
 {/if}

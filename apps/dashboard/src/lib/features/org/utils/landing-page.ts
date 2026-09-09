@@ -18,6 +18,7 @@ import {
   labelMatchesSocialPlatform,
   resolveFooterSocialPlatform
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
+import { isAllowedHref } from '@cio/utils/validation/shared';
 import { t } from '$lib/utils/functions/translations';
 
 export const landingPageThemes = [
@@ -30,7 +31,8 @@ export const landingPageThemes = [
   'corporate',
   'terminal',
   'editorial',
-  'vibrant'
+  'vibrant',
+  'quartz'
 ] as const satisfies OrgLandingPageTheme[];
 
 export const defaultLandingPageHero: OrgLandingPageHero = {
@@ -81,7 +83,7 @@ export function createDefaultFooterConfig(): OrgLandingPageFooterConfig {
 }
 
 export const defaultLandingPageSettings: OrgLandingPageJson = {
-  theme: 'minimal',
+  theme: 'quartz',
   hero: defaultLandingPageHero,
   navItems: [
     { label: 'Courses', href: '/courses' }
@@ -158,8 +160,29 @@ function normalizeText(value: unknown, fallback = '') {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
 }
 
+function stripAccidentalFragmentPrefix(href: string): string {
+  const withoutHash = href.replace(/^#+/, '');
+  const isAbsolute = /^(https?:\/\/|mailto:|tel:|\/\/)/i.test(withoutHash);
+
+  return isAbsolute ? withoutHash : href;
+}
+
 function normalizeHref(value: unknown, fallback = '#') {
-  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return fallback;
+  }
+
+  const repaired = stripAccidentalFragmentPrefix(trimmed);
+  if (!isAllowedHref(repaired)) {
+    return fallback;
+  }
+
+  return repaired;
 }
 
 function isLegacyFooterSocialBlock(value: Record<string, unknown>): boolean {
@@ -448,8 +471,8 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
       }
 
       const title = normalizeText(item.title, '');
-      const hrefSource = typeof item.href === 'string' ? item.href.trim() : '';
-      if (!title || !hrefSource) {
+      const href = normalizeHref(item.href, '');
+      if (!title || !href) {
         return null;
       }
 
@@ -457,7 +480,7 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
         icon: resolveLandingPageLinkIcon(item.icon),
         title,
         description: normalizeText(item.description, ''),
-        href: hrefSource
+        href
       };
     })
     .filter((card): card is NonNullable<typeof card> => card !== null);
@@ -573,7 +596,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
 
   if (landingPage.hero) {
     return {
-      theme: landingPage.theme ?? 'minimal',
+      theme: landingPage.theme ?? 'quartz',
       hero: {
         ...normalizeHero(landingPage.hero),
         secondaryAction: landingPage.hero.secondaryAction
@@ -741,7 +764,7 @@ export function buildOrgLandingPageProps(
 
 export type LandingPageThemeKey = (typeof landingPageThemes)[number];
 
-export const DEFAULT_LANDING_PAGE_THEME: LandingPageThemeKey = 'minimal';
+export const DEFAULT_LANDING_PAGE_THEME: LandingPageThemeKey = 'quartz';
 
 const THEME_BUNDLE_LOADERS: Record<LandingPageThemeKey, () => Promise<LandingPageThemeBundle>> = {
   minimal: () => import('@cio/ui/custom/org-landing-page/minimal'),
@@ -753,7 +776,8 @@ const THEME_BUNDLE_LOADERS: Record<LandingPageThemeKey, () => Promise<LandingPag
   corporate: () => import('@cio/ui/custom/org-landing-page/corporate'),
   terminal: () => import('@cio/ui/custom/org-landing-page/terminal'),
   editorial: () => import('@cio/ui/custom/org-landing-page/editorial'),
-  vibrant: () => import('@cio/ui/custom/org-landing-page/vibrant')
+  vibrant: () => import('@cio/ui/custom/org-landing-page/vibrant'),
+  quartz: () => import('@cio/ui/custom/org-landing-page/quartz')
 };
 
 export function importThemeBundle(theme: LandingPageThemeKey): Promise<LandingPageThemeBundle> {

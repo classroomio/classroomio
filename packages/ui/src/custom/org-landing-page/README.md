@@ -1,6 +1,6 @@
 # Org + Course landing pages
 
-This folder holds the entire landing-page system: the public org site (`{theme}.org`) and the per-course landing (`{theme}.course`), in 10 themes.
+This folder holds the entire landing-page system: the public org site (`{theme}.org`) and the per-course landing (`{theme}.course`), in 11 themes.
 
 Both surfaces share the same nav, hero, footer, tokens, and edit context. A course landing inherits its theme from the org's `landingpage.theme` — courses don't pick their own.
 
@@ -27,7 +27,7 @@ packages/ui/src/custom/org-landing-page/
 ├── landing-page-footer.tokens.ts
 │
 ├── {theme}/                       Everything for one theme (minimal, bold, classic, saas, tech,
-│   │                              studio, corporate, terminal, editorial, vibrant)
+│   │                              studio, corporate, terminal, editorial, vibrant, quartz)
 │   ├── index.ts                   re-exports { nav, hero, courseCard, org, course }
 │   ├── nav.svelte                 reused by both org and course
 │   ├── hero.svelte                reused; course populates with course-shaped hero data
@@ -60,7 +60,7 @@ The central registries (`theme-style.ts`, `course-landing-page.tokens.ts`, `inde
    ▼
 ┌────────────────────────────────────────┐
 │ course-*.svelte           (shared body) │  ← one component per section
-│   • course-section-nav                  │    used by all 10 themes
+│   • course-section-nav                  │    used by all 11 themes
 │   • course-social-proof                 │
 │   • course-info-blocks                  │
 │   • course-curriculum                   │

@@ -1,7 +1,14 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import mkcert from 'vite-plugin-mkcert';
+
+const useHttps = process.env.HTTPS === 'true' || process.env.VITE_USE_HTTPS_ON_LOCALHOST === 'true';
+const host = process.env.HOST || (useHttps ? '0.0.0.0' : undefined);
 
 export default defineConfig({
+  server: {
+    host
+  },
   css: {
     preprocessorOptions: {
       scss: {
@@ -9,7 +16,7 @@ export default defineConfig({
       }
     }
   },
-  plugins: [sveltekit()],
+  plugins: [sveltekit(), ...(useHttps ? [mkcert()] : [])],
   build: {
     sourcemap: true
   },

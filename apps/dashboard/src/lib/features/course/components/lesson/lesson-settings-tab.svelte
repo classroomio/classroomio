@@ -57,7 +57,7 @@
     const currentTz = courseApi.course?.metadata?.sessionTimezone || getBrowserTimezone();
 
     return (
-      sessionCallUrl !== (lessonApi.lesson?.callUrl ?? '') ||
+      sessionCallUrl.trim() !== (lessonApi.lesson?.callUrl ?? '') ||
       computeNewInstant() !== (lessonApi.lesson?.lessonAt ?? '') ||
       sessionTimezone !== currentTz
     );
@@ -71,8 +71,8 @@
     isSavingSession = true;
     try {
       await lessonApi.update(courseId, lessonId, {
-        callUrl: sessionCallUrl || undefined,
-        lessonAt: computeNewInstant() || undefined
+        callUrl: sessionCallUrl.trim() || null,
+        lessonAt: computeNewInstant() || null
       });
 
       const currentTz = courseApi.course?.metadata?.sessionTimezone || '';

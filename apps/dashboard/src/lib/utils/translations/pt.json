@@ -504,7 +504,7 @@
     "go_to_my_learning": "Ir para Meu aprendizado"
   },
   "lms_navigation": {
-    "home": "Página inicial",
+    "home": "Painel",
     "my_learning": "Meu aprendizado",
     "certificates": "Certificados",
     "exercise": "Exercício",
@@ -823,7 +823,8 @@
         "course_avail": "Baixe uma cópia deste curso.",
         "download": "Baixar",
         "allow": "Os alunos podem se inscrever por conta própria",
-        "access": "Quando desativado, os alunos só podem entrar por um link de convite ou sendo adicionados em Pessoas.",
+        "access": "Quando desativado, os alunos só podem entrar por um link de convite ou sendo adicionados em {people}.",
+        "access_people": "Pessoas",
         "publish": "Publicar curso",
         "determines": "Isso determina se o seu curso será exibido na sua página de destino",
         "published": "Publicado",
@@ -841,7 +842,11 @@
           "empty": "Nenhuma tag selecionada",
           "add": "Adicionar etiqueta",
           "popover_title": "Selecione tags",
-          "empty_groups": "Nenhuma tag disponível ainda"
+          "empty_groups": "Nenhuma tag disponível ainda",
+          "create_tag": "Criar etiqueta",
+          "none_created": "Nenhuma tag criada ainda",
+          "search_placeholder": "Pesquisar tags...",
+          "no_results": "Nenhuma tag encontrada"
         },
         "compliance": "Conformidade",
         "public": "Público",
@@ -3535,6 +3540,10 @@
           "editorial": {
             "title": "Redação",
             "description": "Paleta de creme quente, herói pictórico, sensação refinada de revista"
+          },
+          "quartz": {
+            "title": "Quartzo",
+            "description": "Grade monocromática com linhas finas, linhas de curso pautadas, trilho adesivo para matrícula"
           }
         }
       },
@@ -4104,7 +4113,9 @@
       "color": "Cor",
       "color_help": "Escolha uma das 10 cores",
       "select_category": "Selecione uma categoria",
-      "no_groups": "Crie um grupo de tags antes de criar tags"
+      "no_groups": "Crie um grupo de tags antes de criar tags",
+      "search_category": "Categoria de pesquisa",
+      "no_results": "Nenhuma categoria encontrada"
     },
     "group_modal": {
       "create_title": "Criar grupo de tags",
@@ -4475,6 +4486,11 @@
     "heading": "Widgets",
     "subtitle": "Publique coleções de cursos de marca para sites externos.",
     "empty_state": "Ainda não há widgets. Crie um para gerar um bloco de curso incorporável.",
+    "archived": {
+      "heading": "Widgets arquivados",
+      "empty": "Nenhum widget arquivado",
+      "empty_description": "Os widgets que você arquivar aparecerão aqui. Você pode restaurá-los a qualquer momento."
+    },
     "filter": {
       "status": "Status",
       "all": "Todos",
@@ -4486,8 +4502,14 @@
       "saved": "Widget salvo",
       "published": "Widget publicado",
       "rolled_back": "Widget restaurado",
-      "deleted": "Widget arquivado",
-      "validation_failed": "Alguns campos são inválidos. Verifique as entradas destacadas."
+      "restored": "Widget restaurado",
+      "archived_load_failed": "Não foi possível carregar os widgets arquivados",
+      "restore_failed": "Não foi possível restaurar o widget",
+      "validation_failed": "Alguns campos são inválidos. Verifique as entradas destacadas.",
+      "archived": "Widget arquivado",
+      "archive_failed": "Não foi possível arquivar o widget",
+      "permanently_deleted": "Widget excluído permanentemente",
+      "delete_failed": "Não foi possível excluir o widget"
     },
     "form": {
       "name": "Nome do widget",
@@ -4537,7 +4559,7 @@
       "copy_embed": "Copiar incorporação",
       "copy_url": "Copiar URL",
       "rename": "Renomear",
-      "delete": "Excluir"
+      "delete_permanently": "Excluir permanentemente"
     },
     "embed": {
       "tabs": {
@@ -4679,7 +4701,9 @@
       "select_courses": "Selecione os cursos",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Código incorporado"
+      "embed": "Código incorporado",
+      "active": "Ativos",
+      "archived": "Arquivados"
     },
     "defaults": {
       "name_prefix": "Widget do curso"
@@ -4687,6 +4711,10 @@
     "empty": {
       "heading": "Nenhum widget ainda",
       "description": "Crie um widget para gerar um bloco de curso incorporável para sites externos."
+    },
+    "delete_modal": {
+      "title": "Excluir widget permanentemente",
+      "description": "Tem certeza de que deseja excluir permanentemente \"{name}\"? Esta ação não pode ser desfeita."
     }
   },
   "side_panel": {
@@ -5173,7 +5201,7 @@
     "toggle_failed": "Não foi possível atualizar o link de convite"
   },
   "lms": {
-    "view_landing_page": "Ver página inicial"
+    "view_landing_page": "Início"
   },
   "notifications": {
     "title": "Notificações",

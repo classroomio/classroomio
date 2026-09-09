@@ -541,6 +541,21 @@ Full behavior, threshold, clearance, and mount points: `prd/scroll-to-top/README
 <ScrollToTop label={$t('common.scroll_to_top')} />
 ```
 
+### Landing-page href sanitization
+
+All user-controlled URLs in org landing pages (nav links, hero CTAs, footer links, callout buttons, links-section cards) must pass through `safeHref()` before reaching an `<a href>` attribute. This prevents `javascript:`, `data:`, and `vbscript:` XSS payloads from being rendered.
+
+**Shared source of truth:** `packages/utils/src/validation/shared/safe-href.ts` exports two functions:
+- `isAllowedHref(value)` — allowlist check: `http`, `https`, `mailto`, `tel`, `#`, `/`, `./`, `../`, plain paths (`courses/intro`).
+- `containsDisallowedHrefs(value)` — recursive tree walker for Zod refinements on freeform JSON blobs.
+
+**Three consumers, one rule:**
+- **Render-time:** `packages/ui/src/custom/org-landing-page/safe-href.ts` re-exports `isAllowedHref` as `safeHref(value, fallback)` — wrap every user-controlled href. Wired into all 11 themes via shared components (`LandingButton`, `SecondaryActionButton`) and direct `<a>` bindings.
+- **Dashboard normalization:** `normalizeHref()` in `apps/dashboard/src/lib/features/org/utils/landing-page.ts` imports `isAllowedHref` to strip bad schemes when loading/saving config.
+- **API boundary:** Zod refinement on `ZUpdateOrganization.landingpage` imports `containsDisallowedHrefs` to reject bad schemes at write time.
+
+**When adding new landing-page components or themes:** always route hrefs through `safeHref()`. Never pass a user-controlled string directly to `href`.
+
 ## Emails: system vs org-branded
 
 Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.

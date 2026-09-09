@@ -8,6 +8,12 @@
     "binding": "ASSETS",
     "directory": ".svelte-kit/cloudflare"
   },
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "0271d9caac084f8d8c1e3fee84310bb5"
+    }
+  ],
   "observability": {
     "enabled": true,
     "logs": {

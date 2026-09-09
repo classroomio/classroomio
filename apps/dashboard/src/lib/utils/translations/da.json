@@ -504,7 +504,7 @@
     "go_to_my_learning": "Gå til Min Læring"
   },
   "lms_navigation": {
-    "home": "Hjem",
+    "home": "Dashboard",
     "my_learning": "Min Læring",
     "certificates": "Certifikater",
     "exercise": "Motion",
@@ -823,7 +823,8 @@
         "course_avail": "Download en kopi af dette kursus.",
         "download": "Download",
         "allow": "Studerende kan tilmelde sig selv",
-        "access": "Når det er slået fra, kan studerende kun deltage via et invitationslink eller ved at blive tilføjet under Personer.",
+        "access": "Når det er slået fra, kan studerende kun deltage via et invitationslink eller ved at blive tilføjet under {people}.",
+        "access_people": "Personer",
         "publish": "Udgiv kursus",
         "determines": "Dette afgør, om dit kursus vises på din landingsside",
         "published": "Udgivet",
@@ -841,7 +842,11 @@
           "empty": "Ingen tags valgt",
           "add": "Tilføj tag",
           "popover_title": "Vælg tags",
-          "empty_groups": "Ingen tags tilgængelige endnu"
+          "empty_groups": "Ingen tags tilgængelige endnu",
+          "create_tag": "Opret tag",
+          "none_created": "Ingen tags oprettet endnu",
+          "search_placeholder": "Søg tags...",
+          "no_results": "Ingen tags fundet"
         },
         "compliance": "Overholdelse",
         "public": "Offentlig",
@@ -3535,6 +3540,10 @@
           "editorial": {
             "title": "Redaktionel",
             "description": "Varm cremepalette, malerisk helt, raffineret magasinfølelse"
+          },
+          "quartz": {
+            "title": "Kvarts",
+            "description": "Monokromt fint gitter, linjerede rækker, fastlåst indskrivningsskinne"
           }
         }
       },
@@ -4104,7 +4113,9 @@
       "color": "Farve",
       "color_help": "Vælg en af 10 farver",
       "select_category": "Vælg en kategori",
-      "no_groups": "Opret en tag-gruppe, før du opretter tags"
+      "no_groups": "Opret en tag-gruppe, før du opretter tags",
+      "search_category": "Søg kategori",
+      "no_results": "Ingen kategorier fundet"
     },
     "group_modal": {
       "create_title": "Opret taggruppe",
@@ -4475,6 +4486,11 @@
     "heading": "Widgets",
     "subtitle": "Udgive brandede kursussamlinger til eksterne hjemmesider.",
     "empty_state": "Ingen widgets endnu. Opret en for at generere en indlejrbar kursusblok.",
+    "archived": {
+      "heading": "Arkiverede widgets",
+      "empty": "Ingen arkiverede widgets",
+      "empty_description": "Widgets, du arkiverer, vises her. Du kan gendanne dem når som helst."
+    },
     "filter": {
       "status": "Status",
       "all": "Alle",
@@ -4486,8 +4502,14 @@
       "saved": "Widget er gemt",
       "published": "Widget offentliggjort",
       "rolled_back": "Widget gendannet",
-      "deleted": "Widget arkiveret",
-      "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange."
+      "restored": "Widget gendannet",
+      "archived_load_failed": "Kunne ikke indlæse arkiverede widgets",
+      "restore_failed": "Kunne ikke gendanne widget",
+      "validation_failed": "Nogle felter er ugyldige. Tjek de fremhævede indgange.",
+      "archived": "Widget arkiveret",
+      "archive_failed": "Widget kunne ikke arkiveres",
+      "permanently_deleted": "Widget slettet permanent",
+      "delete_failed": "Widget kunne ikke slettes"
     },
     "form": {
       "name": "Widget navn",
@@ -4537,7 +4559,7 @@
       "copy_embed": "Kopiér indlejring",
       "copy_url": "Kopiér URL",
       "rename": "Omdøb",
-      "delete": "Slet"
+      "delete_permanently": "Slet permanent"
     },
     "embed": {
       "tabs": {
@@ -4679,7 +4701,9 @@
       "select_courses": "Vælg Kurser",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Integrer kode"
+      "embed": "Integrer kode",
+      "active": "Aktiv",
+      "archived": "Arkiveret"
     },
     "defaults": {
       "name_prefix": "Kursus-widget"
@@ -4687,6 +4711,10 @@
     "empty": {
       "heading": "Ingen widgets endnu",
       "description": "Opret en widget for at generere en indlejrbar kursusblok til eksterne websteder."
+    },
+    "delete_modal": {
+      "title": "Slet widget permanent",
+      "description": "Er du sikker på, at du vil slette \"{name}\" permanent? Denne handling kan ikke fortrydes."
     }
   },
   "side_panel": {
@@ -5173,7 +5201,7 @@
     "toggle_failed": "Kunne ikke opdatere invitationslinket"
   },
   "lms": {
-    "view_landing_page": "Se landingssiden"
+    "view_landing_page": "Hjem"
   },
   "notifications": {
     "title": "Notifikationer",

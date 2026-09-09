@@ -345,8 +345,8 @@ export const lessonRouter = new Hono()
   )
   /**
    * GET /course/:courseId/lesson/:lessonId/history
-   * Gets lesson version history for a lesson and locale
-   * Query params: locale (required), endRange (optional, default 9)
+   * Gets one keyset page of lesson version history, newest first.
+   * Query params: locale (required), limit (optional, default 10), cursor (optional)
    * Requires authentication and course membership
    */
   .get(
@@ -358,8 +358,8 @@ export const lessonRouter = new Hono()
     async (c) => {
       try {
         const { lessonId } = c.req.valid('param');
-        const { locale, endRange } = c.req.valid('query');
-        const history = await getLessonHistoryService(lessonId, locale, endRange);
+        const { locale, limit, cursor } = c.req.valid('query');
+        const history = await getLessonHistoryService(lessonId, locale, limit, cursor);
 
         return c.json(
           {

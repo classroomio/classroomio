@@ -1,3 +1,4 @@
+import { CERTIFICATE_WIDTH } from '../constants';
 import { CERTIFICATE_FONTS } from '../font-metrics';
 import { escapeHtml, prepareCertificateRenderContext, renderSignatoryBlock, type TemplateRenderer } from './shared';
 
@@ -6,9 +7,11 @@ const FONTS = {
   mono: CERTIFICATE_FONTS.jetbrainsMono
 } as const;
 
+const certPaddingHorizontal = 45;
+const certPaddingX = certPaddingHorizontal * 2;
 const dateRowItemWidth = 180;
 const subtitleRowItemWidth = 300;
-const courseRowItemWidth = 1100 - 90 - dateRowItemWidth - subtitleRowItemWidth; // 1100px total - 90px margins - dateRowItemWidth - subtitleRowItemWidth
+const courseRowItemWidth = CERTIFICATE_WIDTH - certPaddingX - dateRowItemWidth - subtitleRowItemWidth;
 const metaRowCellPaddingHorizontal = 18;
 const metaRowCellPaddingVertical = 14;
 const metaRowCellPaddingX = metaRowCellPaddingHorizontal * 2;
@@ -16,6 +19,8 @@ const metaRowCellPaddingY = metaRowCellPaddingVertical * 2;
 const certIdPaddingHorizontal = 10;
 const certIdPaddingVertical = 6;
 const recipientPaddingLeft = 16;
+const numMaxWidth = CERTIFICATE_WIDTH - certPaddingX;
+const footerColumnWidth = CERTIFICATE_WIDTH / 2 - certPaddingX;
 
 const metaRowItemData = {
   maxHeight: 73 - metaRowCellPaddingY,
@@ -44,6 +49,15 @@ const FIELDS = {
     basePx: 11,
     allowWrap: false,
     textTransform: 'uppercase' as const
+  },
+  num: {
+    maxWidth: numMaxWidth,
+    maxHeight: 120,
+    fontFamily: FONTS.mono,
+    basePx: 120,
+    fontWeight: 700 as const,
+    allowWrap: false,
+    letterSpacingEm: -0.04
   },
   date: {
     maxWidth: dateRowItemWidth - metaRowCellPaddingX,
@@ -75,11 +89,30 @@ const FIELDS = {
     lineHeight: 1.35,
     letterSpacingEm: 0.02,
     allowWrap: true
+  },
+  signatoryName: {
+    maxWidth: footerColumnWidth,
+    maxHeight: 28,
+    fontFamily: FONTS.display,
+    basePx: 18,
+    allowWrap: false,
+    letterSpacingEm: -0.01,
+    textTransform: 'uppercase' as const
+  },
+  signatoryRole: {
+    maxWidth: footerColumnWidth,
+    maxHeight: 24,
+    fontFamily: FONTS.mono,
+    basePx: 9,
+    lineHeight: 1.2,
+    letterSpacingEm: 0.22,
+    allowWrap: true,
+    textTransform: 'uppercase' as const
   }
 } as const;
 
 export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
-  const { accent, subtitle, description, signatoryOne, signatoryTwo, idDigits, fontSizes } =
+  const { accent, subtitle, description, signatoryOne, signatoryTwo, idDigits, fontSizes, roleMinHeight } =
     prepareCertificateRenderContext(design, data, FIELDS);
 
   const metaRowFontSize = Math.min(fontSizes.date, fontSizes.course, fontSizes.subtitle);
@@ -143,7 +176,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 35px 45px 0;
+      padding: 35px ${certPaddingHorizontal}px 0;
       margin-bottom: 10px;
       position: relative;
       z-index: 2;
@@ -166,20 +199,22 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       overflow-wrap: break-word;
     }
     .t-brutalist .title-block {
-      padding: 8px 45px 0;
+      padding: 8px ${certPaddingHorizontal}px 0;
       margin-bottom: 25px;
       position: relative;
       z-index: 2;
       flex-shrink: 0;
     }
     .t-brutalist .num {
-      font-family: '${FONTS.mono}', monospace;
-      font-size: 120px;
-      font-weight: 700;
+      font-family: '${FIELDS.num.fontFamily}', monospace;
+      font-size: ${fontSizes.num}px;
+      font-weight: ${FIELDS.num.fontWeight};
       line-height: 1;
-      max-height: 120px;
+      max-height: ${FIELDS.num.maxHeight}px;
+      max-width: ${numMaxWidth}px;
       color: ${accent};
-      letter-spacing: -0.04em;
+      letter-spacing: ${FIELDS.num.letterSpacingEm}em;
+      overflow-wrap: break-word;
     }
     .t-brutalist .num span { color: #000; }
     .t-brutalist .meta-row {
@@ -187,7 +222,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       grid-template-columns: ${dateRowItemWidth}px ${courseRowItemWidth}px ${subtitleRowItemWidth}px;
       border-top: 4px solid ${accent};
       border-bottom: 2px solid #000;
-      margin: 0 45px 0px;
+      margin: 0 ${certPaddingHorizontal}px;
       position: relative;
       z-index: 2;
       flex-shrink: 0;
@@ -218,7 +253,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       word-break: normal;
     }
     .t-brutalist .recipient-block {
-      padding: 0 45px;
+      padding: 0 ${certPaddingHorizontal}px;
       margin-bottom: 30px;
       position: relative;
       z-index: 2;
@@ -274,23 +309,33 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       z-index: 2;
     }
     .t-brutalist .footer > div {
-      padding: 14px 45px;
+      padding: 14px ${certPaddingHorizontal}px;
       font-family: '${FONTS.mono}', monospace;
     }
     .t-brutalist .footer > div:first-child { border-right: 2px solid #000; }
     .t-brutalist .footer .lbl {
-      font-size: 9px;
-      letter-spacing: 0.22em;
+      font-family: '${FIELDS.signatoryRole.fontFamily}', monospace;
+      font-size: ${fontSizes.signatoryRole}px;
+      line-height: ${FIELDS.signatoryRole.lineHeight};
+      letter-spacing: ${FIELDS.signatoryRole.letterSpacingEm}em;
       color: #666;
-      text-transform: uppercase;
-      margin-bottom: 2px;
+      text-transform: ${FIELDS.signatoryRole.textTransform};
+      margin-bottom: 6px;
+      max-width: ${footerColumnWidth}px;
+      min-height: ${roleMinHeight}px;
+      max-height: ${FIELDS.signatoryRole.maxHeight}px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
       overflow-wrap: break-word;
     }
     .t-brutalist .footer .name {
-      font-family: '${FONTS.display}', sans-serif;
-      font-size: 18px;
-      text-transform: uppercase;
-      letter-spacing: -0.01em;
+      font-family: '${FIELDS.signatoryName.fontFamily}', sans-serif;
+      font-size: ${fontSizes.signatoryName}px;
+      text-transform: ${FIELDS.signatoryName.textTransform};
+      letter-spacing: ${FIELDS.signatoryName.letterSpacingEm}em;
+      max-width: ${footerColumnWidth}px;
+      max-height: ${FIELDS.signatoryName.maxHeight}px;
       overflow-wrap: break-word;
     }
     .t-brutalist .stamp {
