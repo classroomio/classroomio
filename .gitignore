@@ -76,3 +76,5 @@ apps/db-agent
 output.css
 
 /reports
+
+.dev.vars
