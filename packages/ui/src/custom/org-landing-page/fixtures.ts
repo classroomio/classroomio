@@ -1,4 +1,34 @@
-import type { CourseLandingPageProps, OrgLandingPageProps } from './types';
+import type { CourseLandingPageProps, LearningPathItem, OrgLandingPageProps } from './types';
+
+export const mockLearningPaths: LearningPathItem[] = [
+  {
+    id: 'lp-1',
+    slug: 'soc2-compliance-track',
+    title: 'SOC 2 Compliance Track',
+    description:
+      'A guided, three-course sequence from security fundamentals to a completed control matrix — finish with a certificate auditors recognize.',
+    logo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 149.0,
+    currency: 'USD',
+    courseCount: 3,
+    totalHours: 16,
+    hasCertificate: true,
+    metadata: { showDiscount: true, discount: 20 }
+  },
+  {
+    id: 'lp-2',
+    slug: 'workplace-compliance-essentials',
+    title: 'Workplace Compliance Essentials',
+    description:
+      'Safety, anti-harassment, and data-privacy training bundled into one required track for every new hire.',
+    logo: 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 0,
+    currency: 'USD',
+    courseCount: 3,
+    totalHours: 7,
+    hasCertificate: true
+  }
+];
 
 export const mockOrgLandingPageProps: OrgLandingPageProps = {
   orgName: 'Certifi Academy',

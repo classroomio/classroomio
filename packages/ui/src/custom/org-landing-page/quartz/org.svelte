@@ -12,6 +12,7 @@
   import QuartzNav from './nav.svelte';
   import QuartzHero from './hero.svelte';
   import QuartzCourseRow from './course-row.svelte';
+  import LearningPathCard from '../learning-path-card.svelte';
 
   let {
     orgName,
@@ -23,6 +24,8 @@
     hasMoreCourses = false,
     coursesLoaded = true,
     disableCourseLinks = false,
+    learningPaths,
+    hasMoreLearningPaths = false,
     embed,
     callout,
     links,
@@ -36,6 +39,40 @@
 
   <main class="ui:@container ui:max-w-[1200px] ui:mx-auto ui:border-x ui:border-[var(--landing-border)]">
     <QuartzHero {hero} />
+
+    {#if learningPaths && learningPaths.length > 0}
+      <section id="learning-paths" class="ui:border-t ui:border-[var(--landing-border)]">
+        <p
+          class="ui:m-0 ui:px-5 ui:md:px-8 ui:py-3 ui:bg-[var(--landing-card)] ui:text-xs ui:text-[var(--landing-fg-faint)] ui:[letter-spacing:var(--landing-eyebrow-tracking)] ui:[text-transform:var(--landing-eyebrow-case)]"
+        >
+          {labels?.learningPathsHeading ?? 'Learning Paths'}
+        </p>
+
+        <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-px ui:bg-[var(--landing-border)]">
+          {#each learningPaths as path (path.id)}
+            <div class="ui:bg-[var(--landing-bg)]">
+              <LearningPathCard {path} {disableCourseLinks} {labels} />
+            </div>
+          {/each}
+        </div>
+
+        {#if hasMoreLearningPaths}
+          <div
+            class="ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-6 ui:px-5 ui:md:px-8 ui:py-8 ui:bg-[var(--landing-card)] ui:border-y ui:border-[var(--landing-border)]"
+          >
+            <LandingButton
+              variant="secondary"
+              size="lg"
+              href={disableCourseLinks ? undefined : '/learning-paths'}
+              disabled={disableCourseLinks}
+            >
+              {labels?.browseLearningPathsLabel ?? 'View more learning paths'}
+              <ArrowRightIcon class="ui:size-3.5" aria-hidden="true" />
+            </LandingButton>
+          </div>
+        {/if}
+      </section>
+    {/if}
 
     <EditableLandingSection sectionKey="courses">
       <section id="courses" class="ui:border-t ui:border-[var(--landing-border)]">
