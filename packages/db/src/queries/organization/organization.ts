@@ -1149,13 +1149,31 @@ export const createOrganizationPlan = async (
 /**
  * Updates an organization plan by subscription ID
  * @param subscriptionId Subscription ID
- * @param payload Payload data to update
+ * @param updates Organization plan fields to update
  * @returns Updated organization plan record
  */
 export const updateOrganizationPlan = async (
   subscriptionId: string,
+  updates: Partial<Pick<TOrganizationPlan, 'isActive' | 'deactivatedAt' | 'payload'>>
+): Promise<TOrganizationPlan | null> => {
+  const [plan] = await db
+    .update(schema.organizationPlan)
+    .set({ ...updates, updatedAt: sql`timezone('utc'::text, now())` })
+    .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+    .returning();
+  return plan ?? null;
+};
+
+/**
+ * Activates an organization plan by subscription ID.
+ * @param subscriptionId Subscription ID
+ * @param payload Payload data to update
+ * @returns Activated organization plan record, or null when it does not exist
+ */
+export const activateOrganizationPlan = async (
+  subscriptionId: string,
   payload: TOrganizationPlan['payload']
-): Promise<TOrganizationPlan> => {
+): Promise<TOrganizationPlan | null> => {
   const [plan] = await db
     .update(schema.organizationPlan)
     .set({
@@ -1166,7 +1184,8 @@ export const updateOrganizationPlan = async (
     })
     .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
     .returning();
-  return plan;
+
+  return plan ?? null;
 };
 
 /**

@@ -28,6 +28,7 @@ import {
   revokeAudiencePendingInvite
 } from '@api/services/organization/audience';
 import {
+  activateOrgPlan,
   cancelOrgPlan,
   createOrg,
   createOrgPlan,
@@ -598,6 +599,28 @@ export const organizationRouter = new Hono()
       );
     } catch (error) {
       return handleError(c, error, 'Failed to create organization plan');
+    }
+  })
+  /**
+   * POST /organization/plan/activate
+   * Activates an existing organization plan or creates it when the initial
+   * subscription event arrived before payment became active.
+   * Requires authentication (user session or API key)
+   */
+  .post('/plan/activate', authOrApiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
+    try {
+      const data = c.req.valid('json');
+      const plan = await activateOrgPlan(data);
+
+      return c.json(
+        {
+          success: true,
+          data: plan
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to activate organization plan');
     }
   })
   /**
