@@ -137,6 +137,8 @@ export interface PolarSubscriptionWebhookPayload {
     | 'subscription.created'
     | 'subscription.updated'
     | 'subscription.active'
+    | 'subscription.uncanceled'
+    | 'subscription.past_due'
     | 'subscription.revoked'
     | 'subscription.canceled';
   data: SubscriptionData;
