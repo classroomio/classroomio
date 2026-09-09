@@ -272,7 +272,9 @@ Usage query: all `doc_placement` + `lesson.doc_id` for the Doc editor sidebar.
 
 ## Related
 
-- [content-library-lms-bridge](../content-library-lms-bridge/README.md) — pointer to this file
+- [content-library-lms-bridge](../content-library-lms-bridge/README.md) — stub pointing here
+- [notes-sidebar](../notes-sidebar%20%5BDONE%5D/README.md) — Docs workspace (done, pending #699 → main)
+- [notes-comments](../notes-comments%20%5BDONE%5D/README.md) — inline comments (done)
 - [website-customer-ed-positioning](../website-customer-ed-positioning/README.md) — marketing wedge
 - [docs-knowledge-base](../docs-knowledge-base/README.md) — Zoho-style governance (later)
 - [programs](../programs%20%5BDONE%5D/README.md) — paths/programs primitive

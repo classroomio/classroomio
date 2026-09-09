@@ -1,6 +1,6 @@
 # Notes Sidebar — Implementation Plan
 
-Companion to [`notes-sidebar-prd.md`](./notes-sidebar-prd.md). Execute phases in order on branch `cursor/notes-workspace-feedback-6d09`.
+Companion to [`README.md`](./README.md). **Done** on `cursor/notes-foundation-6d09` (PR #715 merged into #699).
 
 ---
 
@@ -407,11 +407,10 @@ pnpm dashboard:dev
 
 ## PR checklist
 
-- [ ] `0005_notes.sql` only (no 0006)
-- [ ] Access tests: team write for admin, read-only for student
-- [ ] Favorites migration from is_pinned
-- [ ] Screenshots of all four sections
-- [ ] Trash restore flow
-- [ ] Templates page: 6 built-ins + Your templates section
-- [ ] `NoteTemplatesBrowser` modal removed
-- [ ] i18n all locales
+- [x] `0005` notes/docs migration only (no extra notes migrations)
+- [x] Access tests: team write for admin, read-only for student
+- [x] Favorites (leaf-only) instead of global is_pinned
+- [x] Four sidebar sections + trash restore + templates page
+- [x] `NoteTemplatesBrowser` modal removed
+- [ ] i18n all locales (en only for new workspace strings)
+- [ ] Screenshots in PR (optional leftover)

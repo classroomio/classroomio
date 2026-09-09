@@ -1,6 +1,6 @@
 # Notes Inline Comments PRD
 
-> **Related:** Notes sidebar redesign → see [`../notes-sidebar-prd.md`](../notes-sidebar-prd.md) and [`../notes-sidebar-implementation-plan.md`](../notes-sidebar-implementation-plan.md).
+> **Related:** Notes sidebar (done) → [`../notes-sidebar [DONE]/README.md`](../notes-sidebar%20%5BDONE%5D/README.md).
 
 ## Status
 

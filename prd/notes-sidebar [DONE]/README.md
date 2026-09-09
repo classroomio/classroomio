@@ -1,24 +1,24 @@
 # Notes Sidebar & Hierarchy PRD
 
-> **Location:** This file is the canonical PRD. When disk space allows, move to `prd/notes-sidebar/README.md`.
+> **Location:** `prd/notes-sidebar [DONE]/README.md`
 
 ## Status
 
-- **Phase 0:** Approved — ready for implementation
-- **Target branch:** `cursor/notes-workspace-feedback-6d09` (PR **#715**), stacked on `cursor/notes-foundation-6d09` (PR **#699**)
-- **Migration rule:** All schema changes go in foundation's single file `packages/db/src/migrations/0005_notes.sql` (do **not** add `0006+` notes migrations)
+- **Done** — implemented on `cursor/notes-foundation-6d09` (PR **#715** merged into **#699**). Not on `main` until #699 lands.
+- Product was later renamed **Notes → Docs** on that branch (`org_doc`, `/org/.../docs`).
+- Follow-on: [docs-content-layer](../docs-content-layer/README.md) (reuse, catalog, blog — not started).
 
 ## Progress
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| **1** | Schema + DB queries + access control | ☐ |
-| **2** | API routes (tree, favorites, share, trash) | ☐ |
-| **3** | Sidebar UI (sections, tree, footer) | ☐ |
-| **4** | Editor SUB-PAGES block + create child | ☐ |
-| **5** | Search modal (⌘K) + tag filter | ☐ |
-| **6** | Individual share UI in share dialog | ☐ |
-| **7** | **Templates page** (course-structure templates, replaces modal) | ☐ |
+| **1** | Schema + DB queries + access control | ☑ |
+| **2** | API routes (tree, favorites, share, trash) | ☑ |
+| **3** | Sidebar UI (sections, tree, footer) | ☑ |
+| **4** | Editor SUB-PAGES block + create child | ☑ |
+| **5** | Search modal (⌘K) + tag filter | ☑ |
+| **6** | Individual share UI in share dialog | ☑ |
+| **7** | **Templates page** (course-structure templates, replaces modal) | ☑ |
 
 ---
 
