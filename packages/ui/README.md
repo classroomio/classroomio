@@ -96,7 +96,7 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 
 In-player chrome for lesson video checkpoints. The overlay sits `absolute inset-0` inside the same relative player wrapper as the video (fullscreen-safe). Copy (`kicker`, `continueLabel`, `errorMessage`) is passed in by the host. The question body is a `questionBody` snippet — production and Storybook both mount `ExerciseQuestion.QuestionRenderer` there (`mode: 'take'` for learners, `mode: 'edit'` in the teacher dialog). Do not invent a second option editor.
 
-- **`Overlay`** — dimmed backdrop, scrollable card (`max-width: 520px`, `max-height: min(78%, 32.5rem)`), kicker, question slot, optional try-again error, **Continue** (disabled until the host says the take renderer has a complete answer). Backdrop blur is skipped when `prefers-reduced-motion` is set.
+- **`Overlay`** — dimmed backdrop, card (`max-width: 520px`, `max-height: min(78%, 32.5rem)`), kicker, scrollable question slot, optional try-again error, **Continue** pinned to the card footer (disabled until the host says the take renderer has a complete answer). Backdrop blur is skipped when `prefers-reduced-motion` is set.
 
 See `Molecules/VideoCheckpoint` in Storybook.
 

@@ -40,26 +40,26 @@
   aria-describedby={hasError ? errorId : undefined}
 >
   <div
-    class="ui:bg-card ui:text-card-foreground ui:border-border ui:flex ui:max-h-[min(78%,32.5rem)] ui:w-full ui:max-w-[520px] ui:flex-col ui:overflow-auto ui:rounded-lg ui:border ui:p-5 ui:pb-4 ui:shadow-md"
+    class="ui:bg-card ui:text-card-foreground ui:border-border ui:flex ui:max-h-[min(78%,32.5rem)] ui:w-full ui:max-w-[520px] ui:flex-col ui:overflow-hidden ui:rounded-lg ui:border ui:p-5 ui:pb-4 ui:shadow-md"
   >
     <p
       id={kickerId}
-      class="ui:text-muted-foreground ui:mb-1.5 ui:text-[11px] ui:font-semibold ui:tracking-[0.06em] ui:uppercase"
+      class="ui:text-muted-foreground ui:mb-1.5 ui:shrink-0 ui:text-[11px] ui:font-semibold ui:tracking-[0.06em] ui:uppercase"
     >
       {kicker}
     </p>
 
-    <div class="ui:min-h-0 ui:flex-1">
+    <div class="ui:min-h-0 ui:flex-1 ui:overflow-y-auto">
       {@render questionBody()}
     </div>
 
     {#if hasError}
-      <p id={errorId} class="ui:text-destructive ui:mt-1 ui:mb-2.5 ui:text-[13px]" role="alert">
+      <p id={errorId} class="ui:text-destructive ui:mt-1 ui:mb-2.5 ui:shrink-0 ui:text-[13px]" role="alert">
         {errorMessage}
       </p>
     {/if}
 
-    <div class="ui:mt-3 ui:flex ui:justify-end">
+    <div class="ui:mt-3 ui:flex ui:shrink-0 ui:justify-end">
       <Button type="button" disabled={continueDisabled} onclick={() => onContinue?.()}>
         {continueLabel}
       </Button>
