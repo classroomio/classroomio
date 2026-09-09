@@ -31,7 +31,8 @@
     callout,
     links,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: OrgLandingPageProps = $props();
 
   function priceLabel(course: CourseItem): string {
@@ -81,7 +82,7 @@
   <main>
     <TerminalHero {orgName} {hero} {courses}>
       {#snippet navigation()}
-        <TerminalNav {orgName} {logoUrl} {navItems} {authAction} />
+        <TerminalNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </TerminalHero>
 

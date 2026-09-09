@@ -28,7 +28,8 @@
     reviews,
     pricing,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: CourseLandingPageProps = $props();
 
   const heroProps = $derived(alignHeroCtaWithPricing(hero, pricing));
@@ -41,7 +42,7 @@
   <main>
     <EditorialHero hero={heroProps} courses={[]}>
       {#snippet navigation()}
-        <EditorialNav {orgName} {logoUrl} {navItems} {authAction} />
+        <EditorialNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </EditorialHero>
 

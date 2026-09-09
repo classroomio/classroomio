@@ -29,7 +29,8 @@
     callout,
     links,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: OrgLandingPageProps = $props();
 </script>
 
@@ -37,7 +38,7 @@
   <main>
     <MinimalHero {hero}>
       {#snippet navigation()}
-        <MinimalNav {orgName} {logoUrl} {navItems} {authAction} />
+        <MinimalNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </MinimalHero>
 

@@ -5235,5 +5235,17 @@
       "direct": "सीधा",
       "watching": "देख रहे हैं"
     }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "खाता मेनू, {email} के रूप में साइन इन किया गया",
+      "trigger_label_anonymous": "खाता मेनू",
+      "my_courses": "मेरे पाठ्यक्रम",
+      "my_certificates": "मेरे प्रमाणपत्र",
+      "account_settings": "खाता सेटिंग्स",
+      "theme": "थीम",
+      "continue_learning": "सीखना जारी रखें",
+      "not_enrolled_note": "अभी तक इस अकादमी में नामांकित नहीं हैं — शामिल होने के बाद शिक्षार्थी गंतव्य दिखाई देंगे।"
+    }
   }
 }

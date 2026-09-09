@@ -13,10 +13,11 @@
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { t } from '$lib/utils/functions/translations';
-  import { user } from '$lib/utils/store/user';
-  import { basePath } from '$lib/utils/store/app';
+  import { user, profile } from '$lib/utils/store/user';
   import type { AccountOrg } from '$features/app/types';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
   import { snackbar } from '$features/ui/snackbar/store';
 
   import { Button } from '@cio/ui/base/button';
@@ -133,22 +134,18 @@
     return !isFreeLandingPageTheme(theme);
   }
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve(`${$basePath !== '#' ? $basePath : '/lms'}`, {})
-        }
-      : { label: t.get('navigation.login'), href: '/login' }
-  );
+  const authAction = $derived(getPreviewOrgLandingAuthAction($user.isLoggedIn));
 
   const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
 
   const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
 
+  const learnerAccount = $derived(getPreviewOrgLandingLearnerAccount($profile, $currentOrg));
+
   const previewProps = $derived.by(() =>
     buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction, {
-      coursesLoaded
+      coursesLoaded,
+      learnerAccount
     })
   );
 

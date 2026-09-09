@@ -5235,5 +5235,17 @@
       "direct": "Directo",
       "watching": "Siguiendo"
     }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menú de cuenta, sesión iniciada como {email}",
+      "trigger_label_anonymous": "Menú de cuenta",
+      "my_courses": "Mis cursos",
+      "my_certificates": "Mis certificados",
+      "account_settings": "Configuración de la cuenta",
+      "theme": "Tema",
+      "continue_learning": "Continuar aprendiendo",
+      "not_enrolled_note": "Aún no estás inscrito en esta academia; los destinos de aprendizaje aparecerán después de registrarte."
+    }
   }
 }

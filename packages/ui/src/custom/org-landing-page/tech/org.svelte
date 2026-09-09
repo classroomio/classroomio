@@ -29,7 +29,8 @@
     callout,
     links,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: OrgLandingPageProps = $props();
 </script>
 
@@ -37,7 +38,7 @@
   <main>
     <TechHero {hero}>
       {#snippet navigation()}
-        <TechNav {orgName} {logoUrl} {navItems} {authAction} />
+        <TechNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </TechHero>
 
