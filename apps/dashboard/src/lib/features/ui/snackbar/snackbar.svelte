@@ -23,13 +23,20 @@
       duration: autoHideDuration || 5000,
       onDismiss: handleClose,
       onAutoClose: handleClose,
+      // Stated rather than inherited: resolving a toast by id merges the new
+      // data over the old toast, so a loading toast's `false` would otherwise
+      // stick to the outcome that replaces it.
+      closeButton: true,
+      dismissable: true,
       // Reusing an id swaps that toast's content instead of stacking a new one.
       ...(id ? { id } : {})
     };
 
     if (severity === SNACKBAR_SEVERITY.LOADING) {
       // Sonner draws the spinner; it stays until the caller resolves this id.
-      toast.loading(message, options);
+      // Not closable, and no close button: this toast is the only report the
+      // run will give, so dismissing it would lose the outcome.
+      toast.loading(message, { ...options, closeButton: false, dismissable: false });
     } else if (severity === SNACKBAR_SEVERITY.SUCCESS) {
       toast.success(message, options);
     } else if (severity === SNACKBAR_SEVERITY.ERROR) {
