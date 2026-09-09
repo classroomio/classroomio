@@ -220,6 +220,10 @@ export interface OrgLandingPageLabels {
   learningPathsEmptyTitle?: string;
   /** Empty catalog description when no learning paths are published. Default: "Check back soon for new programs." */
   learningPathsEmptyDescription?: string;
+  /** Duration label for a learning path card. Default: `${hours}h`. */
+  learningPathHoursLabel?: (hours: number) => string;
+  /** Certificate label for a learning path card. Default: "Certificate". */
+  learningPathCertificateLabel?: string;
 }
 
 export type CourseCurriculumLesson = {

@@ -13,7 +13,7 @@
   const [PAID_PATH, FREE_PATH] = mockLearningPaths;
 </script>
 
-<Story name="Paid, with certificate">
+<Story name="Paid, with certificate (no detail link)">
   {#snippet template()}
     <div class="w-96">
       <LearningPathCard path={PAID_PATH} />

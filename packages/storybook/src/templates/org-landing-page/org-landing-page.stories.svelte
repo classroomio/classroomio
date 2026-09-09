@@ -39,6 +39,12 @@
     embedEyebrow: 'Integración',
     calloutEyebrow: 'Cuando quieras',
     learnMoreLabel: 'Visitar',
+    learningPathsHeading: 'Rutas de aprendizaje',
+    browseLearningPathsLabel: 'Ver más rutas de aprendizaje',
+    learningPathLabel: 'Ruta de aprendizaje',
+    learningPathCourseCountLabel: (n) => (n === 1 ? '1 curso' : `${n} cursos`),
+    learningPathHoursLabel: (hours) => `${hours} horas`,
+    learningPathCertificateLabel: 'Certificado',
     lessonsLabel: (n) => (n === 1 ? '1 lección' : `${n} lecciones`),
     exercisesLabel: (n) => (n === 1 ? '1 ejercicio' : `${n} ejercicios`),
     enrolledLabel: (n) => `${n.toLocaleString()} inscritos`

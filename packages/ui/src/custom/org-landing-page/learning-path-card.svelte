@@ -4,6 +4,7 @@
   import ClockIcon from '@lucide/svelte/icons/clock';
   import AwardIcon from '@lucide/svelte/icons/award';
   import { defaultLearningPathCourseCountLabel } from './landing-page-utils';
+  import { safeHref } from './safe-href';
 
   interface Props {
     path: LearningPathItem;
@@ -13,10 +14,9 @@
 
   let { path, disableCourseLinks = false, labels }: Props = $props();
 
-  const href = $derived.by(() => {
-    if (disableCourseLinks) return undefined;
-    return path.link || (path.slug ? `/learning-paths/${path.slug}` : undefined);
-  });
+  const href = $derived(disableCourseLinks ? undefined : path.link);
+  const safePathHref = $derived(href ? safeHref(href, '') || undefined : undefined);
+  const isNavigationDisabled = $derived(!safePathHref);
 
   const courseCountLabel = $derived(
     (labels?.learningPathCourseCountLabel ?? defaultLearningPathCourseCountLabel)(path.courseCount ?? 0)
@@ -35,12 +35,12 @@
   automatically re-skins correctly inside any theme without per-theme forks.
 -->
 <a
-  {href}
-  class="ui:block ui:h-full ui:no-underline {disableCourseLinks
+  href={safePathHref}
+  class="ui:block ui:h-full ui:no-underline {isNavigationDisabled
     ? 'ui:cursor-default'
     : 'ui:cursor-pointer ui:transition-colors'}"
-  aria-disabled={disableCourseLinks}
-  tabindex={disableCourseLinks ? -1 : undefined}
+  aria-disabled={isNavigationDisabled}
+  tabindex={isNavigationDisabled ? -1 : undefined}
 >
   <div
     class="ui:flex ui:h-full ui:flex-col ui:overflow-hidden ui:border ui:transition-colors"
@@ -83,13 +83,13 @@
         {#if path.totalHours}
           <span class="ui:flex ui:items-center ui:gap-1.5">
             <ClockIcon class="ui:size-4" />
-            {path.totalHours}h
+            {(labels?.learningPathHoursLabel ?? ((hours) => `${hours}h`))(path.totalHours)}
           </span>
         {/if}
         {#if path.hasCertificate}
           <span class="ui:flex ui:items-center ui:gap-1.5">
             <AwardIcon class="ui:size-4" />
-            Certificate
+            {labels?.learningPathCertificateLabel ?? 'Certificate'}
           </span>
         {/if}
         <span class="ui:ml-auto ui:font-semibold" style="color: var(--landing-fg)">

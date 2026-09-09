@@ -11,6 +11,7 @@
   import LearningPathCard from '../learning-path-card.svelte';
   import EditableLandingSection from '../editable-section.svelte';
   import { Button } from '../../../base/button';
+  import LandingButton from '../landing-button.svelte';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import { getCourseTypeLandingMeta } from '../landing-page-utils';
 
@@ -115,14 +116,14 @@
 
           {#if hasMoreLearningPaths}
             <div class="ui:mt-7 ui:flex ui:justify-center">
-              <Button
+              <LandingButton
                 href={disableCourseLinks ? undefined : '/learning-paths'}
-                variant="outline"
+                variant="secondary"
                 disabled={disableCourseLinks}
-                class="ui:rounded-full ui:px-5 ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/5"
+                class="ui:rounded-full ui:px-5"
               >
                 {labels?.browseLearningPathsLabel ?? 'View all learning paths →'}
-              </Button>
+              </LandingButton>
             </div>
           {/if}
         </div>
