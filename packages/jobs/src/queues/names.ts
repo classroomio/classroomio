@@ -12,6 +12,7 @@ export const QUEUE_NAMES = {
   courseImports: 'course-imports',
   agentCourseGeneration: 'agent-course-generation',
   onboardingBootstrap: 'onboarding-bootstrap',
+  audience: 'audience',
   maintenance: 'maintenance'
 } as const;
 
@@ -47,6 +48,9 @@ export const JOB_NAMES = {
   },
   agentCourseGeneration: {
     run: 'run'
+  },
+  audience: {
+    bulkAction: 'bulk-action'
   },
   maintenance: {
     retentionCompact: 'retention-compact',

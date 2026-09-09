@@ -116,6 +116,21 @@ export type BulkAudiencePreview = BulkAudiencePreviewSuccess['data'];
 export type UndoBulkAudienceActionRequest =
   (typeof classroomio.organization)['audience']['bulk-action']['undo']['$post'];
 
+export type BulkAudienceActionStatusRequest =
+  (typeof classroomio.organization)['audience']['bulk-action'][':jobId']['$get'];
+export type BulkAudienceActionStatusSuccess = Extract<
+  InferResponseType<BulkAudienceActionStatusRequest>,
+  { success: true }
+>;
+export type BulkAudienceActionStatus = BulkAudienceActionStatusSuccess['data'];
+
+/** The folded outcome a finished queued run reports, matching the synchronous shape. */
+export type BulkAudienceActionOutcome = {
+  requested: number;
+  succeeded: number;
+  failed: { memberId: number; reason: string }[];
+};
+
 /** The lifecycle actions the bulk bar offers. `delete` requires every target to be ARCHIVED. */
 export type AudienceBulkAction = 'deactivate' | 'reactivate' | 'archive' | 'unarchive' | 'delete';
 

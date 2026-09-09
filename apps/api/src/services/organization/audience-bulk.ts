@@ -2,21 +2,21 @@ import { createHash, randomUUID } from 'node:crypto';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { AUDIENCE_BULK_SYNC_MAX } from '@cio/utils/validation/organization';
-import { db } from '@cio/db/drizzle';
 import {
-  type BulkAudienceMemberRow,
-  type MemberAuditEntry,
-  type OrganizationMemberAuditEvent,
+  AudienceBulkError,
+  type BulkApplyOutcome,
+  applyAudienceBulkActionToMembers
+} from '@cio/core/services/organization/audience-bulk';
+import { db } from '@cio/db/drizzle';
+import { QUEUE_NAMES, enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope, type JobEnvelope } from '@cio/jobs';
+import {
   type OrganizationMemberStatus,
-  bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
   countAudienceMatchesNotArchived,
-  deleteGroupMembershipsForOrgProfiles,
   getAudienceMatchSample,
   getBulkAudienceMembersByIds,
   recordOrganizationMemberAudit,
-  resolveAudienceMemberIds,
-  revokeActiveOrganizationInvitesByEmails
+  resolveAudienceMemberIds
 } from '@cio/db/queries/organization';
 import type { TAudienceBulkAction, TBulkAudienceAction } from '@cio/utils/validation/organization';
 
@@ -32,21 +32,6 @@ export type BulkAudienceActionResult =
     }
   | { mode: 'queued'; jobId: string; requested: number };
 
-const ACTION_TO_STATUS: Record<Exclude<TAudienceBulkAction, 'delete'>, OrganizationMemberStatus> = {
-  deactivate: 'DEACTIVATED',
-  reactivate: 'ACTIVE',
-  archive: 'ARCHIVED',
-  unarchive: 'ACTIVE'
-};
-
-const ACTION_TO_AUDIT_EVENT: Record<TAudienceBulkAction, OrganizationMemberAuditEvent> = {
-  deactivate: 'DEACTIVATED',
-  reactivate: 'REACTIVATED',
-  archive: 'ARCHIVED',
-  unarchive: 'UNARCHIVED',
-  delete: 'REMOVED'
-};
-
 /** The inverse each reversible action undoes to. `delete` has none. */
 const UNDO_STATUS: Record<
   Exclude<TAudienceBulkAction, 'delete' | 'reactivate' | 'unarchive'>,
@@ -55,6 +40,17 @@ const UNDO_STATUS: Record<
   deactivate: 'ACTIVE',
   archive: 'ACTIVE'
 };
+
+/** The applier's codes, mapped to HTTP once, here at the API boundary. */
+function toAppError(error: unknown): unknown {
+  if (!(error instanceof AudienceBulkError)) return error;
+
+  if (error.code === 'DELETE_NOT_ARCHIVED') {
+    return new AppError(error.message, ErrorCodes.ORG_AUDIENCE_DELETE_NOT_ARCHIVED, 409);
+  }
+
+  return new AppError(error.message, ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 404);
+}
 
 /**
  * Checksum over the previewed member ids. A matching count does not prove a
@@ -144,33 +140,20 @@ function consumeUndoToken(token: string, orgId: string, actorProfileId: string):
 
 const PREVIEW_SAMPLE_SIZE = 5;
 
-/** Always checked against a count, never a loaded array, so refusing is cheap. */
-function assertWithinSyncCeiling(targetSize: number): void {
-  if (targetSize <= AUDIENCE_BULK_SYNC_MAX) {
-    return;
-  }
-
-  throw new AppError(
-    `This action affects ${targetSize} learners, which exceeds the ${AUDIENCE_BULK_SYNC_MAX} that can be applied in one request.`,
-    ErrorCodes.ORG_AUDIENCE_BULK_FAILED,
-    413
-  );
-}
-
 /**
- * Resolves the target inside the caller's transaction. Filter mode reuses the
- * list's `whereClause` builder, then re-checks the previewed count and hash.
+ * Resolves the target to member ids. Filter mode reuses the list's
+ * `whereClause` builder, then re-checks the previewed count and hash.
+ *
+ * Ids only, and outside any write transaction, so an oversized target can be
+ * handed to the queue without holding one open.
  */
-async function resolveTarget(
-  orgId: string,
-  data: TBulkAudienceAction,
-  tx: Parameters<Parameters<typeof db.transaction>[0]>[0]
-): Promise<BulkAudienceMemberRow[]> {
+async function resolveTargetIds(orgId: string, data: TBulkAudienceAction): Promise<number[]> {
   if (data.target.mode === 'ids') {
-    return getBulkAudienceMembersByIds(orgId, data.target.memberIds, tx);
+    const members = await getBulkAudienceMembersByIds(orgId, data.target.memberIds);
+    return members.map((member) => member.id);
   }
 
-  const matchedIds = await resolveAudienceMemberIds(orgId, data.target.filter, tx);
+  const matchedIds = await resolveAudienceMemberIds(orgId, data.target.filter);
   const actualHash = computeTargetHash(matchedIds);
 
   if (matchedIds.length !== data.target.expectedCount || actualHash !== data.target.expectedTargetHash) {
@@ -181,168 +164,93 @@ async function resolveTarget(
     );
   }
 
-  // Before loading rows, so a huge match is refused cheaply.
-  assertWithinSyncCeiling(matchedIds.length);
-
-  return getBulkAudienceMembersByIds(orgId, matchedIds, tx);
+  return matchedIds;
 }
 
+/** An applier outcome, plus an undo token when the action is reversible. */
+function toCompletedResult(
+  orgId: string,
+  actorProfileId: string,
+  action: TAudienceBulkAction,
+  outcome: BulkApplyOutcome
+): Extract<BulkAudienceActionResult, { mode: 'completed' }> {
+  const undoStatus = action === 'deactivate' || action === 'archive' ? UNDO_STATUS[action] : undefined;
+
+  // Over the ids that changed, never the filter — the action moved who matches.
+  const undoToken =
+    undoStatus && outcome.appliedStatus && outcome.changedIds.length > 0
+      ? issueUndoToken({
+          orgId,
+          actorProfileId,
+          memberIds: outcome.changedIds,
+          status: undoStatus,
+          appliedStatus: outcome.appliedStatus
+        })
+      : undefined;
+
+  return {
+    mode: 'completed',
+    requested: outcome.requested,
+    succeeded: outcome.succeeded,
+    failed: outcome.failed,
+    undoToken
+  };
+}
+
+/** Members per transaction on the queued path. */
+const QUEUED_CHUNK_SIZE = 200;
+
 /**
- * One transaction owned here: resolution, authorization, writes, invite
- * revocation and audit rows.
+ * Applies a lifecycle action, synchronously up to `AUDIENCE_BULK_SYNC_MAX` and
+ * on the queue above it. The queued path returns a job id to poll; its terminal
+ * payload is the same `completed` shape, so the client renders one summary.
  */
 export async function applyBulkAudienceAction(
   orgId: string,
   data: TBulkAudienceAction,
   actorProfileId: string
 ): Promise<BulkAudienceActionResult> {
-  const outcome = await db.transaction(async (tx) => {
-    const members = await resolveTarget(orgId, data, tx);
+  const memberIds = await resolveTargetIds(orgId, data);
 
-    if (members.length === 0) {
-      throw new AppError('No matching learners to act on', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 404);
+  if (memberIds.length === 0) {
+    throw new AppError('No matching learners to act on', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 404);
+  }
+
+  const filterSnapshot = data.target.mode === 'filter' ? { ...data.target.filter } : undefined;
+
+  if (memberIds.length > AUDIENCE_BULK_SYNC_MAX) {
+    // Ids, not the filter: the target was verified against the admin's preview
+    // hash just now, and re-resolving in the worker would hit a different
+    // population because the action changes who matches.
+    const jobId = await enqueueAudienceBulkAction({
+      organizationId: orgId,
+      actorProfileId,
+      action: data.action,
+      memberIds,
+      reason: data.reason,
+      filterSnapshot,
+      chunkSize: QUEUED_CHUNK_SIZE
+    });
+
+    if (!jobId) {
+      throw new AppError('Could not queue this action', ErrorCodes.ORG_AUDIENCE_BULK_FAILED, 500);
     }
 
-    assertWithinSyncCeiling(members.length);
+    return { mode: 'queued', jobId, requested: memberIds.length };
+  }
 
-    const requested = members.length;
-    const filterSnapshot = data.target.mode === 'filter' ? { ...data.target.filter } : undefined;
-
-    if (data.action === 'delete') {
-      return deleteMembers(orgId, members, data, actorProfileId, filterSnapshot, tx);
-    }
-
-    return changeStatus(orgId, members, data, actorProfileId, filterSnapshot, requested, tx);
-  });
-
-  return outcome;
-}
-
-/**
- * Permanent removal. Every resolved member must already be ARCHIVED; the UI's
- * type-to-confirm sits on top of this gate, never in place of it.
- */
-async function deleteMembers(
-  orgId: string,
-  members: BulkAudienceMemberRow[],
-  data: TBulkAudienceAction,
-  actorProfileId: string,
-  filterSnapshot: Record<string, unknown> | undefined,
-  tx: Parameters<Parameters<typeof db.transaction>[0]>[0]
-): Promise<BulkAudienceActionResult> {
-  const notArchived = members.filter((member) => member.status !== 'ARCHIVED');
-
-  if (notArchived.length > 0) {
-    throw new AppError(
-      `${notArchived.length} of these learners are not archived. Archive them first — deleting is only available for archived learners.`,
-      ErrorCodes.ORG_AUDIENCE_DELETE_NOT_ARCHIVED,
-      409
+  try {
+    const outcome = await applyAudienceBulkActionToMembers(
+      orgId,
+      memberIds,
+      { action: data.action, reason: data.reason, filterSnapshot },
+      actorProfileId
     );
+
+    return toCompletedResult(orgId, actorProfileId, data.action, outcome);
+  } catch (error) {
+    throw toAppError(error);
   }
-
-  const memberIds = members.map((member) => member.id);
-  const profileIds = members.map((member) => member.profileId).filter((id): id is string => Boolean(id));
-
-  // Before the delete, while the identities still exist.
-  await recordOrganizationMemberAudit(orgId, buildAuditEntries(members, data, actorProfileId, filterSnapshot), tx);
-
-  if (profileIds.length > 0) {
-    await deleteGroupMembershipsForOrgProfiles(orgId, profileIds, tx);
-  }
-
-  const deletedIds = await bulkDeleteOrganizationAudienceMembers(orgId, memberIds, tx);
-
-  const emails = members
-    .filter((member) => deletedIds.includes(member.id) && member.email)
-    .map((member) => member.email!.toLowerCase());
-
-  if (emails.length > 0) {
-    // In-transaction: a rollback must not leave invites revoked.
-    await revokeActiveOrganizationInvitesByEmails(orgId, emails, actorProfileId, tx);
-  }
-
-  return {
-    mode: 'completed',
-    requested: members.length,
-    succeeded: deletedIds.length,
-    failed: buildFailures(members, deletedIds),
-    undoToken: undefined
-  };
-}
-
-async function changeStatus(
-  orgId: string,
-  members: BulkAudienceMemberRow[],
-  data: TBulkAudienceAction,
-  actorProfileId: string,
-  filterSnapshot: Record<string, unknown> | undefined,
-  requested: number,
-  tx: Parameters<Parameters<typeof db.transaction>[0]>[0]
-): Promise<BulkAudienceActionResult> {
-  const action = data.action as Exclude<TAudienceBulkAction, 'delete'>;
-  const status = ACTION_TO_STATUS[action];
-  const memberIds = members.map((member) => member.id);
-
-  const changedIds = await bulkUpdateOrganizationMemberStatus(orgId, memberIds, status, actorProfileId, tx);
-  const changed = members.filter((member) => changedIds.includes(member.id));
-
-  await recordOrganizationMemberAudit(orgId, buildAuditEntries(changed, data, actorProfileId, filterSnapshot), tx);
-
-  if (action === 'deactivate' || action === 'archive') {
-    const emails = changed.filter((member) => member.email).map((member) => member.email!.toLowerCase());
-
-    if (emails.length > 0) {
-      await revokeActiveOrganizationInvitesByEmails(orgId, emails, actorProfileId, tx);
-    }
-  }
-
-  // Over the ids that changed, never the filter — the action moved who matches.
-  const undoStatus = action === 'deactivate' || action === 'archive' ? UNDO_STATUS[action] : undefined;
-  const undoToken =
-    undoStatus && changedIds.length > 0
-      ? issueUndoToken({
-          orgId,
-          actorProfileId,
-          memberIds: changedIds,
-          status: undoStatus,
-          appliedStatus: status
-        })
-      : undefined;
-
-  return {
-    mode: 'completed',
-    requested,
-    succeeded: changedIds.length,
-    failed: buildFailures(members, changedIds),
-    undoToken
-  };
-}
-
-/** Resolved but unchanged — usually already in the target state. Reported, not counted as success. */
-function buildFailures(
-  members: BulkAudienceMemberRow[],
-  succeededIds: number[]
-): { memberId: number; reason: string }[] {
-  return members
-    .filter((member) => !succeededIds.includes(member.id))
-    .map((member) => ({ memberId: member.id, reason: 'ALREADY_IN_STATE' }));
-}
-
-function buildAuditEntries(
-  members: BulkAudienceMemberRow[],
-  data: TBulkAudienceAction,
-  actorProfileId: string,
-  filterSnapshot: Record<string, unknown> | undefined
-): MemberAuditEntry[] {
-  return members.map((member) => ({
-    memberId: member.id,
-    profileId: member.profileId,
-    targetEmail: member.email,
-    eventType: ACTION_TO_AUDIT_EVENT[data.action],
-    actorProfileId,
-    reason: data.reason,
-    filterSnapshot
-  }));
 }
 
 /** Applies the inverse status change to precisely the ids that succeeded. */
@@ -404,4 +312,28 @@ export async function undoBulkAudienceAction(
         })
     };
   });
+}
+
+const AUDIENCE_BULK_DOMAIN = 'audience-bulk-action';
+
+/**
+ * Status of a queued bulk action, as the same `JobEnvelope` the notify flow
+ * polls. The job's own payload carries the organization it was enqueued for,
+ * so an admin of one org cannot read another org's run by guessing an id.
+ */
+export async function getBulkAudienceActionStatus(orgId: string, jobId: string, pollCount = 0): Promise<JobEnvelope> {
+  const job = await getQueue(QUEUE_NAMES.audience).getJob(jobId);
+  const payloadOrgId = (job?.data as { organizationId?: string } | undefined)?.organizationId;
+
+  if (!job || payloadOrgId !== orgId) {
+    throw new AppError('Bulk action not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const envelope = await getQueueJobEnvelope(QUEUE_NAMES.audience, jobId, AUDIENCE_BULK_DOMAIN, pollCount);
+
+  if (!envelope) {
+    throw new AppError('Bulk action not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  return envelope;
 }

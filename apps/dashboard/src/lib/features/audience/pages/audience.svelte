@@ -7,6 +7,8 @@
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
+  import { Spinner } from '@cio/ui/base/spinner';
+  import { onDestroy } from 'svelte';
   import { TablePagination, UpgradeBanner } from '$features/ui';
   import { currentOrgMaxAudience, isOrgAdmin } from '$lib/utils/store/org';
   import type {
@@ -31,7 +33,12 @@
   } from '$features/org/utils/audience-query-utils';
   import AudienceBulkConfirmation from '$features/audience/components/audience-bulk-confirmation.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
-  import type { AudienceBulkAction, BulkAudiencePreview, OrganizationAudienceView } from '$features/org/utils/types';
+  import type {
+    AudienceBulkAction,
+    BulkAudienceActionOutcome,
+    BulkAudiencePreview,
+    OrganizationAudienceView
+  } from '$features/org/utils/types';
 
   interface Course {
     id: string;
@@ -230,6 +237,9 @@
   let bulkPreview = $state<BulkAudiencePreview | null>(null);
   let isApplyingBulkAction = $state(false);
   let lastUndoToken = $state<string | null>(null);
+  // A run the API handed to the queue. Held so the strip can say so and the
+  // poll loop can tell "still mine" from "superseded".
+  let queuedRun = $state<{ jobId: string; requested: number } | null>(null);
 
   const bulkTargetCount = $derived(allMatchingSelected ? totalCount : selectedIds.size);
 
@@ -257,6 +267,64 @@
     bulkDialogOpen = true;
   }
 
+  const QUEUED_POLL_FALLBACK_MS = 3_000;
+
+  // Clearing this is what ends the poll loop; without it a navigation would
+  // leave it running against a destroyed component.
+  onDestroy(() => {
+    queuedRun = null;
+  });
+
+  /**
+   * Polls a queued run to its terminal state, then reports the same summary the
+   * synchronous path shows. The loop exits as soon as `queuedRun` no longer
+   * names this job, so leaving the page or starting another run stops it.
+   */
+  async function pollQueuedRun(jobId: string) {
+    for (let pollCount = 0; queuedRun?.jobId === jobId; pollCount += 1) {
+      const response = await orgApi.bulkAudienceActionStatus(jobId, pollCount);
+
+      if (!response) {
+        queuedRun = null;
+        snackbar.error('audience.bulk.queued_lost');
+
+        return;
+      }
+
+      const { job, nextPollMs } = response.data;
+
+      if (job.status === 'completed') {
+        const outcome = job.result as BulkAudienceActionOutcome | null;
+        queuedRun = null;
+
+        if (outcome && outcome.failed.length > 0) {
+          snackbar.success(
+            t.get('audience.bulk.partial_success', {
+              succeeded: outcome.succeeded,
+              failed: outcome.failed.length
+            })
+          );
+        } else {
+          snackbar.success('audience.bulk.success');
+        }
+
+        await refreshAudience();
+
+        return;
+      }
+
+      if (job.status === 'failed' || job.status === 'canceled') {
+        queuedRun = null;
+        snackbar.error('audience.bulk.queued_failed');
+        await refreshAudience();
+
+        return;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, nextPollMs ?? QUEUED_POLL_FALLBACK_MS));
+    }
+  }
+
   async function handleBulkConfirm(reason: string | undefined) {
     if (!bulkAction) return;
 
@@ -281,6 +349,19 @@
 
       const result = response.data;
       lastUndoToken = 'undoToken' in result ? (result.undoToken ?? null) : null;
+
+      if (result.mode === 'queued') {
+        // Too large to apply in the request. Nothing has changed yet, so the
+        // list is not refreshed until the run reports back.
+        bulkDialogOpen = false;
+        bulkAction = null;
+        clearSelection();
+        queuedRun = { jobId: result.jobId, requested: result.requested };
+        snackbar.success(t.get('audience.bulk.queued', { count: result.requested }));
+        void pollQueuedRun(result.jobId);
+
+        return;
+      }
 
       if (result.mode === 'completed' && result.failed.length > 0) {
         snackbar.success(
@@ -373,6 +454,15 @@
   onClearSelection={clearSelection}
   onBulkAction={handleBulkAction}
 />
+
+{#if queuedRun}
+  <div class="flex items-center gap-2 rounded-md border px-4 py-2">
+    <Spinner class="size-4" />
+    <span class="ui:text-muted-foreground text-sm">
+      {$t('audience.bulk.queued_running', { count: queuedRun.requested })}
+    </span>
+  </div>
+{/if}
 
 {#if lastUndoToken}
   <div class="flex items-center gap-2 rounded-md border px-4 py-2">

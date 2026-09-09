@@ -33,6 +33,7 @@ import {
 import { getAudienceExportRows } from '@api/services/organization/audience-export';
 import {
   applyBulkAudienceAction,
+  getBulkAudienceActionStatus,
   previewBulkAudienceAction,
   undoBulkAudienceAction
 } from '@api/services/organization/audience-bulk';
@@ -356,6 +357,23 @@ export const organizationRouter = new Hono()
       }
     }
   )
+  /**
+   * GET /organization/audience/bulk-action/:jobId
+   * Status of a queued bulk action. Declared before `/audience/:userId/analytics`
+   * so a numeric job id cannot be read as a user id.
+   */
+  .get('/audience/bulk-action/:jobId', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const jobId = c.req.param('jobId');
+      const pollCount = Number(c.req.query('pollCount') ?? 0);
+      const envelope = await getBulkAudienceActionStatus(orgId, jobId, Number.isFinite(pollCount) ? pollCount : 0);
+
+      return c.json({ success: true, data: envelope }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to read bulk action status');
+    }
+  })
   /**
    * POST /organization/audience/bulk-action/undo
    * Reverses a bulk action across exactly the members it changed.

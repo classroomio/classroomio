@@ -2,6 +2,7 @@ import type {
   AssignAudienceCoursesRequest,
   CreateLinkInviteRequest,
   BulkAudienceActionRequest,
+  BulkAudienceActionStatusRequest,
   AudienceExportRequest,
   BulkAudiencePreviewRequest,
   DeleteAudienceMemberRequest,
@@ -785,6 +786,24 @@ class OrgApi extends BaseApiWithErrors {
     return this.execute<BulkAudienceActionRequest>({
       requestFn: () => classroomio.organization.audience['bulk-action'].$post({ json: parsed.data }),
       logContext: 'applying bulk audience action',
+      onError: (result) => {
+        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+      }
+    });
+  }
+
+  /**
+   * One status read for a queued bulk action. The caller drives the loop, so a
+   * closed dialog stops polling rather than the API class holding a timer.
+   */
+  async bulkAudienceActionStatus(jobId: string, pollCount = 0) {
+    return this.execute<BulkAudienceActionStatusRequest>({
+      requestFn: () =>
+        classroomio.organization.audience['bulk-action'][':jobId'].$get({
+          param: { jobId },
+          query: { pollCount: String(pollCount) }
+        }),
+      logContext: 'reading bulk audience action status',
       onError: (result) => {
         snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
       }

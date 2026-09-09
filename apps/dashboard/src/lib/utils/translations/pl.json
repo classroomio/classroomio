@@ -11,7 +11,8 @@
       "reload": "Odśwież"
     },
     "discard": "Odrzuć",
-    "save_changes": "Zapisz zmiany"
+    "save_changes": "Zapisz zmiany",
+    "scroll_to_top": "Przewiń do góry"
   },
   "validations": {
     "generic": {
@@ -662,6 +663,7 @@
       "kpi_lessons_exercises": "{count, plural, one {# ćwiczenie} other {# ćwiczeń}} przypisane do lekcji",
       "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów"
     },
+    "exercises_completed": "Ćwiczenia ukończone",
     "course_progress": "Postęp kursu",
     "just_now": "przed chwilą",
     "minutes_ago": "{count, plural, one {# minutę temu} other {# minut temu}}",
@@ -730,7 +732,30 @@
       "no_cohorts": "Bez przypisania do kohorty",
       "all_cohorts": "Wszystkie kohorty",
       "select_cohorts": "Wybierz konkretne kohorty",
-      "select_cohorts_placeholder": "Wybierz kohorty..."
+      "select_cohorts_placeholder": "Wybierz kohorty...",
+      "drop_csv": "Upuść plik CSV tutaj lub kliknij, aby wybrać jeden",
+      "csv_hint": "Plik CSV w formacie UTF-8 z kolumną adresu e-mail. Maks. liczba wierszy: {rows}, 5 MB.",
+      "download_template": "Pobierz szablon",
+      "paste_hint": "Jeden adres w wierszu lub rozdzielony przecinkiem.",
+      "review": "Przegląd",
+      "done": "Gotowe",
+      "submit_count": "Importuj {count} uczniów",
+      "count_ready": "{count} gotowe",
+      "count_duplicate": "{count} jest już na liście",
+      "count_invalid": "{count} wymaga uwagi",
+      "truncated": "{count} wierszy przekraczających limit {rows} zostało pominiętych. Podziel plik i zaimportuj resztę.",
+      "unknown_columns": "Zignorowano nierozpoznane kolumny: {columns}",
+      "result_heading": "Zaimportowano {count} uczniów",
+      "download_errors": "Pobierz wiersze, których nie udało się zaimportować",
+      "status": {
+        "ready": "Gotowe",
+        "already_member": "Już w grupie",
+        "invalid_email": "Nieprawidłowy adres e-mail",
+        "duplicate_in_file": "Duplikat w pliku",
+        "is_staff": "Pracownik, nie uczeń",
+        "over_seat_limit": "Brak wolnych miejsc",
+        "missing_email": "Brak adresu e-mail"
+      }
     },
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {
@@ -773,7 +798,98 @@
       "confirm": "Usuń",
       "snackbar_success": "Członek usunięty"
     },
-    "import_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaimportować więcej uczniów."
+    "import_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaimportować więcej uczniów.",
+    "never": "Nigdy",
+    "progress": "Postęp",
+    "learner_count": "{count} uczniów",
+    "enrolled_ratio": "{completed} / {total}",
+    "bulk": {
+      "actions": "Akcje",
+      "select_all_matching": "Zaznacz wszystkie {count} pasujące elementy",
+      "all_matching_selected": "Wybrano wszystkich {count} pasujących elementów",
+      "clear_selection": "Wyczyść zaznaczenie",
+      "sample_heading": "Zawiera",
+      "sample_more": "i {count} więcej",
+      "export_first": "Wyeksportuj najpierw tę listę",
+      "reason_label": "Powód (opcjonalnie)",
+      "reason_hint": "Zapisane w ścieżce audytu więc odpowiedź będzie dostępna później.",
+      "type_count_label": "Wpisz {count}, aby potwierdzić",
+      "delete_is_permanent": "Usunięcia nie można cofnąć.",
+      "not_archived_blocker": "{count} z tych uczniów nie zostało zarchiwizowanych. Najpierw zarchiwizuj ich.",
+      "success": "Uczniowie zaktualizowani",
+      "partial_success": "{succeeded} zaktualizowano, {failed} pominięto",
+      "undo_available": "Zastosowano. Nadal możesz to cofnąć.",
+      "undo": "Cofnij",
+      "undo_success": "Przywrócono",
+      "confirm_action": {
+        "archive": "Archiwizuj",
+        "deactivate": "Dezaktywuj",
+        "reactivate": "Ponownie aktywuj",
+        "unarchive": "Usuń z archiwum",
+        "delete": "Usuń trwale"
+      },
+      "confirm_body": {
+        "archive": "Utracą dostęp i zwolnią miejsce w Twoim planie. Możesz usunąć ich z archiwum w dowolnym momencie.",
+        "deactivate": "Utracą dostęp, ale zachowają miejsce w Twoim planie. Możesz je ponownie aktywować w dowolnym momencie.",
+        "reactivate": "Użytkownicy odzyskują dostęp do Twojej organizacji i jej kursów.",
+        "unarchive": "Użytkownicy odzyskują dostęp i ponownie zajmują miejsce w Twoim planie.",
+        "delete": "Spowoduje to usunięcie ich z tej organizacji i nie można tego cofnąć. Ich konta, przesłane materiały i wyniki zostaną zachowane."
+      },
+      "confirm_title": {
+        "archive": "Zarchiwizować {count} uczniów?",
+        "deactivate": "Dezaktywować {count} uczniów?",
+        "reactivate": "Ponownie aktywować {count} uczniów?",
+        "unarchive": "Usunąć z archiwum {count} uczniów?",
+        "delete": "Trwale usunąć {count} uczniów?"
+      },
+      "action": {
+        "archive": "Zarchiwizować {count} uczniów",
+        "deactivate": "Dezaktywować {count} uczniów",
+        "reactivate": "Ponownie aktywować {count} uczniów",
+        "unarchive": "Usunąć z archiwum {count} uczniów",
+        "delete": "Usuń {count} uczniów"
+      },
+      "queued": "Aplikowanie do {count} uczniów w tle",
+      "queued_running": "Aplikowanie do {count} uczniów. Możesz kontynuować pracę — powiadomimy Cię o jej zakończeniu.",
+      "queued_failed": "Ta akcja zbiorcza nie została zakończona. Nic więcej nie zostało zastosowane.",
+      "queued_lost": "Straciliśmy śledzenie tego uruchomienia. Odśwież, aby zobaczyć aktualny stan."
+    },
+    "filter": {
+      "status": "Status członka",
+      "status_active": "Aktywny",
+      "status_deactivated": "Dezaktywowany",
+      "status_archived": "Zarchiwizowany",
+      "last_login": "Ostatnie logowanie",
+      "last_activity": "Ostatnia aktywność",
+      "no_login_since": "Brak logowania",
+      "no_activity_since": "Brak aktywności od",
+      "window_7d": "7 dni",
+      "window_30d": "30 dni",
+      "window_90d": "90 dni",
+      "window_180d": "180 dni",
+      "window_never": "Nigdy",
+      "enrollment": "Zapisy",
+      "enrolled": "Zapisany",
+      "not_enrolled": "Niezapisany",
+      "completion": "Ukończenie",
+      "not_started": "Nie rozpoczęto",
+      "in_progress": "W toku",
+      "completed": "Zakończono",
+      "exclude_recent_joiners": "Wyklucz ostatnio dołączonych",
+      "exclude_recent_joiners_hint": "Pomija uczniów, którzy dołączyli zbyt niedawno, by zostać uznanymi za nieaktywnych.",
+      "clear": "Wyczyść filtry",
+      "empty_title": "Żaden uczeń nie spełnia tych kryteriów",
+      "empty_description": "Spróbuj poszerzyć zakres dat lub wyczyścić filtr."
+    },
+    "views": {
+      "all": "Wszyscy uczniowie",
+      "never_logged_in": "Nigdy się nie logował",
+      "inactive_90d": "Nieaktywny od ponad 90 dni",
+      "inactive_180d": "Nieaktywny od ponad 180 dni",
+      "enrolled_not_started": "Zapisany, nigdy nie rozpoczął",
+      "archived": "Zarchiwizowany",
+      "custom": "Filtry niestandardowe"
+    }
   },
   "community": {
     "title": "Społeczność",
@@ -5276,5 +5392,15 @@
       "direct": "Bezpośrednio",
       "watching": "Obserwowanie"
     }
+  },
+  "export": {
+    "as_csv": "Eksportuj jako CSV",
+    "as_excel": "Eksportuj jako Excel",
+    "as_pdf": "Eksportuj jako PDF",
+    "as_html": "Eksportuj jako HTML",
+    "more_formats": "Więcej formatów eksportu",
+    "pdf_too_many_rows": "Zbyt wiele wierszy — użyj CSV lub Excela powyżej {limit}",
+    "nothing_to_export": "Brak elementów do eksportu",
+    "failed": "Eksport nie powiódł się"
   }
 }

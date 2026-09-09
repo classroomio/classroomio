@@ -12,6 +12,13 @@ vi.mock('@cio/db/queries/organization', () => ({
   revokeActiveOrganizationInvitesByEmails: vi.fn()
 }));
 
+vi.mock('@cio/jobs', () => ({
+  QUEUE_NAMES: { audience: 'audience' },
+  enqueueAudienceBulkAction: vi.fn(async () => 'job-1'),
+  getQueue: vi.fn(),
+  getQueueJobEnvelope: vi.fn()
+}));
+
 vi.mock('@cio/db/drizzle', () => ({
   // The service owns one transaction at its boundary; the tests exercise the
   // logic inside it, so the transaction is a pass-through here.
@@ -29,9 +36,12 @@ import {
   resolveAudienceMemberIds,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
+import { enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope } from '@cio/jobs';
+import { runQueuedAudienceBulkAction } from '@cio/core/services/organization/audience-bulk';
 import {
   applyBulkAudienceAction,
   computeTargetHash,
+  getBulkAudienceActionStatus,
   previewBulkAudienceAction,
   undoBulkAudienceAction
 } from '@api/services/organization/audience-bulk';
@@ -276,17 +286,19 @@ describe('applyBulkAudienceAction — reporting and undo', () => {
     await expect(undoBulkAudienceAction('other-org', token, ACTOR)).rejects.toMatchObject({ statusCode: 403 });
   });
 
-  it('rejects a batch larger than the synchronous ceiling', async () => {
+  it('queues a batch larger than the synchronous ceiling instead of applying it inline', async () => {
     const many = Array.from({ length: 1001 }, (_, index) => member(index + 1));
     vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue(many as never);
 
-    await expect(
-      applyBulkAudienceAction(
-        ORG,
-        { target: { mode: 'ids', memberIds: many.map((m) => m.id) }, action: 'archive' },
-        ACTOR
-      )
-    ).rejects.toMatchObject({ statusCode: 413 });
+    const result = await applyBulkAudienceAction(
+      ORG,
+      { target: { mode: 'ids', memberIds: many.map((candidate) => candidate.id) }, action: 'archive' },
+      ACTOR
+    );
+
+    expect(result).toEqual({ mode: 'queued', jobId: 'job-1', requested: 1001 });
+    // Nothing is written on the request thread.
+    expect(bulkUpdateOrganizationMemberStatus).not.toHaveBeenCalled();
   });
 });
 
@@ -320,16 +332,174 @@ describe('previewBulkAudienceAction — bounded work', () => {
   });
 });
 
-describe('applyBulkAudienceAction — ceiling is checked before loading rows', () => {
-  it('rejects an oversized filter match without fetching its members', async () => {
+describe('applyBulkAudienceAction — the queued path', () => {
+  it('hands an oversized filter match to the queue without fetching its members', async () => {
     const many = Array.from({ length: 5_000 }, (_, index) => index + 1);
     vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
 
+    const result = await applyBulkAudienceAction(ORG, { target: filterTarget(many), action: 'archive' }, ACTOR);
+
+    expect(result).toEqual({ mode: 'queued', jobId: 'job-1', requested: 5_000 });
+    // No 5,000-id IN clause is issued on the request thread.
+    expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
+  });
+
+  it('enqueues the resolved ids, not the filter', async () => {
+    // Re-running the filter in the worker would hit a different population,
+    // because the action itself changes who matches it.
+    const many = Array.from({ length: 1_500 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
+
+    await applyBulkAudienceAction(
+      ORG,
+      { target: filterTarget(many), action: 'deactivate', reason: 'Offboarding' },
+      ACTOR
+    );
+
+    expect(enqueueAudienceBulkAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organizationId: ORG,
+        actorProfileId: ACTOR,
+        action: 'deactivate',
+        memberIds: many,
+        reason: 'Offboarding',
+        filterSnapshot: { status: 'ACTIVE', excludeRecentJoiners: true }
+      })
+    );
+  });
+
+  it('offers no undo token for a queued action', async () => {
+    const many = Array.from({ length: 1_500 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
+
+    const result = await applyBulkAudienceAction(ORG, { target: filterTarget(many), action: 'archive' }, ACTOR);
+
+    expect(result).not.toHaveProperty('undoToken');
+  });
+
+  it('fails loudly when the queue will not accept the job', async () => {
+    const many = Array.from({ length: 1_500 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
+    vi.mocked(enqueueAudienceBulkAction).mockResolvedValueOnce(undefined);
+
     await expect(
       applyBulkAudienceAction(ORG, { target: filterTarget(many), action: 'archive' }, ACTOR)
-    ).rejects.toMatchObject({ statusCode: 413 });
+    ).rejects.toMatchObject({ statusCode: 500 });
+  });
 
-    // The point of the fix: no 5,000-id IN clause is issued just to be refused.
-    expect(getBulkAudienceMembersByIds).not.toHaveBeenCalled();
+  it('still verifies the preview hash before queueing', async () => {
+    const many = Array.from({ length: 1_500 }, (_, index) => index + 1);
+    vi.mocked(resolveAudienceMemberIds).mockResolvedValue(many);
+
+    await expect(
+      applyBulkAudienceAction(
+        ORG,
+        { target: filterTarget(many, { expectedTargetHash: computeTargetHash([1, 2]) }), action: 'archive' },
+        ACTOR
+      )
+    ).rejects.toMatchObject({ statusCode: 409 });
+
+    expect(enqueueAudienceBulkAction).not.toHaveBeenCalled();
+  });
+});
+
+describe('runQueuedAudienceBulkAction', () => {
+  it('applies the whole target in chunked transactions and folds the results', async () => {
+    const memberIds = Array.from({ length: 250 }, (_, index) => index + 1);
+    vi.mocked(getBulkAudienceMembersByIds).mockImplementation(
+      async (_orgId, ids) => ids.map((id) => member(id)) as never
+    );
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockImplementation(async (_orgId, ids) => ids as never);
+
+    const outcome = await runQueuedAudienceBulkAction({
+      organizationId: ORG,
+      actorProfileId: ACTOR,
+      action: 'archive',
+      memberIds,
+      chunkSize: 100
+    });
+
+    expect(outcome).toMatchObject({ requested: 250, succeeded: 250, failed: [] });
+    // 100 + 100 + 50 — one transaction each, so no single statement holds 250 rows.
+    expect(vi.mocked(getBulkAudienceMembersByIds).mock.calls.map((call) => call[1].length)).toEqual([100, 100, 50]);
+  });
+
+  it('records a failing chunk against its members and finishes the rest', async () => {
+    const memberIds = [1, 2, 3, 4];
+    vi.mocked(getBulkAudienceMembersByIds).mockImplementation(async (_orgId, ids) => {
+      if (ids.includes(3)) throw new Error('deadlock detected');
+
+      return ids.map((id) => member(id)) as never;
+    });
+    vi.mocked(bulkUpdateOrganizationMemberStatus).mockImplementation(async (_orgId, ids) => ids as never);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const outcome = await runQueuedAudienceBulkAction({
+      organizationId: ORG,
+      actorProfileId: ACTOR,
+      action: 'archive',
+      memberIds,
+      chunkSize: 2
+    });
+
+    expect(outcome.succeeded).toBe(2);
+    expect(outcome.failed).toEqual([
+      { memberId: 3, reason: 'CHUNK_FAILED' },
+      { memberId: 4, reason: 'CHUNK_FAILED' }
+    ]);
+  });
+
+  it('refuses to delete a chunk holding a learner that is not archived', async () => {
+    vi.mocked(getBulkAudienceMembersByIds).mockResolvedValue([member(1, 'ARCHIVED'), member(2, 'ACTIVE')] as never);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const outcome = await runQueuedAudienceBulkAction({
+      organizationId: ORG,
+      actorProfileId: ACTOR,
+      action: 'delete',
+      memberIds: [1, 2],
+      chunkSize: 100
+    });
+
+    expect(outcome.succeeded).toBe(0);
+    expect(outcome.failed).toEqual([
+      { memberId: 1, reason: 'DELETE_NOT_ARCHIVED' },
+      { memberId: 2, reason: 'DELETE_NOT_ARCHIVED' }
+    ]);
+    expect(bulkDeleteOrganizationAudienceMembers).not.toHaveBeenCalled();
+  });
+});
+
+describe('getBulkAudienceActionStatus', () => {
+  function queueHolding(job: unknown) {
+    return { getJob: vi.fn(async () => job) } as never;
+  }
+
+  it('returns the envelope for a job enqueued by this organization', async () => {
+    vi.mocked(getQueue).mockReturnValue(queueHolding({ id: 'job-1', data: { organizationId: ORG } }));
+    vi.mocked(getQueueJobEnvelope).mockResolvedValue({
+      job: { id: 'job-1', status: 'running' },
+      events: [],
+      nextPollMs: 2_000
+    } as never);
+
+    const envelope = await getBulkAudienceActionStatus(ORG, 'job-1');
+
+    expect(envelope.job.status).toBe('running');
+  });
+
+  it('hides a job belonging to another organization behind the same 404 as a missing one', async () => {
+    // Job ids are guessable integers, so the payload's org is the only thing
+    // standing between an admin and another tenant's run.
+    vi.mocked(getQueue).mockReturnValue(queueHolding({ id: 'job-1', data: { organizationId: 'other-org' } }));
+
+    await expect(getBulkAudienceActionStatus(ORG, 'job-1')).rejects.toMatchObject({ statusCode: 404 });
+    expect(getQueueJobEnvelope).not.toHaveBeenCalled();
+  });
+
+  it('404s once retention has swept the job', async () => {
+    vi.mocked(getQueue).mockReturnValue(queueHolding(undefined));
+
+    await expect(getBulkAudienceActionStatus(ORG, 'job-1')).rejects.toMatchObject({ statusCode: 404 });
   });
 });
