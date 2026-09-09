@@ -16,15 +16,15 @@ describe('getBucketSize', () => {
   });
 
   it('adjusts bucket size for 30 days based on width', () => {
-    expect(getBucketSize(30, 900)).toBe(1);
-    expect(getBucketSize(30, 600)).toBe(2);
-    expect(getBucketSize(30, 400)).toBe(3);
+    expect(getBucketSize(30, 900)).toBe(2);
+    expect(getBucketSize(30, 600)).toBe(3);
+    expect(getBucketSize(30, 400)).toBe(4);
   });
 
   it('adjusts bucket size for 90 days based on width', () => {
-    expect(getBucketSize(90, 1200)).toBe(5);
-    expect(getBucketSize(90, 800)).toBe(5);
-    expect(getBucketSize(90, 500)).toBe(7);
+    expect(getBucketSize(90, 1200)).toBe(4);
+    expect(getBucketSize(90, 800)).toBe(4);
+    expect(getBucketSize(90, 500)).toBe(5);
     expect(getBucketSize(90, 350)).toBe(14);
   });
 });

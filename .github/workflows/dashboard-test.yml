@@ -1,0 +1,51 @@
+name: Dashboard tests
+
+on:
+  pull_request:
+    paths:
+      - 'apps/dashboard/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+      - '.nvmrc'
+      - '.github/workflows/dashboard-test.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/dashboard/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+      - '.nvmrc'
+      - '.github/workflows/dashboard-test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare dashboard env
+        run: cp apps/dashboard/.env.example apps/dashboard/.env
+
+      - name: Run dashboard tests
+        run: pnpm --filter @cio/dashboard test
