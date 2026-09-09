@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { AnswerData, ExerciseQuestionListRenderContract, ExerciseQuestionModel } from '@cio/question-types';
   import { getExerciseQuestionContractKey } from '@cio/question-types';
+  import { cn } from '../../tools';
   import QuestionRenderer from './question-renderer.svelte';
 
   interface Props {
@@ -22,7 +23,7 @@
 
 {#each contract.questions as question, index (getExerciseQuestionContractKey(question, index))}
   {@const questionKey = getExerciseQuestionContractKey(question, index)}
-  <div class={itemClass}>
+  <div id={`question-${questionKey}`} class={cn('ui:scroll-mt-24', itemClass)}>
     <QuestionRenderer
       contract={{
         mode: contract.mode,

@@ -93,3 +93,12 @@ export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
+export {
+  PageOutline,
+  injectHeadingIds,
+  outlineFromSections,
+  slugifyHeading,
+  stripHtml,
+  withPageTitle
+} from './custom/page-outline';
+export type { PageOutlineHideBelow, PageOutlineItem, PageOutlineLevel } from './custom/page-outline';

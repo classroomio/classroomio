@@ -126,7 +126,16 @@ export const LESSON_FIXTURE: PublicLessonViewData = {
       <li>When prompted with ambiguous or leading questions.</li>
       <li>When asked to cite sources without retrieval grounding.</li>
     </ul>
+    <h3>Ambiguous prompts</h3>
+    <p>Leading or underspecified questions invite the model to fill gaps with fluent but unsupported text.</p>
+    <h3>Missing retrieval</h3>
+    <p>Without a search or document store, the model cannot look anything up — it will still produce a citation-shaped answer.</p>
+    <h2>Mitigations that work</h2>
     <p>In the next lessons we'll cover concrete mitigations, including retrieval, tool use, and structured outputs.</p>
+    <h3>Retrieval and tools</h3>
+    <p>Fetch sources first, then ask the model to answer only from those sources.</p>
+    <h3>Structured outputs</h3>
+    <p>Constrain the response to a schema so missing evidence stays visible.</p>
   `,
   video: {
     type: 'youtube',

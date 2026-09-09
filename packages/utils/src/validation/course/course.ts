@@ -377,6 +377,7 @@ const ZCourseMetadataFields = z.object({
   lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
+  allowMarkdownExport: z.boolean().optional(),
   allowSelfEnrollment: z.boolean().optional(),
   /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. */
   allowNewStudent: z.boolean().optional(),

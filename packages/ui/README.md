@@ -100,6 +100,26 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
+### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
+
+Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyPrompt`, `buildChatGptUrl`, `buildClaudeUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title **on viewports below `lg`**. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+
+### Public course outline rail actions (`src/custom/public-course/outline-rail-actions.svelte`)
+
+Muted icon+label links rendered **under** `PageOutline`, separated by a top border. Matches the docs-site pattern (copy, share, open in chat):
+
+- **Copy as Markdown** — same fetch as Copy Page; only when `markdownUrl` is set.
+- **Share on social media** — dropdown for Facebook, LinkedIn, and X (intent URLs). Instagram copies the page URL (there is no web share intent) and the host shows a snackbar via `onInstagramCopied`.
+- **Open in chat** — dropdown for ChatGPT and Claude when those URLs are passed.
+
+Pass copy via `labels: OutlineRailActionLabels`. Render through `PublicLessonView` / `PublicExerciseView`'s `outlineActions` snippet. Share-only is valid for exercises. See `Molecules/PublicCourse` → **Lesson · outline rail actions**.
+
+### Page outline (`src/custom/page-outline/`)
+
+Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with left-border indent (`h1` / `h2` / `h3`).
+
+**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html)` rewrites `h1`–`h3` with unique ids and returns outline entries; `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
+
 ### Comment tree (`src/custom/comment-tree/`)
 
 Presentational parts for an arbitrarily deep comment thread. All copy is passed in, so dashboard wrappers supply translated strings. See `Molecules/CommentTree` in Storybook.

@@ -40,10 +40,10 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
-    "@cio/core": "workspace:*",
     "@cio/ai-assistant": "workspace:*",
     "@cio/analytics": "workspace:*",
     "@cio/certificates": "workspace:*",
+    "@cio/core": "workspace:*",
     "@cio/db": "workspace:*",
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
@@ -68,12 +68,14 @@
     "marked": "^7.0.3",
     "nanoid": "^5.1.5",
     "tldts": "^6.1.86",
+    "turndown": "^7.2.4",
     "zod": "^4.1.8",
     "zod-openapi": "^5.4.1"
   },
   "devDependencies": {
     "@types/katex": "^0.16.7",
     "@types/node": "^20.19.0",
+    "@types/turndown": "^5.0.6",
     "@typescript-eslint/eslint-plugin": "7.0.1",
     "@typescript-eslint/parser": "7.0.1",
     "@vitest/coverage-v8": "^1.2.2",

@@ -1,7 +1,10 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { cn } from '../../tools';
   import { SafeHtmlContent } from '../safe-html-content';
   import { MediaPlayer } from '../media-player';
+  import { PageOutline } from '../page-outline';
+  import { injectHeadingIds, withPageTitle } from '../page-outline/heading-utils';
   import Callout from './callout.svelte';
   import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicLessonViewData } from './types';
 
@@ -31,6 +34,11 @@
     playbackReloadLabel?: string;
     callout?: PublicCourseCalloutData | null;
     calloutAnimation?: PublicCourseCalloutAnimation;
+    /** Actions rendered beside the lesson title (e.g. Copy Page on small screens). */
+    titleActions?: Snippet;
+    /** Actions rendered under the page outline (copy, share, open in chat). */
+    outlineActions?: Snippet;
+    outlineLabel?: string;
     class?: string;
     id?: string;
   }
@@ -44,6 +52,9 @@
     playbackReloadLabel,
     callout = null,
     calloutAnimation,
+    titleActions,
+    outlineActions,
+    outlineLabel = 'On this page',
     class: className,
     id
   }: Props = $props();
@@ -76,6 +87,10 @@
       }
     ];
   });
+
+  const injectedBody = $derived(injectHeadingIds(lesson.body ?? ''));
+  const outlineItems = $derived(withPageTitle(lesson.title, injectedBody.items));
+  const titleId = $derived(outlineItems[0]?.id);
 </script>
 
 <!--
@@ -85,55 +100,90 @@
   a public link. The `prose` class (no `ui:` prefix) hooks into the dashboard's
   app.css typography rules.
 -->
-<div {id} class={cn('ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10', className)}>
-  {#if !lesson.isUnlocked}
-    <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
-  {:else}
-    {#if lesson.video}
-      <div class="ui:mb-6 ui:w-full ui:overflow-hidden ui:rounded-lg">
-        <MediaPlayer
-          source={{
-            type: lesson.video.type,
-            url: playbackUrl,
-            hls: isHls,
-            metadata: {
-              ...(lesson.video.metadata ?? {}),
-              title: lesson.video.metadata?.title ?? lesson.title
-            },
-            tracks: captionTracks
-          }}
-          options={{
-            maxHeight: '569px',
-            width: '100%',
-            controls: true,
-            playsinline: true,
-            onBeforeHlsLoad: isHls ? onBeforeHlsLoad : undefined,
-            playbackErrorLabel,
-            playbackReloadLabel,
-            onPlaybackReload: isHls ? async () => true : undefined
-          }}
-        />
-      </div>
-    {/if}
-
-    {#if lesson.sectionTitle}
-      <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
-        {lesson.sectionTitle}
-      </div>
-    {/if}
-
-    <h1 class="ui:mt-2 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl">
-      {lesson.title}
-    </h1>
-
-    <div class="prose ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
-      {#if lesson.body}
-        <SafeHtmlContent content={lesson.body} />
+<div {id} class={cn('ui:flex ui:w-full', className)}>
+  <div class="ui:min-w-0 ui:flex-1">
+    <div class="ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10">
+      {#if !lesson.isUnlocked}
+        <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
       {:else}
-        <p class="ui:text-muted-foreground">No content yet.</p>
+        {#if lesson.sectionTitle}
+          <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
+            {lesson.sectionTitle}
+          </div>
+        {/if}
+
+        <div class="ui:mt-2 ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-3">
+          <h1
+            id={titleId}
+            class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
+          >
+            {lesson.title}
+          </h1>
+          {@render titleActions?.()}
+        </div>
+
+        {#if lesson.video}
+          <div class="ui:mt-6 ui:w-full ui:overflow-hidden ui:rounded-lg">
+            <MediaPlayer
+              source={{
+                type: lesson.video.type,
+                url: playbackUrl,
+                hls: isHls,
+                metadata: {
+                  ...(lesson.video.metadata ?? {}),
+                  title: lesson.video.metadata?.title ?? lesson.title
+                },
+                tracks: captionTracks
+              }}
+              options={{
+                maxHeight: '569px',
+                width: '100%',
+                controls: true,
+                playsinline: true,
+                onBeforeHlsLoad: isHls ? onBeforeHlsLoad : undefined,
+                playbackErrorLabel,
+                playbackReloadLabel,
+                onPlaybackReload: isHls ? async () => true : undefined
+              }}
+            />
+          </div>
+        {/if}
+
+        <div class="prose lesson-body ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
+          {#if injectedBody.html}
+            <SafeHtmlContent content={injectedBody.html} />
+          {:else}
+            <p class="ui:text-muted-foreground">No content yet.</p>
+          {/if}
+        </div>
+
+        <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
       {/if}
     </div>
+  </div>
 
-    <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
+  {#if lesson.isUnlocked && (outlineItems.length > 0 || outlineActions)}
+    <aside
+      class="ui:sticky ui:top-12 ui:z-10 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-56 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:lg:block"
+    >
+      <div class="ui:px-4 ui:py-8">
+        {#if outlineItems.length > 0}
+          <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />
+        {/if}
+        {#if outlineActions}
+          <div class={outlineItems.length > 0 ? 'ui:mt-6 ui:border-t ui:border-border ui:pt-4' : ''}>
+            {@render outlineActions()}
+          </div>
+        {/if}
+      </div>
+    </aside>
   {/if}
 </div>
+
+<style>
+  :global(.lesson-body h1),
+  :global(.lesson-body h2),
+  :global(.lesson-body h3) {
+    scroll-margin-top: 6rem;
+  }
+</style>
