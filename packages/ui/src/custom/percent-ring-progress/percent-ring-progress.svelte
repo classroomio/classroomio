@@ -17,7 +17,10 @@
   const labelClass = $derived(size === 'small' ? 'ui:text-[10px]' : 'ui:text-sm');
 </script>
 
-<div class="ui:relative ui:shrink-0">
+<!-- `w-fit` so the wrapper hugs the svg. As a plain block it stretches to the
+     container — in a table cell that made `inset-0` wider than the ring and
+     pushed the label off centre. `shrink-0` only applies in a flex parent. -->
+<div class="ui:relative ui:w-fit ui:shrink-0">
   <!-- `block` removes the inline descender gap below the svg. Left inline, the
        wrapper is taller than the circle, so the `inset-0` label centres below
        the ring's centre instead of inside it. -->
