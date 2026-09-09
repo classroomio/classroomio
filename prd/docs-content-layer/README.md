@@ -8,6 +8,9 @@ todos:
   - id: land-docs-workspace
     content: Merge Docs workspace (#699) so org_doc exists on main
     status: pending
+  - id: fix-public-doc-reader
+    content: Public Doc page called /org-site/note instead of /org-site/doc, so every public Doc URL 404'd
+    status: done
   - id: reusable-doc-lessons
     content: Live-link a Doc into many course lessons; edit once, apply everywhere (intro/outro)
     status: pending
@@ -23,8 +26,14 @@ todos:
   - id: docs-as-blog
     content: Landing-page section that renders selected Docs as blog posts
     status: pending
-  - id: docs-in-cohorts-paths
-    content: Attach Docs as cohort materials and learning-path items
+  - id: docs-in-cohorts
+    content: Attach Docs as cohort materials (paths deferred — no learning-path product exists yet)
+    status: pending
+  - id: doc-freshness
+    content: Steward plus review-due dates so CE teams can triage which Docs a release invalidated
+    status: pending
+  - id: docs-through-channels
+    content: Expose Docs through the public API, MCP, course widget, and AI tutor retrieval
     status: pending
   - id: url-bookmarks
     content: URL bookmarks in Media for non-Doc resources (help articles, vendor links)
@@ -39,6 +48,8 @@ isProject: true
 - **Draft** — 2026-09-09
 - **ICP:** B2B SaaS **customer education** (CS / CE / product marketing at product-led companies)
 - **Depends on:** Docs workspace on `main` ([PR #699](https://github.com/classroomio/classroomio/pull/699))
+- **Build sequencing:** [`implementation-plan.md`](./implementation-plan.md) — phase-by-phase spec, verified against the code on the Docs branch
+- **Strategy feedback:** [`strategy-review.md`](./strategy-review.md) — what to cut, what to promote, and why reuse alone is not customisability
 - **Related problem (cross-cutting, not unique to this PRD):** When the **product changes**, courses go stale. Docs-as-source-of-truth is how we attack that — one page, many courses.
 
 ---
@@ -192,16 +203,11 @@ Some Docs are **standalone** (SSO how-to, “Invite your team”) — not only a
 - **Materials:** attach Docs (intro, office-hours notes, program FAQ).
 - Shown in cohort home / LMS for members — not buried as a fake course.
 
-**Learning path**
-
-- Path items: `course` | `doc` | (later `exercise`).
-- Sequence: Doc “Welcome” → Course Product 101 → Doc “Next steps.”
-- Completing a Doc item = opened + optional mark complete (v1: mark complete).
+**Learning path** — deferred. No path entity exists to attach to; when one is specced, `path_item` should be heterogeneous (`course` | `doc` | `exercise`) from day one rather than repeating the course-only shape of `program_course` and `cohort_course`.
 
 **Acceptance**
 
 - [ ] Cohort members see attached Docs without enrolling in an extra course.
-- [ ] Path progress counts Doc items.
 
 ### 5. Unified search (P0 with reuse)
 
@@ -214,6 +220,8 @@ Some Docs are **standalone** (SSO how-to, “Invite your team”) — not only a
 ### 6. URL bookmarks (P2 for this ICP)
 
 External help articles and dashboards remain **Media `kind = link`**, embeddable in lessons. **Do not** replace Docs. SaaS CE still lives in Intercom/docs sites; bookmarks are the bridge until content is rewritten as Docs.
+
+Mostly built already: `assets.provider` includes `external_url` and `assets.is_external` exists, so this is adding `'link'` to the `AssetKind` Zod enum plus a media filter option — not a phase of work.
 
 ### 7. Product-change updates (cross-cutting)
 
@@ -233,7 +241,7 @@ Not a separate feature in v1. Mechanism:
 | Second CMS for blogs | Docs + blog chrome only |
 | Auto-sync product changelog → Doc | Follow-up to product-change problem |
 | Agent RAG knowledge base | Separate PRD |
-| Learning paths product itself | Paths may land in parallel; this PRD only **attaches Docs** to paths |
+| Learning paths product itself | There is **no** learning-path or path-item table yet (`program_*` is legacy, `cohort_*` links courses only), so Doc-as-path-item moves to a paths PRD. Cohort materials stay in scope |
 | Duplicating Media Manager | Files/video stay there |
 
 ---
@@ -281,7 +289,7 @@ Usage query: all `doc_placement` + `lesson.doc_id` for the Doc editor sidebar.
 ## Open questions
 
 1. **Doc-only lesson vs material tab:** Is a reusable intro a **whole lesson** (replaces note/video tabs) or a **material** next to video? Recommend **whole lesson type `doc`** plus optional video on the same lesson if we already allow mixed materials.
-2. **Progress:** Same Doc in two courses = two completion records (yes). Catalog one-off = separate “read” progress?
+2. **Progress:** Settled for courses — `lesson_completion` is unique on `(lesson_id, profile_id)` and each course keeps its own `lesson` row, so two completion records fall out with no extra work. Still open: whether a catalog one-off (no lesson row) needs its own “read” record.
 3. **Blog URL vs Doc public URL:** `/blog/sso` vs `/doc/sso` — one canonical, the other redirect?
 4. **Who can attach:** tutors vs admins for blog/catalog (recommend admin for public surfaces).
 5. **Landing filters:** New “All learning” page vs extend existing courses list?

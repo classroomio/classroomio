@@ -22,7 +22,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 12 | `prd/public-courses` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |
-| - | - | `prd/docs-content-layer` | draft (Docs as CE content primitive) |
+| - | - | `prd/docs-content-layer` | draft (Docs as CE content primitive; has implementation-plan + strategy-review) |
 | - | - | `prd/docs-knowledge-base` | draft (Zoho KB later) |
 | - | - | `prd/copy-page-as-markdown` | todo |
 | - | - | `prd/reset-student-course-progress` | todo |
