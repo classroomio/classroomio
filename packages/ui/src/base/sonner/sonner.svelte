@@ -8,14 +8,14 @@
 <Sonner
   closeButton
   theme={mode.current}
-  class="toaster ui:z-999 group"
+  class="toaster ui:z-999 ui:group"
   toastOptions={{
     classes: {
       toast:
-        'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg',
-      description: 'group-[.toast]:text-muted-foreground',
-      actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
-      cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground'
+        'ui:group toast ui:group-[.toaster]:bg-background ui:group-[.toaster]:text-foreground ui:group-[.toaster]:border-border ui:group-[.toaster]:shadow-lg',
+      description: 'ui:group-[.toast]:text-muted-foreground',
+      actionButton: 'ui:group-[.toast]:bg-primary ui:group-[.toast]:text-primary-foreground',
+      cancelButton: 'ui:group-[.toast]:bg-muted ui:group-[.toast]:text-muted-foreground'
     }
   }}
   {...restProps}
