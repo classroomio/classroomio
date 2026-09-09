@@ -234,6 +234,8 @@
   let bulkAction = $state<AudienceBulkAction | null>(null);
   let bulkDialogOpen = $state(false);
   let bulkPreview = $state<BulkAudiencePreview | null>(null);
+  /** Frozen when the dialog opens so clearing selection mid-submit cannot flash "0". */
+  let bulkDialogCount = $state(0);
   let isApplyingBulkAction = $state(false);
   let lastUndoToken = $state<string | null>(null);
   // The run the API handed to the queue. The poll loop reads it to tell "still
@@ -261,6 +263,9 @@
       }
 
       bulkPreview = response.data;
+      bulkDialogCount = response.data.count;
+    } else {
+      bulkDialogCount = selectedIds.size;
     }
 
     bulkDialogOpen = true;
@@ -520,7 +525,7 @@
 <AudienceBulkConfirmation
   bind:open={bulkDialogOpen}
   action={bulkAction}
-  count={bulkTargetCount}
+  count={bulkDialogCount}
   preview={bulkPreview}
   isApplying={isApplyingBulkAction}
   onConfirm={handleBulkConfirm}
