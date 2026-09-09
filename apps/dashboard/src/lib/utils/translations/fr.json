@@ -2141,7 +2141,26 @@
                   "completed": "Traitement terminé",
                   "failed": "Échec du traitement",
                   "canceled": "Traitement annulé"
-                }
+                },
+                "vimeo_link": "Lien Vimeo",
+                "invalid_vimeo": "Lien Vimeo invalide(s)",
+                "vimeo_privacy_hint_prefix": "Pour les vidéos soumises à des restrictions de domaine, ajoutez",
+                "vimeo_privacy_hint_suffix": "aux paramètres de confidentialité de Vimeo.",
+                "vimeo_privacy_error_title": "Intégration restreinte par les paramètres de confidentialité de Vimeo",
+                "vimeo_privacy_error_prefix": "Cette vidéo est soumise à des restrictions de confidentialité au niveau du domaine. Pour autoriser la lecture, ajoutez",
+                "vimeo_privacy_error_suffix": "aux domaines autorisés de la vidéo dans vos paramètres vidéo Vimeo.",
+                "vimeo_retry_label": "Réessayer la lecture",
+                "vimeo_learner_error_title": "Vidéo indisponible",
+                "vimeo_learner_error_description": "Cette vidéo est temporairement indisponible. Veuillez en informer votre professeur.",
+                "duplicate_video_error": "Cette vidéo a déjà été ajoutée à cette leçon.",
+                "duplicates_skipped": "Les vidéos en double ont été ignorées.",
+                "add_video_failed": "Impossible d'ajouter la vidéo. Veuillez réessayer.",
+                "some_videos_failed": "Certaines vidéos n'ont pas pu être ajoutées. Veuillez réessayer.",
+                "vimeo_privacy_error_description": "La lecture a été bloquée par les paramètres de confidentialité de Vimeo. Voici quelques raisons possibles à vérifier :",
+                "vimeo_privacy_error_unlisted_hint": "Le lien de la vidéo non répertoriée ne contient peut-être pas sa clé de confidentialité (hash).",
+                "vimeo_privacy_error_domain_prefix": "Restrictions de domaine sur Vimeo (assurez-vous que",
+                "vimeo_privacy_error_domain_suffix": "est autorisé dans les paramètres de la vidéo).",
+                "vimeo_privacy_error_other_hint": "Autres paramètres de confidentialité de Vimeo"
               },
               "empty_title": "Aucune vidéo pour l'instant",
               "empty_description": "Ajoutez des vidéos de YouTube, téléchargez-les ou de votre bibliothèque multimédia",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Intégré",
                 "course_fallback": "Cours",
                 "menu_aria": "Options vidéo",
-                "transcription_in_progress": "(Génération de transcription en cours)"
+                "transcription_in_progress": "(Génération de transcription en cours)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Voir la transcription",
               "playback_error": "Le chargement de cette vidéo a échoué.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "1080p indisponible pour cette vidéo source",
               "loading": "Chargement de la vidéo…",
               "playback_auth_error": "Votre session a expiré. Veuillez vous reconnecter pour regarder cette vidéo.",
-              "playback_auth_action": "Se connecter"
+              "playback_auth_action": "Se connecter",
+              "vimeo_link": "Lien Vimeo"
             },
             "slide": {
               "title": "Diapositive",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Générique",
       "external_url": "URL externe",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Vidéo",

@@ -2141,7 +2141,26 @@
                   "completed": "Processamento concluído",
                   "failed": "Falha no processamento",
                   "canceled": "Processamento cancelado"
-                }
+                },
+                "vimeo_link": "Link do Vimeo",
+                "invalid_vimeo": "Link(s) do Vimeo inválido(s)",
+                "vimeo_privacy_hint_prefix": "Para vídeos com restrição de domínio, adicione",
+                "vimeo_privacy_hint_suffix": "às configurações de privacidade do Vimeo.",
+                "vimeo_privacy_error_title": "Incorporação restrita pelas configurações de privacidade do Vimeo",
+                "vimeo_privacy_error_prefix": "Este vídeo possui restrições de privacidade em nível de domínio. Para permitir a reprodução, adicione",
+                "vimeo_privacy_error_suffix": "aos domínios permitidos do vídeo nas configurações do Vimeo.",
+                "vimeo_retry_label": "Tentar reproduzir novamente",
+                "vimeo_learner_error_title": "Vídeo indisponível",
+                "vimeo_learner_error_description": "Este vídeo está temporariamente indisponível. Informe seu instrutor.",
+                "duplicate_video_error": "Este vídeo já foi adicionado a esta lição.",
+                "duplicates_skipped": "Vídeos duplicados foram ignorados.",
+                "add_video_failed": "Não foi possível adicionar o vídeo. Tente novamente.",
+                "some_videos_failed": "Alguns vídeos não puderam ser adicionados. Tente novamente.",
+                "vimeo_privacy_error_description": "A reprodução foi bloqueada pelas configurações de privacidade do Vimeo. Possíveis motivos para verificar incluem:",
+                "vimeo_privacy_error_unlisted_hint": "O link do vídeo não listado pode estar sem a chave de privacidade (hash)",
+                "vimeo_privacy_error_domain_prefix": "Restrições de domínio no Vimeo (verifique se",
+                "vimeo_privacy_error_domain_suffix": "está permitido nas configurações do vídeo)",
+                "vimeo_privacy_error_other_hint": "Outras configurações de privacidade do Vimeo"
               },
               "empty_title": "Ainda não há vídeos",
               "empty_description": "Adicione vídeos do YouTube, upload ou sua biblioteca de mídia",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Incorporado",
                 "course_fallback": "Curso",
                 "menu_aria": "Opções de vídeo",
-                "transcription_in_progress": "(Geração de transcrição em andamento)"
+                "transcription_in_progress": "(Geração de transcrição em andamento)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Ver transcrição",
               "playback_error": "Falha ao carregar este vídeo.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "1080p indisponível para este vídeo de origem",
               "loading": "Carregando vídeo…",
               "playback_auth_error": "Sua sessão expirou. Faça login novamente para assistir a este vídeo.",
-              "playback_auth_action": "Entrar"
+              "playback_auth_action": "Entrar",
+              "vimeo_link": "Link do Vimeo"
             },
             "slide": {
               "title": "Slide",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Genérico",
       "external_url": "URL externo",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Vídeo",

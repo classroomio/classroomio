@@ -1,23 +1,18 @@
 <script lang="ts">
-  import { Badge } from '@cio/ui/base/badge';
-  import CopyIcon from '@lucide/svelte/icons/copy';
-  import TrashIcon from '@lucide/svelte/icons/trash';
-
   import { t } from '$lib/utils/functions/translations';
   import type { Lesson, LessonVideoType } from '$features/course/utils/types';
   import type { TAssetProvider } from '@cio/utils/validation/assets';
   import { lessonApi } from '$features/course/api';
   import { mediaApi } from '$features/media/api';
-  import { copyToClipboard, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import {
     googleDrivePreviewUrl,
     googleDriveThumbnailUrl,
     pickGoogleDriveVideo
   } from '$lib/utils/functions/google-drive-picker';
 
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import { env } from '$env/dynamic/public';
+  import AddedVideoList from './added-video-list.svelte';
 
   interface Props {
     lessonId?: string;
@@ -32,10 +27,6 @@
   const apiKey = $derived((env.PUBLIC_GOOGLE_PICKER_API_KEY ?? '').trim());
   const isConfigured = $derived(Boolean(clientId && apiKey));
 
-  function isGoogleDriveLessonVideo(video: NonNullable<Lesson['videos']>[number]): boolean {
-    return (video as { type: string }).type === 'google_drive';
-  }
-
   async function openPicker() {
     errorMessage = '';
 
@@ -44,16 +35,15 @@
       return;
     }
 
-    if (!lessonApi.lesson) return;
-
     isOpeningPicker = true;
 
     try {
-      const picked = await pickGoogleDriveVideo({ clientId, apiKey });
+      const picked = await pickGoogleDriveVideo({
+        clientId,
+        apiKey
+      });
 
-      if (!picked) {
-        return;
-      }
+      if (!picked || !lessonApi.lesson) return;
 
       const previewUrl = googleDrivePreviewUrl(picked.fileId);
       const thumbnailUrl = googleDriveThumbnailUrl(picked.fileId);
@@ -126,27 +116,4 @@
   {/if}
 </div>
 
-<p class="mt-4 pl-2 text-sm">
-  {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
-  <strong>
-    {lessonApi.lesson?.videos?.filter(isGoogleDriveLessonVideo).length || 0}
-  </strong>
-</p>
-
-<div class="">
-  {#each lessonApi.lesson?.videos || [] as video, index (video.assetId ?? `${video.type}-${index}-${video.link}`)}
-    {#if isGoogleDriveLessonVideo(video)}
-      <div class="flex items-center gap-1">
-        <Badge class="max-w-md truncate" variant="secondary">
-          {video.fileName || video.link}
-        </Badge>
-        <IconButton onclick={() => copyToClipboard(video.link)}>
-          <CopyIcon size={16} />
-        </IconButton>
-        <IconButton onclick={() => removeVideo(index)}>
-          <TrashIcon size={16} />
-        </IconButton>
-      </div>
-    {/if}
-  {/each}
-</div>
+<AddedVideoList type="google_drive" />
