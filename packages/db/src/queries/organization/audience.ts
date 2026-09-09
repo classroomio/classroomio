@@ -44,9 +44,16 @@ const lastLoginAtSql = sql<string | null>`(
 /**
  * Per-learner enrolment and progress across this org's courses.
  *
- * Measured in completed lessons, not `course_completion_record`, which only
- * exists for compliance courses. The `total_lessons > 0` guard stops an empty
- * course counting as completed.
+ * A course's work is its lessons **and** its exercises, matching
+ * `calcCourseProgress` in the dashboard — the definition the course card and
+ * LMS dashboard already show. Counting lessons alone reported a learner who
+ * had watched everything and submitted nothing as 100% complete.
+ *
+ * Not `course_completion_record`, which only exists for compliance courses.
+ * The `total_items > 0` guard stops an empty course counting as completed.
+ *
+ * An exercise belongs to a course directly or through its lesson, and a
+ * submission is keyed by `groupmember`, not profile.
  *
  * `leftJoinLateral` emits the LATERAL keyword, so this is the subquery only.
  */
@@ -54,18 +61,24 @@ const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
   SELECT
     COUNT(*)::int AS enrolled_count,
     COUNT(*) FILTER (
-      WHERE course_stats.total_lessons > 0
-        AND course_stats.completed_lessons = course_stats.total_lessons
+      WHERE course_stats.total_items > 0
+        AND course_stats.completed_items = course_stats.total_items
     )::int AS completed_count,
     COUNT(*) FILTER (
-      WHERE course_stats.completed_lessons > 0
-        AND (course_stats.total_lessons = 0 OR course_stats.completed_lessons < course_stats.total_lessons)
+      WHERE course_stats.completed_items > 0
+        AND (course_stats.total_items = 0 OR course_stats.completed_items < course_stats.total_items)
     )::int AS in_progress_count,
-    COALESCE(SUM(course_stats.completed_lessons), 0)::int AS completed_lessons,
-    COALESCE(SUM(course_stats.total_lessons), 0)::int AS total_lessons
+    COALESCE(SUM(course_stats.completed_items), 0)::int AS completed_items,
+    COALESCE(SUM(course_stats.total_items), 0)::int AS total_items
   FROM (
     SELECT
-      (SELECT COUNT(*) FROM lesson l WHERE l.course_id = c.id) AS total_lessons,
+      (SELECT COUNT(*) FROM lesson l WHERE l.course_id = c.id)
+        + (
+          SELECT COUNT(*)
+          FROM exercise e
+          LEFT JOIN lesson el ON el.id = e.lesson_id
+          WHERE e.course_id = c.id OR el.course_id = c.id
+        ) AS total_items,
       (
         SELECT COUNT(*)
         FROM lesson l
@@ -74,7 +87,15 @@ const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
          AND lc.profile_id = ${schema.profile.id}
          AND lc.is_complete = true
         WHERE l.course_id = c.id
-      ) AS completed_lessons
+      )
+        + (
+          SELECT COUNT(DISTINCT s.exercise_id)
+          FROM submission s
+          JOIN exercise e ON e.id = s.exercise_id
+          LEFT JOIN lesson el ON el.id = e.lesson_id
+          WHERE (e.course_id = c.id OR el.course_id = c.id)
+            AND s.submitted_by = gm.id
+        ) AS completed_items
     FROM groupmember gm
     JOIN "group" g ON g.id = gm.group_id AND g.organization_id = ${orgId}
     JOIN course c ON c.group_id = g.id
@@ -85,8 +106,8 @@ const enrolmentSummaryLateral = (orgId: string): SQL => sql`(
 const enrolledCountSql = sql<number>`COALESCE(enrolment.enrolled_count, 0)`;
 const completedCountSql = sql<number>`COALESCE(enrolment.completed_count, 0)`;
 const inProgressCountSql = sql<number>`COALESCE(enrolment.in_progress_count, 0)`;
-const completedLessonsSql = sql<number>`COALESCE(enrolment.completed_lessons, 0)`;
-const totalLessonsSql = sql<number>`COALESCE(enrolment.total_lessons, 0)`;
+const completedItemsSql = sql<number>`COALESCE(enrolment.completed_items, 0)`;
+const totalItemsSql = sql<number>`COALESCE(enrolment.total_items, 0)`;
 
 /**
  * Mirrors `deriveAudienceMemberStatus` so invite status can be filtered before
@@ -183,8 +204,8 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
       lastLoginAt: lastLoginAtSql.as('lastLoginAt'),
       enrolledCount: enrolledCountSql.as('enrolledCount'),
       completedCount: completedCountSql.as('completedCount'),
-      completedLessons: completedLessonsSql.as('completedLessons'),
-      totalLessons: totalLessonsSql.as('totalLessons')
+      completedItems: completedItemsSql.as('completedItems'),
+      totalItems: totalItemsSql.as('totalItems')
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -208,8 +229,8 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
   // dormancy filters key off the same column, so a displayed account age would
   // contradict them.
   const createdAt = row.memberCreatedAt ? new Date(row.memberCreatedAt).toDateString() : '';
-  const totalLessons = Number(row.totalLessons ?? 0);
-  const completedLessons = Number(row.completedLessons ?? 0);
+  const totalItems = Number(row.totalItems ?? 0);
+  const completedItems = Number(row.completedItems ?? 0);
 
   return {
     id: row.memberId,
@@ -223,7 +244,7 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
     lastActiveAt: row.lastActiveAt ?? null,
     enrolledCount: Number(row.enrolledCount ?? 0),
     completedCount: Number(row.completedCount ?? 0),
-    progressPercent: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
+    progressPercent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
   };
 };
 
@@ -459,8 +480,8 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
       lastLoginAt: lastLoginAtSql.as('lastLoginAt'),
       enrolledCount: enrolledCountSql.as('enrolledCount'),
       completedCount: completedCountSql.as('completedCount'),
-      completedLessons: completedLessonsSql.as('completedLessons'),
-      totalLessons: totalLessonsSql.as('totalLessons')
+      completedItems: completedItemsSql.as('completedItems'),
+      totalItems: totalItemsSql.as('totalItems')
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -475,9 +496,9 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
       const email = row.email?.trim() ?? '';
       const name = row.fullname?.trim() || (email.includes('@') ? email.split('@')[0] : email) || '';
       const createdAt = row.memberCreatedAt ? new Date(row.memberCreatedAt).toDateString() : '';
-      const totalLessons = Number(row.totalLessons ?? 0);
-      const completedLessons = Number(row.completedLessons ?? 0);
-      const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+      const totalItems = Number(row.totalItems ?? 0);
+      const completedItems = Number(row.completedItems ?? 0);
+      const progressPercent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
       return {
         id: row.memberId,
