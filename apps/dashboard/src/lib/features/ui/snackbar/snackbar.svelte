@@ -41,4 +41,4 @@
   });
 </script>
 
-<Toaster position="top-right" />
+<Toaster position="top-right" class="!left-auto" closeButton />
