@@ -18,8 +18,11 @@
 </script>
 
 <div class="ui:relative ui:shrink-0">
+  <!-- `block` removes the inline descender gap below the svg. Left inline, the
+       wrapper is taller than the circle, so the `inset-0` label centres below
+       the ring's centre instead of inside it. -->
   <svg
-    class="{sizeClass} ui:-rotate-90"
+    class="{sizeClass} ui:-rotate-90 ui:block"
     style="transform-box: fill-box; transform-origin: center;"
     viewBox="0 0 100 100"
     aria-hidden="true"
@@ -46,7 +49,8 @@
       stroke-dashoffset={strokeDashoffset}
     />
   </svg>
-  <div class="ui:absolute ui:inset-0 ui:flex ui:flex-col ui:items-center ui:justify-center">
-    <p class={labelClass}>{labelPercentage}%</p>
+  <div class="ui:absolute ui:inset-0 ui:flex ui:items-center ui:justify-center">
+    <!-- `leading-none` so the label's line box does not shift it off centre. -->
+    <p class="{labelClass} ui:leading-none">{labelPercentage}%</p>
   </div>
 </div>
