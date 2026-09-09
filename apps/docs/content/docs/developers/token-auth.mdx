@@ -30,7 +30,7 @@ Token Auth requires an **Enterprise** plan.
     Sign in to ClassroomIO as an organization admin.
   </Step>
   <Step>
-    Open **Settings** → **Authentication** → **Token Auth**.
+    Open **Settings** → **Security** → **Token Auth**.
   </Step>
   <Step>
     Click **Generate secret** and copy the secret immediately. The full secret is shown only once.
@@ -136,7 +136,7 @@ When the token is valid:
 
 ## Rotating the Secret
 
-Rotate the secret from **Settings** → **Authentication** → **Token Auth** when a secret may have been exposed or as part of regular credential rotation.
+Rotate the secret from **Settings** → **Security** → **Token Auth** when a secret may have been exposed or as part of regular credential rotation.
 
 After rotation, update your backend to sign new tokens with the new secret. Old tokens signed with the previous secret stop working.
 
