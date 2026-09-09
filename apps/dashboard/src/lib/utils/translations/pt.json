@@ -822,7 +822,7 @@
       "undo": "Desfazer",
       "undo_success": "Revertido",
       "confirm_action": {
-        "archive": "Arquivo",
+        "archive": "Arquivar",
         "deactivate": "Desativar",
         "reactivate": "Reativar",
         "unarchive": "Desarquivar",

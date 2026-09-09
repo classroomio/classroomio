@@ -805,8 +805,8 @@
     "enrolled_ratio": "{completed} / {total}",
     "bulk": {
       "actions": "Akcje",
-      "select_all_matching": "Zaznacz wszystkie {count} pasujące elementy",
-      "all_matching_selected": "Wybrano wszystkich {count} pasujących elementów",
+      "select_all_matching": "Zaznacz wszystkich {count} pasujących uczniów",
+      "all_matching_selected": "Wybrano wszystkich {count} pasujących uczniów",
       "clear_selection": "Wyczyść zaznaczenie",
       "sample_heading": "Zawiera",
       "sample_more": "i {count} więcej",

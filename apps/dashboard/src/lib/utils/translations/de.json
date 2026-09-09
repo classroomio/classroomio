@@ -822,7 +822,7 @@
       "undo": "Rückgängig machen",
       "undo_success": "Zurückgesetzt",
       "confirm_action": {
-        "archive": "Archiv",
+        "archive": "Archivieren",
         "deactivate": "Deaktivieren",
         "reactivate": "Reaktivieren",
         "unarchive": "Entarchivieren",
@@ -836,14 +836,14 @@
         "delete": "Dies führt zum Ausschluss aus dieser Organisation und kann nicht rückgängig gemacht werden. Ihr Konto, ihre Beiträge und Ergebnisse bleiben erhalten."
       },
       "confirm_title": {
-        "archive": "Archiv {count} Lernende?",
+        "archive": "{count} Lernende archivieren?",
         "deactivate": "{count} Lernende deaktivieren?",
         "reactivate": "{count} Lernende reaktivieren?",
         "unarchive": "{count} Lernende aus dem Archiv entfernen?",
         "delete": "{count} Lernende dauerhaft entfernen?"
       },
       "action": {
-        "archive": "Archiv {count} Lernende",
+        "archive": "{count} Lernende archivieren",
         "deactivate": "{count} Lernende deaktivieren",
         "reactivate": "{count} Lernende reaktivieren",
         "unarchive": "{count} Lernende aus dem Archiv entfernen",
