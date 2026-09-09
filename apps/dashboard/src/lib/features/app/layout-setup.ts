@@ -7,6 +7,7 @@ import { blockedSubdomain } from '$lib/utils/constants/app';
 import { env } from '$env/dynamic/private';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { isCustomDomainHost } from '$lib/utils/functions/custom-domain';
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 
 export interface OrgSiteInfo {
   isOrgSite: boolean;
@@ -37,7 +38,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     return response;
   }
 
-  const isLocalHost = url.host.includes('localhost');
+  const isLocalHost = url.host.includes('localhost') || isLocalOrPrivateHost(url.hostname);
   const tempSiteName = url.searchParams.get('org');
 
   if (isLocalHost && tempSiteName) {
