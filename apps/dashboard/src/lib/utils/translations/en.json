@@ -4260,7 +4260,8 @@
       "course": "Course",
       "views": "Views"
     },
-    "course_progress": "Course progress"
+    "course_progress": "Course progress",
+    "exercises_completed": "Exercises Completed"
   },
   "upgrade": {
     "certificate": "Upgrade your plan to generate certificates",
