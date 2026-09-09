@@ -154,9 +154,15 @@ async function onPayload(payload: PolarWebhookPayload) {
 
         try {
           const result = await OrgPlanApiServer.activateOrgPlan(planData);
+
+          if (!result) {
+            throw new Error('Organization plan activation request failed');
+          }
+
           console.log('Subscription activated', result);
         } catch (error) {
           console.error('Error activating org plan', error);
+          throw error;
         }
       } else {
         try {
@@ -181,9 +187,15 @@ async function onPayload(payload: PolarWebhookPayload) {
 
       try {
         const result = await OrgPlanApiServer.activateOrgPlan(planData);
+
+        if (!result) {
+          throw new Error('Organization plan activation request failed');
+        }
+
         console.log('Subscription activated', result);
       } catch (error) {
         console.error('Error activating org plan', error);
+        throw error;
       }
 
       break;
