@@ -20,6 +20,8 @@ import type {
 import type { TTranscriptResponse, TUpdateTranscript } from '@cio/utils/validation/media';
 import {
   assetUsageExistsForTarget,
+  AssetUsageAlreadyExistsError,
+  createAssetAndUsage,
   createAssetUsage,
   createHlsAssetPlaceholder,
   createOrGetAssetByStorageKey,
@@ -409,44 +411,50 @@ export async function listOrganizationAssetsService(orgId: string, query: TAsset
   }
 }
 
+function buildAssetValues(orgId: string, profileId: string, data: TAssetCreateUpload) {
+  return {
+    organizationId: orgId,
+    kind: data.kind,
+    provider: data.provider,
+    storageProvider: data.storageProvider,
+    storageKey: data.storageKey ?? null,
+    sourceUrl: data.sourceUrl ?? null,
+    mimeType: data.mimeType ?? null,
+    byteSize: data.byteSize ?? null,
+    checksum: data.checksum ?? null,
+    title: data.title ?? null,
+    description: data.description ?? null,
+    thumbnailUrl: data.thumbnailUrl ?? null,
+    durationSeconds: data.durationSeconds ?? null,
+    aspectRatio: data.aspectRatio ?? null,
+    isExternal: data.isExternal,
+    status: 'active' as const,
+    metadata: data.metadata ?? {},
+    createdByProfileId: profileId
+  };
+}
+
+function scheduleAssetBackgroundWork(orgId: string, profileId: string, asset: TAsset): void {
+  // Fire-and-forget: enqueue lesson-video post-processing for new uploads.
+  // Errors are logged but never block the asset response.
+  if (asset.kind === 'video' && asset.provider === 'upload' && asset.storageKey) {
+    void enqueueMediaPostProcessingForAsset({
+      organizationId: orgId,
+      assetId: asset.id,
+      storageKey: asset.storageKey,
+      triggeredByProfileId: profileId
+    });
+  }
+
+  // Vimeo oEmbed is slow and third-party controlled. Reads and writes return
+  // the persisted asset immediately while the bounded queue repairs metadata.
+  queueVimeoBackfill(asset);
+}
+
 export async function createAssetFromUploadService(orgId: string, profileId: string, data: TAssetCreateUpload) {
   try {
-    const asset = await createOrGetAssetByStorageKey({
-      organizationId: orgId,
-      kind: data.kind,
-      provider: data.provider,
-      storageProvider: data.storageProvider,
-      storageKey: data.storageKey ?? null,
-      sourceUrl: data.sourceUrl ?? null,
-      mimeType: data.mimeType ?? null,
-      byteSize: data.byteSize ?? null,
-      checksum: data.checksum ?? null,
-      title: data.title ?? null,
-      description: data.description ?? null,
-      thumbnailUrl: data.thumbnailUrl ?? null,
-      durationSeconds: data.durationSeconds ?? null,
-      aspectRatio: data.aspectRatio ?? null,
-      isExternal: data.isExternal,
-      status: 'active',
-      metadata: data.metadata ?? {},
-      createdByProfileId: profileId
-    });
-
-    // Fire-and-forget: enqueue lesson-video post-processing for new uploads.
-    // Errors are logged but never block the asset create response.
-    if (asset.kind === 'video' && asset.provider === 'upload' && asset.storageKey) {
-      void enqueueMediaPostProcessingForAsset({
-        organizationId: orgId,
-        assetId: asset.id,
-        storageKey: asset.storageKey,
-        triggeredByProfileId: profileId
-      });
-    }
-
-    if (shouldBackfillVimeoAsset(asset)) {
-      const backfilledAsset = await backfillVimeoAsset(asset);
-      return backfilledAsset;
-    }
+    const asset = await createOrGetAssetByStorageKey(buildAssetValues(orgId, profileId, data));
+    scheduleAssetBackgroundWork(orgId, profileId, asset);
 
     return asset;
   } catch (error) {
@@ -459,20 +467,24 @@ export async function createAssetFromUploadService(orgId: string, profileId: str
 }
 
 export async function createAndAttachAssetService(orgId: string, profileId: string, input: TAssetCreateAndAttach) {
-  const asset = await createAssetFromUploadService(orgId, profileId, input.asset);
-
   try {
-    const usage = await attachAssetService(orgId, asset.id, profileId, input.attach);
+    const assetValues = buildAssetValues(orgId, profileId, input.asset);
+    const usageValues = {
+      organizationId: orgId,
+      targetType: input.attach.targetType,
+      targetId: input.attach.targetId,
+      slotType: input.attach.slotType,
+      slotKey: input.attach.slotKey ?? null,
+      position: input.attach.position ?? null,
+      createdByProfileId: profileId
+    };
+    const result = await createAssetAndUsage(assetValues, usageValues);
+    scheduleAssetBackgroundWork(orgId, profileId, result.asset);
 
-    return { asset, usage };
+    return result;
   } catch (error) {
-    try {
-      await deleteAsset(asset.id, orgId);
-    } catch (cleanupError) {
-      console.error('createAndAttachAssetService: failed to cleanup asset on attach failure', {
-        assetId: asset.id,
-        error: cleanupError
-      });
+    if (error instanceof AssetUsageAlreadyExistsError) {
+      throw new AppError('Asset is already attached to this target', ErrorCodes.ASSET_ALREADY_ATTACHED, 409);
     }
 
     if (error instanceof AppError) {
@@ -509,10 +521,7 @@ export async function getAssetService(orgId: string, assetId: string) {
     const asset = await getAssetById(assetId, orgId);
     const existingAsset = assertAssetExists(asset);
 
-    if (shouldBackfillVimeoAsset(existingAsset)) {
-      const backfilledAsset = await backfillVimeoAsset(existingAsset);
-      return backfilledAsset;
-    }
+    queueVimeoBackfill(existingAsset);
 
     return existingAsset;
   } catch (error) {
