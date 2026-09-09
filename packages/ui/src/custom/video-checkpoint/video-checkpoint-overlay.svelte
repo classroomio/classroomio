@@ -60,7 +60,12 @@
     {/if}
 
     <div class="ui:mt-3 ui:flex ui:shrink-0 ui:justify-end">
-      <Button type="button" disabled={continueDisabled} onclick={() => onContinue?.()}>
+      <Button
+        type="button"
+        testId="video-checkpoint-continue"
+        disabled={continueDisabled}
+        onclick={() => onContinue?.()}
+      >
         {continueLabel}
       </Button>
     </div>

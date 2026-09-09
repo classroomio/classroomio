@@ -3,6 +3,7 @@
   import { Button, ExerciseQuestion, VideoCheckpoint } from '@cio/ui';
   import { QUESTION_LABELS } from '../exercise-question/question-labels';
   import { answersMatch, isCheckpointAnswerComplete } from './checkpoint-answer-complete';
+  import { toOverlayQuestion } from './checkpoint-types';
   import VideoCheckpointPlayerFrame from './video-checkpoint-player-frame.svelte';
 
   interface Props {
@@ -38,6 +39,7 @@
   let overlayOpen = $state(true);
 
   const continueDisabled = $derived(!isCheckpointAnswerComplete(answer));
+  const overlayQuestion = $derived(toOverlayQuestion(question));
 
   function handleAnswerChange(nextAnswer: unknown) {
     answer = nextAnswer;
@@ -72,7 +74,7 @@
             showContainer={false}
             contract={{
               mode: 'take',
-              question,
+              question: overlayQuestion,
               answer,
               labels: QUESTION_LABELS
             }}
@@ -84,6 +86,8 @@
   </VideoCheckpointPlayerFrame>
 
   {#if !overlayOpen}
-    <Button.Root type="button" variant="outline" size="sm" onclick={replayCheckpoint}>Replay checkpoint</Button.Root>
+    <Button.Root type="button" variant="outline" size="sm" testId="video-checkpoint-replay" onclick={replayCheckpoint}>
+      Replay checkpoint
+    </Button.Root>
   {/if}
 </div>

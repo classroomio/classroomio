@@ -42,6 +42,38 @@ export function cloneJson<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** Compact take-mode fixtures so options fit beside the pinned Continue footer. */
+export function toOverlayQuestion(question: Record<string, unknown>): Record<string, unknown> {
+  const cloned = cloneJson(question);
+  const settings = isRecord(cloned.settings) ? { ...cloned.settings } : {};
+  delete settings.imageUrls;
+  delete settings.imageUrl;
+  delete settings.videoUrls;
+  delete settings.videoUrl;
+  cloned.settings = settings;
+
+  if (Array.isArray(cloned.options)) {
+    cloned.options = cloned.options.map((option) => {
+      if (!isRecord(option)) return option;
+
+      const nextOption = { ...option };
+      if (isRecord(nextOption.settings)) {
+        const optionSettings = { ...nextOption.settings };
+        delete optionSettings.imageUrl;
+        nextOption.settings = optionSettings;
+      }
+
+      return nextOption;
+    });
+  }
+
+  return cloned;
+}
+
 export function getCheckpointType(id: CheckpointTypeId): CheckpointTypeOption {
   const match = CHECKPOINT_TYPES.find((type) => type.id === id);
 
