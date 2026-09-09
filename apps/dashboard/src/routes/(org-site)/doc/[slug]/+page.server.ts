@@ -3,7 +3,7 @@ import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { error } from '@sveltejs/kit';
 
-type GetPublicDocRequest = (typeof classroomio)['org-site']['note'][':docSlug']['$get'];
+type GetPublicDocRequest = (typeof classroomio)['org-site']['doc'][':docSlug']['$get'];
 type GetPublicDocSuccess = Extract<InferResponseType<GetPublicDocRequest>, { success: true }>;
 
 export const load = async ({ params, parent, url }) => {
@@ -15,7 +15,7 @@ export const load = async ({ params, parent, url }) => {
   }
 
   const noteResult = await safeServerApi<GetPublicDocSuccess>(() =>
-    classroomio['org-site'].note[':docSlug'].$get(
+    classroomio['org-site'].doc[':docSlug'].$get(
       {
         param: { docSlug: params.slug },
         query: { siteName }
