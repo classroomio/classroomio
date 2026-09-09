@@ -201,7 +201,7 @@ describe('mapZodErrorsToTranslations generic parameter coverage', () => {
     {
       code: 'invalid_format',
       issue: {
-        validation: 'email',
+        format: 'email',
         regex: /@/,
         path: ['field'],
         origin: 'zod',
@@ -254,11 +254,6 @@ describe('mapZodErrorsToTranslations generic parameter coverage', () => {
       code: 'invalid_value',
       issue: { expected: 'A', received: 'B', path: ['field'], origin: 'zod', message: 'Field must be a valid value' },
       expectedParams: { expected: 'A', received: 'B' }
-    },
-    {
-      code: 'custom',
-      issue: { params: { reason: 'Invalid' }, message: 'Custom message', path: ['field'], origin: 'zod' },
-      expectedParams: { params: JSON.stringify({ reason: 'Invalid' }), message: 'Custom message' }
     }
   ];
 
@@ -295,5 +290,43 @@ describe('mapZodErrorsToTranslations generic parameter coverage', () => {
     );
 
     expect(result).toEqual({ field: renderedMessage });
+  });
+});
+
+describe('mapZodErrorsToTranslations custom errors', () => {
+  beforeEach(() => {
+    mockGet.mockReset();
+  });
+
+  it('treats the custom issue message as a translation key when no field translation exists', () => {
+    mockGet.mockReturnValue(null);
+
+    const error = createError({
+      code: 'custom',
+      params: { reason: 'Invalid' },
+      path: ['field'],
+      origin: 'zod',
+      message: 'validations.custom.message'
+    });
+
+    const result = mapZodErrorsToTranslations(error);
+
+    expect(result).toEqual({ field: 'validations.custom.message' });
+    expect(mockGet).toHaveBeenCalledWith('validations.field.custom', expect.anything());
+    expect(mockGet).toHaveBeenCalledWith('validations.custom.message');
+  });
+
+  it('prefers a field-level custom translation over the message key', () => {
+    mockGet.mockImplementation((key) => (key === 'validations.field.custom' ? 'Field custom message' : null));
+
+    const error = createError({
+      code: 'custom',
+      params: { reason: 'Invalid' },
+      path: ['field'],
+      origin: 'zod',
+      message: 'fallback message'
+    });
+
+    expect(mapZodErrorsToTranslations(error)).toEqual({ field: 'Field custom message' });
   });
 });
