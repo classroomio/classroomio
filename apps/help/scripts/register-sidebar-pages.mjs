@@ -92,18 +92,36 @@ function findGroupForFolder(sidebarArray, folder) {
   for (const element of sidebarArray.getElements()) {
     if (!element.asKind(SyntaxKind.ObjectLiteralExpression)) continue; // skips the bare '/' entry
 
-    const group = element.asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
-    const itemsProp = group.getProperty('items');
-    if (!itemsProp) continue;
+    const found = findGroupInObject(element.asKindOrThrow(SyntaxKind.ObjectLiteralExpression), folder);
+    if (found) return found;
+  }
 
-    const itemsArray = itemsProp
-      .asKindOrThrow(SyntaxKind.PropertyAssignment)
-      .getInitializerOrThrow(SyntaxKind.ArrayLiteralExpression);
-    const existingPaths = itemsArray.getElements().map((el) => el.getText().slice(1, -1));
+  return null;
+}
 
-    if (existingPaths.some((path) => path === `/${folder}` || path.startsWith(`/${folder}/`))) {
-      return itemsArray;
-    }
+// navigation.sidebar is two levels deep, so a top-level section's own
+// `items` may hold group objects rather than page paths — recurse into them.
+function findGroupInObject(group, folder) {
+  const itemsProp = group.getProperty('items');
+  if (!itemsProp) return null;
+
+  const itemsArray = itemsProp
+    .asKindOrThrow(SyntaxKind.PropertyAssignment)
+    .getInitializerOrThrow(SyntaxKind.ArrayLiteralExpression);
+  const elements = itemsArray.getElements();
+
+  const existingPaths = elements
+    .filter((el) => el.asKind(SyntaxKind.StringLiteral))
+    .map((el) => el.getText().slice(1, -1));
+  if (existingPaths.some((path) => path === `/${folder}` || path.startsWith(`/${folder}/`))) {
+    return itemsArray;
+  }
+
+  for (const el of elements) {
+    const nestedGroup = el.asKind(SyntaxKind.ObjectLiteralExpression);
+    if (!nestedGroup) continue;
+    const found = findGroupInObject(nestedGroup, folder);
+    if (found) return found;
   }
 
   return null;

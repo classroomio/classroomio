@@ -24,7 +24,6 @@ requests by pushing a branch directly into the repo.
    - **Title** / **Description** — required, shown in the page header and search results.
    - **Sidebar → Label override** — only set this if you want the sidebar to show different text
      than the page Title.
-   - **Sidebar → Order** — controls ordering among pages already in the same sidebar group.
    - **Last reviewed** — optional freshness date (`YYYY-MM-DD`); leave blank if unsure.
    - **Draft** — check this to keep the page out of the published site until it's ready.
    - **Body** — the page content.

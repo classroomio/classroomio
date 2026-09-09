@@ -48,14 +48,13 @@ collections:
         collapsed: true
         fields:
           - { label: 'Label override', name: label, widget: string, required: false }
-          - { label: Order, name: order, widget: number, required: false, value_type: int }
       - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
       - { label: Draft, name: draft, widget: boolean, required: false, default: false }
       - { label: Body, name: body, widget: markdown }
 
-  - name: build_a_course
-    label: 'Build a Course'
-    folder: apps/help/content/help/build-a-course
+  - name: create_and_deliver
+    label: 'Create & Deliver Learning'
+    folder: apps/help/content/help/create-and-deliver
     extension: mdx
     format: frontmatter
     create: true
@@ -70,14 +69,13 @@ collections:
         collapsed: true
         fields:
           - { label: 'Label override', name: label, widget: string, required: false }
-          - { label: Order, name: order, widget: number, required: false, value_type: int }
       - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
       - { label: Draft, name: draft, widget: boolean, required: false, default: false }
       - { label: Body, name: body, widget: markdown }
 
-  - name: live_classes
-    label: 'Live Classes'
-    folder: apps/help/content/help/live-classes
+  - name: manage_students
+    label: 'Manage Students & Enrollment'
+    folder: apps/help/content/help/manage-students
     extension: mdx
     format: frontmatter
     create: true
@@ -92,14 +90,13 @@ collections:
         collapsed: true
         fields:
           - { label: 'Label override', name: label, widget: string, required: false }
-          - { label: Order, name: order, widget: number, required: false, value_type: int }
       - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
       - { label: Draft, name: draft, widget: boolean, required: false, default: false }
       - { label: Body, name: body, widget: markdown }
 
-  - name: enrollment_and_students
-    label: 'Enrollment & Students'
-    folder: apps/help/content/help/enrollment-and-students
+  - name: publish_and_brand
+    label: 'Publish & Brand Your Academy'
+    folder: apps/help/content/help/publish-and-brand
     extension: mdx
     format: frontmatter
     create: true
@@ -114,29 +111,6 @@ collections:
         collapsed: true
         fields:
           - { label: 'Label override', name: label, widget: string, required: false }
-          - { label: Order, name: order, widget: number, required: false, value_type: int }
-      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
-      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
-      - { label: Body, name: body, widget: markdown }
-
-  - name: publish_your_academy
-    label: 'Publish Your Academy'
-    folder: apps/help/content/help/publish-your-academy
-    extension: mdx
-    format: frontmatter
-    create: true
-    slug: '{{slug}}'
-    fields:
-      - { label: Title, name: title, widget: string }
-      - { label: Description, name: description, widget: text }
-      - label: Sidebar
-        name: sidebar
-        widget: object
-        required: false
-        collapsed: true
-        fields:
-          - { label: 'Label override', name: label, widget: string, required: false }
-          - { label: Order, name: order, widget: number, required: false, value_type: int }
       - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
       - { label: Draft, name: draft, widget: boolean, required: false, default: false }
       - { label: Body, name: body, widget: markdown }
@@ -158,7 +132,48 @@ collections:
         collapsed: true
         fields:
           - { label: 'Label override', name: label, widget: string, required: false }
-          - { label: Order, name: order, widget: number, required: false, value_type: int }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: integrations
+    label: 'Integrations & SSO'
+    folder: apps/help/content/help/integrations
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: student_guides
+    label: 'Student Guides'
+    folder: apps/help/content/help/student-guides
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
       - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
       - { label: Draft, name: draft, widget: boolean, required: false, default: false }
       - { label: Body, name: body, widget: markdown }
@@ -180,7 +195,6 @@ collections:
         collapsed: true
         fields:
           - { label: 'Label override', name: label, widget: string, required: false }
-          - { label: Order, name: order, widget: number, required: false, value_type: int }
       - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
       - { label: Draft, name: draft, widget: boolean, required: false, default: false }
       - { label: Body, name: body, widget: markdown }

@@ -35,8 +35,9 @@ trailing-slash handling — only `preview` runs the site the way production does
 `blume.config.ts` defines an **explicit `navigation.sidebar` array**, which controls group
 membership and order and overrides Blume's default folder-tree/`meta.ts` inference entirely.
 A page must be listed in that array to appear in the sidebar at all — adding a new `.mdx` file
-under `content/help` is not enough by itself. Within a group, page order still comes from each
-page's `sidebar: { order: N }` frontmatter.
+under `content/help` is not enough by itself. Within a group, page order is purely each item's
+position in that array; a page's `sidebar: { order: N }` frontmatter has no effect once
+`navigation.sidebar` is explicit like this — don't set it.
 
 ## Editing docs without a repo clone
 
@@ -54,7 +55,7 @@ assets — there is no server-side rendering.
 
 Two things follow from being mounted at `/help`:
 
-- **Links** are authored root-relative to the content root (e.g. `/build-a-course/course-types`).
+- **Links** are authored root-relative to the content root (e.g. `/create-and-deliver/course-types`).
   Blume prepends the base at build time.
 - **Images** must be written with the base (`/help/customize-organization.webp`). Blume deliberately
   does not rebase images, so an unprefixed path would 404.

@@ -8,8 +8,8 @@
   "assets": {
     "directory": "./build",
     "not_found_handling": "404-page",
-    // Blume's canonical URLs carry no trailing slash (/help/live-classes,
-    // not /help/live-classes/). Without this, Cloudflare's default
+    // Blume's canonical URLs carry no trailing slash (/help/create-and-deliver,
+    // not /help/create-and-deliver/). Without this, Cloudflare's default
     // auto-trailing-slash would 307 every one of them.
     "html_handling": "drop-trailing-slash"
   },
