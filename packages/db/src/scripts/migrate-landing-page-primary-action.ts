@@ -14,7 +14,7 @@ function migratePrimaryAction(landingpage: unknown): { landingpage: unknown; cha
     return { landingpage, changed: false };
   }
 
-  if (landingpage.hero.primaryAction.href !== '/login') {
+  if (landingpage.hero.primaryAction.href !== '/lms') {
     return { landingpage, changed: false };
   }
 
@@ -25,7 +25,7 @@ function migratePrimaryAction(landingpage: unknown): { landingpage: unknown; cha
         ...landingpage.hero,
         primaryAction: {
           ...landingpage.hero.primaryAction,
-          href: '/lms'
+          href: '/courses'
         }
       }
     },
