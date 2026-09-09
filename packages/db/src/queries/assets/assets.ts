@@ -423,6 +423,22 @@ export async function createAssetUsage(values: TNewAssetUsage, dbClient: DbOrTxC
   }
 }
 
+/**
+ * Create an asset and its first usage in one transaction. This keeps the
+ * asset table and polymorphic usage table consistent when attachment fails.
+ */
+export async function createAssetAndUsage(
+  assetValues: TNewAsset,
+  usageValues: Omit<TNewAssetUsage, 'assetId'>
+): Promise<{ asset: TAsset; usage: TAssetUsage }> {
+  return db.transaction(async (tx) => {
+    const asset = await createOrGetAssetByStorageKey(assetValues, tx);
+    const usage = await createAssetUsage({ ...usageValues, assetId: asset.id }, tx);
+
+    return { asset, usage };
+  });
+}
+
 export async function deleteAssetUsage(
   orgId: string,
   assetId: string,
