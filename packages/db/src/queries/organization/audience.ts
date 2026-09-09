@@ -177,7 +177,6 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
       fullname: schema.profile.fullname,
       email: audienceEmailSql.as('email'),
       avatarUrl: schema.profile.avatarUrl,
-      profileCreatedAt: schema.profile.createdAt,
       memberCreatedAt: schema.organizationmember.createdAt,
       memberStatus: schema.organizationmember.status,
       lastActiveAt: schema.organizationmember.lastActiveAt,
@@ -205,8 +204,10 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
 
   const email = row.email?.trim() ?? '';
   const name = row.fullname?.trim() || (email.includes('@') ? email.split('@')[0] : email) || '';
-  const createdAtRaw = row.profileId ? row.profileCreatedAt : row.memberCreatedAt;
-  const createdAt = createdAtRaw ? new Date(createdAtRaw).toDateString() : '';
+  // When they joined this org, not when their account was created. The
+  // dormancy filters key off the same column, so a displayed account age would
+  // contradict them.
+  const createdAt = row.memberCreatedAt ? new Date(row.memberCreatedAt).toDateString() : '';
   const totalLessons = Number(row.totalLessons ?? 0);
   const completedLessons = Number(row.completedLessons ?? 0);
 
@@ -452,7 +453,6 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
       fullname: schema.profile.fullname,
       email: audienceEmailSql.as('email'),
       avatarUrl: schema.profile.avatarUrl,
-      profileCreatedAt: schema.profile.createdAt,
       memberCreatedAt: schema.organizationmember.createdAt,
       memberStatus: schema.organizationmember.status,
       lastActiveAt: schema.organizationmember.lastActiveAt,
@@ -474,8 +474,7 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
     items: result.map((row) => {
       const email = row.email?.trim() ?? '';
       const name = row.fullname?.trim() || (email.includes('@') ? email.split('@')[0] : email) || '';
-      const createdAtRaw = row.profileId ? row.profileCreatedAt : row.memberCreatedAt;
-      const createdAt = createdAtRaw ? new Date(createdAtRaw).toDateString() : '';
+      const createdAt = row.memberCreatedAt ? new Date(row.memberCreatedAt).toDateString() : '';
       const totalLessons = Number(row.totalLessons ?? 0);
       const completedLessons = Number(row.completedLessons ?? 0);
       const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
