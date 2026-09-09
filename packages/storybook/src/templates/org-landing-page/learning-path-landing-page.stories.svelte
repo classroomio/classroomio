@@ -87,3 +87,43 @@
 <Story name="No Learning Paths (section omitted)">
   <MinimalLandingPage {...learningPathProps} learningPaths={[]} />
 </Story>
+
+<Story name="Bold (section omitted)">
+  <BoldLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Classic (section omitted)">
+  <ClassicLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="SaaS (section omitted)">
+  <SaasLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Tech (section omitted)">
+  <TechLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Studio (section omitted)">
+  <StudioLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Corporate (section omitted)">
+  <CorporateLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Terminal (section omitted)">
+  <TerminalLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Editorial (section omitted)">
+  <EditorialLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Vibrant (section omitted)">
+  <VibrantLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
+
+<Story name="Quartz (section omitted)">
+  <QuartzLandingPage {...learningPathProps} learningPaths={[]} />
+</Story>
