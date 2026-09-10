@@ -5245,7 +5245,10 @@
       "account_settings": "Ustawienia konta",
       "theme": "Motyw",
       "continue_learning": "Kontynuuj naukę",
-      "not_enrolled_note": "Nie zapisano jeszcze do tej akademii — miejsca docelowe dla uczestników pojawiają się po dołączeniu."
+      "not_enrolled_note": "Nie zapisano jeszcze do tej akademii — miejsca docelowe dla uczestników pojawiają się po dołączeniu.",
+      "theme_light": "Jasny",
+      "theme_dark": "Ciemny",
+      "theme_system": "System"
     }
   }
 }

@@ -5245,7 +5245,10 @@
       "account_settings": "Cài đặt tài khoản",
       "theme": "Chủ đề",
       "continue_learning": "Tiếp tục học tập",
-      "not_enrolled_note": "Chưa đăng ký học tại học viện này — các điểm đến của người học sẽ hiển thị sau khi đăng ký."
+      "not_enrolled_note": "Chưa đăng ký học tại học viện này — các điểm đến của người học sẽ hiển thị sau khi đăng ký.",
+      "theme_light": "Sáng",
+      "theme_dark": "Tối",
+      "theme_system": "Hệ thống"
     }
   }
 }

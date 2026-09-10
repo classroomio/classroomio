@@ -5245,7 +5245,10 @@
       "account_settings": "Configuración de la cuenta",
       "theme": "Tema",
       "continue_learning": "Continuar aprendiendo",
-      "not_enrolled_note": "Aún no estás inscrito en esta academia; los destinos de aprendizaje aparecerán después de registrarte."
+      "not_enrolled_note": "Aún no estás inscrito en esta academia; los destinos de aprendizaje aparecerán después de registrarte.",
+      "theme_light": "Luz",
+      "theme_dark": "Oscuridad",
+      "theme_system": "Sistema"
     }
   }
 }

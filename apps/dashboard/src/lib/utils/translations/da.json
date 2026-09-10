@@ -5245,7 +5245,10 @@
       "account_settings": "Kontoindstillinger",
       "theme": "Tema",
       "continue_learning": "Fortsæt læring",
-      "not_enrolled_note": "Ikke tilmeldt dette akademi endnu — læringsdestinationer vises efter tilmelding."
+      "not_enrolled_note": "Ikke tilmeldt dette akademi endnu — læringsdestinationer vises efter tilmelding.",
+      "theme_light": "Lys",
+      "theme_dark": "Mørk",
+      "theme_system": "System"
     }
   }
 }

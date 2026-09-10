@@ -38,6 +38,11 @@ export function getOrgLandingLearnerAccount({
   }
 
   const themeLabel = t.get('landing.learner_menu.theme');
+  const themeModeLabels = {
+    light: t.get('landing.learner_menu.theme_light'),
+    dark: t.get('landing.learner_menu.theme_dark'),
+    system: t.get('landing.learner_menu.theme_system')
+  };
   const logoutLabel = t.get('settings.profile.logout');
   const logoutHref = '/logout';
 
@@ -49,6 +54,7 @@ export function getOrgLandingLearnerAccount({
       logoutLabel,
       logoutHref,
       themeLabel,
+      themeModeLabels,
       triggerLabel: t.get('landing.learner_menu.trigger_label_anonymous'),
       loading: true,
       inert
@@ -80,6 +86,7 @@ export function getOrgLandingLearnerAccount({
     logoutLabel,
     logoutHref,
     themeLabel,
+    themeModeLabels,
     triggerLabel: email
       ? t.get('landing.learner_menu.trigger_label', { email })
       : t.get('landing.learner_menu.trigger_label_anonymous'),

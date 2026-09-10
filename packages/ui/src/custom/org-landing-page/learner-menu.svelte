@@ -39,11 +39,11 @@
 
   const activeThemeMode = $derived(userPrefersMode.current ?? 'light');
 
-  const themeOptions = [
-    { mode: 'light' as const, label: 'Light', icon: SunIcon },
-    { mode: 'dark' as const, label: 'Dark', icon: MoonIcon },
-    { mode: 'system' as const, label: 'System', icon: MonitorIcon }
-  ];
+  const themeOptions = $derived([
+    { mode: 'light' as const, label: account?.themeModeLabels?.light ?? 'Light', icon: SunIcon },
+    { mode: 'dark' as const, label: account?.themeModeLabels?.dark ?? 'Dark', icon: MoonIcon },
+    { mode: 'system' as const, label: account?.themeModeLabels?.system ?? 'System', icon: MonitorIcon }
+  ]);
 
   function handleThemeSelect(mode: 'light' | 'dark' | 'system') {
     setMode(mode);
@@ -54,8 +54,8 @@
   function getZoneElements() {
     if (!contentEl) return { linkEls: [], themeEls: [], ctaEl: null };
 
-    // Query selector picks up all role="menuitem" (Zones 1: learner destinations + logout)
-    const linkEls = Array.from(contentEl.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+    // Zone 1: learner destinations + logout
+    const linkEls = Array.from(contentEl.querySelectorAll<HTMLElement>('a[data-slot="lm-link"]'));
     const themeEls = Array.from(contentEl.querySelectorAll<HTMLButtonElement>('button[role="radio"]'));
 
     // Find CTA: either the element with data-slot="lm-cta" or the button/link inside it
@@ -191,7 +191,12 @@
     open = isOpen;
     if (isOpen) {
       focusedLinkIndex = 0;
-      await tick();
+      try {
+        await tick();
+      } catch {
+        return;
+      }
+
       // Double rAF guarantees the popover portal has mounted and rendered into the DOM
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -202,6 +207,23 @@
     }
   }
 </script>
+
+{#snippet learnerAvatar()}
+  {#if account?.avatarUrl && !hasAvatarError}
+    <img
+      src={account.avatarUrl}
+      alt=""
+      class="ui:size-8 ui:rounded-full ui:object-cover ui:block"
+      onerror={() => (failedAvatarUrl = account?.avatarUrl ?? null)}
+    />
+  {:else}
+    <span
+      class="ui:size-8 ui:rounded-full ui:bg-(--landing-card-soft) ui:border ui:border-(--landing-border) ui:grid ui:place-items-center ui:text-(--landing-fg-muted) ui:text-xs ui:font-semibold"
+    >
+      {getInitials(account?.fullname, account?.email)}
+    </span>
+  {/if}
+{/snippet}
 
 {#if !account}
   <!-- FR-1 / AC-1 Logged-out state -->
@@ -219,20 +241,7 @@
     aria-hidden="true"
     data-testid="landing-learner-inert"
   >
-    {#if account.avatarUrl && !hasAvatarError}
-      <img
-        src={account.avatarUrl}
-        alt=""
-        class="ui:size-8 ui:rounded-full ui:object-cover ui:block"
-        onerror={() => (failedAvatarUrl = account?.avatarUrl ?? null)}
-      />
-    {:else}
-      <span
-        class="ui:size-8 ui:rounded-full ui:bg-(--landing-card-soft) ui:border ui:border-(--landing-border) ui:grid ui:place-items-center ui:text-(--landing-fg-muted) ui:text-xs ui:font-semibold"
-      >
-        {getInitials(account.fullname, account.email)}
-      </span>
-    {/if}
+    {@render learnerAvatar()}
   </span>
 {:else}
   <!-- Active state: Popover with trigger button -->
@@ -240,24 +249,11 @@
     <PopoverPrimitive.Trigger
       bind:ref={triggerButtonEl}
       type="button"
-      aria-haspopup="menu"
+      aria-haspopup="dialog"
       aria-label={account.triggerLabel}
       class="ui:size-8 ui:p-0 ui:rounded-full ui:border ui:border-transparent ui:bg-transparent ui:grid ui:place-items-center ui:cursor-pointer ui:transition-[border-color,box-shadow] ui:duration-150 ui:hover:border-[var(--landing-border)] ui:hover:shadow-[0_0_0_3px_color-mix(in_oklab,var(--landing-fg)_8%,transparent)] ui:focus-visible:outline-none ui:focus-visible:shadow-[0_0_0_3px_color-mix(in_oklab,var(--landing-accent)_45%,transparent)] ui:data-[state=open]:border-[var(--landing-border)] ui:data-[state=open]:shadow-[0_0_0_3px_color-mix(in_oklab,var(--landing-fg)_8%,transparent)] {className}"
     >
-      {#if account.avatarUrl && !hasAvatarError}
-        <img
-          src={account.avatarUrl}
-          alt=""
-          class="ui:size-8 ui:rounded-full ui:object-cover ui:block"
-          onerror={() => (failedAvatarUrl = account?.avatarUrl ?? null)}
-        />
-      {:else}
-        <span
-          class="ui:size-8 ui:rounded-full ui:bg-[var(--landing-card-soft)] ui:border ui:border-[var(--landing-border)] ui:grid ui:place-items-center ui:text-[var(--landing-fg-muted)] ui:text-xs ui:font-semibold"
-        >
-          {getInitials(account.fullname, account.email)}
-        </span>
-      {/if}
+      {@render learnerAvatar()}
     </PopoverPrimitive.Trigger>
 
     <PopoverPrimitive.Portal>
@@ -265,7 +261,7 @@
         bind:ref={contentEl}
         align="end"
         sideOffset={8}
-        role="menu"
+        role="dialog"
         aria-label={account.triggerLabel}
         class="ui:z-80 ui:w-[280px] ui:max-w-[calc(100vw-32px)] ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:rounded-[var(--landing-radius-card)] ui:shadow-[var(--landing-shadow-card)] ui:p-1.5 ui:text-[var(--landing-fg)] ui:outline-none ui:transition-[opacity,transform] ui:duration-150"
         style={themeStyle(theme)}
@@ -301,7 +297,7 @@
         {#each account.items as item, index (item.key)}
           <a
             href={item.href || '#'}
-            role="menuitem"
+            data-slot="lm-link"
             tabindex={focusedLinkIndex === index ? 0 : -1}
             onfocus={() => (focusedLinkIndex = index)}
             class="ui:flex ui:items-center ui:justify-between ui:gap-2.5 ui:h-9 ui:px-2.5 ui:rounded-[calc(var(--landing-radius-card)+4px)] ui:text-sm ui:text-[var(--landing-fg)] ui:w-full ui:bg-transparent ui:no-underline ui:transition-colors ui:duration-120 ui:hover:bg-[var(--landing-button-tertiary-bg-hover)] ui:focus-visible:outline-none ui:focus-visible:bg-[var(--landing-button-tertiary-bg-hover)] ui:focus-visible:shadow-[inset_0_0_0_2px_color-mix(in_oklab,var(--landing-accent)_40%,transparent)]"
@@ -364,7 +360,7 @@
         <!-- Zone 1 continuation: Log Out item -->
         <a
           href={account.logoutHref || '#'}
-          role="menuitem"
+          data-slot="lm-link"
           tabindex={focusedLinkIndex === account.items.length ? 0 : -1}
           onfocus={() => (focusedLinkIndex = account.items.length)}
           class="ui:flex ui:items-center ui:justify-between ui:gap-2.5 ui:h-9 ui:px-2.5 ui:rounded-[calc(var(--landing-radius-card)+4px)] ui:text-sm ui:text-[var(--landing-fg)] ui:w-full ui:bg-transparent ui:no-underline ui:transition-colors ui:duration-120 ui:hover:bg-[var(--landing-button-tertiary-bg-hover)] ui:focus-visible:outline-none ui:focus-visible:bg-[var(--landing-button-tertiary-bg-hover)] ui:focus-visible:shadow-[inset_0_0_0_2px_color-mix(in_oklab,var(--landing-accent)_40%,transparent)]"
