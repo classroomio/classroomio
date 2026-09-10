@@ -7,7 +7,7 @@
   import { submissions } from './store';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { onMount, untrack } from 'svelte';
+  import { untrack } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseSubmissions } from './types';
   import type { SubmissionListItem } from '$features/course/utils/types';
@@ -31,18 +31,8 @@
     return 'summary';
   }
 
-  let currentTab = $state<SubmissionTab>('summary');
+  let currentTab = $derived(normalizeSubmissionTab(page.url.searchParams.get('submission')));
   const submissionGroups = $derived(groupSubmissionsByStudentAndAttempt(submissionsData));
-
-  onMount(() => {
-    currentTab = normalizeSubmissionTab(page.url.searchParams.get('submission'));
-  });
-
-  $effect(() => {
-    const nextTab = normalizeSubmissionTab(page.url.searchParams.get('submission'));
-    if (nextTab === untrack(() => currentTab)) return;
-    currentTab = nextTab;
-  });
 
   $effect(() => {
     const currentSubmission = page.url.searchParams.get('submission') ?? '';
