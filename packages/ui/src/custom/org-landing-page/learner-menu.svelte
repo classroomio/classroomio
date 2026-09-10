@@ -305,11 +305,20 @@
           >
             <span>{item.label}</span>
             {#if item.key === 'myCourses'}
-              <BookOpenIcon class="ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0" aria-hidden="true" />
+              <BookOpenIcon
+                class="custom ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0"
+                aria-hidden="true"
+              />
             {:else if item.key === 'myCertificates'}
-              <AwardIcon class="ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0" aria-hidden="true" />
+              <AwardIcon
+                class="custom ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0"
+                aria-hidden="true"
+              />
             {:else if item.key === 'accountSettings'}
-              <SettingsIcon class="ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0" aria-hidden="true" />
+              <SettingsIcon
+                class="custom ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0"
+                aria-hidden="true"
+              />
             {/if}
           </a>
         {/each}
@@ -343,7 +352,7 @@
                   handleThemeSelect(opt.mode);
                 }}
               >
-                <opt.icon class="ui:size-[15px]" aria-hidden="true" />
+                <opt.icon class="custom ui:size-[15px]" aria-hidden="true" />
               </button>
             {/each}
           </div>
@@ -367,7 +376,7 @@
           onclick={() => (open = false)}
         >
           <span>{account.logoutLabel}</span>
-          <LogOutIcon class="ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0" aria-hidden="true" />
+          <LogOutIcon class="custom ui:size-[15px] ui:text-[var(--landing-fg-muted)] ui:shrink-0" aria-hidden="true" />
         </a>
 
         <!-- Non-member enrollment note if present -->
