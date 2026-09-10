@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New Zap · Zapier · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="zapier.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="app">
+      <div class="mobile-backdrop" id="mobileBackdrop"></div>
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">A</div><div class="brand-name">Acme Academy</div></div>
+
+        <div class="nav-label">Home</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses<span class="nav-tail tnum">12</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Audience<span class="nav-tail tnum">1,204</span></a>
+
+        <div class="nav-label">Automation</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17h6"/></svg>MCP</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>API</a>
+        <a class="nav-item active" href="zapier-connected.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Zapier</a>
+
+        <a class="nav-item nav-pinned" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <button class="icon-btn mobile-nav-btn" id="mobileNavBtn" title="Menu" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <nav class="crumbs"><a href="automation-overview.html">Automation</a><span class="sep">/</span><a href="zapier-connected.html">Zapier</a><span class="sep">/</span><a href="zap-templates.html">Create a Zap</a><span class="sep">/</span><span class="here">New Zap</span></nav>
+          <div class="top-actions">
+            <a class="btn btn-sm btn-outline" href="index.html">Prototype map</a>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <!-- ===== Reverse-direction template (action-only): compact hand-off screen ===== -->
+          <div class="wrap-narrow" id="handoffView" hidden>
+            <div class="card card-pad" style="text-align:center; padding:36px 28px">
+              <div style="display:flex; justify-content:center; gap:10px; margin-bottom:18px">
+                <div class="app-badge app-hubspot" style="width:40px;height:40px;font-size:15px;border-radius:var(--radius-lg)">H</div>
+                <div style="display:flex;align-items:center;color:var(--muted-foreground)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </div>
+                <div class="zap-mark zap-mark-lg"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+              </div>
+              <p class="sec-title" style="margin-bottom:6px">This Zap starts in HubSpot</p>
+              <p style="font-size:13px;color:var(--muted-foreground);max-width:44ch;margin:0 auto 22px;line-height:1.6">
+                "Enroll new HubSpot contacts in a course" triggers from a HubSpot deal stage change, so it's built from HubSpot's side.
+                ClassroomIO shows up in Zapier as the action app. Pick <strong style="color:var(--foreground)">Enroll Student in Course</strong> when you get to the action step, and map the contact's name and email.
+              </p>
+              <div style="display:flex;gap:10px;justify-content:center">
+                <a class="btn btn-outline" href="zap-templates.html">Back to templates</a>
+                <span class="btn btn-primary" style="pointer-events:none">Continue in Zapier <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-left:2px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== Main builder wizard ===== -->
+          <div class="zi-builder-shell" id="wizardView">
+            <div class="zi-builder-head">
+              <a class="icon-btn" href="zap-templates.html" title="Back to templates" aria-label="Back to templates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg></a>
+              <input class="zi-zap-name" id="zapName" value="Untitled Zap" aria-label="Zap name" />
+              <div class="top-actions">
+                <span class="btn btn-outline btn-sm" style="pointer-events:none">Save as draft</span>
+              </div>
+            </div>
+
+            <div class="card zi-stepper-card">
+              <div class="stepper" id="stepperNodes">
+                <div class="snode current" data-step="1"><div class="sdot">1</div><div class="slabel">Trigger</div></div>
+                <div class="sbar"></div>
+                <div class="snode" data-step="2"><div class="sdot">2</div><div class="slabel">Action</div></div>
+                <div class="sbar"></div>
+                <div class="snode" data-step="3"><div class="sdot">3</div><div class="slabel">Test</div></div>
+                <div class="sbar"></div>
+                <div class="snode" data-step="4"><div class="sdot">4</div><div class="slabel">Review &amp; enable</div></div>
+              </div>
+            </div>
+
+            <!-- STEP 1: Trigger -->
+            <div class="zi-step-body active" id="step1">
+              <div class="card card-pad">
+                <p class="sec-title">Choose a trigger</p>
+                <p class="hint" style="margin-bottom:16px">This is the ClassroomIO event that starts your Zap.</p>
+                <div class="zi-picker-grid" id="triggerGrid"></div>
+
+                <div id="triggerConfig" hidden>
+                  <div class="zi-subhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>Customize this trigger</div>
+                  <div class="zi-config-row" id="courseFilterRow">
+                    <div><div class="l">Course</div><div class="d">Only run for a specific course, or leave open to all courses.</div></div>
+                    <select class="select" style="width:200px" id="courseFilter">
+                      <option>All courses</option>
+                      <option>Onboarding Basics</option>
+                      <option>Product Fundamentals</option>
+                      <option>Security &amp; Compliance 101</option>
+                    </select>
+                  </div>
+                  <div class="zi-config-row" id="tagFilterRow">
+                    <div><div class="l">Audience tag</div><div class="d">Only run for students with a specific tag.</div></div>
+                    <select class="select" style="width:200px" id="tagFilter">
+                      <option>Any tag</option>
+                      <option>Enterprise</option>
+                      <option>Trial</option>
+                      <option>APAC</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="zi-wizard-foot">
+                <div class="spacer"></div>
+                <button class="btn btn-primary" id="step1Continue" disabled type="button">Continue</button>
+              </div>
+            </div>
+
+            <!-- STEP 2: Action -->
+            <div class="zi-step-body" id="step2">
+              <div class="card card-pad">
+                <p class="sec-title">Choose an app</p>
+                <p class="hint" style="margin-bottom:16px">Where should this data go? Zapier connects to 6,000+ apps. A few common ones are shown here.</p>
+                <div class="zi-app-grid" id="appGrid"></div>
+
+                <div id="actionConfig" hidden>
+                  <div class="zi-subhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Action</div>
+                  <div class="card" style="padding:12px 14px; display:flex; align-items:center; gap:10px; margin-bottom:18px">
+                    <div id="actionAppBadge"></div>
+                    <div style="font-size:13px;font-weight:500" id="actionName"></div>
+                  </div>
+
+                  <div class="zi-subhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h7"/></svg>Set up action</div>
+                  <div id="fieldMapRows"></div>
+
+                  <div class="card zi-field-source">
+                    <div class="zi-field-source-title">Insert data from “<span id="sourceTriggerName"></span>”</div>
+                    <div class="zi-field-source-pills" id="sourcePills"></div>
+                    <div class="zi-map-hint">Click a field to insert it into the input you're editing.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="zi-wizard-foot">
+                <button class="btn btn-outline" id="step2Back" type="button">Back</button>
+                <div class="spacer"></div>
+                <button class="btn btn-primary" id="step2Continue" disabled type="button">Continue</button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Test -->
+            <div class="zi-step-body" id="step3">
+              <p class="sec-title" style="margin-bottom:14px">Test your Zap</p>
+
+              <div class="card zi-test-card">
+                <div class="zi-test-head">
+                  <div class="t">Test trigger</div>
+                  <button class="btn btn-outline btn-sm" id="testTriggerBtn" type="button">Find a sample</button>
+                </div>
+                <p class="zi-test-desc">We'll look for a recent matching record so you can see the data your Zap will receive.</p>
+                <div class="zi-test-result" id="testTriggerResult"></div>
+              </div>
+
+              <div class="card zi-test-card">
+                <div class="zi-test-head">
+                  <div class="t">Test action</div>
+                  <button class="btn btn-outline btn-sm" id="testActionBtn" type="button">Send a test</button>
+                </div>
+                <p class="zi-test-desc">Sends one real test using the sample data above, so you can confirm it arrives correctly.</p>
+                <div class="zi-test-result" id="testActionResult"></div>
+                <button class="filter-clear-all" id="simulateFail" type="button" style="margin-top:10px; font-size:11.5px">Simulate a failed test</button>
+              </div>
+
+              <div class="zi-wizard-foot">
+                <button class="btn btn-outline" id="step3Back" type="button">Back</button>
+                <div class="spacer"></div>
+                <button class="btn btn-primary" id="step3Continue" disabled type="button">Continue</button>
+              </div>
+            </div>
+
+            <!-- STEP 4: Review and enable -->
+            <div class="zi-step-body" id="step4">
+              <p class="sec-title" style="margin-bottom:14px">Review &amp; enable</p>
+
+              <div class="card zi-review-flow">
+                <div class="zi-review-node">
+                  <div class="ico" id="reviewTriggerIco"></div>
+                  <div>
+                    <div class="eyebrow">Trigger · ClassroomIO</div>
+                    <div class="t" id="reviewTriggerName"></div>
+                    <div class="d" id="reviewTriggerFilters"></div>
+                  </div>
+                </div>
+                <div class="zi-review-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+                <div class="zi-review-node">
+                  <div class="ico" id="reviewActionIco"></div>
+                  <div>
+                    <div class="eyebrow" id="reviewActionEyebrow">Action</div>
+                    <div class="t" id="reviewActionName"></div>
+                    <div class="d">Connected as jordan.diallo@acme.com</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card card-pad zi-review-data">
+                <p class="sec-title" style="margin-bottom:10px; font-size:13px">Data being sent</p>
+                <div id="reviewDataRows"></div>
+              </div>
+
+              <div class="card zi-enable-card">
+                <div class="txt">
+                  <div class="t">Turn on this Zap?</div>
+                  <div class="d">Once enabled, it runs automatically every time the trigger happens. No further action needed.</div>
+                </div>
+                <button class="btn btn-primary btn-lg" id="enableBtn" type="button">Turn on Zap</button>
+              </div>
+
+              <div class="zi-wizard-foot">
+                <button class="btn btn-outline" id="step4Back" type="button">Back</button>
+                <div class="spacer"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="proto.js"></script>
+    <script src="apps-catalog.js"></script>
+    <script src="zap-builder.js"></script>
+  </body>
+</html>

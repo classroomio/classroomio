@@ -1,0 +1,2809 @@
+/*
+ * zapier.css — components specific to the Zapier Integration prototype.
+ * Builds on app-theme.css (shared ClassroomIO design tokens). Each block
+ * below is a new pattern needed for this flow; nothing here overrides the
+ * shared theme.
+ */
+
+/* ============ automation hub (screen 1) ============ */
+.auto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.auto-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+}
+.auto-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.auto-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--muted);
+  color: var(--foreground);
+}
+.auto-card-icon svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.8;
+}
+.auto-card-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.auto-card-desc {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  line-height: 1.55;
+  flex: 1;
+}
+.auto-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+@media (max-width: 860px) {
+  .auto-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============ zapier brand mark ============ */
+.zap-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: #ff4a00;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.zap-mark svg {
+  width: 20px;
+  height: 20px;
+}
+.zap-mark-lg {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+}
+.zap-mark-lg svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* ============ connect page (screen 2, pre-connect) ============ */
+.zi-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  margin-bottom: 22px;
+}
+.zi-hero-connector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.zi-hero-connector .plus {
+  color: var(--muted-foreground);
+  font-size: 15px;
+}
+.zi-org-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.zi-hero-text {
+  min-width: 0;
+}
+.zi-hero-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 3px;
+}
+.zi-hero-sub {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin: 0;
+  max-width: 56ch;
+}
+.zi-hero-cta {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.zi-value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0 26px;
+}
+.zi-value-card {
+  padding: 16px;
+}
+.zi-value-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+.zi-value-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+.zi-value-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.zi-value-desc {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.zi-howit {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 24px;
+}
+.zi-howit-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.zi-howit-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.zi-howit-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+.zi-howit-sep {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  color: var(--muted-foreground);
+  margin: 0 14px;
+}
+
+.zi-perm-preview {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--muted);
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.zi-perm-preview svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ============ oauth consent screen ============ */
+.zi-consent-shell {
+  max-width: 460px;
+  margin: 48px auto;
+}
+.zi-consent-card {
+  padding: 28px;
+}
+.zi-consent-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.zi-consent-connector .dashline {
+  width: 32px;
+  height: 0;
+  border-top: 1.5px dashed var(--border);
+}
+.zi-consent-heading {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.zi-consent-heading h1 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 5px;
+}
+.zi-consent-heading p {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+.zi-consent-heading strong {
+  color: var(--foreground);
+}
+.zi-org-picker {
+  margin-bottom: 18px;
+}
+.zi-scope-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.zi-scope-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.zi-scope-row:last-child {
+  border-bottom: none;
+}
+.zi-scope-check {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.zi-scope-row.required .zi-scope-check {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.zi-scope-row .zi-scope-check.on {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.zi-scope-row .zi-scope-check.off {
+  border: 1.5px solid var(--input);
+  background: var(--background);
+}
+.zi-scope-check svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3;
+}
+.zi-scope-text .t {
+  font-size: 13px;
+  font-weight: 500;
+}
+.zi-scope-text .d {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+.zi-scope-tag {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.zi-consent-redirect {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.zi-consent-redirect svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2;
+}
+.zi-consent-actions {
+  display: flex;
+  gap: 10px;
+}
+.zi-consent-actions .btn {
+  flex: 1;
+}
+.zi-consent-loading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 20px;
+  text-align: center;
+}
+.zi-consent-loading.show {
+  display: flex;
+}
+.zi-consent-card.loading > *:not(.zi-consent-loading) {
+  display: none;
+}
+.zi-spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--primary);
+  animation: zi-spin 0.7s linear infinite;
+}
+@keyframes zi-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ connected state (screen 3) ============ */
+.zi-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+}
+.zi-status-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--success-soft);
+  color: var(--success);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.zi-status-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.2;
+}
+.zi-status-text {
+  flex: 1;
+  min-width: 0;
+}
+.zi-status-text .t {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.zi-status-text .d {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+
+.zi-usage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 26px;
+}
+@media (max-width: 860px) {
+  .zi-usage-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.zi-setup-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.zi-setup-step {
+  padding: 14px;
+  text-align: left;
+}
+.zi-setup-step .n {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: 11px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  margin-bottom: 10px;
+}
+.zi-setup-step .t {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.zi-setup-step .d {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+@media (max-width: 860px) {
+  .zi-setup-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.zi-grant-row {
+  grid-template-columns: 2fr 1.3fr 1fr 1fr 70px;
+}
+
+/* ============ templates gallery (screen 4) ============ */
+.zi-template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+@media (max-width: 860px) {
+  .zi-template-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.zi-template-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
+}
+.zi-template-card:hover {
+  border-color: var(--ring);
+  box-shadow: var(--shadow-md);
+}
+.zi-template-flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.zi-flow-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 0;
+}
+.zi-flow-node .ico {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+.zi-flow-node .ico svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.4;
+}
+.zi-flow-node span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zi-flow-arrow {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.2;
+  color: var(--muted-foreground);
+}
+.zi-template-body .t {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.zi-template-body .d {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+.zi-template-foot {
+  margin-top: auto;
+}
+.zi-template-foot .btn {
+  width: 100%;
+}
+.zi-scratch-card {
+  border-style: dashed;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 16px;
+  gap: 10px;
+  color: var(--muted-foreground);
+}
+.zi-scratch-card svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.6;
+}
+.zi-scratch-card .t {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.zi-scratch-card .d {
+  font-size: 12px;
+  max-width: 32ch;
+}
+
+/* app monograms (destination apps in templates / builder) */
+.app-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.app-slack {
+  background: #4a154b;
+}
+.app-sheets {
+  background: #188038;
+}
+.app-hubspot {
+  background: #ff7a59;
+}
+.app-mailchimp {
+  background: #ffe01b;
+  color: #241c15;
+}
+.app-drive {
+  background: #2684fc;
+}
+.app-notion {
+  background: #1a1a1a;
+}
+.app-teams {
+  background: #6264a7;
+}
+.app-salesforce {
+  background: #00a1e0;
+}
+.app-pipedrive {
+  background: #017737;
+}
+.app-activecampaign {
+  background: #eb1c26;
+  font-size: 9px;
+}
+.app-airtable {
+  background: #f82b60;
+  font-size: 9px;
+}
+.app-trello {
+  background: #0052cc;
+  font-size: 9px;
+}
+.app-asana {
+  background: #fc636b;
+  font-size: 9px;
+}
+.app-dropbox {
+  background: #0061ff;
+  font-size: 9px;
+}
+.app-zendesk {
+  background: #03363d;
+}
+.app-intercom {
+  background: #1f8ded;
+  font-size: 9px;
+}
+.app-gmail {
+  background: #ea4335;
+}
+.app-typeform {
+  background: #262627;
+  font-size: 9px;
+}
+.app-jotform {
+  background: #ff6100;
+}
+.app-stripe {
+  background: #635bff;
+  font-size: 9px;
+}
+.app-paypal {
+  background: #003087;
+  font-size: 9px;
+}
+.app-quickbooks {
+  background: #2ca01c;
+  font-size: 9px;
+}
+.app-bamboohr {
+  background: #73c41d;
+  font-size: 9px;
+}
+
+/* ============ builder wizard (screens 5-9) ============ */
+.zi-builder-shell {
+  max-width: 880px;
+  margin: 0 auto;
+}
+.zi-builder-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.zi-zap-name {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 5px 8px;
+  margin: -5px -8px;
+  background: transparent;
+  flex: 1;
+  min-width: 120px;
+  max-width: 420px;
+}
+.zi-zap-name:hover,
+.zi-zap-name:focus {
+  border-color: var(--input);
+  outline: none;
+}
+.zi-builder-head .top-actions {
+  margin-left: auto;
+}
+
+.zi-stepper-card {
+  padding: 18px 24px 8px;
+  margin-bottom: 20px;
+}
+
+.zi-step-body {
+  display: none;
+}
+.zi-step-body.active {
+  display: block;
+}
+
+.zi-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 4px;
+}
+@media (max-width: 700px) {
+  .zi-picker-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.zi-pick-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  background: var(--card);
+  text-align: left;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+}
+.zi-pick-card:hover {
+  border-color: var(--ring);
+}
+.zi-pick-card.selected {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 5%, var(--card));
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.zi-pick-ico {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.zi-pick-ico svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+.zi-pick-card.selected .zi-pick-ico {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.zi-pick-text .t {
+  font-size: 13.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.zi-pick-text .d {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.zi-pick-check {
+  margin-left: auto;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  visibility: hidden;
+}
+.zi-pick-card.selected .zi-pick-check {
+  visibility: visible;
+}
+.zi-pick-check svg {
+  width: 10px;
+  height: 10px;
+  stroke-width: 3;
+}
+
+.zi-app-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+@media (max-width: 700px) {
+  .zi-app-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.zi-app-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  background: var(--card);
+}
+.zi-app-tile:hover {
+  border-color: var(--ring);
+}
+.zi-app-tile.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+  background: color-mix(in oklab, var(--primary) 5%, var(--card));
+}
+.zi-app-tile .app-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+.zi-app-tile span {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.zi-subhead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 22px 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.zi-subhead svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+  color: var(--muted-foreground);
+}
+.zi-subhead:first-child {
+  margin-top: 0;
+}
+
+.zi-config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.zi-config-row:last-child {
+  border-bottom: none;
+}
+.zi-config-row .l {
+  font-size: 13px;
+  font-weight: 500;
+}
+.zi-config-row .d {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+
+/* field mapping */
+.zi-map-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.zi-map-row:last-child {
+  border-bottom: none;
+}
+.zi-map-label {
+  font-size: 13px;
+  font-weight: 500;
+  padding-top: 8px;
+}
+.zi-map-label .req {
+  color: var(--destructive);
+}
+.zi-map-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  box-shadow: var(--shadow-2xs);
+}
+.zi-map-input:focus-within {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+.zi-map-input input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  flex: 1;
+  min-width: 60px;
+  padding: 3px 2px;
+}
+.zi-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.zi-map-hint {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  margin-top: 5px;
+}
+.zi-field-source {
+  margin-top: 22px;
+  padding: 14px;
+}
+.zi-field-source-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-bottom: 10px;
+}
+.zi-field-source-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.zi-field-source-pills .zi-pill {
+  cursor: pointer;
+  border: 1px dashed color-mix(in oklab, var(--primary) 40%, transparent);
+}
+.zi-field-source-pills .zi-pill:hover {
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+}
+
+/* test step */
+.zi-test-card {
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.zi-test-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.zi-test-head .t {
+  font-size: 13.5px;
+  font-weight: 600;
+  flex: 1;
+}
+.zi-test-desc {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin: 4px 0 14px;
+  line-height: 1.55;
+}
+.zi-test-result {
+  display: none;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12.5px;
+}
+.zi-test-result.show {
+  display: block;
+}
+.zi-test-result.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.zi-test-result.success {
+  background: var(--success-soft);
+  color: var(--foreground);
+}
+.zi-test-result.error {
+  background: color-mix(in oklab, var(--destructive) 10%, transparent);
+  color: var(--foreground);
+}
+.zi-test-result-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.zi-test-result.success .zi-test-result-head {
+  color: var(--success);
+}
+.zi-test-result.error .zi-test-result-head {
+  color: var(--destructive);
+}
+.zi-test-result-head svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.2;
+}
+.zi-sample-record {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  font-size: 12.5px;
+}
+.zi-sample-record dt {
+  color: var(--muted-foreground);
+}
+.zi-sample-record dd {
+  margin: 0;
+  font-weight: 500;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.zi-spinner-sm {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  border-top-color: var(--muted-foreground);
+  animation: zi-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* review & enable */
+.zi-review-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 20px;
+}
+.zi-review-node {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.zi-review-node .ico {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+.zi-review-node .ico svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+.zi-review-node .eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-bottom: 3px;
+}
+.zi-review-node .t {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.zi-review-node .d {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+.zi-review-arrow {
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+}
+.zi-review-arrow svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
+.zi-review-data {
+  margin-bottom: 20px;
+}
+.zi-review-data-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+.zi-review-data-row:last-child {
+  border-bottom: none;
+}
+.zi-review-data-row .f {
+  color: var(--muted-foreground);
+  width: 130px;
+  flex-shrink: 0;
+}
+.zi-review-data-row .v {
+  font-weight: 500;
+}
+
+.zi-enable-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+}
+.zi-enable-card .txt {
+  flex: 1;
+}
+.zi-enable-card .t {
+  font-size: 14px;
+  font-weight: 600;
+}
+.zi-enable-card .d {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+
+.zi-wizard-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.zi-wizard-foot .spacer {
+  flex: 1;
+}
+
+/* ============ manage zaps (screen 10) ============ */
+.zi-zap-row {
+  grid-template-columns: 2fr 1.4fr 1fr 0.9fr 1fr 40px;
+}
+.zi-status-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.zi-status-live .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-soft);
+}
+.zi-status-live.paused .dot {
+  background: var(--muted-foreground);
+  box-shadow: none;
+}
+.zi-status-live.error .dot {
+  background: var(--destructive);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 16%, transparent);
+}
+.zi-error-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--destructive);
+  margin-top: 2px;
+}
+.zi-error-note svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.4;
+  flex-shrink: 0;
+}
+.zi-zap-name-cell .t {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.zi-zap-name-cell .flow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  margin-top: 3px;
+}
+.zi-zap-name-cell .flow svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 2.4;
+}
+
+/* toast */
+.zi-toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.18s,
+    transform 0.18s;
+}
+.zi-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.zi-toast svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.2;
+  color: var(--success);
+  flex-shrink: 0;
+}
+
+/* dev-only state toggle (mirrors add-content-created's Proposed/Current pattern) */
+.dev-toggle {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--muted);
+  border-radius: var(--radius-lg);
+  gap: 2px;
+}
+.dev-toggle button {
+  border: none;
+  background: transparent;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.dev-toggle button.on {
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: var(--shadow-2xs);
+}
+
+/* ============ landing page: hero + connect bar (SurveyMonkey-style, ClassroomIO chrome) ============ */
+.zi-landing-hero {
+  text-align: center;
+  padding: 56px 24px 8px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.zi-landing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 14px;
+}
+.zi-landing-eyebrow svg {
+  width: 13px;
+  height: 13px;
+}
+.zi-landing-title {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 0 0 14px;
+}
+.zi-landing-sub {
+  font-size: 15px;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  max-width: 56ch;
+  margin: 0 auto 28px;
+}
+
+.zi-connect-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto 20px;
+  padding: 6px 6px 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.zi-connect-bar-icon {
+  width: 17px;
+  height: 17px;
+  stroke-width: 2;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.zi-connect-bar input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 0;
+}
+.zi-connect-bar .btn {
+  flex-shrink: 0;
+}
+.zi-connect-suggest {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+  z-index: 60;
+  text-align: left;
+  display: none;
+}
+.zi-connect-suggest.show {
+  display: block;
+}
+.zi-connect-suggest .hd {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  padding: 7px 9px 5px;
+}
+.zi-connect-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 9px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.zi-connect-suggest-item:hover {
+  background: var(--accent);
+}
+.zi-connect-suggest-item .d {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  font-weight: 400;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 46%;
+}
+
+.zi-landing-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.zi-icon-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  max-width: 720px;
+  margin: 0 auto 44px;
+}
+.zi-icon-row a {
+  display: block;
+  border-radius: var(--radius-md);
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s;
+}
+.zi-icon-row a:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.zi-icon-row .app-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+}
+
+.zi-landing-footlinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  padding: 22px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+.zi-landing-footlinks a {
+  color: var(--primary);
+  font-weight: 500;
+}
+.zi-landing-footlinks a:hover {
+  text-decoration: underline;
+}
+.zi-landing-footlinks .dot {
+  color: var(--border);
+}
+
+/* condensed how-it-works reused inside the landing, three columns */
+.zi-howit-condensed {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  max-width: 720px;
+  margin: 0 auto 40px;
+}
+.zi-howit-condensed .card {
+  padding: 16px;
+  text-align: left;
+}
+@media (max-width: 760px) {
+  .zi-howit-condensed {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============ app directory ============ */
+.zi-directory-shell {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .zi-directory-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zi-dir-sidebar {
+  position: sticky;
+  top: 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.zi-dir-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-bottom: 6px;
+  padding: 0 8px;
+}
+.zi-dir-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--foreground);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.zi-dir-filter:hover {
+  background: var(--accent);
+}
+.zi-dir-filter.on {
+  background: var(--accent);
+  font-weight: 600;
+}
+.zi-dir-filter .n {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.zi-dir-filter.on .n {
+  color: var(--foreground);
+}
+
+.zi-dir-search {
+  position: relative;
+  margin-bottom: 4px;
+}
+.zi-dir-search svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+  color: var(--muted-foreground);
+}
+.zi-dir-search input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px 0 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  box-shadow: var(--shadow-2xs);
+}
+.zi-dir-search input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.zi-dir-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.zi-dir-count {
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.zi-dir-count strong {
+  color: var(--foreground);
+}
+
+.zi-app-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 980px) {
+  .zi-app-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .zi-app-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.zi-app-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
+  position: relative;
+}
+.zi-app-card:hover {
+  border-color: var(--ring);
+  box-shadow: var(--shadow-md);
+}
+.zi-app-card .app-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.zi-app-card .txt {
+  min-width: 0;
+}
+.zi-app-card .t {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.zi-app-card .d {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+  line-height: 1.45;
+}
+.zi-app-card .badge {
+  margin-top: 6px;
+}
+
+.zi-dir-more {
+  margin-top: 22px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--muted);
+  border-style: dashed;
+}
+.zi-dir-more .ico {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+}
+.zi-dir-more .ico svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.8;
+}
+
+.zi-see-more {
+  width: 100%;
+  margin-top: 14px;
+}
+.zi-see-more svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+}
+
+.zi-dir-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+.zi-dir-empty svg {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.5;
+  margin-bottom: 14px;
+  color: var(--muted-foreground);
+}
+.zi-dir-empty .t {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+.zi-dir-empty .d {
+  font-size: 13px;
+  max-width: 40ch;
+  margin: 0 auto;
+}
+
+/* ============ app detail page ============ */
+.zi-detail-shell {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.zi-detail-hero {
+  text-align: center;
+  padding: 32px 24px;
+  margin-bottom: 20px;
+}
+.zi-detail-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.zi-detail-connector .dashline {
+  width: 36px;
+  height: 0;
+  border-top: 1.5px dashed var(--border);
+}
+.zi-detail-connector .app-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  font-size: 18px;
+}
+.zi-detail-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+.zi-detail-desc {
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  max-width: 48ch;
+  margin: 0 auto 20px;
+}
+.zi-detail-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.zi-detail-section {
+  margin-bottom: 16px;
+}
+.zi-detail-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.zi-detail-section-title svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+  color: var(--muted-foreground);
+}
+.zi-trigger-list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.zi-trigger-list-row:last-child {
+  border-bottom: none;
+}
+.zi-trigger-list-row .ico {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.zi-trigger-list-row .ico svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+.zi-trigger-list-row .t {
+  font-size: 13px;
+  font-weight: 500;
+}
+.zi-trigger-list-row .d {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  margin-top: 1px;
+}
+.zi-action-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.zi-action-preview-row:last-child {
+  border-bottom: none;
+}
+.zi-action-preview-row .label {
+  color: var(--muted-foreground);
+  width: 110px;
+  flex-shrink: 0;
+}
+.zi-back-row {
+  margin-bottom: 18px;
+}
+
+/* ============ app directory: sidebar search (Jotform-style placement) ============ */
+.zi-dir-search.sm input {
+  height: 38px;
+  font-size: 13.5px;
+}
+.zi-dir-search.sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============ landing page: logo marquee (SurveyMonkey-style, auto-scrolling) ============ */
+.zi-marquee-wrap {
+  max-width: 920px;
+  margin: 0 auto 8px;
+}
+.zi-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.zi-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: max-content;
+  animation: zi-marquee-scroll 34s linear infinite;
+  padding: 4px 0;
+}
+.zi-marquee:hover .zi-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes zi-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zi-marquee-track {
+    animation: none;
+  }
+}
+.zi-marquee-tile {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-2xs);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 13px;
+}
+.zi-marquee-tile svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.zi-marquee-note {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin: 14px 0 0;
+}
+.zi-marquee-note a {
+  color: var(--primary);
+  font-weight: 500;
+}
+.zi-marquee-note a:hover {
+  text-decoration: underline;
+}
+
+/* ============ landing page: section rhythm shared by feature/how-to/highlight/faq ============ */
+.zi-section {
+  max-width: 920px;
+  margin: 0 auto 64px;
+  padding: 0 24px;
+}
+.zi-section-head {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.zi-eyebrow-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+.zi-section-title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+.zi-section-sub {
+  font-size: 14px;
+  color: var(--muted-foreground);
+  max-width: 52ch;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* alternating feature rows */
+.zi-feature-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 56px;
+}
+.zi-feature-row:last-child {
+  margin-bottom: 0;
+}
+.zi-feature-row.reverse .zi-feature-text {
+  order: 2;
+}
+.zi-feature-row.reverse .zi-feature-visual {
+  order: 1;
+}
+.zi-feature-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+.zi-feature-title {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+.zi-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.zi-feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+.zi-feature-list svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.4;
+  color: var(--success);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.zi-feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary);
+}
+.zi-feature-link:hover {
+  text-decoration: underline;
+}
+.zi-feature-link svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+.zi-feature-visual {
+  padding: 22px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 760px) {
+  .zi-feature-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .zi-feature-row.reverse .zi-feature-text,
+  .zi-feature-row.reverse .zi-feature-visual {
+    order: initial;
+  }
+}
+
+/* mini mockup card used inside feature visuals */
+.zi-mock-card {
+  width: 100%;
+  max-width: 300px;
+  padding: 14px;
+  background: var(--card);
+}
+.zi-mock-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.zi-mock-row:last-child {
+  border-bottom: none;
+}
+.zi-mock-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.zi-mock-bubble {
+  padding: 10px 12px;
+  background: var(--muted);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.zi-mock-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.zi-mock-table th {
+  text-align: left;
+  color: var(--muted-foreground);
+  font-weight: 500;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.zi-mock-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.zi-mock-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* step-by-step walkthrough (numbered feature rows reusing .zi-feature-row) */
+.zi-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 13px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+.zi-feature-p {
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+.zi-howto-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* miniature "screenshot" of a real prototype screen, used in the walkthrough */
+.zi-mini-screen {
+  width: 100%;
+  max-width: 320px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.zi-mini-screen-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  letter-spacing: 0.02em;
+}
+.zi-mini-screen-bar .dots {
+  display: inline-flex;
+  gap: 4px;
+}
+.zi-mini-screen-bar .dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+  display: block;
+}
+.zi-mini-screen-body {
+  padding: 14px;
+}
+.zi-mini-app-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+}
+.zi-mini-app-row:last-child {
+  border-bottom: none;
+}
+.zi-mini-trigger-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+.zi-mini-trigger-card.selected {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 5%, var(--card));
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.zi-mini-trigger-card .ico {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.zi-mini-trigger-card .ico svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2;
+}
+.zi-mini-trigger-card .t {
+  font-weight: 600;
+}
+.zi-mini-map-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.zi-mini-map-row:last-child {
+  border-bottom: none;
+}
+.zi-mini-map-row .lbl {
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+.zi-mini-map-row .val {
+  padding: 5px 7px;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-sm);
+  background: var(--background);
+}
+.zi-mini-map-row .val .zi-pill {
+  height: 17px;
+  font-size: 9.5px;
+  padding: 0 6px;
+}
+
+/* how-to-connect path cards */
+.zi-howto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 760px) {
+  .zi-howto-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.zi-howto-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.zi-howto-card:hover {
+  border-color: var(--ring);
+  box-shadow: var(--shadow-md);
+}
+.zi-howto-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+}
+.zi-howto-ico svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 2;
+}
+.zi-howto-card .t {
+  font-size: 14px;
+  font-weight: 600;
+}
+.zi-howto-card .d {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  line-height: 1.55;
+  flex: 1;
+}
+
+/* deeper-integration highlight cards */
+.zi-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 760px) {
+  .zi-highlight-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.zi-highlight-card {
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.zi-highlight-card .app-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+}
+.zi-highlight-card .t {
+  font-size: 13px;
+  font-weight: 600;
+}
+.zi-highlight-card .d {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  line-height: 1.4;
+}
+
+/* FAQ accordion */
+.zi-faq {
+  border-top: 1px solid var(--border);
+}
+.zi-faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.zi-faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 2px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--foreground);
+}
+.zi-faq-q svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.zi-faq-item.open .zi-faq-q svg {
+  transform: rotate(180deg);
+}
+.zi-faq-a {
+  display: none;
+  padding: 0 2px 16px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  max-width: 68ch;
+}
+.zi-faq-item.open .zi-faq-a {
+  display: block;
+}
+
+/* ============================================================
+   MOBILE (this prototype's own adaptations, not desktop shrink)
+   Two breakpoints: 860px picks up the existing sidebar-drawer /
+   single-column breakpoint already established in app-theme.css,
+   640px is for phone-width fine-tuning (headings, padding, touch
+   targets). Grouped by screen so any one flow can be reviewed on
+   its own.
+   ============================================================ */
+
+/* ---------- chrome shared by every screen ---------- */
+@media (max-width: 860px) {
+  .content {
+    padding: 18px 16px 48px;
+  }
+  .topbar {
+    padding: 0 12px;
+    gap: 6px;
+  }
+  /* Full breadcrumb trails don't fit next to a hamburger, a back
+     arrow, and top-actions on a phone width. Collapse to just the
+     current page; the page's own <h1> already gives the rest of
+     the context. */
+  .crumbs > *:not(:last-child) {
+    display: none;
+  }
+  .crumbs .here {
+    font-size: 14px;
+  }
+  /* The "Prototype map" link is reviewer chrome for this design
+     file, not part of the product being prototyped. Drop it first
+     when space is tight. */
+  .top-actions a[href='index.html'] {
+    display: none;
+  }
+  /* Touch targets: bump the compact controls used for navigation
+     and row actions up toward a comfortable tap size. */
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .btn-sm {
+    height: 40px;
+    padding: 0 14px;
+  }
+  .mobile-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+@media (max-width: 480px) {
+  .content {
+    padding: 14px 12px 40px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+}
+
+/* ---------- automation hub ---------- */
+@media (max-width: 480px) {
+  .auto-card {
+    padding: 16px;
+  }
+}
+
+/* ---------- landing page ---------- */
+@media (max-width: 640px) {
+  .zi-landing-hero {
+    padding: 28px 4px 4px;
+  }
+  .zi-landing-eyebrow {
+    font-size: 10.5px;
+  }
+  .zi-landing-title {
+    font-size: 26px;
+    letter-spacing: -0.02em;
+  }
+  .zi-landing-sub {
+    font-size: 13.5px;
+    margin-bottom: 22px;
+  }
+  .zi-connect-bar {
+    max-width: 100%;
+    padding: 4px 4px 4px 12px;
+    gap: 6px;
+  }
+  .zi-connect-bar input {
+    font-size: 13px;
+  }
+  .zi-connect-bar .btn {
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+  .zi-landing-actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 28px;
+  }
+  .zi-landing-actions .btn {
+    width: 100%;
+  }
+  .zi-marquee-tile {
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+  }
+  .zi-marquee-track {
+    gap: 14px;
+  }
+  .zi-marquee-note {
+    font-size: 11.5px;
+    padding: 0 8px;
+  }
+  .zi-landing-footlinks {
+    font-size: 11.5px;
+    gap: 6px;
+    padding: 16px 0;
+  }
+  .zi-section {
+    padding: 0 4px;
+    margin-bottom: 40px;
+  }
+  .zi-section-head {
+    margin-bottom: 22px;
+  }
+  .zi-section-title {
+    font-size: 19px;
+  }
+  .zi-section-sub {
+    font-size: 13px;
+  }
+  .zi-feature-row {
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .zi-feature-title {
+    font-size: 17px;
+  }
+  .zi-feature-visual {
+    padding: 4px;
+    min-height: 0;
+  }
+  .zi-mini-screen {
+    max-width: 100%;
+  }
+  .zi-howto-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .zi-howto-cta .btn {
+    width: 100%;
+  }
+}
+
+/* ---------- oauth consent ---------- */
+@media (max-width: 640px) {
+  .zi-consent-shell {
+    margin: 20px auto;
+    padding: 0 4px;
+  }
+  .zi-consent-card {
+    padding: 18px;
+  }
+  .zi-consent-connector {
+    gap: 10px;
+  }
+  .zi-consent-heading h1 {
+    font-size: 15px;
+  }
+  .zi-consent-actions {
+    flex-direction: column-reverse;
+  }
+}
+
+/* ---------- connected state ---------- */
+@media (max-width: 640px) {
+  .zi-status-banner {
+    flex-wrap: wrap;
+    padding: 14px 16px;
+  }
+  .zi-usage-grid {
+    grid-template-columns: 1fr;
+  }
+  .zi-setup-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- tables that become stacked cards: Connections + Manage Zaps ---------- */
+@media (max-width: 700px) {
+  .card > .thead.zi-grant-row,
+  .card > .thead.zi-zap-row {
+    display: none;
+  }
+  .trow.zi-grant-row,
+  .trow.zi-zap-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px 16px;
+    position: relative;
+  }
+  .trow.zi-grant-row > div:nth-child(2)::before,
+  .trow.zi-grant-row > div:nth-child(3)::before,
+  .trow.zi-grant-row > div:nth-child(4)::before,
+  .trow.zi-zap-row > div:nth-child(2)::before,
+  .trow.zi-zap-row > div:nth-child(3)::before,
+  .trow.zi-zap-row > div:nth-child(4)::before,
+  .trow.zi-zap-row > div:nth-child(5)::before {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin-bottom: 3px;
+  }
+  .trow.zi-grant-row > div:nth-child(2)::before {
+    content: 'Access';
+  }
+  .trow.zi-grant-row > div:nth-child(3)::before {
+    content: 'Last used';
+  }
+  .trow.zi-grant-row > div:nth-child(4)::before {
+    content: 'Connected';
+  }
+  .trow.zi-grant-row > div:nth-child(5) .btn {
+    width: 100%;
+  }
+  .trow.zi-zap-row > div:nth-child(2)::before {
+    content: 'Trigger';
+  }
+  .trow.zi-zap-row > div:nth-child(3)::before {
+    content: 'App';
+  }
+  .trow.zi-zap-row > div:nth-child(4)::before {
+    content: 'Status';
+  }
+  .trow.zi-zap-row > div:nth-child(5)::before {
+    content: 'Last activity';
+  }
+  .trow.zi-zap-row > div:nth-child(6) {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+  }
+  .trow.zi-zap-row {
+    padding-right: 52px;
+  }
+}
+
+/* ---------- create a Zap / templates ---------- */
+@media (max-width: 640px) {
+  .zi-template-card {
+    padding: 14px;
+  }
+}
+
+/* ---------- Zap builder ---------- */
+@media (max-width: 700px) {
+  .zi-builder-head {
+    gap: 8px;
+  }
+  .zi-zap-name {
+    font-size: 14.5px;
+    min-width: 60px;
+  }
+  .zi-builder-head .top-actions .btn {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+  .zi-stepper-card {
+    padding: 12px 10px 4px;
+  }
+  /* The stepper's default nodes are a fixed 110px each, four in a
+     row, built for desktop. On a phone that's wider than the
+     screen. Let nodes flex to share the available width instead of
+     forcing a scroll, and let long labels ellipsize rather than
+     wrap and break the row's height. */
+  .zi-stepper-card .stepper {
+    width: 100%;
+  }
+  .zi-stepper-card .snode {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .zi-stepper-card .sdot {
+    width: 24px;
+    height: 24px;
+    font-size: 10.5px;
+  }
+  .zi-stepper-card .slabel {
+    font-size: 9.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    padding: 0 2px;
+  }
+  .zi-stepper-card .sbar {
+    min-width: 4px;
+    margin: 0 -4px 13px;
+  }
+  .zi-app-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .zi-map-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .zi-map-label {
+    padding-top: 0;
+  }
+  .zi-field-source-pills {
+    gap: 8px;
+  }
+  .zi-review-flow {
+    flex-direction: column;
+  }
+  .zi-review-flow .zi-review-node:first-child {
+    border-bottom: 1px solid var(--border);
+  }
+  .zi-review-arrow {
+    width: 100%;
+    height: 28px;
+  }
+  .zi-review-arrow svg {
+    transform: rotate(90deg);
+  }
+  .zi-review-data-row {
+    flex-wrap: wrap;
+  }
+  .zi-enable-card {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .zi-enable-card .btn {
+    width: 100%;
+  }
+  .zi-wizard-foot .btn {
+    padding: 0 16px;
+  }
+}
+
+/* ---------- app directory: mobile filter drawer ---------- */
+.zi-dir-filter-toggle {
+  display: none;
+}
+@media (max-width: 860px) {
+  .zi-directory-shell {
+    gap: 14px;
+  }
+  .zi-dir-sidebar {
+    position: static;
+    top: auto;
+    gap: 10px;
+  }
+  .zi-dir-filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--foreground);
+    cursor: pointer;
+    box-shadow: var(--shadow-2xs);
+  }
+  .zi-dir-filter-toggle svg:first-child {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    color: var(--muted-foreground);
+  }
+  .zi-dir-filter-toggle .chev {
+    margin-left: auto;
+    width: 15px;
+    height: 15px;
+    stroke-width: 2.2;
+    color: var(--muted-foreground);
+    transition: transform 0.15s;
+  }
+  .zi-dir-filter-toggle.open .chev {
+    transform: rotate(180deg);
+  }
+  .zi-dir-filter-count {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 0 6px;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+  }
+  .zi-dir-filter-panel {
+    display: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    background: var(--card);
+    box-shadow: var(--shadow-2xs);
+  }
+  .zi-dir-filter-panel.open {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+@media (max-width: 640px) {
+  .zi-dir-search input {
+    height: 44px;
+  }
+  .zi-dir-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .zi-app-card-grid {
+    gap: 10px;
+  }
+  .zi-app-card {
+    padding: 12px;
+  }
+  .zi-dir-more {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 10px;
+  }
+  .zi-dir-more .btn {
+    width: 100%;
+  }
+}
+
+/* ---------- app detail ---------- */
+@media (max-width: 640px) {
+  .zi-detail-hero {
+    padding: 22px 16px;
+  }
+  .zi-detail-connector .app-badge {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+  .zi-detail-connector .dashline {
+    width: 24px;
+  }
+  .zi-detail-title {
+    font-size: 18px;
+  }
+  .zi-detail-cta .btn {
+    width: 100%;
+  }
+  .zi-detail-cta {
+    flex-direction: column;
+  }
+  .zi-action-preview-row {
+    align-items: flex-start;
+  }
+}
