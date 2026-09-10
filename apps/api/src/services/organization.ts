@@ -947,8 +947,6 @@ export async function getUserAnalytics(userId: string, orgId: string) {
       courses.map(async (course) => {
         let userExercisesStats: Awaited<ReturnType<typeof getUserExercisesStats>> | null;
         try {
-          // failOnError lets this page distinguish a failed query (exercises ===
-          // null) from a legitimately empty course (exercises === []).
           userExercisesStats = await getUserExercisesStats(course.id, userId, { failOnError: true });
         } catch (error) {
           console.error('getUserAnalytics course exercises error:', error);
@@ -963,16 +961,10 @@ export async function getUserAnalytics(userId: string, orgId: string) {
           courseProgress = null;
         }
 
-        // Only graded submissions produce a grade. Exercises the student has
-        // not submitted, or submitted but not yet graded, are absence — they
-        // must not drag the grade toward zero (an em-dash, never a 0).
         const gradedExercises = (userExercisesStats ?? []).filter((exercises) => exercises.status === 3);
         const totalEarnedPoints = sumArrObject(gradedExercises, 'score');
         const totalPoints = sumArrObject(gradedExercises, 'totalPoints');
 
-        // A course is gradeable only if its graded exercises carry points.
-        // Authored exercises worth 0 points cannot produce a grade any more
-        // than no exercises can — so null is "no grade yet", not a grade of 0.
         const gradeablePoints = totalPoints > 0;
         const averageGrade = gradeablePoints ? calcPercentageWithRounding(totalEarnedPoints, totalPoints) : null;
 
@@ -1003,9 +995,6 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     const completedLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
     const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
 
-    // Overall average is a plain mean of gradeable course grades. Courses with
-    // no grade contribute nothing (not a 0) — this also avoids double-scaling
-    // the already-percentage course grades into values like 5200.
     const graded = coursesWithStats.filter(
       (course): course is (typeof coursesWithStats)[number] & { average_grade: number } => course.average_grade !== null
     );
