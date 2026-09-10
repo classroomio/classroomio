@@ -38,16 +38,12 @@ const {
   strings,
 } = Astro.props;
 
-// Merge over the English defaults so a label missing from a translation (or
-// from a not-yet-regenerated snapshot) still renders instead of coming out
-// blank — the PageActions pattern.
+// Merge over English defaults so a missing/stale translation label still renders (the PageActions pattern).
 const n = { ...EN_UI.nav, ...strings };
 
 const badgeBase =
   "shrink-0 rounded-full px-1.5 py-0.5 font-medium text-[0.65rem] leading-none";
-// HTTP-method, AsyncAPI-action, and GraphQL operation-kind badges (from a
-// reference's sidebar) share MethodBadge's table; every other badge falls
-// through to the same neutral style.
+// HTTP-method/AsyncAPI/GraphQL badges share MethodBadge's table; everything else gets the neutral style.
 const badgeClassFor = (badge: string): string =>
   `${badgeBase} ${methodColor(badge)}`;
 const deprecatedClass =
@@ -58,11 +54,8 @@ const hasActivePage = (item: NavNode): boolean =>
     ? item.route === currentRoute
     : item.route === currentRoute || item.children.some(hasActivePage);
 
-// Collect every `page`-mode group in the tree as a panel that is hoisted to the
-// top of the `<blume-nav>` stack. Panel ids match the `${prefix}.${index}`
-// scheme the row renderer uses for `data-nav-to`, so a drill-in trigger and its
-// panel always agree. `flat`/`group` ancestors keep their children in the same
-// visual panel (parentId unchanged); a `page` group opens a new panel.
+// Collects every `page`-mode group as a panel hoisted to the top of the
+// `<blume-nav>` stack. Panel ids must match `data-nav-to`'s `${prefix}.${index}` scheme.
 const collectPanels = (
   nodes: NavNode[],
   prefix: string,
@@ -93,8 +86,7 @@ const collectPanels = (
 };
 
 const panels = root ? collectPanels(items, idPrefix, "root") : [];
-// Open the deepest panel that contains the current page, so a real page load
-// lands on the right sub-panel (and degrades gracefully without JS).
+// Open the deepest panel containing the current page, so a page load lands on the right sub-panel.
 const activePanels = panels.filter((panel) => panel.active);
 const initialId =
   activePanels.length > 0
@@ -119,10 +111,8 @@ const initialId =
       </div>
       {panels.map((panel) => (
         <div data-nav-panel={panel.id} hidden={panel.id !== initialId}>
-          {/* The title is the only sidebar link to the section's own page, so
-              a routed panel keeps it as a link; without a route the whole row
-              becomes the back button. Either way every part of the row is
-              interactive. */}
+          {/* Title links to the section page when routed; otherwise the whole
+              row is the back button — every part stays interactive either way. */}
           {panel.route ? (
             <div class="mb-3 flex items-center gap-0.5">
               <button
@@ -204,7 +194,6 @@ const initialId =
         const spacing =
           index === 0 ? "mt-0" : display === "flat" ? "mt-6" : "mt-0.5";
 
-        // `page`: a single row that drills into this group's panel.
         if (display === "page") {
           return (
             <li class={spacing}>
@@ -232,11 +221,9 @@ const initialId =
           );
         }
 
-        // `group`: a collapsible `<details>` disclosure.
         if (display === "group") {
           const active = hasActivePage(item);
-          // Default every group closed; open only those on the active path (so
-          // the current page's ancestors stay expanded) or forced open via meta.
+          // Default closed except groups on the active path or forced open via meta.
           const open = active || item.collapsed === false;
           return (
             <li class={spacing}>
@@ -277,10 +264,8 @@ const initialId =
                       )}
                     </>
                   )}
-                  {/* Scope the rotation to this group's own `details` — the
-                      `group-open` variant matches any open ancestor `.group`,
-                      so nested chevrons rotated while their own group stayed
-                      closed. */}
+                  {/* Scoped to this group's own `details` — `group-open` would
+                      otherwise match any open ancestor and rotate the wrong chevrons. */}
                   <span class="shrink-0 text-muted-foreground transition-transform [details[open]>summary_&]:rotate-90">
                     <Icon name="chevron-right" size={13} />
                   </span>
@@ -300,8 +285,6 @@ const initialId =
           );
         }
 
-        // `flat` (default): a non-collapsible header with its items beneath.
-        // Depth-0 flat items are section headers (uppercase, with a divider).
         const isSection = depth === 0;
         return (
           <li class={spacing}>
@@ -420,7 +403,6 @@ const initialId =
       if (prev === next) {
         return;
       }
-      // Settle any in-flight slide before starting the next one.
       if (this.finishSlide) {
         this.finishSlide();
       }

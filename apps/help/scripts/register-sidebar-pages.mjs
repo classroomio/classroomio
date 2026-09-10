@@ -1,26 +1,14 @@
 /**
  * Registers newly added content/help/**\/*.mdx pages into the matching group
- * of `navigation.sidebar` in blume.config.ts.
- *
- * Why this exists: navigation.sidebar is an explicit array — Blume does not
- * infer the sidebar from the content folder tree (see blume.config.ts's own
- * top comment) — so a page the CMS creates is otherwise invisible in
- * navigation until someone manually adds its path here. The CMS can only
- * ever add pages inside an EXISTING content/help/<folder>, never a new
- * folder, so a new page's target group is always determinable from its
- * folder name — that's what makes this safe to automate rather than needing
- * a human to decide where a page belongs.
- *
- * Deliberately does NOT decide ordering within a group beyond "append at the
- * end" — picking a smarter position would mean also reading every existing
- * page's frontmatter, and a slightly-out-of-order sidebar is a cosmetic,
- * easily-fixed-later problem, unlike a page that's silently missing from
- * navigation entirely.
+ * of `navigation.sidebar` in blume.config.ts — otherwise a CMS-added page is
+ * invisible in navigation until someone adds it by hand. Safe to automate
+ * because the CMS can only add pages under an existing content/help/<folder>,
+ * so a new page's target group is always determinable from its folder name.
+ * New pages are appended at the end of their group; ordering isn't decided.
  *
  * Run from apps/help/: `node scripts/register-sidebar-pages.mjs [baseRef]`
  * (baseRef defaults to origin/main). Only touches blume.config.ts on disk —
- * committing/pushing the result is the caller's job (see
- * .github/workflows/help-cms-register-pages.yml).
+ * see the "register" job in .github/workflows/help-cms.yml for commit/push.
  */
 import { execFileSync } from 'node:child_process';
 import { dirname, relative, resolve, sep } from 'node:path';
@@ -32,10 +20,7 @@ const repoRoot = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: ap
 const contentRoot = resolve(appRoot, 'content/help');
 const configPath = resolve(appRoot, 'blume.config.ts');
 
-// pnpm's `run <script> -- <args>` forwards the `--` itself through to the
-// underlying command rather than stripping it (confirmed in CI: argv came
-// through as ['--', '<sha>']), so the base ref has to be found by skipping
-// any literal '--' rather than assumed to be sitting at a fixed index.
+// pnpm's `run <script> -- <args>` forwards the literal '--' through to argv, so skip it rather than assume a fixed index.
 const baseRef = process.argv.slice(2).find((arg) => arg !== '--') ?? 'origin/main';
 
 function findAddedMdxFiles() {
@@ -90,7 +75,7 @@ function getSidebarArray(sourceFile) {
 
 function findGroupForFolder(sidebarArray, folder) {
   for (const element of sidebarArray.getElements()) {
-    if (!element.asKind(SyntaxKind.ObjectLiteralExpression)) continue; // skips the bare '/' entry
+    if (!element.asKind(SyntaxKind.ObjectLiteralExpression)) continue;
 
     const found = findGroupInObject(element.asKindOrThrow(SyntaxKind.ObjectLiteralExpression), folder);
     if (found) return found;
@@ -99,8 +84,7 @@ function findGroupForFolder(sidebarArray, folder) {
   return null;
 }
 
-// navigation.sidebar is two levels deep, so a top-level section's own
-// `items` may hold group objects rather than page paths — recurse into them.
+// navigation.sidebar is two levels deep, so items may hold nested groups.
 function findGroupInObject(group, folder) {
   const itemsProp = group.getProperty('items');
   if (!itemsProp) return null;
@@ -168,15 +152,12 @@ for (const file of addedFiles) {
 
 if (changed) {
   sourceFile.saveSync();
-  // ts-morph's inserted node doesn't inherit sibling indentation, so run the
-  // project's own Prettier over the file rather than hand-rolling formatting
-  // rules that would just drift from .prettierrc over time.
+  // ts-morph's inserted node doesn't inherit sibling indentation, so re-run Prettier.
   execFileSync('pnpm', ['exec', 'prettier', '--write', `"${configPath}"`], {
     cwd: repoRoot,
     stdio: 'inherit',
-    // pnpm resolves to a .cmd shim on Windows, which execFileSync can't
-    // exec directly without shell resolution. shell:true doesn't quote args
-    // for you, so a path containing spaces has to be quoted here manually.
+    // pnpm resolves to a .cmd shim on Windows, needing shell:true — which doesn't
+    // quote args itself, hence the manual quotes above for paths containing spaces.
     shell: true
   });
   console.log('[help] Updated apps/help/blume.config.ts.');

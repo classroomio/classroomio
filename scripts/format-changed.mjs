@@ -56,12 +56,8 @@ function runPrettier(filePaths) {
     const result = spawnSync('prettier', [prettierMode, '--ignore-unknown', ...quotedChunk], {
       cwd: process.cwd(),
       stdio: 'inherit',
-      // On Windows, `prettier` resolves to a .cmd shim that spawnSync can't
-      // exec directly without shell resolution — without this, the process
-      // fails to launch at all (ENOENT) and exits non-zero with no output,
-      // indistinguishable from a real formatting failure. shell:true doesn't
-      // quote args for us, so paths are quoted manually below to survive a
-      // repo root containing spaces.
+      // Windows resolves `prettier` to a .cmd shim needing shell:true (else ENOENT);
+      // shell:true doesn't quote args itself, hence the manual quoting above.
       shell: true
     });
 

@@ -1,0 +1,120 @@
+name: Help CMS
+
+# Plain pull_request, not pull_request_target: CMS-authored PRs are always
+# same-repo branches (Sveltia needs push access to open them at all), so each
+# job's `if:` below excludes any stray fork PR before it checks out/builds.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/help/**'
+      - '.github/workflows/help-cms.yml'
+
+jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    outputs:
+      content: ${{ steps.filter.outputs.content }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            content:
+              - 'apps/help/content/help/**'
+              - 'apps/help/scripts/register-sidebar-pages.mjs'
+
+  register:
+    name: Register new pages in navigation.sidebar
+    needs: changes
+    if: needs.changes.outputs.content == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: help-cms-register-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - run: git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: apps/help/.nvmrc
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run register-sidebar-pages
+        id: register
+        run: |
+          pnpm --filter @cio/help run register-sidebar-pages -- "${{ github.event.pull_request.base.sha }}"
+          if [ -n "$(git status --porcelain apps/help/blume.config.ts)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.register.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/help/blume.config.ts
+          git commit -m "chore(help): register new page(s) in navigation.sidebar"
+          git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
+
+  preview:
+    name: Build and deploy preview
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+    concurrency:
+      group: help-cms-preview-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      # apps/help requires Node >=22.12, unlike the rest of the monorepo (Node 20).
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: apps/help/.nvmrc
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @cio/help build
+
+      - name: Upload Workers preview version
+        id: deploy
+        working-directory: apps/help
+        run: |
+          pnpm exec wrangler versions upload \
+            --preview-alias "pr-${{ github.event.pull_request.number }}" \
+            | tee wrangler-output.txt
+          url=$(grep -Eo 'https://[a-zA-Z0-9.-]+\.workers\.dev' wrangler-output.txt | head -n1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+        env:
+          # Dedicated secret — the repo's CLOUDFLARE_API_TOKEN is scoped to Cache Purge only.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_HELP_PREVIEW_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # package-assets.mjs nests the build under build/help/, so it's only reachable at <url>/help.
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: always() && steps.deploy.outputs.url != ''
+        with:
+          header: help-cms-preview
+          message: |
+            ### Help docs preview 🚀
+            ${{ steps.deploy.outputs.url }}/help
+
+            Cloudflare Workers *version* preview — separate from production traffic, not promoted, and expires when this PR closes or updates.

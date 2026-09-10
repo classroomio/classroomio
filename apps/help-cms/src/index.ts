@@ -1,21 +1,8 @@
 /**
- * @cio/help-cms-auth — GitHub OAuth proxy for the Sveltia CMS admin UI at
- * classroomio.com/help/admin. Sveltia's `github` backend needs a small
- * server-side hop to exchange an OAuth `code` for an access token without
- * exposing the OAuth App's client secret to the browser; this Worker is that
- * hop, adapting the standard Decap/Sveltia CMS OAuth-provider contract
- * (same popup handshake as netlify-cms-oauth-provider-node / sveltia-cms-auth).
- *
- * Flow:
- *   1. The CMS opens a popup at GET /auth.
- *   2. /auth redirects to GitHub's OAuth authorize URL, with a `state` value
- *      also stashed in a short-lived cookie (CSRF check — this Worker holds
- *      no server-side session store).
- *   3. GitHub redirects the popup back to GET /callback?code=...&state=...
- *   4. /callback verifies `state` against the cookie, exchanges `code` for an
- *      access token using GITHUB_CLIENT_SECRET (never sent to the browser),
- *      and returns an HTML page whose inline script completes the
- *      window.postMessage handshake the CMS is waiting on.
+ * @cio/help-cms — GitHub OAuth proxy for the Sveltia CMS admin UI at
+ * classroomio.com/help/admin. Exchanges an OAuth `code` for an access token
+ * server-side, since GITHUB_CLIENT_SECRET can never reach the browser.
+ * Implements the standard Decap/Sveltia CMS OAuth-provider popup handshake.
  */
 
 interface Env {
@@ -53,12 +40,8 @@ function isAllowedOrigin(request: Request, env: Env): boolean {
     .filter(Boolean);
   if (allowed.length === 0) return true;
 
-  // Referer/Origin can legitimately be missing (stripped by a browser privacy
-  // setting or extension) even for a real, same-user popup navigation. This
-  // check is defense-in-depth, not the actual security boundary — that's the
-  // OAuth exchange itself plus GitHub requiring repo write access — so fail
-  // open when there's nothing to check, and only block a referer/origin that
-  // is present and clearly doesn't match.
+  // Fails open when Referer/Origin is missing (can happen legitimately) — this
+  // is defense-in-depth only; GitHub's own write-access check is the real boundary.
   const referer = request.headers.get('referer') ?? request.headers.get('origin');
   if (!referer) return true;
 
@@ -80,11 +63,8 @@ function handleAuth(request: Request, env: Env): Response {
   authorizeUrl.searchParams.set('scope', OAUTH_SCOPE);
   authorizeUrl.searchParams.set('state', state);
 
-  // `Secure` is skipped for plain-HTTP requests (local `wrangler dev`) —
-  // some browsers (e.g. Brave) won't store a Secure cookie set over
-  // http://localhost, which silently breaks every callback's state check
-  // locally. In production this Worker is always served over https, so
-  // Secure is kept there.
+  // Secure is skipped over plain HTTP (local `wrangler dev`) — some browsers
+  // (e.g. Brave) won't store a Secure cookie on http://localhost.
   const secureAttr = url.protocol === 'https:' ? 'Secure; ' : '';
   const headers = new Headers({ Location: authorizeUrl.toString() });
   headers.append(
@@ -96,17 +76,8 @@ function handleAuth(request: Request, env: Env): Response {
 }
 
 function renderHandshakePage(message: string): Response {
-  // Always shows visible status text, on every path — a silent blank page
-  // gives no signal when something (an extension, a browser privacy
-  // setting) breaks postMessage or severs window.opener.
-  //
-  // Prefers the standard Decap/Sveltia handshake (wait for the opener to
-  // echo "authorizing:github" back, then reply to the origin that echo
-  // came from) but does not depend on it: if no echo arrives within
-  // 300ms, it falls back to posting directly with '*' so a CMS that skips
-  // the echo step still completes. Closes itself shortly after sending —
-  // a popup left open past that point reads to the CMS as an aborted
-  // attempt, not a successful one.
+  // Waits up to 300ms for the opener's echo (standard Decap/Sveltia handshake),
+  // else falls back to posting with '*' for CMS builds that skip that step.
   const html = `<!doctype html>
 <html>
   <body>
@@ -126,9 +97,6 @@ function renderHandshakePage(message: string): Response {
           try {
             window.opener.postMessage(${JSON.stringify(message)}, targetOrigin);
             setStatus('Signed in. Closing this window…');
-            // The CMS treats a popup that closes before its message is fully
-            // processed as an aborted attempt, so give it a moment before
-            // closing rather than leaving the window open indefinitely.
             setTimeout(function () {
               window.close();
             }, 250);
@@ -158,11 +126,6 @@ function renderHandshakePage(message: string): Response {
           return;
         }
 
-        // Fallback if the opener never echoes back (e.g. an older/different
-        // CMS build that doesn't implement the reply step). Kept short —
-        // the echo round-trip is near-instant when it happens at all, and a
-        // long wait here risks the CMS's own popup-closed watchdog giving
-        // up first.
         setTimeout(function () {
           sendResult('*');
         }, 300);

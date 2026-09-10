@@ -7,15 +7,11 @@ import { z } from 'zod';
  * rewrites URLs in the emitted HTML — it does not nest the build output, so
  * scripts/package-assets.mjs moves dist/ under help/ to match the served path.
  *
- * `navigation.sidebar` below is explicit, which replaces Blume's generated
- * folder-tree sidebar entirely — per-folder meta.ts files and each page's
- * `sidebar.order` frontmatter no longer drive group label/order or in-group
- * page order; Blume's config-sidebar path (`buildConfigSidebar`) just walks
- * this array verbatim, so order is purely each item's position here.
+ * `navigation.sidebar` below is explicit and fully replaces Blume's generated
+ * folder-tree sidebar — order is purely each item's position in this array.
  *
- * It's two levels deep: top-level `display: 'flat'` sections nest the actual
- * topic groups. The section-header/divider styling lives in the ejected
- * components/blume/NavTree.astro.
+ * It's two levels deep: `flat` sections nest the actual `group`/`page` items;
+ * styling lives in the ejected components/blume/NavTree.astro.
  */
 export default defineConfig({
   title: 'ClassroomIO Help Center',
@@ -74,8 +70,7 @@ export default defineConfig({
       { label: 'Developers', path: 'https://classroomio.com/docs/developers', icon: 'terminal' },
       { label: 'API', path: 'https://classroomio.com/docs/api', icon: 'code' }
     ],
-    // New groups must nest inside one of the three sections below, not sit
-    // at the top level — register-sidebar-pages.mjs only recurses into them.
+    // New groups must nest inside a section below — register-sidebar-pages.mjs only recurses into those.
     sidebar: [
       '/',
       {
