@@ -1,4 +1,4 @@
-import type { AccountOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
 import type {
   FooterColumn,
   FooterColumnLink,
@@ -741,7 +741,7 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
 }
 
 export function buildOrgLandingPageProps(
-  org: AccountOrg,
+  org: AccountOrg | PublicOrg,
   landingpage: unknown,
   courses: OrgPublicCourses,
   hasMoreCourses = false,
