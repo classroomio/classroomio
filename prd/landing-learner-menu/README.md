@@ -92,7 +92,7 @@ Prototype: `learner-member.html`, `themes.html`.
 
 - The avatar renders as the last element in the landing nav's right-hand cluster, after the CTA button, with a `12px` gap.
 - Trigger is a `32px` circular button showing `UserAvatar`; on hover and on open it gains a ring in `--landing-border`; focus-visible gets a `--landing-accent` ring, matching `LandingButton`.
-- Accessible name comes from a translation key with the account interpolated, so a screen-reader user learns which account is signed in without opening the card: `landing.learner_menu.trigger_label` → "Account menu, signed in as {email}" (falls back to "Account menu" when the email is null). `aria-haspopup="menu"`, `aria-expanded` reflects open state.
+- Accessible name comes from a translation key with the account interpolated, so a screen-reader user learns which account is signed in without opening the card: `landing.learner_menu.trigger_label` → "Account menu, signed in as {email}" (falls back to "Account menu" when the email is null). `aria-haspopup="dialog"`, `aria-expanded` reflects open state.
 - The trigger renders **only** when the learner is signed in and `appInitApi` has initialised. States:
   - **Logged out** — no avatar, nav is byte-identical to today.
   - **Signed in, not yet initialised** — a `32px` skeleton circle in `--landing-border-soft` occupies the slot, so the nav does not reflow when data lands. The existing loading behaviour of the CTA button (`authAction.loading`) is unchanged.
@@ -114,18 +114,18 @@ Card is `280px` wide, `--landing-card` background, `--landing-border` hairline, 
 | My Certificates | `landing.learner_menu.my_certificates` | → `/lms/certificates` |
 | Account Settings | `landing.learner_menu.account_settings` | → `/lms/settings` |
 | Divider | | |
-| Theme | `landing.learner_menu.theme` label left, 3-button segmented control right (light / dark / system) | Sets app/LMS preference; popover stays open on click |
+| Theme | `landing.learner_menu.theme` label left, 3-button segmented control right with per-mode labels (`landing.learner_menu.theme_light`, `.theme_dark`, `.theme_system`) | Sets app/LMS preference; popover stays open on click |
 | Divider | | |
 | Log Out | `settings.profile.logout` (existing key) with a `log-out` icon on the right | → `/logout` |
 | CTA | Full-width filled `LandingButton variant="primary"`, label and href taken verbatim from `authAction` (`landing.learner_menu.continue_learning` → "Continue Learning") | → `/lms` |
 
 - Every row except Theme closes the popover on activation.
 - Item rows are `36px` tall, `14px` text in `--landing-fg`, hover background `--landing-button-tertiary-bg-hover`.
-- **Focus model.** The card is a `menu`, but it also contains two controls that are not destinations, so the two mechanisms are scoped rather than mixed:
-  - The link rows (`My Courses`, `My Certificates`, `Account Settings`, `Log Out`) are `role="menuitem"` and form a **single roving-tabindex group**: exactly one carries `tabindex="0"`, arrow keys move between them and wrap, `Home`/`End` jump to the ends.
-  - The theme segmented control and the CTA button are **not** menu items. They sit outside the roving group as ordinary tab stops, in visual order: roving group → theme control (its three buttons are a `radiogroup`, arrow keys move within it) → CTA.
+- **Focus model.** The card is a labelled `dialog`, not a `menu`: the content mixes destination links with a theme `radiogroup` and a CTA button, which `menu` semantics cannot express. The three zones are scoped rather than mixed:
+  - The link rows (`My Courses`, `My Certificates`, `Account Settings`, `Log Out`) are plain anchors grouped by `data-slot="lm-link"` and form a **single roving-tabindex group**: exactly one carries `tabindex="0"`, arrow keys move between them and wrap, `Home`/`End` jump to the ends.
+  - The theme segmented control and the CTA button are **not** links in the roving group. They sit alongside it as ordinary tab stops, in visual order: roving group → theme control (its three buttons are a `radiogroup`, arrow keys move within it) → CTA.
   - So `Tab` moves *between* those three zones, and arrow keys move *within* whichever zone has focus. `Tab` does not step through every link row.
-  - The identity block is presentational: `aria-hidden` from the menu's perspective, not focusable, and announced instead through the trigger's `aria-label` (`Account menu, signed in as <email>`).
+  - The identity block is presentational: `aria-hidden` from the dialog's perspective, not focusable, and announced instead through the trigger's `aria-label` (`Account menu, signed in as <email>`).
   - `Escape` closes from anywhere in the card and returns focus to the trigger. Focus is trapped inside the card while open.
 
 ### FR-3 — Popover content, signed in but not a member
@@ -300,7 +300,7 @@ New keys under `landing.learner_menu` in `apps/dashboard/src/lib/utils/translati
 9. Between page load and `appInitApi` initialisation, the nav does not reflow — the skeleton occupies the avatar's final size.
 10. In the settings landing-page preview the avatar renders and the popover does not open.
 11. Keyboard, per the FR-2 focus model: the trigger is reachable by `Tab` and opens on `Enter` or `Space`; inside the card `Tab` moves between the three zones (link rows → theme control → CTA) and never steps row by row; arrow keys move within the focused zone and wrap; `Home`/`End` jump to the ends of the link group; focus stays trapped in the card; `Escape` closes from anywhere and restores focus to the trigger.
-12. A screen reader announces the trigger as "Account menu, signed in as <email>", the link rows as menu items, and the theme control as a radio group. The identity block is not announced twice.
+12. A screen reader announces the trigger as "Account menu, signed in as <email>", the link rows as links, and the theme control as a radio group. The identity block is not announced twice.
 13. The menu renders on all six producer paths in the Builder table — including the public catalog and the public course landing page, which bypass `buildOrgLandingPageProps()`.
 14. In both settings previews the trigger is not a button, no row is a link, and no interaction — pointer, `Enter`, `Space`, or programmatic `.click()` — can navigate or reach `/logout`.
 15. A signed-in learner's nav renders at most two states between first paint and ready (skeleton, then avatar), never a logged-out nav first.
@@ -308,6 +308,10 @@ New keys under `landing.learner_menu` in `apps/dashboard/src/lib/utils/translati
 17. All copy resolves through translation keys; no literal strings in components; every locale file updated.
 18. A Storybook story exists covering all states listed in the Component section.
 19. Zero regression on existing features: public catalog, public course landing page, landing-page editor, `authAction` behaviour, and the LMS sidebar menu are unaffected.
+
+## Decision Log
+
+- **2026-09-10 / PR #1091 — card is a labelled `dialog`, not a `menu`.** The original FR-2 specified `role="menu"` + `role="menuitem"` rows, but the card also contains a theme `radiogroup` and a CTA button, which `menu` semantics cannot legally contain. The pure-menu alternative (converting the theme control to `menuitemradio`) would collapse the zoned keyboard model into one APG menu list and change SR announcements away from AC-12's "radio group". Accepted: `role="dialog"` + `aria-label`, Zone 1 links as plain anchors grouped by `data-slot="lm-link"`, `radiogroup` unchanged, existing zone-trap keyboard handler untouched (still covered by AC-11). `prototypes/` intentionally still shows the old `menu` markup (out-of-scope design mocks).
 
 ## Risks and Mitigations
 

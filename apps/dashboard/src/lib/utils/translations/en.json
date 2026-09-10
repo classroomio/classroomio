@@ -7,6 +7,9 @@
       "my_certificates": "My Certificates",
       "account_settings": "Account Settings",
       "theme": "Theme",
+      "theme_light": "Light",
+      "theme_dark": "Dark",
+      "theme_system": "System",
       "continue_learning": "Continue Learning",
       "not_enrolled_note": "Not enrolled in this academy yet — learner destinations appear after joining."
     }

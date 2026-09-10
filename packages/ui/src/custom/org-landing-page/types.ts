@@ -377,6 +377,8 @@ export interface LandingLearnerAccount {
   logoutLabel: string;
   logoutHref: string;
   themeLabel: string;
+  /** Localized labels for the light/dark/system theme options. */
+  themeModeLabels?: { light: string; dark: string; system: string };
   triggerLabel: string;
   /** True while the account payload is still loading — render a skeleton trigger. */
   loading?: boolean;
