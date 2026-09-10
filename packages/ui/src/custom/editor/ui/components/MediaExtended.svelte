@@ -43,6 +43,14 @@
   let resizingPosition = $state<'left' | 'right'>('left');
   let openedMore = $state(false);
 
+  function getParentWidth(): number {
+    if (!nodeRef) return 0;
+    const parentContainer = nodeRef.closest('.edra-editor') || nodeRef.closest('.ProseMirror') || nodeRef.parentElement;
+    return parentContainer
+      ? (parentContainer as HTMLElement).clientWidth || (parentContainer as HTMLElement).offsetWidth
+      : 0;
+  }
+
   function handleResizingPosition(e: MouseEvent, position: 'left' | 'right') {
     startResize(e);
     resizingPosition = position;
@@ -52,26 +60,28 @@
     e.preventDefault();
     resizing = true;
     resizingInitialMouseX = e.clientX;
-    if (mediaRef && nodeRef?.parentElement) {
+    const parentWidth = getParentWidth();
+    if (mediaRef && parentWidth > 0) {
       const currentWidth = mediaRef.offsetWidth;
-      const parentWidth = nodeRef.parentElement.offsetWidth;
       resizingInitialWidthPercent = (currentWidth / parentWidth) * 100;
     }
   }
 
   function resize(e: MouseEvent) {
-    if (!resizing || !nodeRef?.parentElement) return;
+    if (!resizing || !nodeRef) return;
+    const parentWidth = getParentWidth();
+    if (parentWidth <= 0) return;
+
     let dx = e.clientX - resizingInitialMouseX;
     if (resizingPosition === 'left') {
       dx = resizingInitialMouseX - e.clientX;
     }
-    const parentWidth = nodeRef.parentElement.offsetWidth;
     const deltaPercent = (dx / parentWidth) * 100;
     const newWidthPercent = Math.max(
       Math.min(resizingInitialWidthPercent + deltaPercent, maxWidthPercent),
       minWidthPercent
     );
-    updateAttributes({ width: `${newWidthPercent}%` });
+    updateAttributes({ width: `${Math.round(newWidthPercent)}%` });
   }
 
   function endResize() {
@@ -85,26 +95,28 @@
     resizing = true;
     resizingPosition = position;
     resizingInitialMouseX = e.touches[0].clientX;
-    if (mediaRef && nodeRef?.parentElement) {
+    const parentWidth = getParentWidth();
+    if (mediaRef && parentWidth > 0) {
       const currentWidth = mediaRef.offsetWidth;
-      const parentWidth = nodeRef.parentElement.offsetWidth;
       resizingInitialWidthPercent = (currentWidth / parentWidth) * 100;
     }
   }
 
   function handleTouchMove(e: TouchEvent) {
-    if (!resizing || !nodeRef?.parentElement) return;
+    if (!resizing || !nodeRef) return;
+    const parentWidth = getParentWidth();
+    if (parentWidth <= 0) return;
+
     let dx = e.touches[0].clientX - resizingInitialMouseX;
     if (resizingPosition === 'left') {
       dx = resizingInitialMouseX - e.touches[0].clientX;
     }
-    const parentWidth = nodeRef.parentElement.offsetWidth;
     const deltaPercent = (dx / parentWidth) * 100;
     const newWidthPercent = Math.max(
       Math.min(resizingInitialWidthPercent + deltaPercent, maxWidthPercent),
       minWidthPercent
     );
-    updateAttributes({ width: `${newWidthPercent}%` });
+    updateAttributes({ width: `${Math.round(newWidthPercent)}%` });
   }
 
   function handleTouchEnd() {
@@ -114,9 +126,6 @@
   }
 
   onMount(() => {
-    // Attach id to nodeRef
-    nodeRef = document.getElementById('resizable-container-media') as HTMLDivElement;
-
     // Mouse events
     window.addEventListener('mousemove', resize);
     window.addEventListener('mouseup', endResize);
@@ -139,26 +148,39 @@
 
 {#key node.attrs.align}
   <NodeViewWrapper
-    id="resizable-container-media"
     class={cn(
-      'ui:relative ui:my-2 ui:flex ui:flex-col ui:rounded-md ui:border-2 ui:border-transparent',
+      'ui:relative ui:my-2 ui:flex ui:max-w-full ui:flex-col ui:rounded-md ui:border-2 ui:border-transparent ui:box-border',
       selected ? 'ui:border-muted-foreground' : '',
-      node.attrs.align === 'left' && 'ui:left-0 ui:-translate-x-0',
-      node.attrs.align === 'center' && 'ui:left-1/2 ui:-translate-x-1/2',
-      node.attrs.align === 'right' && 'ui:left-full ui:-translate-x-full'
+      node.attrs.align === 'left' && 'ui:mr-auto ui:ml-0',
+      node.attrs.align === 'center' && 'ui:mx-auto',
+      node.attrs.align === 'right' && 'ui:ml-auto ui:mr-0'
     )}
-    style={`width: ${node.attrs.width}`}
+    style={`width: ${node.attrs.width || '100%'}; max-width: 100%;`}
   >
-    <div class={cn('ui:relative ui:flex ui:flex-col ui:rounded-md group', resizing && '')}>
+    <div
+      bind:this={nodeRef}
+      class={cn('ui:group ui:relative ui:flex ui:w-full ui:max-w-full ui:flex-col ui:rounded-md', resizing && '')}
+    >
       {@render children()}
 
+      {#if node.attrs.title !== null && node.attrs.title !== undefined && node.attrs.title !== ''}
+        <input
+          type="text"
+          aria-label="Image caption"
+          value={node.attrs.title}
+          oninput={(e) => updateAttributes({ title: (e.target as HTMLInputElement).value })}
+          placeholder="Add caption..."
+          class="ui:mt-1 ui:w-full ui:bg-transparent ui:text-center ui:text-xs ui:text-muted-foreground ui:outline-none"
+        />
+      {/if}
+
       {#if editor.isEditable}
+        <!-- Left resize handle -->
         <div
           role="button"
           tabindex="0"
-          aria-label="Back"
-          class="ui:absolute ui:inset-y-0 ui:z-20 ui:flex ui:w-[25px] ui:cursor-col-resize ui:items-center ui:justify-start ui:p-2"
-          style="left: 0px"
+          aria-label="Resize left"
+          class="ui:absolute ui:inset-y-0 ui:left-0 ui:z-20 ui:flex ui:w-5 ui:cursor-col-resize ui:items-center ui:justify-start ui:p-1"
           onmousedown={(event: MouseEvent) => {
             handleResizingPosition(event, 'left');
           }}
@@ -167,16 +189,21 @@
           }}
         >
           <div
-            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all ui:group-hover:opacity-100"
+            class={cn(
+              'ui:bg-primary ui:z-20 ui:h-12 ui:w-1.5 ui:rounded-full ui:shadow-sm ui:transition-all',
+              resizing && resizingPosition === 'left'
+                ? 'ui:scale-110 ui:opacity-100'
+                : 'ui:opacity-0 ui:group-hover:opacity-100'
+            )}
           ></div>
         </div>
 
+        <!-- Right resize handle -->
         <div
           role="button"
           tabindex="0"
-          aria-label="Back"
-          class="ui:absolute ui:inset-y-0 ui:z-20 ui:flex ui:w-[25px] ui:cursor-col-resize ui:items-center ui:justify-end ui:p-2"
-          style="right: 0px"
+          aria-label="Resize right"
+          class="ui:absolute ui:inset-y-0 ui:right-0 ui:z-20 ui:flex ui:w-5 ui:cursor-col-resize ui:items-center ui:justify-end ui:p-1"
           onmousedown={(event: MouseEvent) => {
             handleResizingPosition(event, 'right');
           }}
@@ -185,12 +212,19 @@
           }}
         >
           <div
-            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all ui:group-hover:opacity-100"
+            class={cn(
+              'ui:bg-primary ui:z-20 ui:h-12 ui:w-1.5 ui:rounded-full ui:shadow-sm ui:transition-all',
+              resizing && resizingPosition === 'right'
+                ? 'ui:scale-110 ui:opacity-100'
+                : 'ui:opacity-0 ui:group-hover:opacity-100'
+            )}
           ></div>
         </div>
+
+        <!-- Toolbar controls -->
         <div
           class={cn(
-            'ui:bg-background/50 ui:absolute ui:-top-2 ui:left-[calc(50%-3rem)] ui:flex ui:items-center ui:gap-1 ui:rounded ui:border ui:p-1 ui:opacity-0 ui:backdrop-blur-sm ui:transition-opacity',
+            'ui:bg-background/80 ui:absolute ui:-top-10 ui:left-1/2 ui:z-30 ui:flex ui:-translate-x-1/2 ui:items-center ui:gap-1 ui:rounded-md ui:border ui:p-1 ui:shadow-md ui:backdrop-blur-sm ui:opacity-0 ui:transition-opacity',
             !resizing && 'ui:group-hover:opacity-100',
             openedMore && 'ui:opacity-100'
           )}
@@ -229,10 +263,15 @@
             <DropdownMenu.Content align="start" alignOffset={-90} class="ui:mt-1 ui:overflow-auto ui:text-sm">
               <DropdownMenu.Item
                 onclick={() => {
-                  if (node.attrs.title === null || node.attrs.title.trim() === '')
+                  if (node.attrs.title === null || node.attrs.title === undefined || node.attrs.title.trim() === '') {
                     updateAttributes({
                       title: 'Image Caption'
                     });
+                  } else {
+                    updateAttributes({
+                      title: null
+                    });
+                  }
                 }}
               >
                 <Captions class="ui:mr-1 ui:size-4" /> Caption
@@ -251,7 +290,7 @@
                   });
                 }}
               >
-                <Fullscreen class="ui:mr-1 ui:size-4" /> Full Screen
+                <Fullscreen class="ui:mr-1 ui:size-4" /> Full Width
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 onclick={() => {
