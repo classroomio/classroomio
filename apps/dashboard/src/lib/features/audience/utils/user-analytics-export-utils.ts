@@ -19,7 +19,7 @@ export function buildUserAnalyticsExportDocument(
   analytics: UserAnalytics,
   headers: UserAnalyticsExportHeaders
 ): ExportDocument<UserCourseWithStats> {
-  const learner = analytics.user?.fullname || analytics.user?.email || 'learner';
+  const learner = analytics.user?.fullName || analytics.user?.email || 'learner';
 
   return {
     filename: `${learner}-progress-${new Date().toISOString().slice(0, 10)}`,
