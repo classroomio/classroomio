@@ -1,0 +1,82 @@
+---
+title: Exports
+description: Which formats ClassroomIO exports, what each export contains, and the limits that apply.
+last_reviewed: '2026-09-11'
+---
+
+Anywhere you see an **Export as CSV** button, the dropdown beside it offers the other formats. Files are produced in your browser, so there is no job to wait for and no email to watch for.
+
+## Formats
+
+| Format    | Extension | Use it for                                               |
+| --------- | --------- | -------------------------------------------------------- |
+| **CSV**   | `.csv`    | Spreadsheets, imports into other systems. The default.   |
+| **Excel** | `.xlsx`   | Opening directly in Excel with the columns already typed |
+| **PDF**   | `.pdf`    | Circulating a fixed list for review or sign-off          |
+| **HTML**  | `.html`   | Sharing a readable page without a spreadsheet            |
+
+**PDF is offered up to 2,000 rows.** Above that it becomes unreadable and the option is disabled, with the row limit shown — use CSV or Excel instead.
+
+## What each export contains
+
+The same progress data is available three ways, depending on how you want it sliced.
+
+### Every student, summarised
+
+**Audience → Export.** One row per student, up to 20,000 students.
+
+| Column                    |                                                   |
+| ------------------------- | ------------------------------------------------- |
+| Name, Email               |                                                   |
+| Membership status         | Active, deactivated or archived                   |
+| Invite status             | Active, pending, expired or revoked               |
+| Courses enrolled          | How many of your courses they are in              |
+| Courses completed         | How many they have finished                       |
+| Progress                  | Percentage across everything they are enrolled in |
+| Last login, Last activity |                                                   |
+| Joined                    |                                                   |
+
+This is the one to start from. It is the only export carrying progress for everyone in a single file, and the only one that follows the [Audience filters](/reference/audience#filters) — so filtering to your dormant students and exporting gives you exactly that list.
+
+### One student, course by course
+
+**Audience → a student's name → Export.** One row per course that student is enrolled in: lessons completed out of total, exercises completed out of total, progress, and average grade.
+
+Use it to see _which_ course someone stalled in.
+
+### One course, all its students
+
+**A course → Analytics → Export.** One row per student in that course: lessons completed out of total, exercises submitted out of total, progress, average grade, and when they were last seen.
+
+Use it to see _who_ is stalling in a course.
+
+### Grades and compliance
+
+- **A course → Marks → Export** — grades per student.
+- **Compliance → Export** — one row per student-course obligation, with status, due date and valid-until date.
+
+## How progress is calculated
+
+Progress counts **lessons and exercises together**: everything completed, divided by everything there is to complete. It matches the figure the student sees on their own course card.
+
+A student who has watched every lesson but submitted no exercises is **not** counted as complete.
+
+## Limits
+
+|                 |                    |
+| --------------- | ------------------ |
+| Audience export | 20,000 students    |
+| PDF             | 2,000 rows         |
+| Other formats   | No fixed row limit |
+
+Exports respect what is on screen: whatever you have filtered or selected is what you get.
+
+:::note[No single all-students, all-courses file]
+There is no one export combining every student with every course, row by row. For that level of detail across the whole academy, export one course at a time.
+:::
+
+## Related guides
+
+- [Audience](/reference/audience) — columns, statuses and filters
+- [Manage Your Audience](/manage-students/manage-your-audience) — filtering, bulk actions, import and export
+- [Find and Remove Inactive Learners](/manage-students/find-and-remove-inactive-learners) — export as the review step before acting

@@ -1,28 +1,59 @@
 ---
 title: Audience
-description: Manage all students in your organization — view status, assign to courses, and handle invites from one place.
+description: Manage all students in your organization — view usage, filter, assign to courses, and handle invites from one place.
+last_reviewed: '2026-09-10'
 ---
 
-**Audience** is your org-wide student directory. It shows every person who belongs to your organization — whether they signed up themselves, accepted a course invite, or were added directly. From here you can search, sort, bulk-assign to courses, and manage pending invites.
+**Audience** is your org-wide student directory. It shows every person who belongs to your organization — whether they signed up themselves, accepted a course invite, or were added directly. From here you can search, filter by usage, sort, act on students in bulk, export, and manage pending invites.
 
 For step-by-step tasks, see [Manage Your Audience](/manage-students/manage-your-audience).
 
 :::info[Plan limits]
-Your plan sets a maximum audience size. When you reach the limit, a banner appears and you cannot invite more students until you upgrade or remove existing members.
+Your plan sets a maximum audience size. When you reach the limit, a banner appears and you cannot invite more students until you upgrade or free up seats. **Archiving a student frees their seat**; deactivating one does not. See [Membership status](#membership-status).
 :::
 
 ## What Audience shows
 
 Audience is separate from course-level **People**. Course People shows who is enrolled in a specific course. Audience shows everyone in your organization regardless of which courses they have joined.
 
-| Column          | What it means                            |
-| --------------- | ---------------------------------------- |
-| **Name**        | Student's display name                   |
-| **Email**       | Account email address                    |
-| **Status**      | Current membership state (see below)     |
-| **Date Joined** | When the student joined the organization |
+| Column            | What it means                                                              |
+| ----------------- | -------------------------------------------------------------------------- |
+| **Name**          | Student's display name                                                     |
+| **Email**         | Account email address                                                      |
+| **Status**        | Membership state, or invite state for someone who has not accepted yet     |
+| **Enrollment**    | Courses completed out of courses they are enrolled in, for example `1 / 3` |
+| **Progress**      | Percentage completed across everything they are enrolled in                |
+| **Last Login**    | When they last signed in                                                   |
+| **Last Activity** | When they were last active in a course                                     |
+| **Date Joined**   | When the student joined the organization                                   |
 
-### Status values
+### Enrollment and Progress are not the same thing
+
+**Enrollment** counts whole courses. **Progress** is a percentage across all the work in them.
+
+A student showing `0 / 2` and `90%` has finished neither course but is nearly through both. One showing `1 / 2` and `20%` has finished a short course and not started a long one. Read them together.
+
+Progress counts **lessons and exercises**, matching the figure the student sees on their own course card. Someone who has watched every lesson but submitted no exercises is not counted as complete.
+
+## Status values
+
+A student has two independent kinds of status. Someone can be **Archived** and still have a **Pending** invite.
+
+### Membership status
+
+Applies to people who belong to your organization.
+
+| Status          | Meaning                                             | Plan seat        |
+| --------------- | --------------------------------------------------- | ---------------- |
+| **Active**      | Full access to your academy and their courses       | Uses a seat      |
+| **Deactivated** | Access removed, record kept. Reversible at any time | **Uses a seat**  |
+| **Archived**    | Access removed, record kept. Reversible at any time | **Frees a seat** |
+
+Archive is the one to use for dormant students, because it gives you the seat back. Deactivate suspends someone you expect to return.
+
+### Invite status
+
+Applies to people who have been invited but do not have an account yet.
 
 | Status      | Meaning                                                       |
 | ----------- | ------------------------------------------------------------- |
@@ -31,9 +62,42 @@ Audience is separate from course-level **People**. Course People shows who is en
 | **Expired** | The invite link passed its expiry before the student accepted |
 | **Revoked** | The invite was manually revoked by an admin                   |
 
+## Filters
+
+Every filter combines with the others, and your selection lives in the page address — so you can bookmark a view or send it to a colleague and they see the same list.
+
+| Filter            | Options                                                  |
+| ----------------- | -------------------------------------------------------- |
+| **Last login**    | Not seen in 7, 30, 90 or 180 days · Never logged in      |
+| **Last activity** | Not seen in 7, 30, 90 or 180 days · No activity recorded |
+| **Enrollment**    | Enrolled · Not enrolled                                  |
+| **Completion**    | Not started · In progress · Completed                    |
+| **Status**        | Active · Deactivated · Archived                          |
+| **Invite status** | Active · Pending · Expired · Revoked                     |
+
+:::note[The time filters find dormant students, not recent ones]
+"90 days" means **not seen in 90 days**. These are staleness thresholds, so they return the people you have not heard from — not the people who were here recently.
+:::
+
+Students who joined very recently are held out of the staleness filters by default, so someone who signed up last week is not reported as dormant before they have had a chance to log in.
+
+**Completion** describes only students who are enrolled in something. Someone with no enrolments at all matches none of the three options — use **Enrollment → Not enrolled** to find them.
+
+### Saved views
+
+One click for the questions asked most often:
+
+- All learners
+- Never logged in
+- Inactive 90 days
+- Inactive 180 days
+- Enrolled but not started
+- Archived
+
 ## Related guides
 
-- [Manage Your Audience](/manage-students/manage-your-audience) — assign students to courses, manage invites, and import students
+- [Manage Your Audience](/manage-students/manage-your-audience) — filter, act in bulk, import and export
+- [Find and Remove Inactive Learners](/manage-students/find-and-remove-inactive-learners) — the full review-and-archive workflow
+- [Exports](/reference/exports) — formats, limits, and what each export contains
 - [How Course Enrollment Works](/manage-students/course-enrollment) — how students join courses
-- [Invite Students](/manage-students/invite-students) — send course-specific invites
 - [Roles and Permissions](/organization-and-team/roles-and-permissions) — difference between students and team members
