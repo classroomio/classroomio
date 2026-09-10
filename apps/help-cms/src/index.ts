@@ -13,6 +13,7 @@ interface Env {
 }
 
 const STATE_COOKIE = 'help_cms_auth_state';
+const OPENER_ORIGIN_COOKIE = 'help_cms_auth_opener';
 const OAUTH_SCOPE = 'repo';
 
 function randomState(): string {
@@ -33,24 +34,45 @@ function readCookie(cookieHeader: string | null, name: string): string | null {
   return null;
 }
 
-function isAllowedOrigin(request: Request, env: Env): boolean {
+function decodeCookieValue(value: string | null): string | null {
+  if (!value) return null;
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
+}
+
+function getRequestOrigin(request: Request): string | null {
+  const originOrReferer = request.headers.get('origin') ?? request.headers.get('referer');
+  if (!originOrReferer) return null;
+
+  try {
+    return new URL(originOrReferer).origin;
+  } catch {
+    return null;
+  }
+}
+
+function isAllowedOrigin(origin: string, env: Env): boolean {
   const allowed = (env.ALLOWED_ORIGINS ?? '')
     .split(',')
-    .map((origin) => origin.trim())
+    .map((o) => o.trim())
     .filter(Boolean);
   if (allowed.length === 0) return true;
 
-  // Fails open when Referer/Origin is missing (can happen legitimately) — this
-  // is defense-in-depth only; GitHub's own write-access check is the real boundary.
-  const referer = request.headers.get('referer') ?? request.headers.get('origin');
-  if (!referer) return true;
-
-  return allowed.some((origin) => referer.startsWith(origin));
+  return allowed.includes(origin);
 }
 
 function handleAuth(request: Request, env: Env): Response {
-  if (!isAllowedOrigin(request, env)) {
+  // Reject rather than fail open when the caller's origin can't be determined.
+  const origin = getRequestOrigin(request);
+  if (!origin || !isAllowedOrigin(origin, env)) {
     return new Response('Forbidden', { status: 403 });
+  }
+
+  if (!env.GITHUB_CLIENT_ID) {
+    return new Response('Server misconfigured: GITHUB_CLIENT_ID is not set', { status: 500 });
   }
 
   const url = new URL(request.url);
@@ -71,13 +93,15 @@ function handleAuth(request: Request, env: Env): Response {
     'Set-Cookie',
     `${STATE_COOKIE}=${state}; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=600; Path=/callback`
   );
+  headers.append(
+    'Set-Cookie',
+    `${OPENER_ORIGIN_COOKIE}=${encodeURIComponent(origin)}; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=600; Path=/callback`
+  );
 
   return new Response(null, { status: 302, headers });
 }
 
-function renderHandshakePage(message: string): Response {
-  // Waits up to 300ms for the opener's echo (standard Decap/Sveltia handshake),
-  // else falls back to posting with '*' for CMS builds that skip that step.
+function renderHandshakePage(message: string, targetOrigin: string | null): Response {
   const html = `<!doctype html>
 <html>
   <body>
@@ -85,24 +109,10 @@ function renderHandshakePage(message: string): Response {
     <script>
       (function () {
         var statusEl = document.getElementById('status');
-        var sent = false;
+        var targetOrigin = ${JSON.stringify(targetOrigin)};
 
         function setStatus(text) {
           statusEl.textContent = text;
-        }
-
-        function sendResult(targetOrigin) {
-          if (sent) return;
-          sent = true;
-          try {
-            window.opener.postMessage(${JSON.stringify(message)}, targetOrigin);
-            setStatus('Signed in. Closing this window…');
-            setTimeout(function () {
-              window.close();
-            }, 250);
-          } catch (err) {
-            setStatus('Could not communicate with the opener window: ' + err.message);
-          }
         }
 
         if (!window.opener) {
@@ -110,25 +120,20 @@ function renderHandshakePage(message: string): Response {
           return;
         }
 
-        window.addEventListener(
-          'message',
-          function receiveMessage(e) {
-            window.removeEventListener('message', receiveMessage, false);
-            sendResult(e.origin);
-          },
-          false
-        );
-
-        try {
-          window.opener.postMessage('authorizing:github', '*');
-        } catch (err) {
-          setStatus('Could not reach the opener window: ' + err.message);
+        if (!targetOrigin) {
+          setStatus('Could not verify the CMS origin for this sign-in attempt. Please try again.');
           return;
         }
 
-        setTimeout(function () {
-          sendResult('*');
-        }, 300);
+        try {
+          window.opener.postMessage(${JSON.stringify(message)}, targetOrigin);
+          setStatus('Signed in. Closing this window…');
+          setTimeout(function () {
+            window.close();
+          }, 250);
+        } catch (err) {
+          setStatus('Could not communicate with the opener window: ' + err.message);
+        }
       })();
     </script>
   </body>
@@ -142,9 +147,25 @@ async function handleCallback(request: Request, env: Env): Promise<Response> {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const cookieState = readCookie(request.headers.get('cookie'), STATE_COOKIE);
+  const rawOpenerOrigin = readCookie(request.headers.get('cookie'), OPENER_ORIGIN_COOKIE);
+  const openerOrigin = decodeCookieValue(rawOpenerOrigin);
 
-  if (!code || !state || !cookieState || state !== cookieState) {
-    return renderHandshakePage('authorization:github:error:{"message":"Invalid or missing OAuth state"}');
+  const secureAttr = url.protocol === 'https:' ? 'Secure; ' : '';
+  const finish = (message: string): Response => {
+    const response = renderHandshakePage(message, openerOrigin);
+    response.headers.append(
+      'Set-Cookie',
+      `${STATE_COOKIE}=; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=0; Path=/callback`
+    );
+    response.headers.append(
+      'Set-Cookie',
+      `${OPENER_ORIGIN_COOKIE}=; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=0; Path=/callback`
+    );
+    return response;
+  };
+
+  if (!code || !state || !cookieState || state !== cookieState || !openerOrigin) {
+    return finish('authorization:github:error:{"message":"Invalid or missing OAuth state"}');
   }
 
   const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
@@ -158,26 +179,19 @@ async function handleCallback(request: Request, env: Env): Promise<Response> {
   });
 
   if (!tokenResponse.ok) {
-    return renderHandshakePage('authorization:github:error:{"message":"GitHub token exchange failed"}');
+    return finish('authorization:github:error:{"message":"GitHub token exchange failed"}');
   }
 
   const body = (await tokenResponse.json()) as { access_token?: string; error?: string };
 
   if (!body.access_token) {
-    return renderHandshakePage(
+    return finish(
       `authorization:github:error:${JSON.stringify(JSON.stringify({ message: body.error ?? 'No access token returned' }))}`
     );
   }
 
   const payload = JSON.stringify({ token: body.access_token, provider: 'github' });
-  const response = renderHandshakePage(`authorization:github:success:${payload}`);
-  const secureAttr = url.protocol === 'https:' ? 'Secure; ' : '';
-  response.headers.append(
-    'Set-Cookie',
-    `${STATE_COOKIE}=; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=0; Path=/callback`
-  );
-
-  return response;
+  return finish(`authorization:github:success:${payload}`);
 }
 
 export default {

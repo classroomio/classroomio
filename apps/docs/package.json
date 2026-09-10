@@ -7,6 +7,7 @@
     "build": "blume build && node scripts/package-assets.mjs",
     "preview": "pnpm run build && wrangler dev --port 4173",
     "deploy": "pnpm run build && wrangler deploy",
+    "prevalidate": "node scripts/fetch-openapi.mjs",
     "validate": "blume validate",
     "check-stale": "node scripts/check-stale-docs.mjs"
   },

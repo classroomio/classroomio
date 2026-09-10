@@ -91,9 +91,10 @@ both while editing and on the live page.
 
 ## Two things the CMS can't do yet
 
-- **Adding a brand-new page, or reordering entire sections, needs a developer follow-up.** The
-  CMS can edit any existing page freely, but a new page won't show up in the site's sidebar until
-  a developer adds it to `navigation.sidebar` in `blume.config.ts`. Mention this when you submit a
-  new page so someone picks it up.
+- **Reordering sections, or adding a page to a section with no sidebar group yet, needs a
+  developer follow-up.** Adding a new page to an *existing* section is automatic — submitting it
+  through the CMS opens a pull request, and a workflow registers it in the site's sidebar for you.
+  Mention it when you submit a page in an unfamiliar section, in case it's the one case that still
+  needs a developer.
 - **Pages with call-out boxes** may not render fully inside the CMS's editor. Always check the
   pull request's preview link rather than trusting the in-CMS preview for these pages.

@@ -43,9 +43,10 @@ position in that array; a page's `sidebar: { order: N }` frontmatter has no effe
 
 Non-technical writers can edit existing pages through a browser-based CMS (Sveltia) at
 `classroomio.com/help/admin` instead of cloning the repo — see `CMS_GUIDE.md` for how to log in,
-edit, and submit changes for review. Editing existing pages needs no config change; adding a new
-page or reordering groups still needs the `navigation.sidebar` follow-up described above, which
-stays a developer task.
+edit, and submit changes for review. Editing existing pages needs no config change. The PR workflow
+(`register` job in `.github/workflows/help-cms.yml`, via `scripts/register-sidebar-pages.mjs`)
+automatically registers a new page into its matching `navigation.sidebar` group. A developer is
+only needed to reorder pages/groups, or if a new page's section has no matching sidebar group yet.
 
 ## How it's served
 

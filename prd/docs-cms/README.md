@@ -153,10 +153,10 @@ An agent implementing this PRD should produce:
 - ~~Content root & structure?~~ → `apps/help/content/help`, seven top-level sections (listed in 6.5).
 - ~~`.md` vs `.mdx`?~~ → **100% `.mdx`.**
 - ~~Ordering mechanism?~~ → **Explicit `navigation.sidebar` in `blume.config.ts`** (not numeric prefixes). This reframes the ordering requirement entirely — see 6.4.
+- ~~Add/reorder-page handling (6.4)?~~ → **Automated, beyond the v1 approach originally recommended below.** The `register` job in `.github/workflows/help-cms.yml` runs `apps/help/scripts/register-sidebar-pages.mjs` on every CMS-authored PR, appending a new page to its matching `navigation.sidebar` group automatically. Still a developer task: reordering pages/groups, and a new page in a section with no existing sidebar group yet (the script leaves that case unregistered and logs a warning).
 
 **Still open (decide before/while building):**
 - **Scope:** confirm `apps/help` only for v1 (recommended — its writers are the non-technical audience). `apps/docs` is developer-facing; extend later only if wanted.
-- **Add/reorder-page handling (6.4):** confirm the v1 approach — writers edit existing pages via CMS; developers handle new-page registration in `navigation.sidebar`.
 - **OAuth backend:** custom OAuth proxy Worker (recommended) vs. GitHub App?
 - **Preview:** can Cloudflare's connected-repo integration already emit branch preview URLs (dashboard-side, not visible in-repo), or must a preview job be built?
 - **Draft support:** verify whether `blume@1.2.0` honors a `draft` frontmatter flag; if not, use the unmerged PR as the draft state.

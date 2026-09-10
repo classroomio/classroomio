@@ -40,8 +40,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          persist-credentials: false
 
-      - run: git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
+      # Best-effort: covers a base.sha orphaned by a main force-push/rebase,
+      # which fetch-depth: 0 (all *current* branch history) wouldn't recover.
+      - run: git fetch origin ${{ github.event.pull_request.base.sha }} || true
 
       - uses: pnpm/action-setup@v4
 
@@ -62,12 +66,16 @@ jobs:
 
       - name: Commit and push
         if: steps.register.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps/help/blume.config.ts
           git commit -m "chore(help): register new page(s) in navigation.sidebar"
-          git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
+          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c http.extraheader="AUTHORIZATION: basic $auth" push origin "HEAD:refs/heads/$HEAD_REF"
 
   preview:
     name: Build and deploy preview
@@ -81,6 +89,8 @@ jobs:
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: pnpm/action-setup@v4
 
@@ -94,11 +104,16 @@ jobs:
 
       - run: pnpm --filter @cio/help build
 
+      # Installed independently of the PR's own devDependency so a PR can't swap in a
+      # malicious "wrangler" for the step below, where the Cloudflare token is exposed.
+      - name: Install pinned wrangler
+        run: npm install --no-save --prefix "$RUNNER_TEMP/wrangler" wrangler@4.86.0
+
       - name: Upload Workers preview version
         id: deploy
         working-directory: apps/help
         run: |
-          pnpm exec wrangler versions upload \
+          "$RUNNER_TEMP/wrangler/node_modules/.bin/wrangler" versions upload \
             --preview-alias "pr-${{ github.event.pull_request.number }}" \
             | tee wrangler-output.txt
           url=$(grep -Eo 'https://[a-zA-Z0-9.-]+\.workers\.dev' wrangler-output.txt | head -n1)
