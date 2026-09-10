@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>App Directory · Zapier · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="zapier.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="app">
+      <div class="mobile-backdrop" id="mobileBackdrop"></div>
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">A</div><div class="brand-name">Acme Academy</div></div>
+
+        <div class="nav-label">Home</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses<span class="nav-tail tnum">12</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Audience<span class="nav-tail tnum">1,204</span></a>
+
+        <div class="nav-label">Automation</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17h6"/></svg>MCP</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>API</a>
+        <a class="nav-item active" href="zapier-connect.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Zapier</a>
+
+        <a class="nav-item nav-pinned" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <button class="icon-btn mobile-nav-btn" id="mobileNavBtn" title="Menu" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <a class="icon-btn" href="zapier-connect.html" onclick="if (history.length > 1) { event.preventDefault(); history.back(); }" title="Back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg></a>
+          <nav class="crumbs"><a href="automation-overview.html">Automation</a><span class="sep">/</span><a href="zapier-connect.html">Zapier</a><span class="sep">/</span><span class="here">App Directory</span></nav>
+          <div class="top-actions">
+            <a class="btn btn-sm btn-outline" href="index.html">Prototype map</a>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1080px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">App Directory</h1>
+                <p class="page-sub">Browse the apps you can connect to ClassroomIO through Zapier.</p>
+              </div>
+            </div>
+
+            <div class="zi-directory-shell">
+              <nav class="zi-dir-sidebar">
+                <div class="zi-dir-search sm">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  <input type="text" id="dirSearch" placeholder="Search apps…" autocomplete="off" />
+                </div>
+
+                <button class="zi-dir-filter-toggle" id="filterToggle" type="button" aria-expanded="false">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+                  <span>Filters</span>
+                  <span class="zi-dir-filter-count" id="filterCount" hidden></span>
+                  <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+
+                <div class="zi-dir-filter-panel" id="filterPanel">
+                  <div>
+                    <div class="zi-dir-group-label">Discover</div>
+                    <button class="zi-dir-filter on" data-quick="all" type="button"><span>All apps</span><span class="n" id="countAll"></span></button>
+                    <button class="zi-dir-filter" data-quick="popular" type="button"><span>Popular</span><span class="n" id="countPopular"></span></button>
+                    <button class="zi-dir-filter" data-quick="recent" type="button"><span>Recently added</span><span class="n" id="countRecent"></span></button>
+                  </div>
+                  <div>
+                    <div class="zi-dir-group-label">Categories</div>
+                    <div id="categoryFilters"></div>
+                  </div>
+                </div>
+              </nav>
+
+              <div>
+                <div class="zi-dir-toolbar">
+                  <div class="zi-dir-count" id="dirCount"></div>
+                  <div class="seg-toggle" id="sortToggle">
+                    <button class="on" data-sort="popular" type="button">Popular</button>
+                    <button data-sort="az" type="button">A–Z</button>
+                  </div>
+                </div>
+
+                <div class="zi-app-card-grid" id="appGrid"></div>
+
+                <button class="btn btn-outline zi-see-more" id="seeMoreBtn" type="button" hidden>
+                  View more apps
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                </button>
+
+                <div class="zi-dir-empty" id="dirEmpty" hidden>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  <div class="t">No apps match your search</div>
+                  <div class="d">Try a different name, or connect ClassroomIO to Zapier directly. Zapier's full directory has 6,000+ apps beyond what's shown here.</div>
+                </div>
+
+                <div class="card zi-dir-more" id="dirMore" hidden>
+                  <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+                  <div style="flex:1">
+                    <div style="font-size:13px;font-weight:600">That's every app in this sample</div>
+                    <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px" id="dirMoreCopy">Zapier connects ClassroomIO to 6,000+ apps in total. Connect your account and search for any app from inside Zapier.</div>
+                  </div>
+                  <a class="btn btn-outline btn-sm" href="oauth-consent.html">Connect on Zapier</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="proto.js"></script>
+    <script src="apps-catalog.js"></script>
+    <script>
+      var PAGE_SIZE = 18;
+      var qp = new URLSearchParams(location.search);
+      var state = { quick: 'all', category: qp.get('category') || 'all', q: qp.get('q') || '', sort: 'popular', visibleCount: PAGE_SIZE };
+
+      var slugs = Object.keys(ZI.APPS);
+      document.getElementById('dirMoreCopy').textContent =
+        'You’ve seen all ' + slugs.length + ' apps in this directory. Zapier connects ClassroomIO to 6,000+ apps in total. Connect your account and search for any of them from inside Zapier.';
+      document.getElementById('dirSearch').value = state.q;
+
+      document.getElementById('countAll').textContent = slugs.length;
+      document.getElementById('countPopular').textContent = slugs.filter(function (s) { return ZI.APPS[s].popular; }).length;
+      document.getElementById('countRecent').textContent = slugs.filter(function (s) { return ZI.APPS[s].recent; }).length;
+
+      var catWrap = document.getElementById('categoryFilters');
+      ZI.CATEGORIES.filter(function (c) { return c.key !== 'all'; }).forEach(function (cat) {
+        var count = slugs.filter(function (s) { return ZI.APPS[s].category === cat.key; }).length;
+        if (!count) return;
+        var btn = document.createElement('button');
+        btn.className = 'zi-dir-filter';
+        btn.type = 'button';
+        btn.dataset.category = cat.key;
+        btn.innerHTML = '<span>' + cat.label + '</span><span class="n">' + count + '</span>';
+        btn.addEventListener('click', function () {
+          state.category = state.category === cat.key ? 'all' : cat.key;
+          state.visibleCount = PAGE_SIZE;
+          render();
+          closeFilterPanelOnMobile();
+        });
+        catWrap.appendChild(btn);
+      });
+
+      document.querySelectorAll('[data-quick]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.quick = btn.dataset.quick;
+          state.category = 'all';
+          state.visibleCount = PAGE_SIZE;
+          render();
+          closeFilterPanelOnMobile();
+        });
+      });
+
+      // Mobile filter drawer: the Discover + Categories lists live inside a
+      // panel that's collapsed by default on phone widths, opened by this
+      // toggle. A small badge on the toggle shows whether a filter is
+      // currently narrowing the results, so it's obvious at a glance even
+      // while collapsed.
+      var filterToggle = document.getElementById('filterToggle');
+      var filterPanel = document.getElementById('filterPanel');
+      var filterCount = document.getElementById('filterCount');
+      filterToggle.addEventListener('click', function () {
+        var isOpen = filterPanel.classList.toggle('open');
+        filterToggle.classList.toggle('open', isOpen);
+        filterToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      function closeFilterPanelOnMobile() {
+        if (window.innerWidth > 860) return;
+        filterPanel.classList.remove('open');
+        filterToggle.classList.remove('open');
+        filterToggle.setAttribute('aria-expanded', 'false');
+      }
+      function updateFilterCount() {
+        var active = (state.category !== 'all' ? 1 : 0) + (state.quick !== 'all' ? 1 : 0);
+        filterCount.hidden = active === 0;
+        filterCount.textContent = active;
+      }
+
+      document.getElementById('dirSearch').addEventListener('input', function (e) {
+        state.q = e.target.value.trim();
+        state.visibleCount = PAGE_SIZE;
+        render();
+      });
+
+      document.querySelectorAll('#sortToggle [data-sort]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.sort = btn.dataset.sort;
+          state.visibleCount = PAGE_SIZE;
+          document.querySelectorAll('#sortToggle [data-sort]').forEach(function (b) {
+            b.classList.toggle('on', b === btn);
+          });
+          render();
+        });
+      });
+
+      document.getElementById('seeMoreBtn').addEventListener('click', function () {
+        state.visibleCount += PAGE_SIZE;
+        render();
+      });
+
+      function matches(slug) {
+        var app = ZI.APPS[slug];
+        if (state.q && app.name.toLowerCase().indexOf(state.q.toLowerCase()) === -1) return false;
+        if (state.category !== 'all' && app.category !== state.category) return false;
+        if (state.quick === 'popular' && !app.popular) return false;
+        if (state.quick === 'recent' && !app.recent) return false;
+        return true;
+      }
+
+      function render() {
+        document.querySelectorAll('.zi-dir-filter').forEach(function (btn) {
+          var isQuick = btn.dataset.quick;
+          var isCat = btn.dataset.category;
+          var on = (isQuick && isQuick === state.quick && state.category === 'all') || (isCat && isCat === state.category);
+          btn.classList.toggle('on', !!on);
+        });
+        updateFilterCount();
+
+        var results = slugs.filter(matches);
+        if (state.sort === 'az') {
+          results.sort(function (a, b) { return ZI.APPS[a].name.localeCompare(ZI.APPS[b].name); });
+        } else {
+          results.sort(function (a, b) {
+            var pa = ZI.APPS[a].popular ? 1 : 0;
+            var pb = ZI.APPS[b].popular ? 1 : 0;
+            return pb - pa || ZI.APPS[a].name.localeCompare(ZI.APPS[b].name);
+          });
+        }
+        var visible = results.slice(0, state.visibleCount);
+
+        var grid = document.getElementById('appGrid');
+        grid.innerHTML = '';
+        visible.forEach(function (slug) {
+          var app = ZI.APPS[slug];
+          var card = document.createElement('a');
+          card.className = 'card zi-app-card';
+          card.href = 'app-detail.html?app=' + slug;
+          card.innerHTML =
+            ZI.badgeHTML(slug) +
+            '<div class="txt">' +
+            '<div class="t">' + app.name + '</div>' +
+            '<div class="d">' + app.description + '</div>' +
+            (app.popular ? '<span class="badge badge-primary-soft">Popular</span>' : app.recent ? '<span class="badge badge-muted">Recently added</span>' : '') +
+            '</div>';
+          grid.appendChild(card);
+        });
+
+        var remaining = results.length - visible.length;
+        document.getElementById('dirCount').innerHTML =
+          visible.length === results.length
+            ? '<strong>' + results.length + '</strong> app' + (results.length === 1 ? '' : 's') + (state.q ? ' matching “' + state.q + '”' : '')
+            : 'Showing <strong>' + visible.length + '</strong> of <strong>' + results.length + '</strong> apps' + (state.q ? ' matching “' + state.q + '”' : '');
+        document.getElementById('dirEmpty').hidden = results.length !== 0;
+        document.getElementById('dirMore').hidden = results.length === 0 || remaining > 0;
+        var seeMoreBtn = document.getElementById('seeMoreBtn');
+        seeMoreBtn.hidden = remaining <= 0;
+        seeMoreBtn.innerHTML = 'View more apps <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
+      }
+
+      render();
+    </script>
+  </body>
+</html>
