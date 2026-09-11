@@ -207,18 +207,35 @@ A course can be sold on its own *and* be step 3 of a path, and a learner may alr
 
 This matches how Coursera Specializations behave (a course completed on its own counts toward the Specialization) and how Docebo learning plans derive plan status from the underlying course enrolment statuses. The alternative — requiring learners to re-take a course *through* the path for it to count, as Coursera's enterprise learning paths do — is the behaviour to avoid: it makes learners repeat work they have already done, and it is the single most common complaint about path features in other LMSs.
 
-**2. Access is granted through `groupmember`, with provenance recorded.** Enrolling in a path inserts ordinary `groupmember` rows, the same way cohorts already do (`insertGroupMembersOnConflictDoNothing`). The course side needs no knowledge of paths: `isUserCourseMemberOrOrgAdmin` keeps working unchanged.
+**2. Access is granted through `groupmember`, and every grant records its source.** Enrolling in a path inserts ordinary `groupmember` rows. The course side needs no knowledge of paths: `isUserCourseMemberOrOrgAdmin` keeps working unchanged.
 
-What a bare `groupmember` row cannot express is *why* the learner is there, so `learning_path_member_course` records it:
+What a bare `groupmember` row cannot express is *why* the learner is there — and this is a real, shipped defect in cohorts today, not a hypothetical. A cohort-enrolled learner and a directly-enrolled learner produce byte-identical `groupmember` rows, so the course People page (`getPaginatedCourseMembers`, which accepts only `page`/`limit`/`search`/`roleId`) shows one undifferentiated roster, and no course-scoped surface — gradebook, submissions, analytics, attendance — can be segmented by cohort. The nearest available answer, joining `cohort_member` on `profileId`, is a guess: it returns two rows when a learner belongs to two cohorts containing the course, and cannot see a direct enrolment at all.
 
-- `groupmemberId` — which course enrolment this path step is attached to.
-- `accessGrantedByPath` — TRUE when path enrolment created that row, FALSE when the learner already had their own enrolment and the path merely adopted it.
+Learning paths must not add a second instance of this problem, so provenance is modelled **once, for every enrolment route**, in `course_enrollment_grant`:
 
-That single boolean answers both directions of the question. From the course: join `groupmember → learning_path_member_course → learning_path` to list who is here because of a path, and who enrolled directly. From the path: know whether unenrolling may take course access away.
+```
+course_enrollment_grant
+  groupmemberId · courseId · profileId
+  source: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | IMPORT
+  cohortId (when source=COHORT) · learningPathId (when source=LEARNING_PATH)
+  grantedByProfileId · grantedAt · revokedAt
+  unique NULLS NOT DISTINCT (groupmemberId, source, cohortId, learningPathId)
+```
 
-**Access is the union of grants, and revocation is conservative.** Several paths may point at the same `groupmember` row. Removing a learner from a path sets `accessRevokedAt` and deletes the `groupmember` row *only* when `accessGrantedByPath` is TRUE and no other path holds a live grant on it. A learner who bought the course directly never loses it by leaving a path. This mirrors Moodle's enrolment-instance model, where a user can hold several enrolment rows in one course from different methods and access is the union of them.
+`groupmember` stays the single access row, so nothing existing has to be refactored; this is the ledger beside it. `NULLS NOT DISTINCT` (Postgres 15+) is what makes re-running an enrolment idempotent for the sourceless kinds — without it two `SELF_ENROLL` grants, both with NULL cohort and path, would not collide.
 
-**Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row for a later course is not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all rows are created at enrolment time.
+Consequences:
+
+- **Every course-scoped read can be segmented** by resolving a segment to a set of `groupmemberId`s: "this course, as cohort Y" or "as path P". Roster, gradebook, submissions, analytics and attendance all become filterable through one mechanism rather than each growing its own.
+- **Access is the union of live grants.** A learner may hold several at once — bought the course, then a path granted it, then a cohort did.
+- **Revocation is conservative.** Leaving a path or cohort sets `revokedAt`; the `groupmember` row is deleted only when no grant with `revokedAt IS NULL` remains. A learner who bought the course never loses it because a path dropped them. This is Moodle's enrolment-instance model, where a user holds one enrolment row per method and access is their union.
+- **History survives.** "Was this learner in cohort Y last term?" stays answerable, because grants are revoked rather than deleted. Cohorts today cannot answer this at all: removing a cohort member deletes only the `cohort_member` row and leaves the `groupmember` row behind with no trace of where it came from.
+
+**Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row and its grant for a later course are not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all grants are created at enrolment time.
+
+**Cohorts should migrate onto the same table.** `course_enrollment_grant` is deliberately not path-specific. The cohort enrolment paths (`enrollCohortStudentsInGroups`, `addCohortMembers`, `addCourseToCohortService`, plus the audience and org-invite routes) should write `COHORT` grants, backfilled from the existing `cohort_member` × `cohort_course` join. That is tracked separately from this PRD, but the schema is shaped for it now so there is only ever one provenance mechanism.
+
+**Out of scope here:** per-cohort *content* — separate due dates, announcements or sessions for one cohort inside a shared course. That is a different problem from attribution, cohorts partially solve it already with their own `cohort_newsfeed` and `cohort_goal` tables, and self-paced learning paths do not need it.
 
 ---
 
@@ -261,16 +278,22 @@ learning_path_member
   currentCourseId FK(course, set null) · lastActivityAt timestamptz
   unique(pathId, profileId) · unique(pathId, email) · index(pathId) · index(profileId)
 
-learning_path_member_course
+learning_path_member_course        -- progress cache only; provenance lives in course_enrollment_grant
   id uuid PK · learningPathMemberId FK(cascade) · learningPathCourseId FK(cascade)
-  -- access provenance (see "Access & progression" above):
-  groupmemberId FK(groupmember, set null) nullable
-  accessGrantedByPath boolean default false · accessGrantedAt · accessRevokedAt timestamptz nullable
-  -- progress cache of the shared course record:
   status LEARNING_PATH_COURSE_STATUS default 'LOCKED' · progressPercent integer
   lessonsCompleted / lessonsTotal / exercisesCompleted / exercisesTotal integer
   unlockedAt · startedAt · completedAt · updatedAt timestamptz
-  unique(memberId, pathCourseId) · index(memberId) · index(pathCourseId) · index(groupmemberId)
+  unique(memberId, pathCourseId) · index(memberId) · index(pathCourseId)
+
+course_enrollment_grant           -- cross-cutting: why any learner has access to any course
+  id uuid PK · groupmemberId FK(groupmember, cascade) · courseId FK(course, cascade)
+  profileId FK(profile, cascade) nullable
+  source COURSE_ENROLLMENT_SOURCE
+  cohortId FK(cohort, cascade) nullable · learningPathId FK(learning_path, cascade) nullable
+  grantedByProfileId FK(profile, set null) · grantedAt · revokedAt timestamptz nullable
+  unique NULLS NOT DISTINCT (groupmemberId, source, cohortId, learningPathId)
+  index(courseId, source) · index(groupmemberId) · index(cohortId, courseId)
+  index(learningPathId, courseId) · index(profileId)
 
 learning_path_certificate_issue
   id uuid PK · learningPathId FK(cascade) · learningPathMemberId FK(cascade) · profileId FK(cascade)
@@ -283,6 +306,7 @@ enum LEARNING_PATH_STATUS: ACTIVE | DRAFT | ARCHIVED
 enum LEARNING_PATH_DIFFICULTY: BEGINNER | INTERMEDIATE | ADVANCED
 enum LEARNING_PATH_MEMBER_STATUS: NOT_STARTED | IN_PROGRESS | COMPLETED
 enum LEARNING_PATH_COURSE_STATUS: LOCKED | NOT_STARTED | IN_PROGRESS | COMPLETED
+enum COURSE_ENROLLMENT_SOURCE: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | IMPORT
 ```
 
 Notes:

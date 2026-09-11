@@ -6,9 +6,11 @@ import {
   appsPollSubmission,
   asset,
   assetUsage,
+  cohort,
   communityAnswer,
   communityQuestion,
   course,
+  courseEnrollmentGrant,
   courseNewsfeed,
   courseNewsfeedComment,
   courseSection,
@@ -205,7 +207,7 @@ export const groupmemberRelations = relations(groupmember, ({ one, many }) => ({
   courseNewsfeeds: many(courseNewsfeed),
   courseNewsfeedComments: many(courseNewsfeedComment),
   questionAnswers: many(questionAnswer),
-  learningPathMemberCourses: many(learningPathMemberCourse)
+  courseEnrollmentGrants: many(courseEnrollmentGrant)
 }));
 
 export const appsPollOptionRelations = relations(appsPollOption, ({ one, many }) => ({
@@ -597,10 +599,29 @@ export const learningPathMemberCourseRelations = relations(learningPathMemberCou
   learningPathCourse: one(learningPathCourse, {
     fields: [learningPathMemberCourse.learningPathCourseId],
     references: [learningPathCourse.id]
-  }),
+  })
+}));
+
+export const courseEnrollmentGrantRelations = relations(courseEnrollmentGrant, ({ one }) => ({
   groupmember: one(groupmember, {
-    fields: [learningPathMemberCourse.groupmemberId],
+    fields: [courseEnrollmentGrant.groupmemberId],
     references: [groupmember.id]
+  }),
+  course: one(course, {
+    fields: [courseEnrollmentGrant.courseId],
+    references: [course.id]
+  }),
+  profile: one(profile, {
+    fields: [courseEnrollmentGrant.profileId],
+    references: [profile.id]
+  }),
+  cohort: one(cohort, {
+    fields: [courseEnrollmentGrant.cohortId],
+    references: [cohort.id]
+  }),
+  learningPath: one(learningPath, {
+    fields: [courseEnrollmentGrant.learningPathId],
+    references: [learningPath.id]
   })
 }));
 

@@ -253,6 +253,11 @@ export type TNewLearningPathMemberCourse = typeof schema.learningPathMemberCours
 export type TLearningPathCertificateIssue = typeof schema.learningPathCertificateIssue.$inferSelect;
 export type TNewLearningPathCertificateIssue = typeof schema.learningPathCertificateIssue.$inferInsert;
 
+// ─── Course enrollment provenance ────────────────────────────────────────────
+
+export type TCourseEnrollmentGrant = typeof schema.courseEnrollmentGrant.$inferSelect;
+export type TNewCourseEnrollmentGrant = typeof schema.courseEnrollmentGrant.$inferInsert;
+
 // ─── Job state ───────────────────────────────────────────────────────────────
 
 export type TJobStatus = (typeof schema.jobStatus.enumValues)[number];

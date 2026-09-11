@@ -23,6 +23,7 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import { COURSE_ENROLLMENT_SOURCE_VALUES } from '@cio/utils/constants/enrollment';
 import {
   LEARNING_PATH_COURSE_STATUS_VALUES,
   LEARNING_PATH_DIFFICULTY_VALUES,
@@ -3605,22 +3606,19 @@ export const learningPathMember = pgTable(
 );
 
 /**
- * One row per member per course in a path, carrying two things: how the learner got into
- * the course, and the path-scoped projection of their progress in it.
+ * One row per member per course in a path: the path-scoped projection of the learner's
+ * progress in that course.
  *
- * Progress is deliberately *shared*, not forked. A learner has one `groupmember` row and
+ * Progress is deliberately *shared*, not forked. A learner has one course enrolment and
  * one set of `lesson_completion` / `submission` rows per course no matter how many paths
  * contain it, so a course finished standalone last year counts as done the moment the
  * learner enrols in a path — and work done inside the path counts outside it too. The
  * columns below are a cache of that shared truth, never a second copy of it.
  *
- * Access is granted by inserting into `groupmember` like every other enrolment route, so
- * the course itself needs no knowledge of paths. `groupmemberId` + `accessGrantedByPath`
- * record the provenance the plain `groupmember` row cannot: whether this path is the
- * reason the learner has access (so unenrolling should take it away) or whether they
- * already had their own enrolment (so unenrolling must leave it alone). Several paths may
- * point at the same `groupmember` row; access is the union of the grants, which is why
- * revocation checks for other live grants before removing anything.
+ * Access provenance is NOT here — it lives in `course_enrollment_grant`, which every
+ * enrolment route writes to. Keeping it out of this table is deliberate: a path-only
+ * provenance column would leave cohorts, invites, and audience imports still
+ * indistinguishable on the course roster.
  */
 export const learningPathMemberCourse = pgTable(
   'learning_path_member_course',
@@ -3631,23 +3629,6 @@ export const learningPathMemberCourse = pgTable(
       .notNull(),
     learningPathMemberId: uuid('learning_path_member_id').notNull(),
     learningPathCourseId: uuid('learning_path_course_id').notNull(),
-    // ── Access provenance ──
-    /**
-     * The course enrolment this path row is attached to. NULL while the course is still
-     * locked under sequential unlock, or once a teacher removes the learner from the
-     * course directly.
-     */
-    groupmemberId: uuid('groupmember_id'),
-    /**
-     * TRUE when enrolling in the path is what created the `groupmember` row. FALSE when the
-     * learner was already enrolled and the path merely adopted the existing enrolment.
-     * Unenrolling from the path may only delete the `groupmember` row when this is TRUE and
-     * no other path holds a live grant on it.
-     */
-    accessGrantedByPath: boolean('access_granted_by_path').default(false).notNull(),
-    accessGrantedAt: timestamp('access_granted_at', { withTimezone: true, mode: 'string' }),
-    /** Set instead of deleting the row, so an accidental unenrol/re-enrol keeps its history. */
-    accessRevokedAt: timestamp('access_revoked_at', { withTimezone: true, mode: 'string' }),
     status: learningPathCourseStatus().default('LOCKED').notNull(),
     progressPercent: integer('progress_percent').default(0).notNull(),
     lessonsCompleted: integer('lessons_completed').default(0).notNull(),
@@ -3671,21 +3652,12 @@ export const learningPathMemberCourse = pgTable(
       foreignColumns: [learningPathCourse.id],
       name: 'learning_path_member_course_path_course_id_fkey'
     }).onDelete('cascade'),
-    // Set null rather than cascade: a teacher removing the learner from the course directly
-    // drops the grant but must not erase the path row or its progress cache.
-    foreignKey({
-      columns: [table.groupmemberId],
-      foreignColumns: [groupmember.id],
-      name: 'learning_path_member_course_groupmember_id_fkey'
-    }).onDelete('set null'),
     unique('learning_path_member_course_member_id_path_course_id_unique').on(
       table.learningPathMemberId,
       table.learningPathCourseId
     ),
     index('idx_learning_path_member_course_member_id').on(table.learningPathMemberId),
-    index('idx_learning_path_member_course_path_course_id').on(table.learningPathCourseId),
-    // Reverse lookup from inside a course: "which paths put this learner here?"
-    index('idx_learning_path_member_course_groupmember_id').on(table.groupmemberId)
+    index('idx_learning_path_member_course_path_course_id').on(table.learningPathCourseId)
   ]
 );
 
@@ -3735,6 +3707,109 @@ export const learningPathCertificateIssue = pgTable(
     unique('learning_path_certificate_issue_member_id_key').on(table.learningPathMemberId),
     index('idx_learning_path_certificate_issue_profile_id').on(table.profileId),
     index('idx_learning_path_certificate_issue_learning_path_id').on(table.learningPathId)
+  ]
+);
+
+// ─── Course Enrollment Provenance ────────────────────────────────────────────
+
+export const courseEnrollmentSource = pgEnum('COURSE_ENROLLMENT_SOURCE', [...COURSE_ENROLLMENT_SOURCE_VALUES]);
+
+/**
+ * Why a learner has access to a course — the reason behind every `groupmember` row.
+ *
+ * `groupmember` stays the one and only access row, so every existing access check
+ * (`isUserCourseMemberOrOrgAdmin`, every course query) keeps working untouched. This table
+ * is the ledger beside it, written by every enrolment route: self-enrol, invite, admin add,
+ * audience import, cohort, and learning path.
+ *
+ * It exists because without it a cohort-enrolled learner, a path-enrolled learner and a
+ * learner who bought the course produce byte-identical `groupmember` rows. No course-scoped
+ * screen can then tell them apart, and the closest available answer — joining
+ * `cohort_member` on `profileId` — is a guess, not provenance: it returns two rows when a
+ * learner is in two cohorts that both contain the course, and cannot see a direct enrolment
+ * at all.
+ *
+ * Rules:
+ * - **Access is the union of live grants.** A learner may hold several grants on one
+ *   enrolment (bought it, then a path granted it, then a cohort did).
+ * - **Revoke, do not delete.** Leaving a cohort or path sets `revokedAt`, so "was in cohort
+ *   Y last term" stays answerable and re-joining keeps its history.
+ * - **The enrolment outlives any one grant.** Delete the `groupmember` row only when no
+ *   grant with `revokedAt IS NULL` remains. A learner who enrolled directly never loses the
+ *   course because a path or cohort dropped them.
+ * - **Every course-scoped read may be segmented by it** — roster, gradebook, submissions,
+ *   analytics, attendance — by resolving a segment to a set of `groupmemberId`s.
+ */
+export const courseEnrollmentGrant = pgTable(
+  'course_enrollment_grant',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    groupmemberId: uuid('groupmember_id').notNull(),
+    /**
+     * Denormalized from `groupmember → group → course`. Segment filters and the "who came
+     * from where" roster query run per course, and this keeps them a single index hit
+     * instead of a two-hop join through `group` on every course screen.
+     */
+    courseId: uuid('course_id').notNull(),
+    /** NULL while an invited learner has not yet claimed their account. */
+    profileId: uuid('profile_id'),
+    source: courseEnrollmentSource().notNull(),
+    /** Set when `source = 'COHORT'`, NULL otherwise. */
+    cohortId: uuid('cohort_id'),
+    /** Set when `source = 'LEARNING_PATH'`, NULL otherwise. */
+    learningPathId: uuid('learning_path_id'),
+    /** The teacher or admin who caused the grant, for ADMIN_ADD and INVITE. */
+    grantedByProfileId: uuid('granted_by_profile_id'),
+    grantedAt: timestamp('granted_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.groupmemberId],
+      foreignColumns: [groupmember.id],
+      name: 'course_enrollment_grant_groupmember_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_enrollment_grant_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'course_enrollment_grant_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'course_enrollment_grant_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'course_enrollment_grant_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.grantedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_enrollment_grant_granted_by_profile_id_fkey'
+    }).onDelete('set null'),
+    // One grant per enrolment per source row, so re-running an enrolment is idempotent.
+    // NULLS NOT DISTINCT (Postgres 15+) is what makes this hold for the sourceless kinds:
+    // without it two SELF_ENROLL grants, both with NULL cohort and path, would not collide.
+    unique('course_enrollment_grant_source_unique')
+      .on(table.groupmemberId, table.source, table.cohortId, table.learningPathId)
+      .nullsNotDistinct(),
+    // "Show me this course's roster, segmented by where people came from."
+    index('idx_course_enrollment_grant_course_id_source').on(table.courseId, table.source),
+    index('idx_course_enrollment_grant_groupmember_id').on(table.groupmemberId),
+    // "Which of this course's learners belong to cohort Y / path P?"
+    index('idx_course_enrollment_grant_cohort_id_course_id').on(table.cohortId, table.courseId),
+    index('idx_course_enrollment_grant_learning_path_id_course_id').on(table.learningPathId, table.courseId),
+    index('idx_course_enrollment_grant_profile_id').on(table.profileId)
   ]
 );
 
