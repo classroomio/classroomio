@@ -4366,7 +4366,9 @@
         "generate_course_plan": "Generowanie planu kursu",
         "ask_template_questions": "Przygotowanie szablonu formularza",
         "fetch_documentation_url": "Czytanie strony z dokumentami",
-        "fetch_documentation_url_with_url": "Czytanie {url}"
+        "fetch_documentation_url_with_url": "Czytanie {url}",
+        "list_youtube_playlist_videos": "Wyświetlanie listy filmów z listy odtwarzania",
+        "add_youtube_video_to_lesson": "Osadzanie filmu z YouTube"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# znak} other {# znaków}})",
@@ -4398,7 +4400,10 @@
         "go_live_not_published": "Kurs nie został opublikowany",
         "generate_course_plan": "Wygenerowano plan kursu",
         "ask_template_questions": "Formularz szablonu gotowy",
-        "fetch_documentation_url": "Przeczytaj {url}"
+        "fetch_documentation_url": "Przeczytaj {url}",
+        "list_youtube_playlist_videos": "Znaleziono {count} filmów na liście odtwarzania",
+        "list_youtube_playlist_videos_unavailable": "Nie można wyświetlić listy filmów z listy odtwarzania",
+        "add_youtube_video_to_lesson": "Osadzony film: {title}"
       }
     },
     "student_empty_state": "Zapytaj mnie o cokolwiek na temat tego kursu — uzyskaj wyjaśnienia, przeprowadź quiz lub podsumuj to, co czytasz.",

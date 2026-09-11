@@ -4366,7 +4366,9 @@
         "generate_course_plan": "Kursplan wird generiert",
         "ask_template_questions": "Vorlageformular vorbereiten",
         "fetch_documentation_url": "Seite „Dokumente lesen“.",
-        "fetch_documentation_url_with_url": "{url} wird gelesen"
+        "fetch_documentation_url_with_url": "{url} wird gelesen",
+        "list_youtube_playlist_videos": "Playlist-Videos werden aufgelistet",
+        "add_youtube_video_to_lesson": "YouTube-Video wird eingebettet"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# Zeichen} other {# Zeichen}})",
@@ -4398,7 +4400,10 @@
         "go_live_not_published": "Kurs wurde nicht veröffentlicht",
         "generate_course_plan": "Kursplan generiert",
         "ask_template_questions": "Vorlageformular fertig",
-        "fetch_documentation_url": "{url} lesen"
+        "fetch_documentation_url": "{url} lesen",
+        "list_youtube_playlist_videos": "{count} Videos in der Playlist gefunden",
+        "list_youtube_playlist_videos_unavailable": "Playlist-Videos konnten nicht aufgelistet werden",
+        "add_youtube_video_to_lesson": "Eingebettetes Video: {title}"
       }
     },
     "student_empty_state": "Fragen Sie mich zu diesem Kurs – holen Sie sich Erklärungen, stellen Sie selbst ein Quiz oder fassen Sie zusammen, was Sie gerade lesen.",

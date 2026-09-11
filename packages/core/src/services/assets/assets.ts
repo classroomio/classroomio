@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import { startMediaJob, startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import type {
   TAssetAttach,
   TAssetCreateAndAttach,
@@ -110,7 +111,14 @@ function extractDurationSeconds(html: string): number | null {
   return null;
 }
 
-async function fetchYouTubeOEmbed(videoUrl: string): Promise<{ title: string | null; thumbnailUrl: string | null }> {
+/**
+ * Free YouTube oEmbed lookup — no API key, no provider credits. Used for video
+ * titles and thumbnails, including bulk playlist expansion where paying the
+ * provider per video would be prohibitive.
+ */
+export async function fetchYouTubeOEmbed(
+  videoUrl: string
+): Promise<{ title: string | null; thumbnailUrl: string | null }> {
   try {
     const response = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(videoUrl)}`, {
       signal: AbortSignal.timeout(YOUTUBE_METADATA_TIMEOUT_MS)
@@ -411,6 +419,15 @@ export async function listOrganizationAssetsService(orgId: string, query: TAsset
   }
 }
 
+export interface CreateAssetFromUploadOptions {
+  /**
+   * Skip the automatic YouTube caption prefetch. Set by callers that create
+   * many YouTube assets at once (e.g. attaching a playlist), where prefetching
+   * every one would spend a provider credit per video up front.
+   */
+  skipYoutubeCaptionPrefetch?: boolean;
+}
+
 function buildAssetValues(orgId: string, profileId: string, data: TAssetCreateUpload) {
   return {
     organizationId: orgId,
@@ -434,7 +451,12 @@ function buildAssetValues(orgId: string, profileId: string, data: TAssetCreateUp
   };
 }
 
-function scheduleAssetBackgroundWork(orgId: string, profileId: string, asset: TAsset): void {
+function scheduleAssetBackgroundWork(
+  orgId: string,
+  profileId: string,
+  asset: TAsset,
+  options: CreateAssetFromUploadOptions = {}
+): void {
   // Fire-and-forget: enqueue lesson-video post-processing for new uploads.
   // Errors are logged but never block the asset response.
   if (asset.kind === 'video' && asset.provider === 'upload' && asset.storageKey) {
@@ -446,15 +468,40 @@ function scheduleAssetBackgroundWork(orgId: string, profileId: string, asset: TA
     });
   }
 
+  // Fire-and-forget: enqueue YouTube captions fetch for new YouTube embeds.
+  // The worker checks plan gating and API key availability before calling Supadata.
+  if (
+    asset.kind === 'video' &&
+    asset.provider === 'youtube' &&
+    asset.sourceUrl &&
+    !options.skipYoutubeCaptionPrefetch
+  ) {
+    const videoId = (asset.metadata as { videoId?: string } | undefined)?.videoId;
+    if (videoId) {
+      void enqueueYoutubeCaptionsFetchForAsset({
+        organizationId: orgId,
+        assetId: asset.id,
+        triggeredByProfileId: profileId,
+        youtubeVideoId: videoId,
+        canonicalUrl: asset.sourceUrl
+      });
+    }
+  }
+
   // Vimeo oEmbed is slow and third-party controlled. Reads and writes return
   // the persisted asset immediately while the bounded queue repairs metadata.
   queueVimeoBackfill(asset);
 }
 
-export async function createAssetFromUploadService(orgId: string, profileId: string, data: TAssetCreateUpload) {
+export async function createAssetFromUploadService(
+  orgId: string,
+  profileId: string,
+  data: TAssetCreateUpload,
+  options: CreateAssetFromUploadOptions = {}
+) {
   try {
     const asset = await createOrGetAssetByStorageKey(buildAssetValues(orgId, profileId, data));
-    scheduleAssetBackgroundWork(orgId, profileId, asset);
+    scheduleAssetBackgroundWork(orgId, profileId, asset, options);
 
     return asset;
   } catch (error) {
@@ -503,7 +550,6 @@ async function enqueueMediaPostProcessingForAsset(input: {
   triggeredByProfileId: string;
 }): Promise<void> {
   try {
-    const { startMediaJob } = await import('../jobs/media-jobs');
     await startMediaJob({
       organizationId: input.organizationId,
       assetId: input.assetId,
@@ -513,6 +559,26 @@ async function enqueueMediaPostProcessingForAsset(input: {
     });
   } catch (error) {
     console.error('enqueueMediaPostProcessingForAsset failed:', error);
+  }
+}
+
+async function enqueueYoutubeCaptionsFetchForAsset(input: {
+  organizationId: string;
+  assetId: string;
+  triggeredByProfileId: string;
+  youtubeVideoId: string;
+  canonicalUrl: string;
+}): Promise<void> {
+  try {
+    await startYoutubeCaptionsJob({
+      organizationId: input.organizationId,
+      assetId: input.assetId,
+      triggeredByProfileId: input.triggeredByProfileId,
+      youtubeVideoId: input.youtubeVideoId,
+      canonicalUrl: input.canonicalUrl
+    });
+  } catch (error) {
+    console.error('enqueueYoutubeCaptionsFetchForAsset failed:', error);
   }
 }
 
@@ -1542,7 +1608,6 @@ async function enqueueAudioTranscriptionForAsset(input: {
   triggeredByProfileId: string;
 }): Promise<void> {
   try {
-    const { startTranscriptionOnlyMediaJob } = await import('../jobs/media-jobs');
     await startTranscriptionOnlyMediaJob({
       organizationId: input.organizationId,
       assetId: input.assetId,
