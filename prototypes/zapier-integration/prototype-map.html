@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zapier Integration: Prototype Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="zapier.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .page { max-width: 900px; margin: 0 auto; padding: 56px 24px 90px; }
+      h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin: 8px 0 10px; }
+      .lead { color: var(--muted-foreground); font-size: 15px; max-width: 68ch; margin: 0 0 14px; line-height: 1.65; }
+      .lead b { color: var(--foreground); font-weight: 500; }
+      .eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); display: flex; align-items: center; gap: 7px; }
+      .eyebrow svg { width: 13px; height: 13px; }
+      .sec { font-size: 12.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted-foreground); margin: 40px 0 14px; display: flex; align-items: center; gap: 10px; }
+      .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .shot { padding: 16px 17px 17px; transition: border-color 0.15s, box-shadow 0.15s; display: block; }
+      .shot:hover { border-color: var(--ring); box-shadow: var(--shadow-md); }
+      .shot .n { font-size: 11px; font-weight: 600; color: var(--muted-foreground); letter-spacing: 0.05em; text-transform: uppercase; }
+      .shot .t { font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; margin: 4px 0 5px; }
+      .shot .d { font-size: 12.5px; color: var(--muted-foreground); margin: 0; line-height: 1.55; }
+      .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12.5px; margin: 0 0 8px; }
+      .flow .node { padding: 6px 12px; border-radius: 999px; background: var(--muted); font-weight: 500; }
+      .flow svg { width: 13px; height: 13px; color: var(--muted-foreground); flex-shrink: 0; }
+      .foot { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 13.5px; line-height: 1.75; }
+      .foot b { color: var(--foreground); font-weight: 500; }
+      .foot code { background: var(--muted); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+      @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
+        <div>
+          <span class="eyebrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>ClassroomIO · prototype/design</span>
+          <h1>Zapier Integration</h1>
+        </div>
+        <button class="icon-btn" id="theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      </div>
+
+      <p class="lead">
+        A V1 prototype for connecting ClassroomIO to Zapier: an org admin discovers apps in a directory, authorizes
+        access once, then builds automations where <b>“this happens in ClassroomIO, so do this somewhere else”</b>,
+        without writing code. Grounded in the real IA already in the codebase: the <code>Automation</code> sidebar
+        group (<code>org-navigation.ts</code>) and the OAuth-based connection model in <code>prd/zapier/README.md</code>,
+        with the landing + directory structure inspired by SurveyMonkey's and Jotform's own Zapier pages (see
+        <b>Design notes</b> below).
+      </p>
+
+      <div class="flow">
+        <span class="node">1. Hub</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">2. Landing</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">3. Directory</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">4. App detail</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">5. Authorize</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">6. Connected</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">7. Templates</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">8–12. Build a Zap</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <span class="node">13. Manage Zaps</span>
+      </div>
+
+      <div class="sec">Discover</div>
+      <div class="grid">
+        <a class="card shot" href="index.html">
+          <div class="n">Screen 1</div>
+          <div class="t">Automation hub</div>
+          <p class="d">Where Zapier lives: alongside MCP and API keys in the org's Automation section, each as its own card.</p>
+        </a>
+        <a class="card shot" href="zapier-connect.html">
+          <div class="n">Screen 2</div>
+          <div class="t">Zapier landing page</div>
+          <p class="d">SurveyMonkey-style page: hero + connect bar, an auto-scrolling real-logo marquee, alternating feature rows, a 5-step visual walkthrough built from real prototype UI, integration highlights, and an FAQ.</p>
+        </a>
+        <a class="card shot" href="app-directory.html">
+          <div class="n">Screen 3</div>
+          <div class="t">App Directory</div>
+          <p class="d">Jotform-style directory: sidebar search, category filters with counts, Popular/A–Z sort, and a "View more apps" button that actually expands the grid. 77 real, named apps, not 6,000 hand-built ones.</p>
+        </a>
+        <a class="card shot" href="app-detail.html?app=slack">
+          <div class="n">Screen 4</div>
+          <div class="t">App detail: Slack</div>
+          <p class="d">“ClassroomIO + Slack”: what the connection enables, every ClassroomIO trigger, an example Slack action, and a Connect CTA.</p>
+        </a>
+      </div>
+
+      <div class="sec">Connect</div>
+      <div class="grid">
+        <a class="card shot" href="oauth-consent.html">
+          <div class="n">Screen 5</div>
+          <div class="t">Authorize</div>
+          <p class="d">The consent screen: org picker, read/write scopes (write is optional), redirect notice, Authorize / Deny.</p>
+        </a>
+        <a class="card shot" href="zapier-connected.html">
+          <div class="n">Screen 6</div>
+          <div class="t">Connected</div>
+          <p class="d">Grant details, usage against plan limits, the connections table with revoke, and a setup guide.</p>
+        </a>
+        <a class="card shot" href="oauth-consent.html?startApp=hubspot">
+          <div class="n">Chained example</div>
+          <div class="t">Connect, started from HubSpot</div>
+          <p class="d">Authorize → Connected carry the app chosen in the directory through, ending on “Continue building your HubSpot Zap.”</p>
+        </a>
+      </div>
+
+      <div class="sec">Build an automation</div>
+      <div class="grid">
+        <a class="card shot" href="zap-templates.html">
+          <div class="n">Screen 7</div>
+          <div class="t">Create a Zap</div>
+          <p class="d">Five ready-made templates covering the v1 trigger/action catalog, plus start from scratch.</p>
+        </a>
+        <a class="card shot" href="zap-builder.html">
+          <div class="n">Screens 8–12</div>
+          <div class="t">Zap builder</div>
+          <p class="d">One guided flow: pick a trigger and filters, choose an app and map fields, test, then review and turn it on.</p>
+        </a>
+        <a class="card shot" href="zap-builder.html?template=completed-slack">
+          <div class="n">Worked example</div>
+          <div class="t">Course completed → Slack</div>
+          <p class="d">The builder preloaded with the user's own example: “when a student completes a course, send it to another app.”</p>
+        </a>
+      </div>
+
+      <div class="sec">Manage</div>
+      <div class="grid">
+        <a class="card shot" href="manage-zaps.html">
+          <div class="n">Screen 13</div>
+          <div class="t">Manage Zaps</div>
+          <p class="d">Active, paused, and error states; last activity; a menu to pause/resume or jump into Zapier to edit.</p>
+        </a>
+      </div>
+
+      <div class="sec">Design notes</div>
+      <p class="lead" style="font-size:14px">
+        Built on <code>app-theme.css</code>, copied verbatim from <code>prototypes/learning-paths</code>, which mirrors the real
+        <code>packages/ui/src/index.css</code> tokens. <code>zapier.css</code> adds only the patterns this flow needed
+        (the marquee, feature rows, grant tables, the app directory, the picker/field-mapping/stepper wizard).
+        Everything else reuses existing card, badge, table, tab, and form styles rather than inventing new ones.
+        <code>apps-catalog.js</code> is the one place the 77 apps, their categories, and their actions are defined
+        (most fall back to one of 15 category-level default actions rather than 77 hand-written ones), so the
+        directory, app-detail pages, and the builder can never list different things for the same app. Badges use a
+        `color` on each app rendered through one `ZI.badgeHTML()` helper, not a per-app CSS class. That's the only way
+        this stays sane past a handful of apps. <code>brand-logos.js</code> is a separate, landing-page-only set of
+        16 brand-colored marks for the marquee (see next).
+      </p>
+
+      <div class="foot">
+        <b>Why a landing page + app directory, and why 77 apps</b><br />
+        Screens 2 and 3 closely mirror the section rhythm and interaction patterns of two real Zapier integration
+        pages: SurveyMonkey's landing (hero, connect bar, logo marquee, alternating value-prop rows, a numbered
+        step-by-step walkthrough, integration highlights, FAQ) and Jotform's app directory (sidebar search, category
+        counts, sort, card grid, "view more" pagination). Both are adapted to ClassroomIO's own visual language
+        rather than copied, and trimmed of public-marketing-site elements (contact-sales forms, resource blog cards,
+        mega-footers) that don't belong in an authenticated settings page. Representing all 6,000+ Zapier apps isn't
+        useful or buildable as a prototype. 77 real, named apps across the 15 categories Zapier actually organizes
+        by, at least 5 per category, is enough to prove the directory holds up at a real-ish size: search, category
+        filters, and a genuinely working "view more apps" button that reveals the rest 18 at a time, with an
+        explicit “that's every app in this sample” note and a link to Zapier's full catalog once you've seen them
+        all. See <code>README.md</code> “Why 77 apps, not 6,000” for the full reasoning.<br /><br />
+        <b>Why the builder lives inside ClassroomIO, not just a "Coming soon" link out</b><br />
+        <code>prd/zapier/README.md</code> scopes v1 as OAuth plus a dashboard grant-management page, with the actual
+        Zap built on zapier.com. That's still the safest v1 to ship. This prototype explores the fuller version worth
+        planning toward. Zapier's <a href="https://zapier.com/developer-platform/partner-embeds" target="_blank" rel="noopener">Partner API and embedded editor</a>
+        (used by Webflow, Unbounce, and others) lets a partner render its own trigger/action picker, field mapping,
+        and Zap on/off toggles natively. That's what screens 4 through 10 assume. See <code>README.md</code> for the
+        full read on what's real today versus what this proposes.<br /><br />
+        <b>Why every screen shows the full dashboard sidebar</b><br />
+        Screens 1 through 13 (all but Authorize) render inside the same <code>&lt;aside class="sidebar"&gt;</code> a
+        signed-in admin actually sees: <code>Dashboard</code> / <code>Stats</code> / <code>Setup</code> ungrouped at
+        the top, then <code>Content</code> (Courses, Cohorts, Media, Tags, Widgets), <code>People</code> (Community,
+        Audience), and <code>Automation</code> (MCP, API, Zapier), Settings, and the signed-in user pinned to the
+        bottom. Zapier is the only working link (this prototype is scoped to this flow, not a full dashboard clone),
+        and stays active throughout, pointing back to <code>zapier-connect.html</code> before a connection exists and
+        <code>zapier-connected.html</code> after. The goal isn't a standalone Zapier product, it's showing exactly
+        where this feature sits in the real navigation and how an admin actually reaches it. See
+        <code>README.md</code> “Sidebar” for the full reasoning, including why Authorize keeps its own minimal
+        header instead.<br /><br />
+        <b>Where the thinking lives</b><br />
+        Product spec: <code>prd/zapier/README.md</code><br />
+        Real IA reference: <code>apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts</code>,
+        <code>apps/dashboard/src/lib/features/automation/pages/{mcp,zapier}.svelte</code>
+      </div>
+    </div>
+    <script src="proto.js"></script>
+  </body>
+</html>
