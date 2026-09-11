@@ -49,6 +49,9 @@ jobs:
       - name: Prepare dashboard env
         run: cp apps/dashboard/.env.example apps/dashboard/.env
 
+      - name: Run dashboard tests
+        run: pnpm --filter @cio/dashboard test
+
       - name: Build dashboard
         run: pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
         env:
