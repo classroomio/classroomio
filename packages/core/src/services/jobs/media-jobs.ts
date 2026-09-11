@@ -355,6 +355,22 @@ export interface StartYoutubeCaptionsJobInput {
  * No-ops gracefully when Redis or the provider key is missing.
  */
 export async function startYoutubeCaptionsJob(input: StartYoutubeCaptionsJobInput): Promise<TMediaJob> {
+  // Pre-enqueue guard. The BullMQ job id is deterministic on asset + language,
+  // so a duplicate enqueue is silently dropped — but the `media_job` row would
+  // already have been written and would then never be processed. Callers that
+  // retry (a lesson transcript re-asked before captions land) would leave a
+  // trail of orphan `queued` rows. Only caption jobs run for a YouTube asset,
+  // so the helper's lack of a domain filter cannot block an unrelated job here.
+  const hasActive = await hasActiveMediaJobForAsset(input.assetId, input.organizationId);
+  if (hasActive) {
+    const latestJobs = await listLatestMediaJobsByAsset(input.assetId, input.organizationId);
+    const activeJob = latestJobs.find((row) => row.status === 'queued' || row.status === 'running');
+
+    if (activeJob) {
+      return activeJob;
+    }
+  }
+
   const job = await createMediaJob({
     organizationId: input.organizationId,
     assetId: input.assetId,
@@ -366,12 +382,13 @@ export async function startYoutubeCaptionsJob(input: StartYoutubeCaptionsJobInpu
 
   if (!isRedisConfigured()) {
     logRedisUnavailableOnce('Redis not configured: YouTube captions job cannot be processed.');
-    await updateMediaJob(job.id, {
+    const failedJob = await updateMediaJob(job.id, {
       status: 'failed',
       stage: 'failed',
       error: { code: 'REDIS_UNAVAILABLE', message: 'Redis not configured; captions job cannot run' }
     });
-    return { ...job, status: 'failed', stage: 'failed' };
+
+    return failedJob ?? { ...job, status: 'failed', stage: 'failed' };
   }
 
   try {

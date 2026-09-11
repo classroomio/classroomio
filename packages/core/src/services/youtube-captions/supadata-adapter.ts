@@ -1,36 +1,16 @@
-import type { YoutubeCaptionAdapter, YoutubeCaptionFetchResult } from './types';
+import type { Transcript, TranscriptChunk, TranscriptOrJobId } from '@supadata/js';
 
-interface SupadataCaptionItem {
-  text?: string;
-  offset?: number;
-  duration?: number;
-  lang?: string;
-}
+import type { YoutubeCaptionAdapter, YoutubeCaptionFetchResult, YoutubeCaptionUnavailable } from './types';
 
 /**
  * Supadata adapter for fetching YouTube native captions.
  *
- * Uses the `@supadata/js` SDK to retrieve creator-uploaded or auto-generated
- * caption tracks from YouTube videos.
+ * `supadata.transcript()` returns `Transcript | JobId`; long videos come back as
+ * `{ jobId }` and are polled via `getJobStatus()`. Failures arrive as a thrown
+ * `SupadataError`, never as a property on the result.
  *
- * The SDK returns `TranscriptOrJobId = Transcript | JobId`. For large videos
- * where captions can't be returned immediately, the API responds with
- * `{ jobId }` instead of `{ content }`. We detect this and poll
- * `supadata.transcript.getJobStatus()` until the job completes or fails.
- *
- * SDK response shape:
- * ```json
- * {
- *   "lang": "en",
- *   "availableLangs": ["en"],
- *   "content": [{ "lang": "en", "text": "...", "offset": 80, "duration": 5120 }]
- * }
- * ```
- * `offset` and `duration` are in **milliseconds** — we convert to seconds.
- *
- * Exactly **one** provider call is made per invocation: Supadata bills per
- * request, so trying several languages (or retrying without `lang`) would
- * multiply the cost of a single caption fetch.
+ * Exactly one provider call is made per invocation: Supadata bills per request,
+ * so trying several languages would multiply the cost of one caption fetch.
  */
 export class SupadataAdapter implements YoutubeCaptionAdapter {
   private apiKey: string;
@@ -43,7 +23,7 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
     youtubeVideoId: string;
     canonicalUrl: string;
     language: string;
-  }): Promise<YoutubeCaptionFetchResult | { unavailable: true; reason: string }> {
+  }): Promise<YoutubeCaptionFetchResult | YoutubeCaptionUnavailable> {
     const { youtubeVideoId, canonicalUrl, language } = input;
 
     return this.fetchCaptionsForLanguage(youtubeVideoId, canonicalUrl, language);
@@ -52,117 +32,119 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
   private async fetchCaptionsForLanguage(
     youtubeVideoId: string,
     canonicalUrl: string,
-    lang: string
-  ): Promise<YoutubeCaptionFetchResult | { unavailable: true; reason: string }> {
-    try {
-      const { Supadata } = await import('@supadata/js');
-      const supadata = new Supadata({ apiKey: this.apiKey });
+    requestedLanguage: string
+  ): Promise<YoutubeCaptionFetchResult | YoutubeCaptionUnavailable> {
+    const { Supadata, SupadataError } = await import('@supadata/js');
+    const supadata = new Supadata({ apiKey: this.apiKey });
 
-      const requestParams = {
+    let transcript: Transcript;
+
+    try {
+      const response: TranscriptOrJobId = await supadata.transcript({
         url: canonicalUrl,
         text: false,
         mode: 'native' as const,
-        lang
-      };
+        lang: requestedLanguage
+      });
 
-      const raw = await supadata.transcript(requestParams);
+      if ('jobId' in response) {
+        const jobResult = await supadata.transcript.getJobStatus(response.jobId);
 
-      if (!raw || typeof raw !== 'object') {
-        return { unavailable: true, reason: 'invalid_response' };
-      }
-
-      let transcript: any;
-
-      if ('jobId' in raw) {
-        const jobResult = await supadata.transcript.getJobStatus(raw.jobId);
-
-        if (jobResult.status === 'completed' && jobResult.result) {
-          transcript = jobResult.result;
-        } else if (jobResult.status === 'failed') {
+        if (jobResult.status === 'failed') {
           return { unavailable: true, reason: 'provider_error' };
-        } else {
+        }
+
+        if (jobResult.status !== 'completed' || !jobResult.result) {
           return { unavailable: true, reason: 'async_pending' };
         }
+
+        transcript = jobResult.result;
       } else {
-        transcript = raw;
+        transcript = response;
       }
-
-      if ('error' in transcript && transcript.error) {
-        const code = transcript.error.code ?? '';
-        const message = transcript.error.message ?? '';
-
-        if (code === 'NOT_FOUND' || message.toLowerCase().includes('not found')) {
-          return { unavailable: true, reason: 'not_found' };
-        }
-        if (code === 'PRIVATE' || message.toLowerCase().includes('private')) {
-          return { unavailable: true, reason: 'private' };
-        }
-        if (code === 'NO_CAPTIONS' || message.toLowerCase().includes('no captions')) {
-          return { unavailable: true, reason: 'no_captions' };
-        }
-        if (code === 'DISABLED' || message.toLowerCase().includes('disabled')) {
-          return { unavailable: true, reason: 'disabled' };
-        }
-
-        return { unavailable: true, reason: 'other' };
-      }
-
-      const content = transcript.content as SupadataCaptionItem[] | undefined;
-      if (!content || content.length === 0) {
-        return { unavailable: true, reason: 'no_captions' };
-      }
-
-      const normalizedSegments = content
-        .filter((item: SupadataCaptionItem): item is SupadataCaptionItem & { text: string } =>
-          Boolean(item.text?.trim())
-        )
-        .map((item) => ({
-          start: typeof item.offset === 'number' ? item.offset / 1000 : 0,
-          end:
-            typeof item.offset === 'number' && typeof item.duration === 'number'
-              ? (item.offset + item.duration) / 1000
-              : 0,
-          text: item.text.trim()
-        }));
-
-      if (normalizedSegments.length === 0) {
-        return { unavailable: true, reason: 'no_captions' };
-      }
-
-      const fullText = normalizedSegments
-        .map((seg) => seg.text)
-        .join(' ')
-        .trim();
-
-      if (!fullText) {
-        return { unavailable: true, reason: 'no_captions' };
-      }
-
-      const language = transcript.lang ?? lang ?? content[0]?.lang ?? 'en';
-
-      return {
-        youtubeVideoId,
-        language,
-        isGenerated: false,
-        text: fullText,
-        segments: normalizedSegments,
-        provider: 'supadata',
-        sourceTrackKind: 'unknown'
-      };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-
-      if (message.includes('404') || message.toLowerCase().includes('not found')) {
-        return { unavailable: true, reason: 'not_found' };
-      }
-      if (message.toLowerCase().includes('private')) {
-        return { unavailable: true, reason: 'private' };
-      }
-      if (message.toLowerCase().includes('captions') && message.toLowerCase().includes('disabled')) {
-        return { unavailable: true, reason: 'disabled' };
+      if (error instanceof SupadataError) {
+        return this.toUnavailableOrRethrow(error);
       }
 
       throw error;
     }
+
+    const segments = normalizeSegments(transcript.content);
+    if (segments.length === 0) {
+      return { unavailable: true, reason: 'no_captions' };
+    }
+
+    const text = segments
+      .map((segment) => segment.text)
+      .join(' ')
+      .trim();
+
+    if (!text) {
+      return { unavailable: true, reason: 'no_captions' };
+    }
+
+    return {
+      youtubeVideoId,
+      language: transcript.lang ?? requestedLanguage,
+      isGenerated: false,
+      text,
+      segments,
+      provider: 'supadata',
+      sourceTrackKind: 'unknown'
+    };
   }
+
+  private toUnavailableOrRethrow(error: { error: string }): YoutubeCaptionUnavailable {
+    const reason = captionReasonForSupadataError(error.error);
+
+    if (!reason) {
+      throw error;
+    }
+
+    return { unavailable: true, reason };
+  }
+}
+
+/**
+ * Map a `SupadataError.error` code to a cacheable unavailability reason, or
+ * `null` when the job should rethrow and retry.
+ *
+ * Getting this wrong costs money in both directions: a terminal failure that
+ * rethrows is re-billed on every BullMQ retry, and a transient failure that
+ * gets cached hides a broken API key behind "this video has no captions" for
+ * the whole negative-cache TTL.
+ */
+export function captionReasonForSupadataError(code: string): string | null {
+  switch (code) {
+    case 'transcript-unavailable':
+      return 'no_captions';
+    case 'not-found':
+      return 'not_found';
+    case 'invalid-request':
+      return 'other';
+    // internal-error, limit-exceeded, unauthorized, upgrade-required
+    default:
+      return null;
+  }
+}
+
+/** `content` is `TranscriptChunk[]` when `text: false`, but the SDK also allows a plain string. */
+function normalizeSegments(content: Transcript['content']): Array<{ start: number; end: number; text: string }> {
+  if (typeof content === 'string') {
+    const text = content.trim();
+
+    return text ? [{ start: 0, end: 0, text }] : [];
+  }
+
+  return content
+    .filter((chunk: TranscriptChunk) => Boolean(chunk.text?.trim()))
+    .map((chunk: TranscriptChunk) => ({
+      start: typeof chunk.offset === 'number' ? chunk.offset / 1000 : 0,
+      end:
+        typeof chunk.offset === 'number' && typeof chunk.duration === 'number'
+          ? (chunk.offset + chunk.duration) / 1000
+          : 0,
+      text: chunk.text.trim()
+    }));
 }
