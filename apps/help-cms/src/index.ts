@@ -3,12 +3,23 @@
  * classroomio.com/help/admin. Exchanges an OAuth `code` for an access token
  * server-side, since GITHUB_CLIENT_SECRET can never reach the browser.
  * Implements the standard Decap/Sveltia CMS OAuth-provider popup handshake.
+ *
+ * The final token is only ever released to an origin verified via the
+ * browser-guaranteed `MessageEvent.origin` on the opener's echo reply — never
+ * blindly broadcast with '*', and never trusted just because some origin
+ * claims to be listening. That's what closes the "attacker opens the popup,
+ * a real collaborator approves it, attacker's page receives the token" hole:
+ * an attacker's echo still carries the attacker's real, browser-verified
+ * origin, which won't match ALLOWED_ORIGINS. The Referer/Origin header
+ * recorded at /auth time is only a fallback for CMS builds that skip the
+ * echo step — also checked against the same allowlist, never trusted blind.
+ * If neither check passes, the token is not sent.
  */
 
 interface Env {
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
-  /** Comma-separated list of origins allowed to initiate /auth. */
+  /** Comma-separated list of origins allowed to receive the OAuth result. */
   ALLOWED_ORIGINS?: string;
 }
 
@@ -43,6 +54,13 @@ function decodeCookieValue(value: string | null): string | null {
   }
 }
 
+function allowedOrigins(env: Env): string[] {
+  return (env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+}
+
 function getRequestOrigin(request: Request): string | null {
   const originOrReferer = request.headers.get('origin') ?? request.headers.get('referer');
   if (!originOrReferer) return null;
@@ -54,20 +72,16 @@ function getRequestOrigin(request: Request): string | null {
   }
 }
 
-function isAllowedOrigin(origin: string, env: Env): boolean {
-  const allowed = (env.ALLOWED_ORIGINS ?? '')
-    .split(',')
-    .map((o) => o.trim())
-    .filter(Boolean);
-  if (allowed.length === 0) return true;
-
-  return allowed.includes(origin);
-}
-
 function handleAuth(request: Request, env: Env): Response {
-  // Reject rather than fail open when the caller's origin can't be determined.
+  const allowed = allowedOrigins(env);
   const origin = getRequestOrigin(request);
-  if (!origin || !isAllowedOrigin(origin, env)) {
+
+  // Best-effort only, not the real boundary — real popups often carry no
+  // Referer/Origin at all (e.g. opened blank and navigated afterward). This
+  // just rejects the cheap case: a Referer that IS present and clearly
+  // doesn't match. The token itself is never released without the stronger,
+  // header-independent check in the handshake page below.
+  if (allowed.length > 0 && origin && !allowed.includes(origin)) {
     return new Response('Forbidden', { status: 403 });
   }
 
@@ -93,15 +107,19 @@ function handleAuth(request: Request, env: Env): Response {
     'Set-Cookie',
     `${STATE_COOKIE}=${state}; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=600; Path=/callback`
   );
-  headers.append(
-    'Set-Cookie',
-    `${OPENER_ORIGIN_COOKIE}=${encodeURIComponent(origin)}; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=600; Path=/callback`
-  );
+  // Only recorded when present and already allowlisted — used strictly as a
+  // fallback if the handshake page's own echo-origin check never fires.
+  if (origin && allowed.includes(origin)) {
+    headers.append(
+      'Set-Cookie',
+      `${OPENER_ORIGIN_COOKIE}=${encodeURIComponent(origin)}; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=600; Path=/callback`
+    );
+  }
 
   return new Response(null, { status: 302, headers });
 }
 
-function renderHandshakePage(message: string, targetOrigin: string | null): Response {
+function renderHandshakePage(message: string, allowed: string[], fallbackOrigin: string | null): Response {
   const html = `<!doctype html>
 <html>
   <body>
@@ -109,10 +127,37 @@ function renderHandshakePage(message: string, targetOrigin: string | null): Resp
     <script>
       (function () {
         var statusEl = document.getElementById('status');
-        var targetOrigin = ${JSON.stringify(targetOrigin)};
+        var sent = false;
+        var allowed = ${JSON.stringify(allowed)};
+        var fallbackOrigin = ${JSON.stringify(fallbackOrigin)};
 
         function setStatus(text) {
           statusEl.textContent = text;
+        }
+
+        // Requires a non-empty, matching allowlist — unlike the server-side
+        // check, this one guards the actual token release, so a missing
+        // config must fail closed, not open.
+        function isAllowed(origin) {
+          return !!origin && allowed.indexOf(origin) !== -1;
+        }
+
+        function sendResult(targetOrigin) {
+          if (sent) return;
+          if (!isAllowed(targetOrigin)) {
+            setStatus('Could not verify the CMS origin for this sign-in attempt. Please try again.');
+            return;
+          }
+          sent = true;
+          try {
+            window.opener.postMessage(${JSON.stringify(message)}, targetOrigin);
+            setStatus('Signed in. Closing this window…');
+            setTimeout(function () {
+              window.close();
+            }, 250);
+          } catch (err) {
+            setStatus('Could not communicate with the opener window: ' + err.message);
+          }
         }
 
         if (!window.opener) {
@@ -120,20 +165,28 @@ function renderHandshakePage(message: string, targetOrigin: string | null): Resp
           return;
         }
 
-        if (!targetOrigin) {
-          setStatus('Could not verify the CMS origin for this sign-in attempt. Please try again.');
+        // e.origin below is set by the browser from the real sending window,
+        // not something the message content can spoof — that's what makes
+        // this check trustworthy where a claimed origin wouldn't be.
+        window.addEventListener(
+          'message',
+          function receiveMessage(e) {
+            window.removeEventListener('message', receiveMessage, false);
+            sendResult(e.origin);
+          },
+          false
+        );
+
+        try {
+          window.opener.postMessage('authorizing:github', '*');
+        } catch (err) {
+          setStatus('Could not reach the opener window: ' + err.message);
           return;
         }
 
-        try {
-          window.opener.postMessage(${JSON.stringify(message)}, targetOrigin);
-          setStatus('Signed in. Closing this window…');
-          setTimeout(function () {
-            window.close();
-          }, 250);
-        } catch (err) {
-          setStatus('Could not communicate with the opener window: ' + err.message);
-        }
+        setTimeout(function () {
+          sendResult(fallbackOrigin);
+        }, 300);
       })();
     </script>
   </body>
@@ -147,12 +200,12 @@ async function handleCallback(request: Request, env: Env): Promise<Response> {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const cookieState = readCookie(request.headers.get('cookie'), STATE_COOKIE);
-  const rawOpenerOrigin = readCookie(request.headers.get('cookie'), OPENER_ORIGIN_COOKIE);
-  const openerOrigin = decodeCookieValue(rawOpenerOrigin);
+  const fallbackOrigin = decodeCookieValue(readCookie(request.headers.get('cookie'), OPENER_ORIGIN_COOKIE));
+  const allowed = allowedOrigins(env);
 
   const secureAttr = url.protocol === 'https:' ? 'Secure; ' : '';
   const finish = (message: string): Response => {
-    const response = renderHandshakePage(message, openerOrigin);
+    const response = renderHandshakePage(message, allowed, fallbackOrigin);
     response.headers.append(
       'Set-Cookie',
       `${STATE_COOKIE}=; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=0; Path=/callback`
@@ -164,7 +217,7 @@ async function handleCallback(request: Request, env: Env): Promise<Response> {
     return response;
   };
 
-  if (!code || !state || !cookieState || state !== cookieState || !openerOrigin) {
+  if (!code || !state || !cookieState || state !== cookieState) {
     return finish('authorization:github:error:{"message":"Invalid or missing OAuth state"}');
   }
 
