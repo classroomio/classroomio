@@ -45,6 +45,33 @@ bar so the flow works in reverse too. Two entry points into the OAuth flow, `zap
 Authorize → Connected, so a user who picked Slack in the directory lands back on "Continue building
 your Slack Zap" instead of a generic connected screen.
 
+## Sidebar: shown inside the real dashboard, not as a standalone product
+
+Every screen in this flow (except `oauth-consent.html`, see below) renders inside the actual
+ClassroomIO dashboard chrome: the same `<aside class="sidebar">` a signed-in admin sees, not a
+Zapier-only shell. This is deliberate. The point isn't to show Zapier screens in isolation, it's to
+show stakeholders exactly where the feature lives inside the product and how a user gets to it.
+
+The sidebar structure matches the real navigation IA
+(`apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts`): `Dashboard`, `Stats`, and
+`Setup` as top-level items, then grouped sections for `Content` (Courses, Cohorts, Media, Tags,
+Widgets), `People` (Community, Audience), and `Automation` (MCP, API, Zapier), followed by
+`Settings` and the signed-in user's profile pinned to the bottom. `Zapier` is the only working link
+in this sidebar (every other item points to `#`, since this prototype is scoped to the Zapier flow,
+not a full dashboard clone), and it's marked active on every screen in this flow.
+
+The one thing that changes between screens is what `Zapier` links back to: on the four
+pre-connection screens (`automation-overview.html`, `zapier-connect.html`, `app-directory.html`,
+`app-detail.html`) it points to `zapier-connect.html`, and on the four post-connection screens
+(`zapier-connected.html`, `zap-templates.html`, `zap-builder.html`, `manage-zaps.html`) it points to
+`zapier-connected.html`, so clicking it from anywhere in the flow always lands on "wherever this org
+currently is" with Zapier, connected or not.
+
+`oauth-consent.html` intentionally keeps its own minimal header (brand mark and a couple of top
+actions, no full sidebar), matching how real OAuth authorize screens work: Zapier's own consent
+screen doesn't carry the authorizing app's navigation chrome either, and dropping the sidebar there
+also correctly signals a context switch out of the ClassroomIO dashboard proper.
+
 ## Back navigation
 
 Every page except the landing page (`zapier-connect.html`) and the automation hub
