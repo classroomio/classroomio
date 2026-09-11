@@ -144,8 +144,29 @@ collections:
       - { label: Draft, name: draft, widget: boolean, required: false, default: false }
       - { label: Body, name: body, widget: markdown }
 
+  - name: student_onboarding
+    label: 'For Students: Get Started'
+    folder: apps/help/content/help/student-onboarding
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { label: 'Label override', name: label, widget: string, required: false }
+      - { label: 'Last reviewed', name: last_reviewed, widget: string, required: false, hint: 'YYYY-MM-DD' }
+      - { label: Draft, name: draft, widget: boolean, required: false, default: false }
+      - { label: Body, name: body, widget: markdown }
+
   - name: student_guides
-    label: 'Student Guides'
+    label: 'For Students: Using ClassroomIO'
     folder: apps/help/content/help/student-guides
     extension: mdx
     format: frontmatter

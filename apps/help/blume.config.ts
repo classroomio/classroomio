@@ -74,7 +74,7 @@ export default defineConfig({
     sidebar: [
       '/',
       {
-        label: 'Running your academy',
+        label: 'Your Academy',
         display: 'flat',
         items: [
           {
@@ -89,7 +89,7 @@ export default defineConfig({
             ]
           },
           {
-            label: 'Create & deliver learning',
+            label: 'Create & Deliver',
             display: 'group',
             collapsed: true,
             items: [
@@ -104,7 +104,7 @@ export default defineConfig({
             ]
           },
           {
-            label: 'Manage students & enrollment',
+            label: 'Manage Students',
             display: 'group',
             collapsed: true,
             items: [
@@ -117,7 +117,7 @@ export default defineConfig({
             ]
           },
           {
-            label: 'Publish & brand your academy',
+            label: 'Publish & Brand',
             display: 'group',
             collapsed: true,
             items: [
@@ -143,25 +143,25 @@ export default defineConfig({
             label: 'Integrations & SSO',
             display: 'group',
             collapsed: true,
-            items: ['/integrations', '/integrations/enterprise-sso-setup', '/integrations/use-the-community-forum']
+            items: ['/integrations/enterprise-sso-setup', '/integrations/use-the-community-forum']
           }
         ]
       },
       {
-        label: 'Learning on ClassroomIO',
+        label: 'For Students',
         display: 'flat',
         items: [
           {
-            label: 'Student guides',
+            label: 'Get Started',
             display: 'group',
             collapsed: true,
-            items: [
-              '/student-guides',
-              '/student-guides/join-a-course',
-              '/student-guides/navigate-your-dashboard',
-              '/student-guides/join-a-live-class',
-              '/student-guides/ask-a-question'
-            ]
+            items: ['/student-onboarding/join-a-course', '/student-onboarding/navigate-your-dashboard']
+          },
+          {
+            label: 'Using the LMS',
+            display: 'group',
+            collapsed: true,
+            items: ['/student-guides/join-a-live-class', '/student-guides/ask-a-question']
           }
         ]
       },
@@ -169,7 +169,6 @@ export default defineConfig({
         label: 'Reference',
         display: 'flat',
         items: [
-          '/reference',
           '/reference/glossary',
           '/reference/organization',
           '/reference/course',

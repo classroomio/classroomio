@@ -2,18 +2,12 @@
  * @cio/help-cms — GitHub OAuth proxy for the Sveltia CMS admin UI at
  * classroomio.com/help/admin. Exchanges an OAuth `code` for an access token
  * server-side, since GITHUB_CLIENT_SECRET can never reach the browser.
- * Implements the standard Decap/Sveltia CMS OAuth-provider popup handshake.
  *
- * The final token is only ever released to an origin verified via the
- * browser-guaranteed `MessageEvent.origin` on the opener's echo reply — never
- * blindly broadcast with '*', and never trusted just because some origin
- * claims to be listening. That's what closes the "attacker opens the popup,
- * a real collaborator approves it, attacker's page receives the token" hole:
- * an attacker's echo still carries the attacker's real, browser-verified
- * origin, which won't match ALLOWED_ORIGINS. The Referer/Origin header
- * recorded at /auth time is only a fallback for CMS builds that skip the
- * echo step — also checked against the same allowlist, never trusted blind.
- * If neither check passes, the token is not sent.
+ * The token is only released to an origin verified via the browser-set
+ * `MessageEvent.origin` on the opener's echo — never to `'*'` or to whoever
+ * merely claims to be listening. An attacker's opener would echo back its
+ * own real origin, which won't match ALLOWED_ORIGINS. The Referer-derived
+ * cookie is only a fallback for CMS builds that skip the echo step.
  */
 
 interface Env {
@@ -74,14 +68,13 @@ function getRequestOrigin(request: Request): string | null {
 
 function handleAuth(request: Request, env: Env): Response {
   const allowed = allowedOrigins(env);
-  const origin = getRequestOrigin(request);
+  if (allowed.length === 0) {
+    return new Response('Forbidden', { status: 403 });
+  }
 
-  // Best-effort only, not the real boundary — real popups often carry no
-  // Referer/Origin at all (e.g. opened blank and navigated afterward). This
-  // just rejects the cheap case: a Referer that IS present and clearly
-  // doesn't match. The token itself is never released without the stronger,
-  // header-independent check in the handshake page below.
-  if (allowed.length > 0 && origin && !allowed.includes(origin)) {
+  // Best-effort only — real popups often send no Referer/Origin at all.
+  const origin = getRequestOrigin(request);
+  if (origin && !allowed.includes(origin)) {
     return new Response('Forbidden', { status: 403 });
   }
 
@@ -107,8 +100,7 @@ function handleAuth(request: Request, env: Env): Response {
     'Set-Cookie',
     `${STATE_COOKIE}=${state}; HttpOnly; ${secureAttr}SameSite=Lax; Max-Age=600; Path=/callback`
   );
-  // Only recorded when present and already allowlisted — used strictly as a
-  // fallback if the handshake page's own echo-origin check never fires.
+  // Fallback only, for when the handshake page's echo-origin check can't fire.
   if (origin && allowed.includes(origin)) {
     headers.append(
       'Set-Cookie',
@@ -135,9 +127,7 @@ function renderHandshakePage(message: string, allowed: string[], fallbackOrigin:
           statusEl.textContent = text;
         }
 
-        // Requires a non-empty, matching allowlist — unlike the server-side
-        // check, this one guards the actual token release, so a missing
-        // config must fail closed, not open.
+        // Fails closed on a missing allowlist — this guards the real token release.
         function isAllowed(origin) {
           return !!origin && allowed.indexOf(origin) !== -1;
         }
@@ -165,9 +155,7 @@ function renderHandshakePage(message: string, allowed: string[], fallbackOrigin:
           return;
         }
 
-        // e.origin below is set by the browser from the real sending window,
-        // not something the message content can spoof — that's what makes
-        // this check trustworthy where a claimed origin wouldn't be.
+        // e.origin is browser-set from the real sender, unlike a claimed origin.
         window.addEventListener(
           'message',
           function receiveMessage(e) {

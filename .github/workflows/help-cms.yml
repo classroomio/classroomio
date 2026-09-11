@@ -104,10 +104,10 @@ jobs:
 
       - run: pnpm --filter @cio/help build
 
-      # Installed independently of the PR's own devDependency so a PR can't swap in a
-      # malicious "wrangler" for the step below, where the Cloudflare token is exposed.
+      # Isolated from the PR's own wrangler devDependency, with an explicit registry —
+      # PR code earlier in this job could otherwise taint npm_config_registry via $GITHUB_ENV.
       - name: Install pinned wrangler
-        run: npm install --no-save --prefix "$RUNNER_TEMP/wrangler" wrangler@4.86.0
+        run: npm install --no-save --registry https://registry.npmjs.org --prefix "$RUNNER_TEMP/wrangler" wrangler@4.86.0
 
       - name: Upload Workers preview version
         id: deploy
