@@ -127,6 +127,13 @@
       "when": 1788867843221,
       "tag": "0017_learner_lifecycle",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1789145839925,
+      "tag": "0018_detach_work_on_member_delete",
+      "breakpoints": true
     }
   ]
 }

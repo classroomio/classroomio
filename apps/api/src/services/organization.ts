@@ -1014,9 +1014,13 @@ export async function getUserAnalytics(userId: string, orgId: string) {
           exercises_count: 0,
           exercises_completed: 0
         };
-        const lessonsCompleted = progressData.lessons_completed || 0;
-        const lessonsCount = progressData.lessons_count || 0;
-        const progressPercentage = courseProgress ? calcPercentageWithRounding(lessonsCompleted, lessonsCount) : 0;
+        // A course's work is its lessons and its exercises, matching
+        // `calcCourseProgress` in the dashboard and the audience roster. The
+        // exercise counts were already here; only the percentage ignored them,
+        // so a learner who watched everything and submitted nothing read 100%.
+        const completedItems = (progressData.lessons_completed || 0) + (progressData.exercises_completed || 0);
+        const totalItems = (progressData.lessons_count || 0) + (progressData.exercises_count || 0);
+        const progressPercentage = courseProgress ? calcPercentageWithRounding(completedItems, totalItems) : 0;
 
         return {
           ...course,
@@ -1029,11 +1033,19 @@ export async function getUserAnalytics(userId: string, orgId: string) {
       })
     );
 
-    // Calculate overall stats
+    // Overall progress folds the same items as the rows above, so the headline
+    // figure and the per-course rows cannot disagree. Courses whose progress
+    // lookup failed stay excluded, as main does.
     const progressCourses = coursesWithStats.filter((course) => !course.progress_failed);
-    const totalLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
-    const completedLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
-    const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
+    const totalItems = progressCourses.reduce(
+      (acc, course) => acc + (course.lessons_count || 0) + (course.exercises_count || 0),
+      0
+    );
+    const completedItems = progressCourses.reduce(
+      (acc, course) => acc + (course.lessons_completed || 0) + (course.exercises_completed || 0),
+      0
+    );
+    const overallCourseProgress = calcPercentageWithRounding(completedItems, totalItems);
 
     const graded = coursesWithStats.filter(
       (course): course is (typeof coursesWithStats)[number] & { average_grade: number } => course.average_grade !== null
