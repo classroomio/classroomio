@@ -2345,7 +2345,16 @@
           "link_copied": "Linket er kopieret"
         },
         "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
-        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
+        "add_content_created_section": "Sektion er oprettet!",
+        "add_content_created_lesson": "Lektion er oprettet!",
+        "add_content_created_exercise": "Øvelse er oprettet!",
+        "add_content_create_another_section": "Opret en anden sektion",
+        "add_content_create_another_lesson": "Opret en anden lektion",
+        "add_content_create_another_exercise": "Opret en anden øvelse",
+        "add_content_open_now": "Åbn nu",
+        "add_content_later": "Senere",
+        "add_content_add_to_section": "Tilføj indhold"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",

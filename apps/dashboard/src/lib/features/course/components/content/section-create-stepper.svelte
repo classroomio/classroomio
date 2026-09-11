@@ -3,6 +3,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { lessonApi, courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
+  import { ContentType } from '@cio/utils/constants/content';
   import type { StepperState, StepperActions, BaseStepperProps } from './types';
   import { SECTION_STEPPER_DEFAULT_STATE, ADD_CONTENT_CREATE_SECTION_KEY } from './constants';
 
@@ -68,21 +69,32 @@
       try {
         // Calculate order if not provided
         const finalOrder = order ?? getNextOrder();
+        const trimmedTitle = title.trim();
 
-        await lessonApi.createSection(courseId, {
-          title: title.trim(),
+        const createdSection = await lessonApi.createSection(
           courseId,
-          order: finalOrder
-        });
+          {
+            title: trimmedTitle,
+            courseId,
+            order: finalOrder
+          },
+          { silent: true }
+        );
 
-        if (lessonApi.success) {
-          // Refresh course content so sidebar updates
+        if (createdSection) {
+          // Refresh course content so sidebar updates; success does not depend on it.
           const profileId = $profile?.id;
           if (profileId) {
-            await courseApi.refreshCourse(courseId, profileId);
+            await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+              console.error('Failed to refresh course after section create:', refreshError);
+            });
           }
-          // Notify parent that creation succeeded (section ID not needed for modal close)
-          onCreated('');
+
+          onCreated({
+            id: createdSection.id,
+            title: createdSection.title ?? trimmedTitle,
+            type: ContentType.Section
+          });
         }
       } finally {
         isSubmitting = false;

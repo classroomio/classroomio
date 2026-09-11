@@ -2345,7 +2345,16 @@
           "link_copied": "Đã sao chép liên kết"
         },
         "student_share_your_knowledge": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
-        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau."
+        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
+        "add_content_created_section": "Phần đã được tạo thành công!",
+        "add_content_created_lesson": "Bài học đã được tạo thành công!",
+        "add_content_created_exercise": "Bài tập đã được tạo thành công!",
+        "add_content_create_another_section": "Tạo thêm phần khác",
+        "add_content_create_another_lesson": "Tạo thêm bài học khác",
+        "add_content_create_another_exercise": "Tạo thêm bài tập khác",
+        "add_content_open_now": "Mở ngay",
+        "add_content_later": "Sau",
+        "add_content_add_to_section": "Thêm nội dung"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

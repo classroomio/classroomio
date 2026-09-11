@@ -3,6 +3,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { lessonApi, courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
+  import { ContentType } from '@cio/utils/constants/content';
   import type { StepperState, StepperActions, BaseStepperProps } from './types';
   import { LESSON_STEPPER_DEFAULT_STATE, ADD_CONTENT_CREATE_LESSON_KEY } from './constants';
 
@@ -61,22 +62,30 @@
 
       isSubmitting = true;
       try {
-        await lessonApi.create(courseId, {
-          title: title.trim(),
+        const trimmedTitle = title.trim();
+        const createdLesson = await lessonApi.create(
           courseId,
-          lessonAt: new Date().toDateString(),
-          isUnlocked: true,
-          order,
-          sectionId
-        });
+          {
+            title: trimmedTitle,
+            courseId,
+            lessonAt: new Date().toDateString(),
+            isUnlocked: true,
+            order,
+            sectionId
+          },
+          { silent: true }
+        );
 
-        if (lessonApi.success && lessonApi.lesson) {
-          // Refresh course content
+        if (createdLesson) {
+          // Refresh course content in the background; success does not depend on it.
           const profileId = $profile?.id;
           if (profileId) {
-            await courseApi.refreshCourse(courseId, profileId);
+            await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+              console.error('Failed to refresh course after lesson create:', refreshError);
+            });
           }
-          onCreated(lessonApi.lesson.id);
+
+          onCreated({ id: createdLesson.id, title: createdLesson.title ?? trimmedTitle, type: ContentType.Lesson });
         }
       } finally {
         isSubmitting = false;

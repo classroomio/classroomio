@@ -2345,7 +2345,16 @@
           "link_copied": "Link copiado"
         },
         "student_share_your_knowledge": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
-        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde."
+        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
+        "add_content_created_section": "Seção criada com sucesso!",
+        "add_content_created_lesson": "Lição criada com sucesso!",
+        "add_content_created_exercise": "Exercício criado com sucesso!",
+        "add_content_create_another_section": "Criar outra seção",
+        "add_content_create_another_lesson": "Criar outra lição",
+        "add_content_create_another_exercise": "Criar outro exercício",
+        "add_content_open_now": "Abrir agora",
+        "add_content_later": "Mais tarde",
+        "add_content_add_to_section": "Adicionar conteúdo"
       },
       "news_feed": {
         "heading": "Feed de notícias",

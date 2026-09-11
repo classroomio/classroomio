@@ -11,6 +11,7 @@
   import { EXERCISE_TEMPLATE_TAGS } from '$features/course/utils/constants';
   import { courseApi, exerciseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
+  import { ContentType } from '@cio/utils/constants/content';
   import type { StepperState, StepperActions, BaseStepperProps } from './types';
   import { EXERCISE_STEPPER_DEFAULT_STATE, EXERCISE_CREATE_TYPE } from './constants';
 
@@ -104,13 +105,24 @@
     }
 
     try {
-      await exerciseApi.createFromTemplate(courseId, String(template.id), { sectionId, order });
-      if (exerciseApi.success && exerciseApi.exercise) {
+      const createdExercise = await exerciseApi.createFromTemplate(courseId, String(template.id), {
+        sectionId,
+        order,
+        silent: true
+      });
+      if (createdExercise) {
         const profileId = $profile?.id;
         if (profileId) {
-          await courseApi.refreshCourse(courseId, profileId);
+          await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+            console.error('Failed to refresh course after exercise create:', refreshError);
+          });
         }
-        onCreated(exerciseApi.exercise.id);
+
+        onCreated({
+          id: createdExercise.id,
+          title: createdExercise.title ?? template.title ?? '',
+          type: ContentType.Exercise
+        });
       }
     } catch (error) {
       console.log('Error creating exercise from template', error);
@@ -131,18 +143,30 @@
 
     isLoading = true;
     try {
-      await exerciseApi.create(courseId, {
-        title: title.trim(),
-        sectionId,
-        order
-      });
+      const trimmedTitle = title.trim();
+      const createdExercise = await exerciseApi.create(
+        courseId,
+        {
+          title: trimmedTitle,
+          sectionId,
+          order
+        },
+        { silent: true }
+      );
 
-      if (exerciseApi.success && exerciseApi.exercise) {
+      if (createdExercise) {
         const profileId = $profile?.id;
         if (profileId) {
-          await courseApi.refreshCourse(courseId, profileId);
+          await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+            console.error('Failed to refresh course after exercise create:', refreshError);
+          });
         }
-        onCreated(exerciseApi.exercise.id);
+
+        onCreated({
+          id: createdExercise.id,
+          title: createdExercise.title ?? trimmedTitle,
+          type: ContentType.Exercise
+        });
       }
     } finally {
       isLoading = false;
@@ -262,7 +286,7 @@
       </Label>
 
       <div>
-        <div class="mb-5 flex items-center gap-2">
+        <div class="mb-5 flex flex-wrap items-center gap-2">
           {#each tags as tag (tag)}
             <Badge
               variant={selectedTag === tag ? 'default' : 'secondary'}
@@ -276,7 +300,7 @@
 
         <div class="max-h-[320px] overflow-y-auto pr-1">
           {#if exerciseTemplateApi.isLoading}
-            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+            <div class="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {#each Array(16) as _, index (index)}
                 <div class="ui:border-border h-[140px] w-full rounded-md border p-5 dark:bg-neutral-700">
                   <div class="flex h-full flex-col justify-evenly">
@@ -293,7 +317,7 @@
             <RadioOptionCardGroup
               bind:value={selectedTemplateId}
               options={templateRadioOptions}
-              class="grid-cols-2! lg:grid-cols-3! xl:grid-cols-4!"
+              class="grid-cols-1! sm:grid-cols-2! lg:grid-cols-3! xl:grid-cols-4!"
             />
           {:else}
             <p class="text-sm text-gray-500">
