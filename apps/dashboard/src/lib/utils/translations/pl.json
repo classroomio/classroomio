@@ -3058,7 +3058,8 @@
     "cohorts": "Kohorty",
     "upgrade_now": "Uaktualnij teraz",
     "upgrade_students": "{studentCount} z {studentLimit} uczniów",
-    "upgrade_left": "Pozostało {count}"
+    "upgrade_left": "Pozostało {count}",
+    "learning_paths": "Ścieżki edukacyjne"
   },
   "media_manager": {
     "page_title": "Menedżer mediów - ClassroomIO",
@@ -5234,6 +5235,154 @@
     "tabs": {
       "direct": "Bezpośrednio",
       "watching": "Obserwowanie"
+    }
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Usunąć kurs ze ścieżki?",
+        "description": "Kurs zostanie usunięty z tej ścieżki. Uczestnicy, którzy już zapisali się na kurs, zachowają dostęp i postępy.",
+        "cancel": "Anuluj",
+        "confirm": "Usuń kurs"
+      },
+      "add_courses": {
+        "title": "Dodaj kursy do ścieżki",
+        "description": "Wybierz kursy ze swojej organizacji, które chcesz uwzględnić w tej ścieżce edukacyjnej.",
+        "search_placeholder": "Szukaj kursów…",
+        "no_courses": "Brak dostępnych kursów do dodania.",
+        "no_matches": "Brak kursów pasujących do wyszukiwania.",
+        "cancel": "Anuluj",
+        "submit": "Dodaj {count} {count, plural, =1 {Kurs} other {Kursy}}",
+        "submitting": "Dodawanie kursów…"
+      },
+      "create": {
+        "title": "Utwórz ścieżkę edukacyjną",
+        "description": "Ustaw tytuł i opis nowej ścieżki edukacyjnej.",
+        "name_label": "Nazwa ścieżki",
+        "name_placeholder": "np. Tworzenie stron internetowych Fullstack",
+        "slug_label": "Slug URL",
+        "slug_placeholder": "fullstack-web-development",
+        "desc_label": "Opis",
+        "desc_placeholder": "Krótkie podsumowanie osiągnięć uczestników...",
+        "cancel": "Anuluj",
+        "submit": "Utwórz ścieżkę edukacyjną",
+        "creating": "Tworzenie…"
+      }
+    },
+    "workspace": {
+      "all_paths": "Wszystkie ścieżki edukacyjne",
+      "finish_setup": "Zakończ konfigurację · {percent}%",
+      "preview_student": "Wyświetl podgląd jako student",
+      "active": "Aktywne",
+      "draft": "Wersja robocza",
+      "archived": "Zarchiwizowane",
+      "coming_soon": {
+        "title": "{tab} — Wkrótce",
+        "description": "Ta karta obszaru roboczego będzie dostępna w Fazie 3. Zarządzanie kursami i ich konfiguracja są w pełni funkcjonalne w tej wersji."
+      },
+      "tabs": {
+        "courses": "Kursy",
+        "people": "Osoby",
+        "analytics": "Analityka",
+        "landing": "Strona docelowa",
+        "certificate": "Certyfikat",
+        "settings": "Ustawienia"
+      }
+    },
+    "setup": {
+      "title": "Skonfiguruj swoją ścieżkę",
+      "subtitle": "Zakończ te kroki, aby udostępnić {name} swoim uczestnikom.",
+      "summary": "Ścieżka zostanie uruchomiona po zamówieniu, wycenie i ustawieniu jej jako Aktywnej.",
+      "progress": "Ukończono {completed} z {total}",
+      "done": "Gotowe",
+      "launch_title": "Pozostało {count} {count, plural, =1 {step} other {steps}} do uruchomienia",
+      "launch_desc": "Zamów kursy, ustal cenę, dopracuj stronę docelową i aktywuj.",
+      "activate_now": "Aktywuj teraz",
+      "step_name_title": "Nazwij i opisz swoją ścieżkę",
+      "step_name_desc": "Nadaj ścieżce jasną nazwę, zorientowaną na rezultaty, i krótkie podsumowanie.",
+      "step_name_action": "Edytuj szczegóły",
+      "step_courses_title": "Dodaj kursy",
+      "step_courses_desc": "Wybierz kursy, które składają się na tę ścieżkę nauki.",
+      "step_courses_action": "Dodaj kursy",
+      "step_order_title": "Ustaw kolejność kursów",
+      "step_order_desc": "Przeciągnij kursy do kolejności, w jakiej uczniowie powinni je ukończyć.",
+      "step_order_action": "Ustaw kolejność",
+      "step_price_title": "Ustaw cenę",
+      "step_price_desc": "Wyceń ścieżkę jako pakiet — uczniowie zobaczą oszczędności w porównaniu z pojedynczymi kursami.",
+      "step_price_action": "Ustaw cenę",
+      "step_landing_title": "Dostosuj stronę docelową",
+      "step_landing_desc": "Rezultaty, umiejętności, instruktorzy, opinie i często zadawane pytania na publicznej stronie ścieżki.",
+      "step_landing_action": "Dostosuj",
+      "step_activate_title": "Aktywuj ścieżkę",
+      "step_activate_desc": "Ustaw status na Aktywny, aby wyświetlał się na stronie docelowej i w systemie LMS.",
+      "step_activate_action": "Aktywuj"
+    },
+    "builder": {
+      "title": "Kursy",
+      "subtitle": "Dodaj kursy i przeciągnij je, aby ustawić kolejność, w jakiej uczniowie będą je przechodzić.",
+      "unlock_rule_title": "Odblokuj kursy w kolejności",
+      "unlock_rule_desc": "Każdy kurs pozostaje zablokowany, dopóki uczeń nie ukończy lekcji i ćwiczeń z poprzedniego kursu. Wyłącz, aby zezwolić na dowolną kolejność.",
+      "list_head": "{count} {count, plural, =1 {kurs} inne {kursy}} w tej ścieżce",
+      "drag_hint": "Przeciągnij, aby zmienić kolejność",
+      "lessons_count": "{count} {count, plural, =1 {lekcja} inne {lekcje}}",
+      "exercises_count": "{count} {count, plural, =1 {ćwiczenie} inne {ćwiczenia}}",
+      "open_course": "Otwórz kurs",
+      "remove_course": "Usuń ze ścieżki",
+      "add_course_button": "Dodaj kurs do ścieżki",
+      "certificate_title": "Certyfikat ścieżki",
+      "certificate_desc": "Przyznawany automatycznie po ukończeniu przez ucznia wszystkich {count} kursów.",
+      "configure_certificate": "Skonfiguruj certyfikat"
+    },
+    "listing": {
+      "title": "Ścieżki edukacyjne",
+      "subtitle": "Twórz i zarządzaj ustrukturyzowanymi doświadczeniami edukacyjnymi, które prowadzą uczniów przez wiele kursów.",
+      "create_path": "Utwórz ścieżkę edukacyjną",
+      "create_course": "Utwórz kurs",
+      "empty": {
+        "title": "Utwórz swoją pierwszą ścieżkę edukacyjną",
+        "description": "Połącz wiele kursów w uporządkowaną sekwencję ze śledzeniem kamieni milowych, bramkami i opcjonalnym certyfikatem ukończenia.",
+        "create_path": "Utwórz ścieżkę edukacyjną",
+        "create_course": "Utwórz kurs"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "not_published": "Nieopublikowane jeszcze",
+        "completion": "Ukończenie",
+        "manage": "Zarządzaj",
+        "continue_setup": "Kontynuuj konfigurację"
+      },
+      "filters": {
+        "title": "Filtry",
+        "clear_all": "Wyczyść wszystko",
+        "group_status": "Status",
+        "group_enrollment": "Zapisy",
+        "group_completion": "Wskaźnik ukończenia",
+        "all": "Wszystkie",
+        "draft": "Wersja robocza",
+        "published": "Opublikowano",
+        "archived": "Zarchiwizowano",
+        "no_learners": "Brak uczestników",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Niski (poniżej 25%)",
+        "medium": "Średni (25–75%)",
+        "high": "Wysoki (75%+)"
+      },
+      "toolbar": {
+        "search_placeholder": "Wyszukaj ścieżki edukacyjne…",
+        "preview_empty": "Podgląd – stan pusty",
+        "exit_preview_empty": "Zamknij podgląd",
+        "grid_view": "Widok siatki",
+        "list_view": "Widok listy"
+      },
+      "overview": {
+        "active_paths": "Aktywne ścieżki",
+        "enrolled_learners": "Zapisani uczestnicy",
+        "completions": "Ukończenia",
+        "completion_rate": "Wskaźnik ukończenia",
+        "across_all_paths": "We wszystkich ścieżkach"
+      }
     }
   }
 }

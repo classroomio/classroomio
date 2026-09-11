@@ -3058,7 +3058,8 @@
     "cohorts": "Kohorten",
     "upgrade_now": "Jetzt upgraden",
     "upgrade_students": "{studentCount} von {studentLimit} Studenten",
-    "upgrade_left": "{count} übrig"
+    "upgrade_left": "{count} übrig",
+    "learning_paths": "Lernpfade"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",
@@ -5234,6 +5235,154 @@
     "tabs": {
       "direct": "Direkt",
       "watching": "Beobachtet"
+    }
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Kurs aus dem Lernpfad entfernen?",
+        "description": "Der Kurs wird aus diesem Lernpfad entfernt. Bereits eingeschriebene Teilnehmer behalten ihren Zugriff und ihren Fortschritt.",
+        "cancel": "Abbrechen",
+        "confirm": "Kurs entfernen"
+      },
+      "add_courses": {
+        "title": "Kurse zum Lernpfad hinzufügen",
+        "description": "Wählen Sie Kurse Ihrer Organisation aus, die in diesen Lernpfad aufgenommen werden sollen.",
+        "search_placeholder": "Kurse suchen…",
+        "no_courses": "Keine Kurse zum Hinzufügen verfügbar.",
+        "no_matches": "Ihre Suche ergab keine Treffer.",
+        "cancel": "Abbrechen",
+        "submit": "{Anzahl} {Anzahl, Plural, =1 {Kurs} weitere {Kurse}} hinzufügen",
+        "submitting": "Kurse werden hinzugefügt…"
+      },
+      "create": {
+        "title": "Lernpfad erstellen",
+        "description": "Geben Sie einen Titel und eine Beschreibung für Ihren neuen Lernpfad ein.",
+        "name_label": "Pfadname",
+        "name_placeholder": "z. B. Fullstack-Webentwicklung",
+        "slug_label": "URL-Slug",
+        "slug_placeholder": "fullstack-web-development",
+        "desc_label": "Beschreibung",
+        "desc_placeholder": "Eine kurze Zusammenfassung der Lernziele…",
+        "cancel": "Abbrechen",
+        "submit": "Lernpfad erstellen",
+        "creating": "Wird erstellt…"
+      }
+    },
+    "workspace": {
+      "all_paths": "Alle Lernpfade",
+      "finish_setup": "Einrichtung abschließen · {percent}%",
+      "preview_student": "Vorschau als Teilnehmer",
+      "active": "Aktiv",
+      "draft": "Entwurf",
+      "archived": "Archiviert",
+      "coming_soon": {
+        "title": "{tab} – Demnächst verfügbar",
+        "description": "Dieser Arbeitsbereich-Tab wird in Phase 3 verfügbar sein. Kursverwaltung und -einrichtung sind in dieser Version voll funktionsfähig."
+      },
+      "tabs": {
+        "courses": "Kurse",
+        "people": "Teilnehmer",
+        "analytics": "Analysen",
+        "landing": "Landingpage",
+        "certificate": "Zertifikat",
+        "settings": "Einstellungen"
+      }
+    },
+    "setup": {
+      "title": "Lernpfad einrichten",
+      "subtitle": "Führe diese Schritte aus, um {name} für deine Lernenden freizuschalten.",
+      "summary": "Ein Lernpfad wird freigeschaltet, sobald die Kurse bestellt, bepreist und aktiviert sind.",
+      "progress": "{completed} von {total} abgeschlossen",
+      "done": "Fertig",
+      "launch_title": "{count} {count, plural, =1 {step} weitere {steps}} bis zur Veröffentlichung",
+      "launch_desc": "Bestelle die Kurse, lege einen Preis fest, optimiere die Landingpage und aktiviere den Lernpfad.",
+      "activate_now": "Jetzt aktivieren",
+      "step_name_title": "Benenne und beschreibe deinen Lernpfad",
+      "step_name_desc": "Gib dem Lernpfad einen aussagekräftigen, ergebnisorientierten Namen und eine kurze Zusammenfassung.",
+      "step_name_action": "Details bearbeiten",
+      "step_courses_title": "Kurse hinzufügen",
+      "step_courses_desc": "Wählen Sie die Kurse aus, die diesen Lernpfad bilden.",
+      "step_courses_action": "Kurse hinzufügen",
+      "step_order_title": "Kursreihenfolge festlegen",
+      "step_order_desc": "Ordnen Sie die Kurse in der Reihenfolge an, in der die Lernenden sie absolvieren sollen.",
+      "step_order_action": "Bestellung festlegen",
+      "step_price_title": "Legen Sie Ihren Preis fest",
+      "step_price_desc": "Bieten Sie den Lernpfad als Paket an – so sehen die Lernenden die Einsparungen im Vergleich zu Einzelkursen.",
+      "step_price_action": "Festpreis",
+      "step_landing_title": "Passen Sie Ihre Landingpage an",
+      "step_landing_desc": "Ergebnisse, Fähigkeiten, Ausbilder, Erfahrungsberichte und FAQs auf der öffentlichen Pfadseite.",
+      "step_landing_action": "Anpassen",
+      "step_activate_title": "Pfad aktivieren",
+      "step_activate_desc": "Stellen Sie den Status auf „Aktiv“, damit er auf Ihrer Landingpage und im LMS angezeigt wird.",
+      "step_activate_action": "Aktivieren"
+    },
+    "builder": {
+      "title": "Kurse",
+      "subtitle": "Fügen Sie Kurse hinzu und legen Sie per Drag & Drop die Reihenfolge fest, in der die Studierenden die Kurse durchlaufen.",
+      "unlock_rule_title": "Kurse der Reihe nach freischalten",
+      "unlock_rule_desc": "Jeder Kurs bleibt gesperrt, bis ein Teilnehmer die Lektionen und Übungen des vorherigen Kurses abgeschlossen hat. Deaktivieren Sie diese Option, um die Reihenfolge frei zu wählen.",
+      "list_head": "{count} {count, plural, =1 {course} andere {courses}} in diesem Pfad",
+      "drag_hint": "Zum Neuanordnen ziehen",
+      "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
+      "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
+      "open_course": "Offener Kurs",
+      "remove_course": "Aus Pfad entfernen",
+      "add_course_button": "Füge dem Pfad einen Kurs hinzu",
+      "certificate_title": "Pfadzertifikat",
+      "certificate_desc": "Wird automatisch vergeben, wenn ein Student alle {count} Kurse abgeschlossen hat.",
+      "configure_certificate": "Zertifikat konfigurieren"
+    },
+    "listing": {
+      "title": "Lernpfade",
+      "subtitle": "Strukturierte Lernerfahrungen entwickeln und verwalten, die Lernende durch mehrere Kurse führen.",
+      "create_path": "Lernpfad erstellen",
+      "create_course": "Kurs erstellen",
+      "empty": {
+        "title": "Erstelle deinen ersten Lernpfad",
+        "description": "Mehrere Kurse lassen sich zu einer geordneten Abfolge zusammenfassen, inklusive Meilensteinverfolgung, Zugangskontrollen und optionalem Abschlusszertifikat.",
+        "create_path": "Lernpfad erstellen",
+        "create_course": "Kurs erstellen"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "not_published": "Noch nicht veröffentlicht",
+        "completion": "Fertigstellung",
+        "manage": "Verwalten",
+        "continue_setup": "Einrichtung fortsetzen"
+      },
+      "filters": {
+        "title": "Filter",
+        "clear_all": "Alles löschen",
+        "group_status": "Status",
+        "group_enrollment": "Teilnehmerzahlen",
+        "group_completion": "Abschlussquote",
+        "all": "Alle",
+        "draft": "Entwurf",
+        "published": "Veröffentlicht",
+        "archived": "Archiviert",
+        "no_learners": "Noch keine Teilnehmer",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Niedrig (unter 25 %)",
+        "medium": "Mittel (25–75 %)",
+        "high": "Hoch (75 % und mehr)"
+      },
+      "toolbar": {
+        "search_placeholder": "Lernpfade suchen…",
+        "preview_empty": "Vorschau (leerer Zustand)",
+        "exit_preview_empty": "Vorschau beenden",
+        "grid_view": "Rasteransicht",
+        "list_view": "Listenansicht"
+      },
+      "overview": {
+        "active_paths": "Aktive Lernpfade",
+        "enrolled_learners": "Teilnehmer",
+        "completions": "Abschlüsse",
+        "completion_rate": "Abschlussquote",
+        "across_all_paths": "Über alle Lernpfade hinweg"
+      }
     }
   }
 }

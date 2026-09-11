@@ -3058,7 +3058,8 @@
     "cohorts": "Cohortes",
     "upgrade_now": "Actualiza ahora",
     "upgrade_students": "{studentCount} de {studentLimit} estudiantes",
-    "upgrade_left": "{count} restante"
+    "upgrade_left": "{count} restante",
+    "learning_paths": "Rutas de aprendizaje"
   },
   "media_manager": {
     "page_title": "Administrador de medios - ClassroomIO",
@@ -5234,6 +5235,154 @@
     "tabs": {
       "direct": "Directo",
       "watching": "Siguiendo"
+    }
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "¿Eliminar curso de la ruta?",
+        "description": "El curso se eliminará de esta ruta. Los alumnos ya inscritos conservarán su acceso y progreso.",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar curso"
+      },
+      "add_courses": {
+        "title": "Añadir cursos a la ruta",
+        "description": "Seleccione los cursos de su organización que desea incluir en esta ruta de aprendizaje.",
+        "search_placeholder": "Buscar cursos…",
+        "no_courses": "No hay cursos disponibles para añadir.",
+        "no_matches": "No se encontraron cursos que coincidan con su búsqueda.",
+        "cancel": "Cancelar",
+        "submit": "Añadir {count} {count, plural, =1 {Curso} otros {Cursos}}",
+        "submitting": "Añadiendo cursos…"
+      },
+      "create": {
+        "title": "Crear ruta de aprendizaje",
+        "description": "Establezca un título y una descripción para su nueva ruta de aprendizaje.",
+        "name_label": "Nombre de la ruta",
+        "name_placeholder": "Ej. Desarrollo web fullstack",
+        "slug_label": "URL",
+        "slug_placeholder": "desarrollo web fullstack",
+        "desc_label": "Descripción",
+        "desc_placeholder": "Un breve resumen de lo que los estudiantes lograrán...",
+        "cancel": "Cancelar",
+        "submit": "Crear ruta de aprendizaje",
+        "creating": "Creando…"
+      }
+    },
+    "workspace": {
+      "all_paths": "Todas las rutas de aprendizaje",
+      "finish_setup": "Finalizar configuración · {percent}%",
+      "preview_student": "Vista previa como estudiante",
+      "active": "Activo",
+      "draft": "Borrador",
+      "archived": "Archivado",
+      "coming_soon": {
+        "title": "{tab} — Próximamente",
+        "description": "Esta pestaña del espacio de trabajo estará disponible en la Fase 3. La gestión y configuración del curso son totalmente funcionales en esta versión."
+      },
+      "tabs": {
+        "courses": "Cursos",
+        "people": "Personas",
+        "analytics": "Análisis",
+        "landing": "Página de inicio",
+        "certificate": "Certificado",
+        "settings": "Configuración"
+      }
+    },
+    "setup": {
+      "title": "Configura tu ruta",
+      "subtitle": "Sigue estos pasos para lanzar {nombre} a tus alumnos.",
+      "summary": "Una ruta se activa una vez que sus cursos se han pedido, se les ha asignado un precio y se han marcado como Activos.",
+      "progress": "{completados} de {total} completados",
+      "done": "Listo",
+      "launch_title": "{count} {count, plural, =1 {step} otros {steps}} restantes para el lanzamiento",
+      "launch_desc": "Pide los cursos, establece un precio, optimiza la página de inicio y activa.",
+      "activate_now": "Activar ahora",
+      "step_name_title": "Nombra y describe tu ruta",
+      "step_name_desc": "Dale a la ruta un nombre claro y descriptivo, junto con un breve resumen.",
+      "step_name_action": "Editar detalles",
+      "step_courses_title": "Añadir cursos",
+      "step_courses_desc": "Selecciona los cursos que componen esta ruta de aprendizaje.",
+      "step_courses_action": "Agregar cursos",
+      "step_order_title": "Establecer el orden de los cursos",
+      "step_order_desc": "Arrastra los cursos para ordenarlos según el orden en que los alumnos deben completarlos.",
+      "step_order_action": "Establecer orden",
+      "step_price_title": "Establecer precio",
+      "step_price_desc": "Cotiza el curso como un paquete: los alumnos verán el ahorro en comparación con los cursos individuales.",
+      "step_price_action": "Establecer precio",
+      "step_landing_title": "Personalizar la página de inicio",
+      "step_landing_desc": "Resultados, habilidades, instructores, testimonios y preguntas frecuentes en la página pública del curso.",
+      "step_landing_action": "Personalizar",
+      "step_activate_title": "Activar el curso",
+      "step_activate_desc": "Establece el estado como Activo para que aparezca en tu página de inicio y en la plataforma de aprendizaje en línea (LMS).",
+      "step_activate_action": "Activar"
+    },
+    "builder": {
+      "title": "Cursos",
+      "subtitle": "Agrega cursos y arrástralos para establecer el orden en que los alumnos avanzan por ellos.",
+      "unlock_rule_title": "Desbloquear cursos en orden",
+      "unlock_rule_desc": "Cada curso permanece bloqueado hasta que el alumno completa las lecciones y ejercicios del anterior. Desactiva esta opción para permitir cualquier orden.",
+      "list_head": "{count} {count, plural, =1 {curso} otros {cursos}} en esta ruta",
+      "drag_hint": "Arrastra para reordenar",
+      "lessons_count": "{count} {count, plural, =1 {lección} otras {lecciones}}",
+      "exercises_count": "{count} {count, plural, =1 {ejercicio} otros {ejercicios}}",
+      "open_course": "Abrir curso",
+      "remove_course": "Eliminar de la ruta",
+      "add_course_button": "Añadir curso a la ruta",
+      "certificate_title": "Certificado de ruta",
+      "certificate_desc": "Se otorga automáticamente cuando un estudiante completa todos los {count} cursos.",
+      "configure_certificate": "Configurar certificado"
+    },
+    "listing": {
+      "title": "Rutas de aprendizaje",
+      "subtitle": "Crea y gestiona experiencias de aprendizaje estructuradas que guían a los estudiantes a través de múltiples cursos.",
+      "create_path": "Crear ruta de aprendizaje",
+      "create_course": "Crear curso",
+      "empty": {
+        "title": "Crea tu primera ruta de aprendizaje",
+        "description": "Agrupa varios cursos en una secuencia ordenada con seguimiento de hitos, acceso controlado y un certificado de finalización opcional.",
+        "create_path": "Crear ruta de aprendizaje",
+        "create_course": "Crear curso"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {curso} otros {cursos}}",
+        "learners_count": "{count} {count, plural, =1 {alumno} otros {alumnos}}",
+        "not_published": "Aún no publicado",
+        "completion": "Finalización",
+        "manage": "Gestionar",
+        "continue_setup": "Continuar configuración"
+      },
+      "filters": {
+        "title": "Filtros",
+        "clear_all": "Borrar todo",
+        "group_status": "Estado",
+        "group_enrollment": "Inscripciones",
+        "group_completion": "Tasa de finalización",
+        "all": "Todos",
+        "draft": "Borradores",
+        "published": "Publicados",
+        "archived": "Archivados",
+        "no_learners": "Sin alumnos aún",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Bajo (menos del 25%)",
+        "medium": "Medio (25-75%)",
+        "high": "Alto (más del 75%)"
+      },
+      "toolbar": {
+        "search_placeholder": "Buscar rutas de aprendizaje…",
+        "preview_empty": "Vista previa del estado vacío",
+        "exit_preview_empty": "Salir de la vista previa",
+        "grid_view": "Vista de cuadrícula",
+        "list_view": "Vista de lista"
+      },
+      "overview": {
+        "active_paths": "Rutas activas",
+        "enrolled_learners": "Alumnos inscritos",
+        "completions": "Finalizaciones",
+        "completion_rate": "Tasa de finalización",
+        "across_all_paths": "En todas las rutas"
+      }
     }
   }
 }

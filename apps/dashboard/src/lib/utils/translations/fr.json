@@ -3058,7 +3058,8 @@
     "cohorts": "Cohortes",
     "upgrade_now": "Mettre à niveau maintenant",
     "upgrade_students": "{studentCount} sur {studentLimit} étudiants",
-    "upgrade_left": "Il reste {count}"
+    "upgrade_left": "Il reste {count}",
+    "learning_paths": "Parcours d'apprentissage"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -5234,6 +5235,154 @@
     "tabs": {
       "direct": "Direct",
       "watching": "En cours de visionnage"
+    }
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Supprimer le cours du parcours ?",
+        "description": "Le cours sera supprimé de ce parcours. Les apprenants déjà inscrits conserveront leur accès et leur progression.",
+        "cancel": "Annuler",
+        "confirm": "Supprimer le cours"
+      },
+      "add_courses": {
+        "title": "Ajouter des cours au parcours",
+        "description": "Sélectionnez les cours de votre organisation à inclure dans ce parcours d'apprentissage.",
+        "search_placeholder": "Rechercher des cours…",
+        "no_courses": "Aucun cours disponible.",
+        "no_matches": "Aucun cours ne correspond à votre recherche.",
+        "cancel": "Annuler",
+        "submit": "Ajouter {count} {count, plural, =1 {Cours} autre {Cours}}",
+        "submitting": "Ajout des cours…"
+      },
+      "create": {
+        "title": "Créer un parcours d'apprentissage",
+        "description": "Définissez un titre et une description pour votre nouveau parcours d'apprentissage.",
+        "name_label": "Nom du parcours",
+        "name_placeholder": "Exemple : Développement web Fullstack",
+        "slug_label": "URL",
+        "slug_placeholder": "fullstack-web-development",
+        "desc_label": "Description",
+        "desc_placeholder": "Un bref résumé des acquis des apprenants…",
+        "cancel": "Annuler",
+        "submit": "Créer un parcours d'apprentissage",
+        "creating": "Création en cours…"
+      }
+    },
+    "workspace": {
+      "all_paths": "Tous les parcours d'apprentissage",
+      "finish_setup": "Terminer la configuration · {percent}%",
+      "preview_student": "Aperçu en tant qu'étudiant",
+      "active": "Actif",
+      "draft": "Brouillon",
+      "archived": "Archivé",
+      "coming_soon": {
+        "title": "{tab} — Prochainement",
+        "description": "Cet onglet d'espace de travail sera disponible dans la phase 3. La gestion et la configuration des cours sont entièrement fonctionnelles dans cette version."
+      },
+      "tabs": {
+        "courses": "Cours",
+        "people": "Personnes",
+        "analytics": "Statistiques",
+        "landing": "Page de destination",
+        "certificate": "Certificat",
+        "settings": "Paramètres"
+      }
+    },
+    "setup": {
+      "title": "Configurer votre parcours",
+      "subtitle": "Suivez ces étapes pour proposer {name} à vos apprenants.",
+      "summary": "Un parcours est mis en ligne une fois que ses cours sont commandés, tarifés et activés.",
+      "progress": "{completed} sur {total} terminés",
+      "done": "Terminé",
+      "launch_title": "{count} {count, plural, =1 {step} autres {steps}} restantes avant le lancement",
+      "launch_desc": "Commandez les cours, fixez un prix, peaufinez la page de destination et activez le parcours.",
+      "activate_now": "Activer maintenant",
+      "step_name_title": "Nommez et décrivez votre parcours",
+      "step_name_desc": "Donnez au parcours un nom clair, axé sur les résultats, et un court résumé.",
+      "step_name_action": "Modifier les détails",
+      "step_courses_title": "Ajouter des cours",
+      "step_courses_desc": "Sélectionnez les cours qui composent ce parcours d'apprentissage.",
+      "step_courses_action": "Ajouter des cours",
+      "step_order_title": "Définir l'ordre des cours",
+      "step_order_desc": "Glisser les cours dans l'ordre de progression des apprenants.",
+      "step_order_action": "Définir l'ordre",
+      "step_price_title": "Définir le prix",
+      "step_price_desc": "Proposer le prix du parcours sous forme de forfait : les apprenants bénéficient ainsi d'une réduction par rapport à l'achat de cours individuels.",
+      "step_price_action": "Définir le prix",
+      "step_landing_title": "Personnaliser la page d'accueil",
+      "step_landing_desc": "Résultats, compétences, formateurs, témoignages et FAQ sur la page publique du parcours.",
+      "step_landing_action": "Personnaliser",
+      "step_activate_title": "Activer le parcours",
+      "step_activate_desc": "Définir le statut sur « Actif » pour qu'il apparaisse sur votre page d'accueil et votre plateforme LMS.",
+      "step_activate_action": "Activer"
+    },
+    "builder": {
+      "title": "Cours",
+      "subtitle": "Ajouter des cours et les glisser pour définir l'ordre de progression des apprenants.",
+      "unlock_rule_title": "Déverrouiller les cours dans l'ordre",
+      "unlock_rule_desc": "Chaque cours reste verrouillé jusqu'à ce qu'un apprenant ait terminé les leçons et exercices du cours précédent. Désactiver cette option pour autoriser l'accès dans n'importe quel ordre.",
+      "list_head": "{count} {count, plural, =1 {course} autres {courses}} dans ce parcours",
+      "drag_hint": "Glisser pour réorganiser",
+      "lessons_count": "{count} {count, plural, =1 {lesson} autres {lessons}}",
+      "exercises_count": "{count} {count, plural, =1 {exercise} autres {exercises}}",
+      "open_course": "Ouvrir le cours",
+      "remove_course": "Retirer du parcours",
+      "add_course_button": "Ajouter le cours au parcours",
+      "certificate_title": "Certificat de parcours",
+      "certificate_desc": "Délivré automatiquement lorsqu'un étudiant a terminé tous les {count} cours.",
+      "configure_certificate": "Configurer le certificat"
+    },
+    "listing": {
+      "title": "Parcours d'apprentissage",
+      "subtitle": "Créer et gérer des expériences d'apprentissage structurées qui guident les apprenants à travers plusieurs cours.",
+      "create_path": "Créer un parcours d'apprentissage",
+      "create_course": "Créer un cours",
+      "empty": {
+        "title": "Créer votre premier parcours d'apprentissage",
+        "description": "Regroupez plusieurs cours en une séquence ordonnée avec suivi des étapes clés, validation des acquis et certificat de réussite optionnel.",
+        "create_path": "Créer un parcours d'apprentissage",
+        "create_course": "Créer un cours"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "not_published": "Non publié",
+        "completion": "Terminé",
+        "manage": "Gérer",
+        "continue_setup": "Continuer la configuration"
+      },
+      "filters": {
+        "title": "Filtres",
+        "clear_all": "Tout effacer",
+        "group_status": "Statut",
+        "group_enrollment": "Inscriptions",
+        "group_completion": "Taux d'achèvement",
+        "all": "Tous",
+        "draft": "Brouillons",
+        "published": "Publié",
+        "archived": "Archivé",
+        "no_learners": "Aucun apprenant pour l'instant",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Faible (moins de 25 %)",
+        "medium": "Moyen (25 à 75 %)",
+        "high": "Élevé (75 % et plus)"
+      },
+      "toolbar": {
+        "search_placeholder": "Rechercher des parcours d'apprentissage…",
+        "preview_empty": "Aperçu (état vide)",
+        "exit_preview_empty": "Quitter l'aperçu",
+        "grid_view": "Vue grille",
+        "list_view": "Vue liste"
+      },
+      "overview": {
+        "active_paths": "Parcours actifs",
+        "enrolled_learners": "Apprenants inscrits",
+        "completions": "Achèvements",
+        "completion_rate": "Taux d'achèvement",
+        "across_all_paths": "Tous parcours confondus"
+      }
     }
   }
 }

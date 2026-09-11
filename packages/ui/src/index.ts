@@ -63,6 +63,7 @@ export * as FileDropZone from './custom/file-drop-zone';
 // import { EdraEditor } from '@cio/ui/custom/editor/ui';
 export * as ImageCropper from './custom/image-cropper';
 export { Chip } from './custom/chip';
+export { PathBadge } from './custom/path-badge';
 export { IconButton } from './custom/icon-button';
 export { TextareaField } from './custom/textarea-field';
 export { CheckboxField } from './custom/checkbox-field';

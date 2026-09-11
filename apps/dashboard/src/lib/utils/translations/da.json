@@ -3058,7 +3058,8 @@
     "cohorts": "Kohorter",
     "upgrade_now": "Opgrader nu",
     "upgrade_students": "{studentCount} af {studentLimit} elever",
-    "upgrade_left": "{count} tilbage"
+    "upgrade_left": "{count} tilbage",
+    "learning_paths": "Læringsstier"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -5234,6 +5235,154 @@
     "tabs": {
       "direct": "Direkte",
       "watching": "Ser"
+    }
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Fjern kursus fra sti?",
+        "description": "Kurset vil blive fjernet fra denne sti. Elever, der allerede er tilmeldt kurset, beholder deres adgang og fremskridt.",
+        "cancel": "Annuller",
+        "confirm": "Fjern kursus"
+      },
+      "add_courses": {
+        "title": "Tilføj kurser til sti",
+        "description": "Vælg kurser fra din organisation, der skal inkluderes i denne læringssti.",
+        "search_placeholder": "Søg efter kurser…",
+        "no_courses": "Ingen tilgængelige kurser at tilføje.",
+        "no_matches": "Ingen kurser matcher din søgning.",
+        "cancel": "Annuller",
+        "submit": "Tilføj {count} {count, plural, =1 {Kursus} other {Kurser}}",
+        "submitting": "Tilføjer kurser…"
+      },
+      "create": {
+        "title": "Opret læringssti",
+        "description": "Angiv en titel og beskrivelse til din nye læringssti.",
+        "name_label": "Stinavn",
+        "name_placeholder": "f.eks. Fullstack webudvikling",
+        "slug_label": "URL-slug",
+        "slug_placeholder": "fullstack-web-development",
+        "desc_label": "Beskrivelse",
+        "desc_placeholder": "En kort opsummering af, hvad eleverne vil opnå...",
+        "cancel": "Annuller",
+        "submit": "Opret læringssti",
+        "creating": "Opretter…"
+      }
+    },
+    "workspace": {
+      "all_paths": "Alle læringsstier",
+      "finish_setup": "Afslut opsætning · {percent}%",
+      "preview_student": "Forhåndsvisning som studerende",
+      "active": "Aktiv",
+      "draft": "Kladde",
+      "archived": "Arkiveret",
+      "coming_soon": {
+        "title": "{tab} — Kommer snart",
+        "description": "Denne arbejdsområdefane vil være tilgængelig i fase 3. Kursusadministration og opsætning er fuldt funktionel i denne udgivelse."
+      },
+      "tabs": {
+        "courses": "Kurser",
+        "people": "Personer",
+        "analytics": "Analyse",
+        "landing": "Landingsside",
+        "certificate": "Certifikat",
+        "settings": "Indstillinger"
+      }
+    },
+    "setup": {
+      "title": "Opsæt din sti",
+      "subtitle": "Færdiggør disse trin for at lancere {name} til dine elever.",
+      "summary": "En sti går live, når dens kurser er bestilt, prissat og indstillet til Aktiv.",
+      "progress": "{completed} af {total} fuldført",
+      "done": "Udført",
+      "launch_title": "{count} {count, plural, =1 {step} andre {steps}} tilbage til lancering",
+      "launch_desc": "Bestil kurserne, angiv en pris, finpudse landingssiden og aktivér.",
+      "activate_now": "Aktivér nu",
+      "step_name_title": "Navngiv og beskriv din sti",
+      "step_name_desc": "Giv stien et klart, resultatbaseret navn og en kort opsummering.",
+      "step_name_action": "Rediger detaljer",
+      "step_courses_title": "Tilføj kurser",
+      "step_courses_desc": "Vælg de kurser, der udgør denne læringssti.",
+      "step_courses_action": "Tilføj kurser",
+      "step_order_title": "Angiv kursusrækkefølgen",
+      "step_order_desc": "Træk kurser ind i den rækkefølge, som eleverne skal gennemføre dem.",
+      "step_order_action": "Angiv rækkefølge",
+      "step_price_title": "Angiv din pris",
+      "step_price_desc": "Pris stien som en pakke — eleverne ser besparelserne i forhold til individuelle kurser.",
+      "step_price_action": "Angiv pris",
+      "step_landing_title": "Tilpas din landingsside",
+      "step_landing_desc": "Resultater, færdigheder, instruktører, udtalelser og ofte stillede spørgsmål på den offentlige stiside.",
+      "step_landing_action": "Tilpas",
+      "step_activate_title": "Aktiver stien",
+      "step_activate_desc": "Angiv status til Aktiv, så den vises på din landingsside og LMS.",
+      "step_activate_action": "Aktiver"
+    },
+    "builder": {
+      "title": "Kurser",
+      "subtitle": "Tilføj kurser, og træk for at indstille den rækkefølge, eleverne bevæger sig gennem dem.",
+      "unlock_rule_title": "Lås kurser op i rækkefølge",
+      "unlock_rule_desc": "Hvert kursus forbliver låst, indtil en elev gennemfører det forrige kursuss lektioner og øvelser. Slå fra for at tillade enhver rækkefølge.",
+      "list_head": "{count} {count, plural, =1 {course} other {courses}} i denne sti",
+      "drag_hint": "Træk for at ændre rækkefølgen",
+      "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
+      "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
+      "open_course": "Åbn kursus",
+      "remove_course": "Fjern fra sti",
+      "add_course_button": "Tilføj kursus til sti",
+      "certificate_title": "Sticertifikat",
+      "certificate_desc": "Tildeles automatisk, når en studerende gennemfører alle {count} kurser.",
+      "configure_certificate": "Konfigurer certifikat"
+    },
+    "listing": {
+      "title": "Læringsstier",
+      "subtitle": "Opret og administrer strukturerede læringsoplevelser, der guider eleverne gennem flere kurser.",
+      "create_path": "Opret læringssti",
+      "create_course": "Opret kursus",
+      "empty": {
+        "title": "Opret din første læringssti",
+        "description": "Saml flere kurser i en ordnet rækkefølge med milepælssporing, gating og et valgfrit færdiggørelsescertifikat.",
+        "create_path": "Opret læringssti",
+        "create_course": "Opret kursus"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "not_published": "Ikke udgivet endnu",
+        "completion": "Afslutning",
+        "manage": "Administrer",
+        "continue_setup": "Fortsæt opsætning"
+      },
+      "filters": {
+        "title": "Filtre",
+        "clear_all": "Ryd alle",
+        "group_status": "Status",
+        "group_enrollment": "Tilmelding",
+        "group_completion": "Fuldførelsesprocent",
+        "all": "Alle",
+        "draft": "Kladde",
+        "published": "Udgivet",
+        "archived": "Arkiveret",
+        "no_learners": "Ingen elever endnu",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Lav (under 25%)",
+        "medium": "Mellem (25–75%)",
+        "high": "Høj (75%+)"
+      },
+      "toolbar": {
+        "search_placeholder": "Søg i læringsstier…",
+        "preview_empty": "Forhåndsvisning af tom tilstand",
+        "exit_preview_empty": "Afslut forhåndsvisning",
+        "grid_view": "Gittervisning",
+        "list_view": "Listevisning"
+      },
+      "overview": {
+        "active_paths": "Aktive stier",
+        "enrolled_learners": "Tilmeldte elever",
+        "completions": "Fuldførelser",
+        "completion_rate": "Fuldførelsesprocent",
+        "across_all_paths": "På tværs af alle stier"
+      }
     }
   }
 }

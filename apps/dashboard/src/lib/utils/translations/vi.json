@@ -3058,7 +3058,8 @@
     "cohorts": "Nhóm học tập",
     "upgrade_now": "Nâng cấp ngay bây giờ",
     "upgrade_students": "{studentCount} trong số {studentLimit} sinh viên",
-    "upgrade_left": "còn {count}"
+    "upgrade_left": "còn {count}",
+    "learning_paths": "Lộ trình học tập"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -5234,6 +5235,154 @@
     "tabs": {
       "direct": "Trực tiếp",
       "watching": "Đang xem"
+    }
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Xóa khóa học khỏi lộ trình?",
+        "description": "Khóa học sẽ bị xóa khỏi lộ trình này. Học viên đã đăng ký khóa học sẽ vẫn giữ quyền truy cập và tiến độ học tập của mình.",
+        "cancel": "Hủy",
+        "confirm": "Xóa khóa học"
+      },
+      "add_courses": {
+        "title": "Thêm khóa học vào lộ trình",
+        "description": "Chọn các khóa học từ tổ chức của bạn để đưa vào lộ trình học tập này.",
+        "search_placeholder": "Tìm kiếm khóa học…",
+        "no_courses": "Không có khóa học nào để thêm.",
+        "no_matches": "Không có khóa học nào phù hợp với tìm kiếm của bạn.",
+        "cancel": "Hủy",
+        "submit": "Thêm {count} {count, plural, =1 {Khóa học} khác {Khóa học}}",
+        "submitting": "Đang thêm khóa học…"
+      },
+      "create": {
+        "title": "Tạo Lộ trình Học tập",
+        "description": "Đặt tiêu đề và mô tả cho lộ trình học tập mới của bạn.",
+        "name_label": "Tên Lộ trình",
+        "name_placeholder": "Ví dụ: Phát triển Web Fullstack",
+        "slug_label": "Đường dẫn URL",
+        "slug_placeholder": "phát triển web fullstack",
+        "desc_label": "Mô tả",
+        "desc_placeholder": "Tóm tắt ngắn gọn về những gì người học sẽ đạt được...",
+        "cancel": "Hủy",
+        "submit": "Tạo lộ trình học tập",
+        "creating": "Đang tạo…"
+      }
+    },
+    "workspace": {
+      "all_paths": "Tất cả lộ trình học tập",
+      "finish_setup": "Hoàn tất thiết lập · {phần trăm}%",
+      "preview_student": "Xem trước với tư cách học viên",
+      "active": "Đang hoạt động",
+      "draft": "Bản nháp",
+      "archived": "Đã lưu trữ",
+      "coming_soon": {
+        "title": "{tab} — Sắp ra mắt",
+        "description": "Tab không gian làm việc này sẽ có sẵn trong Giai đoạn 3. Quản lý và thiết lập khóa học hoạt động đầy đủ trong bản phát hành này."
+      },
+      "tabs": {
+        "courses": "Khóa học",
+        "people": "Người dùng",
+        "analytics": "Phân tích",
+        "landing": "Trang đích",
+        "certificate": "Chứng chỉ",
+        "settings": "Cài đặt"
+      }
+    },
+    "setup": {
+      "title": "Thiết lập lộ trình của bạn",
+      "subtitle": "Hoàn thành các bước này để ra mắt {tên} cho người học của bạn.",
+      "summary": "Một lộ trình sẽ được kích hoạt khi các khóa học được đặt hàng, định giá và được đặt ở trạng thái Hoạt động.",
+      "progress": "{đã hoàn thành} trong số {tổng số} khóa học đã hoàn thành",
+      "done": "Xong",
+      "launch_title": "{số lượng} {số lượng, số nhiều, =1 {bước} khác {bước}} còn lại để ra mắt",
+      "launch_desc": "Đặt hàng các khóa học, đặt giá, hoàn thiện trang đích và kích hoạt.",
+      "activate_now": "Kích hoạt ngay",
+      "step_name_title": "Đặt tên và mô tả lộ trình của bạn",
+      "step_name_desc": "Đặt tên rõ ràng, dựa trên kết quả và tóm tắt ngắn gọn cho lộ trình.",
+      "step_name_action": "Chỉnh sửa chi tiết",
+      "step_courses_title": "Thêm khóa học",
+      "step_courses_desc": "Chọn các khóa học tạo nên lộ trình học tập này.",
+      "step_courses_action": "Thêm khóa học",
+      "step_order_title": "Thiết lập thứ tự khóa học",
+      "step_order_desc": "Kéo các khóa học vào theo thứ tự học viên nên hoàn thành.",
+      "step_order_action": "Thiết lập thứ tự",
+      "step_price_title": "Thiết lập giá",
+      "step_price_desc": "Định giá toàn bộ khóa học theo gói — học viên sẽ thấy được khoản tiết kiệm so với việc mua từng khóa học riêng lẻ.",
+      "step_price_action": "Thiết lập giá",
+      "step_landing_title": "Tùy chỉnh trang đích",
+      "step_landing_desc": "Kết quả học tập, kỹ năng, giảng viên, lời chứng thực và Câu hỏi thường gặp trên trang khóa học công khai.",
+      "step_landing_action": "Tùy chỉnh",
+      "step_activate_title": "Kích hoạt khóa học",
+      "step_activate_desc": "Đặt trạng thái thành Hoạt động để khóa học hiển thị trên trang đích và hệ thống quản lý học tập (LMS).",
+      "step_activate_action": "Kích hoạt"
+    },
+    "builder": {
+      "title": "Các khóa học",
+      "subtitle": "Thêm các khóa học và kéo để thiết lập thứ tự học viên hoàn thành các khóa học.",
+      "unlock_rule_title": "Mở khóa các khóa học theo thứ tự",
+      "unlock_rule_desc": "Mỗi khóa học sẽ bị khóa cho đến khi học viên hoàn thành các bài học và bài tập của khóa học trước đó. Tắt tùy chọn này để cho phép bất kỳ thứ tự nào.",
+      "list_head": "{count} {count, plural, =1 {course} other {courses}} trong lộ trình này",
+      "drag_hint": "Kéo để sắp xếp lại",
+      "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
+      "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
+      "open_course": "Mở khóa học",
+      "remove_course": "Xóa khỏi lộ trình",
+      "add_course_button": "Thêm khóa học vào lộ trình",
+      "certificate_title": "Chứng chỉ lộ trình",
+      "certificate_desc": "Được trao tự động khi học viên hoàn thành tất cả {count} khóa học.",
+      "configure_certificate": "Cấu hình chứng chỉ"
+    },
+    "listing": {
+      "title": "Lộ trình học tập",
+      "subtitle": "Tạo và quản lý trải nghiệm học tập có cấu trúc hướng dẫn người học qua nhiều khóa học.",
+      "create_path": "Tạo Lộ Trình Học Tập",
+      "create_course": "Tạo Khóa Học",
+      "empty": {
+        "title": "Tạo Lộ Trình Học Tập đầu tiên của bạn",
+        "description": "Gộp nhiều khóa học thành một chuỗi có thứ tự với theo dõi mốc tiến độ, kiểm soát truy cập và chứng chỉ hoàn thành tùy chọn.",
+        "create_path": "Tạo Lộ Trình Học Tập",
+        "create_course": "Tạo Khóa Học"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "not_published": "Chưa được xuất bản",
+        "completion": "Hoàn thành",
+        "manage": "Quản lý",
+        "continue_setup": "Tiếp tục thiết lập"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "clear_all": "Xóa tất cả",
+        "group_status": "Trạng thái",
+        "group_enrollment": "Đăng ký",
+        "group_completion": "Tỷ lệ hoàn thành",
+        "all": "Tất cả",
+        "draft": "Bản nháp",
+        "published": "Đã xuất bản",
+        "archived": "Đã lưu trữ",
+        "no_learners": "Chưa có học viên nào",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Thấp (dưới 25%)",
+        "medium": "Trung bình (25–75%)",
+        "high": "Cao (75% trở lên)"
+      },
+      "toolbar": {
+        "search_placeholder": "Tìm kiếm lộ trình học tập…",
+        "preview_empty": "Xem trước trạng thái trống",
+        "exit_preview_empty": "Thoát khỏi chế độ xem trước",
+        "grid_view": "Chế độ xem lưới",
+        "list_view": "Chế độ xem danh sách"
+      },
+      "overview": {
+        "active_paths": "Các lộ trình đang hoạt động",
+        "enrolled_learners": "Học viên đã đăng ký",
+        "completions": "Hoàn thành",
+        "completion_rate": "Tỷ lệ hoàn thành",
+        "across_all_paths": "Trên tất cả các lộ trình"
+      }
     }
   }
 }

@@ -3058,7 +3058,8 @@
     "cohorts": "Coortes",
     "upgrade_now": "Atualize agora",
     "upgrade_students": "{studentCount} de {studentLimit} alunos",
-    "upgrade_left": "{contagem} restantes"
+    "upgrade_left": "{contagem} restantes",
+    "learning_paths": "Trilhas de aprendizagem"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -5234,6 +5235,154 @@
     "tabs": {
       "direct": "Direto",
       "watching": "Assistindo"
+    }
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Remover curso do percurso?",
+        "description": "O curso será removido deste percurso. Os alunos já matriculados no curso manterão seu acesso e progresso.",
+        "cancel": "Cancelar",
+        "confirm": "Remover curso"
+      },
+      "add_courses": {
+        "title": "Adicionar cursos ao percurso",
+        "description": "Selecione os cursos da sua organização para incluir neste percurso de aprendizagem.",
+        "search_placeholder": "Pesquisar cursos…",
+        "no_courses": "Nenhum curso disponível para adicionar.",
+        "no_matches": "Nenhum curso corresponde à sua pesquisa.",
+        "cancel": "Cancelar",
+        "submit": "Adicionar {count} {count, plural, =1 {Curso} outros {Cursos}}",
+        "submitting": "Adicionando cursos…"
+      },
+      "create": {
+        "title": "Criar Percurso de Aprendizagem",
+        "description": "Defina um título e uma descrição para o seu novo percurso de aprendizagem.",
+        "name_label": "Nome do Percurso",
+        "name_placeholder": "Ex.: Desenvolvimento Web Fullstack",
+        "slug_label": "URL Slug",
+        "slug_placeholder": "desenvolvimento-web-fullstack",
+        "desc_label": "Descrição",
+        "desc_placeholder": "Um breve resumo do que os alunos irão alcançar...",
+        "cancel": "Cancelar",
+        "submit": "Criar Trilha de Aprendizagem",
+        "creating": "Criando…"
+      }
+    },
+    "workspace": {
+      "all_paths": "Todas as Trilhas de Aprendizagem",
+      "finish_setup": "Finalizar configuração · {percent}%",
+      "preview_student": "Visualizar como aluno",
+      "active": "Ativo",
+      "draft": "Rascunho",
+      "archived": "Arquivado",
+      "coming_soon": {
+        "title": "{tab} — Em breve",
+        "description": "Esta aba do espaço de trabalho estará disponível na Fase 3. O gerenciamento e a configuração do curso estão totalmente funcionais nesta versão."
+      },
+      "tabs": {
+        "courses": "Cursos",
+        "people": "Pessoas",
+        "analytics": "Análises",
+        "landing": "Página de destino",
+        "certificate": "Certificado",
+        "settings": "Configurações"
+      }
+    },
+    "setup": {
+      "title": "Configure seu caminho",
+      "subtitle": "Conclua estas etapas para lançar {name} para seus alunos.",
+      "summary": "Um caminho é ativado assim que seus cursos são encomendados, precificados e definidos como Ativos.",
+      "progress": "{completed} de {total} concluídos",
+      "done": "Concluído",
+      "launch_title": "{count} {count, plural, =1 {step} outros {steps}} restantes para lançar",
+      "launch_desc": "Encomende os cursos, defina um preço, aprimore a página de destino e ative.",
+      "activate_now": "Ative agora",
+      "step_name_title": "Nomeie e descreva seu caminho",
+      "step_name_desc": "Dê ao caminho um nome claro, baseado em resultados, e um breve resumo.",
+      "step_name_action": "Editar detalhes",
+      "step_courses_title": "Adicionar cursos",
+      "step_courses_desc": "Selecione os cursos que compõem este percurso de aprendizagem.",
+      "step_courses_action": "Adicionar cursos",
+      "step_order_title": "Definir a ordem dos cursos",
+      "step_order_desc": "Arraste os cursos para a ordem em que os alunos devem concluí-los.",
+      "step_order_action": "Definir ordem",
+      "step_price_title": "Definir o preço",
+      "step_price_desc": "Precifique o percurso como um pacote — os alunos veem a economia em comparação com os cursos individuais.",
+      "step_price_action": "Definir preço",
+      "step_landing_title": "Personalizar a página inicial",
+      "step_landing_desc": "Resultados, habilidades, instrutores, depoimentos e perguntas frequentes na página pública do percurso.",
+      "step_landing_action": "Personalizar",
+      "step_activate_title": "Ativar o percurso",
+      "step_activate_desc": "Defina o status como Ativo para que apareça na sua página inicial e no LMS.",
+      "step_activate_action": "Ativar"
+    },
+    "builder": {
+      "title": "Cursos",
+      "subtitle": "Adicione cursos e arraste para definir a ordem em que os alunos avançam por eles.",
+      "unlock_rule_title": "Desbloquear cursos em ordem",
+      "unlock_rule_desc": "Cada curso permanece bloqueado até que o aluno conclua as lições e exercícios do curso anterior. Desative para permitir qualquer ordem.",
+      "list_head": "{count} {count, plural, =1 {curso} outros {cursos}} neste caminho",
+      "drag_hint": "Arraste para reordenar",
+      "lessons_count": "{count} {count, plural, =1 {aula} outras {aulas}}",
+      "exercises_count": "{count} {count, plural, =1 {exercício} outros {exercícios}}",
+      "open_course": "Abrir curso",
+      "remove_course": "Remover do caminho",
+      "add_course_button": "Adicionar curso ao caminho",
+      "certificate_title": "Certificado de caminho",
+      "certificate_desc": "Concedido automaticamente quando um aluno conclui todos os {count} cursos.",
+      "configure_certificate": "Configurar certificado"
+    },
+    "listing": {
+      "title": "Caminhos de Aprendizagem",
+      "subtitle": "Crie e gerencie experiências de aprendizagem estruturadas que guiam os alunos por vários cursos.",
+      "create_path": "Criar Trilha de Aprendizagem",
+      "create_course": "Criar Curso",
+      "empty": {
+        "title": "Crie sua primeira Trilha de Aprendizagem",
+        "description": "Agrupe vários cursos em uma sequência ordenada com acompanhamento de marcos, restrições de acesso e um certificado de conclusão opcional.",
+        "create_path": "Criar Trilha de Aprendizagem",
+        "create_course": "Criar Curso"
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "not_published": "Ainda não publicado",
+        "completion": "Conclusão",
+        "manage": "Gerenciar",
+        "continue_setup": "Continuar configuração"
+      },
+      "filters": {
+        "title": "Filtros",
+        "clear_all": "Limpar tudo",
+        "group_status": "Status",
+        "group_enrollment": "Matrículas",
+        "group_completion": "Taxa de conclusão",
+        "all": "Total",
+        "draft": "Rascunhos",
+        "published": "Publicados",
+        "archived": "Arquivados",
+        "no_learners": "Ainda sem alunos",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Baixa (menos de 25%)",
+        "medium": "Média (25–75%)",
+        "high": "Alta (75% ou mais)"
+      },
+      "toolbar": {
+        "search_placeholder": "Pesquisar trilhas de aprendizagem…",
+        "preview_empty": "Visualizar estado vazio",
+        "exit_preview_empty": "Sair da visualização",
+        "grid_view": "Visualização em grade",
+        "list_view": "Visualização em lista"
+      },
+      "overview": {
+        "active_paths": "Trilhas ativas",
+        "enrolled_learners": "Alunos matriculados",
+        "completions": "Conclusões",
+        "completion_rate": "Taxa de conclusão",
+        "across_all_paths": "Em todas as trilhas"
+      }
     }
   }
 }
