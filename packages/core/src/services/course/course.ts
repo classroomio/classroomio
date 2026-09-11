@@ -706,27 +706,41 @@ export async function getUserCourseAnalytics(
 
     const lastSeen = await getLastLogin(userId);
 
-    // Fetch user exercises stats, lessons with completion, and course progress
+    // Fetch user exercises stats, lessons with completion, and course progress.
+    // failOnError makes this single-student detail page distinguish a failed
+    // query from an empty one — an error here must render an error, not the
+    // "no exercises" empty state.
     const [userExercisesStats, lessons, courseProgress] = await Promise.all([
-      getUserExercisesStats(courseId, userId),
+      getUserExercisesStats(courseId, userId, { failOnError: true }),
       getLessonsWithCompletion(courseId, userId),
-      getProfileCourseProgress(courseId, userId)
+      getProfileCourseProgress(courseId, userId, { failOnError: true })
     ]);
 
     if (!userExercisesStats || !lessons || !courseProgress) {
       throw new AppError('Failed to fetch course analytics data', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
-    // Calculate metrics
-    const totalEarnedPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.score, 0);
-    const totalPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
-    const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
+    // Calculate metrics. Only graded submissions produce a grade — exercises
+    // the student has not submitted, or submitted but not yet graded, are
+    // absence and must not drag the grade toward zero (em-dash, never a 0).
+    const gradedExercises = userExercisesStats.filter((exercise) => exercise.status === 3);
+    const totalEarnedPoints = gradedExercises.reduce((sum, exercise) => sum + exercise.score, 0);
+    const totalPoints = gradedExercises.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
+
+    // A course is gradeable only if its graded exercises carry points (authored
+    // exercise worth 0 points cannot produce a grade). Course grades are
+    // already percentages, so this is a plain percentage, not a percent-of-
+    // percents. null = "no grade yet", never 0.
+    const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
     const completedLessons = lessons.filter((lesson) => lesson.completed);
     const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
 
     const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
+
+    const lessonsCompleted = courseProgress.lessons_completed || 0;
+    const lessonsCount = courseProgress.lessons_count || 0;
 
     let progressImpact = null;
 
@@ -762,6 +776,8 @@ export async function getUserCourseAnalytics(
       userExercisesStats,
       totalExercises,
       completedExercises,
+      lessonsCompleted,
+      lessonsCount,
       progressPercentage,
       progressImpact
     };

@@ -661,7 +661,14 @@
       "kpi_team_tutors": "{count, plural, one {# underviser på kursusholdet} other {# undervisere på kursusholdet}}",
       "kpi_lessons_exercises": "{count, plural, one {# øvelse} other {# øvelser}} knyttet til lektioner",
       "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
-    }
+    },
+    "course_progress": "Kursusstatus",
+    "just_now": "lige nu",
+    "minutes_ago": "{count, plural, one {# minut siden} other {# minutter siden}}",
+    "hours_ago": "{count, plural, one {# time siden} other {# timer siden}}",
+    "days_ago": "{count, plural, one {# dag siden} other {# dage siden}}",
+    "months_ago": "{count, plural, one {# måned siden} other {# måneder siden}}",
+    "years_ago": "{count, plural, one {# år siden} other {# år siden}}"
   },
   "audience": {
     "title": "Publikum",
@@ -728,7 +735,34 @@
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
       "title": "Elevprofil",
-      "page_subtitle": "Fremskridt, karakterer og aktivitet på tværs af deres kurser."
+      "page_subtitle": "Fremskridt, karakterer og aktivitet på tværs af deres kurser.",
+      "in_progress": "Igangværende",
+      "not_started": "Ikke startet",
+      "awaiting_grade": "Venter på karakter",
+      "not_submitted": "Ikke afleveret",
+      "course_level_exercise": "Øvelse på kursusniveau",
+      "score": "Score",
+      "status": "Status",
+      "export_progress": "Eksporter status",
+      "student_actions": "Studenthandlinger",
+      "no_courses_title": "Ingen kurser endnu",
+      "no_courses_description": "Tilmeld denne elev for at begynde at spore status.",
+      "no_exercises_title": "Ingen øvelser i dette kursus",
+      "no_exercises_description": "Tilføj en øvelse til en lektion, og hver elevs forsøg vises her.",
+      "no_grades_title": "Intet bedømt endnu",
+      "no_grades_description": "Karakterer vises, når denne elev afleverer en øvelse.",
+      "load_failed_title": "Kan ikke indlæse denne elev",
+      "load_failed_description": "Noget gik galt under indlæsning af denne elev. Prøv igen.",
+      "retry": "Prøv igen",
+      "exercise": "Øvelse",
+      "exercise_load_failed": "Kunne ikke indlæse øvelser til dette kursus.",
+      "tabs": {
+        "courses": "Kurser",
+        "grades": "Karakterer",
+        "activity": "Aktivitet"
+      },
+      "activity_empty_title": "Aktivitetstidslinje Kommer snart",
+      "activity_empty_description": "En tidslinje over gennemførte lektioner og øvelsesafleveringer på tværs af deres kurser vil være tilgængelig i en fremtidig udgivelse."
     },
     "delete": {
       "action": "Slet",
@@ -1522,7 +1556,9 @@
                 "status_pending": "Afventer",
                 "counts_as_complete": "Tæller som gennemført",
                 "passed": "Bestået",
-                "not_passed": "Ikke bestået"
+                "not_passed": "Ikke bestået",
+                "no_submission_title": "Denne bruger har ingen afleveringer til denne øvelse",
+                "no_submission_description": "Afleveringer vises her, når denne elev har gennemført øvelsen."
               },
               "summary": {
                 "heading": "Resumé",

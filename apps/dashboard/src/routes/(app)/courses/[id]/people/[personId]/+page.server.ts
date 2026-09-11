@@ -4,6 +4,7 @@ export const load = async ({ parent }) => {
   return {
     courseId: parentData.courseId,
     userId: parentData.personId,
-    userCourseAnalytics: parentData.userCourseAnalytics
+    userCourseAnalytics: parentData.userCourseAnalytics,
+    loadFailed: parentData.loadFailed
   };
 };

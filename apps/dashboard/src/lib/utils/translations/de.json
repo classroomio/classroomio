@@ -661,7 +661,14 @@
       "kpi_team_tutors": "{count, plural, one {# Tutor im Kurs-Team} other {# Tutoren im Kurs-Team}}",
       "kpi_lessons_exercises": "{count, plural, one {# Übung} other {# Übungen}}, zugeordnet zu Lektionen",
       "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler"
-    }
+    },
+    "course_progress": "Kursfortschritt",
+    "just_now": "Gerade eben",
+    "minutes_ago": "{count, plural, one {vor # Minute} other {vor # Minuten}}",
+    "hours_ago": "{count, plural, one {vor # Stunde} other {vor # Stunden}}",
+    "days_ago": "{count, plural, one {vor # Tag} other {vor # Tagen}}",
+    "months_ago": "{count, plural, one {vor # Monat} other {vor # Monaten}}",
+    "years_ago": "{count, plural, one {vor # Jahr} other {vor # Jahren}}"
   },
   "audience": {
     "title": "Publikum",
@@ -728,7 +735,34 @@
     "page_subtitle": "Sehen Sie, wer zu Ihrer Organisation gehört, wer lernt, wer eingeladen ist und wie Sie sie erreichen.",
     "user_analytics": {
       "title": "Studentenprofil",
-      "page_subtitle": "Fortschritt, Noten und Aktivität in ihren Kursen."
+      "page_subtitle": "Fortschritt, Noten und Aktivität in ihren Kursen.",
+      "in_progress": "In Bearbeitung",
+      "not_started": "Nicht begonnen",
+      "awaiting_grade": "Wartet auf Note",
+      "not_submitted": "Nicht abgegeben",
+      "course_level_exercise": "Übung auf Kursebene",
+      "score": "Punktzahl",
+      "status": "Status",
+      "export_progress": "Fortschritt exportieren",
+      "student_actions": "Aktionen der Studierenden",
+      "no_courses_title": "Noch keine Kurse",
+      "no_courses_description": "Melden Sie diesen Studierenden an, um den Fortschritt zu verfolgen.",
+      "no_exercises_title": "Keine Übungen in diesem Kurs",
+      "no_exercises_description": "Fügen Sie einer Lektion eine Übung hinzu. Die Versuche jedes Studierenden werden hier angezeigt.",
+      "no_grades_title": "Noch nicht bewertet",
+      "no_grades_description": "Noten werden angezeigt, sobald dieser Studierende eine Übung abgibt.",
+      "load_failed_title": "Dieser Student konnte nicht geladen werden.",
+      "load_failed_description": "Beim Laden dieses Studenten ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+      "retry": "Wiederholen",
+      "exercise": "Übung",
+      "exercise_load_failed": "Übungen für diesen Kurs konnten nicht geladen werden.",
+      "tabs": {
+        "courses": "Kurse",
+        "grades": "Noten",
+        "activity": "Aktivität"
+      },
+      "activity_empty_title": "Aktivitätsübersicht – In Kürze verfügbar",
+      "activity_empty_description": "Eine Übersicht über den Abschluss von Lektionen und die Abgabe von Übungen in den verschiedenen Kursen wird in einer zukünftigen Version verfügbar sein."
     },
     "delete": {
       "action": "Löschen",
@@ -1522,7 +1556,9 @@
                 "status_pending": "Ausstehend",
                 "counts_as_complete": "Zählt als abgeschlossen",
                 "passed": "Bestanden",
-                "not_passed": "Nicht bestanden"
+                "not_passed": "Nicht bestanden",
+                "no_submission_title": "Dieser Benutzer hat noch keine Abgabe für diese Übung eingereicht.",
+                "no_submission_description": "Abgaben werden hier angezeigt, sobald dieser Student die Übung abgeschlossen hat."
               },
               "summary": {
                 "heading": "Zusammenfassung",

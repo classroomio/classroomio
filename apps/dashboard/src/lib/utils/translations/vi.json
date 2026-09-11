@@ -661,7 +661,14 @@
       "kpi_team_tutors": "{count, plural, one {# gia sư trong nhóm khóa học} other {# gia sư trong nhóm khóa học}}",
       "kpi_lessons_exercises": "{count, plural, one {# bài tập} other {# bài tập}} được ánh xạ tới bài học",
       "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
-    }
+    },
+    "course_progress": "Tiến độ khóa học",
+    "just_now": "vừa mới đây",
+    "minutes_ago": "{count, plural, other {# phút trước}}",
+    "hours_ago": "{count, plural, other {# giờ trước}}",
+    "days_ago": "{count, plural, other {# ngày trước}}",
+    "months_ago": "{count, plural, other {# tháng trước}}",
+    "years_ago": "{count, plural, other {# năm trước}}"
   },
   "audience": {
     "title": "khán giả",
@@ -728,7 +735,34 @@
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
       "title": "Hồ sơ sinh viên",
-      "page_subtitle": "Tiến độ, điểm số và hoạt động trên các khóa học của họ."
+      "page_subtitle": "Tiến độ, điểm số và hoạt động trên các khóa học của họ.",
+      "in_progress": "Đang tiến hành",
+      "not_started": "Chưa bắt đầu",
+      "awaiting_grade": "Đang chờ chấm điểm",
+      "not_submitted": "Chưa nộp",
+      "course_level_exercise": "Bài tập cấp khóa học",
+      "score": "Điểm số",
+      "status": "Trạng thái",
+      "export_progress": "Xuất tiến độ",
+      "student_actions": "Hành động của học sinh",
+      "no_courses_title": "Chưa có khóa học nào",
+      "no_courses_description": "Đăng ký cho học sinh này để bắt đầu theo dõi tiến độ.",
+      "no_exercises_title": "Không có bài tập nào trong khóa học này",
+      "no_exercises_description": "Thêm bài tập vào bài học và các lần làm bài của mỗi học sinh sẽ hiển thị ở đây.",
+      "no_grades_title": "Chưa có gì được chấm điểm",
+      "no_grades_description": "Điểm sẽ xuất hiện sau khi học sinh này nộp bài tập.",
+      "load_failed_title": "Không thể tải thông tin sinh viên này",
+      "load_failed_description": "Đã xảy ra lỗi khi tải thông tin sinh viên này. Vui lòng thử lại.",
+      "retry": "Thử lại",
+      "exercise": "Bài tập",
+      "exercise_load_failed": "Không thể tải bài tập cho khóa học này.",
+      "tabs": {
+        "courses": "Các khóa học",
+        "grades": "Điểm số",
+        "activity": "Hoạt động"
+      },
+      "activity_empty_title": "Lịch trình hoạt động Sắp ra mắt",
+      "activity_empty_description": "Lịch trình hoàn thành bài học và nộp bài tập trong các khóa học sẽ có trong bản phát hành tiếp theo."
     },
     "delete": {
       "action": "Xóa",
@@ -1522,7 +1556,9 @@
                 "status_pending": "Đang chờ",
                 "counts_as_complete": "Được tính là hoàn thành",
                 "passed": "Đạt",
-                "not_passed": "Không đạt"
+                "not_passed": "Không đạt",
+                "no_submission_title": "Người dùng này chưa nộp bài tập này.",
+                "no_submission_description": "Bài nộp sẽ hiển thị ở đây sau khi sinh viên này hoàn thành bài tập."
               },
               "summary": {
                 "heading": "Tóm tắt",

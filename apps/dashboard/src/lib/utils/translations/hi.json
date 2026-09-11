@@ -661,7 +661,14 @@
       "kpi_team_tutors": "{count, plural, one {पाठ्यक्रम टीम में # शिक्षक} other {पाठ्यक्रम टीम में # शिक्षक}}",
       "kpi_lessons_exercises": "{count, plural, one {# अभ्यास} other {# अभ्यास}} पाठों के अनुसार मैप किया गया",
       "kpi_progress_grade": "नामांकित विद्यार्थियों में {ग्रेड}% औसत व्यायाम ग्रेड"
-    }
+    },
+    "course_progress": "पाठ्यक्रम प्रगति",
+    "just_now": "अभी-अभी",
+    "minutes_ago": "{count, plural, one {# मिनट पहले} other {# मिनट पहले}}",
+    "hours_ago": "{count, plural, one {# घंटा पहले} other {# घंटे पहले}}",
+    "days_ago": "{count, plural, one {# दिन पहले} other {# दिन पहले}}",
+    "months_ago": "{count, plural, one {# महीना पहले} other {# महीने पहले}}",
+    "years_ago": "{count, plural, one {# वर्ष पहले} other {# वर्ष पहले}}"
   },
   "audience": {
     "title": "दर्शक",
@@ -728,7 +735,34 @@
     "page_subtitle": "देखें कि आपके संगठन में कौन शामिल है, कौन सीख रहा है, किसे आमंत्रित किया गया है, और उन तक कैसे पहुँचें।",
     "user_analytics": {
       "title": "छात्र प्रोफ़ाइल",
-      "page_subtitle": "उनके पाठ्यक्रमों में प्रगति, ग्रेड और गतिविधि।"
+      "page_subtitle": "उनके पाठ्यक्रमों में प्रगति, ग्रेड और गतिविधि।",
+      "in_progress": "प्रगति में",
+      "not_started": "शुरू नहीं हुआ",
+      "awaiting_grade": "ग्रेड की प्रतीक्षा में",
+      "not_submitted": "सबमिट नहीं किया गया",
+      "course_level_exercise": "पाठ्यक्रम स्तर का अभ्यास",
+      "score": "स्कोर",
+      "status": "स्थिति",
+      "export_progress": "प्रगति निर्यात करें",
+      "student_actions": "छात्र की क्रियाएँ",
+      "no_courses_title": "अभी तक कोई पाठ्यक्रम नहीं",
+      "no_courses_description": "प्रगति ट्रैक करना शुरू करने के लिए इस छात्र को नामांकित करें।",
+      "no_exercises_title": "इस पाठ्यक्रम में कोई अभ्यास नहीं है",
+      "no_exercises_description": "किसी पाठ में एक अभ्यास जोड़ें और प्रत्येक छात्र के प्रयास यहां दिखाई देंगे।",
+      "no_grades_title": "अभी तक किसी का मूल्यांकन नहीं हुआ है",
+      "no_grades_description": "इस छात्र द्वारा अभ्यास सबमिट करने के बाद ग्रेड दिखाई देंगे।",
+      "load_failed_title": "इस छात्र को लोड करने में असमर्थ",
+      "load_failed_description": "इस छात्र को लोड करने में कुछ गड़बड़ी हुई। कृपया पुनः प्रयास करें।",
+      "retry": "पुनः प्रयास करें",
+      "exercise": "अभ्यास",
+      "exercise_load_failed": "इस पाठ्यक्रम के लिए अभ्यास लोड नहीं हो सके।",
+      "tabs": {
+        "courses": "पाठ्यक्रम",
+        "grades": "ग्रेड",
+        "activity": "गतिविधि"
+      },
+      "activity_empty_title": "गतिविधि समयरेखा जल्द ही उपलब्ध होगी",
+      "activity_empty_description": "उनके पाठ्यक्रमों में पाठों की पूर्णता और अभ्यास जमा करने की समयरेखा आगामी रिलीज़ में उपलब्ध होगी।"
     },
     "delete": {
       "action": "हटाएँ",
@@ -1522,7 +1556,9 @@
                 "status_pending": "लंबित",
                 "counts_as_complete": "पूर्ण माना जाएगा",
                 "passed": "पास",
-                "not_passed": "पास नहीं हुआ"
+                "not_passed": "पास नहीं हुआ",
+                "no_submission_title": "इस उपयोगकर्ता ने इस अभ्यास के लिए कोई सबमिशन नहीं किया है।",
+                "no_submission_description": "इस छात्र द्वारा अभ्यास पूरा करने के बाद सबमिशन यहां दिखाई देंगे।"
               },
               "summary": {
                 "heading": "सारांश",

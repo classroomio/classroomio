@@ -978,33 +978,61 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     // Build analytics data for each course
     const coursesWithStats = await Promise.all(
       courses.map(async (course) => {
-        const [userExercisesStats, courseProgress] = await Promise.all([
-          getUserExercisesStats(course.id, userId),
-          getProfileCourseProgress(course.id, userId)
-        ]);
+        let userExercisesStats: Awaited<ReturnType<typeof getUserExercisesStats>> | null;
+        try {
+          userExercisesStats = await getUserExercisesStats(course.id, userId, { failOnError: true });
+        } catch (error) {
+          console.error('getUserAnalytics course exercises error:', error);
+          userExercisesStats = null;
+        }
 
-        const totalEarnedPoints = sumArrObject(userExercisesStats, 'score');
-        const totalPoints = sumArrObject(userExercisesStats, 'totalPoints');
-        const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
-        const lessonsCompleted = courseProgress.lessons_completed || 0;
-        const lessonsCount = courseProgress.lessons_count || 0;
+        let courseProgress: Awaited<ReturnType<typeof getProfileCourseProgress>> | null;
+        try {
+          courseProgress = await getProfileCourseProgress(course.id, userId, { failOnError: true });
+        } catch (error) {
+          console.error('getUserAnalytics course progress error:', error);
+          courseProgress = null;
+        }
+
+        const gradedExercises = (userExercisesStats ?? []).filter((exercises) => exercises.status === 3);
+        const totalEarnedPoints = sumArrObject(gradedExercises, 'score');
+        const totalPoints = sumArrObject(gradedExercises, 'totalPoints');
+
+        const gradeablePoints = totalPoints > 0;
+        const averageGrade = gradeablePoints ? calcPercentageWithRounding(totalEarnedPoints, totalPoints) : null;
+
+        const progressData = courseProgress ?? {
+          lessons_count: 0,
+          lessons_completed: 0,
+          exercises_count: 0,
+          exercises_completed: 0
+        };
+        const lessonsCompleted = progressData.lessons_completed || 0;
+        const lessonsCount = progressData.lessons_count || 0;
+        const progressPercentage = courseProgress ? calcPercentageWithRounding(lessonsCompleted, lessonsCount) : 0;
 
         return {
           ...course,
-          ...courseProgress,
-          progress_percentage: calcPercentageWithRounding(lessonsCompleted, lessonsCount),
-          average_grade: averageGrade
+          ...progressData,
+          progress_failed: courseProgress === null,
+          progress_percentage: progressPercentage,
+          average_grade: averageGrade,
+          exercises: userExercisesStats
         };
       })
     );
 
     // Calculate overall stats
-    const totalLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
-    const completedLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
+    const progressCourses = coursesWithStats.filter((course) => !course.progress_failed);
+    const totalLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
+    const completedLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
     const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
 
-    const allGrades = sumArrObject(coursesWithStats, 'average_grade');
-    const overallAverageGrade = calcPercentageWithRounding(allGrades, coursesWithStats.length);
+    const graded = coursesWithStats.filter(
+      (course): course is (typeof coursesWithStats)[number] & { average_grade: number } => course.average_grade !== null
+    );
+    const gradeTotal = graded.reduce((sum, course) => sum + course.average_grade, 0);
+    const overallAverageGrade = graded.length === 0 ? null : Math.round(gradeTotal / graded.length);
 
     return {
       user: {

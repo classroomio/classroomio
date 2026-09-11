@@ -126,7 +126,7 @@ export async function getLastSeenForUserIds(userIds: string[]): Promise<Map<stri
  * @param userId User ID (profile ID)
  * @returns Array of exercise stats with scores and completion status
  */
-export async function getUserExercisesStats(courseId: string, userId: string) {
+export async function getUserExercisesStats(courseId: string, userId: string, options: { failOnError?: boolean } = {}) {
   try {
     const exercises = await db
       .select({
@@ -179,7 +179,9 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
       return [];
     }
 
-    // Get submissions for these exercises by this user
+    // Get submissions for these exercises by this user. Most recent wins—order
+    // by created_at, tie-broken by id, so submissions.find(...) below returns a
+    // deterministic row for a student with multiple submissions per exercise.
     const submissions = await db
       .select({
         id: schema.submission.id,
@@ -190,7 +192,8 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
       .from(schema.submission)
       .where(
         and(inArray(schema.submission.exerciseId, exerciseIds), eq(schema.submission.submittedBy, groupMember[0].id))
-      );
+      )
+      .orderBy(desc(schema.submission.createdAt), desc(schema.submission.id));
 
     // Build exercise stats
     const exerciseStats = exercises.map((exercise) => {
@@ -213,6 +216,9 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
     return exerciseStats;
   } catch (error) {
     console.error('getUserExerciseStats error:', error);
+    if (options.failOnError) {
+      throw new Error('Failed to fetch user exercise stats');
+    }
     return [];
   }
 }
@@ -295,7 +301,11 @@ export async function getLessonsWithCompletion(courseId: string, userId: string)
  * @param profileId Profile ID
  * @returns Course progress data
  */
-export async function getProfileCourseProgress(courseId: string, profileId: string) {
+export async function getProfileCourseProgress(
+  courseId: string,
+  profileId: string,
+  options: { failOnError?: boolean } = {}
+) {
   try {
     // Get course group
     const course = await db
@@ -405,6 +415,9 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
     };
   } catch (error) {
     console.error('getProfileCourseProgress error:', error);
+    if (options.failOnError) {
+      throw new Error('Failed to fetch profile course progress');
+    }
     return {
       lessons_count: 0,
       lessons_completed: 0,

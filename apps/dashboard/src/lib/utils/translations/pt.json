@@ -661,7 +661,14 @@
       "kpi_team_tutors": "{count, plural, one {# tutor na equipe do curso} other {# tutores na equipe do curso}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercício} other {# exercícios}} mapeados para lições",
       "kpi_progress_grade": "{grade}% da nota média do exercício entre os alunos matriculados"
-    }
+    },
+    "course_progress": "Progresso do curso",
+    "just_now": "Agora mesmo",
+    "minutes_ago": "{count, plural, one {# minuto atrás} other {# minutos atrás}}",
+    "hours_ago": "{count, plural, one {# hora atrás} other {# horas atrás}}",
+    "days_ago": "{count, plural, one {# dia atrás} other {# dias atrás}}",
+    "months_ago": "{count, plural, one {# mês atrás} other {# meses atrás}}",
+    "years_ago": "{count, plural, one {# ano atrás} other {# anos atrás}}"
   },
   "audience": {
     "title": "Público",
@@ -728,7 +735,34 @@
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {
       "title": "Perfil do aluno",
-      "page_subtitle": "Progresso, notas e atividade nos cursos deles."
+      "page_subtitle": "Progresso, notas e atividade nos cursos deles.",
+      "in_progress": "Em andamento",
+      "not_started": "Não iniciado",
+      "awaiting_grade": "Aguardando nota",
+      "not_submitted": "Não enviado",
+      "course_level_exercise": "Exercício do curso",
+      "score": "Nota",
+      "status": "Status",
+      "export_progress": "Exportar progresso",
+      "student_actions": "Ações do aluno",
+      "no_courses_title": "Nenhum curso ainda",
+      "no_courses_description": "Matricule este aluno para começar a acompanhar o progresso.",
+      "no_exercises_title": "Nenhum exercício neste curso",
+      "no_exercises_description": "Adicione um exercício a uma lição e as tentativas de cada aluno aparecerão aqui.",
+      "no_grades_title": "Nada avaliado ainda",
+      "no_grades_description": "As notas aparecem assim que este aluno enviar um exercício.",
+      "load_failed_title": "Não foi possível carregar este aluno",
+      "load_failed_description": "Ocorreu um erro ao carregar este aluno. Tente novamente.",
+      "retry": "Tentar novamente",
+      "exercise": "Exercício",
+      "exercise_load_failed": "Não foi possível carregar os exercícios para este curso.",
+      "tabs": {
+        "courses": "Cursos",
+        "grades": "Notas",
+        "activity": "Atividade"
+      },
+      "activity_empty_title": "Cronograma de atividades Em breve",
+      "activity_empty_description": "Um cronograma de conclusão de lições e envio de exercícios em todos os cursos estará disponível em uma versão futura."
     },
     "delete": {
       "action": "Excluir",
@@ -1522,7 +1556,9 @@
                 "status_pending": "Pendente",
                 "counts_as_complete": "Conta como concluído",
                 "passed": "Aprovado",
-                "not_passed": "Não aprovado"
+                "not_passed": "Não aprovado",
+                "no_submission_title": "Este usuário não tem nenhuma submissão para este exercício.",
+                "no_submission_description": "As submissões aparecerão aqui assim que este aluno concluir o exercício."
               },
               "summary": {
                 "heading": "Resumo",

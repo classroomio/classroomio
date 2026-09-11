@@ -2819,7 +2819,9 @@
                 "status_pending": "Pending",
                 "counts_as_complete": "Counts as complete",
                 "passed": "Passed",
-                "not_passed": "Not passed"
+                "not_passed": "Not passed",
+                "no_submission_title": "This user has no submission for this exercise",
+                "no_submission_description": "Submissions will appear here once this student completes the exercise."
               },
               "submissions": "Submissions",
               "loading_submissions": "Loading submissions...",
@@ -3932,7 +3934,34 @@
     },
     "user_analytics": {
       "title": "Student profile",
-      "page_subtitle": "Progress, grades, and activity across their courses."
+      "page_subtitle": "Progress, grades, and activity across their courses.",
+      "tabs": {
+        "courses": "Courses",
+        "grades": "Grades",
+        "activity": "Activity"
+      },
+      "activity_empty_title": "Activity timeline Coming soon",
+      "activity_empty_description": "A timeline of lesson completions and exercise submissions across their courses will be available in a future release.",
+      "in_progress": "In progress",
+      "not_started": "Not started",
+      "awaiting_grade": "Awaiting grade",
+      "not_submitted": "Not submitted",
+      "course_level_exercise": "Course-level exercise",
+      "score": "Score",
+      "status": "Status",
+      "export_progress": "Export progress",
+      "student_actions": "Student actions",
+      "no_courses_title": "No courses yet",
+      "no_courses_description": "Enroll this student to start tracking progress.",
+      "no_exercises_title": "No exercises in this course",
+      "no_exercises_description": "Add an exercise to a lesson and each student's attempts show up here.",
+      "no_grades_title": "Nothing graded yet",
+      "no_grades_description": "Grades appear once this student submits an exercise.",
+      "load_failed_title": "Unable to load this student",
+      "load_failed_description": "Something went wrong while loading this student. Please try again.",
+      "retry": "Retry",
+      "exercise": "Exercise",
+      "exercise_load_failed": "Could not load exercises for this course."
     },
     "import": {
       "page_subtitle": "Add many people at once by email, then assign courses or cohorts if you like.",
@@ -3988,6 +4017,12 @@
     "complete": "complete",
     "last_seen": "Last seen",
     "a_while_ago": "a while ago",
+    "just_now": "just now",
+    "minutes_ago": "{count, plural, one {# minute ago} other {# minutes ago}}",
+    "hours_ago": "{count, plural, one {# hour ago} other {# hours ago}}",
+    "days_ago": "{count, plural, one {# day ago} other {# days ago}}",
+    "months_ago": "{count, plural, one {# month ago} other {# months ago}}",
+    "years_ago": "{count, plural, one {# year ago} other {# years ago}}",
     "exercises": "Exercises",
     "graded": "Graded",
     "not_graded": "Not Graded",
@@ -4112,7 +4147,8 @@
       "empty": "No course page views yet",
       "course": "Course",
       "views": "Views"
-    }
+    },
+    "course_progress": "Course progress"
   },
   "upgrade": {
     "certificate": "Upgrade your plan to generate certificates",

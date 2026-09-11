@@ -661,7 +661,14 @@
       "kpi_team_tutors": "{count, plural, one {# korepetytor w zespole kursu} other {# korepetytorów w zespole kursu}}",
       "kpi_lessons_exercises": "{count, plural, one {# ćwiczenie} other {# ćwiczeń}} przypisane do lekcji",
       "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów"
-    }
+    },
+    "course_progress": "Postęp kursu",
+    "just_now": "przed chwilą",
+    "minutes_ago": "{count, plural, one {# minutę temu} other {# minut temu}}",
+    "hours_ago": "{count, plural, one {# godzinę temu} other {# godzin temu}}",
+    "days_ago": "{count, plural, one {# dzień temu} other {# dni temu}}",
+    "months_ago": "{count, plural, one {# miesiąc temu} other {# miesięcy temu}}",
+    "years_ago": "{count, plural, one {# rok temu} other {# lat temu}}"
   },
   "audience": {
     "title": "Publiczność",
@@ -728,7 +735,34 @@
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {
       "title": "Profil studenta",
-      "page_subtitle": "Postępy, oceny i aktywność w ich kursach."
+      "page_subtitle": "Postępy, oceny i aktywność w ich kursach.",
+      "in_progress": "W toku",
+      "not_started": "Nie rozpoczęto",
+      "awaiting_grade": "Oczekiwanie na ocenę",
+      "not_submitted": "Nie przesłano",
+      "course_level_exercise": "Ćwiczenie na poziomie kursu",
+      "score": "Wynik",
+      "status": "Status",
+      "export_progress": "Eksportuj postęp",
+      "student_actions": "Działania ucznia",
+      "no_courses_title": "Brak kursów",
+      "no_courses_description": "Zapisz tego ucznia, aby rozpocząć śledzenie postępów.",
+      "no_exercises_title": "Brak ćwiczeń w tym kursie",
+      "no_exercises_description": "Dodaj ćwiczenie do lekcji, a próby każdego ucznia pojawią się tutaj.",
+      "no_grades_title": "Nic jeszcze nie zostało ocenione",
+      "no_grades_description": "Oceny pojawią się po przesłaniu ćwiczenia przez ucznia.",
+      "load_failed_title": "Nie można załadować tego studenta",
+      "load_failed_description": "Wystąpił błąd podczas ładowania tego studenta. Spróbuj ponownie.",
+      "retry": "Ponów próbę",
+      "exercise": "Ćwiczenie",
+      "exercise_load_failed": "Nie można załadować ćwiczeń do tego kursu.",
+      "tabs": {
+        "courses": "Kursy",
+        "grades": "Oceny",
+        "activity": "Aktywność"
+      },
+      "activity_empty_title": "Harmonogram aktywności Już wkrótce",
+      "activity_empty_description": "Harmonogram ukończonych lekcji i przesłanych ćwiczeń z kursów będzie dostępny w przyszłej wersji."
     },
     "delete": {
       "action": "Usuń",
@@ -1522,7 +1556,9 @@
                 "status_pending": "Oczekujące",
                 "counts_as_complete": "Liczy się jako ukończone",
                 "passed": "Zaliczone",
-                "not_passed": "Niezaliczone"
+                "not_passed": "Niezaliczone",
+                "no_submission_title": "Ten użytkownik nie ma żadnych prac do tego ćwiczenia.",
+                "no_submission_description": "Prace pojawią się tutaj, gdy uczeń ukończy ćwiczenie."
               },
               "summary": {
                 "heading": "Podsumowanie",
