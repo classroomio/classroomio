@@ -5235,5 +5235,20 @@
       "direct": "Direkt",
       "watching": "Beobachtet"
     }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Kontomenü, angemeldet als {email}",
+      "trigger_label_anonymous": "Kontomenü",
+      "my_courses": "Meine Kurse",
+      "my_certificates": "Meine Zertifikate",
+      "account_settings": "Kontoeinstellungen",
+      "theme": "Design",
+      "continue_learning": "Weiterlernen",
+      "not_enrolled_note": "Noch nicht in dieser Akademie angemeldet – verfügbare Bereiche werden nach der Anmeldung angezeigt.",
+      "theme_light": "Hell",
+      "theme_dark": "Dunkel",
+      "theme_system": "System"
+    }
   }
 }

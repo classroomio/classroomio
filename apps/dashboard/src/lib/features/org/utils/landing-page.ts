@@ -746,7 +746,7 @@ export function buildOrgLandingPageProps(
   courses: OrgPublicCourses,
   hasMoreCourses = false,
   authAction?: OrgLandingPageProps['authAction'],
-  options?: { coursesLoaded?: boolean }
+  options?: { coursesLoaded?: boolean; learnerAccount?: OrgLandingPageProps['learnerAccount'] }
 ): OrgLandingPageProps {
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
   const configuredPrimaryAction = normalizedLandingPage.hero.primaryAction;
@@ -759,6 +759,7 @@ export function buildOrgLandingPageProps(
     orgName: org.name,
     logoUrl: org.avatarUrl || undefined,
     authAction,
+    learnerAccount: options?.learnerAccount,
     ...normalizedLandingPage,
     hero: {
       ...normalizedLandingPage.hero,

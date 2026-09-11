@@ -2,6 +2,7 @@
   import type { Snippet } from 'svelte';
   import { safeHref } from './safe-href';
   import { cn } from '../../tools';
+  import { Spinner } from '../../base/spinner';
 
   type Variant = 'primary' | 'secondary' | 'tertiary';
   type Size = 'sm' | 'md' | 'lg';
@@ -11,11 +12,13 @@
     size?: Size;
     href?: string;
     disabled?: boolean;
+    loading?: boolean;
     type?: 'button' | 'submit' | 'reset';
     onclick?: (event: MouseEvent) => void;
     class?: string;
     children: Snippet;
     'aria-label'?: string;
+    'data-slot'?: string;
   }
 
   let {
@@ -23,12 +26,16 @@
     size = 'md',
     href,
     disabled = false,
+    loading = false,
     type = 'button',
     onclick,
     class: extraClass = '',
     children,
-    'aria-label': ariaLabel
+    'aria-label': ariaLabel,
+    'data-slot': dataSlot
   }: Props = $props();
+
+  const isDisabled = $derived(disabled || loading);
 
   const sizeClass = $derived(
     size === 'sm'
@@ -52,12 +59,18 @@
   const finalClass = $derived(cn(baseClass, sizeClass, variantClass, extraClass));
 </script>
 
-{#if href && !disabled}
-  <a href={safeHref(href)} class={finalClass} aria-label={ariaLabel} {onclick}>
+{#if href && !isDisabled}
+  <a href={safeHref(href)} class={finalClass} aria-label={ariaLabel} data-slot={dataSlot} {onclick}>
+    {#if loading}
+      <Spinner class="custom ui:size-3.5" />
+    {/if}
     {@render children()}
   </a>
 {:else}
-  <button {type} class={finalClass} {disabled} {onclick} aria-label={ariaLabel}>
+  <button {type} class={finalClass} disabled={isDisabled} aria-label={ariaLabel} data-slot={dataSlot} {onclick}>
+    {#if loading}
+      <Spinner class="custom ui:size-3.5" />
+    {/if}
     {@render children()}
   </button>
 {/if}

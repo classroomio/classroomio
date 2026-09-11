@@ -5235,5 +5235,20 @@
       "direct": "Bezpośrednio",
       "watching": "Obserwowanie"
     }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menu konta, zalogowano jako {email}",
+      "trigger_label_anonymous": "Menu konta",
+      "my_courses": "Moje kursy",
+      "my_certificates": "Moje certyfikaty",
+      "account_settings": "Ustawienia konta",
+      "theme": "Motyw",
+      "continue_learning": "Kontynuuj naukę",
+      "not_enrolled_note": "Nie zapisano jeszcze do tej akademii — miejsca docelowe dla uczestników pojawiają się po dołączeniu.",
+      "theme_light": "Jasny",
+      "theme_dark": "Ciemny",
+      "theme_system": "System"
+    }
   }
 }

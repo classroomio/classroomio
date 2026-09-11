@@ -23,6 +23,7 @@ packages/ui/src/custom/org-landing-page/
 ├── edit-context.ts                LandingSectionKey + setLandingPageEditContext/getLandingPageEditContext
 ├── editable-section.svelte        Wrapper that makes a section click-to-edit when a context is set
 ├── landing-button.svelte          Theme-aware button used by every CTA
+├── learner-menu.svelte            Authenticated learner avatar trigger + portalled popover menu
 ├── landing-page-footer.svelte     Shared footer, per-theme class tokens
 ├── landing-page-footer.tokens.ts
 │

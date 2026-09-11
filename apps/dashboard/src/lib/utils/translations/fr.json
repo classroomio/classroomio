@@ -5235,5 +5235,20 @@
       "direct": "Direct",
       "watching": "En cours de visionnage"
     }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menu du compte, connecté en tant que {email}",
+      "trigger_label_anonymous": "Menu du compte",
+      "my_courses": "Mes cours",
+      "my_certificates": "Mes certificats",
+      "account_settings": "Paramètres du compte",
+      "theme": "Thème",
+      "continue_learning": "Poursuivre l'apprentissage",
+      "not_enrolled_note": "Pas encore inscrit à cette académie ? Les destinations disponibles s'afficheront après votre inscription.",
+      "theme_light": "Lumière",
+      "theme_dark": "Sombre",
+      "theme_system": "Système"
+    }
   }
 }
