@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import { startMediaJob, startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import type {
   TAssetAttach,
   TAssetCreateAndAttach,
@@ -549,7 +550,6 @@ async function enqueueMediaPostProcessingForAsset(input: {
   triggeredByProfileId: string;
 }): Promise<void> {
   try {
-    const { startMediaJob } = await import('../jobs/media-jobs');
     await startMediaJob({
       organizationId: input.organizationId,
       assetId: input.assetId,
@@ -570,7 +570,6 @@ async function enqueueYoutubeCaptionsFetchForAsset(input: {
   canonicalUrl: string;
 }): Promise<void> {
   try {
-    const { startYoutubeCaptionsJob } = await import('../jobs/media-jobs');
     await startYoutubeCaptionsJob({
       organizationId: input.organizationId,
       assetId: input.assetId,
@@ -1609,7 +1608,6 @@ async function enqueueAudioTranscriptionForAsset(input: {
   triggeredByProfileId: string;
 }): Promise<void> {
   try {
-    const { startTranscriptionOnlyMediaJob } = await import('../jobs/media-jobs');
     await startTranscriptionOnlyMediaJob({
       organizationId: input.organizationId,
       assetId: input.assetId,

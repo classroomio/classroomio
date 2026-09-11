@@ -24,16 +24,13 @@ export interface AttachYoutubeVideoToLessonResult {
 }
 
 /**
- * Attach a YouTube video to a lesson the way the dashboard embed form does.
+ * Attach a YouTube video the way the dashboard embed form does. All three writes
+ * matter: skipping `lesson.videos` leaves the video tab empty, because that JSON
+ * column is what it renders from.
  *
- * Three writes are required, and skipping any of them leaves the lesson looking
- * empty: the asset (the media-library row), the `asset_usages` attachment, and
- * `lesson.videos` — the JSON column the lesson video tab actually renders from.
- *
- * Caption prefetch is suppressed here. `createAssetFromUploadService` normally
- * enqueues a caption fetch per new YouTube asset, which would spend one provider
- * credit per video the moment an agent attaches a playlist. Captions are fetched
- * lazily instead, when someone asks for that lesson's transcript.
+ * Caption prefetch is suppressed — otherwise attaching a playlist would spend one
+ * provider credit per video up front. Captions are fetched when someone asks for
+ * the lesson transcript instead.
  */
 export async function attachYoutubeVideoToLesson(input: {
   orgId: string;

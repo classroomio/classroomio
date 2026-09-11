@@ -14,7 +14,6 @@ import { buildPlaylistUrl, parseYoutubePlaylistId } from './parse-playlist-id';
 /** Hard ceiling regardless of what the caller asks for. */
 export const MAX_PLAYLIST_VIDEOS = 50;
 const DEFAULT_PLAYLIST_VIDEOS = 30;
-/** Titles are fetched from the free oEmbed endpoint; bound the concurrency anyway. */
 const OEMBED_CONCURRENCY = 6;
 const UNATTRIBUTED_COURSE_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -36,14 +35,8 @@ export type ListYoutubePlaylistVideosResult =
   | { available: false; reason: 'plan_gated' | 'token_limit_reached' | 'no_provider_key'; providerCalls: number };
 
 /**
- * Expand a YouTube playlist into its videos.
- *
- * Costs exactly one provider credit: Supadata's playlist endpoint returns video
- * IDs only, and titles come from YouTube's free oEmbed endpoint rather than a
- * per-video provider lookup.
- *
- * The caller's URL is parsed to a playlist ID and never forwarded; the request
- * is rebuilt from that ID.
+ * Costs exactly one provider credit: Supadata returns video IDs only, and titles
+ * come from YouTube's free oEmbed endpoint rather than a per-video lookup.
  */
 export async function listYoutubePlaylistVideos(input: {
   playlistUrl: string;

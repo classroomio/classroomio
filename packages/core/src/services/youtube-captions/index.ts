@@ -21,11 +21,9 @@ import type {
 } from './types';
 
 const NEGATIVE_CACHE_TTL_HOURS = 24;
-/** `async_pending` is a transient provider state — re-asking soon costs another credit for no new information. */
 const ASYNC_PENDING_CACHE_TTL_MINUTES = 15;
 /** `ai_token_usage.course_id` is NOT NULL but carries no FK, so unattributed spend uses the nil UUID. */
 const UNATTRIBUTED_COURSE_ID = '00000000-0000-0000-0000-000000000000';
-/** One Supadata credit ≈ $0.00567, recorded to the nearest cent. */
 const PROVIDER_COST_CENTS_PER_CALL = 1;
 
 export interface FetchAndCacheYoutubeCaptionsInput {
@@ -37,28 +35,26 @@ export interface FetchAndCacheYoutubeCaptionsInput {
 }
 
 /**
- * The only function in the codebase that spends money on captions.
+ * The only function that spends money on captions.
  *
- * Lookup order — every step before the provider call returns `providerCalls: 0`:
- * 1. `youtube_caption` ready row for the normalized language
- * 2. Negative cache, checked at both the language and video level
- * 3. Paid-plan gate for the requesting org
- * 4. AI credit balance
- * 5. Provider fetch (Supadata), billed once, then cached
+ * The plan gate runs before the cache read: a free org gets no YouTube
+ * transcription at all, even when the captions are already cached and would
+ * cost nothing. Neither the gate nor the balance check writes to the cache —
+ * both are per-org verdicts, while `youtube_caption` is platform-wide.
  *
- * The plan gate and balance check deliberately write **nothing** to the cache:
- * both verdicts are per-org while `youtube_caption` is platform-wide, so
- * caching them would deny the video to every other org.
- *
- * On provider transient errors (429, 5xx, network) the error is rethrown so the
- * BullMQ job can retry. The charge is still recorded — Supadata bills on
- * request, not on success.
+ * Transient provider errors rethrow so the job retries; the charge is still
+ * recorded, because Supadata bills on request rather than on success.
  */
 export async function fetchAndCacheYoutubeCaptions(
   input: FetchAndCacheYoutubeCaptionsInput
 ): Promise<YoutubeCaptionOutcome> {
   const { youtubeVideoId, canonicalUrl, preferredLanguages, apiKey, billing } = input;
   const language = resolveRequestLanguage(preferredLanguages);
+
+  const allowed = await canOrgFetchYoutubeCaptions(billing.organizationId);
+  if (!allowed) {
+    return { unavailable: true, reason: 'plan_gated', providerCalls: 0 };
+  }
 
   const cached = await getYoutubeCaption(youtubeVideoId, language);
   if (cached && cached.status === 'ready' && cached.text) {
@@ -81,11 +77,6 @@ export async function fetchAndCacheYoutubeCaptions(
   const negative = videoNegative ?? languageNegative;
   if (negative) {
     return { unavailable: true, reason: negative.unavailableReason ?? 'unavailable', providerCalls: 0 };
-  }
-
-  const allowed = await canOrgFetchYoutubeCaptions(billing.organizationId);
-  if (!allowed) {
-    return { unavailable: true, reason: 'plan_gated', providerCalls: 0 };
   }
 
   const selfHosted = isSelfHostedInstance();
@@ -115,9 +106,7 @@ export async function fetchAndCacheYoutubeCaptions(
 
   await upsertYoutubeCaption({
     youtubeVideoId,
-    // Keyed on the requested language, never `result.language`: the provider
-    // reports regional tags, and a row written under `en-US` would never match
-    // the next `en` lookup — re-billing the same video forever.
+    // Never `result.language`: a row written as `en-US` would not match the next `en` lookup.
     language,
     status: 'ready',
     unavailableReason: null,
@@ -134,10 +123,7 @@ export async function fetchAndCacheYoutubeCaptions(
   return { ...result, providerCalls };
 }
 
-/**
- * Issue the single billed provider call, charging the org even when the call
- * throws — Supadata bills on request, not on success.
- */
+/** Charges the org even when the call throws — Supadata bills on request. */
 async function callProviderAndBill(input: {
   apiKey: string;
   youtubeVideoId: string;
@@ -157,10 +143,7 @@ async function callProviderAndBill(input: {
   }
 }
 
-/**
- * Charge the org for provider calls already made. Wrapped so a metering failure
- * can never lose a transcript we have already paid for.
- */
+/** Wrapped so a metering failure can never lose a transcript we already paid for. */
 async function debitCaptionFetch(
   billing: YoutubeCaptionBillingContext,
   providerCalls: number,
@@ -186,8 +169,6 @@ async function cacheUnavailable(youtubeVideoId: string, language: string, reason
     ? ASYNC_PENDING_CACHE_TTL_MINUTES * 60 * 1000
     : NEGATIVE_CACHE_TTL_HOURS * 60 * 60 * 1000;
 
-  // `no_captions` / `private` / `disabled` describe the video itself, so cache
-  // them once under the video-level key rather than per requested language.
   const cacheLanguage = isVideoLevelUnavailableReason(reason) ? VIDEO_LEVEL_LANGUAGE_KEY : language;
 
   await upsertYoutubeCaption({

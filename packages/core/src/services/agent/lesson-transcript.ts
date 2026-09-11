@@ -1,5 +1,6 @@
 import { listMediaTranscriptsByAssetIds } from '@cio/db/queries/media-transcript';
 
+import { startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import { getLesson } from '../lesson/lesson';
 import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
 import { getTokenBalance } from './usage';
@@ -29,13 +30,8 @@ interface LessonYoutubeVideo {
 }
 
 /**
- * Extract a YouTube video ID from a URL or metadata.
- * Returns null if not a YouTube video or ID not found.
- *
- * Note: lesson-embedded videos store their id under `metadata.svid`, not
- * `metadata.videoId` (see `lesson.videos[].metadata` in the schema), so in
- * practice the metadata branch only fires for assets written by other paths and
- * lesson embeds fall through to URL parsing.
+ * Lesson embeds store their id under `metadata.svid`, not `metadata.videoId`, so
+ * in practice they fall through to URL parsing.
  */
 function extractYoutubeVideoId(link: string | undefined, metadata: { videoId?: string } | undefined): string | null {
   if (metadata?.videoId && typeof metadata.videoId === 'string' && metadata.videoId.length === 11) {
@@ -72,13 +68,10 @@ function extractYoutubeVideoId(link: string | undefined, metadata: { videoId?: s
 }
 
 /**
- * Assembles the transcript text for a lesson's video(s).
- *
- * Reads `media_transcript` only. After the caption write-through, an uploaded
- * video and a YouTube embed are the same kind of row, so both are served by one
- * batched read. A YouTube video with no row yet has its caption fetch enqueued
- * and reports `hasTranscript: false` — the provider is never called inside a
- * chat request, so a slow or rate-limited provider cannot stall the response.
+ * Reads `media_transcript` only — after the caption write-through an upload and a
+ * YouTube embed are the same kind of row. A YouTube video with no row yet gets its
+ * fetch enqueued and reports `hasTranscript: false`, so a slow or rate-limited
+ * provider can never stall a chat request.
  */
 export async function getLessonVideoTranscript(
   lessonId: string,
@@ -170,10 +163,7 @@ export async function getLessonVideoTranscript(
   };
 }
 
-/**
- * Decide whether captions for the given videos can be fetched and, if so,
- * enqueue the fetches. Returns why they are not ready yet.
- */
+/** Enqueues the fetches when allowed; returns why the captions are not ready. */
 async function warmMissingCaptions(
   orgId: string,
   missingVideos: LessonYoutubeVideo[],
@@ -191,8 +181,7 @@ async function warmMissingCaptions(
     }
   }
 
-  // Without a profile to bill there is nothing to attribute the spend to, so
-  // report the videos as still fetching rather than spending anonymously.
+  // Nothing to attribute the spend to, so report as fetching rather than spend anonymously.
   if (!options.userId) {
     return 'fetching';
   }
@@ -209,8 +198,6 @@ async function enqueueCaptionFetches(
   courseId: string | null
 ): Promise<void> {
   try {
-    const { startYoutubeCaptionsJob } = await import('../jobs/media-jobs');
-
     await Promise.all(
       videos.map((video) =>
         startYoutubeCaptionsJob({
@@ -224,8 +211,7 @@ async function enqueueCaptionFetches(
       )
     );
   } catch (error) {
-    // A failed enqueue is non-fatal: the caller still gets whatever transcripts
-    // already exist, and the next request retries.
+    // Non-fatal: the caller still gets existing transcripts and the next request retries.
     console.error('enqueueCaptionFetches failed:', error);
   }
 }

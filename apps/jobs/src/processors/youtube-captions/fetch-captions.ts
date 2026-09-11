@@ -28,19 +28,10 @@ function skippedResult(reason: string): FetchCaptionsResult {
 }
 
 /**
- * Processor for YouTube caption fetch jobs.
- *
- * 1. Validates the payload
- * 2. Checks the provider key, the org's plan, and the org's AI credit balance
- * 3. Calls Supadata via the caption adapter (which meters the spend)
- * 4. Writes to `youtube_caption` (inside fetchAndCacheYoutubeCaptions)
- * 5. Writes through to `media_transcript` + uploads VTT
- * 6. Updates the `media_job` row to completed/failed
- *
- * Deliberately does **not** call `hasActiveMediaJobForAsset`: that is a
- * pre-enqueue guard, and this job's own row is still `queued` here, so it would
- * always match itself and skip the fetch. Dedup lives in the deterministic
- * BullMQ job id and, authoritatively, in the `youtube_caption` cache.
+ * Deliberately does **not** call `hasActiveMediaJobForAsset`: that is a pre-enqueue
+ * guard, and this job's own row is still `queued` here, so it would always match
+ * itself and skip the fetch. Dedup lives in the BullMQ job id and, authoritatively,
+ * in the `youtube_caption` cache.
  */
 export async function processFetchYoutubeCaptions(payload: TFetchYoutubeCaptionsPayload): Promise<FetchCaptionsResult> {
   const {
@@ -81,8 +72,8 @@ export async function processFetchYoutubeCaptions(payload: TFetchYoutubeCaptions
     return completeSkipped(mediaJobId, 'plan_gated');
   }
 
-  // `enforceTokenBalance` throws, and a throw here would burn all three retries
-  // with exponential backoff on a condition that cannot resolve on its own.
+  // `enforceTokenBalance` throws, which would burn all three retries on a condition
+  // that cannot resolve on its own.
   if (!isSelfHostedInstance()) {
     const balance = await getTokenBalance(organizationId);
     if (balance.remaining < CAPTION_FETCH_COST_UNITS) {
@@ -177,11 +168,7 @@ export async function processFetchYoutubeCaptions(payload: TFetchYoutubeCaptions
   }
 }
 
-/**
- * Mark the job `completed` with a skip reason. Never `failed` — none of these
- * conditions resolve by retrying, and a failure would exhaust the retry budget
- * and land the job in the dead-letter table for no reason.
- */
+/** Never `failed`: none of these resolve by retrying, and failing dead-letters the job. */
 async function completeSkipped(mediaJobId: string, reason: string): Promise<FetchCaptionsResult> {
   await updateMediaJob(mediaJobId, {
     status: 'completed',
