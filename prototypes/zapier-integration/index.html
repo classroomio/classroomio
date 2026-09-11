@@ -171,6 +171,17 @@
         (used by Webflow, Unbounce, and others) lets a partner render its own trigger/action picker, field mapping,
         and Zap on/off toggles natively. That's what screens 4 through 10 assume. See <code>README.md</code> for the
         full read on what's real today versus what this proposes.<br /><br />
+        <b>Why every screen shows the full dashboard sidebar</b><br />
+        Screens 1 through 13 (all but Authorize) render inside the same <code>&lt;aside class="sidebar"&gt;</code> a
+        signed-in admin actually sees: <code>Dashboard</code> / <code>Stats</code> / <code>Setup</code> ungrouped at
+        the top, then <code>Content</code> (Courses, Cohorts, Media, Tags, Widgets), <code>People</code> (Community,
+        Audience), and <code>Automation</code> (MCP, API, Zapier), Settings, and the signed-in user pinned to the
+        bottom. Zapier is the only working link (this prototype is scoped to this flow, not a full dashboard clone),
+        and stays active throughout, pointing back to <code>zapier-connect.html</code> before a connection exists and
+        <code>zapier-connected.html</code> after. The goal isn't a standalone Zapier product, it's showing exactly
+        where this feature sits in the real navigation and how an admin actually reaches it. See
+        <code>README.md</code> “Sidebar” for the full reasoning, including why Authorize keeps its own minimal
+        header instead.<br /><br />
         <b>Where the thinking lives</b><br />
         Product spec: <code>prd/zapier/README.md</code><br />
         Real IA reference: <code>apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts</code>,
