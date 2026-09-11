@@ -1,6 +1,6 @@
 import type Plyr from 'plyr';
 
-export type VideoType = 'youtube' | 'generic' | 'upload' | 'muse' | 'google_drive';
+export type VideoType = 'youtube' | 'vimeo' | 'generic' | 'upload' | 'muse' | 'google_drive';
 
 export interface VideoTextTrack {
   src: string;
@@ -36,6 +36,8 @@ export interface MediaPlayerOptions {
   height?: number | string;
   class?: string;
   playsinline?: boolean;
+  /** Whether the viewer is a learner (controls user-facing error copy). */
+  isLearnerView?: boolean;
   /** Fires on HTML5 timeupdate (seconds). */
   onTimeUpdate?: (seconds: number) => void;
   /** Fires the first time playback transitions to playing in this player session. */
@@ -55,6 +57,18 @@ export interface MediaPlayerOptions {
   onPlaybackAuthRequired?: () => void;
   /** Fires after a new `src` finishes loading metadata (used to restore seek position). */
   onSourceLoaded?: (video: HTMLVideoElement) => void;
+  /** Label overrides for Vimeo privacy restriction errors */
+  vimeoPrivacyErrorTitle?: string;
+  vimeoPrivacyErrorDescription?: string;
+  vimeoPrivacyErrorUnlistedHint?: string;
+  vimeoPrivacyErrorDomainPrefix?: string;
+  vimeoPrivacyErrorDomainSuffix?: string;
+  vimeoPrivacyErrorOtherHint?: string;
+  vimeoPrivacyErrorPrefix?: string;
+  vimeoPrivacyErrorSuffix?: string;
+  vimeoRetryLabel?: string;
+  vimeoLearnerErrorTitle?: string;
+  vimeoLearnerErrorDescription?: string;
   /**
    * HTML5 playback only (not YouTube/embed): adds a control-bar button after Plyr inits.
    * Use for actions like reopening a transcript side panel without toggling on-video captions.

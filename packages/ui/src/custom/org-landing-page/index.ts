@@ -78,6 +78,7 @@ export {
 
 export { default as LandingThemeScope } from './landing-theme-scope.svelte';
 export { default as OrgLandingPageCoursesEmpty } from './courses-empty.svelte';
+export { default as LearningPathCard } from './learning-path-card.svelte';
 export { default as LandingButton } from './landing-button.svelte';
 export { default as OrgLandingPageEmbed } from './embed.svelte';
 export { default as OrgLandingPageCallout } from './callout.svelte';
@@ -103,5 +104,5 @@ export { courseLandingTokens, type CourseLandingTokens } from './course-landing-
 export * from './landing-page-link-icons';
 export * from './theme-style';
 export * from './types';
-export { mockOrgLandingPageProps, mockCourseLandingPageProps } from './fixtures';
+export { mockOrgLandingPageProps, mockCourseLandingPageProps, mockLearningPaths } from './fixtures';
 export { safeHref } from './safe-href';

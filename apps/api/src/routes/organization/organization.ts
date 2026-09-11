@@ -28,6 +28,7 @@ import {
   revokeAudiencePendingInvite
 } from '@api/services/organization/audience';
 import {
+  activateOrgPlan,
   cancelOrgPlan,
   createOrg,
   createOrgPlan,
@@ -57,6 +58,7 @@ import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
+import { apiKeyMiddleware } from '@api/middlewares/api-key';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { automationRouter } from '@api/routes/organization/automation';
 import { courseImportRouter } from '@api/routes/organization/course-import';
@@ -582,9 +584,9 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/plan
    * Creates a new organization plan
-   * Requires authentication (user session or API key)
+   * Requires a server API key
    */
-  .post('/plan', authOrApiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
+  .post('/plan', apiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
     try {
       const data = c.req.valid('json');
       const plan = await createOrgPlan(data);
@@ -601,11 +603,33 @@ export const organizationRouter = new Hono()
     }
   })
   /**
+   * POST /organization/plan/activate
+   * Activates an existing organization plan or creates it when the initial
+   * subscription event arrived before payment became active.
+   * Requires a server API key
+   */
+  .post('/plan/activate', apiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
+    try {
+      const data = c.req.valid('json');
+      const plan = await activateOrgPlan(data);
+
+      return c.json(
+        {
+          success: true,
+          data: plan
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to activate organization plan');
+    }
+  })
+  /**
    * PUT /organization/plan
    * Updates an organization plan by subscription ID
-   * Requires authentication (user session or API key)
+   * Requires a server API key
    */
-  .put('/plan', authOrApiKeyMiddleware, zValidator('json', ZUpdateOrgPlan), async (c) => {
+  .put('/plan', apiKeyMiddleware, zValidator('json', ZUpdateOrgPlan), async (c) => {
     try {
       const { subscriptionId, payload } = c.req.valid('json');
       const plan = await updateOrgPlan(subscriptionId, payload);
@@ -624,9 +648,9 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/plan/cancel
    * Cancels an organization plan by subscription ID
-   * Requires authentication (user session or API key)
+   * Requires a server API key
    */
-  .post('/plan/cancel', authOrApiKeyMiddleware, zValidator('json', ZCancelOrgPlan), async (c) => {
+  .post('/plan/cancel', apiKeyMiddleware, zValidator('json', ZCancelOrgPlan), async (c) => {
     try {
       const { subscriptionId, payload } = c.req.valid('json');
       const plan = await cancelOrgPlan(subscriptionId, payload);

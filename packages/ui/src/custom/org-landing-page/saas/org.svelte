@@ -8,6 +8,7 @@
   import SaasHero from './hero.svelte';
   import SaasCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
+  import LearningPathCard from '../learning-path-card.svelte';
   import { Button } from '../../../base/button';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import EditableLandingSection from '../editable-section.svelte';
@@ -22,6 +23,8 @@
     hasMoreCourses = false,
     coursesLoaded = true,
     disableCourseLinks = false,
+    learningPaths,
+    hasMoreLearningPaths = false,
     embed,
     callout,
     links,
@@ -38,6 +41,40 @@
           <SaasNav {orgName} {logoUrl} {navItems} {authAction} />
         {/snippet}
       </SaasHero>
+
+      {#if learningPaths && learningPaths.length > 0}
+        <div class="plus-row"></div>
+
+        <section class="ui:py-12 ui:md:py-20 ui:px-4 ui:md:px-6">
+          <div class="ui:max-w-[1180px] ui:mx-auto">
+            <div
+              class="ui:flex ui:flex-col ui:md:flex-row ui:md:items-end ui:md:justify-between ui:gap-4 ui:mb-8 ui:md:mb-12"
+            >
+              <div>
+                <h2 class="ui:text-3xl ui:md:text-4xl ui:font-bold ui:tracking-tight">
+                  {labels?.learningPathsHeading ?? 'Learning Paths'}
+                </h2>
+              </div>
+              {#if hasMoreLearningPaths}
+                <Button
+                  href={disableCourseLinks ? undefined : '/learning-paths'}
+                  variant="outline"
+                  class="ui:rounded-full ui:self-start ui:md:self-auto"
+                  disabled={disableCourseLinks}
+                >
+                  {labels?.browseLearningPathsLabel ?? 'View more learning paths'}
+                </Button>
+              {/if}
+            </div>
+
+            <div class="course-grid ui:relative">
+              {#each learningPaths as path (path.id)}
+                <LearningPathCard {path} {disableCourseLinks} {labels} />
+              {/each}
+            </div>
+          </div>
+        </section>
+      {/if}
 
       <div class="plus-row"></div>
 

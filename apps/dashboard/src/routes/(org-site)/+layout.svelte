@@ -6,13 +6,13 @@
   import { analytics } from '@cio/analytics/client';
   import { getRequestBaseUrl } from '$lib/utils/services/api';
   import type { Snippet } from 'svelte';
-  import type { AccountOrg } from '$features/app/types';
+  import type { PublicOrg } from '$features/app/types';
 
   interface Props {
     children?: Snippet;
     data: {
       isOrgSite: boolean;
-      org: AccountOrg | null;
+      org: PublicOrg | null;
     };
   }
 

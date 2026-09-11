@@ -75,7 +75,7 @@
     "overrides": {
       "zod": "4.2.1",
       "miniflare>zod": "3.22.3",
-      "blume>zod": "^3.24.0",
+      "blume>zod": "^4.3.6",
       "vite-plugin-mkcert>undici": "^7.24.8"
     }
   },
