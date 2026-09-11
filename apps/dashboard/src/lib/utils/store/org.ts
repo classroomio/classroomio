@@ -2,7 +2,7 @@ import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 import merge from 'lodash/merge';
 
-import type { AccountOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
 import {
   canUseBasicAuthSettings,
@@ -15,6 +15,7 @@ import {
 } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { BRAND_ROOT_DOMAIN, ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
@@ -26,11 +27,19 @@ export const DEFAULT_ORG_CUSTOMIZATION = {
   auth: { backgroundImage: '' }
 } as NonNullable<AccountOrg['customization']>;
 
-export function mergeAccountOrgFromServer(org: AccountOrg): AccountOrg {
+export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountOrg {
+  const plans = org.plans.map((plan) => ({
+    provider: null,
+    subscriptionId: null,
+    customerId: null,
+    ...plan
+  }));
+
   return {
     ...org,
+    plans,
     customization: merge({}, DEFAULT_ORG_CUSTOMIZATION, org.customization ?? {}) as AccountOrg['customization']
-  };
+  } as AccountOrg;
 }
 
 export const orgs = writable<AccountOrg[]>([]);
@@ -148,7 +157,7 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 
   const url = new URL(pathname, origin);
 
-  if (window.location.host.includes('localhost') && org.siteName) {
+  if ((window.location.host.includes('localhost') || isLocalOrPrivateHost(window.location.hostname)) && org.siteName) {
     url.searchParams.set('org', org.siteName);
   }
 

@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type {
   TAssetAttach,
+  TAssetCreateAndAttach,
   TAssetCreateUpload,
   TAssetDetach,
   TAssetExportQuery,
@@ -13,11 +14,14 @@ import type {
   TFinalizeHlsAsset,
   TInitHlsAsset,
   THls1080Status,
-  TYouTubeMetadataQuery
+  TYouTubeMetadataQuery,
+  TVimeoMetadataQuery
 } from '@cio/utils/validation/assets';
 import type { TTranscriptResponse, TUpdateTranscript } from '@cio/utils/validation/media';
 import {
   assetUsageExistsForTarget,
+  AssetUsageAlreadyExistsError,
+  createAssetAndUsage,
   createAssetUsage,
   createHlsAssetPlaceholder,
   createOrGetAssetByStorageKey,
@@ -40,11 +44,10 @@ import {
   generateUploadPresignedUrl,
   TRANSCRIPT_VTT_PRESIGN_SECONDS
 } from '../../utils/s3';
+import { extractVimeoDetails, toCanonicalVimeoUrl, getYoutubeVideoId } from '@cio/utils';
 import { getS3Client, getStorageConfig } from '../../config/storage';
 import { enqueueAssetStorageCleanup, isRedisConfigured, type TAssetStorageCleanupPayload } from '@cio/jobs';
 import type { TAsset } from '@cio/db/types';
-
-const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
 
 type YouTubeOEmbedResponse = {
   title?: unknown;
@@ -57,66 +60,15 @@ type YouTubeWatchPageMetadata = {
   thumbnailUrl: string | null;
 };
 
+const VIMEO_OEMBED_TIMEOUT_MS = 4000;
+const YOUTUBE_METADATA_TIMEOUT_MS = 4000;
+
 function assertAssetExists<T>(asset: T | null): T {
   if (!asset) {
     throw new AppError('Asset not found', ErrorCodes.ASSET_NOT_FOUND, 404);
   }
 
   return asset;
-}
-
-function normalizeUrl(url: string): URL | null {
-  const trimmed = url.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  try {
-    return new URL(trimmed);
-  } catch {
-    try {
-      return new URL(`https://${trimmed}`);
-    } catch {
-      return null;
-    }
-  }
-}
-
-function extractYouTubeVideoId(url: string): string | null {
-  const parsedUrl = normalizeUrl(url);
-  if (!parsedUrl) {
-    return null;
-  }
-
-  const host = parsedUrl.hostname.toLowerCase();
-  let videoId: string | null = null;
-
-  if (host === 'youtu.be' || host === 'www.youtu.be') {
-    const [pathSegment] = parsedUrl.pathname.split('/').filter(Boolean);
-    videoId = pathSegment ?? null;
-  } else if (
-    host === 'youtube.com' ||
-    host === 'www.youtube.com' ||
-    host === 'm.youtube.com' ||
-    host === 'music.youtube.com' ||
-    host === 'youtube-nocookie.com' ||
-    host === 'www.youtube-nocookie.com'
-  ) {
-    if (parsedUrl.pathname === '/watch') {
-      videoId = parsedUrl.searchParams.get('v');
-    } else {
-      const [firstSegment, secondSegment] = parsedUrl.pathname.split('/').filter(Boolean);
-      if (firstSegment === 'embed' || firstSegment === 'shorts' || firstSegment === 'live') {
-        videoId = secondSegment ?? null;
-      }
-    }
-  }
-
-  if (!videoId || !YOUTUBE_VIDEO_ID_REGEX.test(videoId)) {
-    return null;
-  }
-
-  return videoId;
 }
 
 function decodeHtmlEntities(value: string): string {
@@ -167,7 +119,9 @@ export async function fetchYouTubeOEmbed(
   videoUrl: string
 ): Promise<{ title: string | null; thumbnailUrl: string | null }> {
   try {
-    const response = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(videoUrl)}`);
+    const response = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(videoUrl)}`, {
+      signal: AbortSignal.timeout(YOUTUBE_METADATA_TIMEOUT_MS)
+    });
     if (!response.ok) {
       return {
         title: null,
@@ -194,7 +148,9 @@ export async function fetchYouTubeOEmbed(
 
 async function fetchYouTubeWatchPageMetadata(videoId: string): Promise<YouTubeWatchPageMetadata> {
   try {
-    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
+    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+      signal: AbortSignal.timeout(YOUTUBE_METADATA_TIMEOUT_MS)
+    });
     if (!response.ok) {
       return {
         title: null,
@@ -224,9 +180,235 @@ async function fetchYouTubeWatchPageMetadata(videoId: string): Promise<YouTubeWa
   }
 }
 
+type VimeoOEmbedResponse = {
+  title?: unknown;
+  duration?: unknown;
+  thumbnail_url?: unknown;
+  author_name?: unknown;
+};
+
+async function fetchVimeoOEmbed(videoUrl: string): Promise<{
+  title: string | null;
+  durationSeconds: number | null;
+  thumbnailUrl: string | null;
+  authorName: string | null;
+}> {
+  try {
+    const response = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`, {
+      signal: AbortSignal.timeout(VIMEO_OEMBED_TIMEOUT_MS)
+    });
+    if (!response.ok) {
+      return {
+        title: null,
+        durationSeconds: null,
+        thumbnailUrl: null,
+        authorName: null
+      };
+    }
+
+    const data = (await response.json()) as VimeoOEmbedResponse;
+    const title = typeof data.title === 'string' && data.title.trim().length ? data.title.trim() : null;
+    const durationSeconds =
+      typeof data.duration === 'number' && Number.isFinite(data.duration) && data.duration >= 0
+        ? Math.round(data.duration)
+        : null;
+    const thumbnailUrl =
+      typeof data.thumbnail_url === 'string' && data.thumbnail_url.trim().length ? data.thumbnail_url.trim() : null;
+    const authorName =
+      typeof data.author_name === 'string' && data.author_name.trim().length ? data.author_name.trim() : null;
+
+    return {
+      title,
+      durationSeconds,
+      thumbnailUrl,
+      authorName
+    };
+  } catch {
+    return {
+      title: null,
+      durationSeconds: null,
+      thumbnailUrl: null,
+      authorName: null
+    };
+  }
+}
+
+const VIMEO_BACKFILL_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+
+function isGenericVimeoTitle(title: string | null | undefined, sourceUrl: string | null | undefined): boolean {
+  if (!title) {
+    return true;
+  }
+
+  const trimmedTitle = title.trim().toLowerCase();
+  if (!trimmedTitle || trimmedTitle === 'vimeo' || trimmedTitle === 'vimeo video') {
+    return true;
+  }
+
+  if (sourceUrl && trimmedTitle === sourceUrl.trim().toLowerCase()) {
+    return true;
+  }
+
+  return false;
+}
+
+export function shouldBackfillVimeoAsset(asset: TAsset): boolean {
+  const isVimeoProvider = asset.provider === 'vimeo';
+  const isVimeoSource = Boolean(asset.sourceUrl && extractVimeoDetails(asset.sourceUrl));
+  if (!isVimeoProvider && !isVimeoSource) {
+    return false;
+  }
+
+  const hasMissingThumbnail = !asset.thumbnailUrl;
+  const hasMissingDuration = asset.durationSeconds == null;
+  const hasGenericTitle = isGenericVimeoTitle(asset.title, asset.sourceUrl);
+
+  if (!hasMissingThumbnail && !hasMissingDuration && !hasGenericTitle) {
+    return false;
+  }
+
+  const assetMetadata =
+    typeof asset.metadata === 'object' && asset.metadata !== null && !Array.isArray(asset.metadata)
+      ? (asset.metadata as Record<string, unknown>)
+      : {};
+
+  const lastAttemptTimestamp = typeof assetMetadata.lastVimeoFetchAt === 'number' ? assetMetadata.lastVimeoFetchAt : 0;
+  const now = Date.now();
+
+  if (now - lastAttemptTimestamp < VIMEO_BACKFILL_COOLDOWN_MS) {
+    return false;
+  }
+
+  return true;
+}
+
+const MAX_CONCURRENT_VIMEO_BACKFILLS = 3;
+const inFlightVimeoBackfills = new Set<string>();
+const queuedVimeoBackfillIds = new Set<string>();
+const vimeoBackfillQueue: TAsset[] = [];
+let activeVimeoBackfillCount = 0;
+
+function processVimeoBackfillQueue(): void {
+  while (activeVimeoBackfillCount < MAX_CONCURRENT_VIMEO_BACKFILLS && vimeoBackfillQueue.length > 0) {
+    const nextAsset = vimeoBackfillQueue.shift();
+    if (!nextAsset) break;
+
+    queuedVimeoBackfillIds.delete(nextAsset.id);
+    activeVimeoBackfillCount++;
+
+    backfillVimeoAsset(nextAsset)
+      .catch((err) => {
+        console.warn(`[Assets] Queued Vimeo backfill failed for ${nextAsset.id}:`, err);
+      })
+      .finally(() => {
+        activeVimeoBackfillCount = Math.max(0, activeVimeoBackfillCount - 1);
+        processVimeoBackfillQueue();
+      });
+  }
+}
+
+/**
+ * Enqueues a Vimeo asset for background metadata backfill with concurrency control
+ * and asset-ID deduplication across active and queued jobs. Non-blocking.
+ */
+export function queueVimeoBackfill(asset: TAsset): void {
+  if (!shouldBackfillVimeoAsset(asset)) {
+    return;
+  }
+
+  if (inFlightVimeoBackfills.has(asset.id) || queuedVimeoBackfillIds.has(asset.id)) {
+    return;
+  }
+
+  queuedVimeoBackfillIds.add(asset.id);
+  vimeoBackfillQueue.push(asset);
+  processVimeoBackfillQueue();
+}
+
+export async function backfillVimeoAsset(asset: TAsset): Promise<TAsset> {
+  const rawUrl = asset.sourceUrl;
+  if (!rawUrl) {
+    return asset;
+  }
+
+  if (inFlightVimeoBackfills.has(asset.id)) {
+    return asset;
+  }
+
+  inFlightVimeoBackfills.add(asset.id);
+
+  const vimeoDetails = extractVimeoDetails(rawUrl);
+  const sourceUrl = vimeoDetails ? toCanonicalVimeoUrl(vimeoDetails) : rawUrl;
+  if (!sourceUrl) {
+    inFlightVimeoBackfills.delete(asset.id);
+    return asset;
+  }
+
+  const assetMetadata =
+    typeof asset.metadata === 'object' && asset.metadata !== null && !Array.isArray(asset.metadata)
+      ? (asset.metadata as Record<string, unknown>)
+      : {};
+
+  const now = Date.now();
+  const updatedMetadata: Record<string, unknown> = {
+    ...assetMetadata,
+    lastVimeoFetchAt: now
+  };
+
+  try {
+    const oembed = await fetchVimeoOEmbed(sourceUrl);
+    const patch: Partial<TAsset> = {};
+
+    if (oembed.thumbnailUrl && !asset.thumbnailUrl) {
+      patch.thumbnailUrl = oembed.thumbnailUrl;
+      updatedMetadata.thumbnailUrl = oembed.thumbnailUrl;
+    }
+
+    if (oembed.durationSeconds != null && asset.durationSeconds == null) {
+      patch.durationSeconds = oembed.durationSeconds;
+      updatedMetadata.duration = oembed.durationSeconds;
+    }
+
+    if (oembed.title && isGenericVimeoTitle(asset.title, asset.sourceUrl)) {
+      patch.title = oembed.title;
+      updatedMetadata.title = oembed.title;
+    }
+
+    if (oembed.authorName && !assetMetadata.authorName) {
+      updatedMetadata.authorName = oembed.authorName;
+    }
+
+    if (vimeoDetails?.videoId && !assetMetadata.videoId) {
+      updatedMetadata.videoId = vimeoDetails.videoId;
+    }
+
+    if (vimeoDetails?.hash && !assetMetadata.hash) {
+      updatedMetadata.hash = vimeoDetails.hash;
+    }
+
+    patch.metadata = updatedMetadata;
+
+    const updated = await updateAsset(asset.id, asset.organizationId, patch);
+    return updated ?? { ...asset, ...patch };
+  } catch (error) {
+    console.error(`Failed to backfill Vimeo asset ${asset.id}:`, error);
+    return {
+      ...asset,
+      metadata: updatedMetadata
+    };
+  } finally {
+    inFlightVimeoBackfills.delete(asset.id);
+  }
+}
+
 export async function listOrganizationAssetsService(orgId: string, query: TAssetListQuery) {
   try {
-    return await listAssetsByOrg(orgId, query);
+    const result = await listAssetsByOrg(orgId, query);
+    for (const asset of result.items) {
+      queueVimeoBackfill(asset);
+    }
+
+    return result;
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list assets',
@@ -245,6 +427,71 @@ export interface CreateAssetFromUploadOptions {
   skipYoutubeCaptionPrefetch?: boolean;
 }
 
+function buildAssetValues(orgId: string, profileId: string, data: TAssetCreateUpload) {
+  return {
+    organizationId: orgId,
+    kind: data.kind,
+    provider: data.provider,
+    storageProvider: data.storageProvider,
+    storageKey: data.storageKey ?? null,
+    sourceUrl: data.sourceUrl ?? null,
+    mimeType: data.mimeType ?? null,
+    byteSize: data.byteSize ?? null,
+    checksum: data.checksum ?? null,
+    title: data.title ?? null,
+    description: data.description ?? null,
+    thumbnailUrl: data.thumbnailUrl ?? null,
+    durationSeconds: data.durationSeconds ?? null,
+    aspectRatio: data.aspectRatio ?? null,
+    isExternal: data.isExternal,
+    status: 'active' as const,
+    metadata: data.metadata ?? {},
+    createdByProfileId: profileId
+  };
+}
+
+function scheduleAssetBackgroundWork(
+  orgId: string,
+  profileId: string,
+  asset: TAsset,
+  options: CreateAssetFromUploadOptions = {}
+): void {
+  // Fire-and-forget: enqueue lesson-video post-processing for new uploads.
+  // Errors are logged but never block the asset response.
+  if (asset.kind === 'video' && asset.provider === 'upload' && asset.storageKey) {
+    void enqueueMediaPostProcessingForAsset({
+      organizationId: orgId,
+      assetId: asset.id,
+      storageKey: asset.storageKey,
+      triggeredByProfileId: profileId
+    });
+  }
+
+  // Fire-and-forget: enqueue YouTube captions fetch for new YouTube embeds.
+  // The worker checks plan gating and API key availability before calling Supadata.
+  if (
+    asset.kind === 'video' &&
+    asset.provider === 'youtube' &&
+    asset.sourceUrl &&
+    !options.skipYoutubeCaptionPrefetch
+  ) {
+    const videoId = (asset.metadata as { videoId?: string } | undefined)?.videoId;
+    if (videoId) {
+      void enqueueYoutubeCaptionsFetchForAsset({
+        organizationId: orgId,
+        assetId: asset.id,
+        triggeredByProfileId: profileId,
+        youtubeVideoId: videoId,
+        canonicalUrl: asset.sourceUrl
+      });
+    }
+  }
+
+  // Vimeo oEmbed is slow and third-party controlled. Reads and writes return
+  // the persisted asset immediately while the bounded queue repairs metadata.
+  queueVimeoBackfill(asset);
+}
+
 export async function createAssetFromUploadService(
   orgId: string,
   profileId: string,
@@ -252,57 +499,8 @@ export async function createAssetFromUploadService(
   options: CreateAssetFromUploadOptions = {}
 ) {
   try {
-    const asset = await createOrGetAssetByStorageKey({
-      organizationId: orgId,
-      kind: data.kind,
-      provider: data.provider,
-      storageProvider: data.storageProvider,
-      storageKey: data.storageKey ?? null,
-      sourceUrl: data.sourceUrl ?? null,
-      mimeType: data.mimeType ?? null,
-      byteSize: data.byteSize ?? null,
-      checksum: data.checksum ?? null,
-      title: data.title ?? null,
-      description: data.description ?? null,
-      thumbnailUrl: data.thumbnailUrl ?? null,
-      durationSeconds: data.durationSeconds ?? null,
-      aspectRatio: data.aspectRatio ?? null,
-      isExternal: data.isExternal,
-      status: 'active',
-      metadata: data.metadata ?? {},
-      createdByProfileId: profileId
-    });
-
-    // Fire-and-forget: enqueue lesson-video post-processing for new uploads.
-    // Errors are logged but never block the asset create response.
-    if (asset.kind === 'video' && asset.provider === 'upload' && asset.storageKey) {
-      void enqueueMediaPostProcessingForAsset({
-        organizationId: orgId,
-        assetId: asset.id,
-        storageKey: asset.storageKey,
-        triggeredByProfileId: profileId
-      });
-    }
-
-    // Fire-and-forget: enqueue YouTube captions fetch for new YouTube embeds.
-    // The worker checks plan gating and API key availability before calling Supadata.
-    if (
-      asset.kind === 'video' &&
-      asset.provider === 'youtube' &&
-      asset.sourceUrl &&
-      !options.skipYoutubeCaptionPrefetch
-    ) {
-      const videoId = (asset.metadata as { videoId?: string } | undefined)?.videoId;
-      if (videoId) {
-        void enqueueYoutubeCaptionsFetchForAsset({
-          organizationId: orgId,
-          assetId: asset.id,
-          triggeredByProfileId: profileId,
-          youtubeVideoId: videoId,
-          canonicalUrl: asset.sourceUrl
-        });
-      }
-    }
+    const asset = await createOrGetAssetByStorageKey(buildAssetValues(orgId, profileId, data));
+    scheduleAssetBackgroundWork(orgId, profileId, asset, options);
 
     return asset;
   } catch (error) {
@@ -311,6 +509,36 @@ export async function createAssetFromUploadService(
       ErrorCodes.ASSET_CREATE_FAILED,
       500
     );
+  }
+}
+
+export async function createAndAttachAssetService(orgId: string, profileId: string, input: TAssetCreateAndAttach) {
+  try {
+    const assetValues = buildAssetValues(orgId, profileId, input.asset);
+    const usageValues = {
+      organizationId: orgId,
+      targetType: input.attach.targetType,
+      targetId: input.attach.targetId,
+      slotType: input.attach.slotType,
+      slotKey: input.attach.slotKey ?? null,
+      position: input.attach.position ?? null,
+      createdByProfileId: profileId
+    };
+    const result = await createAssetAndUsage(assetValues, usageValues);
+    scheduleAssetBackgroundWork(orgId, profileId, result.asset);
+
+    return result;
+  } catch (error) {
+    if (error instanceof AssetUsageAlreadyExistsError) {
+      throw new AppError('Asset is already attached to this target', ErrorCodes.ASSET_ALREADY_ATTACHED, 409);
+    }
+
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    const errorMessage = error instanceof Error ? error.message : 'Failed to attach asset';
+    throw new AppError(errorMessage, ErrorCodes.ASSET_ATTACH_FAILED, 500);
   }
 }
 
@@ -358,7 +586,11 @@ async function enqueueYoutubeCaptionsFetchForAsset(input: {
 export async function getAssetService(orgId: string, assetId: string) {
   try {
     const asset = await getAssetById(assetId, orgId);
-    return assertAssetExists(asset);
+    const existingAsset = assertAssetExists(asset);
+
+    queueVimeoBackfill(existingAsset);
+
+    return existingAsset;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -1389,7 +1621,7 @@ async function enqueueAudioTranscriptionForAsset(input: {
 }
 
 export async function getYouTubeMetadataService(_orgId: string, query: TYouTubeMetadataQuery) {
-  const videoId = extractYouTubeVideoId(query.url);
+  const videoId = getYoutubeVideoId(query.url);
   if (!videoId) {
     throw new AppError('Invalid YouTube URL', ErrorCodes.VALIDATION_ERROR, 400, 'url');
   }
@@ -1413,6 +1645,43 @@ export async function getYouTubeMetadataService(_orgId: string, query: TYouTubeM
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch YouTube metadata',
+      ErrorCodes.ASSET_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+export async function getVimeoMetadataService(_orgId: string, query: TVimeoMetadataQuery) {
+  const details = extractVimeoDetails(query.url);
+  if (!details) {
+    throw new AppError('Invalid Vimeo URL', ErrorCodes.VALIDATION_ERROR, 400, 'url');
+  }
+
+  const sourceUrl = toCanonicalVimeoUrl(details);
+  if (!sourceUrl) {
+    throw new AppError('Invalid Vimeo URL', ErrorCodes.VALIDATION_ERROR, 400, 'url');
+  }
+
+  try {
+    const oembed = await fetchVimeoOEmbed(sourceUrl);
+    const title = oembed.title ?? 'Vimeo video';
+    const durationSeconds = oembed.durationSeconds;
+    const thumbnailUrl = oembed.thumbnailUrl;
+    const authorName = oembed.authorName;
+    const hash = details.hash ?? null;
+
+    return {
+      videoId: details.videoId,
+      hash,
+      sourceUrl,
+      title,
+      durationSeconds,
+      thumbnailUrl,
+      authorName
+    };
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch Vimeo metadata',
       ErrorCodes.ASSET_FETCH_FAILED,
       500
     );

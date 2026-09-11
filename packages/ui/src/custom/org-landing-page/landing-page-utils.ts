@@ -100,6 +100,10 @@ export function defaultEnrolledLabel(count: number): string {
   return `${count.toLocaleString()} enrolled`;
 }
 
+export function defaultLearningPathCourseCountLabel(count: number): string {
+  return count === 1 ? '1 course' : `${count.toLocaleString()} courses`;
+}
+
 export type EmbedIframeDimensions = {
   width?: string;
   height?: string;

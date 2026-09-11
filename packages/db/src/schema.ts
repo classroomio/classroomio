@@ -1004,7 +1004,7 @@ export const lesson = pgTable(
     commentsEnabled: boolean('comments_enabled').default(true).notNull(),
     videos: jsonb().default([]).$type<
       {
-        type: 'youtube' | 'generic' | 'upload' | 'google_drive';
+        type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
         link: string;
         key?: string;
         assetId?: string;
@@ -1019,6 +1019,8 @@ export const lesson = pgTable(
           duration?: number;
           aspectRatio?: string;
           createdAt?: string;
+          videoId?: string;
+          hash?: string;
         };
       }[]
     >(),

@@ -8,6 +8,7 @@
   import TechHero from './hero.svelte';
   import TechCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
+  import LearningPathCard from '../learning-path-card.svelte';
   import { Button } from '../../../base/button';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import EditableLandingSection from '../editable-section.svelte';
@@ -22,6 +23,8 @@
     hasMoreCourses = false,
     coursesLoaded = true,
     disableCourseLinks = false,
+    learningPaths,
+    hasMoreLearningPaths = false,
     embed,
     callout,
     links,
@@ -37,6 +40,38 @@
         <TechNav {orgName} {logoUrl} {navItems} {authAction} />
       {/snippet}
     </TechHero>
+
+    {#if learningPaths && learningPaths.length > 0}
+      <section class="ui:py-24 ui:px-6">
+        <div class="ui:max-w-[1280px] ui:mx-auto">
+          <div class="ui:flex ui:items-end ui:justify-between ui:flex-wrap ui:gap-4 ui:mb-14">
+            <div>
+              <h2 class="ui:text-4xl ui:lg:text-5xl ui:font-extrabold ui:tracking-tight ui:m-0">
+                {labels?.learningPathsHeading ?? 'Learning Paths'}
+              </h2>
+            </div>
+            {#if hasMoreLearningPaths}
+              <Button
+                href={disableCourseLinks ? undefined : '/learning-paths'}
+                variant="outline"
+                class="ui:rounded-none ui:font-mono ui:text-sm"
+                disabled={disableCourseLinks}
+              >
+                {labels?.browseLearningPathsLabel ?? 'view all →'}
+              </Button>
+            {/if}
+          </div>
+
+          <div
+            class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:border-t ui:border-l ui:border-[var(--landing-border)]"
+          >
+            {#each learningPaths as path (path.id)}
+              <LearningPathCard {path} {disableCourseLinks} {labels} />
+            {/each}
+          </div>
+        </div>
+      </section>
+    {/if}
 
     <EditableLandingSection sectionKey="courses">
       <section class="ui:py-24 ui:px-6">

@@ -2141,7 +2141,26 @@
                   "completed": "Обработка завершена",
                   "failed": "Обработка не удалась",
                   "canceled": "Обработка отменена"
-                }
+                },
+                "vimeo_link": "Ссылка на Vimeo",
+                "invalid_vimeo": "Недействительные ссылки на Vimeo",
+                "vimeo_privacy_hint_prefix": "Для видео с ограниченным доступом к домену добавьте",
+                "vimeo_privacy_hint_suffix": "в настройки конфиденциальности Vimeo.",
+                "vimeo_privacy_error_title": "Встраивание ограничено настройками конфиденциальности Vimeo",
+                "vimeo_privacy_error_prefix": "Это видео имеет ограничения конфиденциальности на уровне домена. Чтобы разрешить воспроизведение, добавьте",
+                "vimeo_privacy_error_suffix": "в разрешенные домены видео в настройках видео Vimeo.",
+                "vimeo_retry_label": "Повторить воспроизведение",
+                "vimeo_learner_error_title": "Видео недоступно",
+                "vimeo_learner_error_description": "Это видео временно недоступно. Пожалуйста, сообщите об этом преподавателю.",
+                "duplicate_video_error": "Это видео уже добавлено в данный урок.",
+                "duplicates_skipped": "Повторяющиеся видео были пропущены.",
+                "add_video_failed": "Не удалось добавить видео. Пожалуйста, попробуйте еще раз.",
+                "some_videos_failed": "Некоторые видео не удалось добавить. Пожалуйста, попробуйте еще раз.",
+                "vimeo_privacy_error_description": "Воспроизведение было заблокировано настройками конфиденциальности Vimeo. Возможные причины для проверки:",
+                "vimeo_privacy_error_unlisted_hint": "Возможно, у ссылки на видео, не включенное в список, отсутствует ключ конфиденциальности (хеш)",
+                "vimeo_privacy_error_domain_prefix": "Ограничения домена на Vimeo (убедитесь, что",
+                "vimeo_privacy_error_domain_suffix": "разрешено в настройках видео)",
+                "vimeo_privacy_error_other_hint": "Другие настройки конфиденциальности Vimeo"
               },
               "empty_title": "Видео пока нет",
               "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки.",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Встроенный",
                 "course_fallback": "Курс",
                 "menu_aria": "Параметры видео",
-                "transcription_in_progress": "(Идет генерация стенограммы)"
+                "transcription_in_progress": "(Идет генерация стенограммы)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Посмотреть транскрипцию",
               "playback_error": "Не удалось загрузить это видео.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "Разрешение 1080p недоступно для этого исходного видео.",
               "loading": "Загрузка видео…",
               "playback_auth_error": "Срок действия вашей сессии истек. Пожалуйста, войдите еще раз, чтобы посмотреть это видео.",
-              "playback_auth_action": "Войти"
+              "playback_auth_action": "Войти",
+              "vimeo_link": "Ссылка на Vimeo"
             },
             "slide": {
               "title": "Слайд",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Общий",
       "external_url": "Внешний URL-адрес",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Видео",

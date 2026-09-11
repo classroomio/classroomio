@@ -8,6 +8,7 @@
   import VibrantHero from './hero.svelte';
   import VibrantCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
+  import LearningPathCard from '../learning-path-card.svelte';
   import EditableLandingSection from '../editable-section.svelte';
   import LandingThemeScope from '../landing-theme-scope.svelte';
   import { Button } from '../../../base/button';
@@ -23,6 +24,8 @@
     hasMoreCourses = false,
     coursesLoaded = true,
     disableCourseLinks = false,
+    learningPaths,
+    hasMoreLearningPaths = false,
     embed,
     callout,
     links,
@@ -55,6 +58,39 @@
         <VibrantNav {orgName} {logoUrl} {navItems} {authAction} />
       {/snippet}
     </VibrantHero>
+
+    {#if learningPaths && learningPaths.length > 0}
+      <section id="learning-paths" class="ui:px-6 ui:md:px-8 ui:py-24 ui:md:py-28 ui:bg-[var(--landing-bg)]">
+        <div class="ui:max-w-[1320px] ui:mx-auto">
+          <div class="ui:flex ui:flex-col ui:md:flex-row ui:md:items-end ui:justify-between ui:gap-6 ui:mb-12">
+            <div>
+              <h2
+                class="ui:text-4xl ui:md:text-5xl ui:font-medium ui:tracking-tight ui:m-0 ui:text-[var(--landing-fg)] ui:max-w-2xl"
+                style="line-height: 1.05; letter-spacing: -0.025em;"
+              >
+                {labels?.learningPathsHeading ?? 'Learning Paths'}
+              </h2>
+            </div>
+            {#if hasMoreLearningPaths}
+              <Button
+                href={disableCourseLinks ? undefined : '/learning-paths'}
+                variant="outline"
+                class="ui:rounded-md ui:px-5 ui:py-2.5 ui:font-medium ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)]"
+                disabled={disableCourseLinks}
+              >
+                {labels?.browseLearningPathsLabel ?? 'Browse all →'}
+              </Button>
+            {/if}
+          </div>
+
+          <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-5">
+            {#each learningPaths as path (path.id)}
+              <LearningPathCard {path} {disableCourseLinks} {labels} />
+            {/each}
+          </div>
+        </div>
+      </section>
+    {/if}
 
     <EditableLandingSection sectionKey="courses">
       {#if coursesLoaded && courses.length === 0}

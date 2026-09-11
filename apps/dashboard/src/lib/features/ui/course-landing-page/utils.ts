@@ -4,7 +4,7 @@ import { NAV_ITEMS, NAV_ITEM_KEY } from './constants';
 import { ContentType } from '@cio/utils/constants/content';
 import type { Review } from '$features/course/utils/types';
 import get from 'lodash/get';
-import type { AccountOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
 import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
 import type { CourseLandingPageProps, OrgLandingPageTheme } from '@cio/ui/custom/org-landing-page';
 import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
@@ -113,7 +113,7 @@ export function filterNavItems(course: Course, reviews: Review[]) {
 
 export function buildCourseLandingPageProps(
   course: Course,
-  org: AccountOrg,
+  org: AccountOrg | PublicOrg,
   options: {
     enrollHref: string;
     enrollDisabled: boolean;

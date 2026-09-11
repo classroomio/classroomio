@@ -57,10 +57,7 @@ breaks every upload with `SignatureDoesNotMatch`. A separate hostname preserves 
 
 ## Deployment
 
-<Steps>
-
-<Step>
-### Set your domain
+### 1. Set your domain
 
 Everything below derives from this one variable. Run it in **every** new SSH session:
 
@@ -75,10 +72,8 @@ export DOMAIN=203.0.113.10.sslip.io
 ```
 
 Your dashboard will be `https://app.$DOMAIN` and storage `https://s3.$DOMAIN`.
-</Step>
 
-<Step>
-### Create a non-root user
+### 2. Create a non-root user
 
 Connect as root, then create the account you'll actually work from:
 
@@ -106,10 +101,8 @@ systemctl restart ssh
 :::
 
 Close the root session. Everything from here runs as `cio`.
-</Step>
 
-<Step>
-### Firewall and swap
+### 3. Firewall and swap
 
 ```zsh title="Terminal"
 sudo apt update && sudo apt upgrade -y
@@ -130,10 +123,8 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 The swap file matters: a video transcode can spike memory enough to get Postgres killed on a 4 GB
 server.
-</Step>
 
-<Step>
-### Install Docker
+### 4. Install Docker
 
 ```zsh title="Terminal"
 sudo apt install -y ca-certificates curl
@@ -171,10 +162,8 @@ docker compose version     # must be v2.24.0 or newer
 Compose **v2.24.0+** is required: Step 6 uses the `!override` YAML tag. Older versions
 *concatenate* port lists instead of replacing them, which would leave your internal services exposed
 to the internet.
-</Step>
 
-<Step>
-### Download the compose file
+### 5. Download the compose file
 
 ```zsh title="Terminal"
 mkdir -p ~/classroomio && cd ~/classroomio
@@ -183,10 +172,8 @@ curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-co
 
 This is the same [pull-based stack](/self-hosted/docker#quick-start) used
 by the other guides. It pulls the published `classroomio/*` images and builds nothing.
-</Step>
 
-<Step>
-### Create the `.env` file
+### 6. Create the `.env` file
 
 This generates every secret for you. Paste it whole:
 
@@ -256,10 +243,8 @@ silently corrupt a password or URL.
 :::
 
 Every remaining variable is documented in [Configuration](/self-hosted/configuration).
-</Step>
 
-<Step>
-### Add Caddy and close the internal ports
+### 7. Add Caddy and close the internal ports
 
 Right now each part of ClassroomIO runs on its own port number: the dashboard on `3082`, file
 storage on `9000`. That leaves two problems: nobody wants to visit `yoursite.com:3082`, and neither
@@ -343,10 +328,8 @@ That's why the `!override` lines above matter. `127.0.0.1` means "this machine o
 services stop accepting outside connections altogether. Caddy still reaches them because it sits on
 the same internal Docker network. Step 9 proves it from outside the server.
 :::
-</Step>
 
-<Step>
-### Download the images
+### 8. Download the images
 
 Save the long compose command as an alias first:
 
@@ -369,10 +352,8 @@ dc pull
 The images are large (`api` 3.7 GB, `dashboard` 3.9 GB, `jobs` 4.2 GB). On a 2-vCPU droplet the
 **progress bars sit still for minutes at a time. This is normal, it is not frozen.** Don't cancel it.
 :::
-</Step>
 
-<Step>
-### Start and verify
+### 9. Start and verify
 
 ```zsh title="Terminal"
 dc up -d
@@ -427,10 +408,8 @@ done
 
 All four must report `no response`. If any is reachable, your Compose version ignored `!override`.
 Check that `docker compose version` is v2.24.0 or newer.
-</Step>
 
-<Step>
-### Sign up
+### 10. Sign up
 
 Open `https://app.<your-domain>` and create the first account: it becomes the organization
 **admin**. Every signup after that joins as a student unless you invite them with a specific role.
@@ -439,9 +418,6 @@ Then verify uploads end to end: create a course, upload an image, and upload a s
 worker process it with `dc logs -f jobs`. In your browser's DevTools the media URLs must point at
 `https://s3.<your-domain>/...`. If you see `localhost:9000`, `OBJECT_STORAGE_PUBLIC_ENDPOINT` is
 wrong.
-</Step>
-
-</Steps>
 
 ## Day-to-day commands
 
