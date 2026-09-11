@@ -49,28 +49,21 @@ yourself, deploy, then attach the dashboard domain. The flow is: **create a proj
 service → paste the compose file → set environment variables → point your domain → deploy → add the
 dashboard domain → sign up**.
 
-<Steps>
-
-<Step>
-### Create a project
+### 1. Create a project
 
 In the Dokploy dashboard, open **Projects** and click **Create Project**. Give it a name (e.g.
 `classroomio`) and open it.
 
 ![Creating a project in Dokploy](/docs/dokploy-01-create-project.webp)
-</Step>
 
-<Step>
-### Add a Compose service
+### 2. Add a Compose service
 
 Inside the project, click **Create Service** and choose **Compose** from the service types. When
 prompted, **select the server** you connected to Dokploy. This is the VPS ClassroomIO runs on.
 
 ![Adding a Compose service and selecting the server](/docs/dokploy-02-compose-service.webp)
-</Step>
 
-<Step>
-### Choose the Raw (manual) provider and paste the compose file
+### 3. Choose the Raw (manual) provider and paste the compose file
 
 Dokploy asks where the compose file comes from: GitHub, GitLab, Bitbucket, or **Raw**. Choose **Raw**
 (the manual option) and paste the contents of
@@ -79,10 +72,8 @@ the same pull-based stack used for the [Docker](/self-hosted/docker) and [Coolif
 deployments.
 
 ![Choosing the Raw provider and pasting the compose file](/docs/dokploy-03-raw-compose.webp)
-</Step>
 
-<Step>
-### Set the environment variables
+### 4. Set the environment variables
 
 Open the service's **Environment** tab and add your configuration. At minimum:
 
@@ -105,29 +96,22 @@ The full variable reference (object storage, CSP, integrations, licensing, versi
 shared [Configuration](/self-hosted/configuration) section. Copy what you need before deploying.
 
 ![Setting the environment variables in Dokploy](/docs/dokploy-04-env-vars.webp)
-</Step>
 
-<Step>
-### Point your domain at the server
+### 5. Point your domain at the server
 
 Before the domain will work, add a DNS **A record** for it (e.g. `dash.yourdomain.com`) pointing at
 your server's public IP. Do this for the dashboard domain, and any other domain you plan to use (such
 as storage). DNS can take a few minutes to propagate.
 
-</Step>
-
-<Step>
-### Deploy
+### 6. Deploy
 
 Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and MinIO,
 then starts the stack. The API runs database setup on first boot. Watch the **logs** until every
 service is up. This is your first deploy.
 
 ![Dokploy deploy logs showing the stack coming up](/docs/dokploy-05-deploy-logs.webp)
-</Step>
 
-<Step>
-### Add the dashboard domain
+### 7. Add the dashboard domain
 
 Open the service's **Domains** section and click **Add Domain**. In the modal that appears:
 
@@ -139,19 +123,14 @@ Open the service's **Domains** section and click **Add Domain**. In the modal th
 Create the domain. Dokploy provisions the certificate through Traefik, which usually only takes a moment.
 
 ![Adding the dashboard domain with port 3082 and Let's Encrypt](/docs/dokploy-06-add-domain.webp)
-</Step>
 
-<Step>
-### Open the app and sign up
+### 8. Open the app and sign up
 
 Once the certificate is issued, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser
 tab and **sign up**. The **first** account becomes the organization **admin**; every signup after that
 joins as a student unless you invite them with a specific role.
 
 ![The running ClassroomIO dashboard sign-up page](/docs/dokploy-07-signup.webp)
-</Step>
-
-</Steps>
 
 ## Environment variable reference
 

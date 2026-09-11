@@ -32,11 +32,21 @@ trailing-slash handling — only `preview` runs the site the way production does
 
 ## Navigation
 
-Unlike `apps/docs`, this app has **no explicit `navigation.sidebar`** in `blume.config.ts`. The
-sidebar is generated from the `content/help` folder tree: one folder per group, each `.mdx` file a
-page. To control a group's label or order, add a `meta.ts` in that folder
-(`export default defineMeta({ title, order })`, from `blume`). To control a page's order within its
-group, set `sidebar: { order: N }` in that page's frontmatter.
+`blume.config.ts` defines an **explicit `navigation.sidebar` array**, which controls group
+membership and order and overrides Blume's default folder-tree/`meta.ts` inference entirely.
+A page must be listed in that array to appear in the sidebar at all — adding a new `.mdx` file
+under `content/help` is not enough by itself. Within a group, page order is purely each item's
+position in that array; a page's `sidebar: { order: N }` frontmatter has no effect once
+`navigation.sidebar` is explicit like this — don't set it.
+
+## Editing docs without a repo clone
+
+Non-technical writers can edit existing pages through a browser-based CMS (Sveltia) at
+`classroomio.com/help/admin` instead of cloning the repo — see `CMS_GUIDE.md` for how to log in,
+edit, and submit changes for review. Editing existing pages needs no config change. The PR workflow
+(`register` job in `.github/workflows/help-cms.yml`, via `scripts/register-sidebar-pages.mjs`)
+automatically registers a new page into its matching `navigation.sidebar` group. A developer is
+only needed to reorder pages/groups, or if a new page's section has no matching sidebar group yet.
 
 ## How it's served
 
@@ -46,7 +56,7 @@ assets — there is no server-side rendering.
 
 Two things follow from being mounted at `/help`:
 
-- **Links** are authored root-relative to the content root (e.g. `/build-a-course/course-types`).
+- **Links** are authored root-relative to the content root (e.g. `/create-and-deliver/course-types`).
   Blume prepends the base at build time.
 - **Images** must be written with the base (`/help/customize-organization.webp`). Blume deliberately
   does not rebase images, so an unprefixed path would 404.

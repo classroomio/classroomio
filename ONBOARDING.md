@@ -33,7 +33,7 @@ Open these pages in a new tab so you understand the product before clicking arou
 | What is ClassroomIO | https://classroomio.com/docs |
 | Terminology | https://classroomio.com/docs/terminology |
 | Quickstart | https://classroomio.com/docs/quickstart/signup |
-| Course Types | https://classroomio.com/help/build-a-course/course-types |
+| Course Types | https://classroomio.com/help/create-and-deliver/course-types |
 | Organization | https://classroomio.com/docs/organization |
 | Student Dashboard | https://classroomio.com/docs/student-dashboard |
 
@@ -497,9 +497,9 @@ student-side testing. This keeps the admin session clean.
 | Topic | Link |
 |---|---|
 | Student Dashboard | https://classroomio.com/docs/student-dashboard |
-| Course Enrollment | https://classroomio.com/help/enrollment-and-students/course-enrollment |
-| Welcome Email | https://classroomio.com/help/enrollment-and-students/welcome-email |
-| Invite Students | https://classroomio.com/help/enrollment-and-students/invite-students |
+| Course Enrollment | https://classroomio.com/help/manage-students/course-enrollment |
+| Welcome Email | https://classroomio.com/help/manage-students/welcome-email |
+| Invite Students | https://classroomio.com/help/manage-students/invite-students |
 
 ### LMS Checklist
 
