@@ -3206,6 +3206,17 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Рабочая область",
+      "personal": "Личные настройки",
+      "product": "Продукт",
+      "connections": "Подключения",
+      "security": "Безопасность",
+      "billing": "Оплата",
+      "branding": "Брендинг",
+      "ai": "ИИ",
+      "search": "Поиск настроек..."
+    },
     "heading": "Настройки",
     "billing": {
       "sub_title": "Платежные реквизиты",

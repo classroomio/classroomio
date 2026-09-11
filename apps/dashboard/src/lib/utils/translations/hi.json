@@ -3206,6 +3206,17 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "कार्यस्थान",
+      "personal": "व्यक्तिगत",
+      "product": "उत्पाद",
+      "connections": "कनेक्शन",
+      "security": "सुरक्षा",
+      "billing": "बिलिंग",
+      "branding": "ब्रांडिंग",
+      "ai": "एआई",
+      "search": "सेटिंग खोजें..."
+    },
     "heading": "सेटिंग्स",
     "billing": {
       "sub_title": "बिलिंग विवरण",

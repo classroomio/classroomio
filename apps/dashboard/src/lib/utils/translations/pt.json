@@ -3206,6 +3206,17 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Espaço de trabalho",
+      "personal": "Pessoal",
+      "product": "Produto",
+      "connections": "Conexões",
+      "security": "Segurança",
+      "billing": "Faturamento",
+      "branding": "Marca",
+      "ai": "IA",
+      "search": "Pesquisar configurações..."
+    },
     "heading": "Configurações",
     "billing": {
       "sub_title": "Detalhes de cobrança",

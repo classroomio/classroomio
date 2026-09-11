@@ -3206,6 +3206,17 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Arbeitsbereich",
+      "personal": "Persönlich",
+      "product": "Produkt",
+      "connections": "Verbindungen",
+      "security": "Sicherheit",
+      "billing": "Abrechnung",
+      "branding": "Branding",
+      "ai": "KI",
+      "search": "Einstellungen durchsuchen..."
+    },
     "heading": "Einstellungen",
     "billing": {
       "sub_title": "Rechnungsdetails",

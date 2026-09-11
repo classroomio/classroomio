@@ -26,7 +26,7 @@ Token Auth requires an **Enterprise** plan.
 ## Set Up Token Auth
 
 1. Sign in to ClassroomIO as an organization admin.
-2. Open **Settings** → **Authentication** → **Token Auth**.
+2. Open **Settings** → **Security** → **Token Auth**.
 3. Click **Generate secret** and copy the secret immediately. The full secret is shown only once.
 4. Store the secret in your backend secret manager or environment variables.
 5. Enable Token Auth after your integration is ready.
@@ -124,7 +124,7 @@ When the token is valid:
 
 ## Rotating the Secret
 
-Rotate the secret from **Settings** → **Authentication** → **Token Auth** when a secret may have been exposed or as part of regular credential rotation.
+Rotate the secret from **Settings** → **Security** → **Token Auth** when a secret may have been exposed or as part of regular credential rotation.
 
 After rotation, update your backend to sign new tokens with the new secret. Old tokens signed with the previous secret stop working.
 

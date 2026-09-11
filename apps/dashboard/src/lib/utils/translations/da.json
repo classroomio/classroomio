@@ -3206,6 +3206,17 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Arbejdsområde",
+      "personal": "Personlig",
+      "product": "Produkt",
+      "connections": "Forbindelser",
+      "security": "Sikkerhed",
+      "billing": "Fakturering",
+      "branding": "Branding",
+      "ai": "AI",
+      "search": "Søg i indstillinger..."
+    },
     "heading": "Indstillinger",
     "billing": {
       "sub_title": "Faktureringsoplysninger",

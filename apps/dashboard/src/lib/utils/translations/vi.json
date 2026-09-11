@@ -3206,6 +3206,17 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Không gian làm việc",
+      "personal": "Cá nhân",
+      "product": "Sản phẩm",
+      "connections": "Kết nối",
+      "security": "Bảo mật",
+      "billing": "Thanh toán",
+      "branding": "Thương hiệu",
+      "ai": "AI",
+      "search": "Tìm kiếm cài đặt..."
+    },
     "heading": "Cài đặt",
     "billing": {
       "sub_title": "Chi tiết thanh toán",
