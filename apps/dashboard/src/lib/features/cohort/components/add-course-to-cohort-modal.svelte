@@ -145,7 +145,7 @@
         bind:searchValue
       >
         {#snippet headingSnippet()}
-          <p class="ui:text-sm ui:font-medium">
+          <p class="text-sm font-medium">
             {$t('cohorts.courses.select_courses') || $t('cohorts.courses.select_course') || 'Select course(s)'}
             {#if selectedCount > 0}
               <span class="ui:text-muted-foreground text-xs">

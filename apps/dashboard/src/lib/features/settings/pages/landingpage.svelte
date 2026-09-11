@@ -8,6 +8,7 @@
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import PaintbrushIcon from '@lucide/svelte/icons/paintbrush';
   import ZapIcon from '@lucide/svelte/icons/zap';
+  import { isFreeLandingPageTheme } from '@cio/utils/constants';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
@@ -52,6 +53,12 @@
   const CDN_BASE = 'https://assets.cdn.clsrio.com/templates';
 
   const themeCards = [
+    {
+      value: 'quartz',
+      preview: `${CDN_BASE}/quartz.png`,
+      titleKey: 'settings.landing_page.theme.cards.quartz.title',
+      descriptionKey: 'settings.landing_page.theme.cards.quartz.description'
+    },
     {
       value: 'minimal',
       preview: `${CDN_BASE}/minimal.png`,
@@ -123,7 +130,7 @@
   const otherThemeCards = $derived(themeCards.filter((card) => card.value !== currentTheme));
 
   function isPaidTheme(theme: LandingPageTheme): boolean {
-    return theme !== 'minimal';
+    return !isFreeLandingPageTheme(theme);
   }
 
   const authAction = $derived(
@@ -218,7 +225,7 @@
   <section>
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div
-        class="ui:border-border bg-background relative aspect-[16/10] w-full overflow-hidden rounded-xl border select-none"
+        class="ui:border-border ui:bg-background relative aspect-[16/10] w-full overflow-hidden rounded-xl border select-none"
         bind:clientWidth={previewWidth}
       >
         <div
@@ -294,7 +301,7 @@
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {#each otherThemeCards as themeCard (themeCard.value)}
         {@const isLocked = $isFreePlan && isPaidTheme(themeCard.value)}
-        <div class="ui:border-border bg-background relative overflow-hidden rounded-xl border">
+        <div class="ui:border-border ui:bg-background relative overflow-hidden rounded-xl border">
           {#if isLocked}
             <div
               class="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white shadow-sm"
@@ -322,14 +329,20 @@
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <div class="bg-background aspect-[4/3] w-full overflow-hidden">
+          <!-- The preview image doubles as the card's click target, matching the menu's Preview action. -->
+          <button
+            type="button"
+            class="ui:bg-background block aspect-[4/3] w-full cursor-pointer overflow-hidden"
+            onclick={() => handlePreviewTheme(themeCard.value)}
+            aria-label={`${$t('settings.landing_page.gallery.preview')}: ${$t(themeCard.titleKey)}`}
+          >
             <img
               src={themeCard.preview}
               alt={$t(themeCard.titleKey)}
               class="h-full w-full object-cover object-top"
               loading="lazy"
             />
-          </div>
+          </button>
           <div class="flex items-center justify-between gap-3 px-4 py-3">
             <div class="min-w-0">
               <p class="ui:text-primary truncate text-sm font-semibold">{$t(themeCard.titleKey)}</p>

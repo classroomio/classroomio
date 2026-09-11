@@ -43,7 +43,7 @@
       {#if showTranscript}
         <HoverableItem>
           {#snippet children(isHovered)}
-            <Button variant="ghost" size="sm" class="ui:h-auto ui:px-1 ui:py-1 sm:ui:px-2" onclick={onTranscript}>
+            <Button variant="ghost" size="sm" class="h-auto px-1 py-1 sm:px-2" onclick={onTranscript}>
               <ContentIcon {isHovered} size={16} />
               {$t('course.navItem.lessons.materials.show_transcript')}
             </Button>
@@ -58,12 +58,7 @@
       {#if showSummarize && IS_AI_ENABLED}
         <HoverableItem>
           {#snippet children(isHovered)}
-            <Button
-              variant="ghost"
-              size="sm"
-              class="ui:h-auto ui:px-1 ui:py-1 sm:ui:px-2"
-              onclick={handleSummarizeLesson}
-            >
+            <Button variant="ghost" size="sm" class="h-auto px-1 py-1 sm:px-2" onclick={handleSummarizeLesson}>
               <PremiumIcon {isHovered} size={16} />
               {$t('course.navItem.lessons.materials.summarize_lesson')}
             </Button>

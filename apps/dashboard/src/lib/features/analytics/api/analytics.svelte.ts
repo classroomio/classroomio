@@ -8,7 +8,9 @@ import type {
   LandingStatsData,
   LandingStatsRequest,
   PopularTypesData,
-  PopularTypesRequest
+  PopularTypesRequest,
+  TopCoursesData,
+  TopCoursesRequest
 } from '../utils/types';
 
 class AnalyticsApi extends BaseApi {
@@ -16,18 +18,27 @@ class AnalyticsApi extends BaseApi {
   country = $state<CountryBreakdownData>([]);
   funnel = $state<CourseFunnelData | null>(null);
   popularTypes = $state<PopularTypesData>([]);
+  topCourses = $state<TopCoursesData>([]);
 
   loadingLanding = $state(false);
   loadingCountry = $state(false);
   loadingFunnel = $state(false);
   loadingPopularTypes = $state(false);
+  loadingTopCourses = $state(false);
 
   range = $state<7 | 30 | 90>(30);
   lastFetchedOrgId = $state<string | null>(null);
   lastFetchedRange = $state<7 | 30 | 90 | null>(null);
+  private topCoursesRequestSeq = 0;
 
   get loading() {
-    return this.loadingLanding || this.loadingCountry || this.loadingFunnel || this.loadingPopularTypes;
+    return (
+      this.loadingLanding ||
+      this.loadingCountry ||
+      this.loadingFunnel ||
+      this.loadingPopularTypes ||
+      this.loadingTopCourses
+    );
   }
 
   private query(orgId: string, bust: boolean) {
@@ -82,7 +93,25 @@ class AnalyticsApi extends BaseApi {
     this.loadingPopularTypes = false;
   }
 
-  /** Fire all four in parallel; each card shows its own spinner. */
+  async fetchTopCourses(orgId: string, bust = false) {
+    const requestSeq = ++this.topCoursesRequestSeq;
+    const query = this.query(orgId, bust);
+    this.loadingTopCourses = true;
+    await this.execute<TopCoursesRequest>({
+      requestFn: () => classroomio.dash['top-courses'].$get({ query }),
+      logContext: 'fetching analytics top courses',
+      onSuccess: (response) => {
+        if (requestSeq !== this.topCoursesRequestSeq) return;
+
+        this.topCourses = response.data;
+      }
+    });
+    if (requestSeq === this.topCoursesRequestSeq) {
+      this.loadingTopCourses = false;
+    }
+  }
+
+  /** Fire all cards in parallel; each card shows its own spinner. */
   fetchAll(orgId: string, bust = false) {
     if (!orgId) return Promise.resolve();
 
@@ -92,7 +121,8 @@ class AnalyticsApi extends BaseApi {
       this.fetchLanding(orgId, bust),
       this.fetchCountry(orgId, bust),
       this.fetchFunnel(orgId, bust),
-      this.fetchPopularTypes(orgId, bust)
+      this.fetchPopularTypes(orgId, bust),
+      this.fetchTopCourses(orgId, bust)
     ]);
   }
 

@@ -49,7 +49,7 @@
       variant="ghost"
       size="icon"
       href={resolve(`${$currentOrgPath}/widgets`, {})}
-      class="ui:size-8 shrink-0"
+      class="size-8 shrink-0"
       aria-label={$t('widgets.actions.back')}
     >
       <ArrowLeftIcon class="size-4" />

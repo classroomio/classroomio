@@ -79,7 +79,7 @@ class CodeRootState {
 
 <Story name="Default">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-3xl">
+    <div class="w-full max-w-3xl">
       <Code.Root code={sampleTypeScript} lang="typescript" />
     </div>
   {/snippet}
@@ -87,7 +87,7 @@ class CodeRootState {
 
 <Story name="With Copy Button">
   {#snippet template()}
-    <div class="ui:relative ui:w-full ui:max-w-3xl">
+    <div class="relative w-full max-w-3xl">
       <Code.Root code={sampleTypeScript} lang="typescript">
         <Code.CopyButton />
       </Code.Root>
@@ -97,15 +97,15 @@ class CodeRootState {
 
 <Story name="Variants">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-6 ui:w-full ui:max-w-3xl">
+    <div class="flex w-full max-w-3xl flex-col gap-6">
       <div>
-        <p class="ui:mb-2 ui:text-sm ui:font-medium ui:text-muted-foreground">Default variant</p>
+        <p class="ui:text-muted-foreground mb-2 text-sm font-medium">Default variant</p>
         <Code.Root code={sampleTypeScript} lang="typescript" variant="default">
           <Code.CopyButton />
         </Code.Root>
       </div>
       <div>
-        <p class="ui:mb-2 ui:text-sm ui:font-medium ui:text-muted-foreground">Secondary variant</p>
+        <p class="ui:text-muted-foreground mb-2 text-sm font-medium">Secondary variant</p>
         <Code.Root code={sampleTypeScript} lang="typescript" variant="secondary">
           <Code.CopyButton />
         </Code.Root>
@@ -116,7 +116,7 @@ class CodeRootState {
 
 <Story name="Languages">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-6 ui:w-full ui:max-w-3xl">
+    <div class="flex w-full max-w-3xl flex-col gap-6">
       <Code.Block filename="example.ts" code={sampleTypeScript} />
       <Code.Block filename="script.sh" code={sampleBash} />
       <Code.Block filename="package.json" code={sampleJson} />
@@ -127,7 +127,7 @@ class CodeRootState {
 
 <Story name="With Line Highlighting">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-2xl">
+    <div class="w-full max-w-2xl">
       <Code.Root code={sampleTypeScript} lang="typescript" highlight={[2, [4, 5]]} />
     </div>
   {/snippet}
@@ -135,7 +135,7 @@ class CodeRootState {
 
 <Story name="Hide Line Numbers">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-2xl">
+    <div class="w-full max-w-2xl">
       <Code.Root code={sampleTypeScript} lang="typescript" hideLines={true} />
     </div>
   {/snippet}
@@ -143,7 +143,7 @@ class CodeRootState {
 
 <Story name="With Overflow">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-2xl">
+    <div class="w-full max-w-2xl">
       <Code.Overflow>
         <Code.Root code={longCode} lang="typescript">
           <Code.CopyButton />
@@ -155,7 +155,7 @@ class CodeRootState {
 
 <Story name="Overflow Expanded">
   {#snippet template()}
-    <div class="ui:w-full ui:max-w-2xl">
+    <div class="w-full max-w-2xl">
       <Code.Overflow collapsed={false}>
         <Code.Root code={longCode} lang="typescript">
           <Code.CopyButton />

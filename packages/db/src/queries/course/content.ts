@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 
 import { ContentType } from '@cio/utils/constants';
-import { db, sql as drizzleSql } from '@db/drizzle';
+import { db, sql as drizzleSql, type DbOrTxClient } from '@db/drizzle';
 import { isExerciseCompletedSql } from './progression';
 
 export type CourseContentItemRow = {
@@ -28,7 +28,11 @@ export type CourseContentItemRow = {
  * @param courseId Course ID
  * @param profileId Optional profile ID for completion state
  */
-export async function getCourseContentItems(courseId: string, profileId?: string): Promise<CourseContentItemRow[]> {
+export async function getCourseContentItems(
+  courseId: string,
+  profileId?: string,
+  dbClient: DbOrTxClient = db
+): Promise<CourseContentItemRow[]> {
   try {
     const lessonCompletionSql = profileId
       ? drizzleSql`COALESCE(
@@ -43,7 +47,7 @@ export async function getCourseContentItems(courseId: string, profileId?: string
 
     const exerciseCompletionSql = profileId ? isExerciseCompletedSql('exercise', { profileId }) : drizzleSql`false`;
 
-    const result = await db.execute(drizzleSql`
+    const result = await dbClient.execute(drizzleSql`
       SELECT
         id,
         ${ContentType.Section}::text AS type,

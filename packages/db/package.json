@@ -70,10 +70,12 @@
     "db:create-org": "tsx src/scripts/create-org-with-admin.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
     "db:backfill-profile-email-verification": "tsx src/scripts/backfill-profile-email-verification.ts",
+    "db:backfill-archived-widgets": "tsx src/scripts/backfill-archived-widgets.ts",
     "db:backfill-member-email-notifications": "tsx src/scripts/backfill-member-email-notifications-from-profile.ts",
     "db:backfill-cohort-course-enrollment": "tsx src/scripts/backfill-cohort-course-enrollment.ts",
     "db:update-user-email": "tsx src/scripts/update-user-email.ts",
     "db:ban-user": "tsx src/scripts/ban-user.ts",
+    "db:delete-org": "tsx src/scripts/delete-org-by-email.ts",
     "db:notify-students-over-limit": "tsx src/scripts/notify-students-over-limit.ts",
     "db:downgrade-expired-subscriptions": "tsx src/scripts/downgrade-expired-subscriptions.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
@@ -87,11 +89,13 @@
     "db:restore-lesson-section-from-dump": "tsx src/scripts/restore-lesson-section-from-dump.ts",
     "db:restore-organizationmember-from-dump": "tsx src/scripts/restore-organizationmember-from-dump.ts",
     "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts",
-    "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts"
+    "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
+    "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",
     "@cio/email": "workspace:*",
+    "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",

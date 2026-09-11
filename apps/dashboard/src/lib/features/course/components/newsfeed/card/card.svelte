@@ -81,9 +81,9 @@
 
 <div
   id={feed.id}
-  class="bg-card text-card-foreground relative mb-4 flex w-full max-w-3xl flex-col overflow-visible rounded-xl {isActive
-    ? 'ring-primary border-primary ring-2'
-    : 'border-border/60 border'}"
+  class="ui:bg-card ui:text-card-foreground relative mb-4 flex w-full max-w-3xl flex-col overflow-visible rounded-xl {isActive
+    ? 'ui:ring-primary ui:border-primary ring-2'
+    : 'ui:border-border/60 border'}"
 >
   {#if feed.isPinned}
     <PinIcon

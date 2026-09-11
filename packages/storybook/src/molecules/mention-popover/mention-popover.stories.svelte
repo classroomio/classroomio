@@ -50,7 +50,7 @@
       {/snippet}
     </MentionPopover>
     {#if lastSelected}
-      <p class="ui:mt-3 ui:text-muted-foreground ui:text-sm">Selected: {lastSelected}</p>
+      <p class="ui:text-muted-foreground mt-3 text-sm">Selected: {lastSelected}</p>
     {/if}
   {/snippet}
 </Story>

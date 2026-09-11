@@ -134,7 +134,7 @@
           rows={1}
           placeholder={$t('ai_assistant.content_input_placeholder')}
           aria-label={$t('ai_assistant.ask_ai_input_aria')}
-          class="ui:min-h-10 ui:max-h-64 ui:resize-none ui:rounded-none ui:shadow-none"
+          class="max-h-64 min-h-10 resize-none rounded-none shadow-none"
           onkeydown={handleTextareaKeydown}
           onblur={handleTextareaBlur}
         />
@@ -151,13 +151,13 @@
       <div class={`flex justify-center ${contentClass}`}>
         <Button
           variant="outline"
-          class="ui:bg-background ui:dark:bg-background ui:shadow-sm pointer-events-auto"
+          class="ui:bg-background ui:dark:bg-background pointer-events-auto shadow-sm"
           aria-label={$t('ai_assistant.ask_ai_expand_aria')}
           onclick={() => expand()}
           onmouseenter={() => expand()}
         >
           {$t('ai_assistant.ask_ai')}
-          <Separator orientation="vertical" class="ui:!h-4" />
+          <Separator orientation="vertical" class="h-4!" />
           <span class="ui:text-muted-foreground flex items-center gap-0.5 font-normal">
             {#if isMac}
               <Kbd.Root>⌘</Kbd.Root>

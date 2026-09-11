@@ -165,7 +165,11 @@
         <!-- Select a content type - Section | Lesson | Exercise -->
         <div class="flex flex-col gap-3">
           <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
-          <RadioOptionCardGroup options={contentOptionsForGroup} bind:value={selectedType} class="md:grid-cols-3" />
+          <RadioOptionCardGroup
+            options={contentOptionsForGroup}
+            bind:value={selectedType}
+            class={contentOptionsForGroup.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}
+          />
           <Dialog.Footer>
             <Button onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
           </Dialog.Footer>
@@ -177,7 +181,7 @@
             <div class="mb-4">
               <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>
               {#if sectionFromContext}
-                <p class="text-muted-foreground text-sm">
+                <p class="ui:text-muted-foreground text-sm">
                   {$t('course.navItem.lessons.add_content_adding_to')}
                   <strong>
                     {sections.find((s) => s.id === sectionId)?.title ??

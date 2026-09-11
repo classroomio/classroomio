@@ -259,14 +259,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Completo :)"
+        "complete": "Completo :)",
+        "courses_reordered": "Ordem dos cursos atualizada"
       },
       "error": {
         "file_size": "O tamanho do arquivo não deve ser superior a 500kb",
         "try_again": "Tente novamente",
         "label": "Carregar imagem",
         "fetch_error": "Erro ao buscar imagens do Unsplash",
-        "upload_failed": "Falha ao carregar a imagem. Por favor, tente novamente."
+        "upload_failed": "Falha ao carregar a imagem. Por favor, tente novamente.",
+        "courses_reorder_failed": "Falha ao atualizar a ordem dos cursos. Tente novamente."
       }
     },
     "team_members": {
@@ -463,11 +465,6 @@
         "post_created": "Postagem criada com sucesso",
         "post_updated": "Postagem atualizada com sucesso"
       }
-    },
-    "report": {
-      "success": "Thanks. We’ll review this report.",
-      "error": "Could not submit the report. Please try again.",
-      "already_submitted": "You’ve already reported this."
     }
   },
   "explore": {
@@ -507,7 +504,7 @@
     "go_to_my_learning": "Ir para Meu aprendizado"
   },
   "lms_navigation": {
-    "home": "Página inicial",
+    "home": "Painel",
     "my_learning": "Meu aprendizado",
     "certificates": "Certificados",
     "exercise": "Exercício",
@@ -603,6 +600,14 @@
         "COMPLIANCE": "Conformidade",
         "PUBLIC": "Público"
       }
+    },
+    "topCourses": {
+      "heading": "Principais cursos por visualizações",
+      "description": "Cursos classificados por visualizações de página",
+      "subtitle": "Classificados por visualizações de página neste intervalo",
+      "empty": "Ainda não há visualizações de páginas de cursos",
+      "course": "Curso",
+      "views": "Visualizações"
     },
     "countries": {
       "heading": "Principais países",
@@ -806,13 +811,20 @@
         "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou devem concluir os itens em ordem.",
         "progression_mode_free": "Livre — conteúdo desbloqueado é acessível",
         "progression_mode_sequential": "Sequencial — concluir itens anteriores para desbloquear o próximo",
+        "comments": {
+          "title": "Comentários das aulas",
+          "description": "Permita que os alunos vejam e adicionem comentários nas aulas deste curso. Os comentários ainda podem ser desativados em aulas individuais.",
+          "enabled": "Comentários ativados para este curso",
+          "disabled": "Comentários desativados para este curso"
+        },
         "lesson_download": "Download das lições",
         "available": "Disponibilizar a Lição para Download em PDF para alunos matriculados",
         "course_download": "Download do curso",
         "course_avail": "Baixe uma cópia deste curso.",
         "download": "Baixar",
         "allow": "Os alunos podem se inscrever por conta própria",
-        "access": "Quando desativado, os alunos só podem entrar por um link de convite ou sendo adicionados em Pessoas.",
+        "access": "Quando desativado, os alunos só podem entrar por um link de convite ou sendo adicionados em {people}.",
+        "access_people": "Pessoas",
         "publish": "Publicar curso",
         "determines": "Isso determina se o seu curso será exibido na sua página de destino",
         "published": "Publicado",
@@ -830,7 +842,11 @@
           "empty": "Nenhuma tag selecionada",
           "add": "Adicionar etiqueta",
           "popover_title": "Selecione tags",
-          "empty_groups": "Nenhuma tag disponível ainda"
+          "empty_groups": "Nenhuma tag disponível ainda",
+          "create_tag": "Criar etiqueta",
+          "none_created": "Nenhuma tag criada ainda",
+          "search_placeholder": "Pesquisar tags...",
+          "no_results": "Nenhuma tag encontrada"
         },
         "compliance": "Conformidade",
         "public": "Público",
@@ -968,7 +984,13 @@
             "yes": "Sim",
             "percent": "Porcentagem de desconto",
             "gift": "Sobre presente",
-            "payment_required": "Um link de pagamento é necessário para cursos pagos"
+            "payment_required": "Um link de pagamento é necessário para cursos pagos",
+            "enable_paid": "Ativar pago",
+            "payment_invalid_url": "Insira um URL válido (por exemplo, https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy ou qualquer link de pagamento",
+            "percentage_helper": "Em porcentagem%",
+            "gift_on_completion": "Presente na conclusão",
+            "payment_cost_required": "Os cursos pagos devem ter um custo superior a 0."
           },
           "instructor_form": {
             "upload": "Logotipo do instrutor",
@@ -1394,7 +1416,17 @@
           "title": "Histórico de versões",
           "fetch_more_versions": "Buscar mais versões",
           "current_version": "Versão atual",
-          "restore_version": "Restaurar esta versão"
+          "restore_version": "Restaurar esta versão",
+          "edit_count": "{count, plural, one {# edição} other {# edições}}",
+          "today": "Hoje",
+          "yesterday": "Ontem",
+          "by_author": "por {name}",
+          "empty": "Nenhuma versão ainda",
+          "kind": {
+            "auto": "Salvamento automático",
+            "manual": "Versão salva",
+            "publish": "Publicado"
+          }
         },
         "poll": {
           "voted": "Votado",
@@ -1432,9 +1464,7 @@
           "comment_btn": "Comentário",
           "cancel_btn": "Cancelar",
           "load_more_btn": "Carregar mais",
-          "comment_error": "Falha ao postar comentário. Por favor, tente novamente.",
-          "edit": "Edit",
-          "delete": "Delete"
+          "comment_error": "Falha ao postar comentário. Por favor, tente novamente."
         },
         "exercises": {
           "heading": "Todos os exercícios",
@@ -2111,7 +2141,26 @@
                   "completed": "Processamento concluído",
                   "failed": "Falha no processamento",
                   "canceled": "Processamento cancelado"
-                }
+                },
+                "vimeo_link": "Link do Vimeo",
+                "invalid_vimeo": "Link(s) do Vimeo inválido(s)",
+                "vimeo_privacy_hint_prefix": "Para vídeos com restrição de domínio, adicione",
+                "vimeo_privacy_hint_suffix": "às configurações de privacidade do Vimeo.",
+                "vimeo_privacy_error_title": "Incorporação restrita pelas configurações de privacidade do Vimeo",
+                "vimeo_privacy_error_prefix": "Este vídeo possui restrições de privacidade em nível de domínio. Para permitir a reprodução, adicione",
+                "vimeo_privacy_error_suffix": "aos domínios permitidos do vídeo nas configurações do Vimeo.",
+                "vimeo_retry_label": "Tentar reproduzir novamente",
+                "vimeo_learner_error_title": "Vídeo indisponível",
+                "vimeo_learner_error_description": "Este vídeo está temporariamente indisponível. Informe seu instrutor.",
+                "duplicate_video_error": "Este vídeo já foi adicionado a esta lição.",
+                "duplicates_skipped": "Vídeos duplicados foram ignorados.",
+                "add_video_failed": "Não foi possível adicionar o vídeo. Tente novamente.",
+                "some_videos_failed": "Alguns vídeos não puderam ser adicionados. Tente novamente.",
+                "vimeo_privacy_error_description": "A reprodução foi bloqueada pelas configurações de privacidade do Vimeo. Possíveis motivos para verificar incluem:",
+                "vimeo_privacy_error_unlisted_hint": "O link do vídeo não listado pode estar sem a chave de privacidade (hash)",
+                "vimeo_privacy_error_domain_prefix": "Restrições de domínio no Vimeo (verifique se",
+                "vimeo_privacy_error_domain_suffix": "está permitido nas configurações do vídeo)",
+                "vimeo_privacy_error_other_hint": "Outras configurações de privacidade do Vimeo"
               },
               "empty_title": "Ainda não há vídeos",
               "empty_description": "Adicione vídeos do YouTube, upload ou sua biblioteca de mídia",
@@ -2140,7 +2189,8 @@
                 "kind_generic": "Incorporado",
                 "course_fallback": "Curso",
                 "menu_aria": "Opções de vídeo",
-                "transcription_in_progress": "(Geração de transcrição em andamento)"
+                "transcription_in_progress": "(Geração de transcrição em andamento)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Ver transcrição",
               "playback_error": "Falha ao carregar este vídeo.",
@@ -2151,7 +2201,8 @@
               "generate_1080_unavailable": "1080p indisponível para este vídeo de origem",
               "loading": "Carregando vídeo…",
               "playback_auth_error": "Sua sessão expirou. Faça login novamente para assistir a este vídeo.",
-              "playback_auth_action": "Entrar"
+              "playback_auth_action": "Entrar",
+              "vimeo_link": "Link do Vimeo"
             },
             "slide": {
               "title": "Slide",
@@ -2225,6 +2276,14 @@
           "watch_threshold": "Limite de visualização (%)"
         },
         "settings": {
+          "comments": {
+            "title": "Comentários da aula",
+            "description": "Escolha se os alunos podem ver e adicionar comentários nesta aula.",
+            "enabled": "Comentários ativados",
+            "disabled": "Comentários desativados",
+            "disabled_by_course": "Os comentários estão desativados para todo o curso, portanto esta configuração da aula não pode ser alterada.",
+            "change_course_setting": "Alterar nas configurações do curso"
+          },
           "progression": {
             "heading": "Progressão",
             "intro": "Escolha como os alunos concluem esta lição e avançam no curso.",
@@ -2284,7 +2343,9 @@
           "starts_in": "Começa em",
           "session_ended": "Sessão encerrada",
           "link_copied": "Link copiado"
-        }
+        },
+        "student_share_your_knowledge": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
+        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde."
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -2350,7 +2411,8 @@
           "description": "Tem certeza de que deseja excluir este feed?",
           "no": "Não",
           "yes": "Sim"
-        }
+        },
+        "student_body_content": "Nenhuma publicação foi feita nesta turma ainda."
       },
       "compliance": {
         "title": "Conformidade",
@@ -2654,7 +2716,12 @@
         "copy_course_url": "Copiar URL do curso"
       },
       "due_date": "Vencimento",
-      "valid_until": "Válido até"
+      "valid_until": "Válido até",
+      "student_empty_title": "Nenhum curso ainda",
+      "student_empty_description": "Ainda não há cursos disponíveis nesta organização. Volte mais tarde.",
+      "updated_at": "Atualizado em {date}",
+      "lessons_count": "{count, plural, one {# lição} other {# lições}}",
+      "exercises_count": "{count, plural, one {# exercício} other {# exercícios}}"
     },
     "course_filter": {
       "date_created_newest": "Data de criação: mais recentes primeiro",
@@ -3073,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Genérico",
       "external_url": "URL externo",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Vídeo",
@@ -3347,6 +3415,9 @@
           "remove": "Remover link de navegação"
         },
         "hero": {
+          "eyebrow": "Antetítulo",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Rótulo opcional acima do título (usado por modelos que o suportam, p. ex. Tech). Deixe em branco para ocultar.",
           "heading": "Título",
           "subheading": "Subtítulo",
           "primary_label": "Etiqueta do botão principal",
@@ -3380,7 +3451,9 @@
           "footer": "Rodapé",
           "footer_desc": "Linha da marca, redes sociais, links em várias colunas e linha legal inferior.",
           "links": "Links",
-          "links_desc": "Bloco opcional de links externos (central de ajuda, comunidade, webinars) exibidos após os cursos."
+          "links_desc": "Bloco opcional de links externos (central de ajuda, comunidade, webinars) exibidos após os cursos.",
+          "courses": "Cursos",
+          "courses_desc": "Arraste para definir a ordem dos cursos publicados na página inicial."
         },
         "links": {
           "toggle": "Mostrar seção de links",
@@ -3418,6 +3491,16 @@
             "calendar": "Eventos",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Arraste os cursos para reordená-los na página inicial.",
+          "empty": "Ainda não há cursos publicados — publique um curso para visualizá-lo aqui.",
+          "load_failed": "Falha ao carregar os cursos publicados.",
+          "add_button": "Adicionar",
+          "popover_title": "Selecionar cursos",
+          "popover_empty": "Nenhum curso publicado disponível.",
+          "search_no_results": "Nenhum curso corresponde à sua pesquisa.",
+          "search_placeholder": "Buscar cursos..."
         }
       },
       "content": {
@@ -3468,6 +3551,10 @@
           "editorial": {
             "title": "Redação",
             "description": "Paleta de creme quente, herói pictórico, sensação refinada de revista"
+          },
+          "quartz": {
+            "title": "Quartzo",
+            "description": "Grade monocromática com linhas finas, linhas de curso pautadas, trilho adesivo para matrícula"
           }
         }
       },
@@ -4037,7 +4124,9 @@
       "color": "Cor",
       "color_help": "Escolha uma das 10 cores",
       "select_category": "Selecione uma categoria",
-      "no_groups": "Crie um grupo de tags antes de criar tags"
+      "no_groups": "Crie um grupo de tags antes de criar tags",
+      "search_category": "Categoria de pesquisa",
+      "no_results": "Nenhuma categoria encontrada"
     },
     "group_modal": {
       "create_title": "Criar grupo de tags",
@@ -4093,7 +4182,9 @@
         "joined": "Organização aderida",
         "join_failed": "Falha ao ingressar na organização",
         "try_again": "Tentar novamente"
-      }
+      },
+      "not_found": "Este convite não está mais disponível.",
+      "loading": "Carregando convite..."
     },
     "link": {
       "page_title": "Junte-se a {orgName} no ClassroomIO",
@@ -4406,6 +4497,11 @@
     "heading": "Widgets",
     "subtitle": "Publique coleções de cursos de marca para sites externos.",
     "empty_state": "Ainda não há widgets. Crie um para gerar um bloco de curso incorporável.",
+    "archived": {
+      "heading": "Widgets arquivados",
+      "empty": "Nenhum widget arquivado",
+      "empty_description": "Os widgets que você arquivar aparecerão aqui. Você pode restaurá-los a qualquer momento."
+    },
     "filter": {
       "status": "Status",
       "all": "Todos",
@@ -4417,8 +4513,14 @@
       "saved": "Widget salvo",
       "published": "Widget publicado",
       "rolled_back": "Widget restaurado",
-      "deleted": "Widget arquivado",
-      "validation_failed": "Alguns campos são inválidos. Verifique as entradas destacadas."
+      "restored": "Widget restaurado",
+      "archived_load_failed": "Não foi possível carregar os widgets arquivados",
+      "restore_failed": "Não foi possível restaurar o widget",
+      "validation_failed": "Alguns campos são inválidos. Verifique as entradas destacadas.",
+      "archived": "Widget arquivado",
+      "archive_failed": "Não foi possível arquivar o widget",
+      "permanently_deleted": "Widget excluído permanentemente",
+      "delete_failed": "Não foi possível excluir o widget"
     },
     "form": {
       "name": "Nome do widget",
@@ -4468,7 +4570,7 @@
       "copy_embed": "Copiar incorporação",
       "copy_url": "Copiar URL",
       "rename": "Renomear",
-      "delete": "Excluir"
+      "delete_permanently": "Excluir permanentemente"
     },
     "embed": {
       "tabs": {
@@ -4603,13 +4705,16 @@
       },
       "current_version": "Versão Atual",
       "active_badge": "Ativo",
-      "active_badge_description": "Esta versão está atualmente ativa em sua incorporação"
+      "active_badge_description": "Esta versão está atualmente ativa em sua incorporação",
+      "upgrade_callout": "Faça o upgrade para desbloquear temas, cores, tipografia e estilos personalizados."
     },
     "tabs": {
       "select_courses": "Selecione os cursos",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Código incorporado"
+      "embed": "Código incorporado",
+      "active": "Ativos",
+      "archived": "Arquivados"
     },
     "defaults": {
       "name_prefix": "Widget do curso"
@@ -4617,6 +4722,10 @@
     "empty": {
       "heading": "Nenhum widget ainda",
       "description": "Crie um widget para gerar um bloco de curso incorporável para sites externos."
+    },
+    "delete_modal": {
+      "title": "Excluir widget permanentemente",
+      "description": "Tem certeza de que deseja excluir permanentemente \"{name}\"? Esta ação não pode ser desfeita."
     }
   },
   "side_panel": {
@@ -5091,6 +5200,62 @@
       "misinformation": "Misinformation",
       "privacy": "Privacy violation",
       "other": "Other"
+    }
+  },
+  "invite_link": {
+    "tab_label": "Link de convite",
+    "title": "Link de convite",
+    "description": "Qualquer pessoa com este link pode participar. Compartilhe-o em vez de inserir e-mails um por um.",
+    "course_description": "Qualquer pessoa com este link pode participar deste curso como aluno. Compartilhe-o em vez de inserir e-mails um por um.",
+    "cohort_description": "Qualquer pessoa com este link pode participar desta turma e de todos os cursos nela contidos. Compartilhe-o em vez de inserir e-mails um por um.",
+    "generate": "Criar link de convite",
+    "copy": "Copiar link de convite",
+    "copied": "Link de convite copiado",
+    "copy_failed": "Não foi possível copiar o link de convite",
+    "toggle_label": "Link ativo",
+    "disabled_notice": "Este link está desativado. Ninguém poderá participar com ele até que você o ative novamente.",
+    "join_count": "{count} pessoas se inscreveram por meio deste link",
+    "snackbar": {
+      "enabled": "Link de convite ativado",
+      "disabled": "Link de convite desativado"
+    },
+    "join": {
+      "page_title": "Inscreva-se no {resourceName} no ClassroomIO",
+      "invitation": "Você foi convidado(a) a se inscrever no {resourceName} na {orgName}.",
+      "course_button": "Inscreva-se no curso",
+      "cohort_button": "Inscreva-se na turma",
+      "disabled": "Este link de convite foi desativado.",
+      "closed": "Não estamos mais aceitando novos membros.",
+      "succeeded": "Você se inscreveu",
+      "failed": "Não foi possível se inscrever. Tente novamente."
+    },
+    "load_failed": "Não foi possível carregar o link de convite",
+    "generate_failed": "Não foi possível criar o link de convite",
+    "toggle_failed": "Não foi possível atualizar o link de convite"
+  },
+  "lms": {
+    "view_landing_page": "Início"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "empty_title": "Nenhuma notificação",
+    "empty_description": "Você está atualizado. Novas notificações aparecerão aqui.",
+    "refresh": "Atualizar",
+    "pending_invite": {
+      "heading": "Convite da organização",
+      "body": "A {orgName} convidou você para participar como {role}.",
+      "action": "Ver convite"
+    },
+    "latest": "Mais recentes",
+    "only_show_unread": "Mostrar apenas itens não lidos",
+    "unread": "Não lidos",
+    "more_options": "Mais opções",
+    "give_feedback": "Deixe seu feedback",
+    "watching_empty_title": "Ainda não há nada para assistir",
+    "watching_empty_description": "As atualizações dos itens que você segue serão exibidas aqui.",
+    "tabs": {
+      "direct": "Direto",
+      "watching": "Assistindo"
     }
   }
 }

@@ -9,7 +9,7 @@
 
 <div class="rounded-md border p-4">
   <p class="mb-2 text-base font-semibold">{$t('course.navItem.people.invite_modal.student_invite_settings')}</p>
-  <p class="text-muted-foreground mb-4 text-sm">
+  <p class="ui:text-muted-foreground mb-4 text-sm">
     {$t('course.navItem.people.invite_modal.student_invite_settings_description')}
   </p>
   <div class="grid gap-3 md:grid-cols-2">

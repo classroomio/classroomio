@@ -8,10 +8,13 @@ import {
   deleteLesson,
   deleteLessonComment,
   getLessonById,
+  getLessonCommentsAvailability,
+  getLessonCommentsAvailabilityByCommentId,
   getLessonCommentsByLessonId,
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
   getLessonVersionHistory,
+  type TLessonVersionCursor,
   getLessonVideoProgress,
   getLessonVideoProgressForLesson,
   getLessonsByCourseId,
@@ -246,6 +249,36 @@ export async function reorderLessons(lessons: TLessonReorder['lessons']): Promis
 
 // Lesson Comment Services
 
+async function assertLessonCommentsEnabled(lessonId: string) {
+  const availability = await getLessonCommentsAvailability(lessonId);
+  if (!availability) {
+    throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+  }
+
+  if (
+    !availability.organizationCommentsEnabled ||
+    !availability.courseCommentsEnabled ||
+    !availability.lessonCommentsEnabled
+  ) {
+    throw new AppError('Comments are disabled for this lesson', ErrorCodes.COMMENTS_DISABLED, 403);
+  }
+}
+
+async function assertLessonCommentsEnabledForComment(commentId: number) {
+  const availability = await getLessonCommentsAvailabilityByCommentId(commentId);
+  if (!availability) {
+    throw new AppError('Comment not found', ErrorCodes.COMMENT_NOT_FOUND, 404);
+  }
+
+  if (
+    !availability.organizationCommentsEnabled ||
+    !availability.courseCommentsEnabled ||
+    !availability.lessonCommentsEnabled
+  ) {
+    throw new AppError('Comments are disabled for this lesson', ErrorCodes.COMMENTS_DISABLED, 403);
+  }
+}
+
 /**
  * Gets comments for a lesson
  * @param lessonId Lesson ID
@@ -253,8 +286,14 @@ export async function reorderLessons(lessons: TLessonReorder['lessons']): Promis
  */
 export async function getLessonComments(lessonId: string) {
   try {
+    await assertLessonCommentsEnabled(lessonId);
+
     return getLessonCommentsByLessonId(lessonId);
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to get lesson comments',
       ErrorCodes.INTERNAL_ERROR,
@@ -271,6 +310,8 @@ export async function getLessonComments(lessonId: string) {
  */
 export async function getLessonCommentsPaginated(lessonId: string, options: { cursor?: string; limit: number }) {
   try {
+    await assertLessonCommentsEnabled(lessonId);
+
     return getLessonCommentsByLessonIdPaginated(lessonId, options);
   } catch (error) {
     if (error instanceof AppError) {
@@ -294,6 +335,8 @@ export async function getLessonCommentsPaginated(lessonId: string, options: { cu
  */
 export async function createLessonCommentService(lessonId: string, groupMemberId: string, comment: string) {
   try {
+    await assertLessonCommentsEnabled(lessonId);
+
     const commentData: TNewLessonComment = {
       lessonId,
       groupmemberId: groupMemberId,
@@ -302,7 +345,10 @@ export async function createLessonCommentService(lessonId: string, groupMemberId
 
     return await createLessonComment(commentData);
   } catch (error) {
-    console.log('error', error);
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create lesson comment',
       ErrorCodes.INTERNAL_ERROR,
@@ -319,6 +365,8 @@ export async function createLessonCommentService(lessonId: string, groupMemberId
  */
 export async function updateLessonCommentService(commentId: number, comment: string) {
   try {
+    await assertLessonCommentsEnabledForComment(commentId);
+
     const updated = await updateLessonComment(commentId, sanitizeHtml(comment));
     if (!updated) {
       throw new AppError('Comment not found', ErrorCodes.LESSON_COMMENT_UPDATE_FAILED, 404);
@@ -345,6 +393,8 @@ export async function updateLessonCommentService(commentId: number, comment: str
  */
 export async function deleteLessonCommentService(commentId: number) {
   try {
+    await assertLessonCommentsEnabledForComment(commentId);
+
     const deleted = await deleteLessonComment(commentId);
     if (!deleted) {
       throw new AppError('Comment not found', ErrorCodes.COMMENT_NOT_FOUND, 404);
@@ -652,16 +702,35 @@ export async function updateLessonWatchProgressService(
   }
 }
 
+function parseLessonVersionCursor(cursor?: string): TLessonVersionCursor | undefined {
+  if (!cursor) return undefined;
+
+  const separatorIndex = cursor.lastIndexOf('|');
+  if (separatorIndex <= 0) return undefined;
+
+  const timestamp = cursor.slice(0, separatorIndex);
+  const id = Number(cursor.slice(separatorIndex + 1));
+
+  if (!timestamp || !Number.isInteger(id)) return undefined;
+
+  // The timestamp is interpolated into a Postgres timestamp comparison, so it has to be a
+  // real date here. Without this check a cursor like `garbage|5` reaches the driver and
+  // fails the query with a 500 instead of restarting at the newest page.
+  if (Number.isNaN(new Date(timestamp).getTime())) return undefined;
+
+  return { timestamp, id };
+}
+
 /**
- * Gets lesson version history for a lesson and locale
- * @param lessonId Lesson ID
- * @param locale Locale
- * @param endRange End range for pagination (0-indexed, inclusive)
- * @returns Array of lesson version history entries
+ * Gets one keyset page of lesson version history.
+ *
+ * @param cursor Serialized `<iso timestamp>|<id>` from the previous page's `nextCursor`.
+ *   Malformed input is treated as absent so a hand-edited URL restarts at the newest page
+ *   rather than erroring.
  */
-export async function getLessonHistoryService(lessonId: string, locale: string, endRange: number) {
+export async function getLessonHistoryService(lessonId: string, locale: string, limit: number, cursor?: string) {
   try {
-    return getLessonVersionHistory(lessonId, locale, endRange);
+    return getLessonVersionHistory(lessonId, locale, limit, parseLessonVersionCursor(cursor));
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to get lesson history',

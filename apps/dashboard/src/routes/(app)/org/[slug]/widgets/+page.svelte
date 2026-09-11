@@ -50,12 +50,23 @@
 
   <Page.Body>
     {#snippet child()}
-      <WidgetsPage initialWidgets={data.initialWidgets} onCreate={() => (createModalOpen = true)} />
+      <WidgetsPage
+        initialWidgets={data.initialWidgets}
+        initialArchivedWidgets={data.initialArchivedWidgets}
+        onCreate={() => {
+          createModalOpen = true;
+        }}
+      />
     {/snippet}
   </Page.Body>
 </Page.Root>
 
-<Dialog.Root bind:open={createModalOpen}>
+<Dialog.Root
+  bind:open={createModalOpen}
+  onOpenChange={(open) => {
+    if (!open) newWidgetName = '';
+  }}
+>
   <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>{$t('widgets.actions.create')}</Dialog.Title>

@@ -26,17 +26,17 @@
       </Tabs.List>
       <Tabs.Content value="overview">
         <div class="space-y-4 pt-4">
-          <p class="text-muted-foreground text-sm">View your overview dashboard with key metrics and insights.</p>
+          <p class="ui:text-muted-foreground text-sm">View your overview dashboard with key metrics and insights.</p>
         </div>
       </Tabs.Content>
       <Tabs.Content value="analytics">
         <div class="space-y-4 pt-4">
-          <p class="text-muted-foreground text-sm">Deep dive into your analytics and user behavior patterns.</p>
+          <p class="ui:text-muted-foreground text-sm">Deep dive into your analytics and user behavior patterns.</p>
         </div>
       </Tabs.Content>
       <Tabs.Content value="reports">
         <div class="space-y-4 pt-4">
-          <p class="text-muted-foreground text-sm">Generate and download detailed reports for your records.</p>
+          <p class="ui:text-muted-foreground text-sm">Generate and download detailed reports for your records.</p>
         </div>
       </Tabs.Content>
     </Tabs.Root>

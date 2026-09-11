@@ -74,7 +74,7 @@
       <Sidebar.MenuItem>
         <div class="flex items-center gap-3 px-2 py-1.5">
           {#if $currentOrg.name}
-            <Avatar.Root class="ui:flex ui:size-8 ui:items-center ui:justify-center ui:rounded-lg">
+            <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
               <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
               <Avatar.Fallback class="rounded-lg">{shortenName($currentOrg.name)}</Avatar.Fallback>
             </Avatar.Root>
@@ -94,7 +94,7 @@
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>
       {#snippet child({ props })}
-        <Breadcrumb.Link {...props} href="##" class="flex items-center gap-2">
+        <Breadcrumb.Link {...props} href="##" class="flex items-center gap-2" data-testid="org-switcher-trigger">
           {#if $currentOrg.name}
             <Avatar.Root class="flex size-6! items-center justify-center rounded-md!">
               <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
@@ -109,12 +109,12 @@
       {/snippet}
     </DropdownMenu.Trigger>
     <DropdownMenu.Content
-      class="ui:w-(--bits-dropdown-menu-anchor-width) ui:min-w-56 ui:rounded-lg"
+      class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
       align="start"
       side={sidebar.isMobile ? 'bottom' : 'right'}
       sideOffset={4}
     >
-      <DropdownMenu.Label class="ui:text-muted-foreground ui:text-xs"
+      <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
         >{$t('account.switcher.your_account')}</DropdownMenu.Label
       >
 
@@ -131,7 +131,7 @@
 
       {#if otherOrgs.length > 0}
         <DropdownMenu.Separator />
-        <DropdownMenu.Label class="ui:text-muted-foreground ui:text-xs"
+        <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
           >{$t('account.switcher.other_organizations')}</DropdownMenu.Label
         >
         {#each otherOrgs as org (org.id)}
@@ -152,7 +152,7 @@
         <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
           <PlusIcon class="size-4" />
         </div>
-        <div class="ui:text-muted-foreground ui:font-normal">Add Organization</div>
+        <div class="ui:text-muted-foreground font-normal">Add Organization</div>
 
         <ComingSoon />
       </DropdownMenu.Item>
@@ -168,10 +168,11 @@
             <Sidebar.MenuButton
               {...props}
               size="lg"
+              data-testid="org-switcher-trigger"
               class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
             >
               {#if $currentOrg.name}
-                <Avatar.Root class="ui:flex ui:size-8 ui:items-center ui:justify-center ui:rounded-lg">
+                <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
                   <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
                   <Avatar.Fallback class="rounded-lg">{shortenName($currentOrg.name)}</Avatar.Fallback>
                 </Avatar.Root>
@@ -194,12 +195,12 @@
           {/snippet}
         </DropdownMenu.Trigger>
         <DropdownMenu.Content
-          class="ui:w-(--bits-dropdown-menu-anchor-width) ui:min-w-56 ui:rounded-lg"
+          class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
           align="start"
           side={sidebar.isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
-          <DropdownMenu.Label class="ui:text-muted-foreground ui:text-xs"
+          <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
             >{$t('account.switcher.your_account')}</DropdownMenu.Label
           >
 
@@ -216,7 +217,7 @@
 
           {#if otherOrgs.length > 0}
             <DropdownMenu.Separator />
-            <DropdownMenu.Label class="ui:text-muted-foreground ui:text-xs"
+            <DropdownMenu.Label class="ui:text-muted-foreground text-xs"
               >{$t('account.switcher.other_organizations')}</DropdownMenu.Label
             >
             {#each otherOrgs as org (org.id)}
@@ -237,7 +238,7 @@
             <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
               <PlusIcon class="size-4" />
             </div>
-            <div class="ui:text-muted-foreground ui:font-normal">Add Organization</div>
+            <div class="ui:text-muted-foreground font-normal">Add Organization</div>
 
             <ComingSoon />
           </DropdownMenu.Item>

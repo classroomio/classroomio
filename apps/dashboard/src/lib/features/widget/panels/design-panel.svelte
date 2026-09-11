@@ -10,33 +10,44 @@
 
   interface Props {
     draftConfig: WidgetConfig;
-    availableThemes: WidgetDetail['planGatedFields']['availableThemes'];
-    canUseCustomColors: boolean;
-    canUseCustomCss: boolean;
-    isBrandingForced: boolean;
+    planGatedFields: WidgetDetail['planGatedFields'];
     /** Zod-keyed validation errors from the last save attempt (e.g. `config.colors.primaryColor`). */
     errors?: Record<string, string>;
   }
 
-  let {
-    draftConfig = $bindable(),
-    availableThemes,
-    canUseCustomColors,
-    canUseCustomCss,
-    isBrandingForced,
-    errors = {}
-  }: Props = $props();
+  let { draftConfig = $bindable(), planGatedFields, errors = {} }: Props = $props();
+
+  const isPaidPlan = $derived(planGatedFields.isPaidPlan);
+  const availableThemes = $derived(planGatedFields.availableThemes);
 
   const errFor = (path: string) => errors[path] ?? '';
 </script>
 
+{#snippet colorField(label: string, key: 'primaryColor' | 'backgroundColor' | 'textColor' | 'borderColor')}
+  <Field.Field>
+    <Field.Label>{label}</Field.Label>
+    <div class="flex items-center gap-2">
+      <input
+        type="color"
+        aria-label={label}
+        bind:value={draftConfig.colors[key]}
+        class="h-9 w-9 cursor-pointer rounded border bg-transparent p-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+      />
+      <span class="ui:text-muted-foreground font-mono text-sm">{draftConfig.colors[key]}</span>
+    </div>
+    {#if errFor(`config.colors.${key}`)}
+      <Field.Error>{errFor(`config.colors.${key}`)}</Field.Error>
+    {/if}
+  </Field.Field>
+{/snippet}
+
 <div class="space-y-6">
   <Field.Group>
-    <Field.Set>
+    <Field.Set disabled={!isPaidPlan}>
       <Field.Legend>{$t('widgets.editor.design')}</Field.Legend>
       <Field.Field>
         <Field.Label>{$t('widgets.form.theme_preset')}</Field.Label>
-        <Select.Root type="single" bind:value={draftConfig.themePreset}>
+        <Select.Root type="single" bind:value={draftConfig.themePreset} disabled={!isPaidPlan}>
           <Select.Trigger>{draftConfig.themePreset}</Select.Trigger>
           <Select.Content>
             {#each availableThemes as theme (theme)}
@@ -45,65 +56,11 @@
           </Select.Content>
         </Select.Root>
       </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('widgets.form.primary_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
-          <input
-            type="color"
-            bind:value={draftConfig.colors.primaryColor}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5"
-          />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.primaryColor}</span>
-        </div>
-        {#if errFor('config.colors.primaryColor')}
-          <Field.Error>{errFor('config.colors.primaryColor')}</Field.Error>
-        {/if}
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('widgets.form.background_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
-          <input
-            type="color"
-            bind:value={draftConfig.colors.backgroundColor}
-            disabled={!canUseCustomColors}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
-          />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.backgroundColor}</span>
-        </div>
-        {#if errFor('config.colors.backgroundColor')}
-          <Field.Error>{errFor('config.colors.backgroundColor')}</Field.Error>
-        {/if}
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('widgets.form.text_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
-          <input
-            type="color"
-            bind:value={draftConfig.colors.textColor}
-            disabled={!canUseCustomColors}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
-          />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.textColor}</span>
-        </div>
-        {#if errFor('config.colors.textColor')}
-          <Field.Error>{errFor('config.colors.textColor')}</Field.Error>
-        {/if}
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('widgets.form.border_color')}</Field.Label>
-        <div class="ui:flex ui:items-center ui:gap-2">
-          <input
-            type="color"
-            bind:value={draftConfig.colors.borderColor}
-            disabled={!canUseCustomColors}
-            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
-          />
-          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.borderColor}</span>
-        </div>
-        {#if errFor('config.colors.borderColor')}
-          <Field.Error>{errFor('config.colors.borderColor')}</Field.Error>
-        {/if}
-      </Field.Field>
+
+      {@render colorField($t('widgets.form.primary_color'), 'primaryColor')}
+      {@render colorField($t('widgets.form.background_color'), 'backgroundColor')}
+      {@render colorField($t('widgets.form.text_color'), 'textColor')}
+      {@render colorField($t('widgets.form.border_color'), 'borderColor')}
       <InputField
         type="number"
         label={$t('widgets.form.border_radius')}
@@ -131,7 +88,7 @@
         errorMessage={errFor('config.typography.fontSizeScale')}
       />
       <Field.Field orientation="horizontal">
-        <Switch bind:checked={draftConfig.branding.showPoweredBy} disabled={isBrandingForced} />
+        <Switch bind:checked={draftConfig.branding.showPoweredBy} />
         <Field.Label>{$t('widgets.form.show_powered_by')}</Field.Label>
       </Field.Field>
       <TextareaField
@@ -139,8 +96,7 @@
         bind:value={draftConfig.advanced.customCss}
         rows={6}
         maxlength={5000}
-        disabled={!canUseCustomCss}
-        helperMessage={!canUseCustomCss
+        helperMessage={!isPaidPlan
           ? $t('widgets.form.custom_css_locked')
           : errFor('config.advanced.customCss')
             ? ''

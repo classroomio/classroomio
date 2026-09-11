@@ -3,15 +3,24 @@ import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/or
 
 import { ONBOARDING_STEPS } from '../utils/constants';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
-import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { onboardingValidation } from '../utils/validations';
 import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
+import { authClient } from '$lib/utils/services/auth/client';
 
 export class OnboardingApi extends BaseApiWithErrors {
   step: OnboardingStep = $state(ONBOARDING_STEPS.ORG_SETUP);
+
+  async markWelcomeEmailPending(): Promise<boolean> {
+    const result = await this.execute<(typeof classroomio.onboarding)['welcome-email-pending']['$post']>({
+      requestFn: () => classroomio.onboarding['welcome-email-pending'].$post({}),
+      logContext: 'marking welcome email pending'
+    });
+
+    return result !== undefined;
+  }
 
   async submit(data: OnboardingField) {
     if (this.step === ONBOARDING_STEPS.ORG_SETUP) {
@@ -84,13 +93,15 @@ export class OnboardingApi extends BaseApiWithErrors {
     await this.execute<(typeof classroomio.onboarding)['update-metadata']['$post']>({
       requestFn: () => classroomio.onboarding['update-metadata'].$post({ json: data }),
       logContext: 'submitting organization setup',
-      onSuccess: (result) => {
+      onSuccess: async (result) => {
         profile.set(result.data);
         handleLocaleChange(result.data.locale ?? 'en');
 
         const welcomePopup = `${result.data.isEmailVerified}`;
+        const orgPath = resolve(`/org/${data.siteName}?welcomePopup=${welcomePopup}`, {});
 
-        return goto(resolve(`/org/${data.siteName}?welcomePopup=${welcomePopup}`, {}));
+        await authClient.getSession({ query: { disableCookieCache: true } });
+        window.location.href = orgPath;
       },
       onError: (result) => {
         if (typeof result === 'string') {

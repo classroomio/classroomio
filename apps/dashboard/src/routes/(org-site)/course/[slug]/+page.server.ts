@@ -1,6 +1,8 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { CourseBySlugWithOrg, GetCourseBySlugRequest } from '$features/course/utils/types';
 import type { GetOrganizationRequest } from '$features/org/utils/types';
+import type { AccountOrg } from '$features/app/types';
+import { toPublicOrg } from '$features/app/public-org';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { error, redirect } from '@sveltejs/kit';
@@ -56,7 +58,8 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
     );
 
     if (organizationResult.ok) {
-      org = organizationResult.body.data[0] ?? null;
+      const organization = organizationResult.body.data[0];
+      org = organization ? toPublicOrg(organization as AccountOrg) : null;
     } else {
       console.error('Failed to fetch course organization:', organizationResult);
     }

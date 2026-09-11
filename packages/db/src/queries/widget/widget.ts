@@ -7,7 +7,7 @@ import type {
   TWidgetCourse,
   TWidgetVersion
 } from '@db/types';
-import { and, asc, desc, eq, ilike, inArray, isNull, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, inArray, isNull, ne, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -42,12 +42,42 @@ export async function listWidgetsByOrganization(orgId: string): Promise<TWidgetL
       .select(widgetListItemSelect())
       .from(schema.widget)
       .leftJoin(schema.widgetCourse, eq(schema.widgetCourse.widgetId, schema.widget.id))
-      .where(and(eq(schema.widget.organizationId, orgId), isNull(schema.widget.deletedAt)))
+      .where(
+        and(
+          eq(schema.widget.organizationId, orgId),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
+      )
       .groupBy(schema.widget.id)
       .orderBy(desc(schema.widget.updatedAt), asc(schema.widget.name));
   } catch (error) {
     console.error('listWidgetsByOrganization error:', error);
     throw new Error('Failed to list widgets');
+  }
+}
+
+/**
+ * Gets all archived widgets for an organization.
+ */
+export async function listArchivedWidgetsByOrganization(orgId: string): Promise<TWidgetListItem[]> {
+  try {
+    return db
+      .select(widgetListItemSelect())
+      .from(schema.widget)
+      .leftJoin(schema.widgetCourse, eq(schema.widgetCourse.widgetId, schema.widget.id))
+      .where(
+        and(
+          eq(schema.widget.organizationId, orgId),
+          isNull(schema.widget.deletedAt),
+          eq(schema.widget.status, 'ARCHIVED')
+        )
+      )
+      .groupBy(schema.widget.id)
+      .orderBy(desc(schema.widget.updatedAt), asc(schema.widget.name));
+  } catch (error) {
+    console.error('listArchivedWidgetsByOrganization error:', error);
+    throw new Error('Failed to list archived widgets');
   }
 }
 
@@ -63,6 +93,7 @@ export async function searchOrgWidgets(orgId: string, search: string, limit: num
         and(
           eq(schema.widget.organizationId, orgId),
           isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED'),
           ilike(schema.widget.name, searchValue)
         )
       )
@@ -82,7 +113,12 @@ export async function getWidgetListItemById(orgId: string, widgetId: string): Pr
       .from(schema.widget)
       .leftJoin(schema.widgetCourse, eq(schema.widgetCourse.widgetId, schema.widget.id))
       .where(
-        and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
       )
       .groupBy(schema.widget.id)
       .limit(1);
@@ -100,7 +136,12 @@ export async function getWidgetById(orgId: string, widgetId: string): Promise<TW
       .select()
       .from(schema.widget)
       .where(
-        and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
       )
       .limit(1);
 
@@ -108,6 +149,31 @@ export async function getWidgetById(orgId: string, widgetId: string): Promise<TW
   } catch (error) {
     console.error('getWidgetById error:', error);
     throw new Error('Failed to get widget');
+  }
+}
+
+/**
+ * Retrieves an archived widget by its ID.
+ */
+export async function getArchivedWidgetById(orgId: string, widgetId: string): Promise<TWidget | null> {
+  try {
+    const [result] = await db
+      .select()
+      .from(schema.widget)
+      .where(
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          eq(schema.widget.status, 'ARCHIVED')
+        )
+      )
+      .limit(1);
+
+    return result ?? null;
+  } catch (error) {
+    console.error('getArchivedWidgetById error:', error);
+    throw new Error('Failed to get archived widget');
   }
 }
 
@@ -136,6 +202,9 @@ export async function createWidget(data: TNewWidget): Promise<TWidget> {
   }
 }
 
+/**
+ * Updates an active widget.
+ */
 export async function updateWidget(orgId: string, widgetId: string, data: Partial<TWidget>): Promise<TWidget | null> {
   try {
     const [result] = await db
@@ -145,7 +214,12 @@ export async function updateWidget(orgId: string, widgetId: string, data: Partia
         updatedAt: new Date().toISOString()
       })
       .where(
-        and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
       )
       .returning();
 
@@ -156,18 +230,25 @@ export async function updateWidget(orgId: string, widgetId: string, data: Partia
   }
 }
 
+/**
+ * Archives an active widget by setting status to ARCHIVED.
+ */
 export async function archiveWidget(orgId: string, widgetId: string, updatedByUserId: string): Promise<TWidget | null> {
   try {
     const [result] = await db
       .update(schema.widget)
       .set({
         status: 'ARCHIVED',
-        deletedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         updatedByUserId
       })
       .where(
-        and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
       )
       .returning();
 
@@ -175,6 +256,73 @@ export async function archiveWidget(orgId: string, widgetId: string, updatedByUs
   } catch (error) {
     console.error('archiveWidget error:', error);
     throw new Error('Failed to archive widget');
+  }
+}
+
+/**
+ * Atomically restores an archived widget by updating status.
+ */
+export async function restoreArchivedWidget(
+  orgId: string,
+  widgetId: string,
+  status: 'DRAFT' | 'PUBLISHED',
+  updatedByUserId: string
+): Promise<TWidget | null> {
+  try {
+    const [result] = await db
+      .update(schema.widget)
+      .set({
+        status,
+        updatedAt: new Date().toISOString(),
+        updatedByUserId
+      })
+      .where(
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          eq(schema.widget.status, 'ARCHIVED')
+        )
+      )
+      .returning();
+
+    return result ?? null;
+  } catch (error) {
+    console.error('restoreArchivedWidget error:', error);
+    throw new Error('Failed to restore widget');
+  }
+}
+
+/**
+ * Permanently soft-deletes an archived widget by setting deletedAt.
+ */
+export async function deleteArchivedWidget(
+  orgId: string,
+  widgetId: string,
+  updatedByUserId: string
+): Promise<TWidget | null> {
+  try {
+    const [result] = await db
+      .update(schema.widget)
+      .set({
+        deletedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        updatedByUserId
+      })
+      .where(
+        and(
+          eq(schema.widget.organizationId, orgId),
+          eq(schema.widget.id, widgetId),
+          isNull(schema.widget.deletedAt),
+          eq(schema.widget.status, 'ARCHIVED')
+        )
+      )
+      .returning();
+
+    return result ?? null;
+  } catch (error) {
+    console.error('deleteArchivedWidget error:', error);
+    throw new Error('Failed to delete archived widget');
   }
 }
 
@@ -216,6 +364,9 @@ export async function replaceWidgetCourses(widgetId: string, courseIds: string[]
   }
 }
 
+/**
+ * Updates an active widget and replaces its associated courses in a transaction.
+ */
 export async function updateWidgetWithCourses(
   orgId: string,
   widgetId: string,
@@ -233,7 +384,12 @@ export async function updateWidgetWithCourses(
           updatedAt: new Date().toISOString()
         })
         .where(
-          and(eq(schema.widget.organizationId, orgId), eq(schema.widget.id, widgetId), isNull(schema.widget.deletedAt))
+          and(
+            eq(schema.widget.organizationId, orgId),
+            eq(schema.widget.id, widgetId),
+            isNull(schema.widget.deletedAt),
+            ne(schema.widget.status, 'ARCHIVED')
+          )
         )
         .returning();
 
@@ -338,7 +494,13 @@ export async function getPublishedWidgetPayloadByPublicKey(publicKey: string): P
       })
       .from(schema.widget)
       .innerJoin(schema.widgetVersion, eq(schema.widget.latestPublishedVersionId, schema.widgetVersion.id))
-      .where(and(eq(schema.widget.publicKey, publicKey), isNull(schema.widget.deletedAt)))
+      .where(
+        and(
+          eq(schema.widget.publicKey, publicKey),
+          isNull(schema.widget.deletedAt),
+          ne(schema.widget.status, 'ARCHIVED')
+        )
+      )
       .limit(1);
 
     return result?.payloadSnapshot ?? null;

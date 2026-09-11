@@ -400,7 +400,7 @@
       </div>
     </div>
   {:else}
-    <div class="h-full w-full {isDisabled ? 'ui:opacity-50 ui:pointer-events-none' : ''}">
+    <div class="h-full w-full {isDisabled ? 'pointer-events-none opacity-50' : ''}">
       <FileDropZone.Root
         accept="video/*"
         maxFiles={1}
@@ -467,7 +467,7 @@
             <p>{$t('generic.loading')}</p>
           </video>
         {/if}
-        <p>{fileName}</p>
+        <p class="max-w-50 truncate text-center text-sm" title={fileName}>{fileName}</p>
         {#if processingJob}
           {@const label = processingLabel(processingJob.stage, processingJob.status)}
           {#if label}

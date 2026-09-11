@@ -2,7 +2,7 @@
   import { page } from '$app/state';
 
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
-  import { VerifyEmailModal } from '$features/onboarding/components';
+  import { VerifyEmailModal, WelcomeModal } from '$features/onboarding/components';
   import { CommandPalette, KeyboardShortcutListener } from '$features/search';
   import { ReportDialog } from '$features/report';
   import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
@@ -45,6 +45,7 @@
 
 <UpgradeModal />
 <VerifyEmailModal />
+<WelcomeModal />
 <CommandPalette />
 <KeyboardShortcutListener />
 <ReportDialog />

@@ -42,7 +42,7 @@
   {#if state.rootState.hoveredTab === value}
     <div
       class={cn(
-        'ui:bg-primary-foreground ui:z-1 ui:absolute ui:top-0 ui:h-[calc(100%-3px)] ui:w-full ui:rounded-md ui:opacity-0 ui:transition-opacity ui:duration-300 ui:pointer-events-none ui:peer-focus-visible:opacity-100',
+        'ui:bg-primary/10 ui:dark:bg-primary/20 ui:z-1 ui:absolute ui:top-0 ui:h-[calc(100%-3px)] ui:w-full ui:rounded-md ui:opacity-0 ui:transition-opacity ui:duration-300 ui:pointer-events-none ui:peer-focus-visible:opacity-100',
         state.rootState.isHovered && 'ui:opacity-100'
       )}
       in:receive={{ key: `${state.rootState.opts.id.current}-tab-hover`, duration: 300 }}

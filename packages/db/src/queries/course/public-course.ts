@@ -1,7 +1,7 @@
 import { and, asc, eq } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 /**
  * Queries backing the anonymous public-course surface under
@@ -290,7 +290,7 @@ export interface PublicLessonContent {
   isUnlocked: boolean;
   body: string;
   video: {
-    type: 'youtube' | 'generic' | 'upload' | 'google_drive';
+    type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
     link: string;
     /** S3 object key for uploads; used server-side for presigning (stripped before API response). */
     key?: string;
@@ -521,7 +521,8 @@ export async function getTakenItemSlugs(courseId: string): Promise<Set<string>> 
  */
 export async function findNonAutoGradableQuestionsInCourse(
   courseId: string,
-  autoGradableTypeIds: readonly number[]
+  autoGradableTypeIds: readonly number[],
+  dbClient: DbOrTxClient = db
 ): Promise<
   Array<{
     questionId: number;
@@ -532,7 +533,7 @@ export async function findNonAutoGradableQuestionsInCourse(
   }>
 > {
   try {
-    const rows = await db
+    const rows = await dbClient
       .select({
         questionId: schema.question.id,
         questionTitle: schema.question.title,

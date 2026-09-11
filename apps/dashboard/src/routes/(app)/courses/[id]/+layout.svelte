@@ -222,7 +222,7 @@
     onSidebarWidthChange={handleSidebarWidthChange}
   />
 
-  <Sidebar.Inset class="ui:min-w-0 ui:flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
+  <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
     <CourseHeader />
     <ContentCreateModal />
     <CourseCompletionModal />

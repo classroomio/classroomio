@@ -27,7 +27,7 @@
     <Trigger>
       <button
         type="button"
-        class="ui:text-muted-foreground hover:ui:bg-muted flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs transition-colors"
+        class="ui:text-muted-foreground ui:hover:bg-muted flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs transition-colors"
       >
         <CircularProgress
           value={contextUsage.percentage}

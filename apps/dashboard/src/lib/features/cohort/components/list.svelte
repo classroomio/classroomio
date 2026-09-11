@@ -54,35 +54,29 @@
   }
 </script>
 
-<ResourceListRow.Root
-  variant="default"
-  align="start"
-  class="ui:cursor-pointer ui:py-3"
-  onclick={handleRowClick}
-  role="row"
->
-  <div class="ui:flex ui:w-full ui:items-start ui:gap-6">
-    <div class="ui:min-w-0 ui:flex-1">
-      <p class="ui:w-full ui:truncate ui:text-base ui:font-semibold">{cohort.name}</p>
+<ResourceListRow.Root variant="default" align="start" class="cursor-pointer py-3" onclick={handleRowClick} role="row">
+  <div class="flex w-full items-start gap-6">
+    <div class="min-w-0 flex-1">
+      <p class="w-full truncate text-base font-semibold">{cohort.name}</p>
 
       {#if cohort.description}
-        <p class="ui:mt-1 ui:text-sm ui:text-muted-foreground">{cohort.description}</p>
+        <p class="ui:text-muted-foreground mt-1 text-sm">{cohort.description}</p>
       {/if}
     </div>
 
-    <div class="ui:flex ui:shrink-0 ui:items-start">
+    <div class="flex shrink-0 items-start">
       <Badge variant={getStatusVariant(cohort.status)}>
         {$t(getStatusLabelKey(cohort.status))}
       </Badge>
     </div>
 
-    <div class="ui:flex ui:shrink-0 ui:flex-col ui:items-start ui:gap-1">
-      <p class="ui:text-sm ui:text-muted-foreground">
+    <div class="flex shrink-0 flex-col items-start gap-1">
+      <p class="ui:text-muted-foreground text-sm">
         {pluralize(t.get('cohorts.card.courses'), courseCount, true)}
       </p>
 
       {#if !isLMS}
-        <p class="ui:text-sm ui:text-muted-foreground">
+        <p class="ui:text-muted-foreground text-sm">
           {pluralize(t.get('cohorts.card.students'), studentCount, true)}
         </p>
       {/if}

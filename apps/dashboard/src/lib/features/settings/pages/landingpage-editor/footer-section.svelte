@@ -171,7 +171,7 @@
 <Accordion.Root
   type="multiple"
   bind:value={openSections}
-  class="border-border divide-border divide-y rounded-lg border"
+  class="ui:border-border divide-border divide-y rounded-lg border"
 >
   <!-- Brand -->
   <Accordion.Item value="brand" class="border-none px-4 last:border-none">
@@ -277,7 +277,7 @@
         {/if}
 
         {#each settings.footer.columns as column, columnIndex (column.id)}
-          <div class="border-border rounded-md border bg-white p-3 dark:bg-transparent">
+          <div class="ui:border-border rounded-md border bg-white p-3 dark:bg-transparent">
             <div class="mb-3 flex items-center justify-between gap-2">
               <Input
                 value={column.heading}
@@ -289,7 +289,7 @@
                 type="button"
                 variant="ghost"
                 size="sm"
-                class="text-destructive hover:text-destructive shrink-0"
+                class="ui:text-destructive ui:hover:text-destructive shrink-0"
                 onclick={() => removeColumn(columnIndex)}
               >
                 <TrashIcon size={14} />
@@ -348,7 +348,7 @@
             </div>
 
             {#if column.cta}
-              <div class="border-border mt-2 flex items-center gap-2 border-t pt-2">
+              <div class="ui:border-border mt-2 flex items-center gap-2 border-t pt-2">
                 <Input
                   value={column.cta.label}
                   placeholder={$t('settings.landing_page.editor.footer.columns.cta_label')}
@@ -390,7 +390,7 @@
           <Field.Label>{$t('settings.landing_page.editor.footer.text')}</Field.Label>
           <Textarea
             value={settings.footer.bottom?.text ?? ''}
-            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
+            class="box-border [field-sizing:fixed] w-full max-w-full min-w-0 resize-y"
             oninput={(event) => {
               const nextSettings = cloneDeep(settings);
               nextSettings.footer.bottom ??= { text: '', links: [] };

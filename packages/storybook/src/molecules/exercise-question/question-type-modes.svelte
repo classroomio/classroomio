@@ -190,9 +190,9 @@
   });
 </script>
 
-<div class="ui:mb-5 ui:space-y-4">
-  <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
-    <p class="ui:text-sm ui:font-semibold">View Mode</p>
+<div class="mb-5 space-y-4">
+  <div class="space-y-3 rounded-md border p-4">
+    <p class="text-sm font-semibold">View Mode</p>
     <ExerciseQuestion.QuestionRenderer
       showContainer={false}
       contract={{
@@ -205,8 +205,8 @@
     />
   </div>
 
-  <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
-    <p class="ui:text-sm ui:font-semibold">Edit Mode</p>
+  <div class="space-y-3 rounded-md border p-4">
+    <p class="text-sm font-semibold">Edit Mode</p>
     <ExerciseQuestion.QuestionRenderer
       showContainer={false}
       contract={{
@@ -218,8 +218,8 @@
     />
   </div>
 
-  <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
-    <p class="ui:text-sm ui:font-semibold">Preview Mode</p>
+  <div class="space-y-3 rounded-md border p-4">
+    <p class="text-sm font-semibold">Preview Mode</p>
     <ExerciseQuestion.QuestionRenderer
       showContainer={false}
       contract={{
@@ -232,9 +232,9 @@
     />
   </div>
 
-  <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
-    <p class="ui:text-sm ui:font-semibold">Review Mode</p>
-    <p class="ui:text-muted-foreground ui:text-xs">
+  <div class="space-y-3 rounded-md border p-4">
+    <p class="text-sm font-semibold">Review Mode</p>
+    <p class="ui:text-muted-foreground text-xs">
       Read-only submission replay with correctness (same as grading / finished exercise in the app).
     </p>
     <ExerciseQuestion.QuestionRenderer
@@ -250,9 +250,9 @@
   </div>
 
   {#if wrongAnswer !== undefined}
-    <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
-      <p class="ui:text-sm ui:font-semibold">Review Mode (incorrect)</p>
-      <p class="ui:text-muted-foreground ui:text-xs">
+    <div class="space-y-3 rounded-md border p-4">
+      <p class="text-sm font-semibold">Review Mode (incorrect)</p>
+      <p class="ui:text-muted-foreground text-xs">
         Same review UI when the submitted answer does not match the correct solution.
       </p>
       <ExerciseQuestion.QuestionRenderer
@@ -268,8 +268,8 @@
     </div>
   {/if}
 
-  <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
-    <p class="ui:text-sm ui:font-semibold">Submission Mode (12 respondents)</p>
+  <div class="space-y-3 rounded-md border p-4">
+    <p class="text-sm font-semibold">Submission Mode (12 respondents)</p>
     <ExerciseQuestion.QuestionRenderer
       showContainer={false}
       contract={{
