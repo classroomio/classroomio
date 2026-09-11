@@ -4863,16 +4863,16 @@
     "retry": "Retry",
     "run_monitor_aria": "Course generation in progress",
     "run_monitor": {
-      "cancel": "Cancel run",
+      "cancel": "Cancel generation",
       "dismiss": "Dismiss",
       "dismiss_confirm": "Walk away",
-      "dismiss_cancel": "Keep run",
-      "dismiss_confirm_body": "Walk away from this canceled run? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
+      "dismiss_cancel": "Stay here",
+      "dismiss_confirm_body": "Walk away from this canceled generation? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
       "now_doing": "Now",
       "input_disabled_hint": "Chat is paused while the agent finishes building the course. Cancel or wait for it to complete.",
       "stuck_queued": {
         "title": "Worker not responding",
-        "body": "This run has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
+        "body": "Course generation has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
       }
     },
     "plan_view": {
@@ -4900,21 +4900,21 @@
       }
     },
     "run_summary": {
-      "completed": "Run completed.",
-      "completed_with_counts": "Run completed — created {counts}.",
-      "failed": "Run failed.",
-      "failed_with_reason": "Run failed — {reason}.",
-      "canceled": "Run canceled.",
-      "canceled_with_counts": "Run canceled — created {counts} before stopping.",
-      "paused": "Run paused. Resume to continue.",
-      "paused_with_counts": "Run paused — created {counts} so far. Resume to continue."
+      "completed": "Course generation completed.",
+      "completed_with_counts": "Course generation completed — created {counts}.",
+      "failed": "Course generation failed.",
+      "failed_with_reason": "Course generation failed — {reason}.",
+      "canceled": "Course generation canceled.",
+      "canceled_with_counts": "Course generation canceled — created {counts} before stopping.",
+      "paused": "Course generation paused. Resume to continue.",
+      "paused_with_counts": "Course generation paused — created {counts} so far. Resume to continue."
     },
     "stopped_content_kept": "Stopped. Created content has been kept.",
     "run_failed_after": "{action} did not finish successfully.",
     "tool": {
       "pending": {
         "working": "Working",
-        "unknown_tool": "Running {toolName}",
+        "unknown_tool": "Working on {toolName}",
         "get_course_structure": "Reading course structure",
         "get_lesson_content": "Reading lesson content",
         "get_exercise_details": "Reading exercise",

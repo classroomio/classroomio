@@ -4380,7 +4380,7 @@
     "tool": {
       "pending": {
         "working": "Przetwarzanie",
-        "unknown_tool": "Uruchamianie {toolName}",
+        "unknown_tool": "Praca nad {toolName}",
         "get_course_structure": "Odczytywanie struktury kursu",
         "get_lesson_content": "Odczytywanie treści lekcji",
         "get_exercise_details": "Odczytywanie ćwiczenia",
@@ -4480,14 +4480,14 @@
     "retry": "Spróbuj ponownie",
     "run_monitor_aria": "Trwa generowanie kursu",
     "run_summary": {
-      "completed": "Uruchomienie zakończone.",
-      "completed_with_counts": "Uruchomienie zakończone — utworzono {counts}.",
-      "failed": "Uruchomienie nie powiodło się.",
-      "failed_with_reason": "Uruchomienie nie powiodło się — {reason}.",
-      "canceled": "Bieg odwołany.",
-      "canceled_with_counts": "Uruchomienie anulowane — utworzono {counts} przed zatrzymaniem.",
-      "paused": "Uruchomienie wstrzymane. Wznów, aby kontynuować.",
-      "paused_with_counts": "Uruchomienie wstrzymane — do tej pory utworzono {counts}. Wznów, aby kontynuować."
+      "completed": "Generowanie kursu zakończone.",
+      "completed_with_counts": "Generowanie kursu zakończone — utworzono {counts}.",
+      "failed": "Generowanie kursu nie powiodło się.",
+      "failed_with_reason": "Generowanie kursu nie powiodło się — {reason}.",
+      "canceled": "Generowanie kursu anulowane.",
+      "canceled_with_counts": "Generowanie kursu anulowane — utworzono {counts} przed zatrzymaniem.",
+      "paused": "Generowanie kursu wstrzymane. Wznów, aby kontynuować.",
+      "paused_with_counts": "Generowanie kursu wstrzymane — dotychczas utworzono {counts}. Wznów, aby kontynuować."
     },
     "changes_card": {
       "summary_count": "Zmieniono {count} elementów",
@@ -4514,16 +4514,16 @@
       "collapse": "Zwiń plan"
     },
     "run_monitor": {
-      "cancel": "Anuluj bieg",
+      "cancel": "Anuluj generowanie",
       "dismiss": "Odrzuć",
       "now_doing": "Teraz",
       "input_disabled_hint": "Czat zostaje wstrzymany, gdy agent kończy tworzenie kursu. Anuluj lub poczekaj na zakończenie.",
       "dismiss_confirm": "Odejdź",
-      "dismiss_cancel": "Biegnij dalej",
-      "dismiss_confirm_body": "Czy chcesz zrezygnować z tego odwołanego biegu? Przycisk Wznów zniknie — każdy kolejny czat rozpocznie się od nowa i nie będzie kontynuowany planu.",
+      "dismiss_cancel": "Zostań tutaj",
+      "dismiss_confirm_body": "Odejść od tego anulowanego generowania? Przycisk Wznów zniknie — każdy kolejny czat zacznie się od nowa i nie będzie kontynuował planu.",
       "stuck_queued": {
         "title": "Pracownik nie odpowiada",
-        "body": "Ten przebieg czekał ponad 30 sekund bez odbioru pracownika. Proces roboczy działający w tle może być wyłączony lub uruchamiany ponownie."
+        "body": "Generowanie kursu czeka dłużej niż 30 sekund i żaden proces w tle go nie podjął. Proces w tle może być wyłączony lub właśnie się restartuje."
       }
     },
     "ask_ai": "Zapytaj AI",

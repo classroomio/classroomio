@@ -4380,7 +4380,7 @@
     "tool": {
       "pending": {
         "working": "In Arbeit",
-        "unknown_tool": "{toolName} wird ausgeführt",
+        "unknown_tool": "Arbeite an {toolName}",
         "get_course_structure": "Kursstruktur wird gelesen",
         "get_lesson_content": "Lektionsinhalt wird gelesen",
         "get_exercise_details": "Übung wird gelesen",
@@ -4480,14 +4480,14 @@
     "retry": "Versuchen Sie es noch einmal",
     "run_monitor_aria": "Kursgenerierung läuft",
     "run_summary": {
-      "completed": "Lauf abgeschlossen.",
-      "completed_with_counts": "Lauf abgeschlossen – {counts} erstellt.",
-      "failed": "Ausführung fehlgeschlagen.",
-      "failed_with_reason": "Ausführung fehlgeschlagen – {reason}.",
-      "canceled": "Lauf abgebrochen.",
-      "canceled_with_counts": "Lauf abgebrochen – {counts} vor dem Stoppen erstellt.",
-      "paused": "Lauf pausiert. Fortfahren, um fortzufahren.",
-      "paused_with_counts": "Ausführung pausiert – bisher {counts} erstellt. Fortfahren, um fortzufahren."
+      "completed": "Kursgenerierung abgeschlossen.",
+      "completed_with_counts": "Kursgenerierung abgeschlossen — {counts} erstellt.",
+      "failed": "Kursgenerierung fehlgeschlagen.",
+      "failed_with_reason": "Kursgenerierung fehlgeschlagen — {reason}.",
+      "canceled": "Kursgenerierung abgebrochen.",
+      "canceled_with_counts": "Kursgenerierung abgebrochen — {counts} vor dem Stoppen erstellt.",
+      "paused": "Kursgenerierung pausiert. Fortsetzen, um weiterzumachen.",
+      "paused_with_counts": "Kursgenerierung pausiert — bisher {counts} erstellt. Fortsetzen, um weiterzumachen."
     },
     "changes_card": {
       "summary_count": "{count} Elemente geändert",
@@ -4514,16 +4514,16 @@
       "collapse": "Plan zusammenbrechen"
     },
     "run_monitor": {
-      "cancel": "Lauf abbrechen",
+      "cancel": "Generierung abbrechen",
       "dismiss": "Entlassen",
       "now_doing": "Jetzt",
       "input_disabled_hint": "Der Chat wird angehalten, während der Agent mit der Erstellung des Kurses fertig ist. Brechen Sie den Vorgang ab oder warten Sie, bis der Vorgang abgeschlossen ist.",
       "dismiss_confirm": "Geh weg",
-      "dismiss_cancel": "Lauf weiter",
-      "dismiss_confirm_body": "Von diesem abgesagten Lauf weggehen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
+      "dismiss_cancel": "Hier bleiben",
+      "dismiss_confirm_body": "Diese abgebrochene Generierung verlassen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
       "stuck_queued": {
         "title": "Arbeiter reagiert nicht",
-        "body": "Dieser Lauf hat mehr als 30 Sekunden gewartet, ohne dass ein Arbeiter abgeholt wurde. Der Hintergrund-Worker ist möglicherweise nicht verfügbar oder wird neu gestartet."
+        "body": "Die Kursgenerierung wartet seit mehr als 30 Sekunden, ohne dass ein Hintergrundprozess sie übernommen hat. Der Hintergrundprozess ist möglicherweise ausgefallen oder wird neu gestartet."
       }
     },
     "ask_ai": "Fragen Sie die KI",

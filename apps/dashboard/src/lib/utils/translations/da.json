@@ -4380,7 +4380,7 @@
     "tool": {
       "pending": {
         "working": "Arbejder",
-        "unknown_tool": "Kører {toolName}",
+        "unknown_tool": "Arbejder på {toolName}",
         "get_course_structure": "Læser kursusstruktur",
         "get_lesson_content": "Læser lektionsindhold",
         "get_exercise_details": "Læser øvelse",
@@ -4480,14 +4480,14 @@
     "retry": "Prøv igen",
     "run_monitor_aria": "Kursusgenerering i gang",
     "run_summary": {
-      "completed": "Kørsel afsluttet.",
-      "completed_with_counts": "Kørsel afsluttet — oprettet {counts}.",
-      "failed": "Kørsel mislykkedes.",
-      "failed_with_reason": "Kørsel mislykkedes — {reason}.",
-      "canceled": "Kørsel annulleret.",
-      "canceled_with_counts": "Kørsel annulleret — oprettet {counts} før stop.",
-      "paused": "Løb sat på pause. Genoptag for at fortsætte.",
-      "paused_with_counts": "Kør på pause – oprettet {counts} indtil videre. Genoptag for at fortsætte."
+      "completed": "Kursusgenerering fuldført.",
+      "completed_with_counts": "Kursusgenerering fuldført — oprettede {counts}.",
+      "failed": "Kursusgenerering mislykkedes.",
+      "failed_with_reason": "Kursusgenerering mislykkedes — {reason}.",
+      "canceled": "Kursusgenerering annulleret.",
+      "canceled_with_counts": "Kursusgenerering annulleret — oprettede {counts} før stop.",
+      "paused": "Kursusgenerering sat på pause. Genoptag for at fortsætte.",
+      "paused_with_counts": "Kursusgenerering sat på pause — oprettede {counts} indtil videre. Genoptag for at fortsætte."
     },
     "changes_card": {
       "summary_count": "{count} elementer blev ændret",
@@ -4514,16 +4514,16 @@
       "collapse": "Kollaps plan"
     },
     "run_monitor": {
-      "cancel": "Annuller kørsel",
+      "cancel": "Annuller generering",
       "dismiss": "Afvis",
       "now_doing": "Nu",
       "input_disabled_hint": "Chatten er sat på pause, mens agenten er færdig med at bygge kurset. Annuller eller vent på, at det er fuldført.",
       "dismiss_confirm": "Gå væk",
-      "dismiss_cancel": "Fortsæt løb",
-      "dismiss_confirm_body": "Vil du gå væk fra dette aflyste løb? Genoptag-knappen forsvinder - enhver yderligere chat starter på en frisk og fortsætter ikke planen.",
+      "dismiss_cancel": "Bliv her",
+      "dismiss_confirm_body": "Vil du forlade denne annullerede generering? Knappen Fortsæt forsvinder — al yderligere chat starter forfra og fortsætter ikke planen.",
       "stuck_queued": {
         "title": "Arbejder reagerer ikke",
-        "body": "Denne kørsel har ventet i mere end 30 sekunder uden nogen afhentning af arbejderen. Baggrundsarbejderen er muligvis nede eller genstarter."
+        "body": "Kursusgenereringen har ventet i mere end 30 sekunder uden at en baggrundsproces har overtaget. Baggrundsprocessen er muligvis nede eller genstarter."
       }
     },
     "ask_ai": "Spørg AI",
