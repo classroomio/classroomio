@@ -236,6 +236,23 @@ export type TNewAiAgentRunStep = typeof schema.aiAgentRunStep.$inferInsert;
 export type TAiAgentRunEvent = typeof schema.aiAgentRunEvent.$inferSelect;
 export type TNewAiAgentRunEvent = typeof schema.aiAgentRunEvent.$inferInsert;
 
+// ─── Learning paths ──────────────────────────────────────────────────────────
+
+export type TLearningPath = typeof schema.learningPath.$inferSelect;
+export type TNewLearningPath = typeof schema.learningPath.$inferInsert;
+
+export type TLearningPathCourse = typeof schema.learningPathCourse.$inferSelect;
+export type TNewLearningPathCourse = typeof schema.learningPathCourse.$inferInsert;
+
+export type TLearningPathMember = typeof schema.learningPathMember.$inferSelect;
+export type TNewLearningPathMember = typeof schema.learningPathMember.$inferInsert;
+
+export type TLearningPathMemberCourse = typeof schema.learningPathMemberCourse.$inferSelect;
+export type TNewLearningPathMemberCourse = typeof schema.learningPathMemberCourse.$inferInsert;
+
+export type TLearningPathCertificateIssue = typeof schema.learningPathCertificateIssue.$inferSelect;
+export type TNewLearningPathCertificateIssue = typeof schema.learningPathCertificateIssue.$inferInsert;
+
 // ─── Job state ───────────────────────────────────────────────────────────────
 
 export type TJobStatus = (typeof schema.jobStatus.enumValues)[number];

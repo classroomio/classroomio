@@ -23,6 +23,13 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import {
+  LEARNING_PATH_COURSE_STATUS_VALUES,
+  LEARNING_PATH_DIFFICULTY_VALUES,
+  LEARNING_PATH_MEMBER_STATUS_VALUES,
+  LEARNING_PATH_STATUS_VALUES,
+  type TLearningPathVisitorAccess
+} from '@cio/utils/constants/learning-path';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
 
@@ -3400,6 +3407,334 @@ export const cohortGoalAssignment = pgTable(
     index('idx_cohort_goal_assignment_goal_id').on(table.goalId),
     index('idx_cohort_goal_assignment_cohort_member_id').on(table.cohortMemberId),
     index('idx_cohort_goal_assignment_due_date').on(table.dueDate)
+  ]
+);
+
+// ─── Learning Paths ──────────────────────────────────────────────────────────
+// An ordered, sequentially unlocked, bundle-priced set of courses sold on the org's
+// public site. Distinct from cohorts/programs: ordered, priced, publicly listed, and
+// certificate-bearing. Courses stay independently sellable and are never mutated by a
+// path — membership and progress live in the tables below, course enrollment keeps
+// using `groupmember`.
+
+export const learningPathStatus = pgEnum('LEARNING_PATH_STATUS', [...LEARNING_PATH_STATUS_VALUES]);
+
+export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', [...LEARNING_PATH_DIFFICULTY_VALUES]);
+
+export const learningPathMemberStatus = pgEnum('LEARNING_PATH_MEMBER_STATUS', [...LEARNING_PATH_MEMBER_STATUS_VALUES]);
+
+export const learningPathCourseStatus = pgEnum('LEARNING_PATH_COURSE_STATUS', [...LEARNING_PATH_COURSE_STATUS_VALUES]);
+
+export const learningPath = pgTable(
+  'learning_path',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar().notNull(),
+    /** URL segment for `/path/[slug]`; unique per org, not globally like `course.slug`. */
+    slug: varchar().notNull(),
+    description: text(),
+    coverImage: text('cover_image'),
+    status: learningPathStatus().default('DRAFT').notNull(),
+    /** Powers the Difficulty filter (My Learning, Explore) and the public stats row. */
+    difficulty: learningPathDifficulty(),
+    /**
+     * Teacher-set total study time, shown as "~38 hours" and bucketed by the Duration
+     * filter. Stored rather than derived because courses carry no duration of their own.
+     */
+    estimatedDurationMinutes: integer('estimated_duration_minutes'),
+    /** Bundle price for the whole path. Savings vs summed `course.cost` is computed at read time. */
+    cost: bigint({ mode: 'number' })
+      .default(sql`'0'`)
+      .notNull(),
+    currency: varchar().default('USD').notNull(),
+    showSavings: boolean('show_savings').default(true).notNull(),
+    sequentialUnlock: boolean('sequential_unlock').default(true).notNull(),
+    selfEnrollment: boolean('self_enrollment').default(true).notNull(),
+    autoEnroll: boolean('auto_enroll').default(true).notNull(),
+    certificateEnabled: boolean('certificate_enabled').default(true).notNull(),
+    certificateTitle: text('certificate_title'),
+    certificateIssuer: text('certificate_issuer'),
+    /** Mirrors `course.certificate.design` so path certificates render through `@cio/certificates`. */
+    certificateDesign: jsonb('certificate_design').default({}).$type<{
+      templateId?: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
+      accentColor?: string;
+      subtitle?: string;
+      descriptionOverride?: string;
+      signatories?: { name: string; role: string; enabled?: boolean; signatureUrl?: string }[];
+      /** Supports `{seq}` / `{year}` / `{month}`; defaults to the `LP-XXXX-XXXX` shape. */
+      idFormat?: string;
+    }>(),
+    /**
+     * Public path page content owned by the Landing page tab. Holds copy only — `id` keys
+     * on testimonials/FAQs are client-generated list keys for editing, never foreign keys.
+     */
+    landingPage: jsonb('landing_page').default({}).$type<{
+      headline?: string;
+      subheadline?: string;
+      visitorAccess?: TLearningPathVisitorAccess;
+      outcomes?: string[];
+      skills?: string[];
+      showInstructors?: boolean;
+      showTestimonials?: boolean;
+      testimonials?: { id: string; name: string; role?: string; avatarUrl?: string; quote: string }[];
+      showFaqs?: boolean;
+      faqs?: { id: string; question: string; answer: string }[];
+      showRating?: boolean;
+      rating?: { average: number; count: number };
+    }>(),
+    /**
+     * Set the first time a teacher confirms the drag-ordering. The only setup-checklist step
+     * that cannot be derived from data (every other step reads name/courses/cost/landingPage/status).
+     */
+    courseOrderSetAt: timestamp('course_order_set_at', { withTimezone: true, mode: 'string' }),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'learning_path_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_created_by_profile_id_fkey'
+    }),
+    unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
+    index('idx_learning_path_organization_id').on(table.organizationId),
+    index('idx_learning_path_organization_id_status').on(table.organizationId, table.status)
+  ]
+);
+
+export const learningPathCourse = pgTable(
+  'learning_path_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathId: uuid('learning_path_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    /**
+     * 1-based position, and the gating sequence itself. Deliberately not uniquely
+     * constrained: reordering rewrites every row in one transaction, and a non-deferrable
+     * unique index would reject the intermediate states of a swap.
+     */
+    order: integer().notNull(),
+    /** Per-course outcome bullets shown on the public path page; path-scoped marketing copy. */
+    outcomes: jsonb().default([]).$type<string[]>(),
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_course_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'learning_path_course_course_id_fkey'
+    }).onDelete('cascade'),
+    unique('learning_path_course_path_id_course_id_unique').on(table.learningPathId, table.courseId),
+    index('idx_learning_path_course_path_id_order').on(table.learningPathId, table.order),
+    // Unlock evaluation runs on every lesson/exercise completion and starts from the course.
+    index('idx_learning_path_course_course_id').on(table.courseId)
+  ]
+);
+
+export const learningPathMember = pgTable(
+  'learning_path_member',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathId: uuid('learning_path_id').notNull(),
+    /** NULL while a batch-invited learner has not yet claimed their account. */
+    profileId: uuid('profile_id'),
+    email: text(),
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    // ── Rollup cache ──
+    // Recomputed by the same service that evaluates unlocking on lesson/exercise completion.
+    // Never a source of truth: `learning_path_member_course` plus lesson/exercise data is.
+    // Cached because People, My Learning, and the admin listing all rank and filter by it.
+    status: learningPathMemberStatus().default('NOT_STARTED').notNull(),
+    progressPercent: integer('progress_percent').default(0).notNull(),
+    completedCourseCount: integer('completed_course_count').default(0).notNull(),
+    /** Drives "Current course" in People and "Continue Learning" on the learner surfaces. */
+    currentCourseId: uuid('current_course_id'),
+    /** Backs the "active learners in the last 14 days" analytics card. */
+    lastActivityAt: timestamp('last_activity_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_member_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_member_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'learning_path_member_role_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.currentCourseId],
+      foreignColumns: [course.id],
+      name: 'learning_path_member_current_course_id_fkey'
+    }).onDelete('set null'),
+    unique('learning_path_member_path_id_profile_id_unique').on(table.learningPathId, table.profileId),
+    unique('learning_path_member_path_id_email_unique').on(table.learningPathId, table.email),
+    index('idx_learning_path_member_learning_path_id').on(table.learningPathId),
+    index('idx_learning_path_member_profile_id').on(table.profileId)
+  ]
+);
+
+/**
+ * One row per member per course in a path, carrying two things: how the learner got into
+ * the course, and the path-scoped projection of their progress in it.
+ *
+ * Progress is deliberately *shared*, not forked. A learner has one `groupmember` row and
+ * one set of `lesson_completion` / `submission` rows per course no matter how many paths
+ * contain it, so a course finished standalone last year counts as done the moment the
+ * learner enrols in a path — and work done inside the path counts outside it too. The
+ * columns below are a cache of that shared truth, never a second copy of it.
+ *
+ * Access is granted by inserting into `groupmember` like every other enrolment route, so
+ * the course itself needs no knowledge of paths. `groupmemberId` + `accessGrantedByPath`
+ * record the provenance the plain `groupmember` row cannot: whether this path is the
+ * reason the learner has access (so unenrolling should take it away) or whether they
+ * already had their own enrolment (so unenrolling must leave it alone). Several paths may
+ * point at the same `groupmember` row; access is the union of the grants, which is why
+ * revocation checks for other live grants before removing anything.
+ */
+export const learningPathMemberCourse = pgTable(
+  'learning_path_member_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathMemberId: uuid('learning_path_member_id').notNull(),
+    learningPathCourseId: uuid('learning_path_course_id').notNull(),
+    // ── Access provenance ──
+    /**
+     * The course enrolment this path row is attached to. NULL while the course is still
+     * locked under sequential unlock, or once a teacher removes the learner from the
+     * course directly.
+     */
+    groupmemberId: uuid('groupmember_id'),
+    /**
+     * TRUE when enrolling in the path is what created the `groupmember` row. FALSE when the
+     * learner was already enrolled and the path merely adopted the existing enrolment.
+     * Unenrolling from the path may only delete the `groupmember` row when this is TRUE and
+     * no other path holds a live grant on it.
+     */
+    accessGrantedByPath: boolean('access_granted_by_path').default(false).notNull(),
+    accessGrantedAt: timestamp('access_granted_at', { withTimezone: true, mode: 'string' }),
+    /** Set instead of deleting the row, so an accidental unenrol/re-enrol keeps its history. */
+    accessRevokedAt: timestamp('access_revoked_at', { withTimezone: true, mode: 'string' }),
+    status: learningPathCourseStatus().default('LOCKED').notNull(),
+    progressPercent: integer('progress_percent').default(0).notNull(),
+    lessonsCompleted: integer('lessons_completed').default(0).notNull(),
+    lessonsTotal: integer('lessons_total').default(0).notNull(),
+    exercisesCompleted: integer('exercises_completed').default(0).notNull(),
+    exercisesTotal: integer('exercises_total').default(0).notNull(),
+    unlockedAt: timestamp('unlocked_at', { withTimezone: true, mode: 'string' }),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    /** Renders as "Finished May 12" on the path hub and feeds the course funnel counts. */
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathMemberId],
+      foreignColumns: [learningPathMember.id],
+      name: 'learning_path_member_course_member_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.learningPathCourseId],
+      foreignColumns: [learningPathCourse.id],
+      name: 'learning_path_member_course_path_course_id_fkey'
+    }).onDelete('cascade'),
+    // Set null rather than cascade: a teacher removing the learner from the course directly
+    // drops the grant but must not erase the path row or its progress cache.
+    foreignKey({
+      columns: [table.groupmemberId],
+      foreignColumns: [groupmember.id],
+      name: 'learning_path_member_course_groupmember_id_fkey'
+    }).onDelete('set null'),
+    unique('learning_path_member_course_member_id_path_course_id_unique').on(
+      table.learningPathMemberId,
+      table.learningPathCourseId
+    ),
+    index('idx_learning_path_member_course_member_id').on(table.learningPathMemberId),
+    index('idx_learning_path_member_course_path_course_id').on(table.learningPathCourseId),
+    // Reverse lookup from inside a course: "which paths put this learner here?"
+    index('idx_learning_path_member_course_groupmember_id').on(table.groupmemberId)
+  ]
+);
+
+/**
+ * Issued path certificates. A stored row rather than a render-time id (how standard course
+ * certificates work today) because the learner's Certificates page shows a stable id and a
+ * downloadable file, and the admin Certificate tab counts what has been awarded.
+ */
+export const learningPathCertificateIssue = pgTable(
+  'learning_path_certificate_issue',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathId: uuid('learning_path_id').notNull(),
+    learningPathMemberId: uuid('learning_path_member_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    /** Human-facing id shown on the certificate face, e.g. `LP-8F42-19AC`. */
+    certificateId: varchar('certificate_id').notNull(),
+    /** Frozen at issue time so a later rename of the path never rewrites history. */
+    title: text().notNull(),
+    issuer: text(),
+    issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    status: varchar().default('valid').notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    fileUrl: text('file_url')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_certificate_issue_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.learningPathMemberId],
+      foreignColumns: [learningPathMember.id],
+      name: 'learning_path_certificate_issue_member_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_certificate_issue_profile_id_fkey'
+    }).onDelete('cascade'),
+    unique('learning_path_certificate_issue_certificate_id_key').on(table.certificateId),
+    // One live certificate per membership; re-issuing updates the row rather than adding one.
+    unique('learning_path_certificate_issue_member_id_key').on(table.learningPathMemberId),
+    index('idx_learning_path_certificate_issue_profile_id').on(table.profileId),
+    index('idx_learning_path_certificate_issue_learning_path_id').on(table.learningPathId)
   ]
 );
 

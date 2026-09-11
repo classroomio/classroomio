@@ -195,6 +195,31 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 - Students: read path data they're members of; public endpoints serve ACTIVE paths only.
 - DRAFT paths: admin/tutor only. ARCHIVED: hidden everywhere, data preserved.
 
+#### Access & progression when a course is both standalone and inside a path
+
+A course can be sold on its own *and* be step 3 of a path, and a learner may already have been enrolled in it long before the path existed. Two rules settle every case:
+
+**1. One progression, always shared.** A learner has exactly one enrolment and one progress record per course, no matter how many paths contain it. There is no path-scoped copy of a course, no second set of lesson completions, no "path version" of a certificate. Consequences, all intended:
+
+- A course the learner finished standalone last year shows as **already complete** the moment they enrol in the path, and immediately counts toward path completion and toward unlocking the next course.
+- Work done inside the path counts outside it. Finishing step 3 within the path earns the ordinary course certificate too.
+- A learner enrolled in two paths that share a course sees one progression in both.
+
+This matches how Coursera Specializations behave (a course completed on its own counts toward the Specialization) and how Docebo learning plans derive plan status from the underlying course enrolment statuses. The alternative — requiring learners to re-take a course *through* the path for it to count, as Coursera's enterprise learning paths do — is the behaviour to avoid: it makes learners repeat work they have already done, and it is the single most common complaint about path features in other LMSs.
+
+**2. Access is granted through `groupmember`, with provenance recorded.** Enrolling in a path inserts ordinary `groupmember` rows, the same way cohorts already do (`insertGroupMembersOnConflictDoNothing`). The course side needs no knowledge of paths: `isUserCourseMemberOrOrgAdmin` keeps working unchanged.
+
+What a bare `groupmember` row cannot express is *why* the learner is there, so `learning_path_member_course` records it:
+
+- `groupmemberId` — which course enrolment this path step is attached to.
+- `accessGrantedByPath` — TRUE when path enrolment created that row, FALSE when the learner already had their own enrolment and the path merely adopted it.
+
+That single boolean answers both directions of the question. From the course: join `groupmember → learning_path_member_course → learning_path` to list who is here because of a path, and who enrolled directly. From the path: know whether unenrolling may take course access away.
+
+**Access is the union of grants, and revocation is conservative.** Several paths may point at the same `groupmember` row. Removing a learner from a path sets `accessRevokedAt` and deletes the `groupmember` row *only* when `accessGrantedByPath` is TRUE and no other path holds a live grant on it. A learner who bought the course directly never loses it by leaving a path. This mirrors Moodle's enrolment-instance model, where a user can hold several enrolment rows in one course from different methods and access is the union of them.
+
+**Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row for a later course is not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all rows are created at enrolment time.
+
 ---
 
 ## Technical Design
@@ -203,34 +228,67 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 
 ```
 learning_path
-  id uuid PK · organizationId FK(organization, cascade) · name varchar · slug varchar (unique per org)
+  id uuid PK · organizationId FK(organization, cascade) · name varchar · slug varchar
   description text · coverImage text · status LEARNING_PATH_STATUS default 'DRAFT'
-  cost numeric · currency varchar default 'USD' · showSavings boolean default true
+  difficulty LEARNING_PATH_DIFFICULTY nullable      -- Difficulty filter + public stats row
+  estimatedDurationMinutes integer nullable          -- "~38 hours"; Duration filter buckets
+  cost bigint default 0 · currency varchar default 'USD' · showSavings boolean default true
   sequentialUnlock boolean default true · selfEnrollment boolean default true · autoEnroll boolean default true
   certificateEnabled boolean default true · certificateTitle text · certificateIssuer text
+  certificateDesign jsonb   -- mirrors course.certificate.design so @cio/certificates can render it
   landingPage jsonb  -- { headline, subheadline, visitorAccess: 'teaser'|'syllabus'|'preview',
                      --   outcomes: string[], skills: string[], showInstructors, testimonials: [...],
-                     --   showTestimonials, faqs: [...], showFaqs }
+                     --   showTestimonials, faqs: [...], showFaqs, showRating, rating }
   visitorAccess is inside landingPage; no relational IDs inside the jsonb (per repo rule)
+  courseOrderSetAt timestamptz nullable   -- only setup-checklist step not derivable from data
   createdByProfileId FK(profile) · createdAt / updatedAt
+  unique(organizationId, slug) · index(organizationId) · index(organizationId, status)
 
 learning_path_course
-  id uuid PK · pathId FK(learning_path, cascade) · courseId FK(course, cascade)
+  id uuid PK · learningPathId FK(learning_path, cascade) · courseId FK(course, cascade)
   order integer NOT NULL          -- 1-based position; the gating sequence
-  unique(pathId, courseId) · unique(pathId, order) · index(pathId)
+  outcomes jsonb default []       -- per-course bullets on the public path page
+  addedAt timestamptz
+  unique(pathId, courseId) · index(pathId, order) · index(courseId)
+  -- NOT unique(pathId, order): reordering rewrites every row in one transaction and a
+  -- non-deferrable unique index rejects the intermediate states of a swap.
 
 learning_path_member
-  id uuid PK · pathId FK(learning_path, cascade) · profileId FK(profile) · roleId FK(role)
-  enrolledAt timestamptz · completedAt timestamptz nullable
-  certificateIssuedAt timestamptz nullable · certificateId varchar nullable
-  unique(pathId, profileId) · index(pathId) · index(profileId)
+  id uuid PK · learningPathId FK(learning_path, cascade) · profileId FK(profile) nullable · email text
+  roleId FK(role) · enrolledAt · startedAt · completedAt timestamptz nullable
+  -- rollup cache, recomputed alongside unlock evaluation; never source of truth:
+  status LEARNING_PATH_MEMBER_STATUS · progressPercent integer · completedCourseCount integer
+  currentCourseId FK(course, set null) · lastActivityAt timestamptz
+  unique(pathId, profileId) · unique(pathId, email) · index(pathId) · index(profileId)
+
+learning_path_member_course
+  id uuid PK · learningPathMemberId FK(cascade) · learningPathCourseId FK(cascade)
+  -- access provenance (see "Access & progression" above):
+  groupmemberId FK(groupmember, set null) nullable
+  accessGrantedByPath boolean default false · accessGrantedAt · accessRevokedAt timestamptz nullable
+  -- progress cache of the shared course record:
+  status LEARNING_PATH_COURSE_STATUS default 'LOCKED' · progressPercent integer
+  lessonsCompleted / lessonsTotal / exercisesCompleted / exercisesTotal integer
+  unlockedAt · startedAt · completedAt · updatedAt timestamptz
+  unique(memberId, pathCourseId) · index(memberId) · index(pathCourseId) · index(groupmemberId)
+
+learning_path_certificate_issue
+  id uuid PK · learningPathId FK(cascade) · learningPathMemberId FK(cascade) · profileId FK(cascade)
+  certificateId varchar UNIQUE     -- LP-8F42-19AC, shown on the learner's Certificates page
+  title text · issuer text         -- frozen at issue time
+  issuedAt · status default 'valid' · revokedAt · fileUrl
+  unique(learningPathMemberId)
 
 enum LEARNING_PATH_STATUS: ACTIVE | DRAFT | ARCHIVED
+enum LEARNING_PATH_DIFFICULTY: BEGINNER | INTERMEDIATE | ADVANCED
+enum LEARNING_PATH_MEMBER_STATUS: NOT_STARTED | IN_PROGRESS | COMPLETED
+enum LEARNING_PATH_COURSE_STATUS: LOCKED | NOT_STARTED | IN_PROGRESS | COMPLETED
 ```
 
 Notes:
-- No denormalized progress on `learning_path_member` beyond `completedAt`; per-course progress is computed from existing lesson-completion + exercise-submission data (already queried for course cards).
+- The progress columns on `learning_path_member` and `learning_path_member_course` are a **cache** of lesson-completion + exercise-submission data, not a second copy of it. They exist because People, My Learning, the admin listing, and the analytics funnel all rank, filter, and aggregate by them. Any read may recompute; nothing may diverge.
 - Savings figure is computed at read time from the sum of `course.cost` over path courses — never stored.
+- `estimatedDurationMinutes` and `difficulty` are stored because nothing derivable backs them: courses carry no duration or difficulty column of their own.
 - Schema work stops at a passing `@cio/db` build; migrations are handled outside this workflow.
 
 ### Completion / unlock logic (service layer)
