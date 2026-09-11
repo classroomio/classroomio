@@ -177,7 +177,8 @@ export default defineConfig({
           '/reference/student-dashboard',
           '/reference/tags',
           '/reference/community',
-          '/reference/enterprise-sso'
+          '/reference/enterprise-sso',
+          '/reference/learning-path'
         ]
       }
     ]
