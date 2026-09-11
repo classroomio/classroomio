@@ -53,6 +53,33 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
 
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
 
+## Database migrations
+
+**Block the merge if a new migration's `when` is not later than every migration already on `main`.**
+
+`drizzle-orm` keeps no record of which migrations ran. It reads one high-water mark
+(`select ... order by created_at desc limit 1`) and applies a migration only when
+`lastCreatedAt < migration.folderMillis`, where `folderMillis` is the `when` in
+`packages/db/src/migrations/meta/_journal.json`. A migration stamped below that mark never runs,
+never errors, and never appears in `drizzle.__drizzle_migrations`: the objects it creates simply do
+not exist. A future-dated `when` is the same bug mirrored, marking the ledger ahead of reality so
+later migrations are skipped.
+
+Fresh databases apply everything in journal order and are unaffected, so this passes on a rebuilt
+local database and on CI, then silently no-ops everywhere else.
+
+Check before merging any PR that adds a migration:
+
+```bash
+git show origin/main:packages/db/src/migrations/meta/_journal.json |
+  python3 -c "import json,sys; print(max(e['when'] for e in json.load(sys.stdin)['entries']))"
+python3 -c "import json; print(max(e['when'] for e in json.load(open('packages/db/src/migrations/meta/_journal.json'))['entries']))"
+```
+
+The branch value must be greater. If it is not, restamp the new entry to `int(time.time() * 1000)`
+and renumber the file so its index follows main's last migration. Renumber on a plain index
+collision too: two branches both adding `0016_*` is the usual way this arises.
+
 ## Naming Convention
 
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
