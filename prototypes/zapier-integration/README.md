@@ -9,8 +9,8 @@ structure and interaction pattern only, adapted to ClassroomIO's design system, 
 
 | File | What it is |
 | --- | --- |
-| `index.html` | Prototype map. Start here |
-| `automation-overview.html` | Screen 1: Automation hub (MCP / API / Zapier cards) |
+| `index.html` | Screen 1: Automation hub (MCP / API / Zapier cards). Start here, the true entry point |
+| `prototype-map.html` | Reviewer-only prototype map, linking out to every screen. Not part of the user flow |
 | `zapier-connect.html` | Screen 2: Zapier landing page. Hero and connect bar, an auto-scrolling logo marquee, alternating value-prop rows, a 5-step visual walkthrough built from real prototype UI, a secondary "other ways in" chooser, integration highlights, and an FAQ accordion. Dev-only plan toggle |
 | `app-directory.html` | Screen 3: App Directory. Sidebar search and category filters with counts (Jotform layout), Popular/A-Z sort, Popular / Recently added quick filters, and a "View more apps" button that paginates through all 77. Accepts `?category=` and `?q=` to arrive pre-filtered |
 | `brand-logos.js` | The 16 hand-built brand-colored marks used only in the landing page's logo marquee (Slack, HubSpot, Salesforce, Google Sheets, Gmail, Teams, Notion, Airtable, Mailchimp, Intercom, Typeform, Jotform, Trello, Asana, Zendesk, Stripe) |
@@ -61,7 +61,7 @@ in this sidebar (every other item points to `#`, since this prototype is scoped 
 not a full dashboard clone), and it's marked active on every screen in this flow.
 
 The one thing that changes between screens is what `Zapier` links back to: on the four
-pre-connection screens (`automation-overview.html`, `zapier-connect.html`, `app-directory.html`,
+pre-connection screens (`index.html`, `zapier-connect.html`, `app-directory.html`,
 `app-detail.html`) it points to `zapier-connect.html`, and on the four post-connection screens
 (`zapier-connected.html`, `zap-templates.html`, `zap-builder.html`, `manage-zaps.html`) it points to
 `zapier-connected.html`, so clicking it from anywhere in the flow always lands on "wherever this org
@@ -75,7 +75,7 @@ also correctly signals a context switch out of the ClassroomIO dashboard proper.
 ## Back navigation
 
 Every page except the landing page (`zapier-connect.html`) and the automation hub
-(`automation-overview.html`, the true entry point of this flow) has a back arrow icon button at the
+(`index.html`, the true entry point of this flow) has a back arrow icon button at the
 start of the top bar, to the left of the breadcrumb. It calls `history.back()` when there's history
 to go back to, and falls back to a sensible previous screen in the flow otherwise (for example,
 `app-detail.html` falls back to `app-directory.html`). This is the same `icon-btn` component used for
