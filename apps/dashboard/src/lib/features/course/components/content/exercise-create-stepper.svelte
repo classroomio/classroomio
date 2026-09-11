@@ -25,6 +25,7 @@
     order,
     onCreated,
     canCreate,
+    session,
     stepperState = $bindable(EXERCISE_STEPPER_DEFAULT_STATE)
   }: Props = $props();
 
@@ -96,6 +97,7 @@
 
   async function handleTemplateSelection() {
     if (!canCreate) return;
+    const startedSession = session;
     isTemplateFinishedLoading = true;
     const template = exerciseTemplateApi.templates?.find((t) => t.id === Number(selectedTemplateId));
 
@@ -113,16 +115,19 @@
       if (createdExercise) {
         const profileId = $profile?.id;
         if (profileId) {
-          await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+          void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
             console.error('Failed to refresh course after exercise create:', refreshError);
           });
         }
 
-        onCreated({
-          id: createdExercise.id,
-          title: createdExercise.title ?? template.title ?? '',
-          type: ContentType.Exercise
-        });
+        onCreated(
+          {
+            id: createdExercise.id,
+            title: createdExercise.title ?? template.title ?? '',
+            type: ContentType.Exercise
+          },
+          startedSession
+        );
       }
     } catch (error) {
       console.log('Error creating exercise from template', error);
@@ -141,6 +146,7 @@
   async function handleAddExercise() {
     if (!title.trim() || !canCreate || isLoading) return;
 
+    const startedSession = session;
     isLoading = true;
     try {
       const trimmedTitle = title.trim();
@@ -157,16 +163,19 @@
       if (createdExercise) {
         const profileId = $profile?.id;
         if (profileId) {
-          await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+          void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
             console.error('Failed to refresh course after exercise create:', refreshError);
           });
         }
 
-        onCreated({
-          id: createdExercise.id,
-          title: createdExercise.title ?? trimmedTitle,
-          type: ContentType.Exercise
-        });
+        onCreated(
+          {
+            id: createdExercise.id,
+            title: createdExercise.title ?? trimmedTitle,
+            type: ContentType.Exercise
+          },
+          startedSession
+        );
       }
     } finally {
       isLoading = false;

@@ -202,22 +202,21 @@
     }
   });
 
-  const handleCreated = $derived.by(() => {
-    const session = modalSession;
-    return (content: CreatedContent) => {
-      if (!$contentCreateStore.open || session !== modalSession) return;
+  function handleCreated(content: CreatedContent, startedSession?: number) {
+    if (!$contentCreateStore.open) return;
+    if (startedSession !== undefined && startedSession !== modalSession) return;
 
-      const nextCreatedContent = { ...content };
-      createdContent = nextCreatedContent;
-      phase = 'success';
+    const currentSession = modalSession;
+    const nextCreatedContent = { ...content };
+    createdContent = nextCreatedContent;
+    phase = 'success';
 
-      return tick().then(() => {
-        if (!$contentCreateStore.open || session !== modalSession) return;
+    return tick().then(() => {
+      if (!$contentCreateStore.open || currentSession !== modalSession) return;
 
-        primarySuccessButton?.focus();
-      });
-    };
-  });
+      primarySuccessButton?.focus();
+    });
+  }
 
   function goToDetails() {
     step = 1;
@@ -275,7 +274,9 @@
     if (!route) return;
 
     closeModal();
-    goto(resolve(route, {}));
+    goto(resolve(route, {})).catch((error) => {
+      console.error('Failed to navigate to created content:', error);
+    });
   }
 </script>
 
@@ -286,6 +287,10 @@
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.add_content')}</Dialog.Title>
     </Dialog.Header>
+
+    <div role="status" aria-live="polite" class="ui:sr-only">
+      {phase === 'success' && successSentenceKey ? $t(successSentenceKey) : ''}
+    </div>
 
     <div class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-1">
       {#if phase === 'success' && createdContent}
@@ -310,7 +315,7 @@
           <p
             class="flex items-center gap-2 text-sm font-semibold"
             style="color: var(--success); margin: 0;"
-            aria-live="polite"
+            aria-hidden="true"
           >
             <CheckIcon size={16} class="custom shrink-0" />
             {$t(successSentenceKey)}
@@ -395,6 +400,7 @@
               order={getNextSectionOrder()}
               canCreate={true}
               sections={sections.map((s) => ({ id: s.id, order: s.order ?? undefined }))}
+              session={modalSession}
               onCreated={handleCreated}
             />
           {:else if selectedType === ContentType.Lesson}
@@ -405,6 +411,7 @@
               sectionId={effectiveSectionId}
               order={nextContentOrder}
               canCreate={canCreateLessonOrExercise}
+              session={modalSession}
               onCreated={handleCreated}
             />
           {:else if selectedType === ContentType.Exercise}
@@ -415,6 +422,7 @@
               sectionId={effectiveSectionId}
               order={nextContentOrder}
               canCreate={canCreateLessonOrExercise}
+              session={modalSession}
               onCreated={handleCreated}
             />
           {/if}

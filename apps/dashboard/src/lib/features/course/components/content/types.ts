@@ -75,6 +75,8 @@ export interface BaseStepperProps {
   order?: number;
   /** Whether the user has permission to create content */
   canCreate: boolean;
+  /** Active modal session identifier to discard stale async completions */
+  session?: number;
   /** Callback when content is successfully created */
-  onCreated: (content: CreatedContent) => void;
+  onCreated: (content: CreatedContent, session?: number) => void;
 }

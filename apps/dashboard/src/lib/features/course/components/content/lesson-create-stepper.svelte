@@ -17,6 +17,7 @@
     order,
     canCreate,
     onCreated,
+    session,
     stepperState = $bindable(LESSON_STEPPER_DEFAULT_STATE)
   }: Props = $props();
 
@@ -60,6 +61,7 @@
     async next() {
       if (!canProceed || isSubmitting) return;
 
+      const startedSession = session;
       isSubmitting = true;
       try {
         const trimmedTitle = title.trim();
@@ -80,12 +82,15 @@
           // Refresh course content in the background; success does not depend on it.
           const profileId = $profile?.id;
           if (profileId) {
-            await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+            void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
               console.error('Failed to refresh course after lesson create:', refreshError);
             });
           }
 
-          onCreated({ id: createdLesson.id, title: createdLesson.title ?? trimmedTitle, type: ContentType.Lesson });
+          onCreated(
+            { id: createdLesson.id, title: createdLesson.title ?? trimmedTitle, type: ContentType.Lesson },
+            startedSession
+          );
         }
       } finally {
         isSubmitting = false;

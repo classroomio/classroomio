@@ -18,6 +18,7 @@
     canCreate,
     onCreated,
     sections,
+    session,
     stepperState = $bindable(SECTION_STEPPER_DEFAULT_STATE)
   }: Props = $props();
 
@@ -65,6 +66,7 @@
     async next() {
       if (!canProceed || isSubmitting) return;
 
+      const startedSession = session;
       isSubmitting = true;
       try {
         // Calculate order if not provided
@@ -85,16 +87,19 @@
           // Refresh course content so sidebar updates; success does not depend on it.
           const profileId = $profile?.id;
           if (profileId) {
-            await courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+            void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
               console.error('Failed to refresh course after section create:', refreshError);
             });
           }
 
-          onCreated({
-            id: createdSection.id,
-            title: createdSection.title ?? trimmedTitle,
-            type: ContentType.Section
-          });
+          onCreated(
+            {
+              id: createdSection.id,
+              title: createdSection.title ?? trimmedTitle,
+              type: ContentType.Section
+            },
+            startedSession
+          );
         }
       } finally {
         isSubmitting = false;
