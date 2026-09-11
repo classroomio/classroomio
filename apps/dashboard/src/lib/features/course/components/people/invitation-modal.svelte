@@ -16,7 +16,13 @@
   import { profile } from '$lib/utils/store/user';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
-  import { TutorSelectSection, ExistingStudentsSection, BulkEmailSection } from '$features/people/components';
+  import { buildResourceInviteLink } from '$features/people/utils/invite-link-utils';
+  import {
+    TutorSelectSection,
+    ExistingStudentsSection,
+    BulkEmailSection,
+    InviteLinkSection
+  } from '$features/people/components';
   import { UpgradeBanner } from '$features/ui';
 
   interface Props {
@@ -36,8 +42,9 @@
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
 
   let isLoadingStudents = $state(false);
-  let activeTab = $state<'tutors' | 'students'>('students');
+  let activeTab = $state<'tutors' | 'students' | 'link'>('students');
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, courseApi.group.people));
+  const inviteLink = $derived(buildResourceInviteLink(peopleApi.inviteLink?.token, $currentOrg));
 
   function getTutors(team: OrgTeamMember[]) {
     const existingTutors = courseApi?.group?.tutors || [];
@@ -145,6 +152,14 @@
     onMembersChanged?.();
   }
 
+  async function generateInviteLink() {
+    await peopleApi.generateInviteLink(courseId);
+  }
+
+  async function toggleInviteLink(isRevoked: boolean) {
+    await peopleApi.toggleInviteLink(courseId, isRevoked);
+  }
+
   async function onSubmit() {
     if (!selectedTutors.length) {
       goto(resolve(page.url.pathname, {}));
@@ -176,6 +191,7 @@
     untrack(() => {
       activeTab = 'students';
       void loadStudents($currentOrg.id);
+      void peopleApi.getInviteLink(courseId);
     });
   });
 </script>
@@ -198,6 +214,9 @@
         </UnderlineTabs.Trigger>
         <UnderlineTabs.Trigger value="students">
           {$t(`${INVITE_MODAL}.invite_students`)}
+        </UnderlineTabs.Trigger>
+        <UnderlineTabs.Trigger value="link">
+          {$t('invite_link.tab_label')}
         </UnderlineTabs.Trigger>
       </UnderlineTabs.List>
 
@@ -232,6 +251,24 @@
           {/if}
 
           <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
+        </div>
+      </UnderlineTabs.Content>
+
+      <UnderlineTabs.Content value="link">
+        <div class="space-y-6">
+          <InviteLinkSection
+            link={inviteLink}
+            isRevoked={peopleApi.inviteLink?.isRevoked ?? false}
+            isLoading={peopleApi.isLoading}
+            joinCount={peopleApi.inviteLink?.joinCount}
+            descriptionKey="invite_link.course_description"
+            onGenerate={generateInviteLink}
+            onToggle={toggleInviteLink}
+          />
+
+          {#if $isStudentLimitReached}
+            <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
+          {/if}
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

@@ -1,16 +1,18 @@
 import { getFirstOrg, getOrgBySiteName, getOrgsByCustomDomain } from '$features/org/api/org.server';
 
-import type { AccountOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
+import { toPublicOrg } from '$features/app/public-org';
 import type { Cookies } from '@sveltejs/kit';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { env } from '$env/dynamic/private';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { isCustomDomainHost } from '$lib/utils/functions/custom-domain';
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 
 export interface OrgSiteInfo {
   isOrgSite: boolean;
-  org: AccountOrg | null;
+  org: PublicOrg | null;
   subdomain: string;
   orgSiteName: string;
 }
@@ -28,7 +30,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     const apiKeyHeaders = getApiKeyHeaders();
     const firstOrg = await getFirstOrg(apiKeyHeaders);
     if (firstOrg) {
-      response.org = firstOrg as AccountOrg;
+      response.org = toPublicOrg(firstOrg as AccountOrg);
       response.isOrgSite = true;
       response.orgSiteName = firstOrg.siteName || '';
       response.subdomain = '';
@@ -37,7 +39,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     return response;
   }
 
-  const isLocalHost = url.host.includes('localhost');
+  const isLocalHost = url.host.includes('localhost') || isLocalOrPrivateHost(url.hostname);
   const tempSiteName = url.searchParams.get('org');
 
   if (isLocalHost && tempSiteName) {
@@ -62,7 +64,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     }
 
     const org = orgs[0];
-    response.org = org as AccountOrg;
+    response.org = toPublicOrg(org as AccountOrg);
     response.isOrgSite = true;
     response.orgSiteName = response.org?.siteName || '';
     response.subdomain = subdomain;
@@ -84,7 +86,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     if (response.orgSiteName) {
       const apiKeyHeaders = getApiKeyHeaders();
       const org = await getOrgBySiteName(response.orgSiteName, apiKeyHeaders);
-      response.org = org ?? null;
+      response.org = org ? toPublicOrg(org as AccountOrg) : null;
     }
 
     const shouldDeleteCookie = !response.org && _orgSiteName;

@@ -1,0 +1,12 @@
+name = "cio-help-cms"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+workers_dev = true
+
+# GITHUB_CLIENT_SECRET is not set here — run `wrangler secret put GITHUB_CLIENT_SECRET` after deploy.
+[vars]
+GITHUB_CLIENT_ID = "Ov23li0S8ytfe0YicK1X"
+ALLOWED_ORIGINS = "https://classroomio.com,https://cio-help.digdippa.workers.dev"
+
+[observability]
+enabled = true

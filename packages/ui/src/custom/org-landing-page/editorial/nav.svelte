@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { NavItem } from '../types';
+  import { safeHref } from '../safe-href';
   import { Button } from '../../../base/button';
   import EditableLandingSection from '../editable-section.svelte';
 
@@ -39,7 +40,7 @@
           <nav class="ui:hidden ui:md:flex ui:gap-8">
             {#each navItems as item (item.href + item.label)}
               <a
-                href={item.href}
+                href={safeHref(item.href)}
                 class="ui:text-sm ui:transition-colors ui:no-underline ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:cursor-pointer"
               >
                 {item.label}
@@ -51,7 +52,7 @@
         <div class="ui:flex ui:items-center ui:gap-2.5">
           {#if authAction}
             <Button
-              href={authAction.href}
+              href={safeHref(authAction.href)}
               loading={authAction.loading}
               disabled={authAction.disabled}
               size="sm"

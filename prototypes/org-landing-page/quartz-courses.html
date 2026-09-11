@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>All courses &mdash; Quartz (org catalogue)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --canvas: #f3f3f4;
+        --card: #ffffff;
+        --ink: #111114;
+        --ink-2: #3a3a41;
+        --muted: #6e6e77;
+        --muted-2: #9a9aa3;
+        --rule: #e3e3e6;
+        --rule-soft: #ededf0;
+        --dark: #0d0d10;
+        --ok: #35c48b;
+        --shell: 1200px;
+        --nav-h: 58px;
+        --pad: 32px;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; scroll-padding-top: 78px; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: var(--canvas); color: var(--ink);
+        font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; cursor: pointer; }
+      h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.032em; line-height: 1.06; }
+      p { margin: 0; }
+      ul { margin: 0; padding: 0; list-style: none; }
+      img, svg { display: block; }
+
+      .frame { max-width: var(--shell); margin: 0 auto; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+      .pad { padding-left: var(--pad); padding-right: var(--pad); }
+      .rule-row { border-top: 1px solid var(--rule); }
+
+      /* ---------- nav ---------- */
+      .nav { position: sticky; top: 0; z-index: 60; background: color-mix(in oklab, var(--canvas) 84%, transparent); backdrop-filter: saturate(180%) blur(12px); }
+      .nav-in { max-width: var(--shell); margin: 0 auto; height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--pad); }
+      .logo { display: inline-flex; align-items: center; gap: 9px; font-weight: 600; font-size: 15px; letter-spacing: -0.022em; }
+      .logo i { width: 20px; height: 20px; border-radius: 6px; background: var(--ink); display: block; position: relative; flex: none; }
+      .logo i::after { content: ''; position: absolute; left: 5px; top: 5px; width: 10px; height: 10px; border-radius: 3px; background: var(--canvas); }
+      .nav-mid { display: flex; gap: 26px; }
+      .nav-mid a { font-size: 14px; color: var(--ink-2); }
+      .nav-mid a:hover { color: var(--ink); }
+
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        height: 34px; padding: 0 15px; border-radius: 8px; font-size: 13.5px; font-weight: 550;
+        border: 1px solid transparent; transition: background .16s, color .16s, border-color .16s;
+      }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-dark:hover { background: #2b2b33; }
+      .btn-line { border-color: var(--rule); background: var(--card); color: var(--ink); }
+      .btn-line:hover { background: #fafafb; }
+      .btn-lg { height: 44px; padding: 0 22px; font-size: 14.5px; border-radius: 10px; }
+      .btn-white { background: #fff; color: var(--ink); }
+      .btn-white:hover { background: #ececef; }
+
+      /* ---------- generative art ---------- */
+      .art { background: #fff; color: var(--ink); overflow: hidden; }
+      .ht { width: 100%; height: 100%; }
+
+      /* ---------- shared bits ---------- */
+      .eyebrow { font-size: 12px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted-2); }
+      .lede { font-size: 17px; line-height: 1.62; color: var(--muted); }
+      .arrow-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 550; }
+      .arrow-link svg { transition: transform .16s; }
+      a:hover > .arrow-link svg, .arrow-link:hover svg { transform: translateX(3px); }
+      .avatars { display: flex; align-items: center; gap: 8px; }
+      .av { width: 22px; height: 22px; border-radius: 50%; flex: none; }
+      .a1 { background: linear-gradient(140deg, #3ba7c9, #6fc26b); }
+      .a2 { background: linear-gradient(140deg, #8b8ff5, #54c9b6); }
+      .a3 { background: linear-gradient(140deg, #f0a05e, #e2688c); }
+      .av-name { font-size: 13px; color: var(--muted); }
+
+      /* ---------- footer ---------- */
+      footer { background: var(--card); border-top: 1px solid var(--rule); margin-top: 0; }
+      .foot { padding-top: 56px; padding-bottom: 34px; }
+      .foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 30px; padding-bottom: 46px; }
+      .foot-blurb { font-size: 13.5px; color: var(--muted); max-width: 30ch; margin-top: 14px; line-height: 1.6; }
+      .foot-col .h { font-size: 13.5px; font-weight: 600; margin-bottom: 14px; }
+      .foot-col a { display: block; font-size: 13.5px; color: var(--muted); padding: 4px 0; }
+      .foot-col a:hover { color: var(--ink); }
+      .socials { display: flex; gap: 12px; color: var(--muted); }
+      .socials a:hover { color: var(--ink); }
+      .foot-bottom {
+        display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+        border-top: 1px dashed var(--rule); padding-top: 22px; font-size: 13px; color: var(--muted-2);
+      }
+      .status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
+      .status i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); display: block; }
+
+      @media (max-width: 900px) {
+        :root { --pad: 20px; }
+        .nav-mid { display: none; }
+        .foot-grid { grid-template-columns: 1fr 1fr; }
+      }
+
+      /* ---------- quartz hero ---------- */
+      .q-hero { padding: 66px 0 30px; }
+      .q-hero .kicker { font-size: 13.5px; color: var(--muted); margin-bottom: 20px; }
+      .q-hero h1 { font-size: clamp(34px, 4.4vw, 50px); letter-spacing: -0.038em; max-width: 20ch; }
+      .q-hero h1 span { color: var(--muted-2); }
+      .q-hero .lede { margin-top: 18px; max-width: 56ch; }
+
+      .toolbar {
+        display: flex; align-items: center; justify-content: space-between; gap: 20px;
+        padding: 20px var(--pad); flex-wrap: wrap;
+      }
+      .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+      .chip { border: 0; background: transparent; border-radius: 999px; padding: 7px 15px; font-size: 13.5px; color: var(--muted); }
+      .chip:hover { color: var(--ink); background: rgba(0,0,0,.04); }
+      .chip.on { background: var(--ink); color: #fff; }
+      .tools { display: flex; align-items: center; gap: 10px; }
+      .search {
+        display: flex; align-items: center; gap: 9px; background: var(--card);
+        border: 1px solid var(--rule); border-radius: 9px; padding: 7px 10px; width: 250px; color: var(--muted-2);
+      }
+      .search input { border: 0; outline: 0; font: inherit; font-size: 13.5px; background: transparent; flex: 1; min-width: 0; color: var(--ink); }
+      .search kbd {
+        font: inherit; font-size: 11px; border: 1px solid var(--rule); border-radius: 5px;
+        padding: 1px 5px; color: var(--muted-2); background: #fafafb;
+      }
+      .icon-btn { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--rule); border-radius: 9px; background: var(--card); color: var(--muted); }
+      .icon-btn:hover { color: var(--ink); }
+
+      /* ---------- featured split ---------- */
+      .feature {
+        display: grid; grid-template-columns: 300px minmax(0, 1fr);
+        background: var(--card); border-top: 1px solid var(--rule);
+      }
+      .feature + .feature { border-top: 1px solid var(--rule); }
+      .feature .art { border-right: 1px solid var(--rule); }
+      .feature .art .ht { aspect-ratio: 4 / 3; }
+      .feature-body { padding: 30px 34px; display: flex; flex-direction: column; }
+      .feature-body .date { font-size: 13px; color: var(--muted-2); margin-bottom: 14px; }
+      .feature-body h2 { font-size: 25px; letter-spacing: -0.03em; margin-bottom: 10px; }
+      .feature-body p { font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 62ch; }
+      .feature-foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: auto; padding-top: 34px; }
+
+      /* ---------- cells ---------- */
+      .labelbar {
+        border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+        padding: 11px var(--pad); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-2);
+        background: var(--card);
+      }
+      .cells { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--card); }
+      .cell {
+        padding: 26px; display: flex; flex-direction: column; min-height: 260px;
+        border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+        transition: background .16s;
+      }
+      .cell:hover { background: #fafafb; }
+      .cell:nth-child(3n) { border-right: 0; }
+      .cell .date { font-size: 13px; color: var(--muted-2); margin-bottom: 12px; }
+      .cell h3 { font-size: 18px; letter-spacing: -0.026em; line-height: 1.25; margin-bottom: 10px; }
+      .cell p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+      .cell-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: auto; padding-top: 26px; }
+      .cell-foot .price { font-size: 13.5px; font-weight: 600; }
+      .cell-meta { display: flex; gap: 12px; font-size: 13px; color: var(--muted-2); }
+
+      .more-row { background: var(--card); border-bottom: 1px solid var(--rule); display: flex; justify-content: center; padding: 26px; }
+
+      /* ---------- course page ---------- */
+      .c-head { background: var(--card); border-bottom: 1px solid var(--rule); padding: 54px var(--pad) 0; text-align: center; }
+      .crumbs { font-size: 13px; color: var(--muted-2); margin-bottom: 22px; }
+      .crumbs a:hover { color: var(--ink); }
+      .c-head h1 { font-size: clamp(32px, 4.4vw, 50px); letter-spacing: -0.04em; max-width: 18ch; margin: 0 auto; }
+      .c-head .lede { max-width: 58ch; margin: 20px auto 0; }
+      .c-actions { display: flex; justify-content: center; gap: 10px; margin-top: 30px; }
+      .c-art { margin-top: 40px; border: 1px solid var(--rule); border-bottom: 0; }
+      .c-art .ht { aspect-ratio: 960 / 300; }
+      .c-byline {
+        display: flex; align-items: center; justify-content: space-between; gap: 20px;
+        padding: 16px var(--pad); background: var(--card); border-bottom: 1px solid var(--rule); font-size: 13px; color: var(--muted);
+      }
+
+      .c-body { display: grid; grid-template-columns: minmax(0, 1fr) 330px; background: var(--card); }
+      .c-main { border-right: 1px solid var(--rule); }
+      .c-sec { padding: 44px var(--pad); border-bottom: 1px solid var(--rule); }
+      .c-sec:last-child { border-bottom: 0; }
+      .c-sec h2 { font-size: 24px; letter-spacing: -0.03em; margin: 10px 0 20px; }
+      .c-sec p { font-size: 16px; line-height: 1.72; color: var(--ink-2); max-width: 64ch; }
+      .c-sec p + p { margin-top: 14px; }
+
+      .outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+      .outcomes li { display: flex; gap: 12px; padding: 13px 0; border-top: 1px solid var(--rule-soft); font-size: 15px; color: var(--ink-2); }
+      .outcomes li .n { font-size: 12px; color: var(--muted-2); font-variant-numeric: tabular-nums; padding-top: 3px; }
+
+      .mods { border-top: 1px solid var(--rule); }
+      .mod-head { width: 100%; display: flex; align-items: center; gap: 14px; padding: 16px 0; background: none; border: 0; border-bottom: 1px solid var(--rule); text-align: left; }
+      .mod-head .n { font-size: 12px; color: var(--muted-2); font-variant-numeric: tabular-nums; width: 22px; }
+      .mod-head .t { font-size: 16px; font-weight: 550; flex: 1; letter-spacing: -0.02em; }
+      .mod-head .m { font-size: 13px; color: var(--muted-2); }
+      .mod-head .chev { color: var(--muted-2); transition: transform .18s; }
+      .mod.open .chev { transform: rotate(180deg); }
+      .mod-body { display: none; padding: 4px 0 12px 36px; border-bottom: 1px solid var(--rule); }
+      .mod.open .mod-body { display: block; }
+      .lesson { display: flex; align-items: center; gap: 12px; padding: 10px 0; font-size: 14.5px; color: var(--ink-2); }
+      .lesson + .lesson { border-top: 1px solid var(--rule-soft); }
+      .lesson .dur { margin-left: auto; font-size: 13px; color: var(--muted-2); }
+
+      .chips-static { display: flex; flex-wrap: wrap; gap: 7px; }
+      .chips-static span { border: 1px solid var(--rule); border-radius: 999px; padding: 6px 13px; font-size: 13px; color: var(--ink-2); }
+
+      .tutor { display: flex; gap: 18px; }
+      .tutor .ph { width: 56px; height: 56px; border-radius: 14px; flex: none; background: linear-gradient(140deg, #3ba7c9, #6fc26b); }
+      .tutor h3 { font-size: 17px; }
+      .tutor .role { font-size: 13.5px; color: var(--muted); margin: 3px 0 10px; }
+
+      .revs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 6px; }
+      .rev { padding: 20px 24px 20px 0; border-top: 1px solid var(--rule-soft); }
+      .rev:nth-child(odd) { border-right: 1px solid var(--rule-soft); padding-right: 24px; }
+      .rev:nth-child(even) { padding-left: 24px; }
+      .rev q { display: block; quotes: none; font-size: 15px; line-height: 1.62; color: var(--ink-2); margin: 10px 0 14px; }
+      .stars { display: inline-flex; gap: 2px; color: var(--ink); }
+
+      .rail { position: sticky; top: calc(var(--nav-h) + 20px); align-self: start; }
+      .rail-in { padding: 30px 28px; }
+      .price { font-size: 40px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+      .price small { font-size: 15px; font-weight: 400; color: var(--muted-2); text-decoration: line-through; margin-left: 10px; letter-spacing: 0; }
+      .rail .note { font-size: 13.5px; color: var(--muted); margin: 12px 0 22px; }
+      .rail .btn { width: 100%; }
+      .rail .btn + .btn { margin-top: 9px; }
+      .facts { margin-top: 26px; border-top: 1px solid var(--rule); }
+      .facts div { display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; font-size: 13.5px; border-bottom: 1px solid var(--rule-soft); }
+      .facts div span:first-child { color: var(--muted); }
+      .facts div span:last-child { font-weight: 550; }
+
+      @media (max-width: 980px) {
+        .feature { grid-template-columns: 1fr; }
+        .feature .art { border-right: 0; border-bottom: 1px solid var(--rule); }
+        .cells { grid-template-columns: 1fr; }
+        .cell { border-right: 0 !important; }
+        .c-body { grid-template-columns: 1fr; }
+        .c-main { border-right: 0; }
+        .outcomes, .revs { grid-template-columns: 1fr; }
+        .rev { border-right: 0 !important; padding: 20px 0 !important; }
+        .rail { position: static; }
+      }
+
+      /* ---------- home: selected courses ---------- */
+      .hero-acts { display: flex; gap: 10px; margin-top: 30px; }
+      .browse-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+        padding: 30px var(--pad); background: var(--card); border-bottom: 1px solid var(--rule);
+      }
+      .browse-row .t { font-size: 19px; letter-spacing: -0.028em; font-weight: 600; }
+      .browse-row .s { font-size: 14px; color: var(--muted); margin-top: 5px; }
+
+      /* ---------- courses index page ---------- */
+      .idx-head { padding: 60px var(--pad) 30px; }
+      .idx-head h1 { font-size: clamp(32px, 4.2vw, 46px); letter-spacing: -0.04em; }
+      .idx-head .lede { margin-top: 16px; max-width: 56ch; }
+      .toolbar.sticky { position: sticky; top: var(--nav-h); z-index: 40; background: color-mix(in oklab, var(--canvas) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+
+      /* ---------- course media frame ---------- */
+      .c-media { padding: 38px var(--pad) 0; display: flex; justify-content: center; }
+      .c-head { padding-bottom: 44px; }
+      .mframe {
+        margin: 0; width: 100%; max-width: 720px; background: #fafafb;
+        border: 1px solid var(--rule); overflow: hidden;
+      }
+      .mframe .mbox { aspect-ratio: 16 / 9; position: relative; overflow: hidden; }
+      .mframe.k-square { max-width: 420px; }
+      .mframe.k-square .mbox { aspect-ratio: 1 / 1; }
+      .mframe.k-portrait { max-width: 360px; }
+      .mframe.k-portrait .mbox { aspect-ratio: 3 / 4; }
+      .mframe .fill { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .mframe .fill.art { background: #fff; color: var(--ink); }
+      .mframe .fill.art .ht { width: 100%; height: 100%; object-fit: cover; }
+      .mframe .poster { display: grid; place-items: center; background: linear-gradient(152deg, #15161c, #2c2f3c 62%, #3d4152); }
+      .play {
+        width: 54px; height: 54px; border-radius: 50%; background: #fff; color: var(--ink);
+        display: grid; place-items: center; box-shadow: 0 12px 34px rgba(0,0,0,.4);
+      }
+      .mcap {
+        display: flex; align-items: center; justify-content: space-between; gap: 14px;
+        border-top: 1px solid var(--rule); background: var(--card);
+        padding: 9px 13px; font-size: 12.5px; color: var(--muted-2);
+      }
+      .mcap .dot { display: inline-flex; align-items: center; gap: 7px; }
+      .mcap .dot i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted-2); display: block; }
+
+      /* prototype-only control, not part of the template */
+      .proto {
+        display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
+        padding: 16px var(--pad) 0; font-size: 12px; color: var(--muted-2);
+      }
+      .proto .lab { letter-spacing: .09em; text-transform: uppercase; }
+      .proto button {
+        border: 1px dashed var(--rule); background: transparent; color: var(--muted);
+        border-radius: 999px; padding: 5px 12px; font-size: 12.5px;
+      }
+      .proto button:hover { color: var(--ink); }
+      .proto button.on { border-style: solid; background: var(--ink); color: #fff; border-color: var(--ink); }
+
+      @media (max-width: 980px) {
+        .browse-row { align-items: flex-start; }
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="nav-in">
+        <a class="logo" href="quartz.html"><i></i> SMI Consulting</a>
+        <nav class="nav-mid">
+          <a href="quartz.html#catalog">Courses</a><a href="#">Learning paths</a><a href="#">Pricing</a><a href="#">Company</a>
+        </nav>
+        <a class="btn btn-dark" href="#">Continue <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+
+    <div class="frame">
+      <header class="idx-head pad">
+        <div class="crumbs" style="font-size:13px;color:var(--muted-2);margin-bottom:18px">
+          <a href="quartz.html">Home</a> / Courses
+        </div>
+        <h1>All courses</h1>
+        <p class="lede">
+          Sette percorsi su compliance, sicurezza, qualit&agrave; e ambiente, aggiornati a ogni
+          revisione delle norme di riferimento.
+        </p>
+      </header>
+
+      <div class="toolbar sticky rule-row">
+        <div class="chips">
+          <button class="chip on">All</button><button class="chip">Compliance</button>
+          <button class="chip">Sicurezza</button><button class="chip">Qualit&agrave;</button>
+          <button class="chip">Ambiente</button>
+        </div>
+        <div class="tools">
+          <div class="search">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input placeholder="Search courses..." aria-label="Search courses" />
+            <kbd>&#8984;</kbd><kbd>K</kbd>
+          </div>
+          <a class="icon-btn" href="#" aria-label="RSS">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="labelbar">7 courses</div>
+      <div class="cells">
+          <a class="cell" href="quartz-course.html">
+            <div class="date">Updated 29 August 2026</div>
+            <h3>Sistemi di gestione</h3>
+            <p>Modulo formativo dedicato ai sistemi di gestione aziendali, dedicato a normative ISO, certificazioni e compliance.</p>
+            <div class="cell-foot">
+              <span class="cell-meta"><span>8 lessons</span><span>Self-paced</span></span>
+              <span class="price">Free</span>
+            </div>
+          </a>
+          <a class="cell" href="quartz-course.html">
+            <div class="date">Updated 29 August 2026</div>
+            <h3>Sicurezza sul lavoro &mdash; base</h3>
+            <p>Obblighi del datore di lavoro, valutazione dei rischi e formazione obbligatoria secondo il D.Lgs. 81/08.</p>
+            <div class="cell-foot">
+              <span class="cell-meta"><span>12 lessons</span><span>Self-paced</span></span>
+              <span class="price">&euro;149</span>
+            </div>
+          </a>
+          <a class="cell" href="quartz-course.html">
+            <div class="date">Updated 29 August 2026</div>
+            <h3>ISO 14001 in pratica</h3>
+            <p>Progettare un sistema di gestione ambientale che superi l&rsquo;audit e resti utile all&rsquo;organizzazione.</p>
+            <div class="cell-foot">
+              <span class="cell-meta"><span>10 lessons</span><span>Cohort</span></span>
+              <span class="price">&euro;249</span>
+            </div>
+          </a>
+          <a class="cell" href="quartz-course.html">
+            <div class="date">Updated 29 August 2026</div>
+            <h3>Audit interni ISO 9001</h3>
+            <p>Pianificare, condurre e documentare audit interni efficaci, con checklist e template riusabili.</p>
+            <div class="cell-foot">
+              <span class="cell-meta"><span>9 lessons</span><span>Self-paced</span></span>
+              <span class="price">&euro;199</span>
+            </div>
+          </a>
+          <a class="cell" href="quartz-course.html">
+            <div class="date">Updated 29 August 2026</div>
+            <h3>GDPR per le PMI</h3>
+            <p>Registro dei trattamenti, informative e misure di sicurezza spiegati senza gergo legale.</p>
+            <div class="cell-foot">
+              <span class="cell-meta"><span>6 lessons</span><span>Self-paced</span></span>
+              <span class="price">Free</span>
+            </div>
+          </a>
+          <a class="cell" href="quartz-course.html">
+            <div class="date">Updated 29 August 2026</div>
+            <h3>Indicatori e miglioramento continuo</h3>
+            <p>Scegliere KPI che l&rsquo;organizzazione usa davvero e collegarli al ciclo di miglioramento.</p>
+            <div class="cell-foot">
+              <span class="cell-meta"><span>7 lessons</span><span>Self-paced</span></span>
+              <span class="price">&euro;129</span>
+            </div>
+          </a>
+      </div>
+      <div class="more-row"><a class="btn btn-line btn-lg" href="#">Load more</a></div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.chip').forEach(function (c) {
+        c.addEventListener('click', function () {
+          document.querySelectorAll('.chip').forEach(function (x) { x.classList.remove('on'); });
+          c.classList.add('on');
+        });
+      });
+    </script>
+
+    <footer>
+      <div class="frame pad foot">
+        <div class="foot-grid">
+          <div>
+            <a class="logo" href="quartz.html"><i></i> SMI Consulting</a>
+            <p class="foot-blurb">Consulenza e formazione su sistemi di gestione, compliance e sicurezza dal 2009.</p>
+          </div>
+          <div class="foot-col">
+            <div class="h">Learn</div>
+            <a href="quartz.html#catalog">All courses</a><a href="#">Learning paths</a><a href="#">Certificates</a><a href="#">Pricing</a>
+          </div>
+          <div class="foot-col">
+            <div class="h">Company</div>
+            <a href="#">About</a><a href="#">Consulting</a><a href="#">Careers</a><a href="#">Contact</a>
+          </div>
+          <div class="foot-col">
+            <div class="h">Community</div>
+            <div class="socials">
+              <a href="#" aria-label="X"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7 8 8.2 12h-6.4l-5-7.3-5.8 7.3H2.9l7.5-8.6L2.5 2h6.6l4.5 6.6L18.9 2Zm-1.1 18h1.8L7.3 3.9H5.4L17.8 20Z"/></svg></a>
+              <a href="#" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21.4 8.65 22 11 22 14.1V21h-4v-6.1c0-1.45-.03-3.3-2.02-3.3-2.02 0-2.33 1.57-2.33 3.2V21h-4V9Z"/></svg></a>
+            </div>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          <span>&copy; 2026 SMI Consulting, all rights reserved</span>
+          <span class="status"><i></i> All systems normal</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

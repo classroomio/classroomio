@@ -26,7 +26,7 @@ import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
-import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
+import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
 import { newsfeedCommentAuthorOnlyMiddleware } from '@api/middlewares/newsfeed-comment-author-only';
 import { newsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/newsfeed-comment-author-or-team';
@@ -61,7 +61,7 @@ export const newsfeedRouter = new Hono()
       const courseId = c.req.param('courseId')!;
       const data = c.req.valid('json');
 
-      const groupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, user.id);
+      const groupMemberId = await ensureCourseGroupMemberId(courseId, user.id);
       if (!groupMemberId) {
         return c.json({ success: false, error: 'User is not a member of this course' }, 403);
       }
@@ -161,7 +161,7 @@ export const newsfeedRouter = new Hono()
         const { feedId } = c.req.valid('param');
         const { content, parentId } = c.req.valid('json');
 
-        const groupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, user.id);
+        const groupMemberId = await ensureCourseGroupMemberId(courseId, user.id);
         if (!groupMemberId) {
           return c.json({ success: false, error: 'User is not a member of this course' }, 403);
         }

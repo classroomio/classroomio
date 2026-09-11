@@ -23,6 +23,7 @@ export { default as LessonIcon } from './lesson.svelte';
 export { default as MarksIcon } from './marks.svelte';
 export { default as MoneyIcon } from './money.svelte';
 export { default as NewsFeedIcon } from './news-feed.svelte';
+export { default as PathIcon } from './path.svelte';
 export { default as PeopleIcon } from './people.svelte';
 export { default as PersonIcon } from './person.svelte';
 export { default as PremiumIcon } from './premium.svelte';

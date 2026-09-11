@@ -800,10 +800,16 @@ export async function publishCourseImportDraftService(
         throw new AppError('Referenced lesson was not created', ErrorCodes.VALIDATION_ERROR, 400);
       }
 
-      await upsertLessonLanguageService(lessonId, {
-        locale: lessonLanguage.locale as TLocale,
-        content: lessonLanguage.content
-      });
+      await upsertLessonLanguageService(
+        lessonId,
+        {
+          locale: lessonLanguage.locale as TLocale,
+          content: lessonLanguage.content
+        },
+        // Imported content is a milestone, not an autosave: keep it forever and
+        // don't let a later edit fold into it.
+        { versionIntent: 'manual' }
+      );
     }
 
     let createdExercises = 0;
@@ -976,17 +982,24 @@ export async function publishCourseImportDraftToExistingCourseService(
 
       const languageKey = `${lessonId}:${lessonLanguage.locale}`;
       if (existingLessonLanguageMap.has(languageKey)) {
-        await updateLessonLanguageService(lessonId, lessonLanguage.locale as TLocale, {
-          content: lessonLanguage.content
-        });
+        await updateLessonLanguageService(
+          lessonId,
+          lessonLanguage.locale as TLocale,
+          { content: lessonLanguage.content },
+          { versionIntent: 'manual' }
+        );
         updatedLessonLanguages += 1;
         continue;
       }
 
-      await upsertLessonLanguageService(lessonId, {
-        locale: lessonLanguage.locale as TLocale,
-        content: lessonLanguage.content
-      });
+      await upsertLessonLanguageService(
+        lessonId,
+        {
+          locale: lessonLanguage.locale as TLocale,
+          content: lessonLanguage.content
+        },
+        { versionIntent: 'manual' }
+      );
       createdLessonLanguages += 1;
     }
 

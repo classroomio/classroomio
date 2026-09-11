@@ -1,8 +1,6 @@
 ---
 title: How the Admin Dashboard Works
 description: What each number on your organization dashboard means, how it is calculated, and how quickly it updates.
-sidebar:
-  order: 1
 ---
 
 The **admin dashboard** is the first page you see after signing in as an admin or tutor. It is a snapshot of your organization: how many courses you have, how many students are enrolled, who recently earned a certificate, and which courses are furthest along.
@@ -15,14 +13,14 @@ This page is an overview. For a single course’s students, grades, and progress
 
 These cards sit at the top of the dashboard.
 
-| Card | What it counts | What it does not count |
-| --- | --- | --- |
-| **Certificates issued** | Every certificate a student has earned on an **active** course | Certificates on deleted courses. The same student earning two course certificates counts as two |
-| **Number of courses** | **Active** courses in this organization | Deleted courses. Draft or unpublished courses still count if they have not been deleted |
-| **Total students** | Unique students enrolled in at least one **active** course | Tutors and admins. Organization audience members who are not in a course. The same person in several courses still counts as one |
+| Card                    | What it counts                                                 | What it does not count                                                                                                           |
+| ----------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Certificates issued** | Every certificate a student has earned on an **active** course | Certificates on deleted courses. The same student earning two course certificates counts as two                                  |
+| **Number of courses**   | **Active** courses in this organization                        | Deleted courses. Draft or unpublished courses still count if they have not been deleted                                          |
+| **Total students**      | Unique students enrolled in at least one **active** course     | Tutors and admins. Organization audience members who are not in a course. The same person in several courses still counts as one |
 
 :::info[Students vs audience]
-**Total students** is course enrollments, not your full audience list. Someone you imported into Audience but never enrolled in a course will not appear here. See [How Course Enrollment Works](/enrollment-and-students/course-enrollment).
+**Total students** is course enrollments, not your full audience list. Someone you imported into Audience but never enrolled in a course will not appear here. See [How Course Enrollment Works](/manage-students/course-enrollment).
 :::
 
 ## Top courses
@@ -31,11 +29,11 @@ This list shows up to **five** active courses, ranked by how much lesson progres
 
 Each row includes:
 
-| Field | Meaning |
-| --- | --- |
-| **Students** | How many students are enrolled in that course |
+| Field          | Meaning                                                                                                                                                         |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Students**   | How many students are enrolled in that course                                                                                                                   |
 | **Completion** | Share of lessons finished across those students. If a course has 10 lessons and 2 students, there are 20 possible completions. Ten finished lessons show as 50% |
-| **Certified** | Share of enrolled students who have earned a certificate for that course |
+| **Certified**  | Share of enrolled students who have earned a certificate for that course                                                                                        |
 
 A few things this bar does **not** include:
 
@@ -49,7 +47,7 @@ If every course has zero lesson completions, the list can look quiet even when e
 
 The five most recent students who earned a certificate on an active course, with the course name and when they earned it.
 
-A name appears here only after the student meets that course’s certificate rules — not when they finish a single lesson. Configure those rules in [Create Certificates](/build-a-course/certificates).
+A name appears here only after the student meets that course’s certificate rules — not when they finish a single lesson. Configure those rules in [Create Certificates](/create-and-deliver/certificates).
 
 ## Student login activity
 
@@ -63,15 +61,15 @@ The dashboard is a **snapshot**, not a live ticker. ClassroomIO keeps that snaps
 
 Some changes skip the wait and refresh the snapshot right away:
 
-| What you (or a student) just did | Dashboard updates |
-| --- | --- |
-| Create, delete, or change a course’s status | Immediately |
-| Enroll or unenroll a student | Immediately |
-| Change someone’s role to or from student | Immediately |
-| A student earns a certificate | Immediately |
-| Reset a student’s course progress | Immediately |
-| A student marks a lesson complete | Within 10 minutes |
-| Students log in | Login chart: within about a day |
+| What you (or a student) just did            | Dashboard updates               |
+| ------------------------------------------- | ------------------------------- |
+| Create, delete, or change a course’s status | Immediately                     |
+| Enroll or unenroll a student                | Immediately                     |
+| Change someone’s role to or from student    | Immediately                     |
+| A student earns a certificate               | Immediately                     |
+| Reset a student’s course progress           | Immediately                     |
+| A student marks a lesson complete           | Within 10 minutes               |
+| Students log in                             | Login chart: within about a day |
 
 That is why creating a course should bump **Number of courses** as soon as you return to the dashboard, while a lesson completion may take a few minutes to move the **Completion** bar.
 
@@ -96,7 +94,7 @@ Certificates need to be enabled for your plan, and the student must meet that co
 ## Related guides
 
 - [Create Your First Course](/get-started/create-first-course)
-- [How Course Enrollment Works](/enrollment-and-students/course-enrollment)
-- [Create Certificates](/build-a-course/certificates)
-- [Control Course Progression](/build-a-course/course-progression)
+- [How Course Enrollment Works](/manage-students/course-enrollment)
+- [Create Certificates](/create-and-deliver/certificates)
+- [Control Course Progression](/create-and-deliver/course-progression)
 - [Student Dashboard](/reference/student-dashboard) — what learners see after they sign in

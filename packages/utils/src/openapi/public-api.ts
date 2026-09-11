@@ -163,8 +163,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 const OPERATION_TAGS = [
   {
     name: 'Public API Audience',
-    description:
-      "Manage your organization's audience — invite, assign to courses, update, and remove members."
+    description: "Manage your organization's audience — invite, assign to courses, update, and remove members."
   },
   {
     name: 'Public API Courses',

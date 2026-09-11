@@ -19,3 +19,5 @@ export * from './cohort';
 export * from './widget';
 export * from './jobs';
 export * from './media-transcript';
+export * from './invite-link';
+export * from './youtube-caption';

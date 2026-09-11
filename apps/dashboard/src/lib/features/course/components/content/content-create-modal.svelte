@@ -165,7 +165,11 @@
         <!-- Select a content type - Section | Lesson | Exercise -->
         <div class="flex flex-col gap-3">
           <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
-          <RadioOptionCardGroup options={contentOptionsForGroup} bind:value={selectedType} class="md:grid-cols-3" />
+          <RadioOptionCardGroup
+            options={contentOptionsForGroup}
+            bind:value={selectedType}
+            class={contentOptionsForGroup.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}
+          />
           <Dialog.Footer>
             <Button onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
           </Dialog.Footer>

@@ -28,6 +28,7 @@
     corporate: 'chapters',
     terminal: 'chapters',
     editorial: 'chapters',
+    quartz: 'accordion',
     vibrant: 'chapters'
   };
 

@@ -8,7 +8,8 @@ export type OrgLandingPageTheme =
   | 'corporate'
   | 'terminal'
   | 'editorial'
-  | 'vibrant';
+  | 'vibrant'
+  | 'quartz';
 
 export interface OrgLandingPageNavItem {
   label: string;
@@ -117,6 +118,8 @@ export interface OrgLandingPageHero {
   };
   image?: string;
   stats?: OrgLandingPageHeroStat[];
+  /** Small kicker above the heading. Used by templates that render one (e.g. Tech). */
+  eyebrow?: string;
 }
 
 export interface OrgLandingPageJson {

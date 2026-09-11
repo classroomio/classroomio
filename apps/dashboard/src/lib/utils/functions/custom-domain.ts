@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 
 /**
  * True when a request arrived on a customer's BYOD domain rather than a host we
@@ -6,7 +7,7 @@ import { env } from '$env/dynamic/private';
  * Worker, so they need proxy-specific response handling.
  */
 export function isCustomDomainHost(url: URL): boolean {
-  if (url.host.includes('localhost')) {
+  if (url.host.includes('localhost') || isLocalOrPrivateHost(url.hostname)) {
     return false;
   }
 

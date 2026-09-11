@@ -19,11 +19,22 @@ import { dev } from '$app/environment';
 // uses `authServerClient` for that), but Better Auth's constructor still
 // validates baseURL with `new URL(...)`, so we hand it the public API
 // URL as an absolute-URL placeholder.
+function isLocalhost(hostname: string): boolean {
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]' || hostname === '::1';
+}
+
 function resolveBaseURL() {
   if (typeof window === 'undefined') {
     return env.PUBLIC_SERVER_URL || 'http://localhost:3002';
   }
   if (dev) {
+    // When accessed from mobile or a LAN network host (e.g. 192.168.x.x),
+    // the remote client cannot reach localhost:3002. Furthermore, calling
+    // localhost:3002 would set cookies on localhost rather than the current origin.
+    // Always use the same-origin proxy for non-localhost hosts.
+    if (!isLocalhost(window.location.hostname)) {
+      return `${window.location.origin}/api/auth`;
+    }
     return env.PUBLIC_SERVER_URL || `${window.location.origin}/api/auth`;
   }
   if (env.PUBLIC_IS_SELFHOSTED === 'true') {

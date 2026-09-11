@@ -67,7 +67,7 @@
 {/snippet}
 
 {#snippet themetoggle()}
-  <DropdownMenu.Label class="p-0 font-normal">
+  <DropdownMenu.Label class="font-normal">
     <ThemeToggle />
   </DropdownMenu.Label>
 {/snippet}

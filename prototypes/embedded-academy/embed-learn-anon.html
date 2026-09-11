@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Academy index (anonymous) · Embedded Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="host">
+      <aside class="host-side">
+        <div class="host-brand"><span class="mk">N</span>Northwind</div>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Product tour</a>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/></svg>Pricing</a>
+        <div class="host-sec">Resources</div>
+        <a class="host-nav on" href="embed-learn-anon.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Learn</a>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Help center</a>
+        <div class="host-foot"><span class="av" style="background: var(--host-line); color: var(--host-muted)">?</span><div><div class="nm">Not signed in</div><div class="rl">Public visitor</div></div></div>
+      </aside>
+
+      <main class="host-main">
+        <div class="embed-wrap" id="embed">
+          <div class="ac">
+            <div class="ac-page">
+              <h1 class="ac-h1">Learn</h1>
+              <p class="ac-lead">Courses, tutorials, and use cases from the Northwind Academy.</p>
+
+              <!-- continue_learning renders nothing here and collapses without leaving a gap -->
+
+              <section class="ac-sec">
+                <h2 class="ac-h2">Featured courses</h2>
+                <p class="ac-sub">Self-paced, multi-lesson courses from the Northwind Academy.</p>
+                <div class="ac-sec-body ac-rows">
+                  <a class="ac-row" href="embed-course.html">
+                    <div class="thumb" style="background: var(--ac-tint-a)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7h-9M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></div>
+                    <div>
+                      <div class="ac-eyebrow">Course</div>
+                      <h3>Automations for Support Teams</h3>
+                      <p>Route, escalate, and resolve tickets automatically: build your first workflow, add conditions, and measure what it saved you.</p>
+                    </div>
+                    <span class="ac-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </a>
+                  <a class="ac-row" href="embed-course.html">
+                    <div class="thumb" style="background: var(--ac-tint-b)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                    <div>
+                      <div class="ac-eyebrow">Course</div>
+                      <h3>Northwind 101</h3>
+                      <p>Everything you need for your first week: workspaces, records, views, and the shortcuts experienced teams rely on.</p>
+                    </div>
+                    <span class="ac-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </a>
+                </div>
+              </section>
+
+              <section class="ac-sec">
+                <h2 class="ac-h2">Getting started</h2>
+                <p class="ac-sub">Short tutorials on the basics, a few minutes each.</p>
+                <div class="ac-sec-body ac-grid">
+                  <a class="ac-card" href="embed-course.html"><div class="shot" style="background: var(--ac-tint-a)"><span class="dur">4 min</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="body"><div class="ac-eyebrow">Tutorial</div><h4>Set up your first workspace in three steps</h4></div></a>
+                  <a class="ac-card" href="embed-course.html"><div class="shot" style="background: var(--ac-tint-b)"><span class="dur">4 min</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v12H5.17L4 17.17z"/></svg></div><div class="body"><div class="ac-eyebrow">Tutorial</div><h4>Delegating your first task to a teammate</h4></div></a>
+                  <a class="ac-card" href="embed-course.html"><div class="shot" style="background: var(--ac-tint-c)"><span class="dur">6 min</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></div><div class="body"><div class="ac-eyebrow">Tutorial</div><h4>Getting started with connectors</h4></div></a>
+                </div>
+              </section>
+
+              <section class="ac-sec">
+                <h2 class="ac-h2">Browse by role</h2>
+                <p class="ac-sub">Courses and use cases for the kind of work you do.</p>
+                <div class="ac-sec-body ac-cats">
+                  <a class="ac-cat" href="embed-category.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="nm">Engineering</span></a>
+                  <a class="ac-cat" href="embed-category.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span class="nm">Marketing</span></a>
+                  <a class="ac-cat" href="embed-category.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg></span><span class="nm">Sales</span></a>
+                  <a class="ac-cat" href="embed-category.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9"/></svg></span><span class="nm">Product</span></a>
+                </div>
+              </section>
+
+              <div class="ac-sec">
+                <div class="ac-note">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  <div>No learner identity was supplied by the host page, so progress, <b>Jump back in</b>, and <b>For you</b> are hidden. Enrolling prompts sign-in on the academy. This is also the state the runtime falls back to when the overlay request fails.</div>
+                </div>
+              </div>
+
+              <div class="ac-sec" style="text-align: center; font-size: 12px; color: var(--ac-muted)">Powered by ClassroomIO</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on">Anonymous</button>
+      <a class="btn btn-sm btn-ghost" href="embed-learn.html">Signed in →</a>
+      <span class="lbl">View</span>
+      <button onclick="document.getElementById('embed').classList.toggle('show-bounds')">Bounds</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+    <script>
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

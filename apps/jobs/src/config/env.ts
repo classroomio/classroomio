@@ -31,7 +31,12 @@ const envSchema = z.object({
   AGENT_COURSE_GENERATION_WORKER_CONCURRENCY: z.string().optional(),
 
   /** Optional OpenAI key — when unset, transcribe-audio jobs no-op and OpenAI-backed agent runs fail config checks. */
-  OPENAI_API_KEY: z.string().optional()
+  OPENAI_API_KEY: z.string().optional(),
+
+  /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcript jobs. */
+  SUPADATA_API_KEY: z.string().optional(),
+  /** YouTube caption provider identifier (default 'supadata'). */
+  YOUTUBE_CAPTION_PROVIDER: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

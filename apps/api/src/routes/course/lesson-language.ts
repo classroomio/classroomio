@@ -92,10 +92,15 @@ export const lessonLanguageRouter = new Hono()
     zValidator('json', ZLessonLanguageCreate),
     async (c) => {
       try {
+        const user = c.get('user')!;
         const { lessonId } = c.req.valid('param');
-        const data = c.req.valid('json');
+        const { versionIntent, versionLabel, ...data } = c.req.valid('json');
 
-        const language = await upsertLessonLanguageService(lessonId, data);
+        const language = await upsertLessonLanguageService(lessonId, data, {
+          authorId: user.id,
+          versionIntent,
+          versionLabel
+        });
 
         return c.json(
           {
@@ -122,10 +127,15 @@ export const lessonLanguageRouter = new Hono()
     zValidator('json', ZLessonLanguageUpdate),
     async (c) => {
       try {
+        const user = c.get('user')!;
         const { lessonId, locale } = c.req.valid('param');
-        const data = c.req.valid('json');
+        const { versionIntent, versionLabel, ...data } = c.req.valid('json');
 
-        const language = await updateLessonLanguageService(lessonId, locale as TLocale, data);
+        const language = await updateLessonLanguageService(lessonId, locale as TLocale, data, {
+          authorId: user.id,
+          versionIntent,
+          versionLabel
+        });
 
         return c.json(
           {

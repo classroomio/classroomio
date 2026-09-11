@@ -11,7 +11,7 @@ import {
   TNewCourseSection,
   TProfile
 } from '@db/types';
-import { and, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -116,7 +116,7 @@ export const getPublishedCoursesBySiteName = async (
           .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
           .where(and(...conditions))
           .groupBy(schema.course.id)
-          .orderBy(desc(schema.course.createdAt))
+          .orderBy(asc(schema.course.displayOrder), desc(schema.course.createdAt))
           .limit(limit)
           .offset(offset ?? 0)
       : await db
@@ -131,7 +131,7 @@ export const getPublishedCoursesBySiteName = async (
           .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
           .where(and(...conditions))
           .groupBy(schema.course.id)
-          .orderBy(desc(schema.course.createdAt));
+          .orderBy(asc(schema.course.displayOrder), desc(schema.course.createdAt));
 
     return result.map((row) => ({
       ...row.course,
@@ -198,6 +198,53 @@ export const countPublishedCoursesBySiteName = async (
     throw new Error(
       `Failed to count courses by site name "${siteName}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+};
+
+/**
+ * Reorders courses for an organization
+ * @param orgId Organization ID the courses must belong to
+ * @param orders Array of course IDs with their new display positions
+ * @throws Error if any course does not belong to the organization
+ */
+export const reorderOrgCourses = async (orgId: string, orders: { id: string; order: number }[]) => {
+  try {
+    const courseIds = orders.map(({ id }) => id);
+
+    await db.transaction(async (tx) => {
+      const allOrgCourses = await tx
+        .select({ id: schema.course.id })
+        .from(schema.course)
+        .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+        .where(eq(schema.group.organizationId, orgId));
+
+      const allOrgCourseIds = allOrgCourses.map((course) => course.id);
+      const allOrgCourseIdSet = new Set(allOrgCourseIds);
+
+      const invalidId = courseIds.find((id) => !allOrgCourseIdSet.has(id));
+      if (invalidId) {
+        throw new Error(`Course ${invalidId} does not belong to this organization`);
+      }
+
+      await Promise.all(
+        orders.map(({ id, order }) =>
+          tx.update(schema.course).set({ displayOrder: order }).where(eq(schema.course.id, id))
+        )
+      );
+
+      const selectedIds = new Set(courseIds);
+      const deselectedIds = allOrgCourseIds.filter((id) => !selectedIds.has(id));
+
+      if (deselectedIds.length > 0) {
+        await tx
+          .update(schema.course)
+          .set({ displayOrder: null })
+          .where(and(inArray(schema.course.id, deselectedIds), isNotNull(schema.course.displayOrder)));
+      }
+    });
+  } catch (error) {
+    console.error('reorderOrgCourses error:', error);
+    throw new Error(`Failed to reorder courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 
@@ -1406,6 +1453,26 @@ export async function getCourseGroupIds(courseIds: string[], dbClient: DbOrTxCli
   } catch (error) {
     console.error('getCourseGroupIds error:', error);
     throw new Error(`Failed to get course group IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Locks the course row so a concurrent status change can't slip past an accept in progress. */
+export async function lockCourseStatusForAccept(
+  dbClient: DbOrTxClient,
+  courseId: string
+): Promise<{ status: string; groupId: string | null } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ status: schema.course.status, groupId: schema.course.groupId })
+      .from(schema.course)
+      .where(eq(schema.course.id, courseId))
+      .limit(1)
+      .for('update');
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockCourseStatusForAccept error:', error);
+    throw new Error(`Failed to lock course: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

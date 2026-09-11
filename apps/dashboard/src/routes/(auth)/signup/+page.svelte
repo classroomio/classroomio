@@ -21,6 +21,7 @@
   import { buildSsoRedirectUrl, createSsoEmailChecker, type SsoAuthState } from '$features/auth/utils/auth-sso';
   import { authSsoStore, ensureSsoInfoLoaded } from '$features/auth/utils/auth-sso-store';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   let { data } = $props();
@@ -142,8 +143,21 @@
         },
         {
           headers,
-          onSuccess: (ctx) => {
+          onSuccess: async (ctx) => {
             console.log('Signup successful');
+            if (!$globalStore.isOrgSite) {
+              let welcomeEmailPending = false;
+              for (let attempt = 0; attempt < 3 && !welcomeEmailPending; attempt++) {
+                welcomeEmailPending = await onboardingApi.markWelcomeEmailPending();
+                if (!welcomeEmailPending) {
+                  await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+                }
+              }
+
+              if (!welcomeEmailPending) {
+                throw new Error('Unable to prepare welcome email');
+              }
+            }
             capturePosthogEvent('user_signed_up', {
               distinct_id: ctx.data.user.id || '',
               email: ctx.data.user.email,

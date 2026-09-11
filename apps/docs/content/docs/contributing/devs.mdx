@@ -15,29 +15,21 @@ entirely, see [Gitpod Setup](/contributing/gitpod) for a ready-made cloud worksp
 
 The monorepo's primary apps are `website` (marketing site), `api` (backend: PDF/video processing, email, notifications), `dashboard` (the LMS web app), and `docs`/`help` (this documentation). Shared code lives under `packages/` (`packages/db`, `packages/utils`, `packages/ui`).
 
-<Steps>
-<Step>
-### Fork and clone the repository
+### 1. Fork and clone the repository
 
 ```bash
 git clone https://github.com/classroomio/classroomio.git
 cd classroomio
 ```
 
-</Step>
-
-<Step>
-### Set up Node and install dependencies
+### 2. Set up Node and install dependencies
 
 ```bash
 nvm install && nvm use
 pnpm i
 ```
 
-</Step>
-
-<Step>
-### Configure environment variables
+### 3. Configure environment variables
 
 Each app reads its own `.env`. In `apps/api`, `apps/jobs`, and `apps/dashboard`, duplicate `.env.example` to `.env` and fill in the values. Generate every secret with `openssl rand -hex 32` rather than copying the example text — and generate `PRIVATE_SERVER_KEY` **once**, then paste the identical value into both `apps/api/.env` and `apps/dashboard/.env`. It authenticates the dashboard's server-to-server calls to the API; a mismatch is the most common cause of a dashboard that renders but can't load any data.
 
@@ -45,10 +37,7 @@ Each app reads its own `.env`. In `apps/api`, `apps/jobs`, and `apps/dashboard`,
 
 For background workers, copy the API env too: `cp apps/api/.env apps/jobs/.env`.
 
-</Step>
-
-<Step>
-### Start Postgres and Redis, then seed the database
+### 4. Start Postgres and Redis, then seed the database
 
 ```bash
 docker compose -f docker-compose.yaml up -d postgres redis
@@ -58,10 +47,7 @@ pnpm --filter @cio/db db:setup:seed
 
 The db scripts run with their own working directory and read `DATABASE_URL` from `packages/db/.env`, not `apps/api/.env` — both need to point at the same database.
 
-</Step>
-
-<Step>
-### Run the app services
+### 5. Run the app services
 
 In separate terminals:
 
@@ -79,16 +65,10 @@ Default local URLs: API at `http://localhost:3002`, dashboard at `http://localho
 
 Optional: `pnpm website:dev` for the marketing site, `pnpm dev --filter=@cio/docs` for these docs.
 
-</Step>
-
-<Step>
-### Log in
+### 6. Log in
 
 Visit `http://localhost:5173/login` and sign in with the seeded demo account — see
 [Login with Demo Accounts](/contributing/demo-accounts) for credentials.
-
-</Step>
-</Steps>
 
 ## Object storage (optional)
 

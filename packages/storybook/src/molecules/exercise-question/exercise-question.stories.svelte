@@ -54,7 +54,7 @@
 
 <Story name="Exercise Sections - Section Intro">
   {#snippet template()}
-    <div class="ui:max-w-5xl">
+    <div class="max-w-5xl">
       <ExerciseQuestion.SectionOverview
         sectionTitle={SECTIONED_EXERCISE_FIXTURE[0].title}
         sectionDescription={SECTIONED_EXERCISE_FIXTURE[0].description}
@@ -73,7 +73,7 @@
 
 <Story name="Exercise Sections - Auto Grouped Existing Questions">
   {#snippet template()}
-    <div class="ui:max-w-5xl">
+    <div class="max-w-5xl">
       <ExerciseQuestion.SectionOverview
         sectionTitle={autoGroupedSection.title}
         sectionDescription={autoGroupedSection.description}
@@ -92,7 +92,7 @@
 
 <Story name="Exercise Sections - Question In Progress">
   {#snippet template()}
-    <div class="ui:grid ui:max-w-5xl ui:gap-6 ui:lg:grid-cols-[190px_minmax(0,1fr)]">
+    <div class="grid max-w-5xl gap-6 lg:grid-cols-[190px_minmax(0,1fr)]">
       <ExerciseQuestion.SectionNavigationSidebar
         sections={SECTIONED_EXERCISE_FIXTURE.map((section, sectionIndex) => ({
           id: section.id,
@@ -107,7 +107,7 @@
         }))}
       />
 
-      <section class="ui:space-y-4">
+      <section class="space-y-4">
         <ExerciseQuestion.SectionHeader
           title={SECTIONED_EXERCISE_FIXTURE[0].title}
           description={SECTIONED_EXERCISE_FIXTURE[0].description}
@@ -134,9 +134,9 @@
 
 <Story name="Exercise Sections - Grading View">
   {#snippet template()}
-    <div class="ui:max-w-4xl ui:space-y-8">
+    <div class="max-w-4xl space-y-8">
       {#each SECTIONED_EXERCISE_FIXTURE as section, sectionIndex (section.id)}
-        <section class="ui:space-y-4">
+        <section class="space-y-4">
           <ExerciseQuestion.SectionHeader
             title={section.title}
             description={section.description}
@@ -163,10 +163,10 @@
               },
               disabled: true
             }}
-            itemClass="ui:mb-4"
+            itemClass="mb-4"
           />
 
-          <div class="ui:flex ui:justify-end ui:border-t ui:pt-3 ui:text-sm ui:font-medium">
+          <div class="flex justify-end border-t pt-3 text-sm font-medium">
             Section subtotal: {section.questions.length * 4}/{section.questions.length * 5}
           </div>
         </section>
@@ -238,7 +238,7 @@
 >
   {#snippet template()}
     <div
-      class="ui:mb-4 ui:rounded-md ui:border ui:border-amber-500/50 ui:bg-amber-500/10 ui:px-4 ui:py-3 ui:text-sm ui:text-amber-800 ui:dark:text-amber-200"
+      class="mb-4 rounded-md border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200"
     >
       <strong>Hidden – still in development.</strong> Not available in the exercise editor.
     </div>
@@ -273,7 +273,7 @@
 >
   {#snippet template()}
     <div
-      class="ui:mb-4 ui:rounded-md ui:border ui:border-amber-500/50 ui:bg-amber-500/10 ui:px-4 ui:py-3 ui:text-sm ui:text-amber-800 ui:dark:text-amber-200"
+      class="mb-4 rounded-md border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200"
     >
       <strong>Hidden – still in development.</strong> Not available in the exercise editor.
     </div>

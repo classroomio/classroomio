@@ -17,8 +17,10 @@ import type {
   OrganizationAudienceQuery,
   OrganizationTeamMembers,
   ResendAudienceInviteRequest,
+  ReorderOrgCoursesRequest,
   RevokeAudienceInviteRequest,
-  ToggleLinkInviteRequest
+  ToggleLinkInviteRequest,
+  UpdateOrganizationRequest
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
@@ -26,6 +28,7 @@ import type {
   TAudienceInviteByEmail,
   TCreateOrganization,
   TGetOrganizations,
+  TCourseReorder,
   TImportAudienceMembers,
   TUpdateOrganization
 } from '@cio/utils/validation/organization';
@@ -36,7 +39,6 @@ import type { AccountOrg } from '$features/app/types';
 import type { GetTeamRequest } from '../utils/types';
 import { ROLE } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';
-import type { UpdateOrganizationRequest } from '../utils/types';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
@@ -48,6 +50,8 @@ import { authClient } from '$lib/utils/services/auth/client';
 import { DEFAULT_ORG_AUDIENCE_QUERY, toAudienceRequestQuery } from '../utils/audience-query-utils';
 import { resolveOrgJoinRedirect } from '../utils/org-join-redirect';
 import type { ZodError } from 'zod';
+
+const PUBLISHED_COURSES_ORDERING_LIMIT = 100;
 
 export interface TOrgUpdateForm {
   name?: string;
@@ -262,6 +266,55 @@ class OrgApi extends BaseApiWithErrors {
   }
 
   /**
+   * Lists published courses for the manual ordering editor (up to 100)
+   * Keeps the landing-page preview state (`publicCourses`) untouched.
+   * @param siteName Organization site name
+   * @returns Published courses array in their current display order
+   */
+  async listPublishedCoursesForOrdering(siteName: string): Promise<OrgPublicCourses> {
+    if (!siteName) {
+      return [];
+    }
+
+    const response = await this.execute<GetOrgPublicCoursesRequest>({
+      requestFn: () =>
+        classroomio.organization.courses.public.$get({
+          query: { siteName, limit: String(PUBLISHED_COURSES_ORDERING_LIMIT) }
+        }),
+      logContext: 'fetching published courses for ordering'
+    });
+
+    if (!response) {
+      throw new Error('Failed to fetch published courses for ordering');
+    }
+
+    return response.data.courses;
+  }
+
+  /**
+   * Persists the manual display order of published courses
+   * @param orders Array of course IDs with their new positions
+   */
+  async reorderPublishedCourses(orders: TCourseReorder['courses'], options: { showToast?: boolean } = {}) {
+    const { showToast = false } = options;
+    return this.execute<ReorderOrgCoursesRequest>({
+      requestFn: () =>
+        classroomio.organization.courses.reorder.$post({
+          json: {
+            courses: orders
+          }
+        }),
+      logContext: 'reordering published courses',
+      onSuccess: () => {
+        if (showToast) {
+          snackbar.success('snackbar.landing_page_settings.success.courses_reordered');
+        }
+      },
+      onError: () => snackbar.error('snackbar.landing_page_settings.error.courses_reorder_failed')
+    });
+  }
+
+  /**
    * Gets current organization by siteName or custom domain
    * @param siteName Organization site name or custom domain
    * @param isCustomDomain Whether the siteName is a custom domain
@@ -411,20 +464,6 @@ class OrgApi extends BaseApiWithErrors {
           return;
         }
 
-        if (options.onSuccess) {
-          return options.onSuccess({
-            name: response.data.name,
-            avatarUrl: response.data.avatarUrl ?? undefined,
-            favicon: response.data.favicon ?? undefined,
-            theme: response.data.theme ?? undefined,
-            landingpage: response.data.landingpage ?? undefined,
-            siteName: response.data.siteName ?? undefined,
-            customDomain: response.data.customDomain,
-            isCustomDomainVerified: response.data.isCustomDomainVerified ?? undefined,
-            customization: response.data.customization ?? undefined
-          });
-        }
-
         orgs.update((_orgs) =>
           _orgs.map((org) => {
             if (org.id === orgId) {
@@ -440,10 +479,28 @@ class OrgApi extends BaseApiWithErrors {
           currentOrg.update((org) => mergeAccountOrgFromServer({ ...org, ...response.data } as AccountOrg));
         }
 
-        snackbar.success('snackbar.course_settings.success.update_successful');
-
         this.success = true;
         this.errors = {};
+
+        // Custom onSuccess replaces the default toast, not the store sync.
+        // Auth settings derive dirty state from `$currentOrg`, so skipping this
+        // left Save/Cancel visible after a successful public-signups toggle.
+        if (options.onSuccess) {
+          options.onSuccess({
+            name: response.data.name,
+            avatarUrl: response.data.avatarUrl ?? undefined,
+            favicon: response.data.favicon ?? undefined,
+            theme: response.data.theme ?? undefined,
+            landingpage: response.data.landingpage ?? undefined,
+            siteName: response.data.siteName ?? undefined,
+            customDomain: response.data.customDomain,
+            isCustomDomainVerified: response.data.isCustomDomainVerified ?? undefined,
+            customization: response.data.customization ?? undefined
+          });
+          return;
+        }
+
+        snackbar.success('snackbar.course_settings.success.update_successful');
       },
       onError: (error) => {
         console.error('Error updating organization:', error);

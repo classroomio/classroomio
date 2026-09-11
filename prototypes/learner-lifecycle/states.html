@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edge states · Learner Lifecycle Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="lifecycle.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .page { max-width: 900px; margin: 0 auto; padding: 40px 24px 90px; }
+      .frame { border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 20px; background: var(--card); margin-bottom: 12px; }
+      h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; margin: 6px 0 8px; }
+      .lead { color: var(--muted-foreground); font-size: 14.5px; max-width: 68ch; margin: 0 0 8px; line-height: 1.6; }
+      .sec { font-size: 12.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted-foreground); margin: 40px 0 6px; display: flex; align-items: center; gap: 10px; }
+      .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+      .why { font-size: 13px; color: var(--muted-foreground); margin: 0 0 14px; line-height: 1.6; }
+      .why b { color: var(--foreground); font-weight: 500; }
+      .eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div>
+          <span class="eyebrow">ClassroomIO · Learner lifecycle</span>
+          <h1>Edge states</h1>
+          <p class="lead">
+            The states that are hard to reach by clicking, shown side by side.
+            The <a href="audience.html" style="color:var(--primary);text-decoration:underline">audience page</a> covers the happy path.
+          </p>
+        </div>
+        <button class="icon-btn" id="theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      </div>
+
+      <!-- 1 -->
+      <div class="sec">1 · Loading — stale-while-loading</div>
+      <p class="why">Today every filter change calls <b>invalidateAll</b> and the table goes dead. Instead: rows stay visible and dimmed, controls stay clickable, a 2px bar runs under the toolbar. Superseded requests are cancelled.</p>
+      <div class="frame">
+        <div class="dt-wrap busy">
+          <div class="loadbar"></div>
+          <div class="dt-scroll">
+            <table class="dt" style="min-width:520px">
+              <thead><tr><th class="c-check"><input type="checkbox" class="cb" disabled /></th><th>Name</th><th>Last login</th><th>Progress</th></tr></thead>
+              <tbody>
+                <tr><td class="c-check"><input type="checkbox" class="cb" /></td><td>Ada Okafor</td><td>3 months ago</td><td>62%</td></tr>
+                <tr><td class="c-check"><input type="checkbox" class="cb" /></td><td>Tunde Mensah</td><td>Never</td><td>0%</td></tr>
+                <tr><td class="c-check"><input type="checkbox" class="cb" /></td><td>Sofia Rossi</td><td>8 months ago</td><td>14%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="sec">2 · Cold load — skeleton</div>
+      <p class="why">The only time a skeleton appears: first paint, when there are no stale rows worth keeping. <code>audience-table-skeleton.svelte</code> already exists in the repo and is currently rendered nowhere.</p>
+      <div class="frame">
+        <div class="dt-wrap">
+          <div style="padding:12px;display:grid;gap:10px">
+            <div class="sk" style="width:38%"></div>
+            <div class="sk" style="width:92%"></div>
+            <div class="sk" style="width:88%"></div>
+            <div class="sk" style="width:94%"></div>
+            <div class="sk" style="width:76%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="sec">3 · Two different empty states</div>
+      <p class="why">Never show "invite your first learner" to someone who just over-filtered. <b>Left:</b> filters match nothing — the action is to clear them. <b>Right:</b> genuinely no audience — the action is to import.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" class="two">
+        <div class="frame" style="padding:0">
+          <div class="empty">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></div>
+            <h3>No learners match these filters</h3>
+            <p>Try widening the date range, or clear the filters to see your whole audience.</p>
+            <button class="btn btn-primary btn-sm">Clear filters</button>
+          </div>
+        </div>
+        <div class="frame" style="padding:0">
+          <div class="empty">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <h3>No learners yet</h3>
+            <p>Import a list or share an invite link to bring your first learners into Acme Academy.</p>
+            <a class="btn btn-primary btn-sm" href="import.html">Import learners</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="sec">4 · Selection survives a filter change</div>
+      <p class="why">Today an <code>$effect</code> silently wipes selection on every refetch. Instead, when the filter changes under a held selection, say so and let the admin choose.</p>
+      <div class="frame">
+        <div class="allmatch on" style="margin:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;color:var(--warning)"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <span>Filters changed. <b>42</b> selected learners are no longer shown.</span>
+          <span style="flex:1"></span>
+          <button class="btn btn-outline btn-sm">Keep selection</button>
+          <button class="link-btn">Clear</button>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="sec">5 · Queued action — over 1,000 rows</div>
+      <p class="why">A 12,000-row archive is not an HTTP request. The dialog closes, this bar takes over, and the admin can navigate away and come back — it is driven by job status, not page state.</p>
+      <div class="frame">
+        <div class="jobbar on" style="margin:0">
+          <span class="lbl">Archiving 12,480 learners…</span>
+          <div class="progress"><span style="width:38%"></span></div>
+          <span class="pct">4,742 of 12,480</span>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="sec">6 · Count drift — the 409</div>
+      <p class="why">Someone logged in between preview and apply, so the affected set no longer matches what the admin approved. Never act on the new set silently.</p>
+      <div class="frame">
+        <div class="toast err" style="max-width:none;margin:0">
+          <span style="flex:1">This list changed while you were reviewing it — <b>3,209</b> learners now match. Re-confirm to continue.</span>
+          <button class="btn btn-outline btn-sm">Review again</button>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="sec">7 · Partial failure — a dialog, not a snackbar</div>
+      <p class="why">A snackbar cannot carry 34 rows of detail. Failures get a scrollable list with per-row reasons and a CSV so the admin can work the exceptions.</p>
+      <div class="frame" style="padding:0;overflow:hidden">
+        <div class="dialog" style="max-width:none;border:none;box-shadow:none">
+          <div class="dialog-head"><h2>Finished with errors</h2><p class="lede">3,180 succeeded · 34 failed</p></div>
+          <div class="dialog-body">
+            <div class="sample">
+              <div class="r"><span>Kwame Boateng<div class="em">kwame.boateng@example.com</div></span><span class="text-muted" style="text-align:right">Still enrolled in a mandatory course</span></div>
+              <div class="r"><span>Hana Sato<div class="em">hana.sato@example.com</div></span><span class="text-muted" style="text-align:right">Still enrolled in a mandatory course</span></div>
+              <div class="r"><span>Ivan Sokolov<div class="em">ivan.sokolov@example.com</div></span><span class="text-muted" style="text-align:right">Is an admin in another workspace</span></div>
+              <div class="r more">and 31 more</div>
+            </div>
+          </div>
+          <div class="dialog-foot"><button class="btn btn-outline">Download failures as CSV</button><button class="btn btn-primary">Done</button></div>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="sec">8 · Delete is gated behind archive</div>
+      <p class="why">Permanent delete is disabled until every selected learner is already archived. The consequence lines under each action are what steer someone to the reversible option.</p>
+      <div class="frame" style="display:flex;justify-content:center">
+        <div class="pop menu on" style="position:static;min-width:300px">
+          <button><div><div class="t">Archive</div><div class="d">Frees a seat · reversible</div></div></button>
+          <button><div><div class="t">Deactivate</div><div class="d">Blocks access · keeps the seat · reversible</div></div></button>
+          <div class="menu-sep"></div>
+          <button class="danger" disabled><div><div class="t">Delete permanently</div><div class="d">Archive them first</div></div></button>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="sec">9 · Delete confirmation — type to confirm</div>
+      <p class="why">Type-to-confirm is <b>delete only</b>. Adding friction to reversible actions just trains people to type past warnings.</p>
+      <div class="frame" style="padding:0;overflow:hidden">
+        <div class="dialog" style="max-width:none;border:none;box-shadow:none">
+          <div class="dialog-head">
+            <h2>Permanently delete 3,214 learners?</h2>
+            <p class="lede">This removes their membership, enrollments and progress from this organization. It cannot be undone.</p>
+          </div>
+          <div class="dialog-body">
+            <div class="export-first done">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <span style="flex:1">Exported 3,214 rows to CSV.</span>
+              <button class="btn btn-outline btn-sm" disabled>Export CSV</button>
+            </div>
+            <div>
+              <label class="label">Type <b>3214</b> to confirm</label>
+              <input class="input" value="321" />
+            </div>
+          </div>
+          <div class="dialog-foot"><button class="btn btn-ghost">Cancel</button><button class="btn btn-destructive" disabled>Delete permanently</button></div>
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="sec">10 · Export menu — scoped and counted</div>
+      <p class="why">Never ambiguous what is being downloaded. PDF disables above 2,000 rows and says why, because a 20,000-row PDF helps nobody.</p>
+      <div class="frame" style="display:flex;justify-content:center">
+        <div class="pop menu on" style="position:static;min-width:290px">
+          <button><div><div class="t">Export 42 selected</div><div class="d">CSV</div></div></button>
+          <button><div><div class="t">Export 3,214 filtered</div><div class="d">CSV · matches the current view</div></div></button>
+          <button><div><div class="t">Export all 12,480</div><div class="d">CSV · streams from the server</div></div></button>
+          <div class="menu-sep"></div>
+          <button disabled><div><div class="t">Export as PDF</div><div class="d">Up to 2,000 rows — use CSV</div></div></button>
+        </div>
+      </div>
+
+      <!-- 11 -->
+      <div class="sec">11 · Undo, because archive is reversible</div>
+      <p class="why">Archived rows leave the default view. The toast names how many, so their disappearance is explained rather than startling. Delete gets no undo — and the dialog said so.</p>
+      <div class="frame" style="display:grid;gap:10px;justify-items:center">
+        <div class="toast" style="margin:0">
+          <span style="flex:1">400 learners archived. They no longer appear in this view.</span>
+          <button class="btn btn-outline btn-sm">Undo</button>
+        </div>
+        <div class="toast" style="margin:0"><span style="flex:1">3,214 learners permanently deleted.</span></div>
+      </div>
+
+      <!-- 12 -->
+      <div class="sec">12 · Mobile — the filter popover becomes a sheet</div>
+      <p class="why">A five-section filter form in a 340px popover on a phone is unusable. Below <code>md</code> it docks to the bottom as a sheet, and controls keep 44px touch targets.</p>
+      <div class="frame" style="display:flex;justify-content:center">
+        <div style="width:320px;border:1px solid var(--border);border-radius:22px;overflow:hidden;background:var(--background);position:relative;height:420px">
+          <div style="padding:14px;border-bottom:1px solid var(--border);font-weight:600;font-size:15px">Audience</div>
+          <div style="padding:12px;display:flex;gap:8px;overflow:hidden">
+            <input class="input" style="flex:1;height:34px" placeholder="Search…" />
+            <button class="btn btn-outline btn-sm">Filter</button>
+          </div>
+          <div style="position:absolute;inset:0;background:rgb(0 0 0/0.4)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;background:var(--popover);border-radius:16px 16px 0 0;border-top:1px solid var(--border);max-height:75%;display:flex;flex-direction:column">
+            <div style="padding:14px;overflow:auto">
+              <div class="legend" style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-foreground);margin-bottom:7px">Last login</div>
+              <label class="fopt" style="min-height:38px"><input type="radio" class="radio" name="m" /> Any</label>
+              <label class="fopt" style="min-height:38px"><input type="radio" class="radio" name="m" checked /> Never logged in</label>
+              <label class="fopt" style="min-height:38px"><input type="radio" class="radio" name="m" /> Before 90 days</label>
+            </div>
+            <div class="filter-foot"><button class="link-btn">Clear all</button><button class="btn btn-primary btn-sm">Apply</button></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="why" style="margin-top:44px;padding-top:20px;border-top:1px solid var(--border)">
+        Spec: <b>prd/admin-controls-and-reporting/UX.md</b> · Engineering plan: <b>prd/admin-controls-and-reporting/README.md</b>
+      </p>
+    </div>
+
+    <script src="proto.js"></script>
+    <script>
+      window.proto.initTheme();
+      const mq = matchMedia('(max-width: 760px)');
+      const apply = () => document.querySelectorAll('.two').forEach((el) => (el.style.gridTemplateColumns = mq.matches ? '1fr' : '1fr 1fr'));
+      mq.addEventListener('change', apply);
+      apply();
+    </script>
+  </body>
+</html>

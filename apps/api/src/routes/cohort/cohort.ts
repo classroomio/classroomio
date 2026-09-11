@@ -40,6 +40,12 @@ import {
 } from '@api/services/cohort/cohort';
 import { assignExistingStudentsToCohort, inviteStudentsToCohort } from '@api/services/cohort/invite';
 import {
+  fetchInviteLinkForResource,
+  getOrCreateInviteLinkForResource,
+  toggleInviteLinkForResource
+} from '@api/services/invite-link';
+import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
+import {
   archiveGoal,
   createGoal,
   evaluateGoal,
@@ -102,8 +108,9 @@ export const cohortRouter = new Hono()
    */
   .get('/', authMiddleware, zValidator('query', ZOrgQuery), async (c) => {
     try {
+      const user = c.get('user')!;
       const { organizationId } = c.req.valid('query');
-      const cohorts = await listOrgCohorts(organizationId);
+      const cohorts = await listOrgCohorts(organizationId, user.id);
       return c.json({ success: true, data: cohorts }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list cohorts');
@@ -306,6 +313,72 @@ export const cohortRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to assign students to cohort');
+      }
+    }
+  )
+
+  // ── Invite link ───────────────────────────────────────────────────────────
+
+  /**
+   * GET /cohort/:cohortId/invite-link
+   * Returns the cohort's shareable join link, or null if one was never created.
+   */
+  .get(
+    '/:cohortId/invite-link',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const result = await fetchInviteLinkForResource('COHORT', cohortId);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load cohort invite link');
+      }
+    }
+  )
+
+  /**
+   * POST /cohort/:cohortId/invite-link
+   * Returns the cohort's shareable join link, creating it on first call.
+   */
+  .post(
+    '/:cohortId/invite-link',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { cohortId } = c.req.valid('param');
+        const result = await getOrCreateInviteLinkForResource('COHORT', cohortId, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create cohort invite link');
+      }
+    }
+  )
+
+  /**
+   * PATCH /cohort/:cohortId/invite-link
+   * Disables or re-enables the cohort's shareable join link.
+   */
+  .patch(
+    '/:cohortId/invite-link',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    zValidator('json', ZToggleInviteLink),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { cohortId } = c.req.valid('param');
+        const { isRevoked } = c.req.valid('json');
+        const result = await toggleInviteLinkForResource('COHORT', cohortId, isRevoked, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update cohort invite link');
       }
     }
   )

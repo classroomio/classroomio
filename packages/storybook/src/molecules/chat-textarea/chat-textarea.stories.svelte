@@ -77,17 +77,17 @@
         {/snippet}
 
         {#snippet actions()}
-          <button class="ui:text-muted-foreground hover:ui:bg-muted ui:rounded-md ui:p-1.5 ui:transition-colors">
+          <button class="ui:text-muted-foreground ui:hover:bg-muted rounded-md p-1.5 transition-colors">
             <PaperclipIcon size={16} />
           </button>
-          <div class="ui:flex-1"></div>
-          <Button size="icon" variant="default" onclick={handleSend} disabled={!value.trim()} class="ui:size-7">
+          <div class="flex-1"></div>
+          <Button size="icon" variant="default" onclick={handleSend} disabled={!value.trim()} class="size-7">
             <SendIcon size={14} />
           </Button>
         {/snippet}
       </ChatTextarea>
-      <p class="ui:text-muted-foreground ui:mt-2 ui:text-xs">
-        Press Enter to send. Current value: <code class="ui:text-xs">{value || '(empty)'}</code>
+      <p class="ui:text-muted-foreground mt-2 text-xs">
+        Press Enter to send. Current value: <code class="text-xs">{value || '(empty)'}</code>
       </p>
     </div>
   {/snippet}
@@ -133,11 +133,11 @@
           {/snippet}
 
           {#snippet actions()}
-            <button class="ui:text-muted-foreground hover:ui:bg-muted ui:rounded-md ui:p-1.5 ui:transition-colors">
+            <button class="ui:text-muted-foreground ui:hover:bg-muted rounded-md p-1.5 transition-colors">
               <PaperclipIcon size={16} />
             </button>
-            <div class="ui:flex-1"></div>
-            <Button size="icon" variant="default" onclick={handleSend} disabled={!value.trim()} class="ui:size-7">
+            <div class="flex-1"></div>
+            <Button size="icon" variant="default" onclick={handleSend} disabled={!value.trim()} class="size-7">
               <SendIcon size={14} />
             </Button>
           {/snippet}
@@ -160,11 +160,11 @@
     <div style="width: 360px;">
       <ChatTextarea value="Streaming response..." disabled placeholder="Ask the AI assistant...">
         {#snippet actions()}
-          <button class="ui:text-muted-foreground ui:rounded-md ui:p-1.5 ui:opacity-50" disabled>
+          <button class="ui:text-muted-foreground rounded-md p-1.5 opacity-50" disabled>
             <PaperclipIcon size={16} />
           </button>
-          <div class="ui:flex-1"></div>
-          <Button size="icon" variant="outline" class="ui:size-7">
+          <div class="flex-1"></div>
+          <Button size="icon" variant="outline" class="size-7">
             <SquareIcon size={12} />
           </Button>
         {/snippet}

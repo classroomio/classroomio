@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -126,7 +126,7 @@ export async function getLastSeenForUserIds(userIds: string[]): Promise<Map<stri
  * @param userId User ID (profile ID)
  * @returns Array of exercise stats with scores and completion status
  */
-export async function getUserExercisesStats(courseId: string, userId: string) {
+export async function getUserExercisesStats(courseId: string, userId: string, options: { failOnError?: boolean } = {}) {
   try {
     const exercises = await db
       .select({
@@ -179,7 +179,9 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
       return [];
     }
 
-    // Get submissions for these exercises by this user
+    // Get submissions for these exercises by this user. Most recent wins—order
+    // by created_at, tie-broken by id, so submissions.find(...) below returns a
+    // deterministic row for a student with multiple submissions per exercise.
     const submissions = await db
       .select({
         id: schema.submission.id,
@@ -190,7 +192,8 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
       .from(schema.submission)
       .where(
         and(inArray(schema.submission.exerciseId, exerciseIds), eq(schema.submission.submittedBy, groupMember[0].id))
-      );
+      )
+      .orderBy(desc(schema.submission.createdAt), desc(schema.submission.id));
 
     // Build exercise stats
     const exerciseStats = exercises.map((exercise) => {
@@ -213,6 +216,9 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
     return exerciseStats;
   } catch (error) {
     console.error('getUserExerciseStats error:', error);
+    if (options.failOnError) {
+      throw new Error('Failed to fetch user exercise stats');
+    }
     return [];
   }
 }
@@ -295,7 +301,11 @@ export async function getLessonsWithCompletion(courseId: string, userId: string)
  * @param profileId Profile ID
  * @returns Course progress data
  */
-export async function getProfileCourseProgress(courseId: string, profileId: string) {
+export async function getProfileCourseProgress(
+  courseId: string,
+  profileId: string,
+  options: { failOnError?: boolean } = {}
+) {
   try {
     // Get course group
     const course = await db
@@ -405,6 +415,9 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
     };
   } catch (error) {
     console.error('getProfileCourseProgress error:', error);
+    if (options.failOnError) {
+      throw new Error('Failed to fetch profile course progress');
+    }
     return {
       lessons_count: 0,
       lessons_completed: 0,
@@ -673,6 +686,38 @@ export async function selectPopularCourseTypes(orgId: string, fromDate: string, 
   } catch (error) {
     console.error('selectPopularCourseTypes error:', error);
     throw new Error('Failed to select popular course types');
+  }
+}
+
+/**
+ * Top courses by page views for an org in a date range. Joins the daily
+ * course rollup with the canonical course row so the result includes the
+ * live title. Courses with zero views in the window are omitted.
+ */
+export async function selectTopCoursesByViews(orgId: string, fromDate: string, toDate: string, limit: number = 10) {
+  try {
+    return await db
+      .select({
+        courseId: schema.analyticsCourseDaily.courseId,
+        title: schema.course.title,
+        views: sql<number>`SUM(${schema.analyticsCourseDaily.views})::int`.as('views')
+      })
+      .from(schema.analyticsCourseDaily)
+      .innerJoin(schema.course, eq(schema.course.id, schema.analyticsCourseDaily.courseId))
+      .where(
+        and(
+          eq(schema.analyticsCourseDaily.orgId, orgId),
+          sql`${schema.analyticsCourseDaily.date} >= ${fromDate}`,
+          sql`${schema.analyticsCourseDaily.date} <= ${toDate}`
+        )
+      )
+      .groupBy(schema.analyticsCourseDaily.courseId, schema.course.title)
+      .having(sql`SUM(${schema.analyticsCourseDaily.views}) > 0`)
+      .orderBy(desc(sql`SUM(${schema.analyticsCourseDaily.views})`), asc(schema.analyticsCourseDaily.courseId))
+      .limit(limit);
+  } catch (error) {
+    console.error('selectTopCoursesByViews error:', error);
+    throw new Error('Failed to select top courses by views');
   }
 }
 

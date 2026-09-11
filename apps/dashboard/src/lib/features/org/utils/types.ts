@@ -53,6 +53,8 @@ export type OrgPublicCoursesResponse = InferResponseType<GetOrgPublicCoursesRequ
 export type OrgPublicCoursesSuccess = Extract<InferResponseType<GetOrgPublicCoursesRequest>, { success: true }>;
 export type OrgPublicCoursesData = OrgPublicCoursesSuccess['data'];
 export type OrgPublicCourses = OrgPublicCoursesData['courses'];
+export type ReorderOrgCoursesRequest = (typeof classroomio.organization.courses)['reorder']['$post'];
+export type ReorderOrgCoursesBody = InferRequestType<ReorderOrgCoursesRequest>;
 
 // dashboard analytics types
 export type GetDashStatsRequest = typeof classroomio.dash.stats.$get;

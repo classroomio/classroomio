@@ -1,8 +1,13 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
-import type { TGetAudienceQuery, TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type {
+  TCourseReorder,
+  TGetAudienceQuery,
+  TGetOrganizationCoursesQuery
+} from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
+  activateOrganizationPlan,
   cancelOrganizationPlan,
   checkSiteNameExists,
   createOrganizationPlan,
@@ -34,7 +39,8 @@ import {
   getExploreCourses,
   getLessonsBySiteName,
   getOrgCourses,
-  getPublishedCoursesBySiteName
+  getPublishedCoursesBySiteName,
+  reorderOrgCourses as reorderOrgCoursesQuery
 } from '@cio/db/queries/course';
 import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
@@ -43,7 +49,7 @@ import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
 import { canUseBasicAuthSettings, PLAN } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
-import { ROLE } from '@cio/utils/constants';
+import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
@@ -328,6 +334,27 @@ export async function getPublicCourses(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch public courses',
       ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Reorders courses for an organization (manual display order on public surfaces)
+ * @param orgId - The organization ID
+ * @param orders - Array of course IDs with their new display positions
+ */
+export async function reorderOrgCourses(orgId: string, orders: TCourseReorder['courses']) {
+  try {
+    await reorderOrgCoursesQuery(orgId, orders);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('does not belong')) {
+      throw new AppError(error.message, ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to reorder courses',
+      ErrorCodes.INTERNAL_ERROR,
       500
     );
   }
@@ -729,7 +756,7 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       const landingpage = data.landingpage as Record<string, unknown>;
       const theme = landingpage.theme;
 
-      if (typeof theme === 'string' && theme !== 'minimal') {
+      if (typeof theme === 'string' && !isFreeLandingPageTheme(theme)) {
         const activePlan = await getActiveOrganizationPlan(orgId);
         const planName = activePlan?.planName ?? PLAN.BASIC;
 
@@ -788,7 +815,7 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
  */
 export async function updateOrgPlan(subscriptionId: string, payload: TOrganizationPlan['payload']) {
   try {
-    const plan = await updateOrganizationPlan(subscriptionId, payload);
+    const plan = await updateOrganizationPlan(subscriptionId, { payload });
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
     }
@@ -799,6 +826,38 @@ export async function updateOrgPlan(subscriptionId: string, payload: TOrganizati
     }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update organization plan',
+      ErrorCodes.ORG_PLAN_UPDATE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Activates an organization plan, creating it when the initial subscription event
+ * arrived before the subscription became active.
+ * @param data Organization plan activation data
+ * @returns Activated or created organization plan
+ */
+export async function activateOrgPlan(data: TNewOrganizationPlan) {
+  try {
+    if (!data.subscriptionId) {
+      throw new AppError('Missing organization plan fields', ErrorCodes.ORG_PLAN_CREATE_FAILED, 400);
+    }
+
+    const activatedPlan = await activateOrganizationPlan(data.subscriptionId, data.payload);
+
+    if (activatedPlan) {
+      return activatedPlan;
+    }
+
+    return await createOrgPlan(data);
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to activate organization plan',
       ErrorCodes.ORG_PLAN_UPDATE_FAILED,
       500
     );
@@ -919,33 +978,61 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     // Build analytics data for each course
     const coursesWithStats = await Promise.all(
       courses.map(async (course) => {
-        const [userExercisesStats, courseProgress] = await Promise.all([
-          getUserExercisesStats(course.id, userId),
-          getProfileCourseProgress(course.id, userId)
-        ]);
+        let userExercisesStats: Awaited<ReturnType<typeof getUserExercisesStats>> | null;
+        try {
+          userExercisesStats = await getUserExercisesStats(course.id, userId, { failOnError: true });
+        } catch (error) {
+          console.error('getUserAnalytics course exercises error:', error);
+          userExercisesStats = null;
+        }
 
-        const totalEarnedPoints = sumArrObject(userExercisesStats, 'score');
-        const totalPoints = sumArrObject(userExercisesStats, 'totalPoints');
-        const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
-        const lessonsCompleted = courseProgress.lessons_completed || 0;
-        const lessonsCount = courseProgress.lessons_count || 0;
+        let courseProgress: Awaited<ReturnType<typeof getProfileCourseProgress>> | null;
+        try {
+          courseProgress = await getProfileCourseProgress(course.id, userId, { failOnError: true });
+        } catch (error) {
+          console.error('getUserAnalytics course progress error:', error);
+          courseProgress = null;
+        }
+
+        const gradedExercises = (userExercisesStats ?? []).filter((exercises) => exercises.status === 3);
+        const totalEarnedPoints = sumArrObject(gradedExercises, 'score');
+        const totalPoints = sumArrObject(gradedExercises, 'totalPoints');
+
+        const gradeablePoints = totalPoints > 0;
+        const averageGrade = gradeablePoints ? calcPercentageWithRounding(totalEarnedPoints, totalPoints) : null;
+
+        const progressData = courseProgress ?? {
+          lessons_count: 0,
+          lessons_completed: 0,
+          exercises_count: 0,
+          exercises_completed: 0
+        };
+        const lessonsCompleted = progressData.lessons_completed || 0;
+        const lessonsCount = progressData.lessons_count || 0;
+        const progressPercentage = courseProgress ? calcPercentageWithRounding(lessonsCompleted, lessonsCount) : 0;
 
         return {
           ...course,
-          ...courseProgress,
-          progress_percentage: calcPercentageWithRounding(lessonsCompleted, lessonsCount),
-          average_grade: averageGrade
+          ...progressData,
+          progress_failed: courseProgress === null,
+          progress_percentage: progressPercentage,
+          average_grade: averageGrade,
+          exercises: userExercisesStats
         };
       })
     );
 
     // Calculate overall stats
-    const totalLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
-    const completedLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
+    const progressCourses = coursesWithStats.filter((course) => !course.progress_failed);
+    const totalLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
+    const completedLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
     const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
 
-    const allGrades = sumArrObject(coursesWithStats, 'average_grade');
-    const overallAverageGrade = calcPercentageWithRounding(allGrades, coursesWithStats.length);
+    const graded = coursesWithStats.filter(
+      (course): course is (typeof coursesWithStats)[number] & { average_grade: number } => course.average_grade !== null
+    );
+    const gradeTotal = graded.reduce((sum, course) => sum + course.average_grade, 0);
+    const overallAverageGrade = graded.length === 0 ? null : Math.round(gradeTotal / graded.length);
 
     return {
       user: {

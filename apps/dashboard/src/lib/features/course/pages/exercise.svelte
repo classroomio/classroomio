@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import * as ButtonGroup from '@cio/ui/base/button-group';
@@ -509,13 +508,18 @@
 
   $effect(() => {
     const currentTab = page.url.searchParams.get('tab') ?? '';
-    // Prevent self-navigation loops: only update URL when it actually changes.
     if (currentTab === selectedTab) return;
 
     untrack(() => {
       const url = new URL(page.url);
       url.searchParams.set('tab', selectedTab);
-      goto(resolve(`${url.pathname}${url.search}`, {}), {
+
+      if (selectedTab !== 'submissions') {
+        url.searchParams.delete('submission');
+        url.searchParams.delete('student');
+      }
+
+      goto(`${url.pathname}${url.search}`, {
         replaceState: true,
         keepFocus: true,
         noScroll: true
@@ -539,6 +543,9 @@
     getOrderedNavigableContent(courseApi.course).find(
       (item) => item.type === ContentType.Exercise && item.id === exerciseId
     )
+  );
+  const enrolledStudentKeys = $derived(
+    courseApi.group.students.map((student) => student.profileId).filter((profileId): profileId is string => !!profileId)
   );
   const isCourseContentReady = $derived(courseApi.course?.id != null);
   const isExerciseTeacherLocked = $derived((exerciseContentItem?.isUnlocked ?? true) === false);
@@ -796,7 +803,7 @@
             />
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
-            <Submissions bind:exerciseId {submissions} />
+            <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
           </UnderlineTabs.Content>
         </UnderlineTabs.Root>
 

@@ -467,7 +467,7 @@
             <p>{$t('generic.loading')}</p>
           </video>
         {/if}
-        <p>{fileName}</p>
+        <p class="max-w-50 truncate text-center text-sm" title={fileName}>{fileName}</p>
         {#if processingJob}
           {@const label = processingLabel(processingJob.stage, processingJob.status)}
           {#if label}

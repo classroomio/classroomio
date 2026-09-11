@@ -10,6 +10,7 @@
     PopularTypes,
     RangePicker,
     RefreshButton,
+    TopCourses,
     TrendChart,
     analyticsApi
   } from '$features/analytics';
@@ -63,9 +64,10 @@
           </Tabs.List>
 
           <Tabs.Content value="overview" class="space-y-4">
-            <TrendChart data={analyticsApi.landing} loading={analyticsApi.loadingLanding} />
+            <TrendChart data={analyticsApi.landing} loading={analyticsApi.loadingLanding} range={analyticsApi.range} />
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <Funnel data={analyticsApi.funnel} loading={analyticsApi.loadingFunnel} />
+              <TopCourses data={analyticsApi.topCourses} loading={analyticsApi.loadingTopCourses} />
               <PopularTypes data={analyticsApi.popularTypes} loading={analyticsApi.loadingPopularTypes} />
             </div>
             <CountriesTable data={analyticsApi.country} loading={analyticsApi.loadingCountry} />
@@ -79,8 +81,11 @@
             <CountriesTable data={analyticsApi.country} loading={analyticsApi.loadingCountry} />
           </Tabs.Content>
 
-          <Tabs.Content value="course_types">
-            <PopularTypes data={analyticsApi.popularTypes} loading={analyticsApi.loadingPopularTypes} />
+          <Tabs.Content value="course_types" class="space-y-4">
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <TopCourses data={analyticsApi.topCourses} loading={analyticsApi.loadingTopCourses} />
+              <PopularTypes data={analyticsApi.popularTypes} loading={analyticsApi.loadingPopularTypes} />
+            </div>
           </Tabs.Content>
         </Tabs.Root>
       </div>

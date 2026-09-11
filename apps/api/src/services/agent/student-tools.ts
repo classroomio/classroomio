@@ -194,13 +194,13 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
 
     read_lesson_transcript: tool({
       description:
-        "Read the transcript of a lesson's uploaded video(s). A video's spoken content is NOT part of the lesson body, so use this whenever the learner asks about what the video says, explains, or demonstrates. Only uploaded videos are transcribed — embedded links (YouTube, etc.) return no transcript.",
+        "Read the transcript of a lesson's video(s). A video's spoken content is NOT part of the lesson body, so use this whenever the learner asks about what the video says, explains, or demonstrates. Use this for uploaded videos and YouTube embeds. Note: YouTube transcripts require a paid plan.",
       inputSchema: readLessonParam,
       execute: async (args) => {
         return executeStudentTool('read_lesson_transcript', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
 
-          return getLessonVideoTranscript(args.lessonId, orgId);
+          return getLessonVideoTranscript(args.lessonId, orgId, { userId, courseId });
         });
       }
     }),

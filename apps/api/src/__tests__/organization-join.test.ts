@@ -28,7 +28,12 @@ vi.mock('@cio/core/config/env', () => ({
   env: { PUBLIC_IS_SELFHOSTED: 'false' }
 }));
 
+vi.mock('@cio/core/services/organization/course-roles', () => ({
+  scheduleCourseRoleReconcile: vi.fn()
+}));
+
 import { joinOrganization } from '@api/services/organization/join';
+import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
 import { env } from '@cio/core/config/env';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -143,5 +148,19 @@ describe('joinOrganization', () => {
       verified: true
     });
     expect(result).toEqual({ alreadyMember: false, linkedExistingMember: false });
+  });
+
+  it('reconciles course roles when joining, so a former team member cannot keep instructor rights', async () => {
+    await joinOrganization(USER_ID, ORG_ID);
+
+    expect(scheduleCourseRoleReconcile).toHaveBeenCalledWith(ORG_ID, USER_ID);
+  });
+
+  it('does not reconcile course roles when the user is already a member', async () => {
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue('member-1' as never);
+
+    await joinOrganization(USER_ID, ORG_ID);
+
+    expect(scheduleCourseRoleReconcile).not.toHaveBeenCalled();
   });
 });

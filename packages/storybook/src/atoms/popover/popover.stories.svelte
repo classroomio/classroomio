@@ -22,7 +22,7 @@
         <div class="grid gap-4">
           <div class="space-y-2">
             <h4 class="leading-none font-medium">Dimensions</h4>
-            <p class="text-muted-foreground text-sm">Set the dimensions for the layer.</p>
+            <p class="ui:text-muted-foreground text-sm">Set the dimensions for the layer.</p>
           </div>
           <div class="grid gap-2">
             <div class="grid grid-cols-3 items-center gap-4">
@@ -71,7 +71,7 @@
         <div class="grid gap-4">
           <div class="space-y-2">
             <h4 class="leading-none font-medium">Settings</h4>
-            <p class="text-muted-foreground text-sm">Manage your account settings.</p>
+            <p class="ui:text-muted-foreground text-sm">Manage your account settings.</p>
           </div>
           <div class="grid gap-2">
             <div class="grid gap-1">
@@ -99,7 +99,7 @@
       <Popover.Content class="w-56">
         <div class="space-y-2">
           <h4 class="font-medium">About this feature</h4>
-          <p class="text-muted-foreground text-sm">
+          <p class="ui:text-muted-foreground text-sm">
             This feature allows you to quickly access important information without leaving the current page.
           </p>
         </div>

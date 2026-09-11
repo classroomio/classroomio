@@ -1,4 +1,4 @@
-import type { AccountOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
 import type {
   FooterColumn,
   FooterColumnLink,
@@ -18,6 +18,7 @@ import {
   labelMatchesSocialPlatform,
   resolveFooterSocialPlatform
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
+import { isAllowedHref } from '@cio/utils/validation/shared';
 import { t } from '$lib/utils/functions/translations';
 
 export const landingPageThemes = [
@@ -30,7 +31,8 @@ export const landingPageThemes = [
   'corporate',
   'terminal',
   'editorial',
-  'vibrant'
+  'vibrant',
+  'quartz'
 ] as const satisfies OrgLandingPageTheme[];
 
 export const defaultLandingPageHero: OrgLandingPageHero = {
@@ -38,7 +40,7 @@ export const defaultLandingPageHero: OrgLandingPageHero = {
   subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
   primaryAction: {
     label: 'Start Learning',
-    href: '/login'
+    href: '/lms'
   },
   secondaryAction: {
     label: 'Browse',
@@ -81,7 +83,7 @@ export function createDefaultFooterConfig(): OrgLandingPageFooterConfig {
 }
 
 export const defaultLandingPageSettings: OrgLandingPageJson = {
-  theme: 'minimal',
+  theme: 'quartz',
   hero: defaultLandingPageHero,
   navItems: [
     { label: 'Courses', href: '/courses' }
@@ -158,8 +160,29 @@ function normalizeText(value: unknown, fallback = '') {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
 }
 
+function stripAccidentalFragmentPrefix(href: string): string {
+  const withoutHash = href.replace(/^#+/, '');
+  const isAbsolute = /^(https?:\/\/|mailto:|tel:|\/\/)/i.test(withoutHash);
+
+  return isAbsolute ? withoutHash : href;
+}
+
 function normalizeHref(value: unknown, fallback = '#') {
-  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return fallback;
+  }
+
+  const repaired = stripAccidentalFragmentPrefix(trimmed);
+  if (!isAllowedHref(repaired)) {
+    return fallback;
+  }
+
+  return repaired;
 }
 
 function isLegacyFooterSocialBlock(value: Record<string, unknown>): boolean {
@@ -448,8 +471,8 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
       }
 
       const title = normalizeText(item.title, '');
-      const hrefSource = typeof item.href === 'string' ? item.href.trim() : '';
-      if (!title || !hrefSource) {
+      const href = normalizeHref(item.href, '');
+      if (!title || !href) {
         return null;
       }
 
@@ -457,7 +480,7 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
         icon: resolveLandingPageLinkIcon(item.icon),
         title,
         description: normalizeText(item.description, ''),
-        href: hrefSource
+        href
       };
     })
     .filter((card): card is NonNullable<typeof card> => card !== null);
@@ -519,8 +542,17 @@ function normalizeHero(hero: NonNullable<LegacyLandingPageJson['hero']>): OrgLan
         }
       : undefined,
     image: normalizeText(hero.image, ''),
-    stats: normalizeHeroStats((hero as { stats?: unknown }).stats)
+    stats: normalizeHeroStats((hero as { stats?: unknown }).stats),
+    eyebrow: normalizeHeroEyebrow(hero.eyebrow)
   };
+}
+
+function normalizeHeroEyebrow(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  return value.trim();
 }
 
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
@@ -564,7 +596,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
 
   if (landingPage.hero) {
     return {
-      theme: landingPage.theme ?? 'minimal',
+      theme: landingPage.theme ?? 'quartz',
       hero: {
         ...normalizeHero(landingPage.hero),
         secondaryAction: landingPage.hero.secondaryAction
@@ -655,6 +687,10 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       : undefined;
     const courseSlug = typeof courseRecord.slug === 'string' && courseRecord.slug.length > 0 ? courseRecord.slug : '';
     const courseCost = typeof courseRecord.cost === 'number' ? courseRecord.cost : undefined;
+    const courseIsPaid =
+      typeof metadataRecord?.paymentEnabled === 'boolean'
+        ? metadataRecord.paymentEnabled
+        : typeof courseCost === 'number' && courseCost > 0;
     const courseCurrency = typeof courseRecord.currency === 'string' ? courseRecord.currency : undefined;
     const lessonCount = typeof courseRecord.lessonCount === 'number' ? courseRecord.lessonCount : undefined;
     const exerciseCount = typeof courseRecord.exerciseCount === 'number' ? courseRecord.exerciseCount : undefined;
@@ -676,7 +712,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       description,
       type,
       isPublished,
-      cost: courseCost,
+      cost: courseIsPaid ? courseCost : 0,
       currency: courseCurrency,
       lessonCount,
       exerciseCount,
@@ -690,7 +726,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       tags,
       image,
       link: courseSlug ? `/course/${courseSlug}` : undefined,
-      price,
+      price: courseIsPaid ? price : undefined,
       duration,
       level
     };
@@ -705,7 +741,7 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
 }
 
 export function buildOrgLandingPageProps(
-  org: AccountOrg,
+  org: AccountOrg | PublicOrg,
   landingpage: unknown,
   courses: OrgPublicCourses,
   hasMoreCourses = false,
@@ -713,12 +749,21 @@ export function buildOrgLandingPageProps(
   options?: { coursesLoaded?: boolean }
 ): OrgLandingPageProps {
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
+  const configuredPrimaryAction = normalizedLandingPage.hero.primaryAction;
+  const primaryAction =
+    configuredPrimaryAction.href === '/login' && authAction && !authAction.loading
+      ? { ...configuredPrimaryAction, href: authAction.href }
+      : configuredPrimaryAction;
 
   return {
     orgName: org.name,
     logoUrl: org.avatarUrl || undefined,
     authAction,
     ...normalizedLandingPage,
+    hero: {
+      ...normalizedLandingPage.hero,
+      primaryAction
+    },
     courses: mapPublicCoursesToLandingPageCourses(courses),
     hasMoreCourses,
     coursesLoaded: options?.coursesLoaded ?? true,
@@ -728,7 +773,7 @@ export function buildOrgLandingPageProps(
 
 export type LandingPageThemeKey = (typeof landingPageThemes)[number];
 
-export const DEFAULT_LANDING_PAGE_THEME: LandingPageThemeKey = 'minimal';
+export const DEFAULT_LANDING_PAGE_THEME: LandingPageThemeKey = 'quartz';
 
 const THEME_BUNDLE_LOADERS: Record<LandingPageThemeKey, () => Promise<LandingPageThemeBundle>> = {
   minimal: () => import('@cio/ui/custom/org-landing-page/minimal'),
@@ -740,7 +785,8 @@ const THEME_BUNDLE_LOADERS: Record<LandingPageThemeKey, () => Promise<LandingPag
   corporate: () => import('@cio/ui/custom/org-landing-page/corporate'),
   terminal: () => import('@cio/ui/custom/org-landing-page/terminal'),
   editorial: () => import('@cio/ui/custom/org-landing-page/editorial'),
-  vibrant: () => import('@cio/ui/custom/org-landing-page/vibrant')
+  vibrant: () => import('@cio/ui/custom/org-landing-page/vibrant'),
+  quartz: () => import('@cio/ui/custom/org-landing-page/quartz')
 };
 
 export function importThemeBundle(theme: LandingPageThemeKey): Promise<LandingPageThemeBundle> {

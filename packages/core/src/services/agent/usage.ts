@@ -40,7 +40,10 @@ const MODEL_COST_MULTIPLIER: Record<string, number> = {
   'gpt-5.4-mini': 4,
   'claude-sonnet-4-6': 11,
   'claude-haiku-4-5-20251001': 1.5,
-  'kimi-k2.6': 4
+  'kimi-k2.6': 4,
+  // Non-LLM spend: billed as a flat charge via `recordFlatCostUnits`, so the
+  // multiplier is never applied. Listed to keep this map a complete inventory.
+  'supadata-youtube-captions': 1
 };
 
 function computeCostUnits(promptTokens: number, completionTokens: number, model: string): number {
@@ -126,6 +129,42 @@ export async function recordTokenUsage(
     courseId,
     promptTokens: usage.promptTokens,
     completionTokens: usage.completionTokens,
+    costUnits,
+    model,
+    planAllowance: allowance,
+    since: startOfCurrentMonth()
+  });
+}
+
+/**
+ * Record a flat, non-token charge (a paid provider call) against the org's AI
+ * budget, draining purchased credits once the plan allowance is spent.
+ *
+ * `recordTokenUsage` cannot express this: it derives `costUnits` from
+ * `promptTokens + completionTokens`, so routing a flat charge through it would
+ * write fabricated token counts into `ai_token_usage`. Here both token columns
+ * stay `0` and `cost_units` carries the charge — safe because every aggregation
+ * reads `COALESCE(cost_units, prompt_tokens + completion_tokens)`.
+ */
+export async function recordFlatCostUnits(
+  orgId: string,
+  userId: string,
+  courseId: string,
+  costUnits: number,
+  model: string
+): Promise<void> {
+  if (costUnits <= 0) {
+    return;
+  }
+
+  const { allowance } = await getPlanAllowance(orgId);
+
+  await insertTokenUsageAndDrainCredits({
+    orgId,
+    userId,
+    courseId,
+    promptTokens: 0,
+    completionTokens: 0,
     costUnits,
     model,
     planAllowance: allowance,
