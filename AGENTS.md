@@ -55,6 +55,10 @@ Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow abov
 
 ## Database migrations
 
+**One migration file per PR.** However many schema changes a branch makes, and however many times
+you revise them while the PR is in review, they ship as a single migration. Fold later changes into
+the file the branch already added rather than adding a second one.
+
 **Block the merge if a new migration's `when` is not later than every migration already on `main`.**
 
 `drizzle-orm` keeps no record of which migrations ran. It reads one high-water mark
