@@ -21,3 +21,5 @@ export { default as CourseLibraryRow } from './course-library-row.svelte';
 export { default as ExploreMoreCourses } from './explore-more-courses.svelte';
 export { default as CourseInPathRibbon } from './course-in-path-ribbon.svelte';
 export { default as CourseInPathNext } from './course-in-path-next.svelte';
+export { default as LearningPathHead } from './learning-path-head.svelte';
+export { default as PathStepper } from './path-stepper.svelte';
