@@ -96,7 +96,8 @@
             {
               id: createdSection.id,
               title: createdSection.title ?? trimmedTitle,
-              type: ContentType.Section
+              type: ContentType.Section,
+              order: finalOrder
             },
             startedSession
           );

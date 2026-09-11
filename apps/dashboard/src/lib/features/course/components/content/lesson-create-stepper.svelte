@@ -88,7 +88,12 @@
           }
 
           onCreated(
-            { id: createdLesson.id, title: createdLesson.title ?? trimmedTitle, type: ContentType.Lesson },
+            {
+              id: createdLesson.id,
+              title: createdLesson.title ?? trimmedTitle,
+              type: ContentType.Lesson,
+              order: createdLesson.order ?? order
+            },
             startedSession
           );
         }

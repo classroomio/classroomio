@@ -12,6 +12,8 @@ export interface CreatedContent {
   title: string;
   /** Content type of the created item */
   type: ContentType;
+  /** Allocated order of the created item */
+  order?: number;
 }
 
 /**

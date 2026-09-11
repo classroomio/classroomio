@@ -124,7 +124,8 @@
           {
             id: createdExercise.id,
             title: createdExercise.title ?? template.title ?? '',
-            type: ContentType.Exercise
+            type: ContentType.Exercise,
+            order
           },
           startedSession
         );
@@ -172,7 +173,8 @@
           {
             id: createdExercise.id,
             title: createdExercise.title ?? trimmedTitle,
-            type: ContentType.Exercise
+            type: ContentType.Exercise,
+            order
           },
           startedSession
         );

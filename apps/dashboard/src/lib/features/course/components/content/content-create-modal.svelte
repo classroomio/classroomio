@@ -7,6 +7,11 @@
   import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
   import { contentCreateStore, contentCreateStoreUtils } from './store';
   import { ContentType } from '@cio/utils/constants/content';
+  import {
+    calculateNextSectionOrder,
+    calculateNextContentOrder,
+    UNGROUPED_SECTION_KEY
+  } from '@cio/utils/functions/course-content';
   import { courseApi } from '$features/course/api';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
@@ -71,7 +76,7 @@
 
   const contentGroupingEnabled = $derived(courseApi.course?.metadata?.isContentGroupingEnabled ?? true);
   const sections = $derived(
-    (courseApi.course?.content?.sections || []).filter((section) => section.id !== 'ungrouped')
+    (courseApi.course?.content?.sections || []).filter((section) => section.id !== UNGROUPED_SECTION_KEY)
   );
   /**
    * True when section is locked by context: either opened from a specific section
@@ -105,37 +110,32 @@
 
   const courseId = $derived(courseApi.course?.id || '');
   const effectiveSectionId = $derived(requiresSection ? sectionId : undefined);
+  /** Local reserved orders for sections created in this modal session while refreshCourse is pending */
+  let reservedSectionOrders = $state<number[]>([]);
+  /** Local reserved orders for lessons/exercises created in this modal session (keyed by sectionId or UNGROUPED_SECTION_KEY) */
+  let reservedContentOrders = $state<Record<string, number[]>>({});
+
   const nextContentOrder = $derived(getNextContentOrder(effectiveSectionId));
 
   function getNextSectionOrder() {
-    const orders = sections.map((section, index) => section.order ?? index + 1);
-    const maxOrder = orders.length ? Math.max(...orders) : 0;
-    return maxOrder + 1;
+    return calculateNextSectionOrder(sections, reservedSectionOrders);
+  }
+
+  function getContentReservationKey(targetSectionId?: string) {
+    return targetSectionId ?? UNGROUPED_SECTION_KEY;
   }
 
   function getNextContentOrder(targetSectionId?: string) {
-    const content = courseApi.course?.content;
-    if (!content) return 1;
-
-    let items = content.items;
-
-    if (content.grouped) {
-      const section = targetSectionId
-        ? content.sections.find((entry) => entry.id === targetSectionId)
-        : content.sections.find((entry) => entry.id === 'ungrouped');
-      items = section?.items ?? [];
-    }
-
-    const orders = items.map((item, index) => item.order ?? index + 1);
-    const maxOrder = orders.length ? Math.max(...orders) : 0;
-
-    return maxOrder + 1;
+    const key = getContentReservationKey(targetSectionId);
+    return calculateNextContentOrder(courseApi.course?.content, targetSectionId, reservedContentOrders[key]);
   }
 
   function resetModalState() {
     phase = 'form';
     createdContent = null;
     lockedSection = null;
+    reservedSectionOrders = [];
+    reservedContentOrders = {};
   }
 
   function resetStepperStates() {
@@ -210,6 +210,19 @@
     const nextCreatedContent = { ...content };
     createdContent = nextCreatedContent;
     phase = 'success';
+
+    // Reserve the created order so consecutive "Create another" actions generate distinct orders
+    if (content.type === ContentType.Section) {
+      const allocatedOrder = content.order ?? getNextSectionOrder();
+      reservedSectionOrders = [...reservedSectionOrders, allocatedOrder];
+    } else {
+      const key = getContentReservationKey(effectiveSectionId);
+      const allocatedOrder = content.order ?? nextContentOrder;
+      reservedContentOrders = {
+        ...reservedContentOrders,
+        [key]: [...(reservedContentOrders[key] ?? []), allocatedOrder]
+      };
+    }
 
     return tick().then(() => {
       if (!$contentCreateStore.open || currentSession !== modalSession) return;
