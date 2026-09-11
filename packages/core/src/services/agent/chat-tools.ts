@@ -527,7 +527,7 @@ export function buildAgentTools(
         return executeAgentTool('get_lesson_transcript', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
 
-          return getLessonVideoTranscript(args.lessonId, orgId, { userId, courseId, isOrgOnPaidPlan });
+          return getLessonVideoTranscript(args.lessonId, orgId, { userId, courseId });
         });
       }
     }),

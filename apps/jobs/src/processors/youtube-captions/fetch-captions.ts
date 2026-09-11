@@ -26,6 +26,7 @@ interface FetchCaptionsResult {
 function skippedResult(reason: string): FetchCaptionsResult {
   return { provider: 'supadata', language: 'en', segmentCount: 0, status: 'unavailable', reason };
 }
+
 /**
  * Processor for YouTube caption fetch jobs.
  *
@@ -69,6 +70,7 @@ export async function processFetchYoutubeCaptions(payload: TFetchYoutubeCaptions
   const apiKey = process.env.SUPADATA_API_KEY;
   if (!apiKey) {
     log.warn('youtube-captions-no-api-key', { mediaJobId, youtubeVideoId });
+
     return completeSkipped(mediaJobId, 'no_provider_key');
   }
 
@@ -174,6 +176,7 @@ export async function processFetchYoutubeCaptions(payload: TFetchYoutubeCaptions
     throw error;
   }
 }
+
 /**
  * Mark the job `completed` with a skip reason. Never `failed` — none of these
  * conditions resolve by retrying, and a failure would exhaust the retry budget

@@ -27,6 +27,7 @@ interface SupadataCaptionItem {
  * }
  * ```
  * `offset` and `duration` are in **milliseconds** — we convert to seconds.
+ *
  * Exactly **one** provider call is made per invocation: Supadata bills per
  * request, so trying several languages (or retrying without `lang`) would
  * multiply the cost of a single caption fetch.

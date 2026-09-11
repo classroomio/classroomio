@@ -39,6 +39,7 @@ export interface YoutubeCaptionBillingContext {
 export type YoutubeCaptionOutcome = (YoutubeCaptionFetchResult | YoutubeCaptionUnavailable) & {
   providerCalls: number;
 };
+
 export interface YoutubeCaptionAdapter {
   fetchNativeCaptions(input: {
     youtubeVideoId: string;

@@ -9,7 +9,6 @@ import * as z from 'zod';
  * `triggeredByProfileId` and `courseId` are the billing attribution for the
  * provider call. `courseId` is nullable because the prefetch fires while the
  * asset is being created, before it has been attached to any lesson.
-
  */
 export const ZFetchYoutubeCaptionsPayload = z.object({
   mediaJobId: z.string().uuid(),

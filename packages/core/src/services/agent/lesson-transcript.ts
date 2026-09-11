@@ -1,4 +1,5 @@
 import { listMediaTranscriptsByAssetIds } from '@cio/db/queries/media-transcript';
+
 import { getLesson } from '../lesson/lesson';
 import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
 import { getTokenBalance } from './usage';
@@ -30,6 +31,7 @@ interface LessonYoutubeVideo {
 /**
  * Extract a YouTube video ID from a URL or metadata.
  * Returns null if not a YouTube video or ID not found.
+ *
  * Note: lesson-embedded videos store their id under `metadata.svid`, not
  * `metadata.videoId` (see `lesson.videos[].metadata` in the schema), so in
  * practice the metadata branch only fires for assets written by other paths and
@@ -147,31 +149,6 @@ export async function getLessonVideoTranscript(
     .join('\n\n');
 
   if (!transcript) {
-    const hasYouTubeVideos = youtubeVideos.length > 0;
-    const hasUploadVideos = uploadAssetIds.length > 0;
-
-    if (hasYouTubeVideos && !hasUploadVideos) {
-      return {
-        lessonId: lessonWithVideos.id,
-        title: lessonWithVideos.title,
-        hasTranscript: false,
-        transcript: null,
-        message:
-          'This lesson has YouTube video(s) but no transcript is available yet. Captions may still be fetching, or the video may not have captions enabled.'
-      };
-    }
-
-    if (hasUploadVideos) {
-      return {
-        lessonId: lessonWithVideos.id,
-        title: lessonWithVideos.title,
-        hasTranscript: false,
-        transcript: null,
-        message:
-          'This lesson has an uploaded video, but no transcript is available yet — transcription may still be processing.'
-      };
-    }
-
     return {
       lessonId: lessonWithVideos.id,
       title: lessonWithVideos.title,

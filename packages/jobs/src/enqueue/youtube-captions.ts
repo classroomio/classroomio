@@ -6,6 +6,7 @@ import type { TFetchYoutubeCaptionsPayload } from '../payloads/youtube-captions'
 /**
  * Enqueue a YouTube captions fetch job. The worker calls Supadata,
  * writes to `youtube_caption`, and writes through to `media_transcript`.
+ *
  * The BullMQ `jobId` is deterministic on asset + language so concurrent
  * enqueues collapse into one job. `youtube_caption` remains the authoritative
  * dedup — a duplicate that does slip through hits the cache and spends nothing.
