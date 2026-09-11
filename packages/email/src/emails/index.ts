@@ -28,6 +28,7 @@ export * from './submission-received';
 export * from './submission-graded';
 export * from './student-limit-reached';
 export * from './student-limit-approaching';
+export * from './content-report-alert';
 
 import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
@@ -48,6 +49,7 @@ import type { submissionReceivedEmail } from './submission-received';
 import type { submissionGradedEmail } from './submission-graded';
 import type { studentLimitReachedEmail } from './student-limit-reached';
 import type { studentLimitApproachingEmail } from './student-limit-approaching';
+import type { contentReportAlertEmail } from './content-report-alert';
 import type { teacherCourseWelcomeEmail } from './teacher-course-welcome';
 import type { teacherStudentBuyRequestEmail } from './teacher-student-buy-request';
 import type { teacherStudentJoinedEmail } from './teacher-student-joined';
@@ -85,4 +87,5 @@ export type EmailSchemas = {
   submissionGraded: typeof submissionGradedEmail.template.schema;
   studentLimitReached: typeof studentLimitReachedEmail.template.schema;
   studentLimitApproaching: typeof studentLimitApproachingEmail.template.schema;
+  contentReportAlert: typeof contentReportAlertEmail.template.schema;
 };

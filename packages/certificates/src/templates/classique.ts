@@ -106,7 +106,7 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
       <div class="corner tr"></div>
       <div class="corner bl"></div>
       <div class="corner br"></div>
-      
+
       <div class="header-area">
         <div class="top-tag" style="font-size: ${fontSizes.org}px;">${escapeHtml(data.orgName)}</div>
         <div class="ornament">&#10086;</div>
@@ -163,7 +163,7 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
     .t-classique .corner.tr { top: 44px; right: 44px; border-left: none; border-bottom: none; }
     .t-classique .corner.bl { bottom: 44px; left: 44px; border-right: none; border-top: none; }
     .t-classique .corner.br { bottom: 44px; right: 44px; border-left: none; border-top: none; }
-    
+
     .t-classique .header-area {
       flex-shrink: 0;
       display: flex;

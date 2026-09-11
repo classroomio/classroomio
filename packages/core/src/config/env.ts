@@ -89,6 +89,8 @@ const envSchema = z.object({
 
       return Number.isFinite(parsed) && parsed >= 1 ? Math.trunc(parsed) : 500;
     }),
+  /** Inbox for user-submitted content reports. Defaults to help@classroomio.com. */
+  MODERATION_EMAIL: z.string().optional(),
   /** Max course lesson document upload size in megabytes (default 5). */
   UPLOAD_MAX_DOCUMENT_MB: z.string().optional(),
   /** Max image upload size in megabytes — avatars, media, editor images (default 5). */
