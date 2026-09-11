@@ -735,6 +735,10 @@
           "vibrant": {
             "title": "Vibrant",
             "description": "Bold primary panels, sunset gradient hero, energetic poster look"
+          },
+          "quartz": {
+            "title": "Quartz",
+            "description": "Monochrome hairline grid, ruled course rows, sticky enrolment rail"
           }
         }
       },
@@ -1162,6 +1166,7 @@
     "provider": {
       "upload": "Upload",
       "youtube": "YouTube",
+      "vimeo": "Vimeo",
       "generic": "Generic",
       "external_url": "External URL",
       "google_drive": "Google Drive"
@@ -1403,6 +1408,8 @@
       "name_prefix": "Course Widget"
     },
     "tabs": {
+      "active": "Active",
+      "archived": "Archived",
       "select_courses": "Select Courses",
       "layout": "Layout",
       "design": "Design",
@@ -1548,7 +1555,11 @@
       "copy_embed": "Copy embed",
       "copy_url": "Copy URL",
       "rename": "Rename",
-      "delete": "Delete"
+      "delete_permanently": "Delete permanently"
+    },
+    "delete_modal": {
+      "title": "Delete widget permanently",
+      "description": "Are you sure you want to permanently delete \"{name}\"? This action cannot be undone."
     },
     "embed": {
       "tabs": {
@@ -1599,8 +1610,19 @@
       "saved": "Widget saved",
       "published": "Widget published",
       "rolled_back": "Widget restored",
-      "deleted": "Widget archived",
+      "archived": "Widget archived",
+      "archive_failed": "Couldn't archive widget",
+      "permanently_deleted": "Widget permanently deleted",
+      "delete_failed": "Couldn't delete widget",
+      "restored": "Widget restored",
+      "archived_load_failed": "Couldn't load archived widgets",
+      "restore_failed": "Couldn't restore widget",
       "validation_failed": "Some fields are invalid. Check the highlighted inputs."
+    },
+    "archived": {
+      "heading": "Archived widgets",
+      "empty": "No archived widgets",
+      "empty_description": "Widgets you archive will appear here. You can restore them at any time."
     },
     "filter": {
       "status": "Status",
@@ -2398,6 +2420,7 @@
             },
             "video": {
               "title": "Video",
+              "vimeo_link": "Vimeo Link",
               "embed_link": "Embed Link",
               "google_drive": "Google Drive",
               "upload": "Upload",
@@ -2405,11 +2428,12 @@
               "button": "Add/Edit Video(s)",
               "remove_video": "Remove video",
               "empty_title": "No videos yet",
-              "empty_description": "Add videos from YouTube, Google Drive, embed links, upload, or your media library",
+              "empty_description": "Add videos from YouTube, Vimeo, Google Drive, embed links, upload, or your media library",
               "add_video": {
                 "title": "Add a Video",
                 "add_by": "Add By",
                 "youtube_link": "Youtube Link",
+                "vimeo_link": "Vimeo Link",
                 "videos_added": "Videos Added",
                 "add_video": "Add Video",
                 "upload_video": "Upload Video",
@@ -2425,6 +2449,22 @@
                 "upgrade": "Upgrade your plan to upload vidoes",
                 "uploading": "Uploading...",
                 "invalid_youtube": "Invalid YouTube link(s)",
+                "invalid_vimeo": "Invalid Vimeo link(s)",
+                "duplicate_video_error": "This video has already been added to this lesson.",
+                "duplicates_skipped": "Duplicate videos were skipped.",
+                "add_video_failed": "Failed to add video. Please try again.",
+                "some_videos_failed": "Some videos could not be added. Please try again.",
+                "vimeo_privacy_hint_prefix": "For domain-restricted videos, add",
+                "vimeo_privacy_hint_suffix": "to Vimeo privacy settings.",
+                "vimeo_privacy_error_title": "Embedding restricted by Vimeo privacy settings",
+                "vimeo_privacy_error_description": "Playback was blocked by Vimeo privacy settings. Possible reasons to check include:",
+                "vimeo_privacy_error_unlisted_hint": "Unlisted video link may be missing its privacy key (hash)",
+                "vimeo_privacy_error_domain_prefix": "Domain restrictions on Vimeo (ensure",
+                "vimeo_privacy_error_domain_suffix": "is allowed in video settings)",
+                "vimeo_privacy_error_other_hint": "Other Vimeo privacy settings",
+                "vimeo_retry_label": "Retry playback",
+                "vimeo_learner_error_title": "Video unavailable",
+                "vimeo_learner_error_description": "This video is temporarily unavailable. Please let your instructor know.",
                 "invalid_link": "Invalid link(s)",
                 "search_library": "Search library",
                 "search_library_action": "Search",
@@ -2466,6 +2506,7 @@
               "loading": "Loading video…",
               "simple_card": {
                 "kind_youtube": "YouTube",
+                "kind_vimeo": "Vimeo",
                 "kind_upload": "Upload",
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Embedded",

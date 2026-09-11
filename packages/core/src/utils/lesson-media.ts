@@ -1,9 +1,11 @@
+import { dedupe } from '@cio/utils';
 import { enrichObjectsWithUrls, extractKeysFromObjects } from './presigned-urls';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from './s3';
 
 import { getAssetsByIds } from '@cio/db/queries/assets';
 import type { LessonById } from '@cio/db/queries/lesson';
 import type { TLesson } from '@cio/db/types';
+import { queueVimeoBackfill } from '../services/assets/assets';
 
 // Extract types from schema
 type LessonVideo = NonNullable<TLesson['videos']>[number];
@@ -11,6 +13,7 @@ type LessonDocument = NonNullable<TLesson['documents']>[number];
 
 function mapProviderToVideoType(provider: string): LessonVideo['type'] {
   if (provider === 'youtube') return 'youtube';
+  if (provider === 'vimeo') return 'vimeo';
   if (provider === 'google_drive') return 'google_drive';
   if (provider === 'generic' || provider === 'external_url') return 'generic';
   return 'upload';
@@ -131,17 +134,25 @@ export async function enrichLessonWithPresignedUrls(lesson: LessonById): Promise
   const documentAssetIds = documents
     .map((document) => document.assetId)
     .filter((assetId): assetId is string => Boolean(assetId));
-  const assetIds = Array.from(new Set([...videoAssetIds, ...documentAssetIds]));
+  const assetIds = dedupe([...videoAssetIds, ...documentAssetIds]);
   const canonicalAssets = assetIds.length ? await getAssetsByIds(assetIds) : [];
+  for (const asset of canonicalAssets) {
+    queueVimeoBackfill(asset);
+  }
+
   const canonicalVideos = applyCanonicalVideoMetadata(videos, canonicalAssets);
   const canonicalDocuments = applyCanonicalDocumentMetadata(documents, canonicalAssets);
 
   const videoKeys = extractKeysFromObjects(canonicalVideos.filter((video) => video.type === 'upload'));
   const docKeys = extractKeysFromObjects(canonicalDocuments);
 
-  // Early return if no keys to process
+  // If no presigned URLs are needed, return lesson with canonical metadata applied
   if (videoKeys.length === 0 && docKeys.length === 0) {
-    return lesson;
+    return {
+      ...lesson,
+      videos: canonicalVideos,
+      documents: canonicalDocuments
+    };
   }
 
   // Generate presigned URLs in parallel

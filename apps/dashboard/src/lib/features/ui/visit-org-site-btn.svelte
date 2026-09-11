@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  import { browser, dev } from '$app/environment';
   import { Button, type ButtonVariant } from '@cio/ui/base/button';
   import SquareArrowOutUpRight from '@lucide/svelte/icons/square-arrow-out-up-right';
   import type { Component } from 'svelte';
 
   import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+  import { isLocalOrPrivateHost } from '@cio/utils/functions';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
@@ -31,19 +32,22 @@
   }: Props = $props();
 
   let href = $derived.by(() => {
-    const subdomainOrigin = $currentOrg.siteName ? `https://${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}` : '';
+    const isDevHost =
+      browser && (window.location.host.includes('localhost') || isLocalOrPrivateHost(window.location.hostname));
+    const subdomainOrigin = !dev && $currentOrg.siteName ? `https://${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}` : '';
     const origin = forceSubdomain
       ? subdomainOrigin || (browser ? window.location.origin : '')
       : $currentOrgDomain || (browser ? window.location.origin : '');
 
+    const target = pathname ?? (isLMS && $user.isLoggedIn ? '/home' : '/');
+
     if (!origin) {
-      return '';
+      return target;
     }
 
-    const target = pathname ?? (isLMS && $user.isLoggedIn ? '/home' : '/');
     const url = new URL(target, origin);
 
-    if (browser && window.location.host.includes('localhost') && $currentOrg.siteName) {
+    if (isDevHost && $currentOrg.siteName) {
       url.searchParams.set('org', $currentOrg.siteName);
     }
 

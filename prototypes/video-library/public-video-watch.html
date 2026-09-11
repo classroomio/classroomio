@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>What's new in Loopwise 4.2 · Loopwise Academy</title>
+    <meta name="description" content="Smart segments, saved views and the new bulk editor — everything that shipped this quarter, in four minutes." />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <link rel="stylesheet" href="video-landing.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .theme-fab { position: fixed; bottom: 18px; right: 74px; width: 38px; height: 38px; border-radius: 999px; display: grid; place-items: center; background: var(--landing-card); border: 1px solid var(--landing-border); color: var(--landing-fg-muted); cursor: pointer; z-index: 50; }
+      .theme-fab svg { width: 17px; height: 17px; stroke-width: 2; }
+      .to-top { position: fixed; bottom: 18px; right: 18px; width: 42px; height: 42px; border-radius: 999px; display: grid; place-items: center; background: var(--landing-card); border: 1px solid var(--landing-border); color: var(--landing-fg-muted); cursor: pointer; z-index: 50; box-shadow: 0 6px 18px -6px rgb(0 0 0 / .3); }
+      .to-top svg { width: 18px; height: 18px; stroke-width: 2; }
+      .crumb { font-size: 13px; color: var(--landing-fg-faint); margin-bottom: 14px; }
+      .crumb a { color: var(--landing-fg-muted); }
+      h1.vh { font-size: 29px; font-weight: var(--landing-heading-weight); letter-spacing: -0.03em; margin: 20px 0 10px; line-height: 1.2; }
+      .vsub { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 13.5px; color: var(--landing-fg-faint); margin-bottom: 18px; }
+      .vbodycopy { font-size: 15.5px; line-height: 1.7; color: var(--landing-fg-muted); max-width: 68ch; }
+      .jsonld { margin-top: 34px; padding: 14px 16px; border: 1px dashed var(--landing-border); border-radius: var(--landing-radius-card); font-size: 12.5px; color: var(--landing-fg-faint); line-height: 1.6; }
+      .jsonld code { background: var(--landing-card-soft); padding: 1px 5px; border-radius: 4px; }
+      .course-card { border: 1px solid var(--landing-accent); border-radius: var(--landing-radius-card); padding: 16px; background: var(--landing-panel-bg-accent); }
+      .statebar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 40px; padding-top: 20px; border-top: var(--landing-divider); font-size: 13px; color: var(--landing-fg-faint); }
+      .statebar button { background: var(--landing-card); border: 1px solid var(--landing-border); border-radius: var(--landing-radius-pill); padding: 5px 12px; font-size: 12.5px; color: var(--landing-fg-muted); cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div class="lp-nav-outer">
+      <nav class="lp-nav">
+        <a class="lp-nav-brand" href="landing-with-videos.html"><span class="lp-nav-logo">L</span>Loopwise Academy</a>
+        <div class="lp-nav-links">
+          <a href="landing-with-videos.html#courses">Courses</a>
+          <a class="active" href="public-videos-index.html">Product tours</a>
+          <a href="#">Help centre</a>
+          <a href="#">Community</a>
+        </div>
+        <a class="lp-nav-auth" href="#">Sign in</a>
+      </nav>
+    </div>
+
+    <main class="lp-section">
+      <div class="lp-wrap">
+        <p class="crumb"><a href="landing-with-videos.html">Home</a> / <a href="public-videos-index.html">Product tours</a> / What's new in Loopwise 4.2</p>
+
+        <div class="lp-watch">
+          <div>
+            <div class="lp-player" id="player">
+              <span class="big"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></span>
+              <div class="lp-scrub"><span>1:26</span><span class="track"><i></i></span><span>4:12</span></div>
+            </div>
+
+            <h1 class="vh">What's new in Loopwise 4.2 — smart segments &amp; saved views</h1>
+            <div class="vsub">
+              <span>14 March 2026</span>
+              <span>·</span>
+              <span class="tnum">1,204 views</span>
+              <span>·</span>
+              <span>4 min watch</span>
+              <span class="lp-vtags" style="margin-left: auto"><a class="lp-vtag" href="public-videos-index.html">Release notes</a><a class="lp-vtag" href="public-videos-index.html">Admin</a></span>
+            </div>
+
+            <p class="vbodycopy">
+              Smart segments let you define an audience once and reuse it everywhere — reports, exports, and automations.
+              Saved views do the same thing for layout: build a table the way you like it, share it with your team, pin it to the sidebar.
+              This walkthrough covers both, plus the new bulk editor and the changes to permissions that come with them.
+            </p>
+
+            <details class="lp-transcript" style="margin-top: 26px" open>
+              <summary>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h11"/></svg>
+                Transcript
+                <span style="margin-left: auto; font-size: 12px; color: var(--landing-fg-faint); font-weight: 400">English · auto-generated</span>
+              </summary>
+              <div class="body">
+                <div class="lp-cue"><span class="t">0:00</span><span class="x">Hey, I'm Priya from the Loopwise product team. Four-two is out today, and there are two features I want to show you.</span></div>
+                <div class="lp-cue"><span class="t">0:12</span><span class="x">The first is smart segments. Until now, if you wanted "enterprise accounts in EMEA that renewed this quarter", you rebuilt that filter every time.</span></div>
+                <div class="lp-cue"><span class="t">0:31</span><span class="x">Now you define it once, name it, and it shows up anywhere you can pick an audience — reports, exports, automations.</span></div>
+                <div class="lp-cue"><span class="t">0:52</span><span class="x">Let me build one. I'll start from the accounts table, add two filters, then hit Save as segment up here in the corner.</span></div>
+                <div class="lp-cue"><span class="t">1:26</span><span class="x">Second feature: saved views. Same idea, but for layout rather than audience — column order, sort, grouping, density.</span></div>
+                <div class="lp-cue"><span class="t">1:58</span><span class="x">One thing worth flagging: a shared view respects each person's permissions, so a teammate who cannot see revenue will not see that column.</span></div>
+                <div class="lp-cue"><span class="t">2:30</span><span class="x">If you administer a workspace, there is a companion video on the new permission model — link is in the sidebar.</span></div>
+              </div>
+            </details>
+
+            <div class="jsonld">
+              <b style="color: var(--landing-fg-muted)">Head &amp; structured data</b> (not visible to the reader, but the point of this page):
+              <code>&lt;title&gt;</code>, meta description, canonical, OG image from the thumbnail, and <code>VideoObject</code> JSON-LD carrying
+              <code>name</code>, <code>description</code>, <code>uploadDate</code>, <code>duration</code>, <code>thumbnailUrl</code>, <code>embedUrl</code> and
+              <code>transcript</code>. This is what makes a video page answer a search for "how do I create a segment in Loopwise" instead of a support ticket.
+            </div>
+
+            <div class="statebar">
+              <span>States:</span>
+              <button id="s-yt">YouTube-hosted (no transcript)</button>
+              <button id="s-notr">No transcript</button>
+              <button id="s-404">Unpublished / 404</button>
+              <a href="public-videos-index.html" style="color: var(--landing-accent)">← library</a>
+              <a href="index.html" style="color: var(--landing-accent)">← map</a>
+            </div>
+          </div>
+
+          <aside style="display: flex; flex-direction: column; gap: 16px">
+            <div class="course-card" id="course-card">
+              <p class="lp-eyebrow" style="margin: 0 0 6px">Go deeper</p>
+              <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: var(--landing-heading-weight)">Loopwise Admin Certification</h3>
+              <p style="margin: 0 0 12px; font-size: 13px; color: var(--landing-fg-muted); line-height: 1.55">This video is lesson 1 of a 12-lesson course with a certificate. 4 hours, self-paced.</p>
+              <a class="lp-btn lp-btn-primary lp-btn-block" href="landing-with-videos.html#courses" style="width: 100%; justify-content: center">Watch the full course</a>
+              <p style="margin: 9px 0 0; font-size: 11.5px; color: var(--landing-fg-faint); line-height: 1.5">Derived from the asset's lesson usage at render time — never stored on the video.</p>
+            </div>
+
+            <div class="lp-rail-card">
+              <p class="lp-eyebrow" style="margin: 0 0 10px">More like this</p>
+              <a class="lp-mini" href="public-video-watch.html">
+                <span class="th" style="background: linear-gradient(135deg, oklch(0.5 0.2 300), oklch(0.6 0.18 315))"><span class="dur">5:02</span></span>
+                <span><span class="nm">What's new in Loopwise 4.1</span><span class="sub">Release notes · 968 views</span></span>
+              </a>
+              <a class="lp-mini" href="public-video-watch.html">
+                <span class="th" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"><span class="dur">3:48</span></span>
+                <span><span class="nm">Setting up SSO in four minutes</span><span class="sub">Admin · 872 views</span></span>
+              </a>
+              <a class="lp-mini" href="public-video-watch.html">
+                <span class="th" style="background: linear-gradient(135deg, oklch(0.45 0.12 200), oklch(0.58 0.13 210))"><span class="dur">9:41</span></span>
+                <span><span class="nm">Salesforce sync explained</span><span class="sub">Integrations · 402 views</span></span>
+              </a>
+              <a href="public-videos-index.html" style="display: inline-block; margin-top: 10px; font-size: 13px; color: var(--landing-accent)">See all videos →</a>
+            </div>
+
+            <div class="lp-rail-card">
+              <p class="lp-eyebrow" style="margin: 0 0 8px">Share</p>
+              <div style="display: flex; gap: 7px; flex-wrap: wrap">
+                <button class="lp-vtag" style="cursor: pointer">Copy link</button>
+                <button class="lp-vtag" style="cursor: pointer">Embed</button>
+                <button class="lp-vtag" style="cursor: pointer">X</button>
+                <button class="lp-vtag" style="cursor: pointer">LinkedIn</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <button class="theme-fab" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="to-top" id="totop" title="Scroll to top" aria-label="Scroll to top" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </button>
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      // ScrollToTop: appears only after one full viewport, hides below 0.8
+      const totop = document.getElementById('totop');
+      addEventListener('scroll', () => {
+        const y = scrollY;
+        if (y > innerHeight) totop.hidden = false;
+        else if (y < innerHeight * 0.8) totop.hidden = true;
+      });
+      totop.onclick = () =>
+        scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+
+      const transcript = document.querySelector('.lp-transcript');
+      document.getElementById('s-yt').onclick = () => {
+        transcript.outerHTML =
+          '<div class="jsonld" style="margin-top:26px">This video is hosted on YouTube, so there is no transcript and no watch-through. Views are still counted on this page.</div>';
+        document.getElementById('player').style.background = 'oklch(.22 .04 22)';
+      };
+      document.getElementById('s-notr').onclick = () => {
+        transcript.outerHTML = '';
+      };
+      document.getElementById('s-404').onclick = () => {
+        document.querySelector('.lp-watch').outerHTML =
+          '<div class="lp-empty" style="padding: 90px 24px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><h3>This video is not available</h3><p>It may have been unpublished. Browse the <a href="public-videos-index.html" style="color: var(--landing-accent)">video library</a> for everything that is live.<br /><br />Behind the scenes the HLS cookie endpoint returns 403 for an unpublished asset — including one that is still lesson content in a published course.</p></div>';
+      };
+    </script>
+  </body>
+</html>

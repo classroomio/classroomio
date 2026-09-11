@@ -2141,7 +2141,26 @@
                   "completed": "Traitement terminé",
                   "failed": "Échec du traitement",
                   "canceled": "Traitement annulé"
-                }
+                },
+                "vimeo_link": "Lien Vimeo",
+                "invalid_vimeo": "Lien Vimeo invalide(s)",
+                "vimeo_privacy_hint_prefix": "Pour les vidéos soumises à des restrictions de domaine, ajoutez",
+                "vimeo_privacy_hint_suffix": "aux paramètres de confidentialité de Vimeo.",
+                "vimeo_privacy_error_title": "Intégration restreinte par les paramètres de confidentialité de Vimeo",
+                "vimeo_privacy_error_prefix": "Cette vidéo est soumise à des restrictions de confidentialité au niveau du domaine. Pour autoriser la lecture, ajoutez",
+                "vimeo_privacy_error_suffix": "aux domaines autorisés de la vidéo dans vos paramètres vidéo Vimeo.",
+                "vimeo_retry_label": "Réessayer la lecture",
+                "vimeo_learner_error_title": "Vidéo indisponible",
+                "vimeo_learner_error_description": "Cette vidéo est temporairement indisponible. Veuillez en informer votre professeur.",
+                "duplicate_video_error": "Cette vidéo a déjà été ajoutée à cette leçon.",
+                "duplicates_skipped": "Les vidéos en double ont été ignorées.",
+                "add_video_failed": "Impossible d'ajouter la vidéo. Veuillez réessayer.",
+                "some_videos_failed": "Certaines vidéos n'ont pas pu être ajoutées. Veuillez réessayer.",
+                "vimeo_privacy_error_description": "La lecture a été bloquée par les paramètres de confidentialité de Vimeo. Voici quelques raisons possibles à vérifier :",
+                "vimeo_privacy_error_unlisted_hint": "Le lien de la vidéo non répertoriée ne contient peut-être pas sa clé de confidentialité (hash).",
+                "vimeo_privacy_error_domain_prefix": "Restrictions de domaine sur Vimeo (assurez-vous que",
+                "vimeo_privacy_error_domain_suffix": "est autorisé dans les paramètres de la vidéo).",
+                "vimeo_privacy_error_other_hint": "Autres paramètres de confidentialité de Vimeo"
               },
               "empty_title": "Aucune vidéo pour l'instant",
               "empty_description": "Ajoutez des vidéos de YouTube, téléchargez-les ou de votre bibliothèque multimédia",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Intégré",
                 "course_fallback": "Cours",
                 "menu_aria": "Options vidéo",
-                "transcription_in_progress": "(Génération de transcription en cours)"
+                "transcription_in_progress": "(Génération de transcription en cours)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Voir la transcription",
               "playback_error": "Le chargement de cette vidéo a échoué.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "1080p indisponible pour cette vidéo source",
               "loading": "Chargement de la vidéo…",
               "playback_auth_error": "Votre session a expiré. Veuillez vous reconnecter pour regarder cette vidéo.",
-              "playback_auth_action": "Se connecter"
+              "playback_auth_action": "Se connecter",
+              "vimeo_link": "Lien Vimeo"
             },
             "slide": {
               "title": "Diapositive",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Générique",
       "external_url": "URL externe",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Vidéo",
@@ -3529,6 +3551,10 @@
           "editorial": {
             "title": "Éditorial",
             "description": "Palette de crème chaude, héros pictural, sensation de magazine raffinée"
+          },
+          "quartz": {
+            "title": "Quartz",
+            "description": "Grille monochrome à traits fins, rangées de cours lignées, rail d'inscription adhésif"
           }
         }
       },
@@ -4471,6 +4497,11 @@
     "heading": "Widgets",
     "subtitle": "Publiez des collections de cours de marque pour des sites Web externes.",
     "empty_state": "Aucun widget pour l'instant. Créez-en un pour générer un bloc de cours intégrable.",
+    "archived": {
+      "heading": "Widgets archivés",
+      "empty": "Aucun widget archivé",
+      "empty_description": "Les widgets archivés apparaîtront ici. Vous pouvez les restaurer à tout moment."
+    },
     "filter": {
       "status": "Statut",
       "all": "Tout",
@@ -4482,8 +4513,14 @@
       "saved": "Widget enregistré",
       "published": "Widget publié",
       "rolled_back": "Widget restauré",
-      "deleted": "Widget archivé",
-      "validation_failed": "Certains champs ne sont pas valides. Vérifiez les entrées en surbrillance."
+      "restored": "Widget restauré",
+      "archived_load_failed": "Impossible de charger les widgets archivés",
+      "restore_failed": "Impossible de restaurer le widget",
+      "validation_failed": "Certains champs ne sont pas valides. Vérifiez les entrées en surbrillance.",
+      "archived": "Widget archivé",
+      "archive_failed": "Impossible d'archiver le widget",
+      "permanently_deleted": "Widget supprimé définitivement",
+      "delete_failed": "Impossible de supprimer le widget"
     },
     "form": {
       "name": "Nom du widget",
@@ -4533,7 +4570,7 @@
       "copy_embed": "Copier l'intégration",
       "copy_url": "Copier l'URL",
       "rename": "Renommer",
-      "delete": "Supprimer"
+      "delete_permanently": "Supprimer définitivement"
     },
     "embed": {
       "tabs": {
@@ -4675,7 +4712,9 @@
       "select_courses": "Sélectionnez des cours",
       "layout": "Mise en page",
       "design": "Design",
-      "embed": "Code intégré"
+      "embed": "Code intégré",
+      "active": "Actifs",
+      "archived": "Archivés"
     },
     "defaults": {
       "name_prefix": "Widget de cours"
@@ -4683,6 +4722,10 @@
     "empty": {
       "heading": "Pas encore de widget",
       "description": "Créez un widget pour générer un bloc de cours intégrable pour les sites Web externes."
+    },
+    "delete_modal": {
+      "title": "Supprimer définitivement le widget",
+      "description": "Êtes-vous sûr de vouloir supprimer définitivement « {name} » ? Cette action est irréversible."
     }
   },
   "side_panel": {

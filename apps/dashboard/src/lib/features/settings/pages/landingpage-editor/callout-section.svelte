@@ -38,7 +38,7 @@
       description: '',
       action: {
         label: t.get('settings.landing_page.editor.callout.action_label_default'),
-        href: '#'
+        href: ''
       }
     };
 

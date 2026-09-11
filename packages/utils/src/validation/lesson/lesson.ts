@@ -22,8 +22,8 @@ export const ZLessonUpdate = z.object({
   note: z.string().optional(),
   sectionId: z.string().optional(),
   order: z.number().int().min(0).optional(),
-  callUrl: z.string().optional(),
-  lessonAt: z.string().optional(),
+  callUrl: z.string().nullable().optional(),
+  lessonAt: z.string().nullable().optional(),
   teacherId: z.string().optional(),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
@@ -37,7 +37,7 @@ export const ZLessonUpdate = z.object({
   videos: z
     .array(
       z.object({
-        type: z.enum(['youtube', 'generic', 'upload', 'google_drive']),
+        type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
         link: z.string(),
         key: z.string().optional(),
         assetId: z.string().uuid().optional(),

@@ -2141,7 +2141,26 @@
                   "completed": "Verarbeitung abgeschlossen",
                   "failed": "Die Verarbeitung ist fehlgeschlagen",
                   "canceled": "Verarbeitung abgebrochen"
-                }
+                },
+                "vimeo_link": "Vimeo-Link",
+                "invalid_vimeo": "Ungültiger Vimeo-Link",
+                "vimeo_privacy_hint_prefix": "Für Videos mit Domainbeschränkungen fügen Sie Folgendes hinzu:",
+                "vimeo_privacy_hint_suffix": "in den Vimeo-Datenschutzeinstellungen.",
+                "vimeo_privacy_error_title": "Einbettung durch Vimeo-Datenschutzeinstellungen eingeschränkt",
+                "vimeo_privacy_error_prefix": "Dieses Video unterliegt Domain-Datenschutzbeschränkungen. Um die Wiedergabe zu ermöglichen, fügen Sie Folgendes hinzu:",
+                "vimeo_privacy_error_suffix": "in den Vimeo-Videoeinstellungen zu den zulässigen Domains des Videos.",
+                "vimeo_retry_label": "Wiedergabe erneut versuchen",
+                "vimeo_learner_error_title": "Video nicht verfügbar",
+                "vimeo_learner_error_description": "Dieses Video ist vorübergehend nicht verfügbar. Bitte informieren Sie Ihren Dozenten/Ihre Dozentin.",
+                "duplicate_video_error": "Dieses Video wurde dieser Lektion bereits hinzugefügt.",
+                "duplicates_skipped": "Doppelte Videos wurden übersprungen.",
+                "add_video_failed": "Video konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",
+                "some_videos_failed": "Einige Videos konnten nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",
+                "vimeo_privacy_error_description": "Die Wiedergabe wurde durch die Vimeo-Datenschutzeinstellungen blockiert. Mögliche Gründe:",
+                "vimeo_privacy_error_unlisted_hint": "Der Link zu einem nicht gelisteten Video hat möglicherweise keinen Datenschutzschlüssel (Hash).",
+                "vimeo_privacy_error_domain_prefix": "Domainbeschränkungen auf Vimeo (stellen Sie sicher, dass",
+                "vimeo_privacy_error_domain_suffix": "in den Videoeinstellungen erlaubt ist).",
+                "vimeo_privacy_error_other_hint": "Weitere Vimeo-Datenschutzeinstellungen"
               },
               "empty_title": "Noch keine Videos",
               "empty_description": "Fügen Sie Videos von YouTube hinzu, laden Sie sie hoch oder laden Sie sie aus Ihrer Medienbibliothek herunter",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Eingebettet",
                 "course_fallback": "Kurs",
                 "menu_aria": "Videooptionen",
-                "transcription_in_progress": "(Transkripterstellung läuft)"
+                "transcription_in_progress": "(Transkripterstellung läuft)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Transkription ansehen",
               "playback_error": "Das Laden dieses Videos ist fehlgeschlagen.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "1080p ist für dieses Quellvideo nicht verfügbar",
               "loading": "Video wird geladen…",
               "playback_auth_error": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an, um dieses Video anzusehen.",
-              "playback_auth_action": "anmelden"
+              "playback_auth_action": "anmelden",
+              "vimeo_link": "Vimeo-Link"
             },
             "slide": {
               "title": "Folie",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Generisch",
       "external_url": "Externe URL",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Video",
@@ -3529,6 +3551,10 @@
           "editorial": {
             "title": "Leitartikel",
             "description": "Warme Creme-Palette, malerischer Held, raffiniertes Magazin-Feeling"
+          },
+          "quartz": {
+            "title": "Quarz",
+            "description": "Monochromes Haarlinienraster, linierte Kursreihen, selbstklebende Einschreibeschiene"
           }
         }
       },
@@ -4471,6 +4497,11 @@
     "heading": "Widgets",
     "subtitle": "Veröffentlichen Sie gebrandete Kurssammlungen für externe Websites.",
     "empty_state": "Noch keine Widgets. Erstellen Sie einen, um einen einbettbaren Kursblock zu generieren.",
+    "archived": {
+      "heading": "Archivierte Widgets",
+      "empty": "Keine archivierten Widgets",
+      "empty_description": "Archivierte Widgets werden hier angezeigt. Sie können sie jederzeit wiederherstellen."
+    },
     "filter": {
       "status": "Status",
       "all": "Alle",
@@ -4482,8 +4513,14 @@
       "saved": "Widget gespeichert",
       "published": "Widget veröffentlicht",
       "rolled_back": "Widget wiederhergestellt",
-      "deleted": "Widget archiviert",
-      "validation_failed": "Einige Felder sind ungültig. Überprüfen Sie die hervorgehobenen Eingaben."
+      "restored": "Widget wiederhergestellt",
+      "archived_load_failed": "Archivierte Widgets konnten nicht geladen werden",
+      "restore_failed": "Widget konnte nicht wiederhergestellt werden",
+      "validation_failed": "Einige Felder sind ungültig. Überprüfen Sie die hervorgehobenen Eingaben.",
+      "archived": "Widget archiviert",
+      "archive_failed": "Widget konnte nicht archiviert werden",
+      "permanently_deleted": "Widget endgültig gelöscht",
+      "delete_failed": "Widget konnte nicht gelöscht werden"
     },
     "form": {
       "name": "Widget-Name",
@@ -4533,7 +4570,7 @@
       "copy_embed": "Einbetten kopieren",
       "copy_url": "URL kopieren",
       "rename": "Umbenennen",
-      "delete": "Löschen"
+      "delete_permanently": "Endgültig löschen"
     },
     "embed": {
       "tabs": {
@@ -4675,7 +4712,9 @@
       "select_courses": "Wählen Sie Kurse aus",
       "layout": "Layout",
       "design": "Design",
-      "embed": "Code einbetten"
+      "embed": "Code einbetten",
+      "active": "Aktiv",
+      "archived": "Archiviert"
     },
     "defaults": {
       "name_prefix": "Kurs-Widget"
@@ -4683,6 +4722,10 @@
     "empty": {
       "heading": "Noch keine Widgets",
       "description": "Erstellen Sie ein Widget, um einen einbettbaren Kursblock für externe Websites zu generieren."
+    },
+    "delete_modal": {
+      "title": "Widget endgültig löschen",
+      "description": "Möchten Sie \"{name}\" wirklich endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden."
     }
   },
   "side_panel": {

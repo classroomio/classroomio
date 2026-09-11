@@ -2141,7 +2141,26 @@
                   "completed": "Procesamiento completo",
                   "failed": "Error de procesamiento",
                   "canceled": "Procesamiento cancelado"
-                }
+                },
+                "vimeo_link": "Enlace de Vimeo",
+                "invalid_vimeo": "Enlace(s) de Vimeo no válido(s)",
+                "vimeo_privacy_hint_prefix": "Para videos con restricciones de dominio, agregue",
+                "vimeo_privacy_hint_suffix": "a la configuración de privacidad de Vimeo.",
+                "vimeo_privacy_error_title": "Inserción restringida por la configuración de privacidad de Vimeo.",
+                "vimeo_privacy_error_prefix": "Este video tiene restricciones de privacidad a nivel de dominio. Para permitir la reproducción, agregue",
+                "vimeo_privacy_error_suffix": "a los dominios permitidos del video en la configuración de Vimeo.",
+                "vimeo_retry_label": "Reintentar reproducción",
+                "vimeo_learner_error_title": "Video no disponible",
+                "vimeo_learner_error_description": "Este video no está disponible temporalmente. Por favor, avise a su instructor.",
+                "duplicate_video_error": "Este video ya se ha añadido a esta lección.",
+                "duplicates_skipped": "Se omitieron los videos duplicados.",
+                "add_video_failed": "No se pudo añadir el vídeo. Inténtalo de nuevo.",
+                "some_videos_failed": "No se pudieron añadir algunos vídeos. Inténtalo de nuevo.",
+                "vimeo_privacy_error_description": "La reproducción fue bloqueada por la configuración de privacidad de Vimeo. Algunas posibles razones a revisar son:",
+                "vimeo_privacy_error_unlisted_hint": "Es posible que el enlace del video no listado no tenga su clave de privacidad (hash).",
+                "vimeo_privacy_error_domain_prefix": "Restricciones de dominio en Vimeo (asegúrese de que",
+                "vimeo_privacy_error_domain_suffix": "esté permitido en la configuración de video).",
+                "vimeo_privacy_error_other_hint": "Otras configuraciones de privacidad de Vimeo"
               },
               "empty_title": "Aún no hay vídeos",
               "empty_description": "Agregue videos de YouTube, cárguelos o de su biblioteca multimedia",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Incrustado",
                 "course_fallback": "Curso",
                 "menu_aria": "Opciones de vídeo",
-                "transcription_in_progress": "(Generación de transcripción en progreso)"
+                "transcription_in_progress": "(Generación de transcripción en progreso)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Ver transcripción",
               "playback_error": "Error al cargar este vídeo.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "1080p no disponible para este vídeo fuente",
               "loading": "Cargando vídeo…",
               "playback_auth_error": "Tu sesión expiró. Inicie sesión nuevamente para ver este video.",
-              "playback_auth_action": "Iniciar sesión"
+              "playback_auth_action": "Iniciar sesión",
+              "vimeo_link": "Enlace de Vimeo"
             },
             "slide": {
               "title": "Diapositiva",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "genérico",
       "external_url": "URL externa",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Video",
@@ -3529,6 +3551,10 @@
           "editorial": {
             "title": "Redacción",
             "description": "Paleta de crema cálida, héroe pictórico, sensación refinada de revista"
+          },
+          "quartz": {
+            "title": "Cuarzo",
+            "description": "Cuadrícula monocromática de líneas finas, filas de cursos con líneas, riel adhesivo para la inscripción"
           }
         }
       },
@@ -4471,6 +4497,11 @@
     "heading": "Widgets",
     "subtitle": "Publique colecciones de cursos de marca para sitios web externos.",
     "empty_state": "Aún no hay widgets. Cree uno para generar un bloque de curso integrable.",
+    "archived": {
+      "heading": "Widgets archivados",
+      "empty": "No hay widgets archivados",
+      "empty_description": "Los widgets que archives aparecerán aquí. Puedes restaurarlos cuando quieras."
+    },
     "filter": {
       "status": "Estado",
       "all": "Todos",
@@ -4482,8 +4513,14 @@
       "saved": "Widget guardado",
       "published": "Widget publicado",
       "rolled_back": "Widget restaurado",
-      "deleted": "Widget archivado",
-      "validation_failed": "Algunos campos no son válidos. Verifique las entradas resaltadas."
+      "restored": "Widget restaurado",
+      "archived_load_failed": "No se pudieron cargar los widgets archivados",
+      "restore_failed": "No se pudo restaurar el widget",
+      "validation_failed": "Algunos campos no son válidos. Verifique las entradas resaltadas.",
+      "archived": "Widget archivado",
+      "archive_failed": "No se pudo archivar el widget",
+      "permanently_deleted": "Widget eliminado permanentemente",
+      "delete_failed": "No se pudo eliminar el widget"
     },
     "form": {
       "name": "Nombre del widget",
@@ -4533,7 +4570,7 @@
       "copy_embed": "Copiar incrustado",
       "copy_url": "Copiar URL",
       "rename": "Cambiar nombre",
-      "delete": "Eliminar"
+      "delete_permanently": "Eliminar permanentemente"
     },
     "embed": {
       "tabs": {
@@ -4675,7 +4712,9 @@
       "select_courses": "Seleccionar cursos",
       "layout": "Disposición",
       "design": "Diseño",
-      "embed": "Código para insertar"
+      "embed": "Código para insertar",
+      "active": "Activos",
+      "archived": "Archivados"
     },
     "defaults": {
       "name_prefix": "Widget del curso"
@@ -4683,6 +4722,10 @@
     "empty": {
       "heading": "Aún no hay widgets",
       "description": "Cree un widget para generar un bloque de curso integrable para sitios web externos."
+    },
+    "delete_modal": {
+      "title": "Eliminar widget permanentemente",
+      "description": "¿Está seguro de que desea eliminar permanentemente \"{name}\"? Esta acción no se puede deshacer."
     }
   },
   "side_panel": {

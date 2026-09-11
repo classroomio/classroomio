@@ -2141,7 +2141,26 @@
                   "completed": "Xử lý hoàn tất",
                   "failed": "Xử lý không thành công",
                   "canceled": "Đã hủy xử lý"
-                }
+                },
+                "vimeo_link": "Liên kết Vimeo",
+                "invalid_vimeo": "Các liên kết Vimeo không hợp lệ",
+                "vimeo_privacy_hint_prefix": "Đối với video bị hạn chế theo tên miền, hãy thêm",
+                "vimeo_privacy_hint_suffix": "vào cài đặt quyền riêng tư của Vimeo.",
+                "vimeo_privacy_error_title": "Việc nhúng video bị hạn chế bởi cài đặt quyền riêng tư của Vimeo",
+                "vimeo_privacy_error_prefix": "Video này có các hạn chế về quyền riêng tư ở cấp độ tên miền. Để cho phép phát lại, hãy thêm",
+                "vimeo_privacy_error_suffix": "vào các tên miền được phép của video trong cài đặt video Vimeo của bạn.",
+                "vimeo_retry_label": "Thử phát lại",
+                "vimeo_learner_error_title": "Video không khả dụng",
+                "vimeo_learner_error_description": "Video này tạm thời không khả dụng. Vui lòng thông báo cho giảng viên của bạn.",
+                "duplicate_video_error": "Video này đã được thêm vào bài học này rồi.",
+                "duplicates_skipped": "Các video trùng lặp đã bị bỏ qua.",
+                "add_video_failed": "Không thể thêm video. Vui lòng thử lại.",
+                "some_videos_failed": "Một số video không thể được thêm vào. Vui lòng thử lại.",
+                "vimeo_privacy_error_description": "Việc phát lại đã bị chặn bởi cài đặt quyền riêng tư của Vimeo. Các lý do có thể cần kiểm tra bao gồm:",
+                "vimeo_privacy_error_unlisted_hint": "Liên kết video không được liệt kê có thể thiếu khóa quyền riêng tư (mã băm)",
+                "vimeo_privacy_error_domain_prefix": "Hạn chế tên miền trên Vimeo (đảm bảo",
+                "vimeo_privacy_error_domain_suffix": "được cho phép trong cài đặt video)",
+                "vimeo_privacy_error_other_hint": "Các cài đặt quyền riêng tư khác của Vimeo"
               },
               "empty_title": "Chưa có video nào",
               "empty_description": "Thêm video từ YouTube, tải lên hoặc thư viện phương tiện của bạn",
@@ -2170,7 +2189,8 @@
                 "kind_generic": "Đã nhúng",
                 "course_fallback": "Khóa học",
                 "menu_aria": "Tùy chọn video",
-                "transcription_in_progress": "(Đang tạo bản ghi)"
+                "transcription_in_progress": "(Đang tạo bản ghi)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Xem bản chép lời",
               "playback_error": "Tải video này không thành công.",
@@ -2181,7 +2201,8 @@
               "generate_1080_unavailable": "1080p không có sẵn cho video nguồn này",
               "loading": "Đang tải video…",
               "playback_auth_error": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại để xem video này.",
-              "playback_auth_action": "Đăng nhập"
+              "playback_auth_action": "Đăng nhập",
+              "vimeo_link": "Liên kết Vimeo"
             },
             "slide": {
               "title": "Slide",
@@ -3119,7 +3140,8 @@
       "youtube": "YouTube",
       "generic": "Chung",
       "external_url": "URL bên ngoài",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Video",
@@ -3529,6 +3551,10 @@
           "editorial": {
             "title": "biên tập",
             "description": "Bảng màu kem ấm áp, anh hùng họa sĩ, cảm giác tạp chí tinh tế"
+          },
+          "quartz": {
+            "title": "Thạch anh",
+            "description": "Lưới kẻ ô đơn sắc, hàng kẻ ô, thanh ghi danh dính"
           }
         }
       },
@@ -4471,6 +4497,11 @@
     "heading": "Widget",
     "subtitle": "Xuất bản bộ sưu tập khóa học có thương hiệu cho các trang web bên ngoài.",
     "empty_state": "Chưa có vật dụng nào. Tạo một cái để tạo khối khóa học có thể nhúng.",
+    "archived": {
+      "heading": "Tiện ích đã lưu trữ",
+      "empty": "Không có tiện ích đã lưu trữ",
+      "empty_description": "Các tiện ích bạn lưu trữ sẽ xuất hiện ở đây. Bạn có thể khôi phục chúng bất cứ lúc nào."
+    },
     "filter": {
       "status": "Trạng thái",
       "all": "Tất cả",
@@ -4482,8 +4513,14 @@
       "saved": "Đã lưu tiện ích",
       "published": "Đã xuất bản tiện ích",
       "rolled_back": "Đã khôi phục tiện ích",
-      "deleted": "Đã lưu trữ tiện ích",
-      "validation_failed": "Một số trường không hợp lệ. Kiểm tra các đầu vào được đánh dấu."
+      "restored": "Đã khôi phục tiện ích",
+      "archived_load_failed": "Không thể tải tiện ích đã lưu trữ",
+      "restore_failed": "Không thể khôi phục tiện ích",
+      "validation_failed": "Một số trường không hợp lệ. Kiểm tra các đầu vào được đánh dấu.",
+      "archived": "Tiện ích đã được lưu trữ",
+      "archive_failed": "Không thể lưu trữ tiện ích",
+      "permanently_deleted": "Tiện ích đã bị xóa vĩnh viễn",
+      "delete_failed": "Không thể xóa tiện ích"
     },
     "form": {
       "name": "Tên tiện ích",
@@ -4533,7 +4570,7 @@
       "copy_embed": "Sao chép nhúng",
       "copy_url": "Sao chép URL",
       "rename": "Đổi tên",
-      "delete": "Xóa"
+      "delete_permanently": "Xóa vĩnh viễn"
     },
     "embed": {
       "tabs": {
@@ -4675,7 +4712,9 @@
       "select_courses": "Chọn khóa học",
       "layout": "Bố cục",
       "design": "Thiết kế",
-      "embed": "Mã nhúng"
+      "embed": "Mã nhúng",
+      "active": "Đang hoạt động",
+      "archived": "Đã lưu trữ"
     },
     "defaults": {
       "name_prefix": "Tiện ích khóa học"
@@ -4683,6 +4722,10 @@
     "empty": {
       "heading": "Chưa có tiện ích nào",
       "description": "Tạo một tiện ích để tạo khối khóa học có thể nhúng cho các trang web bên ngoài."
+    },
+    "delete_modal": {
+      "title": "Xóa tiện ích vĩnh viễn",
+      "description": "Bạn có chắc chắn muốn xóa vĩnh viễn \"{name}\" không? Hành động này không thể hoàn tác."
     }
   },
   "side_panel": {

@@ -24,7 +24,8 @@ export type OrgLandingPageTheme =
   | 'corporate'
   | 'terminal'
   | 'editorial'
-  | 'vibrant';
+  | 'vibrant'
+  | 'quartz';
 
 export type CourseItem = {
   id: string;
@@ -55,6 +56,28 @@ export type CourseItem = {
   price?: string;
   duration?: string;
   level?: string;
+};
+
+export type LearningPathItem = {
+  id: string;
+  slug?: string;
+  logo?: string | null;
+  title: string;
+  description: string;
+  isPublished?: boolean;
+  cost?: number;
+  currency?: string;
+  courseCount?: number;
+  totalHours?: number;
+  hasCertificate?: boolean;
+  metadata?: {
+    discount?: number;
+    showDiscount?: boolean;
+  };
+  // Fallbacks for specific templates that might still want to use these
+  image?: string;
+  link?: string;
+  price?: string;
 };
 
 export type FooterSocialPlatform =
@@ -185,6 +208,22 @@ export interface OrgLandingPageLabels {
   catalogEmptyTitle?: string;
   /** Empty catalog description when no courses are published. Default: "Check back soon for new programs." */
   catalogEmptyDescription?: string;
+  /** Section heading for the Learning Paths catalog on the home page. Default: "Learning Paths". */
+  learningPathsHeading?: string;
+  /** Label for the Learning Paths "browse all"/"view more" CTA. Default: "View more learning paths". */
+  browseLearningPathsLabel?: string;
+  /** "Learning Path" identity chip shown on every learning path card. Default: "Learning Path". */
+  learningPathLabel?: string;
+  /** Plural-aware course-count label for a learning path card. Default: `${count} courses` / `1 course`. */
+  learningPathCourseCountLabel?: (count: number) => string;
+  /** Empty catalog title when no learning paths are published. Default: "No learning paths published yet". */
+  learningPathsEmptyTitle?: string;
+  /** Empty catalog description when no learning paths are published. Default: "Check back soon for new programs." */
+  learningPathsEmptyDescription?: string;
+  /** Duration label for a learning path card. Default: `${hours}h`. */
+  learningPathHoursLabel?: (hours: number) => string;
+  /** Certificate label for a learning path card. Default: "Certificate". */
+  learningPathCertificateLabel?: string;
 }
 
 export type CourseCurriculumLesson = {
@@ -317,6 +356,14 @@ export interface CourseLandingPageLabels {
   navInstructorLabel?: string;
   navReviewsLabel?: string;
   navPricingLabel?: string;
+  /** Curriculum heading combining both counts. Default: `${lessons} across ${modules} modules`. */
+  curriculumSummaryLabel?: (lessonCount: number, moduleCount: number) => string;
+  /** Lesson duration shown on a curriculum row. Default: `${minutes} min`. */
+  lessonDurationLabel?: (minutes: number) => string;
+  /** Row label for the exercise count in a facts table. Default: "Exercises". */
+  factExercisesLabel?: string;
+  /** Value shown when a course includes a certificate. Default: "Included". */
+  factIncludedLabel?: string;
 }
 
 export interface CourseLandingPageProps {
@@ -361,6 +408,14 @@ export interface OrgLandingPageProps {
   /** When false, templates suppress the empty catalog state while courses are still loading. */
   coursesLoaded?: boolean;
   disableCourseLinks?: boolean;
+  /**
+   * Optional — no `learning_path` API exists yet, so this is undefined on the real,
+   * live org home page today. Templates only render the Learning Paths section when
+   * this is provided and non-empty; they never show a permanent empty state for it,
+   * unlike Courses. Pass mock/real data once available to opt an org site in.
+   */
+  learningPaths?: LearningPathItem[];
+  hasMoreLearningPaths?: boolean;
   embed?: LandingPageEmbed;
   callout?: LandingPageCallout;
   links?: LandingPageLinks;

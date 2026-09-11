@@ -8,6 +8,7 @@
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import PaintbrushIcon from '@lucide/svelte/icons/paintbrush';
   import ZapIcon from '@lucide/svelte/icons/zap';
+  import { isFreeLandingPageTheme } from '@cio/utils/constants';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
@@ -52,6 +53,12 @@
   const CDN_BASE = 'https://assets.cdn.clsrio.com/templates';
 
   const themeCards = [
+    {
+      value: 'quartz',
+      preview: `${CDN_BASE}/quartz.png`,
+      titleKey: 'settings.landing_page.theme.cards.quartz.title',
+      descriptionKey: 'settings.landing_page.theme.cards.quartz.description'
+    },
     {
       value: 'minimal',
       preview: `${CDN_BASE}/minimal.png`,
@@ -123,7 +130,7 @@
   const otherThemeCards = $derived(themeCards.filter((card) => card.value !== currentTheme));
 
   function isPaidTheme(theme: LandingPageTheme): boolean {
-    return theme !== 'minimal';
+    return !isFreeLandingPageTheme(theme);
   }
 
   const authAction = $derived(
@@ -322,14 +329,20 @@
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <div class="ui:bg-background aspect-[4/3] w-full overflow-hidden">
+          <!-- The preview image doubles as the card's click target, matching the menu's Preview action. -->
+          <button
+            type="button"
+            class="ui:bg-background block aspect-[4/3] w-full cursor-pointer overflow-hidden"
+            onclick={() => handlePreviewTheme(themeCard.value)}
+            aria-label={`${$t('settings.landing_page.gallery.preview')}: ${$t(themeCard.titleKey)}`}
+          >
             <img
               src={themeCard.preview}
               alt={$t(themeCard.titleKey)}
               class="h-full w-full object-cover object-top"
               loading="lazy"
             />
-          </div>
+          </button>
           <div class="flex items-center justify-between gap-3 px-4 py-3">
             <div class="min-w-0">
               <p class="ui:text-primary truncate text-sm font-semibold">{$t(themeCard.titleKey)}</p>

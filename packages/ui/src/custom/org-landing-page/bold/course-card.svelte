@@ -17,6 +17,11 @@
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
   const primaryTag = $derived(getPrimaryCourseTag(course));
+  const href = $derived.by(() => {
+    if (disableCourseLinks) return undefined;
+
+    return course.link || (course.slug ? `/course/${course.slug}` : undefined);
+  });
 
   function formatCurrency(cost?: number, currency = 'USD') {
     if (!cost) return labels?.freeLabel ?? 'Free';
@@ -85,7 +90,7 @@
       <div class="ui:mt-auto ui:flex ui:items-center ui:justify-between">
         <span class="ui:font-black ui:text-lg">{course.price || formatCurrency(course.cost, course.currency)}</span>
         <Button
-          href={disableCourseLinks ? undefined : course.link}
+          {href}
           variant="outline"
           class="ui:rounded-lg ui:font-bold ui:text-sm {disableCourseLinks
             ? 'ui:pointer-events-none'

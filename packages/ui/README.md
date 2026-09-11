@@ -145,6 +145,43 @@ Passing `searchPlaceholder` renders a search input above the scrollable body —
 
 See `Molecules/ActionPopover` in Storybook.
 
+### Vimeo link form (`src/custom/vimeo-link-form/`)
+
+Form component for validating, normalizing, and attaching Vimeo video links (standard, channels, showcases, and unlisted URLs with privacy hashes). Displays domain-level privacy guidance with a one-click host copy button and a direct link to Vimeo's official domain privacy documentation.
+
+| Prop                  | Purpose                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `inputLabel`          | Text label for the link input                                                                    |
+| `inputPlaceholder`    | Placeholder text inside the input                                                                |
+| `addButtonLabel`      | Label for the submit button                                                                      |
+| `invalidVimeoMessage` | Error text displayed when the input contains invalid Vimeo links                                 |
+| `privacyHintPrefix`   | Optional leading text before the copyable domain badge                                           |
+| `privacyHintSuffix`   | Optional trailing text after the copyable domain badge                                           |
+| `disabled`            | Disables the input and submit button                                                             |
+| `onSubmit`            | Callback `(links: string[]) => Promise<void> \| void` invoked with deduplicated, canonical links |
+| `onInputChange`       | Optional callback when the raw input text changes                                                |
+
+See `Molecules/VimeoLinkForm` in Storybook.
+
+### Media player (`src/custom/media-player/`)
+
+Unified video player component supporting HTML5 video (direct MP4 and HLS via `hls.js`), YouTube embeds, and Vimeo videos via the official `@vimeo/player` SDK.
+
+**Features:**
+
+- **Native Vimeo SDK Integration**: Seamless playback with strict-origin referrer policy and unlisted privacy hash support (`?h=...`).
+- **Domain Privacy Error Recovery**: Automatically detects Vimeo `PrivacyError` events on domain-restricted videos, providing instructors with the exact host to whitelist and a live Retry button, while displaying a learner-friendly notice in learner mode.
+- **HLS Adaptive Streaming**: Plays master manifests via signed cookies or token auth with automatic rendition selection.
+- **YouTube Embeds**: Lightweight iframe embed with responsive aspect-ratio wrappers.
+
+| Option                    | Purpose                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `source`                  | `VideoSource` object (`type: 'upload' \| 'hls' \| 'youtube' \| 'vimeo' \| 'generic'`, `url`, `metadata`, `tracks`) |
+| `options.isLearnerView`   | When `true`, displays learner-friendly fallback messages instead of technical configuration hints                  |
+| `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                     |
+| `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
+| `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

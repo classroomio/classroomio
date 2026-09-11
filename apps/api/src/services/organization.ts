@@ -7,6 +7,7 @@ import type {
 } from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
+  activateOrganizationPlan,
   cancelOrganizationPlan,
   checkSiteNameExists,
   createOrganizationPlan,
@@ -48,7 +49,7 @@ import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
 import { canUseBasicAuthSettings, PLAN } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
-import { ROLE } from '@cio/utils/constants';
+import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
@@ -755,7 +756,7 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       const landingpage = data.landingpage as Record<string, unknown>;
       const theme = landingpage.theme;
 
-      if (typeof theme === 'string' && theme !== 'minimal') {
+      if (typeof theme === 'string' && !isFreeLandingPageTheme(theme)) {
         const activePlan = await getActiveOrganizationPlan(orgId);
         const planName = activePlan?.planName ?? PLAN.BASIC;
 
@@ -814,7 +815,7 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
  */
 export async function updateOrgPlan(subscriptionId: string, payload: TOrganizationPlan['payload']) {
   try {
-    const plan = await updateOrganizationPlan(subscriptionId, payload);
+    const plan = await updateOrganizationPlan(subscriptionId, { payload });
     if (!plan) {
       throw new AppError('Organization plan not found', ErrorCodes.ORG_PLAN_NOT_FOUND, 404);
     }
@@ -825,6 +826,38 @@ export async function updateOrgPlan(subscriptionId: string, payload: TOrganizati
     }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update organization plan',
+      ErrorCodes.ORG_PLAN_UPDATE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Activates an organization plan, creating it when the initial subscription event
+ * arrived before the subscription became active.
+ * @param data Organization plan activation data
+ * @returns Activated or created organization plan
+ */
+export async function activateOrgPlan(data: TNewOrganizationPlan) {
+  try {
+    if (!data.subscriptionId) {
+      throw new AppError('Missing organization plan fields', ErrorCodes.ORG_PLAN_CREATE_FAILED, 400);
+    }
+
+    const activatedPlan = await activateOrganizationPlan(data.subscriptionId, data.payload);
+
+    if (activatedPlan) {
+      return activatedPlan;
+    }
+
+    return await createOrgPlan(data);
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to activate organization plan',
       ErrorCodes.ORG_PLAN_UPDATE_FAILED,
       500
     );
