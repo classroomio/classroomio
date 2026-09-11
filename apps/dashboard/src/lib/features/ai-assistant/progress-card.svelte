@@ -146,78 +146,94 @@
 
   const completedCount = $derived(steps.filter((s) => s.status === 'completed').length);
   const totalCount = $derived(steps.length);
+  const hasNowStrip = $derived(Boolean(currentActionLine && !isStopped));
+  const hasHeader = $derived(showTitle || totalCount > 0 || hasNowStrip);
+  const hasSteps = $derived(steps.length > 0);
+  const hasStopButton = $derived(Boolean(onStop && !isStopped && completedCount < totalCount));
+  const hasFooter = $derived(Boolean(error) || isStopped || hasStopButton);
+  const hasContentBelowHeader = $derived(hasSteps || hasFooter);
 </script>
 
-<div class="ui:bg-background rounded-lg border">
-  <!-- Header: title, progress count, and the prominent "now doing" strip -->
-  <div class="space-y-1.5 border-b px-3 py-2">
-    {#if showTitle}
-      <h4 class="text-sm font-semibold">{$t(titleKey)}</h4>
-    {/if}
-    {#if totalCount > 0}
-      <p class="ui:text-muted-foreground text-xs">
-        {$t('ai_assistant.plan_progress', { completed: completedCount, total: totalCount })}
-      </p>
-    {/if}
-
-    {#if currentActionLine && !isStopped}
-      <div class="ui:bg-muted/40 flex items-center gap-2 rounded-md px-2 py-1.5 text-xs">
-        <LoaderIcon size={14} class="ui:text-primary shrink-0 animate-spin" />
-        <span class="ui:text-muted-foreground shrink-0 text-[10px] font-medium tracking-wide uppercase">
-          {$t('ai_assistant.run_monitor.now_doing')}
-        </span>
-        <span class="ui:text-foreground min-w-0 flex-1 truncate">
-          <ToolLine line={currentActionLine} {courseId} {onNavigate} />
-        </span>
-      </div>
-    {/if}
-  </div>
-
-  <div bind:this={stepsContainer} onscroll={handleScroll} class="max-h-75 space-y-0.5 overflow-y-auto p-2">
-    {#each steps as step, i (stepRowKey(step, i))}
-      {@const rowKey = stepRowKey(step, i)}
-      {@const animatingSlice = animatingTexts.get(rowKey)}
-      {@const isAnimating = animatingSlice !== undefined && step.line.shape === 'i18n'}
-      <div
-        class="flex items-center gap-2 rounded px-2 py-1 text-xs {step.indent ? 'ml-4' : ''} {step.status ===
-        'in_progress'
-          ? 'animate-pulse'
-          : ''}"
-      >
-        {#if step.status === 'completed'}
-          <CheckIcon size={14} class="ui:text-primary shrink-0" />
-        {:else if step.status === 'in_progress'}
-          <LoaderIcon size={14} class="ui:text-primary shrink-0 animate-spin" />
-        {:else if step.status === 'failed'}
-          <AlertCircleIcon size={14} class="shrink-0 text-red-500" />
-        {:else}
-          <CircleIcon size={14} class="ui:text-muted-foreground shrink-0" />
+{#if hasHeader || hasSteps || hasFooter}
+  <div class="ui:bg-background rounded-lg border">
+    {#if hasHeader}
+      <!-- Header: title, progress count, and the prominent "now doing" strip -->
+      <div class="space-y-1.5 px-3 py-2 {hasContentBelowHeader ? 'border-b' : ''}">
+        {#if showTitle}
+          <h4 class="text-sm font-semibold">{$t(titleKey)}</h4>
         {/if}
-        <span class={step.status === 'completed' ? '' : step.status === 'pending' ? 'ui:text-muted-foreground' : ''}>
-          {#if isAnimating}
-            {animatingSlice}
-          {:else}
-            <ToolLine line={step.line} {courseId} {onNavigate} />
-          {/if}
-        </span>
+        {#if totalCount > 0}
+          <p class="ui:text-muted-foreground text-xs">
+            {$t('ai_assistant.plan_progress', { completed: completedCount, total: totalCount })}
+          </p>
+        {/if}
+
+        {#if currentActionLine && !isStopped}
+          <div class="ui:bg-muted/40 flex items-center gap-2 rounded-md px-2 py-1.5 text-xs">
+            <LoaderIcon size={14} class="ui:text-primary shrink-0 animate-spin" />
+            <span class="ui:text-muted-foreground shrink-0 text-[10px] font-medium tracking-wide uppercase">
+              {$t('ai_assistant.run_monitor.now_doing')}
+            </span>
+            <span class="ui:text-foreground min-w-0 flex-1 truncate">
+              <ToolLine line={currentActionLine} {courseId} {onNavigate} />
+            </span>
+          </div>
+        {/if}
       </div>
-    {/each}
+    {/if}
+
+    {#if hasSteps}
+      <div bind:this={stepsContainer} onscroll={handleScroll} class="max-h-75 space-y-0.5 overflow-y-auto p-2">
+        {#each steps as step, i (stepRowKey(step, i))}
+          {@const rowKey = stepRowKey(step, i)}
+          {@const animatingSlice = animatingTexts.get(rowKey)}
+          {@const isAnimating = animatingSlice !== undefined && step.line.shape === 'i18n'}
+          <div
+            class="flex items-center gap-2 rounded px-2 py-1 text-xs {step.indent ? 'ml-4' : ''} {step.status ===
+            'in_progress'
+              ? 'animate-pulse'
+              : ''}"
+          >
+            {#if step.status === 'completed'}
+              <CheckIcon size={14} class="ui:text-primary shrink-0" />
+            {:else if step.status === 'in_progress'}
+              <LoaderIcon size={14} class="ui:text-primary shrink-0 animate-spin" />
+            {:else if step.status === 'failed'}
+              <AlertCircleIcon size={14} class="shrink-0 text-red-500" />
+            {:else}
+              <CircleIcon size={14} class="ui:text-muted-foreground shrink-0" />
+            {/if}
+            <span
+              class={step.status === 'completed' ? '' : step.status === 'pending' ? 'ui:text-muted-foreground' : ''}
+            >
+              {#if isAnimating}
+                {animatingSlice}
+              {:else}
+                <ToolLine line={step.line} {courseId} {onNavigate} />
+              {/if}
+            </span>
+          </div>
+        {/each}
+      </div>
+    {/if}
+
+    {#if hasFooter}
+      <div class="space-y-1 border-t px-3 py-2">
+        {#if error}
+          <p class="text-xs text-red-600 dark:text-red-400">{error}</p>
+        {/if}
+
+        {#if isStopped}
+          <p class="ui:text-muted-foreground text-xs">{$t('ai_assistant.stopped_content_kept')}</p>
+        {/if}
+
+        {#if onStop && !isStopped && completedCount < totalCount}
+          <Button size="sm" variant="outline" onclick={onStop} class="w-full">
+            <SquareIcon size={12} class="mr-1" />
+            {$t('ai_assistant.stop')}
+          </Button>
+        {/if}
+      </div>
+    {/if}
   </div>
-
-  <div class="space-y-1 border-t px-3 py-2">
-    {#if error}
-      <p class="text-xs text-red-600 dark:text-red-400">{error}</p>
-    {/if}
-
-    {#if isStopped}
-      <p class="ui:text-muted-foreground text-xs">{$t('ai_assistant.stopped_content_kept')}</p>
-    {/if}
-
-    {#if onStop && !isStopped && completedCount < totalCount}
-      <Button size="sm" variant="outline" onclick={onStop} class="w-full">
-        <SquareIcon size={12} class="mr-1" />
-        {$t('ai_assistant.stop')}
-      </Button>
-    {/if}
-  </div>
-</div>
+{/if}
