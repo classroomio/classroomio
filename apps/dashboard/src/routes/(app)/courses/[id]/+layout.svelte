@@ -6,6 +6,8 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
+  import CourseInPathRibbon from '$features/learning-path/components/course-in-path-ribbon.svelte';
+  import { learningPathApi } from '$features/learning-path/api/learning-path.svelte';
   import type { Course } from '$features/course/types';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
@@ -76,6 +78,30 @@
 
   const isCourseReady = $derived.by(() => {
     return courseApi.course?.id === data.courseId && !!courseApi.group.id;
+  });
+
+  onMount(() => {
+    if (!learningPathApi.hasLoaded) {
+      learningPathApi.listEnrolled();
+    }
+  });
+
+  const coursePathMembership = $derived.by(() => {
+    const courseTitle = courseApi.course?.title;
+    if (!courseTitle) return null;
+
+    for (const path of learningPathApi.enrolledPaths) {
+      const matchCourses = path.courses.filter((course) => course.title.toLowerCase() === courseTitle.toLowerCase());
+      if (matchCourses.length > 0) {
+        return {
+          pathName: path.name,
+          pathHref: `/lms/paths/${path.id}`,
+          courseTitle
+        };
+      }
+    }
+
+    return null;
   });
 
   const user: CourseMember | undefined = $derived(
@@ -224,6 +250,13 @@
 
   <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
     <CourseHeader />
+    {#if coursePathMembership}
+      <CourseInPathRibbon
+        pathName={coursePathMembership.pathName}
+        pathHref={coursePathMembership.pathHref}
+        courseTitle={coursePathMembership.courseTitle}
+      />
+    {/if}
     <ContentCreateModal />
     <CourseCompletionModal />
 
