@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zapier · Automation · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="zapier.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="app">
+      <div class="mobile-backdrop" id="mobileBackdrop"></div>
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">A</div><div class="brand-name">Acme Academy</div></div>
+
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Setup</a>
+
+        <div class="nav-label">Content</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses<span class="nav-tail tnum">12</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>Cohorts</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Media</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.5"/></svg>Tags</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="7" rx="1"/><rect x="3" y="14" width="8" height="7" rx="1"/><rect x="13" y="14" width="8" height="7" rx="1"/></svg>Widgets</a>
+
+        <div class="nav-label">People</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Community</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Audience<span class="nav-tail tnum">1,204</span></a>
+
+        <div class="nav-label">Automation</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>MCP</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg>API</a>
+        <a class="nav-item active" href="zapier-connect.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Zapier</a>
+
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <button class="icon-btn mobile-nav-btn" id="mobileNavBtn" title="Menu" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <nav class="crumbs"><a href="index.html">Automation</a><span class="sep">/</span><span class="here">Zapier</span></nav>
+          <div class="top-actions">
+            <div class="dev-toggle" title="Prototype-only: preview both plan states">
+              <button class="on" id="planEarly" type="button">Early Adopter</button>
+              <button id="planBasic" type="button">Basic plan</button>
+            </div>
+            <a class="btn btn-sm btn-outline" href="prototype-map.html">Prototype map</a>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <!-- Basic-plan gate (hidden by default) -->
+          <div class="wrap-narrow">
+            <div class="card card-pad" id="gateCallout" hidden style="border-color: color-mix(in oklab, var(--warning) 30%, var(--border)); background: var(--warning-soft); margin: 24px 0; display:flex; align-items:center; gap: 14px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:20px;height:20px;stroke-width:2;color:var(--warning);flex-shrink:0"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:600">Zapier is available on Early Adopter and above</div>
+                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px">Upgrade your plan to connect Zapier and automate work across your stack. You can still browse the App Directory below.</div>
+              </div>
+              <span class="btn btn-primary btn-sm" style="pointer-events:none">Upgrade plan</span>
+            </div>
+          </div>
+
+          <div id="connectContent">
+            <!-- ===== Hero: landing/discovery, SurveyMonkey-inspired structure ===== -->
+            <div class="zi-landing-hero">
+              <div class="zi-landing-eyebrow">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Automation · Zapier
+              </div>
+              <h1 class="zi-landing-title">Connect ClassroomIO to the tools you already use</h1>
+              <p class="zi-landing-sub">
+                Automate customer education workflows like enrollments, completions, and certificates. Browse
+                <strong id="appCountHero">50+</strong> apps in the directory today, with thousands more reachable
+                through Zapier. No code required.
+              </p>
+
+              <div class="zi-connect-bar" id="connectBar">
+                <svg class="zi-connect-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="connectSearch" placeholder="Search apps to connect…" autocomplete="off" />
+                <button class="btn btn-primary btn-sm" id="connectSearchGo" type="button">Connect</button>
+                <div class="zi-connect-suggest" id="connectSuggest">
+                  <div class="hd">Popular with customer education teams</div>
+                  <div id="connectSuggestItems"></div>
+                </div>
+              </div>
+
+              <div class="zi-landing-actions">
+                <a class="btn btn-primary" href="oauth-consent.html">Get started</a>
+                <a class="btn btn-outline" href="app-directory.html">Explore the App Directory</a>
+              </div>
+            </div>
+
+            <div class="zi-marquee-wrap">
+              <div class="zi-marquee">
+                <div class="zi-marquee-track" id="marqueeTrack"></div>
+              </div>
+              <p class="zi-marquee-note">
+                These are the apps people connect most. <a href="app-directory.html">Browse all <span id="appCountMarquee"></span> apps in the App Directory</a>,
+                with more added as the ecosystem grows.
+              </p>
+            </div>
+
+            <div class="zi-landing-footlinks">
+              <a href="app-directory.html">Popular use cases</a><span class="dot">·</span>
+              <a href="#howto">How connecting works</a><span class="dot">·</span>
+              <a href="app-directory.html">Browse the App Directory</a><span class="dot">·</span>
+              <a href="#faq">FAQ</a>
+            </div>
+
+            <!-- ===== "200+ integrations" style intro + alternating feature rows ===== -->
+            <div class="zi-section" style="margin-top: 24px">
+              <div class="zi-section-head">
+                <div class="zi-eyebrow-label">What you can automate</div>
+                <h2 class="zi-section-title">Turn learner activity into action across your stack</h2>
+                <p class="zi-section-sub">Explore how customer education teams use Zapier to connect ClassroomIO to the rest of their tools.</p>
+              </div>
+
+              <div class="zi-feature-row">
+                <div class="zi-feature-text">
+                  <div class="zi-feature-eyebrow">Enroll &amp; onboard</div>
+                  <h3 class="zi-feature-title">Enroll learners the moment they're ready</h3>
+                  <ul class="zi-feature-list">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>A new deal, signup, or form response can enroll someone automatically</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Route learners into the right course based on plan, region, or tag</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>No spreadsheets, no manual invites</li>
+                  </ul>
+                  <a class="zi-feature-link" href="app-directory.html?category=crm">Explore CRM integrations <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="card zi-mock-card">
+                    <div class="zi-mock-row"><div class="app-badge app-hubspot" style="width:24px;height:24px;font-size:10px">H</div><span>Deal reaches "Customer"</span></div>
+                    <div class="zi-mock-row" style="justify-content:center;color:var(--muted-foreground)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+                    <div class="zi-mock-row"><div class="zap-mark" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="#fff" style="width:13px;height:13px"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span>Enroll in Onboarding Basics</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="zi-feature-row reverse">
+                <div class="zi-feature-text">
+                  <div class="zi-feature-eyebrow">Notify your team</div>
+                  <h3 class="zi-feature-title">Keep your team in the loop, automatically</h3>
+                  <ul class="zi-feature-list">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Post to Slack or Teams when a learner finishes a course</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Send a personal email the moment a certificate is earned</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Loop in support or success teams without a status meeting</li>
+                  </ul>
+                  <a class="zi-feature-link" href="app-directory.html?category=communication">Explore Communication integrations <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="card zi-mock-card">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                      <div class="app-badge app-slack" style="width:22px;height:22px;font-size:10px">#</div>
+                      <span style="font-size:12px;font-weight:600">customer-onboarding</span>
+                    </div>
+                    <div class="zi-mock-bubble">🎓 <strong>Amara Chen</strong> just completed <strong>Product Fundamentals</strong>!</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="zi-feature-row">
+                <div class="zi-feature-text">
+                  <div class="zi-feature-eyebrow">Sync records</div>
+                  <h3 class="zi-feature-title">Keep completions and certificates in sync</h3>
+                  <ul class="zi-feature-list">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Log every completion as a row in a spreadsheet or database</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Save issued certificates straight to Drive or Dropbox</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Build the reporting view your team already trusts</li>
+                  </ul>
+                  <a class="zi-feature-link" href="app-directory.html?category=productivity">Explore Productivity integrations <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="card zi-mock-card">
+                    <table class="zi-mock-table">
+                      <thead><tr><th>Student</th><th>Course</th><th>Date</th></tr></thead>
+                      <tbody>
+                        <tr><td>Amara Chen</td><td>Product Fundamentals</td><td>Sep 8</td></tr>
+                        <tr><td>Dele Osei</td><td>Onboarding Basics</td><td>Sep 7</td></tr>
+                        <tr><td>Priya Nair</td><td>Security 101</td><td>Sep 5</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== How it works: step-by-step with real product previews ===== -->
+            <div class="zi-section" id="howto">
+              <div class="zi-section-head">
+                <div class="zi-eyebrow-label">See it in action</div>
+                <h2 class="zi-section-title">Connect your apps in a few steps</h2>
+                <p class="zi-section-sub">This is the actual ClassroomIO experience, not a mockup. Here's what each step looks like.</p>
+              </div>
+
+              <div class="zi-feature-row">
+                <div class="zi-feature-text">
+                  <div class="zi-step-num">1</div>
+                  <h3 class="zi-feature-title">Choose an app</h3>
+                  <p class="zi-feature-p">Search or browse the App Directory by category, and open any app to see what connecting it enables before you commit.</p>
+                  <a class="zi-feature-link" href="app-directory.html">Open the App Directory <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="zi-mini-screen">
+                    <div class="zi-mini-screen-bar"><span class="dots"><i></i><i></i><i></i></span>App Directory</div>
+                    <div class="zi-mini-screen-body" id="miniDirectory"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="zi-feature-row reverse">
+                <div class="zi-feature-text">
+                  <div class="zi-step-num">2</div>
+                  <h3 class="zi-feature-title">Connect your account</h3>
+                  <p class="zi-feature-p">Authorize once. You choose exactly what Zapier can read, and whether it can create or update anything in ClassroomIO. Write access is optional.</p>
+                  <a class="zi-feature-link" href="oauth-consent.html">See the authorize screen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="zi-mini-screen">
+                    <div class="zi-mini-screen-bar"><span class="dots"><i></i><i></i><i></i></span>Authorize</div>
+                    <div class="zi-mini-screen-body">
+                      <div class="zi-scope-row required" style="padding:10px 0">
+                        <div class="zi-scope-check on" style="width:16px;height:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                        <div class="zi-scope-text"><div class="t" style="font-size:12.5px">Read your ClassroomIO data</div></div>
+                        <span class="badge badge-outline" style="font-size:10px">Required</span>
+                      </div>
+                      <div class="zi-scope-row" style="padding:10px 0">
+                        <div class="zi-scope-check on" style="width:16px;height:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                        <div class="zi-scope-text"><div class="t" style="font-size:12.5px">Create and update data</div></div>
+                      </div>
+                      <button class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;pointer-events:none">Authorize</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="zi-feature-row">
+                <div class="zi-feature-text">
+                  <div class="zi-step-num">3</div>
+                  <h3 class="zi-feature-title">Choose what triggers it</h3>
+                  <p class="zi-feature-p">Pick the ClassroomIO event that should start the automation, like a course completed, a certificate issued, or a student enrolled. You can narrow it to a specific course if you want.</p>
+                  <a class="zi-feature-link" href="zap-builder.html">Try the trigger picker <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="zi-mini-screen">
+                    <div class="zi-mini-screen-bar"><span class="dots"><i></i><i></i><i></i></span>Choose a trigger</div>
+                    <div class="zi-mini-screen-body" id="miniTrigger"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="zi-feature-row reverse">
+                <div class="zi-feature-text">
+                  <div class="zi-step-num">4</div>
+                  <h3 class="zi-feature-title">Choose what happens next</h3>
+                  <p class="zi-feature-p">Pick the app and action, then map ClassroomIO fields like student name, course, and completion date by clicking to insert them.</p>
+                  <a class="zi-feature-link" href="zap-builder.html?template=completed-slack">See field mapping <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="zi-mini-screen">
+                    <div class="zi-mini-screen-bar"><span class="dots"><i></i><i></i><i></i></span>Set up action</div>
+                    <div class="zi-mini-screen-body" id="miniAction"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="zi-feature-row">
+                <div class="zi-feature-text">
+                  <div class="zi-step-num">5</div>
+                  <h3 class="zi-feature-title">Test, then turn it on</h3>
+                  <p class="zi-feature-p">Run a real test with a sample record before anything goes live, then review the whole automation and turn it on.</p>
+                  <a class="zi-feature-link" href="manage-zaps.html">See Manage Zaps <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                </div>
+                <div class="zi-feature-visual">
+                  <div class="zi-mini-screen">
+                    <div class="zi-mini-screen-bar"><span class="dots"><i></i><i></i><i></i></span>Test &amp; enable</div>
+                    <div class="zi-mini-screen-body">
+                      <div class="zi-test-result show success" style="padding:10px">
+                        <div class="zi-test-result-head" style="font-size:12px;margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><path d="M20 6 9 17l-5-5"/></svg>Sample record found</div>
+                        <div style="font-size:11px;color:var(--muted-foreground)">Amara Chen · Product Fundamentals</div>
+                      </div>
+                      <button class="btn btn-primary" style="width:100%;margin-top:10px;pointer-events:none">Turn on Zap</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="zi-howto-cta">
+                <a class="btn btn-primary" href="oauth-consent.html">Get started</a>
+                <a class="btn btn-outline" href="app-directory.html">Explore the App Directory</a>
+              </div>
+            </div>
+
+            <!-- ===== Prefer another path ===== -->
+            <div class="zi-section">
+              <div class="zi-section-head">
+                <div class="zi-eyebrow-label">Other ways in</div>
+                <h2 class="zi-section-title">Prefer a different starting point?</h2>
+              </div>
+              <div class="zi-howto-grid">
+                <a class="card zi-howto-card" href="app-directory.html">
+                  <div class="zi-howto-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+                  <div class="t">Browse the App Directory</div>
+                  <div class="d">Search or filter by category, pick an app, and see exactly what it enables before you connect.</div>
+                  <span class="zi-feature-link">Explore apps <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </a>
+                <a class="card zi-howto-card" href="oauth-consent.html">
+                  <div class="zi-howto-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+                  <div class="t">Connect directly</div>
+                  <div class="d">Already know you want Zapier? Authorize ClassroomIO now and pick an app once you're in.</div>
+                  <span class="zi-feature-link">Get started <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </a>
+                <a class="card zi-howto-card" href="index.html">
+                  <div class="zi-howto-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+                  <div class="t">Prefer to write code?</div>
+                  <div class="d">Use the ClassroomIO REST API or MCP server directly with an org-scoped key. No Zapier required.</div>
+                  <span class="zi-feature-link">View API &amp; MCP <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </a>
+              </div>
+            </div>
+
+            <!-- ===== Deeper integration highlights ===== -->
+            <div class="zi-section">
+              <div class="zi-section-head">
+                <div class="zi-eyebrow-label">A closer look</div>
+                <h2 class="zi-section-title">Popular with customer education teams</h2>
+              </div>
+              <div class="zi-highlight-grid" id="highlightGrid"></div>
+            </div>
+
+            <!-- ===== FAQ ===== -->
+            <div class="zi-section" id="faq">
+              <div class="zi-section-head">
+                <div class="zi-eyebrow-label">FAQ</div>
+                <h2 class="zi-section-title">Frequently asked questions</h2>
+              </div>
+              <div class="zi-faq" id="faqList"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="proto.js"></script>
+    <script src="apps-catalog.js"></script>
+    <script src="brand-logos.js"></script>
+    <script>
+      var planEarly = document.getElementById('planEarly');
+      var planBasic = document.getElementById('planBasic');
+      var gate = document.getElementById('gateCallout');
+      var content = document.getElementById('connectContent');
+      planEarly.onclick = function () {
+        planEarly.classList.add('on');
+        planBasic.classList.remove('on');
+        gate.hidden = true;
+        content.hidden = false;
+      };
+      planBasic.onclick = function () {
+        planBasic.classList.add('on');
+        planEarly.classList.remove('on');
+        gate.hidden = false;
+        content.hidden = true;
+      };
+
+      var totalAppCount = ZI.appSlugs().length;
+      document.getElementById('appCountHero').textContent = totalAppCount + '+';
+      document.getElementById('appCountMarquee').textContent = totalAppCount;
+
+      // Logo marquee: real-ish brand marks, looping continuously. The track is
+      // rendered twice back to back and animated to -50% so the loop is seamless.
+      var marqueeTrack = document.getElementById('marqueeTrack');
+      var marqueeSlugs = Object.keys(ZI_BRAND_LOGOS);
+      function renderMarqueeSet() {
+        marqueeSlugs.forEach(function (slug) {
+          var logo = ZI_BRAND_LOGOS[slug];
+          var a = document.createElement('a');
+          a.className = 'zi-marquee-tile';
+          a.href = 'app-detail.html?app=' + slug;
+          a.title = logo.name;
+          a.innerHTML = logo.svg;
+          marqueeTrack.appendChild(a);
+        });
+      }
+      renderMarqueeSet();
+      renderMarqueeSet();
+
+      // Deeper-integration highlight cards
+      var HIGHLIGHT_APPS = ['salesforce', 'hubspot', 'slack', 'stripe'];
+      var highlightGrid = document.getElementById('highlightGrid');
+      HIGHLIGHT_APPS.forEach(function (slug) {
+        var app = ZI.APPS[slug];
+        var card = document.createElement('a');
+        card.className = 'card zi-highlight-card';
+        card.href = 'app-detail.html?app=' + slug;
+        card.innerHTML =
+          ZI.badgeHTML(slug) +
+          '<div class="t">' + app.name + '</div>' +
+          '<div class="d">' + app.description + '</div>' +
+          '<span class="zi-feature-link" style="font-size:12px">Learn more</span>';
+        highlightGrid.appendChild(card);
+      });
+
+      // FAQ accordion
+      var FAQS = [
+        {
+          q: 'Is Zapier included in my plan?',
+          a: 'Zapier is available on the Early Adopter plan and above. Basic-plan orgs can still browse the App Directory to see what\'s possible. Connecting requires an upgrade.'
+        },
+        {
+          q: 'What data can Zapier see or change?',
+          a: 'By default Zapier can read your courses, audience, enrollments, completions, certificates, and payment requests. Creating or updating data, like enrolling a student, is a separate permission you can leave unchecked at connect time.'
+        },
+        {
+          q: 'Do I need a developer to set this up?',
+          a: 'No. Connecting is a one-time authorization, and building a Zap just means picking a ClassroomIO trigger and an app action from a list. No code required.'
+        },
+        {
+          q: 'Can I revoke access later?',
+          a: 'Yes, at any time from Automation → Zapier in ClassroomIO. Revoking stops every Zap that uses that connection until it\'s reconnected.'
+        },
+        {
+          q: 'What happens if I downgrade my plan?',
+          a: 'If your org drops below Early Adopter, the connection is revoked immediately and any Zaps using it stop running until you upgrade and reconnect.'
+        }
+      ];
+      var faqList = document.getElementById('faqList');
+      FAQS.forEach(function (faq, i) {
+        var item = document.createElement('div');
+        item.className = 'zi-faq-item';
+        item.innerHTML =
+          '<button class="zi-faq-q" type="button" aria-expanded="false">' + faq.q +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>' +
+          '<div class="zi-faq-a">' + faq.a + '</div>';
+        var btn = item.querySelector('.zi-faq-q');
+        btn.addEventListener('click', function () {
+          var isOpen = item.classList.toggle('open');
+          btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        faqList.appendChild(item);
+      });
+
+      // Step-by-step walkthrough: miniature previews built from the same
+      // component classes as the real screens (App Directory cards, the
+      // trigger picker, field mapping). Not illustrations, small live copies.
+      var miniDirWrap = document.getElementById('miniDirectory');
+      ['slack', 'hubspot', 'sheets', 'salesforce'].forEach(function (slug) {
+        var app = ZI.APPS[slug];
+        var row = document.createElement('div');
+        row.className = 'zi-mini-app-row';
+        row.innerHTML = ZI.badgeHTML(slug, 'width:20px;height:20px;font-size:8px') + '<span>' + app.name + '</span><span style="margin-left:auto;color:var(--muted-foreground);font-size:10px">' + ZI.categoryLabel(app.category) + '</span>';
+        miniDirWrap.appendChild(row);
+      });
+
+      var miniTriggerWrap = document.getElementById('miniTrigger');
+      ['course_completed', 'certificate_issued'].forEach(function (key, i) {
+        var trig = ZI.TRIGGERS[key];
+        var card = document.createElement('div');
+        card.className = 'zi-mini-trigger-card' + (i === 0 ? ' selected' : '');
+        card.innerHTML = '<div class="ico">' + trig.icon + '</div><div><div class="t">' + trig.label + '</div></div>';
+        miniTriggerWrap.appendChild(card);
+      });
+
+      var miniActionWrap = document.getElementById('miniAction');
+      (function () {
+        var app = ZI.APPS.slack;
+        var action = ZI.getAction('slack');
+        var head = document.createElement('div');
+        head.className = 'zi-mini-app-row';
+        head.style.marginBottom = '4px';
+        head.innerHTML = ZI.badgeHTML('slack', 'width:20px;height:20px;font-size:8px') + '<span style="font-weight:600">' + action.label + '</span>';
+        miniActionWrap.appendChild(head);
+        action.fields.forEach(function (field) {
+          var row = document.createElement('div');
+          row.className = 'zi-mini-map-row';
+          var val = field.type === 'select' ? field.options[0] : field.default.replace(/\{\{([^}]+)\}\}/g, '<span class="zi-pill">$1</span>');
+          row.innerHTML = '<span class="lbl">' + field.label + '</span><div class="val">' + val + '</div>';
+          miniActionWrap.appendChild(row);
+        });
+      })();
+
+      // Connect bar: type-ahead search over the app catalog
+      var searchInput = document.getElementById('connectSearch');
+      var suggestBox = document.getElementById('connectSuggest');
+      var suggestItems = document.getElementById('connectSuggestItems');
+      var suggestHd = suggestBox.querySelector('.hd');
+
+      function renderSuggestions(query) {
+        var slugs = Object.keys(ZI.APPS);
+        var results;
+        if (query) {
+          results = slugs.filter(function (slug) {
+            return ZI.APPS[slug].name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+          });
+          suggestHd.textContent = results.length ? 'Matching apps' : '';
+        } else {
+          results = slugs.filter(function (slug) {
+            return ZI.APPS[slug].popular;
+          });
+          suggestHd.textContent = 'Popular with customer education teams';
+        }
+        suggestItems.innerHTML = '';
+        if (!results.length) {
+          suggestItems.innerHTML =
+            '<div style="padding:14px 9px;font-size:12.5px;color:var(--muted-foreground)">No apps match “' + query + '”. Try the <a href="app-directory.html" style="color:var(--primary);font-weight:500">App Directory</a>.</div>';
+          return;
+        }
+        results.slice(0, 6).forEach(function (slug) {
+          var app = ZI.APPS[slug];
+          var item = document.createElement('a');
+          item.href = 'app-detail.html?app=' + slug;
+          item.className = 'zi-connect-suggest-item';
+          item.innerHTML =
+            ZI.badgeHTML(slug, 'width:24px;height:24px;font-size:10px') +
+            '<span>' + app.name + '</span>' +
+            '<span class="d">' + ZI.categoryLabel(app.category) + '</span>';
+          suggestItems.appendChild(item);
+        });
+      }
+
+      searchInput.addEventListener('focus', function () {
+        renderSuggestions(searchInput.value.trim());
+        suggestBox.classList.add('show');
+      });
+      searchInput.addEventListener('input', function () {
+        renderSuggestions(searchInput.value.trim());
+        suggestBox.classList.add('show');
+      });
+      document.addEventListener('click', function (e) {
+        if (!document.getElementById('connectBar').contains(e.target)) {
+          suggestBox.classList.remove('show');
+        }
+      });
+      document.getElementById('connectSearchGo').addEventListener('click', function () {
+        var query = searchInput.value.trim().toLowerCase();
+        var match = Object.keys(ZI.APPS).filter(function (slug) {
+          return ZI.APPS[slug].name.toLowerCase() === query;
+        })[0];
+        if (match) {
+          window.location.href = 'app-detail.html?app=' + match;
+        } else {
+          window.location.href = 'app-directory.html' + (query ? '?q=' + encodeURIComponent(query) : '');
+        }
+      });
+    </script>
+  </body>
+</html>
