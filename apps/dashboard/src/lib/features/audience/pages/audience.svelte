@@ -49,9 +49,11 @@
     pagination?: OrganizationAudiencePagination | null;
     query: OrganizationAudienceQuery;
     courses?: Course[];
+    /** Reported upward so the page header's export can honour the selection. */
+    selectedMemberIds?: number[];
   }
 
-  let { audience, pagination = null, query, courses = [] }: Props = $props();
+  let { audience, pagination = null, query, courses = [], selectedMemberIds = $bindable([]) }: Props = $props();
 
   $effect(() => {
     orgApi.audience = audience ?? [];
@@ -147,6 +149,14 @@
     selectablePageRows.some((row) => selectedIds.has(String(row.id))) && !allPageSelected
   );
   const hasSelection = $derived(selectedIds.size > 0 || allMatchingSelected);
+
+  // Selection lives here, but the Export control sits in the route's header, so
+  // the ids have to travel up or the exported file silently ignores what was
+  // ticked. "All matching" is a filter, not a set of ids, so it reports none
+  // and the export falls back to the filter query.
+  $effect(() => {
+    selectedMemberIds = allMatchingSelected ? [] : [...selectedIds].map(Number);
+  });
 
   function toggleSelectAll() {
     if (allPageSelected) {

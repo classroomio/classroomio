@@ -722,7 +722,6 @@
       "select_courses": "Chọn các khóa học cụ thể",
       "select_courses_placeholder": "Chọn khóa học...",
       "send_email": "Gửi email lời mời tới người dùng đã nhập",
-      "submit": "Nhập người dùng",
       "back": "Quay lại Đối tượng",
       "snackbar_success": "{imported} lời mời mới, {assigned} học viên hiện có được quyền truy cập khóa học, {pendingInvitesRenewed} lời mời đang chờ được gia hạn ({emailsSent} email đã gửi)",
       "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
@@ -739,23 +738,23 @@
       "paste_hint": "Một địa chỉ trên mỗi dòng, hoặc phân tách bằng dấu phẩy.",
       "review": "Xem lại",
       "done": "Hoàn tất",
-      "submit_count": "Nhập {count} học viên",
       "count_ready": "{count} sẵn sàng",
       "count_duplicate": "{count} đã được liệt kê",
       "count_invalid": "{count} cần chú ý",
       "truncated": "{count} hàng vượt quá giới hạn {rows} hàng đã bị bỏ sót. Chia tệp và nhập phần còn lại.",
       "unknown_columns": "Bỏ qua các cột không được nhận dạng: {columns}",
-      "result_heading": "{count} học viên đã được nhập",
       "download_errors": "Tải xuống các hàng bị lỗi",
       "status": {
         "ready": "Sẵn sàng",
         "already_member": "Đã có trong danh sách người tham dự",
         "invalid_email": "Email không hợp lệ",
         "duplicate_in_file": "Trùng lặp trong tệp",
-        "is_staff": "Nhân viên, không phải học viên",
         "over_seat_limit": "Không còn chỗ trống",
-        "missing_email": "Không có email"
-      }
+        "missing_email": "Không có email",
+        "is_staff": "Nhân viên, không phải học viên"
+      },
+      "submit_count": "Nhập {count} học viên",
+      "result_heading": "{count} học viên đã được nhập"
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
@@ -801,12 +800,10 @@
     "import_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để nhập thêm sinh viên.",
     "never": "Chưa bao giờ",
     "progress": "Tiến độ",
-    "learner_count": "{count} học viên",
     "enrolled_ratio": "{completed} / {total}",
     "bulk": {
       "actions": "Hành động",
       "select_all_matching": "Chọn tất cả {count} học viên phù hợp",
-      "all_matching_selected": "Đã chọn tất cả {count} học viên phù hợp",
       "clear_selection": "Xóa lựa chọn",
       "sample_heading": "Bao gồm",
       "sample_more": "và {count} người nữa",
@@ -815,8 +812,6 @@
       "reason_hint": "Đã ghi lại trong nhật ký kiểm toán để có thể trả lời sau.",
       "type_count_label": "Nhập {count} để xác nhận",
       "delete_is_permanent": "Không thể hoàn tác việc xóa.",
-      "not_archived_blocker": "{count} học viên trong số này chưa được lưu trữ. Hãy lưu trữ họ trước.",
-      "success": "Học viên đã được cập nhật",
       "partial_success": "{succeeded} đã được cập nhật, {failed} đã bị bỏ qua",
       "undo_available": "Đã áp dụng. Bạn vẫn có thể hoàn tác thao tác này.",
       "undo": "Hoàn tác",
@@ -836,22 +831,25 @@
         "delete": "Thao tác này sẽ xóa họ khỏi tổ chức và không thể hoàn tác. Tài khoản, bài nộp và kết quả của họ vẫn được giữ nguyên."
       },
       "confirm_title": {
-        "archive": "Lưu trữ {count} học viên?",
-        "deactivate": "Vô hiệu hóa {count} học viên?",
-        "reactivate": "Kích hoạt lại {count} học viên?",
-        "unarchive": "Bỏ lưu trữ {count} học viên?",
-        "delete": "Xóa vĩnh viễn {count} học viên?"
+        "archive": "Lưu trữ {count} học sinh?",
+        "deactivate": "Vô hiệu hóa {count} học sinh?",
+        "reactivate": "Kích hoạt lại {count} học sinh?",
+        "unarchive": "Bỏ lưu trữ {count} học sinh?",
+        "delete": "Xóa vĩnh viễn {count} học sinh?"
       },
       "action": {
-        "archive": "Lưu trữ {count} học viên",
-        "deactivate": "Vô hiệu hóa {count} học viên",
-        "reactivate": "Kích hoạt lại {count} học viên",
-        "unarchive": "Bỏ lưu trữ {count} học viên",
-        "delete": "Xóa {count} học viên"
+        "archive": "Lưu trữ {count} học sinh",
+        "deactivate": "Vô hiệu hóa {count} học sinh",
+        "reactivate": "Kích hoạt lại {count} học sinh",
+        "unarchive": "Bỏ lưu trữ {count} học sinh",
+        "delete": "Xóa {count} học sinh"
       },
-      "queued_running": "Đang áp dụng cho {count} học viên. Bạn có thể tiếp tục làm việc — chúng tôi sẽ thông báo cho bạn khi hoàn tất.",
       "queued_failed": "Thao tác hàng loạt này không hoàn tất. Không có gì khác được áp dụng.",
-      "queued_lost": "Chúng tôi đã mất dấu vết của lần chạy này. Tải lại để xem trạng thái hiện tại."
+      "queued_lost": "Chúng tôi đã mất dấu vết của lần chạy này. Tải lại để xem trạng thái hiện tại.",
+      "all_matching_selected": "Tất cả {count} học sinh phù hợp đã được chọn",
+      "not_archived_blocker": "{count} học sinh trong số này chưa được lưu trữ. Hãy lưu trữ họ trước.",
+      "success": "Học sinh đã được cập nhật",
+      "queued_running": "Đang áp dụng cho {count} học sinh. Bạn có thể tiếp tục làm việc — chúng tôi sẽ thông báo cho bạn khi hoàn tất."
     },
     "filter": {
       "status": "Trạng thái thành viên",
@@ -875,20 +873,22 @@
       "in_progress": "Đang tiến hành",
       "completed": "Đã hoàn thành",
       "exclude_recent_joiners": "Loại trừ người mới tham gia",
-      "exclude_recent_joiners_hint": "Loại bỏ những học viên mới tham gia quá gần đây để được coi là không hoạt động.",
       "clear": "Xóa bộ lọc",
-      "empty_title": "Không có học viên nào khớp với các bộ lọc này",
-      "empty_description": "Hãy thử mở rộng phạm vi ngày hoặc xóa một bộ lọc."
+      "empty_description": "Hãy thử mở rộng phạm vi ngày hoặc xóa một bộ lọc.",
+      "exclude_recent_joiners_hint": "Loại bỏ những học sinh mới tham gia quá gần đây để được coi là không hoạt động.",
+      "empty_title": "Không có học viên nào phù hợp với các bộ lọc này",
+      "invite_status": "Trạng thái mời"
     },
     "views": {
-      "all": "Tất cả học viên",
       "never_logged_in": "Chưa từng đăng nhập",
       "inactive_90d": "Không hoạt động trên 90 ngày",
       "inactive_180d": "Không hoạt động trên 180 ngày",
       "enrolled_not_started": "Đã đăng ký, nhưng chưa bắt đầu",
       "archived": "Đã lưu trữ",
-      "custom": "Bộ lọc tùy chỉnh"
-    }
+      "custom": "Bộ lọc tùy chỉnh",
+      "all": "Tất cả học viên"
+    },
+    "learner_count": "{count} học sinh"
   },
   "community": {
     "title": "cộng đồng",
@@ -1039,14 +1039,14 @@
           "unlock_all": "Mở khóa tất cả"
         },
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
         "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
         "completion_deadline_label": "Thời hạn hoàn thành khóa học",
         "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
         "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
-        "copy_link": "Sao chép liên kết"
+        "copy_link": "Sao chép liên kết",
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản."
       },
       "analytics": {
         "title": "Phân tích"
@@ -1301,7 +1301,6 @@
         "you": "bạn",
         "pending": "Đang chờ xử lý",
         "name": "Tên",
-        "learner": "Học viên",
         "progress": "Tiến độ",
         "stage": "Giai đoạn",
         "last_login_at": "Đăng nhập lần cuối",
@@ -1457,7 +1456,8 @@
             "custom": "tùy chỉnh"
           },
           "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
-        }
+        },
+        "learner": "Học viên"
       },
       "marks": {
         "title": "Điểm",
@@ -2738,8 +2738,8 @@
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
       "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
       "deadline_required": "Các khóa học tuân thủ yêu cầu thời hạn hoàn thành trước khi có thể xuất bản.",
-      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký.",
-      "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ."
+      "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ.",
+      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký."
     },
     "creator": {
       "heading": "Bạn muốn tạo khóa học nào?",

@@ -7,6 +7,7 @@
     OrganizationAudienceActivityWindow,
     OrganizationAudienceCompletion,
     OrganizationAudienceEnrollment,
+    OrganizationAudienceInviteStatus,
     OrganizationAudienceMemberStatus,
     OrganizationAudienceQuery,
     OrganizationAudienceSortBy,
@@ -60,6 +61,15 @@
     { value: '90d', label: $t('audience.filter.window_90d') },
     { value: '180d', label: $t('audience.filter.window_180d') },
     { value: 'never', label: $t('audience.filter.window_never') }
+  ]);
+
+  // Invite state is independent of membership state: someone can be archived
+  // and still hold a pending invite.
+  const inviteStatusOptions = $derived<{ value: OrganizationAudienceInviteStatus; label: string }[]>([
+    { value: 'active', label: $t('audience.status_active') },
+    { value: 'pending', label: $t('audience.status_pending') },
+    { value: 'expired', label: $t('audience.status_expired') },
+    { value: 'revoked', label: $t('audience.status_revoked') }
   ]);
 
   const enrollmentOptions = $derived<{ value: OrganizationAudienceEnrollment; label: string }[]>([
@@ -171,6 +181,24 @@
           </span>
         </label>
       {/if}
+
+      <div class="space-y-2">
+        <p class="ui:text-muted-foreground text-xs font-semibold uppercase">
+          {$t('audience.filter.invite_status')}
+        </p>
+        <div class="flex flex-wrap gap-2">
+          {#each inviteStatusOptions as option (option.value)}
+            <Button
+              type="button"
+              size="sm"
+              variant={query.inviteStatus === option.value ? 'secondary' : 'outline'}
+              onclick={() => toggle('inviteStatus', option.value)}
+            >
+              {option.label}
+            </Button>
+          {/each}
+        </div>
+      </div>
 
       <div class="space-y-2">
         <p class="ui:text-muted-foreground text-xs font-semibold uppercase">{$t('audience.filter.enrollment')}</p>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { ExportMenu } from '$features/ui';
   import { orgApi } from '$features/org/api/org.svelte';
@@ -18,8 +18,15 @@
 
   // Built on demand from the current filters, so the file matches the list the
   // admin just reviewed rather than the whole roster.
+  // Bound from the table below, so the export can follow a tick-box selection.
+  let selectedMemberIds = $state<number[]>([]);
+  const exportRowCount = $derived(selectedMemberIds.length || audienceLength);
+
   async function loadExportDocument() {
-    const response = await orgApi.getAudienceExportRows(data.query);
+    const response = await orgApi.getAudienceExportRows(
+      data.query,
+      selectedMemberIds.length > 0 ? selectedMemberIds : undefined
+    );
     const rows = response?.data ?? [];
 
     return buildAudienceExportDocument(rows, $currentOrg?.name ?? 'Organization', {
@@ -58,7 +65,7 @@
     <Page.Action>
       <ExportMenu
         document={loadExportDocument}
-        estimatedRowCount={audienceLength}
+        estimatedRowCount={exportRowCount}
         disabled={audienceLength === 0}
         testId="audience-export"
       />
@@ -74,7 +81,13 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <AudiencePage audience={data.audience} pagination={data.pagination} query={data.query} courses={data.courses} />
+      <AudiencePage
+        audience={data.audience}
+        pagination={data.pagination}
+        query={data.query}
+        courses={data.courses}
+        bind:selectedMemberIds
+      />
     {/snippet}
   </Page.Body>
 </Page.Root>

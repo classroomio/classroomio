@@ -722,7 +722,6 @@
       "select_courses": "Sélectionnez des cours spécifiques",
       "select_courses_placeholder": "Choisissez des cours...",
       "send_email": "Envoyer un e-mail d'invitation aux utilisateurs importés",
-      "submit": "Importer des utilisateurs",
       "back": "Retour au public",
       "snackbar_success": "{imported} nouvelles invitations, {assigned} étudiants existants avec accès au cours, {pendingInvitesRenewed} invitations en attente renouvelées ({emailsSent} e-mails envoyés)",
       "snackbar_no_emails": "Veuillez saisir au moins une adresse e-mail",
@@ -739,23 +738,23 @@
       "paste_hint": "Une adresse par ligne, ou séparées par des virgules.",
       "review": "Revoir",
       "done": "Fait",
-      "submit_count": "Importer {count} apprenants",
       "count_ready": "{count} prêt",
       "count_duplicate": "{count} déjà listé",
       "count_invalid": "{count} ont besoin d'attention",
       "truncated": "{count} lignes au-delà de la limite de {rows} lignes ont été ignorées. Divisez le fichier et importez le reste.",
       "unknown_columns": "Colonnes non reconnues ignorées : {columns}",
-      "result_heading": "{count} apprenants importés",
       "download_errors": "Télécharger les lignes qui ont échoué",
       "status": {
         "ready": "Prêt",
         "already_member": "Déjà dans le public",
         "invalid_email": "Adresse e-mail invalide",
         "duplicate_in_file": "Duplicata dans le fichier",
-        "is_staff": "Personnel, pas apprenant",
         "over_seat_limit": "Plus de places disponibles",
-        "missing_email": "Pas d'email"
-      }
+        "missing_email": "Pas d'email",
+        "is_staff": "Personnel non étudiant"
+      },
+      "submit_count": "Importer {count} étudiants",
+      "result_heading": "{count} étudiants importés"
     },
     "page_subtitle": "Découvrez qui appartient à votre organisation, qui apprend, qui est invité et comment les contacter.",
     "user_analytics": {
@@ -801,12 +800,10 @@
     "import_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour importer plus d'étudiants.",
     "never": "Jamais",
     "progress": "Progrès",
-    "learner_count": "{count} apprenants",
     "enrolled_ratio": "{completed} / {total}",
     "bulk": {
       "actions": "Actions",
       "select_all_matching": "Sélectionner les {count} correspondants",
-      "all_matching_selected": "Les {count} apprenants correspondants sont sélectionnés",
       "clear_selection": "Effacer la sélection",
       "sample_heading": "Comprend",
       "sample_more": "et {count} plus",
@@ -815,8 +812,6 @@
       "reason_hint": "Consigné dans l'audit pour pouvoir répondre ultérieurement.",
       "type_count_label": "Tapez {count} pour confirmer",
       "delete_is_permanent": "La suppression est irréversible.",
-      "not_archived_blocker": "{count} de ces apprenants ne sont pas archivés. Veuillez les archiver d'abord.",
-      "success": "Mise à jour des apprenants",
       "partial_success": "{succeeded} mis à jour, {failed} ignorés",
       "undo_available": "Appliqué. Vous pouvez encore annuler cette action.",
       "undo": "Annuler",
@@ -836,22 +831,25 @@
         "delete": "Cette décision les exclut définitivement de l'organisation. Leur compte, leurs contributions et leurs résultats sont conservés."
       },
       "confirm_title": {
-        "archive": "Archiver {count} apprenants ?",
-        "deactivate": "Désactiver {count} apprenants ?",
-        "reactivate": "Réactiver {count} apprenants ?",
-        "unarchive": "Désarchiver {count} apprenants ?",
-        "delete": "Supprimer définitivement {count} apprenants ?"
+        "archive": "Archiver {count} étudiants ?",
+        "deactivate": "Désactiver {count} étudiants ?",
+        "reactivate": "Réactiver {count} étudiants ?",
+        "unarchive": "Désarchiver {count} étudiants ?",
+        "delete": "Supprimer définitivement {count} étudiants ?"
       },
       "action": {
-        "archive": "Archiver {count} apprenants",
-        "deactivate": "Désactiver {count} apprenants",
-        "reactivate": "Réactiver {count} apprenants",
-        "unarchive": "Désarchiver {count} apprenants",
-        "delete": "Supprimer {count} apprenants"
+        "archive": "Archiver {count} étudiants",
+        "deactivate": "Désactiver {count} étudiants",
+        "reactivate": "Réactiver {count} étudiants",
+        "unarchive": "Désarchiver {count} étudiants",
+        "delete": "Supprimer {count} étudiants"
       },
-      "queued_running": "Application à {count} apprenants. Vous pouvez continuer à travailler ; nous vous informerons de la fin de l’opération.",
       "queued_failed": "Cette action groupée n’a pas abouti. Aucune autre action n’a été appliquée.",
-      "queued_lost": "Cette exécution a été interrompue. Rechargez la page pour afficher l’état actuel."
+      "queued_lost": "Cette exécution a été interrompue. Rechargez la page pour afficher l’état actuel.",
+      "all_matching_selected": "Tous les {count} étudiants correspondants sélectionnés",
+      "not_archived_blocker": "{count} de ces étudiants ne sont pas archivés. Veuillez les archiver d'abord.",
+      "success": "Étudiants mis à jour",
+      "queued_running": "Candidature en cours auprès de {count} étudiants. Vous pouvez continuer à travailler ; nous vous informerons lorsque l'opération sera terminée."
     },
     "filter": {
       "status": "Statut de membre",
@@ -875,20 +873,22 @@
       "in_progress": "En cours",
       "completed": "Complété",
       "exclude_recent_joiners": "Exclure les nouveaux inscrits",
-      "exclude_recent_joiners_hint": "Exclut les apprenants qui se sont inscrits trop récemment pour être considérés comme inactifs.",
       "clear": "Effacer les filtres",
-      "empty_title": "Aucun apprenant ne correspond à ces filtres",
-      "empty_description": "Essayez d'élargir la plage de dates ou de supprimer un filtre."
+      "empty_description": "Essayez d'élargir la plage de dates ou de supprimer un filtre.",
+      "exclude_recent_joiners_hint": "Les étudiants inscrits trop récemment pour être considérés comme inactifs sont exclus.",
+      "empty_title": "Aucun étudiant ne correspond à ces filtres.",
+      "invite_status": "Statut de l'invitation"
     },
     "views": {
-      "all": "Tous les apprenants",
       "never_logged_in": "Jamais connecté",
       "inactive_90d": "Inactif depuis plus de 90 jours",
       "inactive_180d": "Inactif depuis plus de 180 jours",
       "enrolled_not_started": "Inscrit, jamais commencé",
       "archived": "Archivé",
-      "custom": "Filtres personnalisés"
-    }
+      "custom": "Filtres personnalisés",
+      "all": "Tous les étudiants"
+    },
+    "learner_count": "{count} étudiants"
   },
   "community": {
     "title": "Communauté",
@@ -1039,14 +1039,14 @@
           "unlock_all": "Débloquez tout"
         },
         "certificate_deadline_required": "Définir d'abord la date limite du certificat",
-        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du cours avant de publier.",
         "go_to_certificate_settings": "Accédez aux paramètres du certificat",
         "completion_deadline_label": "Date limite de fin de cours",
         "completion_deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite.",
         "go_to_completion_deadline": "Accéder à la date limite d'achèvement",
         "generate_link": "Générer un nouveau lien",
         "open_link": "Ouvrir le lien dans un nouvel onglet",
-        "copy_link": "Copier le lien"
+        "copy_link": "Copier le lien",
+        "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication."
       },
       "analytics": {
         "title": "Analytique"
@@ -1301,7 +1301,6 @@
         "you": "Vous",
         "pending": "En attente",
         "name": "Nom",
-        "learner": "Apprenant",
         "progress": "Progression",
         "stage": "Étape",
         "last_login_at": "Dernière connexion",
@@ -1457,7 +1456,8 @@
             "custom": "Personnalisé"
           },
           "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants."
-        }
+        },
+        "learner": "Étudiant"
       },
       "marks": {
         "title": "Marques",
@@ -2738,8 +2738,8 @@
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !",
       "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné.",
       "deadline_required": "Les cours de conformité nécessitent une date limite d'achèvement avant de pouvoir être publiés.",
-      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits.",
-      "deadline_invalid": "La date limite d'achèvement du cours n'est pas valide."
+      "deadline_invalid": "La date limite d'achèvement du cours n'est pas valide.",
+      "deadline_required_enroll": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants."
     },
     "creator": {
       "heading": "Quel cours souhaitez-vous créer ?",

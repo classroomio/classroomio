@@ -722,7 +722,6 @@
       "select_courses": "Selecione cursos específicos",
       "select_courses_placeholder": "Escolha cursos...",
       "send_email": "Enviar e-mail de convite para usuários importados",
-      "submit": "Importar usuários",
       "back": "Voltar ao público",
       "snackbar_success": "{imported} novos convites, {assigned} estudantes existentes com acesso ao curso, {pendingInvitesRenewed} convites pendentes renovados ({emailsSent} e-mails enviados)",
       "snackbar_no_emails": "Insira pelo menos um endereço de e-mail",
@@ -739,23 +738,23 @@
       "paste_hint": "Um endereço por linha ou separado por vírgulas.",
       "review": "Revisar",
       "done": "Concluído",
-      "submit_count": "Importar {count} alunos",
       "count_ready": "{count} prontos",
       "count_duplicate": "{count} já cadastrados",
       "count_invalid": "{count} precisam de atenção",
       "truncated": "{count} linhas além do limite de {rows} linhas foram omitidas. Divida o arquivo e importe o restante.",
       "unknown_columns": "Colunas não reconhecidas ignoradas: {columns}",
-      "result_heading": "{count} alunos importados",
       "download_errors": "Baixar as linhas com falha",
       "status": {
         "ready": "Pronto",
         "already_member": "Já na plateia",
         "invalid_email": "E-mail inválido",
         "duplicate_in_file": "Duplicado no arquivo",
-        "is_staff": "Funcionário, não aluno",
         "over_seat_limit": "Sem vagas disponíveis",
-        "missing_email": "Sem e-mail"
-      }
+        "missing_email": "Sem e-mail",
+        "is_staff": "Funcionário, não aluno"
+      },
+      "submit_count": "Importar {count} alunos",
+      "result_heading": "{count} alunos importados"
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {
@@ -801,12 +800,10 @@
     "import_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para importar mais alunos.",
     "never": "Nunca",
     "progress": "Progresso",
-    "learner_count": "{count} alunos",
     "enrolled_ratio": "{completed} / {total}",
     "bulk": {
       "actions": "Ações",
       "select_all_matching": "Selecione todos os {count} correspondentes",
-      "all_matching_selected": "Todos os {count} alunos correspondentes foram selecionados.",
       "clear_selection": "Limpar seleção",
       "sample_heading": "Inclui",
       "sample_more": "e {count} mais",
@@ -815,8 +812,6 @@
       "reason_hint": "Isso fica registrado no histórico de auditoria, então poderemos responder a essa pergunta posteriormente.",
       "type_count_label": "Digite {count} para confirmar",
       "delete_is_permanent": "A exclusão não pode ser desfeita.",
-      "not_archived_blocker": "{count} desses alunos não estão arquivados. Arquive-os primeiro.",
-      "success": "Alunos atualizados",
       "partial_success": "{succeeded} atualizado, {failed} ignorado",
       "undo_available": "Aplicado. Você ainda pode desfazer isso.",
       "undo": "Desfazer",
@@ -846,12 +841,15 @@
         "archive": "Arquivar {count} alunos",
         "deactivate": "Desativar {count} alunos",
         "reactivate": "Reativar {count} alunos",
-        "unarchive": "Desarquivar {count} aprendizes",
+        "unarchive": "Desarquivar {count} alunos",
         "delete": "Excluir {count} alunos"
       },
-      "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar.",
       "queued_failed": "Esta ação em lote não foi concluída. Nenhuma outra ação foi aplicada.",
-      "queued_lost": "Perdemos o controle desta execução. Recarregue a página para ver o estado atual."
+      "queued_lost": "Perdemos o controle desta execução. Recarregue a página para ver o estado atual.",
+      "all_matching_selected": "Todos os {count} alunos correspondentes selecionados",
+      "not_archived_blocker": "{count} desses alunos não estão arquivados. Arquive-os primeiro.",
+      "success": "Alunos atualizados",
+      "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar."
     },
     "filter": {
       "status": "Status do membro",
@@ -875,20 +873,22 @@
       "in_progress": "Em andamento",
       "completed": "Concluído",
       "exclude_recent_joiners": "Excluir inscritos recentes",
-      "exclude_recent_joiners_hint": "Exclui alunos que se inscreveram recentemente e não podem mais ser considerados inativos.",
       "clear": "Limpar filtros",
+      "empty_description": "Tente ampliar o intervalo de datas ou limpar um filtro.",
+      "exclude_recent_joiners_hint": "Exclui alunos que se inscreveram recentemente e não podem mais ser considerados inativos.",
       "empty_title": "Nenhum aluno corresponde a estes filtros",
-      "empty_description": "Tente ampliar o intervalo de datas ou limpar um filtro."
+      "invite_status": "Status de convite"
     },
     "views": {
-      "all": "Todos os alunos",
       "never_logged_in": "Nunca acessaram",
       "inactive_90d": "Inativos há mais de 90 dias",
       "inactive_180d": "Inativos há mais de 180 dias",
       "enrolled_not_started": "Matriculados, nunca iniciaram",
       "archived": "Arquivados",
-      "custom": "Filtros personalizados"
-    }
+      "custom": "Filtros personalizados",
+      "all": "Todos os alunos"
+    },
+    "learner_count": "{count} alunos"
   },
   "community": {
     "title": "Comunidade",
@@ -1039,14 +1039,14 @@
           "unlock_all": "Desbloquear tudo"
         },
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
-        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
         "go_to_certificate_settings": "Vá para configurações de certificado",
         "completion_deadline_label": "Prazo para conclusão do curso",
         "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
-        "copy_link": "Copiar link"
+        "copy_link": "Copiar link",
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar."
       },
       "analytics": {
         "title": "Análises"
@@ -1301,7 +1301,6 @@
         "you": "Você",
         "pending": "Pendente",
         "name": "Nome",
-        "learner": "Aluno",
         "progress": "Progresso",
         "stage": "Etapa",
         "last_login_at": "Último login",
@@ -1457,7 +1456,8 @@
             "custom": "Personalizado"
           },
           "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
-        }
+        },
+        "learner": "Aluno"
       },
       "marks": {
         "title": "Marcas",
@@ -2738,8 +2738,8 @@
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
       "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
       "deadline_required": "Os cursos de conformidade exigem um prazo de conclusão antes de serem publicados.",
-      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados.",
-      "deadline_invalid": "O prazo de conclusão do curso é inválido."
+      "deadline_invalid": "O prazo de conclusão do curso é inválido.",
+      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados."
     },
     "creator": {
       "heading": "Qual curso você deseja criar?",

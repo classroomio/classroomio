@@ -722,7 +722,6 @@
       "select_courses": "Vælg specifikke kurser",
       "select_courses_placeholder": "Vælg kurser...",
       "send_email": "Send invitationsmail til importerede brugere",
-      "submit": "Importer brugere",
       "back": "Tilbage til Publikum",
       "snackbar_success": "{imported} nye invitationer, {assigned} eksisterende studerende med kursusadgang, {pendingInvitesRenewed} afventende invitationer fornyet ({emailsSent} e-mails sendt)",
       "snackbar_no_emails": "Indtast venligst mindst én e-mailadresse",
@@ -739,23 +738,23 @@
       "paste_hint": "Én adresse pr. linje eller kommasepareret.",
       "review": "Gennemgå",
       "done": "Udført",
-      "submit_count": "Importer {count} elever",
       "count_ready": "{count} klar",
       "count_duplicate": "{count} allerede angivet",
       "count_invalid": "{count} skal gøres opmærksom på",
       "truncated": "{count} rækker efter grænsen på {rows}-rækker blev udeladt. Opdel filen, og importer resten.",
       "unknown_columns": "Ignorerede ukendte kolonner: {columns}",
-      "result_heading": "{count} elever importeret",
       "download_errors": "Download de rækker, der mislykkedes",
       "status": {
         "ready": "Klar",
         "already_member": "Allerede i målgruppen",
         "invalid_email": "Ugyldig e-mail",
         "duplicate_in_file": "Duplikat i filen",
-        "is_staff": "Medarbejder, ikke en elev",
         "over_seat_limit": "Ingen pladser tilbage",
-        "missing_email": "Ingen e-mail"
-      }
+        "missing_email": "Ingen e-mail",
+        "is_staff": "Personal, ikke en studerende"
+      },
+      "submit_count": "Importer {count} studerende",
+      "result_heading": "{count} studerende importeret"
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
@@ -801,12 +800,10 @@
     "import_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at importere flere elever.",
     "never": "Aldrig",
     "progress": "Fremskridt",
-    "learner_count": "{count} elever",
     "enrolled_ratio": "{completed} / {total}",
     "bulk": {
       "actions": "Handlinger",
       "select_all_matching": "Vælg alle {count} matchende",
-      "all_matching_selected": "Alle {count} matchende elever valgt",
       "clear_selection": "Ryd valg",
       "sample_heading": "Inkluderer",
       "sample_more": "og {count} mere",
@@ -815,8 +812,6 @@
       "reason_hint": "Registreret i revisionssporet, så dette kan besvares senere.",
       "type_count_label": "Skriv {count} for at bekræfte",
       "delete_is_permanent": "Sletning kan ikke fortrydes.",
-      "not_archived_blocker": "{count} af disse elever er ikke arkiverede. Arkivér dem først.",
-      "success": "Elever opdateret",
       "partial_success": "{succeeded} opdateret, {failed} sprunget over",
       "undo_available": "Anvendt. Du kan stadig fortryde dette.",
       "undo": "Fortryd",
@@ -836,22 +831,25 @@
         "delete": "Dette fjerner dem fra denne organisation og kan ikke fortrydes. Deres konto, afleveringer og resultater gemmes."
       },
       "confirm_title": {
-        "archive": "Arkivér {count} elever?",
-        "deactivate": "Deaktiver {count} elever?",
-        "reactivate": "Genaktiver {count} elever?",
-        "unarchive": "Afarkivér {count} elever?",
-        "delete": "Fjern {count} elever permanent?"
+        "archive": "Arkivere {count} elever?",
+        "deactivate": "Deaktivere {count} elever?",
+        "reactivate": "Genaktivere {count} elever?",
+        "unarchive": "Afarkivere {count} elever?",
+        "delete": "Fjerne {count} elever permanent?"
       },
       "action": {
-        "archive": "Arkivér {count} elever",
-        "deactivate": "Deaktiver {count} elever",
-        "reactivate": "Genaktiver {count} elever",
-        "unarchive": "Afarkivér {count} elever",
+        "archive": "Arkivere {count} elever",
+        "deactivate": "Deaktivere {count} elever",
+        "reactivate": "Genaktivere {count} elever",
+        "unarchive": "Afarkivere {count} elever",
         "delete": "Slet {count} elever"
       },
-      "queued_running": "Anvendes til {count} elever. Du kan fortsætte med at arbejde — vi giver dig besked, når det er færdigt.",
       "queued_failed": "Denne massehandling blev ikke afsluttet. Intet yderligere blev anvendt.",
-      "queued_lost": "Vi mistede overblikket over denne kørsel. Genindlæs for at se den aktuelle status."
+      "queued_lost": "Vi mistede overblikket over denne kørsel. Genindlæs for at se den aktuelle status.",
+      "all_matching_selected": "Alle {count} matchende elever er valgt",
+      "not_archived_blocker": "{count} af disse elever er ikke arkiverede. Arkivér dem først.",
+      "success": "Elever opdateret",
+      "queued_running": "Ansøger om at blive optaget på {count} elever. Du kan fortsætte med at arbejde - vi giver dig besked, når det er færdigt."
     },
     "filter": {
       "status": "Medlemsstatus",
@@ -875,20 +873,22 @@
       "in_progress": "Igangværende",
       "completed": "Afsluttet",
       "exclude_recent_joiners": "Ekskluder nylige tilmeldte",
-      "exclude_recent_joiners_hint": "Udelader elever, der tilmeldte sig for nylig til at blive bedømt som inaktive.",
       "clear": "Ryd filtre",
-      "empty_title": "Ingen elever matcher disse filtre",
-      "empty_description": "Prøv at udvide datointervallet eller rydde et filter."
+      "empty_description": "Prøv at udvide datointervallet eller rydde et filter.",
+      "exclude_recent_joiners_hint": "Udelader elever, der er tilmeldt for nylig til at blive bedømt som inaktive.",
+      "empty_title": "Ingen studerende matcher disse filtre",
+      "invite_status": "Invitationsstatus"
     },
     "views": {
-      "all": "Alle elever",
       "never_logged_in": "Aldrig logget ind",
       "inactive_90d": "Inaktiv i 90+ ​​dage",
       "inactive_180d": "Inaktiv i 180+ dage",
       "enrolled_not_started": "Tilmeldt, aldrig startet",
       "archived": "Arkiveret",
-      "custom": "Brugerdefinerede filtre"
-    }
+      "custom": "Brugerdefinerede filtre",
+      "all": "Alle studerende"
+    },
+    "learner_count": "{count} elever"
   },
   "community": {
     "title": "Fællesskab",
@@ -1039,14 +1039,14 @@
           "unlock_all": "Lås alle op"
         },
         "certificate_deadline_required": "Indstil certifikatfrist først",
-        "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
         "go_to_certificate_settings": "Gå til Certifikatindstillinger",
         "completion_deadline_label": "Deadline for kursusafslutning",
         "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
-        "copy_link": "Kopiér link"
+        "copy_link": "Kopiér link",
+        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer."
       },
       "analytics": {
         "title": "Analyse"
@@ -1301,7 +1301,6 @@
         "you": "Dig",
         "pending": "Afventer",
         "name": "Navn",
-        "learner": "Deltager",
         "progress": "Fremskridt",
         "stage": "Fase",
         "last_login_at": "Sidste login",
@@ -1457,7 +1456,8 @@
             "custom": "Brugerdefineret"
           },
           "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
-        }
+        },
+        "learner": "Studerende"
       },
       "marks": {
         "title": "Mærker",
@@ -2738,8 +2738,8 @@
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
       "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
       "deadline_required": "Overholdelseskurser kræver en fuldførelsesfrist, før de kan udgives.",
-      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes.",
-      "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig."
+      "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig.",
+      "deadline_required_enroll": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes."
     },
     "creator": {
       "heading": "Hvilket kursus vil du lave?",
