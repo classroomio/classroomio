@@ -226,16 +226,29 @@ course_enrollment_grant
 
 Consequences:
 
-- **Every course-scoped read can be segmented** by resolving a segment to a set of `groupmemberId`s: "this course, as cohort Y" or "as path P". Roster, gradebook, submissions, analytics and attendance all become filterable through one mechanism rather than each growing its own.
+- **The course roster can show where each learner came from** as a column on the existing People page — "via Frontend Bootcamp" instead of an unexplained name — computed per row from that learner's live grants.
 - **Access is the union of live grants.** A learner may hold several at once — bought the course, then a path granted it, then a cohort did.
 - **Revocation is conservative.** Leaving a path or cohort sets `revokedAt`; the `groupmember` row is deleted only when no grant with `revokedAt IS NULL` remains. A learner who bought the course never loses it because a path dropped them. This is Moodle's enrolment-instance model, where a user holds one enrolment row per method and access is their union.
-- **History survives.** "Was this learner in cohort Y last term?" stays answerable, because grants are revoked rather than deleted. Cohorts today cannot answer this at all: removing a cohort member deletes only the `cohort_member` row and leaves the `groupmember` row behind with no trace of where it came from.
+- **History survives.** Grants are revoked, not deleted, so "did this path ever grant this course?" stays answerable after the learner leaves.
+
+**Prerequisite — every enrolment must have at least one grant.** The conservative-revocation rule reads "no live grants left" as "nobody is claiming this enrolment, so remove it". That is only safe if every route that creates a `groupmember` row records a grant. If cohort enrolment writes no grant, then revoking a path grant would leave zero live grants on a row a cohort is relying on, and the cleanup would strip cohort-granted access. So before revocation is switched on:
+
+1. Backfill a grant for every existing `groupmember` row — `COHORT` where the `cohort_member` × `cohort_course` join explains it, `IMPORT` for the rest.
+2. Make the remaining enrolment routes write their grant: the cohort services, the audience and org-invite routes, and `ensureProgramCourseAccess`.
+
+This is a narrow correctness requirement, not a cohort redesign: cohort enrolment needs a grant row so path revocation does not delete access it never granted. How cohorts segment a course is a separate question, answered by `prd/course-cohorts`.
+
+`ensureProgramCourseAccess` deserves a decision either way. `courseMemberMiddleware` calls it to lazily create `groupmember` rows for legacy program members, which means an authorization check on a GET performs a transaction and can throw `UPGRADE_REQUIRED` (403) from a student-limit check. Prefer retiring it for an eager backfill over teaching it to write grants.
 
 **Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row and its grant for a later course are not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all grants are created at enrolment time.
 
-**Cohorts migrate onto the same table.** `course_enrollment_grant` is deliberately not path-specific. Reworking cohort enrolment onto it is specified in `prd/cohorts-v2/README.md` and is out of scope for this PRD; the schema is shaped for it now so there is only ever one provenance mechanism.
+**Where per-path teacher data lives: on the path's own routes, not on the course.** `/paths/[id]/people` and `/paths/[id]/analytics` read `learning_path_member` and `learning_path_member_course` directly — the context is in the URL path, so it survives navigation and needs no grant filtering at all. Do **not** introduce a "view this course as path P" mode carried by a query parameter: a param is dropped the moment the teacher clicks into a lesson, so holding it would mean threading it through every link in the course shell. If a persistent scoped-course view is ever wanted, carry it in the route (`/paths/[id]/courses/[courseId]/…`) so a layout can inherit and authorize it once, not in a query string.
 
-**Out of scope here:** per-cohort *content* — separate due dates, announcements or sessions for one cohort inside a shared course. That is a different problem from attribution, cohorts partially solve it already with their own `cohort_newsfeed` and `cohort_goal` tables, and self-paced learning paths do not need it.
+On the course's own screens the grant ledger is a **column, and at most an ordinary page-local filter** alongside the `search` and `roleId` that `ZCourseMembersQuery` already accepts. A filter that resets when you leave the page is correct filter behaviour, not state to preserve.
+
+**Provenance and partitioning are different problems — do not merge them.** `prd/course-cohorts/README.md` segments a course by giving each batch its own `group`, which works because `submission`, `question_answer`, `group_attendance` and `lesson_comment` are already keyed on `groupmember.id`. That is a **partition**: every learner sits in exactly one batch, and a second membership deliberately forks their records (that PRD lists retakes as a feature). Learning paths need the opposite — one shared enrolment and one progression, so a course finished standalone counts inside the path. A path therefore cannot be a group, and access provenance cannot be a partition at all: one learner can hold many simultaneous reasons for access. Groups answer "which instance of this course is this record part of"; grants answer "why does this learner have access". Cohort segmentation is out of scope for this PRD and is addressed by `prd/course-cohorts`.
+
+**Out of scope here:** per-cohort *content* — separate due dates, announcements or sessions inside a shared course. Cohort v1 partly addresses that with `cohort_newsfeed` and `cohort_goal`, and self-paced learning paths do not need it.
 
 ---
 
