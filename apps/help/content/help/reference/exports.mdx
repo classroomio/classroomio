@@ -1,7 +1,7 @@
 ---
 title: Exports
 description: Which formats ClassroomIO exports, what each export contains, and the limits that apply.
-last_reviewed: '2026-09-11'
+last_reviewed: '2026-09-12'
 ---
 
 Anywhere you see an **Export as CSV** button, the dropdown beside it offers the other formats. Files are produced in your browser, so there is no job to wait for and no email to watch for.
@@ -15,45 +15,49 @@ Anywhere you see an **Export as CSV** button, the dropdown beside it offers the 
 | **PDF**   | `.pdf`    | Circulating a fixed list for review or sign-off          |
 | **HTML**  | `.html`   | Sharing a readable page without a spreadsheet            |
 
-**PDF is offered up to 2,000 rows.** Above that it becomes unreadable and the option is disabled, with the row limit shown — use CSV or Excel instead.
+**PDF is offered up to 2,000 rows.** Above that it becomes unreadable, so the option is disabled and tells you the limit. Use CSV or Excel instead.
 
 ## What each export contains
 
-The same progress data is available three ways, depending on how you want it sliced.
-
 ### Every student, summarised
 
-**Audience → Export.** One row per student, up to 20,000 students.
+**Audience, then Export.** One row per student, up to 20,000 students.
 
 | Column                    |                                                   |
 | ------------------------- | ------------------------------------------------- |
 | Name, Email               |                                                   |
 | Membership status         | Active, deactivated or archived                   |
 | Invite status             | Active, pending, expired or revoked               |
-| Courses enrolled          | How many of your courses they are in              |
-| Courses completed         | How many they have finished                       |
+| Enrollment                | Courses completed out of courses enrolled         |
+| Completed                 | Courses finished                                  |
 | Progress                  | Percentage across everything they are enrolled in |
 | Last login, Last activity |                                                   |
-| Joined                    |                                                   |
+| Date joined               |                                                   |
 
-This is the one to start from. It is the only export carrying progress for everyone in a single file, and the only one that follows the [Audience filters](/reference/audience#filters) — so filtering to your dormant students and exporting gives you exactly that list.
+This is the one to start from. It is the only export carrying progress for everyone in a single file, and the only one that follows the [Audience filters](/reference/audience#filters), so filtering to your dormant students and exporting gives you exactly that list.
+
+Tick rows before exporting and you get only those. With nothing ticked you get everything matching the filters.
 
 ### One student, course by course
 
-**Audience → a student's name → Export.** One row per course that student is enrolled in: lessons completed out of total, exercises completed out of total, progress, and average grade.
+**Audience, then a student's name, then Export.** One row per course that student is enrolled in.
+
+Columns: Course, Lessons completed, Lessons, Exercises completed, Exercises, Progress, Average grade.
 
 Use it to see _which_ course someone stalled in.
 
 ### One course, all its students
 
-**A course → Analytics → Export.** One row per student in that course: lessons completed out of total, exercises submitted out of total, progress, average grade, and when they were last seen.
+**A course, then Analytics, then Export.** One row per student in that course.
 
-Use it to see _who_ is stalling in a course.
+Columns: Name, Email, Lessons completed, Lessons, Exercises submitted, Exercises, Progress, Average grade, Last seen.
+
+Use it to see _who_ is stalling in a course. The table on screen is paginated, but the export covers every student in the course.
 
 ### Grades and compliance
 
-- **A course → Marks → Export** — grades per student.
-- **Compliance → Export** — one row per student-course obligation, with status, due date and valid-until date.
+- **A course, then Marks, then Export**: name, email, one column per exercise, and the average grade.
+- **Compliance, then Export**: one row per student-course obligation, with status, due date and valid-until date. It exports the Students tab whichever tab you are viewing.
 
 ## How progress is calculated
 
@@ -63,13 +67,13 @@ A student who has watched every lesson but submitted no exercises is **not** cou
 
 ## Limits
 
-|                 |                    |
-| --------------- | ------------------ |
-| Audience export | 20,000 students    |
-| PDF             | 2,000 rows         |
-| Other formats   | No fixed row limit |
+|                        |                 |
+| ---------------------- | --------------- |
+| Audience export        | 20,000 students |
+| PDF                    | 2,000 rows      |
+| The other four exports | No row limit    |
 
-Exports respect what is on screen: whatever you have filtered or selected is what you get.
+The 20,000 cap applies to the audience data before a format is chosen, so it holds for CSV, Excel and HTML too, not only PDF.
 
 :::note[No single all-students, all-courses file]
 There is no one export combining every student with every course, row by row. For that level of detail across the whole academy, export one course at a time.
@@ -79,4 +83,4 @@ There is no one export combining every student with every course, row by row. Fo
 
 - [Audience](/reference/audience) — columns, statuses and filters
 - [Manage Your Audience](/manage-students/manage-your-audience) — filtering, bulk actions, import and export
-- [Find and Remove Inactive Learners](/manage-students/find-and-remove-inactive-learners) — export as the review step before acting
+- [Find and Remove Inactive Students](/manage-students/find-and-remove-inactive-students) — export as the review step before acting

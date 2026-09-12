@@ -1,10 +1,10 @@
 ---
 title: Audience
-description: Manage all students in your organization — view usage, filter, assign to courses, and handle invites from one place.
-last_reviewed: '2026-09-10'
+description: Manage all students in your organization, view usage, filter, assign to courses, and handle invites from one place.
+last_reviewed: '2026-09-12'
 ---
 
-**Audience** is your org-wide student directory. It shows every person who belongs to your organization — whether they signed up themselves, accepted a course invite, or were added directly. From here you can search, filter by usage, sort, act on students in bulk, export, and manage pending invites.
+**Audience** is your org-wide student directory. It shows every person who belongs to your organization, whether they signed up themselves, accepted a course invite, or were added directly. From here you can search, filter by usage, sort, act on students in bulk, export, and manage pending invites.
 
 For step-by-step tasks, see [Manage Your Audience](/manage-students/manage-your-audience).
 
@@ -20,7 +20,7 @@ Audience is separate from course-level **People**. Course People shows who is en
 | ----------------- | -------------------------------------------------------------------------- |
 | **Name**          | Student's display name                                                     |
 | **Email**         | Account email address                                                      |
-| **Status**        | Membership state, or invite state for someone who has not accepted yet     |
+| **Status**        | Membership state, or invite state (see [Status values](#status-values))    |
 | **Enrollment**    | Courses completed out of courses they are enrolled in, for example `1 / 3` |
 | **Progress**      | Percentage completed across everything they are enrolled in                |
 | **Last Login**    | When they last signed in                                                   |
@@ -37,7 +37,9 @@ Progress counts **lessons and exercises**, matching the figure the student sees 
 
 ## Status values
 
-A student has two independent kinds of status. Someone can be **Archived** and still have a **Pending** invite.
+A student has two kinds of status, and they are independent. Someone can be archived and still hold a pending invite.
+
+The column shows **one** of them: the membership state whenever it is anything other than Active, otherwise the invite state. So an archived student with a pending invite reads **Archived**. Rows in a non-active state are greyed as well.
 
 ### Membership status
 
@@ -53,7 +55,7 @@ Archive is the one to use for dormant students, because it gives you the seat ba
 
 ### Invite status
 
-Applies to people who have been invited but do not have an account yet.
+Applies to people who have been invited.
 
 | Status      | Meaning                                                       |
 | ----------- | ------------------------------------------------------------- |
@@ -64,40 +66,48 @@ Applies to people who have been invited but do not have an account yet.
 
 ## Filters
 
-Every filter combines with the others, and your selection lives in the page address — so you can bookmark a view or send it to a colleague and they see the same list.
+Every filter combines with the others, and your selection lives in the page address, so you can bookmark a view or send it to a colleague and they see the same list. Defaults are left out of the address, so a plain Audience URL is the default view.
 
-| Filter            | Options                                                  |
-| ----------------- | -------------------------------------------------------- |
-| **Last login**    | Not seen in 7, 30, 90 or 180 days · Never logged in      |
-| **Last activity** | Not seen in 7, 30, 90 or 180 days · No activity recorded |
-| **Enrollment**    | Enrolled · Not enrolled                                  |
-| **Completion**    | Not started · In progress · Completed                    |
-| **Status**        | Active · Deactivated · Archived                          |
-| **Invite status** | Active · Pending · Expired · Revoked                     |
+| Filter             | Options                                        |
+| ------------------ | ---------------------------------------------- |
+| **Status**         | Active, Deactivated, Archived                  |
+| **No login in**    | 7, 30, 90 or 180 days, or Never logged in      |
+| **No activity in** | 7, 30, 90 or 180 days, or No activity recorded |
+| **Invite status**  | Active, Pending, Expired, Revoked              |
+| **Enrollment**     | Enrolled, Not enrolled                         |
+| **Completion**     | Not started, In progress, Completed            |
+
+You can also search by name or email, and sort by date joined, name, email, last login or last activity.
 
 :::note[The time filters find dormant students, not recent ones]
-"90 days" means **not seen in 90 days**. These are staleness thresholds, so they return the people you have not heard from — not the people who were here recently.
+**No login in 90 days** means exactly that. It returns the people you have not heard from, not the people who were here recently.
 :::
 
-Students who joined very recently are held out of the staleness filters by default, so someone who signed up last week is not reported as dormant before they have had a chance to log in.
+**Completion** describes only students who are enrolled in something. Someone with no enrolments at all matches none of the three options, so use **Enrollment, Not enrolled** to find them.
 
-**Completion** describes only students who are enrolled in something. Someone with no enrolments at all matches none of the three options — use **Enrollment → Not enrolled** to find them.
+### Excluding recent joiners
+
+When you set a time filter, an **Exclude recent joiners** toggle appears, switched on by default. It holds back people who have not been around long enough to be judged inactive.
+
+The grace period is the filter's own window: on **No activity in 90 days**, anyone who joined within the last 90 days is held back. For **Never logged in**, the grace is 7 days.
 
 ### Saved views
 
 One click for the questions asked most often:
 
-- All learners
+- All students
 - Never logged in
-- Inactive 90 days
-- Inactive 180 days
-- Enrolled but not started
+- Inactive 90+ days
+- Inactive 180+ days
+- Enrolled, never started
 - Archived
+
+Change any filter and the selector reads **Custom filters**.
 
 ## Related guides
 
 - [Manage Your Audience](/manage-students/manage-your-audience) — filter, act in bulk, import and export
-- [Find and Remove Inactive Learners](/manage-students/find-and-remove-inactive-learners) — the full review-and-archive workflow
+- [Find and Remove Inactive Students](/manage-students/find-and-remove-inactive-students) — the full review-and-archive workflow
 - [Exports](/reference/exports) — formats, limits, and what each export contains
 - [How Course Enrollment Works](/manage-students/course-enrollment) — how students join courses
 - [Roles and Permissions](/organization-and-team/roles-and-permissions) — difference between students and team members

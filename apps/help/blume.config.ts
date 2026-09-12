@@ -114,7 +114,7 @@ export default defineConfig({
               '/manage-students/create-a-cohort',
               '/manage-students/manage-your-audience',
               '/manage-students/enrollment-access-control',
-          '/manage-students/find-and-remove-inactive-learners'
+              '/manage-students/find-and-remove-inactive-students'
             ]
           },
           {

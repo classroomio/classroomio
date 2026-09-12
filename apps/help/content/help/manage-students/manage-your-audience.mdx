@@ -3,51 +3,58 @@ title: Manage Your Audience
 description: Filter students by usage, act on them in bulk, assign courses, manage invites, and import or export students in ClassroomIO.
 sidebar:
   order: 5
-last_reviewed: '2026-09-10'
+last_reviewed: '2026-09-12'
 ---
 
 This guide covers the recurring Audience tasks: filtering by usage, bulk actions, assigning students to courses, managing pending invites, and importing or exporting. For what Audience shows and what each status means, see [Audience](/reference/audience).
 
 ## Filter students by usage
 
-Use the filter bar above the table to narrow the list. Filters combine, and your selection lives in the page address, so you can bookmark a view or send it to a colleague.
+Use the filter control above the table to narrow the list. Filters combine, and your selection lives in the page address, so you can bookmark a view or send it to a colleague.
 
-- **Last login** and **Last activity** — not seen in 7, 30, 90 or 180 days, or never.
-- **Enrollment** — enrolled, or not enrolled in anything.
-- **Completion** — not started, in progress, or completed.
-- **Status** — active, deactivated or archived.
+- **No login in** and **No activity in**: 7, 30, 90 or 180 days, or never.
+- **Enrollment**: enrolled, or not enrolled in anything.
+- **Completion**: not started, in progress, or completed.
+- **Status**: active, deactivated or archived.
+- **Invite status**: active, pending, expired or revoked.
 
-The **saved views** beside the filters cover the common questions in one click: never logged in, inactive 90 days, inactive 180 days, enrolled but not started, and archived.
+The **saved views** beside the filters cover the common questions in one click: never logged in, inactive 90+ days, inactive 180+ days, enrolled never started, and archived. Change any filter and the selector reads **Custom filters**.
 
 :::note[These filters find dormant students]
-"90 days" means **not seen in 90 days**, so these return the people you have not heard from. Recent joiners are held out by default, so nobody is flagged as dormant before they have had a chance to log in.
+**No login in 90 days** returns the people you have not heard from in that time. An **Exclude recent joiners** toggle appears with any time filter and is on by default, so nobody is flagged before they have had a chance to log in.
 :::
 
-To act on the result, see [Find and Remove Inactive Learners](/manage-students/find-and-remove-inactive-learners), which walks the whole review-and-archive loop.
+To act on the result, see [Find and Remove Inactive Students](/manage-students/find-and-remove-inactive-students), which walks the whole review-and-archive loop.
 
 ## Bulk actions
 
-Tick students in the table, or use **Select all matching** to act on everyone the current filter returns — including when that is thousands of people.
+Tick students in the table, or use **Select all matching** to act on everyone the current filter returns, including when that is thousands of people.
+
+Rows for invites that have not been accepted have no checkbox, because there is no account yet. "Select all matching" is filter-based, so it can still reach them.
 
 With a selection made, open **Actions**:
 
-| Action         | What it does                                    | Reversible       | Plan seat    |
-| -------------- | ----------------------------------------------- | ---------------- | ------------ |
-| **Archive**    | Removes access, keeps the record                | Yes — Unarchive  | Frees a seat |
-| **Deactivate** | Removes access, keeps the record                | Yes — Reactivate | Keeps a seat |
-| **Reactivate** | Restores a deactivated student                  | —                | —            |
-| **Unarchive**  | Restores an archived student                    | —                | Takes a seat |
-| **Delete**     | Permanently removes them from your organization | **No**           | Frees a seat |
+| Action         | What it does                                    | Reversible      | Plan seat    |
+| -------------- | ----------------------------------------------- | --------------- | ------------ |
+| **Archive**    | Removes access, keeps the record                | Yes, Unarchive  | Frees a seat |
+| **Deactivate** | Removes access, keeps the record                | Yes, Reactivate | Keeps a seat |
+| **Reactivate** | Restores a deactivated student                  | n/a             | n/a          |
+| **Unarchive**  | Restores an archived student                    | n/a             | Takes a seat |
+| **Delete**     | Permanently removes them from your organization | **No**          | Frees a seat |
 
-Before anything is applied you see a confirmation showing exactly how many students are affected and a sample of who they are, plus an optional **reason** that is recorded against each student so the decision is answerable later.
+Before anything is applied you confirm the exact number affected, and you can record an optional **reason** that is stored against each student so the decision is answerable later.
 
-After a reversible action, an **Undo** button stays available for 15 minutes and applies to exactly the students who changed.
+When you use **Select all matching**, the confirmation also lists a few example addresses and warns you if any of them are not archived yet. Ticking rows individually shows the count only, since you can already see who you picked.
+
+**Undo** appears after an archive or a deactivate, for 15 minutes, and applies to exactly the students who changed. Reactivate, unarchive and delete cannot be undone. The Undo button lives on the page, so leaving or reloading it before you use the button clears the offer.
 
 :::caution[Delete is permanent and needs archiving first]
-**Delete** is only available for students who are already archived, and asks you to type the number of students to confirm. Their account, submissions and results are kept — they are removed from your organization, not erased.
+**Delete** only works on students who are already archived, and asks you to type the number of students to confirm. It removes them from your organization and from every course in it, including their course completion records. Their ClassroomIO account and their lesson progress remain.
 :::
 
-If the list changed between the confirmation and applying it — someone else archived a student, or a student logged in and left the dormant filter — the action stops and asks you to review again rather than acting on a set you did not see. Runs of more than 1,000 students continue in the background, and you are told when they finish.
+If the filtered list changed between the confirmation and applying it, a filter-based action stops and asks you to review again rather than acting on a set you did not see. An action on rows you ticked has no such check: anyone who has since been removed is quietly skipped, and anyone already in the target state is reported as unchanged.
+
+Runs of more than 1,000 students continue in the background so you can keep working. Keep the tab open to see the result, because the notification arrives on this page and there is no email.
 
 ## Assign students to courses
 
@@ -80,8 +87,8 @@ Assignment happens immediately, and no action is needed from the students. The c
 
 Open the actions menu (the ellipsis icon at the end of a row) for a student whose invite hasn't been accepted yet:
 
-- **Resend invite** — sends a fresh invite email to that address. Available for **Pending**, **Expired**, and **Revoked** invites, so you can also use it to renew an invite that expired or was revoked by mistake.
-- **Revoke invite** — cancels the invite so the link stops working. Only available while the invite is still **Pending**.
+- **Resend invite** sends a fresh invite email to that address. Available for **Pending**, **Expired**, and **Revoked** invites, so you can also use it to renew an invite that expired or was revoked by mistake.
+- **Revoke invite** cancels the invite so the link stops working. Only available while the invite is still **Pending**.
 
 These actions only show up for invite rows. Once a student has an account, their row no longer has invite actions in this menu.
 
@@ -103,7 +110,7 @@ Drop a **CSV** file onto the upload area, or click to choose one. Use **Download
 
 For more than 1,000 students, split the file and import it in parts.
 
-If you would rather not use a file, paste addresses into the field below the upload area instead — one per line, or separated by commas — then click **Review**.
+If you would rather not use a file, paste addresses into the field below the upload area instead, one per line or separated by commas, then click **Review**.
 
 </Step>
 
@@ -112,47 +119,49 @@ If you would rather not use a file, paste addresses into the field below the upl
 
 Dropping a file takes you straight here. Every row is listed with the outcome it will get, and nothing is created until you submit from this screen.
 
-| Row status                   | Meaning                                             |
-| ---------------------------- | --------------------------------------------------- |
-| **Ready**                    | Will be invited                                     |
-| **Already in your audience** | Skipped                                             |
-| **Invalid email address**    | Skipped                                             |
-| **Duplicate in this file**   | Skipped                                             |
-| **Staff member**             | Skipped — they are an admin or tutor, not a student |
-| **No seats left**            | Skipped — over your plan limit                      |
-| **No email address**         | Skipped                                             |
+| Row status               | Meaning                             |
+| ------------------------ | ----------------------------------- |
+| **Ready**                | Will be invited                     |
+| **Already in audience**  | Skipped                             |
+| **Invalid email**        | Skipped                             |
+| **Duplicate in file**    | Skipped                             |
+| **Staff, not a student** | Skipped, they are an admin or tutor |
+| **No seats left**        | Skipped, over your plan limit       |
+| **No email**             | Skipped                             |
 
 </Step>
 
 <Step>
 ### Choose course and cohort access
 
-Under **Course Access**, choose whether the imported students get no course assignment, all of your courses, or a specific set. Under **Cohort Access**, make the same choice for cohorts.
+On the same screen, under **Course Access**, choose whether the imported students get no course assignment, all of your courses, or a specific set. Under **Cohort Access**, make the same choice for cohorts.
 
 </Step>
 
 <Step>
 ### Submit
 
-Click **Import Users**.
+Click **Import N students**, which counts only the rows marked Ready.
 
 </Step>
 </Steps>
 
-New students receive an invitation email. If some rows did not work, you can download just those rows as a CSV from the result screen, fix them, and upload again.
+New students receive an invitation email. If some rows did not work, **Download the rows that failed** on the result screen gives you a CSV of just those, with the reason for each, to fix and upload again.
 
 ## Export students
 
 Use the **Export as CSV** button above the table, or its dropdown for **Excel**, **PDF** and **HTML**.
 
-The export contains name, email, membership and invite status, courses enrolled, courses completed, progress, last login, last activity and date joined — and it follows whatever you have filtered or selected, so the normal workflow is to filter first, export, circulate for sign-off, then come back and act.
+The export contains name, email, membership and invite status, courses enrolled, courses completed, progress, last login, last activity and date joined.
+
+It follows what you have on screen: tick some rows and you get exactly those, otherwise you get everything matching the current filters. So the normal workflow is to filter first, export, circulate for sign-off, then come back and act.
 
 For formats, limits and what the other exports contain, see [Exports](/reference/exports).
 
 ## Related guides
 
 - [Audience](/reference/audience) — what Audience shows and what each status means
-- [Find and Remove Inactive Learners](/manage-students/find-and-remove-inactive-learners) — the full review-and-archive workflow
+- [Find and Remove Inactive Students](/manage-students/find-and-remove-inactive-students) — the full review-and-archive workflow
 - [Exports](/reference/exports) — formats, limits, and what each export contains
 - [How Course Enrollment Works](/manage-students/course-enrollment) — how students join courses
 - [Invite Students](/manage-students/invite-students) — send course-specific invites
