@@ -238,7 +238,7 @@ Consequences:
 
 This is a narrow correctness requirement, not a cohort redesign: cohort enrolment needs a grant row so path revocation does not delete access it never granted. How cohorts segment a course is a separate question, answered by `prd/course-cohorts`.
 
-`ensureProgramCourseAccess` deserves a decision either way. `courseMemberMiddleware` calls it to lazily create `groupmember` rows for legacy program members, which means an authorization check on a GET performs a transaction and can throw `UPGRADE_REQUIRED` (403) from a student-limit check. Prefer retiring it for an eager backfill over teaching it to write grants.
+`ensureProgramCourseAccess` is the one non-obvious case. `courseMemberMiddleware` calls it whenever `isUserCourseMemberOrOrgAdmin` returns false, lazily creating a `groupmember` row for legacy `program` members. Those rows have no grant, so for a learner in both a program and a path, the path's grant is the only one — unenrolling them from the path leaves zero live grants and the cleanup deletes the row. The middleware then recreates it on their next request, so the removal silently undoes itself. Writing a `PROGRAM` grant in that function fixes it. Whether the lazy write belongs in an authorization middleware at all is a separate question and out of scope here.
 
 **Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row and its grant for a later course are not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all grants are created at enrolment time.
 
