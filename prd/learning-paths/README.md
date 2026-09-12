@@ -216,7 +216,7 @@ Learning paths must not add a second instance of this problem, so provenance is 
 ```
 course_enrollment_grant
   groupmemberId · courseId · profileId
-  source: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | IMPORT
+  source: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | PROGRAM | IMPORT
   cohortId (when source=COHORT) · learningPathId (when source=LEARNING_PATH)
   grantedByProfileId · grantedAt · revokedAt
   unique NULLS NOT DISTINCT (groupmemberId, source, cohortId, learningPathId)
@@ -233,7 +233,7 @@ Consequences:
 
 **Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row and its grant for a later course are not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all grants are created at enrolment time.
 
-**Cohorts should migrate onto the same table.** `course_enrollment_grant` is deliberately not path-specific. The cohort enrolment paths (`enrollCohortStudentsInGroups`, `addCohortMembers`, `addCourseToCohortService`, plus the audience and org-invite routes) should write `COHORT` grants, backfilled from the existing `cohort_member` × `cohort_course` join. That is tracked separately from this PRD, but the schema is shaped for it now so there is only ever one provenance mechanism.
+**Cohorts migrate onto the same table.** `course_enrollment_grant` is deliberately not path-specific. Reworking cohort enrolment onto it is specified in `prd/cohorts-v2/README.md` and is out of scope for this PRD; the schema is shaped for it now so there is only ever one provenance mechanism.
 
 **Out of scope here:** per-cohort *content* — separate due dates, announcements or sessions for one cohort inside a shared course. That is a different problem from attribution, cohorts partially solve it already with their own `cohort_newsfeed` and `cohort_goal` tables, and self-paced learning paths do not need it.
 
@@ -306,7 +306,7 @@ enum LEARNING_PATH_STATUS: ACTIVE | DRAFT | ARCHIVED
 enum LEARNING_PATH_DIFFICULTY: BEGINNER | INTERMEDIATE | ADVANCED
 enum LEARNING_PATH_MEMBER_STATUS: NOT_STARTED | IN_PROGRESS | COMPLETED
 enum LEARNING_PATH_COURSE_STATUS: LOCKED | NOT_STARTED | IN_PROGRESS | COMPLETED
-enum COURSE_ENROLLMENT_SOURCE: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | IMPORT
+enum COURSE_ENROLLMENT_SOURCE: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | PROGRAM | IMPORT
 ```
 
 Notes:

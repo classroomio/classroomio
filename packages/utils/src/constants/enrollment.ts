@@ -18,6 +18,12 @@ export const COURSE_ENROLLMENT_SOURCE_VALUES = [
   'COHORT',
   /** Granted by learning path enrolment; `learningPathId` is set. */
   'LEARNING_PATH',
+  /**
+   * Granted by legacy `program` membership. Needed because `courseMemberMiddleware` still
+   * lazily backfills enrolments via `ensureProgramCourseAccess`; without this value that
+   * path would create `groupmember` rows with no grant behind them.
+   */
+  'PROGRAM',
   /** Bulk import or migration backfill. */
   'IMPORT'
 ] as const;
