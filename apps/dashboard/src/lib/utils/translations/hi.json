@@ -2381,7 +2381,16 @@
           "link_copied": "लिंक कॉपी किया गया"
         },
         "student_share_your_knowledge": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
-        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।"
+        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
+        "add_content_created_section": "सेक्शन सफलतापूर्वक बन गया है!",
+        "add_content_created_lesson": "पाठ सफलतापूर्वक बन गया है!",
+        "add_content_created_exercise": "अभ्यास सफलतापूर्वक बन गया है!",
+        "add_content_create_another_section": "एक और सेक्शन बनाएँ",
+        "add_content_create_another_lesson": "एक और पाठ बनाएँ",
+        "add_content_create_another_exercise": "एक और अभ्यास बनाएँ",
+        "add_content_open_now": "अभी खोलें",
+        "add_content_later": "बाद में",
+        "add_content_add_to_section": "सामग्री जोड़ें"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",

@@ -2381,7 +2381,16 @@
           "link_copied": "Link skopiowany"
         },
         "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
-        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później."
+        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
+        "add_content_created_section": "Sekcja została utworzona pomyślnie!",
+        "add_content_created_lesson": "Lekcja została utworzona pomyślnie!",
+        "add_content_created_exercise": "Ćwiczenie zostało utworzone pomyślnie!",
+        "add_content_create_another_section": "Utwórz kolejną sekcję",
+        "add_content_create_another_lesson": "Utwórz kolejną lekcję",
+        "add_content_create_another_exercise": "Utwórz kolejne ćwiczenie",
+        "add_content_open_now": "Otwórz teraz",
+        "add_content_later": "Później",
+        "add_content_add_to_section": "Dodaj treść"
       },
       "news_feed": {
         "heading": "Kanał wiadomości",

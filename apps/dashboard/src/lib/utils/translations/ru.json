@@ -2381,7 +2381,16 @@
           "link_copied": "Ссылка скопирована"
         },
         "student_share_your_knowledge": "В этот курс пока не добавлены уроки. Пожалуйста, зайдите позже.",
-        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже."
+        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже.",
+        "add_content_created_section": "Раздел успешно создан!",
+        "add_content_created_lesson": "Урок успешно создан!",
+        "add_content_created_exercise": "Упражнение успешно создано!",
+        "add_content_create_another_section": "Создать ещё один раздел",
+        "add_content_create_another_lesson": "Создать ещё один урок",
+        "add_content_create_another_exercise": "Создать ещё одно упражнение",
+        "add_content_open_now": "Открыть сейчас",
+        "add_content_later": "Позже",
+        "add_content_add_to_section": "Добавить в раздел"
       },
       "news_feed": {
         "heading": "Лента новостей",
