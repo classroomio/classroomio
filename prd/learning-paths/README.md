@@ -228,17 +228,52 @@ Consequences:
 
 - **The course roster can show where each learner came from** as a column on the existing People page — "via Frontend Bootcamp" instead of an unexplained name — computed per row from that learner's live grants.
 - **Access is the union of live grants.** A learner may hold several at once — bought the course, then a path granted it, then a cohort did.
-- **Revocation is conservative.** Leaving a path or cohort sets `revokedAt`; the `groupmember` row is deleted only when no grant with `revokedAt IS NULL` remains. A learner who bought the course never loses it because a path dropped them. This is Moodle's enrolment-instance model, where a user holds one enrolment row per method and access is their union.
+- **Nothing is ever deleted.** Revocation sets `revokedAt` on the grant. The `groupmember` row stays. A learner who bought the course never loses it because a path dropped them. This is Moodle's enrolment-instance model, where a user holds one enrolment row per method and access is their union.
+
+**Access is "has a live grant", not "has a `groupmember` row".** The two access predicates — `isUserCourseMemberOrOrgAdmin` and `isCourseTeamMemberOrOrgAdmin` — gain one `EXISTS` on `course_enrollment_grant` for a live grant. This is the only read-path change, and it is required rather than a preference, because **deleting a `groupmember` row is not a safe way to revoke access:**
+
+- `submission_submitted_by_fkey`, `group_attendance_student_id_fkey`, `lesson_comment_groupmember_id_fkey`, `question_answer_group_member_id_fkey`, `course_newsfeed_author_id_fkey` and `apps_poll_submission_selected_by_id_fkey` all declare **no** `onDelete`, so Postgres defaults to `NO ACTION`. Deleting the enrolment of any learner who has ever submitted, commented, answered, posted or been marked present raises a foreign-key violation.
+- `course_completion_record_group_member_id_fkey` **does** cascade, so where the delete does succeed it silently destroys the learner's compliance records.
+- `groupmember.certificateEarnedAt` lives on the row itself, so deleting it discards the course certificate they earned.
+
+Revoking a grant and leaving the row intact avoids all three, and keeps the audit trail. It costs one indexed `EXISTS` in two functions, evaluated once per request by middleware.
 - **History survives.** Grants are revoked, not deleted, so "did this path ever grant this course?" stays answerable after the learner leaves.
 
-**Prerequisite — every enrolment must have at least one grant.** The conservative-revocation rule reads "no live grants left" as "nobody is claiming this enrolment, so remove it". That is only safe if every route that creates a `groupmember` row records a grant. If cohort enrolment writes no grant, then revoking a path grant would leave zero live grants on a row a cohort is relying on, and the cleanup would strip cohort-granted access. So before revocation is switched on:
+**Prerequisite — every enrolment must have at least one grant.** Once access means "has a live grant", any enrolment with no grant at all is invisible: existing learners would lose access on deploy. So before the predicate change ships:
 
 1. Backfill a grant for every existing `groupmember` row — `COHORT` where the `cohort_member` × `cohort_course` join explains it, `IMPORT` for the rest.
 2. Make the remaining enrolment routes write their grant: the cohort services, the audience and org-invite routes, and `ensureProgramCourseAccess`.
 
-This is a narrow correctness requirement, not a cohort redesign: cohort enrolment needs a grant row so path revocation does not delete access it never granted. How cohorts segment a course is a separate question, answered by `prd/course-cohorts`.
+This is a narrow correctness requirement, not a cohort redesign: cohort enrolment needs a grant row so cohort learners keep access. How cohorts segment a course is a separate question, answered by `prd/course-cohorts`.
 
-`ensureProgramCourseAccess` is the one non-obvious case. `courseMemberMiddleware` calls it whenever `isUserCourseMemberOrOrgAdmin` returns false, lazily creating a `groupmember` row for legacy `program` members. Those rows have no grant, so for a learner in both a program and a path, the path's grant is the only one — unenrolling them from the path leaves zero live grants and the cleanup deletes the row. The middleware then recreates it on their next request, so the removal silently undoes itself. Writing a `PROGRAM` grant in that function fixes it. Whether the lazy write belongs in an authorization middleware at all is a separate question and out of scope here.
+`ensureProgramCourseAccess` is the one non-obvious case, because it creates enrolments at request time rather than at an enrolment event: `courseMemberMiddleware` calls it whenever the access check fails, lazily inserting a `groupmember` row for legacy `program` members. A one-time backfill cannot cover rows that do not exist yet, so that function must write a `PROGRAM` grant itself or its members lose access the first time they are created. Whether a lazy write belongs in an authorization middleware at all is a separate question, out of scope here.
+
+### What happens on enrol and unenrol
+
+**Enrolling** (`learningPathId`, `profileId`), one transaction:
+
+| Table | Write |
+| --- | --- |
+| `learning_path_member` | Insert one row (`NOT_STARTED`), or clear `removedAt` if a removed row exists |
+| `learning_path_member_course` | Insert one row per `learning_path_course`: first course `NOT_STARTED`, the rest `LOCKED` under `sequentialUnlock`, else all `NOT_STARTED` |
+| `organizationmember` | Insert if absent, after the student-limit check |
+| `groupmember` | Insert **only for courses granted now** (the first course under `sequentialUnlock`, all of them otherwise) — and only if the learner does not already have the row |
+| `course_enrollment_grant` | Upsert one `LEARNING_PATH` grant per granted course, clearing `revokedAt` on conflict |
+
+Nothing is written to `lesson_completion` or `submission`. That is precisely why a course the learner already finished counts immediately: the rollup recompute that follows enrolment reads their existing completions, marks that course `COMPLETED`, and cascades the unlock to the next one — so a learner who had already done courses 1 and 2 lands on course 3.
+
+**Unlocking a later course** (triggered by the completion event, in that same transaction): flip `learning_path_member_course.status` from `LOCKED`, set `unlockedAt`, insert the `groupmember` row if absent, and upsert its grant.
+
+**Unenrolling**, one transaction:
+
+| Table | Write |
+| --- | --- |
+| `course_enrollment_grant` | Set `revokedAt` on this path's live grants for this learner |
+| `learning_path_member` | Set `removedAt` — never delete, or the cascade takes their `learning_path_member_course` rows and their issued certificate |
+| `groupmember` | **Untouched** |
+| `lesson_completion`, `submission`, `group_attendance` | **Untouched** |
+
+Course access ends because no live grant remains, not because anything was deleted. If the learner also bought the course or a cohort granted it, that grant is still live and they keep access. Re-enrolling clears `removedAt` and reactivates the grants, so their progress is exactly where they left it.
 
 **Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row and its grant for a later course are not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all grants are created at enrolment time.
 
@@ -285,7 +320,9 @@ learning_path_course
 
 learning_path_member
   id uuid PK · learningPathId FK(learning_path, cascade) · profileId FK(profile) nullable · email text
-  roleId FK(role) · enrolledAt · startedAt · completedAt timestamptz nullable
+  roleId FK(role) · enrolledAt · startedAt · completedAt · removedAt timestamptz nullable
+  -- removedAt is a soft-remove: deleting the row would cascade the member's per-course
+  -- cache and their issued certificate. Re-enrolling clears it instead of inserting again.
   -- rollup cache, recomputed alongside unlock evaluation; never source of truth:
   status LEARNING_PATH_MEMBER_STATUS · progressPercent integer · completedCourseCount integer
   currentCourseId FK(course, set null) · lastActivityAt timestamptz

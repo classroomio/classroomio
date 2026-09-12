@@ -3565,6 +3565,14 @@ export const learningPathMember = pgTable(
     enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
     completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    /**
+     * Unenrolling soft-removes rather than deleting the row, because deleting it would
+     * cascade away `learning_path_member_course` and the learner's
+     * `learning_path_certificate_issue` — a certificate they legitimately earned. Also keeps
+     * drop-off answerable in analytics. Re-enrolling clears this instead of inserting again,
+     * which is what `unique(pathId, profileId)` requires.
+     */
+    removedAt: timestamp('removed_at', { withTimezone: true, mode: 'string' }),
     // ── Rollup cache ──
     // Recomputed by the same service that evaluates unlocking on lesson/exercise completion.
     // Never a source of truth: `learning_path_member_course` plus lesson/exercise data is.
