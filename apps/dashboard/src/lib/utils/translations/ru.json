@@ -3093,6 +3093,8 @@
     "compliance": "Соответствие требованиям",
     "cohorts": "Когорты",
     "upgrade_now": "Обновите сейчас",
+    "upgrade_label": "Обновить",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} из {studentLimit} студентов",
     "upgrade_left": "{count} осталось"
   },

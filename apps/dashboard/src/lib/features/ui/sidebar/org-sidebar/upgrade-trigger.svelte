@@ -22,7 +22,6 @@
 </script>
 
 {#if $isFreePlan}
-
   <Sidebar.Menu>
     <Sidebar.MenuItem>
       <Sidebar.MenuButton
@@ -31,18 +30,18 @@
         data-testid="org-sidebar-upgrade"
         type="button"
         tooltipContent="{upgradeLabel} {upgradeCount}"
-        class="h-10 rounded-full ui:bg-background px-3 shadow-sm"
+        class="ui:bg-background h-10 rounded-full px-3 text-black shadow-sm dark:text-white"
         onclick={openUpgradeModal}
       >
         <CircularProgress
           value={usagePercent}
           size={16}
-          strokeWidth={2}
+          strokeWidth={2.5}
           {progressClass}
           trackClass="stroke-black/15 dark:stroke-white/20"
         />
-        <span class="truncate font-medium ui:group-data-[collapsible=icon]:hidden">{upgradeLabel}</span>
-        <span class={['ml-auto tabular-nums text-xs font-medium ui:group-data-[collapsible=icon]:hidden', countClass]}>
+        <span class="ui:group-data-[collapsible=icon]:hidden truncate font-medium">{upgradeLabel}</span>
+        <span class={['ui:group-data-[collapsible=icon]:hidden ml-auto text-xs font-medium tabular-nums', countClass]}>
           {upgradeCount}
         </span>
       </Sidebar.MenuButton>

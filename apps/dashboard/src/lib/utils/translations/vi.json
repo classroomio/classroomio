@@ -3093,6 +3093,8 @@
     "compliance": "Tuân thủ",
     "cohorts": "Nhóm học tập",
     "upgrade_now": "Nâng cấp ngay bây giờ",
+    "upgrade_label": "Nâng cấp",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} trong số {studentLimit} sinh viên",
     "upgrade_left": "còn {count}"
   },

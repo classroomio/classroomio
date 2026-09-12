@@ -3093,6 +3093,8 @@
     "compliance": "Cumplimiento",
     "cohorts": "Cohortes",
     "upgrade_now": "Actualiza ahora",
+    "upgrade_label": "Actualizar",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} de {studentLimit} estudiantes",
     "upgrade_left": "{count} restante"
   },
