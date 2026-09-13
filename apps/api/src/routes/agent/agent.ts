@@ -540,7 +540,11 @@ const agentCoreRouter = new Hono()
         role === AgentRole.STUDENT
           ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings)
           : filterToolsForChatMode(
-              buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid, documentAssets })
+              buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid, documentAssets }),
+              {
+                activeTemplateId,
+                hasDocuments: documentAssets.length > 0
+              }
             );
 
       const contextManaged = await buildModelContextMessages({
@@ -554,6 +558,7 @@ const agentCoreRouter = new Hono()
       let finishReason: string | undefined;
 
       const isAnthropic = providerConfig.provider === AIProvider.ANTHROPIC;
+      const isMoonshot = providerConfig.provider === AIProvider.MOONSHOT;
 
       // 1h TTL keeps the prefix warm across tool-execution gaps in long agent
       // runs. Break-even is 3 requests within the hour; well under most plan-
@@ -567,6 +572,14 @@ const agentCoreRouter = new Hono()
             }
           }
         : systemPrompt;
+
+      // Moonshot caches prompt prefixes automatically, but hit rate depends on
+      // sticky cluster routing: requests sharing a `prompt_cache_key` are
+      // steered to the same cluster so its KV cache stays warm across turns of
+      // the same conversation. The SDK spreads providerOptions into the request
+      // body, so `moonshotai.prompt_cache_key` reaches the API untouched.
+      const moonshotProviderOptions =
+        isMoonshot && conversationId ? { moonshotai: { prompt_cache_key: conversationId } } : undefined;
 
       // Prepend volatile context as a user-turn message so the stable system +
       // tools prefix stays cacheable even when the teacher navigates to a
@@ -601,6 +614,7 @@ const agentCoreRouter = new Hono()
         system: systemContent,
         messages: modelMessages,
         tools: agentTools,
+        providerOptions: moonshotProviderOptions,
         stopWhen: stepCountIs(MAX_STEPS_PER_ROUND),
         onStepFinish: () => {
           completedStepCount += 1;
@@ -615,7 +629,7 @@ const agentCoreRouter = new Hono()
           // Cache hit/miss visibility. If cacheRead stays 0 across repeated
           // turns of the same conversation, a silent invalidator is leaking
           // into the cached prefix — audit system prompt and tool definitions.
-          if (isAnthropic) {
+          if (isAnthropic || isMoonshot) {
             const details = totalUsage?.inputTokenDetails;
             const cacheRead = details?.cacheReadTokens ?? 0;
             const cacheWrite = details?.cacheWriteTokens ?? 0;
