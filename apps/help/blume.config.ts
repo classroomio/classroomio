@@ -113,7 +113,8 @@ export default defineConfig({
               '/manage-students/invite-students',
               '/manage-students/create-a-cohort',
               '/manage-students/manage-your-audience',
-              '/manage-students/enrollment-access-control'
+              '/manage-students/enrollment-access-control',
+              '/manage-students/find-and-remove-inactive-students'
             ]
           },
           {
@@ -174,6 +175,7 @@ export default defineConfig({
           '/reference/course',
           '/reference/cohorts',
           '/reference/audience',
+          '/reference/exports',
           '/reference/student-dashboard',
           '/reference/tags',
           '/reference/community',

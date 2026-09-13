@@ -7,6 +7,8 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import RefreshIcon from '@lucide/svelte/icons/refresh-cw';
   import { StatusTiles, CourseBreakdown, LearnersTable, complianceApi } from '$features/compliance';
+  import { ExportMenu } from '$features/ui';
+  import { buildComplianceExportDocument } from '$features/compliance/utils/compliance-export-utils';
   import type { ComplianceLearnerRow } from '$features/compliance/utils/types';
 
   $effect(() => {
@@ -35,6 +37,24 @@
   ];
 
   let activeFilter = $state<LearnerStatus | 'all'>('all');
+
+  // Exports what the table shows, including the active status filter, so the
+  // file matches the list on screen.
+  const exportDocument = $derived(
+    buildComplianceExportDocument(
+      (complianceApi.overview?.learners ?? []).filter((row) => activeFilter === 'all' || row.status === activeFilter),
+      $currentOrg?.name ?? 'Organization',
+      {
+        name: $t('compliance.learners.learner'),
+        email: $t('audience.email'),
+        course: $t('compliance.learners.course'),
+        status: $t('compliance.learners.status'),
+        dueDate: $t('compliance.learners.due_date'),
+        validUntil: $t('compliance.learners.expires')
+      },
+      (status) => $t(`compliance.status.${status}`)
+    )
+  );
 </script>
 
 <svelte:head>
@@ -48,6 +68,12 @@
       <p class="ui:text-muted-foreground text-sm">{$t('compliance.subtitle')}</p>
     </Page.HeaderContent>
     <Page.Action>
+      <ExportMenu
+        document={exportDocument}
+        estimatedRowCount={exportDocument.rows.length}
+        disabled={exportDocument.rows.length === 0}
+        testId="compliance-export"
+      />
       <Button variant="outline" size="sm" disabled={complianceApi.loading} onclick={handleRefresh}>
         <RefreshIcon class={complianceApi.loading ? 'animate-spin' : ''} />
         {$t('analytics.refresh')}

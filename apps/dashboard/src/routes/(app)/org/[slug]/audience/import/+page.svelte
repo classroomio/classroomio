@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Button } from '@cio/ui/base/button';
   import { ImportAudiencePage } from '$features/audience/pages';
   import { BackButton } from '@cio/ui';
   import * as Page from '@cio/ui/base/page';
@@ -23,11 +22,6 @@
       <Page.Title>{$t('audience.import.title')}</Page.Title>
       <Page.Subtitle>{$t('audience.import.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
-    <Page.Action>
-      <Button type="submit" form="import-audience-form">
-        {$t('audience.import.submit')}
-      </Button>
-    </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}

@@ -33,15 +33,41 @@ export type GetAudienceRequest = (typeof classroomio.organization)['audience']['
 export type OrganizationAudienceResponse = InferResponseType<GetAudienceRequest> | null;
 export type OrganizationAudienceSuccess = Extract<InferResponseType<GetAudienceRequest>, { success: true }>;
 export type OrganizationAudienceRequestQuery = NonNullable<InferRequestType<GetAudienceRequest>['query']>;
-export type OrganizationAudienceSortBy = 'createdAt' | 'name' | 'email';
+export type OrganizationAudienceSortBy = 'createdAt' | 'name' | 'email' | 'lastLoginAt' | 'lastActiveAt';
 export type OrganizationAudienceSortOrder = 'asc' | 'desc';
+export type OrganizationAudienceMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED';
+export type OrganizationAudienceInviteStatus = 'active' | 'pending' | 'expired' | 'revoked';
+export type OrganizationAudienceEnrollment = 'enrolled' | 'not_enrolled';
+export type OrganizationAudienceCompletion = 'not_started' | 'in_progress' | 'completed';
+export type OrganizationAudienceActivityWindow = '7d' | '30d' | '90d' | '180d' | 'never';
+
 export type OrganizationAudienceQuery = {
   page: number;
   limit: number;
   search?: string;
   sortBy: OrganizationAudienceSortBy;
   sortOrder: OrganizationAudienceSortOrder;
+  status: OrganizationAudienceMemberStatus;
+  inviteStatus?: OrganizationAudienceInviteStatus;
+  enrollment?: OrganizationAudienceEnrollment;
+  completion?: OrganizationAudienceCompletion;
+  lastLoginBefore?: OrganizationAudienceActivityWindow;
+  lastActiveBefore?: OrganizationAudienceActivityWindow;
+  excludeRecentJoiners: boolean;
 };
+
+/**
+ * The one-click dormancy views. These are saved filter combinations, not a
+ * separate concept — each resolves to a plain `OrganizationAudienceQuery`, so a
+ * view is always representable as a shareable URL.
+ */
+export type OrganizationAudienceView =
+  | 'all'
+  | 'never_logged_in'
+  | 'inactive_90d'
+  | 'inactive_180d'
+  | 'enrolled_not_started'
+  | 'archived';
 
 export type OrganizationAudience = OrganizationAudienceSuccess['data'];
 export type OrganizationAudiencePagination = OrganizationAudienceSuccess['pagination'];
@@ -72,6 +98,42 @@ export type InviteTeamData = InviteTeamSuccess['data'];
 
 export type DeleteTeamRequest = (typeof classroomio.organization)['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { success: true }>;
+export type BulkAudienceActionRequest = (typeof classroomio.organization)['audience']['bulk-action']['$post'];
+export type BulkAudienceActionSuccess = Extract<InferResponseType<BulkAudienceActionRequest>, { success: true }>;
+export type BulkAudienceActionResult = BulkAudienceActionSuccess['data'];
+
+export type ImportAudienceSuccess = Extract<InferResponseType<ImportAudienceRequest>, { success: true }>;
+export type AudienceImportResultRows = ImportAudienceSuccess['data']['rows'];
+
+export type AudienceExportRequest = (typeof classroomio.organization)['audience']['export']['$get'];
+export type AudienceExportSuccess = Extract<InferResponseType<AudienceExportRequest>, { success: true }>;
+export type AudienceExportRows = AudienceExportSuccess['data'];
+
+export type BulkAudiencePreviewRequest = (typeof classroomio.organization)['audience']['bulk-preview']['$get'];
+export type BulkAudiencePreviewSuccess = Extract<InferResponseType<BulkAudiencePreviewRequest>, { success: true }>;
+export type BulkAudiencePreview = BulkAudiencePreviewSuccess['data'];
+
+export type UndoBulkAudienceActionRequest =
+  (typeof classroomio.organization)['audience']['bulk-action']['undo']['$post'];
+
+export type BulkAudienceActionStatusRequest =
+  (typeof classroomio.organization)['audience']['bulk-action'][':jobId']['$get'];
+export type BulkAudienceActionStatusSuccess = Extract<
+  InferResponseType<BulkAudienceActionStatusRequest>,
+  { success: true }
+>;
+export type BulkAudienceActionStatus = BulkAudienceActionStatusSuccess['data'];
+
+/** The folded outcome a finished queued run reports, matching the synchronous shape. */
+export type BulkAudienceActionOutcome = {
+  requested: number;
+  succeeded: number;
+  failed: { memberId: number; reason: string }[];
+};
+
+/** The lifecycle actions the bulk bar offers. `delete` requires every target to be ARCHIVED. */
+export type AudienceBulkAction = 'deactivate' | 'reactivate' | 'archive' | 'unarchive' | 'delete';
+
 export type DeleteAudienceMemberRequest = (typeof classroomio.organization)['audience'][':memberId']['$delete'];
 export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudienceMemberRequest>, { success: true }>;
 

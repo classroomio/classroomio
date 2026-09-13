@@ -9,22 +9,17 @@ export const DEFAULT_ORG_SITE_NAME = 'udemy-test';
 
 /** Admin app login (cloud mode, localhost preview). */
 export async function loginAsAdmin(page: Page) {
-  await page.goto('/login');
+  const baseURL = process.env.DEMO_BASE_URL ?? 'http://localhost:4173';
 
-  const email = page.getByTestId('auth-login-email');
-  const password = page.getByTestId('auth-login-password');
+  // Same-origin auth via the dashboard proxy — avoids Svelte hydration races on
+  // bound login fields and stores session cookies on the page origin.
+  const response = await page.request.post(`${baseURL}/api/auth/sign-in/email`, {
+    data: { email: DEMO_ADMIN.email, password: DEMO_ADMIN.password },
+    headers: { Origin: baseURL, 'Content-Type': 'application/json' }
+  });
 
-  await email.waitFor({ state: 'visible' });
-
-  // Vite hydrates bound inputs after first paint; filling too early is discarded.
-  await expect(async () => {
-    await email.fill(DEMO_ADMIN.email);
-    await password.fill(DEMO_ADMIN.password);
-    await expect(email).toHaveValue(DEMO_ADMIN.email);
-    await expect(password).toHaveValue(DEMO_ADMIN.password);
-  }).toPass({ timeout: 10_000 });
-
-  await page.getByTestId('auth-login-submit').click();
+  expect(response.ok()).toBeTruthy();
+  await page.goto('/');
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 60_000 });
 }
 

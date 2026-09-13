@@ -18,7 +18,8 @@
     "test": "jest",
     "test:watch": "pnpm run test --watch",
     "ci": "cp .env.example .env && vite build && vite preview",
-    "translate": "node ./scripts/translate.cjs"
+    "translate": "node ./scripts/translate.cjs",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@ai-sdk/svelte": "^4.0.158",
@@ -132,6 +133,7 @@
     "typescript-eslint": "^8.44.1",
     "vite": "^5.4.4",
     "vite-plugin-mkcert": "^2.1.0",
+    "vitest": "^1.2.2",
     "wrangler": "4.21.2"
   },
   "type": "module",
