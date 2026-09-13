@@ -4495,7 +4495,7 @@
     "tool": {
       "pending": {
         "working": "Đang xử lý",
-        "unknown_tool": "Đang chạy {toolName}",
+        "unknown_tool": "Đang làm việc với {toolName}",
         "get_course_structure": "Đang đọc cấu trúc khóa học",
         "get_lesson_content": "Đang đọc nội dung bài học",
         "get_exercise_details": "Đang đọc bài tập",
@@ -4595,14 +4595,14 @@
     "retry": "Thử lại",
     "run_monitor_aria": "Đang tạo khóa học",
     "run_summary": {
-      "completed": "Chạy xong.",
-      "completed_with_counts": "Đã hoàn thành chạy — đã tạo {counts}.",
-      "failed": "Chạy không thành công.",
-      "failed_with_reason": "Chạy không thành công — {reason}.",
-      "canceled": "Cuộc chạy bị hủy.",
-      "canceled_with_counts": "Cuộc chạy đã bị hủy — đã tạo {counts} trước khi dừng.",
-      "paused": "Chạy bị tạm dừng. Tiếp tục để tiếp tục.",
-      "paused_with_counts": "Cuộc chạy bị tạm dừng — đã tạo {counts} cho đến nay. Tiếp tục để tiếp tục."
+      "completed": "Đã tạo xong khóa học.",
+      "completed_with_counts": "Đã tạo xong khóa học — đã tạo {counts}.",
+      "failed": "Tạo khóa học không thành công.",
+      "failed_with_reason": "Tạo khóa học không thành công — {reason}.",
+      "canceled": "Đã hủy tạo khóa học.",
+      "canceled_with_counts": "Đã hủy tạo khóa học — đã tạo {counts} trước khi dừng.",
+      "paused": "Đã tạm dừng tạo khóa học. Tiếp tục để làm tiếp.",
+      "paused_with_counts": "Đã tạm dừng tạo khóa học — đã tạo {counts} cho đến nay. Tiếp tục để làm tiếp."
     },
     "changes_card": {
       "summary_count": "{count} mục đã thay đổi",
@@ -4629,16 +4629,16 @@
       "collapse": "Thu gọn kế hoạch"
     },
     "run_monitor": {
-      "cancel": "Hủy chạy",
+      "cancel": "Hủy tạo khóa học",
       "dismiss": "Loại bỏ",
       "now_doing": "bây giờ",
       "input_disabled_hint": "Cuộc trò chuyện bị tạm dừng trong khi nhân viên hỗ trợ hoàn tất việc xây dựng khóa học. Hủy bỏ hoặc đợi cho đến khi nó hoàn thành.",
       "dismiss_confirm": "Bỏ đi",
-      "dismiss_cancel": "Tiếp tục chạy",
-      "dismiss_confirm_body": "Rời khỏi cuộc chạy bị hủy bỏ này? Nút Tiếp tục sẽ biến mất - mọi cuộc trò chuyện tiếp theo sẽ bắt đầu mới và sẽ không tiếp tục kế hoạch.",
+      "dismiss_cancel": "Ở lại đây",
+      "dismiss_confirm_body": "Rời khỏi lần tạo đã hủy này? Nút Tiếp tục sẽ biến mất — mọi cuộc trò chuyện tiếp theo sẽ bắt đầu lại và không tiếp tục kế hoạch.",
       "stuck_queued": {
         "title": "Công nhân không phản hồi",
-        "body": "Lần chạy này đã chờ hơn 30 giây mà không có công nhân đón. Nhân viên chạy nền có thể không hoạt động hoặc đang khởi động lại."
+        "body": "Việc tạo khóa học đã chờ hơn 30 giây mà không có tiến trình nền nào tiếp nhận. Tiến trình nền có thể đang tắt hoặc đang khởi động lại."
       }
     },
     "ask_ai": "Hỏi AI",

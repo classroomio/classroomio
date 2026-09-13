@@ -4495,7 +4495,7 @@
     "tool": {
       "pending": {
         "working": "En cours",
-        "unknown_tool": "Exécution de {toolName}",
+        "unknown_tool": "Travail sur {toolName}",
         "get_course_structure": "Lecture de la structure du cours",
         "get_lesson_content": "Lecture du contenu de la leçon",
         "get_exercise_details": "Lecture de l'exercice",
@@ -4595,14 +4595,14 @@
     "retry": "Réessayer",
     "run_monitor_aria": "Génération de cours en cours",
     "run_summary": {
-      "completed": "Exécution terminée.",
-      "completed_with_counts": "Exécution terminée – créé {counts}.",
-      "failed": "L'exécution a échoué.",
-      "failed_with_reason": "Échec de l'exécution – {reason}.",
-      "canceled": "Exécution annulée.",
-      "canceled_with_counts": "Exécution annulée – créé {counts} avant de s'arrêter.",
-      "paused": "Exécution en pause. Reprendre pour continuer.",
-      "paused_with_counts": "Exécution en pause – créé {counts} jusqu'à présent. Reprendre pour continuer."
+      "completed": "Génération du cours terminée.",
+      "completed_with_counts": "Génération du cours terminée — {counts} créé(s).",
+      "failed": "La génération du cours a échoué.",
+      "failed_with_reason": "La génération du cours a échoué — {reason}.",
+      "canceled": "Génération du cours annulée.",
+      "canceled_with_counts": "Génération du cours annulée — {counts} créé(s) avant l’arrêt.",
+      "paused": "Génération du cours en pause. Reprenez pour continuer.",
+      "paused_with_counts": "Génération du cours en pause — {counts} créé(s) jusqu’ici. Reprenez pour continuer."
     },
     "changes_card": {
       "summary_count": "{count} éléments modifiés",
@@ -4629,16 +4629,16 @@
       "collapse": "Plan d'effondrement"
     },
     "run_monitor": {
-      "cancel": "Annuler l'exécution",
+      "cancel": "Annuler la génération",
       "dismiss": "Rejeter",
       "now_doing": "Maintenant",
       "input_disabled_hint": "La conversation est suspendue pendant que l'agent termine la création du cours. Annulez ou attendez qu'il soit terminé.",
       "dismiss_confirm": "S'éloigner",
-      "dismiss_cancel": "Continuez à courir",
-      "dismiss_confirm_body": "S'éloigner de cette course annulée ? Le bouton Reprendre disparaîtra : toute nouvelle discussion recommencera à zéro et ne poursuivra pas le plan.",
+      "dismiss_cancel": "Rester ici",
+      "dismiss_confirm_body": "Quitter cette génération annulée ? Le bouton Reprendre disparaîtra : toute nouvelle discussion recommencera à zéro et ne poursuivra pas le plan.",
       "stuck_queued": {
         "title": "Le travailleur ne répond pas",
-        "body": "Cette exécution attend depuis plus de 30 secondes sans qu'aucun travailleur ne soit récupéré. Le travailleur en arrière-plan est peut-être en panne ou redémarre."
+        "body": "La génération du cours attend depuis plus de 30 secondes sans qu’aucun processus en arrière-plan ne la prenne en charge. Le processus en arrière-plan est peut-être hors service ou en cours de redémarrage."
       }
     },
     "ask_ai": "Demandez à l'IA",

@@ -4495,7 +4495,7 @@
     "tool": {
       "pending": {
         "working": "Trabajando",
-        "unknown_tool": "Ejecutando {toolName}",
+        "unknown_tool": "Trabajando en {toolName}",
         "get_course_structure": "Leyendo estructura del curso",
         "get_lesson_content": "Leyendo contenido de la lección",
         "get_exercise_details": "Leyendo ejercicio",
@@ -4595,14 +4595,14 @@
     "retry": "Reintentar",
     "run_monitor_aria": "Generación de cursos en progreso",
     "run_summary": {
-      "completed": "Ejecución completada.",
-      "completed_with_counts": "Ejecución completada: creada {counts}.",
-      "failed": "La ejecución falló.",
-      "failed_with_reason": "La ejecución falló: {reason}.",
-      "canceled": "Ejecución cancelada.",
-      "canceled_with_counts": "Ejecución cancelada: creó {counts} antes de detenerse.",
-      "paused": "Ejecución pausada. Reanudar para continuar.",
-      "paused_with_counts": "Ejecución pausada: creado {counts} hasta el momento. Reanudar para continuar."
+      "completed": "Generación del curso completada.",
+      "completed_with_counts": "Generación del curso completada — se creó {counts}.",
+      "failed": "La generación del curso falló.",
+      "failed_with_reason": "La generación del curso falló — {reason}.",
+      "canceled": "Generación del curso cancelada.",
+      "canceled_with_counts": "Generación del curso cancelada — se creó {counts} antes de detenerse.",
+      "paused": "Generación del curso pausada. Reanuda para continuar.",
+      "paused_with_counts": "Generación del curso pausada — se creó {counts} hasta ahora. Reanuda para continuar."
     },
     "changes_card": {
       "summary_count": "{count} elementos cambiados",
@@ -4629,16 +4629,16 @@
       "collapse": "Plan de colapso"
     },
     "run_monitor": {
-      "cancel": "Cancelar ejecución",
+      "cancel": "Cancelar generación",
       "dismiss": "Descartar",
       "now_doing": "ahora",
       "input_disabled_hint": "El chat se pausa mientras el agente termina de crear el curso. Cancele o espere a que se complete.",
       "dismiss_confirm": "alejarse",
-      "dismiss_cancel": "seguir corriendo",
-      "dismiss_confirm_body": "¿Abandonarse de esta carrera cancelada? El botón Reanudar desaparecerá; cualquier conversación adicional comenzará de nuevo y no continuará con el plan.",
+      "dismiss_cancel": "Quedarse aquí",
+      "dismiss_confirm_body": "¿Abandonar esta generación cancelada? El botón Reanudar desaparecerá: cualquier conversación adicional empezará de cero y no continuará el plan.",
       "stuck_queued": {
         "title": "trabajador no responde",
-        "body": "Esta ejecución ha estado esperando más de 30 segundos sin que ningún trabajador haya sido recogido. Es posible que el trabajador en segundo plano esté inactivo o reiniciándose."
+        "body": "La generación del curso lleva más de 30 segundos esperando sin que ningún proceso en segundo plano la haya recogido. Es posible que el proceso en segundo plano esté inactivo o reiniciándose."
       }
     },
     "ask_ai": "Pregúntale a la IA",
