@@ -1373,6 +1373,8 @@
     "unlock": "Unlock unlimited features and invest in our future",
     "upgrade": "Upgrade Now",
     "upgrade_now": "Upgrade now",
+    "upgrade_label": "Upgrade",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} of {studentLimit} students",
     "upgrade_left": "{count} left",
     "cohorts": "Cohorts"

@@ -3208,6 +3208,8 @@
     "compliance": "अनुपालन",
     "cohorts": "कोहोर्ट",
     "upgrade_now": "अभी अपग्रेड करें",
+    "upgrade_label": "अपग्रेड",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentLimit} छात्रों की {studentCount}",
     "upgrade_left": "{count} शेष"
   },
