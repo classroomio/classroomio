@@ -754,7 +754,8 @@
         "is_staff": "Personal, ikke en studerende"
       },
       "submit_count": "Importer {count} studerende",
-      "result_heading": "{count} studerende importeret"
+      "result_heading": "{count} studerende importeret",
+      "start_over": "Vælg en anden fil"
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {

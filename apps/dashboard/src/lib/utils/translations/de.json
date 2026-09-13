@@ -754,7 +754,8 @@
         "is_staff": "Mitarbeiter/in (keine/r Studierende/r)"
       },
       "submit_count": "{count} Studierende importieren",
-      "result_heading": "{count} Studierende importiert"
+      "result_heading": "{count} Studierende importiert",
+      "start_over": "Wählen Sie eine andere Datei"
     },
     "page_subtitle": "Sehen Sie, wer zu Ihrer Organisation gehört, wer lernt, wer eingeladen ist und wie Sie sie erreichen.",
     "user_analytics": {

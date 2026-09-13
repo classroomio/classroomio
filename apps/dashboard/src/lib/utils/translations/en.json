@@ -3978,6 +3978,7 @@
       "select_cohorts_placeholder": "Choose cohorts...",
       "send_email": "Send invitation email to imported users",
       "back": "Back",
+      "start_over": "Choose a different file",
       "snackbar_success": "{imported} new invites, {assigned} existing students given access, {pendingInvitesRenewed} pending invites renewed ({emailsSent} emails sent)",
       "snackbar_no_emails": "Please enter at least one email address",
       "snackbar_failed": "Failed to import users",

@@ -754,7 +754,8 @@
         "is_staff": "Personnel non étudiant"
       },
       "submit_count": "Importer {count} étudiants",
-      "result_heading": "{count} étudiants importés"
+      "result_heading": "{count} étudiants importés",
+      "start_over": "Choisissez un autre fichier"
     },
     "page_subtitle": "Découvrez qui appartient à votre organisation, qui apprend, qui est invité et comment les contacter.",
     "user_analytics": {

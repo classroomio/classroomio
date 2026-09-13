@@ -754,7 +754,8 @@
         "is_staff": "Pracownik, nie student"
       },
       "submit_count": "Importuj {count} studentów",
-      "result_heading": "Zaimportowano {count} studentów"
+      "result_heading": "Zaimportowano {count} studentów",
+      "start_over": "Wybierz inny plik"
     },
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {

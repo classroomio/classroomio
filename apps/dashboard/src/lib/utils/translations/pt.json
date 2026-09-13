@@ -754,7 +754,8 @@
         "is_staff": "Funcionário, não aluno"
       },
       "submit_count": "Importar {count} alunos",
-      "result_heading": "{count} alunos importados"
+      "result_heading": "{count} alunos importados",
+      "start_over": "Escolha um arquivo diferente"
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {

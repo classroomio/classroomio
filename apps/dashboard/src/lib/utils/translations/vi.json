@@ -754,7 +754,8 @@
         "is_staff": "Nhân viên, không phải học viên"
       },
       "submit_count": "Nhập {count} học viên",
-      "result_heading": "{count} học viên đã được nhập"
+      "result_heading": "{count} học viên đã được nhập",
+      "start_over": "Chọn một tập tin khác"
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
