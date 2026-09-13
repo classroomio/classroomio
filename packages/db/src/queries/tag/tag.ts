@@ -2,7 +2,7 @@ import type { TNewTag, TNewTagGroup, TTag, TTagAssignment, TTagGroup } from '@db
 import { and, asc, eq, ilike, inArray, sql } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 export interface TTagWithCourseCount extends TTag {
   courseCount: number;
@@ -155,13 +155,13 @@ export async function getTagById(orgId: string, tagId: string): Promise<TTag | n
   }
 }
 
-export async function getTagsByIds(orgId: string, tagIds: string[]): Promise<TTag[]> {
+export async function getTagsByIds(orgId: string, tagIds: string[], dbClient: DbOrTxClient = db): Promise<TTag[]> {
   try {
     if (tagIds.length === 0) {
       return [];
     }
 
-    return db
+    return dbClient
       .select()
       .from(schema.tag)
       .where(and(eq(schema.tag.organizationId, orgId), inArray(schema.tag.id, tagIds)));
@@ -357,9 +357,9 @@ export async function getCourseIdsByTagSlugs(orgId: string, tagSlugs: string[]):
   }
 }
 
-export async function getCourseOrganizationId(courseId: string): Promise<string | null> {
+export async function getCourseOrganizationId(courseId: string, dbClient: DbOrTxClient = db): Promise<string | null> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({
         organizationId: schema.group.organizationId
       })
@@ -375,9 +375,13 @@ export async function getCourseOrganizationId(courseId: string): Promise<string 
   }
 }
 
-export async function getCourseTagsForOrganization(orgId: string, courseId: string): Promise<TTag[]> {
+export async function getCourseTagsForOrganization(
+  orgId: string,
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TTag[]> {
   try {
-    const rows = await db
+    const rows = await dbClient
       .select({ tag: schema.tag })
       .from(schema.tagAssignment)
       .innerJoin(schema.tag, eq(schema.tagAssignment.tagId, schema.tag.id))
@@ -432,18 +436,22 @@ export async function getCourseTagsByCourseIdsForOrganization(
   }
 }
 
-export async function replaceCourseTagAssignments(courseId: string, tagIds: string[]): Promise<TTagAssignment[]> {
+export async function replaceCourseTagAssignments(
+  courseId: string,
+  tagIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<TTagAssignment[]> {
   try {
     const normalizedTagIds = Array.from(new Set(tagIds));
 
-    return db.transaction(async (tx) => {
-      await tx.delete(schema.tagAssignment).where(eq(schema.tagAssignment.courseId, courseId));
+    const replaceAssignments = async (transactionClient: DbOrTxClient) => {
+      await transactionClient.delete(schema.tagAssignment).where(eq(schema.tagAssignment.courseId, courseId));
 
       if (normalizedTagIds.length === 0) {
         return [];
       }
 
-      return tx
+      return transactionClient
         .insert(schema.tagAssignment)
         .values(
           normalizedTagIds.map((tagId) => ({
@@ -452,7 +460,13 @@ export async function replaceCourseTagAssignments(courseId: string, tagIds: stri
           }))
         )
         .returning();
-    });
+    };
+
+    if (dbClient === db) {
+      return db.transaction((tx) => replaceAssignments(tx));
+    }
+
+    return replaceAssignments(dbClient);
   } catch (error) {
     console.error('replaceCourseTagAssignments error:', error);
     throw new Error('Failed to replace course tag assignments');

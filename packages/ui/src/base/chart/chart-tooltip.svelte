@@ -1,8 +1,8 @@
 <script lang="ts">
+  import { getChartContext, Tooltip as TooltipPrimitive } from 'layerchart';
   import { cn, type WithElementRef, type WithoutChildren } from '../../tools';
   import type { HTMLAttributes } from 'svelte/elements';
   import { getPayloadConfigFromPayload, useChart, type TooltipPayload } from './chart-utils';
-  import { getTooltipContext, Tooltip as TooltipPrimitive } from 'layerchart';
   import type { Snippet } from 'svelte';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,27 +48,39 @@
   } = $props();
 
   const chart = useChart();
-  const tooltipCtx = getTooltipContext();
+  const chartCtx = getChartContext();
+
+  const visibleSeries = $derived(chartCtx.tooltip.series.filter((s) => s.value !== undefined));
 
   const formattedLabel = $derived.by(() => {
-    if (hideLabel || !tooltipCtx.payload?.length) return null;
+    if (hideLabel || !visibleSeries?.length) return null;
 
-    const [item] = tooltipCtx.payload;
-    const key = labelKey ?? item?.label ?? item?.name ?? 'value';
+    const [item] = visibleSeries;
+    const tooltipData = chartCtx.tooltip.data;
 
-    const itemConfig = getPayloadConfigFromPayload(chart.config, item, key);
+    const dataLabel = tooltipData != null ? chartCtx.x(tooltipData) : undefined;
 
-    const value =
-      !labelKey && typeof label === 'string'
-        ? (chart.config[label as keyof typeof chart.config]?.label ?? label)
-        : (itemConfig?.label ?? item.label);
+    const key = labelKey ?? item?.label ?? 'value';
+
+    let value: unknown;
+    if (!labelKey && typeof label === 'string') {
+      value = chart.config[label as keyof typeof chart.config]?.label ?? label;
+    } else {
+      const itemConfig = getPayloadConfigFromPayload(
+        chart.config,
+        item,
+        key,
+        tooltipData as Record<string, unknown> | null
+      );
+      value = itemConfig?.label ?? dataLabel;
+    }
 
     if (value === undefined) return null;
     if (!labelFormatter) return value;
-    return labelFormatter(value, tooltipCtx.payload);
+    return labelFormatter(value, visibleSeries);
   });
 
-  const nestLabel = $derived(tooltipCtx.payload.length === 1 && indicator !== 'dot');
+  const nestLabel = $derived(visibleSeries.length === 1 && indicator !== 'dot');
 </script>
 
 {#snippet TooltipLabel()}
@@ -85,6 +97,7 @@
 
 <TooltipPrimitive.Root variant="none">
   <div
+    bind:this={ref}
     class={cn(
       'ui:border-border/50 ui:bg-background ui:grid ui:min-w-[9rem] ui:items-start ui:gap-1.5 ui:rounded-lg ui:border ui:px-2.5 ui:py-1.5 ui:text-xs ui:shadow-xl',
       className
@@ -95,23 +108,23 @@
       {@render TooltipLabel()}
     {/if}
     <div class="ui:grid ui:gap-1.5">
-      {#each tooltipCtx.payload as item, i (item.key + i)}
-        {@const key = `${nameKey || item.key || item.name || 'value'}`}
-        {@const itemConfig = getPayloadConfigFromPayload(chart.config, item, key)}
-        {@const indicatorColor = color || item.payload?.color || item.color}
+      {#each visibleSeries as item, i (item.key + i)}
+        {@const key = `${nameKey || item.key || item.label || 'value'}`}
+        {@const itemConfig = getPayloadConfigFromPayload(chart.config, item, key, chartCtx.tooltip.data)}
+        {@const indicatorColor = color || item.config?.color || item.color}
         <div
           class={cn(
             'ui:[&>svg]:text-muted-foreground ui:flex ui:w-full ui:flex-wrap ui:items-stretch ui:gap-2 ui:[&>svg]:size-2.5',
             indicator === 'dot' && 'ui:items-center'
           )}
         >
-          {#if formatter && item.value !== undefined && item.name}
+          {#if formatter && item.value !== undefined && item.label}
             {@render formatter({
               value: item.value,
-              name: item.name,
+              name: item.label,
               item,
               index: i,
-              payload: tooltipCtx.payload
+              payload: visibleSeries
             })}
           {:else}
             {#if itemConfig?.icon}
@@ -138,7 +151,7 @@
                   {@render TooltipLabel()}
                 {/if}
                 <span class="ui:text-muted-foreground">
-                  {itemConfig?.label || item.name}
+                  {itemConfig?.label || item.label}
                 </span>
               </div>
               {#if item.value !== undefined}

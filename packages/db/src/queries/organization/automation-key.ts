@@ -119,3 +119,33 @@ export const updateOrganizationApiKey = async (
     throw new Error('Failed to update organization API key');
   }
 };
+
+export const rotateOrganizationApiKeyIfActive = async (
+  organizationId: string,
+  keyId: string,
+  data: Pick<TOrganizationApiKey, 'secretPrefix' | 'secretHash'>
+): Promise<TOrganizationApiKey | null> => {
+  try {
+    const [row] = await db
+      .update(schema.organizationApiKey)
+      .set({
+        secretPrefix: data.secretPrefix,
+        secretHash: data.secretHash,
+        lastUsedAt: null,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.organizationApiKey.organizationId, organizationId),
+          eq(schema.organizationApiKey.id, keyId),
+          isNull(schema.organizationApiKey.revokedAt)
+        )
+      )
+      .returning();
+
+    return row || null;
+  } catch (error) {
+    console.error('rotateOrganizationApiKeyIfActive error:', error);
+    throw new Error('Failed to rotate organization API key');
+  }
+};

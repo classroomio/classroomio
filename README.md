@@ -193,9 +193,10 @@ The repository also contains shared packages under `packages/` (for example `pac
    docker compose -f docker-compose.yaml --profile minio up -d minio minio-init
    ```
 
-   - Console: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`)
+   - Console Web UI: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`). Open in browser and select **Object Browser** to view buckets and uploaded files.
    - S3 endpoint: http://localhost:9000
    - Buckets created by `minio-init`: `videos`, `documents`, `media`
+   - Browser presigned uploads work out of the box: Compose passes `MINIO_API_CORS_ALLOW_ORIGIN` (default `*`) from the **root `.env`** to the MinIO container — set it there if you need to restrict origins.
    - Add to `apps/api/.env` when using MinIO locally:
      - `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`
      - `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000`
@@ -215,6 +216,7 @@ The repository also contains shared packages under `packages/` (for example `pac
    ```
 
    - If you see `Failed to resolve entry for package "@cio/..."`, the shared workspace packages haven't been built yet (their `dist/` is missing). Build them once with `pnpm build`, then re-run the dev commands.
+   - To test over HTTPS (e.g. from a mobile device on your local network), run `pnpm dashboard:dev:https` (or `pnpm dashboard:dev:https:fresh`). This provisions local certificates and automatically binds to `0.0.0.0` (on seperate mobile or LAN devices, bypass the browser's certificate warning if you have the option).
 
 9. Default local URLs:
 
@@ -224,7 +226,10 @@ The repository also contains shared packages under `packages/` (for example `pac
 10. Optional: run other apps:
 
    - **website**: `pnpm website:dev`
-   - **docs**: `pnpm dev --filter=@cio/docs`
+   - **docs**: `CHOKIDAR_USEPOLLING=true pnpm dev --filter=@cio/docs`
+     (Requires Node ≥ 22.12: `nvm use 22.12` first. The polling flag prevents
+     an `EMFILE` error on macOS when other dev servers are already consuming
+     file descriptors.)
 
 11. Login into `dashboard`:
 

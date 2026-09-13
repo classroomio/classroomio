@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { openUpgradeModalOver } from '$lib/utils/functions/org';
+  import { openUpgradeModalOver } from '$lib/utils/store/upgrade-modal';
   import { isFreePlan } from '$lib/utils/store/org';
   import * as Item from '@cio/ui/base/item';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';

@@ -31,14 +31,7 @@ async function assertCourseBelongsToOrganization(orgId: string, courseId: string
 }
 
 export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
-  const result = await getOrganizationCourses(orgId, '', ROLE.ADMIN, {
-    page: 1,
-    limit: 100,
-    search: undefined,
-    tags: query.tags
-  });
-
-  return result.items;
+  return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);
 }
 
 export async function getCourseService(orgId: string, params: TPublicApiCourseParam) {

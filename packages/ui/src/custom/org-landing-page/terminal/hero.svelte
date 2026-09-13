@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { OrgLandingPageProps, CourseItem } from '../types';
   import type { Snippet } from 'svelte';
+  import { safeHref } from '../safe-href';
   import { Button } from '../../../base/button';
   import CoursePrimaryAction from '../course-primary-action.svelte';
   import EditableLandingSection from '../editable-section.svelte';
@@ -100,7 +101,7 @@
         <div class="ui:inline-flex ui:items-center ui:gap-2 ui:mb-8">
           {#if hero.secondaryAction}
             <Button
-              href={hero.secondaryAction.href}
+              href={safeHref(hero.secondaryAction.href)}
               size="sm"
               variant="outline"
               class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-white/5 ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/10"

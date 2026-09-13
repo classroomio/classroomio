@@ -15,7 +15,7 @@ export default {
       '20 Students',
       'Advanced Course Builder (no video upload)',
       '500K AI credits / month',
-      'MCP access with 20 automation credits / month',
+      'MCP access',
       'ClassroomIO branding'
     ],
     CTA: {
@@ -41,7 +41,7 @@ export default {
       '10K Students',
       'Course Builder with Video Upload & Certificate',
       '3M AI credits / month',
-      'MCP access with 500 automation credits / month',
+      'MCP access',
       'Custom Branding',
       'Custom Domain',
       'API with limits',

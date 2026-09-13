@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Downloads &amp; sync — ClassroomIO Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <header class="proto-head">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> All screens</a>
+      <span class="eyebrow">Learner · Platform</span>
+      <h1>Downloads, storage &amp; sync queue</h1>
+      <p>
+        Content is cached in SQLite plus the file system from one <code>GET /course/:courseId/offline-manifest</code> call.
+        Writes go the other way: completion and playback position queue locally with an idempotency key and replay through
+        <code>POST /course/:courseId/sync</code>. Completion is monotonic, so a retry can never corrupt a record — which is
+        exactly why offline exercises are deferred to v2.
+      </p>
+      <div class="proto-links">
+        <a href="lesson.html">← Offline lesson</a>
+        <a href="course.html">Download a course →</a>
+        <a href="profile.html">Profile →</a>
+      </div>
+    </header>
+
+    <div class="stage">
+      <!-- 1. DOWNLOADS -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:48"></div>
+
+            <div class="navbar">
+              <a class="icon-btn plain" href="profile.html" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></a>
+              <div class="grow"><div class="title">Downloads</div><div class="sub">3 courses · 284 MB used</div></div>
+            </div>
+
+            <div class="screen">
+              <div class="card card-pad" style="margin: 10px 0 14px">
+                <div class="row between" style="margin-bottom: 8px">
+                  <span class="eyebrow">Storage on this device</span>
+                  <span class="tnum" style="font-size: 12px; font-weight: 600">284 MB of 3.7 GB free</span>
+                </div>
+                <div style="display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--muted)">
+                  <span style="width: 30%; background: var(--primary)"></span>
+                  <span style="width: 22%; background: color-mix(in oklab, var(--primary) 55%, var(--muted))"></span>
+                  <span style="width: 12%; background: color-mix(in oklab, var(--primary) 30%, var(--muted))"></span>
+                </div>
+                <div class="row" style="gap: 12px; margin-top: 10px; flex-wrap: wrap">
+                  <span class="lmeta" style="margin: 0"><span style="width: 8px; height: 8px; border-radius: 2px; background: var(--primary); display: inline-block"></span> Forklift 84 MB</span>
+                  <span class="lmeta" style="margin: 0"><span style="width: 8px; height: 8px; border-radius: 2px; background: color-mix(in oklab, var(--primary) 55%, var(--muted)); display: inline-block"></span> Fire Safety 112 MB</span>
+                  <span class="lmeta" style="margin: 0"><span style="width: 8px; height: 8px; border-radius: 2px; background: color-mix(in oklab, var(--primary) 30%, var(--muted)); display: inline-block"></span> GDPR 88 MB</span>
+                </div>
+              </div>
+
+              <div class="sec-head" style="margin-top: 0"><h2>Downloading</h2></div>
+              <div class="card card-pad" style="margin-bottom: 4px">
+                <div class="row row-top">
+                  <div class="media lg is-current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 15V3M7 10l5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Hazardous Materials Handling</div>
+                    <div class="lmeta"><span>Lesson 5 of 8</span><span class="sep">·</span><span class="tnum">48 MB of 96 MB</span></div>
+                    <div class="row" style="margin-top: 8px">
+                      <div class="progress"><span style="width: 50%"></span></div>
+                      <span class="text-muted tnum" style="font-size: 11px">50%</span>
+                    </div>
+                  </div>
+                  <button class="icon-btn plain" aria-label="Pause"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>On this device</h2><span class="count">3</span></div>
+              <div class="stack">
+                <div class="lrow">
+                  <div class="media lg is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Forklift Safety Recertification</div>
+                    <div class="lmeta"><span>12 lessons</span><span class="sep">·</span><span class="tnum">84 MB</span><span class="sep">·</span><span>Synced 2h ago</span></div>
+                  </div>
+                  <button class="icon-btn" aria-label="Remove download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+                </div>
+                <div class="lrow">
+                  <div class="media lg is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Warehouse Fire Safety</div>
+                    <div class="lmeta"><span>8 lessons</span><span class="sep">·</span><span class="tnum">112 MB</span><span class="sep">·</span><span>Synced 2h ago</span></div>
+                  </div>
+                  <button class="icon-btn" aria-label="Remove download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+                </div>
+                <div class="lrow">
+                  <div class="media lg is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Data Protection &amp; GDPR Essentials</div>
+                    <div class="lmeta"><span>Completed</span><span class="sep">·</span><span class="tnum">88 MB</span></div>
+                  </div>
+                  <button class="icon-btn" aria-label="Remove download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Settings</h2></div>
+              <div class="card card-pad">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Download over Wi-Fi only</div><div class="lsub">Protects your mobile data</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Auto-download required training</div><div class="lsub">When new compliance courses are assigned</div></div>
+                  <label class="switch"><input type="checkbox" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="kv"><span class="k">Video quality offline</span><span class="v">Standard (480p)</span></div>
+              </div>
+
+              <button class="btn btn-outline btn-block" style="margin-top: 12px; color: var(--destructive); border-color: color-mix(in oklab, var(--destructive) 35%, transparent)">
+                Remove all downloads · 284 MB
+              </button>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Downloads &amp; storage</b>Per-course breakdown, resumable progress, and Wi-Fi-only by default. Nothing is silently evicted — the learner chose to download it.</figcaption>
+      </figure>
+
+      <!-- 2. SYNC QUEUE -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="19:22"></div>
+
+            <div class="navbar">
+              <a class="icon-btn plain" href="downloads.html" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></a>
+              <div class="grow"><div class="title-sm">Sync queue</div><div class="sub">Back online · syncing</div></div>
+              <button class="icon-btn" aria-label="Sync now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><path d="M21 3v6h-6"/></svg></button>
+            </div>
+
+            <div class="screen">
+              <div class="banner banner-info" style="margin: 12px 0 14px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><path d="M21 3v6h-6"/></svg>
+                <div class="grow">
+                  <div class="bt">Syncing 4 changes</div>
+                  <div class="bd">Recorded while you were offline. Your dashboard will match in a few seconds.</div>
+                </div>
+              </div>
+
+              <div class="stack">
+                <div class="lrow">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Lesson 4 completed</div>
+                    <div class="lmeta"><span>Forklift Safety</span><span class="sep">·</span><span>Queued 18:31</span></div>
+                  </div>
+                  <span class="badge badge-success-soft">Synced</span>
+                </div>
+                <div class="lrow">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Lesson 5 completed</div>
+                    <div class="lmeta"><span>Forklift Safety</span><span class="sep">·</span><span>Queued 18:40</span></div>
+                  </div>
+                  <span class="badge badge-success-soft">Synced</span>
+                </div>
+                <div class="lrow current">
+                  <div class="media is-current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><path d="M21 3v6h-6"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Playback position 7:02</div>
+                    <div class="lmeta"><span>Lesson 5</span><span class="sep">·</span><span>Queued 18:47</span></div>
+                  </div>
+                  <span class="badge badge-primary-soft">Syncing</span>
+                </div>
+                <div class="lrow">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Lesson 6 completed</div>
+                    <div class="lmeta"><span>Retrying in 8s · attempt 2 of 5</span></div>
+                  </div>
+                  <button class="btn btn-outline btn-sm">Retry</button>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>What syncs offline</h2></div>
+              <div class="card card-pad">
+                <div class="kv"><span class="k">Lesson completion</span><span class="v"><span class="badge badge-success-soft">Queued offline</span></span></div>
+                <div class="kv"><span class="k">Playback position</span><span class="v"><span class="badge badge-success-soft">Queued offline</span></span></div>
+                <div class="kv"><span class="k">Exercise answers</span><span class="v"><span class="badge badge-muted">Online only</span></span></div>
+                <div class="kv"><span class="k">Community posts</span><span class="v"><span class="badge badge-muted">Online only</span></span></div>
+              </div>
+
+              <div class="hint" style="margin-top: 10px">
+                Completion only ever moves forward, so replaying a queued change twice is harmless. Grading and submissions
+                stay online to keep assessment records unambiguous.
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Sync queue</b>Every queued intent is visible with its state and retry count — the learner can see their work is safe rather than hoping.</figcaption>
+      </figure>
+    </div>
+
+    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script src="proto.js"></script>
+  </body>
+</html>

@@ -15,7 +15,7 @@
 <Story name="Default">
   {#snippet template()}
     <div class="flex flex-col items-center gap-4">
-      <p class="text-muted-foreground text-sm">Click to toggle dark/light mode</p>
+      <p class="ui:text-muted-foreground text-sm">Click to toggle dark/light mode</p>
       <ModeSwitcher />
     </div>
   {/snippet}

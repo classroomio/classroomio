@@ -136,6 +136,7 @@ export const SLIDE_EMBED_FRAME_SRC_ORIGINS = [
   'https://*.officeapps.live.com',
   'https://view.officeapps.live.com',
   'https://1drv.ms',
+  'https://sharepoint.com',
   'https://*.sharepoint.com',
   'https://www.icloud.com',
   'https://icloud.com',

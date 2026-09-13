@@ -8,8 +8,10 @@
   import CorporateHero from './hero.svelte';
   import CorporateCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
+  import LearningPathCard from '../learning-path-card.svelte';
+  import EditableLandingSection from '../editable-section.svelte';
   import { Button } from '../../../base/button';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
 
   let {
     orgName,
@@ -21,6 +23,8 @@
     hasMoreCourses = false,
     coursesLoaded = true,
     disableCourseLinks = false,
+    learningPaths,
+    hasMoreLearningPaths = false,
     embed,
     callout,
     links,
@@ -29,10 +33,7 @@
   }: OrgLandingPageProps = $props();
 </script>
 
-<div
-  class="ui:min-h-screen ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans"
-  style={themeStyle('corporate')}
->
+<LandingThemeScope theme="corporate" class="ui:font-sans">
   <main>
     <CorporateHero {orgName} {hero}>
       {#snippet navigation()}
@@ -40,42 +41,78 @@
       {/snippet}
     </CorporateHero>
 
-    <section class="ui:py-24 ui:px-6 ui:border-t ui:border-[var(--landing-border)]">
-      <div class="ui:max-w-[1120px] ui:mx-auto">
-        <div class="ui:flex ui:items-end ui:justify-between ui:flex-wrap ui:gap-4 ui:mb-10">
-          <div>
-            <p class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-fg)] ui:mb-3">
-              {labels?.catalogEyebrow ?? 'Catalog'}
-            </p>
-            <h2 class="ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight ui:m-0 ui:max-w-xl">
-              {labels?.catalogHeading ?? 'Courses your teams are taking'}
-            </h2>
+    {#if learningPaths && learningPaths.length > 0}
+      <section class="ui:py-24 ui:px-6 ui:border-t ui:border-[var(--landing-border)]">
+        <div class="ui:max-w-[1120px] ui:mx-auto">
+          <div class="ui:flex ui:items-end ui:justify-between ui:flex-wrap ui:gap-4 ui:mb-10">
+            <div>
+              <h2 class="ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight ui:m-0 ui:max-w-xl">
+                {labels?.learningPathsHeading ?? 'Learning Paths'}
+              </h2>
+            </div>
+            {#if hasMoreLearningPaths}
+              <Button
+                href={disableCourseLinks ? undefined : '/learning-paths'}
+                variant="outline"
+                class="ui:rounded-none ui:font-medium"
+                disabled={disableCourseLinks}
+              >
+                {labels?.browseLearningPathsLabel ?? 'Browse catalog →'}
+              </Button>
+            {/if}
           </div>
-          {#if hasMoreCourses && courses.length > 0}
-            <Button
-              href={disableCourseLinks ? undefined : '/courses'}
-              variant="outline"
-              class="ui:rounded-none ui:font-medium"
-              disabled={disableCourseLinks}
-            >
-              {labels?.browseCoursesLabel ?? 'Browse catalog →'}
-            </Button>
-          {/if}
-        </div>
 
-        {#if coursesLoaded && courses.length === 0}
-          <OrgLandingPageCoursesEmpty {labels} />
-        {:else}
           <div
             class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:border-t ui:border-l ui:border-[var(--landing-border)]"
           >
-            {#each courses as course, index (course.id)}
-              <CorporateCourseCard {course} {disableCourseLinks} {labels} />
+            {#each learningPaths as path (path.id)}
+              <LearningPathCard {path} {disableCourseLinks} {labels} />
             {/each}
           </div>
-        {/if}
-      </div>
-    </section>
+        </div>
+      </section>
+    {/if}
+
+    <EditableLandingSection sectionKey="courses">
+      <section class="ui:py-24 ui:px-6 ui:border-t ui:border-[var(--landing-border)]">
+        <div class="ui:max-w-[1120px] ui:mx-auto">
+          <div class="ui:flex ui:items-end ui:justify-between ui:flex-wrap ui:gap-4 ui:mb-10">
+            <div>
+              <p
+                class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-fg)] ui:mb-3"
+              >
+                {labels?.catalogEyebrow ?? 'Catalog'}
+              </p>
+              <h2 class="ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight ui:m-0 ui:max-w-xl">
+                {labels?.catalogHeading ?? 'Courses your teams are taking'}
+              </h2>
+            </div>
+            {#if hasMoreCourses && courses.length > 0}
+              <Button
+                href={disableCourseLinks ? undefined : '/courses'}
+                variant="outline"
+                class="ui:rounded-none ui:font-medium"
+                disabled={disableCourseLinks}
+              >
+                {labels?.browseCoursesLabel ?? 'Browse catalog →'}
+              </Button>
+            {/if}
+          </div>
+
+          {#if coursesLoaded && courses.length === 0}
+            <OrgLandingPageCoursesEmpty {labels} />
+          {:else}
+            <div
+              class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:border-t ui:border-l ui:border-[var(--landing-border)]"
+            >
+              {#each courses as course, index (course.id)}
+                <CorporateCourseCard {course} {disableCourseLinks} {labels} />
+              {/each}
+            </div>
+          {/if}
+        </div>
+      </section>
+    </EditableLandingSection>
   </main>
 
   <OrgLandingPageLinks {links} {labels} variant="corporate" />
@@ -85,4 +122,4 @@
   <OrgLandingPageCallout {callout} {labels} variant="corporate" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="corporate" />
-</div>
+</LandingThemeScope>

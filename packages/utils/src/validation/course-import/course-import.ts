@@ -72,7 +72,7 @@ export type TCourseImportDraftExerciseOption = z.infer<typeof ZCourseImportDraft
 export const ZCourseImportDraftExerciseQuestion = z.object({
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
-  points: z.number().int().min(0).optional(),
+  points: z.number().int().min(1),
   order: z.number().int().min(0).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   options: z.array(ZCourseImportDraftExerciseOption).optional()

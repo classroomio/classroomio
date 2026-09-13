@@ -1,3 +1,4 @@
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 import type { TWidgetPayload } from '@cio/utils/validation/widget';
 
 // Parent → iframe messages
@@ -46,22 +47,32 @@ export function getAllowedOrigins(): string[] {
     origins.push(dashboardUrl);
   }
 
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    origins.push(`http://localhost:${window.location.port}`);
+  if (typeof window !== 'undefined' && isLocalOrPrivateHost(window.location.hostname)) {
+    origins.push(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`);
   }
 
   return origins;
 }
 
 export function isAllowedOrigin(origin: string): boolean {
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    try {
-      const url = new URL(origin);
-      return url.hostname === 'localhost';
-    } catch {
-      return false;
-    }
+  if (typeof window === 'undefined') {
+    return false;
   }
 
-  return origin === window.location.origin;
+  try {
+    const url = new URL(origin);
+    if (url.origin === window.location.origin) {
+      return true;
+    }
+    if (
+      isLocalOrPrivateHost(window.location.hostname) &&
+      (url.hostname === window.location.hostname || url.hostname === 'localhost' || url.hostname === '127.0.0.1')
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
 }

@@ -223,18 +223,16 @@
       </Item.Root>
       <Item.Root variant="outline">
         <Item.Media>
-          <div
-            class="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale"
-          >
-            <Avatar.Root class="hidden sm:flex">
+          <div class="flex -space-x-2">
+            <Avatar.Root class="ui:ring-background hidden ring-2 grayscale sm:flex">
               <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
               <Avatar.Fallback>CN</Avatar.Fallback>
             </Avatar.Root>
-            <Avatar.Root class="hidden sm:flex">
+            <Avatar.Root class="ui:ring-background hidden ring-2 grayscale sm:flex">
               <Avatar.Image src="https://github.com/maxleiter.png" alt="@maxleiter" />
               <Avatar.Fallback>LR</Avatar.Fallback>
             </Avatar.Root>
-            <Avatar.Root>
+            <Avatar.Root class="ui:ring-background ring-2 grayscale">
               <Avatar.Image src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
               <Avatar.Fallback>ER</Avatar.Fallback>
             </Avatar.Root>
@@ -271,7 +269,7 @@
                 </Item.Media>
                 <Item.Content>
                   <Item.Title class="line-clamp-1">
-                    {song.title} - <span class="text-muted-foreground">{song.album}</span>
+                    {song.title} - <span class="ui:text-muted-foreground">{song.album}</span>
                   </Item.Title>
                   <Item.Description>{song.artist}</Item.Description>
                 </Item.Content>

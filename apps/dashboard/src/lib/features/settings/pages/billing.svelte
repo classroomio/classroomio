@@ -3,7 +3,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrgPlan, isFreePlan, currentOrg, isSecondaryWorkspace } from '$lib/utils/store/org';
   import HourglassIcon from '@lucide/svelte/icons/hourglass';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import ReceiptIcon from '@lucide/svelte/icons/receipt';
   import { Button } from '@cio/ui/base/button';
   import * as Item from '@cio/ui/base/item';

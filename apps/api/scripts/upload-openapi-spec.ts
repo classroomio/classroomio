@@ -152,8 +152,18 @@ class OpenAPISpecGenerator {
       });
 
       const publicApiSpec = filterPublicApiSpec(spec as Record<string, unknown>);
+      const pathCount = Object.keys((publicApiSpec as { paths?: Record<string, unknown> }).paths ?? {}).length;
+
+      if (pathCount === 0) {
+        throw new Error(
+          'Generated OpenAPI spec has zero public API paths. Refusing to publish an empty spec — ' +
+            'this usually means route metadata (describeRoute) is being dropped before reaching ' +
+            'hono-openapi, e.g. by an .onError() on a sub-router that gets merged via .route().'
+        );
+      }
+
       const specString = JSON.stringify(publicApiSpec, null, 2);
-      console.log('✅ OpenAPI specification generated successfully');
+      console.log(`✅ OpenAPI specification generated successfully (${pathCount} path(s))`);
 
       return specString;
     } catch (error) {

@@ -20,8 +20,9 @@
   import GraduationCapIcon from '@lucide/svelte/icons/graduation-cap';
   import CompassIcon from '@lucide/svelte/icons/compass';
   import AwardIcon from '@lucide/svelte/icons/award';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { AI_CHAT_MODEL_STORAGE_KEY } from '$features/ai-assistant/utils/constants';
   import type { TCourseType } from '@cio/db/types';
   import {
@@ -32,6 +33,14 @@
   } from '@cio/utils/agent-models';
 
   type CreatingStep = 'reading' | 'naming' | 'building';
+
+  $effect(() => {
+    if (IS_AI_ENABLED) return;
+
+    if ($currentOrgPath !== '#') {
+      goto(`${$currentOrgPath}/dash`);
+    }
+  });
 
   const steps: { key: CreatingStep; label: string }[] = [
     { key: 'reading', label: t.get('course.creator.drafting.step_reading') },
@@ -194,7 +203,7 @@
       </p>
     </div>
 
-    <div class="ui:border w-full max-w-lg rounded-2xl p-5">
+    <div class="w-full max-w-lg rounded-2xl border p-5">
       <p class="mb-5 text-sm text-neutral-300 italic">"{draftingPrompt}"</p>
 
       <div class="flex flex-col gap-3">
@@ -250,8 +259,8 @@
           {@const isSelected = selectedTemplateId === template.id}
           <button
             type="button"
-            class="group ui:border ui:transition-colors focus-visible:ui:ring-[3px] focus-visible:ui:ring-ring/50 focus-visible:ui:outline-none flex h-full min-h-[168px] w-full cursor-pointer flex-col items-start gap-3 rounded-2xl p-5 text-left sm:p-6 {isSelected
-              ? 'ui:bg-primary/5 ui:border-primary ui:ring-primary/20 ui:ring-2'
+            class="group ui:focus-visible:ring-ring/50 flex h-full min-h-[168px] w-full cursor-pointer flex-col items-start gap-3 rounded-2xl border p-5 text-left transition-colors focus-visible:ring-[3px] focus-visible:outline-none sm:p-6 {isSelected
+              ? 'ui:bg-primary/5 ui:border-primary ui:ring-primary/20 ring-2'
               : 'ui:bg-card ui:border-border ui:hover:border-primary'}"
             onclick={() => selectTemplate(template)}
             aria-label={$t(display.titleKey)}

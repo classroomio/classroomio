@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tutor course snapshot — ClassroomIO Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <header class="proto-head">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> All screens</a>
+      <span class="eyebrow">Tutor · Release 3</span>
+      <h1>Course snapshot, announcements &amp; moderation</h1>
+      <p>
+        Read-only insight plus the two write actions a tutor genuinely needs away from a desk: post an announcement and
+        moderate a thread. Authoring, analytics configuration, enrollment management, and org settings are deliberately
+        absent — they stay on the web.
+      </p>
+      <div class="proto-links">
+        <a href="tutor-grading.html">← Grading queue</a>
+        <a href="tutor-attendance.html">Attendance →</a>
+        <a href="community.html">Learner's community view →</a>
+      </div>
+    </header>
+
+    <div class="stage">
+      <!-- 1. SNAPSHOT -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="11:32"></div>
+
+            <div class="navbar bordered">
+              <a class="icon-btn plain" href="tutor-grading.html" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></a>
+              <div class="grow"><div class="title-sm">HIPAA Awareness 2026</div><div class="sub">Acme Health Academy</div></div>
+              <button class="icon-btn" data-sheet-open="announce" aria-label="Post announcement"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 11 18-5v12L3 13z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></button>
+            </div>
+
+            <div class="screen">
+              <div class="card card-pad" style="margin: 12px 0 12px">
+                <div class="row" style="align-items: stretch">
+                  <div class="stat"><div class="v tnum">64</div><div class="k">Enrolled</div></div>
+                  <div style="width: 1px; background: var(--border)"></div>
+                  <div class="stat"><div class="v tnum">71%</div><div class="k">Completed</div></div>
+                  <div style="width: 1px; background: var(--border)"></div>
+                  <div class="stat"><div class="v tnum" style="color: var(--destructive)">7</div><div class="k">Overdue</div></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row" style="margin-bottom: 6px">
+                  <div class="progress tall success"><span style="width: 71%"></span></div>
+                  <span class="tnum" style="font-size: 12px; font-weight: 600">45/64</span>
+                </div>
+                <div class="lmeta"><span>Deadline 30 Sep 2026 · 45 days left</span></div>
+              </div>
+
+              <div class="sec-head" style="margin-top: 0"><h2>Needs a nudge</h2><span class="count">7</span></div>
+              <div class="stack">
+                <div class="lrow">
+                  <div class="avatar">MB</div>
+                  <div class="grow"><div class="ltitle">Marcus Bell</div><div class="lmeta"><span>No activity in 21 days</span><span class="sep">·</span><span>1 of 9 lessons</span></div></div>
+                  <button class="btn btn-outline btn-sm">Remind</button>
+                </div>
+                <div class="lrow">
+                  <div class="avatar">RS</div>
+                  <div class="grow"><div class="ltitle">Rina Sato</div><div class="lmeta"><span>Stalled at Lesson 4</span><span class="sep">·</span><span>9 days</span></div></div>
+                  <button class="btn btn-outline btn-sm">Remind</button>
+                </div>
+                <div class="lrow">
+                  <div class="avatar">JW</div>
+                  <div class="grow"><div class="ltitle">Joseph Wanjiru</div><div class="lmeta"><span>Waiting on your grading</span></div></div>
+                  <a class="btn btn-primary btn-sm" href="tutor-grading.html">Grade</a>
+                </div>
+              </div>
+
+              <button class="btn btn-outline btn-block" style="margin-top: 12px">Remind all 7 learners</button>
+
+              <div class="sec-head"><h2>Where learners get stuck</h2></div>
+              <div class="card card-pad">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Lesson 4 · Minimum necessary rule</div><div class="lmeta"><span>11 learners stalled here</span></div></div>
+                  <span class="badge badge-warning-soft">17%</span>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Scenario response</div><div class="lmeta"><span>Average score 6.8 / 10</span></div></div>
+                  <span class="badge badge-warning-soft">Low</span>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Lesson 2 · Covered entities</div><div class="lmeta"><span>4 unanswered questions</span></div></div>
+                  <span class="badge badge-outline">Q&amp;A</span>
+                </div>
+              </div>
+
+              <div class="hint" style="margin-top: 14px">
+                Full analytics, exports, and course editing live in the web dashboard.
+              </div>
+            </div>
+
+            <div class="scrim" data-scrim-for="announce" style="display: none"></div>
+            <div class="sheet" id="announce" style="display: none">
+              <div class="grabber"></div>
+              <div class="sheet-head">
+                <div class="st">Post an announcement</div>
+                <button class="icon-btn plain" data-sheet-close="announce" style="margin-left: auto" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+              </div>
+              <div class="sheet-body">
+                <div class="field">
+                  <label class="label">Audience</label>
+                  <div class="segmented" data-select>
+                    <button class="on" data-option>Everyone</button>
+                    <button data-option>Overdue only</button>
+                    <button data-option>One cohort</button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Message</label>
+                  <textarea class="textarea">Reminder: the HIPAA scenario response is the last item before certification. If you're stuck on the "minimum necessary" rule, Lesson 4 has a worked example at 2:15.</textarea>
+                </div>
+                <div class="lrow" style="margin-bottom: 12px">
+                  <div class="grow"><div class="ltitle">Also send as a push notification</div><div class="lsub">Respects each learner's quiet hours</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <button class="btn btn-primary btn-lg btn-block">Post to 64 learners</button>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Snapshot &amp; announcement</b>Enough insight to act — who's stalled and where — plus a one-tap nudge. Open the announcement sheet from the header in the live prototype.</figcaption>
+      </figure>
+
+      <!-- 2. MODERATION -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="11:40"></div>
+
+            <div class="navbar">
+              <div class="avatar brand" style="background: oklch(0.424 0.199 265.638)">AH</div>
+              <div class="grow"><div class="sub">Acme Health Academy</div><div class="title-sm">Teach</div></div>
+            </div>
+
+            <div class="tabs" data-select>
+              <button data-option>To grade</button>
+              <button data-option>Attendance</button>
+              <button data-option>Courses</button>
+              <button class="on" data-option>Moderation</button>
+            </div>
+
+            <div class="screen">
+              <div class="sec-head" style="margin-top: 12px"><h2>Unanswered questions</h2><span class="count">4</span></div>
+              <div class="stack">
+                <div class="card card-pad">
+                  <div class="row row-top">
+                    <div class="avatar">FA</div>
+                    <div class="grow">
+                      <div class="row between">
+                        <div class="ltitle" style="font-size: 13.5px">Fatima Ali</div>
+                        <span class="text-muted" style="font-size: 11px">2d</span>
+                      </div>
+                      <div class="lmeta" style="margin-top: 1px"><span>HIPAA Awareness · Lesson 2</span></div>
+                      <div style="font-size: 13.5px; line-height: 1.5; margin-top: 6px">
+                        Is a contracted cleaning company a business associate if they're never shown records?
+                      </div>
+                      <div class="row" style="gap: 8px; margin-top: 10px">
+                        <button class="btn btn-primary btn-sm">Answer</button>
+                        <button class="btn btn-outline btn-sm">Assign to tutor</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card card-pad">
+                  <div class="row row-top">
+                    <div class="avatar">LC</div>
+                    <div class="grow">
+                      <div class="row between">
+                        <div class="ltitle" style="font-size: 13.5px">Liam Chen</div>
+                        <span class="text-muted" style="font-size: 11px">3d</span>
+                      </div>
+                      <div class="lmeta" style="margin-top: 1px"><span>HIPAA Awareness · General</span></div>
+                      <div style="font-size: 13.5px; line-height: 1.5; margin-top: 6px">
+                        Does the training reset if I change department within the same hospital?
+                      </div>
+                      <div class="row" style="gap: 8px; margin-top: 10px">
+                        <button class="btn btn-primary btn-sm">Answer</button>
+                        <button class="btn btn-outline btn-sm">Assign to tutor</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Reported</h2><span class="count">1</span></div>
+              <div class="card card-pad">
+                <div class="row row-top">
+                  <div class="avatar">?</div>
+                  <div class="grow">
+                    <div class="row between">
+                      <div class="ltitle" style="font-size: 13.5px">Anonymous learner</div>
+                      <span class="badge badge-danger-soft">Reported ×2</span>
+                    </div>
+                    <div class="lmeta" style="margin-top: 1px"><span>SOC 2 Security Basics · Q&amp;A</span></div>
+                    <div style="font-size: 13.5px; line-height: 1.5; margin-top: 6px; padding: 8px 10px; background: var(--muted); border-radius: var(--radius-md)">
+                      "Here's the answer key from last year's exam, DM me…"
+                    </div>
+                    <div class="row" style="gap: 8px; margin-top: 10px">
+                      <button class="btn btn-destructive btn-sm">Remove post</button>
+                      <button class="btn btn-outline btn-sm">Keep</button>
+                      <button class="btn btn-ghost btn-sm">View thread</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Recently handled</h2></div>
+              <div class="stack stack-sm">
+                <div class="lrow flat">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow"><div class="ltitle">Marked "audit trail" answer as accepted</div><div class="lmeta"><span>Yesterday</span></div></div>
+                </div>
+                <div class="lrow flat">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow"><div class="ltitle">Removed duplicate thread</div><div class="lmeta"><span>Mon 18 Aug</span></div></div>
+                </div>
+              </div>
+            </div>
+
+            <nav class="tabbar" data-tabbar="teach" data-role="tutor" data-badges="teach:12"></nav>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Moderation</b>Unanswered questions and reported posts in one queue, using the same author/team permission rules the API enforces.</figcaption>
+      </figure>
+    </div>
+
+    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script src="proto.js"></script>
+  </body>
+</html>

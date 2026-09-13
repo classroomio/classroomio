@@ -17,13 +17,14 @@
 
   import { Image } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { calcCourseDiscount } from '$lib/utils/functions/course';
+  import { calcCourseCost } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
   import {
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
-    getStudentCourseComplianceStatusVariant
+    getStudentCourseComplianceStatusVariant,
+    shouldShowStudentCourseComplianceStatusBadge
   } from '$features/course/utils/compliance-utils';
   import CardDropdown from './card-dropdown.svelte';
   import CoursePublishBadge from './course-publish-badge.svelte';
@@ -140,7 +141,7 @@
     }
   };
 
-  let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
+  let cost = $derived(calcCourseCost(course));
 
   const isExploreClickable = $derived(!!(isLMS && isExplore && onExploreClick));
 
@@ -194,6 +195,11 @@
     isLMS && type === 'COMPLIANCE' && !isExplore
       ? getStudentCourseComplianceStatusKey(course as UserEnrolledCourses[number])
       : null
+  );
+  const showComplianceStatusBadge = $derived(
+    isLMS && type === 'COMPLIANCE' && !isExplore
+      ? shouldShowStudentCourseComplianceStatusBadge(course as UserEnrolledCourses[number])
+      : false
   );
   const complianceStatusVariant = $derived(
     isLMS && type === 'COMPLIANCE' && !isExplore
@@ -300,7 +306,7 @@
 
               {#if type === 'COMPLIANCE'}
                 <div class="mt-2 flex flex-wrap items-center gap-2">
-                  {#if complianceStatusKey}
+                  {#if showComplianceStatusBadge && complianceStatusKey}
                     <Badge variant={complianceStatusVariant}>
                       {$t(complianceStatusKey)}
                     </Badge>

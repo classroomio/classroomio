@@ -19,6 +19,7 @@ import {
   getCourseFunnel,
   getLandingStats,
   getPopularTypes,
+  getTopCoursesByViews,
   ingestEventBatch
 } from '@api/services/analytics';
 
@@ -41,9 +42,9 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/stats', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashStats), async (c) => {
     try {
-      const { orgId, siteName } = c.req.valid('query');
+      const { orgId, siteName, bust } = c.req.valid('query');
 
-      const result = await getOrganisationAnalytics(orgId, siteName);
+      const result = await getOrganisationAnalytics(orgId, siteName, bust);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
@@ -119,6 +120,19 @@ export const dashAnalyticsRouter = new Hono()
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to load popular course types');
+    }
+  })
+  .get('/top-courses', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
+    try {
+      const { days } = c.req.valid('query');
+      const orgId = c.get('orgId')!;
+      const bust = c.req.query('bust') === '1';
+      const result = await getTopCoursesByViews(orgId, days, bust);
+
+      c.header('Cache-Control', 'no-store');
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load top courses');
     }
   })
   .get(

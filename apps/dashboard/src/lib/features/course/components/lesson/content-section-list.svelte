@@ -467,7 +467,7 @@
       : undefined}
     <div
       id={isUngrouped ? undefined : `section-${section.id}`}
-      class="border-border m-auto mb-3 max-w-xl scroll-mt-24 rounded-md border transition dark:bg-neutral-800"
+      class="ui:border-border m-auto mb-3 max-w-xl scroll-mt-24 rounded-md border transition dark:bg-neutral-800"
       style={reorder ? 'border: 2px #1d4ed8 solid; border-style: dashed; cursor: grab;' : ''}
     >
       <SectionHeader
@@ -523,7 +523,7 @@
           {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
 
           <div
-            class="ui:border mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md px-3 py-1 transition"
+            class="mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border px-3 py-1 transition"
             style={reorder ? 'border: 2px #1d4ed8 solid; border-style: dashed; cursor: grab;' : ''}
             animate:flip={{ duration: flipDurationMs }}
           >

@@ -3,17 +3,24 @@ declare global {
     $ujq: unknown[];
     uj: {
       init: (
-        appId: string,
+        projectId: string,
         options?: {
-          widget?: boolean;
-          position?: 'left' | 'right';
-          theme?: 'auto' | 'light' | 'dark';
+          widget?:
+            | boolean
+            | {
+                launcher?: boolean;
+                position?: 'left' | 'right';
+                theme?: 'auto' | 'light' | 'dark';
+                whispers?: boolean;
+              };
+          locale?: string;
         }
       ) => void;
-      identify: (
-        user: { id: string; email?: string; firstName?: string; lastName?: string; avatar?: string } | null
-      ) => void;
-      showWidget: (options: { section: 'feedback' | 'roadmap' | 'updates' }) => void;
+      identify: (payload: {
+        user: { id: string; email?: string; firstName?: string; lastName?: string; avatar?: string };
+      }) => void;
+      logout: () => void;
+      open: (options?: { to: 'home' | 'feedback' | 'roadmap' | 'updates' | 'messages' | 'notifications' }) => void;
       [method: string]: (...args: unknown[]) => void;
     };
   }

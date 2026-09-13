@@ -1,5 +1,5 @@
 {
-  "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "id": "b201ac61-e28c-4e63-b327-52ccb6075530",
   "prevId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "version": "7",
   "dialect": "postgresql",
@@ -3897,7 +3897,7 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false,
-          "default": "'Welcome to this amazing course \ud83d\ude80 '"
+          "default": "'Welcome to this amazing course 🚀 '"
         },
         "id": {
           "name": "id",
@@ -5236,9 +5236,46 @@
           "type": "bigint",
           "primaryKey": false,
           "notNull": false
+        },
+        "reply_to_comment_id": {
+          "name": "reply_to_comment_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "course_newsfeed_comment_parent_id_idx": {
+          "name": "course_newsfeed_comment_parent_id_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_newsfeed_comment_course_newsfeed_id_idx": {
+          "name": "course_newsfeed_comment_course_newsfeed_id_idx",
+          "columns": [
+            {
+              "expression": "course_newsfeed_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "course_newsfeed_comment_author_id_fkey": {
           "name": "course_newsfeed_comment_author_id_fkey",
@@ -5265,6 +5302,15 @@
           "columnsFrom": ["parent_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "course_newsfeed_comment_reply_to_comment_id_fkey": {
+          "name": "course_newsfeed_comment_reply_to_comment_id_fkey",
+          "tableFrom": "course_newsfeed_comment",
+          "tableTo": "course_newsfeed_comment",
+          "columnsFrom": ["reply_to_comment_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -6270,13 +6316,6 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
-        },
-        "slides": {
-          "name": "slides",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
         },
         "course_id": {
           "name": "course_id",
@@ -12035,6 +12074,138 @@
           "name": "widget_version_widget_version_key",
           "nullsNotDistinct": false,
           "columns": ["widget_id", "version"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.youtube_caption": {
+      "name": "youtube_caption",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "youtube_video_id": {
+          "name": "youtube_video_id",
+          "type": "varchar(11)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "language": {
+          "name": "language",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ready'"
+        },
+        "unavailable_reason": {
+          "name": "unavailable_reason",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_generated": {
+          "name": "is_generated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "segments": {
+          "name": "segments",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider": {
+          "name": "provider",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'supadata'"
+        },
+        "source_hash": {
+          "name": "source_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cost_cents": {
+          "name": "cost_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_youtube_caption_video_id": {
+          "name": "idx_youtube_caption_video_id",
+          "columns": [
+            {
+              "expression": "youtube_video_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "youtube_caption_video_lang_unique": {
+          "name": "youtube_caption_video_lang_unique",
+          "nullsNotDistinct": false,
+          "columns": ["youtube_video_id", "language"]
         }
       },
       "policies": {},

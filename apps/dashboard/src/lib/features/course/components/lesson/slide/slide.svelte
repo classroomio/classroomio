@@ -72,8 +72,14 @@
     lessonApi.updateLessonState('slideUrl', firstSrc);
   }
 
-  function getSlideFrameTitle(slide: SlideEmbed) {
-    return SLIDE_PLATFORM_BY_ID[slide.platform]?.name ?? slide.platform;
+  function getSlideFrameTitle(slide: SlideEmbed, index: number) {
+    const platformName = SLIDE_PLATFORM_BY_ID[slide.platform]?.name ?? slide.platform;
+
+    return t.get('course.navItem.lessons.materials.tabs.slide.frame_title', {
+      platform: platformName,
+      index: index + 1,
+      total: slides.length
+    });
   }
 
   function handleAdd(slide: SlideEmbed) {
@@ -140,7 +146,7 @@
   <div class="w-full">
     {#each slides as slide, index (slide.id)}
       <div class="{index < slides.length - 1 ? 'mb-5' : ''} w-full overflow-hidden">
-        <SlideEmbedFrame src={slide.src} title={getSlideFrameTitle(slide)} />
+        <SlideEmbedFrame src={slide.src} title={getSlideFrameTitle(slide, index)} />
       </div>
     {/each}
   </div>

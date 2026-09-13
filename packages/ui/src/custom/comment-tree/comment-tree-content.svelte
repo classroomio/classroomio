@@ -13,7 +13,7 @@
   let formattedContent = $derived(content ? sanitizeHtml(content.replace(/(<\/blockquote>)\s+/gi, '$1')) : '');
 </script>
 
-<div class="ui:text-sm ui:leading-relaxed ui:text-foreground/90 ui:whitespace-pre-line ui:break-words {className}">
+<div class="ui:text-sm ui:leading-snug ui:text-foreground/90 ui:whitespace-pre-line ui:break-words {className}">
   {#if children}
     {@render children()}
   {:else if formattedContent}

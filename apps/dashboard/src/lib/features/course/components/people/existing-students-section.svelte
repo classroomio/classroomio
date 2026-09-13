@@ -174,7 +174,7 @@
         bind:searchValue
       >
         {#snippet headingSnippet()}
-          <p class="ui:text-sm ui:font-medium">
+          <p class="text-sm font-medium">
             {$t('course.navItem.people.invite_modal.existing_students_title')} ({multiSelectItems.length})
             {#if selectedCount > 0}
               <span class="ui:text-muted-foreground text-xs"

@@ -241,10 +241,10 @@ class WidgetEditorStore {
     }
   }
 
-  async deleteWidget() {
+  async archiveWidget() {
     if (!this.detail) return;
 
-    await widgetApi.deleteWidget(this.detail.widget.id);
+    await widgetApi.archiveWidget(this.detail.widget.id);
     goto(resolve(`${get(currentOrgPath)}/widgets`, {}));
   }
 }

@@ -104,9 +104,113 @@ Presentational list for lesson (or similar) file attachments with **view** and *
 
 Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
 
+### Comment tree (`src/custom/comment-tree/`)
+
+Presentational parts for an arbitrarily deep comment thread. All copy is passed in, so dashboard wrappers supply translated strings. See `Molecules/CommentTree` in Storybook.
+
+- `Root` / `Item` — layout wrappers.
+- `Node` — the recursive node. It renders one comment via the `body` snippet, then recurses over `node.children`. It imports its own file to recurse (`svelte:self` is deprecated in Svelte 5). Indent is applied as an inline `padding-left` from `indentStep` rather than a class, because a composed `ui:pl-*` string would never be emitted. At `indentCap` (default 5) indenting stops and `onContinueThread` is offered instead, so deep chains stay readable on narrow screens. Collapse state is not held by the node — pass `isCollapsed(id)` and `onToggleCollapse(id)` so it survives remounts and sibling appends.
+- `CollapseToggle` — the `[−]` / `[+]` control. Carries `aria-expanded` and `aria-controls` pointing at the children container.
+- `ThreadLine` — the vertical rail beside a nesting level; a real `<button>` so it is a keyboard-safe target, with `tabindex="-1"` to avoid a duplicate tab stop per level.
+- `MoreReplies` — one control for both "N more replies" (`kind="more"`) and "Continue this thread" (`kind="continue"`).
+- `Header` — avatar, name, optional `roleBadge`, date, and an edit/delete dropdown gated by `canEdit` / `canDelete`.
+- `Content` — sanitizes and renders comment HTML.
+- `Actions` — reply button plus an optional delete dropdown.
+- `Input` — the composer, with optional "replying to" chrome that is live UI state and never persisted.
+- `ReplyingTo` — the "↳ Replying to @X" line. Only for rows written before replies carried a real parent, where the visual parent is the thread root rather than the comment being answered.
+- `Replies` — superseded by `Node`; kept for compatibility and no longer used.
+
 ### Live session card (`src/custom/live-session-card/`)
 
 Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.
+
+### Action popover (`src/custom/action-popover/`)
+
+Popover with a scrollable body, an optional search bar, and a pinned full-width action button in the footer. Import as `import { ActionPopover } from '@cio/ui/custom/action-popover'`. The default trigger is an outline icon `Button` with a plus icon; pass a `trigger` snippet (receives `{ props }` to spread on your own control) to replace it. Content is passed via the `children` snippet and scrolls at `max-h-64` (override with `bodyClass`). When `buttonText` is set, the footer renders below a border; clicking it awaits `onAction` (showing a spinner when it returns a Promise) and closes the popover unless `closeOnAction` is false. Omitting `buttonText` renders no footer. All copy comes from props, so dashboard wrappers supply translated strings.
+
+Passing `searchPlaceholder` renders a search input above the scrollable body — independent of `title`, so it works with or without a heading. The component does not filter content itself; bind `searchQuery` (cleared automatically when the popover closes) and filter your list in the consumer.
+
+| Prop                | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| `title`             | Optional heading rendered above the scrollable body          |
+| `buttonText`        | Footer button label; omit to render no footer                |
+| `onAction`          | Footer button handler; may return a Promise (shows loading)  |
+| `buttonDisabled`    | Disables the footer button                                   |
+| `buttonLoading`     | Forces the footer loading state                              |
+| `closeOnAction`     | Close the popover after the action resolves (default `true`) |
+| `align`             | Popover alignment (default `start`)                          |
+| `contentClass`      | Extra classes on `Popover.Content` (e.g. width)              |
+| `bodyClass`         | Extra classes on the padded body wrapper                     |
+| `searchPlaceholder` | Show a search bar when provided; used as its placeholder     |
+| `searchQuery`       | Bindable search query; cleared when the popover closes       |
+| `open`              | Bindable open state                                          |
+| `trigger`           | Optional snippet replacing the default plus-icon trigger     |
+| `children`          | Snippet with the popover body content                        |
+
+See `Molecules/ActionPopover` in Storybook.
+
+### Vimeo link form (`src/custom/vimeo-link-form/`)
+
+Form component for validating, normalizing, and attaching Vimeo video links (standard, channels, showcases, and unlisted URLs with privacy hashes). Displays domain-level privacy guidance with a one-click host copy button and a direct link to Vimeo's official domain privacy documentation.
+
+| Prop                  | Purpose                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `inputLabel`          | Text label for the link input                                                                    |
+| `inputPlaceholder`    | Placeholder text inside the input                                                                |
+| `addButtonLabel`      | Label for the submit button                                                                      |
+| `invalidVimeoMessage` | Error text displayed when the input contains invalid Vimeo links                                 |
+| `privacyHintPrefix`   | Optional leading text before the copyable domain badge                                           |
+| `privacyHintSuffix`   | Optional trailing text after the copyable domain badge                                           |
+| `disabled`            | Disables the input and submit button                                                             |
+| `onSubmit`            | Callback `(links: string[]) => Promise<void> \| void` invoked with deduplicated, canonical links |
+| `onInputChange`       | Optional callback when the raw input text changes                                                |
+
+See `Molecules/VimeoLinkForm` in Storybook.
+
+### Media player (`src/custom/media-player/`)
+
+Unified video player component supporting HTML5 video (direct MP4 and HLS via `hls.js`), YouTube embeds, and Vimeo videos via the official `@vimeo/player` SDK.
+
+**Features:**
+
+- **Native Vimeo SDK Integration**: Seamless playback with strict-origin referrer policy and unlisted privacy hash support (`?h=...`).
+- **Domain Privacy Error Recovery**: Automatically detects Vimeo `PrivacyError` events on domain-restricted videos, providing instructors with the exact host to whitelist and a live Retry button, while displaying a learner-friendly notice in learner mode.
+- **HLS Adaptive Streaming**: Plays master manifests via signed cookies or token auth with automatic rendition selection.
+- **YouTube Embeds**: Lightweight iframe embed with responsive aspect-ratio wrappers.
+
+| Option                    | Purpose                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `source`                  | `VideoSource` object (`type: 'upload' \| 'hls' \| 'youtube' \| 'vimeo' \| 'generic'`, `url`, `metadata`, `tracks`) |
+| `options.isLearnerView`   | When `true`, displays learner-friendly fallback messages instead of technical configuration hints                  |
+| `options.onTimeUpdate`    | Callback invoked as playback position advances                                                                     |
+| `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
+| `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
+
+### Combo button (`src/custom/combo-button/`)
+
+A split button: a labelled primary action joined to a chevron that opens a menu of alternatives. Import as `import { ComboButton, type ComboButtonItem } from '@cio/ui/custom/combo-button'`.
+
+Use it when there is a genuine default worth one click, and **label the primary half with the action it performs** — `Export as CSV`, not `Export`. An unlabelled primary silently picks one of the alternatives for the user. When no option dominates, use a plain `Button` with a `DropdownMenu` instead.
+
+Each item owns its own handler, so the component carries no behaviour: the consumer passes `onSelect` for the primary and one per item. Copy comes from props, so dashboard callers supply translated strings.
+
+| Prop        | Description                                                        |
+| ----------- | ------------------------------------------------------------------ |
+| `label`     | Primary button label; name the action, not a category              |
+| `onSelect`  | Primary button handler; may return a Promise                       |
+| `items`     | Menu entries (`ComboButtonItem[]`), each with its own `onSelect`   |
+| `menuLabel` | Accessible name for the chevron, which has no visible text         |
+| `icon`      | Optional lucide icon for the primary half                          |
+| `variant`   | Button variant applied to both halves (default `outline`)          |
+| `size`      | `sm` \| `default` \| `lg` (default `sm`)                           |
+| `disabled`  | Disables both halves                                               |
+| `loading`   | Spinner on the primary half; also disables the menu                |
+| `align`     | Menu alignment (default `end`)                                     |
+| `testId`    | Primary `data-testid`; the chevron gets `${testId}-menu`           |
+
+`ComboButtonItem` takes `id`, `label`, and `onSelect`, plus optional `icon`, `description` (rendered muted beneath the label — use it to say *why* an item is disabled rather than hiding it), `disabled` and `destructive`.
+
+See `Molecules/ComboButton` in Storybook.
 
 ### Hooks (`src/hooks/`)
 
@@ -231,6 +335,19 @@ This ensures that styles don't conflict with other Tailwind configurations in co
 ```
 
 **Note:** When adding new components or styles, always use the `ui:` prefix for all Tailwind classes.
+
+## Test hooks (`testId`)
+
+Optional `testId` props on form wrappers and buttons render `data-testid` for Playwright. Prefer roles/labels first; use `testId` when a flow needs a stable, locale-independent hook.
+
+Supported today: `InputField`, `TextareaField`, `CheckboxField`, `Button`. Fixed ids on `Page.SettingsActions` (`page-settings-save`, `page-settings-discard`).
+
+```svelte
+<InputField testId="course-settings-title" label="Title" bind:value={title} />
+<Button testId="course-create-submit">Create</Button>
+```
+
+Registry and naming rules: `e2e/README.md` and AGENTS.md § E2E test hooks.
 
 ## Component Exports
 

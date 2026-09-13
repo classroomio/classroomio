@@ -14,6 +14,22 @@ const scriptPath = fileURLToPath(import.meta.url);
 const packageRoot = resolve(dirname(scriptPath), '../..');
 const pnpmBinary = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 
+function getArgumentValue(argumentName: string): string | undefined {
+  const inlineArgument = process.argv.find((argument) => argument.startsWith(`${argumentName}=`));
+  if (inlineArgument) {
+    return inlineArgument.slice(`${argumentName}=`.length);
+  }
+
+  const argumentIndex = process.argv.indexOf(argumentName);
+  if (argumentIndex === -1) {
+    return undefined;
+  }
+
+  return process.argv[argumentIndex + 1];
+}
+
+const seedOrganization = getArgumentValue('--organization');
+
 if (!connectionString) {
   console.error('DATABASE_URL or PRIVATE_DATABASE_URL environment variable is required');
   process.exit(1);
@@ -57,7 +73,12 @@ async function runSeedEssential() {
 
 async function runSeed() {
   console.log('Seeding database...');
-  await runPnpmCommand('Seed', ['seed']);
+  const seedArgs = ['seed'];
+  if (seedOrganization) {
+    seedArgs.push('--organization', seedOrganization);
+  }
+
+  await runPnpmCommand('Seed', seedArgs);
 }
 
 async function dbSetup() {

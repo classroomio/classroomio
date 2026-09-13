@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { resolve } from '$app/paths';
 
   import { appInitApi } from '$features/app/init.svelte';
   import { Spinner } from '@cio/ui/base/spinner';
@@ -9,9 +8,8 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { SimpleLogoNav } from '@cio/ui/custom/simple-logo-nav';
   import { buildOrgLandingPageProps, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
-  import { basePath } from '$lib/utils/store/app';
-  import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
+  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
 
   let { data } = $props();
 
@@ -23,17 +21,18 @@
       : 'ClassroomIO - One Platform for Customer, Partner, and Employee Training'
   );
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-        }
-      : {
-          label: t.get('navigation.login'),
-          href: '/login'
-        }
+  const authAction = $derived.by(() =>
+    data.org
+      ? getOrgLandingAuthAction({
+          isLoggedIn: $user.isLoggedIn,
+          isInitialized: appInitApi.isInitializedAndReady,
+          org: data.org,
+          organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
+          hasPendingInvite: !!appInitApi.pendingOrgInvite
+        })
+      : undefined
   );
+  const ThemeComponent = $derived(data.ThemeComponent);
 
   const landingPageProps = $derived.by(() => {
     if (!data.isOrgSite || !data.org) return null;
@@ -64,8 +63,8 @@
 </svelte:head>
 
 {#if data.isOrgSite && data.org}
-  {#if data.ThemeComponent && landingPageProps}
-    <svelte:component this={data.ThemeComponent} {...landingPageProps} />
+  {#if ThemeComponent && landingPageProps}
+    <ThemeComponent {...landingPageProps} />
   {/if}
 {:else if hasSetupError}
   <Empty

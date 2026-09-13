@@ -15,8 +15,6 @@ import {
 } from '@api/services/v1/audience';
 
 import { Hono } from '@api/utils/hono';
-import { automationKeyMiddleware } from '@api/middlewares/automation-key';
-import { automationKeyScopesMiddleware } from '@api/middlewares/automation-key-scopes';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
@@ -52,8 +50,6 @@ const AudienceDetailResponse = {
 export const v1AudienceRouter = new Hono()
   .get(
     '/',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'List audience members for the authenticated organization',
       tags: ['Public API Audience'],
@@ -93,8 +89,6 @@ export const v1AudienceRouter = new Hono()
   )
   .post(
     '/',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Create an audience member invitation for the authenticated organization',
       tags: ['Public API Audience'],
@@ -134,8 +128,6 @@ export const v1AudienceRouter = new Hono()
   )
   .post(
     '/assign-courses',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Assign one or more audience members to one or more courses',
       tags: ['Public API Audience'],
@@ -174,8 +166,6 @@ export const v1AudienceRouter = new Hono()
   )
   .get(
     '/:memberId',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Get a single audience member by id',
       tags: ['Public API Audience'],
@@ -214,8 +204,6 @@ export const v1AudienceRouter = new Hono()
   )
   .delete(
     '/:memberId',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Remove an audience member by id',
       tags: ['Public API Audience'],
@@ -255,8 +243,6 @@ export const v1AudienceRouter = new Hono()
   )
   .put(
     '/:memberId',
-    automationKeyMiddleware,
-    automationKeyScopesMiddleware(['public_api:*']),
     describeRoute({
       description: 'Update a pending audience member email address',
       tags: ['Public API Audience'],

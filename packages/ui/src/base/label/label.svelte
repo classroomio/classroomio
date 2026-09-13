@@ -2,7 +2,11 @@
   import { Label as LabelPrimitive } from 'bits-ui';
   import { cn } from '../../tools';
 
-  let { ref = $bindable(null), class: className, ...restProps }: LabelPrimitive.RootProps = $props();
+  interface Props extends LabelPrimitive.RootProps {
+    required?: boolean;
+  }
+
+  let { ref = $bindable(null), class: className, children, required = false, ...restProps }: Props = $props();
 </script>
 
 <LabelPrimitive.Root
@@ -13,4 +17,9 @@
     className
   )}
   {...restProps}
-/>
+>
+  {@render children?.()}
+  {#if required}
+    <span class="ui:text-red-700" aria-hidden="true">*</span>
+  {/if}
+</LabelPrimitive.Root>

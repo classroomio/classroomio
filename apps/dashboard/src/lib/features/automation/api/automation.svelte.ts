@@ -99,6 +99,12 @@ class AutomationApi extends BaseApiWithErrors {
       requestFn: () => classroomio.organization.automation.keys[':keyId'].rotate.$post({ param: { keyId } }),
       logContext: 'rotating automation key',
       onSuccess: (response) => {
+        const existingKey = this.keys.find((key) => key.id === response.data.key.id);
+        if (existingKey?.revokedAt) {
+          this.generatedSecret = null;
+          return;
+        }
+
         this.generatedSecret = response.data.secret;
         this.keys = this.keys.map((key) => (key.id === response.data.key.id ? response.data.key : key));
         snackbar.success('snackbar.automation.rotated');

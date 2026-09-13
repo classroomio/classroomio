@@ -36,7 +36,7 @@
     <HoverCard.Root>
       <HoverCard.Trigger
         href="/instructors/sarah-johnson"
-        class="ui:rounded-sm ui:underline-offset-4 ui:hover:underline ui:focus-visible:outline-2 ui:focus-visible:outline-offset-8 ui:focus-visible:outline-black ui:flex ui:items-center ui:gap-2"
+        class="flex items-center gap-2 rounded-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-black"
       >
         <Avatar.Root>
           <Avatar.Image src="https://github.com/shadcn.png" />
@@ -54,7 +54,7 @@
             <p class="text-sm">Senior Full-Stack Developer & Instructor</p>
             <div class="flex items-center pt-2">
               <CalendarDaysIcon class="me-2 size-4 opacity-70" />
-              <span class="text-muted-foreground text-xs">Teaching since January 2020</span>
+              <span class="ui:text-muted-foreground text-xs">Teaching since January 2020</span>
             </div>
           </div>
         </div>
@@ -66,13 +66,13 @@
 <Story name="Course Preview">
   {#snippet template()}
     <HoverCard.Root>
-      <HoverCard.Trigger href="/courses/advanced-react" class="text-primary underline-offset-4 hover:underline">
+      <HoverCard.Trigger href="/courses/advanced-react" class="ui:text-primary underline-offset-4 hover:underline">
         Advanced React Patterns
       </HoverCard.Trigger>
       <HoverCard.Content class="w-64">
         <div class="space-y-2">
           <h4 class="text-sm font-semibold">Advanced React Patterns</h4>
-          <p class="text-muted-foreground text-sm">
+          <p class="ui:text-muted-foreground text-sm">
             Master advanced React concepts including hooks, context, performance optimization, and modern patterns used
             in production applications.
           </p>
@@ -85,7 +85,7 @@
 <Story name="Student Profile">
   {#snippet template()}
     <HoverCard.Root>
-      <HoverCard.Trigger class="text-primary ui:flex ui:items-center ui:gap-2 underline-offset-4 hover:underline">
+      <HoverCard.Trigger class="ui:text-primary flex items-center gap-2 underline-offset-4 hover:underline">
         <Avatar.Root>
           <Avatar.Image src="https://github.com/rotimi-best.png" />
           <Avatar.Fallback>AM</Avatar.Fallback>
@@ -101,15 +101,15 @@
             </Avatar.Root>
             <div>
               <h4 class="text-sm font-semibold">Alex Martinez</h4>
-              <p class="text-muted-foreground text-xs">Student</p>
+              <p class="ui:text-muted-foreground text-xs">Student</p>
             </div>
           </div>
           <div class="space-y-2">
-            <div class="text-muted-foreground flex items-center gap-2 text-xs">
+            <div class="ui:text-muted-foreground flex items-center gap-2 text-xs">
               <BookOpenIcon class="size-4" />
               <span>5 courses enrolled</span>
             </div>
-            <div class="text-muted-foreground flex items-center gap-2 text-xs">
+            <div class="ui:text-muted-foreground flex items-center gap-2 text-xs">
               <UsersIcon class="size-4" />
               <span>Active since March 2024</span>
             </div>

@@ -56,7 +56,7 @@
     </Dialog.Header>
 
     {#if isLoadingUsage}
-      <Empty description={$t('media_manager.usage.loading')} icon={Spinner} class="ui:max-h-40 py-6" />
+      <Empty description={$t('media_manager.usage.loading')} icon={Spinner} class="max-h-40 py-6" />
     {:else if isInUse}
       <Alert.Root variant="warning">
         <TriangleAlertIcon />

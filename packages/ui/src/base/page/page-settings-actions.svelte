@@ -37,6 +37,7 @@
   <div
     bind:this={ref}
     data-slot="page-settings-actions"
+    data-testid="page-settings-actions"
     class={cn(
       'ui:pointer-events-none ui:sticky ui:bottom-0 ui:z-50 ui:flex ui:shrink-0 ui:justify-center ui:px-2 ui:pb-4',
       className
@@ -64,13 +65,22 @@
           variant="secondary"
           size="sm"
           type="button"
+          testId="page-settings-discard"
           class="ui:bg-background ui:text-foreground ui:hover:bg-background/80"
           disabled={loading}
           onclick={onDiscard}
         >
           {discardLabel}
         </Button>
-        <Button variant="default" size="sm" type="button" {loading} disabled={loading || disabled} onclick={onSave}>
+        <Button
+          variant="default"
+          size="sm"
+          type="button"
+          testId="page-settings-save"
+          {loading}
+          disabled={loading || disabled}
+          onclick={onSave}
+        >
           {saveLabel}
         </Button>
       </div>

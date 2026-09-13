@@ -218,7 +218,7 @@ export function handleAddQuestion(exerciseSectionId?: string | null) {
           id: nextQuestionId,
           name: `${nextQuestionId}`,
           value: '',
-          points: 0,
+          points: 1,
           order: questions.length,
           exerciseSectionId: nextExerciseSectionId,
           questionType: DEFAULT_QUESTION_TYPE,

@@ -13,7 +13,7 @@
   import { courseApi } from '$features/course/api';
   import { getCourseProgress } from '$features/course/utils/content';
   import { useSidebar } from '@cio/ui/base/sidebar';
-  import CourseProgressCard from '$features/course/components/course-progress-card.svelte';
+  import CourseSidebarFooterNav from '$features/course/components/sidebar/course-sidebar-footer-nav.svelte';
   import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
   import { COURSE_SIDEBAR_DEFAULT_WIDTH, COURSE_SIDEBAR_MAX_WIDTH, COURSE_SIDEBAR_MIN_WIDTH } from './constants';
 
@@ -48,7 +48,7 @@
 
   const attributionCourseSlug = $derived(courseApi.course?.slug ?? null);
   const courseProgress = $derived(getCourseProgress(courseApi.course));
-  const showCourseProgress = $derived(
+  const showStudentFooterNav = $derived(
     $isStudentExperience && isCourseReady && sidebar.open && !sidebar.isMobile && courseProgress.total > 0
   );
 
@@ -129,15 +129,15 @@
       {:else}
         <Sidebar.Group class="pt-0!">
           <div class="flex h-8 items-center gap-2 rounded-md px-2">
-            <Skeleton class="ui:size-4 ui:rounded-md" />
-            <Skeleton class="ui:h-4 ui:w-24" />
+            <Skeleton class="size-4 rounded-md" />
+            <Skeleton class="h-4 w-24" />
           </div>
           <Sidebar.Menu>
             {#each Array(SIDEBAR_ITEM_SKELETON_COUNT) as _, i (i)}
               <Sidebar.MenuItem>
-                <div class="ui:flex ui:h-8 ui:items-center ui:gap-2 ui:rounded-md ui:px-2" data-sidebar="menu-skeleton">
-                  <Skeleton class="ui:size-4 ui:rounded-md" />
-                  <Skeleton class="ui:h-4 ui:max-w-32 ui:flex-1" />
+                <div class="flex h-8 items-center gap-2 rounded-md px-2" data-sidebar="menu-skeleton">
+                  <Skeleton class="size-4 rounded-md" />
+                  <Skeleton class="h-4 max-w-32 flex-1" />
                 </div>
               </Sidebar.MenuItem>
             {/each}
@@ -149,11 +149,8 @@
     <Sidebar.Rail onclick={handleRailClick} onpointerdown={handleRailPointerDown} />
 
     <Sidebar.Footer>
-      {#if showCourseProgress}
-        <CourseProgressCard
-          progress={courseProgress}
-          class="ui:border-sidebar-border ui:bg-sidebar-accent/50 rounded-lg border p-3"
-        />
+      {#if showStudentFooterNav}
+        <CourseSidebarFooterNav courseId={id} path={currentPath} class="ui:border-sidebar-border border-t" />
       {/if}
       <PoweredBy
         variant="sidebar"

@@ -8,7 +8,9 @@
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { getCourseContent } from '$features/course/utils/content';
+  import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
 
   interface Props {
@@ -41,15 +43,11 @@
   const isCourseLoadedForThisPage = $derived(courseApi.course?.id === courseId);
   const canResolveNext = $derived(isCourseLoadedForThisPage && navigableContentItems.length > 0 && !hasHandledNext);
 
-  function findFirstIncompleteContent() {
-    return navigableContentItems.find((item) => !item.isComplete && item.isUnlocked === true);
-  }
-
   $effect(() => {
     if (!canResolveNext || isFetching || query.get('next') !== 'true') return;
 
     hasHandledNext = true;
-    const incompleteContent = findFirstIncompleteContent();
+    const incompleteContent = getFirstIncompleteNavigableContent(courseApi.course);
     if (incompleteContent) {
       if (incompleteContent.type === ContentType.Lesson) {
         goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);
@@ -67,7 +65,9 @@
 {#if shouldShowNextPlaceholder}
   <Empty
     title={$t('course.navItem.lessons.no_lesson')}
-    description={$t('course.navItem.lessons.share_your_knowledge')}
+    description={$isOrgStudent
+      ? $t('course.navItem.lessons.student_share_your_knowledge')
+      : $t('course.navItem.lessons.share_your_knowledge')}
     icon={BookOpenIcon}
     variant="page"
   />
@@ -114,7 +114,9 @@
 {:else}
   <Empty
     title={$t('course.navItem.lessons.body_header')}
-    description={$t('course.navItem.lessons.body_content')}
+    description={$isOrgStudent
+      ? $t('course.navItem.lessons.student_body_content')
+      : $t('course.navItem.lessons.body_content')}
     icon={BookOpenIcon}
     variant="page"
   />

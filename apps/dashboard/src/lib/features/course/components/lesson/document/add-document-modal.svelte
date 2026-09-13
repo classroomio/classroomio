@@ -289,7 +289,7 @@
     <div class="p-6">
       <!-- File Upload Area -->
       {#if selectedFile}
-        <div class="border-border mb-4 flex items-center justify-center space-x-3 rounded-lg border p-4">
+        <div class="ui:border-border mb-4 flex items-center justify-center space-x-3 rounded-lg border p-4">
           <FileTextIcon class="ui:text-muted-foreground size-5 shrink-0" />
           <div class="min-w-0 flex-1 text-left">
             <p class="ui:text-foreground truncate font-medium">{selectedFile.name}</p>
@@ -298,7 +298,7 @@
           <CloseButton onClick={removeSelectedFile} />
         </div>
       {:else}
-        <div class={isDisabled ? 'ui:opacity-50 ui:pointer-events-none' : ''}>
+        <div class={isDisabled ? 'pointer-events-none opacity-50' : ''}>
           <FileDropZone.Root
             accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
             maxFiles={1}

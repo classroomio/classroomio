@@ -3,9 +3,14 @@
   import { parseEmbedIframeDimensions } from './landing-page-utils';
 
   let { code }: { code: string } = $props();
-
   const dimensions = $derived(parseEmbedIframeDimensions(code));
-  const sanitizedCode = $derived(sanitizeEmbedHtml(code));
+
+  /**
+   * Embeds are browser-only: the markup is injected with `{@html}` and needs a live document.
+   * Checked locally rather than via SvelteKit's `$app/environment` so this library stays usable
+   * outside a SvelteKit app (Storybook resolves no `$app/*` modules for `packages/ui`).
+   */
+  const browser = typeof window !== 'undefined';
 </script>
 
 <div
@@ -13,9 +18,11 @@
   style:width={dimensions.width}
   style:max-width="100%"
 >
-  <div class="landing-embed-frame ui:w-full" style:height={dimensions.height}>
-    {@html sanitizedCode}
-  </div>
+  {#if browser}
+    <div class="landing-embed-frame ui:w-full" style:height={dimensions.height}>
+      {@html sanitizeEmbedHtml(code)}
+    </div>
+  {/if}
 </div>
 
 <style>

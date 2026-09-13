@@ -8,7 +8,8 @@
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import XIcon from '@lucide/svelte/icons/x';
   import { t } from '$lib/utils/functions/translations';
-  import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+  import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
+  import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import type { RecommendedCourses } from '$features/course/types';
   import pluralize from 'pluralize';
@@ -21,6 +22,7 @@
   let { course, open = $bindable(false) }: Props = $props();
 
   type CourseMetadata = {
+    allowSelfEnrollment?: boolean;
     allowNewStudent?: boolean;
     discount?: number;
     showDiscount?: boolean;
@@ -28,10 +30,9 @@
   };
 
   const metadata = $derived(course.metadata as CourseMetadata | null);
-  const discount = $derived(metadata?.discount ?? 0);
-  const calculatedCost = $derived(calcCourseDiscount(discount, course.cost || 0, !!metadata?.showDiscount));
+  const calculatedCost = $derived(calcCourseCost(course));
   const isFree = $derived(isCourseFree(calculatedCost));
-  const allowNewStudent = $derived(metadata?.allowNewStudent !== false);
+  const selfEnrollmentAllowed = $derived(isSelfEnrollmentAllowed(metadata));
   const requirements = $derived(metadata?.requirements?.trim() || null);
   const formatter = $derived(getCurrencyFormatter(course.currency ?? 'USD'));
 
@@ -47,22 +48,22 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="ui:p-0 overflow-hidden sm:max-w-2xl" showCloseButton={false}>
-    <div class="relative overflow-hidden rounded-md">
+  <Dialog.Content class="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0" showCloseButton={false}>
+    <div class="relative shrink-0 overflow-hidden">
       <img
         src={course.logo || DEFAULT_COURSE_BANNER_IMAGE}
         alt={course.title}
         class="aspect-video w-full object-cover"
       />
       <Dialog.Close
-        class="ui:absolute ui:top-3 ui:right-3 ui:inline-flex ui:size-8 ui:items-center ui:justify-center ui:rounded-md ui:bg-secondary ui:text-secondary-foreground ui:hover:bg-secondary/80 ui:transition-colors ui:cursor-pointer"
+        class="ui:bg-secondary ui:text-secondary-foreground ui:hover:bg-secondary/80 absolute top-3 right-3 inline-flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors"
       >
-        <XIcon class="ui:size-4" />
-        <span class="ui:sr-only">Close</span>
+        <XIcon class="size-4" />
+        <span class="sr-only">Close</span>
       </Dialog.Close>
     </div>
 
-    <div class="max-h-72 overflow-y-auto px-6 py-4">
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-4">
       <h2 class="text-xl font-semibold tracking-tight">{course.title}</h2>
 
       {#if course.description}
@@ -90,9 +91,9 @@
       {/if}
     </div>
 
-    <div class="ui:border-t ui:bg-card sticky bottom-0 flex items-center justify-between px-6 py-4" data-sticky="true">
+    <Dialog.Footer class="flex shrink-0 flex-row items-center justify-between border-t px-6 py-4 sm:justify-between">
       <div>
-        {#if allowNewStudent}
+        {#if selfEnrollmentAllowed}
           <p class="text-lg font-bold">
             {formatter.format(calculatedCost)}
             {#if isFree}
@@ -113,11 +114,11 @@
         {/if}
       </div>
 
-      <Button onclick={handleJoinCourse} disabled={!allowNewStudent}>
+      <Button onclick={handleJoinCourse} disabled={!selfEnrollmentAllowed}>
         {isFree
           ? $t('course.navItem.landing_page.pricing_section.enroll')
           : $t('course.navItem.landing_page.pricing_section.buy')}
       </Button>
-    </div>
+    </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

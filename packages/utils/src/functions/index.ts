@@ -1,5 +1,6 @@
 export * from './array';
 export * from './compliance-deadline';
+export * from './course-enrollment';
 export * from './course-progression';
 export * from './currency';
 export * from './fileValidation';
@@ -8,3 +9,8 @@ export * from './sanitize';
 export * from './slide-embed';
 export * from './slug';
 export * from './transcript-vtt';
+export * from './network';
+export * from './links';
+export * from './vimeo';
+export * from './youtube';
+export * from './video';

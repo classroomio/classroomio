@@ -66,6 +66,7 @@
   const assetId = $derived((video as LessonVideo & { assetId?: string }).assetId ?? null);
 
   const canGenerateTranscript = $derived(video.type === 'upload' && !!assetId);
+  const canViewTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
   const canManageThumbnails = $derived(video.type === 'upload' && !!assetId);
   const hls1080Status = $derived(getHls1080Status(video));
   const showGenerate1080 = $derived(canGenerateHls1080(video) && !isGenerating1080);
@@ -75,7 +76,7 @@
   );
 
   onMount(() => {
-    if (canGenerateTranscript) {
+    if (canGenerateTranscript || video.type === 'youtube') {
       void ensureTranscriptChecked();
     }
   });
@@ -301,7 +302,7 @@
   onOpenChange={(open) => {
     if (!open) return;
 
-    if (canGenerateTranscript) {
+    if (canGenerateTranscript || video.type === 'youtube') {
       void ensureTranscriptChecked();
     }
 
@@ -312,8 +313,8 @@
 >
   <DropdownMenu.Trigger
     class={menuPlacement === 'corner'
-      ? 'ui:data-[state=open]:opacity-100 absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100'
-      : 'ui:data-[state=open]:opacity-100 -mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100'}
+      ? 'absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100'
+      : '-mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100 data-[state=open]:opacity-100'}
     aria-label={$t('course.navItem.lessons.materials.tabs.video.simple_card.menu_aria')}
     onclick={(e) => e.stopPropagation()}
   >
@@ -380,7 +381,7 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    {#if canGenerateTranscript && hasTranscript}
+    {#if canViewTranscript && hasTranscript}
       <DropdownMenu.Item
         onclick={() => {
           void handleViewTranscript();
@@ -392,7 +393,7 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    <DropdownMenu.Item class="ui:text-red-600" onclick={onRemove}>
+    <DropdownMenu.Item class="text-red-600" onclick={onRemove}>
       <span class="flex items-center gap-2">
         <Trash2Icon size={14} />
         {$t('course.navItem.lessons.materials.tabs.video.remove_video')}

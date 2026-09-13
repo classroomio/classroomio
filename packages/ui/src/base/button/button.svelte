@@ -49,6 +49,8 @@
     size?: ButtonSize;
     animate?: ButtonAnimate;
     loading?: boolean;
+    /** Stable hook for Playwright (`data-testid`). Also accepts `data-testid` via HTML attributes. */
+    testId?: string;
     onClickPromise?: (
       e: MouseEvent & {
         currentTarget: EventTarget & HTMLButtonElement;
@@ -86,6 +88,7 @@
     type = 'button',
     loading = false,
     disabled = false,
+    testId,
     tabindex = 0,
     onclick,
     onClickPromise,
@@ -99,25 +102,9 @@
     'bg-shine':
       'ui:animate-shine ui:border ui:border-neutral-800 ui:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] ui:bg-[length:200%_100%] ui:text-white'
   };
-</script>
 
-<!-- This approach to disabled links is inspired by bits-ui see: https://github.com/huntabyte/bits-ui/pull/1055 -->
-<svelte:element
-  this={href ? 'a' : 'button'}
-  {...rest}
-  data-slot="button"
-  type={href ? undefined : type}
-  href={href && !disabled ? href : undefined}
-  disabled={href ? undefined : disabled || loading}
-  aria-disabled={href ? disabled : undefined}
-  role={href && disabled ? 'link' : undefined}
-  tabindex={href && disabled ? -1 : tabindex}
-  class={cn(buttonVariants({ variant, size }), animate && animateClasses[animate], className)}
-  bind:this={ref}
-  onclick={async (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    e: any
-  ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function handleClick(e: any) {
     onclick?.(e);
 
     if (type === undefined) return;
@@ -129,8 +116,11 @@
 
       loading = false;
     }
-  }}
->
+  }
+</script>
+
+<!-- This approach to disabled links is inspired by bits-ui see: https://github.com/huntabyte/bits-ui/pull/1055 -->
+{#snippet content()}
   {#if type !== undefined && loading}
     <div class="ui:absolute ui:flex ui:size-full ui:place-items-center ui:justify-center ui:bg-inherit">
       <div class="ui:flex ui:place-items-center ui:justify-center">
@@ -145,4 +135,35 @@
   {:else}
     {@render children?.()}
   {/if}
-</svelte:element>
+{/snippet}
+
+{#if href}
+  <a
+    {...rest}
+    data-slot="button"
+    data-testid={testId}
+    href={disabled ? undefined : href}
+    aria-disabled={disabled}
+    role={disabled ? 'link' : undefined}
+    tabindex={disabled ? -1 : tabindex}
+    class={cn(buttonVariants({ variant, size }), animate && animateClasses[animate], className)}
+    bind:this={ref}
+    onclick={handleClick}
+  >
+    {@render content()}
+  </a>
+{:else}
+  <button
+    {...rest}
+    data-slot="button"
+    data-testid={testId}
+    {type}
+    disabled={disabled || loading}
+    {tabindex}
+    class={cn(buttonVariants({ variant, size }), animate && animateClasses[animate], className)}
+    bind:this={ref}
+    onclick={handleClick}
+  >
+    {@render content()}
+  </button>
+{/if}

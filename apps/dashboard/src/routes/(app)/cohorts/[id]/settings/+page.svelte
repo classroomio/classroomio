@@ -141,7 +141,7 @@
             <h2 class="mb-1 text-sm font-semibold text-red-600">
               {$t('cohorts.settings.danger_zone') || 'Danger Zone'}
             </h2>
-            <p class="text-muted-foreground mb-4 text-sm">
+            <p class="ui:text-muted-foreground mb-4 text-sm">
               {$t('cohorts.settings.delete_description') ||
                 'Once deleted, this cohort and all its data cannot be recovered.'}
             </p>

@@ -6,6 +6,10 @@ import Actions from './comment-tree-actions.svelte';
 import Input from './comment-tree-input.svelte';
 import Replies from './comment-tree-replies.svelte';
 import ReplyingTo from './comment-tree-replying-to.svelte';
+import Node from './comment-tree-node.svelte';
+import CollapseToggle from './comment-tree-collapse-toggle.svelte';
+import ThreadLine from './comment-tree-thread-line.svelte';
+import MoreReplies from './comment-tree-more-replies.svelte';
 
 export * from './types';
 
@@ -18,6 +22,10 @@ export {
   Input,
   Replies,
   ReplyingTo,
+  Node,
+  CollapseToggle,
+  ThreadLine,
+  MoreReplies,
   // Alias names
   Root as CommentRoot,
   Item as CommentItem,
@@ -26,5 +34,6 @@ export {
   Actions as CommentActions,
   Input as CommentInput,
   Replies as CommentReplies,
-  ReplyingTo as CommentReplyingTo
+  ReplyingTo as CommentReplyingTo,
+  Node as CommentNode
 };

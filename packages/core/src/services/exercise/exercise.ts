@@ -258,7 +258,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
           exerciseId: exercise.id,
           title: q.question,
           questionTypeId: q.questionTypeId || 1,
-          points: q.points || 0,
+          points: q.points ?? 1,
           order: typeof q.order === 'number' ? q.order : undefined,
           settings: q.settings ?? {}
         }));
@@ -839,7 +839,7 @@ export async function createExerciseFromTemplate(
                 exerciseId: exercise.id,
                 title: sanitizeHtml(title),
                 questionTypeId: question_type.id,
-                points: points || 0,
+                points: points ?? 1,
                 order: order || 0,
                 settings: questionSettings
               }

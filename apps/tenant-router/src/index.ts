@@ -346,20 +346,30 @@ export default {
     // `Cache-Control` header on the response alone does NOT, so without this a
     // cold browser cache (new device, or post-deploy hash change) stampedes the
     // origin for every chunk.
+    //
+    // Deliberately NO `cacheTtl`: it caches the response "regardless of what
+    // headers are seen on the response", which includes 404s and 5xx. A chunk
+    // request that lands on a draining instance mid-deploy would then be pinned
+    // as missing for a year, breaking every page that needs it. Both upstreams
+    // already send the right thing on success (`immutable` for chunks,
+    // `max-age=3600` for OG images) and something short or absent on failure,
+    // so honoring origin headers gives us edge caching without pinning errors.
     const isImmutableAsset = url.pathname.startsWith('/_app/immutable/');
-    const edgeCacheTtl = isImmutableAsset ? 31536000 : isOrgSiteOgImage ? 3600 : undefined;
+    const shouldEdgeCache = isImmutableAsset || isOrgSiteOgImage;
 
     const upstreamResponse = await fetch(upstreamUrl.toString(), {
       method: request.method,
       headers: upstreamHeaders,
       body: request.body,
       redirect: 'manual',
-      cf: edgeCacheTtl ? { cacheEverything: true, cacheTtl: edgeCacheTtl } : undefined
+      cf: shouldEdgeCache ? { cacheEverything: true } : undefined
     });
 
     if (isImmutableAsset) {
       const response = new Response(upstreamResponse.body, upstreamResponse);
-      response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      // Only a real chunk is immutable. Telling the browser to keep a 404 for a
+      // year is unrecoverable without a hard reload.
+      response.headers.set('Cache-Control', upstreamResponse.ok ? 'public, max-age=31536000, immutable' : 'no-store');
       return response;
     }
 

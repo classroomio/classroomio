@@ -101,7 +101,7 @@
 
 <Story name="Text">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputGroup.Root>
         <InputGroup.Addon align="inline-start">
           <InputGroup.Text>https://</InputGroup.Text>
@@ -135,7 +135,7 @@
 
 <Story name="Button">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputGroup.Root>
         <InputGroup.Input placeholder="https://x.com/shadcn" />
         <InputGroup.Addon align="inline-end">
@@ -159,7 +159,7 @@
 
 <Story name="Tooltip">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputGroup.Root>
         <InputGroup.Addon align="inline-start">
           <LockIcon />
@@ -236,7 +236,7 @@
 
 <Story name="Textarea">
   {#snippet template()}
-    <div class="ui:flex ui:flex-col ui:gap-4 ui:w-96">
+    <div class="flex w-96 flex-col gap-4">
       <InputGroup.Root>
         <InputGroup.Addon align="block-start">
           <InputGroup.Text>Code</InputGroup.Text>
@@ -282,7 +282,7 @@
           <LoaderIcon class="animate-spin" />
         </InputGroup.Addon>
         <InputGroup.Addon align="inline-end">
-          <InputGroup.Text class="text-muted-foreground">Please wait...</InputGroup.Text>
+          <InputGroup.Text class="ui:text-muted-foreground">Please wait...</InputGroup.Text>
         </InputGroup.Addon>
       </InputGroup.Root>
     </div>

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { page } from '$app/state';
+  import { replaceState } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { CertificatesPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -11,10 +14,21 @@
   import { ZCourseUpdate } from '@cio/utils/validation/course/course';
   import { validateWithTranslation } from '$lib/utils/validation';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
 
   let errors = $state<Record<string, string>>({});
-  let certificateActiveTab = $state('design');
+
+  function normalizeCertificateTab(tab: string | null) {
+    return tab === 'settings' ? 'settings' : 'design';
+  }
+
+  // replaceState does not update page.url; local state handles tab clicks, this resyncs on navigation.
+  let certificateActiveTab = $state(normalizeCertificateTab(page.url.searchParams.get('tab')));
+
+  $effect.pre(() => {
+    certificateActiveTab = normalizeCertificateTab(page.url.searchParams.get('tab'));
+  });
+
   let hasUnsavedChanges = $state(false);
   let savedCertificateState = $state<string | null>(null);
   let savedCertificateStateCourseId = $state<string | null>(null);
@@ -134,6 +148,20 @@
     hasUnsavedChanges = false;
     errors = {};
   }
+
+  function handleActiveTabChange(tab: string) {
+    const nextTab = normalizeCertificateTab(tab);
+
+    if (nextTab === certificateActiveTab) {
+      return;
+    }
+
+    certificateActiveTab = nextTab;
+
+    const url = new URL(page.url);
+    url.searchParams.set('tab', nextTab);
+    replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
+  }
 </script>
 
 <svelte:head>
@@ -160,7 +188,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CertificatesPage {errors} bind:activeTab={certificateActiveTab} />
+      <CertificatesPage {errors} activeTab={certificateActiveTab} onActiveTabChange={handleActiveTabChange} />
     {/snippet}
   </Page.Body>
   {#if canEditCertificates && certificateActiveTab === 'settings'}

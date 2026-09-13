@@ -30,7 +30,7 @@
   });
 </script>
 
-<div class="ui:mx-auto flex w-full max-w-5xl flex-col gap-8 px-2 pb-12">
+<div class="mx-auto flex w-full max-w-5xl flex-col gap-8 px-2 pb-12">
   <UsageSummaryCards usage={aiCreditsApi.usage} purchased={aiCreditsApi.purchased} />
   <p class="ui:text-muted-foreground -mt-4 text-sm">{$t('settings.ai_credits.cost_note')}</p>
   <UsageChart usage={aiCreditsApi.usage} />

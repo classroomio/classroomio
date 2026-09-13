@@ -14,5 +14,6 @@ export const FIELDS = [
   'labelClassName',
   'min',
   'max',
-  'autoComplete'
+  'autoComplete',
+  'testId'
 ] as string[];

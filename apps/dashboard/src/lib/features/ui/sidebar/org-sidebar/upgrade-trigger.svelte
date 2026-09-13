@@ -3,7 +3,7 @@
   import { Progress } from '@cio/ui/base/progress';
   import RocketIcon from '@lucide/svelte/icons/rocket';
   import { t } from '$lib/utils/functions/translations';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { currentOrgMaxAudience, isFreePlan, studentUsage } from '$lib/utils/store/org';
   import { useSidebar } from '@cio/ui/base/sidebar';
 

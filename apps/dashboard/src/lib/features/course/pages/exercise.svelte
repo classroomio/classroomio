@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import * as ButtonGroup from '@cio/ui/base/button-group';
@@ -30,7 +29,10 @@
   import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
-  import { isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
+  import { isOrgStudent, isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { exerciseApi } from '$features/course/api';
@@ -48,6 +50,8 @@
   } from '$features/ui';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import { saveExerciseDraft } from '$features/course/utils/exercise-draft';
+  import { onUpgradeCheckoutHandoff } from '$lib/utils/store/upgrade-modal';
   import {
     hydrateExercisePageData
     // , refreshExercisePageData
@@ -86,6 +90,15 @@
     submissions,
     mySubmissions = []
   }: Props = $props();
+
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage: Boolean(exerciseId),
+      courseProgress: getCourseProgress(courseApi.course)
+    })
+  );
 
   type ExerciseTab = 'questions' | 'settings' | 'submissions';
 
@@ -463,6 +476,19 @@
     selectedTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
   });
 
+  // Upgrading from a premium question type sends the browser to an external checkout. Stash the
+  // editor so it can be restored on the way back, and stand the leave guard down — with the work
+  // persisted there is nothing to warn about.
+  onMount(() =>
+    onUpgradeCheckoutHandoff(() => {
+      const courseId = courseApi.course?.id;
+      if ($isOrgStudent || !courseId || !hasDirtyQuestionnaire()) return;
+
+      saveExerciseDraft(courseId, exerciseId, $questionnaire);
+      hasUnsavedChanges = false;
+    })
+  );
+
   $effect(() => {
     const nextTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
     if (nextTab === untrack(() => selectedTab)) return;
@@ -482,13 +508,18 @@
 
   $effect(() => {
     const currentTab = page.url.searchParams.get('tab') ?? '';
-    // Prevent self-navigation loops: only update URL when it actually changes.
     if (currentTab === selectedTab) return;
 
     untrack(() => {
       const url = new URL(page.url);
       url.searchParams.set('tab', selectedTab);
-      goto(resolve(`${url.pathname}${url.search}`, {}), {
+
+      if (selectedTab !== 'submissions') {
+        url.searchParams.delete('submission');
+        url.searchParams.delete('student');
+      }
+
+      goto(`${url.pathname}${url.search}`, {
         replaceState: true,
         keepFocus: true,
         noScroll: true
@@ -512,6 +543,9 @@
     getOrderedNavigableContent(courseApi.course).find(
       (item) => item.type === ContentType.Exercise && item.id === exerciseId
     )
+  );
+  const enrolledStudentKeys = $derived(
+    courseApi.group.students.map((student) => student.profileId).filter((profileId): profileId is string => !!profileId)
   );
   const isCourseContentReady = $derived(courseApi.course?.id != null);
   const isExerciseTeacherLocked = $derived((exerciseContentItem?.isUnlocked ?? true) === false);
@@ -611,7 +645,7 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if $isStudentExperience && courseApi.course?.id && exerciseId}
+      {#if $isCourseLearnerView && courseApi.course?.id && exerciseId && !showMobileBottomNav}
         <ContentNavigationActions courseId={courseApi.course.id} {exerciseId} />
       {/if}
 
@@ -769,7 +803,7 @@
             />
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
-            <Submissions bind:exerciseId {submissions} />
+            <Submissions bind:exerciseId {submissions} {enrolledStudentKeys} />
           </UnderlineTabs.Content>
         </UnderlineTabs.Root>
 

@@ -23,6 +23,12 @@ export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
     removeOnComplete: { age: 86_400, count: 500 },
     removeOnFail: { age: 14 * 86_400 }
   },
+  [QUEUE_NAMES.youtubeCaptions]: {
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 30_000 },
+    removeOnComplete: { age: 86_400, count: 1_000 },
+    removeOnFail: { age: 7 * 86_400 }
+  },
   [QUEUE_NAMES.emails]: {
     attempts: 5,
     backoff: { type: 'exponential', delay: 5_000 },
@@ -58,6 +64,13 @@ export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
     backoff: { type: 'exponential', delay: 30_000 },
     removeOnComplete: { age: 7 * 86_400, count: 500 },
     removeOnFail: { age: 14 * 86_400 }
+  },
+  [QUEUE_NAMES.audience]: {
+    // One attempt: the writes are idempotent per member, but a blind retry of a
+    // partially-applied chunk would double the audit rows.
+    attempts: 1,
+    removeOnComplete: { age: 24 * 3_600, count: 500 },
+    removeOnFail: { age: 7 * 86_400 }
   },
   [QUEUE_NAMES.maintenance]: {
     attempts: 2,

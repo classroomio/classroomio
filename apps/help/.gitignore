@@ -1,0 +1,17 @@
+node_modules
+
+.DS_Store
+.cache
+.wrangler
+.dev.vars
+
+# Blume build output, and the packaged assets served by the worker.
+/dist/
+/build/
+/.blume/
+/.blume-verify/
+/.astro/
+
+# Vale style packages, fetched by `vale sync`.
+/styles/
+.blume-verify/

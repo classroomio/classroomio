@@ -23,6 +23,7 @@ import {
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { QUESTION_TYPE_IDS } from '@cio/question-types';
 
 async function cloneLessonLanguages(newLessons: TLesson[], oldLessons: TLesson[]): Promise<void> {
@@ -236,6 +237,9 @@ export async function cloneCourse(
     status: course.status,
     type: course.type
   });
+
+  const statsOrgId = organizationId ?? newGroup.organizationId;
+  await invalidateOrgStats(statsOrgId);
 
   // 4. add group member
   await addGroupMember({

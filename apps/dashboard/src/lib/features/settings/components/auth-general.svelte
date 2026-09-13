@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { currentOrg, isEnterprisePlan } from '$lib/utils/store/org';
+  import { currentOrg, hasBasicAuthSettingsAccess, isEnterprisePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import * as Field from '@cio/ui/base/field';
@@ -8,6 +8,7 @@
   import LockIcon from '@lucide/svelte/icons/lock';
   import { orgApi } from '$features/org/api/org.svelte';
   import * as Alert from '@cio/ui/base/alert';
+  import { UpgradeLock } from '$features/ui';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -112,7 +113,10 @@
       <Field.Field orientation="horizontal">
         <Switch bind:checked={disableSignup} disabled={!$isEnterprisePlan || isSaving} />
         <div class="space-y-0.5">
-          <Field.Label>{$t('settings.auth.general.disable_signup.label')}</Field.Label>
+          <Field.Label class="flex items-center gap-2">
+            {$t('settings.auth.general.disable_signup.label')}
+            <UpgradeLock locked={!$isEnterprisePlan} />
+          </Field.Label>
           <Field.Description>
             {$t('settings.auth.general.disable_signup.description')}
           </Field.Description>
@@ -121,9 +125,12 @@
 
       <!-- Allow Public Signups (invite-only when off) -->
       <Field.Field orientation="horizontal">
-        <Switch bind:checked={allowPublicSignups} disabled={!$isEnterprisePlan || isSaving} />
+        <Switch bind:checked={allowPublicSignups} disabled={!$hasBasicAuthSettingsAccess || isSaving} />
         <div class="space-y-0.5">
-          <Field.Label>{$t('settings.auth.general.allow_public_signups.label')}</Field.Label>
+          <Field.Label class="flex items-center gap-2">
+            {$t('settings.auth.general.allow_public_signups.label')}
+            <UpgradeLock locked={!$hasBasicAuthSettingsAccess} />
+          </Field.Label>
           <Field.Description>
             {$t('settings.auth.general.allow_public_signups.description')}
           </Field.Description>
@@ -132,9 +139,12 @@
 
       <!-- Internal Enrollment Only -->
       <Field.Field orientation="horizontal">
-        <Switch bind:checked={internalEnrollmentOnly} disabled={!$isEnterprisePlan || isSaving} />
+        <Switch bind:checked={internalEnrollmentOnly} disabled={!$hasBasicAuthSettingsAccess || isSaving} />
         <div class="space-y-0.5">
-          <Field.Label>{$t('settings.auth.general.internal_enrollment_only.label')}</Field.Label>
+          <Field.Label class="flex items-center gap-2">
+            {$t('settings.auth.general.internal_enrollment_only.label')}
+            <UpgradeLock locked={!$hasBasicAuthSettingsAccess} />
+          </Field.Label>
           <Field.Description>
             {$t('settings.auth.general.internal_enrollment_only.description')}
           </Field.Description>
@@ -144,7 +154,10 @@
       <!-- Signup Disabled Message (shown when disableSignup is true) -->
       {#if disableSignup}
         <Field.Field>
-          <Field.Label>{$t('settings.auth.general.disable_signup_message.label')}</Field.Label>
+          <Field.Label class="flex items-center gap-2">
+            {$t('settings.auth.general.disable_signup_message.label')}
+            <UpgradeLock locked={!$isEnterprisePlan} />
+          </Field.Label>
           <Field.Description>
             {$t('settings.auth.general.disable_signup_message.description')}
           </Field.Description>
@@ -162,7 +175,10 @@
       <Field.Field orientation="horizontal">
         <Switch bind:checked={disableEmailPassword} disabled={!$isEnterprisePlan || isSaving} />
         <div class="space-y-0.5">
-          <Field.Label>{$t('settings.auth.general.disable_email_password.label')}</Field.Label>
+          <Field.Label class="flex items-center gap-2">
+            {$t('settings.auth.general.disable_email_password.label')}
+            <UpgradeLock locked={!$isEnterprisePlan} />
+          </Field.Label>
           <Field.Description>
             {$t('settings.auth.general.disable_email_password.description')}
           </Field.Description>
@@ -173,7 +189,10 @@
       <Field.Field orientation="horizontal">
         <Switch bind:checked={disableGoogleAuth} disabled={!$isEnterprisePlan || isSaving} />
         <div class="space-y-0.5">
-          <Field.Label>{$t('settings.auth.general.disable_google_auth.label')}</Field.Label>
+          <Field.Label class="flex items-center gap-2">
+            {$t('settings.auth.general.disable_google_auth.label')}
+            <UpgradeLock locked={!$isEnterprisePlan} />
+          </Field.Label>
           <Field.Description>
             {$t('settings.auth.general.disable_google_auth.description')}
           </Field.Description>

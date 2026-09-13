@@ -6,7 +6,6 @@ import {
   countOrganizationAutomationUsageSinceByKey,
   createOrganizationAutomationUsage,
   getActiveOrganizationPlan,
-  getOrganizationAutomationCreditsUsedSince,
   listRecentOrganizationAutomationUsage
 } from '@cio/db/queries/organization';
 import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/types';
@@ -15,7 +14,6 @@ import {
   getMcpAutomationCategory,
   canUsePublicApi,
   getMcpAutomationLimits,
-  MCP_TOOL_CREDIT_COST,
   type TMcpToolName
 } from '@cio/utils/plans';
 
@@ -24,9 +22,6 @@ export type OrganizationAutomationUsageSummary = {
   planName: TPlan;
   billingPeriodStart: string;
   billingPeriodEnd: string;
-  monthlyCreditsIncluded: number;
-  monthlyCreditsUsed: number;
-  monthlyCreditsRemaining: number;
   activeKeys: number;
   maxActiveKeys: number;
   rateLimits: ReturnType<typeof getMcpAutomationLimits>['rateLimits'];
@@ -104,9 +99,6 @@ export async function getOrganizationAutomationUsageSummaryService(
       planName,
       billingPeriodStart: billingPeriodStart.toISOString(),
       billingPeriodEnd: billingPeriodEnd.toISOString(),
-      monthlyCreditsIncluded: 0,
-      monthlyCreditsUsed: 0,
-      monthlyCreditsRemaining: 0,
       activeKeys: await countActiveOrganizationApiKeys(organizationId, type),
       maxActiveKeys: 0,
       rateLimits: {
@@ -118,8 +110,7 @@ export async function getOrganizationAutomationUsageSummaryService(
   }
 
   const limits = getMcpAutomationLimits(planName);
-  const [monthlyCreditsUsed, activeKeys, recentActions] = await Promise.all([
-    getOrganizationAutomationCreditsUsedSince(organizationId, type, billingPeriodStart.toISOString()),
+  const [activeKeys, recentActions] = await Promise.all([
     countActiveOrganizationApiKeys(organizationId, type),
     listRecentOrganizationAutomationUsage(organizationId, type, 10)
   ]);
@@ -129,9 +120,6 @@ export async function getOrganizationAutomationUsageSummaryService(
     planName,
     billingPeriodStart: billingPeriodStart.toISOString(),
     billingPeriodEnd: billingPeriodEnd.toISOString(),
-    monthlyCreditsIncluded: limits.monthlyCredits,
-    monthlyCreditsUsed,
-    monthlyCreditsRemaining: Math.max(limits.monthlyCredits - monthlyCreditsUsed, 0),
     activeKeys,
     maxActiveKeys: limits.maxActiveKeys,
     rateLimits: limits.rateLimits,
@@ -151,23 +139,12 @@ export async function assertMcpAutomationUsageAllowed(
   const limits = getMcpAutomationLimits(planName);
   const category = getMcpAutomationCategory(toolName);
   const now = new Date();
-  const billingPeriodStart = getBillingPeriodStart(now).toISOString();
   const minuteWindowStart = getMinuteWindowStart(now).toISOString();
 
-  const [creditsUsed, keyRequestsInWindow, orgRequestsInWindow] = await Promise.all([
-    getOrganizationAutomationCreditsUsedSince(automationKey.organizationId, automationKey.type, billingPeriodStart),
+  const [keyRequestsInWindow, orgRequestsInWindow] = await Promise.all([
     countOrganizationAutomationUsageSinceByKey(automationKey.id, category, minuteWindowStart),
     countOrganizationAutomationUsageSince(automationKey.organizationId, automationKey.type, category, minuteWindowStart)
   ]);
-
-  const creditsNeeded = MCP_TOOL_CREDIT_COST[toolName];
-  if (creditsUsed + creditsNeeded > limits.monthlyCredits) {
-    throw new AppError(
-      'Monthly automation credits exhausted for this organization',
-      ErrorCodes.AUTOMATION_CREDIT_LIMIT_EXCEEDED,
-      429
-    );
-  }
 
   const keyLimit =
     category === 'read'
@@ -199,7 +176,7 @@ export async function recordMcpAutomationUsage(
     type: automationKey.type,
     action: toolName,
     category: getMcpAutomationCategory(toolName),
-    creditsConsumed: MCP_TOOL_CREDIT_COST[toolName],
+    creditsConsumed: 0,
     metadata
   });
 }

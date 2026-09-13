@@ -93,7 +93,7 @@ export async function updateCourseAiTutorOverride(
     };
 
     const nextMetadata = {
-      ...(row.metadata ?? { allowNewStudent: true }),
+      ...(row.metadata ?? {}),
       aiTutor: nextOverride
     };
 

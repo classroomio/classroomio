@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite dev --port 5173",
+    "dev:https": "cross-env HTTPS=true pnpm run dev",
     "prebuild": "pnpm --filter @cio/ui run build",
     "build": "vite build",
     "preview": "vite preview",
@@ -17,7 +18,8 @@
     "test": "jest",
     "test:watch": "pnpm run test --watch",
     "ci": "cp .env.example .env && vite build && vite preview",
-    "translate": "node ./scripts/translate.cjs"
+    "translate": "node ./scripts/translate.cjs",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@ai-sdk/svelte": "^4.0.158",
@@ -106,6 +108,7 @@
     "@types/node": "^20",
     "all-object-keys": "^2.2.0",
     "babel-jest": "^29.7.0",
+    "cross-env": "^10.1.0",
     "diff": "^5.2.0",
     "dotenv": "^16.3.1",
     "eslint": "^9.36.0",
@@ -118,7 +121,7 @@
     "postcss-load-config": "^4.0.1",
     "qrcode": "^1.5.3",
     "sass": "^1.64.2",
-    "svelte": "^5.0.0",
+    "svelte": "^5.46.1",
     "svelte-dnd-action": "^0.9.24",
     "svelte-jester": "^3.0.0",
     "svelte-preprocess": "^6.0.0",
@@ -129,6 +132,8 @@
     "typescript": "^5.5.0",
     "typescript-eslint": "^8.44.1",
     "vite": "^5.4.4",
+    "vite-plugin-mkcert": "^2.1.0",
+    "vitest": "^1.2.2",
     "wrangler": "4.21.2"
   },
   "type": "module",

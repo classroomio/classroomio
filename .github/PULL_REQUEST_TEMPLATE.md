@@ -4,7 +4,9 @@
 
 Fixes # (place issue number here without bracket)
 
-<!-- Please provide a screenshots or upload a video for visual changes to speed up reviews -->
+## Demo
+
+<!-- Please upload a video here or attach a link to a video player like Awesome Screenshot or Loom to show the change in action. This speeds up reviews, especially for visual changes. -->
 
 ## Type of change
 
@@ -39,6 +41,7 @@ Fixes # (place issue number here without bracket)
 - [ ] Removed all `console.logs`
 - [ ] Merged the latest changes from main onto my branch with `git pull origin main`
 - [ ] My changes don't cause any responsiveness issues
+- [ ] If I am a first-time or external contributor, I signed the [ClassroomIO Contributor License Agreement](https://forms.gle/XsXdfGcgJpWtNuzs7)
 - [ ] If this PR changes `pnpm-lock.yaml`, `.github/workflows/**`, or publish config: call that out in the PR description
 
 ### Appreciated

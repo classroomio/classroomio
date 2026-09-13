@@ -41,7 +41,7 @@
   }
 </script>
 
-<div class={cn('ui:flex ui:items-center ui:gap-2', className)}>
+<div class={cn('ui:flex ui:items-center ui:gap-1.5', className)}>
   <Popover.Root bind:open>
     <Popover.Trigger>
       {#snippet child({ props })}
@@ -87,7 +87,7 @@
             type="button"
             variant={selectedReactionType === reactionOption.type ? 'light-default' : 'ghost'}
             size="sm"
-            class="ui:h-8 ui:rounded-full ui:px-3"
+            class="ui:h-7 ui:rounded-full ui:px-2.5"
             {disabled}
             aria-label={reactionOption.label}
             onclick={() => handleReactionToggle(reactionOption.type)}

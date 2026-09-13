@@ -1,0 +1,14 @@
+/* The Help Center featured-rail link is this whole app's self-link — every
+ * page here is under /help, so it should always read as the current section,
+ * the way cal.com's rail keeps "Documentation" highlighted while browsing it.
+ * `navigation.featured` has no active-state concept (unlike tabs/sidebar) and
+ * isn't behind an override slot, so this targets the rendered markup
+ * directly. Colors/weight match the sidebar's real aria-current="page" state
+ * (NavTree.astro) for visual consistency. Re-check this selector if the
+ * `blume` dependency version bumps and changes Featured's markup/aria-label.
+ */
+nav[aria-label='Featured'] a[href='/help'] {
+  background-color: var(--color-muted);
+  color: var(--color-foreground);
+  font-weight: 500;
+}

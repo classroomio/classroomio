@@ -33,6 +33,7 @@ const saasDefaults = {
     'wss://*.classroomio.com',
     'https://assets.cdn.clsrio.com',
     'https://cdn.plyr.io',
+    'https://widget.userjot.com',
     'https://*.posthog.com',
     'https://umami.hz.oncws.com',
     'https://*.r2.cloudflarestorage.com',
@@ -40,12 +41,18 @@ const saasDefaults = {
     'https://*.ytimg.com',
     'https://noembed.com',
     'https://www.googleapis.com',
-    'https://o476906.ingest.us.sentry.io'
+    'https://o476906.ingest.us.sentry.io',
+    'https://*.vimeo.com',
+    'https://vimeo.com',
+    'https://*.vimeocdn.com'
   ],
   frameSrc: [
     'https://www.youtube.com',
     'https://youtube.com',
     'https://www.youtube-nocookie.com',
+    'https://player.vimeo.com',
+    'https://*.vimeo.com',
+    'https://vimeo.com',
     'https://www.google.com',
     'https://google.com',
     'https://drive.google.com',
@@ -60,6 +67,7 @@ const saasDefaults = {
     'https://*.officeapps.live.com',
     'https://view.officeapps.live.com',
     'https://1drv.ms',
+    'https://sharepoint.com',
     'https://*.sharepoint.com',
     'https://www.icloud.com',
     'https://icloud.com',
@@ -75,7 +83,8 @@ const saasDefaults = {
     'https://www.slideshare.net',
     'https://slideshare.net',
     'https://www.beautiful.ai',
-    'https://beautiful.ai'
+    'https://beautiful.ai',
+    'https://widget.userjot.com'
   ],
   fontSrc: ['https://fonts.gstatic.com', 'https://cdn.plyr.io'],
   mediaSrc: ['https:']

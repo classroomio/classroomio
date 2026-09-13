@@ -51,6 +51,8 @@ jobs:
 
       - name: Build dashboard
         run: pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=6144"
 
       - name: Build API
         run: pnpm --filter @cio/api^... build && pnpm --filter @cio/api build

@@ -183,7 +183,7 @@
                       <Button
                         variant="ghost"
                         size="icon"
-                        class="text-muted-foreground hover:text-destructive"
+                        class="ui:text-muted-foreground ui:hover:text-destructive"
                         onclick={(event) => {
                           event.stopPropagation();
                           openDeleteModal(item.courseId);
@@ -207,7 +207,7 @@
                   <Button
                     variant="outline"
                     size="icon"
-                    class="text-muted-foreground hover:text-destructive absolute! top-6 right-6 z-40"
+                    class="ui:text-muted-foreground ui:hover:text-destructive absolute! top-6 right-6 z-40"
                     onclick={(event) => {
                       event.stopPropagation();
                       openDeleteModal(course.id);

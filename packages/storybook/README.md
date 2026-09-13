@@ -283,37 +283,26 @@ Composite components:
 
 ### CSS Class Conventions
 
-#### UI Prefix
+#### UI Prefix & Scoping Rules
 
-Use the `ui:` prefix for utility classes to scope them properly:
+Storybook combines two CSS layers:
 
-```svelte
-<!-- ✅ Correct -->
-<div class="ui:flex ui:flex-col ui:gap-6">
-<Button class="ui:w-full">
-
-<!-- ❌ Incorrect -->
-<div class="flex flex-col gap-6">
-<Button class="w-full">
-```
-
-#### When to Use UI Prefix
-
-- **Always use** for utility classes (flex, grid, gap, padding, margin, etc.)
-- **Don't use** for component-specific classes or data attributes
-- **Don't use** for Tailwind classes that are part of component styling
+1. **Unprefixed Tailwind** (`packages/storybook/src/index.css`): All layout, sizing, grid, flex, and spacing utilities stay **unprefixed** (`flex`, `grid`, `gap-4`, `w-96`, `w-full`, `p-4`, `size-12`, etc.).
+2. **`@cio/ui` Precompiled Tokens** (`@cio/ui/output.css`): Theme color classes (`ui:text-muted-foreground`, `ui:text-primary`, `ui:border-border`, `ui:bg-muted`, `ui:ring-background`, etc.) use the **`ui:` prefix** everywhere.
 
 #### Examples
 
 ```svelte
-<!-- Utility classes - use ui: prefix -->
-<div class="ui:flex ui:items-center ui:gap-2">
-<div class="ui:space-y-2">
-<div class="ui:text-muted-foreground ui:text-sm">
-
-<!-- Component classes - no prefix needed -->
+<!-- Layout, sizing & spacing - unprefixed -->
+<div class="flex flex-col gap-6 w-96 p-6">
+<ul class="grid grid-cols-1 gap-4 md:grid-cols-2">
 <Card.Root class="w-full max-w-sm">
-<HoverCard.Content class="w-80">
+<Button class="w-full">
+
+<!-- UI theme colors - use ui: prefix -->
+<span class="ui:text-muted-foreground text-sm">Active students</span>
+<div class="ui:border-border border">
+<Avatar.Root class="ui:ring-background ring-2">
 ```
 
 ### LMS Content Guidelines
@@ -496,7 +485,7 @@ When creating a new story, ensure:
 - [ ] Title follows `'Category/ComponentName'` format
 - [ ] Component reference is correct (Root for multi-part, direct for single)
 - [ ] `tags: ['autodocs']` is included
-- [ ] All utility classes use `ui:` prefix
+- [ ] All theme color utilities use `ui:` prefix; story layout wrappers use standard Tailwind classes
 - [ ] Content is LMS-related (courses, students, instructors, etc.)
 - [ ] Multiple stories showcase different use cases
 - [ ] `fields.ts` is created if controls are needed
@@ -507,7 +496,7 @@ When creating a new story, ensure:
 
 - **State Management**: Use Svelte 5 runes (`$state()`, `$derived()`) for reactive state
 - **Layout**: Most stories use `layout: 'centered'` in parameters
-- **Styling**: Prefer Tailwind utility classes with `ui:` prefix
+- **Styling**: Use standard Tailwind utilities for story wrappers, and `ui:` prefix for UI theme tokens
 - **Accessibility**: Include proper ARIA labels and semantic HTML
 - **Documentation**: Story names should be descriptive and reflect the use case
 

@@ -13,6 +13,7 @@ import {
   getActiveOrganizationApiKeyByHash,
   getOrganizationApiKeyById,
   listOrganizationApiKeys,
+  rotateOrganizationApiKeyIfActive,
   updateOrganizationApiKey
 } from '@cio/db/queries/organization';
 import { assertOrganizationAutomationKeyCreationAllowed } from './automation-usage';
@@ -135,16 +136,26 @@ export async function rotateOrganizationApiKeyService(organizationId: string, ke
     throw new AppError('Organization API key not found', ErrorCodes.ORGANIZATION_API_KEY_NOT_FOUND, 404);
   }
 
+  if (existing.revokedAt) {
+    throw new AppError(
+      'Cannot rotate a revoked organization API key',
+      ErrorCodes.ORGANIZATION_API_KEY_ROTATE_FAILED,
+      400
+    );
+  }
+
   const secret = generateOrganizationApiKeySecret(existing.type);
-  const updated = await updateOrganizationApiKey(organizationId, keyId, {
+  const updated = await rotateOrganizationApiKeyIfActive(organizationId, keyId, {
     secretPrefix: getSecretPrefix(secret),
-    secretHash: hashSecret(secret),
-    revokedAt: null,
-    lastUsedAt: null
+    secretHash: hashSecret(secret)
   });
 
   if (!updated) {
-    throw new AppError('Failed to rotate organization API key', ErrorCodes.ORGANIZATION_API_KEY_ROTATE_FAILED, 500);
+    throw new AppError(
+      'Organization API key was revoked before rotation completed',
+      ErrorCodes.ORGANIZATION_API_KEY_ROTATE_FAILED,
+      409
+    );
   }
 
   return {

@@ -81,6 +81,7 @@ export interface PublicLessonViewData {
 export interface PublicExerciseViewData {
   kind: 'exercise';
   title: string;
+  /** Rich-text HTML (as produced by the exercise description editor). */
   description: string | null;
   sectionTitle: string | null;
   isUnlocked: boolean;

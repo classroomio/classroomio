@@ -8,12 +8,13 @@ type CourseSettings = {
   courseDescription: string;
   grading: boolean;
   type: TCourseType;
-  allowNewStudents: boolean;
+  allowSelfEnrollment: boolean;
   tabs: { id: number; name: string }[];
   lessonDownload: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
   progressionMode: 'free' | 'sequential';
+  commentsEnabled: boolean;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
   certificate: {
@@ -30,7 +31,7 @@ export const settings = writable<CourseSettings>({
   courseDescription: '',
   grading: false,
   type: 'SELF_PACED' as TCourseType,
-  allowNewStudents: false,
+  allowSelfEnrollment: true,
   tabs: [
     { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
     { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
@@ -41,6 +42,7 @@ export const settings = writable<CourseSettings>({
   isPublished: false,
   isContentGroupingEnabled: true,
   progressionMode: 'free',
+  commentsEnabled: true,
   callout: null,
   welcomeEmailMessage: '',
   certificate: {

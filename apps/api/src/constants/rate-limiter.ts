@@ -3,6 +3,8 @@ export const DEFAULT_WINDOW_MS = 60 * 1000;
 
 export const DEFAULT_MAX_REQUESTS = 100;
 
+export const PUBLIC_API_FAILED_AUTH_MAX_REQUESTS = 1000;
+
 export const RATE_LIMIT_KEY_PREFIX = 'rate_limit:';
 
 export const DEFAULT_RATE_LIMITER_OPTIONS = {

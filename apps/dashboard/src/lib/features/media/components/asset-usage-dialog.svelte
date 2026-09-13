@@ -103,7 +103,7 @@
     {/if}
 
     {#if isLoading}
-      <Empty description={$t('media_manager.usage.loading')} icon={Spinner} class="ui:max-h-40 py-6" />
+      <Empty description={$t('media_manager.usage.loading')} icon={Spinner} class="max-h-40 py-6" />
     {:else if isUsageEmpty}
       <p class="ui:text-muted-foreground text-sm">{$t('media_manager.usage.empty')}</p>
     {:else if usageData}
