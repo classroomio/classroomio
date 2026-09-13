@@ -11,6 +11,13 @@ AUTH_SECRET="${BETTER_AUTH_SECRET:-$(openssl rand -hex 32)}"
 
 mkdir -p apps/api apps/dashboard packages/db
 
+# Root .env is required even when only starting postgres/redis — docker compose
+# interpolates api/dashboard service env vars while parsing the whole file.
+cat > .env <<EOF
+BETTER_AUTH_SECRET=${AUTH_SECRET}
+PRIVATE_SERVER_KEY=${SERVER_KEY}
+EOF
+
 cat > apps/api/.env <<EOF
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/classroomio
 REDIS_URL=redis://localhost:6379
@@ -30,4 +37,4 @@ EOF
 
 cp packages/db/.env.example packages/db/.env
 
-echo "Prepared API, dashboard, and db env files for PR demo CI."
+echo "Prepared root, API, dashboard, and db env files for PR demo CI."
