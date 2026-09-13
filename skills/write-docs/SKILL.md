@@ -57,18 +57,21 @@ Certificate features require a paid plan.
 :::
 ```
 
-**Steps** for sequential procedures. Keep an `###` heading inside each `<Step>` — it is what
-generates the linkable anchor:
+**Numbered `###` headings** for sequential procedures. Do not use a `<Steps>`/`<Step>` component: the
+CMS reads the raw markdown, where those tags render as literal text. The heading also generates the
+linkable anchor.
 
 ```mdx
-<Steps>
-<Step>
-### Enable downloadable certificates
+### 1. Enable downloadable certificates
 
 Turn on **Allow students download certificate**.
-</Step>
-</Steps>
+
+### 2. Set the completion threshold
+
+Choose the percentage a student must reach.
 ```
+
+A short summary of a procedure the page then covers in full can be a plain numbered list instead.
 
 Also available without imports: `<Tabs>`/`<Tab>`, `<Card>`, `<Accordion>`, `<YouTube id="..." />`,
 `<CodeGroup>`, `<Frame>`. Code fences take a title: ` ```zsh title="Terminal" `. Mermaid fences render
@@ -101,7 +104,7 @@ a page that isn't listed there will not appear in the nav.
 - Use **bold** for UI element names exactly as they appear in the product (match translations).
 - Use `code` for paths, values, slugs, and field names.
 - Tables for comparisons and reference lists.
-- Steps component for sequential procedures (not numbered markdown lists).
+- Numbered `###` headings for sequential procedures (never a `<Steps>` component).
 - End every substantive page with a `## Related guides` section linking to connected pages.
 - Remove the "Work in Progress" callout when replacing it with real content.
 
@@ -116,7 +119,7 @@ a page that isn't listed there will not appear in the nav.
 **How-to guide** (how to do something):
 1. One-sentence context (what and why)
 2. Prerequisites if any
-3. Steps component with the procedure
+3. The procedure, as numbered `###` headings
 4. Common scenarios or edge cases (Callout blocks)
 5. Related guides
 

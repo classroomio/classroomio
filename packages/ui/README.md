@@ -190,21 +190,21 @@ Use it when there is a genuine default worth one click, and **label the primary 
 
 Each item owns its own handler, so the component carries no behaviour: the consumer passes `onSelect` for the primary and one per item. Copy comes from props, so dashboard callers supply translated strings.
 
-| Prop        | Description                                                        |
-| ----------- | ------------------------------------------------------------------ |
-| `label`     | Primary button label; name the action, not a category              |
-| `onSelect`  | Primary button handler; may return a Promise                       |
-| `items`     | Menu entries (`ComboButtonItem[]`), each with its own `onSelect`   |
-| `menuLabel` | Accessible name for the chevron, which has no visible text         |
-| `icon`      | Optional lucide icon for the primary half                          |
-| `variant`   | Button variant applied to both halves (default `outline`)          |
-| `size`      | `sm` \| `default` \| `lg` (default `sm`)                           |
-| `disabled`  | Disables both halves                                               |
-| `loading`   | Spinner on the primary half; also disables the menu                |
-| `align`     | Menu alignment (default `end`)                                     |
-| `testId`    | Primary `data-testid`; the chevron gets `${testId}-menu`           |
+| Prop        | Description                                                      |
+| ----------- | ---------------------------------------------------------------- |
+| `label`     | Primary button label; name the action, not a category            |
+| `onSelect`  | Primary button handler; may return a Promise                     |
+| `items`     | Menu entries (`ComboButtonItem[]`), each with its own `onSelect` |
+| `menuLabel` | Accessible name for the chevron, which has no visible text       |
+| `icon`      | Optional lucide icon for the primary half                        |
+| `variant`   | Button variant applied to both halves (default `outline`)        |
+| `size`      | `sm` \| `default` \| `lg` (default `sm`)                         |
+| `disabled`  | Disables both halves                                             |
+| `loading`   | Spinner on the primary half; also disables the menu              |
+| `align`     | Menu alignment (default `end`)                                   |
+| `testId`    | Primary `data-testid`; the chevron gets `${testId}-menu`         |
 
-`ComboButtonItem` takes `id`, `label`, and `onSelect`, plus optional `icon`, `description` (rendered muted beneath the label — use it to say *why* an item is disabled rather than hiding it), `disabled` and `destructive`.
+`ComboButtonItem` takes `id`, `label`, and `onSelect`, plus optional `icon`, `description` (rendered muted beneath the label — use it to say _why_ an item is disabled rather than hiding it), `disabled` and `destructive`.
 
 See `Molecules/ComboButton` in Storybook.
 
@@ -243,7 +243,14 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.Action`                  | Right-aligned header actions                                 |
 | `Page.Body`                    | Main content area (`child` snippet)                          |
 | `Page.BodyHeader`              | Toolbar inside the body                                      |
+| `Page.FloatingBar`             | Shell for the bar that rises from the bottom of a page       |
 | `Page.SettingsActions`         | Compact save/discard card for dirty settings forms           |
+
+**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing *is* the notification), an optional `badge` snippet before the status, and the buttons as children.
+
+Set `fixed` to pin it to the viewport instead of sticking it to the end of the page content. **Anything rendered through `Page.Body`'s `child` snippet must use `fixed`**, because `Page.Body` sets `overflow-x-hidden` and a sticky bar inside a scroll container has no travel. It is a boolean rather than a `'sticky' | 'fixed'` union deliberately: the `ui:` prefix script rewrites class-like string literals, and turns `position === 'fixed'` into `position === 'ui:fixed'`, which never matches.
+
+See `Molecules/PageFloatingBar` in Storybook.
 
 **Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The card uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). The card is compact and centered (not full width) and **only renders when `hasChanges` is true**. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard. Save is a primary button; Discard is a secondary button. Use `disabled` to block Save only (Discard still follows `loading`). Use `contentClass` for extra classes on the inner card when needed.
 

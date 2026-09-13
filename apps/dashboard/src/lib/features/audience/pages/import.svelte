@@ -19,6 +19,7 @@
     parseAudienceImportCsv
   } from '@cio/utils/validation/organization';
   import { t } from '$lib/utils/functions/translations';
+  import type { ImportControls } from '$features/audience/utils/types';
   import { orgApi } from '$features/org/api/org.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { goto } from '$app/navigation';
@@ -46,9 +47,16 @@
   interface Props {
     courses: Course[];
     cohorts: Cohort[];
+    /**
+     * Reported upward so the route can put the step's actions in the page
+     * header, where every other page keeps them. The route owns `Page.Header`,
+     * and this component is rendered through `Page.Body`, so the state has to
+     * travel rather than the buttons.
+     */
+    controls?: ImportControls | null;
   }
 
-  let { courses, cohorts }: Props = $props();
+  let { courses, cohorts, controls = $bindable(null) }: Props = $props();
 
   type Step = 'upload' | 'preview' | 'result';
 
@@ -156,10 +164,21 @@
     resultRows = [];
     importedCount = 0;
   }
+
+  // Writes only; nothing here reads `controls`, so this cannot loop.
+  $effect(() => {
+    controls = {
+      step,
+      readyCount: summary.ready,
+      isSubmitting,
+      submit: handleSubmit,
+      startOver
+    };
+  });
 </script>
 
 {#if step === 'upload'}
-  <div class="space-y-6">
+  <div class="space-y-6 pb-10">
     <p class="ui:text-muted-foreground text-sm">{$t('audience.import.description')}</p>
 
     <FileDropZone.Root
@@ -204,7 +223,7 @@
     </Button>
   </div>
 {:else if step === 'preview'}
-  <div class="space-y-6">
+  <div class="space-y-6 pb-10">
     <div class="flex flex-wrap items-center gap-2">
       {#if sourceName}
         <span class="text-sm font-medium">{sourceName}</span>
@@ -214,7 +233,11 @@
         <Badge variant="outline">{$t('audience.import.count_duplicate', { count: summary.alreadyListed })}</Badge>
       {/if}
       {#if summary.invalid > 0}
-        <Badge variant="destructive">{$t('audience.import.count_invalid', { count: summary.invalid })}</Badge>
+        <!-- Outlined amber, not destructive: these rows are skipped, not
+             errors, and the file still imports without them. -->
+        <Badge variant="outline" class="ui:border-amber-600 ui:text-amber-600">
+          {$t('audience.import.count_invalid', { count: summary.invalid })}
+        </Badge>
       {/if}
     </div>
 
@@ -316,18 +339,9 @@
         />
       {/if}
     </div>
-
-    <div class="flex items-center gap-2">
-      <Button variant="outline" onclick={startOver} disabled={isSubmitting}>
-        {$t('audience.import.back')}
-      </Button>
-      <Button onclick={handleSubmit} loading={isSubmitting} disabled={isSubmitting || summary.ready === 0}>
-        {$t('audience.import.submit_count', { count: summary.ready })}
-      </Button>
-    </div>
   </div>
 {:else}
-  <div class="space-y-6">
+  <div class="space-y-6 pb-10">
     <p class="text-sm font-medium">{$t('audience.import.result_heading', { count: importedCount })}</p>
 
     <div class="max-h-80 overflow-auto rounded-md border">

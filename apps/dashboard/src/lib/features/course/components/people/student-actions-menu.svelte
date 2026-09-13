@@ -1,8 +1,8 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { Button } from '@cio/ui/base/button';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import DownloadIcon from '@lucide/svelte/icons/download';
-  import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
 
   import { courseApi } from '$features/course/api';
@@ -25,6 +25,7 @@
   } = $props();
 
   let dialogOpen = $state(false);
+  let menuOpen = $state(false);
 
   const memberId = $derived(courseApi.group.people.find((member) => member.profileId === personId)?.id ?? '');
   const studentName = $derived(userCourseAnalytics.user.fullName || userCourseAnalytics.user.email || '');
@@ -52,11 +53,15 @@
   }
 </script>
 
-<DropdownMenu.Root>
+<DropdownMenu.Root bind:open={menuOpen}>
   <DropdownMenu.Trigger>
     {#snippet child({ props })}
-      <Button {...props} variant="secondary" size="icon" aria-label={$t('audience.user_analytics.student_actions')}>
-        <EllipsisIcon />
+      <Button {...props} variant="secondary" size="sm" aria-label={$t('audience.user_analytics.student_actions')}>
+        {$t('generic.progress')}
+        <ChevronDownIcon
+          class="size-4 transition-transform duration-200 {menuOpen ? 'rotate-180' : ''}"
+          aria-hidden="true"
+        />
       </Button>
     {/snippet}
   </DropdownMenu.Trigger>

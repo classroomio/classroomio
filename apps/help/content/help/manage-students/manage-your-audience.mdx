@@ -21,7 +21,7 @@ Use the filter control above the table to narrow the list. Filters combine, and 
 The **saved views** beside the filters cover the common questions in one click: never logged in, inactive 90+ days, inactive 180+ days, enrolled never started, and archived. Change any filter and the selector reads **Custom filters**.
 
 :::note[These filters find dormant students]
-**No login in 90 days** returns the people you have not heard from in that time. An **Exclude recent joiners** toggle appears with any time filter and is on by default, so nobody is flagged before they have had a chance to log in.
+**No login in 90 days** returns the people you have not heard from in that time. Setting either time filter also shows an **Exclude recent joiners** toggle, on by default, which leaves out anyone who joined too recently to count as inactive. See [Excluding recent joiners](/reference/audience#excluding-recent-joiners).
 :::
 
 To act on the result, see [Find and Remove Inactive Students](/manage-students/find-and-remove-inactive-students), which walks the whole review-and-archive loop.
@@ -31,6 +31,8 @@ To act on the result, see [Find and Remove Inactive Students](/manage-students/f
 Tick students in the table, or use **Select all matching** to act on everyone the current filter returns, including when that is thousands of people.
 
 Rows for invites that have not been accepted have no checkbox, because there is no account yet. "Select all matching" is filter-based, so it can still reach them.
+
+![The selection bar at the foot of the Audience table reading 2 selected, with the Actions menu open and red arrows on Select all 31 matching and Assign to Courses](/help/audience-bulk-actions.webp)
 
 With a selection made, open **Actions**:
 
@@ -58,28 +60,17 @@ Runs of more than 1,000 students continue in the background so you can keep work
 
 ## Assign students to courses
 
-<Steps>
-<Step>
-### Select students
+### 1. Select students
 
 In the Audience table, check one or more students. Only members who already have an account can be selected this way. Rows for invites that haven't been accepted yet don't have a checkbox.
 
-</Step>
+### 2. Open the assign dialog
 
-<Step>
-### Open the assign dialog
+Once you have a selection, a bar rises at the foot of the page showing how many students are selected. Open **Actions** and choose **Assign to Courses**.
 
-Once you have a selection, a bar appears above the table showing how many students are selected and an **Assign to Courses** button. Click it.
-
-</Step>
-
-<Step>
-### Pick courses and confirm
+### 3. Pick courses and confirm
 
 In the **Assign to Courses** dialog, pick one or more courses from the list. Leave **Send notification email** checked (it's on by default) to email the students you're assigning, or clear it to give them access without notifying them. Click **Assign**.
-
-</Step>
-</Steps>
 
 Assignment happens immediately, and no action is needed from the students. The confirmation message reports how many students were newly assigned, how many already had access to a selected course, and how many emails were sent.
 
@@ -96,9 +87,7 @@ These actions only show up for invite rows. Once a student has an account, their
 
 Click **Import Users** in the top right of the Audience page. The button is disabled once your organization reaches its plan's audience limit.
 
-<Steps>
-<Step>
-### Upload a CSV, or paste addresses
+### 1. Upload a CSV, or paste addresses
 
 Drop a **CSV** file onto the upload area, or click to choose one. Use **Download the template** if you want the expected shape.
 
@@ -112,12 +101,13 @@ For more than 1,000 students, split the file and import it in parts.
 
 If you would rather not use a file, paste addresses into the field below the upload area instead, one per line or separated by commas, then click **Review**.
 
-</Step>
+![The import screen with the CSV drop zone, the Download the template link, and the paste field below it](/help/audience-import-upload.webp)
 
-<Step>
-### Review what will happen
+### 2. Review what will happen
 
 Dropping a file takes you straight here. Every row is listed with the outcome it will get, and nothing is created until you submit from this screen.
+
+![The import preview listing each row with a Ready, Duplicate in file, Invalid email or No email badge, above the course and cohort access options](/help/audience-import-preview.webp)
 
 | Row status               | Meaning                             |
 | ------------------------ | ----------------------------------- |
@@ -129,28 +119,25 @@ Dropping a file takes you straight here. Every row is listed with the outcome it
 | **No seats left**        | Skipped, over your plan limit       |
 | **No email**             | Skipped                             |
 
-</Step>
-
-<Step>
-### Choose course and cohort access
+### 3. Choose course and cohort access
 
 On the same screen, under **Course Access**, choose whether the imported students get no course assignment, all of your courses, or a specific set. Under **Cohort Access**, make the same choice for cohorts.
 
-</Step>
-
-<Step>
-### Submit
+### 4. Submit
 
 Click **Import N students**, which counts only the rows marked Ready.
 
-</Step>
-</Steps>
+New students receive an invitation email.
 
-New students receive an invitation email. If some rows did not work, **Download the rows that failed** on the result screen gives you a CSV of just those, with the reason for each, to fix and upload again.
+![The import result screen listing every address with its outcome in a Status column](/help/audience-import-result.webp)
+
+If some rows did not work, **Download the rows that failed** appears here and gives you a CSV of just those, with the reason for each, to fix and upload again.
 
 ## Export students
 
 Use the **Export as CSV** button above the table, or its dropdown for **Excel**, **PDF** and **HTML**.
+
+![The Export as CSV button with its dropdown open showing Excel, PDF and HTML](/help/audience-export-menu.webp)
 
 The export contains name, email, membership and invite status, courses enrolled, courses completed, progress, last login, last activity and date joined.
 

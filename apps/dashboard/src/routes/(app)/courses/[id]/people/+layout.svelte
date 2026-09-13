@@ -2,11 +2,10 @@
   import { goto, invalidateAll } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
+  import { BackButton } from '@cio/ui/custom/back-button';
   import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import * as Page from '@cio/ui/base/page';
   import { courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
@@ -17,19 +16,17 @@
 
   let userCourseAnalytics = $derived(page.data.userCourseAnalytics as UserCourseAnalytics | null | undefined);
 
-  // Get back URL from query parameters
-  let backUrl = $derived(page.url.searchParams.get('back'));
+  let backUrl = $derived.by(() => {
+    const back = page.url.searchParams.get('back');
+    if (back) {
+      return resolve(back, {});
+    } else {
+      return resolve(`/courses/${data.courseId}/people`, {});
+    }
+  });
 
   const handleClick = () => {
     goto(resolve(`${page.url.pathname}?add=true`, {}));
-  };
-
-  const handleBackNavigation = () => {
-    if (backUrl) {
-      goto(resolve(backUrl, {}));
-    } else {
-      goto(resolve(`/courses/${data.courseId}/people`, {}));
-    }
   };
 
   async function refreshPeoplePage() {
@@ -46,9 +43,7 @@
     <Page.HeaderContent>
       {#if data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <IconButton onclick={handleBackNavigation}>
-            <ArrowLeftIcon size={16} />
-          </IconButton>
+          <BackButton href={backUrl} label={$t('audience.import.back')} class="p-0!" />
         </RoleBasedSecurity>
       {/if}
       {#if !data.personId}

@@ -16,6 +16,8 @@ Your plan sets a maximum audience size. When you reach the limit, a banner appea
 
 Audience is separate from course-level **People**. Course People shows who is enrolled in a specific course. Audience shows everyone in your organization regardless of which courses they have joined.
 
+![The Audience table showing name, email, status, enrollment, progress, last login, last activity and date joined](/help/audience-table-columns.webp)
+
 | Column            | What it means                                                              |
 | ----------------- | -------------------------------------------------------------------------- |
 | **Name**          | Student's display name                                                     |
@@ -68,6 +70,8 @@ Applies to people who have been invited.
 
 Every filter combines with the others, and your selection lives in the page address, so you can bookmark a view or send it to a colleague and they see the same list. Defaults are left out of the address, so a plain Audience URL is the default view.
 
+![The Filter popover open, with a red arrow highlighting the Exclude recent joiners checkbox](/help/audience-filter-popover.webp)
+
 | Filter             | Options                                        |
 | ------------------ | ---------------------------------------------- |
 | **Status**         | Active, Deactivated, Archived                  |
@@ -87,13 +91,29 @@ You can also search by name or email, and sort by date joined, name, email, last
 
 ### Excluding recent joiners
 
-When you set a time filter, an **Exclude recent joiners** toggle appears, switched on by default. It holds back people who have not been around long enough to be judged inactive.
+Set either time filter and an **Exclude recent joiners** toggle appears, switched on by default.
 
-The grace period is the filter's own window: on **No activity in 90 days**, anyone who joined within the last 90 days is held back. For **Never logged in**, the grace is 7 days.
+While it is on, **the results leave out anyone who joined too recently to be judged inactive**. They still exist and still appear in an unfiltered Audience; they are simply not returned by this search, so you cannot archive them by mistake.
+
+"Recently" is measured against **Date Joined**, the same column in the table. That is when the person joined **this organization**, not when they created their ClassroomIO account, so somebody with a three-year-old account who was invited here last week counts as new.
+
+The window you picked is also the grace period:
+
+| Filter                     | Left out while the toggle is on       |
+| -------------------------- | ------------------------------------- |
+| **No activity in 90 days** | Anyone who joined in the last 90 days |
+| **No login in 30 days**    | Anyone who joined in the last 30 days |
+| **Never logged in**        | Anyone who joined in the last 7 days  |
+
+**Never logged in** has no window of its own, so it uses a flat 7 days. Someone invited yesterday has technically never logged in, but the invite email may not even have been opened yet.
+
+Turn it off when you want the newest people included, which is the point of auditing an invite batch: "who from last week's 200 invites still hasn't signed in" is only answerable with the toggle off.
 
 ### Saved views
 
 One click for the questions asked most often:
+
+![The saved views selector open, with a red arrow on Inactive 90+ days](/help/audience-saved-views.webp)
 
 - All students
 - Never logged in
