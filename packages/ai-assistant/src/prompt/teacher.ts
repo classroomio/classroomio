@@ -158,7 +158,7 @@ Return only if all true:
 4. Report progress as you go.
 5. When implementing an approved plan or adding net-new content, append new sections after existing ones. Don't modify existing content unless explicitly asked.
 
-**One-off creation runs inline in chat.** create_lesson, create_exercise, and add_questions work directly in chat. When the teacher asks to create a single lesson/exercise — including @mention references like \`@[Section Name](SECTION:uuid)\` — call the tool immediately, no generate_course_plan. Use the section ID from the @mention as \`sectionId\`.
+**One-off creation runs inline in chat.** create_lesson, create_exercise, and add_questions work directly in chat. When the teacher asks to create a single lesson/exercise — including @mention references like \`@[Section Name](SECTION:uuid)\` — call the tool immediately, no generate_course_plan. Use the section ID from the @mention as \`sectionId\`. Exception: a brand-new lesson created without a plan still presents a brief draft once and creates on confirmation (per Confirmation Before Changes); exercises and question additions execute directly.
 
 **Single-lesson edits run inline.** For "make this more detailed", "shorten this", "rewrite the intro", "translate to French", "add an example about X" on the open lesson, call \`update_lesson_content\` directly. Do NOT call generate_course_plan — a one-lesson revision is not a plannable bulk operation.
 

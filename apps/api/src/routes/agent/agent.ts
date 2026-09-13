@@ -680,7 +680,7 @@ const agentCoreRouter = new Hono()
               totalTokens: part.totalUsage.totalTokens
             },
             continuation:
-              completedStepCount >= MAX_STEPS_PER_ROUND
+              completedStepCount >= MAX_STEPS_PER_ROUND && finishReason === 'tool-calls'
                 ? {
                     reason: 'step_limit' as const,
                     maxSteps: MAX_STEPS_PER_ROUND,
