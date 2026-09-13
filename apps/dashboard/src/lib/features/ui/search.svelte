@@ -11,6 +11,7 @@
     placeholder?: string;
     value?: string;
     class?: string;
+    compact?: boolean;
     onFocus?: (event: FocusEvent) => void;
     onBlur?: (event: FocusEvent) => void;
     onKeydown?: (event: KeyboardEvent) => void;
@@ -21,6 +22,7 @@
     placeholder = '',
     value = $bindable(''),
     class: className = '',
+    compact = false,
     onFocus,
     onBlur,
     onKeydown,
@@ -54,8 +56,13 @@
   }
 </script>
 
-<InputGroup.Root class={`hidden! max-w-56 md:flex! ${className}`} onpointerdown={handlePointerdown} {...restProps}>
+<InputGroup.Root
+  class="{compact ? 'flex! h-8! w-full max-w-none ui:h-8!' : 'hidden! max-w-56 md:flex!'} {className}"
+  onpointerdown={handlePointerdown}
+  {...restProps}
+>
   <InputGroup.Input
+    class={compact ? 'text-xs' : ''}
     placeholder={placeholder || $t('app.search.placeholder')}
     bind:value
     readonly
@@ -68,8 +75,10 @@
   <InputGroup.Addon>
     <SearchIcon />
   </InputGroup.Addon>
-  <InputGroup.Addon align="inline-end">
-    <Kbd.Root>⌘</Kbd.Root>
-    <Kbd.Root>K</Kbd.Root>
-  </InputGroup.Addon>
+  {#if !compact}
+    <InputGroup.Addon align="inline-end">
+      <Kbd.Root>⌘</Kbd.Root>
+      <Kbd.Root>K</Kbd.Root>
+    </InputGroup.Addon>
+  {/if}
 </InputGroup.Root>

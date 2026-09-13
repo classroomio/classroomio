@@ -3058,7 +3058,11 @@
     "cohorts": "कोहोर्ट",
     "upgrade_now": "अभी अपग्रेड करें",
     "upgrade_students": "{studentLimit} छात्रों की {studentCount}",
-    "upgrade_left": "{गिनती} बाएँ"
+    "upgrade_left": "{गिनती} बाएँ",
+    "back_to_app": "ऐप पर वापस जाएं",
+    "create": "बनाएँ",
+    "distribute": "बांटो",
+    "tools": "उपकरण"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -3215,7 +3219,8 @@
       "billing": "बिलिंग",
       "branding": "ब्रांडिंग",
       "ai": "एआई",
-      "search": "सेटिंग खोजें..."
+      "search": "सेटिंग खोजें...",
+      "extensions": "एक्सटेंशन"
     },
     "heading": "सेटिंग्स",
     "billing": {
@@ -3314,7 +3319,8 @@
         "title": "शीर्षक",
         "content": "सामग्री",
         "upload_an_image": "एक छवि अपलोड करें",
-        "select_image": "छवि का चयन करें"
+        "select_image": "छवि का चयन करें",
+        "create": "बनाएँ"
       },
       "actions": {
         "heading": "क्रियाएँ",

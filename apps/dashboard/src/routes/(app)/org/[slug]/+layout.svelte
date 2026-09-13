@@ -35,6 +35,7 @@
       goto(resolve('/lms', {}));
     }
   });
+
 </script>
 
 {#if PUBLIC_IS_SELFHOSTED !== 'true'}
@@ -50,9 +51,9 @@
 
   <Sidebar.Inset>
     {#if isSettingsRoute}
-      <header class="flex h-12 items-center border-b px-4">
-        <Sidebar.Trigger testId="settings-sidebar-trigger" />
-      </header>
+      <div class="flex h-10 items-center px-3 md:hidden">
+        <Sidebar.Trigger testId="settings-sidebar-trigger-mobile" />
+      </div>
     {:else}
       <AppHeader />
     {/if}

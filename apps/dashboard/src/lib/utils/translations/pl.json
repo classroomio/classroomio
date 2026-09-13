@@ -3058,7 +3058,11 @@
     "cohorts": "Kohorty",
     "upgrade_now": "Uaktualnij teraz",
     "upgrade_students": "{studentCount} z {studentLimit} uczniów",
-    "upgrade_left": "Pozostało {count}"
+    "upgrade_left": "Pozostało {count}",
+    "back_to_app": "Powrót do aplikacji",
+    "create": "Utwórz",
+    "distribute": "Rozpowszechniaj",
+    "tools": "Narzędzia"
   },
   "media_manager": {
     "page_title": "Menedżer mediów - ClassroomIO",
@@ -3215,7 +3219,8 @@
       "billing": "Rozliczenia",
       "branding": "Marka",
       "ai": "AI",
-      "search": "Szukaj w ustawieniach..."
+      "search": "Szukaj w ustawieniach...",
+      "extensions": "Rozszerzenia"
     },
     "heading": "Ustawienia",
     "billing": {
@@ -3314,7 +3319,8 @@
         "title": "Tytuł",
         "content": "Treść",
         "upload_an_image": "Prześlij obraz",
-        "select_image": "Wybierz Obraz"
+        "select_image": "Wybierz Obraz",
+        "create": "Utwórz"
       },
       "actions": {
         "heading": "Akcje",

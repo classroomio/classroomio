@@ -204,6 +204,23 @@ export async function listAssetsByOrg(orgId: string, options: ListAssetsOptions 
   }
 }
 
+export async function countAssetsByOrg(orgId: string, options: ListAssetsOptions = {}): Promise<number> {
+  try {
+    const conditions = buildAssetWhereConditions(orgId, options);
+    const [totalRow] = await db
+      .select({ count: count(schema.asset.id) })
+      .from(schema.asset)
+      .where(and(...conditions));
+
+    return Number(totalRow?.count ?? 0);
+  } catch (error) {
+    console.error('countAssetsByOrg error:', error);
+    throw new Error(
+      `Failed to count assets by organization: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function updateAsset(
   assetId: string,
   orgId: string,

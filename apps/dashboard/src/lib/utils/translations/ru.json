@@ -3058,7 +3058,11 @@
     "cohorts": "Когорты",
     "upgrade_now": "Обновите сейчас",
     "upgrade_students": "{studentCount} из {studentLimit} студентов",
-    "upgrade_left": "{count} осталось"
+    "upgrade_left": "{count} осталось",
+    "back_to_app": "Вернуться в приложение",
+    "create": "Создать",
+    "distribute": "Распространение",
+    "tools": "Инструменты"
   },
   "media_manager": {
     "page_title": "Медиаменеджер — ClassroomIO",
@@ -3215,7 +3219,8 @@
       "billing": "Оплата",
       "branding": "Брендинг",
       "ai": "ИИ",
-      "search": "Поиск настроек..."
+      "search": "Поиск настроек...",
+      "extensions": "Расширения"
     },
     "heading": "Настройки",
     "billing": {
@@ -3314,7 +3319,8 @@
         "title": "Название",
         "content": "Содержание",
         "upload_an_image": "Загрузите изображение",
-        "select_image": "Выберите изображение"
+        "select_image": "Выберите изображение",
+        "create": "Создать"
       },
       "actions": {
         "heading": "Действия",

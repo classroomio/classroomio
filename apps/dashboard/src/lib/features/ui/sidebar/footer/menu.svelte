@@ -8,6 +8,7 @@
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import LogOutIcon from '@lucide/svelte/icons/log-out';
   import MessageSquarePlusIcon from '@lucide/svelte/icons/message-square-plus';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { useSidebar } from '@cio/ui/base/sidebar';
@@ -67,7 +68,7 @@
 {/snippet}
 
 {#snippet themetoggle()}
-  <DropdownMenu.Label class="font-normal">
+  <DropdownMenu.Label class="ui:py-0 font-normal">
     <ThemeToggle />
   </DropdownMenu.Label>
 {/snippet}
@@ -106,6 +107,15 @@
 
         <DropdownMenu.Separator />
         {@render themetoggle()}
+
+        <DropdownMenu.Separator />
+
+        <DropdownMenu.Item class="m-0">
+          <a href={resolve(`${$basePath}/settings`, {})} class="flex w-full items-center gap-2">
+            <SettingsIcon size={16} />
+            <p class="text-sm">{$t('org_navigation.settings')}</p>
+          </a>
+        </DropdownMenu.Item>
 
         <DropdownMenu.Separator />
 

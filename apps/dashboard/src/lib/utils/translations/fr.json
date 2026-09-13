@@ -3058,7 +3058,11 @@
     "cohorts": "Cohortes",
     "upgrade_now": "Mettre à niveau maintenant",
     "upgrade_students": "{studentCount} sur {studentLimit} étudiants",
-    "upgrade_left": "Il reste {count}"
+    "upgrade_left": "Il reste {count}",
+    "back_to_app": "Retour à l'application",
+    "create": "Créer",
+    "distribute": "Distribuer",
+    "tools": "Outils"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -3215,7 +3219,8 @@
       "billing": "Facturation",
       "branding": "Image de marque",
       "ai": "IA",
-      "search": "Rechercher dans les paramètres..."
+      "search": "Rechercher dans les paramètres...",
+      "extensions": "Rallonges"
     },
     "heading": "Paramètres",
     "billing": {
@@ -3314,7 +3319,8 @@
         "title": "Titre",
         "content": "Contenu",
         "upload_an_image": "Télécharger une image",
-        "select_image": "Sélectionnez une image"
+        "select_image": "Sélectionnez une image",
+        "create": "Créer"
       },
       "actions": {
         "heading": "Actions",

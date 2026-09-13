@@ -3058,7 +3058,11 @@
     "cohorts": "Nhóm học tập",
     "upgrade_now": "Nâng cấp ngay bây giờ",
     "upgrade_students": "{studentCount} trong số {studentLimit} sinh viên",
-    "upgrade_left": "còn {count}"
+    "upgrade_left": "còn {count}",
+    "back_to_app": "Quay lại ứng dụng",
+    "create": "Tạo",
+    "distribute": "phân phối",
+    "tools": "Công cụ"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
@@ -3215,7 +3219,8 @@
       "billing": "Thanh toán",
       "branding": "Thương hiệu",
       "ai": "AI",
-      "search": "Tìm kiếm cài đặt..."
+      "search": "Tìm kiếm cài đặt...",
+      "extensions": "Tiện ích mở rộng"
     },
     "heading": "Cài đặt",
     "billing": {
@@ -3314,7 +3319,8 @@
         "title": "Tiêu đề",
         "content": "Nội dung",
         "upload_an_image": "Tải lên một hình ảnh",
-        "select_image": "Chọn hình ảnh"
+        "select_image": "Chọn hình ảnh",
+        "create": "Tạo"
       },
       "actions": {
         "heading": "Hành động",

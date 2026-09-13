@@ -32,18 +32,24 @@ Never describe behavior you haven't verified in the source code or UI.
 
 ## Settings navigation paths
 
-These are the exact sidebar paths in the admin dashboard:
+Settings is opened from the **account menu** in the sidebar footer, not from the org nav. Use these exact paths:
 
 - `Settings → Profile` — personal profile settings
-- `Settings → Organization` — org name, logo, theme, and links to Custom Domain and Teams sub-pages
-- `Settings → Organization → Custom Domain` — navigated to via "Edit domain" button inside Organization
-- `Settings → Organization → Teams` — navigated to via "Manage Team" button inside Organization
-- `Settings → Landing Page` — academy landing page editor
-- `Settings → Authentication` — signup rules, SSO, token auth; sub-tabs: General, SSO, Token Auth
-- `Settings → Authentication → General` — signup toggle, Internal Enrollment Only
+- `Settings → Notifications` — personal email notification preferences
+- `Settings → Branding` — org name, logo, and brand color
+- `Settings → Domains` — academy subdomain, custom domain, and favicon
+- `Settings → Teams` — invite and manage admins and tutors
+- `Settings → Customize LMS` — LMS feature toggles
 - `Settings → Billing` — plan and billing
-- `Settings → AI Credits` — token usage
 - `Settings → AI Tutor` — per-org AI tutor toggle
+- `Settings → AI Credits` — token usage
+- `Settings → Authentication` — signup rules, SSO, token auth; tabs: General, SSO, Token Auth
+- `Settings → Authentication → General` — signup toggle, Internal Enrollment Only
+- `Settings → Authentication → SSO` — enterprise SSO connections
+- `Settings → Authentication → Token Auth` — Token Auth signing secret
+- `Distribute → Landing Page` — academy landing page editor (org sidebar, not Settings)
+
+Do not write `Settings → Organization` or `Settings → Landing Page`. Those paths are gone.
 
 ## MDX format conventions
 
