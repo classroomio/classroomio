@@ -40,7 +40,7 @@ const MODEL_COST_MULTIPLIER: Record<string, number> = {
   'gpt-5.4-mini': 4,
   'claude-sonnet-4-6': 11,
   'claude-haiku-4-5-20251001': 1.5,
-  'kimi-k2.6': 4,
+  'kimi-k2.6': 1,
   // Non-LLM spend: billed as a flat charge via `recordFlatCostUnits`, so the
   // multiplier is never applied. Listed to keep this map a complete inventory.
   'supadata-youtube-captions': 1

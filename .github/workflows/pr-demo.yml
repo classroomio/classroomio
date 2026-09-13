@@ -161,6 +161,10 @@ jobs:
           bash .github/scripts/validate-pr-demo-spec.sh "$SPEC"
           echo "path=${SPEC}" >> "$GITHUB_OUTPUT"
 
+      - name: Prepare demo env files
+        if: steps.gate.outputs.run_demo == 'true'
+        run: bash .github/scripts/prepare-pr-demo-env.sh
+
       - name: Start Postgres and Redis
         if: steps.gate.outputs.run_demo == 'true'
         run: docker compose -f docker-compose.yaml up -d postgres redis
@@ -178,10 +182,6 @@ jobs:
           done
           echo "::error::Postgres did not become ready in time."
           exit 1
-
-      - name: Prepare demo env files
-        if: steps.gate.outputs.run_demo == 'true'
-        run: bash .github/scripts/prepare-pr-demo-env.sh
 
       - name: Build workspace for db seed
         if: steps.gate.outputs.run_demo == 'true'
