@@ -1,6 +1,7 @@
 import Action from './page-action.svelte';
 import Body from './page-body.svelte';
 import BodyHeader from './page-body-header.svelte';
+import FloatingBar from './page-floating-bar.svelte';
 import Header from './page-header.svelte';
 import HeaderContent from './page-header-content.svelte';
 import Root from './page.svelte';
@@ -17,6 +18,7 @@ export {
   Subtitle,
   Body,
   BodyHeader,
+  FloatingBar,
   SettingsActions,
   //
   Root as Page,
@@ -27,5 +29,6 @@ export {
   Subtitle as PageSubtitle,
   Body as PageBody,
   BodyHeader as PageBodyHeader,
+  FloatingBar as PageFloatingBar,
   SettingsActions as PageSettingsActions
 };

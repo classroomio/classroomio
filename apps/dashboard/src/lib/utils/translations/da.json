@@ -5401,6 +5401,15 @@
     "more_formats": "Flere eksportformater",
     "pdf_too_many_rows": "For mange rækker — brug CSV eller Excel over {limit}",
     "nothing_to_export": "Der er intet at eksportere",
-    "failed": "Eksport mislykkedes"
+    "failed": "Eksport mislykkedes",
+    "label": "Eksporter",
+    "copy": "Kopiér",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Kopieret til udklipsholder",
+    "copy_failed": "Kunne ikke kopiere til udklipsholder"
   }
 }

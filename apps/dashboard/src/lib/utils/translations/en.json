@@ -5388,6 +5388,15 @@
     "more_formats": "More export formats",
     "pdf_too_many_rows": "Too many rows — use CSV or Excel above {limit}",
     "nothing_to_export": "There is nothing to export",
-    "failed": "Export failed"
+    "failed": "Export failed",
+    "label": "Export",
+    "copy": "Copy",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Copied to clipboard",
+    "copy_failed": "Could not copy to clipboard"
   }
 }

@@ -5401,6 +5401,15 @@
     "more_formats": "Другие форматы экспорта",
     "pdf_too_many_rows": "Слишком много строк — используйте CSV или Excel, если количество строк превышает {limit}",
     "nothing_to_export": "Экспортировать нечего",
-    "failed": "Экспорт не удался"
+    "failed": "Экспорт не удался",
+    "label": "Экспорт",
+    "copy": "Копировать",
+    "format_csv": "CSV-файл",
+    "format_excel": "Эксель",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Скопировано в буфер обмена",
+    "copy_failed": "Не удалось скопировать в буфер обмена"
   }
 }

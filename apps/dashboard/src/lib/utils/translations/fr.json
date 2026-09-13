@@ -5401,6 +5401,15 @@
     "more_formats": "Plus de formats d'exportation",
     "pdf_too_many_rows": "Trop de lignes — utilisez un fichier CSV ou Excel au-dessus de {limit}",
     "nothing_to_export": "Il n'y a rien à exporter",
-    "failed": "L'exportation a échoué."
+    "failed": "L'exportation a échoué.",
+    "label": "Exporter",
+    "copy": "Copier",
+    "format_csv": "CSV",
+    "format_excel": "Exceller",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Copié dans le presse-papiers",
+    "copy_failed": "Impossible de copier dans le presse-papiers"
   }
 }

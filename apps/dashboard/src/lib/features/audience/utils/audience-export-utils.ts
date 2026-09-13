@@ -1,4 +1,5 @@
 import type { ExportDocument } from '@cio/utils/export';
+import { t } from '$lib/utils/functions/translations';
 import type { AudienceExportRows } from '$features/org/utils/types';
 
 type AudienceExportRow = AudienceExportRows[number];
@@ -49,5 +50,25 @@ export function buildAudienceExportDocument(
       { key: 'joined', header: headers.joined, value: (row) => row.createdAt }
     ],
     rows
+  };
+}
+
+/**
+ * The translated header set, in one place: the page header's export and the
+ * selection bar's both build the same document, and a header that drifted
+ * between them would produce two different files from one table.
+ */
+export function audienceExportHeaders(): AudienceExportHeaders {
+  return {
+    name: t.get('audience.name'),
+    email: t.get('audience.email'),
+    memberStatus: t.get('audience.filter.status'),
+    inviteStatus: t.get('audience.status'),
+    joined: t.get('audience.date_joined'),
+    lastLogin: t.get('audience.filter.last_login'),
+    lastActivity: t.get('audience.filter.last_activity'),
+    enrolled: t.get('audience.filter.enrollment'),
+    completed: t.get('audience.filter.completed'),
+    progress: t.get('audience.progress')
   };
 }

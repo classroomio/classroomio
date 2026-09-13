@@ -5401,6 +5401,15 @@
     "more_formats": "Thêm định dạng xuất",
     "pdf_too_many_rows": "Quá nhiều hàng — hãy sử dụng CSV hoặc Excel nếu số lượng lớn hơn {limit}",
     "nothing_to_export": "Không có gì để xuất",
-    "failed": "Xuất thất bại"
+    "failed": "Xuất thất bại",
+    "label": "Xuất khẩu",
+    "copy": "Sao chép",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Đã sao chép vào bảng nhớ tạm",
+    "copy_failed": "Không thể sao chép vào bảng nhớ tạm"
   }
 }

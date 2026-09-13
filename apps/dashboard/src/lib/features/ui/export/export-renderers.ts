@@ -5,6 +5,9 @@ import { XLSX_MIME_TYPE, buildXlsx } from '@cio/utils/export/xlsx';
 
 export type ExportFormat = 'csv' | 'xlsx' | 'pdf' | 'html';
 
+/** The formats that are text, so they can go to the clipboard as well as to a file. */
+export type CopyFormat = 'csv' | 'json' | 'html';
+
 /**
  * The object URL is revoked after the click, so a large export does not pin its
  * bytes for the life of the tab.
@@ -25,12 +28,29 @@ function escapeHtml(value: string | number): string {
   return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-export function downloadCsv<Row>(doc: ExportDocument<Row>): void {
+/**
+ * Serializers are separate from the download helpers so the clipboard gets the
+ * same bytes the file would, rather than a second rendering that can drift.
+ */
+export function toCsv<Row>(doc: ExportDocument<Row>): string {
   const { head, body } = toExportMatrix(doc);
+
   // Positional, not keyed by header: two columns sharing a header would collapse.
-  const csv = Papa.unparse({ fields: head, data: body });
+  return Papa.unparse({ fields: head, data: body });
+}
+
+/** One object per row, keyed by column. Headers repeat per row, which is the
+ * point: JSON is consumed by a script, not read down a column. */
+export function toJson<Row>(doc: ExportDocument<Row>): string {
+  const { head, body } = toExportMatrix(doc);
+  const rows = body.map((cells) => Object.fromEntries(cells.map((cell, index) => [head[index], cell])));
+
+  return JSON.stringify(rows, null, 2);
+}
+
+export function downloadCsv<Row>(doc: ExportDocument<Row>): void {
   // BOM so Excel on Windows reads it as UTF-8.
-  const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([`﻿${toCsv(doc)}`], { type: 'text/csv;charset=utf-8;' });
 
   downloadBlob(blob, `${sanitizeExportFilename(doc.filename)}.csv`);
 }
@@ -68,10 +88,10 @@ export async function downloadPdf<Row>(doc: ExportDocument<Row>): Promise<void> 
 }
 
 /** Self-contained HTML — no external stylesheet, so it renders the same wherever it lands. */
-export function downloadHtml<Row>(doc: ExportDocument<Row>): void {
+export function toHtml<Row>(doc: ExportDocument<Row>): string {
   const { head, body } = toExportMatrix(doc);
 
-  const markup = `<!doctype html>
+  return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -97,11 +117,21 @@ ${body.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).joi
 </table>
 </body>
 </html>`;
+}
 
+export function downloadHtml<Row>(doc: ExportDocument<Row>): void {
   downloadBlob(
-    new Blob([markup], { type: 'text/html;charset=utf-8;' }),
+    new Blob([toHtml(doc)], { type: 'text/html;charset=utf-8;' }),
     `${sanitizeExportFilename(doc.filename)}.html`
   );
+}
+
+/** Clipboard writes need a user gesture and a secure context, so the caller
+ * reports failure rather than this pretending it worked. */
+export async function copyExport<Row>(doc: ExportDocument<Row>, format: CopyFormat): Promise<void> {
+  const serialize = { csv: toCsv, json: toJson, html: toHtml }[format];
+
+  await navigator.clipboard.writeText(serialize(doc));
 }
 
 export async function downloadExport<Row>(doc: ExportDocument<Row>, format: ExportFormat): Promise<void> {

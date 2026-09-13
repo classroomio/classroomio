@@ -5401,6 +5401,15 @@
     "more_formats": "Más formatos de exportación",
     "pdf_too_many_rows": "Demasiadas filas: utilice CSV o Excel (superior a {limit})",
     "nothing_to_export": "No hay nada que exportar",
-    "failed": "Error al exportar"
+    "failed": "Error al exportar",
+    "label": "Exportar",
+    "copy": "Copiar",
+    "format_csv": "CSV",
+    "format_excel": "excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Copiado al portapapeles",
+    "copy_failed": "No se pudo copiar al portapapeles"
   }
 }

@@ -5401,6 +5401,15 @@
     "more_formats": "अन्य निर्यात प्रारूप",
     "pdf_too_many_rows": "बहुत अधिक पंक्तियाँ - {limit} से अधिक CSV या Excel का उपयोग करें",
     "nothing_to_export": "निर्यात करने के लिए कुछ भी नहीं है",
-    "failed": "निर्यात विफल"
+    "failed": "निर्यात विफल",
+    "label": "निर्यात करें",
+    "copy": "प्रतिलिपि",
+    "format_csv": "सीएसवी",
+    "format_excel": "एक्सेल",
+    "format_pdf": "पीडीएफ",
+    "format_html": "एचटीएमएल",
+    "format_json": "JSON",
+    "copied": "क्लिपबोर्ड पर कॉपी किया गया",
+    "copy_failed": "क्लिपबोर्ड पर कॉपी नहीं किया जा सका"
   }
 }

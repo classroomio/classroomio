@@ -5401,6 +5401,15 @@
     "more_formats": "Weitere Exportformate",
     "pdf_too_many_rows": "Zu viele Zeilen – verwenden Sie CSV oder Excel oberhalb von {limit}",
     "nothing_to_export": "Es gibt nichts zu exportieren",
-    "failed": "Export fehlgeschlagen"
+    "failed": "Export fehlgeschlagen",
+    "label": "Exportieren",
+    "copy": "Kopieren",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "In die Zwischenablage kopiert",
+    "copy_failed": "Konnte nicht in die Zwischenablage kopieren"
   }
 }
