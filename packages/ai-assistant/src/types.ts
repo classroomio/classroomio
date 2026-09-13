@@ -212,10 +212,7 @@ export const MAX_AGENT_DOCUMENT_SIZE = 5 * 1024 * 1024;
 /** Redis TTL for uploaded document text (1 hour) */
 export const DOCUMENT_REDIS_TTL = 3600;
 
-/**
- * Maximum steps per streamText() round. Each step re-bills the full system +
- * tools + history prefix, so a lower cap directly bounds per-turn token cost.
- */
+/** Maximum steps per streamText() round; each step re-bills the full prompt. */
 export const MAX_STEPS_PER_ROUND = 8;
 
 /** Supported MIME types for document upload */

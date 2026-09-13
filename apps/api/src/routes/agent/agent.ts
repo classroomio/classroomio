@@ -573,11 +573,7 @@ const agentCoreRouter = new Hono()
           }
         : systemPrompt;
 
-      // Moonshot caches prompt prefixes automatically, but hit rate depends on
-      // sticky cluster routing: requests sharing a `prompt_cache_key` are
-      // steered to the same cluster so its KV cache stays warm across turns of
-      // the same conversation. The SDK spreads providerOptions into the request
-      // body, so `moonshotai.prompt_cache_key` reaches the API untouched.
+      // Sticky cluster routing keeps Moonshot's automatic prefix cache warm across turns.
       const moonshotProviderOptions =
         isMoonshot && conversationId ? { moonshotai: { prompt_cache_key: conversationId } } : undefined;
 

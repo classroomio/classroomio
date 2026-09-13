@@ -40,9 +40,6 @@ const MODEL_COST_MULTIPLIER: Record<string, number> = {
   'gpt-5.4-mini': 4,
   'claude-sonnet-4-6': 11,
   'claude-haiku-4-5-20251001': 1.5,
-  // kimi-k2.6 billed at the 1× baseline: Moonshot's auto cache-hit pricing
-  // ($0.16/M input on a hit vs $0.95/M miss) already discounts the dominant
-  // input side of agent workloads, so no blended surcharge is needed.
   'kimi-k2.6': 1,
   // Non-LLM spend: billed as a flat charge via `recordFlatCostUnits`, so the
   // multiplier is never applied. Listed to keep this map a complete inventory.

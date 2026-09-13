@@ -1134,12 +1134,7 @@ export function buildAgentTools(
 export const RUN_ONLY_TOOL_NAMES = new Set<string>();
 
 export interface FilterToolsForChatModeOptions {
-  /**
-   * Conversation-stable signals only. NEVER derive this from per-message
-   * content: Moonshot and Anthropic cache the tools+system prefix byte-for-byte,
-   * so the tool set must be identical across turns of a conversation or every
-   * subsequent turn reprocesses the whole prefix at cache-miss price.
-   */
+  /** Conversation-stable signals only, so the tools block stays cache-friendly. */
   activeTemplateId?: string;
   hasDocuments?: boolean;
 }
