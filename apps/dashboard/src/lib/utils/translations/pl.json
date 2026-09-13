@@ -3215,7 +3215,11 @@
     "upgrade_label": "Ulepsz",
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} z {studentLimit} uczniów",
-    "upgrade_left": "Pozostało {count}"
+    "upgrade_left": "Pozostało {count}",
+    "back_to_app": "Powrót do aplikacji",
+    "create": "Utwórz",
+    "distribute": "Rozpowszechniaj",
+    "tools": "Narzędzia"
   },
   "media_manager": {
     "page_title": "Menedżer mediów - ClassroomIO",
@@ -3363,6 +3367,18 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Obszar roboczy",
+      "personal": "Osobiste",
+      "product": "Produkt",
+      "connections": "Połączenia",
+      "security": "Bezpieczeństwo",
+      "billing": "Rozliczenia",
+      "branding": "Marka",
+      "ai": "AI",
+      "search": "Szukaj w ustawieniach...",
+      "extensions": "Rozszerzenia"
+    },
     "heading": "Ustawienia",
     "billing": {
       "sub_title": "Szczegóły rozliczenia",
@@ -3460,7 +3476,8 @@
         "title": "Tytuł",
         "content": "Treść",
         "upload_an_image": "Prześlij obraz",
-        "select_image": "Wybierz Obraz"
+        "select_image": "Wybierz Obraz",
+        "create": "Utwórz"
       },
       "actions": {
         "heading": "Akcje",

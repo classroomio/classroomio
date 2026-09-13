@@ -94,9 +94,9 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Field.Group class="w-full max-w-md! px-2">
-  <Field.Set>
-    <Field.Group>
+<Field.Group class="w-full max-w-md! gap-4! px-2">
+  <Field.Set class="gap-4!">
+    <Field.Group class="gap-3!">
       <Field.Field>
         <Field.Label>{$t('settings.organization.organization_profile.organization_name')}</Field.Label>
         <Input bind:value={$currentOrg.name} oninput={() => (hasUnsavedChanges = true)} class="w-full lg:w-60" />
@@ -116,7 +116,7 @@
     </Field.Group>
   </Field.Set>
 
-  <Field.Separator />
+  <Field.Separator class="my-0 h-3!" />
 
   <Field.Set>
     <Field.Legend>{$t('settings.organization.organization_profile.theme.heading')}</Field.Legend>

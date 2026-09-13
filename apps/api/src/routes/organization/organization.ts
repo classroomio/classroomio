@@ -47,6 +47,7 @@ import {
   getOrgSetupData,
   getOrgTeam,
   getOrganizationCourses,
+  getOrganizationNavCounts,
   getOrganizationsWithFilters,
   getPublicCourses,
   getRecommendedCourses,
@@ -612,6 +613,40 @@ export const organizationRouter = new Hono()
       }
     }
   )
+  /**
+   * GET /organization/nav-counts
+   * Lightweight unfiltered totals for org sidebar items (courses, cohorts, media, tags)
+   */
+  .get('/nav-counts', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgId = c.get('orgId');
+      const userRole = c.get('userRole');
+
+      if (!orgId) {
+        return c.json(
+          {
+            success: false,
+            error: 'Organization context not available',
+            code: 'ORG_CONTEXT_MISSING'
+          },
+          500
+        );
+      }
+
+      const data = await getOrganizationNavCounts(orgId, user.id, userRole ?? ROLE.ADMIN);
+
+      return c.json(
+        {
+          success: true,
+          data
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch organization nav counts');
+    }
+  })
   /**
    * GET /organization/courses
    * Gets courses for an organization with role-based filtering (used in dashboard)

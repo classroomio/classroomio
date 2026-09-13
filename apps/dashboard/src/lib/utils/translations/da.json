@@ -3215,7 +3215,11 @@
     "upgrade_label": "Opgrader",
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} af {studentLimit} elever",
-    "upgrade_left": "{count} tilbage"
+    "upgrade_left": "{count} tilbage",
+    "back_to_app": "Tilbage til app",
+    "create": "Opret",
+    "distribute": "Fordel",
+    "tools": "Værktøjer"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -3363,6 +3367,18 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Arbejdsområde",
+      "personal": "Personlig",
+      "product": "Produkt",
+      "connections": "Forbindelser",
+      "security": "Sikkerhed",
+      "billing": "Fakturering",
+      "branding": "Branding",
+      "ai": "AI",
+      "search": "Søg i indstillinger...",
+      "extensions": "Udvidelser"
+    },
     "heading": "Indstillinger",
     "billing": {
       "sub_title": "Faktureringsoplysninger",
@@ -3460,7 +3476,8 @@
         "title": "Titel",
         "content": "Indhold",
         "upload_an_image": "Upload et billede",
-        "select_image": "Vælg Billede"
+        "select_image": "Vælg Billede",
+        "create": "Opret"
       },
       "actions": {
         "heading": "Handlinger",

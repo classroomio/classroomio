@@ -2,46 +2,39 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
-
   import { currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
+  import type { Snippet } from 'svelte';
 
-  const orgSettingsTabs = [
-    { value: 'general', href: '/settings/org', label: 'settings.auth.tabs.general' },
-    {
-      value: 'domains',
-      href: '/settings/domains',
-      label: 'settings.organization.organization_profile.custom_domain.heading'
-    },
-    { value: 'teams', href: '/settings/teams', label: 'settings.organization.organization_profile.team.heading' },
-    { value: 'customize-lms', href: '/settings/customize-lms', label: 'settings.tabs.customize_lms_tab' }
+  let { children }: { children?: Snippet } = $props();
+
+  const tabs = [
+    { value: 'mcp', href: '/automation/mcp', label: 'automation.tabs.mcp' },
+    { value: 'api', href: '/automation/api', label: 'automation.tabs.api' },
+    { value: 'zapier', href: '/automation/zapier', label: 'automation.tabs.zapier' }
   ] as const;
 
   function getCurrentTab(pathname: string) {
-    if (pathname.endsWith('/settings/org')) return 'general';
-    if (pathname.endsWith('/settings/customize-lms')) return 'customize-lms';
-    if (pathname.endsWith('/settings/domains')) return 'domains';
-    if (pathname.endsWith('/settings/teams')) return 'teams';
-
-    return null;
+    if (pathname.endsWith('/automation/mcp')) return 'mcp';
+    if (pathname.endsWith('/automation/api')) return 'api';
+    if (pathname.endsWith('/automation/zapier')) return 'zapier';
+    return 'mcp';
   }
 
   let currentTab = $derived(getCurrentTab(page.url.pathname));
 
   function handleTabChange(value: string) {
-    const nextTab = orgSettingsTabs.find((tab) => tab.value === value);
-
+    const nextTab = tabs.find((tab) => tab.value === value);
     if (!nextTab || value === currentTab) return;
-
     goto($currentOrgPath + nextTab.href);
   }
 </script>
 
-{#if currentTab}
+<div class="mx-auto mt-4 w-full max-w-4xl">
   <div class="mb-2 px-2">
     <UnderlineTabs.Root value={currentTab} onValueChange={(event) => handleTabChange(event)}>
       <UnderlineTabs.List class="flex flex-wrap gap-2 border-b">
-        {#each orgSettingsTabs as tab}
+        {#each tabs as tab}
           <UnderlineTabs.Trigger value={tab.value}>
             {$t(tab.label)}
           </UnderlineTabs.Trigger>
@@ -49,4 +42,5 @@
       </UnderlineTabs.List>
     </UnderlineTabs.Root>
   </div>
-{/if}
+  {@render children?.()}
+</div>

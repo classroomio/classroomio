@@ -3215,7 +3215,11 @@
     "upgrade_label": "Atualizar",
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} de {studentLimit} alunos",
-    "upgrade_left": "{count} restantes"
+    "upgrade_left": "{count} restantes",
+    "back_to_app": "Voltar ao aplicativo",
+    "create": "Criar",
+    "distribute": "Distribuir",
+    "tools": "Ferramentas"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -3363,6 +3367,18 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Espaço de trabalho",
+      "personal": "Pessoal",
+      "product": "Produto",
+      "connections": "Conexões",
+      "security": "Segurança",
+      "billing": "Faturamento",
+      "branding": "Marca",
+      "ai": "IA",
+      "search": "Pesquisar configurações...",
+      "extensions": "Extensões"
+    },
     "heading": "Configurações",
     "billing": {
       "sub_title": "Detalhes de cobrança",
@@ -3460,7 +3476,8 @@
         "title": "Título",
         "content": "Conteúdo",
         "upload_an_image": "Carregar uma imagem",
-        "select_image": "Selecione a imagem"
+        "select_image": "Selecione a imagem",
+        "create": "Criar"
       },
       "actions": {
         "heading": "Ações",

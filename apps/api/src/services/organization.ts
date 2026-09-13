@@ -31,6 +31,7 @@ import {
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
 import {
+  countOrgCourses,
   countPublishedCoursesBySiteName,
   getCoursesById,
   getCoursesBySiteNameForSetup,
@@ -42,7 +43,9 @@ import {
   getPublishedCoursesBySiteName,
   reorderOrgCourses as reorderOrgCoursesQuery
 } from '@cio/db/queries/course';
-import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
+import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
+import { countAssetsByOrg } from '@cio/db/queries/assets';
+import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
@@ -488,6 +491,27 @@ export async function getOrganizationCourses(
     if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+export async function getOrganizationNavCounts(orgId: string, userId: string, userRole: number) {
+  try {
+    const courseProfileId = userRole === ROLE.ADMIN ? undefined : userId;
+    const [courses, cohorts, media, tags] = await Promise.all([
+      countOrgCourses({ orgId, profileId: courseProfileId }),
+      countCohortsByOrgForProfile(orgId, userId),
+      countAssetsByOrg(orgId),
+      countTagsByOrg(orgId)
+    ]);
+
+    return { courses, cohorts, media, tags };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch organization nav counts',
       ErrorCodes.COURSES_FETCH_FAILED,
       500
     );

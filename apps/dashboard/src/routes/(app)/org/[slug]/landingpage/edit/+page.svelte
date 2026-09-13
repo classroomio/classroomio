@@ -127,7 +127,7 @@
   function handleClose() {
     const queryTheme = page.url.searchParams.get('theme');
     const querySuffix = isLandingPageTheme(queryTheme) ? `?theme=${encodeURIComponent(queryTheme)}` : '';
-    goto(resolve(`${$currentOrgPath}/settings/landingpage${querySuffix}`, {}));
+    goto(resolve(`${$currentOrgPath}/landingpage${querySuffix}`, {}));
   }
 </script>
 
