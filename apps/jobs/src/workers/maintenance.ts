@@ -6,6 +6,7 @@ import { runAnalyticsRollupDaily } from '@cio/analytics';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
 import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
+import { reconcileMemberLastActive } from '@cio/db/queries/organization';
 import { capAutoLessonVersionsPerLanguage, pruneAutoLessonVersions } from '@cio/db/queries/lesson/version';
 import {
   JOB_NAMES,
@@ -16,6 +17,7 @@ import {
   ZDeadLetterCleanupPayload,
   ZLessonVersionRetentionPayload,
   ZMediaJobReapPayload,
+  ZMemberActivityReconcilePayload,
   ZRetentionCompactPayload,
   createRedisConnection
 } from '@cio/jobs';
@@ -108,6 +110,13 @@ const worker = new Worker(
       return { demoted };
     }
 
+    if (job.name === JOB_NAMES.maintenance.memberActivityReconcile) {
+      const data = ZMemberActivityReconcilePayload.parse(job.data ?? {});
+      const updated = await reconcileMemberLastActive(data.lookbackDays);
+      log.info('member-activity-reconcile-done', { updated, lookbackDays: data.lookbackDays });
+      return { updated };
+    }
+
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {
       const data = ZAnalyticsDailyRollupPayload.parse(job.data ?? {});
       const result = await runAnalyticsRollupDaily({ daysAgo: data.daysAgo });
@@ -150,6 +159,16 @@ async function registerSchedulers(): Promise<void> {
     );
     log.info('analytics-rollup-scheduler-registered', {
       name: JOB_NAMES.maintenance.analyticsDailyRollup,
+      everyMs: 86_400_000
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'member-activity-reconcile-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.memberActivityReconcile, data: {} }
+    );
+    log.info('member-activity-reconcile-scheduler-registered', {
+      name: JOB_NAMES.maintenance.memberActivityReconcile,
       everyMs: 86_400_000
     });
 

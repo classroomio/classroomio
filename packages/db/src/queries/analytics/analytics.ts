@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -126,7 +126,7 @@ export async function getLastSeenForUserIds(userIds: string[]): Promise<Map<stri
  * @param userId User ID (profile ID)
  * @returns Array of exercise stats with scores and completion status
  */
-export async function getUserExercisesStats(courseId: string, userId: string) {
+export async function getUserExercisesStats(courseId: string, userId: string, options: { failOnError?: boolean } = {}) {
   try {
     const exercises = await db
       .select({
@@ -179,7 +179,9 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
       return [];
     }
 
-    // Get submissions for these exercises by this user
+    // Get submissions for these exercises by this user. Most recent wins—order
+    // by created_at, tie-broken by id, so submissions.find(...) below returns a
+    // deterministic row for a student with multiple submissions per exercise.
     const submissions = await db
       .select({
         id: schema.submission.id,
@@ -190,7 +192,8 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
       .from(schema.submission)
       .where(
         and(inArray(schema.submission.exerciseId, exerciseIds), eq(schema.submission.submittedBy, groupMember[0].id))
-      );
+      )
+      .orderBy(desc(schema.submission.createdAt), desc(schema.submission.id));
 
     // Build exercise stats
     const exerciseStats = exercises.map((exercise) => {
@@ -213,6 +216,9 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
     return exerciseStats;
   } catch (error) {
     console.error('getUserExerciseStats error:', error);
+    if (options.failOnError) {
+      throw new Error('Failed to fetch user exercise stats');
+    }
     return [];
   }
 }
@@ -295,7 +301,11 @@ export async function getLessonsWithCompletion(courseId: string, userId: string)
  * @param profileId Profile ID
  * @returns Course progress data
  */
-export async function getProfileCourseProgress(courseId: string, profileId: string) {
+export async function getProfileCourseProgress(
+  courseId: string,
+  profileId: string,
+  options: { failOnError?: boolean } = {}
+) {
   try {
     // Get course group
     const course = await db
@@ -405,6 +415,9 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
     };
   } catch (error) {
     console.error('getProfileCourseProgress error:', error);
+    if (options.failOnError) {
+      throw new Error('Failed to fetch profile course progress');
+    }
     return {
       lessons_count: 0,
       lessons_completed: 0,
@@ -434,10 +447,76 @@ export async function insertPageEvents(events: PageEventInsert[]) {
       .insert(schema.analyticsPageEvent)
       .values(events)
       .returning({ id: schema.analyticsPageEvent.id });
+
+    await bumpMemberLastActiveFromEvents(events);
+
     return inserted.length;
   } catch (error) {
     console.error('insertPageEvents error:', error);
     throw new Error('Failed to insert page events');
+  }
+}
+
+export type MemberActivity = { orgId: string; userId: string; occurredAt: string };
+
+/** Latest activity per (org, user), so ingest writes one row per member. */
+export function collapseLatestActivityByMember(events: PageEventInsert[]): MemberActivity[] {
+  const latestByMember = new Map<string, MemberActivity & { at: number }>();
+
+  for (const event of events) {
+    const { orgId, userId, occurredAt } = event;
+    if (!orgId || !userId || !occurredAt) continue;
+
+    // Instants, not strings: `/track` accepts any ISO string, so offsets mix.
+    const at = new Date(occurredAt).getTime();
+    if (Number.isNaN(at)) continue;
+
+    const key = `${orgId}:${userId}`;
+    const seen = latestByMember.get(key);
+
+    if (!seen || at > seen.at) {
+      latestByMember.set(key, { orgId, userId, occurredAt, at });
+    }
+  }
+
+  return [...latestByMember.values()].map(({ orgId, userId, occurredAt }) => ({ orgId, userId, occurredAt }));
+}
+
+/**
+ * Keeps `last_active_at` current from the events just ingested. Denormalized
+ * because filtering a 20k-learner roster against the raw event table does not
+ * hold up.
+ *
+ * Only moves forward, so replayed batches cannot walk activity backwards.
+ * Best-effort — the nightly reconcile repairs any gap.
+ */
+async function bumpMemberLastActiveFromEvents(events: PageEventInsert[]): Promise<void> {
+  const activities = collapseLatestActivityByMember(events);
+
+  if (activities.length === 0) {
+    return;
+  }
+
+  try {
+    await Promise.all(
+      activities.map((activity) =>
+        db
+          .update(schema.organizationmember)
+          .set({ lastActiveAt: activity.occurredAt })
+          .where(
+            and(
+              eq(schema.organizationmember.organizationId, activity.orgId),
+              eq(schema.organizationmember.profileId, activity.userId),
+              or(
+                isNull(schema.organizationmember.lastActiveAt),
+                lt(schema.organizationmember.lastActiveAt, activity.occurredAt)
+              )
+            )
+          )
+      )
+    );
+  } catch (error) {
+    console.error('bumpMemberLastActiveFromEvents error:', error);
   }
 }
 
