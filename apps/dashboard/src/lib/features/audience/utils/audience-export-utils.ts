@@ -1,8 +1,6 @@
 import type { ExportDocument } from '@cio/utils/export';
 import { t } from '$lib/utils/functions/translations';
-import type { AudienceExportRows } from '$features/org/utils/types';
-
-type AudienceExportRow = AudienceExportRows[number];
+import type { AudienceExportRow, AudienceExportRows } from './types';
 
 type AudienceExportHeaders = {
   name: string;

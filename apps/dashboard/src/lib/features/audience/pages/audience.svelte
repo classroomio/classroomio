@@ -21,6 +21,7 @@
   import AudienceDeleteConfirmation from '$features/audience/components/audience-delete-confirmation.svelte';
   import AudienceTableToolbar from '$features/audience/components/audience-table-toolbar.svelte';
   import { audienceExportHeaders, buildAudienceExportDocument } from '$features/audience/utils/audience-export-utils';
+  import type { AudienceSelectionControls } from '$features/audience/utils/types';
   import AudienceTable from '$features/audience/components/audience-table.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import {
