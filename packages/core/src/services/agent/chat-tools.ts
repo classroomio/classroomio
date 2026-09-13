@@ -1133,6 +1133,28 @@ export function buildAgentTools(
  */
 export const RUN_ONLY_TOOL_NAMES = new Set<string>();
 
-export function filterToolsForChatMode<T extends Record<string, unknown>>(tools: T): T {
-  return tools;
+export interface FilterToolsForChatModeOptions {
+  /** Conversation-stable signals only, so the tools block stays cache-friendly. */
+  activeTemplateId?: string;
+  hasDocuments?: boolean;
+}
+
+type SituationalToolFilter = (options: FilterToolsForChatModeOptions) => boolean;
+
+const SITUATIONAL_TOOLS: Record<string, SituationalToolFilter> = {
+  ask_template_questions: (options) => !!options.activeTemplateId,
+  attach_document_to_lesson: (options) => !!options.hasDocuments
+};
+
+export function filterToolsForChatMode<T extends Record<string, unknown>>(
+  tools: T,
+  options: FilterToolsForChatModeOptions = {}
+): T {
+  const filteredEntries = Object.entries(tools).filter(([toolName]) => {
+    const shouldInclude = SITUATIONAL_TOOLS[toolName];
+
+    return shouldInclude ? shouldInclude(options) : true;
+  });
+
+  return Object.fromEntries(filteredEntries) as T;
 }
