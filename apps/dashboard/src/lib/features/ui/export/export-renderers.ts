@@ -39,11 +39,11 @@ export function toCsv<Row>(doc: ExportDocument<Row>): string {
   return Papa.unparse({ fields: head, data: body });
 }
 
-/** One object per row, keyed by column. Headers repeat per row, which is the
- * point: JSON is consumed by a script, not read down a column. */
+/** One object per row, keyed by each column's stable key so the JSON shape does
+ * not depend on the active locale and duplicate labels cannot collapse. */
 export function toJson<Row>(doc: ExportDocument<Row>): string {
-  const { head, body } = toExportMatrix(doc);
-  const rows = body.map((cells) => Object.fromEntries(cells.map((cell, index) => [head[index], cell])));
+  const { body } = toExportMatrix(doc);
+  const rows = body.map((cells) => Object.fromEntries(cells.map((cell, index) => [doc.columns[index].key, cell])));
 
   return JSON.stringify(rows, null, 2);
 }
