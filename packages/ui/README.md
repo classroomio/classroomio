@@ -182,6 +182,32 @@ Unified video player component supporting HTML5 video (direct MP4 and HLS via `h
 | `options.onPlayerReady`   | Callback invoked when the underlying player SDK is initialized                                                     |
 | `options.vimeoRetryLabel` | Optional label override for the Vimeo playback retry button                                                        |
 
+### Combo button (`src/custom/combo-button/`)
+
+A split button: a labelled primary action joined to a chevron that opens a menu of alternatives. Import as `import { ComboButton, type ComboButtonItem } from '@cio/ui/custom/combo-button'`.
+
+Use it when there is a genuine default worth one click, and **label the primary half with the action it performs** — `Export as CSV`, not `Export`. An unlabelled primary silently picks one of the alternatives for the user. When no option dominates, use a plain `Button` with a `DropdownMenu` instead.
+
+Each item owns its own handler, so the component carries no behaviour: the consumer passes `onSelect` for the primary and one per item. Copy comes from props, so dashboard callers supply translated strings.
+
+| Prop        | Description                                                        |
+| ----------- | ------------------------------------------------------------------ |
+| `label`     | Primary button label; name the action, not a category              |
+| `onSelect`  | Primary button handler; may return a Promise                       |
+| `items`     | Menu entries (`ComboButtonItem[]`), each with its own `onSelect`   |
+| `menuLabel` | Accessible name for the chevron, which has no visible text         |
+| `icon`      | Optional lucide icon for the primary half                          |
+| `variant`   | Button variant applied to both halves (default `outline`)          |
+| `size`      | `sm` \| `default` \| `lg` (default `sm`)                           |
+| `disabled`  | Disables both halves                                               |
+| `loading`   | Spinner on the primary half; also disables the menu                |
+| `align`     | Menu alignment (default `end`)                                     |
+| `testId`    | Primary `data-testid`; the chevron gets `${testId}-menu`           |
+
+`ComboButtonItem` takes `id`, `label`, and `onSelect`, plus optional `icon`, `description` (rendered muted beneath the label — use it to say *why* an item is disabled rather than hiding it), `disabled` and `destructive`.
+
+See `Molecules/ComboButton` in Storybook.
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

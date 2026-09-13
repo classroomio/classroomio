@@ -301,7 +301,8 @@
     },
     "discard": "Discard",
     "save_changes": "Save changes",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "scroll_to_top": "Scroll to top"
   },
   "compliance": {
     "title": "Compliance",
@@ -2101,7 +2102,7 @@
       "deadline_label": "Certification deadline",
       "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
       "deadline_required": "Compliance courses require a completion deadline before they can be published.",
-      "deadline_required_enroll": "Compliance courses require a certificate deadline before learners can be enrolled.",
+      "deadline_required_enroll": "Compliance courses require a certificate deadline before students can be enrolled.",
       "deadline_invalid": "The course completion deadline is invalid.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
@@ -3343,7 +3344,7 @@
         "you": "You",
         "pending": "Pending",
         "name": "Name",
-        "learner": "Learner",
+        "learner": "Student",
         "progress": "Progress",
         "stage": "Stage",
         "last_login_at": "Last Login At",
@@ -3800,7 +3801,7 @@
         "published": "Published",
         "unpublished": "Unpublished",
         "certificate_deadline_required": "Set Certificate Deadline First",
-        "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the course settings before publishing.",
+        "certificate_deadline_required_description": "Compliance courses require a certificate deadline before students can be enrolled. Please set a deadline in the course settings before publishing.",
         "go_to_completion_deadline": "Go to Completion Deadline",
         "completion_deadline_label": "Course Completion Deadline",
         "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
@@ -3978,15 +3979,37 @@
       "select_courses_placeholder": "Choose courses...",
       "select_cohorts_placeholder": "Choose cohorts...",
       "send_email": "Send invitation email to imported users",
-      "submit": "Import Users",
-      "back": "Back to Audience",
+      "back": "Back",
       "snackbar_success": "{imported} new invites, {assigned} existing students given access, {pendingInvitesRenewed} pending invites renewed ({emailsSent} emails sent)",
       "snackbar_no_emails": "Please enter at least one email address",
       "snackbar_failed": "Failed to import users",
       "cohort_access": "Cohort Access",
       "no_cohorts": "No cohort assignment",
       "all_cohorts": "All cohorts",
-      "select_cohorts": "Select specific cohorts"
+      "select_cohorts": "Select specific cohorts",
+      "drop_csv": "Drop a CSV here, or click to choose one",
+      "csv_hint": "UTF-8 CSV with an email column. Up to {rows} rows, 5 MB.",
+      "download_template": "Download the template",
+      "paste_hint": "One address per line, or comma separated.",
+      "review": "Review",
+      "done": "Done",
+      "submit_count": "Import {count} students",
+      "count_ready": "{count} ready",
+      "count_duplicate": "{count} already listed",
+      "count_invalid": "{count} need attention",
+      "truncated": "{count} rows past the {rows}-row limit were left out. Split the file and import the rest.",
+      "unknown_columns": "Ignored unrecognised columns: {columns}",
+      "result_heading": "{count} students imported",
+      "download_errors": "Download the rows that failed",
+      "status": {
+        "ready": "Ready",
+        "already_member": "Already in audience",
+        "invalid_email": "Invalid email",
+        "duplicate_in_file": "Duplicate in file",
+        "is_staff": "Staff, not a student",
+        "over_seat_limit": "No seats left",
+        "missing_email": "No email"
+      }
     },
     "assign": {
       "title": "Assign to Courses",
@@ -4007,6 +4030,97 @@
       "resend_snackbar_success": "Invitation email sent",
       "resend_snackbar_email_failed": "Invite was renewed but the email could not be sent",
       "revoke_snackbar_success": "Pending invitation revoked"
+    },
+    "never": "Never",
+    "progress": "Progress",
+    "learner_count": "{count} students",
+    "enrolled_ratio": "{completed} / {total}",
+    "views": {
+      "all": "All students",
+      "never_logged_in": "Never logged in",
+      "inactive_90d": "Inactive 90+ days",
+      "inactive_180d": "Inactive 180+ days",
+      "enrolled_not_started": "Enrolled, never started",
+      "archived": "Archived",
+      "custom": "Custom filters"
+    },
+    "filter": {
+      "status": "Member status",
+      "status_active": "Active",
+      "status_deactivated": "Deactivated",
+      "status_archived": "Archived",
+      "last_login": "Last login",
+      "last_activity": "Last activity",
+      "no_login_since": "No login in",
+      "no_activity_since": "No activity in",
+      "window_7d": "7 days",
+      "window_30d": "30 days",
+      "window_90d": "90 days",
+      "window_180d": "180 days",
+      "window_never": "Never",
+      "enrollment": "Enrollment",
+      "enrolled": "Enrolled",
+      "not_enrolled": "Not enrolled",
+      "completion": "Completion",
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "exclude_recent_joiners": "Exclude recent joiners",
+      "exclude_recent_joiners_hint": "Leaves out students who joined too recently to be judged inactive.",
+      "clear": "Clear filters",
+      "empty_title": "No students match these filters",
+      "empty_description": "Try widening the date range or clearing a filter.",
+      "invite_status": "Invite status"
+    },
+    "bulk": {
+      "actions": "Actions",
+      "select_all_matching": "Select all {count} matching",
+      "all_matching_selected": "All {count} matching students selected",
+      "clear_selection": "Clear selection",
+      "action": {
+        "archive": "Archive {count} students",
+        "deactivate": "Deactivate {count} students",
+        "reactivate": "Reactivate {count} students",
+        "unarchive": "Unarchive {count} students",
+        "delete": "Delete {count} students"
+      },
+      "confirm_title": {
+        "archive": "Archive {count} students?",
+        "deactivate": "Deactivate {count} students?",
+        "reactivate": "Reactivate {count} students?",
+        "unarchive": "Unarchive {count} students?",
+        "delete": "Permanently remove {count} students?"
+      },
+      "confirm_body": {
+        "archive": "They lose access and free up a seat on your plan. You can unarchive them at any time.",
+        "deactivate": "They lose access but keep their seat on your plan. You can reactivate them at any time.",
+        "reactivate": "They regain access to your organization and its courses.",
+        "unarchive": "They regain access and take a seat on your plan again.",
+        "delete": "This removes them from this organization and cannot be undone. Their account, submissions and results are kept."
+      },
+      "confirm_action": {
+        "archive": "Archive",
+        "deactivate": "Deactivate",
+        "reactivate": "Reactivate",
+        "unarchive": "Unarchive",
+        "delete": "Delete permanently"
+      },
+      "sample_heading": "Includes",
+      "sample_more": "and {count} more",
+      "export_first": "Export this list first",
+      "reason_label": "Reason (optional)",
+      "reason_hint": "Recorded on the audit trail so this is answerable later.",
+      "type_count_label": "Type {count} to confirm",
+      "delete_is_permanent": "Deleting cannot be undone.",
+      "not_archived_blocker": "{count} of these students are not archived. Archive them first.",
+      "success": "Students updated",
+      "partial_success": "{succeeded} updated, {failed} skipped",
+      "undo_available": "Applied. You can still undo this.",
+      "undo": "Undo",
+      "undo_success": "Reverted",
+      "queued_running": "Applying to {count} students. You can keep working — we will tell you when it finishes.",
+      "queued_failed": "This bulk action did not finish. Nothing further was applied.",
+      "queued_lost": "We lost track of this run. Reload to see the current state."
     }
   },
   "analytics": {
@@ -4150,7 +4264,8 @@
       "course": "Course",
       "views": "Views"
     },
-    "course_progress": "Course progress"
+    "course_progress": "Course progress",
+    "exercises_completed": "Exercises Completed"
   },
   "upgrade": {
     "certificate": "Upgrade your plan to generate certificates",
@@ -5265,5 +5380,15 @@
     },
     "watching_empty_title": "Nothing to watch yet",
     "watching_empty_description": "Updates on items you follow will show up here."
+  },
+  "export": {
+    "as_csv": "Export as CSV",
+    "as_excel": "Export as Excel",
+    "as_pdf": "Export as PDF",
+    "as_html": "Export as HTML",
+    "more_formats": "More export formats",
+    "pdf_too_many_rows": "Too many rows — use CSV or Excel above {limit}",
+    "nothing_to_export": "There is nothing to export",
+    "failed": "Export failed"
   }
 }

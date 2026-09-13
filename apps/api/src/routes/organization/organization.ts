@@ -6,6 +6,8 @@ import {
   ZCreateLinkInvite,
   ZCreateOrgPlan,
   ZCreateOrganization,
+  ZAudienceExportQuery,
+  ZBulkAudienceAction,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
   ZGetOrgSetup,
@@ -17,6 +19,7 @@ import {
   ZLMSExercisesParam,
   ZRemoveTeamMember,
   ZToggleLinkInvite,
+  ZUndoBulkAudienceAction,
   ZUpdateOrgPlan,
   ZUpdateOrganization
 } from '@cio/utils/validation/organization';
@@ -27,6 +30,13 @@ import {
   resendAudienceInvite,
   revokeAudiencePendingInvite
 } from '@api/services/organization/audience';
+import { getAudienceExportRows } from '@api/services/organization/audience-export';
+import {
+  applyBulkAudienceAction,
+  getBulkAudienceActionStatus,
+  previewBulkAudienceAction,
+  undoBulkAudienceAction
+} from '@api/services/organization/audience-bulk';
 import {
   activateOrgPlan,
   cancelOrgPlan,
@@ -281,6 +291,111 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch organization audience');
     }
   })
+  /**
+   * GET /organization/audience/export
+   * Every row matching the scope, for a client-side export. Not paginated —
+   * the caller builds the file in the browser, so it needs the whole set.
+   */
+  .get(
+    '/audience/export',
+    authMiddleware,
+    orgTeamMemberMiddleware,
+    zValidator('query', ZAudienceExportQuery),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const query = c.req.valid('query');
+        const rows = await getAudienceExportRows(orgId, query);
+
+        return c.json({ success: true, data: rows }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to build audience export');
+      }
+    }
+  )
+  /**
+   * GET /organization/audience/bulk-preview
+   * Exact count, target hash and sample for a filter-mode bulk action.
+   * The hash is what the apply step verifies the admin actually reviewed.
+   */
+  .get(
+    '/audience/bulk-preview',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('query', ZGetAudienceQuery.omit({ page: true, limit: true, sortBy: true, sortOrder: true })),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const filter = c.req.valid('query');
+        const preview = await previewBulkAudienceAction(orgId, filter);
+
+        return c.json({ success: true, data: preview }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to preview bulk action');
+      }
+    }
+  )
+  /**
+   * POST /organization/audience/bulk-action
+   * Applies a lifecycle action to a selection or to everyone matching a filter.
+   */
+  .post(
+    '/audience/bulk-action',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('json', ZBulkAudienceAction),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const data = c.req.valid('json');
+        const result = await applyBulkAudienceAction(orgId, data, user.id);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to apply bulk action');
+      }
+    }
+  )
+  /**
+   * GET /organization/audience/bulk-action/:jobId
+   * Status of a queued bulk action. Declared before `/audience/:userId/analytics`
+   * so a numeric job id cannot be read as a user id.
+   */
+  .get('/audience/bulk-action/:jobId', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const jobId = c.req.param('jobId');
+      const pollCount = Number(c.req.query('pollCount') ?? 0);
+      const envelope = await getBulkAudienceActionStatus(orgId, jobId, Number.isFinite(pollCount) ? pollCount : 0);
+
+      return c.json({ success: true, data: envelope }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to read bulk action status');
+    }
+  })
+  /**
+   * POST /organization/audience/bulk-action/undo
+   * Reverses a bulk action across exactly the members it changed.
+   */
+  .post(
+    '/audience/bulk-action/undo',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('json', ZUndoBulkAudienceAction),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const { undoToken } = c.req.valid('json');
+        const result = await undoBulkAudienceAction(orgId, undoToken, user.id);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to undo bulk action');
+      }
+    }
+  )
   /**
    * DELETE /organization/audience/:memberId
    * Removes a student from the organization

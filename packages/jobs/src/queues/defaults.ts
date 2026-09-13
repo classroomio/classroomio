@@ -65,6 +65,13 @@ export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
     removeOnComplete: { age: 7 * 86_400, count: 500 },
     removeOnFail: { age: 14 * 86_400 }
   },
+  [QUEUE_NAMES.audience]: {
+    // One attempt: the writes are idempotent per member, but a blind retry of a
+    // partially-applied chunk would double the audit rows.
+    attempts: 1,
+    removeOnComplete: { age: 24 * 3_600, count: 500 },
+    removeOnFail: { age: 7 * 86_400 }
+  },
   [QUEUE_NAMES.maintenance]: {
     attempts: 2,
     backoff: { type: 'exponential', delay: 60_000 },

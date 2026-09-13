@@ -11,7 +11,8 @@
       "reload": "Recarregar"
     },
     "discard": "Descartar",
-    "save_changes": "Salvar alterações"
+    "save_changes": "Salvar alterações",
+    "scroll_to_top": "Voltar ao topo"
   },
   "validations": {
     "generic": {
@@ -662,6 +663,7 @@
       "kpi_lessons_exercises": "{count, plural, one {# exercício} other {# exercícios}} mapeados para lições",
       "kpi_progress_grade": "{grade}% da nota média do exercício entre os alunos matriculados"
     },
+    "exercises_completed": "Exercícios Concluídos",
     "course_progress": "Progresso do curso",
     "just_now": "Agora mesmo",
     "minutes_ago": "{count, plural, one {# minuto atrás} other {# minutos atrás}}",
@@ -720,7 +722,6 @@
       "select_courses": "Selecione cursos específicos",
       "select_courses_placeholder": "Escolha cursos...",
       "send_email": "Enviar e-mail de convite para usuários importados",
-      "submit": "Importar usuários",
       "back": "Voltar ao público",
       "snackbar_success": "{imported} novos convites, {assigned} estudantes existentes com acesso ao curso, {pendingInvitesRenewed} convites pendentes renovados ({emailsSent} e-mails enviados)",
       "snackbar_no_emails": "Insira pelo menos um endereço de e-mail",
@@ -730,7 +731,30 @@
       "no_cohorts": "Sem atribuição de coorte",
       "all_cohorts": "Todas as coortes",
       "select_cohorts": "Selecione coortes específicas",
-      "select_cohorts_placeholder": "Escolha coortes..."
+      "select_cohorts_placeholder": "Escolha coortes...",
+      "drop_csv": "Arraste e solte um arquivo CSV aqui ou clique para escolher um",
+      "csv_hint": "CSV em UTF-8 com uma coluna de e-mail. Até {rows} linhas, 5 MB.",
+      "download_template": "Baixe o modelo",
+      "paste_hint": "Um endereço por linha ou separado por vírgulas.",
+      "review": "Revisar",
+      "done": "Concluído",
+      "count_ready": "{count} prontos",
+      "count_duplicate": "{count} já cadastrados",
+      "count_invalid": "{count} precisam de atenção",
+      "truncated": "{count} linhas além do limite de {rows} linhas foram omitidas. Divida o arquivo e importe o restante.",
+      "unknown_columns": "Colunas não reconhecidas ignoradas: {columns}",
+      "download_errors": "Baixar as linhas com falha",
+      "status": {
+        "ready": "Pronto",
+        "already_member": "Já na plateia",
+        "invalid_email": "E-mail inválido",
+        "duplicate_in_file": "Duplicado no arquivo",
+        "over_seat_limit": "Sem vagas disponíveis",
+        "missing_email": "Sem e-mail",
+        "is_staff": "Funcionário, não aluno"
+      },
+      "submit_count": "Importar {count} alunos",
+      "result_heading": "{count} alunos importados"
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {
@@ -773,7 +797,98 @@
       "confirm": "Excluir",
       "snackbar_success": "Membro excluído"
     },
-    "import_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para importar mais alunos."
+    "import_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para importar mais alunos.",
+    "never": "Nunca",
+    "progress": "Progresso",
+    "enrolled_ratio": "{completed} / {total}",
+    "bulk": {
+      "actions": "Ações",
+      "select_all_matching": "Selecione todos os {count} correspondentes",
+      "clear_selection": "Limpar seleção",
+      "sample_heading": "Inclui",
+      "sample_more": "e {count} mais",
+      "export_first": "Exporte esta lista primeiro",
+      "reason_label": "Motivo (opcional)",
+      "reason_hint": "Isso fica registrado no histórico de auditoria, então poderemos responder a essa pergunta posteriormente.",
+      "type_count_label": "Digite {count} para confirmar",
+      "delete_is_permanent": "A exclusão não pode ser desfeita.",
+      "partial_success": "{succeeded} atualizado, {failed} ignorado",
+      "undo_available": "Aplicado. Você ainda pode desfazer isso.",
+      "undo": "Desfazer",
+      "undo_success": "Revertido",
+      "confirm_action": {
+        "archive": "Arquivar",
+        "deactivate": "Desativar",
+        "reactivate": "Reativar",
+        "unarchive": "Desarquivar",
+        "delete": "Excluir permanentemente"
+      },
+      "confirm_body": {
+        "archive": "Eles perdem o acesso e liberam uma vaga no seu plano. Você pode desarquivá-los a qualquer momento.",
+        "deactivate": "Eles perdem o acesso, mas mantêm o lugar no seu plano. Você pode reativá-los a qualquer momento.",
+        "reactivate": "Eles recuperam o acesso à sua organização e aos seus cursos.",
+        "unarchive": "Eles recuperam o acesso e voltam a ocupar um lugar no seu plano.",
+        "delete": "Isso os remove desta organização e a ação é irreversível. Suas contas, envios e resultados serão mantidos."
+      },
+      "confirm_title": {
+        "archive": "Arquivar {count} alunos?",
+        "deactivate": "Desativar {count} alunos?",
+        "reactivate": "Reativar {count} alunos?",
+        "unarchive": "Desarquivar {count} alunos?",
+        "delete": "Remover permanentemente {count} alunos?"
+      },
+      "action": {
+        "archive": "Arquivar {count} alunos",
+        "deactivate": "Desativar {count} alunos",
+        "reactivate": "Reativar {count} alunos",
+        "unarchive": "Desarquivar {count} alunos",
+        "delete": "Excluir {count} alunos"
+      },
+      "queued_failed": "Esta ação em lote não foi concluída. Nenhuma outra ação foi aplicada.",
+      "queued_lost": "Perdemos o controle desta execução. Recarregue a página para ver o estado atual.",
+      "all_matching_selected": "Todos os {count} alunos correspondentes selecionados",
+      "not_archived_blocker": "{count} desses alunos não estão arquivados. Arquive-os primeiro.",
+      "success": "Alunos atualizados",
+      "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar."
+    },
+    "filter": {
+      "status": "Status do membro",
+      "status_active": "Ativo",
+      "status_deactivated": "Desativado",
+      "status_archived": "Arquivado",
+      "last_login": "Último login",
+      "last_activity": "Última atividade",
+      "no_login_since": "Sem login em",
+      "no_activity_since": "Sem atividade em",
+      "window_7d": "7 dias",
+      "window_30d": "30 dias",
+      "window_90d": "90 dias",
+      "window_180d": "180 dias",
+      "window_never": "Nunca",
+      "enrollment": "Matrícula",
+      "enrolled": "Matriculado",
+      "not_enrolled": "Não matriculado",
+      "completion": "Conclusão",
+      "not_started": "Não iniciado",
+      "in_progress": "Em andamento",
+      "completed": "Concluído",
+      "exclude_recent_joiners": "Excluir inscritos recentes",
+      "clear": "Limpar filtros",
+      "empty_description": "Tente ampliar o intervalo de datas ou limpar um filtro.",
+      "exclude_recent_joiners_hint": "Exclui alunos que se inscreveram recentemente e não podem mais ser considerados inativos.",
+      "empty_title": "Nenhum aluno corresponde a estes filtros",
+      "invite_status": "Status de convite"
+    },
+    "views": {
+      "never_logged_in": "Nunca acessaram",
+      "inactive_90d": "Inativos há mais de 90 dias",
+      "inactive_180d": "Inativos há mais de 180 dias",
+      "enrolled_not_started": "Matriculados, nunca iniciaram",
+      "archived": "Arquivados",
+      "custom": "Filtros personalizados",
+      "all": "Todos os alunos"
+    },
+    "learner_count": "{count} alunos"
   },
   "community": {
     "title": "Comunidade",
@@ -924,14 +1039,14 @@
           "unlock_all": "Desbloquear tudo"
         },
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
-        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
         "go_to_certificate_settings": "Vá para configurações de certificado",
         "completion_deadline_label": "Prazo para conclusão do curso",
         "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
-        "copy_link": "Copiar link"
+        "copy_link": "Copiar link",
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar."
       },
       "analytics": {
         "title": "Análises"
@@ -1186,7 +1301,6 @@
         "you": "Você",
         "pending": "Pendente",
         "name": "Nome",
-        "learner": "Aluno",
         "progress": "Progresso",
         "stage": "Etapa",
         "last_login_at": "Último login",
@@ -1342,7 +1456,8 @@
             "custom": "Personalizado"
           },
           "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
-        }
+        },
+        "learner": "Aluno"
       },
       "marks": {
         "title": "Marcas",
@@ -2623,8 +2738,8 @@
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
       "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
       "deadline_required": "Os cursos de conformidade exigem um prazo de conclusão antes de serem publicados.",
-      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados.",
-      "deadline_invalid": "O prazo de conclusão do curso é inválido."
+      "deadline_invalid": "O prazo de conclusão do curso é inválido.",
+      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados."
     },
     "creator": {
       "heading": "Qual curso você deseja criar?",
@@ -3096,7 +3211,7 @@
     "upgrade_label": "Atualizar",
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} de {studentLimit} alunos",
-    "upgrade_left": "{contagem} restantes"
+    "upgrade_left": "{count} restantes"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -5008,8 +5123,8 @@
     },
     "stage": {
       "probing": "Lendo vídeo…",
-      "encoding": "Codificação {rung} ({percent}%)",
-      "uploading": "Fazendo upload de segmentos ({uploaded}/{total})",
+      "encoding": "Codificando vídeo…",
+      "uploading": "Enviando…",
       "thumbnail": "Gerando miniatura…",
       "finalizing": "Salvando…",
       "done": "Pronto",
@@ -5278,5 +5393,15 @@
       "direct": "Direto",
       "watching": "Assistindo"
     }
+  },
+  "export": {
+    "as_csv": "Exportar como CSV",
+    "as_excel": "Exportar como Excel",
+    "as_pdf": "Exportar como PDF",
+    "as_html": "Exportar como HTML",
+    "more_formats": "Mais formatos de exportação",
+    "pdf_too_many_rows": "Muitas linhas — use CSV ou Excel acima de {limit}",
+    "nothing_to_export": "Não há nada para exportar.",
+    "failed": "A exportação falhou"
   }
 }

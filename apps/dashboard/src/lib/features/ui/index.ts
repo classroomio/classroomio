@@ -37,3 +37,4 @@ export { default as PageRestricted } from './page-restricted.svelte';
 export { default as SortSelect } from './sort-select.svelte';
 export type { SortOption } from './sort-select.svelte';
 export { default as SortPopover } from './sort-popover.svelte';
+export { ExportMenu } from './export';
