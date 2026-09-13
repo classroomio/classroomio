@@ -161,7 +161,8 @@ jobs:
         run: pnpm --filter @cio/db^... build
 
       - name: Seed database
-        run: pnpm --filter @cio/db db:setup:seed -- --organization udemy-test
+        # Enterprise tenant (coursera-test) — not the free udemy-test plan — so demos can exercise gated features.
+        run: pnpm --filter @cio/db db:setup:seed -- --organization coursera-test
 
       - name: Build dashboard and API
         run: |

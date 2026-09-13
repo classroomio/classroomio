@@ -1,11 +1,12 @@
 import { expect, type Page } from '@playwright/test';
 
+/** Enterprise org admin — unlocks license-gated features for PR demos. */
 export const DEMO_ADMIN = {
-  email: 'admin@test.com',
+  email: 'enterprise@test.com',
   password: '123456'
 } as const;
 
-export const DEFAULT_ORG_SITE_NAME = 'udemy-test';
+export const DEFAULT_ORG_SITE_NAME = 'coursera-test';
 
 /** Admin app login (cloud mode, localhost preview). */
 export async function loginAsAdmin(page: Page) {

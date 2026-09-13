@@ -28,7 +28,11 @@ import { loginAsAdmin, openOrgCatalog, DEMO_ADMIN, DEFAULT_ORG_SITE_NAME } from 
 
 ## Seeded credentials (cloud mode)
 
-- Admin: `admin@test.com` / `123456`
-- Default org siteName: `udemy-test`
+Use the **enterprise** tenant so demos are not blocked by free-plan limits:
+
+- Admin: `enterprise@test.com` / `123456`
+- Default org siteName: `coursera-test`
+
+(`loginAsAdmin` / `openOrgCatalog` already target this org.)
 
 If the PR does not describe test steps clearly, write a minimal demo that logs in as admin and navigates to the most relevant route inferred from the diff.
