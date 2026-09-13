@@ -49,7 +49,7 @@
 
   <Button
     variant="secondary"
-    size="sm"
+    size="xs"
     type="button"
     testId="page-settings-discard"
     class="ui:bg-background ui:text-foreground ui:hover:bg-background/80"
@@ -60,7 +60,7 @@
   </Button>
   <Button
     variant="default"
-    size="sm"
+    size="xs"
     type="button"
     testId="page-settings-save"
     {loading}

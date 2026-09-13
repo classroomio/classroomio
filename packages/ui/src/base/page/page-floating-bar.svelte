@@ -62,7 +62,7 @@
     data-slot="page-floating-bar"
     data-testid="page-floating-bar"
     class={cn(
-      'ui:pointer-events-none ui:z-50 ui:flex ui:shrink-0 ui:justify-center ui:px-2 ui:pb-4',
+      'ui:pointer-events-none ui:z-50 ui:flex ui:shrink-0 ui:justify-center ui:px-2 ui:pb-10',
       fixed ? 'ui:fixed ui:inset-x-0 ui:bottom-0' : 'ui:sticky ui:bottom-0',
       className
     )}

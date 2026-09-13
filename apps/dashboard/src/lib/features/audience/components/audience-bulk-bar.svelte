@@ -110,8 +110,7 @@
     <Button
       testId="audience-bulk-select-all-matching"
       variant="secondary"
-      size="sm"
-      class="ui:bg-background ui:text-foreground ui:hover:bg-background/80"
+      size="xs"
       onclick={onSelectAllMatching}
       disabled={isApplying}
     >
@@ -126,7 +125,7 @@
           {...props}
           testId="audience-bulk-copy"
           variant="secondary"
-          size="sm"
+          size="xs"
           class="ui:bg-background ui:text-foreground ui:hover:bg-background/80"
           disabled={isApplying || isBusy}
         >
@@ -159,8 +158,7 @@
           {...props}
           testId="audience-bulk-export"
           variant="secondary"
-          size="sm"
-          class="ui:bg-background ui:text-foreground ui:hover:bg-background/80"
+          size="xs"
           disabled={isApplying || isBusy}
         >
           <DownloadIcon class="size-4" aria-hidden="true" />
@@ -190,7 +188,7 @@
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>
       {#snippet child({ props })}
-        <Button {...props} testId="audience-bulk-actions" variant="default" size="sm" disabled={isApplying}>
+        <Button {...props} testId="audience-bulk-actions" variant="default" size="xs" disabled={isApplying}>
           {$t('audience.bulk.actions')}
           <ChevronDownIcon class="size-4" aria-hidden="true" />
         </Button>
@@ -219,7 +217,7 @@
   <span class="ui:bg-background/30 h-5 w-px shrink-0" aria-hidden="true"></span>
   <Button
     variant="link"
-    size="sm"
+    size="xs"
     class="ui:text-background ui:hover:text-background h-auto p-0"
     onclick={onClearSelection}
     disabled={isApplying}
