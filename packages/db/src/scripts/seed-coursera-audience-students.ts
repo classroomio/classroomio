@@ -1,6 +1,18 @@
 import 'dotenv/config';
 
-import { and, db, eq, groupmember, inArray, organizationmember, profile, user } from '@db/drizzle';
+import {
+  analyticsLoginEvents,
+  and,
+  db,
+  eq,
+  groupmember,
+  inArray,
+  lessonCompletion,
+  organizationmember,
+  profile,
+  submission,
+  user
+} from '@db/drizzle';
 
 import type { TNewGroupmember, TNewProfile } from '@db/types';
 
@@ -18,12 +30,22 @@ import type { TNewGroupmember, TNewProfile } from '@db/types';
 
 const COURSERA_ORG_ID = '2b8f4a1c-6d3e-4b2a-9f7e-1c4d8a6e9b0f';
 
-// Compliance courses, created by the `compliance` seed.
+// Compliance courses, created by the `compliance` seed. Each is two lessons
+// and one exercise, so the audience query sees three items of work per course.
 const HIPAA_GROUP_ID = '7e000000-1000-4000-8000-000000000001';
 const SOC2_GROUP_ID = '7e000000-1000-4000-8000-000000000002';
+const HIPAA_COURSE_ID = '7e000000-2000-4000-8000-000000000001';
+const SOC2_COURSE_ID = '7e000000-2000-4000-8000-000000000002';
+const HIPAA_LESSON_IDS = ['7e000000-4000-4000-8000-000000000001', '7e000000-4000-4000-8000-000000000002'] as const;
+const SOC2_LESSON_IDS = ['7e000000-4000-4000-8000-000000000003', '7e000000-4000-4000-8000-000000000004'] as const;
+const HIPAA_EXERCISE_ID = '7e000000-5000-4000-8000-000000000001';
+const SOC2_EXERCISE_ID = '7e000000-5000-4000-8000-000000000002';
 
 const ROLE_STUDENT = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** submissionstatus: 1 = Submitted, 3 = Graded. */
+const STATUS_GRADED = 3;
 
 /**
  * Reserved id prefixes, distinct from the `9f000001-` block that
@@ -82,6 +104,36 @@ const ENROLMENT_CYCLE = ['both', 'hipaa', 'both', 'soc2', 'none'] as const;
 
 type EnrolmentPattern = (typeof ENROLMENT_CYCLE)[number];
 
+/**
+ * How far into a course a student got. Each course is three items, so these
+ * land on 0%, 33%, 67% and 100% per course, and a student in both courses
+ * takes two adjacent entries rather than the same one twice.
+ *
+ * The zero entry matters as much as the full one: "Completion: not started"
+ * and the "enrolled, never started" saved view both need rows to return.
+ */
+const PROGRESS_CYCLE = [
+  { lessonsCompleted: 2, submitted: true }, // 100%, counts as completed
+  { lessonsCompleted: 0, submitted: false }, // 0%, never started
+  { lessonsCompleted: 1, submitted: false }, // 33%
+  { lessonsCompleted: 2, submitted: false }, // 67%
+  { lessonsCompleted: 0, submitted: true }, // 33%, submitted without reading
+  { lessonsCompleted: 1, submitted: true }, // 67%
+  { lessonsCompleted: 2, submitted: true } // 100%
+] as const;
+
+type CourseProgress = (typeof PROGRESS_CYCLE)[number];
+
+/**
+ * Every seventh student has never signed in, so "Never logged in" is not an
+ * empty view. The rest spread across the 7/30/90/180-day windows.
+ */
+function loginDaysAgo(index: number): number | null {
+  if (index % 7 === 3) return null;
+
+  return 1 + ((index * 29) % 210);
+}
+
 type SeedStudent = {
   id: string;
   fullname: string;
@@ -90,6 +142,10 @@ type SeedStudent = {
   hipaaMemberId: string;
   soc2MemberId: string;
   enrolment: EnrolmentPattern;
+  hipaaProgress: CourseProgress;
+  soc2Progress: CourseProgress;
+  /** null means they have never signed in. */
+  loginDaysAgo: number | null;
   /** Spread so the roster is not one uniform join date. */
   joinedDaysAgo: number;
 };
@@ -106,6 +162,9 @@ function buildStudents(): SeedStudent[] {
       hipaaMemberId: seedId(HIPAA_MEMBER_PREFIX, index + 1),
       soc2MemberId: seedId(SOC2_MEMBER_PREFIX, index + 1),
       enrolment: ENROLMENT_CYCLE[index % ENROLMENT_CYCLE.length],
+      hipaaProgress: PROGRESS_CYCLE[index % PROGRESS_CYCLE.length],
+      soc2Progress: PROGRESS_CYCLE[(index + 1) % PROGRESS_CYCLE.length],
+      loginDaysAgo: loginDaysAgo(index),
       // 3 to 380 days, so the dormancy filters and the recent-joiner grace
       // both have rows on either side of every threshold.
       joinedDaysAgo: 3 + index * 13
@@ -258,6 +317,117 @@ async function seedEnrolments(students: SeedStudent[]) {
   console.log(`   ✓ Inserted ${toInsert.length} enrolment(s)`);
 }
 
+/** The courses a student is actually in, paired with how far they got. */
+function progressPlans(student: SeedStudent) {
+  const plans: {
+    courseId: string;
+    groupMemberId: string;
+    lessonIds: readonly string[];
+    exerciseId: string;
+    progress: CourseProgress;
+  }[] = [];
+
+  if (student.enrolment === 'both' || student.enrolment === 'hipaa') {
+    plans.push({
+      courseId: HIPAA_COURSE_ID,
+      groupMemberId: student.hipaaMemberId,
+      lessonIds: HIPAA_LESSON_IDS,
+      exerciseId: HIPAA_EXERCISE_ID,
+      progress: student.hipaaProgress
+    });
+  }
+
+  if (student.enrolment === 'both' || student.enrolment === 'soc2') {
+    plans.push({
+      courseId: SOC2_COURSE_ID,
+      groupMemberId: student.soc2MemberId,
+      lessonIds: SOC2_LESSON_IDS,
+      exerciseId: SOC2_EXERCISE_ID,
+      progress: student.soc2Progress
+    });
+  }
+
+  return plans;
+}
+
+async function seedLessonCompletions(students: SeedStudent[]) {
+  const desired = students.flatMap((student) =>
+    progressPlans(student).flatMap((plan) =>
+      plan.lessonIds.slice(0, plan.progress.lessonsCompleted).map((lessonId) => ({
+        lessonId,
+        profileId: student.id,
+        isComplete: true
+      }))
+    )
+  );
+
+  // Withdrawing an enrolment has to take its lesson progress with it, or a
+  // student reads as having completed a course they are no longer in.
+  const profileIds = students.map((student) => student.id);
+  await db.delete(lessonCompletion).where(inArray(lessonCompletion.profileId, profileIds));
+
+  if (desired.length === 0) {
+    console.log('   ✓ No lesson completions to seed');
+    return;
+  }
+
+  await db.insert(lessonCompletion).values(desired);
+  console.log(`   ✓ Set ${desired.length} lesson completion(s)`);
+}
+
+async function seedSubmissions(students: SeedStudent[]) {
+  const desired = students.flatMap((student) =>
+    progressPlans(student)
+      .filter((plan) => plan.progress.submitted)
+      .map((plan) => ({
+        exerciseId: plan.exerciseId,
+        submittedBy: plan.groupMemberId,
+        courseId: plan.courseId,
+        statusId: STATUS_GRADED,
+        gradingState: 'graded',
+        overallStatus: 'passed',
+        total: 0
+      }))
+  );
+
+  const ownedMemberIds = students.flatMap((student) => [student.hipaaMemberId, student.soc2MemberId]);
+  await db.delete(submission).where(inArray(submission.submittedBy, ownedMemberIds));
+
+  if (desired.length === 0) {
+    console.log('   ✓ No submissions to seed');
+    return;
+  }
+
+  await db.insert(submission).values(desired);
+  console.log(`   ✓ Set ${desired.length} submission(s)`);
+}
+
+async function seedLogins(students: SeedStudent[]) {
+  const now = Date.now();
+  const desired = students
+    .filter((student) => student.loginDaysAgo !== null)
+    .map((student) => {
+      const loggedInAt = new Date(now - student.loginDaysAgo! * DAY_MS);
+
+      return {
+        userId: student.id,
+        loggedInAt: loggedInAt.toISOString(),
+        loggedInDate: loggedInAt.toISOString().slice(0, 10)
+      };
+    });
+
+  const profileIds = students.map((student) => student.id);
+  await db.delete(analyticsLoginEvents).where(inArray(analyticsLoginEvents.userId, profileIds));
+
+  if (desired.length === 0) {
+    console.log('   ✓ No login events to seed');
+    return;
+  }
+
+  await db.insert(analyticsLoginEvents).values(desired);
+  console.log(`   ✓ Set ${desired.length} login event(s), ${students.length - desired.length} never signed in`);
+}
+
 async function main() {
   const students = buildStudents();
 
@@ -266,6 +436,10 @@ async function main() {
   await seedProfiles(students);
   await seedOrgMembers(students);
   await seedEnrolments(students);
+  await seedLessonCompletions(students);
+  await seedSubmissions(students);
+  await seedLogins(students);
+
   const counts = students.reduce<Record<EnrolmentPattern, number>>(
     (totals, student) => {
       totals[student.enrolment] += 1;
