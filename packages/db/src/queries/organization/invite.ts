@@ -81,14 +81,15 @@ export async function createOrganizationInviteAudits(
 export async function revokeActiveOrganizationInvitesByEmails(
   organizationId: string,
   emails: string[],
-  revokedByProfileId: string
+  revokedByProfileId: string,
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationInvite[]> {
   if (emails.length === 0) {
     return [];
   }
 
   try {
-    const updated = await db
+    const updated = await dbClient
       .update(schema.organizationInvite)
       .set({
         isRevoked: true,

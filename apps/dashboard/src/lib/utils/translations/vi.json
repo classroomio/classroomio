@@ -11,7 +11,8 @@
       "reload": "Tải lại"
     },
     "discard": "Hủy",
-    "save_changes": "Lưu thay đổi"
+    "save_changes": "Lưu thay đổi",
+    "scroll_to_top": "Cuộn lên đầu trang"
   },
   "validations": {
     "generic": {
@@ -662,6 +663,7 @@
       "kpi_lessons_exercises": "{count, plural, one {# bài tập} other {# bài tập}} được ánh xạ tới bài học",
       "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
     },
+    "exercises_completed": "Bài tập đã hoàn thành",
     "course_progress": "Tiến độ khóa học",
     "just_now": "vừa mới đây",
     "minutes_ago": "{count, plural, other {# phút trước}}",
@@ -720,7 +722,6 @@
       "select_courses": "Chọn các khóa học cụ thể",
       "select_courses_placeholder": "Chọn khóa học...",
       "send_email": "Gửi email lời mời tới người dùng đã nhập",
-      "submit": "Nhập người dùng",
       "back": "Quay lại Đối tượng",
       "snackbar_success": "{imported} lời mời mới, {assigned} học viên hiện có được quyền truy cập khóa học, {pendingInvitesRenewed} lời mời đang chờ được gia hạn ({emailsSent} email đã gửi)",
       "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
@@ -730,7 +731,30 @@
       "no_cohorts": "Không gán nhóm học tập",
       "all_cohorts": "Tất cả nhóm học tập",
       "select_cohorts": "Chọn nhóm học tập cụ thể",
-      "select_cohorts_placeholder": "Chọn nhóm học tập..."
+      "select_cohorts_placeholder": "Chọn nhóm học tập...",
+      "drop_csv": "Nhập tệp CSV tại đây, hoặc nhấp để chọn một tệp",
+      "csv_hint": "CSV UTF-8 với cột email. Tối đa {rows} hàng, 5 MB.",
+      "download_template": "Tải xuống mẫu",
+      "paste_hint": "Một địa chỉ trên mỗi dòng, hoặc phân tách bằng dấu phẩy.",
+      "review": "Xem lại",
+      "done": "Hoàn tất",
+      "count_ready": "{count} sẵn sàng",
+      "count_duplicate": "{count} đã được liệt kê",
+      "count_invalid": "{count} cần chú ý",
+      "truncated": "{count} hàng vượt quá giới hạn {rows} hàng đã bị bỏ sót. Chia tệp và nhập phần còn lại.",
+      "unknown_columns": "Bỏ qua các cột không được nhận dạng: {columns}",
+      "download_errors": "Tải xuống các hàng bị lỗi",
+      "status": {
+        "ready": "Sẵn sàng",
+        "already_member": "Đã có trong danh sách người tham dự",
+        "invalid_email": "Email không hợp lệ",
+        "duplicate_in_file": "Trùng lặp trong tệp",
+        "over_seat_limit": "Không còn chỗ trống",
+        "missing_email": "Không có email",
+        "is_staff": "Nhân viên, không phải học viên"
+      },
+      "submit_count": "Nhập {count} học viên",
+      "result_heading": "{count} học viên đã được nhập"
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
@@ -773,7 +797,98 @@
       "confirm": "Xóa",
       "snackbar_success": "Thành viên đã bị xóa"
     },
-    "import_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để nhập thêm sinh viên."
+    "import_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để nhập thêm sinh viên.",
+    "never": "Chưa bao giờ",
+    "progress": "Tiến độ",
+    "enrolled_ratio": "{completed} / {total}",
+    "bulk": {
+      "actions": "Hành động",
+      "select_all_matching": "Chọn tất cả {count} học viên phù hợp",
+      "clear_selection": "Xóa lựa chọn",
+      "sample_heading": "Bao gồm",
+      "sample_more": "và {count} người nữa",
+      "export_first": "Xuất danh sách này trước",
+      "reason_label": "Lý do (tùy chọn)",
+      "reason_hint": "Đã ghi lại trong nhật ký kiểm toán để có thể trả lời sau.",
+      "type_count_label": "Nhập {count} để xác nhận",
+      "delete_is_permanent": "Không thể hoàn tác việc xóa.",
+      "partial_success": "{succeeded} đã được cập nhật, {failed} đã bị bỏ qua",
+      "undo_available": "Đã áp dụng. Bạn vẫn có thể hoàn tác thao tác này.",
+      "undo": "Hoàn tác",
+      "undo_success": "Đã khôi phục",
+      "confirm_action": {
+        "archive": "Lưu trữ",
+        "deactivate": "Vô hiệu hóa",
+        "reactivate": "Kích hoạt lại",
+        "unarchive": "Bỏ lưu trữ",
+        "delete": "Xóa vĩnh viễn"
+      },
+      "confirm_body": {
+        "archive": "Họ mất quyền truy cập và giải phóng một chỗ ngồi trong gói của bạn. Bạn có thể bỏ lưu trữ họ bất cứ lúc nào.",
+        "deactivate": "Họ mất quyền truy cập nhưng vẫn giữ chỗ ngồi trong gói của bạn. Bạn có thể kích hoạt lại họ bất cứ lúc nào.",
+        "reactivate": "Họ lấy lại quyền truy cập vào tổ chức và các khóa học của bạn.",
+        "unarchive": "Họ lấy lại quyền truy cập và tham gia lại chương trình của bạn.",
+        "delete": "Thao tác này sẽ xóa họ khỏi tổ chức và không thể hoàn tác. Tài khoản, bài nộp và kết quả của họ vẫn được giữ nguyên."
+      },
+      "confirm_title": {
+        "archive": "Lưu trữ {count} học sinh?",
+        "deactivate": "Vô hiệu hóa {count} học sinh?",
+        "reactivate": "Kích hoạt lại {count} học sinh?",
+        "unarchive": "Bỏ lưu trữ {count} học sinh?",
+        "delete": "Xóa vĩnh viễn {count} học sinh?"
+      },
+      "action": {
+        "archive": "Lưu trữ {count} học sinh",
+        "deactivate": "Vô hiệu hóa {count} học sinh",
+        "reactivate": "Kích hoạt lại {count} học sinh",
+        "unarchive": "Bỏ lưu trữ {count} học sinh",
+        "delete": "Xóa {count} học sinh"
+      },
+      "queued_failed": "Thao tác hàng loạt này không hoàn tất. Không có gì khác được áp dụng.",
+      "queued_lost": "Chúng tôi đã mất dấu vết của lần chạy này. Tải lại để xem trạng thái hiện tại.",
+      "all_matching_selected": "Tất cả {count} học sinh phù hợp đã được chọn",
+      "not_archived_blocker": "{count} học sinh trong số này chưa được lưu trữ. Hãy lưu trữ họ trước.",
+      "success": "Học sinh đã được cập nhật",
+      "queued_running": "Đang áp dụng cho {count} học sinh. Bạn có thể tiếp tục làm việc — chúng tôi sẽ thông báo cho bạn khi hoàn tất."
+    },
+    "filter": {
+      "status": "Trạng thái thành viên",
+      "status_active": "Hoạt động",
+      "status_deactivated": "Đã hủy kích hoạt",
+      "status_archived": "Đã lưu trữ",
+      "last_login": "Lần đăng nhập cuối",
+      "last_activity": "Hoạt động gần nhất",
+      "no_login_since": "Không đăng nhập trong",
+      "no_activity_since": "Không hoạt động trong",
+      "window_7d": "7 ngày",
+      "window_30d": "30 ngày",
+      "window_90d": "90 ngày",
+      "window_180d": "180 ngày",
+      "window_never": "Chưa bao giờ",
+      "enrollment": "Đăng ký",
+      "enrolled": "Đã đăng ký",
+      "not_enrolled": "Chưa đăng ký",
+      "completion": "Hoàn thành",
+      "not_started": "Chưa bắt đầu",
+      "in_progress": "Đang tiến hành",
+      "completed": "Đã hoàn thành",
+      "exclude_recent_joiners": "Loại trừ người mới tham gia",
+      "clear": "Xóa bộ lọc",
+      "empty_description": "Hãy thử mở rộng phạm vi ngày hoặc xóa một bộ lọc.",
+      "exclude_recent_joiners_hint": "Loại bỏ những học sinh mới tham gia quá gần đây để được coi là không hoạt động.",
+      "empty_title": "Không có học viên nào phù hợp với các bộ lọc này",
+      "invite_status": "Trạng thái mời"
+    },
+    "views": {
+      "never_logged_in": "Chưa từng đăng nhập",
+      "inactive_90d": "Không hoạt động trên 90 ngày",
+      "inactive_180d": "Không hoạt động trên 180 ngày",
+      "enrolled_not_started": "Đã đăng ký, nhưng chưa bắt đầu",
+      "archived": "Đã lưu trữ",
+      "custom": "Bộ lọc tùy chỉnh",
+      "all": "Tất cả học viên"
+    },
+    "learner_count": "{count} học sinh"
   },
   "community": {
     "title": "cộng đồng",
@@ -924,14 +1039,14 @@
           "unlock_all": "Mở khóa tất cả"
         },
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
         "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
         "completion_deadline_label": "Thời hạn hoàn thành khóa học",
         "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
         "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
-        "copy_link": "Sao chép liên kết"
+        "copy_link": "Sao chép liên kết",
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản."
       },
       "analytics": {
         "title": "Phân tích"
@@ -1186,7 +1301,6 @@
         "you": "bạn",
         "pending": "Đang chờ xử lý",
         "name": "Tên",
-        "learner": "Học viên",
         "progress": "Tiến độ",
         "stage": "Giai đoạn",
         "last_login_at": "Đăng nhập lần cuối",
@@ -1342,7 +1456,8 @@
             "custom": "tùy chỉnh"
           },
           "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
-        }
+        },
+        "learner": "Học viên"
       },
       "marks": {
         "title": "Điểm",
@@ -2623,8 +2738,8 @@
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
       "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
       "deadline_required": "Các khóa học tuân thủ yêu cầu thời hạn hoàn thành trước khi có thể xuất bản.",
-      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký.",
-      "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ."
+      "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ.",
+      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký."
     },
     "creator": {
       "heading": "Bạn muốn tạo khóa học nào?",
@@ -5006,8 +5121,8 @@
     },
     "stage": {
       "probing": "Đang đọc video…",
-      "encoding": "Mã hóa {rung} ({percent}%)",
-      "uploading": "Đang tải lên các phân đoạn ({uploaded}/{total})",
+      "encoding": "Đang mã hóa video…",
+      "uploading": "Đang tải lên…",
       "thumbnail": "Đang tạo hình thu nhỏ…",
       "finalizing": "Đang lưu…",
       "done": "Sẵn sàng",
@@ -5276,5 +5391,15 @@
       "direct": "Trực tiếp",
       "watching": "Đang xem"
     }
+  },
+  "export": {
+    "as_csv": "Xuất dưới dạng CSV",
+    "as_excel": "Xuất dưới dạng Excel",
+    "as_pdf": "Xuất dưới dạng PDF",
+    "as_html": "Xuất dưới dạng HTML",
+    "more_formats": "Thêm định dạng xuất",
+    "pdf_too_many_rows": "Quá nhiều hàng — hãy sử dụng CSV hoặc Excel nếu số lượng lớn hơn {limit}",
+    "nothing_to_export": "Không có gì để xuất",
+    "failed": "Xuất thất bại"
   }
 }
