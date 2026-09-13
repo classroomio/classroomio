@@ -851,7 +851,8 @@
       "not_archived_blocker": "{count} dieser Studierenden sind nicht archiviert. Archivieren Sie sie zuerst.",
       "success": "Studierende aktualisiert",
       "queued_running": "Wird auf {count} Studierende angewendet. Sie können weiterarbeiten – wir benachrichtigen Sie, sobald der Vorgang abgeschlossen ist.",
-      "undo_dismiss": "Schließen"
+      "undo_dismiss": "Schließen",
+      "clear": "Löschen"
     },
     "filter": {
       "status": "Mitgliedsstatus",

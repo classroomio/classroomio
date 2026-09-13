@@ -4076,6 +4076,7 @@
       "select_all_matching": "Select all {count} matching",
       "all_matching_selected": "All {count} matching students selected",
       "clear_selection": "Clear selection",
+      "clear": "Clear",
       "action": {
         "archive": "Archive {count} students",
         "deactivate": "Deactivate {count} students",

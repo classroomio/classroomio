@@ -851,7 +851,8 @@
       "not_archived_blocker": "{count} z tych studentów nie zostało zarchiwizowanych. Najpierw zarchiwizuj ich.",
       "success": "Zaktualizowano studentów",
       "queued_running": "Aplikowanie do {count} studentów. Możesz kontynuować pracę — poinformujemy Cię o zakończeniu.",
-      "undo_dismiss": "Zamknij"
+      "undo_dismiss": "Zamknij",
+      "clear": "Wyczyść"
     },
     "filter": {
       "status": "Status członka",

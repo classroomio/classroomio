@@ -851,7 +851,8 @@
       "not_archived_blocker": "{count} học sinh trong số này chưa được lưu trữ. Hãy lưu trữ họ trước.",
       "success": "Học sinh đã được cập nhật",
       "queued_running": "Đang áp dụng cho {count} học sinh. Bạn có thể tiếp tục làm việc — chúng tôi sẽ thông báo cho bạn khi hoàn tất.",
-      "undo_dismiss": "Đóng"
+      "undo_dismiss": "Đóng",
+      "clear": "Xóa"
     },
     "filter": {
       "status": "Trạng thái thành viên",

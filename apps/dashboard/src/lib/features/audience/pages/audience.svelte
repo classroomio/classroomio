@@ -20,7 +20,6 @@
   import AssignCoursesModal from '$features/audience/components/assign-courses-modal.svelte';
   import AudienceDeleteConfirmation from '$features/audience/components/audience-delete-confirmation.svelte';
   import AudienceTableToolbar from '$features/audience/components/audience-table-toolbar.svelte';
-  import AudienceBulkBar from '$features/audience/components/audience-bulk-bar.svelte';
   import { audienceExportHeaders, buildAudienceExportDocument } from '$features/audience/utils/audience-export-utils';
   import AudienceTable from '$features/audience/components/audience-table.svelte';
   import { SvelteSet } from 'svelte/reactivity';
@@ -54,6 +53,12 @@
     courses?: Course[];
     /** Reported upward so the page header's export can honour the selection. */
     selectedMemberIds?: number[];
+    /**
+     * The selection bar lives in the route, beside `Page.Body`, because a
+     * sticky bar inside `Page.Body` has no travel and would also centre on the
+     * viewport rather than on the content column.
+     */
+    selectionControls?: AudienceSelectionControls | null;
   }
 
   let { audience, pagination = null, query, courses = [], selectedMemberIds = $bindable([]) }: Props = $props();
@@ -156,6 +161,21 @@
   // The selection bar's Copy and Export both need the rows behind the current
   // selection. Ticked rows win; "all matching" is a filter, so it falls back to
   // the query and lets the server resolve it.
+  // Writes only; nothing here reads `selectionControls`, so this cannot loop.
+  $effect(() => {
+    selectionControls = {
+      selectedCount: selectedIds.size,
+      totalMatching: totalCount,
+      allMatchingSelected,
+      isApplying: isApplyingBulkAction,
+      loadDocument: loadSelectionExportDocument,
+      selectAllMatching: () => (allMatchingSelected = true),
+      clear: clearSelection,
+      openAssign: () => (assignModalOpen = true),
+      act: handleBulkAction
+    };
+  });
+
   async function loadSelectionExportDocument() {
     const memberIds = allMatchingSelected ? undefined : [...selectedIds].map(Number);
     const response = await orgApi.getAudienceExportRows(query, memberIds?.length ? memberIds : undefined);
@@ -577,18 +597,6 @@
   member={deleteCandidate}
   isDeleting={deletingMemberId !== null}
   onDelete={handleDeleteAudienceMember}
-/>
-
-<AudienceBulkBar
-  selectedCount={selectedIds.size}
-  totalMatching={totalCount}
-  {allMatchingSelected}
-  {isApplyingBulkAction}
-  document={loadSelectionExportDocument}
-  onSelectAllMatching={() => (allMatchingSelected = true)}
-  onClearSelection={clearSelection}
-  onOpenAssign={() => (assignModalOpen = true)}
-  onAction={handleBulkAction}
 />
 
 <AudienceBulkConfirmation

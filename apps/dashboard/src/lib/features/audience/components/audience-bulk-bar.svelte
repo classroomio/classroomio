@@ -101,7 +101,6 @@
 
 <Page.FloatingBar
   show={effectiveCount > 0}
-  fixed
   status={allMatchingSelected
     ? $t('audience.bulk.all_matching_selected', { count: totalMatching })
     : $t('audience.selected_count', { count: selectedCount })}
@@ -216,13 +215,15 @@
     </DropdownMenu.Content>
   </DropdownMenu.Root>
 
+  <!-- Separated and quieter: clearing is the way out, not one of the actions. -->
+  <span class="ui:bg-background/30 h-5 w-px shrink-0" aria-hidden="true"></span>
   <Button
-    variant="ghost"
+    variant="link"
     size="sm"
-    class="ui:text-background ui:hover:bg-background/20 ui:hover:text-background"
+    class="ui:text-background ui:hover:text-background h-auto p-0"
     onclick={onClearSelection}
     disabled={isApplying}
   >
-    {$t('audience.bulk.clear_selection')}
+    {$t('audience.bulk.clear')}
   </Button>
 </Page.FloatingBar>

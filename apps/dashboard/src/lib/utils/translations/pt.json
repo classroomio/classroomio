@@ -851,7 +851,8 @@
       "not_archived_blocker": "{count} desses alunos não estão arquivados. Arquive-os primeiro.",
       "success": "Alunos atualizados",
       "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar.",
-      "undo_dismiss": "Fechar"
+      "undo_dismiss": "Fechar",
+      "clear": "Limpar"
     },
     "filter": {
       "status": "Status do membro",

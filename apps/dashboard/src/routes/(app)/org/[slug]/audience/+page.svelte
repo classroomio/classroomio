@@ -5,6 +5,8 @@
   import { buildAudienceExportDocument } from '$features/audience/utils/audience-export-utils';
   import { currentOrg } from '$lib/utils/store/org';
   import { AudiencePage } from '$features/audience/pages';
+  import AudienceBulkBar from '$features/audience/components/audience-bulk-bar.svelte';
+  import type { AudienceSelectionControls } from '$features/audience/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
   import { PLAN } from '@cio/utils/plans';
@@ -20,6 +22,9 @@
   // admin just reviewed rather than the whole roster.
   // Bound from the table below, so the export can follow a tick-box selection.
   let selectedMemberIds = $state<number[]>([]);
+  // Bound from the page: the selection bar sits here, as a sibling of
+  // Page.Body, so it sticks to the content column rather than the viewport.
+  let selectionControls = $state<AudienceSelectionControls | null>(null);
   const exportRowCount = $derived(selectedMemberIds.length || audienceLength);
 
   async function loadExportDocument() {
@@ -87,7 +92,21 @@
         query={data.query}
         courses={data.courses}
         bind:selectedMemberIds
+        bind:selectionControls
       />
     {/snippet}
   </Page.Body>
+  {#if selectionControls}
+    <AudienceBulkBar
+      selectedCount={selectionControls.selectedCount}
+      totalMatching={selectionControls.totalMatching}
+      allMatchingSelected={selectionControls.allMatchingSelected}
+      isApplying={selectionControls.isApplying}
+      document={selectionControls.loadDocument}
+      onSelectAllMatching={selectionControls.selectAllMatching}
+      onClearSelection={selectionControls.clear}
+      onOpenAssign={selectionControls.openAssign}
+      onAction={selectionControls.act}
+    />
+  {/if}
 </Page.Root>

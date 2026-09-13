@@ -1,5 +1,7 @@
 <script lang="ts">
   import { cn, type WithElementRef } from '../../tools';
+  import { fly } from 'svelte/transition';
+  import { prefersReducedMotion } from 'svelte/motion';
   import type { HTMLAttributes } from 'svelte/elements';
   import type { Snippet } from 'svelte';
 
@@ -67,6 +69,7 @@
     {...restProps}
   >
     <div
+      transition:fly={{ y: prefersReducedMotion.current ? 0 : 24, duration: 200, opacity: 0 }}
       class={cn(
         'ui:pointer-events-auto ui:flex ui:w-fit ui:max-w-full ui:flex-wrap ui:items-center ui:justify-center ui:gap-x-6 ui:gap-y-2 ui:rounded-lg ui:bg-foreground ui:px-3.5 ui:py-2 ui:text-background ui:shadow-lg',
         contentClassName
