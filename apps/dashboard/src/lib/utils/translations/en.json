@@ -4791,7 +4791,8 @@
   "generic": {
     "locked": "Locked",
     "unlocked": "Unlocked",
-    "loading": "Loading"
+    "loading": "Loading",
+    "progress": "Progress"
   },
   "validations": {
     "user_profile": {

@@ -143,7 +143,8 @@
   "generic": {
     "locked": "bloqueado",
     "unlocked": "desbloqueado",
-    "loading": "Cargando"
+    "loading": "Cargando",
+    "progress": "Progreso"
   },
   "content": {
     "heading": "Internacionalización en SvelteKit",
