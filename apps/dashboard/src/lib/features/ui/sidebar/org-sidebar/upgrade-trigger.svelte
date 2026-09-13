@@ -19,6 +19,7 @@
   const countClass = $derived(isNearLimit ? 'text-red-500' : 'text-black dark:text-white');
   const upgradeLabel = $derived($t('org_navigation.upgrade_label'));
   const upgradeCount = $derived($t('org_navigation.upgrade_count', { studentCount, studentLimit }));
+  const upgradeAccessibleLabel = $derived(`${upgradeLabel} ${upgradeCount}`);
 </script>
 
 {#if $isFreePlan}
@@ -29,7 +30,8 @@
         data-slot="upgrade-trigger"
         data-testid="org-sidebar-upgrade"
         type="button"
-        tooltipContent="{upgradeLabel} {upgradeCount}"
+        aria-label={upgradeAccessibleLabel}
+        tooltipContent={upgradeAccessibleLabel}
         class="ui:bg-background h-10 rounded-md px-3 text-black shadow-sm dark:text-white"
         onclick={openUpgradeModal}
       >
