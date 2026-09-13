@@ -85,7 +85,10 @@ jobs:
   run:
     name: Run PR demo
     needs: generate
+    # always() so we still post a PR comment when generate fails.
     if: |
+      always() &&
+      !cancelled() &&
       github.event.label.name == 'demo-pr' &&
       github.event.sender.login == 'rotimi-best'
     runs-on: ubuntu-latest
@@ -108,25 +111,43 @@ jobs:
             exit 1
           fi
 
+      - name: Gate on generate success
+        id: gate
+        run: |
+          RESULT="${{ needs.generate.result }}"
+          echo "generate_result=${RESULT}" >> "$GITHUB_OUTPUT"
+          if [ "$RESULT" = "success" ]; then
+            echo "run_demo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_demo=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Generate job result was ${RESULT}; skipping demo execution and posting failure comment."
+          fi
+
       - name: Download generated spec
+        if: steps.gate.outputs.run_demo == 'true'
         uses: actions/download-artifact@v4
         with:
           name: pr-demo-spec-${{ github.event.pull_request.number }}
           path: .github/demo-runs
 
       - name: Setup pnpm
+        if: steps.gate.outputs.run_demo == 'true'
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
+        if: steps.gate.outputs.run_demo == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Pin to the repo engines/.nvmrc version (repo-wide Node upgrade is out of scope for this PR).
+          node-version: '20.19.3'
           cache: 'pnpm'
 
       - name: Install dependencies
+        if: steps.gate.outputs.run_demo == 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Resolve spec path
+      - name: Resolve and re-validate spec
+        if: steps.gate.outputs.run_demo == 'true'
         id: spec
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -136,12 +157,16 @@ jobs:
             echo "::error::Downloaded spec missing at ${SPEC}"
             exit 1
           fi
+          # Re-validate in this job (no OpenCode secret) before env files or Playwright run.
+          bash .github/scripts/validate-pr-demo-spec.sh "$SPEC"
           echo "path=${SPEC}" >> "$GITHUB_OUTPUT"
 
       - name: Start Postgres and Redis
+        if: steps.gate.outputs.run_demo == 'true'
         run: docker compose -f docker-compose.yaml up -d postgres redis
 
       - name: Wait for Postgres
+        if: steps.gate.outputs.run_demo == 'true'
         run: |
           for attempt in $(seq 1 30); do
             if docker exec cio-postgres pg_isready -U postgres -d classroomio >/dev/null 2>&1; then
@@ -155,31 +180,38 @@ jobs:
           exit 1
 
       - name: Prepare demo env files
+        if: steps.gate.outputs.run_demo == 'true'
         run: bash .github/scripts/prepare-pr-demo-env.sh
 
       - name: Build workspace for db seed
+        if: steps.gate.outputs.run_demo == 'true'
         run: pnpm --filter @cio/db^... build
 
       - name: Seed database
+        if: steps.gate.outputs.run_demo == 'true'
         # Enterprise tenant (coursera-test) — not the free udemy-test plan — so demos can exercise gated features.
         run: pnpm --filter @cio/db db:setup:seed -- --organization coursera-test
 
       - name: Build dashboard and API
+        if: steps.gate.outputs.run_demo == 'true'
         run: |
           pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
           pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
 
       - name: Start API
+        if: steps.gate.outputs.run_demo == 'true'
         run: |
           pnpm --filter @cio/api start > /tmp/cio-api.log 2>&1 &
           echo $! > /tmp/cio-api.pid
 
       - name: Start dashboard preview
+        if: steps.gate.outputs.run_demo == 'true'
         run: |
           pnpm --filter @cio/dashboard exec vite preview --port 4173 --host 127.0.0.1 > /tmp/cio-dashboard.log 2>&1 &
           echo $! > /tmp/cio-dashboard.pid
 
       - name: Wait for API and dashboard
+        if: steps.gate.outputs.run_demo == 'true'
         run: |
           for attempt in $(seq 1 60); do
             if curl -sf http://127.0.0.1:3002/ >/dev/null 2>&1; then
@@ -208,9 +240,11 @@ jobs:
           done
 
       - name: Install Playwright browser
+        if: steps.gate.outputs.run_demo == 'true'
         run: pnpm exec playwright install chromium --with-deps
 
       - name: Run Playwright demo
+        if: steps.gate.outputs.run_demo == 'true'
         id: playwright
         continue-on-error: true
         env:
@@ -219,7 +253,7 @@ jobs:
         run: pnpm exec playwright test --config e2e/playwright.config.ts "${{ steps.spec.outputs.path }}"
 
       - name: Upload demo artifacts
-        if: always()
+        if: always() && steps.gate.outputs.run_demo == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: pr-demo-${{ github.event.pull_request.number }}
@@ -227,24 +261,31 @@ jobs:
             e2e/test-results/
             e2e/playwright-report/
           retention-days: 14
+          if-no-files-found: ignore
 
       - name: Comment on pull request
         if: always()
         uses: actions/github-script@v7
         env:
+          GENERATE_RESULT: ${{ needs.generate.result }}
           PLAYWRIGHT_OUTCOME: ${{ steps.playwright.outcome || 'skipped' }}
           SPEC_PATH: ${{ steps.spec.outputs.path || 'generation failed' }}
         with:
           script: |
             const marker = '<!-- pr-demo-playwright -->';
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const passed = process.env.PLAYWRIGHT_OUTCOME === 'success';
+            const generateResult = process.env.GENERATE_RESULT ?? 'unknown';
+            const playwrightOutcome = process.env.PLAYWRIGHT_OUTCOME ?? 'skipped';
             const specPath = process.env.SPEC_PATH ?? '(unknown)';
-            const skipped = process.env.PLAYWRIGHT_OUTCOME === 'skipped';
+            const generateFailed = generateResult !== 'success';
+            const passed = !generateFailed && playwrightOutcome === 'success';
+            const skipped = generateFailed || playwrightOutcome === 'skipped';
 
             let statusLine;
-            if (skipped) {
-              statusLine = 'Demo did not run (spec generation or setup failed).';
+            if (generateFailed) {
+              statusLine = `Spec generation failed (\`generate\` job: ${generateResult}). No Playwright run.`;
+            } else if (skipped) {
+              statusLine = 'Demo did not run (setup failed after generation).';
             } else if (passed) {
               statusLine = 'The demo test finished successfully.';
             } else {
@@ -253,7 +294,7 @@ jobs:
             }
 
             const body = `${marker}
-            ### PR demo ${passed ? 'passed' : skipped ? 'did not run' : 'completed with warnings'}
+            ### PR demo ${passed ? 'passed' : generateFailed ? 'generation failed' : skipped ? 'did not run' : 'completed with warnings'}
 
             Ephemeral Playwright spec: \`${specPath}\` (not committed).
 
@@ -286,7 +327,7 @@ jobs:
             }
 
       - name: Stop background services
-        if: always()
+        if: always() && steps.gate.outputs.run_demo == 'true'
         run: |
           if [ -f /tmp/cio-api.pid ]; then kill "$(cat /tmp/cio-api.pid)" 2>/dev/null || true; fi
           if [ -f /tmp/cio-dashboard.pid ]; then kill "$(cat /tmp/cio-dashboard.pid)" 2>/dev/null || true; fi

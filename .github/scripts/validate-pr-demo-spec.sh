@@ -15,8 +15,13 @@ if ! grep -q 'test(' "$SPEC"; then
   exit 1
 fi
 
-if grep -Eq "require\\(['\"]child_process|from ['\"]fs['\"]|from ['\"]node:fs['\"]|from ['\"]node:child_process['\"]|from ['\"]node:net['\"]|from ['\"]node:http['\"]|from ['\"]node:https['\"]|from ['\"]node:dns['\"]" "$SPEC"; then
+if grep -Eq "require\\(['\"]child_process|from ['\"]fs['\"]|from ['\"]node:fs['\"]|from ['\"]node:child_process['\"]|from ['\"]node:net['\"]|from ['\"]node:http['\"]|from ['\"]node:https['\"]|from ['\"]node:dns['\"]|from ['\"]node:process['\"]|from ['\"]process['\"]" "$SPEC"; then
   echo "::error::Generated spec contains disallowed imports"
+  exit 1
+fi
+
+if grep -Eq "\\beval\\s*\\(|new\\s+Function\\s*\\(|import\\s*\\(|process\\.env|process\\.binding|globalThis\\.process" "$SPEC"; then
+  echo "::error::Generated spec contains disallowed dynamic code or process access"
   exit 1
 fi
 
