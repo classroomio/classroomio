@@ -29,7 +29,7 @@
 
   <!-- upgrade banner -->
   <div class="mx-2 mb-2">
-    <Skeleton class="h-10 w-full rounded-full" />
+    <Skeleton class="h-10 w-full rounded-md" />
   </div>
 
   <!-- nav user -->

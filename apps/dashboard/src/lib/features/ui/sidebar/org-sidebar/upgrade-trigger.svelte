@@ -30,7 +30,7 @@
         data-testid="org-sidebar-upgrade"
         type="button"
         tooltipContent="{upgradeLabel} {upgradeCount}"
-        class="ui:bg-background h-10 rounded-full px-3 text-black shadow-sm dark:text-white"
+        class="ui:bg-background h-10 rounded-md px-3 text-black shadow-sm dark:text-white"
         onclick={openUpgradeModal}
       >
         <CircularProgress
