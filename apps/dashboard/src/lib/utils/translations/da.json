@@ -3208,6 +3208,8 @@
     "compliance": "Overholdelse",
     "cohorts": "Kohorter",
     "upgrade_now": "Opgrader nu",
+    "upgrade_label": "Opgrader",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} af {studentLimit} elever",
     "upgrade_left": "{count} tilbage"
   },

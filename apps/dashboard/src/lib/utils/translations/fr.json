@@ -3208,6 +3208,8 @@
     "compliance": "Conformité",
     "cohorts": "Cohortes",
     "upgrade_now": "Mettre à niveau maintenant",
+    "upgrade_label": "Mettre à niveau",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} sur {studentLimit} étudiants",
     "upgrade_left": "Il reste {count}"
   },
