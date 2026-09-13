@@ -3,9 +3,14 @@ name: PR demo (Playwright)
 # Label `demo-pr` (by rotimi-best) → OpenCode writes an ephemeral Playwright spec,
 # CI runs preview build + Playwright, uploads video artifacts, comments on the PR.
 # Policy B: demo failures warn but do not fail the workflow.
+#
+# Uses pull_request_target (not pull_request) so the workflow file is read from the
+# base branch (main). With pull_request + labeled, GitHub only runs workflows that
+# already exist on the PR head — so labeling a feature branch that predates this
+# file would do nothing. Jobs still check out the PR head SHA explicitly below.
 
 on:
-  pull_request:
+  pull_request_target:
     types: [labeled]
 
 permissions:
@@ -26,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # pull_request_target defaults to the base ref — always pin the PR head SHA.
       - name: Checkout PR head
         uses: actions/checkout@v4
         with:
