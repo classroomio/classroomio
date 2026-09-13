@@ -157,11 +157,15 @@
   const totalCount = $derived(pagination?.total ?? 0);
   const selectablePageRows = $derived(orgApi.audience.filter((row) => row.profileId));
 
+  // "All matching" covers every row on this page by definition, so the boxes
+  // have to show it. Without this the bar reads "all 31 selected" over a table
+  // with one tick in it.
   const allPageSelected = $derived(
-    selectablePageRows.length > 0 && selectablePageRows.every((row) => selectedIds.has(String(row.id)))
+    allMatchingSelected ||
+      (selectablePageRows.length > 0 && selectablePageRows.every((row) => selectedIds.has(String(row.id))))
   );
   const somePageSelected = $derived(
-    selectablePageRows.some((row) => selectedIds.has(String(row.id))) && !allPageSelected
+    !allMatchingSelected && selectablePageRows.some((row) => selectedIds.has(String(row.id))) && !allPageSelected
   );
   const hasSelection = $derived(selectedIds.size > 0 || allMatchingSelected);
 
@@ -202,7 +206,27 @@
     selectedMemberIds = allMatchingSelected ? [] : [...selectedIds].map(Number);
   });
 
+  /**
+   * Leaves "all matching" for the concrete rows on this page, so a tick the
+   * admin removes lands on something representable. The mode spans pages and a
+   * set of ids does not, so this is a narrowing, not a no-op.
+   */
+  function materialisePageSelection() {
+    allMatchingSelected = false;
+
+    for (const row of selectablePageRows) {
+      selectedIds.add(String(row.id));
+    }
+  }
+
   function toggleSelectAll() {
+    // The header box covers this page; the mode covers every page. Turning it
+    // off can only mean all of it.
+    if (allMatchingSelected) {
+      clearSelection();
+      return;
+    }
+
     if (allPageSelected) {
       for (const row of selectablePageRows) {
         selectedIds.delete(String(row.id));
@@ -215,6 +239,12 @@
   }
 
   function toggleRow(id: string) {
+    if (allMatchingSelected) {
+      materialisePageSelection();
+      selectedIds.delete(id);
+      return;
+    }
+
     if (selectedIds.has(id)) {
       selectedIds.delete(id);
     } else {
@@ -564,7 +594,7 @@
       {allPageSelected}
       {somePageSelected}
       onToggleSelectAll={toggleSelectAll}
-      isRowSelected={(id) => selectedIds.has(id)}
+      isRowSelected={(id) => allMatchingSelected || selectedIds.has(id)}
       onToggleRow={toggleRow}
       {inviteActionEmail}
       {deletingMemberId}

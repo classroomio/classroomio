@@ -5,9 +5,10 @@ import { and, db, eq, groupmember, inArray, organizationmember, profile, user } 
 import type { TNewGroupmember, TNewProfile } from '@db/types';
 
 // ---------------------------------------------------------------------------
-// Thirty extra students in the coursera-test org, each enrolled in both
-// compliance courses, so the audience table has enough rows to demonstrate
-// selection, bulk actions and export against demo data rather than a real org.
+// Thirty extra students in the coursera-test org, enrolled across the two
+// compliance courses in an uneven mix, so the audience table has enough rows
+// to demonstrate selection, bulk actions and export against demo data rather
+// than a real org.
 //
 // Names and addresses are fictional and the domain is reserved for examples,
 // so screenshots taken here can be published without redaction.
@@ -71,6 +72,16 @@ const NAMES = [
   'Dilara Yilmaz'
 ] as const;
 
+/**
+ * Who gets which course. A real roster is uneven, and the Enrollment column
+ * only reads as real in a screenshot if it shows more than one value, so the
+ * cycle mixes both-courses, one-course and not-enrolled rows. The last also
+ * gives the "Enrollment: not enrolled in anything" filter something to return.
+ */
+const ENROLMENT_CYCLE = ['both', 'hipaa', 'both', 'soc2', 'none'] as const;
+
+type EnrolmentPattern = (typeof ENROLMENT_CYCLE)[number];
+
 type SeedStudent = {
   id: string;
   fullname: string;
@@ -78,6 +89,7 @@ type SeedStudent = {
   email: string;
   hipaaMemberId: string;
   soc2MemberId: string;
+  enrolment: EnrolmentPattern;
   /** Spread so the roster is not one uniform join date. */
   joinedDaysAgo: number;
 };
@@ -93,6 +105,7 @@ function buildStudents(): SeedStudent[] {
       email: `${slug}@coursera-test.demo`,
       hipaaMemberId: seedId(HIPAA_MEMBER_PREFIX, index + 1),
       soc2MemberId: seedId(SOC2_MEMBER_PREFIX, index + 1),
+      enrolment: ENROLMENT_CYCLE[index % ENROLMENT_CYCLE.length],
       // 3 to 380 days, so the dormancy filters and the recent-joiner grace
       // both have rows on either side of every threshold.
       joinedDaysAgo: 3 + index * 13
@@ -185,21 +198,46 @@ async function seedOrgMembers(students: SeedStudent[]) {
   console.log(`   ✓ Inserted ${toInsert.length} organization member(s)`);
 }
 
+/** The enrolment rows a student's pattern calls for. */
+function desiredEnrolments(student: SeedStudent) {
+  const rows: { id: string; groupId: string; profileId: string }[] = [];
+
+  if (student.enrolment === 'both' || student.enrolment === 'hipaa') {
+    rows.push({ id: student.hipaaMemberId, groupId: HIPAA_GROUP_ID, profileId: student.id });
+  }
+
+  if (student.enrolment === 'both' || student.enrolment === 'soc2') {
+    rows.push({ id: student.soc2MemberId, groupId: SOC2_GROUP_ID, profileId: student.id });
+  }
+
+  return rows;
+}
+
 async function seedEnrolments(students: SeedStudent[]) {
-  const desired = students.flatMap((student) => [
-    { id: student.hipaaMemberId, groupId: HIPAA_GROUP_ID, profileId: student.id },
-    { id: student.soc2MemberId, groupId: SOC2_GROUP_ID, profileId: student.id }
-  ]);
+  const desired = students.flatMap(desiredEnrolments);
+  const desiredIds = new Set(desired.map((row) => row.id));
+
+  // Every enrolment id this script owns, wanted or not. Re-running after the
+  // mix changes has to withdraw the ones it no longer wants, otherwise the
+  // roster only grows and the cycle above stops describing the data.
+  const ownedIds = students.flatMap((student) => [student.hipaaMemberId, student.soc2MemberId]);
+  const staleIds = ownedIds.filter((id) => !desiredIds.has(id));
+
+  if (staleIds.length > 0) {
+    const removed = await db
+      .delete(groupmember)
+      .where(inArray(groupmember.id, staleIds))
+      .returning({ id: groupmember.id });
+
+    if (removed.length > 0) {
+      console.log(`   ✓ Withdrew ${removed.length} enrolment(s) no longer in the mix`);
+    }
+  }
 
   const existing = await db
     .select({ id: groupmember.id })
     .from(groupmember)
-    .where(
-      inArray(
-        groupmember.id,
-        desired.map((row) => row.id)
-      )
-    );
+    .where(inArray(groupmember.id, [...desiredIds]));
   const existingIds = new Set(existing.map((row) => row.id));
 
   const toInsert: TNewGroupmember[] = desired
@@ -212,12 +250,12 @@ async function seedEnrolments(students: SeedStudent[]) {
     }));
 
   if (toInsert.length === 0) {
-    console.log('   ✓ Enrolments already exist, skipping');
+    console.log('   ✓ Enrolments already match the mix, skipping');
     return;
   }
 
   await db.insert(groupmember).values(toInsert);
-  console.log(`   ✓ Inserted ${toInsert.length} enrolment(s) across both courses`);
+  console.log(`   ✓ Inserted ${toInsert.length} enrolment(s)`);
 }
 
 async function main() {
@@ -228,7 +266,18 @@ async function main() {
   await seedProfiles(students);
   await seedOrgMembers(students);
   await seedEnrolments(students);
-  console.log('✅ coursera-test students seeded successfully!');
+  const counts = students.reduce<Record<EnrolmentPattern, number>>(
+    (totals, student) => {
+      totals[student.enrolment] += 1;
+
+      return totals;
+    },
+    { both: 0, hipaa: 0, soc2: 0, none: 0 }
+  );
+
+  console.log(
+    `✅ Done: ${counts.both} in both courses, ${counts.hipaa} in HIPAA only, ${counts.soc2} in SOC 2 only, ${counts.none} not enrolled`
+  );
 }
 
 main().catch((error) => {
