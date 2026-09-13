@@ -61,7 +61,14 @@
     selectionControls?: AudienceSelectionControls | null;
   }
 
-  let { audience, pagination = null, query, courses = [], selectedMemberIds = $bindable([]) }: Props = $props();
+  let {
+    audience,
+    pagination = null,
+    query,
+    courses = [],
+    selectedMemberIds = $bindable([]),
+    selectionControls = $bindable(null)
+  }: Props = $props();
 
   $effect(() => {
     orgApi.audience = audience ?? [];
