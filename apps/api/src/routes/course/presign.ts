@@ -12,10 +12,13 @@ import {
 } from '@cio/core/utils/s3';
 
 import { Hono } from '@api/utils/hono';
-import { authMiddleware } from '@api/middlewares/auth';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import { automationKeyScopeOrSessionMiddleware } from '@api/middlewares/automation-key-scope-or-session';
 import { generateFileKey } from '@cio/core/utils/upload';
 import { AppError } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
+
+const requireCourseWrite = automationKeyScopeOrSessionMiddleware(['course:write']);
 
 /**
  * Advisory check on client-reported `fileSize`. Upload bytes go directly to object storage
@@ -56,7 +59,8 @@ const PresignDownloadResponse = {
 export const presignRouter = new Hono()
   .post(
     '/video/upload',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate a pre-signed URL for video upload',
       responses: {
@@ -99,7 +103,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/upload',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate a pre-signed URL for document upload',
       responses: {
@@ -142,7 +147,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/video/download',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate pre-signed URLs for video download',
       responses: {
@@ -180,7 +186,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/download',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate pre-signed URLs for document download',
       responses: {

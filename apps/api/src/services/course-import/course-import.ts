@@ -788,7 +788,8 @@ export async function publishCourseImportDraftService(
         sectionId,
         order: lesson.order,
         isUnlocked: lesson.isUnlocked,
-        public: lesson.public
+        public: lesson.public,
+        videos: lesson.videos
       });
 
       lessonIdMap.set(lesson.externalId, createdLesson.id);
@@ -945,7 +946,8 @@ export async function publishCourseImportDraftToExistingCourseService(
           sectionId,
           order: lesson.order,
           isUnlocked: lesson.isUnlocked,
-          public: lesson.public
+          public: lesson.public,
+          videos: lesson.videos
         });
         lessonIdMap.set(lesson.externalId, updatedLesson.id);
         updatedLessons += 1;
@@ -959,7 +961,8 @@ export async function publishCourseImportDraftToExistingCourseService(
         sectionId,
         order: lesson.order,
         isUnlocked: lesson.isUnlocked,
-        public: lesson.public
+        public: lesson.public,
+        videos: lesson.videos
       });
       lessonIdMap.set(lesson.externalId, createdLesson.id);
       createdLessons += 1;
