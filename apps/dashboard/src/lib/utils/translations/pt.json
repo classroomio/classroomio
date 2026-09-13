@@ -849,7 +849,8 @@
       "all_matching_selected": "Todos os {count} alunos correspondentes selecionados",
       "not_archived_blocker": "{count} desses alunos não estão arquivados. Arquive-os primeiro.",
       "success": "Alunos atualizados",
-      "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar."
+      "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar.",
+      "undo_dismiss": "Fechar"
     },
     "filter": {
       "status": "Status do membro",

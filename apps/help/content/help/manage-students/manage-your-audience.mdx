@@ -21,7 +21,7 @@ Use the filter control above the table to narrow the list. Filters combine, and 
 The **saved views** beside the filters cover the common questions in one click: never logged in, inactive 90+ days, inactive 180+ days, enrolled never started, and archived. Change any filter and the selector reads **Custom filters**.
 
 :::note[These filters find dormant students]
-**No login in 90 days** returns the people you have not heard from in that time. An **Exclude recent joiners** toggle appears with any time filter and is on by default, so nobody is flagged before they have had a chance to log in.
+**No login in 90 days** returns the people you have not heard from in that time. Setting either time filter also shows an **Exclude recent joiners** toggle, on by default, which leaves out anyone who joined too recently to count as inactive. See [Excluding recent joiners](/reference/audience#excluding-recent-joiners).
 :::
 
 To act on the result, see [Find and Remove Inactive Students](/manage-students/find-and-remove-inactive-students), which walks the whole review-and-archive loop.
@@ -31,6 +31,8 @@ To act on the result, see [Find and Remove Inactive Students](/manage-students/f
 Tick students in the table, or use **Select all matching** to act on everyone the current filter returns, including when that is thousands of people.
 
 Rows for invites that have not been accepted have no checkbox, because there is no account yet. "Select all matching" is filter-based, so it can still reach them.
+
+![The selection bar above the Audience table, with a red arrow on Select all 19 matching](/help/audience-bulk-actions.webp)
 
 With a selection made, open **Actions**:
 
@@ -112,6 +114,8 @@ For more than 1,000 students, split the file and import it in parts.
 
 If you would rather not use a file, paste addresses into the field below the upload area instead, one per line or separated by commas, then click **Review**.
 
+![The import screen with the CSV drop zone, the Download the template link, and the paste field below it](/help/audience-import-upload.webp)
+
 </Step>
 
 <Step>
@@ -146,11 +150,17 @@ Click **Import N students**, which counts only the rows marked Ready.
 </Step>
 </Steps>
 
-New students receive an invitation email. If some rows did not work, **Download the rows that failed** on the result screen gives you a CSV of just those, with the reason for each, to fix and upload again.
+New students receive an invitation email.
+
+![The import result screen listing every address with its outcome in a Status column](/help/audience-import-result.webp)
+
+If some rows did not work, **Download the rows that failed** appears here and gives you a CSV of just those, with the reason for each, to fix and upload again.
 
 ## Export students
 
 Use the **Export as CSV** button above the table, or its dropdown for **Excel**, **PDF** and **HTML**.
+
+![The Export as CSV button with its dropdown open showing Excel, PDF and HTML](/help/audience-export-menu.webp)
 
 The export contains name, email, membership and invite status, courses enrolled, courses completed, progress, last login, last activity and date joined.
 

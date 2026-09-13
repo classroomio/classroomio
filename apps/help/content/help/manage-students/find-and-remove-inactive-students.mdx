@@ -56,7 +56,7 @@ The fastest start is a saved view:
 For anything more specific, combine filters, such as **No login in 180 days** with **Completion, not started**. See [Filters](/reference/audience#filters) for the full set.
 
 :::note[Recent joiners are excluded automatically]
-Any time filter switches on **Exclude recent joiners**, so a new intake does not appear in these views. The grace period is the filter's own window, and 7 days for **Never logged in**.
+These views leave out anyone who joined too recently to count as inactive, so a fresh batch of invites will not appear in them. See [Excluding recent joiners](/reference/audience#excluding-recent-joiners) for how recent counts and when to switch it off.
 :::
 
 Two columns tell you whether "inactive" is the whole story. **Last Login** is when they last signed in; **Last Activity** is when they last did something in a course. Someone logging in without any activity is a different problem from someone who has vanished. The first may be stuck rather than disengaged.
@@ -91,6 +91,8 @@ Deleting removes the student from your organization and from every course in it,
 ## 4. Check the result, and undo if needed
 
 The confirmation tells you how many students changed and how many were skipped, usually because they were already in that state.
+
+![The Applied banner above the Audience table, with a red arrow on the Undo button](/help/audience-undo.webp)
 
 **Undo** then stays available for 15 minutes after an archive or a deactivate, and applies to exactly the students who changed rather than to a re-run of the filter. If someone else has since acted on one of them, their newer decision is kept.
 

@@ -3,6 +3,7 @@
   import { navigating, page } from '$app/state';
   import UsersIcon from '@lucide/svelte/icons/users';
   import SearchXIcon from '@lucide/svelte/icons/search-x';
+  import XIcon from '@lucide/svelte/icons/x';
   import { Button } from '@cio/ui/base/button';
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -502,6 +503,19 @@
     <span class="ui:text-muted-foreground text-sm">{$t('audience.bulk.undo_available')}</span>
     <Button variant="secondary" size="sm" onclick={handleUndo} loading={isUndoing} disabled={isUndoing}>
       {$t('audience.bulk.undo')}
+    </Button>
+    <!-- Dismissing drops the offer, not the action: the change already
+         happened, and the token expires on its own either way. -->
+    <Button
+      variant="secondary"
+      size="icon"
+      class="ml-auto"
+      disabled={isUndoing}
+      onclick={() => (lastUndoToken = null)}
+      title={$t('audience.bulk.undo_dismiss')}
+    >
+      <XIcon class="size-4" aria-hidden="true" />
+      <span class="sr-only">{$t('audience.bulk.undo_dismiss')}</span>
     </Button>
   </div>
 {/if}

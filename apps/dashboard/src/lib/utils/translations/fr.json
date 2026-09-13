@@ -849,7 +849,8 @@
       "all_matching_selected": "Tous les {count} étudiants correspondants sélectionnés",
       "not_archived_blocker": "{count} de ces étudiants ne sont pas archivés. Veuillez les archiver d'abord.",
       "success": "Étudiants mis à jour",
-      "queued_running": "Candidature en cours auprès de {count} étudiants. Vous pouvez continuer à travailler ; nous vous informerons lorsque l'opération sera terminée."
+      "queued_running": "Candidature en cours auprès de {count} étudiants. Vous pouvez continuer à travailler ; nous vous informerons lorsque l'opération sera terminée.",
+      "undo_dismiss": "Fermer"
     },
     "filter": {
       "status": "Statut de membre",

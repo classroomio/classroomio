@@ -4115,6 +4115,7 @@
       "partial_success": "{succeeded} updated, {failed} skipped",
       "undo_available": "Applied. You can still undo this.",
       "undo": "Undo",
+      "undo_dismiss": "Dismiss",
       "undo_success": "Reverted",
       "queued_running": "Applying to {count} students. You can keep working — we will tell you when it finishes.",
       "queued_failed": "This bulk action did not finish. Nothing further was applied.",

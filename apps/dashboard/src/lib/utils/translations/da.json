@@ -849,7 +849,8 @@
       "all_matching_selected": "Alle {count} matchende elever er valgt",
       "not_archived_blocker": "{count} af disse elever er ikke arkiverede. Arkivér dem først.",
       "success": "Elever opdateret",
-      "queued_running": "Ansøger om at blive optaget på {count} elever. Du kan fortsætte med at arbejde - vi giver dig besked, når det er færdigt."
+      "queued_running": "Ansøger om at blive optaget på {count} elever. Du kan fortsætte med at arbejde - vi giver dig besked, når det er færdigt.",
+      "undo_dismiss": "Luk"
     },
     "filter": {
       "status": "Medlemsstatus",

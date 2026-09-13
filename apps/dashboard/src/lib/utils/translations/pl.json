@@ -849,7 +849,8 @@
       "all_matching_selected": "Wybrano wszystkich {count} pasujących studentów",
       "not_archived_blocker": "{count} z tych studentów nie zostało zarchiwizowanych. Najpierw zarchiwizuj ich.",
       "success": "Zaktualizowano studentów",
-      "queued_running": "Aplikowanie do {count} studentów. Możesz kontynuować pracę — poinformujemy Cię o zakończeniu."
+      "queued_running": "Aplikowanie do {count} studentów. Możesz kontynuować pracę — poinformujemy Cię o zakończeniu.",
+      "undo_dismiss": "Zamknij"
     },
     "filter": {
       "status": "Status członka",
