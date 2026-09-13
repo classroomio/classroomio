@@ -11,29 +11,49 @@ Certificate features require a paid plan. The controls are visible on free plans
 
 ## Configure certificate rules
 
+Certificate options are split across two tabs of your course. Turning certificates on and writing the email live on
+the **Certificates** tab; the rules that decide _who qualifies_ live on the **Settings** tab.
+
+| What you want to set                | Tab              |
+| ----------------------------------- | ---------------- |
+| Allow students download certificate | **Certificates** |
+| Email message                       | **Certificates** |
+| Minimum completion (%)              | **Settings**     |
+| Final exercise (optional)           | **Settings**     |
+| Minimum score on final exercise (%) | **Settings**     |
+| Course Completion Deadline          | **Settings**     |
+
+### On the Certificates tab
+
 Open your course in the admin dashboard and go to the **Certificates** tab.
 
-![Certificate rules panel with the download toggle and completion threshold](/help/certificates-rules.webp)
+![Certificates tab showing the Rules section with the download toggle](/help/certificates-rules.webp)
 
-### 1. Enable downloadable certificates
+#### 1. Enable downloadable certificates
 
-Turn on **Allow students download certificate**. When this is off, no certificate is generated even if students meet the requirements.
+Under **Rules**, turn on **Allow students download certificate**. When this is off, no certificate is generated even if students meet the requirements.
 
-### 2. Set a completion threshold
+#### 2. Add a custom email message (optional)
 
-Enter a percentage in **Minimum completion (%)**. A student must complete this share of the course to qualify. Defaults to 100%.
+Enter text under **Email Message**. This message is included in the notification email sent to students when they earn their certificate.
 
-### 3. Require a final exercise (optional)
+### On the Settings tab
 
-Select an exercise from **Final exercise (optional)**. When set, the student must pass that specific exercise (best attempt counts) in addition to meeting the overall completion percentage. Set **Minimum score on final exercise (%)** to the minimum passing score for that exercise.
+Go to the course's **Settings** tab for the qualifying rules.
 
-### 4. Set a deadline (optional)
+#### 1. Set a completion threshold
 
-Enter a date and time in **Certification deadline**. Students who complete the course after this date do not receive a certificate.
+Enter a percentage in **Minimum completion (%)**. This is combined lesson _and_ exercise progress, and it defaults to 100%.
 
-### 5. Add a custom email message (optional)
+#### 2. Require a final exercise (optional)
 
-Enter text in the email message field. This message is included in the notification email sent to students when they earn their certificate.
+Select an exercise from **Final exercise (optional)**. When set, the student must reach the minimum score on that specific exercise, in addition to meeting the overall completion percentage.
+
+**Minimum score on final exercise (%)** appears once you pick an exercise. The student's best attempt counts, and selecting an exercise here gives students unlimited attempts on it.
+
+#### 3. Set a deadline (optional)
+
+Enter a date and time in **Course Completion Deadline**. Students must meet the completion percentage before this datetime, in local time. Leave it empty for no deadline.
 
 ## Customize the design and add signatures
 
