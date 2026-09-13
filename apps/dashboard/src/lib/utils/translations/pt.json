@@ -754,7 +754,8 @@
         "is_staff": "Funcionário, não aluno"
       },
       "submit_count": "Importar {count} alunos",
-      "result_heading": "{count} alunos importados"
+      "result_heading": "{count} alunos importados",
+      "start_over": "Escolha um arquivo diferente"
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {
@@ -849,7 +850,9 @@
       "all_matching_selected": "Todos os {count} alunos correspondentes selecionados",
       "not_archived_blocker": "{count} desses alunos não estão arquivados. Arquive-os primeiro.",
       "success": "Alunos atualizados",
-      "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar."
+      "queued_running": "Aplicando a {count} alunos. Você pode continuar trabalhando — avisaremos quando terminar.",
+      "undo_dismiss": "Fechar",
+      "clear": "Limpar"
     },
     "filter": {
       "status": "Status do membro",
@@ -5400,6 +5403,15 @@
     "more_formats": "Mais formatos de exportação",
     "pdf_too_many_rows": "Muitas linhas — use CSV ou Excel acima de {limit}",
     "nothing_to_export": "Não há nada para exportar.",
-    "failed": "A exportação falhou"
+    "failed": "A exportação falhou",
+    "label": "Exportar",
+    "copy": "Copiar",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Copiado para a área de transferência",
+    "copy_failed": "Não foi possível copiar para a área de transferência"
   }
 }

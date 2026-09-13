@@ -754,7 +754,8 @@
         "is_staff": "Personnel non étudiant"
       },
       "submit_count": "Importer {count} étudiants",
-      "result_heading": "{count} étudiants importés"
+      "result_heading": "{count} étudiants importés",
+      "start_over": "Choisissez un autre fichier"
     },
     "page_subtitle": "Découvrez qui appartient à votre organisation, qui apprend, qui est invité et comment les contacter.",
     "user_analytics": {
@@ -849,7 +850,9 @@
       "all_matching_selected": "Tous les {count} étudiants correspondants sélectionnés",
       "not_archived_blocker": "{count} de ces étudiants ne sont pas archivés. Veuillez les archiver d'abord.",
       "success": "Étudiants mis à jour",
-      "queued_running": "Candidature en cours auprès de {count} étudiants. Vous pouvez continuer à travailler ; nous vous informerons lorsque l'opération sera terminée."
+      "queued_running": "Candidature en cours auprès de {count} étudiants. Vous pouvez continuer à travailler ; nous vous informerons lorsque l'opération sera terminée.",
+      "undo_dismiss": "Fermer",
+      "clear": "Effacer"
     },
     "filter": {
       "status": "Statut de membre",
@@ -5400,6 +5403,15 @@
     "more_formats": "Plus de formats d'exportation",
     "pdf_too_many_rows": "Trop de lignes — utilisez un fichier CSV ou Excel au-dessus de {limit}",
     "nothing_to_export": "Il n'y a rien à exporter",
-    "failed": "L'exportation a échoué."
+    "failed": "L'exportation a échoué.",
+    "label": "Exporter",
+    "copy": "Copier",
+    "format_csv": "CSV",
+    "format_excel": "Exceller",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Copié dans le presse-papiers",
+    "copy_failed": "Impossible de copier dans le presse-papiers"
   }
 }

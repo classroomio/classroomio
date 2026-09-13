@@ -754,7 +754,8 @@
         "is_staff": "Pracownik, nie student"
       },
       "submit_count": "Importuj {count} studentów",
-      "result_heading": "Zaimportowano {count} studentów"
+      "result_heading": "Zaimportowano {count} studentów",
+      "start_over": "Wybierz inny plik"
     },
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {
@@ -849,7 +850,9 @@
       "all_matching_selected": "Wybrano wszystkich {count} pasujących studentów",
       "not_archived_blocker": "{count} z tych studentów nie zostało zarchiwizowanych. Najpierw zarchiwizuj ich.",
       "success": "Zaktualizowano studentów",
-      "queued_running": "Aplikowanie do {count} studentów. Możesz kontynuować pracę — poinformujemy Cię o zakończeniu."
+      "queued_running": "Aplikowanie do {count} studentów. Możesz kontynuować pracę — poinformujemy Cię o zakończeniu.",
+      "undo_dismiss": "Zamknij",
+      "clear": "Wyczyść"
     },
     "filter": {
       "status": "Status członka",
@@ -5400,6 +5403,15 @@
     "more_formats": "Więcej formatów eksportu",
     "pdf_too_many_rows": "Zbyt wiele wierszy — użyj CSV lub Excela powyżej {limit}",
     "nothing_to_export": "Brak elementów do eksportu",
-    "failed": "Eksport nie powiódł się"
+    "failed": "Eksport nie powiódł się",
+    "label": "Eksportuj",
+    "copy": "Kopiuj",
+    "format_csv": "CSV",
+    "format_excel": "Excela",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Skopiowano do schowka",
+    "copy_failed": "Nie można skopiować do schowka"
   }
 }

@@ -3978,6 +3978,7 @@
       "select_cohorts_placeholder": "Choose cohorts...",
       "send_email": "Send invitation email to imported users",
       "back": "Back",
+      "start_over": "Choose a different file",
       "snackbar_success": "{imported} new invites, {assigned} existing students given access, {pendingInvitesRenewed} pending invites renewed ({emailsSent} emails sent)",
       "snackbar_no_emails": "Please enter at least one email address",
       "snackbar_failed": "Failed to import users",
@@ -4075,6 +4076,7 @@
       "select_all_matching": "Select all {count} matching",
       "all_matching_selected": "All {count} matching students selected",
       "clear_selection": "Clear selection",
+      "clear": "Clear",
       "action": {
         "archive": "Archive {count} students",
         "deactivate": "Deactivate {count} students",
@@ -4115,6 +4117,7 @@
       "partial_success": "{succeeded} updated, {failed} skipped",
       "undo_available": "Applied. You can still undo this.",
       "undo": "Undo",
+      "undo_dismiss": "Dismiss",
       "undo_success": "Reverted",
       "queued_running": "Applying to {count} students. You can keep working — we will tell you when it finishes.",
       "queued_failed": "This bulk action did not finish. Nothing further was applied.",
@@ -5387,6 +5390,15 @@
     "more_formats": "More export formats",
     "pdf_too_many_rows": "Too many rows — use CSV or Excel above {limit}",
     "nothing_to_export": "There is nothing to export",
-    "failed": "Export failed"
+    "failed": "Export failed",
+    "label": "Export",
+    "copy": "Copy",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Copied to clipboard",
+    "copy_failed": "Could not copy to clipboard"
   }
 }

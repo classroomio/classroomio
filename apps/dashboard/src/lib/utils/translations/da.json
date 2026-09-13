@@ -754,7 +754,8 @@
         "is_staff": "Personal, ikke en studerende"
       },
       "submit_count": "Importer {count} studerende",
-      "result_heading": "{count} studerende importeret"
+      "result_heading": "{count} studerende importeret",
+      "start_over": "Vælg en anden fil"
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
@@ -849,7 +850,9 @@
       "all_matching_selected": "Alle {count} matchende elever er valgt",
       "not_archived_blocker": "{count} af disse elever er ikke arkiverede. Arkivér dem først.",
       "success": "Elever opdateret",
-      "queued_running": "Ansøger om at blive optaget på {count} elever. Du kan fortsætte med at arbejde - vi giver dig besked, når det er færdigt."
+      "queued_running": "Ansøger om at blive optaget på {count} elever. Du kan fortsætte med at arbejde - vi giver dig besked, når det er færdigt.",
+      "undo_dismiss": "Luk",
+      "clear": "Ryd"
     },
     "filter": {
       "status": "Medlemsstatus",
@@ -5400,6 +5403,15 @@
     "more_formats": "Flere eksportformater",
     "pdf_too_many_rows": "For mange rækker — brug CSV eller Excel over {limit}",
     "nothing_to_export": "Der er intet at eksportere",
-    "failed": "Eksport mislykkedes"
+    "failed": "Eksport mislykkedes",
+    "label": "Eksporter",
+    "copy": "Kopiér",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Kopieret til udklipsholder",
+    "copy_failed": "Kunne ikke kopiere til udklipsholder"
   }
 }

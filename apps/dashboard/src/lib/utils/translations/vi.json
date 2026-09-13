@@ -754,7 +754,8 @@
         "is_staff": "Nhân viên, không phải học viên"
       },
       "submit_count": "Nhập {count} học viên",
-      "result_heading": "{count} học viên đã được nhập"
+      "result_heading": "{count} học viên đã được nhập",
+      "start_over": "Chọn một tập tin khác"
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
@@ -849,7 +850,9 @@
       "all_matching_selected": "Tất cả {count} học sinh phù hợp đã được chọn",
       "not_archived_blocker": "{count} học sinh trong số này chưa được lưu trữ. Hãy lưu trữ họ trước.",
       "success": "Học sinh đã được cập nhật",
-      "queued_running": "Đang áp dụng cho {count} học sinh. Bạn có thể tiếp tục làm việc — chúng tôi sẽ thông báo cho bạn khi hoàn tất."
+      "queued_running": "Đang áp dụng cho {count} học sinh. Bạn có thể tiếp tục làm việc — chúng tôi sẽ thông báo cho bạn khi hoàn tất.",
+      "undo_dismiss": "Đóng",
+      "clear": "Xóa"
     },
     "filter": {
       "status": "Trạng thái thành viên",
@@ -5400,6 +5403,15 @@
     "more_formats": "Thêm định dạng xuất",
     "pdf_too_many_rows": "Quá nhiều hàng — hãy sử dụng CSV hoặc Excel nếu số lượng lớn hơn {limit}",
     "nothing_to_export": "Không có gì để xuất",
-    "failed": "Xuất thất bại"
+    "failed": "Xuất thất bại",
+    "label": "Xuất khẩu",
+    "copy": "Sao chép",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Đã sao chép vào bảng nhớ tạm",
+    "copy_failed": "Không thể sao chép vào bảng nhớ tạm"
   }
 }

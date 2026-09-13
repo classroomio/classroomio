@@ -754,7 +754,8 @@
         "is_staff": "Mitarbeiter/in (keine/r Studierende/r)"
       },
       "submit_count": "{count} Studierende importieren",
-      "result_heading": "{count} Studierende importiert"
+      "result_heading": "{count} Studierende importiert",
+      "start_over": "Wählen Sie eine andere Datei"
     },
     "page_subtitle": "Sehen Sie, wer zu Ihrer Organisation gehört, wer lernt, wer eingeladen ist und wie Sie sie erreichen.",
     "user_analytics": {
@@ -849,7 +850,9 @@
       "all_matching_selected": "Alle {count} passenden Studierenden ausgewählt",
       "not_archived_blocker": "{count} dieser Studierenden sind nicht archiviert. Archivieren Sie sie zuerst.",
       "success": "Studierende aktualisiert",
-      "queued_running": "Wird auf {count} Studierende angewendet. Sie können weiterarbeiten – wir benachrichtigen Sie, sobald der Vorgang abgeschlossen ist."
+      "queued_running": "Wird auf {count} Studierende angewendet. Sie können weiterarbeiten – wir benachrichtigen Sie, sobald der Vorgang abgeschlossen ist.",
+      "undo_dismiss": "Schließen",
+      "clear": "Löschen"
     },
     "filter": {
       "status": "Mitgliedsstatus",
@@ -5400,6 +5403,15 @@
     "more_formats": "Weitere Exportformate",
     "pdf_too_many_rows": "Zu viele Zeilen – verwenden Sie CSV oder Excel oberhalb von {limit}",
     "nothing_to_export": "Es gibt nichts zu exportieren",
-    "failed": "Export fehlgeschlagen"
+    "failed": "Export fehlgeschlagen",
+    "label": "Exportieren",
+    "copy": "Kopieren",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "In die Zwischenablage kopiert",
+    "copy_failed": "Konnte nicht in die Zwischenablage kopieren"
   }
 }

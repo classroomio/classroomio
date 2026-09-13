@@ -3,13 +3,14 @@
   import { navigating, page } from '$app/state';
   import UsersIcon from '@lucide/svelte/icons/users';
   import SearchXIcon from '@lucide/svelte/icons/search-x';
+  import XIcon from '@lucide/svelte/icons/x';
   import { Button } from '@cio/ui/base/button';
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import { onDestroy } from 'svelte';
   import { TablePagination, UpgradeBanner } from '$features/ui';
-  import { currentOrgMaxAudience, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgMaxAudience, isOrgAdmin } from '$lib/utils/store/org';
   import type {
     OrganizationAudience,
     OrganizationAudienceMember,
@@ -19,6 +20,7 @@
   import AssignCoursesModal from '$features/audience/components/assign-courses-modal.svelte';
   import AudienceDeleteConfirmation from '$features/audience/components/audience-delete-confirmation.svelte';
   import AudienceTableToolbar from '$features/audience/components/audience-table-toolbar.svelte';
+  import { audienceExportHeaders, buildAudienceExportDocument } from '$features/audience/utils/audience-export-utils';
   import AudienceTable from '$features/audience/components/audience-table.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import {
@@ -51,9 +53,22 @@
     courses?: Course[];
     /** Reported upward so the page header's export can honour the selection. */
     selectedMemberIds?: number[];
+    /**
+     * The selection bar lives in the route, beside `Page.Body`, because a
+     * sticky bar inside `Page.Body` has no travel and would also centre on the
+     * viewport rather than on the content column.
+     */
+    selectionControls?: AudienceSelectionControls | null;
   }
 
-  let { audience, pagination = null, query, courses = [], selectedMemberIds = $bindable([]) }: Props = $props();
+  let {
+    audience,
+    pagination = null,
+    query,
+    courses = [],
+    selectedMemberIds = $bindable([]),
+    selectionControls = $bindable(null)
+  }: Props = $props();
 
   $effect(() => {
     orgApi.audience = audience ?? [];
@@ -149,6 +164,35 @@
     selectablePageRows.some((row) => selectedIds.has(String(row.id))) && !allPageSelected
   );
   const hasSelection = $derived(selectedIds.size > 0 || allMatchingSelected);
+
+  // The selection bar's Copy and Export both need the rows behind the current
+  // selection. Ticked rows win; "all matching" is a filter, so it falls back to
+  // the query and lets the server resolve it.
+  // Writes only; nothing here reads `selectionControls`, so this cannot loop.
+  $effect(() => {
+    selectionControls = {
+      selectedCount: selectedIds.size,
+      totalMatching: totalCount,
+      allMatchingSelected,
+      isApplying: isApplyingBulkAction,
+      loadDocument: loadSelectionExportDocument,
+      selectAllMatching: () => (allMatchingSelected = true),
+      clear: clearSelection,
+      openAssign: () => (assignModalOpen = true),
+      act: handleBulkAction
+    };
+  });
+
+  async function loadSelectionExportDocument() {
+    const memberIds = allMatchingSelected ? undefined : [...selectedIds].map(Number);
+    const response = await orgApi.getAudienceExportRows(query, memberIds?.length ? memberIds : undefined);
+
+    return buildAudienceExportDocument(
+      response?.data ?? [],
+      $currentOrg?.name ?? 'Organization',
+      audienceExportHeaders()
+    );
+  }
 
   // Selection lives here, but the Export control sits in the route's header, so
   // the ids have to travel up or the exported file silently ignores what was
@@ -478,10 +522,6 @@
 {/if}
 
 <AudienceTableToolbar
-  {hasSelection}
-  selectedCount={selectedIds.size}
-  {allMatchingSelected}
-  {isApplyingBulkAction}
   bind:searchValue
   {query}
   {activeView}
@@ -491,10 +531,6 @@
   onFilterChange={handleFilterChange}
   onClearFilters={handleClearFilters}
   onSelectView={handleSelectView}
-  onOpenAssign={() => (assignModalOpen = true)}
-  onSelectAllMatching={() => (allMatchingSelected = true)}
-  onClearSelection={clearSelection}
-  onBulkAction={handleBulkAction}
 />
 
 {#if lastUndoToken}
@@ -502,6 +538,19 @@
     <span class="ui:text-muted-foreground text-sm">{$t('audience.bulk.undo_available')}</span>
     <Button variant="secondary" size="sm" onclick={handleUndo} loading={isUndoing} disabled={isUndoing}>
       {$t('audience.bulk.undo')}
+    </Button>
+    <!-- Dismissing drops the offer, not the action: the change already
+         happened, and the token expires on its own either way. -->
+    <Button
+      variant="secondary"
+      size="icon"
+      class="ml-auto"
+      disabled={isUndoing}
+      onclick={() => (lastUndoToken = null)}
+      title={$t('audience.bulk.undo_dismiss')}
+    >
+      <XIcon class="size-4" aria-hidden="true" />
+      <span class="sr-only">{$t('audience.bulk.undo_dismiss')}</span>
     </Button>
   </div>
 {/if}
