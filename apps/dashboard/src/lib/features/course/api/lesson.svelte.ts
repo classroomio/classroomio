@@ -26,9 +26,9 @@ import type {
   UpdateLessonRequest,
   UpdateLessonWatchProgressRequest,
   GetLessonWatchProgressRequest,
-  type LessonWatchProgress,
-  type LessonWatchProgressUpdate
+  CreateCourseSectionData
 } from '../utils/types';
+import type { LessonWatchProgress, LessonWatchProgressUpdate } from '../utils/types';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import type {
   TCourseSectionCreate,
@@ -110,13 +110,21 @@ export class LessonApi extends BaseApiWithErrors {
 
   /**
    * Creates a new lesson
+   * @returns The created lesson, or undefined when validation or the request fails.
    */
-  async create(courseId: string, fields: TLessonCreate) {
+  async create(
+    courseId: string,
+    fields: TLessonCreate,
+    options: { silent?: boolean } = {}
+  ): Promise<Lesson | undefined> {
     const result = ZLessonCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
+
+    const silent = options.silent ?? false;
+    let createdLesson: Lesson | undefined;
 
     await this.execute<CreateLessonRequest>({
       requestFn: () =>
@@ -127,12 +135,15 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating lesson',
       onSuccess: (response) => {
         if (response.data) {
-          const createdLesson = response.data as Lesson;
+          const createdLessonData = response.data as Lesson;
           this.lesson = {
-            ...createdLesson,
-            lessonLanguages: createdLesson.lessonLanguages ?? []
+            ...createdLessonData,
+            lessonLanguages: createdLessonData.lessonLanguages ?? []
           };
-          snackbar.success('snackbar.lessons.lesson_created');
+          createdLesson = this.lesson;
+          if (!silent) {
+            snackbar.success('snackbar.lessons.lesson_created');
+          }
           this.success = true;
           this.errors = {};
         }
@@ -151,6 +162,8 @@ export class LessonApi extends BaseApiWithErrors {
         }
       }
     });
+
+    return createdLesson;
   }
 
   /**
@@ -230,13 +243,21 @@ export class LessonApi extends BaseApiWithErrors {
 
   /**
    * Creates a course section
+   * @returns The created section, or undefined when validation or the request fails.
    */
-  async createSection(courseId: string, fields: TCourseSectionCreate) {
+  async createSection(
+    courseId: string,
+    fields: TCourseSectionCreate,
+    options: { silent?: boolean } = {}
+  ): Promise<CreateCourseSectionData | undefined> {
     const result = ZCourseSectionCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
+
+    const silent = options.silent ?? false;
+    let createdSection: CreateCourseSectionData | undefined;
 
     await this.execute<CreateCourseSectionRequest>({
       requestFn: () =>
@@ -247,7 +268,10 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('snackbar.lessons.section_created');
+          createdSection = response.data;
+          if (!silent) {
+            snackbar.success('snackbar.lessons.section_created');
+          }
           this.success = true;
           this.errors = {};
         }
@@ -263,6 +287,8 @@ export class LessonApi extends BaseApiWithErrors {
         }
       }
     });
+
+    return createdSection;
   }
 
   /**
