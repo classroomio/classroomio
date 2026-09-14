@@ -109,6 +109,7 @@
           appColor: null,
           appMono: null,
           isClassroomIOAction: true,
+          actionLabel: 'Enroll Student in Course',
           status: 'error',
           errorNote: 'Course "Onboarding Basics" was archived',
           lastActivity: '1 day ago'
@@ -131,7 +132,25 @@
       try {
         stored = JSON.parse(sessionStorage.getItem('ziNewZap'));
       } catch (e) {}
-      if (justEnabled && stored) {
+      if (justEnabled && stored && stored.isClassroomIOAction) {
+        // Reverse-direction Zap: another app's trigger, one of ClassroomIO's
+        // 5 real actions as the outcome (PRD "Action Catalog").
+        var caction = ZI.CLASSROOMIO_ACTIONS[stored.action];
+        ZAPS.unshift({
+          name: stored.name,
+          trigger: stored.trigger,
+          triggerIcon: '<div class="app-badge app-hubspot" style="width:100%;height:100%;border-radius:var(--radius-md)">H</div>',
+          app: 'ClassroomIO',
+          appColor: null,
+          appMono: null,
+          isClassroomIOAction: true,
+          actionLabel: caction ? caction.label : 'ClassroomIO action',
+          status: 'active',
+          lastActivity: 'Just now',
+          isNew: true
+        });
+        sessionStorage.removeItem('ziNewZap');
+      } else if (justEnabled && stored) {
         var app = ZI.APPS[stored.app] || ZI.APPS.slack;
         var trig = ZI.TRIGGERS[stored.trigger];
         ZAPS.unshift({
@@ -158,7 +177,7 @@
         if (zap.isNew) row.style.background = 'color-mix(in oklab, var(--success) 6%, transparent)';
 
         var appCell = zap.isClassroomIOAction
-          ? '<div style="display:flex;align-items:center;gap:8px"><div class="zi-org-mark" style="width:26px;height:26px;font-size:11px">A</div><span>ClassroomIO</span></div>'
+          ? '<div style="display:flex;align-items:center;gap:8px"><div class="zi-org-mark" style="width:26px;height:26px;font-size:11px">A</div><span>' + (zap.actionLabel || 'ClassroomIO') + '</span></div>'
           : '<div style="display:flex;align-items:center;gap:8px"><div class="app-badge" style="width:26px;height:26px;font-size:11px;background:' + zap.appColor + ';color:' + (zap.appDark ? '#241c15' : '#fff') + '">' + zap.appMono + '</div><span>' + zap.app + '</span></div>';
 
         var statusCell = '<span class="zi-status-live ' + zap.status + '"><span class="dot"></span>' + STATUS_LABEL[zap.status] + '</span>';

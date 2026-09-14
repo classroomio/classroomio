@@ -34,7 +34,7 @@
       filters: { course: false, tag: false },
       fields: ['Student Name', 'Student Email', 'Signup Date']
     },
-    student_enrolled: {
+    student_enrolled_in_course: {
       label: 'Student enrolled in a course',
       desc: 'A student is added to a course, by invite or direct assignment.',
       icon: ICONS.enrolled,
@@ -55,12 +55,92 @@
       filters: { course: true, tag: false },
       fields: ['Student Name', 'Student Email', 'Course Name', 'Certificate ID', 'Issued Date']
     },
-    payment_request: {
+    payment_request_created: {
       label: 'Payment request submitted',
       desc: 'A learner submits a payment request.',
       icon: ICONS.payment,
       filters: { course: true, tag: false },
       fields: ['Student Name', 'Student Email', 'Course Name', 'Amount', 'Submitted Date']
+    }
+  };
+
+  // The 5 real "creates" ClassroomIO ships as a Zapier action app: what a Zap
+  // built in another app (HubSpot, a form tool, a spreadsheet) can do TO
+  // ClassroomIO. Separate from CATEGORY_DEFAULT_ACTIONS / APPS[x].action
+  // above, which model the opposite direction (what a ClassroomIO trigger can
+  // do to another app). Every field here is `zapier:write` scoped.
+  var CLASSROOMIO_ACTIONS = {
+    enroll_student_in_course: {
+      label: 'Enroll Student in Course',
+      desc: 'Find or create the student by email, then assign them to one or more courses.',
+      endpoint: 'POST /public-api/v1/audience + POST /public-api/v1/audience/assign-courses',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 11 2 2 4-4"/></svg>',
+      fields: [
+        { key: 'email', label: 'Email', type: 'pill', default: '{{Contact Email}}' },
+        { key: 'name', label: 'Full name', type: 'pill', default: '{{Contact Name}}' },
+        {
+          key: 'course',
+          label: 'Course',
+          type: 'select',
+          options: ['Onboarding Basics', 'Product Fundamentals', 'Security & Compliance 101']
+        }
+      ]
+    },
+    add_student: {
+      label: 'Add Student',
+      desc: 'Create an audience member without assigning any course.',
+      endpoint: 'POST /public-api/v1/audience',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>',
+      fields: [
+        { key: 'email', label: 'Email', type: 'pill', default: '{{Contact Email}}' },
+        { key: 'name', label: 'Full name', type: 'pill', default: '{{Contact Name}}' }
+      ]
+    },
+    update_student: {
+      label: 'Update Student',
+      desc: 'Update an existing audience member: name, email, or a custom attribute.',
+      endpoint: 'PUT /public-api/v1/audience/:memberId',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
+      fields: [
+        { key: 'email', label: 'Email (to find)', type: 'pill', default: '{{Contact Email}}' },
+        { key: 'name', label: 'Full name', type: 'pill', default: '{{Contact Name}}' },
+        { key: 'attribute', label: 'Custom attribute', type: 'pill', default: 'plan: {{Deal Stage}}' }
+      ]
+    },
+    remove_student: {
+      label: 'Remove Student',
+      desc: 'Remove a student from the organization by email.',
+      endpoint: 'DELETE /public-api/v1/audience/:memberId',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M17 11h6"/></svg>',
+      fields: [{ key: 'email', label: 'Email', type: 'pill', default: '{{Contact Email}}' }]
+    },
+    tag_student: {
+      label: 'Tag Student',
+      desc: 'Apply or remove a tag on an existing audience member.',
+      endpoint: 'POST /public-api/v1/audience/:memberId/tags',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.5"/></svg>',
+      fields: [
+        { key: 'email', label: 'Email', type: 'pill', default: '{{Contact Email}}' },
+        { key: 'tag', label: 'Tag', type: 'select', options: ['Enterprise', 'Trial', 'APAC'] },
+        { key: 'mode', label: 'Action', type: 'select', options: ['Apply tag', 'Remove tag'] }
+      ]
+    }
+  };
+
+  // The 2 v1 searches, used by Zapier's find-or-create pattern alongside
+  // add_student / find_course above. Not independently pickable in this
+  // prototype's builder, since Zapier auto-generates the "Find or Create"
+  // step from these plus the matching create action.
+  var CLASSROOMIO_SEARCHES = {
+    find_student_by_email: {
+      label: 'Find Student by Email',
+      desc: 'Look up an audience member by exact email.',
+      endpoint: 'GET /public-api/v1/audience?email=…'
+    },
+    find_course: {
+      label: 'Find Course',
+      desc: 'Look up a course by slug or title.',
+      endpoint: 'GET /public-api/v1/courses?slug=… or ?title=…'
     }
   };
 
@@ -75,7 +155,10 @@
     'Certificate ID': 'cert_9b21e4',
     'Issued Date': 'Sep 8, 2026',
     Amount: '$249.00',
-    'Submitted Date': 'Sep 8, 2026'
+    'Submitted Date': 'Sep 8, 2026',
+    'Contact Name': 'Priya Sharma',
+    'Contact Email': 'priya.sharma@northwind.io',
+    'Deal Stage': 'Customer'
   };
 
   var CATEGORIES = [
@@ -973,6 +1056,8 @@
     SAMPLE_VALUES: SAMPLE_VALUES,
     CATEGORIES: CATEGORIES,
     APPS: APPS,
+    CLASSROOMIO_ACTIONS: CLASSROOMIO_ACTIONS,
+    CLASSROOMIO_SEARCHES: CLASSROOMIO_SEARCHES,
     categoryLabel: function (key) {
       var found = CATEGORIES.filter(function (c) {
         return c.key === key;

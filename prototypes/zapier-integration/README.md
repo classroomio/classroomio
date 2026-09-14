@@ -16,10 +16,10 @@ adapted to ClassroomIO's design system, never its visuals.
 | `oauth-consent.html` | Screen 4: Authorize screen. Org picker, read/write scopes, Authorize / Deny |
 | `zapier-connected.html` | Screen 5: Connected state. Grant info, usage vs plan limits, connections table, setup guide |
 | `zap-templates.html` | Screen 6: Five ready-made Zap templates plus start from scratch |
-| `zap-builder.html` + `zap-builder.js` | Screens 7-10: One guided flow. Trigger, action, test, review and enable |
+| `zap-builder.html` + `zap-builder.js` | Screens 7-10: One guided flow. Trigger, action, test, review and enable. Also hosts a second, separate wizard for `?template=crm-enroll`, the reverse direction where another app triggers and ClassroomIO is the action (see "Why the App Directory..." below) |
 | `manage-zaps.html` | Screen 11: Active / paused / error Zaps, with a working pause/resume action |
 | `automation-overview.html` | Context screen: the org's Automation hub (MCP / API / Zapier cards) inside the real dashboard chrome. Not required to reach Zapier, but one click away from the "Automation" breadcrumb on every Zapier screen |
-| `apps-catalog.js` | Shared data: the 77-app catalog (categories, colors, descriptions), 15 category-level default actions, the 5 ClassroomIO triggers, and the `ZI.badgeHTML()` / `ZI.getAction()` helpers every other file renders through. Single source of truth for the directory landing, the full App Directory, app-detail pages, and the builder |
+| `apps-catalog.js` | Shared data: the 77-app catalog (categories, colors, descriptions), 15 category-level default actions, the 5 ClassroomIO triggers, the 5 real ClassroomIO actions and 2 searches from the PRD's Action/Search Catalog (`ZI.CLASSROOMIO_ACTIONS` / `ZI.CLASSROOMIO_SEARCHES`), and the `ZI.badgeHTML()` / `ZI.getAction()` helpers every other file renders through. Single source of truth for the directory landing, the full App Directory, app-detail pages, and the builder |
 | `app-theme.css` | Shared theme, copied from `prototypes/learning-paths`. Mirrors `packages/ui/src/index.css` tokens |
 | `zapier.css` | Components specific to this prototype (directory landing hero/search bar, popular-app cards, directory sidebar/cards, app-detail layout, grant table, picker cards, field mapping, wizard stepper, status dots) |
 | `proto.js` | Theme toggle, mobile nav, shared toast |
@@ -178,14 +178,36 @@ exactly here:
 - **Plan gating is binary at Early Adopter+.** `index.html`'s dev toggle shows the upgrade callout a
   Basic-plan org would see instead of the directory landing, matching the PRD's stated gate.
 - **Rate limits and grant counts match `ZAPIER_AUTOMATION_LIMITS_BY_PLAN`** in
-  `packages/utils/src/plans/automation.ts` (1 / 5 / 25 grants, 120 reads and 40 writes per minute on
-  Early Adopter).
+  `packages/utils/src/plans/automation.ts`: Basic gets 0 grants (Zapier is off entirely), Early
+  Adopter gets 5 grants at 120 reads / 40 writes per minute, Enterprise gets 25 grants at 360 / 120.
+  `zapier-connected.html` shows the Early Adopter numbers (1/5 active connections, 120 reads, 40
+  writes) since that's the plan the prototype's org is on.
 - **The v1 trigger catalog is exactly the PRD's 5 polling triggers:** `new_audience_member`,
   `student_enrolled_in_course`, `course_completed`, `certificate_issued`, `payment_request_created`.
   `exercise_submitted` and `lesson_completed` are deliberately absent; the PRD defers them to v1.1
   because they need webhooks to poll at sane volume.
+- **The v1 action catalog is exactly the PRD's 5 real actions:** `enroll_student_in_course`,
+  `add_student`, `update_student`, `remove_student`, `tag_student`, all `zapier:write` scoped
+  (`ZI.CLASSROOMIO_ACTIONS` in `apps-catalog.js`). These are what ClassroomIO does as the *action* app
+  in a Zap that starts somewhere else, the mirror image of the 5 triggers above. The
+  `zap-builder.html?template=crm-enroll` flow is a real, working example: pick one of the 5 actions,
+  map fields from the other app's sample data, test, review, and enable, landing on Manage Zaps with
+  ClassroomIO shown as the action rather than the trigger. `find_student_by_email` and `find_course`
+  (the 2 v1 searches, `ZI.CLASSROOMIO_SEARCHES`) aren't independently pickable, matching how Zapier
+  auto-generates "Find or Create" steps from a search plus a create action rather than exposing them
+  as their own builder step.
 - **Revoke is per-grant, from the dashboard.** There's no bulk "Disconnect Zapier" button, matching
   the PRD's stated reasoning that customers manage the integration from Zapier's side day to day.
+- **Admin-permission and plan-downgrade gates are both real, toggleable states**, not just the plan
+  gate. `index.html` and `zapier-connected.html` each carry an Admin/Member dev-toggle alongside the
+  Early Adopter/Basic one: Member replaces the connect flow or the connections table with "you need
+  admin access," matching the PRD's Dashboard Zapier Tab section order (admin callout first, plan
+  callout second). Basic-plan on the connected page shows the exact PRD downgrade behavior: a toast
+  ("all Zapier grants revoked") and a callout explaining the plan-gated failure, not just a blocked
+  connect button. `oauth-consent.html` carries the equivalent for the consent screen itself: switching
+  to "Signed in as member" removes the org from the picker entirely (PRD: only eligible orgs appear)
+  and hides Authorize, leaving only Deny, matching the PRD's manual verification step for a non-admin
+  OAuth attempt.
 
 Where this prototype goes further than the confirmed v1 scope is the App Directory, app-detail pages,
 the template gallery, the trigger/action builder, field mapping, the test step, and Manage Zaps. The
@@ -199,11 +221,16 @@ and everything after it as **the case for a fuller v1.1 worth scoping**, not as 
 literally from these mocks. Authorize and Connected (screens 4 and 5) are close enough to the
 confirmed PRD that they could inform the real `zapier.svelte` build directly.
 
-One deliberate gap: the "New HubSpot deal → Enroll in course" template
+One deliberate difference: the "New HubSpot deal → Enroll in course" template
 (`zap-templates.html` → `zap-builder.html?template=crm-enroll`) triggers from HubSpot, not
-ClassroomIO, so it can't run through this trigger-first wizard. Rather than fake a HubSpot trigger
-picker, that template opens a short hand-off screen explaining the Zap starts on HubSpot's side and
-ClassroomIO shows up as the action app. That's the honest answer, not an invented one.
+ClassroomIO, so it can't run through the trigger-first wizard above. Rather than fake a HubSpot
+trigger picker, it runs a second, separate 4-step wizard scoped to this direction: step 1 explains the
+trigger lives on HubSpot's side (read-only, since it's not built here), step 2 is a real picker across
+all 5 of the PRD's ClassroomIO actions (not just the one this template needs) with field mapping
+against HubSpot's own sample fields, and steps 3-4 are the same test/review/enable pattern as the main
+wizard. That's the honest, and now fully interactive, answer: ClassroomIO genuinely is both a trigger
+app and an action app in the real Zapier integration, and this prototype shows both directions working
+rather than only describing the second one in prose.
 
 ## Known prototype-only shortcuts
 
@@ -226,3 +253,14 @@ ClassroomIO shows up as the action app. That's the honest answer, not an invente
 - Third-party app marks are simplified, prototype-only approximations, not official brand assets or
   reproduced logos: a colored monogram, one `.app-badge` shape tinted per app via `color` in
   `apps-catalog.js` and rendered through `ZI.badgeHTML()`, used everywhere an app appears.
+- The redirect URI shown on `oauth-consent.html` (`zapier.com/dashboard/auth/oauth/return/...`) is an
+  illustrative example of Zapier's real callback URL shape, not a live one; the PRD leaves the actual
+  value to `ZAPIER_OAUTH_REDIRECT_URIS`.
+- The write-scope toggle on `oauth-consent.html` does affect the resulting connection (it flows through
+  as `?scope=read` and flips the Access badge on `zapier-connected.html` to "Read only"), but there's no
+  real scope enforcement behind it. A live `zapier:write` scope 403ing on write endpoints, per the PRD's
+  manual verification step 5, needs a real API to test against.
+- The reverse-direction builder (`?template=crm-enroll`) always frames the other app as HubSpot with a
+  fixed "Deal stage changed" trigger and fixed sample data. A real Zapier app would let this vary per
+  whatever app and trigger the Zap author actually picked on their end; this prototype fixes it to keep
+  one concrete, honest example rather than simulating arbitrary third-party trigger data.
