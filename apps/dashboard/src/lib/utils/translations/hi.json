@@ -5708,7 +5708,14 @@
     },
     "ribbon": {
       "part_of": "हिस्सा है",
-      "view_path": "पथ देखें"
+      "view_path": "पथ देखें",
+      "path_label": "सीखने का पथ",
+      "course_n_of_total": "{position} का कोर्स {total}",
+      "next_in_path": "आपके पथ में अगला",
+      "next_course_position": "कोर्स {position}",
+      "unlocks_after_finish": "जब आप इस कोर्स को पूरा कर लेंगे तो अनलॉक हो जाएगा - {lessons} पाठ और {exercises} अभ्यास।",
+      "locked": "ताला लगा दिया",
+      "path_complete": "पथ पूर्ण - सभी पाठ्यक्रम समाप्त। महान काम!"
     },
     "progress": {
       "label": "प्रगति"

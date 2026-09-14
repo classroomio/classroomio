@@ -23,3 +23,17 @@ export interface CourseLibraryItem {
   partOfPath: CourseLibraryPathRef | null;
   href: string;
 }
+
+export type CourseInPathState = 'COMPLETED' | 'IN_PROGRESS' | 'LOCKED';
+
+export interface CourseInPathNode {
+  title: string;
+  state: CourseInPathState;
+}
+
+export interface CourseInPathNextInfo {
+  position: number;
+  title: string;
+  remainingLessons: number;
+  remainingExercises: number;
+}

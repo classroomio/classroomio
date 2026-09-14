@@ -5708,7 +5708,14 @@
     },
     "ribbon": {
       "part_of": "Forma parte de",
-      "view_path": "Ver ruta"
+      "view_path": "Ver ruta",
+      "path_label": "Ruta de aprendizaje",
+      "course_n_of_total": "Curso {position} de {total}",
+      "next_in_path": "SIGUIENTE EN TU CAMINO",
+      "next_course_position": "Curso {position}",
+      "unlocks_after_finish": "Se desbloquea cuando terminas este curso: quedan {lessons} lecciones y {exercises} ejercicios.",
+      "locked": "bloqueado",
+      "path_complete": "Ruta completa: todos los cursos terminados. ¡Gran trabajo!"
     },
     "progress": {
       "label": "Progreso"

@@ -5708,7 +5708,14 @@
     },
     "ribbon": {
       "part_of": "faz parte de",
-      "view_path": "Caminho de visualização"
+      "view_path": "Caminho de visualização",
+      "path_label": "Caminho de aprendizagem",
+      "course_n_of_total": "Curso {position} de {total}",
+      "next_in_path": "PRÓXIMO NO SEU CAMINHO",
+      "next_course_position": "Curso {position}",
+      "unlocks_after_finish": "Desbloqueia quando você termina este curso — {lessons} lições e {exercises} exercícios restantes.",
+      "locked": "Bloqueado",
+      "path_complete": "Caminho concluído – todos os cursos concluídos. Ótimo trabalho!"
     },
     "progress": {
       "label": "progresso"

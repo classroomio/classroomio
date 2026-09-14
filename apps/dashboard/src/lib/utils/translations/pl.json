@@ -5708,7 +5708,14 @@
     },
     "ribbon": {
       "part_of": "jest częścią",
-      "view_path": "Wyświetl ścieżkę"
+      "view_path": "Wyświetl ścieżkę",
+      "path_label": "Ścieżka edukacyjna",
+      "course_n_of_total": "Kurs {position} z {total}",
+      "next_in_path": "NASTĘPNY NA TWOJEJ DROGIE",
+      "next_course_position": "Kurs {position}",
+      "unlocks_after_finish": "Odblokowuje się po ukończeniu tego kursu — pozostało jeszcze {lessons} lekcji i {exercises} ćwiczeń.",
+      "locked": "Zablokowane",
+      "path_complete": "Ścieżka ukończona — ukończono wszystkie kursy. Świetna praca!"
     },
     "progress": {
       "label": "postęp"

@@ -5708,7 +5708,14 @@
     },
     "ribbon": {
       "part_of": "er en del af",
-      "view_path": "Se sti"
+      "view_path": "Se sti",
+      "path_label": "Læringsvej",
+      "course_n_of_total": "Kursus {position} af {total}",
+      "next_in_path": "NÆSTE PÅ DIN VEJ",
+      "next_course_position": "Kursus {position}",
+      "unlocks_after_finish": "Låser op, når du er færdig med dette kursus — {lessons} lektioner og {exercises} øvelser tilbage.",
+      "locked": "Låst",
+      "path_complete": "Sti færdig - alle kurser afsluttet. Flot arbejde!"
     },
     "progress": {
       "label": "fremskridt"

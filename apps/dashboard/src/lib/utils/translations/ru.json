@@ -5708,7 +5708,14 @@
     },
     "ribbon": {
       "part_of": "является частью",
-      "view_path": "Просмотреть путь"
+      "view_path": "Просмотреть путь",
+      "path_label": "Путь обучения",
+      "course_n_of_total": "Курс {position} из {total}",
+      "next_in_path": "СЛЕДУЮЩИЙ НА ВАШЕМ ПУТИ",
+      "next_course_position": "Курс {position}",
+      "unlocks_after_finish": "Откроется после завершения этого курса — осталось {lessons} уроков и {exercises} упражнений.",
+      "locked": "Заблокировано",
+      "path_complete": "Путь завершен — все курсы пройдены. Отличная работа!"
     },
     "progress": {
       "label": "прогресс"

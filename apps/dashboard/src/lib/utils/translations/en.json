@@ -5429,7 +5429,14 @@
     },
     "ribbon": {
       "part_of": "is part of",
-      "view_path": "View path"
+      "view_path": "View path",
+      "path_label": "Learning Path",
+      "course_n_of_total": "Course {position} of {total}",
+      "next_in_path": "NEXT IN YOUR PATH",
+      "next_course_position": "Course {position}",
+      "unlocks_after_finish": "Unlocks when you finish this course — {lessons} lessons & {exercises} exercises to go.",
+      "locked": "Locked",
+      "path_complete": "Path complete — all courses finished. Great work!"
     },
     "status": {
       "draft": "Draft",
