@@ -82,4 +82,38 @@ describe('lesson video field (FIX-02)', () => {
 
     expect(result.success).toBe(true);
   });
+
+  it('preserves HLS-derived metadata keys that are not in the known list, instead of silently stripping them', () => {
+    // These are computed at read time by applyCanonicalVideoMetadata
+    // (packages/core/src/utils/lesson-media.ts) and can round-trip back through an
+    // update if the dashboard resubmits a lesson it just fetched. A plain z.object()
+    // would silently drop them here even though safeParse still reports success.
+    const result = ZLessonUpdate.safeParse({
+      videos: [
+        {
+          type: 'upload',
+          link: 'https://example.com/video.mp4',
+          metadata: {
+            title: 'A video',
+            hls: true,
+            sourceWidth: 1920,
+            sourceHeight: 1080,
+            hlsRenditions: ['720p', '1080p'],
+            hls1080Status: 'ready'
+          }
+        }
+      ]
+    });
+
+    expect(result.success).toBe(true);
+    const metadata = result.success ? result.data.videos?.[0]?.metadata : undefined;
+    expect(metadata).toMatchObject({
+      title: 'A video',
+      hls: true,
+      sourceWidth: 1920,
+      sourceHeight: 1080,
+      hlsRenditions: ['720p', '1080p'],
+      hls1080Status: 'ready'
+    });
+  });
 });

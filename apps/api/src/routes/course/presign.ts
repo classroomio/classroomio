@@ -15,10 +15,46 @@ import { Hono } from '@api/utils/hono';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { automationKeyScopeOrSessionMiddleware } from '@api/middlewares/automation-key-scope-or-session';
 import { generateFileKey } from '@cio/core/utils/upload';
-import { AppError } from '@api/utils/errors';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
+import { getAssetsByStorageKeys } from '@cio/db/queries/assets';
+import type { Context } from 'hono';
 
 const requireCourseWrite = automationKeyScopeOrSessionMiddleware(['course:write']);
+
+const AutomationKeyForbiddenResponse = {
+  description:
+    'Automation key is missing the required scope, or (download routes only) one or more requested keys do not belong to the key\'s organization'
+};
+
+/**
+ * Session callers keep today's behavior unchanged (no per-key ownership check on this
+ * legacy endpoint). Automation-key callers get a real check: every requested key must
+ * resolve to an asset actually owned by the key's organization, otherwise the whole
+ * request is rejected. Without this, any org's course:write key could sign a download
+ * URL for any other org's object just by guessing/knowing its storage key.
+ */
+export async function assertAutomationKeyOwnsDownloadKeys(c: Context, keys: string[]): Promise<Response | void> {
+  const automationKey = c.get('automationKey');
+  if (!automationKey) {
+    return;
+  }
+
+  const owned = await getAssetsByStorageKeys(automationKey.organizationId, keys);
+  const ownedKeys = new Set(owned.map((asset) => asset.storageKey));
+  const unauthorizedKeys = keys.filter((key) => !ownedKeys.has(key));
+
+  if (unauthorizedKeys.length > 0) {
+    return c.json(
+      {
+        success: false,
+        error: 'One or more requested keys do not belong to this organization',
+        code: ErrorCodes.FORBIDDEN
+      },
+      403
+    );
+  }
+}
 
 /**
  * Advisory check on client-reported `fileSize`. Upload bytes go directly to object storage
@@ -77,7 +113,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: AutomationKeyForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -121,7 +158,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: AutomationKeyForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -165,7 +203,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: AutomationKeyForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -174,6 +213,11 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = await assertAutomationKeyOwnsDownloadKeys(c, keys);
+      if (forbidden) {
+        return forbidden;
+      }
 
       const signedUrls = await generateVideoDownloadPresignedUrls(keys);
 
@@ -204,7 +248,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: AutomationKeyForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -213,6 +258,11 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = await assertAutomationKeyOwnsDownloadKeys(c, keys);
+      if (forbidden) {
+        return forbidden;
+      }
 
       const signedUrls = await generateDocumentDownloadPresignedUrls(keys);
 

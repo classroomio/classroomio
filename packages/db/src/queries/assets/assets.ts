@@ -166,6 +166,27 @@ export async function getAssetsByIds(assetIds: string[], orgId?: string): Promis
   }
 }
 
+/**
+ * Looks up assets by their storage key, scoped to one organization. Used to verify
+ * that a caller-supplied set of download keys actually belongs to that organization
+ * before signing download URLs for them (see `course/presign.ts`).
+ */
+export async function getAssetsByStorageKeys(orgId: string, storageKeys: string[]): Promise<TAsset[]> {
+  try {
+    if (storageKeys.length === 0) {
+      return [];
+    }
+
+    return await db
+      .select()
+      .from(schema.asset)
+      .where(and(eq(schema.asset.organizationId, orgId), inArray(schema.asset.storageKey, storageKeys)));
+  } catch (error) {
+    console.error('getAssetsByStorageKeys error:', error);
+    throw new Error(`Failed to get assets by storage keys: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function listAssetsByOrg(orgId: string, options: ListAssetsOptions = {}): Promise<ListAssetsResult> {
   try {
     const page = options.page && options.page > 0 ? options.page : 1;
