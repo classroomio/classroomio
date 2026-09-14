@@ -214,7 +214,7 @@
           <p class="ui:text-muted-foreground text-xs">
             {certificateEarned
               ? $t('learningPath.detail.certificate_earned')
-              : $t('learningPath.detail.certificate_hint')}
+              : $t('learningPath.detail.certificate_hint', { count: String(courses.length) })}
           </p>
         </div>
         {#if certificateEarned}

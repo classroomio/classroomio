@@ -5619,7 +5619,7 @@
       "review": "Ôn tập",
       "enroll": "Tham gia",
       "certificate_on_completion": "Bạn sẽ nhận được chứng chỉ sau khi hoàn thành mỗi khóa học.",
-      "certificate_hint": "Đã hoàn thành tất cả các khóa học.",
+      "certificate_hint": "Hoàn thành tất cả {count} khóa học để mở khóa và tải xuống chứng chỉ của bạn.",
       "certificate_earned": "Chứng chỉ đã đạt được",
       "view_certificate": "Xem chứng chỉ"
     },

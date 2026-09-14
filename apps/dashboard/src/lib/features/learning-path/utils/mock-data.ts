@@ -702,9 +702,7 @@ export function getCourseProgressList(path: LearningPath): LearningPathCoursePro
     const totalItems = lessonsExpected + exercisesExpected;
     const doneItems = course.lessonsCompleted + course.exercisesCompleted;
 
-    if (state === 'COMPLETED') {
-      previousComplete = true;
-    }
+    previousComplete = state === 'COMPLETED';
 
     const progressPercent =
       state === 'COMPLETED'

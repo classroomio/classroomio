@@ -5619,7 +5619,7 @@
       "review": "Gennemgang",
       "enroll": "Tilmelding",
       "certificate_on_completion": "Optjen et certifikat, når du gennemfører hvert kursus.",
-      "certificate_hint": "Alle beståede kurser",
+      "certificate_hint": "Fuldfør alle {count} kurser for at låse op og downloade dit certifikat.",
       "certificate_earned": "Optjent certifikat",
       "view_certificate": "Se certifikat"
     },

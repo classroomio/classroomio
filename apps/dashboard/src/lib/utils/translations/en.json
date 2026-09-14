@@ -5547,7 +5547,7 @@
       "review": "Review",
       "enroll": "Enroll",
       "certificate_on_completion": "Earn a certificate when you complete every course.",
-      "certificate_hint": "All courses passed",
+      "certificate_hint": "Complete all {count} courses to unlock and download your certificate.",
       "certificate_earned": "Certificate earned",
       "view_certificate": "View certificate"
     },

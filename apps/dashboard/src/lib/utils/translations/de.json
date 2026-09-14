@@ -5619,7 +5619,7 @@
       "review": "Überprüfung",
       "enroll": "Anmelden",
       "certificate_on_completion": "Erhalten Sie ein Zertifikat, wenn Sie alle Kurse abgeschlossen haben.",
-      "certificate_hint": "Alle Kurse bestanden",
+      "certificate_hint": "Schließe alle {count} Kurse ab, um dein Zertifikat freizuschalten und herunterzuladen.",
       "certificate_earned": "Zertifikat erhalten",
       "view_certificate": "Zertifikat ansehen"
     },

@@ -5619,7 +5619,7 @@
       "review": "Révision",
       "enroll": "Inscription",
       "certificate_on_completion": "Obtenez un certificat en terminant chaque cours.",
-      "certificate_hint": "Tous les cours réussis",
+      "certificate_hint": "Terminez tous les {count} cours pour débloquer et télécharger votre certificat.",
       "certificate_earned": "Certificat obtenu",
       "view_certificate": "Consulter le certificat"
     },
