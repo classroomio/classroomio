@@ -514,7 +514,9 @@
     "explore": "Khám phá",
     "help": "Trợ giúp",
     "settings": "Cài đặt",
-    "cohorts": "Nhóm học tập"
+    "cohorts": "Nhóm học tập",
+    "learning_paths": "Các lộ trình học tập",
+    "my_courses": "Các khóa học của tôi"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",

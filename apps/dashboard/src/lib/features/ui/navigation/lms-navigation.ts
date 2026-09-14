@@ -6,6 +6,7 @@ import {
   ExploreIcon,
   GoalIcon,
   HomeIcon,
+  PathIcon,
   SettingsIcon
 } from '@cio/ui/custom/moving-icons';
 
@@ -57,8 +58,19 @@ export const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'lms_navigation.my_learning',
     path: '/mylearning',
-    icon: CourseIcon,
-    matchPattern: '^/lms/mylearning(/.*)?$'
+    icon: PathIcon,
+    useHashUrl: true,
+    matchPattern: '^/lms/mylearning(/.*)?$',
+    items: [
+      {
+        titleKey: 'lms_navigation.learning_paths',
+        path: '/mylearning/learning-paths'
+      },
+      {
+        titleKey: 'lms_navigation.my_courses',
+        path: '/mylearning/courses'
+      }
+    ]
   },
   {
     titleKey: 'lms_navigation.certificates',
@@ -172,11 +184,18 @@ export function getLmsNavigationItems(
 
     // Handle nested items (like settings sub-items)
     if (config.items) {
-      item.items = config.items.map((subConfig) => ({
-        title: t(`settings.tabs.${subConfig.titleKey.toLowerCase()}_tab`) || subConfig.titleKey,
-        url: `/lms${subConfig.path}`,
-        path: subConfig.path
-      }));
+      item.items = config.items.map((subConfig) => {
+        const resolvedTitle =
+          typeof subConfig.titleKey === 'string' && subConfig.titleKey.includes('.')
+            ? t(subConfig.titleKey)
+            : t(`settings.tabs.${subConfig.titleKey.toLowerCase()}_tab`) || subConfig.titleKey;
+
+        return {
+          title: resolvedTitle,
+          url: `/lms${subConfig.path}`,
+          path: subConfig.path
+        };
+      });
     }
 
     items.push(item);

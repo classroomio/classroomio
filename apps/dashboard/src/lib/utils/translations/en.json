@@ -4411,7 +4411,9 @@
     "explore": "Explore",
     "help": "Help",
     "settings": "Settings",
-    "cohorts": "Cohorts"
+    "cohorts": "Cohorts",
+    "learning_paths": "Learning Paths",
+    "my_courses": "My Courses"
   },
   "lms": {
     "view_landing_page": "Home"

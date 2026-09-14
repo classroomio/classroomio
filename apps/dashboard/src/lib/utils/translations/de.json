@@ -514,7 +514,9 @@
     "explore": "Entdecken",
     "help": "Hilfe",
     "settings": "Einstellungen",
-    "cohorts": "Kohorten"
+    "cohorts": "Kohorten",
+    "learning_paths": "Lernpfade",
+    "my_courses": "Meine Kurse"
   },
   "upgrade": {
     "certificate": "Aktualisieren Sie Ihren Plan, um Zertifikate zu generieren",

@@ -514,7 +514,9 @@
     "explore": "Udforsk",
     "help": "Hjælp",
     "settings": "Indstillinger",
-    "cohorts": "Kohorter"
+    "cohorts": "Kohorter",
+    "learning_paths": "Læringsstier",
+    "my_courses": "Mine kurser"
   },
   "upgrade": {
     "certificate": "Opgrader din plan for at generere certifikater",

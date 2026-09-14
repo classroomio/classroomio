@@ -514,7 +514,9 @@
     "explore": "Explorer",
     "help": "Aide",
     "settings": "Paramètres",
-    "cohorts": "Cohortes"
+    "cohorts": "Cohortes",
+    "learning_paths": "Parcours d'apprentissage",
+    "my_courses": "Mes cours"
   },
   "upgrade": {
     "certificate": "Mettez à niveau votre plan pour générer des certificats",
