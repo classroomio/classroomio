@@ -102,7 +102,11 @@ const envSchema = z.object({
   /** Max org landing page image upload size in megabytes (default 0.5). */
   UPLOAD_MAX_LANDING_IMAGE_MB: z.string().optional(),
   /** Max media thumbnail upload size in megabytes (default 5). */
-  UPLOAD_MAX_THUMBNAIL_MB: z.string().optional()
+  UPLOAD_MAX_THUMBNAIL_MB: z.string().optional(),
+  /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcripts. */
+  SUPADATA_API_KEY: z.string().optional(),
+  /** YouTube caption provider identifier (default 'supadata'). */
+  YOUTUBE_CAPTION_PROVIDER: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

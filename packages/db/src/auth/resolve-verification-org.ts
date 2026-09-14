@@ -1,4 +1,5 @@
 import { TENANT_ROOT_DOMAIN, BRAND_ROOT_DOMAIN } from '@cio/utils/constants/domains';
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 
 import type { TOrganization } from '../types';
 import {
@@ -46,7 +47,7 @@ function getTenantSiteName(hostname: string): string | null {
 
 function isCustomDomainHost(hostname: string): boolean {
   const host = hostname.replace(/^www\./, '').toLowerCase();
-  if (host.includes('localhost')) {
+  if (host.includes('localhost') || isLocalOrPrivateHost(host)) {
     return false;
   }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import YoutubeVideo from './youtube-video.svelte';
+  import VimeoVideo from './vimeo-video.svelte';
   import UploadVideo from './upload-video.svelte';
   import EmbedLink from './embed-link.svelte';
   import LibraryVideo from './library-video.svelte';
@@ -53,7 +54,7 @@
             disabled={$lessonVideoUpload.isUploading && currentTab !== String(item.value)}
             class="flex items-center gap-2"
           >
-            {#if $isFreePlan && item.value === 3}
+            {#if $isFreePlan && item.value === 'upload'}
               <ZapIcon size={16} class="filled" />
             {:else}
               <item.icon />
@@ -62,19 +63,22 @@
           </UnderlineTabs.Trigger>
         {/each}
       </UnderlineTabs.List>
-      <UnderlineTabs.Content value="1" class="mt-3">
+      <UnderlineTabs.Content value="youtube" class="mt-3">
         <YoutubeVideo {lessonId} />
       </UnderlineTabs.Content>
-      <UnderlineTabs.Content value="2" class="mt-3">
+      <UnderlineTabs.Content value="vimeo" class="mt-3">
+        <VimeoVideo {lessonId} />
+      </UnderlineTabs.Content>
+      <UnderlineTabs.Content value="embed" class="mt-3">
         <EmbedLink {lessonId} />
       </UnderlineTabs.Content>
-      <UnderlineTabs.Content value="3" class="mt-3">
+      <UnderlineTabs.Content value="upload" class="mt-3">
         <UploadVideo {lessonId} />
       </UnderlineTabs.Content>
-      <UnderlineTabs.Content value="4" class="mt-3">
+      <UnderlineTabs.Content value="library" class="mt-3">
         <LibraryVideo {lessonId} />
       </UnderlineTabs.Content>
-      <UnderlineTabs.Content value="5" class="mt-3">
+      <UnderlineTabs.Content value="google_drive" class="mt-3">
         <GoogleDriveVideo {lessonId} />
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

@@ -1,4 +1,4 @@
-import type { AccountOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
 import type {
   FooterColumn,
   FooterColumnLink,
@@ -40,7 +40,7 @@ export const defaultLandingPageHero: OrgLandingPageHero = {
   subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
   primaryAction: {
     label: 'Start Learning',
-    href: '/login'
+    href: '/lms'
   },
   secondaryAction: {
     label: 'Browse',
@@ -757,7 +757,7 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
 }
 
 export function buildOrgLandingPageProps(
-  org: AccountOrg,
+  org: AccountOrg | PublicOrg,
   landingpage: unknown,
   courses: OrgPublicCourses,
   hasMoreCourses = false,
@@ -765,12 +765,21 @@ export function buildOrgLandingPageProps(
   options?: { coursesLoaded?: boolean }
 ): OrgLandingPageProps {
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
+  const configuredPrimaryAction = normalizedLandingPage.hero.primaryAction;
+  const primaryAction =
+    configuredPrimaryAction.href === '/login' && authAction && !authAction.loading
+      ? { ...configuredPrimaryAction, href: authAction.href }
+      : configuredPrimaryAction;
 
   return {
     orgName: org.name,
     logoUrl: org.avatarUrl || undefined,
     authAction,
     ...normalizedLandingPage,
+    hero: {
+      ...normalizedLandingPage.hero,
+      primaryAction
+    },
     courses: mapPublicCoursesToLandingPageCourses(courses),
     hasMoreCourses,
     coursesLoaded: options?.coursesLoaded ?? true,

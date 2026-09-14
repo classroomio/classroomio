@@ -801,11 +801,11 @@ export class LessonApi extends BaseApiWithErrors {
    * Updates the thumbnail URL on a lesson video's metadata so the card preview
    * reflects the asset's new thumbnail without waiting for a reload.
    */
-  updateLessonVideoThumbnail(videoIndex: number, thumbnailUrl: string) {
-    this.updateLessonVideoMetadata(videoIndex, { thumbnailUrl });
+  updateLessonVideoThumbnail(videoIndex: number, thumbnailUrl: string, options: { markDirty?: boolean } = {}) {
+    this.updateLessonVideoMetadata(videoIndex, { thumbnailUrl }, options);
   }
 
-  updateLessonVideoMetadata(videoIndex: number, patch: Record<string, unknown>) {
+  updateLessonVideoMetadata(videoIndex: number, patch: Record<string, unknown>, options: { markDirty?: boolean } = {}) {
     if (!this.lesson) return;
 
     const videos = Array.isArray(this.lesson.videos) ? [...this.lesson.videos] : [];
@@ -817,13 +817,29 @@ export class LessonApi extends BaseApiWithErrors {
         ? (target.metadata as Record<string, unknown>)
         : {};
 
+    const isPlaceholderFileName =
+      !target.fileName ||
+      target.fileName === target.link ||
+      target.fileName === 'Vimeo' ||
+      target.fileName === 'Vimeo video' ||
+      target.fileName === 'YouTube' ||
+      target.fileName === 'YouTube video' ||
+      target.fileName === 'Embedded video';
+
+    const updatedFileName =
+      patch.title && typeof patch.title === 'string' && isPlaceholderFileName ? patch.title : target.fileName;
+
     videos[videoIndex] = {
       ...target,
+      ...(updatedFileName ? { fileName: updatedFileName } : {}),
       metadata: { ...metadata, ...patch }
     };
 
     this.lesson = { ...this.lesson, videos };
-    this.isDirty = true;
+
+    if (options.markDirty ?? true) {
+      this.isDirty = true;
+    }
   }
 
   /**

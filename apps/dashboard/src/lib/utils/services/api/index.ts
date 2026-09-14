@@ -11,6 +11,10 @@ import { env } from '$env/dynamic/public';
 import { getCioCookieString } from '$lib/utils/functions/cookies';
 import { CIO_ENVELOPE_CONTENT_TYPE } from '@cio/utils/constants';
 
+function isLocalhost(hostname: string): boolean {
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]' || hostname === '::1';
+}
+
 export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
     // When on the server, we want to hit the private url which is the docker container of `api` or the private network url of `api`.
@@ -19,9 +23,15 @@ export const getRequestBaseUrl = () => {
     return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
   }
 
-  // Local dev keeps the direct API path so existing Vite/API workflows do not
-  // depend on the SvelteKit proxy.
+  // Local dev keeps the direct API path on localhost so existing Vite/API workflows
+  // do not depend on the SvelteKit proxy.
+  // When accessed from mobile or a LAN network host (e.g. 192.168.x.x),
+  // localhost:3002 is unreachable from the remote browser and cookies would be isolated.
+  // Route through the same-origin `/proxy` endpoint instead.
   if (dev) {
+    if (!isLocalhost(window.location.hostname)) {
+      return `${window.location.origin}/proxy`;
+    }
     return env.PUBLIC_SERVER_URL ?? '';
   }
 

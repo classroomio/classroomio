@@ -29,8 +29,6 @@
   let editingTag = $state<OrganizationTag | null>(null);
   let editingGroup = $state<OrganizationTagGroup | null>(null);
 
-  const hasTagGroups = $derived(tagApi.tagGroups.length > 0);
-
   $effect(() => {
     tagApi.tagGroups = initialTagGroups;
   });

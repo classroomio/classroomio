@@ -11,9 +11,11 @@
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
+  import SettingsSidebar from '$features/ui/sidebar/settings-sidebar.svelte';
   import { AddOrgModal } from '$features/org';
 
   let { data, children } = $props();
+  const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
 
   function redirect(siteName: string | null) {
     if (!siteName) return;
@@ -33,6 +35,7 @@
       goto(resolve('/lms', {}));
     }
   });
+
 </script>
 
 {#if PUBLIC_IS_SELFHOSTED !== 'true'}
@@ -40,10 +43,20 @@
 {/if}
 
 <Sidebar.Provider>
-  <OrgSidebar />
+  {#if isSettingsRoute}
+    <SettingsSidebar />
+  {:else}
+    <OrgSidebar />
+  {/if}
 
   <Sidebar.Inset>
-    <AppHeader />
+    {#if isSettingsRoute}
+      <div class="flex h-10 items-center px-3 md:hidden">
+        <Sidebar.Trigger testId="settings-sidebar-trigger-mobile" />
+      </div>
+    {:else}
+      <AppHeader />
+    {/if}
 
     <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
       {#if data.orgName === '*'}

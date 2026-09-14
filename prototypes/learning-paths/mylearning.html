@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Learning · ClassroomIO LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      /* ============ Learning Path grid card ============ */
+      .plib-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .plib-card { overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.15s, border-color 0.15s; }
+      .plib-card:hover { border-color: var(--ring); box-shadow: var(--shadow-md); }
+      .plib-cover { height: 92px; position: relative; }
+      .plib-cover .badge { position: absolute; top: 11px; left: 13px; }
+      .plib-body { padding: 15px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+      .plib-title { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+      .plib-desc { font-size: 12.5px; color: var(--muted-foreground); margin: 0; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 36px; }
+      .plib-meta { display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--muted-foreground); }
+      .plib-meta .m { display: flex; align-items: center; gap: 5px; }
+      .plib-meta svg { width: 13px; height: 13px; stroke-width: 2; }
+      .plib-progress-top { display: flex; align-items: baseline; justify-content: space-between; font-size: 12.5px; }
+      .plib-progress-top .l { color: var(--muted-foreground); font-weight: 500; }
+      .plib-progress-top .p { font-weight: 700; color: var(--primary); font-size: 14px; }
+      .plib-sub { font-size: 11.5px; color: var(--muted-foreground); }
+      .plib-body .btn { width: 100%; margin-top: 2px; }
+
+      @media (max-width: 900px) { .plib-grid { grid-template-columns: 1fr; } }
+
+      /* ============ Explore More Learning Paths ============ */
+      .emore-tagline { font-size: 13px; color: var(--muted-foreground); margin: -6px 0 16px; }
+      .emore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+      @media (max-width: 900px) { .emore-grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="mobile-backdrop" id="mobileBackdrop"></div>
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="nav-label">Main</div>
+        <a class="nav-item" href="lms-home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+
+        <button class="nav-item nav-parent open section-active" id="myLearningToggle" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>My Learning</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="nav-sub" id="myLearningSub">
+          <a class="nav-subitem active" href="mylearning.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Paths</a>
+          <a class="nav-subitem" href="mylearning-courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+        </div>
+
+        <a class="nav-item" href="explore.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></svg>Explore</a>
+        <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Assignments<span class="nav-badge">3</span></a>
+        <a class="nav-item" href="community.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Community</a>
+        <div class="nav-label">Personal</div>
+        <a class="nav-item" href="certificates.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificates</a>
+        <a class="nav-item nav-pinned" href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">AO</div><div class="who"><div class="nm">Ada Okafor</div><div class="rl">Student</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <button class="icon-btn mobile-nav-btn" id="mobileNavBtn" title="Menu" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <span class="top-title">My Learning</span>
+          <div class="top-actions">
+            <button class="icon-btn" title="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1000px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">My Learning</h1>
+                <p class="page-sub">Your enrolled learning paths, from what's active to what's next.</p>
+              </div>
+            </div>
+
+            <!-- ============ Currently Learning ============ -->
+            <div class="sec-head" style="margin-top: 0">
+              <h2 class="sec-title">Currently Learning</h2>
+            </div>
+
+            <a class="card cl-hero" href="path-detail.html">
+              <div class="cl-hero-inner">
+                <div class="cl-hero-cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))">
+                  <span class="badge badge-path-label">Learning Path</span>
+                  <svg class="cl-hero-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
+                <div class="cl-hero-body">
+                  <h3 class="cl-hero-title">Frontend Engineering Bootcamp</h3>
+                  <div class="cl-hero-meta">5 courses · ~38h</div>
+                  <div class="cl-hero-progress-top"><span class="l">Progress</span><span class="p tnum">49%</span></div>
+                  <div class="progress"><span style="width: 49%"></span></div>
+                  <div class="cl-hero-foot">
+                    <span class="cl-hero-sub tnum">2 of 5 courses completed</span>
+                    <span class="btn btn-primary">Continue Learning<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            <!-- ============ Learning Paths (remaining enrolled) ============ -->
+            <div class="sec-head">
+              <h2 class="sec-title">Learning Paths</h2>
+            </div>
+
+            <div class="lib-toolbar" style="margin-top: 0">
+              <div class="lib-toolbar-left">
+                <div class="filter-popover" id="filterPopover">
+                  <button class="filter-btn" id="filterBtn" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
+                    Filters
+                    <span class="filter-count" id="filterCount" hidden>0</span>
+                  </button>
+                  <div class="filter-panel">
+                    <div class="filter-panel-head">
+                      <span class="filter-panel-title">Filters</span>
+                      <button class="filter-clear-all" id="clearFilters" type="button">Clear all</button>
+                    </div>
+                    <div class="filter-group">
+                      <div class="filter-group-label">Status</div>
+                      <div class="filter-pill-row">
+                        <button class="filter-pill on" type="button" data-group="status">All</button>
+                        <button class="filter-pill" type="button" data-group="status">Not Started</button>
+                        <button class="filter-pill" type="button" data-group="status">In Progress</button>
+                        <button class="filter-pill" type="button" data-group="status">Completed</button>
+                      </div>
+                    </div>
+                    <div class="filter-group">
+                      <div class="filter-group-label">Difficulty</div>
+                      <div class="filter-pill-row">
+                        <button class="filter-pill on" type="button" data-group="difficulty">Any</button>
+                        <button class="filter-pill" type="button" data-group="difficulty">Beginner</button>
+                        <button class="filter-pill" type="button" data-group="difficulty">Intermediate</button>
+                        <button class="filter-pill" type="button" data-group="difficulty">Advanced</button>
+                      </div>
+                    </div>
+                    <div class="filter-group">
+                      <div class="filter-group-label">Duration</div>
+                      <div class="filter-pill-row">
+                        <button class="filter-pill on" type="button" data-group="duration">Any</button>
+                        <button class="filter-pill" type="button" data-group="duration">Under 4h</button>
+                        <button class="filter-pill" type="button" data-group="duration">4–10h</button>
+                        <button class="filter-pill" type="button" data-group="duration">10h+</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="view-toggle" id="viewToggle">
+                <button data-view="grid" class="on" title="Grid view" aria-label="Grid view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+                <button data-view="list" title="List view" aria-label="List view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+              </div>
+            </div>
+
+            <div class="plib-grid" data-view-content="grid">
+              <a class="card plib-card" href="path-detail.html">
+                <div class="plib-cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))">
+                  <span class="badge badge-path-label">Learning Path</span>
+                </div>
+                <div class="plib-body">
+                  <h3 class="plib-title">Data Science with Python</h3>
+                  <p class="plib-desc">Pandas, visualization, and applied machine-learning basics.</p>
+                  <div class="plib-meta">
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>4 courses</span>
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~30h</span>
+                  </div>
+                  <div>
+                    <div class="plib-progress-top"><span class="l">Progress</span><span class="p tnum">8%</span></div>
+                    <div class="progress" style="margin-top: 6px"><span style="width: 8%"></span></div>
+                    <div class="plib-sub tnum" style="margin-top: 6px">0 of 4 courses completed</div>
+                  </div>
+                  <span class="btn btn-primary">Continue Learning<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+              </a>
+
+              <div class="card plib-card">
+                <a class="plib-cover" href="path-detail.html" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08)); display: block">
+                  <span class="badge badge-path-label">Learning Path</span>
+                </a>
+                <div class="plib-body">
+                  <h3 class="plib-title"><a href="path-detail.html" style="color: inherit">Workplace Compliance 2026</a></h3>
+                  <p class="plib-desc">Security awareness, data handling, and code of conduct.</p>
+                  <div class="plib-meta">
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>3 courses</span>
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate earned</span>
+                  </div>
+                  <div>
+                    <div class="plib-progress-top"><span class="l">Progress</span><span class="p tnum" style="color: var(--success)">100%</span></div>
+                    <div class="progress progress-success" style="margin-top: 6px"><span style="width: 100%"></span></div>
+                    <div class="plib-sub tnum" style="margin-top: 6px">3 of 3 courses completed</div>
+                  </div>
+                  <a class="btn btn-outline" href="certificates.html">View Certificate<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                </div>
+              </div>
+            </div>
+
+            <div class="lp-list" data-view-content="list" hidden>
+              <a class="card lp-row" href="path-detail.html">
+                <div class="lp-row-thumb" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"></div>
+                <div class="lp-row-main">
+                  <div class="lp-row-top"><span class="badge badge-path-label">Learning Path</span></div>
+                  <h3 class="lp-row-title">Data Science with Python</h3>
+                  <p class="lp-row-desc">Pandas, visualization, and applied machine-learning basics.</p>
+                  <div class="lp-row-meta">
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>4 courses · ~30h</span>
+                    <span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>0 of 4 completed</span>
+                    <span class="badge badge-primary-soft">In Progress</span>
+                  </div>
+                </div>
+                <div class="lp-row-side">
+                  <div class="lp-row-progress"><div class="progress progress-thin"><span style="width: 8%"></span></div><span class="p tnum">8%</span></div>
+                  <span class="btn btn-primary btn-sm">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+              </a>
+
+              <div class="card lp-row">
+                <a class="lp-row-thumb" href="path-detail.html" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08)); display: block"></a>
+                <div class="lp-row-main">
+                  <div class="lp-row-top"><span class="badge badge-path-label">Learning Path</span></div>
+                  <h3 class="lp-row-title"><a href="path-detail.html" style="color: inherit">Workplace Compliance 2026</a></h3>
+                  <p class="lp-row-desc">Security awareness, data handling, and code of conduct.</p>
+                  <div class="lp-row-meta">
+                    <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>3 courses</span>
+                    <span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>3 of 3 completed</span>
+                    <span class="badge badge-success">Completed</span>
+                  </div>
+                </div>
+                <div class="lp-row-side">
+                  <div class="lp-row-progress"><div class="progress progress-thin progress-success"><span style="width: 100%"></span></div><span class="p tnum" style="color: var(--success)">100%</span></div>
+                  <a class="btn btn-outline btn-sm" href="certificates.html">Certificate<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ Explore More Learning Paths ============ -->
+            <div class="sec-head" style="margin-top: 36px">
+              <h2 class="sec-title">Explore More Learning Paths</h2>
+              <a class="more" href="explore.html">View more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+            <p class="emore-tagline">Continue building your product knowledge.</p>
+
+            <div class="emore-grid">
+              <a class="card xpath-card" href="explore.html">
+                <div class="xp-cover" style="background: linear-gradient(135deg, oklch(0.723 0.219 149.579), oklch(0.596 0.145 163.225))">
+                  <span class="badge badge-path-label">Learning Path</span>
+                  <svg class="wm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
+                <div class="xp-body">
+                  <h3 class="xp-title">Become a Product Analytics Expert</h3>
+                  <p class="xp-desc">8 courses · 6h 30m — a structured track for reading, building, and acting on product data.</p>
+                  <div class="xp-foot"><span class="btn btn-outline btn-sm">View Learning Path<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+                </div>
+              </a>
+              <a class="card xpath-card" href="explore.html">
+                <div class="xp-cover" style="background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))">
+                  <span class="badge badge-path-label">Learning Path</span>
+                  <svg class="wm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
+                <div class="xp-body">
+                  <h3 class="xp-title">Customer Success Foundations</h3>
+                  <p class="xp-desc">6 courses · 4h 20m — onboarding, health scoring, and renewal playbooks.</p>
+                  <div class="xp-foot"><span class="btn btn-outline btn-sm">View Learning Path<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+                </div>
+              </a>
+              <a class="card xpath-card" href="explore.html">
+                <div class="xp-cover" style="background: linear-gradient(135deg, oklch(0.585 0.233 277.117), oklch(0.606 0.25 292.717))">
+                  <span class="badge badge-path-label">Learning Path</span>
+                  <svg class="wm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
+                <div class="xp-body">
+                  <h3 class="xp-title">Automating Your Workflows</h3>
+                  <p class="xp-desc">5 courses · 3h 45m — triggers, conditions, and multi-step automations.</p>
+                  <div class="xp-foot"><span class="btn btn-outline btn-sm">View Learning Path<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+
+      const appShell = document.querySelector('.app');
+      const mobileNavBtn = document.getElementById('mobileNavBtn');
+      const mobileBackdrop = document.getElementById('mobileBackdrop');
+      mobileNavBtn?.addEventListener('click', () => appShell.classList.add('mobile-nav-open'));
+      mobileBackdrop?.addEventListener('click', () => appShell.classList.remove('mobile-nav-open'));
+
+      const myLearningToggle = document.getElementById('myLearningToggle');
+      const myLearningSub = document.getElementById('myLearningSub');
+      myLearningToggle.addEventListener('click', () => {
+        const isOpen = myLearningToggle.classList.toggle('open');
+        myLearningSub.hidden = !isOpen;
+      });
+
+      const filterPopover = document.getElementById('filterPopover');
+      const filterBtn = document.getElementById('filterBtn');
+      const filterCount = document.getElementById('filterCount');
+
+      function updateFilterCount() {
+        let active = 0;
+        document.querySelectorAll('.filter-pill-row').forEach((row) => {
+          const selected = row.querySelector('.filter-pill.on');
+          const first = row.querySelector('.filter-pill');
+          if (selected && selected !== first) active++;
+        });
+        filterCount.hidden = active === 0;
+        filterCount.textContent = active;
+      }
+
+      filterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterPopover.classList.toggle('open');
+      });
+      document.querySelectorAll('.filter-pill-row').forEach((row) => {
+        row.querySelectorAll('.filter-pill').forEach((pill) => {
+          pill.addEventListener('click', () => {
+            row.querySelector('.filter-pill.on')?.classList.remove('on');
+            pill.classList.add('on');
+            updateFilterCount();
+          });
+        });
+      });
+      document.getElementById('clearFilters').addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill-row').forEach((row) => {
+          row.querySelector('.filter-pill.on')?.classList.remove('on');
+          row.querySelector('.filter-pill').classList.add('on');
+        });
+        updateFilterCount();
+      });
+      document.addEventListener('click', () => filterPopover.classList.remove('open'));
+
+      document.querySelectorAll('#viewToggle button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelector('#viewToggle .on')?.classList.remove('on');
+          btn.classList.add('on');
+          document.querySelectorAll('[data-view-content]').forEach((el) => {
+            el.hidden = el.dataset.viewContent !== btn.dataset.view;
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

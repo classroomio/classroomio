@@ -1,4 +1,4 @@
-import type { AccountOrg } from '$features/app/types';
+import type { PublicOrg } from '$features/app/types';
 import { t } from '$lib/utils/functions/translations';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '@cio/utils/constants';
@@ -12,7 +12,7 @@ type OrganizationMembership = {
 interface OrgLandingAuthActionOptions {
   isLoggedIn: boolean;
   isInitialized: boolean;
-  org: AccountOrg;
+  org: PublicOrg;
   organizations?: OrganizationMembership[];
   hasPendingInvite?: boolean;
 }
