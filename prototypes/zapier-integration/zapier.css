@@ -480,11 +480,13 @@
 }
 .zi-consent-redirect {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 7px;
   font-size: 11.5px;
   color: var(--muted-foreground);
   justify-content: center;
+  text-align: center;
+  line-height: 1.6;
   margin-bottom: 20px;
 }
 .zi-consent-redirect svg {
@@ -614,7 +616,7 @@
 }
 
 .zi-grant-row {
-  grid-template-columns: 2fr 1.3fr 1fr 1fr 70px;
+  grid-template-columns: 2fr 1.1fr 0.9fr 1fr 1fr 70px;
 }
 
 /* ============ templates gallery (screen 4) ============ */
@@ -1933,6 +1935,7 @@
   .trow.zi-grant-row > div:nth-child(2)::before,
   .trow.zi-grant-row > div:nth-child(3)::before,
   .trow.zi-grant-row > div:nth-child(4)::before,
+  .trow.zi-grant-row > div:nth-child(5)::before,
   .trow.zi-zap-row > div:nth-child(2)::before,
   .trow.zi-zap-row > div:nth-child(3)::before,
   .trow.zi-zap-row > div:nth-child(4)::before,
@@ -1949,12 +1952,15 @@
     content: 'Access';
   }
   .trow.zi-grant-row > div:nth-child(3)::before {
-    content: 'Last used';
+    content: 'Status';
   }
   .trow.zi-grant-row > div:nth-child(4)::before {
+    content: 'Last used';
+  }
+  .trow.zi-grant-row > div:nth-child(5)::before {
     content: 'Connected';
   }
-  .trow.zi-grant-row > div:nth-child(5) .btn {
+  .trow.zi-grant-row > div:nth-child(6) .btn {
     width: 100%;
   }
   .trow.zi-zap-row > div:nth-child(2)::before {

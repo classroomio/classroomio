@@ -53,24 +53,148 @@
         </header>
 
         <main class="content">
-          <!-- ===== Reverse-direction template (action-only): compact hand-off screen ===== -->
-          <div class="wrap-narrow" id="handoffView" hidden>
-            <div class="card card-pad" style="text-align:center; padding:36px 28px">
-              <div style="display:flex; justify-content:center; gap:10px; margin-bottom:18px">
-                <div class="app-badge app-hubspot" style="width:40px;height:40px;font-size:15px;border-radius:var(--radius-lg)">H</div>
-                <div style="display:flex;align-items:center;color:var(--muted-foreground)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </div>
-                <div class="zap-mark zap-mark-lg"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <!-- ===== Reverse-direction wizard: a Zap that starts in another app and -->
+          <!-- ends with one of ClassroomIO's 5 real actions (PRD "Action Catalog"). -->
+          <!-- Separate step machinery from the trigger-first wizard below, since -->
+          <!-- there's no ClassroomIO trigger step here: the trigger lives in the -->
+          <!-- other app's own Zapier account. -->
+          <div class="zi-builder-shell" id="handoffView" hidden>
+            <div class="zi-builder-head">
+              <a class="icon-btn" href="zap-templates.html" title="Back to templates" aria-label="Back to templates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg></a>
+              <input class="zi-zap-name" id="revZapName" value="New HubSpot deal → Enroll in course" aria-label="Zap name" />
+              <div class="top-actions">
+                <span class="btn btn-outline btn-sm" style="pointer-events:none">Save as draft</span>
               </div>
-              <p class="sec-title" style="margin-bottom:6px">This Zap starts in HubSpot</p>
-              <p style="font-size:13px;color:var(--muted-foreground);max-width:44ch;margin:0 auto 22px;line-height:1.6">
-                "Enroll new HubSpot contacts in a course" triggers from a HubSpot deal stage change, so it's built from HubSpot's side.
-                ClassroomIO shows up in Zapier as the action app. Pick <strong style="color:var(--foreground)">Enroll Student in Course</strong> when you get to the action step, and map the contact's name and email.
-              </p>
-              <div style="display:flex;gap:10px;justify-content:center">
-                <a class="btn btn-outline" href="zap-templates.html">Back to templates</a>
-                <span class="btn btn-primary" style="pointer-events:none">Continue in Zapier <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-left:2px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </div>
+
+            <div class="card zi-stepper-card">
+              <div class="stepper" id="revStepperNodes">
+                <div class="snode current" data-step="1"><div class="sdot">1</div><div class="slabel">Trigger</div></div>
+                <div class="sbar"></div>
+                <div class="snode" data-step="2"><div class="sdot">2</div><div class="slabel">Action</div></div>
+                <div class="sbar"></div>
+                <div class="snode" data-step="3"><div class="sdot">3</div><div class="slabel">Test</div></div>
+                <div class="sbar"></div>
+                <div class="snode" data-step="4"><div class="sdot">4</div><div class="slabel">Review &amp; enable</div></div>
+              </div>
+            </div>
+
+            <!-- REV STEP 1: trigger context, read-only since it's built on the other app's side -->
+            <div class="zi-step-body active" id="revStep1">
+              <div class="card card-pad" style="text-align:center; padding:32px 24px">
+                <div style="display:flex; justify-content:center; gap:10px; margin-bottom:18px">
+                  <div class="app-badge app-hubspot" style="width:40px;height:40px;font-size:15px;border-radius:var(--radius-lg)">H</div>
+                  <div style="display:flex;align-items:center;color:var(--muted-foreground)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                  </div>
+                  <div class="zap-mark zap-mark-lg"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+                </div>
+                <p class="sec-title" style="margin-bottom:6px">This Zap's trigger is HubSpot: Deal stage changed</p>
+                <p style="font-size:13px;color:var(--muted-foreground);max-width:46ch;margin:0 auto 4px;line-height:1.6">
+                  Triggers built on another app's data are configured from that app's own Zapier account, so there's no
+                  ClassroomIO trigger step here. ClassroomIO shows up in Zapier as the <strong style="color:var(--foreground)">action</strong> app for this Zap. Continue to choose what it should do.
+                </p>
+              </div>
+              <div class="zi-wizard-foot">
+                <div class="spacer"></div>
+                <button class="btn btn-primary" id="revStep1Continue" type="button">Continue</button>
+              </div>
+            </div>
+
+            <!-- REV STEP 2: choose one of the 5 real ClassroomIO actions -->
+            <div class="zi-step-body" id="revStep2">
+              <div class="card card-pad">
+                <p class="sec-title">Choose a ClassroomIO action</p>
+                <p class="hint" style="margin-bottom:16px">This is what ClassroomIO does when the HubSpot trigger fires.</p>
+                <div class="zi-picker-grid" id="actionPickerGrid"></div>
+
+                <div id="revActionConfig" hidden>
+                  <div class="zi-subhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h7"/></svg>Set up action</div>
+                  <div id="revFieldMapRows"></div>
+
+                  <div class="card zi-field-source">
+                    <div class="zi-field-source-title">Insert data from “HubSpot: Deal stage changed”</div>
+                    <div class="zi-field-source-pills" id="revSourcePills"></div>
+                    <div class="zi-map-hint">Click a field to insert it into the input you're editing.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="zi-wizard-foot">
+                <button class="btn btn-outline" id="revStep2Back" type="button">Back</button>
+                <div class="spacer"></div>
+                <button class="btn btn-primary" id="revStep2Continue" disabled type="button">Continue</button>
+              </div>
+            </div>
+
+            <!-- REV STEP 3: Test -->
+            <div class="zi-step-body" id="revStep3">
+              <p class="sec-title" style="margin-bottom:14px">Test your Zap</p>
+
+              <div class="card zi-test-card">
+                <div class="zi-test-head">
+                  <div class="t">Test trigger</div>
+                  <button class="btn btn-outline btn-sm" id="revTestTriggerBtn" type="button">Find a sample</button>
+                </div>
+                <p class="zi-test-desc">We'll look for a recent matching HubSpot deal so you can see the data your Zap will receive.</p>
+                <div class="zi-test-result" id="revTestTriggerResult"></div>
+              </div>
+
+              <div class="card zi-test-card">
+                <div class="zi-test-head">
+                  <div class="t">Test action</div>
+                  <button class="btn btn-outline btn-sm" id="revTestActionBtn" type="button">Send a test</button>
+                </div>
+                <p class="zi-test-desc">Sends one real test using the sample data above, so you can confirm ClassroomIO receives it correctly.</p>
+                <div class="zi-test-result" id="revTestActionResult"></div>
+              </div>
+
+              <div class="zi-wizard-foot">
+                <button class="btn btn-outline" id="revStep3Back" type="button">Back</button>
+                <div class="spacer"></div>
+                <button class="btn btn-primary" id="revStep3Continue" disabled type="button">Continue</button>
+              </div>
+            </div>
+
+            <!-- REV STEP 4: Review and enable -->
+            <div class="zi-step-body" id="revStep4">
+              <p class="sec-title" style="margin-bottom:14px">Review &amp; enable</p>
+
+              <div class="card zi-review-flow">
+                <div class="zi-review-node">
+                  <div class="ico app-hubspot" style="font-weight:700">H</div>
+                  <div>
+                    <div class="eyebrow">Trigger · HubSpot</div>
+                    <div class="t">Deal stage changed</div>
+                    <div class="d">Stage: Customer</div>
+                  </div>
+                </div>
+                <div class="zi-review-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+                <div class="zi-review-node">
+                  <div class="ico" id="revReviewActionIco"></div>
+                  <div>
+                    <div class="eyebrow">Action · ClassroomIO</div>
+                    <div class="t" id="revReviewActionName"></div>
+                    <div class="d">Connected as jordan.diallo@acme.com</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card card-pad zi-review-data">
+                <p class="sec-title" style="margin-bottom:10px; font-size:13px">Data being sent</p>
+                <div id="revReviewDataRows"></div>
+              </div>
+
+              <div class="card zi-enable-card">
+                <div class="txt">
+                  <div class="t">Turn on this Zap?</div>
+                  <div class="d">Once enabled, it runs automatically every time the trigger happens. No further action needed.</div>
+                </div>
+                <button class="btn btn-primary btn-lg" id="revEnableBtn" type="button">Turn on Zap</button>
+              </div>
+
+              <div class="zi-wizard-foot">
+                <button class="btn btn-outline" id="revStep4Back" type="button">Back</button>
+                <div class="spacer"></div>
               </div>
             </div>
           </div>

@@ -25,8 +25,12 @@
   var TEMPLATES = {
     'completed-slack': { trigger: 'course_completed', app: 'slack', name: 'Course completed → Slack notification' },
     'certificate-drive': { trigger: 'certificate_issued', app: 'drive', name: 'Certificate issued → Save to Drive' },
-    'payment-hubspot': { trigger: 'payment_request', app: 'hubspot', name: 'Payment request → HubSpot deal' },
-    'enrolled-mailchimp': { trigger: 'student_enrolled', app: 'mailchimp', name: 'Student enrolled → Mailchimp' }
+    'payment-hubspot': { trigger: 'payment_request_created', app: 'hubspot', name: 'Payment request → HubSpot deal' },
+    'enrolled-mailchimp': {
+      trigger: 'student_enrolled_in_course',
+      app: 'mailchimp',
+      name: 'Student enrolled → Mailchimp'
+    }
   };
 
   var params = new URLSearchParams(location.search);
@@ -36,7 +40,233 @@
   if (templateKey === 'crm-enroll') {
     document.getElementById('wizardView').hidden = true;
     document.getElementById('handoffView').hidden = false;
+    initReverseWizard();
     return;
+  }
+
+  // ---------- reverse-direction wizard: another app's trigger, a real ----------
+  // ---------- ClassroomIO action (PRD "Action Catalog", zapier:write) ----------
+  function initReverseWizard() {
+    var ACTIONS = ZI.CLASSROOMIO_ACTIONS;
+    var HUBSPOT_FIELDS = ['Contact Name', 'Contact Email', 'Deal Stage'];
+    var rev = { action: null, lastFocusedInput: null };
+
+    var actionGrid = document.getElementById('actionPickerGrid');
+    Object.keys(ACTIONS).forEach(function (key) {
+      var action = ACTIONS[key];
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'zi-pick-card';
+      card.dataset.action = key;
+      card.innerHTML =
+        '<div class="zi-pick-ico">' +
+        action.icon +
+        '</div>' +
+        '<div class="zi-pick-text"><div class="t">' +
+        action.label +
+        '</div><div class="d">' +
+        action.desc +
+        '</div></div>' +
+        '<div class="zi-pick-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>';
+      card.addEventListener('click', function () {
+        selectRevAction(key);
+      });
+      actionGrid.appendChild(card);
+    });
+
+    function selectRevAction(key) {
+      rev.action = key;
+      actionGrid.querySelectorAll('.zi-pick-card').forEach(function (el) {
+        el.classList.toggle('selected', el.dataset.action === key);
+      });
+      document.getElementById('revActionConfig').hidden = false;
+      document.getElementById('revStep2Continue').disabled = false;
+      renderRevFieldMap(ACTIONS[key]);
+      renderRevSourcePills();
+    }
+
+    function renderRevFieldMap(action) {
+      var wrap = document.getElementById('revFieldMapRows');
+      wrap.innerHTML = '';
+      action.fields.forEach(function (field) {
+        var row = document.createElement('div');
+        row.className = 'zi-map-row';
+        if (field.type === 'select') {
+          row.innerHTML =
+            '<div class="zi-map-label">' +
+            field.label +
+            '</div>' +
+            '<select class="select">' +
+            field.options
+              .map(function (o) {
+                return '<option>' + o + '</option>';
+              })
+              .join('') +
+            '</select>';
+        } else {
+          row.innerHTML =
+            '<div class="zi-map-label">' +
+            field.label +
+            '</div>' +
+            '<div class="zi-map-input"><input type="text" value="' +
+            field.default +
+            '" data-field="' +
+            field.key +
+            '" /></div>';
+        }
+        wrap.appendChild(row);
+      });
+      wrap.querySelectorAll('.zi-map-input input').forEach(function (input) {
+        input.addEventListener('focus', function () {
+          rev.lastFocusedInput = input;
+        });
+      });
+      var firstInput = wrap.querySelector('.zi-map-input input');
+      if (firstInput) rev.lastFocusedInput = firstInput;
+    }
+
+    function renderRevSourcePills() {
+      var wrap = document.getElementById('revSourcePills');
+      wrap.innerHTML = '';
+      HUBSPOT_FIELDS.forEach(function (fieldName) {
+        var pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'zi-pill';
+        pill.textContent = fieldName;
+        pill.addEventListener('click', function () {
+          var target = rev.lastFocusedInput || document.querySelector('#revFieldMapRows .zi-map-input input');
+          if (!target) return;
+          var token = '{{' + fieldName + '}}';
+          var pos = target.selectionStart == null ? target.value.length : target.selectionStart;
+          target.value = target.value.slice(0, pos) + token + target.value.slice(pos);
+          target.focus();
+        });
+        wrap.appendChild(pill);
+      });
+    }
+
+    // ---------- step navigation ----------
+    var revStepBodies = document.querySelectorAll('#handoffView .zi-step-body');
+    var revStepperNodes = document.querySelectorAll('#revStepperNodes .snode');
+    var revSbars = document.querySelectorAll('#revStepperNodes .sbar');
+
+    function goToRevStep(n) {
+      revStepBodies.forEach(function (el) {
+        el.classList.toggle('active', el.id === 'revStep' + n);
+      });
+      revStepperNodes.forEach(function (el) {
+        var s = Number(el.dataset.step);
+        el.classList.toggle('current', s === n);
+        el.classList.toggle('done', s < n);
+      });
+      revSbars.forEach(function (el, i) {
+        el.classList.toggle('filled', i < n - 1);
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    }
+
+    document.getElementById('revStep1Continue').addEventListener('click', function () {
+      goToRevStep(2);
+    });
+    document.getElementById('revStep2Back').addEventListener('click', function () {
+      goToRevStep(1);
+    });
+    document.getElementById('revStep2Continue').addEventListener('click', function () {
+      goToRevStep(3);
+    });
+    document.getElementById('revStep3Back').addEventListener('click', function () {
+      goToRevStep(2);
+    });
+    document.getElementById('revStep3Continue').addEventListener('click', function () {
+      renderRevReview();
+      goToRevStep(4);
+    });
+    document.getElementById('revStep4Back').addEventListener('click', function () {
+      goToRevStep(3);
+    });
+
+    // ---------- step 3: test ----------
+    document.getElementById('revTestTriggerBtn').addEventListener('click', function () {
+      var box = document.getElementById('revTestTriggerResult');
+      box.className = 'zi-test-result show loading';
+      box.innerHTML = '<div class="zi-spinner-sm"></div><span>Looking for a recent matching deal…</span>';
+      setTimeout(function () {
+        var rows = HUBSPOT_FIELDS.map(function (f) {
+          return '<dt>' + f + '</dt><dd>' + (SAMPLE_VALUES[f] || 'N/A') + '</dd>';
+        }).join('');
+        box.className = 'zi-test-result show success';
+        box.innerHTML =
+          '<div class="zi-test-result-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Sample record found</div>' +
+          '<dl class="zi-sample-record">' +
+          rows +
+          '</dl>';
+        document.getElementById('revStep3Continue').disabled = false;
+      }, 900);
+    });
+
+    document.getElementById('revTestActionBtn').addEventListener('click', function () {
+      var box = document.getElementById('revTestActionResult');
+      box.className = 'zi-test-result show loading';
+      box.innerHTML = '<div class="zi-spinner-sm"></div><span>Sending test to ClassroomIO…</span>';
+      setTimeout(function () {
+        box.className = 'zi-test-result show success';
+        box.innerHTML =
+          '<div class="zi-test-result-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Test sent</div>' +
+          '<div>Delivered to ClassroomIO using the sample record above. Check your audience list to confirm it looks right.</div>';
+      }, 900);
+    });
+
+    // ---------- step 4: review ----------
+    function renderRevReview() {
+      var action = ACTIONS[rev.action];
+      document.getElementById('revReviewActionIco').innerHTML = action.icon;
+      document.getElementById('revReviewActionIco').style.background = 'var(--primary)';
+      document.getElementById('revReviewActionIco').style.color = 'var(--primary-foreground)';
+      document.getElementById('revReviewActionName').textContent = action.label;
+
+      var dataWrap = document.getElementById('revReviewDataRows');
+      dataWrap.innerHTML = '';
+      action.fields.forEach(function (field) {
+        var value;
+        if (field.type === 'select') {
+          var rows = document.querySelectorAll('#revFieldMapRows .zi-map-row');
+          value = field.options[0];
+          rows.forEach(function (row) {
+            if (row.querySelector('.zi-map-label').textContent === field.label) {
+              var sel = row.querySelector('select');
+              if (sel) value = sel.value;
+            }
+          });
+        } else {
+          var input = document.querySelector('#revFieldMapRows .zi-map-input input[data-field="' + field.key + '"]');
+          value = input ? input.value : field.default;
+        }
+        var row = document.createElement('div');
+        row.className = 'zi-review-data-row';
+        row.innerHTML = '<div class="f">' + field.label + '</div><div class="v">' + value + '</div>';
+        dataWrap.appendChild(row);
+      });
+    }
+
+    // ---------- enable ----------
+    document.getElementById('revEnableBtn').addEventListener('click', function () {
+      var btn = this;
+      btn.disabled = true;
+      btn.textContent = 'Turning on…';
+      setTimeout(function () {
+        var name = document.getElementById('revZapName').value || 'Untitled Zap';
+        sessionStorage.setItem(
+          'ziNewZap',
+          JSON.stringify({
+            name: name,
+            isClassroomIOAction: true,
+            action: rev.action,
+            trigger: 'HubSpot: Deal stage changed'
+          })
+        );
+        window.location.href = 'manage-zaps.html?enabled=1';
+      }, 900);
+    });
   }
 
   var state = {

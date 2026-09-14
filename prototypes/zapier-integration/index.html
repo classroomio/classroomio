@@ -47,6 +47,10 @@
           <button class="icon-btn mobile-nav-btn" id="mobileNavBtn" title="Menu" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
           <nav class="crumbs"><a href="automation-overview.html">Automation</a><span class="sep">/</span><span class="here">Zapier</span></nav>
           <div class="top-actions">
+            <div class="dev-toggle" title="Prototype-only: preview a non-admin viewer">
+              <button class="on" id="roleAdmin" type="button">Admin</button>
+              <button id="roleMember" type="button">Member</button>
+            </div>
             <div class="dev-toggle" title="Prototype-only: preview both plan states">
               <button class="on" id="planEarly" type="button">Early Adopter</button>
               <button id="planBasic" type="button">Basic plan</button>
@@ -57,8 +61,15 @@
         </header>
 
         <main class="content">
-          <!-- Basic-plan gate (hidden by default) -->
+          <!-- Admin-permission and Basic-plan gates (hidden by default) -->
           <div class="wrap">
+            <div class="card card-pad" id="memberGate" hidden style="border-color: color-mix(in oklab, var(--border) 100%, transparent); background: var(--muted); margin: 24px 0; display:flex; align-items:center; gap: 14px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:20px;height:20px;stroke-width:2;color:var(--muted-foreground);flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:600">You need admin access to connect Zapier</div>
+                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px">Ask an admin on Acme Academy to connect Zapier. You can still browse the App Directory below.</div>
+              </div>
+            </div>
             <div class="card card-pad" id="gateCallout" hidden style="border-color: color-mix(in oklab, var(--warning) 30%, var(--border)); background: var(--warning-soft); margin: 24px 0; display:flex; align-items:center; gap: 14px;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:20px;height:20px;stroke-width:2;color:var(--warning);flex-shrink:0"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
               <div style="flex:1">
@@ -131,24 +142,50 @@
     <script src="proto.js"></script>
     <script src="apps-catalog.js"></script>
     <script>
+      var roleAdmin = document.getElementById('roleAdmin');
+      var roleMember = document.getElementById('roleMember');
+      var memberGate = document.getElementById('memberGate');
       var planEarly = document.getElementById('planEarly');
       var planBasic = document.getElementById('planBasic');
       var gate = document.getElementById('gateCallout');
       var content = document.getElementById('connectContent');
+
+      // Admin-permission gate takes priority over the plan gate: a non-admin
+      // never sees the connect flow regardless of plan, matching the PRD's
+      // Dashboard Zapier Tab section order (admin callout, then plan callout).
+      roleAdmin.onclick = function () {
+        roleAdmin.classList.add('on');
+        roleMember.classList.remove('on');
+        memberGate.hidden = true;
+        gate.hidden = !planBasic.classList.contains('on') ? true : false;
+        content.hidden = planBasic.classList.contains('on');
+      };
+      roleMember.onclick = function () {
+        roleMember.classList.add('on');
+        roleAdmin.classList.remove('on');
+        memberGate.hidden = false;
+        gate.hidden = true;
+        content.hidden = true;
+      };
+
       planEarly.onclick = function () {
         planEarly.classList.add('on');
         planBasic.classList.remove('on');
         gate.hidden = true;
-        content.hidden = false;
+        content.hidden = roleMember.classList.contains('on');
       };
       planBasic.onclick = function () {
         planBasic.classList.add('on');
         planEarly.classList.remove('on');
-        gate.hidden = false;
+        if (!roleMember.classList.contains('on')) gate.hidden = false;
         content.hidden = true;
       };
 
       document.getElementById('appCount').textContent = ZI.appSlugs().length;
+
+      if (new URLSearchParams(location.search).get('denied')) {
+        setTimeout(function () { ziToast('Connection request denied'); }, 250);
+      }
 
       // ---------- popular apps (default state) ----------
       var POPULAR_SLUGS = ['sheets', 'slack', 'stripe'];
