@@ -2321,6 +2321,7 @@
               "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки.",
               "google_drive": "Google Drive",
               "generate_transcript": "Сгенерировать транскрипцию",
+              "transcript_in_progress": "Получение транскрипции…",
               "generate_transcript_in_progress": "Транскрибирование…",
               "transcript": {
                 "title": "Транскрипция",
@@ -4542,6 +4543,7 @@
         "fetch_documentation_url": "Чтение страницы документации",
         "fetch_documentation_url_with_url": "Чтение {url}",
         "list_youtube_playlist_videos": "Вывод списка видео из плейлиста",
+        "get_lesson_transcript": "Чтение транскрипции видео",
         "add_youtube_video_to_lesson": "Встраивание видео с YouTube"
       },
       "meta": {
@@ -4577,6 +4579,8 @@
         "fetch_documentation_url": "Прочитать {url}",
         "list_youtube_playlist_videos": "Найдено {count} видео в плейлисте",
         "list_youtube_playlist_videos_unavailable": "Не удалось вывести список видео из плейлиста",
+        "get_lesson_transcript": "Транскрипция для {title} прочитана",
+        "get_lesson_transcript_unavailable": "Транскрипция для {title} пока недоступна",
         "add_youtube_video_to_lesson": "Встроенное видео: {title}"
       }
     },

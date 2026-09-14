@@ -65,7 +65,7 @@
 
   const assetId = $derived((video as LessonVideo & { assetId?: string }).assetId ?? null);
 
-  const canGenerateTranscript = $derived(video.type === 'upload' && !!assetId);
+  const canGenerateTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
   const canViewTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
   const canManageThumbnails = $derived(video.type === 'upload' && !!assetId);
   const hls1080Status = $derived(getHls1080Status(video));
@@ -76,7 +76,7 @@
   );
 
   onMount(() => {
-    if (canGenerateTranscript || video.type === 'youtube') {
+    if (canGenerateTranscript) {
       void ensureTranscriptChecked();
     }
   });
@@ -302,7 +302,7 @@
   onOpenChange={(open) => {
     if (!open) return;
 
-    if (canGenerateTranscript || video.type === 'youtube') {
+    if (canGenerateTranscript) {
       void ensureTranscriptChecked();
     }
 
@@ -368,9 +368,16 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    {#if canGenerateTranscript && !hasTranscript}
+    {#if canGenerateTranscript && !hasTranscript && isTranscribing}
+      <DropdownMenu.Item disabled>
+        <span class="flex items-center gap-2">
+          <CaptionsIcon size={14} />
+          {$t('course.navItem.lessons.materials.tabs.video.transcript_in_progress')}
+        </span>
+      </DropdownMenu.Item>
+    {/if}
+    {#if canGenerateTranscript && !hasTranscript && !isTranscribing}
       <DropdownMenu.Item
-        disabled={isTranscribing}
         onclick={() => {
           void handleGenerateTranscript();
         }}

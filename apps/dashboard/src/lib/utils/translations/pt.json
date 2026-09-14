@@ -2321,6 +2321,7 @@
               "empty_description": "Adicione vídeos do YouTube, upload ou sua biblioteca de mídia",
               "google_drive": "Google Drive",
               "generate_transcript": "Gerar transcrição",
+              "transcript_in_progress": "Obtendo transcrição…",
               "generate_transcript_in_progress": "Transcrevendo…",
               "transcript": {
                 "title": "Transcrição",
@@ -4542,6 +4543,7 @@
         "fetch_documentation_url": "Lendo a página de documentos",
         "fetch_documentation_url_with_url": "Lendo {url}",
         "list_youtube_playlist_videos": "Listando vídeos da lista de reprodução",
+        "get_lesson_transcript": "Lendo a transcrição do vídeo",
         "add_youtube_video_to_lesson": "Incorporando vídeo do YouTube"
       },
       "meta": {
@@ -4577,6 +4579,8 @@
         "fetch_documentation_url": "Leia {url}",
         "list_youtube_playlist_videos": "Foram encontrados {count} vídeos na lista de reprodução",
         "list_youtube_playlist_videos_unavailable": "Não foi possível listar os vídeos da lista de reprodução",
+        "get_lesson_transcript": "Transcrição de {title} lida",
+        "get_lesson_transcript_unavailable": "Ainda não há transcrição disponível para {title}",
         "add_youtube_video_to_lesson": "Vídeo incorporado: {title}"
       }
     },

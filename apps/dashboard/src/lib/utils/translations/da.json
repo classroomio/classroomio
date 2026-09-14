@@ -2321,6 +2321,7 @@
               "empty_description": "Tilføj videoer fra YouTube, upload eller dit mediebibliotek",
               "google_drive": "Google Drive",
               "generate_transcript": "Generer transskription",
+              "transcript_in_progress": "Henter transskription…",
               "generate_transcript_in_progress": "Transskriberer…",
               "transcript": {
                 "title": "Transskription",
@@ -4542,6 +4543,7 @@
         "fetch_documentation_url": "Læse dokumenter side",
         "fetch_documentation_url_with_url": "Læser {url}",
         "list_youtube_playlist_videos": "Viser afspilningslistens videoer",
+        "get_lesson_transcript": "Læser videotransskription",
         "add_youtube_video_to_lesson": "Indlejret YouTube-video"
       },
       "meta": {
@@ -4577,6 +4579,8 @@
         "fetch_documentation_url": "Læs {url}",
         "list_youtube_playlist_videos": "Fundet {count} videoer på afspilningslisten",
         "list_youtube_playlist_videos_unavailable": "Kunne ikke vise afspilningslistens videoer",
+        "get_lesson_transcript": "Læste transskriptionen for {title}",
+        "get_lesson_transcript_unavailable": "Ingen transskription tilgængelig endnu for {title}",
         "add_youtube_video_to_lesson": "Indlejret video: {title}"
       }
     },

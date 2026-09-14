@@ -2321,6 +2321,7 @@
               "empty_description": "Dodaj filmy z YouTube, prześlij lub ze swojej biblioteki multimediów",
               "google_drive": "Google Drive",
               "generate_transcript": "Wygeneruj transkrypcję",
+              "transcript_in_progress": "Pobieranie transkrypcji…",
               "generate_transcript_in_progress": "Transkrypcja…",
               "transcript": {
                 "title": "Transkrypcja",
@@ -4542,6 +4543,7 @@
         "fetch_documentation_url": "Czytanie strony z dokumentami",
         "fetch_documentation_url_with_url": "Czytanie {url}",
         "list_youtube_playlist_videos": "Wyświetlanie listy filmów z listy odtwarzania",
+        "get_lesson_transcript": "Odczytywanie transkrypcji wideo",
         "add_youtube_video_to_lesson": "Osadzanie filmu z YouTube"
       },
       "meta": {
@@ -4577,6 +4579,8 @@
         "fetch_documentation_url": "Przeczytaj {url}",
         "list_youtube_playlist_videos": "Znaleziono {count} filmów na liście odtwarzania",
         "list_youtube_playlist_videos_unavailable": "Nie można wyświetlić listy filmów z listy odtwarzania",
+        "get_lesson_transcript": "Odczytano transkrypcję dla {title}",
+        "get_lesson_transcript_unavailable": "Brak dostępnej transkrypcji dla {title}",
         "add_youtube_video_to_lesson": "Osadzony film: {title}"
       }
     },

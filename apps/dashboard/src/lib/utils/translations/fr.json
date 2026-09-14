@@ -2321,6 +2321,7 @@
               "empty_description": "Ajoutez des vidéos de YouTube, téléchargez-les ou de votre bibliothèque multimédia",
               "google_drive": "Google Drive",
               "generate_transcript": "Générer la transcription",
+              "transcript_in_progress": "Récupération de la transcription…",
               "generate_transcript_in_progress": "Transcription en cours…",
               "transcript": {
                 "title": "Transcription",
@@ -4542,6 +4543,7 @@
         "fetch_documentation_url": "Lecture de la page de documentation",
         "fetch_documentation_url_with_url": "Lecture de {url}",
         "list_youtube_playlist_videos": "Affichage des vidéos de la playlist",
+        "get_lesson_transcript": "Lecture de la transcription de la vidéo",
         "add_youtube_video_to_lesson": "Intégration de la vidéo YouTube"
       },
       "meta": {
@@ -4577,6 +4579,8 @@
         "fetch_documentation_url": "Lire {url}",
         "list_youtube_playlist_videos": "{count} vidéos trouvées dans la playlist",
         "list_youtube_playlist_videos_unavailable": "Impossible d'afficher les vidéos de la playlist",
+        "get_lesson_transcript": "Transcription de {title} lue",
+        "get_lesson_transcript_unavailable": "Aucune transcription disponible pour le moment pour {title}",
         "add_youtube_video_to_lesson": "Vidéo intégrée : {title}"
       }
     },

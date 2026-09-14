@@ -988,7 +988,7 @@
       "about": {
         "heading": "About",
         "title": "Title",
-    "create": "Create",
+        "create": "Create",
         "upload_an_image": "Upload an image",
         "select_image": "Select Image"
       },
@@ -2511,6 +2511,7 @@
                 }
               },
               "generate_transcript": "Generate transcription",
+              "transcript_in_progress": "Fetching transcript…",
               "generate_transcript_in_progress": "Transcribing…",
               "view_transcript": "View transcription",
               "generate_1080": "Generate 1080p",
@@ -5074,6 +5075,7 @@
         "fetch_documentation_url": "Reading docs page",
         "fetch_documentation_url_with_url": "Reading {url}",
         "list_youtube_playlist_videos": "Listing playlist videos",
+        "get_lesson_transcript": "Reading video transcript",
         "add_youtube_video_to_lesson": "Embedding YouTube video"
       },
       "meta": {
@@ -5109,6 +5111,8 @@
         "fetch_documentation_url": "Read {url}",
         "list_youtube_playlist_videos": "Found {count} videos in the playlist",
         "list_youtube_playlist_videos_unavailable": "Could not list the playlist videos",
+        "get_lesson_transcript": "Read the transcript for {title}",
+        "get_lesson_transcript_unavailable": "No transcript available yet for {title}",
         "add_youtube_video_to_lesson": "Embedded video: {title}"
       }
     },
