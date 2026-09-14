@@ -1902,7 +1902,20 @@
     "login_activity_title": "Student Login Activity",
     "login_activity_description": "Most active days of the week (last 90 days)",
     "login_activity_no_data": "No login activity yet",
-    "login_activity_logins": "logins"
+    "login_activity_logins": "logins",
+    "completed": "Completed",
+    "continue_course": "Continue Course",
+    "course_position": "Course {course} of {total}",
+    "enrolled": "Enrolled",
+    "explore_courses_hours": "{count} courses · {hours}h",
+    "explore_lessons_count": "{count} lessons",
+    "explore_something_new": "Explore Something New",
+    "lessons_done": "{completed} of {total} lessons done",
+    "no_assignments": "No upcoming assignments",
+    "no_assignments_description": "Assignments you need to submit will appear here.",
+    "no_recommendations": "Nothing recommended yet",
+    "no_recommendations_description": "Explore the catalog to find your next course or learning path.",
+    "upcoming_assignments": "Upcoming Assignments"
   },
   "ai": {
     "help_me": "Help me write",

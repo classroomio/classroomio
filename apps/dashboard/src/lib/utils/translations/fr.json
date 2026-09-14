@@ -2979,7 +2979,20 @@
     "open_academy": "Académie ouverte",
     "explore_more_courses": "Explorez plus de cours",
     "view_more": "Voir plus",
-    "upcoming_sessions_heading": "Séances en direct"
+    "upcoming_sessions_heading": "Séances en direct",
+    "completed": "Terminé(e)",
+    "continue_course": "Continuer le cours",
+    "course_position": "Cours {course} sur {total}",
+    "enrolled": "Inscrit(e)",
+    "explore_courses_hours": "{count} cours · {hours} h",
+    "explore_lessons_count": "{count} leçons",
+    "explore_something_new": "Explorer de nouvelles choses",
+    "lessons_done": "{completed} sur {total} leçons terminées",
+    "no_assignments": "Aucun devoir à venir",
+    "no_assignments_description": "Les devoirs à rendre s'afficheront ici.",
+    "no_recommendations": "Aucune recommandation pour le moment",
+    "no_recommendations_description": "Explorez le catalogue pour trouver votre prochain cours ou parcours d'apprentissage.",
+    "upcoming_assignments": "Devoirs à venir"
   },
   "schedule": {
     "title": "Votre emploi du temps",

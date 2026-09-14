@@ -2979,7 +2979,20 @@
     "open_academy": "Otwarta Akademia",
     "explore_more_courses": "Przeglądaj więcej kursów",
     "view_more": "Zobacz więcej",
-    "upcoming_sessions_heading": "Sesje na żywo"
+    "upcoming_sessions_heading": "Sesje na żywo",
+    "completed": "Ukończono",
+    "continue_course": "Kontynuuj kurs",
+    "course_position": "Kurs {course} z {total}",
+    "enrolled": "Zapisano",
+    "explore_courses_hours": "{count} kursów · {hours}h",
+    "explore_lessons_count": "{count} lekcji",
+    "explore_something_new": "Odkryj coś nowego",
+    "lessons_done": "{completed} z {total} lekcji wykonanych",
+    "no_assignments": "Brak nadchodzących zadań",
+    "no_assignments_description": "Zadania, które musisz przesłać, pojawią się tutaj.",
+    "no_recommendations": "Nic jeszcze nie polecono",
+    "no_recommendations_description": "Przejrzyj katalog, aby znaleźć kolejny kurs lub ścieżkę edukacyjną.",
+    "upcoming_assignments": "Nadchodzące zadania"
   },
   "schedule": {
     "title": "Twój harmonogram",

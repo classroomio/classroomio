@@ -2979,7 +2979,20 @@
     "open_academy": "Åbent Akademi",
     "explore_more_courses": "Udforsk flere kurser",
     "view_more": "Se mere",
-    "upcoming_sessions_heading": "Live sessioner"
+    "upcoming_sessions_heading": "Live sessioner",
+    "completed": "Afsluttet",
+    "continue_course": "Fortsæt kursus",
+    "course_position": "Kursus {course} af {total}",
+    "enrolled": "Tilmeldt",
+    "explore_courses_hours": "{count} kurser · {hours}t",
+    "explore_lessons_count": "{count} lektioner",
+    "explore_something_new": "Udforsk noget nyt",
+    "lessons_done": "{completed} af {total} lektioner gennemført",
+    "no_assignments": "Ingen kommende opgaver",
+    "no_assignments_description": "Opgaver, du skal indsende, vises her.",
+    "no_recommendations": "Intet anbefalet endnu",
+    "no_recommendations_description": "Udforsk kataloget for at finde dit næste kursus eller din næste læringssti.",
+    "upcoming_assignments": "Kommende opgaver"
   },
   "schedule": {
     "title": "Dit skema",

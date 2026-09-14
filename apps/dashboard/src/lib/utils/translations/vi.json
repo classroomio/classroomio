@@ -2979,7 +2979,20 @@
     "open_academy": "Học viện mở",
     "explore_more_courses": "Khám phá thêm các khóa học",
     "view_more": "Xem thêm",
-    "upcoming_sessions_heading": "Phiên trực tiếp"
+    "upcoming_sessions_heading": "Phiên trực tiếp",
+    "completed": "Đã hoàn thành",
+    "continue_course": "Tiếp tục khóa học",
+    "course_position": "Khóa học {course} trong tổng số {total}",
+    "enrolled": "Đã đăng ký",
+    "explore_courses_hours": "{count} khóa học · {hours}h",
+    "explore_lessons_count": "{count} bài học",
+    "explore_something_new": "Khám phá điều mới mẻ",
+    "lessons_done": "{completed} trong tổng số {total} bài học đã hoàn thành",
+    "no_assignments": "Không có bài tập sắp tới",
+    "no_assignments_description": "Các bài tập bạn cần nộp sẽ hiển thị ở đây.",
+    "no_recommendations": "Chưa có đề xuất nào",
+    "no_recommendations_description": "Khám phá danh mục để tìm khóa học hoặc lộ trình học tập tiếp theo của bạn.",
+    "upcoming_assignments": "Bài tập sắp tới"
   },
   "schedule": {
     "title": "Lịch trình của bạn",

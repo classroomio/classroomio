@@ -2979,7 +2979,20 @@
     "open_academy": "अकादमी खोलें",
     "explore_more_courses": "अधिक पाठ्यक्रम खोजें",
     "view_more": "और देखें",
-    "upcoming_sessions_heading": "लाइव सत्र"
+    "upcoming_sessions_heading": "लाइव सत्र",
+    "completed": "पूर्ण",
+    "continue_course": "पाठ्यक्रम जारी रखें",
+    "course_position": "{total} में से {course} पाठ्यक्रम",
+    "enrolled": "नामांकित",
+    "explore_courses_hours": "{count} पाठ्यक्रम · {hours}",
+    "explore_lessons_count": "{count} पाठ",
+    "explore_something_new": "कुछ नया खोजें",
+    "lessons_done": "{total} पाठों में से {completed} पाठ",
+    "no_assignments": "कोई आगामी असाइनमेंट नहीं",
+    "no_assignments_description": "आपको जमा करने के लिए आवश्यक असाइनमेंट यहां दिखाई देंगे।",
+    "no_recommendations": "अभी तक कुछ भी अनुशंसित नहीं है",
+    "no_recommendations_description": "अपना अगला पाठ्यक्रम या शिक्षण मार्ग खोजने के लिए कैटलॉग देखें।",
+    "upcoming_assignments": "आगामी असाइनमेंट"
   },
   "schedule": {
     "title": "आपका शेड्यूल",

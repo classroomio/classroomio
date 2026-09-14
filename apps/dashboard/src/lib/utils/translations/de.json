@@ -2979,7 +2979,20 @@
     "open_academy": "Offene Akademie",
     "explore_more_courses": "Entdecken Sie weitere Kurse",
     "view_more": "Mehr anzeigen",
-    "upcoming_sessions_heading": "Live-Sitzungen"
+    "upcoming_sessions_heading": "Live-Sitzungen",
+    "completed": "Abgeschlossen",
+    "continue_course": "Kurs fortsetzen",
+    "course_position": "Kurs {course} von {total}",
+    "enrolled": "Angemeldet",
+    "explore_courses_hours": "{count} Kurse · {hours}h",
+    "explore_lessons_count": "{count} Lektionen",
+    "explore_something_new": "Entdecken Sie etwas Neues",
+    "lessons_done": "{completed} von {total} Lektionen abgeschlossen",
+    "no_assignments": "Keine anstehenden Aufgaben",
+    "no_assignments_description": "Ihre abzugebenden Aufgaben werden hier angezeigt.",
+    "no_recommendations": "Noch keine Empfehlungen",
+    "no_recommendations_description": "Stöbern Sie im Katalog und finden Sie Ihren nächsten Kurs oder Lernpfad.",
+    "upcoming_assignments": "Anstehende Aufgaben"
   },
   "schedule": {
     "title": "Ihr Zeitplan",
