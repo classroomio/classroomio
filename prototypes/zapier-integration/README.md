@@ -9,9 +9,9 @@ adapted to ClassroomIO's design system, never its visuals.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | Screen 1: Zapier's main entry point, and the true start of this prototype. Opens directly into a Jotform-style directory landing: a heading, a functional search bar that filters the full 77-app catalog live, the three most popular integrations, and an "Add integration" CTA. No separate landing/welcome screen before it |
+| `index.html` | Screen 1: Zapier's main entry point, and the true start of this prototype. Opens directly into a Jotform-style directory landing: a heading, a functional search bar that filters the full 77-app catalog live, the three most popular integrations, and an "Add integration" CTA. No separate landing/welcome screen before it. Both the "Browse all apps" link near the search bar and the "View more apps" button under the popular integrations lead to the full App Directory |
 | `prototype-map.html` | Reviewer-only prototype map, linking out to every screen. Not part of the user flow |
-| `app-directory.html` | Screen 2: the full App Directory, reached from `index.html`'s "Browse all apps" link. Sidebar search and category filters with counts (Jotform layout), Popular/A-Z sort, Popular / Recently added quick filters, and a "View more apps" button that paginates through all 77. Accepts `?category=` and `?q=` to arrive pre-filtered |
+| `app-directory.html` | Screen 2: the full App Directory, reached from `index.html`. Sidebar search and category filters with counts (Jotform layout), Popular/A-Z sort, Popular / Recently added quick filters, and a "View more apps" button that paginates through all 77. Accepts `?category=` and `?q=` to arrive pre-filtered |
 | `app-detail.html` | Screen 3: Per-app "ClassroomIO + {App}" page. What it enables, every ClassroomIO trigger, an example action, Connect CTA |
 | `oauth-consent.html` | Screen 4: Authorize screen. Org picker, read/write scopes, Authorize / Deny |
 | `zapier-connected.html` | Screen 5: Connected state. Grant info, usage vs plan limits, connections table, setup guide |
