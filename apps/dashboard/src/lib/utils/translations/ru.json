@@ -384,7 +384,8 @@
       "delete_success": "Видео удалено",
       "delete_in_use": "Это видео все еще прикреплено к уроку. Сначала уберите его оттуда.",
       "delete_failed": "Не удалось удалить видео.",
-      "added_to_lesson": "Видео добавлено в урок"
+      "added_to_lesson": "Видео добавлено в урок",
+      "transcript_unavailable": "Транскрипция недоступна"
     },
     "tags": {
       "group_created": "Группа тегов создана.",
@@ -4580,7 +4581,10 @@
         "list_youtube_playlist_videos": "Найдено {count} видео в плейлисте",
         "list_youtube_playlist_videos_unavailable": "Не удалось вывести список видео из плейлиста",
         "get_lesson_transcript": "Транскрипция для {title} прочитана",
-        "get_lesson_transcript_unavailable": "Транскрипция для {title} пока недоступна",
+        "get_lesson_transcript_fetching": "Получение транскрипции для {title}",
+        "get_lesson_transcript_plan_gated": "Транскрипции доступны на платном тарифе",
+        "get_lesson_transcript_no_credits": "Закончились ИИ-кредиты для получения транскрипций",
+        "get_lesson_transcript_unavailable": "Транскрипция для {title} недоступна",
         "add_youtube_video_to_lesson": "Встроенное видео: {title}"
       }
     },

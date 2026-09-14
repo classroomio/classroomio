@@ -384,7 +384,8 @@
       "delete_success": "Đã xóa video",
       "delete_in_use": "Video này vẫn được đính kèm với một bài học. Loại bỏ nó ở đó đầu tiên.",
       "delete_failed": "Không thể xóa video",
-      "added_to_lesson": "Video đã được thêm vào bài học"
+      "added_to_lesson": "Video đã được thêm vào bài học",
+      "transcript_unavailable": "Không có bản ghi"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -4580,7 +4581,10 @@
         "list_youtube_playlist_videos": "Đã tìm thấy {count} video trong danh sách phát",
         "list_youtube_playlist_videos_unavailable": "Không thể liệt kê các video trong danh sách phát",
         "get_lesson_transcript": "Đã đọc bản ghi cho {title}",
-        "get_lesson_transcript_unavailable": "Chưa có bản ghi cho {title}",
+        "get_lesson_transcript_fetching": "Đang lấy bản ghi cho {title}",
+        "get_lesson_transcript_plan_gated": "Bản ghi yêu cầu gói trả phí",
+        "get_lesson_transcript_no_credits": "Đã hết tín dụng AI để lấy bản ghi",
+        "get_lesson_transcript_unavailable": "Không có bản ghi cho {title}",
         "add_youtube_video_to_lesson": "Video nhúng: {title}"
       }
     },

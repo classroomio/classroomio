@@ -384,7 +384,8 @@
       "delete_success": "Video slettet",
       "delete_in_use": "Denne video er stadig knyttet til en lektion. Fjern det der først.",
       "delete_failed": "Videoen kunne ikke slettes",
-      "added_to_lesson": "Video tilføjet til lektion"
+      "added_to_lesson": "Video tilføjet til lektion",
+      "transcript_unavailable": "Transskription utilgængelig"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -4580,7 +4581,10 @@
         "list_youtube_playlist_videos": "Fundet {count} videoer på afspilningslisten",
         "list_youtube_playlist_videos_unavailable": "Kunne ikke vise afspilningslistens videoer",
         "get_lesson_transcript": "Læste transskriptionen for {title}",
-        "get_lesson_transcript_unavailable": "Ingen transskription tilgængelig endnu for {title}",
+        "get_lesson_transcript_fetching": "Henter transskriptionen for {title}",
+        "get_lesson_transcript_plan_gated": "Transskriptioner kræver et betalt abonnement",
+        "get_lesson_transcript_no_credits": "Ingen AI-kreditter tilbage til transskriptioner",
+        "get_lesson_transcript_unavailable": "Ingen transskription tilgængelig for {title}",
         "add_youtube_video_to_lesson": "Indlejret video: {title}"
       }
     },

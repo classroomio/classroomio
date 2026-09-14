@@ -384,7 +384,8 @@
       "delete_success": "Film usunięty",
       "delete_in_use": "Ten film jest nadal dołączony do lekcji. Najpierw usuń go tam.",
       "delete_failed": "Nie udało się usunąć filmu",
-      "added_to_lesson": "Film dodany do lekcji"
+      "added_to_lesson": "Film dodany do lekcji",
+      "transcript_unavailable": "Transkrypcja niedostępna"
     },
     "tags": {
       "group_created": "Utworzono grupę tagów",
@@ -4580,6 +4581,9 @@
         "list_youtube_playlist_videos": "Znaleziono {count} filmów na liście odtwarzania",
         "list_youtube_playlist_videos_unavailable": "Nie można wyświetlić listy filmów z listy odtwarzania",
         "get_lesson_transcript": "Odczytano transkrypcję dla {title}",
+        "get_lesson_transcript_fetching": "Pobieranie transkrypcji dla {title}",
+        "get_lesson_transcript_plan_gated": "Transkrypcje wymagają planu płatnego",
+        "get_lesson_transcript_no_credits": "Brak kredytów AI na pobranie transkrypcji",
         "get_lesson_transcript_unavailable": "Brak dostępnej transkrypcji dla {title}",
         "add_youtube_video_to_lesson": "Osadzony film: {title}"
       }

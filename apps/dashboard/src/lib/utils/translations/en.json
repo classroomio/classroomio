@@ -4523,7 +4523,8 @@
       "transcription_completed": "Transcription finished",
       "transcript_fetch_failed": "Could not load transcript",
       "transcript_saved": "Transcript updated",
-      "transcript_save_failed": "Could not save transcript"
+      "transcript_save_failed": "Could not save transcript",
+      "transcript_unavailable": "Transcript unavailable"
     },
     "lesson_video": {
       "generate_1080_completed": "1080p rendition added",
@@ -5112,7 +5113,10 @@
         "list_youtube_playlist_videos": "Found {count} videos in the playlist",
         "list_youtube_playlist_videos_unavailable": "Could not list the playlist videos",
         "get_lesson_transcript": "Read the transcript for {title}",
-        "get_lesson_transcript_unavailable": "No transcript available yet for {title}",
+        "get_lesson_transcript_fetching": "Fetching the transcript for {title}",
+        "get_lesson_transcript_plan_gated": "Transcripts require a paid plan",
+        "get_lesson_transcript_no_credits": "Out of AI credits to fetch transcripts",
+        "get_lesson_transcript_unavailable": "No transcript available for {title}",
         "add_youtube_video_to_lesson": "Embedded video: {title}"
       }
     },

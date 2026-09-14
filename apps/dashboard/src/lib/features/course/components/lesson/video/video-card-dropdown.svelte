@@ -122,6 +122,24 @@
     });
   }
 
+  /**
+   * A caption job completes with `status: 'completed'` even when its result is
+   * `unavailable` or `skipped` (no captions, plan gated, out of credits), so job
+   * completion is not proof a transcript exists. Confirm against the transcript
+   * itself before showing it as available.
+   */
+  async function confirmTranscriptAfterJob(afterAssetId: string) {
+    const data = await mediaApi.getAssetTranscript(afterAssetId);
+    hasTranscript = !!data?.segments?.length;
+
+    if (hasTranscript) {
+      snackbar.success('snackbar.media_manager.transcription_completed');
+      return;
+    }
+
+    snackbar.error('snackbar.media_manager.transcript_unavailable');
+  }
+
   async function startTranscriptionPoll(afterAssetId: string) {
     activePoller?.stop();
     activePoller = null;
@@ -137,8 +155,7 @@
 
     if (latest.job.status === 'completed') {
       setIsTranscribing(false);
-      hasTranscript = true;
-      snackbar.success('snackbar.media_manager.transcription_completed');
+      await confirmTranscriptAfterJob(afterAssetId);
 
       return;
     }
@@ -156,8 +173,7 @@
           activePoller?.stop();
           activePoller = null;
           setIsTranscribing(false);
-          hasTranscript = true;
-          snackbar.success('snackbar.media_manager.transcription_completed');
+          void confirmTranscriptAfterJob(afterAssetId);
         }
 
         if (envelope.job.status === 'failed' || envelope.job.status === 'canceled') {

@@ -384,7 +384,8 @@
       "delete_success": "Vidéo supprimée",
       "delete_in_use": "Cette vidéo est toujours jointe à une leçon. Retirez-le d'abord.",
       "delete_failed": "Échec de la suppression de la vidéo",
-      "added_to_lesson": "Vidéo ajoutée à la leçon"
+      "added_to_lesson": "Vidéo ajoutée à la leçon",
+      "transcript_unavailable": "Transcription indisponible"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -4580,7 +4581,10 @@
         "list_youtube_playlist_videos": "{count} vidéos trouvées dans la playlist",
         "list_youtube_playlist_videos_unavailable": "Impossible d'afficher les vidéos de la playlist",
         "get_lesson_transcript": "Transcription de {title} lue",
-        "get_lesson_transcript_unavailable": "Aucune transcription disponible pour le moment pour {title}",
+        "get_lesson_transcript_fetching": "Récupération de la transcription de {title}",
+        "get_lesson_transcript_plan_gated": "Les transcriptions nécessitent un forfait payant",
+        "get_lesson_transcript_no_credits": "Plus de crédits IA pour récupérer les transcriptions",
+        "get_lesson_transcript_unavailable": "Aucune transcription disponible pour {title}",
         "add_youtube_video_to_lesson": "Vidéo intégrée : {title}"
       }
     },

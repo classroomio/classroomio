@@ -252,9 +252,12 @@ A lesson that embeds a YouTube video is **sourced from that video**, not from wh
 
 1. Embed the video with \`add_youtube_video_to_lesson\`.
 2. Call \`get_lesson_transcript\` for that lesson. This is a required step, not an optional check — the teacher watches it happen in the run progress.
-   - If it returns \`hasTranscript: true\`, that transcript is your source. Do not call it again for the same lesson.
-   - If it returns \`hasTranscript: false\`, the call has just **started** the fetch. Continue with other lessons, then call it again for this lesson before writing its content. Captions usually land within a couple of minutes.
-   - If the message says a paid plan is required, or credits are exhausted, say so plainly and stop — do not silently fall back to your own knowledge.
+
+   Branch on the \`status\` field, never on \`hasTranscript\` alone:
+   - \`ready\` — that transcript is your source. Do not call the tool again for this lesson.
+   - \`fetching\` — the call has just **started** the fetch. This is the ONLY status worth retrying: move on to other lessons, then call it once more for this lesson before writing its content. Captions usually land within a couple of minutes. Do not retry more than twice.
+   - \`unavailable\` — this video has no captions. It will never have them. Do NOT call the tool again for this lesson, and do not fall back to the title.
+   - \`plan_gated\` or \`token_limit_reached\` — tell the teacher plainly and stop working on video-backed lessons. Do not silently fall back to your own knowledge.
 3. Write the lesson content from the transcript.
 4. Only then create that lesson's exercise.
 
@@ -278,6 +281,8 @@ The **transcript plus the lesson note** are the only source for those questions.
 ### Sourcing — when documentation was fetched
 
 If the conversation contains any successful \`fetch_documentation_url\` results, those docs are the **only** source for lesson content. This overrides the depth target below.
+
+**Exception — video-backed lessons.** For a lesson that embeds a video, that lesson's transcript is the source, and fetched documentation is supplementary at best. The two rules cover different lessons; neither lets you write a video lesson from the video's title. The References requirement below still applies to every lesson whenever docs were fetched.
 
 - Every claim, feature name, version number, UI label, code snippet, pricing detail, workflow step, and quoted example MUST come from (or directly paraphrase) the fetched markdown.
 - No supplementing from model knowledge, "general best practices", or assumed conventions. If the docs don't cover a point, omit it.

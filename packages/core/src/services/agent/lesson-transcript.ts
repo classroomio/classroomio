@@ -1,14 +1,30 @@
 import { listMediaTranscriptsByAssetIds } from '@cio/db/queries/media-transcript';
+import { getActiveNegativeYoutubeCaption } from '@cio/db/queries/youtube-caption';
 
 import { startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import { getLesson } from '../lesson/lesson';
+import { VIDEO_LEVEL_LANGUAGE_KEY, resolveRequestLanguage } from '../youtube-captions/language';
 import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
 import { getTokenBalance } from './usage';
+
+/**
+ * Why a transcript is missing. `fetching` is the only value worth retrying —
+ * everything else is terminal for this run, so callers (and the agent) must be
+ * able to tell them apart rather than inferring from `hasTranscript: false`.
+ */
+export type LessonTranscriptStatus =
+  | 'ready'
+  | 'fetching'
+  | 'unavailable'
+  | 'plan_gated'
+  | 'token_limit_reached'
+  | 'no_videos';
 
 export interface LessonVideoTranscriptResult {
   lessonId: string;
   title: string;
   hasTranscript: boolean;
+  status: LessonTranscriptStatus;
   transcript: string | null;
   message?: string;
 }
@@ -21,7 +37,7 @@ export interface GetLessonVideoTranscriptOptions {
 }
 
 /** Why a lesson's YouTube captions are not available yet. */
-type PendingCaptionReason = 'plan_gated' | 'token_limit_reached' | 'fetching';
+type PendingCaptionReason = 'plan_gated' | 'token_limit_reached' | 'fetching' | 'unavailable';
 
 interface LessonYoutubeVideo {
   assetId: string;
@@ -115,6 +131,7 @@ export async function getLessonVideoTranscript(
       lessonId: lessonWithVideos.id,
       title: lessonWithVideos.title,
       hasTranscript: false,
+      status: 'no_videos',
       transcript: null,
       message:
         'This lesson has no videos with transcripts. Upload a video or embed a YouTube video with captions to enable transcript-based Q&A.'
@@ -146,6 +163,7 @@ export async function getLessonVideoTranscript(
       lessonId: lessonWithVideos.id,
       title: lessonWithVideos.title,
       hasTranscript: false,
+      status: pendingReason ?? 'unavailable',
       transcript: null,
       message: buildEmptyTranscriptMessage({
         hasUploadVideos: uploadAssetIds.length > 0,
@@ -159,6 +177,7 @@ export async function getLessonVideoTranscript(
     lessonId: lessonWithVideos.id,
     title: lessonWithVideos.title,
     hasTranscript: true,
+    status: 'ready',
     transcript
   };
 }
@@ -181,14 +200,40 @@ async function warmMissingCaptions(
     }
   }
 
+  const fetchable = await filterOutKnownUnavailable(missingVideos);
+  if (fetchable.length === 0) {
+    return 'unavailable';
+  }
+
   // Nothing to attribute the spend to, so report as fetching rather than spend anonymously.
   if (!options.userId) {
     return 'fetching';
   }
 
-  await enqueueCaptionFetches(orgId, missingVideos, options.userId, options.courseId ?? null);
+  await enqueueCaptionFetches(orgId, fetchable, options.userId, options.courseId ?? null);
 
   return 'fetching';
+}
+
+/**
+ * Drop videos the provider has already reported as captionless. Without this a
+ * caller that retries on `hasTranscript: false` would re-enqueue the same video
+ * forever — the negative cache stops the spend, not the churn.
+ */
+async function filterOutKnownUnavailable(videos: LessonYoutubeVideo[]): Promise<LessonYoutubeVideo[]> {
+  const language = resolveRequestLanguage();
+  const checks = await Promise.all(
+    videos.map(async (video) => {
+      const [languageNegative, videoNegative] = await Promise.all([
+        getActiveNegativeYoutubeCaption(video.youtubeVideoId, language),
+        getActiveNegativeYoutubeCaption(video.youtubeVideoId, VIDEO_LEVEL_LANGUAGE_KEY)
+      ]);
+
+      return languageNegative || videoNegative ? null : video;
+    })
+  );
+
+  return checks.filter((video): video is LessonYoutubeVideo => video !== null);
 }
 
 async function enqueueCaptionFetches(
@@ -232,7 +277,11 @@ function buildEmptyTranscriptMessage(input: {
       return 'This lesson has YouTube video(s), but the AI credit balance is exhausted so captions could not be fetched. Top up AI credits to enable transcript-based Q&A.';
     }
 
-    return 'This lesson has YouTube video(s) but no transcript is available yet. Captions are being fetched — try again shortly, or the video may not have captions enabled.';
+    if (pendingReason === 'unavailable') {
+      return 'These YouTube video(s) have no captions available, so there is no transcript to work from. Do not rely on the video title instead.';
+    }
+
+    return 'This lesson has YouTube video(s) but no transcript is available yet. Captions are being fetched — ask again shortly.';
   }
 
   if (hasUploadVideos) {
