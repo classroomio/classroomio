@@ -173,6 +173,20 @@ export async function getLessonVideoTranscript(
     };
   }
 
+  // An uploaded video's transcript does not stand in for a missing YouTube one.
+  // Returning `ready` here would let the agent write the lesson and its exercise
+  // while the embedded video is still ungrounded.
+  if (pendingReason) {
+    return {
+      lessonId: lessonWithVideos.id,
+      title: lessonWithVideos.title,
+      hasTranscript: false,
+      status: pendingReason,
+      transcript,
+      message: buildPartialTranscriptMessage(pendingReason)
+    };
+  }
+
   return {
     lessonId: lessonWithVideos.id,
     title: lessonWithVideos.title,
@@ -182,12 +196,35 @@ export async function getLessonVideoTranscript(
   };
 }
 
+function buildPartialTranscriptMessage(pendingReason: PendingCaptionReason): string {
+  if (pendingReason === 'plan_gated') {
+    return 'Only part of this lesson has a transcript. YouTube transcripts require a paid plan, so the embedded video is not covered.';
+  }
+
+  if (pendingReason === 'token_limit_reached') {
+    return 'Only part of this lesson has a transcript. AI credits are exhausted, so the embedded YouTube video could not be fetched.';
+  }
+
+  if (pendingReason === 'unavailable') {
+    return 'Only part of this lesson has a transcript — the embedded YouTube video has no captions available. Do not fill the gap from the video title.';
+  }
+
+  return 'Only part of this lesson has a transcript. Captions for the embedded YouTube video are still being fetched — ask again shortly.';
+}
+
 /** Enqueues the fetches when allowed; returns why the captions are not ready. */
 async function warmMissingCaptions(
   orgId: string,
   missingVideos: LessonYoutubeVideo[],
   options: GetLessonVideoTranscriptOptions
 ): Promise<PendingCaptionReason> {
+  // Filter first: a video we already know has no captions cannot be fetched at
+  // any plan or balance, and telling the teacher to upgrade for it would be wrong.
+  const fetchable = await filterOutKnownUnavailable(missingVideos);
+  if (fetchable.length === 0) {
+    return 'unavailable';
+  }
+
   const allowed = await canOrgFetchYoutubeCaptions(orgId);
   if (!allowed) {
     return 'plan_gated';
@@ -198,11 +235,6 @@ async function warmMissingCaptions(
     if (balance.remaining < CAPTION_FETCH_COST_UNITS) {
       return 'token_limit_reached';
     }
-  }
-
-  const fetchable = await filterOutKnownUnavailable(missingVideos);
-  if (fetchable.length === 0) {
-    return 'unavailable';
   }
 
   // Nothing to attribute the spend to, so report as fetching rather than spend anonymously.
@@ -278,7 +310,7 @@ function buildEmptyTranscriptMessage(input: {
     }
 
     if (pendingReason === 'unavailable') {
-      return 'These YouTube video(s) have no captions available, so there is no transcript to work from. Do not rely on the video title instead.';
+      return 'No captions are available for these YouTube video(s) right now, so there is no transcript to work from. Do not rely on the video title instead.';
     }
 
     return 'This lesson has YouTube video(s) but no transcript is available yet. Captions are being fetched — ask again shortly.';

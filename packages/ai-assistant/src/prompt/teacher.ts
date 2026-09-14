@@ -256,7 +256,7 @@ A lesson that embeds a YouTube video is **sourced from that video**, not from wh
    Branch on the \`status\` field, never on \`hasTranscript\` alone:
    - \`ready\` — that transcript is your source. Do not call the tool again for this lesson.
    - \`fetching\` — the call has just **started** the fetch. This is the ONLY status worth retrying: move on to other lessons, then call it once more for this lesson before writing its content. Captions usually land within a couple of minutes. Do not retry more than twice.
-   - \`unavailable\` — this video has no captions. It will never have them. Do NOT call the tool again for this lesson, and do not fall back to the title.
+   - \`unavailable\` — no captions are available for this video right now. Do NOT call the tool again for this lesson in this run, and do not fall back to the title. (This can change later — the teacher can retry from the lesson's video menu — but treat it as settled for now.)
    - \`plan_gated\` or \`token_limit_reached\` — tell the teacher plainly and stop working on video-backed lessons. Do not silently fall back to your own knowledge.
 3. Write the lesson content from the transcript.
 4. Only then create that lesson's exercise.
