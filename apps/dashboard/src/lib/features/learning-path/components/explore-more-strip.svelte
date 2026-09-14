@@ -2,7 +2,8 @@
   import { Button } from '@cio/ui/base/button';
   import LearningPathBadge from './learning-path-badge.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { ArrowRightFromLine, ArrowRightIcon, GitBranch } from '@lucide/svelte';
+  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import { GitBranch } from '@lucide/svelte';
 
   interface ExplorePath {
     id: string;
@@ -20,10 +21,17 @@
 </script>
 
 <section class="my-9">
-  <div class="mb-1 flex items-center justify-between">
+  <div class="mb-1 flex items-center justify-between gap-3">
     <h2 class="text-base font-semibold">{$t('learningPath.explore.title')}</h2>
+    <a
+      class="ui:text-muted-foreground hover:ui:text-primary inline-flex items-center gap-1 text-sm hover:underline"
+      href="/lms/explore"
+    >
+      {$t('learningPath.explore.view_more')}
+      <ArrowRightIcon class="size-3.5" />
+    </a>
   </div>
-  <p class="ui:text-muted-foreground mb-4 text-sm">{$t('learningPath.explore.tagline')}</p>
+  <p class="ui:text-muted-foreground -mt-1 mb-4 text-sm">{$t('learningPath.explore.tagline')}</p>
 
   <div class="grid grid-cols-3 gap-4 md:grid-cols-3">
     {#each items as path}
