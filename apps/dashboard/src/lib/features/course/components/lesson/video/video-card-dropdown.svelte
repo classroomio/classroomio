@@ -122,12 +122,7 @@
     });
   }
 
-  /**
-   * A caption job completes with `status: 'completed'` even when its result is
-   * `unavailable` or `skipped` (no captions, plan gated, out of credits), so job
-   * completion is not proof a transcript exists. Confirm against the transcript
-   * itself before showing it as available.
-   */
+  /** A caption job completes even when its result is `unavailable` or `skipped`, so completion is not proof of a transcript. */
   async function confirmTranscriptAfterJob(afterAssetId: string) {
     const data = await mediaApi.getAssetTranscript(afterAssetId);
     hasTranscript = !!data?.segments?.length;

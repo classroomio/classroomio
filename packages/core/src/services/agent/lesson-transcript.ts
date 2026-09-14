@@ -7,11 +7,7 @@ import { VIDEO_LEVEL_LANGUAGE_KEY, resolveRequestLanguage } from '../youtube-cap
 import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
 import { getTokenBalance } from './usage';
 
-/**
- * Why a transcript is missing. `fetching` is the only value worth retrying —
- * everything else is terminal for this run, so callers (and the agent) must be
- * able to tell them apart rather than inferring from `hasTranscript: false`.
- */
+/** `fetching` is the only value worth retrying; the rest are terminal for this run. */
 export type LessonTranscriptStatus =
   | 'ready'
   | 'fetching'
@@ -174,8 +170,6 @@ export async function getLessonVideoTranscript(
   }
 
   // An uploaded video's transcript does not stand in for a missing YouTube one.
-  // Returning `ready` here would let the agent write the lesson and its exercise
-  // while the embedded video is still ungrounded.
   if (pendingReason) {
     return {
       lessonId: lessonWithVideos.id,
@@ -218,8 +212,7 @@ async function warmMissingCaptions(
   missingVideos: LessonYoutubeVideo[],
   options: GetLessonVideoTranscriptOptions
 ): Promise<PendingCaptionReason> {
-  // Filter first: a video we already know has no captions cannot be fetched at
-  // any plan or balance, and telling the teacher to upgrade for it would be wrong.
+  // Filter first: no plan or balance can fetch captions for a video that has none.
   const fetchable = await filterOutKnownUnavailable(missingVideos);
   if (fetchable.length === 0) {
     return 'unavailable';
@@ -247,11 +240,7 @@ async function warmMissingCaptions(
   return 'fetching';
 }
 
-/**
- * Drop videos the provider has already reported as captionless. Without this a
- * caller that retries on `hasTranscript: false` would re-enqueue the same video
- * forever — the negative cache stops the spend, not the churn.
- */
+/** Without this, a caller retrying on a miss re-enqueues the same video forever. */
 async function filterOutKnownUnavailable(videos: LessonYoutubeVideo[]): Promise<LessonYoutubeVideo[]> {
   const language = resolveRequestLanguage();
   const checks = await Promise.all(

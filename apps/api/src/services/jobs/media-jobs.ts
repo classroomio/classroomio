@@ -28,12 +28,7 @@ export interface StartTranscriptionOnlyMediaJobInput {
   triggeredByProfileId: string | null;
 }
 
-/**
- * Start a transcript job for any transcribable asset.
- *
- * Uploads go to Whisper; YouTube embeds go to the caption provider. The
- * dashboard's "Generate transcript" action should not have to know which.
- */
+/** Uploads go to Whisper; YouTube embeds go to the caption provider. */
 export async function startAssetTranscriptJob(input: StartTranscriptionOnlyMediaJobInput): Promise<TMediaJob> {
   const asset = await getAssetById(input.assetId);
   if (!asset || asset.organizationId !== input.organizationId) {

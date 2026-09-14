@@ -234,8 +234,6 @@ export function getCompletedToolLine(toolName: string, result: unknown): ToolLin
       return { shape: 'i18n', key: 'ai_assistant.tool.done.ask_template_questions' };
     case 'get_lesson_transcript': {
       const title = readString(r, 'title') ?? '';
-      // `hasTranscript: false` covers several outcomes; `status` is what tells
-      // "still fetching" apart from "this video has no captions".
       const status = readString(r, 'status');
 
       if (r.hasTranscript === true) {

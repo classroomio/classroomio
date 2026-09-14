@@ -50,8 +50,6 @@ describe('getLessonVideoTranscript status', () => {
 
     const result = await getLessonVideoTranscript('lesson-1', ORG, OPTIONS);
 
-    // The upload's text must not stand in for the missing YouTube transcript,
-    // or the agent writes the lesson and its exercise ungrounded.
     expect(result.status).toBe('fetching');
     expect(result.hasTranscript).toBe(false);
     expect(result.transcript).toContain('spoken words');
@@ -78,8 +76,6 @@ describe('getLessonVideoTranscript status', () => {
 
     const result = await getLessonVideoTranscript('lesson-1', ORG, OPTIONS);
 
-    // Telling the teacher to upgrade would be wrong: no plan can fetch captions
-    // for a video that has none.
     expect(result.status).toBe('unavailable');
     expect(startYoutubeCaptionsJob).not.toHaveBeenCalled();
   });
