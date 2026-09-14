@@ -248,6 +248,18 @@
   }
 }
 
+.zi-home-viewmore-row {
+  display: flex;
+  justify-content: center;
+  margin: 22px 0 36px;
+}
+@media (max-width: 640px) {
+  .zi-home-viewmore-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .zi-home-ribbon {
   display: inline-flex;
   align-items: center;
