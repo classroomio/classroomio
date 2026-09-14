@@ -3,7 +3,8 @@ export const SNACKBAR_SEVERITY = {
   WARNING: 'WARNING',
   DEFAULT: 'DEFAULT',
   INFO: 'INFO',
-  SUCCESS: 'SUCCESS'
+  SUCCESS: 'SUCCESS',
+  LOADING: 'LOADING'
 };
 
 export const SNACKBAR_SEVERITY_COLOR = {
@@ -11,5 +12,6 @@ export const SNACKBAR_SEVERITY_COLOR = {
   WARNING: 'bg-yellow-600',
   INFO: 'ui:bg-primary',
   DEFAULT: 'bg-gray-600',
-  SUCCESS: 'bg-green-600'
+  SUCCESS: 'bg-green-600',
+  LOADING: 'bg-gray-600'
 };

@@ -31,6 +31,7 @@ import {
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
 import {
+  countOrgCourses,
   countPublishedCoursesBySiteName,
   getCoursesById,
   getCoursesBySiteNameForSetup,
@@ -42,7 +43,9 @@ import {
   getPublishedCoursesBySiteName,
   reorderOrgCourses as reorderOrgCoursesQuery
 } from '@cio/db/queries/course';
-import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
+import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
+import { countAssetsByOrg } from '@cio/db/queries/assets';
+import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getAccountPrimary } from '@cio/db/queries/account';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
@@ -178,7 +181,14 @@ export async function getOrgAudience(
         limit: audienceResult.limit,
         search: query.search,
         sortBy: query.sortBy,
-        sortOrder: query.sortOrder
+        sortOrder: query.sortOrder,
+        status: query.status,
+        inviteStatus: query.inviteStatus,
+        enrollment: query.enrollment,
+        completion: query.completion,
+        lastLoginBefore: query.lastLoginBefore,
+        lastActiveBefore: query.lastActiveBefore,
+        excludeRecentJoiners: query.excludeRecentJoiners
       }
     };
   } catch (error) {
@@ -481,6 +491,27 @@ export async function getOrganizationCourses(
     if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+export async function getOrganizationNavCounts(orgId: string, userId: string, userRole: number) {
+  try {
+    const courseProfileId = userRole === ROLE.ADMIN ? undefined : userId;
+    const [courses, cohorts, media, tags] = await Promise.all([
+      countOrgCourses({ orgId, profileId: courseProfileId }),
+      countCohortsByOrgForProfile(orgId, userId),
+      countAssetsByOrg(orgId),
+      countTagsByOrg(orgId)
+    ]);
+
+    return { courses, cohorts, media, tags };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch organization nav counts',
       ErrorCodes.COURSES_FETCH_FAILED,
       500
     );
@@ -1007,9 +1038,13 @@ export async function getUserAnalytics(userId: string, orgId: string) {
           exercises_count: 0,
           exercises_completed: 0
         };
-        const lessonsCompleted = progressData.lessons_completed || 0;
-        const lessonsCount = progressData.lessons_count || 0;
-        const progressPercentage = courseProgress ? calcPercentageWithRounding(lessonsCompleted, lessonsCount) : 0;
+        // A course's work is its lessons and its exercises, matching
+        // `calcCourseProgress` in the dashboard and the audience roster. The
+        // exercise counts were already here; only the percentage ignored them,
+        // so a learner who watched everything and submitted nothing read 100%.
+        const completedItems = (progressData.lessons_completed || 0) + (progressData.exercises_completed || 0);
+        const totalItems = (progressData.lessons_count || 0) + (progressData.exercises_count || 0);
+        const progressPercentage = courseProgress ? calcPercentageWithRounding(completedItems, totalItems) : 0;
 
         return {
           ...course,
@@ -1022,11 +1057,19 @@ export async function getUserAnalytics(userId: string, orgId: string) {
       })
     );
 
-    // Calculate overall stats
+    // Overall progress folds the same items as the rows above, so the headline
+    // figure and the per-course rows cannot disagree. Courses whose progress
+    // lookup failed stay excluded, as main does.
     const progressCourses = coursesWithStats.filter((course) => !course.progress_failed);
-    const totalLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
-    const completedLessons = progressCourses.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
-    const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
+    const totalItems = progressCourses.reduce(
+      (acc, course) => acc + (course.lessons_count || 0) + (course.exercises_count || 0),
+      0
+    );
+    const completedItems = progressCourses.reduce(
+      (acc, course) => acc + (course.lessons_completed || 0) + (course.exercises_completed || 0),
+      0
+    );
+    const overallCourseProgress = calcPercentageWithRounding(completedItems, totalItems);
 
     const graded = coursesWithStats.filter(
       (course): course is (typeof coursesWithStats)[number] & { average_grade: number } => course.average_grade !== null

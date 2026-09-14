@@ -74,6 +74,26 @@ export const organizationInviteEventType = pgEnum('ORGANIZATION_INVITE_EVENT_TYP
 ]);
 export const organizationInviteType = pgEnum('ORGANIZATION_INVITE_TYPE', ['EMAIL', 'LINK']);
 
+/**
+ * Lifecycle state of an organization membership. Orthogonal to `verified`,
+ * which records whether the invite was accepted rather than whether the member
+ * is allowed in.
+ *
+ * - `ACTIVE` — normal member.
+ * - `DEACTIVATED` — access suspended, reversible, still occupies a plan seat.
+ * - `ARCHIVED` — access suspended, reversible, and releases the plan seat
+ *   (see `countActiveStudents`). The intended answer to "remove them".
+ */
+export const organizationMemberStatus = pgEnum('ORGANIZATION_MEMBER_STATUS', ['ACTIVE', 'DEACTIVATED', 'ARCHIVED']);
+
+export const organizationMemberEventType = pgEnum('ORGANIZATION_MEMBER_EVENT_TYPE', [
+  'DEACTIVATED',
+  'REACTIVATED',
+  'ARCHIVED',
+  'UNARCHIVED',
+  'REMOVED'
+]);
+
 export const user = pgTable('user', {
   id: uuid()
     .default(sql`gen_random_uuid()`)
@@ -1518,6 +1538,55 @@ export const organizationInviteAudit = pgTable(
   ]
 );
 
+/**
+ * Lifecycle history for organization memberships — who deactivated, archived or
+ * removed whom, when, and off the back of which filter.
+ *
+ * `memberId` and `profileId` are recorded values, not live references, and
+ * carry no foreign key on purpose: the rows that matter most describe members
+ * that no longer exist, and a cascade would delete exactly the evidence this
+ * table is for. `targetEmail` is the durable identity for those rows.
+ */
+export const organizationMemberAudit = pgTable(
+  'organization_member_audit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    memberId: bigint('member_id', { mode: 'number' }),
+    profileId: uuid('profile_id'),
+    targetEmail: varchar('target_email'),
+    eventType: organizationMemberEventType('event_type').notNull(),
+    actorProfileId: uuid('actor_profile_id'),
+    reason: text(),
+    /** The filter a bulk action was launched from, so it stays replayable. Empty for per-row actions. */
+    filterSnapshot: jsonb('filter_snapshot').default({}).notNull(),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_member_audit_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_member_audit_actor_profile_id_fkey'
+    }).onDelete('set null'),
+    index('idx_organization_member_audit_org_id').on(table.organizationId),
+    index('idx_organization_member_audit_member_id').on(table.memberId),
+    index('idx_organization_member_audit_profile_id').on(table.profileId),
+    index('idx_organization_member_audit_event_type').on(table.eventType),
+    index('idx_organization_member_audit_created_at').on(table.createdAt)
+  ]
+);
+
 export const lessonVideoProgress = pgTable(
   'lesson_video_progress',
   {
@@ -1882,6 +1951,16 @@ export const organizationmember = pgTable(
     profileId: uuid('profile_id'),
     email: text(),
     verified: boolean().default(false),
+    status: organizationMemberStatus().default('ACTIVE').notNull(),
+    statusChangedAt: timestamp('status_changed_at', { withTimezone: true, mode: 'string' }),
+    statusChangedBy: uuid('status_changed_by'),
+    /**
+     * Denormalized "last did anything in this org" timestamp. Maintained on
+     * page-event ingest and reconciled nightly from `analytics_page_event` and
+     * `lesson_completion`. Filtering 20k-row rosters against the raw event
+     * table does not hold up, which is why this column exists at all.
+     */
+    lastActiveAt: timestamp('last_active_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull()
@@ -1892,6 +1971,11 @@ export const organizationmember = pgTable(
       foreignColumns: [organization.id],
       name: 'organizationmember_organization_id_fkey'
     }),
+    foreignKey({
+      columns: [table.statusChangedBy],
+      foreignColumns: [profile.id],
+      name: 'organizationmember_status_changed_by_fkey'
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.profileId],
       foreignColumns: [profile.id],
@@ -1905,6 +1989,8 @@ export const organizationmember = pgTable(
     index('idx_organizationmember_profile_id').on(table.profileId),
     index('idx_organizationmember_organization_id').on(table.organizationId),
     index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
+    index('idx_orgmember_org_role_status').on(table.organizationId, table.roleId, table.status),
+    index('idx_orgmember_org_last_active').on(table.organizationId, table.lastActiveAt),
     uniqueIndex('organizationmember_org_profile_unique')
       .on(table.organizationId, table.profileId)
       .where(sql`${table.profileId} IS NOT NULL`),

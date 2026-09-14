@@ -120,6 +120,13 @@
       "when": 1788782400000,
       "tag": "0016_clumsy_omega_flight",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789190269035,
+      "tag": "0017_learner_lifecycle",
+      "breakpoints": true
     }
   ]
 }

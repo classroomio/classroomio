@@ -36,4 +36,5 @@ export { default as ShieldCheckIcon } from './shield-check.svelte';
 export { default as SubmissionIcon } from './submission.svelte';
 export { default as TagIcon } from './tag.svelte';
 export { default as UploadIcon } from './upload.svelte';
+export { default as WidgetsIcon } from './widgets.svelte';
 export { default as ZapIcon } from './zap.svelte';

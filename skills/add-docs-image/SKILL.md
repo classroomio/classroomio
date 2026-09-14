@@ -63,9 +63,13 @@ To benchmark against existing images: `ls -la apps/docs/public/*.webp` (most are
 
 Add the image on its own line, with a blank line before and after, at the most useful spot:
 
-- **Under a section heading** — right after the section's intro sentence, before any `<Steps>` block.
-- **Inside a `<Step>`** — after that step's instruction, so the screenshot illustrates that exact action.
+- **Under a section heading** — right after the section's intro sentence.
+- **Under a numbered step heading** (`### 2. Review what will happen`) — after that step's instruction, so the
+  screenshot illustrates that exact action.
 - **After the relevant paragraph** — e.g. a "What students see" view goes right after the sentence describing it.
+
+Sequential instructions are numbered `###` headings, not a `<Steps>`/`<Step>` component. The CMS reads the raw
+markdown, where those tags render as literal text.
 
 ```mdx
 ![Certificate rules panel with the download toggle and completion threshold](/certificates-rules.webp)

@@ -78,7 +78,7 @@ describe('recordFlatCostUnits', () => {
     expect(vi.mocked(insertTokenUsageAndDrainCredits).mock.calls[0][0]).toMatchObject({
       promptTokens: 1_000,
       completionTokens: 500,
-      costUnits: 6_000 // (1000 + 500) x 4
+      costUnits: 1_500 // (1000 + 500) x 1
     });
   });
 });

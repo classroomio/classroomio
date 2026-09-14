@@ -1,5 +1,51 @@
 import type { BadgeVariant } from '@cio/ui/base/badge';
+import { calDateDiff } from '$lib/utils/functions/date';
+import type { OrganizationAudienceMemberStatus } from '$features/org/utils/types';
 import { t } from '$lib/utils/functions/translations';
+
+/** `null` when absent, so the caller can render a translated "Never". */
+export function formatActivityAge(timestamp: string | null | undefined): string | null {
+  if (!timestamp) {
+    return null;
+  }
+
+  const parsed = new Date(timestamp);
+
+  return Number.isNaN(parsed.getTime()) ? null : calDateDiff(parsed);
+}
+
+/** Exact date, for the column's hover title. */
+export function formatActivityExact(timestamp: string | null | undefined): string | undefined {
+  if (!timestamp) {
+    return undefined;
+  }
+
+  const parsed = new Date(timestamp);
+
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toLocaleString();
+}
+
+export function memberStatusBadgeVariant(status: OrganizationAudienceMemberStatus): BadgeVariant {
+  switch (status) {
+    case 'DEACTIVATED':
+      return 'destructive';
+    case 'ARCHIVED':
+      return 'outline';
+    default:
+      return 'secondary';
+  }
+}
+
+export function memberStatusLabelKey(status: OrganizationAudienceMemberStatus): string {
+  switch (status) {
+    case 'DEACTIVATED':
+      return 'audience.filter.status_deactivated';
+    case 'ARCHIVED':
+      return 'audience.filter.status_archived';
+    default:
+      return 'audience.filter.status_active';
+  }
+}
 
 export function statusBadgeVariant(status: string): BadgeVariant {
   switch (status) {

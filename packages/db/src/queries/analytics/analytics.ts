@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -447,10 +447,76 @@ export async function insertPageEvents(events: PageEventInsert[]) {
       .insert(schema.analyticsPageEvent)
       .values(events)
       .returning({ id: schema.analyticsPageEvent.id });
+
+    await bumpMemberLastActiveFromEvents(events);
+
     return inserted.length;
   } catch (error) {
     console.error('insertPageEvents error:', error);
     throw new Error('Failed to insert page events');
+  }
+}
+
+export type MemberActivity = { orgId: string; userId: string; occurredAt: string };
+
+/** Latest activity per (org, user), so ingest writes one row per member. */
+export function collapseLatestActivityByMember(events: PageEventInsert[]): MemberActivity[] {
+  const latestByMember = new Map<string, MemberActivity & { at: number }>();
+
+  for (const event of events) {
+    const { orgId, userId, occurredAt } = event;
+    if (!orgId || !userId || !occurredAt) continue;
+
+    // Instants, not strings: `/track` accepts any ISO string, so offsets mix.
+    const at = new Date(occurredAt).getTime();
+    if (Number.isNaN(at)) continue;
+
+    const key = `${orgId}:${userId}`;
+    const seen = latestByMember.get(key);
+
+    if (!seen || at > seen.at) {
+      latestByMember.set(key, { orgId, userId, occurredAt, at });
+    }
+  }
+
+  return [...latestByMember.values()].map(({ orgId, userId, occurredAt }) => ({ orgId, userId, occurredAt }));
+}
+
+/**
+ * Keeps `last_active_at` current from the events just ingested. Denormalized
+ * because filtering a 20k-learner roster against the raw event table does not
+ * hold up.
+ *
+ * Only moves forward, so replayed batches cannot walk activity backwards.
+ * Best-effort — the nightly reconcile repairs any gap.
+ */
+async function bumpMemberLastActiveFromEvents(events: PageEventInsert[]): Promise<void> {
+  const activities = collapseLatestActivityByMember(events);
+
+  if (activities.length === 0) {
+    return;
+  }
+
+  try {
+    await Promise.all(
+      activities.map((activity) =>
+        db
+          .update(schema.organizationmember)
+          .set({ lastActiveAt: activity.occurredAt })
+          .where(
+            and(
+              eq(schema.organizationmember.organizationId, activity.orgId),
+              eq(schema.organizationmember.profileId, activity.userId),
+              or(
+                isNull(schema.organizationmember.lastActiveAt),
+                lt(schema.organizationmember.lastActiveAt, activity.occurredAt)
+              )
+            )
+          )
+      )
+    );
+  } catch (error) {
+    console.error('bumpMemberLastActiveFromEvents error:', error);
   }
 }
 

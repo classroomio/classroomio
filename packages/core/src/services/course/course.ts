@@ -611,7 +611,13 @@ export async function getCourseAnalytics(courseId: string) {
 
             const lessonsCompleted = courseProgress.lessonsCompleted || 0;
             const totalLessons = courseProgress.lessonsCount || 0;
-            const progressPercentage = calcPercentageWithRounding(lessonsCompleted, totalLessons);
+            // Lessons and exercises together, matching `calcCourseProgress` in
+            // the dashboard and the audience roster. Counting lessons alone
+            // reported a learner who had submitted nothing as fully complete.
+            const progressPercentage = calcPercentageWithRounding(
+              lessonsCompleted + completedExercises,
+              totalLessons + totalExercises
+            );
             const lastSeen = lastSeenByProfileId.get(student.profileId!) ?? undefined;
 
             return {

@@ -12,6 +12,7 @@ export const QUEUE_NAMES = {
   courseImports: 'course-imports',
   agentCourseGeneration: 'agent-course-generation',
   onboardingBootstrap: 'onboarding-bootstrap',
+  audience: 'audience',
   maintenance: 'maintenance'
 } as const;
 
@@ -48,6 +49,9 @@ export const JOB_NAMES = {
   agentCourseGeneration: {
     run: 'run'
   },
+  audience: {
+    bulkAction: 'bulk-action'
+  },
   maintenance: {
     retentionCompact: 'retention-compact',
     lessonVersionRetention: 'lesson-version-retention',
@@ -55,6 +59,7 @@ export const JOB_NAMES = {
     mediaJobReap: 'media-job-reap',
     analyticsDailyRollup: 'analytics-daily-rollup',
     assetStorageCleanup: 'asset-storage-cleanup',
-    courseRoleReconcile: 'course-role-reconcile'
+    courseRoleReconcile: 'course-role-reconcile',
+    memberActivityReconcile: 'member-activity-reconcile'
   }
 } as const;

@@ -5,6 +5,7 @@ import type { CloneCourseRequest } from '../utils/types';
 import type { TCourseClone } from '@cio/utils/validation/course';
 import { ZCourseClone } from '@cio/utils/validation/course';
 import { currentOrg } from '$lib/utils/store/org';
+import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { generateSlug } from '@cio/utils/functions';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -55,6 +56,8 @@ export class CourseCloneApi extends BaseApiWithErrors {
 
         copyCourseModal.set(copyCourseModalInitialState);
         copyCourseModal.update((modal) => ({ ...modal, open: false }));
+
+        orgNavCountsApi.adjustCount('courses', 1);
 
         // Navigate to the new course
         goto(resolve(`/courses/${response.course.id}`, {}));
