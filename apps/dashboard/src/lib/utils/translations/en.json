@@ -5500,7 +5500,8 @@
     "explore": {
       "title": "Explore more paths",
       "tagline": "Tracks built to take you further.",
-      "view_path": "View learning path"
+      "view_path": "View learning path",
+      "view_more": "View more"
     },
     "empty": {
       "title": "No learning paths yet",

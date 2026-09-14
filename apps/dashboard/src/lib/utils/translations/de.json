@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "Entdecke weitere Wege",
       "tagline": "Strecken, die dich weiterbringen.",
-      "view_path": "Pfad anzeigen"
+      "view_path": "Pfad anzeigen",
+      "view_more": "Mehr anzeigen"
     },
     "enrollment": {
       "not_started": "Nicht begonnen",

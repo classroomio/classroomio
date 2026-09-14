@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "और भी रास्ते तलाशें",
       "tagline": "ऐसे ट्रैक जो आपको और आगे ले जाएंगे।",
-      "view_path": "पथ देखें"
+      "view_path": "पथ देखें",
+      "view_more": "और देखें"
     },
     "enrollment": {
       "not_started": "शुरू नहीं",

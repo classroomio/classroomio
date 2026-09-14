@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "Udforsk flere stier",
       "tagline": "Ruter bygget til at tage dig længere.",
-      "view_path": "Vis sti"
+      "view_path": "Vis sti",
+      "view_more": "Se mere"
     },
     "enrollment": {
       "not_started": "Ikke startet",

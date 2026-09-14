@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "Odkryj więcej ścieżek",
       "tagline": "Ścieżki stworzone, by zaprowadzić Cię dalej.",
-      "view_path": "Wyświetl ścieżkę"
+      "view_path": "Wyświetl ścieżkę",
+      "view_more": "Zobacz więcej"
     },
     "enrollment": {
       "not_started": "Nie rozpoczęto",

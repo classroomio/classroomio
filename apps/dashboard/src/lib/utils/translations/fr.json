@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "Explorez d'autres chemins",
       "tagline": "Des pistes conçues pour vous emmener plus loin.",
-      "view_path": "Chemin d'affichage"
+      "view_path": "Chemin d'affichage",
+      "view_more": "Voir plus"
     },
     "enrollment": {
       "not_started": "Pas encore commencé",

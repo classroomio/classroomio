@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "Explore mais caminhos",
       "tagline": "Trilhas construídas para te levar mais longe.",
-      "view_path": "Caminho de visualização"
+      "view_path": "Caminho de visualização",
+      "view_more": "Ver mais"
     },
     "enrollment": {
       "not_started": "Não iniciado",

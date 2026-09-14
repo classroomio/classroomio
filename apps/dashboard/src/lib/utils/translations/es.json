@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "Explora más caminos",
       "tagline": "Rutas diseñadas para llevarte más lejos.",
-      "view_path": "Ver ruta"
+      "view_path": "Ver ruta",
+      "view_more": "Ver más"
     },
     "enrollment": {
       "not_started": "No iniciada",

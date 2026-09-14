@@ -5649,7 +5649,8 @@
     "explore": {
       "title": "Khám phá thêm nhiều con đường",
       "tagline": "Những con đường được xây dựng để đưa bạn đi xa hơn.",
-      "view_path": "Xem lộ trình"
+      "view_path": "Xem lộ trình",
+      "view_more": "Xem thêm"
     },
     "enrollment": {
       "not_started": "Chưa bắt đầu",
