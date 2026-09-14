@@ -1,6 +1,10 @@
 import type {
   AssignAudienceCoursesRequest,
   CreateLinkInviteRequest,
+  BulkAudienceActionRequest,
+  BulkAudienceActionStatusRequest,
+  AudienceExportRequest,
+  BulkAudiencePreviewRequest,
   DeleteAudienceMemberRequest,
   DeleteTeamRequest,
   DomainRequestRequest,
@@ -20,6 +24,7 @@ import type {
   ReorderOrgCoursesRequest,
   RevokeAudienceInviteRequest,
   ToggleLinkInviteRequest,
+  UndoBulkAudienceActionRequest,
   UpdateOrganizationRequest
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
@@ -29,10 +34,11 @@ import type {
   TCreateOrganization,
   TGetOrganizations,
   TCourseReorder,
+  TBulkAudienceAction,
   TImportAudienceMembers,
   TUpdateOrganization
 } from '@cio/utils/validation/organization';
-import { ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
+import { ZBulkAudienceAction, ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 
 import type { AccountOrg } from '$features/app/types';
@@ -47,7 +53,11 @@ import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { uploadImage } from '$lib/utils/services/upload';
 import { authClient } from '$lib/utils/services/auth/client';
-import { DEFAULT_ORG_AUDIENCE_QUERY, toAudienceRequestQuery } from '../utils/audience-query-utils';
+import {
+  DEFAULT_ORG_AUDIENCE_QUERY,
+  toAudienceBulkFilterQuery,
+  toAudienceRequestQuery
+} from '../utils/audience-query-utils';
 import { resolveOrgJoinRedirect } from '../utils/org-join-redirect';
 import type { ZodError } from 'zod';
 
@@ -727,6 +737,88 @@ class OrgApi extends BaseApiWithErrors {
         if (typeof result === 'string') {
           snackbar.error(result);
         }
+      }
+    });
+  }
+
+  /** Every row matching the current scope, for a client-side export. */
+  async getAudienceExportRows(query: OrganizationAudienceQuery, memberIds?: number[]) {
+    return this.execute<AudienceExportRequest>({
+      requestFn: () =>
+        classroomio.organization.audience.export.$get({
+          query: {
+            ...toAudienceBulkFilterQuery(query),
+            memberIds: memberIds?.length ? memberIds.map(String) : undefined
+          }
+        }),
+      logContext: 'building audience export',
+      onError: (result) => {
+        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+      }
+    });
+  }
+
+  /**
+   * Exact count, target hash and sample for a filter-mode action. The hash is
+   * passed back on apply so the server can prove the admin reviewed this set.
+   */
+  async previewBulkAudienceAction(filter: OrganizationAudienceQuery) {
+    return this.execute<BulkAudiencePreviewRequest>({
+      requestFn: () =>
+        classroomio.organization.audience['bulk-preview'].$get({
+          query: toAudienceBulkFilterQuery(filter)
+        }),
+      logContext: 'previewing bulk audience action',
+      onError: (result) => {
+        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+      }
+    });
+  }
+
+  async bulkAudienceAction(fields: TBulkAudienceAction) {
+    const parsed = ZBulkAudienceAction.safeParse(fields);
+
+    if (!parsed.success) {
+      this.errors = mapZodErrorsToTranslations(parsed.error);
+      return;
+    }
+
+    return this.execute<BulkAudienceActionRequest>({
+      requestFn: () => classroomio.organization.audience['bulk-action'].$post({ json: parsed.data }),
+      logContext: 'applying bulk audience action',
+      onError: (result) => {
+        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+      }
+    });
+  }
+
+  /**
+   * One status read for a queued bulk action. The caller drives the loop, so a
+   * closed dialog stops polling rather than the API class holding a timer.
+   */
+  async bulkAudienceActionStatus(jobId: string, pollCount = 0) {
+    return this.execute<BulkAudienceActionStatusRequest>({
+      requestFn: () =>
+        classroomio.organization.audience['bulk-action'][':jobId'].$get({
+          param: { jobId },
+          query: { pollCount: String(pollCount) }
+        }),
+      logContext: 'reading bulk audience action status',
+      onError: (result) => {
+        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
+      }
+    });
+  }
+
+  async undoBulkAudienceAction(undoToken: string) {
+    return this.execute<UndoBulkAudienceActionRequest>({
+      requestFn: () => classroomio.organization.audience['bulk-action'].undo.$post({ json: { undoToken } }),
+      logContext: 'undoing bulk audience action',
+      onSuccess: () => {
+        snackbar.success('audience.bulk.undo_success');
+      },
+      onError: (result) => {
+        snackbar.error(typeof result === 'string' ? result : 'error' in result ? result.error : result.message);
       }
     });
   }

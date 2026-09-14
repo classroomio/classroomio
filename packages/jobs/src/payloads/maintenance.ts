@@ -87,6 +87,17 @@ export const ZAssetStorageCleanupPayload = z.object({
 export type TAssetStorageCleanupPayload = z.infer<typeof ZAssetStorageCleanupPayload>;
 
 /**
+ * Nightly repair of `organizationmember.last_active_at`. Page-event ingest keeps
+ * the column warm in real time, so this only has to catch what that path misses:
+ * dropped batches and lesson completions, which never flow through page events.
+ * A few days of overlap costs little and covers a worker outage.
+ */
+export const ZMemberActivityReconcilePayload = z.object({
+  lookbackDays: z.number().int().positive().default(3)
+});
+export type TMemberActivityReconcilePayload = z.infer<typeof ZMemberActivityReconcilePayload>;
+
+/**
  * Re-align a person's course roles with the role they now hold in an organization. Carries
  * no role: the worker re-reads it, so the job never acts on stale input.
  */

@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -155,6 +155,42 @@ export async function getCohortsByOrgForProfile(
     console.error('getCohortsByOrgForProfile error:', error);
     throw new Error(
       `Failed to get cohorts for profile "${profileId}" in org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function countCohortsByOrgForProfile(organizationId: string, profileId: string): Promise<number> {
+  try {
+    const [adminRow] = await db
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        )
+      )
+      .limit(1);
+
+    const [countRow] = adminRow
+      ? await db
+          .select({ count: count(schema.cohort.id) })
+          .from(schema.cohort)
+          .where(eq(schema.cohort.organizationId, organizationId))
+      : await db
+          .select({ count: count(schema.cohort.id) })
+          .from(schema.cohort)
+          .innerJoin(schema.cohortMember, eq(schema.cohortMember.cohortId, schema.cohort.id))
+          .where(
+            and(eq(schema.cohort.organizationId, organizationId), eq(schema.cohortMember.profileId, profileId))
+          );
+
+    return Number(countRow?.count ?? 0);
+  } catch (error) {
+    console.error('countCohortsByOrgForProfile error:', error);
+    throw new Error(
+      `Failed to count cohorts for profile "${profileId}" in org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

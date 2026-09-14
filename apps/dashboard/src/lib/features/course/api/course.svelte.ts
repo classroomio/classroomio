@@ -29,6 +29,7 @@ import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { coursesApi } from './courses.svelte';
+import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { ROLE, ErrorCodes } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import type { CourseMembers } from '../utils/types';
@@ -425,6 +426,8 @@ export class CourseApi extends BaseApiWithErrors {
             user_email: userProfile.email
           });
 
+          orgNavCountsApi.adjustCount('courses', 1);
+
           if (onCreated) {
             onCreated(newCourse.id);
           } else {
@@ -549,6 +552,7 @@ export class CourseApi extends BaseApiWithErrors {
       logContext: 'deleting course',
       onSuccess: (response) => {
         coursesApi.removeCourseFromLists(courseId);
+        orgNavCountsApi.adjustCount('courses', -1);
         if (response.data) {
           snackbar.success('Course deleted successfully');
           this.success = true;

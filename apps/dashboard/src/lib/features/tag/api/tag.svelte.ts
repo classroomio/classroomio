@@ -21,6 +21,7 @@ import {
   ZTagUpdate
 } from '@cio/utils/validation/tag';
 
+import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
 
@@ -139,6 +140,7 @@ class TagApi extends BaseApiWithErrors {
       logContext: 'creating tag',
       onSuccess: (response) => {
         created = response.data;
+        orgNavCountsApi.adjustCount('tags', 1);
         snackbar.success('snackbar.tags.tag_created');
       },
       onError: (result) => {
