@@ -162,7 +162,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'DELETE /public-api/v1/courses/{courseId}/members/{memberId}': 'Remove a course member',
   'POST /public-api/v1/courses/{courseId}/members/{memberId}/reset-progress': 'Reset member progress',
   'GET /public-api/v1/courses/{courseId}/members/{memberId}/analytics': 'Get member analytics',
-  'GET /public-api/v1/courses/{courseId}/invites': 'List pending invites',
+  'GET /public-api/v1/courses/{courseId}/invites': 'List invites',
   'POST /public-api/v1/courses/{courseId}/invites': 'Create an invite',
   'POST /public-api/v1/courses/{courseId}/invites/{inviteId}/revoke': 'Revoke an invite'
 };

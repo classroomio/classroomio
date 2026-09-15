@@ -16,9 +16,8 @@ import {
   updateMember
 } from '@api/services/course/people';
 import { getCourseMember } from '@cio/db/queries/course/people';
-import { getProfileById } from '@cio/db/queries/auth';
 import { getUserCourseAnalytics } from '@cio/core/services/course/course';
-import { assertCourseBelongsToOrganization } from '@api/services/v1/shared';
+import { assertCourseBelongsToOrganization, assertProfileBelongsToOrganization } from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export async function listCourseMembersService(
@@ -39,10 +38,7 @@ export async function addCourseMemberService(
   await assertCourseBelongsToOrganization(orgId, params.courseId);
 
   if (payload.profileId) {
-    const profile = await getProfileById(payload.profileId);
-    if (!profile) {
-      throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
-    }
+    await assertProfileBelongsToOrganization(orgId, payload.profileId);
   }
 
   return addMember(params.courseId, payload);

@@ -8,8 +8,8 @@ vi.mock('@cio/db/queries/course/people', () => ({
   getCourseMember: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/auth', () => ({
-  getProfileById: vi.fn()
+vi.mock('@cio/db/queries/organization', () => ({
+  getOrganizationMemberIdByOrgAndProfile: vi.fn()
 }));
 
 vi.mock('@api/services/course/people', () => ({
@@ -28,7 +28,7 @@ import { AppError } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getCourseMember } from '@cio/db/queries/course/people';
-import { getProfileById } from '@cio/db/queries/auth';
+import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { addMember, deleteMember, listPaginatedCourseMembers, resetMemberCourseProgress, updateMember } from '@api/services/course/people';
 import { getUserCourseAnalytics } from '@cio/core/services/course/course';
 import {
@@ -81,23 +81,24 @@ describe('services/v1/course-member', () => {
 
     await addCourseMemberService(ORG_ID, { courseId: COURSE_ID }, payload);
 
-    expect(getProfileById).not.toHaveBeenCalled();
+    expect(getOrganizationMemberIdByOrgAndProfile).not.toHaveBeenCalled();
     expect(addMember).toHaveBeenCalledWith(COURSE_ID, payload);
   });
 
-  it('addCourseMemberService returns 404 for a well-formed but nonexistent profileId', async () => {
-    const payload = { roleId: ROLE.STUDENT, profileId: 'missing-profile' };
-    vi.mocked(getProfileById).mockResolvedValue(undefined as unknown as Awaited<ReturnType<typeof getProfileById>>);
+  it('addCourseMemberService returns 404 when the profileId does not belong to this organization', async () => {
+    const payload = { roleId: ROLE.STUDENT, profileId: 'other-org-profile' };
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null);
 
     await expect(addCourseMemberService(ORG_ID, { courseId: COURSE_ID }, payload)).rejects.toMatchObject({
       statusCode: 404
     });
+    expect(getOrganizationMemberIdByOrgAndProfile).toHaveBeenCalledWith(ORG_ID, 'other-org-profile');
     expect(addMember).not.toHaveBeenCalled();
   });
 
-  it('addCourseMemberService delegates once the profileId is confirmed to exist', async () => {
+  it('addCourseMemberService delegates once the profileId is confirmed to belong to this organization', async () => {
     const payload = { roleId: ROLE.STUDENT, profileId: 'profile-1' };
-    vi.mocked(getProfileById).mockResolvedValue({ id: 'profile-1' } as Awaited<ReturnType<typeof getProfileById>>);
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(42);
     vi.mocked(addMember).mockResolvedValue({ id: MEMBER_ID } as Awaited<ReturnType<typeof addMember>>);
 
     await addCourseMemberService(ORG_ID, { courseId: COURSE_ID }, payload);

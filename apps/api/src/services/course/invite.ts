@@ -7,6 +7,7 @@ import {
   getPaginatedCourseInvites,
   listCourseInviteAudit,
   listCourseInviteAuditStats,
+  listCourseInviteAuditStatsForInvites,
   listCourseInvites,
   optimisticIncrementCourseInviteUsedCount,
   revokeCourseInvite,
@@ -830,10 +831,11 @@ export async function listStudentInvites(courseId: string) {
 }
 
 export async function listPaginatedStudentInvites(courseId: string, options: { page: number; limit: number }) {
-  const [result, stats] = await Promise.all([
-    getPaginatedCourseInvites(courseId, options),
-    listCourseInviteAuditStats(courseId)
-  ]);
+  const result = await getPaginatedCourseInvites(courseId, options);
+  const stats = await listCourseInviteAuditStatsForInvites(
+    courseId,
+    result.items.map((invite) => invite.id)
+  );
   const statsByInvite = buildInviteActivityMap(stats);
 
   return {

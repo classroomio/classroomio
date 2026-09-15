@@ -48,7 +48,7 @@ export const v1CourseInvitesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List pending invites for a course',
+      description: 'List invites for a course, of any status (active, revoked, expired, or used up)',
       tags: ['Public API Course Members'],
       responses: {
         200: {

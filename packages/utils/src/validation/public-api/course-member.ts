@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { ZCourseMembersQuery, ZUpdateCourseMember } from '../course/people';
+import { ZCourseMembersQuery, ZCourseRoleId, ZUpdateCourseMember } from '../course/people';
 import { ZCourseUserAnalyticsQuery } from '../course/course';
 
 export const ZPublicApiCourseMemberParam = z.object({
@@ -15,7 +15,7 @@ export type TPublicApiCourseMembersQuery = z.infer<typeof ZPublicApiCourseMember
 export const ZPublicApiAddCourseMember = z
   .object({
     profileId: z.uuid().optional(),
-    roleId: z.number().int().min(1),
+    roleId: ZCourseRoleId,
     email: z.email().optional(),
     name: z.string().optional()
   })

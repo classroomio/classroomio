@@ -1,7 +1,7 @@
 import type { TCourseInvite, TCourseInviteAudit, TNewCourseInvite, TNewCourseInviteAudit } from '@db/types';
 import * as schema from '@db/schema';
 
-import { and, desc, eq, gte, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createCourseInvite(values: TNewCourseInvite): Promise<TCourseInvite> {
@@ -187,7 +187,7 @@ export async function getPaginatedCourseInvites(
       .from(schema.courseInvite)
       .leftJoin(schema.profile, eq(schema.courseInvite.createdByProfileId, schema.profile.id))
       .where(eq(schema.courseInvite.courseId, courseId))
-      .orderBy(desc(schema.courseInvite.createdAt))
+      .orderBy(desc(schema.courseInvite.createdAt), desc(schema.courseInvite.id))
       .limit(limit)
       .offset((page - 1) * limit);
 
@@ -268,6 +268,40 @@ export async function listCourseInviteAuditStats(courseId: string): Promise<TCou
   } catch (error) {
     console.error('listCourseInviteAuditStats error:', error);
     throw new Error(`Failed to list invite audit stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function listCourseInviteAuditStatsForInvites(
+  courseId: string,
+  inviteIds: string[]
+): Promise<TCourseInviteAuditStatsRow[]> {
+  if (inviteIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await db
+      .select({
+        inviteId: schema.courseInviteAudit.inviteId,
+        eventType: schema.courseInviteAudit.eventType,
+        count: sql<number>`count(*)::int`.as('count'),
+        lastAt: sql<string | null>`max(${schema.courseInviteAudit.createdAt})`.as('last_at')
+      })
+      .from(schema.courseInviteAudit)
+      .where(
+        and(
+          eq(schema.courseInviteAudit.courseId, courseId),
+          inArray(schema.courseInviteAudit.inviteId, inviteIds)
+        )
+      )
+      .groupBy(schema.courseInviteAudit.inviteId, schema.courseInviteAudit.eventType);
+
+    return rows;
+  } catch (error) {
+    console.error('listCourseInviteAuditStatsForInvites error:', error);
+    throw new Error(
+      `Failed to list invite audit stats for invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
