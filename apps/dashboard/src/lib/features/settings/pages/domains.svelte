@@ -18,7 +18,8 @@
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
-  import { BRAND_ROOT_DOMAIN, isFirstPartyOrgSiteHost, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+  import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+  import { isFirstPartyOrgSiteHost } from '@cio/utils/functions';
 
   import { Badge } from '@cio/ui/base/badge';
   import { IconButton } from '@cio/ui/custom/icon-button';

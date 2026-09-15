@@ -16,9 +16,3 @@ export { EMBED_PUBLIC_BASE_URL, EMBED_PUBLIC_HOST } from './embeds';
  * customers cannot claim one as a BYOD custom domain.
  */
 export const FIRST_PARTY_ORG_SITE_HOSTS: readonly string[] = ['academy.classroomio.com'];
-
-export function isFirstPartyOrgSiteHost(hostname: string): boolean {
-  const host = hostname.trim().toLowerCase().replace(/\.$/, '');
-
-  return FIRST_PARTY_ORG_SITE_HOSTS.includes(host);
-}

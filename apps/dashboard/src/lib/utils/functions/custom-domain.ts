@@ -1,6 +1,5 @@
 import { env } from '$env/dynamic/private';
-import { isFirstPartyOrgSiteHost } from '@cio/utils/constants/domains';
-import { isLocalOrPrivateHost } from '@cio/utils/functions';
+import { isFirstPartyOrgSiteHost, isLocalOrPrivateHost } from '@cio/utils/functions';
 
 /**
  * True when a request arrived on a customer's BYOD domain rather than a host we

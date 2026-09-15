@@ -1,3 +1,5 @@
+import { FIRST_PARTY_ORG_SITE_HOSTS } from '../constants/domains';
+
 /**
  * Checks whether a given host or hostname represents a local machine
  * or a private local area network (LAN) IP address.
@@ -64,4 +66,18 @@ export function isLocalOrPrivateHost(input: string): boolean {
   }
 
   return false;
+}
+
+/**
+ * Checks whether a hostname is one of our own brand-zone hosts that is served as an
+ * organization site rather than as marketing or the admin app.
+ *
+ * Matching is exact against {@link FIRST_PARTY_ORG_SITE_HOSTS} so every other
+ * `classroomio.com` hostname stays reserved, and so a lookalike such as
+ * `academy.classroomio.com.example.com` cannot pass as a first-party host.
+ */
+export function isFirstPartyOrgSiteHost(hostname: string): boolean {
+  const host = hostname.trim().toLowerCase().replace(/\.$/, '');
+
+  return FIRST_PARTY_ORG_SITE_HOSTS.includes(host);
 }

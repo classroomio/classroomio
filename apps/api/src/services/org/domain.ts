@@ -1,7 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 import { env } from '@cio/core/config/env';
-import { isFirstPartyOrgSiteHost } from '@cio/utils/constants/domains';
+import { isFirstPartyOrgSiteHost } from '@cio/utils/functions';
 import { parse } from 'tldts';
 
 export type DomainSetupStatus =
