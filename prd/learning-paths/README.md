@@ -41,7 +41,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 
 1. **New entity, separate from Programs.** `learning_path` is its own table set. Programs remain unchanged (cohort hub + newsfeed). No migration.
 2. **Terminology**: "Learning Path" everywhere (admin, LMS, public site).
-3. **Self-enrollment with bundle pricing.** A path is public on the org landing site with one price. Enrolling (buy or free) auto-enrolls the learner in every course in the path.
+3. **Self-enrollment with bundle pricing.** A path is public on the org landing site with one price. Enrolling (buy or free) writes path membership and grants course access for courses unlocked now (the first course under sequential unlock, all of them otherwise).
 4. **Show savings.** The public page shows the bundle price against the summed individual course prices ("$199 ~~$280~~ · Save $81 (29%)"). Toggleable per path.
 5. **Unlock rule = lessons + exercises.** Course N+1 unlocks when course N has every lesson complete AND every exercise submitted/passed. Sequential unlocking is a per-path toggle (off = take in any order).
 6. **Path certificate is a teacher toggle** with its own admin tab; issued automatically on full completion; appears in the learner's LMS Certificates page.
@@ -50,7 +50,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 9. **Public path page follows the Coursera professional-certificate shape**: hero with stats + enroll CTA, what-you'll-learn, skills tags, sequential course cards with per-course outcomes and lesson outlines, certificate block, instructors, testimonials, FAQ accordion, pricing card.
 10. **Org landing page: Learning Paths section sits ABOVE the Courses section.** Plus a `/paths` catalog page and `/path/[slug]` detail page mirroring how `/courses` and `/course/[slug]` work today.
 11. **Course independence**: a course can be in multiple paths and remain individually sellable. Removing a course from a path or a learner from a path never deletes `groupmember` rows or progress.
-12. **Statuses**: `ACTIVE` (public + LMS), `DRAFT` (hidden while building), `ARCHIVED` (hidden everywhere, restorable).
+12. **Publish flag, not a status enum.** Same paradigm as `course.isPublished`: a boolean. Unpublished paths are hidden from the public catalog and reject self-enrollment. Already-enrolled learners keep access; teachers can still add members from the People tab while building. No Draft / Archived / Published enum.
 13. **Enrolled-student sidebar IA** (see `lms-home.html` etc.): **Main** — Dashboard, My Learning, Explore, Assignments, Community; **Personal** — Certificates; pinned above the account footer — Settings. "Cohorts" is not a standalone nav destination in this IA; enrolled cohorts remain reachable at `paths.html`/`path-detail.html` (unchanged routes) via My Learning rather than their own sidebar entry. "Exercises" is renamed "Assignments" in the nav label and page copy only — no route rename, to avoid breaking existing deep links. **Dashboard** (`lms-home.html`) is the action/progress-first landing page (greeting, stat overview, one Continue-Learning hero, a compact snapshot); **My Learning** (`mylearning.html`) is the full library — the two are deliberately not the same page, per the "reduce cognitive load" principle of showing less on the page whose job is to say "what's next," and more on the page whose job is "everything I'm enrolled in."
 14. **My Learning drops tabs for a single content-type dropdown** (superseding the tabbed layout from Decision 13): a "Learning Paths ▾ / Courses ▾" selector is the one control that decides what's on the page — never two competing nav patterns at once. Rationale: with Explore already the place to discover new content, a third "Explore More" tab inside My Learning duplicated navigation; it survives only as a small teaser strip at the bottom of the Learning Paths view (Decision 15), not a tab. Content-type dropdown, a **Filters** popover (options scoped to whichever content type is selected — Learning Paths get Status/Difficulty/Category, Courses get Status/Category/Duration), and a **Grid/List** view toggle sit in one toolbar row above the content; switching any of the three never discards the other two states (e.g. changing content type keeps the chosen view). Grid is the default view. The same dropdown, filter-popover, and view-toggle components are shared verbatim by both content types and by Explore's filter (Decision 16), so they read as one system rather than three bespoke controls.
 15. **Explore More Learning Paths** is a fixed strip at the bottom of My Learning's Learning Paths view only (not Courses) — a one-line tagline, three recommended (not-yet-enrolled) path cards, and a "View more" link (Decision 32) to the full Explore page. It exists to hand off to discovery without turning My Learning into a second Explore page.
@@ -63,7 +63,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 22. **List-view progress bars were rendering collapsed — root cause and fix.** `.progress`'s base rule sets `flex: 1` (i.e. `flex-basis: 0%`), which silently overrides an explicit `width` set on the same element elsewhere in the cascade — CSS resolves `flex-basis` before `width` for main-axis sizing. `.lp-row-progress .progress { width: 90px }` was therefore never applied; inside an unconstrained flex column (`.lp-row-side`) the bar collapsed toward zero width. Fixed with `flex: none` alongside the explicit `width`, plus a stable `width: 130px` on the `.lp-row-progress` container itself so it isn't sized by content. This one rule is shared by every list view in the product (My Learning's two pages, the Admin Learning Paths list view) — fixed once, in `app-theme.css`, not per page.
 23. **One content-type badge component, one button vocabulary, everywhere.** `.badge-path-label` (filled primary) and `.badge-course-label` (filled secondary) share identical typography, padding, radius, and — critically — the same top-left overlay position on a card's cover image; Explore's Course badge had drifted into the card body while its Learning Path badge stayed on the cover, which is the inconsistency this fixes. Buttons converge on one vocabulary applied by state, not by page: `Continue Learning` (in-progress path), `Continue Course` (in-progress course), `View Learning Path` / `View Course` (not-yet-enrolled, discovery context), `View Certificate` (completed path), `Review Course` (completed course), `Manage` (admin). Every Dashboard Current Learning card now shows its CTA explicitly — previously some cards were click-anywhere with no visible button, which read as a different, lower-affordance pattern next to My Learning's explicit-button cards.
 24. **No three-dot / ellipsis menu on any Learning Path card — student or admin.** The original (pre-existing) admin table row had one; it's removed with nothing added in its place. A Learning Path card's job is identity, progress, and one clear primary action; a menu of secondary actions is exactly the "traditional LMS management table" feel this redesign moves away from. If a genuinely necessary secondary action turns up later (e.g. duplicate, delete), it belongs on the path's own workspace page, not hidden behind a kebab on the listing card.
-25. **Admin Learning Paths (`teacher-paths.html`) is restyled to the same design system as the student experience, scope-limited to this one admin page** (Decision 7's teacher workspace tabs — Courses/People/Analytics/Landing page/Certificate/Settings — are unchanged; only the top-level listing page changes). It gains: a performance overview (Active Paths, Enrolled Learners, Completions, Completion Rate as a progress ring, reusing the same `.ring` component as the student Dashboard), search + a contextual Filters popover (Status, Enrollment size, Completion-rate bucket — no Category, same reasoning as Decision 21), a Grid/List toggle sharing the exact `.apath-card`/`.lp-row` pattern the student side uses, status badges renamed to match the product's real lifecycle (`Draft` / `Published` / `Archived`, replacing the old ad hoc `Active`/`Inactive`), and a previewable empty state (toggle button in this prototype only, so the state is demonstrable without needing a truly empty data set). Per Decision 30, this page stops at the four metric cards — it does not also render an aggregate progress visualization.
+25. **Admin Learning Paths (`teacher-paths.html`) is restyled to the same design system as the student experience, scope-limited to this one admin page** (Decision 7's teacher workspace tabs — Courses/People/Analytics/Landing page/Certificate/Settings — are unchanged; only the top-level listing page changes). It gains: a performance overview (Active Paths, Enrolled Learners, Completions, Completion Rate as a progress ring, reusing the same `.ring` component as the student Dashboard), search + a contextual Filters popover (Published/Unpublished, Enrollment size, Completion-rate bucket — no Category, same reasoning as Decision 21), a Grid/List toggle sharing the exact `.apath-card`/`.lp-row` pattern the student side uses, published/unpublished badges matching course cards (the prototype's `Draft`/`Archived` radios are superseded by Decision 12), and a previewable empty state (toggle button in this prototype only, so the state is demonstrable without needing a truly empty data set). Per Decision 30, this page stops at the four metric cards — it does not also render an aggregate progress visualization.
 26. **The level-dots difficulty indicator is removed from Learning Path cards** (Explore's grid). It was a permanent on-card decoration duplicating what Difficulty (a filter dimension, Decisions 20/25) already communicates on demand — removing it declutters the card down to identity, progress, course count, duration, status, and one primary action, per the "keep Learning Path cards clean" principle already applied to the three-dot-menu removal (Decision 24).
 27. **All progress bars are one shared pill shape, and content-type badges are glassmorphism.** `.progress` and `.progress > span` use `border-radius: 999px` globally (`app-theme.css`) — this single change makes every progress bar in the product visually identical by construction, including the two places that had drifted from it (Dashboard's featured Learning Path card and the legacy `paths.html`, both of which used a per-course segmented bar instead of the plain bar everyone else uses — both converted to the plain pill bar here). `.badge-path-label`/`.badge-course-label` get a frosted-glass treatment: `backdrop-filter: blur(8px)` plus a translucent tint and a soft border, in two variants — primary-tinted glass as the default (for badges on plain card/list backgrounds) and white-tinted glass wherever the badge overlays a colored cover image (`*-cover .badge`), since a primary tint would fight with arbitrary gradient colors there.
 28. **The "Currently Learning" hero card (both My Learning pages) is a deliberately more premium treatment than an ordinary listing card**, not just structurally (it already was `.card`) but visually: a subtle primary-tinted border and elevated shadow that strengthens on hover, a large low-opacity content-type icon on the cover for depth instead of a flat color block, and an extra responsive breakpoint (cover narrows before it drops to a full-width stack) so it reads as considered at tablet width too, not just desktop and mobile.
@@ -89,7 +89,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 ## Product Goals
 
 1. A visitor can discover a path on the org landing page, read a full Coursera-style path page, and self-enroll (paid or free).
-2. Enrolling in a path creates path membership and `groupmember` rows for every course in it.
+2. Enrolling in a path creates path membership and grants course access for courses unlocked now (not necessarily every course at once).
 3. A learner sees paths in the LMS (home section + Learning Paths nav), opens a path hub with per-course progress and locked/unlocked states, and moves through courses in order.
 4. Inside a course that belongs to a path, the learner sees path context (position stepper, "next course unlocks when…").
 5. Teachers create a path via a setup checklist, order courses by drag, price the bundle, customize the public page, configure the certificate, and track a per-course funnel.
@@ -171,29 +171,137 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 
 - **Header**: "Learning Paths" + subtitle, with **Create Learning Path** (primary) and **Create Course** (secondary) CTAs positioned together at the top — creating either is never more than one click away.
 - **Performance overview**: four metric cards — Active Paths, Enrolled Learners, Completions (plain counts) and Completion Rate (a `.ring` progress circle, the same component the student Dashboard uses for overall progress) — so an admin reads path health at a glance without opening anything. This is the entire analytics surface on this page (Decision 30) — no further aggregate visualization follows it; a deeper breakdown belongs in the path's own Analytics tab.
-- **Toolbar**: search (path name) + a Filters popover (Status, Enrollment size, Completion-rate bucket — no Category, Decision 21) + a Grid/List toggle (grid default), the identical `.filter-popover`/`.view-toggle` components the student pages use.
-- **Grid view**: `.apath-card` — cover with a `LEARNING PATH` badge (top-left overlay, same as everywhere else), title, short description, a `Draft`/`Published`/`Archived` status badge, course count, learner count, a labeled Completion row with progress bar, "Updated {relative time}", and one primary action (`Manage`, or `Continue setup` for a Draft path with no learners yet). **No three-dot menu** (Decision 24).
+- **Toolbar**: search (path name) + a Filters popover (Published/Unpublished, Enrollment size, Completion-rate bucket — no Category, Decision 21) + a Grid/List toggle (grid default), the identical `.filter-popover`/`.view-toggle` components the student pages use.
+- **Grid view**: `.apath-card` — cover with a `LEARNING PATH` badge (top-left overlay, same as everywhere else), title, short description, a `Published`/`Unpublished` badge (same paradigm as course cards), course count, learner count, a labeled Completion row with progress bar, "Updated {relative time}", and one primary action (`Manage`, or `Continue setup` for an unpublished path with no learners yet). **No three-dot menu** (Decision 24).
 - **List view**: `.lp-row` — the same shared row component as the student list views, carrying every field the grid card does (this is where Decision 22's progress-bar fix matters most, since the admin list view uses the identical CSS).
 - **Empty state**: icon, "Create your first Learning Path" heading, one line of copy, both CTAs again. In this prototype it's reachable via a "Preview empty state" toggle next to the view switch, since the page can't otherwise demonstrate a state that only exists before any path has been created.
 
-**Setup checklist `/paths/[id]/setup`** (`teacher-path-setup.html`): Get Started pattern (ring + dots + item rows): name/describe ✓ auto, add courses, set order, set price, customize landing page, activate. Each step deep-links to its tab. Shown until complete; "Finish setup · N%" chip in the workspace top bar.
+**Setup checklist `/paths/[id]/setup`** (`teacher-path-setup.html`): Get Started pattern (ring + dots + item rows): name/describe ✓ auto, add courses, set order, set price, customize landing page, publish. Each step deep-links to its tab. Shown until complete; "Finish setup · N%" chip in the workspace top bar.
 
 **Path workspace `/paths/[id]/*`** — course-style sidebar (back link, path identity + status, tabs):
 
 | Tab | File | Contents |
 | --- | --- | --- |
 | Courses | `teacher-path-builder.html` | "Unlock courses in order" toggle; drag-to-reorder course rows (order, thumb, lessons/exercises/price, open/remove); add-course picker (org courses not in path); certificate end-row. Remove-course confirmation notes nobody is unenrolled. |
-| People | `teacher-path-people.html` | Auto-enroll info banner; search + progress filter; table: learner, path progress bar, current course, enrolled date, actions (view, remove — preserves course access). Add learners (batch email, like course invites). |
+| People | `teacher-path-people.html` | Auto-enroll info banner; search + progress filter; table: learner, path progress bar, current course, enrolled date, actions (view, remove — revokes the path grant; they keep the course only if another live grant remains). Add learners (batch email, like course invites). |
 | Analytics | `teacher-path-analytics.html` | Stat cards (enrolled, active, completion rate, avg time); per-course funnel with drop-off callouts; "stuck" list (lessons/exercises blocking most learners). |
 | Landing page | `teacher-path-landing-editor.html` | Hero headline/subheadline; visitor access radio (teaser / syllabus / syllabus+previews); what-you'll-learn bullets; skills tags; instructors toggle (auto from course tutors); testimonials CRUD + toggle; FAQ CRUD + toggle; "View live page". |
 | Certificate | `teacher-path-certificate.html` | Award toggle; requirements summary (all lessons + all exercises); title + issuer fields; live preview; awarded count. |
-| Settings | `teacher-path-settings.html` | General (name, description, cover); Pricing (bundle price, currency, show-savings toggle with computed sum); Enrollment & flow (self-enrollment toggle, unlock-in-order toggle, auto-enroll toggle); Status radio (Active / Draft / Archived); Danger zone (delete path — courses & progress preserved). |
+| Settings | `teacher-path-settings.html` | General (name, description, cover); Pricing (bundle price, currency, show-savings toggle with computed sum); Enrollment & flow (self-enrollment toggle, unlock-in-order toggle, auto-enroll toggle); Publish toggle (same as course `isPublished` — not a Draft/Archived/Active radio); Danger zone (delete path — courses & progress preserved). |
 
 ### 4. Access control
 
 - Org admins manage all paths; path-level TUTOR role can manage content but not delete (mirror Programs roles: ADMIN/TUTOR/STUDENT via `roleId`).
-- Students: read path data they're members of; public endpoints serve ACTIVE paths only.
-- DRAFT paths: admin/tutor only. ARCHIVED: hidden everywhere, data preserved.
+- Students: read path data they're members of (including unpublished paths they already joined). Public endpoints serve published paths only.
+- Unpublished paths: admin/tutor only on public/catalog surfaces. Self-enrollment and public invite-link enrollment are rejected, matching `enrollInCourse`'s `isPublished` gate. Teachers can still add members from the People tab. Unpublishing does not revoke existing grants.
+
+#### Access & progression when a course is both standalone and inside a path
+
+A course can be sold on its own *and* be step 3 of a path, and a learner may already have been enrolled in it long before the path existed. Two rules settle every case:
+
+**1. One progression, always shared.** A learner has exactly one enrolment and one progress record per course, no matter how many paths contain it. There is no path-scoped copy of a course, no second set of lesson completions, no "path version" of a certificate. Consequences, all intended:
+
+- A course the learner finished standalone last year shows as **already complete** the moment they enrol in the path, and immediately counts toward path completion and toward unlocking the next course.
+- Work done inside the path counts outside it. Finishing step 3 within the path earns the ordinary course certificate too.
+- A learner enrolled in two paths that share a course sees one progression in both.
+
+This matches how Coursera Specializations behave (a course completed on its own counts toward the Specialization) and how Docebo learning plans derive plan status from the underlying course enrolment statuses. The alternative — requiring learners to re-take a course *through* the path for it to count, as Coursera's enterprise learning paths do — is the behaviour to avoid: it makes learners repeat work they have already done, and it is the single most common complaint about path features in other LMSs.
+
+**2. Access is granted through `groupmember`, and every grant records its source.** Enrolling in a path inserts ordinary `groupmember` rows. The course does not get a second copy of the learner. Origin is not on `groupmember` — it lives in `course_enrollment_grant`.
+
+What a bare `groupmember` row cannot express is *why* the learner is there — and this is a real, shipped defect in cohorts today, not a hypothetical. A cohort-enrolled learner and a directly-enrolled learner produce byte-identical `groupmember` rows, so the course People page (`getPaginatedCourseMembers`, which accepts only `page`/`limit`/`search`/`roleId`) shows one undifferentiated roster, and no course-scoped surface — gradebook, submissions, analytics, attendance — can be segmented by cohort. The nearest available answer, joining `cohort_member` on `profileId`, is a guess: it returns two rows when a learner belongs to two cohorts containing the course, and cannot see a direct enrolment at all.
+
+Learning paths must not add a second instance of this problem, so provenance is modelled **once, for every enrolment route**, in `course_enrollment_grant`:
+
+```
+course_enrollment_grant
+  groupmemberId · courseId · profileId
+  source: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | PROGRAM | IMPORT
+  cohortId (when source=COHORT) · learningPathId (when source=LEARNING_PATH)
+  grantedByProfileId · grantedAt · revokedAt
+  unique NULLS NOT DISTINCT (groupmemberId, source, cohortId, learningPathId)
+```
+
+`groupmember` stays the single access row, so nothing existing has to be refactored; this is the ledger beside it. `NULLS NOT DISTINCT` (Postgres 15+) is what makes re-running an enrolment idempotent for the sourceless kinds — without it two `SELF_ENROLL` grants, both with NULL cohort and path, would not collide.
+
+Consequences:
+
+- **The course roster can show where each learner came from** as a column on the existing People page — "via Frontend Bootcamp" instead of an unexplained name — computed per row from that learner's live grants.
+- **Access is the union of live grants.** A learner may hold several at once — bought the course, then a path granted it, then a cohort did.
+- **Nothing is ever deleted.** Revocation sets `revokedAt` on the grant. The `groupmember` row stays. A learner who bought the course never loses it because a path dropped them. This is Moodle's enrolment-instance model, where a user holds one enrolment row per method and access is their union.
+
+**Access is "has a live grant", not "has a `groupmember` row".** The two access predicates — `isUserCourseMemberOrOrgAdmin` and `isCourseTeamMemberOrOrgAdmin` — gain one `EXISTS` on `course_enrollment_grant` for a live grant. This is the only read-path change, and it is required rather than a preference, because **deleting a `groupmember` row is not a safe way to revoke access:**
+
+- `submission_submitted_by_fkey`, `group_attendance_student_id_fkey`, `lesson_comment_groupmember_id_fkey`, `question_answer_group_member_id_fkey`, `course_newsfeed_author_id_fkey` and `apps_poll_submission_selected_by_id_fkey` all declare **no** `onDelete`, so Postgres defaults to `NO ACTION`. Deleting the enrolment of any learner who has ever submitted, commented, answered, posted or been marked present raises a foreign-key violation.
+- `course_completion_record_group_member_id_fkey` **does** cascade, so where the delete does succeed it silently destroys the learner's compliance records.
+- `groupmember.certificateEarnedAt` lives on the row itself, so deleting it discards the course certificate they earned.
+
+Revoking a grant and leaving the row intact avoids all three, and keeps the audit trail. It costs one indexed `EXISTS` in two functions, evaluated once per request by middleware.
+- **History survives.** Grants are revoked, not deleted, so "did this path ever grant this course?" stays answerable after the learner leaves.
+
+**Prerequisite — every enrolment must have at least one grant.** Once access means "has a live grant", any enrolment with no grant at all is invisible: existing learners would lose access on deploy. So before the predicate change ships:
+
+1. Backfill a grant for every existing `groupmember` row — `COHORT` where the `cohort_member` × `cohort_course` join explains it, `IMPORT` for the rest.
+2. Make the remaining enrolment routes write their grant: the cohort services, the audience and org-invite routes, and `ensureProgramCourseAccess`.
+
+This is a narrow correctness requirement, not a cohort redesign: cohort enrolment needs a grant row so cohort learners keep access. How cohorts segment a course is a separate question, answered by `prd/course-cohorts`.
+
+`ensureProgramCourseAccess` is the one non-obvious case, because it creates enrolments at request time rather than at an enrolment event: `courseMemberMiddleware` calls it whenever the access check fails, lazily inserting a `groupmember` row for legacy `program` members. A one-time backfill cannot cover rows that do not exist yet, so that function must write a `PROGRAM` grant itself or its members lose access the first time they are created. Whether a lazy write belongs in an authorization middleware at all is a separate question, out of scope here.
+
+### What happens on enrol and unenrol
+
+**Enrolling** (`learningPathId`, `profileId`), one transaction:
+
+| Table | Write |
+| --- | --- |
+| `learning_path_member` | Insert one row (`NOT_STARTED`), or clear `removedAt` if a removed row exists |
+| `learning_path_member_course` | Insert one row per `learning_path_course`: first course `NOT_STARTED`, the rest `LOCKED` under `sequentialUnlock`, else all `NOT_STARTED` |
+| `organizationmember` | Insert if absent, after the student-limit check |
+| `groupmember` | Insert **only for courses granted now** (the first course under `sequentialUnlock`, all of them otherwise) — and only if the learner does not already have the row |
+| `course_enrollment_grant` | Upsert one `LEARNING_PATH` grant per granted course, clearing `revokedAt` on conflict |
+
+Nothing is written to `lesson_completion` or `submission`. That is precisely why a course the learner already finished counts immediately: the rollup recompute that follows enrolment reads their existing completions, marks that course `COMPLETED`, and cascades the unlock to the next one — so a learner who had already done courses 1 and 2 lands on course 3.
+
+**Unlocking a later course** (triggered by the completion event, in that same transaction): flip `learning_path_member_course.status` from `LOCKED`, set `unlockedAt`, insert the `groupmember` row if absent, and upsert its grant.
+
+**Unenrolling**, one transaction:
+
+| Table | Write |
+| --- | --- |
+| `course_enrollment_grant` | Set `revokedAt` on this path's live grants for this learner |
+| `learning_path_member` | Set `removedAt` — never delete, or the cascade takes their `learning_path_member_course` rows and their issued certificate |
+| `groupmember` | **Untouched** |
+| `lesson_completion`, `submission`, `group_attendance` | **Untouched** |
+
+Course access ends because no live grant remains, not because anything was deleted. If the learner also bought the course or a cohort granted it, that grant is still live and they keep access. Re-enrolling clears `removedAt` and reactivates the grants, so their progress is exactly where they left it.
+
+**Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row and its grant for a later course are not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all grants are created at enrolment time.
+
+**Where per-path teacher data lives: on the path's own routes, not on the course.** `/paths/[id]/people` and `/paths/[id]/analytics` read `learning_path_member` and `learning_path_member_course` directly — the context is in the URL path, so it survives navigation and needs no grant filtering at all. Do **not** introduce a "view this course as path P" mode carried by a query parameter: a param is dropped the moment the teacher clicks into a lesson, so holding it would mean threading it through every link in the course shell. If a persistent scoped-course view is ever wanted, carry it in the route (`/paths/[id]/courses/[courseId]/…`) so a layout can inherit and authorize it once, not in a query string.
+
+On the course's own screens the grant ledger is a **column, and at most an ordinary page-local filter** alongside the `search` and `roleId` that `ZCourseMembersQuery` already accepts. A filter that resets when you leave the page is correct filter behaviour, not state to preserve.
+
+### Course roster, grading, and analytics
+
+**How we tell path vs personal enrolment.** `groupmember` cannot answer this. Two learners who bought the course and who joined via a path produce the same row today — that is the cohort bug. Origin is `course_enrollment_grant` where `revokedAt IS NULL`:
+
+- `source = LEARNING_PATH` and `learningPathId` set → they got this course because of that path.
+- `source = SELF_ENROLL` / `INVITE` / `ADMIN_ADD` → they enrolled in the course itself.
+- Both rows at once is normal: they bought it, then later joined a path that contains it. The People page shows **one person**, with both origins listed ("Direct · Frontend Bootcamp"), matching Moodle's participants page which shows every enrolment method in the status column when a user has more than one.
+
+**The course People page still lists everyone who currently has access.** `getPaginatedCourseMembers` keeps reading `groupmember`. After the live-grant predicate ships, that is everyone with at least one un-revoked grant — path students included. They are actually taking the course: they submit exercises, appear in the gradebook, generate lesson completions. Excluding them would hide their submissions from the teacher grading that course.
+
+Moodle, Docebo, and Coursera all do this. Moodle's Participants page lists every enrolled user regardless of method, with an enrolment-method column and filter; the gradebook tracks all enrolled users. Docebo's course report is "the users currently enrolled in the course" with a separate Users–Learning plans report for path-level progress. Coursera admin exports have an Enrollment Source field on top of a single enrollments count.
+
+**Course analytics include path students.** Completion rate, average progress, submissions, attendance — anyone with a live grant. A teacher looking at "this course" is looking at everyone currently in it. Path-only numbers (funnel across courses, drop-off between step 2 and step 3, "48 enrolled in the path") live on `/paths/[id]/analytics` and are computed from `learning_path_member`, not from filtering the course.
+
+**What a teacher can do on the course that they cannot do today:** see a Source column, and optionally filter that one page by source the same way they already filter by role. They cannot put the course into a persistent "path P mode." That view is the path's own People/Analytics tabs.
+
+**After someone leaves the path:** their `LEARNING_PATH` grant is revoked. If that was their only grant they drop off the course roster and out of live analytics, even though the `groupmember` row is still there. If they also enrolled directly, they stay.
+
+**Provenance and partitioning are different problems — do not merge them.** `prd/course-cohorts/README.md` segments a course by giving each batch its own `group`, which works because `submission`, `question_answer`, `group_attendance` and `lesson_comment` are already keyed on `groupmember.id`. That is a **partition**: every learner sits in exactly one batch, and a second membership deliberately forks their records (that PRD lists retakes as a feature). Learning paths need the opposite — one shared enrolment and one progression, so a course finished standalone counts inside the path. A path therefore cannot be a group, and access provenance cannot be a partition at all: one learner can hold many simultaneous reasons for access. Groups answer "which instance of this course is this record part of"; grants answer "why does this learner have access". Cohort segmentation is out of scope for this PRD and is addressed by `prd/course-cohorts`.
+
+**Out of scope here:** per-cohort *content* — separate due dates, announcements or sessions inside a shared course. Cohort v1 partly addresses that with `cohort_newsfeed` and `cohort_goal`, and self-paced learning paths do not need it.
 
 ---
 
@@ -203,34 +311,76 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 
 ```
 learning_path
-  id uuid PK · organizationId FK(organization, cascade) · name varchar · slug varchar (unique per org)
-  description text · coverImage text · status LEARNING_PATH_STATUS default 'DRAFT'
-  cost numeric · currency varchar default 'USD' · showSavings boolean default true
+  id uuid PK · organizationId FK(organization, cascade) · name varchar · slug varchar
+  description text · coverImage text · isPublished boolean default false
+  -- same paradigm as course.isPublished: unpublished = hidden from catalog, self-enroll rejected
+  difficulty LEARNING_PATH_DIFFICULTY nullable      -- Difficulty filter + public stats row
+  estimatedDurationMinutes integer nullable          -- "~38 hours"; Duration filter buckets
+  cost bigint default 0 · currency varchar default 'USD' · showSavings boolean default true
   sequentialUnlock boolean default true · selfEnrollment boolean default true · autoEnroll boolean default true
   certificateEnabled boolean default true · certificateTitle text · certificateIssuer text
+  certificateDesign jsonb   -- mirrors course.certificate.design so @cio/certificates can render it
   landingPage jsonb  -- { headline, subheadline, visitorAccess: 'teaser'|'syllabus'|'preview',
                      --   outcomes: string[], skills: string[], showInstructors, testimonials: [...],
-                     --   showTestimonials, faqs: [...], showFaqs }
+                     --   showTestimonials, faqs: [...], showFaqs, showRating, rating }
   visitorAccess is inside landingPage; no relational IDs inside the jsonb (per repo rule)
+  courseOrderSetAt timestamptz nullable   -- only setup-checklist step not derivable from data
   createdByProfileId FK(profile) · createdAt / updatedAt
+  unique(organizationId, slug) · index(organizationId) · index(organizationId, isPublished)
 
 learning_path_course
-  id uuid PK · pathId FK(learning_path, cascade) · courseId FK(course, cascade)
+  id uuid PK · learningPathId FK(learning_path, cascade) · courseId FK(course, cascade)
   order integer NOT NULL          -- 1-based position; the gating sequence
-  unique(pathId, courseId) · unique(pathId, order) · index(pathId)
+  outcomes jsonb default []       -- per-course bullets on the public path page
+  addedAt timestamptz
+  unique(pathId, courseId) · index(pathId, order) · index(courseId)
+  -- NOT unique(pathId, order): reordering rewrites every row in one transaction and a
+  -- non-deferrable unique index rejects the intermediate states of a swap.
 
 learning_path_member
-  id uuid PK · pathId FK(learning_path, cascade) · profileId FK(profile) · roleId FK(role)
-  enrolledAt timestamptz · completedAt timestamptz nullable
-  certificateIssuedAt timestamptz nullable · certificateId varchar nullable
-  unique(pathId, profileId) · index(pathId) · index(profileId)
+  id uuid PK · learningPathId FK(learning_path, cascade) · profileId FK(profile) nullable · email text
+  roleId FK(role) · enrolledAt · startedAt · completedAt · removedAt timestamptz nullable
+  -- removedAt is a soft-remove: deleting the row would cascade the member's per-course
+  -- cache and their issued certificate. Re-enrolling clears it instead of inserting again.
+  -- rollup cache, recomputed alongside unlock evaluation; never source of truth:
+  status LEARNING_PATH_MEMBER_STATUS · progressPercent integer · completedCourseCount integer
+  currentCourseId FK(course, set null) · lastActivityAt timestamptz
+  unique(pathId, profileId) · unique(pathId, email) · index(pathId) · index(profileId)
 
-enum LEARNING_PATH_STATUS: ACTIVE | DRAFT | ARCHIVED
+learning_path_member_course        -- progress cache only; provenance lives in course_enrollment_grant
+  id uuid PK · learningPathMemberId FK(cascade) · learningPathCourseId FK(cascade)
+  status LEARNING_PATH_COURSE_STATUS default 'LOCKED' · progressPercent integer
+  lessonsCompleted / lessonsTotal / exercisesCompleted / exercisesTotal integer
+  unlockedAt · startedAt · completedAt · updatedAt timestamptz
+  unique(memberId, pathCourseId) · index(memberId) · index(pathCourseId)
+
+course_enrollment_grant           -- cross-cutting: why any learner has access to any course
+  id uuid PK · groupmemberId FK(groupmember, cascade) · courseId FK(course, cascade)
+  profileId FK(profile, cascade) nullable
+  source COURSE_ENROLLMENT_SOURCE
+  cohortId FK(cohort, cascade) nullable · learningPathId FK(learning_path, cascade) nullable
+  grantedByProfileId FK(profile, set null) · grantedAt · revokedAt timestamptz nullable
+  unique NULLS NOT DISTINCT (groupmemberId, source, cohortId, learningPathId)
+  index(courseId, source) · index(groupmemberId) · index(cohortId, courseId)
+  index(learningPathId, courseId) · index(profileId)
+
+learning_path_certificate_issue
+  id uuid PK · learningPathId FK(cascade) · learningPathMemberId FK(cascade) · profileId FK(cascade)
+  certificateId varchar UNIQUE     -- LP-8F42-19AC, shown on the learner's Certificates page
+  title text · issuer text         -- frozen at issue time
+  issuedAt · status default 'valid' · revokedAt · fileUrl
+  unique(learningPathMemberId)
+
+enum LEARNING_PATH_DIFFICULTY: BEGINNER | INTERMEDIATE | ADVANCED
+enum LEARNING_PATH_MEMBER_STATUS: NOT_STARTED | IN_PROGRESS | COMPLETED
+enum LEARNING_PATH_COURSE_STATUS: LOCKED | NOT_STARTED | IN_PROGRESS | COMPLETED
+enum COURSE_ENROLLMENT_SOURCE: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | PROGRAM | IMPORT
 ```
 
 Notes:
-- No denormalized progress on `learning_path_member` beyond `completedAt`; per-course progress is computed from existing lesson-completion + exercise-submission data (already queried for course cards).
+- **Where progression is stored.** Source of truth is the existing course tables: `lesson_completion` and `submission`. There is no path-scoped copy of progress. `learning_path_member_course` and `learning_path_member` hold a cache (status/percent/counts) recomputed from that truth. Course completion is still `groupmember.certificateEarnedAt`. Path completion is `learning_path_member.completedAt`.
 - Savings figure is computed at read time from the sum of `course.cost` over path courses — never stored.
+- `estimatedDurationMinutes` and `difficulty` are stored because nothing derivable backs them: courses carry no duration or difficulty column of their own.
 - Schema work stops at a passing `@cio/db` build; migrations are handled outside this workflow.
 
 ### Completion / unlock logic (service layer)
@@ -255,21 +405,21 @@ Follow the standard layering (validation in `packages/utils/src/validation/learn
 | Method | Path | Auth | Description |
 | --- | --- | --- | --- |
 | GET | `/learning-path` | org admin | List org paths (admin) |
-| POST | `/learning-path` | org admin | Create (name, description) → DRAFT |
+| POST | `/learning-path` | org admin | Create (name, description) → unpublished |
 | GET | `/learning-path/:pathId` | member/admin | Detail incl. ordered courses + caller progress |
-| PUT | `/learning-path/:pathId` | admin/tutor | Update settings/pricing/landingPage/status |
+| PUT | `/learning-path/:pathId` | admin/tutor | Update settings/pricing/landingPage/isPublished |
 | DELETE | `/learning-path/:pathId` | org admin | Delete (courses/progress preserved) |
 | POST | `/learning-path/:pathId/courses` | admin/tutor | Add course (+ auto-enroll existing students) |
 | PUT | `/learning-path/:pathId/courses/order` | admin/tutor | Reorder (array of courseIds) |
 | DELETE | `/learning-path/:pathId/courses/:courseId` | admin/tutor | Remove (no unenrollment) |
 | GET | `/learning-path/:pathId/members` | admin/tutor | Members + per-course progress |
 | POST | `/learning-path/:pathId/members` | admin/tutor | Batch add (email+role) + auto-enroll |
-| DELETE | `/learning-path/:pathId/members/:memberId` | admin/tutor | Remove (course access preserved) |
+| DELETE | `/learning-path/:pathId/members/:memberId` | admin/tutor | Soft-remove (`removedAt`); revoke `LEARNING_PATH` grants. Course access remains only if another live grant exists |
 | GET | `/learning-path/:pathId/analytics` | admin/tutor | Funnel + stuck items |
 | POST | `/learning-path/:pathId/enroll` | auth user | Self-enroll (free) / post-payment callback (paid) |
 | GET | `/organization/learning-paths/enrolled` | auth user | LMS: caller's paths with progress + unlock states |
 
-Public (org-site loaders, no auth): list ACTIVE paths for landing/catalog; get path by slug with landingPage content filtered by `visitorAccess`.
+Public (org-site loaders, no auth): list published paths for landing/catalog; get path by slug with landingPage content filtered by `visitorAccess`. Self-enroll requires `isPublished` (same gate as `enrollInCourse`).
 
 ### Frontend plan (dashboard)
 
@@ -300,16 +450,16 @@ pnpm format:check
 
 ## Acceptance Criteria
 
-1. Teacher can create a path, add + reorder courses, set a bundle price, and activate it; the setup checklist reflects real completion.
-2. ACTIVE paths appear on the org landing page above courses, in `/paths`, and at `/path/[slug]` with all enabled sections; DRAFT/ARCHIVED paths do not.
+1. Teacher can create a path, add + reorder courses, set a bundle price, and publish it; the setup checklist reflects real completion.
+2. Published paths appear on the org landing page above courses, in `/paths`, and at `/path/[slug]` with all enabled sections; unpublished paths do not.
 3. Savings displays as bundle price vs summed course prices and updates when course prices change.
 4. Visitor access level correctly gates lesson outlines/previews for non-enrolled visitors.
-5. Enrolling (free or paid) creates the member row and `groupmember` rows for all path courses, idempotently.
+5. Enrolling (free or paid) creates the member row and grants course access for courses unlocked now, idempotently. Unpublished paths reject self-enrollment.
 6. With sequential unlock on, course N+1 is locked until course N's lessons AND exercises are complete — enforced in UI and API; toggle off restores free order.
-7. Learner LMS shows path progress (segments + %), locked states, and the in-course path ribbon; direct URL access to a locked course is blocked with an explanatory state.
+7. Learner LMS shows path progress (segments + %), locked states, and the in-course path ribbon; a locked course has no live grant yet, so the existing course-member middleware 403s.
 8. Completing all courses sets `completedAt` and (when enabled) issues the path certificate, visible in LMS Certificates.
-9. Removing a course from a path or a member from a path never deletes course enrollments or progress.
-10. Adding a course to a path with existing students auto-enrolls them in that course.
+9. Removing a course from a path or a member from a path never deletes `groupmember` rows or progress. Path unenrollment revokes the path's grants; the learner keeps the course only if another live grant remains.
+10. Adding a course to a path with existing students auto-enrolls them in that course (subject to sequential unlock).
 11. Analytics funnel counts match member course-completion data.
 12. Programs and standalone courses behave exactly as before.
 13. All user-facing strings use translation keys; all builds and `pnpm format:check` pass.
@@ -343,7 +493,7 @@ pnpm format:check
 32. The Admin Learning Paths page shows a performance overview with Active Paths, Enrolled Learners, Completions, and a Completion Rate progress ring.
 33. The page renders no aggregate learner-progress visualization (stacked bar, donut chart, sparkline, or otherwise) below the four metric cards — the four cards are the entire analytics surface on this page (Decision 30).
 34. Grid and List views are both available, Grid is the default, and both are reachable from the same view-toggle component used on the student side.
-35. Search (by Learning Path name) and a contextual Filters popover (Status, Enrollment, Completion rate — no Category) are both present in the toolbar.
+35. Search (by Learning Path name) and a contextual Filters popover (Published/Unpublished, Enrollment, Completion rate — no Category) are both present in the toolbar.
 36. Create Learning Path (primary) and Create Course (secondary) CTAs are visible near the page header at all times, and repeated in the empty state.
 37. An empty state exists, is reachable in this prototype via a preview toggle, and offers both create actions.
 38. No three-dot menu appears on any Admin Learning Path card or row.

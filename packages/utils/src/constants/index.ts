@@ -4,6 +4,8 @@ export * from './content';
 export * from './course-type';
 export * from './domains';
 export * from './embeds';
+export * from './enrollment';
+export * from './learning-path';
 export * from './lesson-version';
 export * from './error-codes';
 export * from './b64-envelope';

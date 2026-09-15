@@ -6,9 +6,11 @@ import {
   appsPollSubmission,
   asset,
   assetUsage,
+  cohort,
   communityAnswer,
   communityQuestion,
   course,
+  courseEnrollmentGrant,
   courseNewsfeed,
   courseNewsfeedComment,
   courseSection,
@@ -16,6 +18,11 @@ import {
   group,
   groupAttendance,
   groupmember,
+  learningPath,
+  learningPathCertificateIssue,
+  learningPathCourse,
+  learningPathMember,
+  learningPathMemberCourse,
   lesson,
   lessonComment,
   lessonCompletion,
@@ -199,7 +206,8 @@ export const groupmemberRelations = relations(groupmember, ({ one, many }) => ({
   }),
   courseNewsfeeds: many(courseNewsfeed),
   courseNewsfeedComments: many(courseNewsfeedComment),
-  questionAnswers: many(questionAnswer)
+  questionAnswers: many(questionAnswer),
+  courseEnrollmentGrants: many(courseEnrollmentGrant)
 }));
 
 export const appsPollOptionRelations = relations(appsPollOption, ({ one, many }) => ({
@@ -534,5 +542,100 @@ export const questionAnswerRelations = relations(questionAnswer, ({ one }) => ({
   submission: one(submission, {
     fields: [questionAnswer.submissionId],
     references: [submission.id]
+  })
+}));
+
+export const learningPathRelations = relations(learningPath, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [learningPath.organizationId],
+    references: [organization.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [learningPath.createdByProfileId],
+    references: [profile.id]
+  }),
+  learningPathCourses: many(learningPathCourse),
+  learningPathMembers: many(learningPathMember),
+  learningPathCertificateIssues: many(learningPathCertificateIssue)
+}));
+
+export const learningPathCourseRelations = relations(learningPathCourse, ({ one, many }) => ({
+  learningPath: one(learningPath, {
+    fields: [learningPathCourse.learningPathId],
+    references: [learningPath.id]
+  }),
+  course: one(course, {
+    fields: [learningPathCourse.courseId],
+    references: [course.id]
+  }),
+  learningPathMemberCourses: many(learningPathMemberCourse)
+}));
+
+export const learningPathMemberRelations = relations(learningPathMember, ({ one, many }) => ({
+  learningPath: one(learningPath, {
+    fields: [learningPathMember.learningPathId],
+    references: [learningPath.id]
+  }),
+  profile: one(profile, {
+    fields: [learningPathMember.profileId],
+    references: [profile.id]
+  }),
+  role: one(role, {
+    fields: [learningPathMember.roleId],
+    references: [role.id]
+  }),
+  currentCourse: one(course, {
+    fields: [learningPathMember.currentCourseId],
+    references: [course.id]
+  }),
+  learningPathMemberCourses: many(learningPathMemberCourse)
+}));
+
+export const learningPathMemberCourseRelations = relations(learningPathMemberCourse, ({ one }) => ({
+  learningPathMember: one(learningPathMember, {
+    fields: [learningPathMemberCourse.learningPathMemberId],
+    references: [learningPathMember.id]
+  }),
+  learningPathCourse: one(learningPathCourse, {
+    fields: [learningPathMemberCourse.learningPathCourseId],
+    references: [learningPathCourse.id]
+  })
+}));
+
+export const courseEnrollmentGrantRelations = relations(courseEnrollmentGrant, ({ one }) => ({
+  groupmember: one(groupmember, {
+    fields: [courseEnrollmentGrant.groupmemberId],
+    references: [groupmember.id]
+  }),
+  course: one(course, {
+    fields: [courseEnrollmentGrant.courseId],
+    references: [course.id]
+  }),
+  profile: one(profile, {
+    fields: [courseEnrollmentGrant.profileId],
+    references: [profile.id]
+  }),
+  cohort: one(cohort, {
+    fields: [courseEnrollmentGrant.cohortId],
+    references: [cohort.id]
+  }),
+  learningPath: one(learningPath, {
+    fields: [courseEnrollmentGrant.learningPathId],
+    references: [learningPath.id]
+  })
+}));
+
+export const learningPathCertificateIssueRelations = relations(learningPathCertificateIssue, ({ one }) => ({
+  learningPath: one(learningPath, {
+    fields: [learningPathCertificateIssue.learningPathId],
+    references: [learningPath.id]
+  }),
+  learningPathMember: one(learningPathMember, {
+    fields: [learningPathCertificateIssue.learningPathMemberId],
+    references: [learningPathMember.id]
+  }),
+  profile: one(profile, {
+    fields: [learningPathCertificateIssue.profileId],
+    references: [profile.id]
   })
 }));
