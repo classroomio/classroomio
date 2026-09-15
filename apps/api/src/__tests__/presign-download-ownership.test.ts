@@ -60,7 +60,6 @@ describe('assertAutomationKeyOwnsDownloadKeys (downloads ownership check)', () =
   });
 
   it('rejects an automation key requesting a key from another organization', async () => {
-    // Only "a.mp4" resolves for this org; "b.mp4" belongs to someone else (or doesn't exist).
     mocks.getAssetsByStorageKeys.mockResolvedValue([{ storageKey: 'a.mp4' }]);
     const app = buildApp({ organizationId: ORG_ID });
     const response = await app.request('/check', {

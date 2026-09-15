@@ -42,7 +42,7 @@ services:
       start_period: 5s
 
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/minio:latest
     container_name: cio-minio
     command: server /data --console-address ":9001"
     ports:
@@ -58,7 +58,7 @@ services:
       - minio
 
   minio-init:
-    image: minio/mc:latest
+    image: quay.io/minio/mc:latest
     container_name: cio-minio-init
     depends_on:
       - minio

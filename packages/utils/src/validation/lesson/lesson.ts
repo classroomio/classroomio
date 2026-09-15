@@ -2,8 +2,6 @@ import * as z from 'zod';
 
 import { ZSlug } from '../shared/slug';
 
-// Shared by ZLessonCreate and ZLessonUpdate (and, via course-import, ZCourseImportDraftLesson)
-// so the three can't drift apart on what a lesson video looks like.
 export const ZLessonVideoItem = z.object({
   type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
   link: z.string(),

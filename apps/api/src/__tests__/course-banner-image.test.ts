@@ -26,8 +26,6 @@ describe('bannerImage on course update (FIX-01)', () => {
   });
 
   it('ZCourseUpdateBase still accepts the deprecated logo field for backward compatibility', () => {
-    // The core update service maps `logo` onto `bannerImage` when no bannerImage
-    // is supplied, so existing API clients keep working.
     const result = ZCourseUpdateBase.safeParse({
       logo: 'https://example.com/legacy-logo.png'
     });
@@ -42,8 +40,6 @@ describe('bannerImage on course update (FIX-01)', () => {
     });
 
     expect(result.success).toBe(true);
-    // Before FIX-01, bannerImage was absent from the schema entirely, so a non-strict
-    // z.object() would silently strip it here even though safeParse still reported success.
     expect(result.success && result.data.bannerImage).toBe('https://example.com/banner.png');
   });
 

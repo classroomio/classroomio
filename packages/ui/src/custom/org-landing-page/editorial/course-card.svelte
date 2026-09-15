@@ -6,7 +6,6 @@
     course: CourseItem;
     disableCourseLinks?: boolean;
     labels?: OrgLandingPageLabels;
-    /** Index in the parent grid; used to cycle the painterly thumb gradient when the course has no banner image. */
     index?: number;
   }
 

@@ -491,12 +491,7 @@ export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
   type: ZCourseType.optional(),
-  /** Course banner/hero image. Canonical course image field. */
   bannerImage: z.string().optional(),
-  /**
-   * @deprecated Use `bannerImage` instead. Accepted for backward compatibility
-   * only: when `bannerImage` is absent, `logo` is mapped onto it on write.
-   */
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),

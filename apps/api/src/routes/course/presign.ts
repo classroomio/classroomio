@@ -27,13 +27,6 @@ const AutomationKeyForbiddenResponse = {
     'Automation key is missing the required scope, or (download routes only) one or more requested keys do not belong to the key\'s organization'
 };
 
-/**
- * Session callers keep today's behavior unchanged (no per-key ownership check on this
- * legacy endpoint). Automation-key callers get a real check: every requested key must
- * resolve to an asset actually owned by the key's organization, otherwise the whole
- * request is rejected. Without this, any org's course:write key could sign a download
- * URL for any other org's object just by guessing/knowing its storage key.
- */
 export async function assertAutomationKeyOwnsDownloadKeys(c: Context, keys: string[]): Promise<Response | void> {
   const automationKey = c.get('automationKey');
   if (!automationKey) {
@@ -67,27 +60,11 @@ function assertPresignFileSizeWithinLimit(fileSize: number | undefined, maxBytes
   }
 }
 
-/**
- * Automation-key callers always carry their org on `c.get('automationKey')`. Session callers
- * don't go through any org-scoped middleware on these routes, so we fall back to the same
- * `cio-org-id` header the dashboard already sends on every request (see `organization/assets.ts`).
- */
 export function resolveCallerOrganizationId(c: Context): string | null {
   const automationKey = c.get('automationKey');
   return automationKey?.organizationId ?? c.req.header('cio-org-id') ?? null;
 }
 
-/**
- * Registers the freshly-issued storage key as an asset so `assertAutomationKeyOwnsDownloadKeys`
- * has a row to match against later. Without this, no key issued by the upload routes ever
- * belongs to anyone as far as the download ownership check is concerned, and every download
- * request 403s regardless of caller.
- *
- * Bookkeeping only: the actual bytes land in storage the moment the client PUTs to the
- * presigned URL, independent of this write, so a failure here must not fail the upload
- * response — it just means this key's future download ownership check fails closed until
- * the row exists, same as before this function existed.
- */
 export async function registerUploadedAsset(
   c: Context,
   params: { fileKey: string; fileType: string; fileSize: number | undefined; kind: 'video' | 'document' }

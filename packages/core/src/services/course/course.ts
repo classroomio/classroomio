@@ -379,8 +379,6 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>, dbC
     const existingMetadata = existingCourse?.metadata;
     const mergedMetadata = data.metadata ? { ...existingMetadata, ...omitUndefinedValues(data.metadata) } : undefined;
 
-    // `logo` is deprecated: when present without `bannerImage`, map it onto the
-    // canonical `bannerImage` field so API callers keep working.
     const { logo: legacyLogo, ...dataWithoutLegacyLogo } = data;
     const bannerImage = dataWithoutLegacyLogo.bannerImage ?? legacyLogo;
 

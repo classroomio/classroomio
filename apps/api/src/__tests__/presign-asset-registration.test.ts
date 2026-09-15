@@ -5,15 +5,6 @@ import type { Context, Next } from 'hono';
 
 import { assertAutomationKeyOwnsDownloadKeys, registerUploadedAsset } from '../routes/course/presign';
 
-/**
- * Regression test for the bug where `f8b10c82e` added the ownership check in
- * `assertAutomationKeyOwnsDownloadKeys` without anything ever writing to the `assets` table
- * it checks against, so every download of a just-uploaded key 403'd regardless of caller.
- * `registerUploadedAsset` is the fix: the upload routes now write the row the download check
- * reads. This file proves the two halves actually connect, instead of testing either one
- * against a fake asset that no code path would ever have produced.
- */
-
 const mocks = vi.hoisted(() => ({
   createOrGetAssetByStorageKey: vi.fn(),
   getAssetsByStorageKeys: vi.fn()
