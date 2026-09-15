@@ -1,5 +1,10 @@
 import * as z from 'zod';
 
+import { ROLE } from '@cio/utils/constants';
+
+export const ZCourseRoleId = z.union([z.literal(ROLE.ADMIN), z.literal(ROLE.TUTOR), z.literal(ROLE.STUDENT)]);
+export type TCourseRoleId = z.infer<typeof ZCourseRoleId>;
+
 export const ZCourseMembersParam = z.object({
   courseId: z.string().min(1)
 });
@@ -22,7 +27,7 @@ export type TCourseMembersMemberParam = z.infer<typeof ZCourseMembersMemberParam
 export const ZAddCourseMembers = z.array(
   z.object({
     profileId: z.uuid().optional(),
-    roleId: z.number().int().min(1),
+    roleId: ZCourseRoleId,
     email: z.email().optional(),
     name: z.string().optional() // For email sending
   })
@@ -30,7 +35,7 @@ export const ZAddCourseMembers = z.array(
 export type TAddCourseMembers = z.infer<typeof ZAddCourseMembers>;
 
 export const ZUpdateCourseMember = z.object({
-  roleId: z.number().int().min(1).optional(),
+  roleId: ZCourseRoleId.optional(),
   email: z.email().optional()
 });
 export type TUpdateCourseMember = z.infer<typeof ZUpdateCourseMember>;

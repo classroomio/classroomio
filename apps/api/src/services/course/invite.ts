@@ -4,13 +4,16 @@ import {
   createCourseInviteAudit,
   getCourseInviteById,
   getCourseInviteByTokenHash,
+  getPaginatedCourseInvites,
   listCourseInviteAudit,
   listCourseInviteAuditStats,
+  listCourseInviteAuditStatsForInvites,
   listCourseInvites,
   optimisticIncrementCourseInviteUsedCount,
   revokeCourseInvite,
   selectCourseInviteAcceptBundleByTokenHash
 } from '@cio/db/queries/course/invite';
+import type { TCourseInviteListItem } from '@cio/db/queries/course/invite';
 import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import {
@@ -747,24 +750,21 @@ export async function enrollInCourse(
   };
 }
 
-/**
- * Lists secure invites for a course, enriched with activity stats.
- */
-export async function listStudentInvites(courseId: string) {
-  const [invites, stats] = await Promise.all([listCourseInvites(courseId), listCourseInviteAuditStats(courseId)]);
+type InviteActivity = {
+  previewedCount: number;
+  acceptedCount: number;
+  emailSentCount: number;
+  emailFailedCount: number;
+  lastPreviewedAt: string | null;
+  lastAcceptedAt: string | null;
+  lastEmailSentAt: string | null;
+};
 
-  const statsByInvite = new Map<
-    string,
-    {
-      previewedCount: number;
-      acceptedCount: number;
-      emailSentCount: number;
-      emailFailedCount: number;
-      lastPreviewedAt: string | null;
-      lastAcceptedAt: string | null;
-      lastEmailSentAt: string | null;
-    }
-  >();
+function buildInviteActivityMap(stats: Awaited<ReturnType<typeof listCourseInviteAuditStats>>): Map<
+  string,
+  InviteActivity
+> {
+  const statsByInvite = new Map<string, InviteActivity>();
 
   for (const row of stats) {
     if (!statsByInvite.has(row.inviteId)) {
@@ -797,25 +797,51 @@ export async function listStudentInvites(courseId: string) {
     }
   }
 
-  return invites.map((invite) => {
-    const status = getInviteStatus(invite);
-    const activity = statsByInvite.get(invite.id) || {
-      previewedCount: 0,
-      acceptedCount: 0,
-      emailSentCount: 0,
-      emailFailedCount: 0,
-      lastPreviewedAt: null,
-      lastAcceptedAt: null,
-      lastEmailSentAt: null
-    };
+  return statsByInvite;
+}
 
-    return {
-      ...invite,
-      status,
-      usesRemaining: Math.max(invite.maxUses - invite.usedCount, 0),
-      activity
-    };
-  });
+function enrichInviteWithActivity(invite: TCourseInviteListItem, statsByInvite: Map<string, InviteActivity>) {
+  const status = getInviteStatus(invite);
+  const activity = statsByInvite.get(invite.id) || {
+    previewedCount: 0,
+    acceptedCount: 0,
+    emailSentCount: 0,
+    emailFailedCount: 0,
+    lastPreviewedAt: null,
+    lastAcceptedAt: null,
+    lastEmailSentAt: null
+  };
+
+  return {
+    ...invite,
+    status,
+    usesRemaining: Math.max(invite.maxUses - invite.usedCount, 0),
+    activity
+  };
+}
+
+/**
+ * Lists secure invites for a course, enriched with activity stats.
+ */
+export async function listStudentInvites(courseId: string) {
+  const [invites, stats] = await Promise.all([listCourseInvites(courseId), listCourseInviteAuditStats(courseId)]);
+  const statsByInvite = buildInviteActivityMap(stats);
+
+  return invites.map((invite) => enrichInviteWithActivity(invite, statsByInvite));
+}
+
+export async function listPaginatedStudentInvites(courseId: string, options: { page: number; limit: number }) {
+  const result = await getPaginatedCourseInvites(courseId, options);
+  const stats = await listCourseInviteAuditStatsForInvites(
+    courseId,
+    result.items.map((invite) => invite.id)
+  );
+  const statsByInvite = buildInviteActivityMap(stats);
+
+  return {
+    ...result,
+    items: result.items.map((invite) => enrichInviteWithActivity(invite, statsByInvite))
+  };
 }
 
 export async function getStudentInviteAuditTrail(courseId: string, inviteId: string) {

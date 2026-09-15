@@ -154,7 +154,17 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
-  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure'
+  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/courses/{courseId}/members': 'List course members',
+  'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
+  'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
+  'PUT /public-api/v1/courses/{courseId}/members/{memberId}': "Update a member's role",
+  'DELETE /public-api/v1/courses/{courseId}/members/{memberId}': 'Remove a course member',
+  'POST /public-api/v1/courses/{courseId}/members/{memberId}/reset-progress': 'Reset member progress',
+  'GET /public-api/v1/courses/{courseId}/members/{memberId}/analytics': 'Get member analytics',
+  'GET /public-api/v1/courses/{courseId}/invites': 'List invites',
+  'POST /public-api/v1/courses/{courseId}/invites': 'Create an invite',
+  'POST /public-api/v1/courses/{courseId}/invites/{inviteId}/revoke': 'Revoke an invite'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -168,6 +178,11 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Course Members',
+    description:
+      "Manage a course's membership and invites — list, add, update roles, remove, reset progress, view analytics, and invite people into the course. A course member row is distinct from Public API Audience (organization-wide people); adding a member here requires the person already be an organization member — use the invites endpoints to onboard someone new."
   }
 ];
 

@@ -19,6 +19,8 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
+import { v1CourseInvitesRouter } from '@api/routes/v1/course-invites';
+import { v1CourseMembersRouter } from '@api/routes/v1/course-members';
 
 const PaginationSchema = {
   type: 'object' as const,
@@ -306,6 +308,8 @@ export const v1CoursesRouter = new Hono()
       }
     }
   )
+  .route('/:courseId/members', v1CourseMembersRouter)
+  .route('/:courseId/invites', v1CourseInvitesRouter)
   .get(
     '/:courseId',
     describeRoute({
