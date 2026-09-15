@@ -13,6 +13,7 @@
     name: string;
     description: string;
     coverGradient?: string;
+    coverImage?: string;
     courseCount: number;
     totalHours: number;
     sequentialUnlock: boolean;
@@ -32,6 +33,7 @@
     name,
     description,
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
+    coverImage,
     courseCount,
     totalHours,
     sequentialUnlock,
@@ -46,15 +48,19 @@
 
 <div class="grid gap-5 rounded-2xl border p-5 md:grid-cols-[12rem_1fr] md:p-6">
   <div
-    class="flex aspect-[25/10] w-full items-center justify-center overflow-hidden rounded-xl md:aspect-auto md:h-auto"
+    class="relative flex aspect-[25/10] w-full items-center justify-center overflow-hidden rounded-xl md:aspect-auto md:h-auto"
     style="background: {coverGradient}"
   >
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="ui:text-white/30 size-20" aria-hidden="true">
-      <path d="M6 3v12" />
-      <circle cx="6" cy="18" r="3" />
-      <circle cx="18" cy="6" r="3" />
-      <path d="M18 9a9 9 0 0 1-9 9" />
-    </svg>
+    {#if coverImage}
+      <img src={coverImage} alt={name} loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
+    {:else}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="size-20 text-white/30" aria-hidden="true">
+        <path d="M6 3v12" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="18" cy="6" r="3" />
+        <path d="M18 9a9 9 0 0 1-9 9" />
+      </svg>
+    {/if}
   </div>
 
   <div class="flex min-w-0 flex-col">
@@ -110,7 +116,7 @@
         <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
           <p class="ui:text-muted-foreground min-w-0 flex-1 truncate text-xs">
             {#if isComplete(coursesCompleted, courseCount)}
-              <span class="ui:text-emerald-600 ui:dark:text-emerald-400 font-medium"
+              <span class="font-medium text-emerald-600 dark:text-emerald-400"
                 >{$t('learningPath.detail.all_courses_complete')}</span
               >
             {:else if nextCourseTitle}
