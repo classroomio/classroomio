@@ -244,12 +244,6 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
     await tx`DELETE FROM analytics_course_daily WHERE org_id = ${orgId}`;
     await tx`DELETE FROM analytics_country_daily WHERE org_id = ${orgId}`;
 
-    // NOTE: analytics_login_events is platform-wide (keyed by user_id, no
-    // org_id) and must NOT be deleted here — org deletion only removes
-    // memberships, and members may belong to other orgs. The email flow's
-    // deleteUserAccount cleans these up only when the user row is actually
-    // removed.
-
     await tx`DELETE FROM dead_letter_job WHERE organization_id = ${orgId}`;
 
     // Phase 2: AI tutor data (RESTRICT FKs to org)
