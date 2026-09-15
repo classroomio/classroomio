@@ -207,7 +207,7 @@ A course can be sold on its own *and* be step 3 of a path, and a learner may alr
 
 This matches how Coursera Specializations behave (a course completed on its own counts toward the Specialization) and how Docebo learning plans derive plan status from the underlying course enrolment statuses. The alternative — requiring learners to re-take a course *through* the path for it to count, as Coursera's enterprise learning paths do — is the behaviour to avoid: it makes learners repeat work they have already done, and it is the single most common complaint about path features in other LMSs.
 
-**2. Access is granted through `groupmember`, and every grant records its source.** Enrolling in a path inserts ordinary `groupmember` rows. The course side needs no knowledge of paths: `isUserCourseMemberOrOrgAdmin` keeps working unchanged.
+**2. Access is granted through `groupmember`, and every grant records its source.** Enrolling in a path inserts ordinary `groupmember` rows. The course does not get a second copy of the learner. Origin is not on `groupmember` — it lives in `course_enrollment_grant`.
 
 What a bare `groupmember` row cannot express is *why* the learner is there — and this is a real, shipped defect in cohorts today, not a hypothetical. A cohort-enrolled learner and a directly-enrolled learner produce byte-identical `groupmember` rows, so the course People page (`getPaginatedCourseMembers`, which accepts only `page`/`limit`/`search`/`roleId`) shows one undifferentiated roster, and no course-scoped surface — gradebook, submissions, analytics, attendance — can be segmented by cohort. The nearest available answer, joining `cohort_member` on `profileId`, is a guess: it returns two rows when a learner belongs to two cohorts containing the course, and cannot see a direct enrolment at all.
 
@@ -280,6 +280,24 @@ Course access ends because no live grant remains, not because anything was delet
 **Where per-path teacher data lives: on the path's own routes, not on the course.** `/paths/[id]/people` and `/paths/[id]/analytics` read `learning_path_member` and `learning_path_member_course` directly — the context is in the URL path, so it survives navigation and needs no grant filtering at all. Do **not** introduce a "view this course as path P" mode carried by a query parameter: a param is dropped the moment the teacher clicks into a lesson, so holding it would mean threading it through every link in the course shell. If a persistent scoped-course view is ever wanted, carry it in the route (`/paths/[id]/courses/[courseId]/…`) so a layout can inherit and authorize it once, not in a query string.
 
 On the course's own screens the grant ledger is a **column, and at most an ordinary page-local filter** alongside the `search` and `roleId` that `ZCourseMembersQuery` already accepts. A filter that resets when you leave the page is correct filter behaviour, not state to preserve.
+
+### Course roster, grading, and analytics
+
+**How we tell path vs personal enrolment.** `groupmember` cannot answer this. Two learners who bought the course and who joined via a path produce the same row today — that is the cohort bug. Origin is `course_enrollment_grant` where `revokedAt IS NULL`:
+
+- `source = LEARNING_PATH` and `learningPathId` set → they got this course because of that path.
+- `source = SELF_ENROLL` / `INVITE` / `ADMIN_ADD` → they enrolled in the course itself.
+- Both rows at once is normal: they bought it, then later joined a path that contains it. The People page shows **one person**, with both origins listed ("Direct · Frontend Bootcamp"), matching Moodle's participants page which shows every enrolment method in the status column when a user has more than one.
+
+**The course People page still lists everyone who currently has access.** `getPaginatedCourseMembers` keeps reading `groupmember`. After the live-grant predicate ships, that is everyone with at least one un-revoked grant — path students included. They are actually taking the course: they submit exercises, appear in the gradebook, generate lesson completions. Excluding them would hide their submissions from the teacher grading that course.
+
+Moodle, Docebo, and Coursera all do this. Moodle's Participants page lists every enrolled user regardless of method, with an enrolment-method column and filter; the gradebook tracks all enrolled users. Docebo's course report is "the users currently enrolled in the course" with a separate Users–Learning plans report for path-level progress. Coursera admin exports have an Enrollment Source field on top of a single enrollments count.
+
+**Course analytics include path students.** Completion rate, average progress, submissions, attendance — anyone with a live grant. A teacher looking at "this course" is looking at everyone currently in it. Path-only numbers (funnel across courses, drop-off between step 2 and step 3, "48 enrolled in the path") live on `/paths/[id]/analytics` and are computed from `learning_path_member`, not from filtering the course.
+
+**What a teacher can do on the course that they cannot do today:** see a Source column, and optionally filter that one page by source the same way they already filter by role. They cannot put the course into a persistent "path P mode." That view is the path's own People/Analytics tabs.
+
+**After someone leaves the path:** their `LEARNING_PATH` grant is revoked. If that was their only grant they drop off the course roster and out of live analytics, even though the `groupmember` row is still there. If they also enrolled directly, they stay.
 
 **Provenance and partitioning are different problems — do not merge them.** `prd/course-cohorts/README.md` segments a course by giving each batch its own `group`, which works because `submission`, `question_answer`, `group_attendance` and `lesson_comment` are already keyed on `groupmember.id`. That is a **partition**: every learner sits in exactly one batch, and a second membership deliberately forks their records (that PRD lists retakes as a feature). Learning paths need the opposite — one shared enrolment and one progression, so a course finished standalone counts inside the path. A path therefore cannot be a group, and access provenance cannot be a partition at all: one learner can hold many simultaneous reasons for access. Groups answer "which instance of this course is this record part of"; grants answer "why does this learner have access". Cohort segmentation is out of scope for this PRD and is addressed by `prd/course-cohorts`.
 
