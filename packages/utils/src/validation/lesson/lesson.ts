@@ -11,11 +11,6 @@ export const ZLessonVideoItem = z.object({
   assetId: z.string().uuid().optional(),
   watchEnforced: z.boolean().optional(),
   fileName: z.string().optional(),
-  // Known fields are typed for callers that want them; `.catchall` preserves any other
-  // key instead of silently stripping it. The application round-trips fields here that
-  // aren't in this list (e.g. hls, sourceWidth, sourceHeight, hlsRenditions,
-  // hls1080Status, computed in packages/core/src/utils/lesson-media.ts), and a plain
-  // z.object() would otherwise drop them on the next lesson update.
   metadata: z
     .object({
       svid: z.string().optional(),
