@@ -84,7 +84,18 @@ function findGroupForFolder(sidebarArray, folder) {
   return null;
 }
 
-// navigation.sidebar is two levels deep, so items may hold nested groups.
+function pagePathOf(element) {
+  const stringPage = element.asKind(SyntaxKind.StringLiteral);
+  if (stringPage) return stringPage.getLiteralText();
+
+  const objectPage = element.asKind(SyntaxKind.ObjectLiteralExpression);
+  const rootProperty = objectPage?.getProperty('root')?.asKind(SyntaxKind.PropertyAssignment);
+  const rootValue = rootProperty?.getInitializer()?.asKind(SyntaxKind.StringLiteral);
+
+  return rootValue?.getLiteralText() ?? null;
+}
+
+// navigation.sidebar is three levels deep, so items may hold nested groups.
 function findGroupInObject(group, folder) {
   const itemsProp = group.getProperty('items');
   if (!itemsProp) return null;
@@ -94,9 +105,7 @@ function findGroupInObject(group, folder) {
     .getInitializerOrThrow(SyntaxKind.ArrayLiteralExpression);
   const elements = itemsArray.getElements();
 
-  const existingPaths = elements
-    .filter((el) => el.asKind(SyntaxKind.StringLiteral))
-    .map((el) => el.getText().slice(1, -1));
+  const existingPaths = elements.map(pagePathOf).filter(Boolean);
   if (existingPaths.some((path) => path === `/${folder}` || path.startsWith(`/${folder}/`))) {
     return itemsArray;
   }
@@ -139,7 +148,7 @@ for (const file of addedFiles) {
     continue;
   }
 
-  const existingPaths = itemsArray.getElements().map((el) => el.getText().slice(1, -1));
+  const existingPaths = itemsArray.getElements().map(pagePathOf).filter(Boolean);
   if (existingPaths.includes(sitePath)) {
     console.log(`[help] ${sitePath} is already registered in navigation.sidebar — skipping.`);
     continue;
