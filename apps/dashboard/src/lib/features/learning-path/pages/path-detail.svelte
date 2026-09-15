@@ -34,7 +34,7 @@
 </script>
 
 {#if learningPathApi.isLoading && !path}
-  <div class="ui:flex ui:min-h-64 ui:items-center ui:justify-center">
+  <div class="flex min-h-64 items-center justify-center">
     <Spinner />
   </div>
 {:else if !path}
@@ -52,6 +52,7 @@
     name={path.name}
     description={path.description}
     coverGradient={path.coverGradient}
+    coverImage={path.coverImage}
     courseCount={path.courses.length}
     {totalHours}
     sequentialUnlock={path.sequentialUnlock}
