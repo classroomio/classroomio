@@ -14,6 +14,8 @@ const envSchema = z.object({
   APPROXIMATED_DNS_TARGET_IP: z.string().optional(),
   /** Optional CNAME target customers can point to instead of A record. */
   APPROXIMATED_DNS_TARGET_CNAME: z.string().optional(),
+  /** Comma-separated brand-zone hosts served as org sites, e.g. academy.classroomio.com. */
+  FIRST_PARTY_ORG_SITE_HOSTS: z.string().optional(),
   // S3-compatible storage (MinIO, AWS S3, or other S3-compatible backends)
   OBJECT_STORAGE_ENDPOINT: z.string().optional(),
   OBJECT_STORAGE_REGION: z.string().optional(),
