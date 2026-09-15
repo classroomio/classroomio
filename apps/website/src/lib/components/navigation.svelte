@@ -15,13 +15,37 @@
   import Webhook from '@lucide/svelte/icons/webhook';
   import X from '@lucide/svelte/icons/x';
   import { page } from '$app/state';
+  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import type { HTMLAttributes } from 'svelte/elements';
   import * as NavigationMenu from '@cio/ui/base/navigation-menu';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import { cn } from '@cio/ui/tools';
 
-  let { stars }: { stars: number } = $props();
+  let { stars = 0 }: { stars: number } = $props();
+
+  // Prerendered pages bake the build-time value (often 0 when the build-time
+  // GitHub call is rate limited), so refresh from the runtime KV-backed endpoint.
+  let liveStars = $state(stars);
+
+  onMount(async () => {
+    try {
+      const response = await fetch('/api/github-stars');
+
+      if (!response.ok) {
+        console.error('[github-stars] client fetch failed with status', response.status);
+        return;
+      }
+
+      const payload = (await response.json()) as { stars?: unknown };
+
+      if (typeof payload.stars === 'number' && payload.stars > 0) {
+        liveStars = payload.stars;
+      }
+    } catch (error) {
+      console.error('[github-stars] client fetch error', error);
+    }
+  });
 
   type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
     title: string;
@@ -336,7 +360,7 @@
           <span
             class="text-sm leading-none font-medium text-gray-600 transition-colors duration-200 group-hover:text-black"
           >
-            {stars}
+            {liveStars}
           </span>
         </a>
       </div>
@@ -437,7 +461,7 @@
             />
             <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>
             <span class="ml-1 text-sm font-medium text-gray-600 transition-colors duration-200 group-hover:text-black"
-              >({stars})</span
+              >({liveStars})</span
             >
           </a>
           <a
