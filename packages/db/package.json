@@ -77,6 +77,7 @@
     "db:update-user-email": "tsx src/scripts/update-user-email.ts",
     "db:ban-user": "tsx src/scripts/ban-user.ts",
     "db:delete-org": "tsx src/scripts/delete-org-by-email.ts",
+    "db:delete-org-by-sitename": "tsx src/scripts/delete-org-by-sitename.ts",
     "db:notify-students-over-limit": "tsx src/scripts/notify-students-over-limit.ts",
     "db:downgrade-expired-subscriptions": "tsx src/scripts/downgrade-expired-subscriptions.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
