@@ -1,7 +1,9 @@
+import { AppError, ErrorCodes } from '@cio/utils/errors';
+
 import { listMediaTranscriptsByAssetIds } from '@cio/db/queries/media-transcript';
 import { getActiveNegativeYoutubeCaption } from '@cio/db/queries/youtube-caption';
 
-import { startYoutubeCaptionsJob } from '../jobs/media-jobs';
+import { startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import { getLesson } from '../lesson/lesson';
 import { VIDEO_LEVEL_LANGUAGE_KEY, resolveRequestLanguage } from '../youtube-captions/language';
 import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
@@ -152,8 +154,9 @@ export async function getLessonVideoTranscript(
 
   // An upload still being transcribed leaves the lesson just as ungrounded as a
   // missing caption track, so it also blocks `ready`.
-  const partialReason: PendingCaptionReason | null =
-    pendingReason ?? (missingUploadAssetIds.length > 0 ? 'fetching' : null);
+  const uploadReason =
+    missingUploadAssetIds.length > 0 ? await warmMissingUploads(orgId, missingUploadAssetIds, options) : null;
+  const partialReason: PendingCaptionReason | null = pendingReason ?? uploadReason;
 
   const transcript = allAssetIds
     .map((assetId) => textByAssetId.get(assetId))
@@ -183,9 +186,7 @@ export async function getLessonVideoTranscript(
       hasTranscript: false,
       status: partialReason,
       transcript,
-      message: pendingReason
-        ? buildPartialTranscriptMessage(pendingReason)
-        : 'Only part of this lesson has a transcript — an uploaded video is still being transcribed. Ask again shortly.'
+      message: pendingReason ? buildPartialTranscriptMessage(pendingReason) : buildPartialUploadMessage(partialReason)
     };
   }
 
@@ -196,6 +197,14 @@ export async function getLessonVideoTranscript(
     status: 'ready',
     transcript
   };
+}
+
+function buildPartialUploadMessage(reason: PendingCaptionReason): string {
+  if (reason === 'unavailable') {
+    return 'Only part of this lesson has a transcript — an uploaded video cannot be transcribed. Do not fill the gap from the video title.';
+  }
+
+  return 'Only part of this lesson has a transcript — an uploaded video is still being transcribed. Ask again shortly.';
 }
 
 function buildPartialTranscriptMessage(pendingReason: PendingCaptionReason): string {
@@ -263,6 +272,48 @@ async function filterOutKnownUnavailable(videos: LessonYoutubeVideo[]): Promise<
   );
 
   return checks.filter((video): video is LessonYoutubeVideo => video !== null);
+}
+
+/**
+ * Upload post-processing is fire-and-forget at asset creation, so an upload can
+ * reach here with no transcript and no job. Reporting `fetching` without
+ * queueing one would leave the agent retrying something nothing is working on.
+ */
+async function warmMissingUploads(
+  orgId: string,
+  assetIds: string[],
+  options: GetLessonVideoTranscriptOptions
+): Promise<PendingCaptionReason> {
+  const outcomes = await Promise.all(
+    assetIds.map(async (assetId) => {
+      try {
+        await startTranscriptionOnlyMediaJob({
+          organizationId: orgId,
+          assetId,
+          triggeredByProfileId: options.userId ?? null
+        });
+
+        return 'fetching' as const;
+      } catch (error) {
+        // A job already running is exactly the state `fetching` describes.
+        const code = error instanceof AppError ? error.code : null;
+
+        if (code === ErrorCodes.CONFLICT) {
+          return 'fetching' as const;
+        }
+
+        if (code === ErrorCodes.OPENAI_KEY_MISSING || code === ErrorCodes.ASSET_NOT_TRANSCRIBABLE) {
+          return 'unavailable' as const;
+        }
+
+        console.error('warmMissingUploads failed:', error);
+
+        return 'unavailable' as const;
+      }
+    })
+  );
+
+  return outcomes.includes('fetching') ? 'fetching' : 'unavailable';
 }
 
 async function enqueueCaptionFetches(

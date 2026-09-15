@@ -2,7 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/media-transcript', () => ({ listMediaTranscriptsByAssetIds: vi.fn() }));
 vi.mock('@cio/db/queries/youtube-caption', () => ({ getActiveNegativeYoutubeCaption: vi.fn() }));
-vi.mock('@cio/core/services/jobs/media-jobs', () => ({ startYoutubeCaptionsJob: vi.fn() }));
+vi.mock('@cio/core/services/jobs/media-jobs', () => ({
+  startYoutubeCaptionsJob: vi.fn(),
+  startTranscriptionOnlyMediaJob: vi.fn()
+}));
 vi.mock('@cio/core/services/lesson/lesson', () => ({ getLesson: vi.fn() }));
 vi.mock('@cio/core/services/youtube-captions/policy', () => ({
   CAPTION_FETCH_COST_UNITS: 6_000,
@@ -14,7 +17,8 @@ vi.mock('@cio/core/services/agent/usage', () => ({ getTokenBalance: vi.fn() }));
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { listMediaTranscriptsByAssetIds } from '@cio/db/queries/media-transcript';
 import { getActiveNegativeYoutubeCaption } from '@cio/db/queries/youtube-caption';
-import { startYoutubeCaptionsJob } from '@cio/core/services/jobs/media-jobs';
+import { startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '@cio/core/services/jobs/media-jobs';
+import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { getLesson } from '@cio/core/services/lesson/lesson';
 import { canOrgFetchYoutubeCaptions } from '@cio/core/services/youtube-captions/policy';
 import { getTokenBalance } from '@cio/core/services/agent/usage';
@@ -40,6 +44,7 @@ describe('getLessonVideoTranscript status', () => {
     vi.mocked(getTokenBalance).mockResolvedValue({ remaining: 1_000_000 } as never);
     vi.mocked(getActiveNegativeYoutubeCaption).mockResolvedValue(null as never);
     vi.mocked(startYoutubeCaptionsJob).mockResolvedValue({} as never);
+    vi.mocked(startTranscriptionOnlyMediaJob).mockResolvedValue({} as never);
   });
 
   it('does not report ready when an upload has text but a YouTube video does not', async () => {
@@ -66,6 +71,43 @@ describe('getLessonVideoTranscript status', () => {
     expect(result.status).not.toBe('ready');
     expect(result.hasTranscript).toBe(false);
     expect(result.transcript).toContain('captions from');
+  });
+
+  it('queues the transcription job for an upload it reports as fetching', async () => {
+    mockLesson([UPLOAD_VIDEO, YOUTUBE_VIDEO]);
+    vi.mocked(listMediaTranscriptsByAssetIds).mockResolvedValue([
+      { assetId: 'asset-youtube', text: 'captions from the embedded video' }
+    ] as never);
+
+    const result = await getLessonVideoTranscript('lesson-1', ORG, OPTIONS);
+
+    expect(result.status).toBe('fetching');
+    expect(startTranscriptionOnlyMediaJob).toHaveBeenCalledWith(expect.objectContaining({ assetId: 'asset-upload' }));
+  });
+
+  it('treats an already-running upload job as fetching', async () => {
+    mockLesson([UPLOAD_VIDEO]);
+    vi.mocked(listMediaTranscriptsByAssetIds).mockResolvedValue([] as never);
+    vi.mocked(startTranscriptionOnlyMediaJob).mockRejectedValue(
+      new AppError('A media job is already running for this asset', ErrorCodes.CONFLICT, 409)
+    );
+
+    const result = await getLessonVideoTranscript('lesson-1', ORG, OPTIONS);
+
+    expect(result.status).toBe('fetching');
+  });
+
+  it('does not report fetching for an upload that can never be transcribed', async () => {
+    mockLesson([UPLOAD_VIDEO]);
+    vi.mocked(listMediaTranscriptsByAssetIds).mockResolvedValue([] as never);
+    vi.mocked(startTranscriptionOnlyMediaJob).mockRejectedValue(
+      new AppError('Transcription not configured', ErrorCodes.OPENAI_KEY_MISSING, 503)
+    );
+
+    const result = await getLessonVideoTranscript('lesson-1', ORG, OPTIONS);
+
+    // Retrying would spin forever against a job nothing will create.
+    expect(result.status).toBe('unavailable');
   });
 
   it('reports ready only when every video has a transcript', async () => {
