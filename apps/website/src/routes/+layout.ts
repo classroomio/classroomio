@@ -1,8 +1,27 @@
+import { browser } from '$app/environment';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 
-export async function load({ data, url }) {
+export const prerender = true;
+
+export async function load({ data, url, fetch }) {
+  let stars = data.stars;
+
+  if (browser) {
+    try {
+      const response = await fetch('/api/github-stars');
+
+      if (response.ok) {
+        const payload = (await response.json()) as { stars?: unknown };
+
+        if (typeof payload.stars === 'number' && payload.stars > 0) {
+          stars = payload.stars;
+        }
+      }
+    } catch {}
+  }
+
   return {
-    stars: data.stars,
+    stars,
     baseMetaTags: getBaseMetaTags(url),
     url: url.pathname
   };
