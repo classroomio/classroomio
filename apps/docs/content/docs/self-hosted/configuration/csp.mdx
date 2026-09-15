@@ -39,3 +39,7 @@ Normal dashboard traffic is proxied to the API **same-origin**, so the API host 
 the CSP. Add external hosts only: your CDN, video provider, font host, and object-storage/media domain
 (the most common one, so browsers can load uploaded media).
 :::
+
+:::note[Cloud defaults]
+Cloud (`PUBLIC_IS_SELFHOSTED=false`) already allows YouTube, Google Drive/Docs, and the slide-embed hosts (Canva, OneDrive/SharePoint, iCloud Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai) in `frame-src`. Self-hosted images start empty — add only the hosts you actually embed.
+:::

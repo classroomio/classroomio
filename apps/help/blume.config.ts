@@ -100,7 +100,8 @@ export default defineConfig({
               '/create-and-deliver/certificates',
               '/create-and-deliver/use-math-in-editor',
               '/create-and-deliver/live-class',
-              '/create-and-deliver/take-attendance'
+              '/create-and-deliver/take-attendance',
+              '/create-and-deliver/embed-slides'
             ]
           },
           {
