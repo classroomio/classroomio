@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "storybook dev -p 6006",
+    "dev:https": "cross-env HTTPS=true pnpm run dev",
     "build": "storybook build",
     "preview": "storybook preview",
     "format": "prettier --write .",
@@ -26,6 +27,7 @@
     "@cio/tsconfig": "workspace:*",
     "@storybook/addon-essentials": "^8.4.2",
     "@storybook/addon-interactions": "^8.4.2",
+    "cross-env": "^10.1.0",
     "@storybook/addon-links": "^8.4.2",
     "@storybook/addon-svelte-csf": "^5.0.6",
     "@storybook/blocks": "^8.4.2",
@@ -45,6 +47,7 @@
     "tailwindcss": "^4.1.14",
     "tsx": "^4.7.1",
     "typescript-svelte-plugin": "^0.3.50",
-    "vite": "^7.1.4"
+    "vite": "^7.1.4",
+    "vite-plugin-mkcert": "^2.1.0"
   }
 }

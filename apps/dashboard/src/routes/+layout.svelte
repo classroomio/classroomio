@@ -30,8 +30,6 @@
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
 
   onMount(() => {
-    console.log('Layout', data);
-
     const sessionUser = data?.locals?.user;
     setupCloudAnalytics(
       sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined,

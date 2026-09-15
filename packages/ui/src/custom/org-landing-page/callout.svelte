@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { LandingPageCallout, OrgLandingPageLabels, OrgLandingPageTheme } from './types';
+  import { safeHref } from './safe-href';
   import { Button } from '../../base/button';
   import EditableLandingSection from './editable-section.svelte';
 
@@ -19,7 +20,7 @@
       ? 'Get started'
       : variant === 'tech'
         ? '// get started'
-        : variant === 'studio' || variant === 'corporate' || variant === 'editorial'
+        : variant === 'studio' || variant === 'corporate' || variant === 'editorial' || variant === 'quartz'
           ? 'Ready when you are'
           : null
   );
@@ -37,7 +38,8 @@
       'ui:py-20 ui:px-6 ui:bg-[var(--landing-card-soft)]/40 ui:text-[var(--landing-fg)] ui:border-t ui:border-[var(--landing-border)]',
     terminal: 'ui:py-20 ui:px-6 ui:border-t ui:border-[#1c1f28] ui:text-[#e9eaed] ui:bg-[#06070a]',
     editorial: 'ui:py-32 ui:md:py-40 ui:px-6 ui:bg-[#e2e1d9] ui:text-[#1a1a1a]',
-    vibrant: 'ui:py-32 ui:md:py-40 ui:px-6 ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:text-center'
+    vibrant: 'ui:py-32 ui:md:py-40 ui:px-6 ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:text-center',
+    quartz: 'ui:py-20 ui:md:py-24 ui:px-6 ui:bg-[var(--landing-fg)] ui:text-[var(--landing-bg)] ui:text-center'
   };
 
   const headingClasses: Record<string, string> = {
@@ -50,7 +52,9 @@
     corporate: 'ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight',
     terminal: 'ui:text-[22px] ui:font-semibold ui:tracking-tight',
     editorial: 'ui:text-4xl ui:md:text-5xl ui:lg:text-[56px] ui:font-medium ui:tracking-tight ui:leading-[1.05]',
-    vibrant: 'ui:text-5xl ui:md:text-6xl ui:lg:text-[80px] ui:font-medium ui:tracking-tight ui:leading-[1.02]'
+    vibrant: 'ui:text-5xl ui:md:text-6xl ui:lg:text-[80px] ui:font-medium ui:tracking-tight ui:leading-[1.02]',
+    quartz:
+      'ui:text-3xl ui:md:text-[38px] ui:font-semibold ui:tracking-tight ui:leading-[1.08] ui:max-w-[20ch] ui:mx-auto'
   };
 
   const descriptionClasses: Record<string, string> = {
@@ -63,7 +67,8 @@
     corporate: 'ui:text-base ui:text-[var(--landing-fg-muted)] ui:max-w-xl ui:mx-auto',
     terminal: 'ui:text-sm ui:max-w-md ui:mx-auto ui:text-[#9da1ab]',
     editorial: 'ui:text-base ui:md:text-lg ui:text-[#76746c] ui:max-w-xl ui:mx-auto',
-    vibrant: 'ui:text-lg ui:text-[var(--landing-fg-muted)] ui:max-w-xl ui:mx-auto'
+    vibrant: 'ui:text-lg ui:text-[var(--landing-fg-muted)] ui:max-w-xl ui:mx-auto',
+    quartz: 'ui:text-base ui:text-[var(--landing-bg)]/70 ui:max-w-xl ui:mx-auto'
   };
 
   const buttonClasses: Record<string, string> = {
@@ -79,7 +84,9 @@
     editorial:
       'ui:rounded-full ui:px-6 ui:font-medium ui:bg-[#1a1a1a] ui:text-[#fafaf5] ui:hover:bg-[#2c2b29] ui:transition-colors',
     vibrant:
-      'ui:rounded-md ui:px-7 ui:py-3 ui:text-base ui:font-medium ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:hover:bg-[var(--landing-accent)]/90 ui:transition-colors'
+      'ui:rounded-md ui:px-7 ui:py-3 ui:text-base ui:font-medium ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:hover:bg-[var(--landing-accent)]/90 ui:transition-colors',
+    quartz:
+      'ui:rounded-md ui:px-6 ui:font-medium ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:transition-colors'
   };
 
   const eyebrowClasses: Record<string, string> = {
@@ -92,7 +99,8 @@
     corporate: 'ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-fg)] ui:mb-1',
     terminal: '',
     editorial: 'ui:text-sm ui:text-[#76746c] ui:mb-1',
-    vibrant: ''
+    vibrant: '',
+    quartz: 'ui:text-xs ui:tracking-[0.09em] ui:uppercase ui:text-[var(--landing-bg)]/55 ui:mb-2'
   };
 
   // Default eyebrow per variant is computed above as `defaultEyebrow`, resolved
@@ -149,7 +157,7 @@
         {/if}
 
         <Button
-          href={callout.action.href}
+          href={safeHref(callout.action.href)}
           size="lg"
           class={buttonClasses[variant]}
           variant={variant === 'bold' || variant === 'classic' || variant === 'tech' ? 'secondary' : 'default'}

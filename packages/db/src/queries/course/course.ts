@@ -785,6 +785,51 @@ export interface GetOrgCoursesResult {
   totalPages: number;
 }
 
+export async function countOrgCourses({
+  orgId,
+  profileId,
+  courseIds,
+  search
+}: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search'>): Promise<number> {
+  try {
+    if (courseIds && courseIds.length === 0) {
+      return 0;
+    }
+
+    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
+
+    if (courseIds && courseIds.length > 0) {
+      conditions.push(inArray(schema.course.id, courseIds));
+    }
+
+    if (search?.trim()) {
+      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
+    }
+
+    const totalQuery = profileId
+      ? db
+          .select({ count: count(schema.course.id) })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .innerJoin(
+            schema.groupmember,
+            and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId))
+          )
+          .where(and(...conditions))
+      : db
+          .select({ count: count(schema.course.id) })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .where(and(...conditions));
+
+    const [countRow] = await totalQuery;
+    return Number(countRow?.count ?? 0);
+  } catch (error) {
+    console.error('countOrgCourses error:', error);
+    throw new Error(`Failed to count org courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 /**
  * Gets courses for an organization with optional member filtering
  * Returns courses with lesson_count and total_students
@@ -821,24 +866,7 @@ export const getOrgCourses = async ({
       conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
     }
 
-    const totalQuery = profileId
-      ? db
-          .select({ count: count(schema.course.id) })
-          .from(schema.course)
-          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-          .innerJoin(
-            schema.groupmember,
-            and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId))
-          )
-          .where(and(...conditions))
-      : db
-          .select({ count: count(schema.course.id) })
-          .from(schema.course)
-          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-          .where(and(...conditions));
-
-    const [countRow] = await totalQuery;
-    const total = Number(countRow?.count ?? 0);
+    const total = await countOrgCourses({ orgId, profileId, courseIds, search });
 
     const baseQuery = db
       .select({

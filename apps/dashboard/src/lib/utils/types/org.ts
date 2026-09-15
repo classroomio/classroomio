@@ -8,7 +8,8 @@ export type OrgLandingPageTheme =
   | 'corporate'
   | 'terminal'
   | 'editorial'
-  | 'vibrant';
+  | 'vibrant'
+  | 'quartz';
 
 export interface OrgLandingPageNavItem {
   label: string;

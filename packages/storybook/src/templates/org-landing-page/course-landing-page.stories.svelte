@@ -11,6 +11,7 @@
     TerminalCourseLanding,
     EditorialCourseLanding,
     VibrantCourseLanding,
+    QuartzCourseLanding,
     mockCourseLandingPageProps as mockProps
   } from '@cio/ui/custom/org-landing-page';
 
@@ -63,6 +64,10 @@
   <VibrantCourseLanding {...mockProps} />
 </Story>
 
+<Story name="Quartz">
+  <QuartzCourseLanding {...mockProps} authAction={{ label: 'Continue', href: '#signin' }} />
+</Story>
+
 <Story name="Gallery · all themes">
   <div class="flex flex-col">
     <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Minimal</div>
@@ -85,5 +90,7 @@
     <EditorialCourseLanding {...mockProps} />
     <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Vibrant</div>
     <VibrantCourseLanding {...mockProps} />
+    <div class="sticky top-0 z-50 bg-black/85 px-4 py-2 text-xs text-white">Quartz</div>
+    <QuartzCourseLanding {...mockProps} />
   </div>
 </Story>

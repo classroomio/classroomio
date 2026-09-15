@@ -19,6 +19,7 @@
   } from '$features/people/components';
   import { UpgradeBanner } from '$features/ui';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
+  import { buildResourceInviteLink } from '$features/people/utils/invite-link-utils';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { cohortApi } from '../api';
 
@@ -37,6 +38,7 @@
   const isOpen = $derived(addPeopleParam === 'true');
   const selectedTutors = $derived(tutors.filter((tutor) => selectedIds.includes(tutor.id.toString())));
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, cohortApi.members));
+  const inviteLink = $derived(buildResourceInviteLink(cohortApi.inviteLink?.token, $currentOrg));
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
 
   function getTutors(team: OrgTeamMember[]) {
@@ -248,7 +250,7 @@
       <UnderlineTabs.Content value="link">
         <div class="space-y-6">
           <InviteLinkSection
-            link={cohortApi.inviteLink?.inviteLink ?? ''}
+            link={inviteLink}
             isRevoked={cohortApi.inviteLink?.isRevoked ?? false}
             isLoading={cohortApi.isLoading}
             joinCount={cohortApi.inviteLink?.joinCount}

@@ -151,7 +151,13 @@ function getCharAdvanceRatio(char: string, profile: FontAdvanceProfile): number 
   return profile.defaultRatio;
 }
 
-function measureTextWidth(text: string, fontSize: number, profile: FontAdvanceProfile, letterSpacingEm = 0): number {
+function measureTextWidth(
+  text: string,
+  fontSize: number,
+  profile: FontAdvanceProfile,
+  letterSpacingEm = 0,
+  advanceMultiplier = 1.0
+): number {
   if (!text) return 0;
 
   const chars = splitGraphemes(text);
@@ -159,7 +165,7 @@ function measureTextWidth(text: string, fontSize: number, profile: FontAdvancePr
 
   let total = 0;
   for (const char of chars) {
-    total += getCharAdvanceRatio(char, profile) * fontSize;
+    total += getCharAdvanceRatio(char, profile) * advanceMultiplier * fontSize;
   }
 
   const trackingPerGap = letterSpacingEm * fontSize;
@@ -178,6 +184,27 @@ export interface FitFontSizeOptions {
   allowWrap?: boolean;
   letterSpacingEm?: number;
   textTransform?: 'none' | 'uppercase' | 'lowercase';
+  fontWeight?: number | 'normal' | 'bold' | 'black';
+  fontStyle?: 'normal' | 'italic';
+}
+
+function getWeightAdvanceMultiplier(fontWeight?: number | string): number {
+  if (!fontWeight) return 1.0;
+  if (fontWeight === 'black' || (typeof fontWeight === 'number' && fontWeight >= 900)) {
+    return 1.3;
+  }
+  if (fontWeight === 'bold' || (typeof fontWeight === 'number' && fontWeight >= 700)) {
+    return 1.12;
+  }
+  if (typeof fontWeight === 'number' && fontWeight >= 600) {
+    return 1.06;
+  }
+  return 1.0;
+}
+
+function getStyleAdvanceMultiplier(fontStyle?: string): number {
+  if (fontStyle === 'italic') return 1.1;
+  return 1.0;
 }
 
 // In-memory LRU-like cache for font size calculations
@@ -207,15 +234,19 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
   const allowWrap = options.allowWrap !== false;
   const letterSpacingEm = options.letterSpacingEm ?? 0;
   const profile = FONT_PROFILES[options.fontFamily] ?? FONT_PROFILES['Cormorant Garamond'];
+  const advanceMultiplier =
+    getWeightAdvanceMultiplier(options.fontWeight) * getStyleAdvanceMultiplier(options.fontStyle);
 
-  const cacheKey = `${transformedText}|${options.fontFamily}|${options.maxWidth}|${options.maxHeight}|${basePx}|${minPx}|${lineHeight}|${allowWrap}|${letterSpacingEm}`;
+  const cacheKey = `${transformedText}|${options.fontFamily}|${options.maxWidth}|${options.maxHeight}|${basePx}|${minPx}|${lineHeight}|${allowWrap}|${letterSpacingEm}|${options.fontWeight}|${options.fontStyle}`;
   const cached = FIT_CACHE.get(cacheKey);
   if (cached !== undefined) return cached;
 
   function doesFit(fontSize: number): boolean {
+    const descenderSlack = lineHeight < 1.25 ? Math.ceil(fontSize * (1.25 - lineHeight)) : 0;
+
     if (!allowWrap) {
-      const singleLineWidth = measureTextWidth(transformedText, fontSize, profile, letterSpacingEm);
-      const singleLineHeight = fontSize * lineHeight;
+      const singleLineWidth = measureTextWidth(transformedText, fontSize, profile, letterSpacingEm, advanceMultiplier);
+      const singleLineHeight = fontSize * lineHeight + descenderSlack;
       return singleLineWidth <= options.maxWidth && singleLineHeight <= options.maxHeight;
     }
 
@@ -224,11 +255,11 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
     let currentLineWidth = 0;
     let lineCount = 1;
     const trackingPerGap = letterSpacingEm * fontSize;
-    const spaceWidth = measureTextWidth(' ', fontSize, profile, letterSpacingEm);
+    const spaceWidth = measureTextWidth(' ', fontSize, profile, letterSpacingEm, advanceMultiplier);
 
     for (let i = 0; i < words.length; i++) {
       const word = words[i];
-      const wordWidth = measureTextWidth(word, fontSize, profile, letterSpacingEm);
+      const wordWidth = measureTextWidth(word, fontSize, profile, letterSpacingEm, advanceMultiplier);
 
       if (currentLineWidth > 0) {
         // Between words on the same line, account for tracking gaps around the space
@@ -250,7 +281,7 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
         let charLineWidth = 0;
         for (let j = 0; j < chars.length; j++) {
           const char = chars[j];
-          const charAdvance = getCharAdvanceRatio(char, profile) * fontSize;
+          const charAdvance = getCharAdvanceRatio(char, profile) * advanceMultiplier * fontSize;
           const charGap = charLineWidth > 0 ? trackingPerGap : 0;
           if (charLineWidth > 0 && charLineWidth + charGap + charAdvance > options.maxWidth) {
             lineCount += 1;
@@ -263,7 +294,7 @@ export function computeFitFontSize(text: string | undefined | null, options: Fit
       }
     }
 
-    const totalHeight = lineCount * fontSize * lineHeight;
+    const totalHeight = lineCount * fontSize * lineHeight + descenderSlack;
     return totalHeight <= options.maxHeight;
   }
 

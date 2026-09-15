@@ -14,6 +14,7 @@ import {
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
   getLessonVersionHistory,
+  type TLessonVersionCursor,
   getLessonVideoProgress,
   getLessonVideoProgressForLesson,
   getLessonsByCourseId,
@@ -701,16 +702,35 @@ export async function updateLessonWatchProgressService(
   }
 }
 
+function parseLessonVersionCursor(cursor?: string): TLessonVersionCursor | undefined {
+  if (!cursor) return undefined;
+
+  const separatorIndex = cursor.lastIndexOf('|');
+  if (separatorIndex <= 0) return undefined;
+
+  const timestamp = cursor.slice(0, separatorIndex);
+  const id = Number(cursor.slice(separatorIndex + 1));
+
+  if (!timestamp || !Number.isInteger(id)) return undefined;
+
+  // The timestamp is interpolated into a Postgres timestamp comparison, so it has to be a
+  // real date here. Without this check a cursor like `garbage|5` reaches the driver and
+  // fails the query with a 500 instead of restarting at the newest page.
+  if (Number.isNaN(new Date(timestamp).getTime())) return undefined;
+
+  return { timestamp, id };
+}
+
 /**
- * Gets lesson version history for a lesson and locale
- * @param lessonId Lesson ID
- * @param locale Locale
- * @param endRange End range for pagination (0-indexed, inclusive)
- * @returns Array of lesson version history entries
+ * Gets one keyset page of lesson version history.
+ *
+ * @param cursor Serialized `<iso timestamp>|<id>` from the previous page's `nextCursor`.
+ *   Malformed input is treated as absent so a hand-edited URL restarts at the newest page
+ *   rather than erroring.
  */
-export async function getLessonHistoryService(lessonId: string, locale: string, endRange: number) {
+export async function getLessonHistoryService(lessonId: string, locale: string, limit: number, cursor?: string) {
   try {
-    return getLessonVersionHistory(lessonId, locale, endRange);
+    return getLessonVersionHistory(lessonId, locale, limit, parseLessonVersionCursor(cursor));
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to get lesson history',

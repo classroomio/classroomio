@@ -2,9 +2,21 @@ import * as schema from '@db/schema';
 
 import type { TLessonLanguageHistory, TLessonVersion, TNewLessonLanguageHistory } from '@db/types';
 import type { TLessonVersionKind } from '@cio/utils/constants/lesson-version';
-import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm';
+import { and, desc, eq, getTableColumns, lt, or, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
+
+/** Keyset cursor: the (timestamp, id) of the last row already returned. */
+export type TLessonVersionCursor = {
+  timestamp: string;
+  id: number;
+};
+
+export type TLessonVersionPage = {
+  items: TLessonVersion[];
+  /** Null when the last page has been reached. */
+  nextCursor: TLessonVersionCursor | null;
+};
 
 /**
  * Newest snapshot plus how long ago it happened, used to decide whether an
@@ -239,18 +251,52 @@ export async function sealLatestLessonVersionsForCourse(courseId: string, dbClie
 export async function getLessonVersionHistory(
   lessonId: string,
   locale: string,
-  endRange: number
-): Promise<TLessonVersion[]> {
+  limit: number,
+  cursor?: TLessonVersionCursor
+): Promise<TLessonVersionPage> {
   try {
-    const result = await db
+    // Keyset, not offset: the list is ordered by (timestamp, id) and rows are only ever
+    // appended at the newest end, so seeking past the last row read is stable under
+    // concurrent edits and costs the same at page 1 and page 50.
+    const olderThanCursor = cursor
+      ? or(
+          lt(schema.lessonVersions.timestamp, cursor.timestamp),
+          and(eq(schema.lessonVersions.timestamp, cursor.timestamp), lt(schema.lessonVersions.id, cursor.id))
+        )
+      : undefined;
+
+    const rows = await db
       .select()
       .from(schema.lessonVersions)
-      .where(and(eq(schema.lessonVersions.lessonId, lessonId), eq(schema.lessonVersions.locale, locale as any)))
+      .where(
+        and(
+          eq(schema.lessonVersions.lessonId, lessonId),
+          eq(schema.lessonVersions.locale, locale as any),
+          olderThanCursor
+        )
+      )
       .orderBy(desc(schema.lessonVersions.timestamp), desc(schema.lessonVersions.id))
-      .limit(endRange + 1);
+      // One extra row is the has-more probe; it is trimmed before returning.
+      .limit(limit + 1);
 
-    if (result.length > 0) {
-      return result;
+    if (rows.length > 0) {
+      const hasMore = rows.length > limit;
+      const items = hasMore ? rows.slice(0, limit) : rows;
+      const last = items[items.length - 1];
+      // `lessonVersions` is a view, so its columns type as nullable. Without both keys
+      // there is no stable seek point, so stop rather than hand back a broken cursor.
+      const canSeekPastLast = hasMore && last?.timestamp != null && last?.id != null;
+
+      return {
+        items,
+        nextCursor: canSeekPastLast ? { timestamp: last.timestamp!, id: last.id! } : null
+      };
+    }
+
+    // A cursor that ran past the end has no fallback to offer — the synthesized
+    // current-content row below belongs to the first page only.
+    if (cursor) {
+      return { items: [], nextCursor: null };
     }
 
     // Older lessons may not have a history row yet. Expose their current content
@@ -262,7 +308,7 @@ export async function getLessonVersionHistory(
       .limit(1);
 
     if (!currentLanguage) {
-      return [];
+      return { items: [], nextCursor: null };
     }
 
     const now = new Date().toISOString();
@@ -283,7 +329,7 @@ export async function getLessonVersionHistory(
       lessonId: currentLanguage.lessonId
     };
 
-    return [currentVersion];
+    return { items: [currentVersion], nextCursor: null };
   } catch (error) {
     console.error('getLessonVersionHistory error:', error);
     throw new Error(

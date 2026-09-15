@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Course detail · Embedded Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="host">
+      <aside class="host-side">
+        <div class="host-brand"><span class="mk">N</span>Northwind</div>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <div class="host-sec">Resources</div>
+        <a class="host-nav on" href="embed-learn.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Learn</a>
+        <div class="host-foot"><span class="av">RA</span><div><div class="nm">Ruth Adeyemi</div><div class="rl">Engineering</div></div></div>
+      </aside>
+
+      <main class="host-main">
+        <div class="embed-wrap" id="embed">
+          <div class="ac">
+            <div class="ac-page">
+              <a class="ac-back" href="embed-learn.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All of Learn</a>
+
+              <div class="ac-hero">
+                <div>
+                  <div class="ac-eyebrow">Course · Engineering</div>
+                  <h1>Automations for Support Teams</h1>
+                  <p class="ac-lead">Route, escalate, and resolve tickets automatically. You will build a working workflow, add branching conditions, and measure the hours it gives back.</p>
+                  <div class="ac-facts">
+                    <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>8 lessons</span>
+                    <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>2 exercises</span>
+                    <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>About 2 hours</span>
+                  </div>
+                </div>
+
+                <aside class="ac-buy">
+                  <div id="price-line" class="price" style="display: none">$149</div>
+                  <div id="progress-block" style="display: none">
+                    <div class="ac-eyebrow">Your progress</div>
+                    <div class="ac-prog" style="margin-top: 8px"><span style="width: 62%"></span></div>
+                    <div class="ac-pmeta">5 of 8 lessons complete</div>
+                  </div>
+                  <a id="cta" class="ac-btn ac-btn-primary" href="embed-lesson.html" style="width: 100%; justify-content: center; margin-top: 14px">Enrol free</a>
+                  <p id="cta-note" style="font-size: 12px; color: var(--ac-muted); margin: 11px 0 0; line-height: 1.5">Free for everyone at Northwind. You stay on this page.</p>
+                </aside>
+              </div>
+
+              <section class="ac-sec">
+                <h2 class="ac-h2">What you will learn</h2>
+                <div class="ac-sec-body ac-prose">
+                  <ul>
+                    <li>Build a ticket-routing workflow from a blank canvas</li>
+                    <li>Branch on priority, customer tier, and business hours</li>
+                    <li>Escalate safely without creating notification storms</li>
+                    <li>Read the automation report and prove the time saved</li>
+                  </ul>
+                </div>
+              </section>
+
+              <section class="ac-sec">
+                <h2 class="ac-h2">Curriculum</h2>
+                <div class="ac-sec-body ac-curric">
+                  <div class="grp">Foundations</div>
+                  <a class="ac-item done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>What automations can and cannot do<span class="len">6 min</span></a>
+                  <a class="ac-item done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Anatomy of a workflow<span class="len">9 min</span></a>
+                  <a class="ac-item done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Your first routing rule<span class="len">12 min</span></a>
+                  <div class="grp">Conditions and branching</div>
+                  <a class="ac-item done" href="embed-lesson.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Matching on customer tier<span class="len">8 min</span></a>
+                  <a class="ac-item done" href="embed-exercise.html"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>Knowledge check — conditions<span class="len">Exercise</span></a>
+                  <a class="ac-item" href="embed-lesson.html"><span class="ic"></span>Branching on ticket priority<span class="len">11 min</span></a>
+                  <a class="ac-item" href="embed-lesson.html"><span class="ic"></span>Business hours and time zones<span class="len">7 min</span></a>
+                  <div class="grp">Measuring impact</div>
+                  <a class="ac-item" href="embed-lesson.html"><span class="ic"></span>Reading the automation report<span class="len">10 min</span></a>
+                  <a class="ac-item" href="embed-exercise.html"><span class="ic"></span>Final exercise — build and measure<span class="len">Exercise</span></a>
+                </div>
+              </section>
+
+              <div class="ac-sec" style="text-align: center; font-size: 12px; color: var(--ac-muted)">Powered by ClassroomIO</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on" onclick="setState('free', this)">Free · not enrolled</button>
+      <button onclick="setState('enrolled', this)">Enrolled</button>
+      <button onclick="setState('paid', this)">Paid</button>
+      <button onclick="setState('anon', this)">Anonymous</button>
+      <span class="lbl">View</span>
+      <button onclick="document.getElementById('embed').classList.toggle('show-bounds')">Bounds</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+
+    <script>
+      const STATES = {
+        free: { cta: 'Enrol free', href: 'embed-lesson.html', note: 'Free for everyone at Northwind. Enrolling happens here — you stay on this page.', price: false, progress: false, locked: false },
+        enrolled: { cta: 'Continue where you left off', href: 'embed-lesson.html', note: 'Next up: Branching on ticket priority.', price: false, progress: true, locked: false },
+        paid: { cta: 'Get this course ↗', href: 'embed-course.html', note: 'Checkout opens the Northwind academy in a new tab. Payment never runs inside the embed — this is the one deliberate hand-off.', price: true, progress: false, locked: true },
+        anon: { cta: 'Sign in to enrol', href: 'embed-course.html', note: 'No learner identity was supplied by the host page, so enrolling continues on the academy.', price: false, progress: false, locked: true }
+      };
+      function setState(key, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        const state = STATES[key];
+        const cta = document.getElementById('cta');
+        cta.textContent = state.cta;
+        cta.setAttribute('href', state.href);
+        document.getElementById('cta-note').textContent = state.note;
+        document.getElementById('price-line').style.display = state.price ? 'block' : 'none';
+        document.getElementById('progress-block').style.display = state.progress ? 'block' : 'none';
+        document.querySelectorAll('.ac-item').forEach((item, index) => {
+          item.classList.toggle('done', !state.locked && state.progress && index < 5);
+          const len = item.querySelector('.len');
+          if (state.locked && index > 0) {
+            len.innerHTML = '<span style="display:inline-flex;align-items:center;gap:4px">Locked</span>';
+          } else if (!len.dataset.original) {
+            return;
+          } else {
+            len.textContent = len.dataset.original;
+          }
+        });
+      }
+      document.querySelectorAll('.ac-item .len').forEach((len) => (len.dataset.original = len.textContent));
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

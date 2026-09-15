@@ -11,22 +11,55 @@
         document.documentElement.classList.add('dark');
     </script>
     <style>
-      .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-      .grid-cols { grid-template-columns: 2.4fr 0.8fr 0.9fr 1fr 40px; }
-      .p-ico { width: 38px; height: 38px; border-radius: var(--radius-md); display: grid; place-items: center; color: #fff; flex-shrink: 0; }
-      .p-ico svg { width: 18px; height: 18px; stroke-width: 2; }
-      .p-name { display: flex; align-items: center; gap: 12px; min-width: 0; }
-      .p-name .t { font-size: 14px; font-weight: 500; }
-      .p-name .d { font-size: 12.5px; color: var(--muted-foreground); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-      .cell { display: flex; align-items: center; gap: 6px; color: var(--foreground); }
-      .cell svg { width: 14px; height: 14px; stroke-width: 2; color: var(--muted-foreground); }
-      .row-more { color: var(--muted-foreground); display: grid; place-items: center; }
-      .row-more svg { width: 16px; height: 16px; stroke-width: 2; }
       .org-pill { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--sidebar-border); border-radius: var(--radius-md); margin-bottom: 6px; background: var(--background); }
       .org-pill .l { width: 22px; height: 22px; border-radius: var(--radius-sm); background: oklch(0.596 0.145 163.225); color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 600; }
       .org-pill .n { font-size: 13px; font-weight: 500; }
       .org-pill svg { margin-left: auto; width: 14px; height: 14px; color: var(--muted-foreground); stroke-width: 2; }
-      @media (max-width: 900px) { .stats { grid-template-columns: 1fr; } .thead { display: none; } .trow.grid-cols { grid-template-columns: 1fr auto; } }
+
+      /* ============ performance overview ============ */
+      .overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+      .ov-card { display: flex; align-items: center; gap: 14px; padding: 16px 18px; }
+      .ov-card .k { font-size: 12.5px; color: var(--muted-foreground); font-weight: 500; }
+      .ov-card .v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-top: 2px; }
+      .ov-icon { width: 38px; height: 38px; border-radius: var(--radius-md); background: color-mix(in oklab, var(--primary) 10%, transparent); color: var(--primary); display: grid; place-items: center; flex-shrink: 0; }
+      .ov-icon svg { width: 18px; height: 18px; stroke-width: 2; }
+      .ov-icon.success { background: var(--success-soft); color: var(--success); }
+      .ov-icon.warning { background: var(--warning-soft); color: var(--warning); }
+      @media (max-width: 900px) { .overview { grid-template-columns: repeat(2, 1fr); } }
+
+      /* ============ toolbar ============ */
+      .admin-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+      .search-box { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+      .search-box svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--muted-foreground); stroke-width: 2; }
+      .search-box input { padding-left: 32px; }
+
+      /* ============ admin path grid card ============ */
+      .apath-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .apath-card { overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.15s, border-color 0.15s; }
+      .apath-card:hover { border-color: var(--ring); box-shadow: var(--shadow-md); }
+      .apath-cover { height: 84px; position: relative; }
+      .apath-cover .badge { position: absolute; top: 11px; left: 13px; }
+      .apath-body { padding: 15px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+      .apath-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+      .apath-title { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+      .apath-desc { font-size: 12.5px; color: var(--muted-foreground); margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 33px; }
+      .apath-meta { display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--muted-foreground); }
+      .apath-meta .m { display: flex; align-items: center; gap: 5px; }
+      .apath-meta svg { width: 13px; height: 13px; stroke-width: 2; }
+      .apath-progress-top { display: flex; align-items: baseline; justify-content: space-between; font-size: 12.5px; }
+      .apath-progress-top .l { color: var(--muted-foreground); font-weight: 500; }
+      .apath-progress-top .p { font-weight: 700; color: var(--primary); font-size: 14px; }
+      .apath-updated { font-size: 11.5px; color: var(--muted-foreground); }
+      .apath-body .btn { width: 100%; margin-top: 2px; }
+      @media (max-width: 900px) { .apath-grid { grid-template-columns: 1fr; } }
+
+      /* ============ empty state ============ */
+      .empty-state { padding: 56px 32px; text-align: center; }
+      .empty-state .ico { width: 52px; height: 52px; border-radius: var(--radius-lg); background: color-mix(in oklab, var(--primary) 8%, transparent); color: var(--primary); display: grid; place-items: center; margin: 0 auto 18px; }
+      .empty-state .ico svg { width: 24px; height: 24px; stroke-width: 1.6; }
+      .empty-state h3 { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
+      .empty-state p { font-size: 13.5px; color: var(--muted-foreground); max-width: 42ch; margin: 0 auto 20px; }
+      .empty-state .actions { display: flex; align-items: center; justify-content: center; gap: 10px; }
     </style>
   </head>
   <body>
@@ -38,7 +71,7 @@
         <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
         <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
         <a class="nav-item active" href="teacher-paths.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Paths</a>
-        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Audience</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Audience</a>
         <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="4" y="9" width="16" height="12" rx="2"/></svg>Community</a>
         <div class="nav-label">Settings</div>
         <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>Organization</a>
@@ -54,67 +87,277 @@
         </header>
 
         <main class="content">
-          <div class="wrap" style="max-width: 1000px">
+          <div class="wrap" style="max-width: 1080px">
             <div class="page-head">
               <div>
                 <h1 class="page-title">Learning Paths</h1>
-                <p class="page-sub">Group your courses into ordered tracks your learners complete step by step.</p>
+                <p class="page-sub">Create and manage structured learning experiences that guide learners through multiple courses.</p>
               </div>
-              <a class="btn btn-primary" href="teacher-path-setup.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Create path</a>
+              <div style="display: flex; gap: 10px; flex-shrink: 0">
+                <a class="btn btn-outline" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Create Course</a>
+                <a class="btn btn-primary" href="teacher-path-setup.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Create Learning Path</a>
+              </div>
             </div>
 
-            <div class="stats">
-              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Active paths</div><div class="v tnum">3</div></div>
-              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Enrolled learners</div><div class="v tnum">126</div></div>
-              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Completions</div><div class="v tnum">54</div></div>
+            <!-- ============ performance overview ============ -->
+            <div class="overview">
+              <div class="card ov-card">
+                <div class="ov-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
+                <div><div class="k">Active paths</div><div class="v tnum">2</div></div>
+              </div>
+              <div class="card ov-card">
+                <div class="ov-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+                <div><div class="k">Enrolled learners</div><div class="v tnum">126</div></div>
+              </div>
+              <div class="card ov-card">
+                <div class="ov-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+                <div><div class="k">Completions</div><div class="v tnum">54</div></div>
+              </div>
+              <div class="card ov-card">
+                <div class="ring ring-lg" style="width: 52px; height: 52px; flex-shrink: 0">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="track" cx="50" cy="50" r="45" fill="none" stroke-width="9" />
+                    <circle class="arc" cx="50" cy="50" r="45" fill="none" stroke-width="9" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="162" />
+                  </svg>
+                  <span class="lbl tnum" style="font-size: 13px">43%</span>
+                </div>
+                <div><div class="k">Completion rate</div><div class="v" style="font-size: 13px; font-weight: 500; color: var(--muted-foreground); margin-top: 4px">Across all paths</div></div>
+              </div>
             </div>
 
-            <div class="card" style="overflow: hidden">
-              <div class="thead grid-cols"><span>Path</span><span>Courses</span><span>Learners</span><span>Status</span><span></span></div>
+            <!-- ============ toolbar ============ -->
+            <div class="admin-toolbar">
+              <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input class="input" placeholder="Search learning paths…" />
+              </div>
 
-              <a class="trow grid-cols" href="teacher-path-builder.html">
-                <div class="p-name">
-                  <span class="p-ico" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
-                  <div style="min-width: 0"><div class="t">Frontend Engineering Bootcamp</div><div class="d">HTML foundations through shipping a React app.</div></div>
+              <div class="filter-popover" id="filterPopover">
+                <button class="filter-btn" id="filterBtn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
+                  Filters
+                  <span class="filter-count" id="filterCount" hidden>0</span>
+                </button>
+                <div class="filter-panel">
+                  <div class="filter-panel-head">
+                    <span class="filter-panel-title">Filters</span>
+                    <button class="filter-clear-all" id="clearFilters" type="button">Clear all</button>
+                  </div>
+                  <div class="filter-group">
+                    <div class="filter-group-label">Status</div>
+                    <div class="filter-pill-row">
+                      <button class="filter-pill on" type="button" data-group="status">All</button>
+                      <button class="filter-pill" type="button" data-group="status">Draft</button>
+                      <button class="filter-pill" type="button" data-group="status">Published</button>
+                      <button class="filter-pill" type="button" data-group="status">Archived</button>
+                    </div>
+                  </div>
+                  <div class="filter-group">
+                    <div class="filter-group-label">Enrollment</div>
+                    <div class="filter-pill-row">
+                      <button class="filter-pill on" type="button" data-group="enrollment">All</button>
+                      <button class="filter-pill" type="button" data-group="enrollment">No learners yet</button>
+                      <button class="filter-pill" type="button" data-group="enrollment">1–49</button>
+                      <button class="filter-pill" type="button" data-group="enrollment">50+</button>
+                    </div>
+                  </div>
+                  <div class="filter-group">
+                    <div class="filter-group-label">Completion rate</div>
+                    <div class="filter-pill-row">
+                      <button class="filter-pill on" type="button" data-group="completion">All</button>
+                      <button class="filter-pill" type="button" data-group="completion">Low (under 25%)</button>
+                      <button class="filter-pill" type="button" data-group="completion">Medium (25–75%)</button>
+                      <button class="filter-pill" type="button" data-group="completion">High (75%+)</button>
+                    </div>
+                  </div>
                 </div>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5</span>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>48</span>
-                <span><span class="badge badge-success-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Active</span></span>
-                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
-              </a>
+              </div>
 
-              <a class="trow grid-cols" href="teacher-path-builder.html">
-                <div class="p-name">
-                  <span class="p-ico" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
-                  <div style="min-width: 0"><div class="t">Data Science with Python</div><div class="d">Pandas, visualization, and applied ML basics.</div></div>
-                </div>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>4</span>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>61</span>
-                <span><span class="badge badge-success-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Active</span></span>
-                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
-              </a>
+              <span style="flex: 1"></span>
 
-              <a class="trow grid-cols" href="teacher-path-setup.html">
-                <div class="p-name">
-                  <span class="p-ico" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
-                  <div style="min-width: 0"><div class="t">Product Management Fundamentals</div><div class="d">Discovery, prioritization, and roadmap craft.</div></div>
-                </div>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5</span>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>0</span>
-                <span><span class="badge badge-warning" style="background: var(--warning-soft); color: var(--warning)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Draft</span></span>
-                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
-              </a>
+              <div class="view-toggle" id="viewToggle">
+                <button data-view="grid" class="on" title="Grid view" aria-label="Grid view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+                <button data-view="list" title="List view" aria-label="List view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+              </div>
 
-              <a class="trow grid-cols" href="teacher-path-builder.html" style="opacity: 0.7">
-                <div class="p-name">
-                  <span class="p-ico" style="background: var(--muted); color: var(--muted-foreground)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
-                  <div style="min-width: 0"><div class="t">Workplace Compliance 2026</div><div class="d">Security awareness, data handling, code of conduct.</div></div>
+              <button class="btn btn-outline btn-sm" id="toggleEmpty" type="button" style="margin-left: 4px">Preview empty state</button>
+            </div>
+
+            <!-- ============ populated state ============ -->
+            <div id="populatedState">
+              <div class="apath-grid" data-view-content="grid">
+                <div class="card apath-card">
+                  <a class="apath-cover" href="teacher-path-builder.html" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815)); display: block">
+                    <span class="badge badge-path-label">Learning Path</span>
+                  </a>
+                  <div class="apath-body">
+                    <div class="apath-top">
+                      <h3 class="apath-title"><a href="teacher-path-builder.html" style="color: inherit">Frontend Engineering Bootcamp</a></h3>
+                      <span class="badge badge-success">Published</span>
+                    </div>
+                    <p class="apath-desc">HTML foundations through shipping a production React app.</p>
+                    <div class="apath-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>48 learners</span>
+                    </div>
+                    <div>
+                      <div class="apath-progress-top"><span class="l">Completion</span><span class="p tnum">42%</span></div>
+                      <div class="progress" style="margin-top: 6px"><span style="width: 42%"></span></div>
+                    </div>
+                    <div class="apath-updated">Updated 2 days ago</div>
+                    <a class="btn btn-primary" href="teacher-path-builder.html">Manage<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
                 </div>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>3</span>
-                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>17</span>
-                <span><span class="badge badge-muted">Inactive</span></span>
-                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
-              </a>
+
+                <div class="card apath-card">
+                  <a class="apath-cover" href="teacher-path-builder.html" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48)); display: block">
+                    <span class="badge badge-path-label">Learning Path</span>
+                  </a>
+                  <div class="apath-body">
+                    <div class="apath-top">
+                      <h3 class="apath-title"><a href="teacher-path-builder.html" style="color: inherit">Data Science with Python</a></h3>
+                      <span class="badge badge-success">Published</span>
+                    </div>
+                    <p class="apath-desc">Pandas, visualization, and applied ML basics.</p>
+                    <div class="apath-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>4 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>61 learners</span>
+                    </div>
+                    <div>
+                      <div class="apath-progress-top"><span class="l">Completion</span><span class="p tnum">28%</span></div>
+                      <div class="progress" style="margin-top: 6px"><span style="width: 28%"></span></div>
+                    </div>
+                    <div class="apath-updated">Updated 5 days ago</div>
+                    <a class="btn btn-primary" href="teacher-path-builder.html">Manage<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
+                </div>
+
+                <div class="card apath-card">
+                  <a class="apath-cover" href="teacher-path-setup.html" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08)); display: block">
+                    <span class="badge badge-path-label">Learning Path</span>
+                  </a>
+                  <div class="apath-body">
+                    <div class="apath-top">
+                      <h3 class="apath-title"><a href="teacher-path-setup.html" style="color: inherit">Product Management Fundamentals</a></h3>
+                      <span class="badge badge-warning" style="background: var(--warning-soft); color: var(--warning)">Draft</span>
+                    </div>
+                    <p class="apath-desc">Discovery, prioritization, and roadmap craft.</p>
+                    <div class="apath-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Not published yet</span>
+                    </div>
+                    <div class="apath-updated" style="margin-top: 2px">Updated 1 week ago</div>
+                    <a class="btn btn-outline" href="teacher-path-setup.html">Continue setup<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
+                </div>
+
+                <div class="card apath-card" style="opacity: 0.75">
+                  <a class="apath-cover" href="teacher-path-builder.html" style="background: var(--muted); display: block">
+                    <span class="badge badge-path-label">Learning Path</span>
+                  </a>
+                  <div class="apath-body">
+                    <div class="apath-top">
+                      <h3 class="apath-title"><a href="teacher-path-builder.html" style="color: inherit">Workplace Compliance 2026</a></h3>
+                      <span class="badge badge-muted">Archived</span>
+                    </div>
+                    <p class="apath-desc">Security awareness, data handling, code of conduct.</p>
+                    <div class="apath-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>3 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>17 learners</span>
+                    </div>
+                    <div>
+                      <div class="apath-progress-top"><span class="l">Completion</span><span class="p tnum">81%</span></div>
+                      <div class="progress progress-success" style="margin-top: 6px"><span style="width: 81%"></span></div>
+                    </div>
+                    <div class="apath-updated">Updated 3 weeks ago</div>
+                    <a class="btn btn-outline" href="teacher-path-builder.html">Manage<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lp-list" data-view-content="list" hidden>
+                <div class="card lp-row">
+                  <a class="lp-row-thumb" href="teacher-path-builder.html" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815)); display: block"></a>
+                  <div class="lp-row-main">
+                    <div class="lp-row-top"><span class="badge badge-path-label">Learning Path</span><span class="badge badge-success">Published</span></div>
+                    <h3 class="lp-row-title"><a href="teacher-path-builder.html" style="color: inherit">Frontend Engineering Bootcamp</a></h3>
+                    <p class="lp-row-desc">HTML foundations through shipping a production React app.</p>
+                    <div class="lp-row-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>48 learners</span>
+                      <span class="m">Updated 2 days ago</span>
+                    </div>
+                  </div>
+                  <div class="lp-row-side">
+                    <div class="lp-row-progress"><div class="progress progress-thin"><span style="width: 42%"></span></div><span class="p tnum">42%</span></div>
+                    <a class="btn btn-primary btn-sm" href="teacher-path-builder.html">Manage<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
+                </div>
+
+                <div class="card lp-row">
+                  <a class="lp-row-thumb" href="teacher-path-builder.html" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48)); display: block"></a>
+                  <div class="lp-row-main">
+                    <div class="lp-row-top"><span class="badge badge-path-label">Learning Path</span><span class="badge badge-success">Published</span></div>
+                    <h3 class="lp-row-title"><a href="teacher-path-builder.html" style="color: inherit">Data Science with Python</a></h3>
+                    <p class="lp-row-desc">Pandas, visualization, and applied ML basics.</p>
+                    <div class="lp-row-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>4 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>61 learners</span>
+                      <span class="m">Updated 5 days ago</span>
+                    </div>
+                  </div>
+                  <div class="lp-row-side">
+                    <div class="lp-row-progress"><div class="progress progress-thin"><span style="width: 28%"></span></div><span class="p tnum">28%</span></div>
+                    <a class="btn btn-primary btn-sm" href="teacher-path-builder.html">Manage<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
+                </div>
+
+                <div class="card lp-row">
+                  <a class="lp-row-thumb" href="teacher-path-setup.html" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08)); display: block"></a>
+                  <div class="lp-row-main">
+                    <div class="lp-row-top"><span class="badge badge-path-label">Learning Path</span><span class="badge badge-warning" style="background: var(--warning-soft); color: var(--warning)">Draft</span></div>
+                    <h3 class="lp-row-title"><a href="teacher-path-setup.html" style="color: inherit">Product Management Fundamentals</a></h3>
+                    <p class="lp-row-desc">Discovery, prioritization, and roadmap craft.</p>
+                    <div class="lp-row-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5 courses</span>
+                      <span class="m">Updated 1 week ago</span>
+                    </div>
+                  </div>
+                  <div class="lp-row-side">
+                    <div class="lp-row-progress"><div class="progress progress-thin"><span style="width: 0%"></span></div><span class="p tnum" style="color: var(--muted-foreground)">—</span></div>
+                    <a class="btn btn-outline btn-sm" href="teacher-path-setup.html">Continue setup<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
+                </div>
+
+                <div class="card lp-row" style="opacity: 0.75">
+                  <a class="lp-row-thumb" href="teacher-path-builder.html" style="background: var(--muted); display: block"></a>
+                  <div class="lp-row-main">
+                    <div class="lp-row-top"><span class="badge badge-path-label">Learning Path</span><span class="badge badge-muted">Archived</span></div>
+                    <h3 class="lp-row-title"><a href="teacher-path-builder.html" style="color: inherit">Workplace Compliance 2026</a></h3>
+                    <p class="lp-row-desc">Security awareness, data handling, code of conduct.</p>
+                    <div class="lp-row-meta">
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>3 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>17 learners</span>
+                      <span class="m">Updated 3 weeks ago</span>
+                    </div>
+                  </div>
+                  <div class="lp-row-side">
+                    <div class="lp-row-progress"><div class="progress progress-thin progress-success"><span style="width: 81%"></span></div><span class="p tnum">81%</span></div>
+                    <a class="btn btn-outline btn-sm" href="teacher-path-builder.html">Manage<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ empty state (hidden by default — toggle above to preview) ============ -->
+            <div class="card empty-state" id="emptyState" hidden>
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
+              <h3>Create your first Learning Path</h3>
+              <p>Create your first Learning Path to organize courses into a structured learning experience.</p>
+              <div class="actions">
+                <a class="btn btn-outline" href="#">Create Course</a>
+                <a class="btn btn-primary" href="teacher-path-setup.html">Create Learning Path</a>
+              </div>
             </div>
           </div>
         </main>
@@ -126,6 +369,63 @@
         const dark = document.documentElement.classList.toggle('dark');
         localStorage.cioTheme = dark ? 'dark' : 'light';
       };
+
+      const filterPopover = document.getElementById('filterPopover');
+      const filterBtn = document.getElementById('filterBtn');
+      const filterCount = document.getElementById('filterCount');
+
+      function updateFilterCount() {
+        let active = 0;
+        document.querySelectorAll('.filter-pill-row').forEach((row) => {
+          const selected = row.querySelector('.filter-pill.on');
+          const first = row.querySelector('.filter-pill');
+          if (selected && selected !== first) active++;
+        });
+        filterCount.hidden = active === 0;
+        filterCount.textContent = active;
+      }
+
+      filterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterPopover.classList.toggle('open');
+      });
+      document.querySelectorAll('.filter-pill-row').forEach((row) => {
+        row.querySelectorAll('.filter-pill').forEach((pill) => {
+          pill.addEventListener('click', () => {
+            row.querySelector('.filter-pill.on')?.classList.remove('on');
+            pill.classList.add('on');
+            updateFilterCount();
+          });
+        });
+      });
+      document.getElementById('clearFilters').addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill-row').forEach((row) => {
+          row.querySelector('.filter-pill.on')?.classList.remove('on');
+          row.querySelector('.filter-pill').classList.add('on');
+        });
+        updateFilterCount();
+      });
+      document.addEventListener('click', () => filterPopover.classList.remove('open'));
+
+      document.querySelectorAll('#viewToggle button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelector('#viewToggle .on')?.classList.remove('on');
+          btn.classList.add('on');
+          document.querySelectorAll('[data-view-content]').forEach((el) => {
+            el.hidden = el.dataset.viewContent !== btn.dataset.view;
+          });
+        });
+      });
+
+      const toggleEmptyBtn = document.getElementById('toggleEmpty');
+      const populatedState = document.getElementById('populatedState');
+      const emptyState = document.getElementById('emptyState');
+      toggleEmptyBtn.addEventListener('click', () => {
+        const showingEmpty = !emptyState.hidden;
+        emptyState.hidden = showingEmpty;
+        populatedState.hidden = !showingEmpty;
+        toggleEmptyBtn.textContent = showingEmpty ? 'Preview empty state' : 'Back to Learning Paths';
+      });
     </script>
   </body>
 </html>

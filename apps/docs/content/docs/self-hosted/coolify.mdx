@@ -35,27 +35,19 @@ See [Configuration → Environment & secrets](/self-hosted/configuration/secrets
 
 This uses a **Docker Compose resource**: you paste the compose file and set every environment value yourself. The flow is: **create a project → add the compose file → set environment variables → point the dashboard domain → deploy → sign up**.
 
-<Steps>
-
-<Step>
-### Create a project and add a Docker Compose resource
+### 1. Create a project and add a Docker Compose resource
 
 Log in to Coolify and **create a project**. When you add a resource, Coolify asks what type it is: GitHub, a Docker image, a service, or a **Docker Compose** file. Choose **Docker Compose**, then **paste the contents of [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)** into the editor.
 
 ![Showing list of options to choose from](/docs/coolify-02-services.webp)
 
-</Step>
-
-<Step>
-### Confirm the services parsed
+### 2. Confirm the services parsed
 
 After saving, Coolify parses the compose file and lists the services: `postgres`, `redis`, `api`, `dashboard`, `jobs` (and `minio` once you enable its profile in the next step). Confirm they all appear before moving on.
 ![Select composer file type](/docs/coolify-01-add-resource.webp)
 ![Coolify showing the parsed ClassroomIO services](/docs/coolify-02-services.webp)
-</Step>
 
-<Step>
-### Set the environment variables
+### 3. Set the environment variables
 
 Open the resource's **Environment Variables** page. This is where most Coolify deployments go wrong, so treat the [Environment variable reference](#environment-variable-reference) below as the source of truth: **set every variable it lists as required, and leave the optional ones blank.** The block here covers the essentials to get you started; the full copy-paste reference is a few sections down.
 
@@ -85,10 +77,8 @@ only if you use that integration. Leaving an optional one blank never causes a b
 :::
 
 ![Setting the environment variables in Coolify](/docs/coolify-03-env-vars.webp)
-</Step>
 
-<Step>
-### Confirm the image tag
+### 4. Confirm the image tag
 
 `CIO_VERSION` chooses the tag pulled for `classroomio/{api,dashboard,jobs}`. **Confirm the tag you use actually exists** at [hub.docker.com/r/classroomio](https://hub.docker.com/r/classroomio/) before deploying.
 
@@ -100,35 +90,26 @@ reproducible.
 :::
 
 ![Confirming the classroomio image tags on Docker Hub](/docs/coolify-04-image-tag.webp)
-</Step>
 
-<Step>
-### Set the dashboard domain
+### 5. Set the dashboard domain
 
 Open the **dashboard** service → **Settings** and set its domain, including the internal port, e.g. `https://dash.yourdomain.com:3082`. Coolify maps that FQDN to the container's port `3082` and issues the certificate through its proxy.
 
 The dashboard proxies API calls server-side, so you normally only expose the dashboard publicly. The `api` service stays internal.
 
 ![Setting the dashboard service domain in Coolify](/docs/coolify-05-dashboard-domain.webp)
-</Step>
 
-<Step>
-### Deploy
+### 6. Deploy
 
 Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up. Watch the **logs**: they tell you when every service is up.
 
 ![Coolify deploy logs showing the stack coming up](/docs/coolify-06-deploy-logs.webp)
-</Step>
 
-<Step>
-### Open the app and sign up
+### 7. Open the app and sign up
 
 Once the logs show the stack is healthy, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser tab and **sign up**. The **first** account becomes the organization **admin**. Every signup or sign-in after that joins as a student, unless you invite them with a specific role.
 
 ![The running ClassroomIO dashboard sign-up page](/docs/railway-12-signup.webp)
-</Step>
-
-</Steps>
 
 ## Environment variable reference
 

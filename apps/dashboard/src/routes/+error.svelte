@@ -51,7 +51,7 @@
     <div class="flex gap-2">
       <HoverableItem>
         {#snippet children(isHovered)}
-          <Button href="https://classroomio.com/tools" variant="secondary">
+          <Button href="https://classroomio.com/tools" variant="secondary" size="xs">
             <ExternalLinkIcon {isHovered} size={16} ariaHidden={true} />
             Try Free Tools
           </Button>
@@ -59,7 +59,7 @@
       </HoverableItem>
       <HoverableItem>
         {#snippet children(isHovered)}
-          <Button onclick={goHome}>
+          <Button size="xs" onclick={goHome}>
             <HomeIcon {isHovered} size={16} ariaHidden={true} />
             Go Home
           </Button>

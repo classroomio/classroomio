@@ -41,6 +41,10 @@ Pass `testId` on `@cio/ui` field wrappers and buttons when a feature needs a sta
 
 Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{action}`.
 
+| Test id | Surface |
+|---|---|
+| `course-settings-people-link` | Self-enrollment description link to the course People page |
+
 ## Helpers
 
 - `e2e/helpers/login.ts` — `loginAsAdmin`, `openOrgCatalog`

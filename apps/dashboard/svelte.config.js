@@ -9,6 +9,8 @@ const IS_CLOUDFLARE = process.env.CI_ENVIRONMENT === 'cloudflare';
 
 const adapterCloudflare = IS_CLOUDFLARE ? (await import('@sveltejs/adapter-cloudflare')).default : null;
 const isSelfHosted = process.env.PUBLIC_IS_SELFHOSTED === 'true';
+const isProduction = process.env.NODE_ENV === 'production';
+const devConnectSrc = !isProduction ? ['ws:', 'wss:'] : [];
 const csp = getCspDomains(isSelfHosted, process.env.PUBLIC_SERVER_URL);
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -56,6 +58,7 @@ const config = {
         'connect-src': [
           'self',
           'blob:',
+          ...devConnectSrc,
           'http://localhost:3002',
           'http://localhost:9000',
           ...(csp.apiOrigin ? [csp.apiOrigin] : []),
@@ -67,7 +70,7 @@ const config = {
         'form-action': ['self'],
         // 'self' allows same-origin iframes (e.g. widget preview at /widget-preview). 'none' blocks all embedding.
         'frame-ancestors': ['self'],
-        'upgrade-insecure-requests': true
+        'upgrade-insecure-requests': isProduction
       },
       reportOnly: {
         'default-src': ['self'],
@@ -88,6 +91,7 @@ const config = {
         'connect-src': [
           'self',
           'blob:',
+          ...devConnectSrc,
           'http://localhost:3002',
           'http://localhost:9000',
           ...(csp.apiOrigin ? [csp.apiOrigin] : []),
