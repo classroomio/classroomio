@@ -81,10 +81,9 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
 
     // Org members
     const orgMembers = await tx`
-      SELECT id, profile_id FROM organizationmember WHERE organization_id = ${orgId}
+      SELECT id FROM organizationmember WHERE organization_id = ${orgId}
     `;
     const orgMemberIds = orgMembers.map((om) => om.id);
-    const orgMemberProfileIds = orgMembers.map((om) => om.profile_id).filter(Boolean);
 
     // Lessons
     const lessons = courseIds.length > 0 ? await tx`SELECT id FROM lesson WHERE course_id IN ${tx(courseIds)}` : [];
@@ -245,10 +244,11 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
     await tx`DELETE FROM analytics_course_daily WHERE org_id = ${orgId}`;
     await tx`DELETE FROM analytics_country_daily WHERE org_id = ${orgId}`;
 
-    // Login events for all org members (user_id references user.id)
-    if (orgMemberProfileIds.length > 0) {
-      await tx`DELETE FROM analytics_login_events WHERE user_id IN ${tx(orgMemberProfileIds)}`;
-    }
+    // NOTE: analytics_login_events is platform-wide (keyed by user_id, no
+    // org_id) and must NOT be deleted here — org deletion only removes
+    // memberships, and members may belong to other orgs. The email flow's
+    // deleteUserAccount cleans these up only when the user row is actually
+    // removed.
 
     await tx`DELETE FROM dead_letter_job WHERE organization_id = ${orgId}`;
 
