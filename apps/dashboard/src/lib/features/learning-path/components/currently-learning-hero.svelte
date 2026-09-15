@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import { PathIcon } from '@cio/ui/custom/moving-icons';
   import LearningPathBadge from './learning-path-badge.svelte';
   import LearningPathProgress from './learning-path-progress.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -9,6 +8,7 @@
     name: string;
     description: string;
     coverGradient?: string;
+    coverImage?: string;
     courseCount: number;
     totalHours: number;
     progressPercent: number;
@@ -30,6 +30,7 @@
     name,
     description,
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
+    coverImage,
     courseCount,
     totalHours,
     progressPercent,
@@ -38,9 +39,7 @@
   }: Props = $props();
 </script>
 
-<div
-  class="ui:from-secondary ui:to-background flex flex-col overflow-hidden rounded-2xl border bg-gradient-to-br sm:flex-row"
->
+<div class="flex flex-col overflow-hidden rounded-2xl border sm:flex-row">
   <!-- Cover — flush to the left edge -->
   <a
     {href}
@@ -49,6 +48,14 @@
     aria-label={name}
     tabindex="-1"
   >
+    {#if coverImage}
+      <img
+        src={coverImage}
+        alt={name}
+        loading="lazy"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+    {/if}
     <LearningPathBadge type="path" onCover class="absolute top-3 left-3" />
   </a>
 
@@ -56,7 +63,7 @@
   <div class="flex min-w-0 flex-1 flex-col gap-5 p-5 md:gap-6">
     <div class="flex min-w-0 flex-1 flex-col py-1">
       <a {href} class="w-fit">
-        <h3 class="hover:ui:text-primary text-lg font-semibold tracking-tight">{name}</h3>
+        <h3 class="ui:hover:text-primary text-lg font-semibold tracking-tight">{name}</h3>
       </a>
       <p class="ui:text-muted-foreground mt-0.5 text-sm">
         {courseCount}

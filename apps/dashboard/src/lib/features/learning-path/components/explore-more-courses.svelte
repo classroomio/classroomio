@@ -1,10 +1,8 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import { PathIcon } from '@cio/ui/custom/moving-icons';
   import LearningPathBadge from './learning-path-badge.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-  import BookIcon from '@lucide/svelte/icons/book-open';
   import { GitBranch } from '@lucide/svelte';
 
   interface ExploreCourse {
@@ -12,6 +10,7 @@
     title: string;
     metaLabel: string;
     coverGradient?: string;
+    coverImage?: string;
     partOfPathName?: string | null;
   }
 
@@ -26,7 +25,7 @@
   <div class="mb-1 flex items-center justify-between gap-3">
     <h2 class="text-base font-semibold">{$t('learningPath.course.explore_more_title')}</h2>
     <a
-      class="ui:text-muted-foreground hover:ui:text-primary inline-flex items-center gap-1 text-sm hover:underline"
+      class="ui:text-muted-foreground ui:hover:text-primary inline-flex items-center gap-1 text-sm hover:underline"
       href="/lms/explore"
     >
       {$t('learningPath.course.view_more')}
@@ -39,14 +38,21 @@
     {#each items as course (course.id ?? course.title)}
       <a
         href="/lms/explore"
-        class="group hover:ui:border-ring flex flex-col overflow-hidden rounded-xl border shadow-sm transition-[box-shadow,border-color] hover:shadow-md"
+        class="group ui:hover:border-primary/40 flex flex-col overflow-hidden rounded-xl border shadow-sm transition-[box-shadow,border-color] hover:shadow-md"
       >
         <div
           class="relative flex h-20 items-center justify-center overflow-hidden"
           style="background: {course.coverGradient ??
             'linear-gradient(135deg, oklch(0.645 0.246 16.439), oklch(0.586 0.253 17.585))'}"
         >
-          <!-- <BookIcon class="ui:text-white/30 size-10" /> -->
+          {#if course.coverImage}
+            <img
+              src={course.coverImage}
+              alt={course.title}
+              loading="lazy"
+              class="absolute inset-0 h-full w-full object-cover"
+            />
+          {/if}
           <LearningPathBadge type="course" onCover class="absolute top-3 left-3" />
         </div>
         <div class="flex flex-1 flex-col p-4">

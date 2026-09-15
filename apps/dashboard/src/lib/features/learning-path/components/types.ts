@@ -16,6 +16,7 @@ export interface CourseLibraryItem {
   title: string;
   description: string;
   coverGradient?: string;
+  coverImage?: string;
   durationHours: number;
   difficulty: PathDifficulty;
   status: CourseStatus;

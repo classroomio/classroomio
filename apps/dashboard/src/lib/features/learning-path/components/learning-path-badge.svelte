@@ -17,9 +17,7 @@
   variant="outline"
   class={cn(
     'text-[10px] font-semibold tracking-[0.08em] uppercase backdrop-blur',
-    onCover
-      ? 'ui:border-white/30 ui:bg-white/15 ui:text-white'
-      : 'ui:border-primary/25 ui:bg-primary/10 ui:text-primary',
+    onCover ? 'border-white/30 bg-white/15 text-white' : 'ui:border-primary/30 ui:bg-primary/10 ui:text-primary',
     className
   )}
 >
