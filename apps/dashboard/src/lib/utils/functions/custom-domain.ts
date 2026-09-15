@@ -1,5 +1,4 @@
 import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
 import { isFirstPartyOrgSiteHost, isLocalOrPrivateHost } from '@cio/utils/functions';
 
 /**
@@ -13,7 +12,7 @@ export function isCustomDomainHost(url: URL): boolean {
   }
 
   // Our own academy site sits under the brand zone but is routed like a BYOD domain.
-  if (isFirstPartyOrgSiteHost(url.hostname, publicEnv.PUBLIC_FIRST_PARTY_ORG_SITE_HOSTS)) {
+  if (isFirstPartyOrgSiteHost(url.hostname, env.FIRST_PARTY_ORG_SITE_HOSTS)) {
     return true;
   }
 
