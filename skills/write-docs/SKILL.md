@@ -1,144 +1,162 @@
 ---
 name: write-docs
-description: Write accurate, product-grounded documentation pages for ClassroomIO. Use when adding content to stub pages, expanding thin docs, or creating new guide pages under apps/docs/content/docs/.
+description: Write, revise, split, or audit customer-facing ClassroomIO Help Center guides under apps/help/content/help. Use for task guides, troubleshooting answers, concept/reference pages, student guides, and their media or internal-link plans. Do not use for developer or API reference documentation.
 ---
 
-You are writing documentation for ClassroomIO — an LMS platform that lets organizations create and run training academies. Documentation lives in `apps/docs/content/docs/` and is rendered by Blume.
+# ClassroomIO Help Guide Writer
 
-## Research before writing
+Create help articles that let a reader finish one job without contacting support. Every article must be accurate to the current product, independently shareable, easy to scan, and complete without relying on a screenshot or video.
 
-Every page must reflect how the feature actually works in the product. Before writing, read the relevant source:
+## Non-negotiable outcomes
 
-- **UI components / pages**: `apps/dashboard/src/lib/features/{domain}/pages/`
-- **Settings pages**: `apps/dashboard/src/lib/features/settings/pages/`
-- **API routes**: `apps/api/src/routes/{domain}/` and `apps/api/src/services/{domain}/`
-- **DB schema**: `packages/db/src/schema.ts` — column names and types reveal the data model
-- **Translations**: `apps/dashboard/src/lib/utils/translations/en.json` — use the exact UI label text from here, not guesses
+- Give one article one primary search intent or task. Split unrelated jobs into separate URLs.
+- Put the answer or outcome before background information.
+- Use the product's exact current labels and behavior. Never document a roadmap item, unfinished control, or inferred behavior as available.
+- Keep the written instructions sufficient on their own. Images confirm location or state; videos demonstrate motion or a long workflow.
+- Preserve a canonical explanation for each concept. Summarize and link instead of duplicating full instructions across pages.
+- Make every new article discoverable through the sidebar and at least one contextual link from an existing page.
+- Warn before a destructive, irreversible, paid, permission-gated, or behavior-changing action.
 
-Never describe behavior you haven't verified in the source code or UI.
+## Where the help center lives
 
-## Terminology (use these terms everywhere)
+- Articles: `apps/help/content/help/**/*.mdx`
+- Sidebar: `apps/help/blume.config.ts`
+- Help-site assets and scripts: `apps/help/`
+- Current public-image archive: `apps/help/public/`
+- Proposed information architecture: `apps/help/help-center-sidebar-proposal.html`
 
-| Term | Meaning |
-|---|---|
-| **academy** | The public-facing org site (`<siteName>.myclassroomio.com` or custom domain) |
-| **LMS** | The authenticated student learning area (Home, My Learning, Explore, Programs) |
-| **organization** | The admin workspace holding courses, people, settings, branding |
-| **student** | A user enrolled in courses — never "learner" |
-| **Open Academy** | The button/link that opens the public academy |
-| **Academy subdomain** | The org's site name / slug field in settings |
-| **academy landing page** | The public homepage for the org (not "org landing page") |
-| **course landing page** | The per-course public page |
+The help site is rendered by Blume at `classroomio.com/help`. Do not use the retired `apps/docs/` paths.
 
-## Settings navigation paths
+## Workflow
 
-Settings is opened from the **account menu** in the sidebar footer, not from the org nav. Use these exact paths:
+### 1. Define the reader and the job
 
-- `Settings → Profile` — personal profile settings
-- `Settings → Notifications` — personal email notification preferences
-- `Settings → Branding` — org name, logo, and brand color
-- `Settings → Domains` — academy subdomain, custom domain, and favicon
-- `Settings → Teams` — invite and manage admins and tutors
-- `Settings → Customize LMS` — LMS feature toggles
-- `Settings → Billing` — plan and billing
-- `Settings → AI Tutor` — per-org AI tutor toggle
-- `Settings → AI Credits` — token usage
-- `Settings → Authentication` — signup rules, SSO, token auth; tabs: General, SSO, Token Auth
-- `Settings → Authentication → General` — signup toggle, Internal Enrollment Only
-- `Settings → Authentication → SSO` — enterprise SSO connections
-- `Settings → Authentication → Token Auth` — Token Auth signing secret
-- `Distribute → Landing Page` — academy landing page editor (org sidebar, not Settings)
+Write down, for your own use:
 
-Do not write `Settings → Organization` or `Settings → Landing Page`. Those paths are gone.
+- reader: administrator, tutor/instructor, or student;
+- job: the single result they need;
+- entry state: where they begin and what must already be true;
+- success state: what they should see or be able to do at the end;
+- likely failure states: permissions, plan limits, missing setup, processing delays, and destructive consequences.
 
-## MDX format conventions
+If the draft needs two different success states, two unrelated navigation paths, or serves both administrators and students with separate procedures, split it unless the comparison itself is the point.
 
-Pages are rendered by Blume. Its components are global — **do not import anything**.
+### 2. Verify the current product
 
-**Callouts** are directives, not components. Types: `note`, `info`, `tip`, `success`, `warning`, `danger`.
+Research before writing. Prefer the narrowest authoritative source that proves the claim:
 
-```mdx
-:::warning[Paid plan required]
-Certificate features require a paid plan.
-:::
-```
+- visible UI and routes: `apps/dashboard/src/routes/`;
+- feature pages and components: `apps/dashboard/src/lib/features/`;
+- exact UI labels: `apps/dashboard/src/lib/utils/translations/en.json`;
+- validation and shared product rules: `packages/utils/src/validation/`;
+- API behavior and errors: `apps/api/src/routes/` and `apps/api/src/services/`;
+- persisted concepts: query and schema code under `packages/db/src/`;
+- emails and link destinations: `packages/email/` and the API caller that builds each URL.
 
-**Numbered `###` headings** for sequential procedures. Do not use a `<Steps>`/`<Step>` component: the
-CMS reads the raw markdown, where those tags render as literal text. The heading also generates the
-linkable anchor.
+Trace both the normal path and meaningful branches. Confirm:
 
-```mdx
-### 1. Enable downloadable certificates
+- who can see and use the control;
+- plan or feature-flag requirements;
+- defaults and inherited values;
+- save, publish, enrollment, notification, and deletion side effects;
+- what administrators see versus what students see;
+- exact success, empty, pending, and error states when those affect the task.
 
-Turn on **Allow students download certificate**.
+Do not expose implementation-only details unless the reader needs them to make a decision or troubleshoot. If the source and visible UI disagree, document the shipped UI and report the discrepancy instead of guessing.
 
-### 2. Set the completion threshold
+### 3. Choose the article pattern
 
-Choose the percentage a student must reach.
-```
+Read [references/article-blueprints.md](references/article-blueprints.md) and choose the smallest pattern that fits:
 
-A short summary of a procedure the page then covers in full can be a plain numbered list instead.
+- task/how-to guide;
+- quick answer or troubleshooting guide;
+- concept or feature reference;
+- overview or decision guide;
+- student guide.
 
-Also available without imports: `<Tabs>`/`<Tab>`, `<Card>`, `<Accordion>`, `<YouTube id="..." />`,
-`<CodeGroup>`, `<Frame>`. Code fences take a title: ` ```zsh title="Terminal" `. Mermaid fences render
-as diagrams.
+Do not force every optional section into every article.
 
-**Links and images follow different rules** — this trips people up:
+### 4. Apply the editorial standard
 
-- **Links**: root-relative, no `/docs` prefix — `[Enrollment](/course-enrollment)`. Blume adds the
-  base at build time.
-- **Images**: must include the `/docs` prefix — `![Alt](/docs/certificates-rules.webp)`. Blume does
-  not rebase images, so an unprefixed path 404s. Files live in `apps/docs/public/`.
+Read [references/editorial-standard.md](references/editorial-standard.md) before drafting or substantially revising a page. It defines titles, introductions, voice, terminology, headings, procedures, callouts, tables, accessibility, and maintenance rules.
 
-Run `pnpm --filter @cio/docs validate` to check links and anchors.
+### 5. Plan links and media
 
-**Frontmatter** (required on every page):
+Read [references/media-and-linking.md](references/media-and-linking.md) whenever the article adds, removes, or meaningfully changes screenshots, videos, diagrams, internal links, anchors, or related guides.
+
+Media is selected after the written procedure is known. Do not add a screenshot quota or use a video to compensate for missing written instructions.
+
+### 6. Write the MDX
+
+Every page starts with:
+
 ```mdx
 ---
-title: Page Title
-description: One sentence — shown in search results and link previews.
+title: Action-oriented or question-shaped title
+description: One sentence that states the article's answer, outcome, or scope.
+last_reviewed: 'YYYY-MM-DD'
 ---
 ```
 
-New pages must also be added to the sidebar in `apps/docs/blume.config.ts` (`navigation.sidebar`) —
-a page that isn't listed there will not appear in the nav.
+Blume renders `title` as the page H1, so body headings start at `##`.
 
-## Writing style
+Use globally available Blume syntax without imports:
 
-- Address the reader as "you" (the admin/instructor).
-- Short, direct sentences. No filler. No "In this guide, we will…" preambles.
-- Use **bold** for UI element names exactly as they appear in the product (match translations).
-- Use `code` for paths, values, slugs, and field names.
-- Tables for comparisons and reference lists.
-- Numbered `###` headings for sequential procedures (never a `<Steps>` component).
-- End every substantive page with a `## Related guides` section linking to connected pages.
-- Remove the "Work in Progress" callout when replacing it with real content.
+- `:::note`, `:::info`, `:::tip`, `:::success`, `:::warning`, and `:::danger` callouts;
+- numbered `###` action headings for procedures;
+- `<Tabs>` only for equivalent variants of the same task;
+- `<Accordion>` only for optional or FAQ material that does not hide a required step;
+- `<CardGroup>` and `<Card>` for overview/index navigation;
+- `<YouTube id="..." title="..." />` for approved video embeds.
 
-## Page structure patterns
+Do not use `<Steps>` for help procedures. Numbered Markdown headings create visible, linkable anchors and survive CMS editing and plain-Markdown export more reliably.
 
-**Reference page** (what a feature is):
-1. One-paragraph description of the feature
-2. Key concepts or table
-3. How it fits with related features
-4. Related guides
+### 7. Connect the article
 
-**How-to guide** (how to do something):
-1. One-sentence context (what and why)
-2. Prerequisites if any
-3. The procedure, as numbered `###` headings
-4. Common scenarios or edge cases (Callout blocks)
-5. Related guides
+For a new page:
 
-**Overview/index page** (org, course, programs):
-1. Short description
-2. Table: area | where | guide
-3. Related guides
+1. Use a short, durable, kebab-case slug based on the task, not the current menu location.
+2. Add it to the correct section and topic group in `apps/help/blume.config.ts`.
+3. Add at least one natural inbound link from an existing guide where a reader would need the new task.
+4. Add focused outbound links in the body and `## Related guides`.
 
-## Things to avoid
+For a page split, leave a short summary and link at the old point of explanation. Do not leave two complete, drifting copies of the same procedure.
 
-- Don't describe UI that doesn't exist yet
-- Don't say "workspace" — use "organization"
-- Don't use "learner" — use "student"
-- Don't say "org site" — say "your academy"
-- Don't hardcode customer site names — use `<siteName>.myclassroomio.com` as the placeholder
-- Don't add the "Work in Progress" callout to pages you've completed
+Avoid changing a published URL only to improve wording. If a move is necessary, identify every inbound link and require a redirect plan before removing the old path.
+
+### 8. Review and verify
+
+Check the rendered article, not only its source. Confirm that:
+
+- the first paragraph answers the title;
+- a reader can complete the task using text alone;
+- every label and navigation path matches the product;
+- conditions and warnings appear before the affected action;
+- headings form a useful in-page table of contents;
+- screenshots sit beside the instruction they clarify and remain legible on mobile;
+- videos have descriptive titles and written equivalents;
+- internal links, fragments, images, and sidebar entries resolve;
+- the page has no placeholders, speculative copy, or stale screenshots;
+- `last_reviewed` reflects the date the product behavior was actually checked.
+
+Format and validate the changed files:
+
+```bash
+pnpm exec prettier --write apps/help/content/help/<path>.mdx
+pnpm --filter @cio/help validate
+pnpm --filter @cio/help build
+```
+
+When only planning or auditing content, do not modify product code or capture new media unless the user asks. Report missing evidence, unavailable screenshots, or product/documentation discrepancies explicitly.
+
+## ClassroomIO terminology
+
+- **organization**: the administrator workspace that owns courses, people, settings, and branding;
+- **academy**: the public-facing organization site on a ClassroomIO subdomain or custom domain;
+- **LMS**: the signed-in student learning area;
+- **student**: the person taking a course; use “learner” only when quoting an exact UI label;
+- **administrator** and **tutor**: use the exact role relevant to the permission being described;
+- **academy landing page**: the public organization homepage;
+- **course landing page**: the public page for one course.
+
+Use **ClassroomIO** exactly. Use American English because the current interface uses forms such as “organization” and “customize.”
