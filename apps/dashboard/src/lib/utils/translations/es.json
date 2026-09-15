@@ -384,7 +384,8 @@
       "delete_success": "Vídeo eliminado",
       "delete_in_use": "Este vídeo todavía está adjunto a una lección. Quítelo allí primero.",
       "delete_failed": "No se pudo eliminar el video",
-      "added_to_lesson": "Vídeo añadido a la lección."
+      "added_to_lesson": "Vídeo añadido a la lección.",
+      "transcript_unavailable": "Transcripción no disponible"
     },
     "tags": {
       "group_created": "Grupo de etiquetas creado",
@@ -2321,6 +2322,7 @@
               "empty_description": "Agregue videos de YouTube, cárguelos o de su biblioteca multimedia",
               "google_drive": "Google Drive",
               "generate_transcript": "Generar transcripción",
+              "transcript_in_progress": "Obteniendo transcripción…",
               "generate_transcript_in_progress": "Transcribiendo…",
               "transcript": {
                 "title": "Transcripción",
@@ -4542,6 +4544,7 @@
         "fetch_documentation_url": "Página de lectura de documentos",
         "fetch_documentation_url_with_url": "Leyendo {url}",
         "list_youtube_playlist_videos": "Listando videos de la lista de reproducción",
+        "get_lesson_transcript": "Leyendo la transcripción del video",
         "add_youtube_video_to_lesson": "Insertando video de YouTube"
       },
       "meta": {
@@ -4577,6 +4580,11 @@
         "fetch_documentation_url": "Leer {url}",
         "list_youtube_playlist_videos": "Se encontraron {count} videos en la lista de reproducción",
         "list_youtube_playlist_videos_unavailable": "No se pudieron listar los videos de la lista de reproducción",
+        "get_lesson_transcript": "Se leyó la transcripción de {title}",
+        "get_lesson_transcript_fetching": "Obteniendo la transcripción de {title}",
+        "get_lesson_transcript_plan_gated": "Las transcripciones requieren un plan de pago",
+        "get_lesson_transcript_no_credits": "Sin créditos de IA para obtener transcripciones",
+        "get_lesson_transcript_unavailable": "No hay transcripción disponible para {title}",
         "add_youtube_video_to_lesson": "Video incrustado: {title}"
       }
     },

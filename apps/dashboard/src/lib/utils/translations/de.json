@@ -384,7 +384,8 @@
       "delete_success": "Video gelöscht",
       "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
       "delete_failed": "Video konnte nicht gelöscht werden",
-      "added_to_lesson": "Video zur Lektion hinzugefügt"
+      "added_to_lesson": "Video zur Lektion hinzugefügt",
+      "transcript_unavailable": "Transkript nicht verfügbar"
     },
     "tags": {
       "group_created": "Tag-Gruppe erstellt",
@@ -2321,6 +2322,7 @@
               "empty_description": "Fügen Sie Videos von YouTube hinzu, laden Sie sie hoch oder laden Sie sie aus Ihrer Medienbibliothek herunter",
               "google_drive": "Google Drive",
               "generate_transcript": "Transkript generieren",
+              "transcript_in_progress": "Transkript wird abgerufen…",
               "generate_transcript_in_progress": "Transkription läuft…",
               "transcript": {
                 "title": "Transkript",
@@ -4542,6 +4544,7 @@
         "fetch_documentation_url": "Seite „Dokumente lesen“.",
         "fetch_documentation_url_with_url": "{url} wird gelesen",
         "list_youtube_playlist_videos": "Playlist-Videos werden aufgelistet",
+        "get_lesson_transcript": "Videotranskript lesen",
         "add_youtube_video_to_lesson": "YouTube-Video wird eingebettet"
       },
       "meta": {
@@ -4577,6 +4580,11 @@
         "fetch_documentation_url": "{url} lesen",
         "list_youtube_playlist_videos": "{count} Videos in der Playlist gefunden",
         "list_youtube_playlist_videos_unavailable": "Playlist-Videos konnten nicht aufgelistet werden",
+        "get_lesson_transcript": "Transkript für {title} gelesen",
+        "get_lesson_transcript_fetching": "Transkript für {title} wird abgerufen",
+        "get_lesson_transcript_plan_gated": "Transkripte erfordern einen kostenpflichtigen Tarif",
+        "get_lesson_transcript_no_credits": "Keine KI-Credits mehr für Transkripte",
+        "get_lesson_transcript_unavailable": "Kein Transkript für {title} verfügbar",
         "add_youtube_video_to_lesson": "Eingebettetes Video: {title}"
       }
     },
