@@ -35,7 +35,7 @@
 
 <CourseCard
   {href}
-  bannerImage={course.logo || ''}
+  bannerImage={course.bannerImage || ''}
   bannerAlt={course.title}
   title={course.title}
   description={course.description}

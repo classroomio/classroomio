@@ -73,8 +73,7 @@ export interface UserCourseWithStats {
   title: string;
   slug: string;
   description: string;
-  logo: string;
-  banner_image: string;
+  bannerImage: string | null;
   cost: number;
   currency: string;
   is_published: boolean;

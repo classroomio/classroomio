@@ -197,7 +197,6 @@ async function maybeApplyCourseBannerImage(courseId: string, imageUrl: string | 
   }
 
   await updateCourse(courseId, {
-    logo: imageUrl,
     bannerImage: imageUrl
   });
 
@@ -698,7 +697,7 @@ export async function publishCourseImportDraftService(
       return {
         courseId: existing.publishedCourseId,
         courseUrl,
-        bannerImageUrl: publishedCourse?.logo ?? null,
+        bannerImageUrl: publishedCourse?.bannerImage ?? null,
         tagNames: normalizeDraftTagNames(draft.tags),
         createdSections: 0,
         createdLessons: 0,
@@ -788,7 +787,8 @@ export async function publishCourseImportDraftService(
         sectionId,
         order: lesson.order,
         isUnlocked: lesson.isUnlocked,
-        public: lesson.public
+        public: lesson.public,
+        videos: lesson.videos
       });
 
       lessonIdMap.set(lesson.externalId, createdLesson.id);
@@ -945,7 +945,8 @@ export async function publishCourseImportDraftToExistingCourseService(
           sectionId,
           order: lesson.order,
           isUnlocked: lesson.isUnlocked,
-          public: lesson.public
+          public: lesson.public,
+          videos: lesson.videos
         });
         lessonIdMap.set(lesson.externalId, updatedLesson.id);
         updatedLessons += 1;
@@ -959,7 +960,8 @@ export async function publishCourseImportDraftToExistingCourseService(
         sectionId,
         order: lesson.order,
         isUnlocked: lesson.isUnlocked,
-        public: lesson.public
+        public: lesson.public,
+        videos: lesson.videos
       });
       lessonIdMap.set(lesson.externalId, createdLesson.id);
       createdLessons += 1;

@@ -2,6 +2,30 @@ import * as z from 'zod';
 
 import { ZSlug } from '../shared/slug';
 
+export const ZLessonVideoItem = z.object({
+  type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
+  link: z.string(),
+  key: z.string().optional(),
+  assetId: z.string().uuid().optional(),
+  watchEnforced: z.boolean().optional(),
+  fileName: z.string().optional(),
+  metadata: z
+    .object({
+      svid: z.string().optional(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      thumbnailUrl: z.string().optional(),
+      duration: z.number().optional(),
+      aspectRatio: z.string().optional(),
+      createdAt: z.string().optional(),
+      videoId: z.string().optional(),
+      hash: z.string().optional()
+    })
+    .catchall(z.unknown())
+    .optional()
+});
+export type TLessonVideoItem = z.infer<typeof ZLessonVideoItem>;
+
 // Lesson Schemas
 export const ZLessonCreate = z.object({
   title: z.string().min(1),
@@ -13,7 +37,8 @@ export const ZLessonCreate = z.object({
   teacherId: z.string().optional(),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
-  slug: ZSlug.optional()
+  slug: ZSlug.optional(),
+  videos: z.array(ZLessonVideoItem).optional()
 });
 export type TLessonCreate = z.infer<typeof ZLessonCreate>;
 
@@ -34,19 +59,7 @@ export const ZLessonUpdate = z.object({
   commentsEnabled: z.boolean().optional(),
   videoUrl: z.url().optional(),
   slideUrl: z.url().optional(),
-  videos: z
-    .array(
-      z.object({
-        type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
-        link: z.string(),
-        key: z.string().optional(),
-        assetId: z.string().uuid().optional(),
-        watchEnforced: z.boolean().optional(),
-        fileName: z.string().optional(),
-        metadata: z.record(z.string(), z.unknown()).optional()
-      })
-    )
-    .optional(),
+  videos: z.array(ZLessonVideoItem).optional(),
   documents: z
     .array(
       z.object({

@@ -21,7 +21,7 @@
         name: orgName
       },
       url: page.url.href,
-      ...(data.course.logo ? { image: data.course.logo } : {})
+      ...(data.course.bannerImage ? { image: data.course.bannerImage } : {})
     };
 
     return JSON.stringify(schema).replace(/</g, '\\u003c');
