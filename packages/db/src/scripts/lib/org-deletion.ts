@@ -1,11 +1,3 @@
-/**
- * Shared cascade-deletion helpers used by org deletion scripts.
- *
- * `deleteOrganization` removes an organization and ALL associated data by
- * walking every child table (courses, lessons, exercises, submissions,
- * groupmembers, tags, assets, widgets, programs, cohorts, AI data,
- * analytics, etc.) in reverse dependency order before removing the org.
- */
 import type postgres from 'postgres';
 
 export type OrgDataCounts = {
