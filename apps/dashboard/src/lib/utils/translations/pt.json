@@ -384,7 +384,8 @@
       "delete_success": "Vídeo excluído",
       "delete_in_use": "Este vídeo ainda está anexado a uma aula. Remova-o primeiro.",
       "delete_failed": "Falha ao excluir vídeo",
-      "added_to_lesson": "Vídeo adicionado à aula"
+      "added_to_lesson": "Vídeo adicionado à aula",
+      "transcript_unavailable": "Transcrição indisponível"
     },
     "tags": {
       "group_created": "Grupo de tags criado",
@@ -2321,6 +2322,7 @@
               "empty_description": "Adicione vídeos do YouTube, upload ou sua biblioteca de mídia",
               "google_drive": "Google Drive",
               "generate_transcript": "Gerar transcrição",
+              "transcript_in_progress": "Obtendo transcrição…",
               "generate_transcript_in_progress": "Transcrevendo…",
               "transcript": {
                 "title": "Transcrição",
@@ -4542,6 +4544,7 @@
         "fetch_documentation_url": "Lendo a página de documentos",
         "fetch_documentation_url_with_url": "Lendo {url}",
         "list_youtube_playlist_videos": "Listando vídeos da lista de reprodução",
+        "get_lesson_transcript": "Lendo a transcrição do vídeo",
         "add_youtube_video_to_lesson": "Incorporando vídeo do YouTube"
       },
       "meta": {
@@ -4577,6 +4580,11 @@
         "fetch_documentation_url": "Leia {url}",
         "list_youtube_playlist_videos": "Foram encontrados {count} vídeos na lista de reprodução",
         "list_youtube_playlist_videos_unavailable": "Não foi possível listar os vídeos da lista de reprodução",
+        "get_lesson_transcript": "Transcrição de {title} lida",
+        "get_lesson_transcript_fetching": "Obtendo a transcrição de {title}",
+        "get_lesson_transcript_plan_gated": "As transcrições exigem um plano pago",
+        "get_lesson_transcript_no_credits": "Sem créditos de IA para obter transcrições",
+        "get_lesson_transcript_unavailable": "Nenhuma transcrição disponível para {title}",
         "add_youtube_video_to_lesson": "Vídeo incorporado: {title}"
       }
     },

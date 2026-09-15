@@ -43,7 +43,8 @@ const TOOLS_WITH_PENDING_COPY = new Set([
   'ask_template_questions',
   'fetch_documentation_url',
   'list_youtube_playlist_videos',
-  'add_youtube_video_to_lesson'
+  'add_youtube_video_to_lesson',
+  'get_lesson_transcript'
 ]);
 
 /** i18n key for the running / pending description of `toolName` */
@@ -231,6 +232,32 @@ export function getCompletedToolLine(toolName: string, result: unknown): ToolLin
       return { shape: 'i18n', key: 'ai_assistant.tool.done.generate_course_plan' };
     case 'ask_template_questions':
       return { shape: 'i18n', key: 'ai_assistant.tool.done.ask_template_questions' };
+    case 'get_lesson_transcript': {
+      const title = readString(r, 'title') ?? '';
+      const status = readString(r, 'status');
+
+      if (r.hasTranscript === true) {
+        return { shape: 'i18n', key: 'ai_assistant.tool.done.get_lesson_transcript', vars: { title } };
+      }
+
+      if (status === 'fetching') {
+        return { shape: 'i18n', key: 'ai_assistant.tool.done.get_lesson_transcript_fetching', vars: { title } };
+      }
+
+      if (status === 'plan_gated') {
+        return { shape: 'i18n', key: 'ai_assistant.tool.done.get_lesson_transcript_plan_gated' };
+      }
+
+      if (status === 'token_limit_reached') {
+        return { shape: 'i18n', key: 'ai_assistant.tool.done.get_lesson_transcript_no_credits' };
+      }
+
+      return {
+        shape: 'i18n',
+        key: 'ai_assistant.tool.done.get_lesson_transcript_unavailable',
+        vars: { title }
+      };
+    }
     case 'list_youtube_playlist_videos': {
       if (r.available === false) {
         return { shape: 'i18n', key: 'ai_assistant.tool.done.list_youtube_playlist_videos_unavailable' };

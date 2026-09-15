@@ -384,7 +384,8 @@
       "delete_success": "वीडियो हटा दिया गया",
       "delete_in_use": "यह वीडियो अभी भी एक पाठ से जुड़ा हुआ है। पहले इसे वहां से हटाएं.",
       "delete_failed": "वीडियो हटाने में विफल",
-      "added_to_lesson": "पाठ में वीडियो जोड़ा गया"
+      "added_to_lesson": "पाठ में वीडियो जोड़ा गया",
+      "transcript_unavailable": "ट्रांसक्रिप्ट उपलब्ध नहीं"
     },
     "tags": {
       "group_created": "टैग समूह बनाया गया",
@@ -2321,6 +2322,7 @@
               "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से",
               "google_drive": "गूगल ड्राइव",
               "generate_transcript": "ट्रांसक्रिप्शन बनाएं",
+              "transcript_in_progress": "ट्रांसक्रिप्ट प्राप्त किया जा रहा है…",
               "generate_transcript_in_progress": "ट्रांसक्राइब किया जा रहा है…",
               "transcript": {
                 "title": "ट्रांसक्रिप्ट",
@@ -4542,6 +4544,7 @@
         "fetch_documentation_url": "दस्तावेज़ पृष्ठ पढ़ना",
         "fetch_documentation_url_with_url": "पढ़ना {url}",
         "list_youtube_playlist_videos": "प्लेलिस्ट के वीडियो दिखाए जा रहे हैं",
+        "get_lesson_transcript": "वीडियो ट्रांसक्रिप्ट पढ़ा जा रहा है",
         "add_youtube_video_to_lesson": "YouTube वीडियो एम्बेड किया जा रहा है"
       },
       "meta": {
@@ -4577,6 +4580,11 @@
         "fetch_documentation_url": "पढ़ें {url}",
         "list_youtube_playlist_videos": "प्लेलिस्ट में {count} वीडियो मिले",
         "list_youtube_playlist_videos_unavailable": "प्लेलिस्ट के वीडियो नहीं दिखाए जा सके",
+        "get_lesson_transcript": "{title} का ट्रांसक्रिप्ट पढ़ा गया",
+        "get_lesson_transcript_fetching": "{title} का ट्रांसक्रिप्ट प्राप्त किया जा रहा है",
+        "get_lesson_transcript_plan_gated": "ट्रांसक्रिप्ट के लिए सशुल्क प्लान आवश्यक है",
+        "get_lesson_transcript_no_credits": "ट्रांसक्रिप्ट प्राप्त करने के लिए AI क्रेडिट शेष नहीं हैं",
+        "get_lesson_transcript_unavailable": "{title} के लिए कोई ट्रांसक्रिप्ट उपलब्ध नहीं है",
         "add_youtube_video_to_lesson": "एम्बेड किया गया वीडियो: {title}"
       }
     },
