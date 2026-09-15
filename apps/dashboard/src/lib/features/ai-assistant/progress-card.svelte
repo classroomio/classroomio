@@ -218,7 +218,7 @@
     {/if}
 
     {#if hasFooter}
-      <div class="space-y-1 border-t px-3 py-2">
+      <div class="space-y-1 px-3 py-2 {hasHeader || hasSteps ? 'border-t' : ''}">
         {#if error}
           <p class="text-xs text-red-600 dark:text-red-400">{error}</p>
         {/if}
