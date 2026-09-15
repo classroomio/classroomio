@@ -1,5 +1,3 @@
-export const prerender = true;
-
 export const load = () => ({
   pageMetaTags: {
     title: 'Open source LMS API, Webhooks, and MCP server | ClassroomIO',

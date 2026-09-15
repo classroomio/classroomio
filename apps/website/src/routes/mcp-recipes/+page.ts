@@ -1,5 +1,3 @@
-export const prerender = true;
-
 export const load = () => ({
   pageMetaTags: {
     title: 'MCP recipes for ClassroomIO | Build courses with your agent',
