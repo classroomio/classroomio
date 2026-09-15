@@ -182,9 +182,7 @@ export async function countCohortsByOrgForProfile(organizationId: string, profil
           .select({ count: count(schema.cohort.id) })
           .from(schema.cohort)
           .innerJoin(schema.cohortMember, eq(schema.cohortMember.cohortId, schema.cohort.id))
-          .where(
-            and(eq(schema.cohort.organizationId, organizationId), eq(schema.cohortMember.profileId, profileId))
-          );
+          .where(and(eq(schema.cohort.organizationId, organizationId), eq(schema.cohortMember.profileId, profileId)));
 
     return Number(countRow?.count ?? 0);
   } catch (error) {
@@ -615,7 +613,7 @@ export async function getCoursesByCohort(
           id: schema.course.id,
           title: schema.course.title,
           description: schema.course.description,
-          coverImage: schema.course.logo,
+          coverImage: schema.course.bannerImage,
           slug: schema.course.slug,
           status: schema.course.status,
           isPublished: schema.course.isPublished

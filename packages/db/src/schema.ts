@@ -673,6 +673,10 @@ export const course = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     groupId: uuid('group_id'),
     isTemplate: boolean('is_template').default(true),
+    /**
+     * @deprecated Use `bannerImage` instead. Kept only for the one-time data
+     * migration; the app never reads or writes `logo`.
+     */
     logo: text().default('').notNull(),
     slug: varchar(),
     metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{

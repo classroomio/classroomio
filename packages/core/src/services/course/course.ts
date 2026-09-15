@@ -379,13 +379,18 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>, dbC
     const existingMetadata = existingCourse?.metadata;
     const mergedMetadata = data.metadata ? { ...existingMetadata, ...omitUndefinedValues(data.metadata) } : undefined;
 
+    // `logo` is deprecated: when present without `bannerImage`, map it onto the
+    // canonical `bannerImage` field so API callers keep working.
+    const { logo: legacyLogo, ...dataWithoutLegacyLogo } = data;
+    const bannerImage = dataWithoutLegacyLogo.bannerImage ?? legacyLogo;
+
     const sanitizedData: Partial<TCourse> = {
-      ...data,
+      ...dataWithoutLegacyLogo,
       description: sanitizeOptionalHtml(data.description),
       overview: sanitizeOptionalHtml(data.overview),
       metadata: sanitizeCourseMetadata(mergedMetadata),
       certificate: sanitizeCourseCertificate(data.certificate),
-      logo: data.logo,
+      ...(bannerImage !== undefined ? { bannerImage } : {}),
       slug: data.slug
     };
 
