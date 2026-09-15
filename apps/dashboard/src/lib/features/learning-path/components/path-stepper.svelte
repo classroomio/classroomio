@@ -41,7 +41,7 @@
           class={cn(
             'flex size-9 shrink-0 items-center justify-center rounded-full border',
             isCompleted(course)
-              ? 'ui:border-emerald-500/30 ui:bg-emerald-500/10 ui:text-emerald-600 ui:dark:text-emerald-400'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
               : isLocked(course)
                 ? 'ui:border-border ui:bg-muted ui:text-muted-foreground'
                 : 'ui:border-primary/40 ui:bg-primary/10 ui:text-primary'
@@ -56,9 +56,7 @@
           {/if}
         </div>
         {#if index < courses.length - 1 || certificateEnabled}
-          <div
-            class={cn('ui:bg-border h-full w-px', isCompleted(course) ? 'ui:bg-emerald-500/40' : 'ui:bg-border')}
-          ></div>
+          <div class={cn('ui:bg-border h-full w-px', isCompleted(course) ? 'bg-emerald-500/40' : 'ui:bg-border')}></div>
         {/if}
       </div>
 
@@ -66,7 +64,7 @@
       <article
         class={cn(
           'mb-1 flex flex-1 gap-4 rounded-xl border p-4 transition-colors',
-          isLocked(course) ? 'opacity-75' : 'hover:ui:border-ring',
+          isLocked(course) ? 'opacity-75' : 'ui:hover:border-primary/40',
           isCurrent(course) ? 'ui:border-primary/30' : ''
         )}
       >
@@ -80,10 +78,19 @@
             'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))'}"
           aria-label={course.title}
         >
-          <BookIcon class="ui:text-white/40 size-7" />
+          {#if course.coverImage}
+            <img
+              src={course.coverImage}
+              alt={course.title}
+              loading="lazy"
+              class="absolute inset-0 h-full w-full object-cover"
+            />
+          {:else}
+            <BookIcon class="size-7 text-white/40" />
+          {/if}
           {#if isLocked(course)}
-            <div class="ui:bg-black/30 absolute inset-0 flex items-center justify-center">
-              <LockIcon class="ui:text-white size-5" />
+            <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+              <LockIcon class="ui:text-white size-5" color="white" />
             </div>
           {/if}
         </a>
@@ -96,7 +103,7 @@
             {#if isCompleted(course)}
               <Badge
                 variant="outline"
-                class="ui:border-emerald-500/30 ui:bg-emerald-500/10 ui:text-emerald-600 ui:dark:text-emerald-400 gap-1"
+                class="gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
               >
                 <CheckIcon class="size-3" />
                 {$t('learningPath.enrollment.completed')}
@@ -107,7 +114,7 @@
                 {$t('learningPath.enrollment.locked')}
               </Badge>
             {:else}
-              <Badge variant="outline" class="ui:border-primary/25 ui:bg-primary/10 ui:text-primary gap-1">
+              <Badge variant="outline" class="ui:border-primary/30 ui:bg-primary/10 ui:text-primary gap-1">
                 <PlayIcon class="size-3" />
                 {$t('learningPath.enrollment.in_progress')}
               </Badge>
@@ -115,7 +122,7 @@
           </div>
 
           <a href={isLocked(course) ? undefined : courseHref(course.order)} class="mt-1 w-fit">
-            <h3 class="text-sm leading-snug font-semibold {isLocked(course) ? '' : 'hover:ui:text-primary'}">
+            <h3 class="text-sm leading-snug font-semibold {isLocked(course) ? '' : 'ui:hover:text-primary'}">
               {course.title}
             </h3>
           </a>
@@ -192,7 +199,7 @@
           class={cn(
             'flex size-9 shrink-0 items-center justify-center rounded-full border',
             certificateEarned
-              ? 'ui:border-emerald-500/30 ui:bg-emerald-500/10 ui:text-emerald-600 ui:dark:text-emerald-400'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
               : 'ui:border-border ui:bg-muted ui:text-muted-foreground'
           )}
         >
@@ -203,7 +210,7 @@
       <div
         class={cn(
           'mb-1 flex flex-1 items-center gap-4 rounded-xl border border-dashed p-4',
-          certificateEarned ? 'ui:border-emerald-500/30 ui:bg-emerald-500/5' : 'ui:border-muted'
+          certificateEarned ? 'border-emerald-500/30 bg-emerald-500/5' : 'ui:border-muted'
         )}
       >
         <div class="ui:bg-muted ui:text-muted-foreground flex size-11 shrink-0 items-center justify-center rounded-lg">
