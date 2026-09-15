@@ -76,8 +76,8 @@
                 class={cn(
                   'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                   selected[group.id] === option.value
-                    ? 'ui:border-primary/60 ui:bg-primary/10 ui:text-primary'
-                    : 'ui:text-muted-foreground hover:ui:border-ring hover:ui:text-foreground'
+                    ? 'ui:border-primary/40 ui:bg-primary/10 ui:text-primary'
+                    : 'ui:text-muted-foreground ui:hover:border-primary/40 ui:hover:text-foreground'
                 )}
               >
                 {option.label}

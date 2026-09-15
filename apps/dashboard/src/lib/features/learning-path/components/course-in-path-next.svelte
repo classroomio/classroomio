@@ -50,7 +50,7 @@
       <div class="flex flex-wrap items-center justify-between gap-3 p-4">
         <div class="flex min-w-0 items-center gap-3">
           <div
-            class="ui:bg-emerald-500/15 ui:text-emerald-600 ui:dark:text-emerald-400 flex size-11 shrink-0 items-center justify-center rounded-lg"
+            class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
           >
             <CheckIcon class="size-5" strokeWidth={2.5} />
           </div>

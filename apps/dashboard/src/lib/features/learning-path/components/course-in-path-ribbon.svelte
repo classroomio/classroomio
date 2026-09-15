@@ -31,10 +31,10 @@
   }
 </script>
 
-<div class="ui:bg-secondary/40 ui:border-border flex flex-wrap items-center gap-x-4 gap-y-2 border-y px-4 py-2.5">
+<div class="ui:bg-secondary/50 ui:border-border flex flex-wrap items-center gap-x-4 gap-y-2 border-y px-4 py-2.5">
   <a href={pathHref} onclick={onClick} class="group flex min-w-0 items-center gap-2">
     <LearningPathBadge type="path" />
-    <span class="ui:text-muted-foreground group-hover:ui:text-foreground min-w-0 truncate text-xs font-medium">
+    <span class="ui:text-muted-foreground ui:group-hover:text-foreground min-w-0 truncate text-xs font-medium">
       {$t('learningPath.ribbon.path_label')}:
       <strong class="ui:text-foreground font-semibold">{pathName}</strong>
     </span>
@@ -72,7 +72,7 @@
   <a
     href={pathHref}
     onclick={onClick}
-    class="ui:text-muted-foreground hover:ui:text-primary ml-auto inline-flex shrink-0 items-center gap-1 text-xs font-medium hover:underline"
+    class="ui:text-muted-foreground ui:hover:text-primary ml-auto inline-flex shrink-0 items-center gap-1 text-xs font-medium hover:underline"
   >
     {$t('learningPath.ribbon.view_path')}
     <ArrowRightIcon class="size-3.5" />

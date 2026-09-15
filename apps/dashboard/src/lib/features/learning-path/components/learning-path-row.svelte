@@ -5,7 +5,6 @@
   import { Progress } from '@cio/ui/base/progress';
   import { t } from '$lib/utils/functions/translations';
   import BookIcon from '@lucide/svelte/icons/book-open';
-  import CheckCircleIcon from '@lucide/svelte/icons/check-circle-2';
   import { Check } from '@lucide/svelte';
 
   interface Props {
@@ -13,6 +12,7 @@
     name: string;
     description: string;
     coverGradient?: string;
+    coverImage?: string;
     courseCount: number;
     totalHours: number;
     progressPercent: number;
@@ -28,6 +28,7 @@
     name,
     description,
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
+    coverImage,
     courseCount,
     totalHours,
     progressPercent,
@@ -45,14 +46,16 @@
   );
 </script>
 
-<div class="hover:ui:border-ring flex items-center gap-4 rounded-xl border p-4 transition-colors">
+<div class="ui:hover:border-primary/40 flex items-center gap-4 rounded-xl border p-4 transition-colors">
   <a
     {href}
-    class="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10"
+    class="relative flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10"
     style="background: {coverGradient}"
     aria-label={name}
   >
-    <!-- <GitBranch className="size-5 ui:text-white/30" aria-hidden="true" /> -->
+    {#if coverImage}
+      <img src={coverImage} alt={name} loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
+    {/if}
   </a>
 
   <div class="min-w-0 flex-1">
@@ -60,7 +63,7 @@
       <LearningPathBadge type="path" />
     </div>
     <a {href} class="w-fit">
-      <h3 class="hover:ui:text-primary truncate text-sm font-semibold">{name}</h3>
+      <h3 class="ui:hover:text-primary truncate text-sm font-semibold">{name}</h3>
     </a>
     <p class="ui:text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
 
@@ -80,17 +83,17 @@
       {#if done}
         <Badge
           variant="outline"
-          class="ui:border-emerald-500/30 ui:bg-emerald-500/10 ui:text-emerald-600 ui:dark:text-emerald-400 gap-1"
+          class="gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
         >
           <Check class="size-3" />
           {$t('learningPath.enrollment.completed')}
         </Badge>
       {:else if coursesCompleted === 0}
-        <Badge variant="outline" class="ui:border-primary/25 ui:bg-primary/10 ui:text-primary">
+        <Badge variant="outline" class="ui:border-primary/30 ui:bg-primary/10 ui:text-primary">
           {$t('learningPath.enrollment.not_started')}
         </Badge>
       {:else}
-        <Badge variant="outline" class="ui:border-primary/25 ui:bg-primary/10 ui:text-primary">
+        <Badge variant="outline" class="ui:border-primary/30 ui:bg-primary/10 ui:text-primary">
           {$t('learningPath.enrollment.in_progress')}
         </Badge>
       {/if}

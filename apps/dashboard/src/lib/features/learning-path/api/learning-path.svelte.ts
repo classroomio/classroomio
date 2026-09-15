@@ -37,6 +37,7 @@ class LearningPathApi {
         name: path.name,
         description: path.description,
         coverGradient: path.coverGradient,
+        coverImage: path.coverImage,
         href: `/lms/paths/${path.id}`
       }))
       .slice(0, 3);

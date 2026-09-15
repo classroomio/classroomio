@@ -6,13 +6,13 @@
   import BookIcon from '@lucide/svelte/icons/book-open';
   import ClockIcon from '@lucide/svelte/icons/clock';
   import CertificateIcon from '@lucide/svelte/icons/badge-check';
-  import { GitBranch } from '@lucide/svelte';
 
   interface Props {
     href: string;
     name: string;
     description: string;
     coverGradient?: string;
+    coverImage?: string;
     courseCount: number;
     totalHours: number;
     progressPercent: number;
@@ -28,6 +28,7 @@
     name,
     description,
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
+    coverImage,
     courseCount,
     totalHours,
     progressPercent,
@@ -46,7 +47,7 @@
 </script>
 
 <div
-  class="hover:ui:border-ring flex flex-col overflow-hidden rounded-xl border shadow-sm transition-[box-shadow,border-color] hover:shadow-md"
+  class="ui:hover:border-primary/40 flex flex-col overflow-hidden rounded-xl border shadow-sm transition-[box-shadow,border-color] hover:shadow-md"
 >
   <a
     {href}
@@ -54,12 +55,20 @@
     style="background: {coverGradient}"
     aria-label={name}
   >
+    {#if coverImage}
+      <img
+        src={coverImage}
+        alt={name}
+        loading="lazy"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+    {/if}
     <LearningPathBadge type="path" onCover class="absolute top-3 left-3" />
   </a>
 
   <div class="flex flex-1 flex-col gap-2 p-4">
     <a {href} class="w-fit">
-      <h3 class="hover:ui:text-primary line-clamp-2 text-sm leading-snug font-semibold">{name}</h3>
+      <h3 class="ui:hover:text-primary line-clamp-2 text-sm leading-snug font-semibold">{name}</h3>
     </a>
 
     <p class="ui:text-muted-foreground line-clamp-2 h-10 text-xs leading-relaxed">
@@ -88,7 +97,7 @@
     <div class="mt-2">
       <div class="mb-1.5 flex items-center justify-between">
         <span class="ui:text-muted-foreground text-xs">{$t('learningPath.progress.label')}</span>
-        <span class="tnum text-xs font-semibold {done ? 'ui:text-emerald-600' : ''}">{progressPercent}%</span>
+        <span class="tnum text-xs font-semibold {done ? 'text-emerald-600' : ''}">{progressPercent}%</span>
       </div>
       <LearningPathProgress value={progressPercent} />
       <p class="tnum ui:text-muted-foreground mt-1.5 text-xs">
