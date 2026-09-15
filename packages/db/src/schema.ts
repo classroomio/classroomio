@@ -28,7 +28,6 @@ import {
   LEARNING_PATH_COURSE_STATUS_VALUES,
   LEARNING_PATH_DIFFICULTY_VALUES,
   LEARNING_PATH_MEMBER_STATUS_VALUES,
-  LEARNING_PATH_STATUS_VALUES,
   type TLearningPathVisitorAccess
 } from '@cio/utils/constants/learning-path';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
@@ -3504,8 +3503,6 @@ export const cohortGoalAssignment = pgTable(
 // path — membership and progress live in the tables below, course enrollment keeps
 // using `groupmember`.
 
-export const learningPathStatus = pgEnum('LEARNING_PATH_STATUS', [...LEARNING_PATH_STATUS_VALUES]);
-
 export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', [...LEARNING_PATH_DIFFICULTY_VALUES]);
 
 export const learningPathMemberStatus = pgEnum('LEARNING_PATH_MEMBER_STATUS', [...LEARNING_PATH_MEMBER_STATUS_VALUES]);
@@ -3525,7 +3522,12 @@ export const learningPath = pgTable(
     slug: varchar().notNull(),
     description: text(),
     coverImage: text('cover_image'),
-    status: learningPathStatus().default('DRAFT').notNull(),
+    /**
+     * Same paradigm as `course.isPublished`. Unpublished paths are hidden from the public
+     * catalog and reject self-enrollment (and any public invite-link enroll). Already-enrolled
+     * learners keep access; teachers can still add members from the People tab while building.
+     */
+    isPublished: boolean('is_published').default(false).notNull(),
     /** Powers the Difficulty filter (My Learning, Explore) and the public stats row. */
     difficulty: learningPathDifficulty(),
     /**
@@ -3595,7 +3597,7 @@ export const learningPath = pgTable(
     }),
     unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
     index('idx_learning_path_organization_id').on(table.organizationId),
-    index('idx_learning_path_organization_id_status').on(table.organizationId, table.status)
+    index('idx_learning_path_organization_id_is_published').on(table.organizationId, table.isPublished)
   ]
 );
 

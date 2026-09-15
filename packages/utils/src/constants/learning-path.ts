@@ -1,8 +1,3 @@
-/** Postgres `LEARNING_PATH_STATUS` enum values — shared by Drizzle schema and Zod validation. */
-export const LEARNING_PATH_STATUS_VALUES = ['ACTIVE', 'DRAFT', 'ARCHIVED'] as const;
-
-export type TLearningPathStatus = (typeof LEARNING_PATH_STATUS_VALUES)[number];
-
 /** Postgres `LEARNING_PATH_DIFFICULTY` enum values — powers the Difficulty filter and the public stats row. */
 export const LEARNING_PATH_DIFFICULTY_VALUES = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const;
 

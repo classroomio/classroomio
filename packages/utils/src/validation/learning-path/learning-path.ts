@@ -1,13 +1,8 @@
 import * as z from 'zod';
 
-import {
-  LEARNING_PATH_DIFFICULTY_VALUES,
-  LEARNING_PATH_STATUS_VALUES,
-  LEARNING_PATH_VISITOR_ACCESS_VALUES
-} from '../../constants/learning-path';
+import { LEARNING_PATH_DIFFICULTY_VALUES, LEARNING_PATH_VISITOR_ACCESS_VALUES } from '../../constants/learning-path';
 import { ROLE } from '../../constants/roles';
 
-export const ZLearningPathStatus = z.enum(LEARNING_PATH_STATUS_VALUES);
 export const ZLearningPathDifficulty = z.enum(LEARNING_PATH_DIFFICULTY_VALUES);
 export const ZLearningPathVisitorAccess = z.enum(LEARNING_PATH_VISITOR_ACCESS_VALUES);
 
@@ -83,7 +78,7 @@ export const ZUpdateLearningPath = z.object({
     .optional(),
   description: z.string().max(2000).nullable().optional(),
   coverImage: z.string().url().nullable().optional(),
-  status: ZLearningPathStatus.optional(),
+  isPublished: z.boolean().optional(),
   difficulty: ZLearningPathDifficulty.nullable().optional(),
   estimatedDurationMinutes: z.number().int().min(0).max(100000).nullable().optional(),
   cost: z.number().int().min(0).optional(),
