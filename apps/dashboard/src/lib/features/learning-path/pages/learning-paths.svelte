@@ -71,6 +71,7 @@
         name={activePath.name}
         description={activePath.description}
         coverGradient={activePath.coverGradient}
+        coverImage={activePath.coverImage}
         courseCount={completionProgress(activePath).courseCount}
         totalHours={totalHours(activePath)}
         progressPercent={completionProgress(activePath).progressPercent}
@@ -101,6 +102,7 @@
             name={path.name}
             description={path.description}
             coverGradient={path.coverGradient}
+            coverImage={path.coverImage}
             courseCount={completionProgress(path).courseCount}
             totalHours={totalHours(path)}
             progressPercent={completionProgress(path).progressPercent}
@@ -117,6 +119,7 @@
             name={path.name}
             description={path.description}
             coverGradient={path.coverGradient}
+            coverImage={path.coverImage}
             courseCount={completionProgress(path).courseCount}
             totalHours={totalHours(path)}
             progressPercent={completionProgress(path).progressPercent}
@@ -127,6 +130,6 @@
       </div>
     {/if}
 
-    <ExploreMoreStrip items={learningPathApi.explorePaths} />
+    <!-- <ExploreMoreStrip items={learningPathApi.explorePaths} /> -->
   </section>
 {/if}

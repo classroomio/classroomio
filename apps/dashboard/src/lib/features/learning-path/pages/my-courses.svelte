@@ -48,6 +48,7 @@
         title: course.title,
         description: mockPath?.courses.find((item) => item.id === course.courseId)?.description ?? '',
         coverGradient: course.coverGradient,
+        coverImage: course.coverImage,
         durationHours: course.durationHours,
         difficulty: path.difficulty,
         status: (course.state === 'LOCKED' ? 'NOT_STARTED' : course.state) as CourseStatus,
@@ -134,6 +135,7 @@
         id: course?.id ?? path.id,
         title: course?.title ?? path.name,
         coverGradient: course?.coverGradient ?? path.coverGradient,
+        coverImage: course?.coverImage ?? path.coverImage,
         metaLabel: course ? `${Math.max(1, Math.round(course.durationHours * 60))} min` : '',
         partOfPathName: path.name
       };
@@ -146,7 +148,7 @@
     <Spinner />
   </div>
 {:else}
-  <section>
+  <section class="mb-5">
     {#if activeCourse}
       <div class="mb-2 flex items-center justify-between">
         <h2 class="text-base font-semibold">{$t('learningPath.my_learning.currently_learning')}</h2>
@@ -155,6 +157,7 @@
         title={activeCourse.title}
         href={activeCourse.href}
         coverGradient={activeCourse.coverGradient}
+        coverImage={activeCourse.coverImage}
         weeksLabel={weeksLabel(activeCourse)}
         partOfPathName={activeCourse.partOfPath?.name}
         pathHref={activeCourse.partOfPath?.href}
@@ -185,6 +188,7 @@
             title={item.title}
             description={item.description}
             coverGradient={item.coverGradient}
+            coverImage={item.coverImage}
             metaLabel={weeksLabel(item)}
             status={item.status}
             progressPercent={item.progressPercent}
@@ -200,6 +204,7 @@
             title={item.title}
             description={item.description}
             coverGradient={item.coverGradient}
+            coverImage={item.coverImage}
             metaLabel={weeksLabel(item)}
             status={item.status}
             progressPercent={item.progressPercent}
@@ -209,8 +214,8 @@
       </div>
     {/if}
 
-    {#if exploreCourses.length > 0}
+    <!-- {#if exploreCourses.length > 0}
       <ExploreMoreCourses items={exploreCourses} />
-    {/if}
+    {/if} -->
   </section>
 {/if}

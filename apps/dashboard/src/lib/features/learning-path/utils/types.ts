@@ -129,6 +129,7 @@ export type LearningPathCourseProgress = {
   durationHours: number;
   slug?: string;
   coverGradient?: string;
+  coverImage?: string;
 };
 
 export type LearningPathEnrollment = {
