@@ -21,19 +21,19 @@ export async function seedCourseSections({ mvcCourseId, reactCourseId, pandasCou
       id: MVC_SECTION_ID,
       courseId: mvcCourseId,
       title: 'Getting Started',
-      order: 0
+      order: 1
     },
     {
       id: REACT_SECTION_ID,
       courseId: reactCourseId,
       title: 'Core Concepts',
-      order: 0
+      order: 1
     },
     {
       id: PANDAS_SECTION_ID,
       courseId: pandasCourseId,
       title: 'Foundations',
-      order: 0
+      order: 1
     }
   ].filter((s) => !existingSectionIds.has(s.id!));
 
