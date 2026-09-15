@@ -146,8 +146,14 @@ export async function getLessonVideoTranscript(
   }
 
   const missingYoutubeVideos = youtubeVideos.filter((video) => !textByAssetId.has(video.assetId));
+  const missingUploadAssetIds = uploadAssetIds.filter((assetId) => !textByAssetId.has(assetId));
   const pendingReason =
     missingYoutubeVideos.length > 0 ? await warmMissingCaptions(orgId, missingYoutubeVideos, options) : null;
+
+  // An upload still being transcribed leaves the lesson just as ungrounded as a
+  // missing caption track, so it also blocks `ready`.
+  const partialReason: PendingCaptionReason | null =
+    pendingReason ?? (missingUploadAssetIds.length > 0 ? 'fetching' : null);
 
   const transcript = allAssetIds
     .map((assetId) => textByAssetId.get(assetId))
@@ -159,7 +165,7 @@ export async function getLessonVideoTranscript(
       lessonId: lessonWithVideos.id,
       title: lessonWithVideos.title,
       hasTranscript: false,
-      status: pendingReason ?? 'unavailable',
+      status: partialReason ?? 'unavailable',
       transcript: null,
       message: buildEmptyTranscriptMessage({
         hasUploadVideos: uploadAssetIds.length > 0,
@@ -169,15 +175,17 @@ export async function getLessonVideoTranscript(
     };
   }
 
-  // An uploaded video's transcript does not stand in for a missing YouTube one.
-  if (pendingReason) {
+  // One video's transcript does not stand in for another's.
+  if (partialReason) {
     return {
       lessonId: lessonWithVideos.id,
       title: lessonWithVideos.title,
       hasTranscript: false,
-      status: pendingReason,
+      status: partialReason,
       transcript,
-      message: buildPartialTranscriptMessage(pendingReason)
+      message: pendingReason
+        ? buildPartialTranscriptMessage(pendingReason)
+        : 'Only part of this lesson has a transcript — an uploaded video is still being transcribed. Ask again shortly.'
     };
   }
 

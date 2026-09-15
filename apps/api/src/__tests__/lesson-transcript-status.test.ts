@@ -55,6 +55,19 @@ describe('getLessonVideoTranscript status', () => {
     expect(result.transcript).toContain('spoken words');
   });
 
+  it('does not report ready when a YouTube video has text but an upload does not', async () => {
+    mockLesson([UPLOAD_VIDEO, YOUTUBE_VIDEO]);
+    vi.mocked(listMediaTranscriptsByAssetIds).mockResolvedValue([
+      { assetId: 'asset-youtube', text: 'captions from the embedded video' }
+    ] as never);
+
+    const result = await getLessonVideoTranscript('lesson-1', ORG, OPTIONS);
+
+    expect(result.status).not.toBe('ready');
+    expect(result.hasTranscript).toBe(false);
+    expect(result.transcript).toContain('captions from');
+  });
+
   it('reports ready only when every video has a transcript', async () => {
     mockLesson([UPLOAD_VIDEO, YOUTUBE_VIDEO]);
     vi.mocked(listMediaTranscriptsByAssetIds).mockResolvedValue([
