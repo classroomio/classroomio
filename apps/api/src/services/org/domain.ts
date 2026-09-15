@@ -202,7 +202,7 @@ export function assertSupportedCustomDomain(domain: string) {
     );
   }
 
-  if (isFirstPartyOrgSiteHost(domain)) {
+  if (isFirstPartyOrgSiteHost(domain, env.PUBLIC_FIRST_PARTY_ORG_SITE_HOSTS)) {
     return;
   }
 

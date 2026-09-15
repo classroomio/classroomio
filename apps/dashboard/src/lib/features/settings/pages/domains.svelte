@@ -20,6 +20,7 @@
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
   import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
   import { isFirstPartyOrgSiteHost } from '@cio/utils/functions';
+  import { env as publicEnv } from '$env/dynamic/public';
 
   import { Badge } from '@cio/ui/base/badge';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -238,7 +239,7 @@
     const sanitizedDomain = sanitizeDomain(customDomain);
 
     const isReservedBrandDomain =
-      !isFirstPartyOrgSiteHost(sanitizedDomain) &&
+      !isFirstPartyOrgSiteHost(sanitizedDomain, publicEnv.PUBLIC_FIRST_PARTY_ORG_SITE_HOSTS) &&
       (sanitizedDomain.includes(BRAND_ROOT_DOMAIN) || sanitizedDomain.includes(TENANT_ROOT_DOMAIN));
 
     if (isReservedBrandDomain) {
