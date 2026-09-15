@@ -187,7 +187,7 @@ export function buildCourseLandingPageProps(
         disabled: options.enrollDisabled
       },
       secondaryAction: { label: 'View curriculum', href: '#curriculum' },
-      image: course.logo || undefined,
+      image: course.bannerImage || undefined,
       stats,
       eyebrow: landing.hero.eyebrow
     },

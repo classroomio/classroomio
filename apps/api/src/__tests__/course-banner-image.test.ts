@@ -15,7 +15,7 @@ describe('bannerImage on course update (FIX-01)', () => {
     expect(result.success && result.data.logo).toBe('https://example.com/logo.png');
   });
 
-  it('ZCourseUpdateBase allows bannerImage independent of logo', () => {
+  it('ZCourseUpdateBase allows bannerImage independent of the deprecated logo', () => {
     const result = ZCourseUpdateBase.safeParse({
       bannerImage: 'https://example.com/banner-only.png'
     });
@@ -23,6 +23,17 @@ describe('bannerImage on course update (FIX-01)', () => {
     expect(result.success).toBe(true);
     expect(result.success && result.data.bannerImage).toBe('https://example.com/banner-only.png');
     expect(result.success && result.data.logo).toBeUndefined();
+  });
+
+  it('ZCourseUpdateBase still accepts the deprecated logo field for backward compatibility', () => {
+    // The core update service maps `logo` onto `bannerImage` when no bannerImage
+    // is supplied, so existing API clients keep working.
+    const result = ZCourseUpdateBase.safeParse({
+      logo: 'https://example.com/legacy-logo.png'
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.success && result.data.logo).toBe('https://example.com/legacy-logo.png');
   });
 
   it('ZPublicApiUpdateCourse (the public API schema) does not silently drop bannerImage', () => {

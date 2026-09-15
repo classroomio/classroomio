@@ -197,7 +197,6 @@ async function maybeApplyCourseBannerImage(courseId: string, imageUrl: string | 
   }
 
   await updateCourse(courseId, {
-    logo: imageUrl,
     bannerImage: imageUrl
   });
 
@@ -698,7 +697,7 @@ export async function publishCourseImportDraftService(
       return {
         courseId: existing.publishedCourseId,
         courseUrl,
-        bannerImageUrl: publishedCourse?.logo ?? null,
+        bannerImageUrl: publishedCourse?.bannerImage ?? null,
         tagNames: normalizeDraftTagNames(draft.tags),
         createdSections: 0,
         createdLessons: 0,
