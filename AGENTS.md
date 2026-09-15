@@ -2,6 +2,10 @@
 
 This document collects implementation rules and workflow conventions for code changes.
 
+## Writing Code
+
+**Read [`skills/writing-code/SKILL.md`](skills/writing-code/SKILL.md) before writing or editing any code.** The comment policy there is mandatory: default to no comments, use JSDoc only for function contracts, and never add an inline comment to explain a design choice — refactor the code instead. The only allowed inline comments record an external constraint the code cannot express.
+
 ## Research Requirements
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
