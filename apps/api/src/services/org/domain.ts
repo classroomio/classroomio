@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 import { env } from '@cio/core/config/env';
+import { isFirstPartyOrgSiteHost } from '@cio/utils/constants/domains';
 import { parse } from 'tldts';
 
 export type DomainSetupStatus =
@@ -199,6 +200,10 @@ export function assertSupportedCustomDomain(domain: string) {
       400,
       'domain'
     );
+  }
+
+  if (isFirstPartyOrgSiteHost(domain)) {
+    return;
   }
 
   if (domain.includes('classroomio.com') || domain.includes('myclassroomio.com')) {

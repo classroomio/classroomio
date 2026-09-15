@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { isFirstPartyOrgSiteHost } from '@cio/utils/constants/domains';
 import { isLocalOrPrivateHost } from '@cio/utils/functions';
 
 /**
@@ -9,6 +10,11 @@ import { isLocalOrPrivateHost } from '@cio/utils/functions';
 export function isCustomDomainHost(url: URL): boolean {
   if (url.host.includes('localhost') || isLocalOrPrivateHost(url.hostname)) {
     return false;
+  }
+
+  // Our own academy site sits under the brand zone but is routed like a BYOD domain.
+  if (isFirstPartyOrgSiteHost(url.hostname)) {
+    return true;
   }
 
   const appHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'myclassroomio.com'].filter(Boolean);
