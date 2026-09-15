@@ -17,7 +17,7 @@ import { automationKeyScopeOrSessionMiddleware } from '@api/middlewares/automati
 import { generateFileKey } from '@cio/core/utils/upload';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
-import { getAssetsByStorageKeys } from '@cio/db/queries/assets';
+import { createOrGetAssetByStorageKey, getAssetsByStorageKeys } from '@cio/db/queries/assets';
 import type { Context } from 'hono';
 
 const requireCourseWrite = automationKeyScopeOrSessionMiddleware(['course:write']);
@@ -64,6 +64,51 @@ export async function assertAutomationKeyOwnsDownloadKeys(c: Context, keys: stri
 function assertPresignFileSizeWithinLimit(fileSize: number | undefined, maxBytes: number): void {
   if (fileSize != null && fileSize > maxBytes) {
     throw new AppError(`File size exceeds maximum of ${maxBytes / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
+  }
+}
+
+/**
+ * Automation-key callers always carry their org on `c.get('automationKey')`. Session callers
+ * don't go through any org-scoped middleware on these routes, so we fall back to the same
+ * `cio-org-id` header the dashboard already sends on every request (see `organization/assets.ts`).
+ */
+export function resolveCallerOrganizationId(c: Context): string | null {
+  const automationKey = c.get('automationKey');
+  return automationKey?.organizationId ?? c.req.header('cio-org-id') ?? null;
+}
+
+/**
+ * Registers the freshly-issued storage key as an asset so `assertAutomationKeyOwnsDownloadKeys`
+ * has a row to match against later. Without this, no key issued by the upload routes ever
+ * belongs to anyone as far as the download ownership check is concerned, and every download
+ * request 403s regardless of caller.
+ *
+ * Bookkeeping only: the actual bytes land in storage the moment the client PUTs to the
+ * presigned URL, independent of this write, so a failure here must not fail the upload
+ * response — it just means this key's future download ownership check fails closed until
+ * the row exists, same as before this function existed.
+ */
+export async function registerUploadedAsset(
+  c: Context,
+  params: { fileKey: string; fileType: string; fileSize: number | undefined; kind: 'video' | 'document' }
+): Promise<void> {
+  const organizationId = resolveCallerOrganizationId(c);
+  if (!organizationId) {
+    return;
+  }
+
+  try {
+    await createOrGetAssetByStorageKey({
+      organizationId,
+      kind: params.kind,
+      provider: 'upload',
+      storageKey: params.fileKey,
+      mimeType: params.fileType,
+      byteSize: params.fileSize ?? null,
+      createdByProfileId: c.get('user')?.id ?? null
+    });
+  } catch (error) {
+    console.error('Failed to register uploaded asset for ownership checks:', error);
   }
 }
 
@@ -130,6 +175,8 @@ export const presignRouter = new Hono()
 
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
 
+      await registerUploadedAsset(c, { fileKey, fileType, fileSize, kind: 'video' });
+
       return c.json({
         success: true,
         url: presignedUrl,
@@ -174,6 +221,8 @@ export const presignRouter = new Hono()
       const fileKey = generateFileKey(fileName);
 
       const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);
+
+      await registerUploadedAsset(c, { fileKey, fileType, fileSize, kind: 'document' });
 
       return c.json({
         success: true,
