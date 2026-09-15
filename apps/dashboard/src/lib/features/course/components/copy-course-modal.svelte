@@ -9,15 +9,10 @@
   import { t } from '$lib/utils/functions/translations';
 
   async function createCourse() {
-    if ($copyCourseModal.isSaving || courseCloneApi.isLoading) return;
+    if (courseCloneApi.isLoading) return;
 
     await courseCloneApi.clone($copyCourseModal.id, $copyCourseModal.title, $copyCourseModal.description);
   }
-
-  // Sync loading state with modal store
-  $effect(() => {
-    $copyCourseModal.isSaving = courseCloneApi.isLoading;
-  });
 </script>
 
 <Dialog.Root bind:open={$copyCourseModal.open}>

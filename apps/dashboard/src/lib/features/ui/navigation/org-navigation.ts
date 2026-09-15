@@ -7,6 +7,7 @@ import {
   GoalIcon,
   HomeIcon,
   LandingPageIcon,
+  PathIcon,
   PeopleIcon,
   SettingsIcon,
   TagIcon
@@ -136,6 +137,13 @@ export const baseNavConfig: NavItemConfig[] = [
     icon: CourseIcon,
     countKey: 'courses',
     matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
+  },
+  {
+    group: 'content',
+    titleKey: 'org_navigation.learning_paths',
+    path: '/paths',
+    icon: PathIcon,
+    matchPattern: '^/org/[^/]+/paths(/.*)?$'
   },
   {
     group: 'content',

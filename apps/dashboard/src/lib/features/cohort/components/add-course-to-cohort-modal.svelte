@@ -125,12 +125,12 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="max-w-md">
-    <Dialog.Header>
+  <Dialog.Content class="flex max-h-[85vh] max-w-md flex-col overflow-hidden">
+    <Dialog.Header class="shrink-0">
       <Dialog.Title>{$t('cohorts.courses.add_modal_title') || 'Add Course to Cohort'}</Dialog.Title>
     </Dialog.Header>
 
-    <div class="flex flex-col gap-4 py-2">
+    <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto py-2">
       <MultiSelectList
         class="border-0"
         {emptyMessage}
@@ -187,7 +187,7 @@
       {/if}
     </div>
 
-    <Dialog.Footer>
+    <Dialog.Footer class="shrink-0 pt-3">
       <Button variant="outline" onclick={closeModal} disabled={cohortApi.isLoading}>
         {$t('app.cancel') || 'Cancel'}
       </Button>

@@ -88,10 +88,15 @@
   }
 
   function handleCloneCourse() {
-    $copyCourseModal.open = true;
-    $copyCourseModal.id = id;
-    $copyCourseModal.title = title;
-    $copyCourseModal.description = description;
+    setTimeout(() => {
+      copyCourseModal.set({
+        open: true,
+        id,
+        title: `${title} (Copy)`,
+        description: description || '',
+        isSaving: false
+      });
+    }, 50);
   }
 
   function handleOpenCourse() {

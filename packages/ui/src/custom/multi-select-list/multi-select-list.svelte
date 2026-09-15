@@ -84,13 +84,21 @@
       {#each items as item (item.id)}
         <CheckboxField
           name={`${namePrefix}-${item.id}`}
-          label={item.label || item.id}
+          label={null}
           checked={isSelected(item.id)}
           onclick={() => onToggle(item.id)}
+          className="ui:items-start"
         >
-          {#if item.description}
-            <p class="ui:ml-2 ui:text-muted-foreground ui:text-sm">{item.description}</p>
-          {/if}
+          <div class="ui:ml-2 ui:min-w-0 ui:flex-1">
+            <p class="ui:text-foreground ui:text-sm ui:font-medium ui:line-clamp-2 ui:break-words">
+              {item.label || item.id}
+            </p>
+            {#if item.description}
+              <p class="ui:text-muted-foreground ui:text-xs ui:line-clamp-2 ui:break-words ui:mt-0.5">
+                {item.description}
+              </p>
+            {/if}
+          </div>
         </CheckboxField>
       {/each}
     </div>
