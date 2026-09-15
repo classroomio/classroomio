@@ -66,7 +66,7 @@ export function isLocalOrPrivateHost(input: string): boolean {
   return false;
 }
 
-/** Exact match: a suffix check would accept `academy.classroomio.com.evil.com` as first-party. */
+/** Matches a hostname against a comma-separated allowlist of hosts. */
 export function isFirstPartyOrgSiteHost(hostname: string, configuredHosts: string | undefined): boolean {
   const host = hostname.trim().toLowerCase().replace(/\.$/, '');
 

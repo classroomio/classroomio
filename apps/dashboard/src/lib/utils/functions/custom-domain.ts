@@ -11,7 +11,6 @@ export function isCustomDomainHost(url: URL): boolean {
     return false;
   }
 
-  // Our own academy site sits under the brand zone but is routed like a BYOD domain.
   if (isFirstPartyOrgSiteHost(url.hostname, env.FIRST_PARTY_ORG_SITE_HOSTS)) {
     return true;
   }
