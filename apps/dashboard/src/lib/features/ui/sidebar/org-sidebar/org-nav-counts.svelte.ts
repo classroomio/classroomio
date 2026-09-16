@@ -7,11 +7,13 @@ class OrgNavCountsApi extends BaseApi {
   counts = $state<OrgNavCounts | null>(null);
   loadedOrgId = $state<string | null>(null);
   private inFlightOrgId: string | null = null;
+  private overrides: Partial<Record<OrgNavCountKey, number>> = {};
 
   reset() {
     this.counts = null;
     this.loadedOrgId = null;
     this.inFlightOrgId = null;
+    this.overrides = {};
   }
 
   async ensureCounts(orgId: string) {
@@ -27,6 +29,9 @@ class OrgNavCountsApi extends BaseApi {
 
     if (this.loadedOrgId !== orgId) {
       this.counts = null;
+      if (this.loadedOrgId !== null) {
+        this.overrides = {};
+      }
       this.loadedOrgId = null;
     }
 
@@ -40,7 +45,10 @@ class OrgNavCountsApi extends BaseApi {
           return;
         }
 
-        this.counts = response.data;
+        this.counts = {
+          ...response.data,
+          ...this.overrides
+        };
         this.loadedOrgId = orgId;
       }
     });
@@ -51,12 +59,15 @@ class OrgNavCountsApi extends BaseApi {
   }
 
   setCount(key: OrgNavCountKey, value: number) {
-    if (!this.counts) return;
+    const safeValue = Math.max(0, value);
+    this.overrides[key] = safeValue;
 
-    this.counts = {
-      ...this.counts,
-      [key]: Math.max(0, value)
-    };
+    if (this.counts) {
+      this.counts = {
+        ...this.counts,
+        [key]: safeValue
+      };
+    }
   }
 
   adjustCount(key: OrgNavCountKey, delta: number) {

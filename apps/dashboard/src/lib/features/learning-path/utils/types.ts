@@ -3,7 +3,7 @@ export interface LearningPathCourseItem {
   courseId: string;
   order: number;
   title: string;
-  description?: string | null;
+  description: string;
   lessonsCount: number;
   exercisesCount: number;
   cost: number;
@@ -17,7 +17,7 @@ export interface LearningPathSummary {
   organizationId: string;
   name: string;
   slug: string;
-  description: string | null;
+  description: string;
   coverImage: string | null;
   isPublished: boolean;
   difficulty?: unknown;
@@ -33,6 +33,7 @@ export interface LearningPathSummary {
   updatedAt: string;
   createdAt: string;
   gradient?: string;
+  tutorIds?: string[];
 }
 
 export interface LearningPathLandingPageData {
@@ -86,3 +87,12 @@ export interface SetupStep {
   isCompleted: boolean;
   isCurrent: boolean;
 }
+
+export interface CreateLearningPathInput {
+  name: string;
+  slug: string;
+  description: string;
+  organizationId?: string;
+}
+
+export type UpdateLearningPathInput = Partial<Omit<LearningPathDetail, 'id' | 'createdAt'>>;

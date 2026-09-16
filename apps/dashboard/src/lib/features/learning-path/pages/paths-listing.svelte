@@ -15,8 +15,11 @@
   import { browser } from '$app/environment';
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import { PathCard, PathRow, PathFilterPopover, CreatePathModal, ClonePathModal } from '../components';
   import { learningPathApi } from '../api';
+  import { isPathAccessibleToUser } from '../utils/learning-path-utils';
   import {
     LEARNING_PATHS_VIEW_MODE_KEY,
     DEFAULT_VIEW_MODE,
@@ -32,12 +35,6 @@
   }
 
   let { initialPaths }: Props = $props();
-
-  $effect.pre(() => {
-    if (initialPaths && initialPaths.length > 0 && learningPathApi.paths.length === 0) {
-      learningPathApi.setPaths(initialPaths);
-    }
-  });
 
   let searchQuery = $state('');
   let sortKey = $state<PathSortBy>(DEFAULT_PATH_SORT);
@@ -56,7 +53,7 @@
   // Query parameter support (?create=true)
   $effect(() => {
     const isCreateRequested = page.url.searchParams.get('create') === 'true';
-    if (isCreateRequested) {
+    if (isCreateRequested && $isOrgAdmin) {
       showCreateDialog = true;
     }
   });
@@ -111,8 +108,16 @@
     }
   }
 
+  const visiblePaths = $derived(
+    learningPathApi.paths.filter((pathItem) => isPathAccessibleToUser(pathItem, Boolean($isOrgAdmin), $profile?.id))
+  );
+
+  $effect(() => {
+    learningPathApi.updateNavCount(visiblePaths.length);
+  });
+
   const filteredPaths = $derived.by(() => {
-    let list = learningPathApi.paths;
+    let list = visiblePaths;
 
     // Search filter
     const query = searchQuery.trim().toLowerCase();
@@ -205,7 +210,7 @@
 
 <!-- Content Area -->
 <div class="mx-auto mt-4 w-full flex-1">
-  {#if learningPathApi.paths.length === 0}
+  {#if visiblePaths.length === 0}
     <Empty
       title={$t('learningPath.listing.empty.title')}
       description={$t('learningPath.listing.empty.description')}

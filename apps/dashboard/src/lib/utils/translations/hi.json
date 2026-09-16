@@ -2822,6 +2822,7 @@
       "course_description_label": "पाठ्यक्रम विवरण",
       "course_description_placeholder": "अपने पाठ्यक्रम के लिए विवरण दर्ज करें",
       "create_button": "बनाएँ",
+      "title_copy_format": "{title} (प्रतिलिपि)",
       "error": {
         "failed_to_clone": "पाठ्यक्रम क्लोन करने में विफल"
       },
@@ -5488,6 +5489,7 @@
         "title": "क्लोन लर्निंग पथ",
         "description": "इस शिक्षण पथ की सभी पाठ्यक्रमों सहित एक प्रति बनाएँ।",
         "submit": "क्लोन",
+        "title_copy_format": "{name} (प्रतिलिपि)",
         "failed": "शिक्षण पथ का क्लोन बनाने में विफल"
       }
     },
@@ -5519,6 +5521,10 @@
       "unpublish_path": "अप्रकाशित पथ",
       "published": "लर्निंग पाथ प्रकाशित हो चुकी है।",
       "unpublished": "सीखने का पथ अप्रकाशित",
+      "publish_failed": "लर्निंग पाथ प्रकाशित करने में विफल",
+      "not_found_title": "लर्निंग पाथ नहीं मिला",
+      "not_found_description": "आप जिस लर्निंग पाथ को खोज रहे हैं वह मौजूद नहीं है या हटा दिया गया है।",
+      "back_to_paths": "लर्निंग पाथ पर वापस जाएं",
       "copy_path_url": "पाथ यूआरएल कॉपी करें",
       "preview_missing_slug": "पूर्वावलोकन करने से पहले पथ स्लग बनाएं और सहेजें।",
       "url_copied": "शिक्षण पथ URL को क्लिपबोर्ड पर कॉपी किया गया",
@@ -5563,10 +5569,10 @@
       "subtitle": "कोर्स जोड़ें और छात्रों के आगे बढ़ने के क्रम को निर्धारित करने के लिए ड्रैग करें।",
       "unlock_rule_title": "क्रम से पाठ्यक्रम अनलॉक करें",
       "unlock_rule_desc": "प्रत्येक पाठ्यक्रम तब तक लॉक रहता है जब तक छात्र पिछले पाठ्यक्रम के पाठ और अभ्यास पूरे नहीं कर लेता। किसी भी क्रम में पढ़ने की अनुमति देने के लिए इसे बंद करें।",
-      "list_head": "इस पथ में {count} {count, plural, =1 {course} other {courses}}",
+      "list_head": "इस पथ में {count} {count, plural, =1 {कोर्स} other {कोर्स}}",
       "drag_hint": "क्रम बदलने के लिए खींचें",
-      "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
-      "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
+      "lessons_count": "{count} {count, plural, =1 {पाठ} other {पाठ}}",
+      "exercises_count": "{count} {count, plural, =1 {अभ्यास} other {अभ्यास}}",
       "open_course": "पाठ्यक्रम खोलें",
       "remove_course": "पथ से हटाएं",
       "add_course_button": "पथ में पाठ्यक्रम जोड़ें",
@@ -5590,8 +5596,8 @@
         "no_matches_description": "अपने फ़िल्टर साफ़ करने या अपनी खोज क्वेरी बदलने का प्रयास करें।"
       },
       "card": {
-        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
-        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "courses_count": "{count} {count, plural, =1 {कोर्स} other {कोर्स}}",
+        "learners_count": "{count} {count, plural, =1 {शिक्षार्थी} other {शिक्षार्थी}}",
         "not_published": "अभी प्रकाशित नहीं हुआ है",
         "completion": "पूर्णता",
         "manage": "प्रबंधित करें",

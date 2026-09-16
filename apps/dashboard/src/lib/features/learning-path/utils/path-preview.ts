@@ -1,6 +1,5 @@
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
-import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { accountApi } from '$features/account/api/account.svelte';
 import { currentOrg, getOrgPublicOrigin } from '$lib/utils/store/org';
@@ -26,7 +25,7 @@ export function getPublicPathPageUrl(pathSlug: string, currentOrgDomain = ''): s
   const trimmedDomain = currentOrgDomain?.trim();
   const origin = trimmedDomain || getOrgPublicOrigin(get(currentOrg));
 
-  return new URL(resolve(`/path/${pathSlug}`, {}), origin).toString();
+  return new URL(`/path/${pathSlug}`, origin).toString();
 }
 
 export function openPathPreview({ pathId, pathSlug, currentOrgDomain = '' }: OpenPathPreviewOptions) {
@@ -34,7 +33,7 @@ export function openPathPreview({ pathId, pathSlug, currentOrgDomain = '' }: Ope
     snackbar.info('learningPath.workspace.preview_missing_slug');
 
     if (pathId) {
-      goto(resolve(`/paths/${pathId}/settings`, {}));
+      goto(`/paths/${pathId}/settings`);
     }
 
     return false;
@@ -55,7 +54,13 @@ export async function viewPathAsStudent({ pathId, pathSlug, currentOrgDomain = '
     return false;
   }
 
-  if (!pathId && !pathSlug) {
+  if (!pathSlug) {
+    snackbar.info('learningPath.workspace.preview_missing_slug');
+
+    if (pathId) {
+      goto(`/paths/${pathId}/settings`);
+    }
+
     return false;
   }
 
@@ -69,8 +74,7 @@ export async function viewPathAsStudent({ pathId, pathSlug, currentOrgDomain = '
   const origin = currentOrgDomain?.trim() || getOrgPublicOrigin(get(currentOrg));
   const loginLinkUrl = new URL('/api/auth/login-link', origin);
   loginLinkUrl.searchParams.set('token', token);
-  const redirectTarget = pathSlug ? `/path/${pathSlug}` : `/paths/${pathId}`;
-  loginLinkUrl.searchParams.set('redirect', redirectTarget);
+  loginLinkUrl.searchParams.set('redirect', `/path/${pathSlug}`);
 
   // Cross-origin handoff — open in a new tab so the teacher keeps their dashboard.
   window.open(loginLinkUrl.toString(), '_blank', 'noopener,noreferrer');

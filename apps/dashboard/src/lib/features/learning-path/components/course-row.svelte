@@ -18,6 +18,15 @@
 
   let { course, order = course.order, reorder = false, onRemove }: Props = $props();
 
+  const formattedPrice = $derived(
+    course.cost > 0
+      ? new Intl.NumberFormat(undefined, {
+          style: 'currency',
+          currency: course.currency
+        }).format(course.cost)
+      : $t('courses.pricing_free')
+  );
+
   const metaChipClass =
     'ui:bg-muted ui:text-muted-foreground inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px]';
 </script>
@@ -76,7 +85,7 @@
 
       <span class={metaChipClass}>
         <MoneyIcon class="size-3 [&_svg]:h-3 [&_svg]:w-3" />
-        {course.cost > 0 ? `$${course.cost}` : $t('courses.pricing_free')}
+        {formattedPrice}
       </span>
     </div>
   </div>

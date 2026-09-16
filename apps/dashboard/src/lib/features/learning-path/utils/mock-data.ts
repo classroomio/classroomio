@@ -58,6 +58,8 @@ export const MOCK_BOOTCAMP_COURSES: LearningPathCourseItem[] = [
   }
 ];
 
+export const MOCK_TUTOR_ID = 'mock-tutor-1';
+
 export const MOCK_PATHS: LearningPathDetail[] = [
   {
     id: 'lp-frontend-bootcamp',
@@ -90,6 +92,7 @@ export const MOCK_PATHS: LearningPathDetail[] = [
       visitorAccess: 'syllabus'
     },
     courses: [...MOCK_BOOTCAMP_COURSES],
+    tutorIds: [MOCK_TUTOR_ID],
     updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
   },
@@ -123,6 +126,7 @@ export const MOCK_PATHS: LearningPathDetail[] = [
       subheadline: 'From data wrangling to predictive models with scikit-learn.'
     },
     courses: MOCK_BOOTCAMP_COURSES.slice(0, 4),
+    tutorIds: [],
     updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString()
   },
@@ -155,6 +159,7 @@ export const MOCK_PATHS: LearningPathDetail[] = [
       headline: 'Build products users love'
     },
     courses: [...MOCK_BOOTCAMP_COURSES],
+    tutorIds: [MOCK_TUTOR_ID],
     updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
   },
@@ -187,6 +192,7 @@ export const MOCK_PATHS: LearningPathDetail[] = [
       headline: 'Annual Mandatory Workplace Compliance'
     },
     courses: MOCK_BOOTCAMP_COURSES.slice(0, 3),
+    tutorIds: [],
     updatedAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString()
   }

@@ -4,14 +4,18 @@
   import { getSetupSteps, getSetupProgress } from '$features/learning-path/utils/setup-steps';
   import { resolveActivePath } from '$features/learning-path/utils/learning-path-utils';
   import { Spinner } from '@cio/ui/base/spinner';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   let { data } = $props();
 
   $effect(() => {
-    const activePath = resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path);
+    const activePath = resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
+      isAdmin: $isOrgAdmin,
+      userProfileId: $profile?.id
+    });
 
     if (!activePath) {
-      goto(`/paths/${data.pathId}/courses`, { replaceState: true });
       return;
     }
 

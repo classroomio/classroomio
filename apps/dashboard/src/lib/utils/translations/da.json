@@ -2822,6 +2822,7 @@
       "course_description_label": "Kursusbeskrivelse",
       "course_description_placeholder": "Indtast en beskrivelse af dit kursus",
       "create_button": "Opret",
+      "title_copy_format": "{title} (Kopi)",
       "error": {
         "failed_to_clone": "Kurset kunne ikke klones"
       },
@@ -5222,7 +5223,7 @@
       "published_access_callout_title": "Studerendes adgang",
       "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i denne kohorte for dit team, mens de stadig ikke er udgivet, men de forbliver skjulte for eleverne, indtil du udgiver dem.",
       "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte.",
-      "add_count": "Tilføj {count} {count, plural, =1 {Course} other {Courses}}",
+      "add_count": "Tilføj {count} {count, plural, =1 {kursus} other {kurser}}",
       "adding": "Tilføjer kurser..."
     },
     "newsfeed": {
@@ -5488,6 +5489,7 @@
         "title": "Klon læringssti",
         "description": "Opret en kopi af denne læringssti med alle dens kurser.",
         "submit": "Klon",
+        "title_copy_format": "{name} (Kopi)",
         "failed": "Kunne ikke klone læringsstien"
       }
     },
@@ -5519,6 +5521,10 @@
       "unpublish_path": "Fjern udgivelse af sti",
       "published": "Læringsvej offentliggjort",
       "unpublished": "Læringsvej upubliceret",
+      "publish_failed": "Kunne ikke udgive læringsstien",
+      "not_found_title": "Læringssti ikke fundet",
+      "not_found_description": "Den læringssti, du leder efter, findes ikke eller er blevet slettet.",
+      "back_to_paths": "Tilbage til læringsstier",
       "copy_path_url": "Kopiér sti-URL",
       "preview_missing_slug": "Generer og gem en stisnegl før forhåndsvisning.",
       "url_copied": "Læringssti-URL kopieret til udklipsholder",
@@ -5532,7 +5538,7 @@
       "summary": "En sti går live, når dens kurser er bestilt, prissat og indstillet til Aktiv.",
       "progress": "{completed} af {total} fuldført",
       "done": "Udført",
-      "launch_title": "{count} {count, plural, =1 {step} other {steps}} tilbage til lancering",
+      "launch_title": "{count} {count, plural, =1 {trin} other {trin}} tilbage til lancering",
       "launch_desc": "Bestil kurserne, angiv en pris, finpudse landingssiden og aktivér.",
       "activate_now": "Aktivér nu",
       "step_name_title": "Navngiv og beskriv din sti",
@@ -5563,10 +5569,10 @@
       "subtitle": "Tilføj kurser, og træk for at indstille den rækkefølge, eleverne bevæger sig gennem dem.",
       "unlock_rule_title": "Lås kurser op i rækkefølge",
       "unlock_rule_desc": "Hvert kursus forbliver låst, indtil en elev gennemfører det forrige kursuss lektioner og øvelser. Slå fra for at tillade enhver rækkefølge.",
-      "list_head": "{count} {count, plural, =1 {course} other {courses}} i denne sti",
+      "list_head": "{count} {count, plural, =1 {kursus} other {kurser}} i denne sti",
       "drag_hint": "Træk for at ændre rækkefølgen",
-      "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
-      "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
+      "lessons_count": "{count} {count, plural, =1 {lektion} other {lektioner}}",
+      "exercises_count": "{count} {count, plural, =1 {øvelse} other {øvelser}}",
       "open_course": "Åbn kursus",
       "remove_course": "Fjern fra sti",
       "add_course_button": "Tilføj kursus til sti",
@@ -5590,8 +5596,8 @@
         "no_matches_description": "Prøv at rydde dine filtre eller ændre din søgeforespørgsel."
       },
       "card": {
-        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
-        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "courses_count": "{count} {count, plural, =1 {kursus} other {kurser}}",
+        "learners_count": "{count} {count, plural, =1 {elev} other {elever}}",
         "not_published": "Ikke udgivet endnu",
         "completion": "Afslutning",
         "manage": "Administrer",

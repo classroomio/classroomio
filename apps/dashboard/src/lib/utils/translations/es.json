@@ -2827,7 +2827,8 @@
       },
       "success": {
         "course_cloned": "Curso copiado exitosamente"
-      }
+      },
+      "title_copy_format": "{title} (Copia)"
     },
     "new_course_modal": {
       "heading": "Crear un curso",
@@ -5488,7 +5489,8 @@
         "title": "Clonar ruta de aprendizaje",
         "description": "Cree una copia de esta ruta de aprendizaje con todos sus cursos.",
         "submit": "clonar",
-        "failed": "No se pudo clonar la ruta de aprendizaje"
+        "failed": "No se pudo clonar la ruta de aprendizaje",
+        "title_copy_format": "{name} (Copia)"
       }
     },
     "workspace": {
@@ -5524,7 +5526,11 @@
       "url_copied": "URL de la ruta de aprendizaje copiada al portapapeles",
       "cloned": "Ruta de aprendizaje clonada con éxito",
       "loading_title": "Cargando ruta de aprendizaje…",
-      "loading_description": "Espere mientras cargamos los datos de su ruta de aprendizaje."
+      "loading_description": "Espere mientras cargamos los datos de su ruta de aprendizaje.",
+      "publish_failed": "No se pudo publicar la ruta de aprendizaje",
+      "not_found_title": "Ruta de aprendizaje no encontrada",
+      "not_found_description": "La ruta de aprendizaje que estás buscando no existe o ha sido eliminada.",
+      "back_to_paths": "Volver a los caminos del aprendizaje"
     },
     "setup": {
       "title": "Configura tu ruta",

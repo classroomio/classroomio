@@ -2007,6 +2007,7 @@
       "course_description_label": "Course description",
       "course_description_placeholder": "Enter a description for your course",
       "create_button": "Create",
+      "title_copy_format": "{title} (Copy)",
       "success": {
         "course_cloned": "Course copied successfully"
       },
@@ -5560,6 +5561,10 @@
       "published": "Learning Path published",
       "unpublished": "Learning Path unpublished",
       "cloned": "Learning path cloned successfully",
+      "publish_failed": "Failed to publish learning path",
+      "not_found_title": "Learning path not found",
+      "not_found_description": "The learning path you are looking for does not exist or has been deleted.",
+      "back_to_paths": "Back to learning paths",
       "loading_title": "Loading learning path…",
       "loading_description": "Please wait while we load your learning path data.",
       "tabs": {
@@ -5595,6 +5600,7 @@
         "title": "Clone Learning Path",
         "description": "Create a copy of this learning path with all its courses.",
         "submit": "Clone",
+        "title_copy_format": "{name} (Copy)",
         "failed": "Failed to clone learning path"
       },
       "create": {

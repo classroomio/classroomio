@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrgDomain, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { clonePathModal } from '../utils/store';
   import { learningPathApi } from '../api';
@@ -46,7 +46,7 @@
       clonePathModal.set({
         open: true,
         id,
-        name: `${name} (Copy)`,
+        name: $t('learningPath.modals.clone.title_copy_format', { name }),
         description: description || '',
         isSaving: false
       });
@@ -75,14 +75,22 @@
   async function handleCopyPathUrl(e: MouseEvent) {
     e.stopPropagation();
     if (slug) {
-      await copyPublicPathPageUrl(slug, $currentOrgDomain);
+      try {
+        await copyPublicPathPageUrl(slug, $currentOrgDomain);
+      } catch {
+        snackbar.error('snackbar.public_course.url_copy_failed');
+      }
     }
   }
 
   async function handlePublishPath(e: MouseEvent) {
     e.stopPropagation();
-    await learningPathApi.updatePath(id, { isPublished: true });
-    snackbar.success('learningPath.workspace.published');
+    try {
+      await learningPathApi.updatePath(id, { isPublished: true });
+      snackbar.success('learningPath.workspace.published');
+    } catch {
+      snackbar.error('learningPath.workspace.publish_failed');
+    }
   }
 
   function handleDelete(e: MouseEvent) {
@@ -121,9 +129,11 @@
   </DropdownMenu.Item>
 {/if}
 
-<DropdownMenu.Item onclick={handleClone}>
-  {$t('learningPath.context_menu.clone')}
-</DropdownMenu.Item>
+{#if $isOrgAdmin}
+  <DropdownMenu.Item onclick={handleClone}>
+    {$t('learningPath.context_menu.clone')}
+  </DropdownMenu.Item>
+{/if}
 <DropdownMenu.Item onclick={handleShare}>
   {$t('learningPath.context_menu.share')}
 </DropdownMenu.Item>
@@ -131,8 +141,10 @@
   {$t('learningPath.context_menu.invite')}
 </DropdownMenu.Item>
 
-<DropdownMenu.Separator />
+{#if $isOrgAdmin}
+  <DropdownMenu.Separator />
 
-<DropdownMenu.Item onclick={handleDelete} class="text-red-600">
-  {$t('learningPath.context_menu.delete')}
-</DropdownMenu.Item>
+  <DropdownMenu.Item onclick={handleDelete} class="text-red-600">
+    {$t('learningPath.context_menu.delete')}
+  </DropdownMenu.Item>
+{/if}

@@ -2827,7 +2827,8 @@
       },
       "success": {
         "course_cloned": "Cours copié avec succès"
-      }
+      },
+      "title_copy_format": "{title} (Copie)"
     },
     "new_course_modal": {
       "heading": "Créer un cours",
@@ -5488,7 +5489,8 @@
         "title": "Parcours d'apprentissage du clonage",
         "description": "Créez une copie de ce parcours d'apprentissage avec tous ses cours.",
         "submit": "Cloner",
-        "failed": "Échec du clonage du parcours d'apprentissage"
+        "failed": "Échec du clonage du parcours d'apprentissage",
+        "title_copy_format": "{name} (Copie)"
       }
     },
     "workspace": {
@@ -5524,7 +5526,11 @@
       "url_copied": "URL du parcours d'apprentissage copiée dans le presse-papiers",
       "cloned": "Parcours d'apprentissage cloné avec succès",
       "loading_title": "Chargement du parcours d'apprentissage…",
-      "loading_description": "Veuillez patienter pendant que nous chargeons les données de votre parcours d'apprentissage."
+      "loading_description": "Veuillez patienter pendant que nous chargeons les données de votre parcours d'apprentissage.",
+      "publish_failed": "Échec de la publication du parcours d'apprentissage",
+      "not_found_title": "Parcours d'apprentissage introuvable",
+      "not_found_description": "Le parcours de formation que vous recherchez n'existe pas ou a été supprimé.",
+      "back_to_paths": "Retour aux parcours d'apprentissage"
     },
     "setup": {
       "title": "Configurer votre parcours",

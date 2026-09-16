@@ -28,7 +28,7 @@
   });
 </script>
 
-<CourseCard href={targetHref} title={path.name} description={path.description || ''} {typeBadge} class="group relative">
+<CourseCard href={targetHref} title={path.name} description={path.description} {typeBadge} class="group relative">
   {#snippet media()}
     <Image src={bannerImage} alt={path.name} className="w-full h-full rounded-sm object-cover" />
   {/snippet}

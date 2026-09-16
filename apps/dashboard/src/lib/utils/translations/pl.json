@@ -2827,7 +2827,8 @@
       },
       "success": {
         "course_cloned": "Kurs został pomyślnie skopiowany"
-      }
+      },
+      "title_copy_format": "{title} (Kopia)"
     },
     "new_course_modal": {
       "heading": "Utwórz kurs",
@@ -5488,7 +5489,8 @@
         "title": "Ścieżka uczenia się klonowania",
         "description": "Utwórz kopię tej ścieżki szkoleniowej ze wszystkimi jej kursami.",
         "submit": "Klon",
-        "failed": "Nie udało się sklonować ścieżki szkoleniowej"
+        "failed": "Nie udało się sklonować ścieżki szkoleniowej",
+        "title_copy_format": "{name} (Kopia)"
       }
     },
     "workspace": {
@@ -5524,7 +5526,11 @@
       "url_copied": "Adres URL ścieżki szkoleniowej skopiowany do schowka",
       "cloned": "Ścieżka szkoleniowa została pomyślnie sklonowana",
       "loading_title": "Ładowanie ścieżki szkoleniowej…",
-      "loading_description": "Poczekaj, aż załadujemy dane Twojej ścieżki szkoleniowej."
+      "loading_description": "Poczekaj, aż załadujemy dane Twojej ścieżki szkoleniowej.",
+      "publish_failed": "Nie udało się opublikować ścieżki szkoleniowej",
+      "not_found_title": "Nie znaleziono ścieżki szkoleniowej",
+      "not_found_description": "Ścieżka szkoleniowa, której szukasz nie istnieje lub została usunięta.",
+      "back_to_paths": "Wracając do ścieżek edukacyjnych"
     },
     "setup": {
       "title": "Skonfiguruj swoją ścieżkę",

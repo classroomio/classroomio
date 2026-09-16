@@ -2822,6 +2822,7 @@
       "course_description_label": "Mô tả khóa học",
       "course_description_placeholder": "Nhập mô tả cho khóa học của bạn",
       "create_button": "Tạo",
+      "title_copy_format": "{title} (Bản sao)",
       "error": {
         "failed_to_clone": "Không thể sao chép khóa học"
       },
@@ -5488,6 +5489,7 @@
         "title": "Con đường học tập nhân bản",
         "description": "Tạo bản sao của lộ trình học tập này với tất cả các khóa học trong đó.",
         "submit": "bản sao",
+        "title_copy_format": "{name} (Bản sao)",
         "failed": "Không thể sao chép lộ trình học tập"
       }
     },
@@ -5519,6 +5521,10 @@
       "unpublish_path": "Đường dẫn hủy xuất bản",
       "published": "Lộ trình học tập được công bố",
       "unpublished": "Lộ trình học tập chưa được xuất bản",
+      "publish_failed": "Không thể xuất bản lộ trình học tập",
+      "not_found_title": "Không tìm thấy lộ trình học tập",
+      "not_found_description": "Lộ trình học tập bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+      "back_to_paths": "Quay lại lộ trình học tập",
       "copy_path_url": "Sao chép URL đường dẫn",
       "preview_missing_slug": "Tạo và lưu sên đường dẫn trước khi xem trước.",
       "url_copied": "Đã sao chép URL đường dẫn học tập vào bảng nhớ tạm",
@@ -5563,10 +5569,10 @@
       "subtitle": "Thêm các khóa học và kéo để thiết lập thứ tự học viên hoàn thành các khóa học.",
       "unlock_rule_title": "Mở khóa các khóa học theo thứ tự",
       "unlock_rule_desc": "Mỗi khóa học sẽ bị khóa cho đến khi học viên hoàn thành các bài học và bài tập của khóa học trước đó. Tắt tùy chọn này để cho phép bất kỳ thứ tự nào.",
-      "list_head": "{count} {count, plural, =1 {course} other {courses}} trong lộ trình này",
+      "list_head": "{count} {count, plural, =1 {khóa học} other {khóa học}} trong lộ trình này",
       "drag_hint": "Kéo để sắp xếp lại",
-      "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
-      "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
+      "lessons_count": "{count} {count, plural, =1 {bài học} other {bài học}}",
+      "exercises_count": "{count} {count, plural, =1 {bài tập} other {bài tập}}",
       "open_course": "Mở khóa học",
       "remove_course": "Xóa khỏi lộ trình",
       "add_course_button": "Thêm khóa học vào lộ trình",
@@ -5590,8 +5596,8 @@
         "no_matches_description": "Hãy thử xóa bộ lọc hoặc thay đổi truy vấn tìm kiếm của bạn."
       },
       "card": {
-        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
-        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "courses_count": "{count} {count, plural, =1 {khóa học} other {khóa học}}",
+        "learners_count": "{count} {count, plural, =1 {học viên} other {học viên}}",
         "not_published": "Chưa được xuất bản",
         "completion": "Hoàn thành",
         "manage": "Quản lý",

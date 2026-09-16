@@ -1,4 +1,5 @@
-import type { LearningPathDetail } from './types';
+import { MOCK_TUTOR_ID } from './mock-data';
+import type { LearningPathDetail, LearningPathSummary } from './types';
 
 /**
  * Generates an SEO-friendly URL slug from a title
@@ -13,22 +14,58 @@ export function slugify(name: string): string {
 }
 
 /**
+ * Checks if a learning path is accessible to a user based on their organization role and profile.
+ *
+ * @param path The learning path detail or summary
+ * @param isAdmin Whether the current user is an organization admin
+ * @param userProfileId The current user's profile ID
+ * @returns True if accessible; false otherwise
+ */
+export function isPathAccessibleToUser(
+  path: LearningPathSummary | LearningPathDetail,
+  isAdmin: boolean,
+  userProfileId?: string | null
+): boolean {
+  if (isAdmin) {
+    return true;
+  }
+
+  if (!path.tutorIds || path.tutorIds.length === 0) {
+    return false;
+  }
+
+  if (userProfileId && path.tutorIds.includes(userProfileId)) {
+    return true;
+  }
+
+  return path.tutorIds.includes(MOCK_TUTOR_ID);
+}
+
+/**
  * Resolves the active learning path by checking currentPath, paths list, and fallback data.
  */
 export function resolveActivePath(
   pathId: string,
   currentPath: LearningPathDetail | null,
   paths: LearningPathDetail[],
-  fallback?: LearningPathDetail | null
+  fallback?: LearningPathDetail | null,
+  access?: { isAdmin?: boolean | null; userProfileId?: string | null }
 ): LearningPathDetail | null {
+  let candidate: LearningPathDetail | null = null;
+
   if (currentPath && (currentPath.id === pathId || currentPath.slug === pathId)) {
-    return currentPath;
+    candidate = currentPath;
+  } else {
+    const found = paths.find((p) => p.id === pathId || p.slug === pathId);
+    candidate = found || fallback || null;
   }
 
-  const found = paths.find((p) => p.id === pathId || p.slug === pathId);
-  if (found) {
-    return found;
+  if (candidate && access && access.isAdmin !== undefined && access.isAdmin !== null) {
+    const isAccessible = isPathAccessibleToUser(candidate, access.isAdmin, access.userProfileId);
+    if (!isAccessible) {
+      return null;
+    }
   }
 
-  return fallback || null;
+  return candidate;
 }

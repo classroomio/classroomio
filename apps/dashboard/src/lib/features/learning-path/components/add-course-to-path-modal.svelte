@@ -59,7 +59,11 @@
       return;
     }
 
-    await coursesApi.getOrgCourses();
+    try {
+      await coursesApi.getOrgCourses();
+    } catch (error) {
+      console.error('Failed to load courses for path modal', error);
+    }
   }
 
   function toggleCourse(courseId: string) {

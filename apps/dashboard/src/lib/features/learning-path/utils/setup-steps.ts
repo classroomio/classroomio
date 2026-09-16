@@ -1,6 +1,22 @@
 import { t } from '$lib/utils/functions/translations';
 import type { LearningPathDetail, SetupStep } from './types';
 
+/**
+ * Safely resolves a translation key, returning the fallback string if the key
+ * is missing, empty, or returns the unresolved key path itself.
+ *
+ * @param key - The translation key path
+ * @param fallback - The fallback default string
+ * @returns The translated string or fallback
+ */
+function translate(key: string, fallback: string): string {
+  const value = t.get(key);
+  if (!value || value === key) {
+    return fallback;
+  }
+  return value;
+}
+
 export function getSetupSteps(path: LearningPathDetail | null | undefined, basePath: string): SetupStep[] {
   if (!path) return [];
 
@@ -89,9 +105,9 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
       foundCurrent = true;
     }
 
-    const title = t.get(step.titleKey) || step.defaultTitle;
-    const description = t.get(step.descKey) || step.defaultDesc;
-    const actionText = t.get(step.actionTextKey) || step.defaultAction;
+    const title = translate(step.titleKey, step.defaultTitle);
+    const description = translate(step.descKey, step.defaultDesc);
+    const actionText = translate(step.actionTextKey, step.defaultAction);
 
     return {
       id: step.id,

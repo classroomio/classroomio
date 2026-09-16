@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
+  import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
   import { PathSidebar, PathHeader, ClonePathModal } from '$features/learning-path';
@@ -9,6 +10,8 @@
   import { resolveActivePath } from '$features/learning-path/utils/learning-path-utils';
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   let { data, children } = $props();
 
@@ -18,15 +21,22 @@
 
   let deleteModalOpen = $state(false);
   let isDeleting = $state(false);
+  let isChecked = $state(false);
 
   $effect.pre(() => {
     if (data.pathId) {
-      learningPathApi.getPath(data.pathId);
+      isChecked = false;
+      void learningPathApi.getPath(data.pathId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id }).then(() => {
+        isChecked = true;
+      });
     }
   });
 
   const activePath = $derived(
-    resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path)
+    resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
+      isAdmin: $isOrgAdmin,
+      userProfileId: $profile?.id
+    })
   );
 
   const isPathReady = $derived(!!activePath);
@@ -46,7 +56,7 @@
     try {
       await learningPathApi.deletePath(activePath.id);
       deleteModalOpen = false;
-      goto(`/org/${data.orgSlug}/paths`);
+      goto(`${$currentOrgPath}/paths`);
     } finally {
       isDeleting = false;
     }
@@ -99,14 +109,28 @@
     <PathHeader path={activePath} onDelete={() => (deleteModalOpen = true)} />
 
     {#if !isPathReady}
-      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
-        <Empty
-          title={$t('learningPath.workspace.loading_title')}
-          description={$t('learningPath.workspace.loading_description')}
-          icon={Spinner}
-          iconClass="h-8 w-8"
-          variant="page"
-        />
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        {#if isChecked}
+          <Empty
+            title={$t('learningPath.workspace.not_found_title')}
+            description={$t('learningPath.workspace.not_found_description')}
+            variant="page"
+          >
+            <div class="mt-4 flex justify-center">
+              <Button href={`${$currentOrgPath}/paths`} variant="outline">
+                {$t('learningPath.workspace.back_to_paths')}
+              </Button>
+            </div>
+          </Empty>
+        {:else}
+          <Empty
+            title={$t('learningPath.workspace.loading_title')}
+            description={$t('learningPath.workspace.loading_description')}
+            icon={Spinner}
+            iconClass="h-8 w-8"
+            variant="page"
+          />
+        {/if}
       </div>
     {:else}
       {@render children?.()}

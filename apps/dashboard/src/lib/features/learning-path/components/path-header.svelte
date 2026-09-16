@@ -10,16 +10,14 @@
   import { goto } from '$app/navigation';
   import { currentOrgDomain } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$features/ui/snackbar/store';
   import CoursePublishBadge from '$features/course/components/course-publish-badge.svelte';
-  import { learningPathApi } from '../api';
-  import { clonePathModal } from '../utils/store';
   import { getSetupSteps, getSetupProgress } from '../utils/setup-steps';
-  import { copyPublicPathPageUrl, openPathPreview } from '../utils/path-preview';
+  import { openPathPreview } from '../utils/path-preview';
   import ViewPathSiteUnpublishedModal from './view-path-site-unpublished-modal.svelte';
   import ViewPathAsStudentModal from './view-path-as-student-modal.svelte';
   import type { LearningPathDetail } from '../utils/types';
   import CheckSquareIcon from '@lucide/svelte/icons/check-square';
+  import PathContextMenuContent from './path-context-menu-content.svelte';
 
   interface Props {
     path: LearningPathDetail | null;
@@ -64,45 +62,6 @@
       pathSlug: path.slug,
       currentOrgDomain: $currentOrgDomain
     });
-  }
-
-  async function handleCopyPathUrl() {
-    if (!path?.slug) return;
-
-    await copyPublicPathPageUrl(path.slug, $currentOrgDomain);
-  }
-
-  async function handlePublishPath() {
-    if (!path?.id) return;
-
-    await learningPathApi.updatePath(path.id, { isPublished: true });
-    snackbar.success('learningPath.workspace.published');
-  }
-
-  function handleShare() {
-    if (!path) return;
-
-    goto(`${basePath}/settings#share`);
-  }
-
-  function handleInvite() {
-    if (!path) return;
-
-    goto(`${basePath}/people?add=true`);
-  }
-
-  function handleClone() {
-    if (!path) return;
-
-    setTimeout(() => {
-      clonePathModal.set({
-        open: true,
-        id: path.id,
-        name: `${path.name} (Copy)`,
-        description: path.description || '',
-        isSaving: false
-      });
-    }, 50);
   }
 </script>
 
@@ -161,46 +120,16 @@
             {/snippet}
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end">
-            <DropdownMenu.Item onclick={() => (viewAsStudentOpen = true)}>
-              {$t('course.header.view_as_student')}
-            </DropdownMenu.Item>
-
-            <DropdownMenu.Separator />
-
-            {#if isPublished}
-              <DropdownMenu.Item onclick={handleViewSite}>
-                {$t('learningPath.workspace.view_path_site')}
-              </DropdownMenu.Item>
-              {#if path.slug}
-                <DropdownMenu.Item onclick={() => void handleCopyPathUrl()}>
-                  {$t('learningPath.workspace.copy_path_url')}
-                </DropdownMenu.Item>
-              {/if}
-            {:else}
-              <DropdownMenu.Item onclick={handlePublishPath}>
-                {$t('learningPath.workspace.publish_path')}
-              </DropdownMenu.Item>
-            {/if}
-
-            <DropdownMenu.Separator />
-
-            <DropdownMenu.Item onclick={handleClone}>
-              {$t('learningPath.context_menu.clone')}
-            </DropdownMenu.Item>
-
-            <DropdownMenu.Item onclick={handleShare}>
-              {$t('learningPath.context_menu.share')}
-            </DropdownMenu.Item>
-
-            <DropdownMenu.Item onclick={handleInvite}>
-              {$t('learningPath.context_menu.invite')}
-            </DropdownMenu.Item>
-
-            <DropdownMenu.Separator />
-
-            <DropdownMenu.Item onclick={onDelete} class="text-red-600">
-              {$t('learningPath.context_menu.delete')}
-            </DropdownMenu.Item>
+            <PathContextMenuContent
+              id={path.id}
+              slug={path.slug}
+              name={path.name}
+              description={path.description}
+              {isPublished}
+              {onDelete}
+              includeViewAsStudent={true}
+              onViewAsStudent={() => (viewAsStudentOpen = true)}
+            />
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </ButtonGroup.Root>

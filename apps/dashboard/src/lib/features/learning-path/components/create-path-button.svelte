@@ -27,7 +27,13 @@
 </script>
 
 {#if isResponsive && isMobileStore.current}
-  <Button variant="outline" size="icon" disabled={!$isOrgAdmin} onclick={handleClick}>
+  <Button
+    variant="outline"
+    size="icon"
+    aria-label={$t('learningPath.listing.create_path')}
+    disabled={!$isOrgAdmin}
+    onclick={handleClick}
+  >
     <PlusIcon size={16} />
   </Button>
 {:else}

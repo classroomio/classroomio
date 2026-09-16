@@ -12,6 +12,8 @@
   import { t } from '$lib/utils/functions/translations';
 
   import { resolveActivePath } from '$features/learning-path/utils/learning-path-utils';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   let { data } = $props();
 
@@ -27,12 +29,15 @@
   });
 
   const activePath = $derived(
-    resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path)
+    resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
+      isAdmin: $isOrgAdmin,
+      userProfileId: $profile?.id
+    })
   );
 
   function handleRefresh() {
     if (data.pathId) {
-      learningPathApi.getPath(data.pathId);
+      learningPathApi.getPath(data.pathId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id });
     }
   }
 

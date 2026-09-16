@@ -23,17 +23,22 @@
     }
 
     isPublishing = true;
-    await learningPathApi.updatePath(path.id, { isPublished: true });
-    isPublishing = false;
-    snackbar.success('learningPath.workspace.published');
+    try {
+      await learningPathApi.updatePath(path.id, { isPublished: true });
+      snackbar.success('learningPath.workspace.published');
 
-    open = false;
+      open = false;
 
-    openPathPreview({
-      pathId: path.id,
-      pathSlug: path.slug,
-      currentOrgDomain
-    });
+      openPathPreview({
+        pathId: path.id,
+        pathSlug: path.slug,
+        currentOrgDomain
+      });
+    } catch {
+      snackbar.error('learningPath.workspace.publish_failed');
+    } finally {
+      isPublishing = false;
+    }
   }
 </script>
 

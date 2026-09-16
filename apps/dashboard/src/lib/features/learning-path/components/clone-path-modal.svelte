@@ -24,17 +24,17 @@
         learningPathApi.paths.find((p) => p.id === $clonePathModal.id) ||
         (learningPathApi.currentPath?.id === $clonePathModal.id ? learningPathApi.currentPath : null);
 
-      const newSlug = slugify($clonePathModal.name.trim()) + '-' + Date.now().toString().slice(-4);
+      const baseSlug = slugify($clonePathModal.name.trim()) || 'path';
+      const newSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
       const newId = await learningPathApi.createPath({
         name: $clonePathModal.name.trim(),
         slug: newSlug,
-        description: $clonePathModal.description.trim() || undefined
+        description: $clonePathModal.description.trim()
       });
 
       // If source path had courses, copy them over
       if (sourcePath && sourcePath.courses && sourcePath.courses.length > 0) {
-        const courseIds = sourcePath.courses.map((c) => c.courseId);
-        await learningPathApi.addCourses(newId, courseIds);
+        await learningPathApi.addCourseItems(newId, sourcePath.courses);
       }
 
       snackbar.success('learningPath.workspace.cloned');

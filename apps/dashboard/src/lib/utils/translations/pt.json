@@ -2827,7 +2827,8 @@
       },
       "success": {
         "course_cloned": "Curso copiado com sucesso"
-      }
+      },
+      "title_copy_format": "{title} (Cópia)"
     },
     "new_course_modal": {
       "heading": "Crie um curso",
@@ -5488,7 +5489,8 @@
         "title": "Clonar caminho de aprendizagem",
         "description": "Crie uma cópia deste roteiro de aprendizagem com todos os seus cursos.",
         "submit": "Clonar",
-        "failed": "Falha ao clonar o caminho de aprendizagem"
+        "failed": "Falha ao clonar o caminho de aprendizagem",
+        "title_copy_format": "{name} (Copiar)"
       }
     },
     "workspace": {
@@ -5524,7 +5526,11 @@
       "url_copied": "URL do caminho de aprendizagem copiado para a área de transferência",
       "cloned": "Caminho de aprendizagem clonado com sucesso",
       "loading_title": "Carregando caminho de aprendizagem…",
-      "loading_description": "Aguarde enquanto carregamos os dados do seu caminho de aprendizagem."
+      "loading_description": "Aguarde enquanto carregamos os dados do seu caminho de aprendizagem.",
+      "publish_failed": "Falha ao publicar o caminho de aprendizagem",
+      "not_found_title": "Caminho de aprendizagem não encontrado",
+      "not_found_description": "O caminho de aprendizagem que você procura não existe ou foi excluído.",
+      "back_to_paths": "Voltar aos caminhos de aprendizagem"
     },
     "setup": {
       "title": "Configure seu caminho",

@@ -2822,6 +2822,7 @@
       "course_description_label": "Kursbeschreibung",
       "course_description_placeholder": "Geben Sie eine Beschreibung für Ihren Kurs ein",
       "create_button": "Erstellen",
+      "title_copy_format": "{title} (Kopie)",
       "error": {
         "failed_to_clone": "Der Kurs konnte nicht geklont werden"
       },
@@ -5222,7 +5223,7 @@
       "published_access_callout_title": "Zugang für Studierende",
       "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind. Sie bleiben den Studierenden jedoch verborgen, bis Sie sie veröffentlichen.",
       "empty_student_description": "In dieser Kohorte gibt es noch keine veröffentlichten Kurse.",
-      "add_count": "Hinzufügen von {count} {count, plural, =1 {Course} other {Courses}}",
+      "add_count": "{count} {count, plural, =1 {Kurs} other {Kurse}} hinzufügen",
       "adding": "Kurse werden hinzugefügt…"
     },
     "newsfeed": {
@@ -5488,6 +5489,7 @@
         "title": "Klon-Lernpfad",
         "description": "Erstellen Sie eine Kopie dieses Lernpfads mit allen Kursen.",
         "submit": "Klonen",
+        "title_copy_format": "{name} (Kopie)",
         "failed": "Der Lernpfad konnte nicht geklont werden"
       }
     },
@@ -5519,6 +5521,10 @@
       "unpublish_path": "Veröffentlichungspfad aufheben",
       "published": "Lernpfad veröffentlicht",
       "unpublished": "Lernpfad unveröffentlicht",
+      "publish_failed": "Lernpfad konnte nicht veröffentlicht werden",
+      "not_found_title": "Lernpfad nicht gefunden",
+      "not_found_description": "Der gesuchte Lernpfad existiert nicht oder wurde gelöscht.",
+      "back_to_paths": "Zurück zu den Lernpfaden",
       "copy_path_url": "Pfad-URL kopieren",
       "preview_missing_slug": "Generieren und speichern Sie vor der Vorschau einen Pfad-Slug.",
       "url_copied": "Lernpfad-URL in die Zwischenablage kopiert",
@@ -5532,7 +5538,7 @@
       "summary": "Ein Lernpfad wird freigeschaltet, sobald die Kurse bestellt, bepreist und aktiviert sind.",
       "progress": "{completed} von {total} abgeschlossen",
       "done": "Fertig",
-      "launch_title": "{count} {count, plural, =1 {step} other {steps}} bis zur Veröffentlichung",
+      "launch_title": "{count} {count, plural, =1 {Schritt} other {Schritte}} bis zur Veröffentlichung",
       "launch_desc": "Bestelle die Kurse, lege einen Preis fest, optimiere die Landingpage und aktiviere den Lernpfad.",
       "activate_now": "Jetzt aktivieren",
       "step_name_title": "Benenne und beschreibe deinen Lernpfad",
@@ -5563,10 +5569,10 @@
       "subtitle": "Fügen Sie Kurse hinzu und legen Sie per Drag & Drop die Reihenfolge fest, in der die Studierenden die Kurse durchlaufen.",
       "unlock_rule_title": "Kurse der Reihe nach freischalten",
       "unlock_rule_desc": "Jeder Kurs bleibt gesperrt, bis ein Teilnehmer die Lektionen und Übungen des vorherigen Kurses abgeschlossen hat. Deaktivieren Sie diese Option, um die Reihenfolge frei zu wählen.",
-      "list_head": "{count} {count, plural, =1 {course} other {courses}} in diesem Pfad",
+      "list_head": "{count} {count, plural, =1 {Kurs} other {Kurse}} in diesem Pfad",
       "drag_hint": "Zum Neuanordnen ziehen",
-      "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
-      "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
+      "lessons_count": "{count} {count, plural, =1 {Lektion} other {Lektionen}}",
+      "exercises_count": "{count} {count, plural, =1 {Übung} other {Übungen}}",
       "open_course": "Offener Kurs",
       "remove_course": "Aus Pfad entfernen",
       "add_course_button": "Füge dem Pfad einen Kurs hinzu",
@@ -5590,8 +5596,8 @@
         "no_matches_description": "Versuchen Sie, Ihre Filter zu löschen oder Ihre Suchanfrage zu ändern."
       },
       "card": {
-        "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
-        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
+        "courses_count": "{count} {count, plural, =1 {Kurs} other {Kurse}}",
+        "learners_count": "{count} {count, plural, =1 {Lernender} other {Lernende}}",
         "not_published": "Noch nicht veröffentlicht",
         "completion": "Fertigstellung",
         "manage": "Verwalten",

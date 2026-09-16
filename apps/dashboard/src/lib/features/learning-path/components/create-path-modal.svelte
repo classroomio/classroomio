@@ -45,7 +45,8 @@
     errorMessage = undefined;
 
     try {
-      const generatedSlug = slugify(name.trim());
+      const rawSlug = slugify(name.trim());
+      const generatedSlug = rawSlug || `path-${Date.now().toString().slice(-4)}`;
       const newId = await learningPathApi.createPath({
         name: name.trim(),
         slug: generatedSlug,

@@ -5,7 +5,7 @@
   import { resolve } from '$app/paths';
   import { copyCourseModal, deleteCourseModal } from '$features/course/utils/store';
   import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
-  import { currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrgDomain, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { goAndHighlight } from '$lib/routing/go-and-highlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
@@ -90,7 +90,7 @@
   function handleCloneCourse() {
     $copyCourseModal.open = true;
     $copyCourseModal.id = id;
-    $copyCourseModal.title = `${title} (Copy)`;
+    $copyCourseModal.title = $t('courses.copy_course.title_copy_format', { title });
     $copyCourseModal.description = description;
     $copyCourseModal.isSaving = false;
   }
@@ -155,18 +155,23 @@
   {/if}
 
   {#if !hideOrgActions}
-    <DropdownMenu.Item onclick={handleCloneCourse}>
-      {$t('courses.course_card.context_menu.clone')}
-    </DropdownMenu.Item>
+    {#if $isOrgAdmin}
+      <DropdownMenu.Item onclick={handleCloneCourse}>
+        {$t('courses.course_card.context_menu.clone')}
+      </DropdownMenu.Item>
+    {/if}
     <DropdownMenu.Item onclick={handleShareCourse}>
       {$t('courses.course_card.context_menu.share')}
     </DropdownMenu.Item>
     <DropdownMenu.Item onclick={handleInvite}>
       {$t('courses.course_card.context_menu.invite')}
     </DropdownMenu.Item>
-    <DropdownMenu.Separator />
-    <DropdownMenu.Item class="text-red-600" onclick={handleDeleteCourse}>
-      {$t('courses.course_card.context_menu.delete')}
-    </DropdownMenu.Item>
+
+    {#if $isOrgAdmin}
+      <DropdownMenu.Separator />
+      <DropdownMenu.Item class="text-red-600" onclick={handleDeleteCourse}>
+        {$t('courses.course_card.context_menu.delete')}
+      </DropdownMenu.Item>
+    {/if}
   {/if}
 {/if}
