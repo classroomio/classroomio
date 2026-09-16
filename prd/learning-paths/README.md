@@ -195,58 +195,17 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 - Students: read path data they're members of (including unpublished paths they already joined). Public endpoints serve published paths only.
 - Unpublished paths: admin/tutor only on public/catalog surfaces. Self-enrollment and public invite-link enrollment are rejected, matching `enrollInCourse`'s `isPublished` gate. Teachers can still add members from the People tab. Unpublishing does not revoke existing grants.
 
-#### Access & progression when a course is both standalone and inside a path
+#### Alignments
 
-A course can be sold on its own *and* be step 3 of a path, and a learner may already have been enrolled in it long before the path existed. Two rules settle every case:
-
-**1. One progression, always shared.** A learner has exactly one enrolment and one progress record per course, no matter how many paths contain it. There is no path-scoped copy of a course, no second set of lesson completions, no "path version" of a certificate. Consequences, all intended:
-
-- A course the learner finished standalone last year shows as **already complete** the moment they enrol in the path, and immediately counts toward path completion and toward unlocking the next course.
-- Work done inside the path counts outside it. Finishing step 3 within the path earns the ordinary course certificate too.
-- A learner enrolled in two paths that share a course sees one progression in both.
-
-This matches how Coursera Specializations behave (a course completed on its own counts toward the Specialization) and how Docebo learning plans derive plan status from the underlying course enrolment statuses. The alternative — requiring learners to re-take a course *through* the path for it to count, as Coursera's enterprise learning paths do — is the behaviour to avoid: it makes learners repeat work they have already done, and it is the single most common complaint about path features in other LMSs.
-
-**2. Access is granted through `groupmember`, and every grant records its source.** Enrolling in a path inserts ordinary `groupmember` rows. The course does not get a second copy of the learner. Origin is not on `groupmember` — it lives in `course_enrollment_grant`.
-
-What a bare `groupmember` row cannot express is *why* the learner is there — and this is a real, shipped defect in cohorts today, not a hypothetical. A cohort-enrolled learner and a directly-enrolled learner produce byte-identical `groupmember` rows, so the course People page (`getPaginatedCourseMembers`, which accepts only `page`/`limit`/`search`/`roleId`) shows one undifferentiated roster, and no course-scoped surface — gradebook, submissions, analytics, attendance — can be segmented by cohort. The nearest available answer, joining `cohort_member` on `profileId`, is a guess: it returns two rows when a learner belongs to two cohorts containing the course, and cannot see a direct enrolment at all.
-
-Learning paths must not add a second instance of this problem, so provenance is modelled **once, for every enrolment route**, in `course_enrollment_grant`:
-
-```
-course_enrollment_grant
-  groupmemberId · courseId · profileId
-  source: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE | COHORT | LEARNING_PATH | PROGRAM | IMPORT
-  cohortId (when source=COHORT) · learningPathId (when source=LEARNING_PATH)
-  grantedByProfileId · grantedAt · revokedAt
-  unique NULLS NOT DISTINCT (groupmemberId, source, cohortId, learningPathId)
-```
-
-`groupmember` stays the single access row, so nothing existing has to be refactored; this is the ledger beside it. `NULLS NOT DISTINCT` (Postgres 15+) is what makes re-running an enrolment idempotent for the sourceless kinds — without it two `SELF_ENROLL` grants, both with NULL cohort and path, would not collide.
-
-Consequences:
-
-- **The course roster can show where each learner came from** as a column on the existing People page — "via Frontend Bootcamp" instead of an unexplained name — computed per row from that learner's live grants.
-- **Access is the union of live grants.** A learner may hold several at once — bought the course, then a path granted it, then a cohort did.
-- **Nothing is ever deleted.** Revocation sets `revokedAt` on the grant. The `groupmember` row stays. A learner who bought the course never loses it because a path dropped them. This is Moodle's enrolment-instance model, where a user holds one enrolment row per method and access is their union.
-
-**Access is "has a live grant", not "has a `groupmember` row".** The two access predicates — `isUserCourseMemberOrOrgAdmin` and `isCourseTeamMemberOrOrgAdmin` — gain one `EXISTS` on `course_enrollment_grant` for a live grant. This is the only read-path change, and it is required rather than a preference, because **deleting a `groupmember` row is not a safe way to revoke access:**
-
-- `submission_submitted_by_fkey`, `group_attendance_student_id_fkey`, `lesson_comment_groupmember_id_fkey`, `question_answer_group_member_id_fkey`, `course_newsfeed_author_id_fkey` and `apps_poll_submission_selected_by_id_fkey` all declare **no** `onDelete`, so Postgres defaults to `NO ACTION`. Deleting the enrolment of any learner who has ever submitted, commented, answered, posted or been marked present raises a foreign-key violation.
-- `course_completion_record_group_member_id_fkey` **does** cascade, so where the delete does succeed it silently destroys the learner's compliance records.
-- `groupmember.certificateEarnedAt` lives on the row itself, so deleting it discards the course certificate they earned.
-
-Revoking a grant and leaving the row intact avoids all three, and keeps the audit trail. It costs one indexed `EXISTS` in two functions, evaluated once per request by middleware.
-- **History survives.** Grants are revoked, not deleted, so "did this path ever grant this course?" stays answerable after the learner leaves.
-
-**Prerequisite — every enrolment must have at least one grant.** Once access means "has a live grant", any enrolment with no grant at all is invisible: existing learners would lose access on deploy. So before the predicate change ships:
-
-1. Backfill a grant for every existing `groupmember` row — `COHORT` where the `cohort_member` × `cohort_course` join explains it, `IMPORT` for the rest.
-2. Make the remaining enrolment routes write their grant: the cohort services, the audience and org-invite routes, and `ensureProgramCourseAccess`.
-
-This is a narrow correctness requirement, not a cohort redesign: cohort enrolment needs a grant row so cohort learners keep access. How cohorts segment a course is a separate question, answered by `prd/course-cohorts`.
-
-`ensureProgramCourseAccess` is the one non-obvious case, because it creates enrolments at request time rather than at an enrolment event: `courseMemberMiddleware` calls it whenever the access check fails, lazily inserting a `groupmember` row for legacy `program` members. A one-time backfill cannot cover rows that do not exist yet, so that function must write a `PROGRAM` grant itself or its members lose access the first time they are created. Whether a lazy write belongs in an authorization middleware at all is a separate question, out of scope here.
+- **One shared progression.** One enrolment and one progress record per learner per course. A course they already finished counts in the path. Work in the path counts on the course.
+- **Progression lives in existing course tables.** Truth: `lesson_completion` and `submission`. Caches: `learning_path_member_course` and `learning_path_member`. Course completion: `groupmember.certificateEarnedAt`. Path completion: `learning_path_member.completedAt`.
+- **Access is `groupmember` plus a grant.** Joining a path writes `learning_path_member`, then a `groupmember` row if missing, then a `LEARNING_PATH` grant. Sequential unlock delays that grant until the course unlocks. Origin is `course_enrollment_grant`, not `groupmember`.
+- **Path vs personal.** `source = LEARNING_PATH` + `learningPathId` vs `SELF_ENROLL` / `INVITE` / `ADMIN_ADD`. Both at once is allowed. The People page shows one person, with both origins listed.
+- **Course People, gradebook, and analytics include everyone with a live grant**, path students included. Source is a column, plus an optional page-local filter. Path funnel numbers live on `/paths/[id]/people` and `/paths/[id]/analytics`. No `?learningPathId=` on course routes.
+- **Removed from a path.** Revoke the path grant, set `learning_path_member.removedAt`. Do not delete `groupmember` or progress. They lose the course only if that grant was their last one.
+- **Access check is “has a live grant”.** `isUserCourseMemberOrOrgAdmin` / `isCourseTeamMemberOrOrgAdmin` gain one `EXISTS` on an un-revoked grant. Before that ships, backfill a grant for every existing `groupmember` (`COHORT` where the join explains it, `IMPORT` otherwise) and have remaining enrolment routes write theirs, including `ensureProgramCourseAccess`.
+- **Publish, not a status enum.** `isPublished` like courses. Unpublished: off the public catalog, self-enrolment rejected. Existing members keep access. Teachers can still add members while building.
+- **Cohort segmentation is out of scope.** See `prd/course-cohorts`.
 
 ### What happens on enrol and unenrol
 
@@ -254,54 +213,21 @@ This is a narrow correctness requirement, not a cohort redesign: cohort enrolmen
 
 | Table | Write |
 | --- | --- |
-| `learning_path_member` | Insert one row (`NOT_STARTED`), or clear `removedAt` if a removed row exists |
-| `learning_path_member_course` | Insert one row per `learning_path_course`: first course `NOT_STARTED`, the rest `LOCKED` under `sequentialUnlock`, else all `NOT_STARTED` |
+| `learning_path_member` | Insert (`NOT_STARTED`), or clear `removedAt` if they were previously removed |
+| `learning_path_member_course` | One row per path course: first `NOT_STARTED`, the rest `LOCKED` under sequential unlock, else all `NOT_STARTED` |
 | `organizationmember` | Insert if absent, after the student-limit check |
-| `groupmember` | Insert **only for courses granted now** (the first course under `sequentialUnlock`, all of them otherwise) — and only if the learner does not already have the row |
-| `course_enrollment_grant` | Upsert one `LEARNING_PATH` grant per granted course, clearing `revokedAt` on conflict |
+| `groupmember` | Insert only for courses granted now, and only if the row is missing |
+| `course_enrollment_grant` | Upsert one `LEARNING_PATH` grant per granted course |
 
-Nothing is written to `lesson_completion` or `submission`. That is precisely why a course the learner already finished counts immediately: the rollup recompute that follows enrolment reads their existing completions, marks that course `COMPLETED`, and cascades the unlock to the next one — so a learner who had already done courses 1 and 2 lands on course 3.
-
-**Unlocking a later course** (triggered by the completion event, in that same transaction): flip `learning_path_member_course.status` from `LOCKED`, set `unlockedAt`, insert the `groupmember` row if absent, and upsert its grant.
+**Unlocking a later course:** flip `LOCKED` → `NOT_STARTED`, insert `groupmember` if missing, upsert its grant.
 
 **Unenrolling**, one transaction:
 
 | Table | Write |
 | --- | --- |
-| `course_enrollment_grant` | Set `revokedAt` on this path's live grants for this learner |
-| `learning_path_member` | Set `removedAt` — never delete, or the cascade takes their `learning_path_member_course` rows and their issued certificate |
-| `groupmember` | **Untouched** |
-| `lesson_completion`, `submission`, `group_attendance` | **Untouched** |
-
-Course access ends because no live grant remains, not because anything was deleted. If the learner also bought the course or a cohort granted it, that grant is still live and they keep access. Re-enrolling clears `removedAt` and reactivates the grants, so their progress is exactly where they left it.
-
-**Sequential unlock gates the grant, not just the UI.** Under `sequentialUnlock`, the `groupmember` row and its grant for a later course are not created until that course unlocks — locked means genuinely no access, not a hidden link. Under `autoEnroll` with sequential unlock off, all grants are created at enrolment time.
-
-**Where per-path teacher data lives: on the path's own routes, not on the course.** `/paths/[id]/people` and `/paths/[id]/analytics` read `learning_path_member` and `learning_path_member_course` directly — the context is in the URL path, so it survives navigation and needs no grant filtering at all. Do **not** introduce a "view this course as path P" mode carried by a query parameter: a param is dropped the moment the teacher clicks into a lesson, so holding it would mean threading it through every link in the course shell. If a persistent scoped-course view is ever wanted, carry it in the route (`/paths/[id]/courses/[courseId]/…`) so a layout can inherit and authorize it once, not in a query string.
-
-On the course's own screens the grant ledger is a **column, and at most an ordinary page-local filter** alongside the `search` and `roleId` that `ZCourseMembersQuery` already accepts. A filter that resets when you leave the page is correct filter behaviour, not state to preserve.
-
-### Course roster, grading, and analytics
-
-**How we tell path vs personal enrolment.** `groupmember` cannot answer this. Two learners who bought the course and who joined via a path produce the same row today — that is the cohort bug. Origin is `course_enrollment_grant` where `revokedAt IS NULL`:
-
-- `source = LEARNING_PATH` and `learningPathId` set → they got this course because of that path.
-- `source = SELF_ENROLL` / `INVITE` / `ADMIN_ADD` → they enrolled in the course itself.
-- Both rows at once is normal: they bought it, then later joined a path that contains it. The People page shows **one person**, with both origins listed ("Direct · Frontend Bootcamp"), matching Moodle's participants page which shows every enrolment method in the status column when a user has more than one.
-
-**The course People page still lists everyone who currently has access.** `getPaginatedCourseMembers` keeps reading `groupmember`. After the live-grant predicate ships, that is everyone with at least one un-revoked grant — path students included. They are actually taking the course: they submit exercises, appear in the gradebook, generate lesson completions. Excluding them would hide their submissions from the teacher grading that course.
-
-Moodle, Docebo, and Coursera all do this. Moodle's Participants page lists every enrolled user regardless of method, with an enrolment-method column and filter; the gradebook tracks all enrolled users. Docebo's course report is "the users currently enrolled in the course" with a separate Users–Learning plans report for path-level progress. Coursera admin exports have an Enrollment Source field on top of a single enrollments count.
-
-**Course analytics include path students.** Completion rate, average progress, submissions, attendance — anyone with a live grant. A teacher looking at "this course" is looking at everyone currently in it. Path-only numbers (funnel across courses, drop-off between step 2 and step 3, "48 enrolled in the path") live on `/paths/[id]/analytics` and are computed from `learning_path_member`, not from filtering the course.
-
-**What a teacher can do on the course that they cannot do today:** see a Source column, and optionally filter that one page by source the same way they already filter by role. They cannot put the course into a persistent "path P mode." That view is the path's own People/Analytics tabs.
-
-**After someone leaves the path:** their `LEARNING_PATH` grant is revoked. If that was their only grant they drop off the course roster and out of live analytics, even though the `groupmember` row is still there. If they also enrolled directly, they stay.
-
-**Provenance and partitioning are different problems — do not merge them.** `prd/course-cohorts/README.md` segments a course by giving each batch its own `group`, which works because `submission`, `question_answer`, `group_attendance` and `lesson_comment` are already keyed on `groupmember.id`. That is a **partition**: every learner sits in exactly one batch, and a second membership deliberately forks their records (that PRD lists retakes as a feature). Learning paths need the opposite — one shared enrolment and one progression, so a course finished standalone counts inside the path. A path therefore cannot be a group, and access provenance cannot be a partition at all: one learner can hold many simultaneous reasons for access. Groups answer "which instance of this course is this record part of"; grants answer "why does this learner have access". Cohort segmentation is out of scope for this PRD and is addressed by `prd/course-cohorts`.
-
-**Out of scope here:** per-cohort *content* — separate due dates, announcements or sessions inside a shared course. Cohort v1 partly addresses that with `cohort_newsfeed` and `cohort_goal`, and self-paced learning paths do not need it.
+| `course_enrollment_grant` | Set `revokedAt` on this path's live grants |
+| `learning_path_member` | Set `removedAt` |
+| `groupmember`, `lesson_completion`, `submission` | Untouched |
 
 ---
 

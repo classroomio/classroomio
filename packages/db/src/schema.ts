@@ -3701,21 +3701,7 @@ export const learningPathMember = pgTable(
   ]
 );
 
-/**
- * One row per member per course in a path: the path-scoped projection of the learner's
- * progress in that course.
- *
- * Progress is deliberately *shared*, not forked. A learner has one course enrolment and
- * one set of `lesson_completion` / `submission` rows per course no matter how many paths
- * contain it, so a course finished standalone last year counts as done the moment the
- * learner enrols in a path — and work done inside the path counts outside it too. The
- * columns below are a cache of that shared truth, never a second copy of it.
- *
- * Access provenance is NOT here — it lives in `course_enrollment_grant`, which every
- * enrolment route writes to. Keeping it out of this table is deliberate: a path-only
- * provenance column would leave cohorts, invites, and audience imports still
- * indistinguishable on the course roster.
- */
+/** Path-scoped progress cache for one member on one course. Truth is `lesson_completion` / `submission`. */
 export const learningPathMemberCourse = pgTable(
   'learning_path_member_course',
   {
@@ -3811,30 +3797,9 @@ export const learningPathCertificateIssue = pgTable(
 export const courseEnrollmentSource = pgEnum('COURSE_ENROLLMENT_SOURCE', [...COURSE_ENROLLMENT_SOURCE_VALUES]);
 
 /**
- * Why a learner has access to a course — the reason behind every `groupmember` row.
- *
- * `groupmember` stays the one and only access row, so every existing access check
- * (`isUserCourseMemberOrOrgAdmin`, every course query) keeps working untouched. This table
- * is the ledger beside it, written by every enrolment route: self-enrol, invite, admin add,
- * audience import, cohort, and learning path.
- *
- * It exists because without it a cohort-enrolled learner, a path-enrolled learner and a
- * learner who bought the course produce byte-identical `groupmember` rows. No course-scoped
- * screen can then tell them apart, and the closest available answer — joining
- * `cohort_member` on `profileId` — is a guess, not provenance: it returns two rows when a
- * learner is in two cohorts that both contain the course, and cannot see a direct enrolment
- * at all.
- *
- * Rules:
- * - **Access is the union of live grants.** A learner may hold several grants on one
- *   enrolment (bought it, then a path granted it, then a cohort did).
- * - **Revoke, do not delete.** Leaving a cohort or path sets `revokedAt`, so "was in cohort
- *   Y last term" stays answerable and re-joining keeps its history.
- * - **The enrolment outlives any one grant.** Delete the `groupmember` row only when no
- *   grant with `revokedAt IS NULL` remains. A learner who enrolled directly never loses the
- *   course because a path or cohort dropped them.
- * - **Every course-scoped read may be segmented by it** — roster, gradebook, submissions,
- *   analytics, attendance — by resolving a segment to a set of `groupmemberId`s.
+ * Why a learner has access to a course. `groupmember` is the enrolment row; this is the
+ * ledger beside it. Access is the union of live grants (`revokedAt IS NULL`). Revoke, do
+ * not delete the `groupmember` row.
  */
 export const courseEnrollmentGrant = pgTable(
   'course_enrollment_grant',
