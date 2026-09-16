@@ -10,6 +10,7 @@ import {
   updateCourseMember
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
+import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 
 import type { TAddCourseMembers, TCourseMembersQuery } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
@@ -107,6 +108,13 @@ export async function listPaginatedCourseMembers(courseId: string, query: TCours
   }
 }
 
+async function assertProfileBelongsToOrganization(orgId: string, profileId: string) {
+  const memberId = await getOrganizationMemberIdByOrgAndProfile(orgId, profileId);
+  if (!memberId) {
+    throw new AppError('Profile is not a member of this organization', ErrorCodes.PROFILE_NOT_FOUND, 404);
+  }
+}
+
 /**
  * Adds a course member (person) to a course
  * @param courseId Course ID
@@ -120,6 +128,14 @@ export async function addMember(
   try {
     if (!data.profileId && !data.email) {
       throw new AppError('Either profileId or email must be provided', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    if (data.profileId) {
+      const orgId = await getOrgIdByCourseId(courseId);
+      if (!orgId) {
+        throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+      }
+      await assertProfileBelongsToOrganization(orgId, data.profileId);
     }
 
     const addedMember = await addCourseMember(courseId, data);
@@ -262,6 +278,12 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
 
     if (!courseOrgData) {
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    for (const member of members) {
+      if (member.profileId) {
+        await assertProfileBelongsToOrganization(courseOrgData.orgId, member.profileId);
+      }
     }
 
     const courseName = courseOrgData.courseTitle || '';

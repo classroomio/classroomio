@@ -3,7 +3,16 @@ import type {
   TAutomationDraftTagAssignment,
   TAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
-import type { TCourseContentReorder, TCourseLandingPageUpdate, TCourseUpdateParam } from '@cio/utils/validation/course';
+import type {
+  TAddCourseMembers,
+  TCourseContentReorder,
+  TCourseLandingPageUpdate,
+  TCourseMembersQuery,
+  TCourseUpdateParam,
+  TCourseUserAnalyticsQuery,
+  TCreateCourseInvite,
+  TUpdateCourseMember
+} from '@cio/utils/validation/course';
 import type {
   TCourseImportCourseParam,
   TCourseImportDraftCreate,
@@ -22,6 +31,7 @@ import type {
 
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type { TToggleInviteLink } from '@cio/utils/validation/invite-link';
 
 type ApiSuccess<T> = {
   success: true;
@@ -179,10 +189,109 @@ export class ClassroomIoApiClient {
     });
   }
 
+  async listCourseMembers(courseId: string, query: Partial<TCourseMembersQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page) searchParams.set('page', String(query.page));
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.search) searchParams.set('search', query.search);
+    if (query.roleId) searchParams.set('roleId', String(query.roleId));
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.request(`/course/${courseId}/members${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async addCourseMembers(courseId: string, payload: TAddCourseMembers) {
+    return this.request(`/course/${courseId}/members`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateCourseMember(courseId: string, memberId: string, payload: TUpdateCourseMember) {
+    return this.request(`/course/${courseId}/members/${memberId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteCourseMember(courseId: string, memberId: string) {
+    return this.request(`/course/${courseId}/members/${memberId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async resetCourseMemberProgress(courseId: string, memberId: string) {
+    return this.request(`/course/${courseId}/members/${memberId}/reset-progress`, {
+      method: 'POST'
+    });
+  }
+
+  async getCourseMemberAnalytics(
+    courseId: string,
+    userId: string,
+    query: Partial<TCourseUserAnalyticsQuery> = {}
+  ) {
+    const searchParams = new URLSearchParams();
+    if (query.includeProgressImpact !== undefined) {
+      searchParams.set('includeProgressImpact', String(query.includeProgressImpact));
+    }
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.request(`/course/${courseId}/members/${userId}/analytics${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async listCourseInvites(courseId: string) {
+    return this.request(`/course/${courseId}/invites`, {
+      method: 'GET'
+    });
+  }
+
+  async createCourseInvite(courseId: string, payload: TCreateCourseInvite) {
+    return this.request(`/course/${courseId}/invites`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async getCourseInviteLink(courseId: string) {
+    return this.request(`/course/${courseId}/invites/link`, {
+      method: 'GET'
+    });
+  }
+
+  async createCourseInviteLink(courseId: string) {
+    return this.request(`/course/${courseId}/invites/link`, {
+      method: 'POST'
+    });
+  }
+
+  async toggleCourseInviteLink(courseId: string, payload: TToggleInviteLink) {
+    return this.request(`/course/${courseId}/invites/link`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async revokeCourseInvite(courseId: string, inviteId: string) {
+    return this.request(`/course/${courseId}/invites/${inviteId}/revoke`, {
+      method: 'POST'
+    });
+  }
+
+  async getCourseInviteAudit(courseId: string, inviteId: string) {
+    return this.request(`/course/${courseId}/invites/${inviteId}/audit`, {
+      method: 'GET'
+    });
+  }
+
   private async request<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT';
+      method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
       body?: unknown;
     }
   ): Promise<TResponse> {
