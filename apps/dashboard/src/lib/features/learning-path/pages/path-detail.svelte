@@ -29,7 +29,7 @@
   const certificateEarned = $derived(Boolean(path?.enrollment?.certificateId));
 
   function courseHref(order: number) {
-    return `/lms/mylearning/courses`;
+    return `/lms/mylearning`;
   }
 </script>
 
@@ -44,7 +44,7 @@
     description={$t('learningPath.empty.path_not_found_description')}
   >
     {#snippet children()}
-      <Button href="/lms/mylearning/learning-paths">{$t('learningPath.empty.back_to_paths')}</Button>
+      <Button href="/lms/mylearning">{$t('learningPath.empty.back_to_paths')}</Button>
     {/snippet}
   </Empty>
 {:else}
