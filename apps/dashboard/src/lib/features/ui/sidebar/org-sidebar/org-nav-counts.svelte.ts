@@ -1,8 +1,7 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
+import type { GetOrgNavCountsRequest, OrgNavCountKey, OrgNavCounts } from './types';
 
-export type OrgNavCountKey = 'courses' | 'cohorts' | 'media' | 'tags';
-
-export type OrgNavCounts = Record<OrgNavCountKey, number>;
+export type { OrgNavCountKey, OrgNavCounts };
 
 class OrgNavCountsApi extends BaseApi {
   counts = $state<OrgNavCounts | null>(null);
@@ -33,7 +32,7 @@ class OrgNavCountsApi extends BaseApi {
 
     this.inFlightOrgId = orgId;
 
-    await this.execute<typeof classroomio.organization['nav-counts']['$get']>({
+    await this.execute<GetOrgNavCountsRequest>({
       requestFn: () => classroomio.organization['nav-counts'].$get(),
       logContext: 'fetching organization nav counts',
       onSuccess: (response) => {

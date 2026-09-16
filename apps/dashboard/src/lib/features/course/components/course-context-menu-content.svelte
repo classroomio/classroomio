@@ -90,8 +90,9 @@
   function handleCloneCourse() {
     $copyCourseModal.open = true;
     $copyCourseModal.id = id;
-    $copyCourseModal.title = title;
+    $copyCourseModal.title = `${title} (Copy)`;
     $copyCourseModal.description = description;
+    $copyCourseModal.isSaving = false;
   }
 
   function handleOpenCourse() {

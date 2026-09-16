@@ -46,6 +46,7 @@ import {
 import { countCohortsByOrgForProfile } from '@cio/db/queries/cohort';
 import { countAssetsByOrg } from '@cio/db/queries/assets';
 import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
+import { countLearningPathsByOrg } from '@cio/db/queries/learning-path';
 import { getAccountPrimary } from '@cio/db/queries/account';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
@@ -500,14 +501,15 @@ export async function getOrganizationCourses(
 export async function getOrganizationNavCounts(orgId: string, userId: string, userRole: number) {
   try {
     const courseProfileId = userRole === ROLE.ADMIN ? undefined : userId;
-    const [courses, cohorts, media, tags] = await Promise.all([
+    const [courses, cohorts, media, tags, learningPaths] = await Promise.all([
       countOrgCourses({ orgId, profileId: courseProfileId }),
       countCohortsByOrgForProfile(orgId, userId),
       countAssetsByOrg(orgId),
-      countTagsByOrg(orgId)
+      countTagsByOrg(orgId),
+      countLearningPathsByOrg(orgId)
     ]);
 
-    return { courses, cohorts, media, tags };
+    return { courses, cohorts, media, tags, learningPaths };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

@@ -2824,6 +2824,9 @@
       "create_button": "Créer",
       "error": {
         "failed_to_clone": "Échec du clonage du cours"
+      },
+      "success": {
+        "course_cloned": "Cours copié avec succès"
       }
     },
     "new_course_modal": {
@@ -2904,7 +2907,8 @@
       "tags": "Étiquettes",
       "empty_tags": "Aucune balise disponible"
     },
-    "page_subtitle": "Là où les leçons deviennent des cours et les cours deviennent des inscriptions."
+    "page_subtitle": "Là où les leçons deviennent des cours et les cours deviennent des inscriptions.",
+    "pricing_free": "Gratuit"
   },
   "ai": {
     "help_me": "Aide-moi à écrire",
@@ -3221,7 +3225,8 @@
     "back_to_app": "Retour à l'application",
     "create": "Créer",
     "distribute": "Distribuer",
-    "tools": "Outils"
+    "tools": "Outils",
+    "learning_paths": "Parcours d'apprentissage"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -4161,7 +4166,9 @@
       }
     },
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "previous": "Précédent",
+    "next": "Suivant"
   },
   "welcome_modal": {
     "we_at": "Nous à",
@@ -5214,7 +5221,9 @@
       "pagination_status": "Page {page} sur {totalPages}",
       "published_access_callout_title": "Accès étudiant",
       "published_access_callout_description": "Les étudiants n'ont accès qu'aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe même s'ils ne sont pas encore publiés, mais ils restent cachés aux étudiants jusqu'à ce que vous les publiiez.",
-      "empty_student_description": "Il n'y a pas encore de cours publiés dans cette cohorte."
+      "empty_student_description": "Il n'y a pas encore de cours publiés dans cette cohorte.",
+      "add_count": "Ajouter {count} {count, plural, =1 {Cours} other {Cours}}",
+      "adding": "Ajout de cours…"
     },
     "newsfeed": {
       "post": "Nouveau message",
@@ -5441,5 +5450,208 @@
     "format_json": "JSON",
     "copied": "Copié dans le presse-papiers",
     "copy_failed": "Impossible de copier dans le presse-papiers"
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Supprimer le cours du parcours ?",
+        "description": "Le cours sera supprimé de ce parcours. Les apprenants déjà inscrits conserveront leur accès et leur progression.",
+        "cancel": "Annuler",
+        "confirm": "Supprimer le cours"
+      },
+      "add_courses": {
+        "title": "Ajouter des cours au parcours",
+        "search_placeholder": "Rechercher des cours…",
+        "no_courses": "Aucun cours disponible.",
+        "no_matches": "Aucun cours ne correspond à votre recherche.",
+        "cancel": "Annuler",
+        "submit": "Ajouter {count} {count, plural, =1 {Cours} other {Cours}}",
+        "submitting": "Ajout des cours…",
+        "select_courses": "Sélectionner des cours",
+        "pagination_status": "Page {page} sur {totalPages}"
+      },
+      "create": {
+        "title": "Créer un parcours d'apprentissage",
+        "description": "Définissez un titre et une description pour votre nouveau parcours d'apprentissage.",
+        "name_label": "Nom du parcours",
+        "name_placeholder": "Exemple : Développement web Fullstack",
+        "slug_label": "URL",
+        "slug_placeholder": "fullstack-web-development",
+        "desc_label": "Description",
+        "desc_placeholder": "Un bref résumé des acquis des apprenants…",
+        "cancel": "Annuler",
+        "submit": "Créer un parcours d'apprentissage",
+        "creating": "Création en cours…",
+        "failed": "Échec de la création du parcours d'apprentissage"
+      },
+      "clone": {
+        "title": "Parcours d'apprentissage du clonage",
+        "description": "Créez une copie de ce parcours d'apprentissage avec tous ses cours.",
+        "submit": "Cloner",
+        "failed": "Échec du clonage du parcours d'apprentissage"
+      }
+    },
+    "workspace": {
+      "all_paths": "Tous les parcours d'apprentissage",
+      "finish_setup": "Terminer la configuration · {percent}%",
+      "view_path_site": "Voir le site du chemin",
+      "active": "Actif",
+      "draft": "Brouillon",
+      "archived": "Archivé",
+      "coming_soon": {
+        "title": "{tab} — Prochainement",
+        "description": "Cet onglet d'espace de travail sera disponible dans la phase 3. La gestion et la configuration des cours sont entièrement fonctionnelles dans cette version."
+      },
+      "tabs": {
+        "courses": "Cours",
+        "people": "Personnes",
+        "analytics": "Statistiques",
+        "landing": "Page de destination",
+        "certificate": "Certificat",
+        "settings": "Paramètres",
+        "setup": "Installation"
+      },
+      "activate_path": "Activer le chemin",
+      "deactivate_path": "Désactiver le chemin",
+      "activated": "Parcours d'apprentissage activé",
+      "deactivated": "Parcours d'apprentissage désactivé",
+      "publish_path": "Chemin de publication",
+      "unpublish_path": "Chemin de dépublication",
+      "published": "Parcours d'apprentissage publié",
+      "unpublished": "Parcours d'apprentissage inédit",
+      "copy_path_url": "Copier l'URL du chemin",
+      "preview_missing_slug": "Générez et enregistrez un slug de chemin avant de prévisualiser.",
+      "url_copied": "URL du parcours d'apprentissage copiée dans le presse-papiers",
+      "cloned": "Parcours d'apprentissage cloné avec succès",
+      "loading_title": "Chargement du parcours d'apprentissage…",
+      "loading_description": "Veuillez patienter pendant que nous chargeons les données de votre parcours d'apprentissage."
+    },
+    "setup": {
+      "title": "Configurer votre parcours",
+      "subtitle": "Suivez ces étapes pour proposer {name} à vos apprenants.",
+      "summary": "Un parcours est mis en ligne une fois que ses cours sont commandés, tarifés et activés.",
+      "progress": "{completed} sur {total} terminés",
+      "done": "Terminé",
+      "launch_title": "{count} {count, plural, =1 {étape} other {étapes}} restantes avant le lancement",
+      "launch_desc": "Commandez les cours, fixez un prix, peaufinez la page de destination et activez le parcours.",
+      "activate_now": "Activer maintenant",
+      "step_name_title": "Nommez et décrivez votre parcours",
+      "step_name_desc": "Donnez au parcours un nom clair, axé sur les résultats, et un court résumé.",
+      "step_name_action": "Modifier les détails",
+      "step_courses_title": "Ajouter des cours",
+      "step_courses_desc": "Sélectionnez les cours qui composent ce parcours d'apprentissage.",
+      "step_courses_action": "Ajouter des cours",
+      "step_order_title": "Définir l'ordre des cours",
+      "step_order_desc": "Glisser les cours dans l'ordre de progression des apprenants.",
+      "step_order_action": "Définir l'ordre",
+      "step_price_title": "Définir le prix",
+      "step_price_desc": "Proposer le prix du parcours sous forme de forfait : les apprenants bénéficient ainsi d'une réduction par rapport à l'achat de cours individuels.",
+      "step_price_action": "Définir le prix",
+      "step_landing_title": "Personnaliser la page d'accueil",
+      "step_landing_desc": "Résultats, compétences, formateurs, témoignages et FAQ sur la page publique du parcours.",
+      "step_landing_action": "Personnaliser",
+      "step_activate_title": "Activer le parcours",
+      "step_activate_desc": "Définir le statut sur « Actif » pour qu'il apparaisse sur votre page d'accueil et votre plateforme LMS.",
+      "step_activate_action": "Activer",
+      "step_publish_title": "Publier le chemin",
+      "step_publish_desc": "Publiez le chemin pour qu'il apparaisse sur votre page de destination et votre LMS.",
+      "step_publish_action": "Publier",
+      "reorder_action": "Réorganiser"
+    },
+    "builder": {
+      "title": "Cours",
+      "subtitle": "Ajouter des cours et les glisser pour définir l'ordre de progression des apprenants.",
+      "unlock_rule_title": "Déverrouiller les cours dans l'ordre",
+      "unlock_rule_desc": "Chaque cours reste verrouillé jusqu'à ce qu'un apprenant ait terminé les leçons et exercices du cours précédent. Désactiver cette option pour autoriser l'accès dans n'importe quel ordre.",
+      "list_head": "{count} {count, plural, =1 {cours} other {cours}} dans ce parcours",
+      "drag_hint": "Glisser pour réorganiser",
+      "lessons_count": "{count} {count, plural, =1 {leçon} other {leçons}}",
+      "exercises_count": "{count} {count, plural, =1 {exercice} other {exercices}}",
+      "open_course": "Ouvrir le cours",
+      "remove_course": "Retirer du parcours",
+      "add_course_button": "Ajouter le cours au parcours",
+      "certificate_title": "Certificat de parcours",
+      "certificate_desc": "Délivré automatiquement lorsqu'un étudiant a terminé tous les {count} cours.",
+      "configure_certificate": "Configurer le certificat",
+      "empty_title": "Aucun cours dans ce parcours d'apprentissage pour l'instant",
+      "empty_description": "Ajoutez des cours pour guider les apprenants à travers une séquence structurée. Commencez par cliquer sur le bouton Ajouter."
+    },
+    "listing": {
+      "title": "Parcours d'apprentissage",
+      "subtitle": "Créer et gérer des expériences d'apprentissage structurées qui guident les apprenants à travers plusieurs cours.",
+      "create_path": "Créer un parcours d'apprentissage",
+      "create_course": "Créer un cours",
+      "empty": {
+        "title": "Créer votre premier parcours d'apprentissage",
+        "description": "Regroupez plusieurs cours en une séquence ordonnée avec suivi des étapes clés, validation des acquis et certificat de réussite optionnel.",
+        "create_path": "Créer un parcours d'apprentissage",
+        "create_course": "Créer un cours",
+        "no_matches_title": "Aucun parcours d'apprentissage ne correspond à vos filtres actifs",
+        "no_matches_description": "Essayez de supprimer vos filtres ou de modifier votre requête de recherche."
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {cours} other {cours}}",
+        "learners_count": "{count} {count, plural, =1 {apprenant} other {apprenants}}",
+        "not_published": "Non publié",
+        "completion": "Terminé",
+        "manage": "Gérer",
+        "continue_setup": "Continuer la configuration"
+      },
+      "filters": {
+        "title": "Filtres",
+        "clear_all": "Tout effacer",
+        "group_status": "Statut",
+        "group_enrollment": "Inscriptions",
+        "group_completion": "Taux d'achèvement",
+        "all": "Tous",
+        "draft": "Brouillons",
+        "published": "Publié",
+        "archived": "Archivé",
+        "no_learners": "Aucun apprenant pour l'instant",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Faible (moins de 25 %)",
+        "medium": "Moyen (25 à 75 %)",
+        "high": "Élevé (75 % et plus)",
+        "sort_date_created": "Date de création",
+        "sort_last_updated_at": "Dernière mise à jour à",
+        "sort_published": "Publié",
+        "sort_courses": "Cours"
+      },
+      "toolbar": {
+        "search_placeholder": "Rechercher des parcours d'apprentissage…",
+        "preview_empty": "Aperçu (état vide)",
+        "exit_preview_empty": "Quitter l'aperçu",
+        "grid_view": "Vue grille",
+        "list_view": "Vue liste"
+      },
+      "overview": {
+        "active_paths": "Parcours actifs",
+        "enrolled_learners": "Apprenants inscrits",
+        "completions": "Achèvements",
+        "completion_rate": "Taux d'achèvement",
+        "across_all_paths": "Tous parcours confondus"
+      }
+    },
+    "view_path_site": {
+      "unpublished_title": "Publiez votre parcours d'apprentissage",
+      "unpublished_description": "Vous devez publier ce parcours d'apprentissage avant de pouvoir voir le site",
+      "cancel": "Annuler",
+      "publish_path": "Chemin de publication"
+    },
+    "context_menu": {
+      "open": "Ouvert",
+      "clone": "Cloner",
+      "share": "Partager",
+      "invite": "Inviter",
+      "delete": "Supprimer"
+    },
+    "card": {
+      "actions_menu_aria": "Actions sur le chemin",
+      "updated_at": "Mis à jour le {date}",
+      "published": "Publié",
+      "unpublished": "Inédit",
+      "badge": "Parcours d'apprentissage"
+    }
   }
 }
