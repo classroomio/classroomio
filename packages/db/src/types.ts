@@ -254,3 +254,6 @@ export type TNewYoutubeCaption = typeof schema.youtubeCaption.$inferInsert;
 
 export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
 export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;
+
+export type TPluginEntityRecord = typeof schema.pluginEntityRecord.$inferSelect;
+export type TNewPluginEntityRecord = typeof schema.pluginEntityRecord.$inferInsert;

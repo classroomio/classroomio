@@ -4083,3 +4083,31 @@ export const deadLetterJob = pgTable(
     index('idx_dead_letter_job_org_created').on(table.organizationId, table.createdAt)
   ]
 );
+
+export const pluginEntityRecord = pgTable(
+  'plugin_entity_records',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    pluginName: varchar('plugin_name', { length: 128 }).notNull(),
+    entityName: varchar('entity_name', { length: 128 }).notNull(),
+    orgId: uuid('org_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    courseId: uuid('course_id').references(() => course.id, { onDelete: 'cascade' }),
+    lessonId: uuid('lesson_id').references(() => lesson.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').references(() => user.id, { onDelete: 'cascade' }),
+    data: jsonb('data').default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    index('plugin_entity_records_plugin_entity_org_idx').on(table.pluginName, table.entityName, table.orgId),
+    index('plugin_entity_records_org_id_idx').on(table.orgId),
+    index('plugin_entity_records_user_id_idx').on(table.userId),
+    index('plugin_entity_records_course_id_idx').on(table.courseId),
+    index('plugin_entity_records_lesson_id_idx').on(table.lessonId)
+  ]
+);
