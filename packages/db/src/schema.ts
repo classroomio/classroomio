@@ -23,13 +23,6 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
-import { COURSE_ENROLLMENT_SOURCE_VALUES } from '@cio/utils/constants/enrollment';
-import {
-  LEARNING_PATH_COURSE_STATUS_VALUES,
-  LEARNING_PATH_DIFFICULTY_VALUES,
-  LEARNING_PATH_MEMBER_STATUS_VALUES,
-  type TLearningPathVisitorAccess
-} from '@cio/utils/constants/learning-path';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
 
@@ -3503,11 +3496,20 @@ export const cohortGoalAssignment = pgTable(
 // path — membership and progress live in the tables below, course enrollment keeps
 // using `groupmember`.
 
-export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', [...LEARNING_PATH_DIFFICULTY_VALUES]);
+export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']);
 
-export const learningPathMemberStatus = pgEnum('LEARNING_PATH_MEMBER_STATUS', [...LEARNING_PATH_MEMBER_STATUS_VALUES]);
+export const learningPathMemberStatus = pgEnum('LEARNING_PATH_MEMBER_STATUS', [
+  'NOT_STARTED',
+  'IN_PROGRESS',
+  'COMPLETED'
+]);
 
-export const learningPathCourseStatus = pgEnum('LEARNING_PATH_COURSE_STATUS', [...LEARNING_PATH_COURSE_STATUS_VALUES]);
+export const learningPathCourseStatus = pgEnum('LEARNING_PATH_COURSE_STATUS', [
+  'LOCKED',
+  'NOT_STARTED',
+  'IN_PROGRESS',
+  'COMPLETED'
+]);
 
 export const learningPath = pgTable(
   'learning_path',
@@ -3564,7 +3566,7 @@ export const learningPath = pgTable(
     landingPage: jsonb('landing_page').default({}).$type<{
       headline?: string;
       subheadline?: string;
-      visitorAccess?: TLearningPathVisitorAccess;
+      visitorAccess?: 'teaser' | 'syllabus' | 'preview';
       outcomes?: string[];
       skills?: string[];
       showInstructors?: boolean;
@@ -3794,7 +3796,16 @@ export const learningPathCertificateIssue = pgTable(
 
 // ─── Course Enrollment Provenance ────────────────────────────────────────────
 
-export const courseEnrollmentSource = pgEnum('COURSE_ENROLLMENT_SOURCE', [...COURSE_ENROLLMENT_SOURCE_VALUES]);
+export const courseEnrollmentSource = pgEnum('COURSE_ENROLLMENT_SOURCE', [
+  'SELF_ENROLL',
+  'INVITE',
+  'ADMIN_ADD',
+  'ORG_AUDIENCE',
+  'COHORT',
+  'LEARNING_PATH',
+  'PROGRAM',
+  'IMPORT'
+]);
 
 /**
  * Why a learner has access to a course. `groupmember` is the enrolment row; this is the
