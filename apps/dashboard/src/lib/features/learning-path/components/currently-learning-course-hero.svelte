@@ -25,7 +25,7 @@
     coverImage,
     weeksLabel,
     partOfPathName = null,
-    pathHref = '/lms/mylearning/learning-paths',
+    pathHref = '/lms/mylearning',
     progressPercent,
     lessonsLabel
   }: Props = $props();

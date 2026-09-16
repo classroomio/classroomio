@@ -79,7 +79,7 @@
           status: state,
           progressPercent,
           partOfPath: null,
-          href: `/lms/mylearning/courses`
+          href: `/lms/mylearning`
         };
       })
   );
