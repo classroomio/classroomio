@@ -1,0 +1,22 @@
+{
+  "extends": "@cio/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": false,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": ["**/*.ts", "**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "**/tests/**"]
+}

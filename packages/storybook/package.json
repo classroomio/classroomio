@@ -16,6 +16,7 @@
   "dependencies": {
     "@cio/certificates": "workspace:*",
     "@cio/email": "workspace:*",
+    "@cio/plugins": "workspace:*",
     "@cio/ui": "workspace:*",
     "@cio/utils": "workspace:*",
     "@lucide/svelte": "^0.562.0",
