@@ -6,7 +6,7 @@
 
 ## Implementation source of truth — courses in the app
 
-**Binding rule.** How courses work in the live dashboard is the source of truth for everything that is not unique to learning paths. Enrolment, settings, sidebar, layouts, search, filters, drag-and-drop, create flow, listing pages, People, certificates, landing-page editor, publish, org nav, LMS chrome: copy the existing course implementation. Reuse the same components (`Page.*`, `Search`, `CourseFilterPopover` / `SortSelect`, `Page.SettingsActions`, `UnsavedChanges`, `Field.Group` / `Field.Set`, `svelte-dnd-action` Start/End reorder, `invitation-modal`, `CourseSidebar`). Do not invent a second version of those.
+**Binding rule.** How courses work in the live dashboard is the source of truth for everything that is not unique to learning paths. Enrolment, settings, sidebar, layouts, search, filters, drag-and-drop, create flow, listing pages, People, certificates, landing-page editor, publish, org nav, LMS chrome: copy the existing course implementation. Reuse the same components (`Page.*`, `Search`, `CourseFilterPopover` / `SortSelect`, `Page.SettingsActions`, `UnsavedChanges`, `Field.Group` / `Field.Set`, `svelte-dnd-action` Start/End reorder, `invitation-modal`, `CourseSidebar`, course landing overlay + live preview). Do not invent a second version of those.
 
 This rule **overrides** Confirmed Decisions 13–33 (now collapsed to a do-not-copy list) and any leftover prototype copy in Functional Requirements. Those passages describe prototype exploration. They are not an implementation spec. When a later section, a prototype HTML file, or this document disagrees with the live course UI on a **shared** pattern, **the live course UI wins**.
 
@@ -29,7 +29,8 @@ Path-specific only (do not look to courses for these): ordered course list and s
 | LMS list | `/lms/mylearning`: existing `CoursesPage` with `isLMS` (search, in-progress/complete tabs, **grid only**). Explore: existing explore page |
 | Org nav | `org-navigation.ts` content group, same listing patterns as Courses |
 | Public catalog | `(org-site)/courses` and course landing composer — extend, do not restyle from `landing-theme.css` unless the public course page already does that |
-| Landing editor | Course landing-page editor in the course workspace — same composer, path-specific sections only |
+| Landing editor (path public page) | `courses/[id]/landingpage`: full-screen overlay (`fixed inset-0`), left `Sidebar` section list, right live `CourseLandingPage` preview in `editMode`, `setLandingPageEditContext` click-to-select, `UnsavedChanges`. Not a settings form inside the workspace. Path-specific sections only (visitor access, FAQ, sequential course series, bundle savings) |
+| Org landing editor | `org/[slug]/landingpage/edit`: same overlay pattern. Add a Learning Paths section above Courses by extending `landingpage-editor/courses-section.svelte` — do not invent a second org editor |
 | Certificate admin | `courses/[id]/certificates` + `Page.SettingsActions` — same page, path certificate as a second credential |
 | LMS nav | `lms-navigation.ts` as shipped (Home, My Learning, Certificates, Explore, Cohorts, Exercises, Community, Settings). Add a Learning Paths destination next to Courses/My Learning. Do not rename Exercises, hide Cohorts, or rewrite the drawer |
 
@@ -58,13 +59,14 @@ Do not implement these as specified in the prototype. Use the course pattern ins
 | Prototype-only CSS (`.badge-path-label` glassmorphism, `.ring`, “View more” microcopy, button `color` rules, list-view flex-basis bugfix in `app-theme.css`) | App already has badges, buttons, Empty, Progress | Use `@cio/ui` / dashboard course components. Do not port prototype CSS into the app |
 | Learner sidebar IA rewrite (Assignments rename, My Learning expand-group, hide Cohorts, mobile drawer) | LMS nav is `lms-navigation.ts` as shipped | Add a Learning Paths entry where Courses / My Learning sit. Do not rename Exercises, hide Cohorts, or restyle the LMS chrome |
 | LMS Assignments / Community / Settings pages in the prototype | Those screens already exist (`/lms/exercises`, `/lms/community`, `/lms/settings`) | Out of scope. Do not rebuild them in this feature |
-| Landing / certificate admin HTML as a new form language | Course landing editor and certificates page already exist | Reuse those; add path-only fields |
+| Path landing editor as stacked cards inside the workspace (`teacher-path-landing-editor.html`: Hero / Visitor access / What you'll learn / Skills / Instructors / Testimonials / FAQ + custom radio-cards, tags, sticky `.savebar`, “View live page” as an external link) | Course landing editor is a **full-screen overlay**: section sidebar + live preview, click a section on the page to edit it. Hero ≈ header, outcomes ≈ goals, skills ≈ chips, instructors ≈ instructor, testimonials ≈ reviews, pricing already has a form | Copy `courses/[id]/landingpage` (`Editor` + `CourseLandingPage` `editMode`). Add path-only sections (visitor access, FAQ, sequential course series / per-course outcomes, show-savings on pricing). Do not ship a settings-style form. “View live page” is the in-editor preview, same as courses |
+| Org landing “Learning Paths” block as a new editor | Org already edits the public site at `org/[slug]/landingpage/edit` | Extend that editor’s courses section (paths above courses). Same overlay, same `Field.*` / dnd section chrome |
 
 ---
 
 ## Prototypes — path-specific UX only
 
-Interactive HTML for path-specific surfaces lives in [`prototypes/learning-paths/`](../../prototypes/learning-paths/). Use them for: public path page sections, path hub / journey spine, in-course path ribbon, unlock states, bundle savings on the public page. Do not use them as a layout spec for listing, settings, people, filters, or the LMS shell.
+Interactive HTML for path-specific surfaces lives in [`prototypes/learning-paths/`](../../prototypes/learning-paths/). Use them for: public path page **sections** (what the visitor sees), path hub / journey spine, in-course path ribbon, unlock states, bundle savings on the public page. Do not use them as a layout spec for listing, settings, people, filters, the LMS shell, **or the landing-page editor chrome**.
 
 **Start here:** `prototypes/learning-paths/index.html` (maps visitor / learner / teacher and cross-links each flow).
 
@@ -72,7 +74,7 @@ Interactive HTML for path-specific surfaces lives in [`prototypes/learning-paths
 | --- | --- | --- |
 | Public (org site) | `org-landing.html`, `public-paths.html`, `public-path.html` | Path-specific public page and landing section |
 | Learner | `path-detail.html`, `course-in-path.html` | Path hub and in-course ribbon. Other learner HTML in this folder is **not** a mandate to redesign LMS |
-| Teacher | `teacher-path-builder.html`, `teacher-path-analytics.html`, `teacher-path-landing-editor.html`, `teacher-path-certificate.html` | Path-specific workspace content. Listing / people / settings HTML is illustrative — implement like courses |
+| Teacher | `teacher-path-builder.html`, `teacher-path-analytics.html`, `teacher-path-certificate.html` | Path-specific workspace **content**. `teacher-path-landing-editor.html` is **not** the editor chrome — implement like `courses/[id]/landingpage`. Listing / people / settings HTML is illustrative — implement like courses |
 
 ## Purpose
 
@@ -111,6 +113,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 - Admin listing rebuild (metric cards, dual Create CTAs, `.apath-card` / `.lp-row`, pill filters, no context menu)
 - Prototype CSS (`app-theme.css` glass badges, `.ring`, pill progress, “View more” microcopy, button `color` rules)
 - Public `/paths` checkbox filter sidebar (`landing-theme.css`) as a new catalog chrome — public courses already have a catalog; mirror that
+- Path landing editor as a settings form (`teacher-path-landing-editor.html`) — course landing editor is the overlay + live preview at `courses/[id]/landingpage`
 
 The prototype HTML remains useful for **path-specific** surfaces (path hub, in-course ribbon, public path page sections, bundle savings). Shared UI is implemented like courses. Path-specific product in Decisions 1–12 still stands.
 
@@ -153,11 +156,12 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 
 ### 1. Public — org landing site
 
-**Landing page section** (above Courses; see `org-landing.html`):
+**Landing page section** (above Courses; see `org-landing.html` for **visitor** layout only):
 - Section heading "Learning Paths" + lead line; grid of path cards.
 - Path card: "Learning Path" chip, name, description, ordered course preview list (first 3 + "+N more"), meta row (course count, total hours, certificate), bundle price with struck-through sum.
 - "View all learning paths" → `/paths`.
 - Rendered per landing-page theme like the courses section (start with `minimal`; other themes can fall back to base styling).
+- **Editor:** teachers add/reorder this section in the existing org landing editor (`org/[slug]/landingpage/edit`), by extending `landingpage-editor/courses-section.svelte`. Same full-screen overlay. Do not build a separate org-landing editor for paths.
 
 **Catalog page `/paths`**: mirror `(org-site)/courses` — same shell, search, and catalog filters/sheets the public courses page already uses. Prototype `public-paths.html` checkbox filter **sidebar** is exploration; do not ship it.
 
@@ -205,7 +209,7 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 | Courses | Lessons / content list | Sequential-unlock toggle (path-specific). Reorder with the **same Start reorder / End reorder** mode as course content (`svelte-dnd-action`); persist when reorder ends. Add-course picker; remove confirms nobody is unenrolled. Prototype always-on drag is wrong. |
 | People | `courses/[id]/people` | Header Add → `?add=true` → `invitation-modal` (existing members, bulk email, invite link). `Search` + role `Select`. Table like course People; path-specific columns: current course, path %. Remove revokes the path grant; they keep the course only if another live grant remains. |
 | Analytics | Course analytics | Path-specific funnel (enrolled, drop-off, stuck lessons/exercises). This is where listing metric cards belong, not the org listing. |
-| Landing page | Course landing editor | Reuse the course landing composer; path-specific sections (outcomes, skills, visitor access, testimonials, FAQ). |
+| Landing page | `courses/[id]/landingpage` | **Same editor chrome**, not a form in the path workspace. Full-screen overlay, left section list, right live path-page preview (`editMode` + `setLandingPageEditContext`). Map existing course sections: header (hero), goals (what you'll learn), chips (skills), instructor (auto from course tutors + show toggle), reviews (testimonials), certificate, pricing (add show-savings). Path-only sections: visitor access (teaser / syllabus / syllabus+preview), FAQ, sequential course series with per-course outcomes. Curriculum on a course is auto from lessons — here the series is the ordered path courses. Do not copy the prototype’s stacked cards, radio-cards, or external “View live page” link. |
 | Certificate | `courses/[id]/certificates` | Award toggle, title/issuer, preview, `Page.SettingsActions`. Path-specific: issued on full path completion. |
 | Settings | `courses/[id]/settings` | `Field.Group` / `Field.Set` / `Field.Separator`, `isPublished` `Switch`, `UnsavedChanges`, sticky `Page.SettingsActions`. Path-specific fields: bundle price, show-savings, sequential unlock, auto-enroll, self-enrollment. Danger zone deletes the path, not courses or progress. |
 
@@ -373,7 +377,7 @@ Follow CLAUDE.md conventions: types in `features/learning-path/utils/types.ts` i
 
 - **Admin**: nav item in `org-navigation.ts` after Courses using `PathIcon` from `@cio/ui/custom/moving-icons`; routes `org/[slug]/paths/+page.svelte` (same listing as courses) and `paths/[id]/{courses,people,analytics,landing,certificate,settings}` with a `PathSidebar` copied from `CourseSidebar`. Reuse `Page.*`, `Search`, `CourseFilterPopover`, `Field.*`, `invitation-modal`, `Page.SettingsActions`, and the lesson **Start reorder / End reorder** + `svelte-dnd-action` pattern. Optional in-workspace setup chip only — no `/setup` create route.
 - **LMS**: add paths into existing `/lms/mylearning` and `/lms/explore` (do not rebuild those pages); path hub `/lms/paths/[id]`; path ribbon in the course layout when course ∈ caller's path. Reuse `course-progress-card` math for per-course %.
-- **Public**: paths section added to org landing themes (start `minimal`), `(org-site)/paths` and `(org-site)/path/[slug]` mirroring the **existing** courses catalog and course landing — not `landing-theme.css` as a new system unless the public course page already uses it. Reuse `CourseSectionNav`, `CourseSocialProof`, `CourseCurriculum`-style rows, `CoursePricing` card, `LandingButton`, footer.
+- **Public**: paths section added to org landing themes (start `minimal`) via the **existing** org landing editor; `(org-site)/paths` and `(org-site)/path/[slug]` mirroring the **existing** courses catalog and course landing. Path public-page **editor** copies `courses/[id]/landingpage` (overlay + live preview), not `teacher-path-landing-editor.html`. Reuse `CourseSectionNav`, `CourseSocialProof`, `CourseCurriculum`-style rows, `CoursePricing` card, `LandingButton`, footer.
 
 ### Build verification
 
@@ -409,7 +413,7 @@ pnpm format:check
 11. Analytics funnel counts match member course-completion data.
 12. Programs and standalone courses behave exactly as before.
 13. All user-facing strings use translation keys; all builds and `pnpm format:check` pass.
-14. Shared UI matches the live course implementation: org listing, create modal, `PathSidebar`, People (`invitation-modal` + role filter), Settings (`Field.*` + `Page.SettingsActions`), filters/search, LMS My Learning (tabs + grid only), Explore toolbar, drag-reorder mode. Prototype Decisions 13–33 that redesigned those surfaces are **not** acceptance criteria.
+14. Shared UI matches the live course implementation: org listing, create modal, `PathSidebar`, People (`invitation-modal` + role filter), Settings (`Field.*` + `Page.SettingsActions`), filters/search, LMS My Learning (tabs + grid only), Explore toolbar, drag-reorder mode, **landing editor** (`courses/[id]/landingpage` overlay + live preview, not a workspace form). Prototype Decisions 13–33 that redesigned those surfaces are **not** acceptance criteria.
 
 
 
