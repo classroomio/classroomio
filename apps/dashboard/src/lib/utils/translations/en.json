@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Add to LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Verified credential",
+      "certificate_title": "Certificate of completion",
+      "presented_to": "Proudly presented to",
+      "completion_of": "For completion of",
+      "instructor_signature": "Instructor signature",
+      "template_name": "Modern Gold",
+      "template_description": "Prestigious dark slate design with gold geometric borders and royal insignia.",
+      "academy_director": "Academy director"
+    }
+  },
   "aiTutor": {
     "page": {
       "org": {
@@ -988,7 +1003,7 @@
       "about": {
         "heading": "About",
         "title": "Title",
-    "create": "Create",
+        "create": "Create",
         "upload_an_image": "Upload an image",
         "select_image": "Select Image"
       },
@@ -1392,7 +1407,8 @@
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} of {studentLimit} students",
     "upgrade_left": "{count} left",
-    "cohorts": "Cohorts"
+    "cohorts": "Cohorts",
+    "more": "More"
   },
   "pricing": {
     "plan_names": {

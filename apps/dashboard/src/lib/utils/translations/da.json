@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Føj til LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Verificeret certifikat",
+      "certificate_title": "Gennemførelsesbevis",
+      "presented_to": "Stolt tildelt",
+      "completion_of": "For gennemførelse af",
+      "instructor_signature": "Underviserens underskrift",
+      "template_name": "Moderne guld",
+      "template_description": "Prestigefyldt mørk skiferstil med geometriske guldrammer og kongeligt emblem.",
+      "academy_director": "Akademidirektør"
+    }
+  },
   "common": {
     "refresh": "Opdater",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "Linket er kopieret"
         },
         "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
-        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
+        "activity_type": {
+          "label": "Aktivitetstype",
+          "description": "Vælg, om dette er en standardlektion eller en interaktiv plugin-aktivitet.",
+          "standard_label": "Standard lektion",
+          "standard_description": "Noter, dias, videoer og dokumenter."
+        }
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -3219,7 +3240,8 @@
     "back_to_app": "Tilbage til app",
     "create": "Opret",
     "distribute": "Fordel",
-    "tools": "Værktøjer"
+    "tools": "Værktøjer",
+    "more": "Mere"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",

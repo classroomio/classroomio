@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Dodaj do LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Zweryfikowane poświadczenie",
+      "certificate_title": "Certyfikat ukończenia",
+      "presented_to": "Z dumą przyznany",
+      "completion_of": "Za ukończenie",
+      "instructor_signature": "Podpis instruktora",
+      "template_name": "Nowoczesne złoto",
+      "template_description": "Prestiżowy ciemny projekt z geometrycznymi złotymi obramowaniami i królewskim insygnium.",
+      "academy_director": "Dyrektor akademii"
+    }
+  },
   "common": {
     "refresh": "Odśwież",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "Link skopiowany"
         },
         "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
-        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później."
+        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
+        "activity_type": {
+          "label": "Typ aktywności",
+          "description": "Wybierz, czy jest to lekcja standardowa, czy interaktywna wtyczka.",
+          "standard_label": "Standardowa lekcja",
+          "standard_description": "Notatki, slajdy, filmy i dokumenty."
+        }
       },
       "news_feed": {
         "heading": "Kanał wiadomości",
@@ -3219,7 +3240,8 @@
     "back_to_app": "Powrót do aplikacji",
     "create": "Utwórz",
     "distribute": "Rozpowszechniaj",
-    "tools": "Narzędzia"
+    "tools": "Narzędzia",
+    "more": "Więcej"
   },
   "media_manager": {
     "page_title": "Menedżer mediów - ClassroomIO",

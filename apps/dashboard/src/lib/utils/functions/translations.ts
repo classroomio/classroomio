@@ -1,7 +1,9 @@
 import type { TLocale } from '@cio/db/types';
 import i18n from '@sveltekit-i18n/base';
 import parser from '@sveltekit-i18n/parser-icu';
-import { writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
+import { applyTerminology } from '@cio/sdk';
+import { appConfig } from '$lib/utils/config';
 
 export const config = {
   parser: parser(),
@@ -59,7 +61,30 @@ export const config = {
   ]
 };
 
-export const { t, loading, locales, locale, initialized, translations, loadTranslations } = new i18n(config);
+const { t: baseT, loading, locales, locale, initialized, translations, loadTranslations } = new i18n(config);
+
+const derivedT = derived([baseT, locale], ([$baseT, $locale]) => {
+  return (key: string, ...args: any[]): string => {
+    const raw = ($baseT as any)(key, ...args);
+    return applyTerminology(raw, appConfig.terminology, $locale);
+  };
+});
+
+const tFunction = (key: string, ...args: any[]): string => {
+  const currentLocale = get(locale);
+  const raw = (baseT as any).get(key, ...args);
+  return applyTerminology(raw, appConfig.terminology, currentLocale);
+};
+
+tFunction.subscribe = derivedT.subscribe;
+tFunction.get = (key: string, ...args: any[]): string => {
+  const currentLocale = get(locale);
+  const raw = (baseT as any).get(key, ...args);
+  return applyTerminology(raw, appConfig.terminology, currentLocale);
+};
+
+export const t = tFunction as typeof baseT;
+export { loading, locales, locale, initialized, translations, loadTranslations };
 
 export const selectedLocale = writable<string>('en');
 export const LOCALE_STORAGE_KEY = 'classroomio_locale';

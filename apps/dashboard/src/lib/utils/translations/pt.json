@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Adicionar ao LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Credencial verificada",
+      "certificate_title": "Certificado de conclusão",
+      "presented_to": "Orgulhosamente concedido a",
+      "completion_of": "Pela conclusão de",
+      "instructor_signature": "Assinatura do instrutor",
+      "template_name": "Ouro moderno",
+      "template_description": "Design prestigioso em ardósia escura com bordas geométricas douradas e insígnia real.",
+      "academy_director": "Diretor da academia"
+    }
+  },
   "common": {
     "refresh": "Atualizar",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "Link copiado"
         },
         "student_share_your_knowledge": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
-        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde."
+        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
+        "activity_type": {
+          "label": "Tipo de atividade",
+          "description": "Selecione se esta é uma lição padrão ou uma atividade de plug-in interativa.",
+          "standard_label": "Lição padrão",
+          "standard_description": "Notas, slides, vídeos e documentos."
+        }
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -3219,7 +3240,8 @@
     "back_to_app": "Voltar ao aplicativo",
     "create": "Criar",
     "distribute": "Distribuir",
-    "tools": "Ferramentas"
+    "tools": "Ferramentas",
+    "more": "Mais"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",

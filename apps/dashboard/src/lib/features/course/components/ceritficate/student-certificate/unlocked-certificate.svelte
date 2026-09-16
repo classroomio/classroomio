@@ -4,6 +4,7 @@
   import ImageIcon from '@lucide/svelte/icons/image';
 
   import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { t } from '$lib/utils/functions/translations';
@@ -13,6 +14,7 @@
   import type { CertificationEvaluationData } from '$features/course/utils/types';
   import { normalizeCertificateIssuedAt, formatBlockerMessage } from '$features/course/utils/certificate-utils';
   import { updateCourseCompletionModal } from '$features/course/store/course-completion-modal';
+  import PluginSlot from '$features/plugins/plugin-slot.svelte';
 
   let isLoading = $state(false);
   let isPngLoading = $state(false);
@@ -25,7 +27,13 @@
     return {
       studentName: $profile.fullname || 'Recipient',
       studentId: $profile.id || undefined,
-      issuedAt: normalizeCertificateIssuedAt(evaluation?.certificateEarnedAt)
+      issuedAt: normalizeCertificateIssuedAt(evaluation?.certificateEarnedAt),
+      labels: {
+        certificateTitle: $t('plugins.certificate_modern_gold.certificate_title'),
+        completionLabel: $t('plugins.certificate_modern_gold.completion_of'),
+        presentedToLabel: $t('plugins.certificate_modern_gold.presented_to'),
+        verifiedCredentialLabel: $t('plugins.certificate_modern_gold.verified_credential')
+      }
     } as const;
   }
 
@@ -152,6 +160,17 @@
         <ImageIcon size={16} />
         {$t('course.navItem.certificates.download_image')}
       </Button>
+      <PluginSlot
+        name="certificate.actions"
+        context={{
+          courseTitle: courseApi.course?.title,
+          orgName: $currentOrg.name,
+          earnedAt: evaluation?.certificateEarnedAt,
+          certificateId: evaluation?.certificateId || courseApi.course?.id,
+          label: $t('plugins.integration_linkedin_certificate.add_to_linkedin'),
+          disabled: !isCourseComplete
+        }}
+      />
     </div>
   </Empty>
 </div>

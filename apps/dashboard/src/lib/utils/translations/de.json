@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Zu LinkedIn hinzufügen"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Verifizierter Nachweis",
+      "certificate_title": "Abschlusszertifikat",
+      "presented_to": "Stolz verliehen an",
+      "completion_of": "Für den Abschluss von",
+      "instructor_signature": "Unterschrift der Lehrkraft",
+      "template_name": "Modernes Gold",
+      "template_description": "Prestigeträchtiges dunkles Schieferdesign mit geometrischen Goldrahmen und königlichem Emblem.",
+      "academy_director": "Akademieleitung"
+    }
+  },
   "common": {
     "refresh": "Aktualisieren",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "Link kopiert"
         },
         "student_share_your_knowledge": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
-        "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei."
+        "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
+        "activity_type": {
+          "label": "Aktivitätstyp",
+          "description": "Wählen Sie aus, ob es sich um eine Standardlektion oder eine interaktive Plugin-Aktivität handelt.",
+          "standard_label": "Standardlektion",
+          "standard_description": "Notizen, Folien, Videos und Dokumente."
+        }
       },
       "news_feed": {
         "heading": "Newsfeed",
@@ -3219,7 +3240,8 @@
     "back_to_app": "Zurück zur App",
     "create": "Erstellen",
     "distribute": "Verteilen",
-    "tools": "Werkzeuge"
+    "tools": "Werkzeuge",
+    "more": "Mehr"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",

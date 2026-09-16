@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Ajouter à LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Titre vérifié",
+      "certificate_title": "Certificat de réussite",
+      "presented_to": "Fièrement décerné à",
+      "completion_of": "Pour avoir terminé",
+      "instructor_signature": "Signature du formateur",
+      "template_name": "Or moderne",
+      "template_description": "Élégant design ardoise sombre avec bordures géométriques dorées et insigne royal.",
+      "academy_director": "Direction de l’académie"
+    }
+  },
   "common": {
     "refresh": "Actualiser",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "Lien copié"
         },
         "student_share_your_knowledge": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard.",
-        "student_body_content": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard."
+        "student_body_content": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard.",
+        "activity_type": {
+          "label": "Type d'activité",
+          "description": "Sélectionnez s'il s'agit d'une leçon standard ou d'une activité de plug-in interactive.",
+          "standard_label": "Leçon standard",
+          "standard_description": "Notes, diapositives, vidéos et documents."
+        }
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -3219,7 +3240,8 @@
     "back_to_app": "Retour à l'application",
     "create": "Créer",
     "distribute": "Distribuer",
-    "tools": "Outils"
+    "tools": "Outils",
+    "more": "Plus"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",

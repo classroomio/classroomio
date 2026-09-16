@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "LinkedIn में जोड़ें"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "सत्यापित प्रमाणपत्र",
+      "certificate_title": "पूर्णता प्रमाणपत्र",
+      "presented_to": "गर्व से प्रदान किया गया",
+      "completion_of": "पूरा करने के लिए",
+      "instructor_signature": "प्रशिक्षक के हस्ताक्षर",
+      "template_name": "आधुनिक स्वर्ण",
+      "template_description": "सुनहरे ज्यामितीय बॉर्डर और शाही प्रतीक वाला प्रतिष्ठित गहरा स्लेट डिज़ाइन।",
+      "academy_director": "अकादमी निदेशक"
+    }
+  },
   "common": {
     "refresh": "रीफ़्रेश करें",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "लिंक कॉपी किया गया"
         },
         "student_share_your_knowledge": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
-        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।"
+        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
+        "activity_type": {
+          "label": "गतिविधि प्रकार",
+          "description": "चुनें कि क्या यह एक मानक पाठ है या एक इंटरैक्टिव प्लगइन गतिविधि है।",
+          "standard_label": "मानक पाठ",
+          "standard_description": "नोट्स, स्लाइड, वीडियो और दस्तावेज़।"
+        }
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -3219,7 +3240,8 @@
     "back_to_app": "ऐप पर वापस जाएं",
     "create": "बनाएँ",
     "distribute": "बांटो",
-    "tools": "उपकरण"
+    "tools": "उपकरण",
+    "more": "अधिक"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",

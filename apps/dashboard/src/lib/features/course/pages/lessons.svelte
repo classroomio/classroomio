@@ -12,6 +12,8 @@
   import { getCourseContent } from '$features/course/utils/content';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
+  import { appConfig } from '$lib/utils/config';
+  import { PluginSlot } from '$features/plugins';
 
   interface Props {
     courseId: string;
@@ -106,7 +108,9 @@
     </p>
   {/if}
 
-  {#if contentData.grouped}
+  {#if (appConfig.slots?.['course.format']?.length ?? 0) > 0}
+    <PluginSlot name="course.format" context={{ course: courseApi.course, contentData, reorder }} />
+  {:else if contentData.grouped}
     <ContentSectionList {reorder} />
   {:else}
     <ContentList {reorder} />

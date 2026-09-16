@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Добавить в LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Подтверждённый документ",
+      "certificate_title": "Сертификат об окончании",
+      "presented_to": "С гордостью вручается",
+      "completion_of": "За завершение",
+      "instructor_signature": "Подпись преподавателя",
+      "template_name": "Современное золото",
+      "template_description": "Престижный дизайн в тёмных сланцевых тонах с золотыми геометрическими рамками и королевской эмблемой.",
+      "academy_director": "Директор академии"
+    }
+  },
   "common": {
     "refresh": "Обновить",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "Ссылка скопирована"
         },
         "student_share_your_knowledge": "В этот курс пока не добавлены уроки. Пожалуйста, зайдите позже.",
-        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже."
+        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже.",
+        "activity_type": {
+          "label": "Тип деятельности",
+          "description": "Выберите, будет ли это стандартный урок или интерактивное плагинное занятие.",
+          "standard_label": "Стандартный урок",
+          "standard_description": "Заметки, слайды, видео и документы."
+        }
       },
       "news_feed": {
         "heading": "Лента новостей",
@@ -3219,7 +3240,8 @@
     "back_to_app": "Вернуться в приложение",
     "create": "Создать",
     "distribute": "Распространение",
-    "tools": "Инструменты"
+    "tools": "Инструменты",
+    "more": "Более"
   },
   "media_manager": {
     "page_title": "Медиаменеджер — ClassroomIO",

@@ -22,6 +22,7 @@ import type { PlanLimitResource } from '@cio/utils/plans';
 import type { OrgNavCountKey, OrgNavCounts } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 
 export interface NavItem {
+  key?: string;
   title: string;
   url: string;
   path: string; // Actual path (e.g., '/settings') for breadcrumb generation
@@ -46,6 +47,7 @@ export interface NavItem {
 }
 
 export interface NavItemConfig {
+  key?: string;
   titleKey: string;
   path: string;
   icon?: Component;
@@ -405,7 +407,10 @@ export function getOrgNavigationGroups(
     const matchPattern =
       typeof config.matchPattern === 'function' ? config.matchPattern(currentOrg.siteName!) : config.matchPattern;
 
+    const itemKey = config.key ?? (config.path ? config.path.replace(/^\//, '').replace(/\//g, '-') : 'home');
+
     const item: NavItem = {
+      key: itemKey,
       title: t(config.titleKey),
       url: config.useHashUrl ? '#' : url,
       path: config.path,
@@ -430,7 +435,9 @@ export function getOrgNavigationGroups(
             ? subConfig.matchPattern(currentOrg.siteName!)
             : subConfig.matchPattern;
         const subUrl = `${currentOrgPath}${subConfig.path}`;
+        const subKey = subConfig.key ?? (subConfig.path ? subConfig.path.replace(/^\//, '').replace(/\//g, '-') : '');
         return {
+          key: subKey,
           title: t(subConfig.titleKey),
           isActive: isActive(pathnameOnly, subUrl, subMatchPattern, true),
           url: subUrl,

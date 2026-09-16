@@ -1,4 +1,19 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Thêm vào LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Chứng nhận đã xác minh",
+      "certificate_title": "Giấy chứng nhận hoàn thành",
+      "presented_to": "Trân trọng trao tặng",
+      "completion_of": "Vì đã hoàn thành",
+      "instructor_signature": "Chữ ký giảng viên",
+      "template_name": "Vàng hiện đại",
+      "template_description": "Thiết kế đá phiến tối trang trọng với viền hình học màu vàng và huy hiệu hoàng gia.",
+      "academy_director": "Giám đốc học viện"
+    }
+  },
   "common": {
     "refresh": "Làm mới",
     "unsaved_changes": {
@@ -2500,7 +2515,13 @@
           "link_copied": "Đã sao chép liên kết"
         },
         "student_share_your_knowledge": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
-        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau."
+        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
+        "activity_type": {
+          "label": "Loại hoạt động",
+          "description": "Chọn xem đây là bài học tiêu chuẩn hay hoạt động bổ trợ tương tác.",
+          "standard_label": "Bài học chuẩn",
+          "standard_description": "Ghi chú, slide, video và tài liệu."
+        }
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -3219,7 +3240,8 @@
     "back_to_app": "Quay lại ứng dụng",
     "create": "Tạo",
     "distribute": "phân phối",
-    "tools": "Công cụ"
+    "tools": "Công cụ",
+    "more": "Hơn"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",
