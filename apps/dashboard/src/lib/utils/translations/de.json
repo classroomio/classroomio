@@ -5633,7 +5633,9 @@
       "courses_title": "Meine Kurse",
       "course_paths_title": "Kurspfade",
       "course_paths_description": "Kurse, die Teil eines Lernpfads sind, zeigen an, zu welchem ​​Pfad sie gehören.",
-      "currently_learning": "Aktuell im Lernprozess"
+      "currently_learning": "Aktuell im Lernprozess",
+      "paths_section_title": "Lernpfade",
+      "courses_section_title": "Weitere Kurse"
     },
     "empty": {
       "title": "Noch keine Lernpfade",

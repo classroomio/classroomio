@@ -5633,7 +5633,9 @@
       "courses_title": "Mes cours",
       "course_paths_title": "Parcours de cours",
       "course_paths_description": "Les cours qui font partie d'un parcours d'apprentissage indiquent à quel parcours ils appartiennent.",
-      "currently_learning": "Apprentissage en cours"
+      "currently_learning": "Apprentissage en cours",
+      "paths_section_title": "Parcours d'apprentissage",
+      "courses_section_title": "Plus de cours"
     },
     "empty": {
       "title": "Aucun parcours d'apprentissage pour le moment",

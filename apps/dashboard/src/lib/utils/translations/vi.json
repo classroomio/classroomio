@@ -5633,7 +5633,9 @@
       "courses_title": "Các khóa học của tôi",
       "course_paths_title": "Các lộ trình khóa học",
       "course_paths_description": "Các khóa học thuộc một lộ trình học tập sẽ hiển thị lộ trình mà chúng thuộc về.",
-      "currently_learning": "Đang học"
+      "currently_learning": "Đang học",
+      "paths_section_title": "Lộ trình học tập",
+      "courses_section_title": "Thêm khóa học"
     },
     "empty": {
       "title": "Chưa có lộ trình học tập nào",

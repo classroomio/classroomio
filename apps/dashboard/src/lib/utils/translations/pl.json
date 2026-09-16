@@ -5633,7 +5633,9 @@
       "courses_title": "Moje kursy",
       "course_paths_title": "Ścieżki kursów",
       "course_paths_description": "Kursy, które są częścią ścieżki edukacyjnej, pokazują, do której ścieżki należą.",
-      "currently_learning": "Aktualnie się uczysz"
+      "currently_learning": "Aktualnie się uczysz",
+      "paths_section_title": "Ścieżki uczenia się",
+      "courses_section_title": "Więcej kursów"
     },
     "empty": {
       "title": "Brak ścieżek edukacyjnych",

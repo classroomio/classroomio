@@ -5633,7 +5633,9 @@
       "courses_title": "Mis cursos",
       "course_paths_title": "Rutas de aprendizaje",
       "course_paths_description": "Los cursos que forman parte de una ruta de aprendizaje muestran a qué ruta pertenecen.",
-      "currently_learning": "Actualmente aprendiendo"
+      "currently_learning": "Actualmente aprendiendo",
+      "paths_section_title": "Rutas de aprendizaje",
+      "courses_section_title": "Más cursos"
     },
     "empty": {
       "title": "Aún no hay rutas de aprendizaje",

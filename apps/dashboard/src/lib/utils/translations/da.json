@@ -5633,7 +5633,9 @@
       "courses_title": "Mine kurser",
       "course_paths_title": "Kursusstier",
       "course_paths_description": "Kurser, der er en del af et læringssti, viser, hvilket sti de tilhører.",
-      "currently_learning": "Lærer i øjeblikket"
+      "currently_learning": "Lærer i øjeblikket",
+      "paths_section_title": "Læringsveje",
+      "courses_section_title": "Flere kurser"
     },
     "empty": {
       "title": "Ingen læringsstier endnu",

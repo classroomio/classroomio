@@ -5531,6 +5531,8 @@
       "courses_title": "My Courses",
       "course_paths_title": "Course paths",
       "course_paths_description": "Courses that are part of a learning path show which path they belong to.",
+      "paths_section_title": "Learning Paths",
+      "courses_section_title": "More Courses",
       "currently_learning": "Currently Learning"
     },
     "detail": {

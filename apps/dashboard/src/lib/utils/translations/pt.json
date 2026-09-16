@@ -5633,7 +5633,9 @@
       "courses_title": "Meus cursos",
       "course_paths_title": "Percursos do curso",
       "course_paths_description": "Os cursos que fazem parte de um percurso de aprendizagem indicam a qual percurso pertencem.",
-      "currently_learning": "Atualmente aprendendo"
+      "currently_learning": "Atualmente aprendendo",
+      "paths_section_title": "Caminhos de aprendizagem",
+      "courses_section_title": "Mais cursos"
     },
     "empty": {
       "title": "Ainda não existem percursos de aprendizagem.",

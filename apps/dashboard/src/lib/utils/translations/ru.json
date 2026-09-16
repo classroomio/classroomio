@@ -5633,7 +5633,9 @@
       "courses_title": "Мои курсы",
       "course_paths_title": "Учебные программы",
       "course_paths_description": "Курсы, входящие в учебную программу, показывают, к какой программе они относятся.",
-      "currently_learning": "В настоящее время обучаюсь"
+      "currently_learning": "В настоящее время обучаюсь",
+      "paths_section_title": "Пути обучения",
+      "courses_section_title": "Больше курсов"
     },
     "empty": {
       "title": "Учебных программ пока нет",

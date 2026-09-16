@@ -5633,7 +5633,9 @@
       "courses_title": "मेरे पाठ्यक्रम",
       "course_paths_title": "पाठ्यक्रम पथ",
       "course_paths_description": "किसी शिक्षण मार्ग का हिस्सा बनने वाले पाठ्यक्रम यह दर्शाते हैं कि वे किस मार्ग से संबंधित हैं।",
-      "currently_learning": "वर्तमान में सीख रहा हूँ"
+      "currently_learning": "वर्तमान में सीख रहा हूँ",
+      "paths_section_title": "सीखने के रास्ते",
+      "courses_section_title": "अधिक पाठ्यक्रम"
     },
     "empty": {
       "title": "अभी तक कोई लर्निंग पाथ उपलब्ध नहीं हैं।",
