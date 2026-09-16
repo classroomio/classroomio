@@ -2,6 +2,7 @@
   import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { copyPublicPathPageUrl, viewPathAsStudent } from '../utils/path-preview';
 
   interface Props {
@@ -24,12 +25,18 @@
   async function handleGoToLms() {
     isNavigating = true;
 
-    // Opens the student view in a new tab; close the modal once the handoff starts.
-    const ok = await viewPathAsStudent({ pathId, pathSlug, currentOrgDomain });
-    isNavigating = false;
+    try {
+      // Opens the student view in a new tab; close the modal once the handoff starts.
+      const ok = await viewPathAsStudent({ pathId, pathSlug, currentOrgDomain });
 
-    if (ok) {
-      open = false;
+      if (ok) {
+        open = false;
+      }
+    } catch (error) {
+      console.error('Failed to view path as student:', error);
+      snackbar.error('snackbar.view_as_student.failed');
+    } finally {
+      isNavigating = false;
     }
   }
 </script>
