@@ -41,7 +41,7 @@ export type TCourseImportDraftCourse = z.infer<typeof ZCourseImportDraftCourse>;
 export const ZCourseImportDraftSection = z.object({
   externalId: z.string().min(1),
   title: z.string().min(1),
-  order: z.number().int().min(0)
+  order: z.number().int().min(1)
 });
 export type TCourseImportDraftSection = z.infer<typeof ZCourseImportDraftSection>;
 
@@ -49,7 +49,7 @@ export const ZCourseImportDraftLesson = z.object({
   externalId: z.string().min(1),
   sectionExternalId: z.string().min(1),
   title: z.string().min(1),
-  order: z.number().int().min(0),
+  order: z.number().int().min(1),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional()
 });
@@ -73,7 +73,7 @@ export const ZCourseImportDraftExerciseQuestion = z.object({
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
   points: z.number().int().min(1),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   options: z.array(ZCourseImportDraftExerciseOption).optional()
 });
@@ -85,7 +85,7 @@ export const ZCourseImportDraftExercise = z.object({
   sectionExternalId: z.string().min(1).optional(),
   title: z.string().min(1),
   description: z.string().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1),
   dueBy: z.string().optional(),
   questions: z.array(ZCourseImportDraftExerciseQuestion).optional()
 });
@@ -128,6 +128,15 @@ export const ZCourseImportDraftPayload = z
       sectionIds.add(section.externalId);
     });
 
+    const sectionOrders = value.sections.map((section) => section.order).sort((a, b) => a - b);
+    if (sectionOrders.length > 0 && sectionOrders.some((order, i) => order !== i + 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['sections'],
+        message: 'Section orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
+      });
+    }
+
     const lessonIds = new Set<string>();
     value.lessons.forEach((lesson, index) => {
       if (lessonIds.has(lesson.externalId)) {
@@ -147,6 +156,23 @@ export const ZCourseImportDraftPayload = z
         });
       }
     });
+
+    const lessonsBySection = new Map<string, number[]>();
+    for (const lesson of value.lessons) {
+      const orders = lessonsBySection.get(lesson.sectionExternalId) ?? [];
+      orders.push(lesson.order);
+      lessonsBySection.set(lesson.sectionExternalId, orders);
+    }
+    for (const [, orders] of lessonsBySection) {
+      const sorted = [...orders].sort((a, b) => a - b);
+      if (sorted.some((order, i) => order !== i + 1)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['lessons'],
+          message: 'Lesson orders within each section must be a contiguous 1-based sequence (1, 2, 3, ...)'
+        });
+      }
+    }
 
     value.lessonLanguages.forEach((lessonLanguage, index) => {
       if (!lessonIds.has(lessonLanguage.lessonExternalId)) {
@@ -185,6 +211,31 @@ export const ZCourseImportDraftPayload = z
         });
       }
     });
+
+    if (value.exercises) {
+      const lessonsByExternalId = new Map(value.lessons.map((l) => [l.externalId, l]));
+      const exercisesByGroup = new Map<string, number[]>();
+      for (const exercise of value.exercises) {
+        let groupKey = exercise.sectionExternalId ?? '';
+        if (exercise.lessonExternalId) {
+          const parentLesson = lessonsByExternalId.get(exercise.lessonExternalId);
+          groupKey = parentLesson?.sectionExternalId ?? exercise.lessonExternalId;
+        }
+        const orders = exercisesByGroup.get(groupKey) ?? [];
+        orders.push(exercise.order);
+        exercisesByGroup.set(groupKey, orders);
+      }
+      for (const [, orders] of exercisesByGroup) {
+        const sorted = [...orders].sort((a, b) => a - b);
+        if (sorted.some((order, i) => order !== i + 1)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['exercises'],
+            message: 'Exercise orders within each group must be a contiguous 1-based sequence (1, 2, 3, ...)'
+          });
+        }
+      }
+    }
   });
 export type TCourseImportDraftPayload = z.infer<typeof ZCourseImportDraftPayload>;
 
