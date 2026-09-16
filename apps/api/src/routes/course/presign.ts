@@ -13,27 +13,27 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
-import { automationKeyScopeOrSessionMiddleware } from '@api/middlewares/automation-key-scope-or-session';
+import { orgTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-team-member-or-automation-key';
 import { generateFileKey } from '@cio/core/utils/upload';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
 import { createOrGetAssetByStorageKey, getAssetsByStorageKeys } from '@cio/db/queries/assets';
 import type { Context } from 'hono';
 
-const requireCourseWrite = automationKeyScopeOrSessionMiddleware(['course:write']);
+const requireCourseWrite = orgTeamMemberOrAutomationKeyMiddleware(['course:write']);
 
-const AutomationKeyForbiddenResponse = {
+const CourseWriteForbiddenResponse = {
   description:
-    'Automation key is missing the required scope, or (download routes only) one or more requested keys do not belong to the key\'s organization'
+    "Automation key is missing the required scope, caller is not an organization admin or tutor, or (download routes only) one or more requested keys do not belong to the caller's organization"
 };
 
-export async function assertAutomationKeyOwnsDownloadKeys(c: Context, keys: string[]): Promise<Response | void> {
-  const automationKey = c.get('automationKey');
-  if (!automationKey) {
+export async function assertCallerOwnsDownloadKeys(c: Context, keys: string[]): Promise<Response | void> {
+  const organizationId = c.get('orgId');
+  if (!organizationId) {
     return;
   }
 
-  const owned = await getAssetsByStorageKeys(automationKey.organizationId, keys);
+  const owned = await getAssetsByStorageKeys(organizationId, keys);
   const ownedKeys = new Set(owned.map((asset) => asset.storageKey));
   const unauthorizedKeys = keys.filter((key) => !ownedKeys.has(key));
 
@@ -60,16 +60,11 @@ function assertPresignFileSizeWithinLimit(fileSize: number | undefined, maxBytes
   }
 }
 
-export function resolveCallerOrganizationId(c: Context): string | null {
-  const automationKey = c.get('automationKey');
-  return automationKey?.organizationId ?? c.req.header('cio-org-id') ?? null;
-}
-
 export async function registerUploadedAsset(
   c: Context,
   params: { fileKey: string; fileType: string; fileSize: number | undefined; kind: 'video' | 'document' }
 ): Promise<void> {
-  const organizationId = resolveCallerOrganizationId(c);
+  const organizationId = c.get('orgId');
   if (!organizationId) {
     return;
   }
@@ -136,7 +131,7 @@ export const presignRouter = new Hono()
         401: {
           description: 'Unauthorized'
         },
-        403: AutomationKeyForbiddenResponse
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -183,7 +178,7 @@ export const presignRouter = new Hono()
         401: {
           description: 'Unauthorized'
         },
-        403: AutomationKeyForbiddenResponse
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -230,7 +225,7 @@ export const presignRouter = new Hono()
         401: {
           description: 'Unauthorized'
         },
-        403: AutomationKeyForbiddenResponse
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -240,7 +235,7 @@ export const presignRouter = new Hono()
 
       const { keys } = body;
 
-      const forbidden = await assertAutomationKeyOwnsDownloadKeys(c, keys);
+      const forbidden = await assertCallerOwnsDownloadKeys(c, keys);
       if (forbidden) {
         return forbidden;
       }
@@ -275,7 +270,7 @@ export const presignRouter = new Hono()
         401: {
           description: 'Unauthorized'
         },
-        403: AutomationKeyForbiddenResponse
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -285,7 +280,7 @@ export const presignRouter = new Hono()
 
       const { keys } = body;
 
-      const forbidden = await assertAutomationKeyOwnsDownloadKeys(c, keys);
+      const forbidden = await assertCallerOwnsDownloadKeys(c, keys);
       if (forbidden) {
         return forbidden;
       }
