@@ -237,6 +237,323 @@ const PRODUCT_ANALYTICS_COURSES = [
     exercisesCompleted: 0,
     durationHours: 1,
     cost: 19
+  }),
+  makeCourse({
+    id: 'c-pa-2',
+    title: 'Funnel & Drop-Off Analysis',
+    description: 'Map activation, session, and retention funnels to where users leak.',
+    order: 2,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-pa-3',
+    title: 'Cohorts & Retention Curves',
+    description: 'Build retention cohorts and read the curves that predict growth.',
+    order: 3,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-pa-4',
+    title: 'Advanced Reporting',
+    description: 'Design dashboards that turn raw product data into decisions.',
+    order: 4,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.9,
+    cost: 29
+  }),
+  makeCourse({
+    id: 'c-pa-5',
+    title: 'Activation & Onboarding CFM',
+    description: 'Session reach, activation rates, and the metrics that move them.',
+    order: 5,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-pa-6',
+    title: 'Experimentation Essentials',
+    description: 'Hypothesis, A/B testing, and reading significance with confidence.',
+    order: 6,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-pa-7',
+    title: 'Product KPIs & Board Metrics',
+    description: 'North-star metrics, ratio KPIs, and aligning the team around one number.',
+    order: 7,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 1,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.7,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-pa-8',
+    title: 'Data-Informed Roadmaps',
+    description: 'Turn analysis into a roadmap your stakeholders actually buy into.',
+    order: 8,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 1,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.7,
+    cost: 19
+  })
+];
+
+const CUSTOMER_SUCCESS_COURSES = [
+  makeCourse({
+    id: 'c-cs-1',
+    title: 'Onboarding Fundamentals',
+    description: 'Design onboarding that drives time-to-value.',
+    order: 1,
+    coverGradient: BASE_COVERS.sky,
+    coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 0
+  }),
+  makeCourse({
+    id: 'c-cs-2',
+    title: 'Cohort Health Scoring',
+    description: 'Score cohorts and spot churn risk before it happens.',
+    order: 2,
+    coverGradient: BASE_COVERS.sky,
+    coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 0
+  }),
+  makeCourse({
+    id: 'c-cs-3',
+    title: 'Renewal Playbooks',
+    description: 'Build renewal motions that protect recurring revenue.',
+    order: 3,
+    coverGradient: BASE_COVERS.sky,
+    coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.75,
+    cost: 0
+  }),
+  makeCourse({
+    id: 'c-cs-4',
+    title: 'Expand & Advocate Programs',
+    description: 'Turn happy customers into sponsors and expansions.',
+    order: 4,
+    coverGradient: BASE_COVERS.sky,
+    coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.7,
+    cost: 0
+  }),
+  makeCourse({
+    id: 'c-cs-5',
+    title: 'Customer Interview Skills',
+    description: 'Discovery, listening, and turning calls into product insight.',
+    order: 5,
+    coverGradient: BASE_COVERS.sky,
+    coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 1,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.7,
+    cost: 0
+  }),
+  makeCourse({
+    id: 'c-cs-6',
+    title: 'Success Reporting & Dashboards',
+    description: 'Tell the customer’s story with the right data.',
+    order: 6,
+    coverGradient: BASE_COVERS.sky,
+    coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 1,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.6,
+    cost: 0
+  })
+];
+
+const AUTOMATION_COURSES = [
+  makeCourse({
+    id: 'c-au-1',
+    title: 'Automation Triggers',
+    description: 'The events that kick your workflows into motion.',
+    order: 1,
+    coverGradient: BASE_COVERS.purple,
+    coverImage: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-au-2',
+    title: 'Conditions & Branching',
+    description: 'Logic trees that route work based on context.',
+    order: 2,
+    coverGradient: BASE_COVERS.purple,
+    coverImage: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-au-3',
+    title: 'Multi-Step Workflows',
+    description: 'Chain actions across apps without writing code.',
+    order: 3,
+    coverGradient: BASE_COVERS.purple,
+    coverImage: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.75,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-au-4',
+    title: 'Error Handling & Monitoring',
+    description: 'Catch failures, retry gracefully, and audit every run.',
+    order: 4,
+    coverGradient: BASE_COVERS.purple,
+    coverImage: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.7,
+    cost: 19
+  }),
+  makeCourse({
+    id: 'c-au-5',
+    title: 'Automation Governance',
+    description: 'Naming, ownership, and review flows for team-wide automations.',
+    order: 5,
+    coverGradient: BASE_COVERS.purple,
+    coverImage: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 1,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.7,
+    cost: 19
+  })
+];
+
+const INTEGRATIONS_COURSES = [
+  makeCourse({
+    id: 'c-in-1',
+    title: 'Connecting Your Stack',
+    description: 'How apps talk to each other and where integrations start.',
+    order: 1,
+    coverGradient: BASE_COVERS.blue,
+    coverImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 29
+  }),
+  makeCourse({
+    id: 'c-in-2',
+    title: 'Webhooks & APIs',
+    description: 'Receive events and call APIs to move data in real time.',
+    order: 2,
+    coverGradient: BASE_COVERS.blue,
+    coverImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 6,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.8,
+    cost: 29
+  }),
+  makeCourse({
+    id: 'c-in-3',
+    title: 'CRM & Marketing Sync',
+    description: 'Keep your CRM, email, and analytics tools speaking the same language.',
+    order: 3,
+    coverGradient: BASE_COVERS.blue,
+    coverImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 2,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.7,
+    cost: 29
+  }),
+  makeCourse({
+    id: 'c-in-4',
+    title: 'Building vs Buying Integrations',
+    description: 'Evaluate custom code, iPaaS, and no-code tools for your stack.',
+    order: 4,
+    coverGradient: BASE_COVERS.blue,
+    coverImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 5,
+    exerciseCount: 1,
+    lessonsCompleted: 0,
+    exercisesCompleted: 0,
+    durationHours: 0.5,
+    cost: 29
   })
 ];
 
@@ -314,6 +631,7 @@ export const IDS = {
   PRODUCT_ANALYTICS: 'path-product-analytics',
   CUSTOMER_SUCCESS: 'path-customer-success',
   AUTOMATION: 'path-automation',
+  INTEGRATIONS: 'path-integrations',
   DRAFT_BOOTCAMP: 'path-draft-backend'
 };
 
@@ -596,7 +914,7 @@ export function buildMockPaths(): LearningPath[] {
     createBasePath(IDS.PRODUCT_ANALYTICS, {
       name: 'Become a Product Analytics Expert',
       slug: 'product-analytics-expert',
-      description: '8 courses · 6h 30m — a structured track for reading, building, and acting on product data.',
+      description: 'A structured track for reading, building, and acting on product data.',
       status: 'ACTIVE',
       cost: 89,
       coverGradient: BASE_COVERS.teal,
@@ -620,7 +938,7 @@ export function buildMockPaths(): LearningPath[] {
     createBasePath(IDS.CUSTOMER_SUCCESS, {
       name: 'Customer Success Foundations',
       slug: 'customer-success-foundations',
-      description: '6 courses · 4h 20m — onboarding, health scoring, and renewal playbooks.',
+      description: 'Onboarding, health scoring, and renewal playbooks.',
       status: 'ACTIVE',
       cost: 0,
       coverGradient: BASE_COVERS.sky,
@@ -632,14 +950,14 @@ export function buildMockPaths(): LearningPath[] {
     }),
     { headline: 'Onboarding, health scoring, and renewals', subheadline: '', faqs: [] }
   );
-  customerSuccess.courses = [];
+  customerSuccess.courses = CUSTOMER_SUCCESS_COURSES;
   customerSuccess.members = [];
 
   const automation = withLanding(
     createBasePath(IDS.AUTOMATION, {
       name: 'Automating Your Workflows',
       slug: 'automating-your-workflows',
-      description: '5 courses · 3h 45m — triggers, conditions, and multi-step automations.',
+      description: 'Triggers, conditions, and multi-step automations.',
       status: 'ACTIVE',
       cost: 59,
       coverGradient: BASE_COVERS.purple,
@@ -650,8 +968,26 @@ export function buildMockPaths(): LearningPath[] {
     }),
     { headline: 'Design reliable, multi-step automations', subheadline: '', faqs: [] }
   );
-  automation.courses = [];
+  automation.courses = AUTOMATION_COURSES;
   automation.members = [];
+
+  const integrations = withLanding(
+    createBasePath(IDS.INTEGRATIONS, {
+      name: 'Integrations 101',
+      slug: 'integrations-101',
+      description: 'Connect your stack — webhooks, APIs, and sync strategies.',
+      status: 'ACTIVE',
+      cost: 39,
+      coverGradient: BASE_COVERS.blue,
+      coverImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=640&q=80',
+      difficulty: 'Beginner',
+      createdAt: '2026-02-20T09:00:00.000Z',
+      updatedAt: '2026-03-06T09:00:00.000Z'
+    }),
+    { headline: 'Connect your stack', subheadline: '', faqs: [] }
+  );
+  integrations.courses = INTEGRATIONS_COURSES;
+  integrations.members = [];
 
   const draftBackend = createBasePath(IDS.DRAFT_BOOTCAMP, {
     name: 'Backend Engineering Track',
@@ -676,7 +1012,7 @@ export function buildMockPaths(): LearningPath[] {
     faqs: []
   };
 
-  return [feBootcamp, dsPython, compliance, productAnalytics, customerSuccess, automation, draftBackend];
+  return [feBootcamp, dsPython, compliance, productAnalytics, customerSuccess, automation, integrations, draftBackend];
 }
 
 export const MOCK_PATHS = buildMockPaths();

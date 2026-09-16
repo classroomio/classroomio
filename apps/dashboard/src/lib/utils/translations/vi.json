@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "Khám phá các khóa học của chúng tôi",
-    "empty_heading": "Không có khóa học nào",
-    "empty_description": "Hiện tại chưa có khóa học nào được xuất bản"
+    "heading": "Khám phá",
+    "subtitle": "Khám phá những trải nghiệm học tập được thiết kế để giúp bạn nhận được nhiều giá trị hơn từ nền tảng.",
+    "search_placeholder": "Tìm kiếm lộ trình học tập và khóa học…",
+    "content_type": "Loại nội dung",
+    "content_type_all": "Tất cả",
+    "section_paths": "Lộ trình học tập",
+    "section_courses": "Khóa học",
+    "view_learning_path": "Xem lộ trình học tập",
+    "paths_empty_title": "Không tìm thấy đường dẫn nào",
+    "paths_empty_description": "Hãy thử tìm kiếm khác hoặc xóa bộ lọc của bạn.",
+    "courses_empty_title": "Không có khóa học nào phù hợp với tìm kiếm của bạn",
+    "courses_empty_description": "Hãy thử một cụm từ tìm kiếm khác."
   },
   "exercises": {
     "heading": "Bài tập",

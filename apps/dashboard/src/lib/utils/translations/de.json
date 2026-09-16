@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "Entdecken Sie unsere Kurse",
-    "empty_heading": "Kein Kurs verfügbar",
-    "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar"
+    "heading": "Entdecken",
+    "subtitle": "Entdecken Sie Lernerfahrungen, die Ihnen dabei helfen sollen, die Plattform optimal zu nutzen.",
+    "search_placeholder": "Lernpfade und Kurse durchsuchen…",
+    "content_type": "Inhaltstyp",
+    "content_type_all": "Alle",
+    "section_paths": "Lernpfade",
+    "section_courses": "Kurse",
+    "view_learning_path": "Lernpfad anzeigen",
+    "paths_empty_title": "Keine Pfade gefunden",
+    "paths_empty_description": "Versuchen Sie es mit einer anderen Suche oder löschen Sie Ihre Filter.",
+    "courses_empty_title": "Zu Ihrer Suche passen keine Kurse",
+    "courses_empty_description": "Versuchen Sie es mit einem anderen Suchbegriff."
   },
   "exercises": {
     "heading": "Übungen",

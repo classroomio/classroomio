@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "Udforsk vores kurser",
-    "empty_heading": "Intet kursus tilgængeligt",
-    "empty_description": "Der er i øjeblikket ingen offentliggjorte kurser tilgængelige"
+    "heading": "Udforsk",
+    "subtitle": "Oplev læringsoplevelser designet til at hjælpe dig med at få mere værdi ud af platformen.",
+    "search_placeholder": "Søg læringsveje og kurser...",
+    "content_type": "Indholdstype",
+    "content_type_all": "Alle",
+    "section_paths": "Læringsveje",
+    "section_courses": "Kurser",
+    "view_learning_path": "Se læringsstien",
+    "paths_empty_title": "Ingen stier fundet",
+    "paths_empty_description": "Prøv en anden søgning, eller ryd dine filtre.",
+    "courses_empty_title": "Ingen kurser matcher din søgning",
+    "courses_empty_description": "Prøv et andet søgeord."
   },
   "exercises": {
     "heading": "Øvelser",

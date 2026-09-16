@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "Explore nossos cursos",
-    "empty_heading": "Nenhum curso disponível",
-    "empty_description": "Atualmente não há nenhum curso publicado disponível"
+    "heading": "Explorar",
+    "subtitle": "Descubra experiências de aprendizagem projetadas para ajudar você a obter mais valor da plataforma.",
+    "search_placeholder": "Pesquise caminhos de aprendizagem e cursos…",
+    "content_type": "Tipo de conteúdo",
+    "content_type_all": "Todos",
+    "section_paths": "Caminhos de aprendizagem",
+    "section_courses": "Cursos",
+    "view_learning_path": "Ver caminho de aprendizagem",
+    "paths_empty_title": "Nenhum caminho encontrado",
+    "paths_empty_description": "Tente uma pesquisa diferente ou limpe seus filtros.",
+    "courses_empty_title": "Nenhum curso corresponde à sua pesquisa",
+    "courses_empty_description": "Experimente um termo de pesquisa diferente."
   },
   "exercises": {
     "heading": "Exercícios",
