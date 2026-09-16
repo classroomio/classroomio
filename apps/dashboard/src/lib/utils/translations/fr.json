@@ -2958,7 +2958,6 @@
     "progress": "Progrès",
     "pick_up_where_you_left_off": "Reprenez là où vous vous étiez arrêté",
     "get_your_certificate": "Obtenez votre certificat",
-    "course_awaits_you": "{title} vous attend",
     "learning_awaits_you": "Votre prochain cours vous attend",
     "my_certificate": "Mon certificat",
     "lms_today_progress": "Vous avez progressé de {progress} % dans votre apprentissage : chaque étape compte.",
@@ -2988,11 +2987,14 @@
     "explore_lessons_count": "{count} leçons",
     "explore_something_new": "Explorer de nouvelles choses",
     "lessons_done": "{completed} sur {total} leçons terminées",
-    "no_assignments": "Aucun devoir à venir",
-    "no_assignments_description": "Les devoirs à rendre s'afficheront ici.",
     "no_recommendations": "Aucune recommandation pour le moment",
     "no_recommendations_description": "Explorez le catalogue pour trouver votre prochain cours ou parcours d'apprentissage.",
-    "upcoming_assignments": "Devoirs à venir"
+    "exercise_status_in_progress": "En cours",
+    "exercise_status_overdue": "En retard",
+    "exercise_status_not_submitted": "Non soumis",
+    "no_exercises": "Aucun exercice à venir",
+    "no_exercises_description": "Les exercices que vous devez soumettre apparaîtront ici.",
+    "upcoming_exercises": "Exercices à venir"
   },
   "schedule": {
     "title": "Votre emploi du temps",

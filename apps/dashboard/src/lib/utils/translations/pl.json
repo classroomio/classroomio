@@ -2958,7 +2958,6 @@
     "progress": "Postęp",
     "pick_up_where_you_left_off": "Rozpocznij od miejsca, w którym skończyłeś",
     "get_your_certificate": "Odbierz swój certyfikat",
-    "course_awaits_you": "{title} czeka na Ciebie",
     "learning_awaits_you": "Kolejny kurs już na Ciebie czeka",
     "my_certificate": "Mój certyfikat",
     "lms_today_progress": "Twój postęp w nauce wynosi {progress}% – każdy krok się liczy.",
@@ -2988,11 +2987,14 @@
     "explore_lessons_count": "{count} lekcji",
     "explore_something_new": "Odkryj coś nowego",
     "lessons_done": "{completed} z {total} lekcji wykonanych",
-    "no_assignments": "Brak nadchodzących zadań",
-    "no_assignments_description": "Zadania, które musisz przesłać, pojawią się tutaj.",
     "no_recommendations": "Nic jeszcze nie polecono",
     "no_recommendations_description": "Przejrzyj katalog, aby znaleźć kolejny kurs lub ścieżkę edukacyjną.",
-    "upcoming_assignments": "Nadchodzące zadania"
+    "exercise_status_in_progress": "W toku",
+    "exercise_status_overdue": "Zaległe",
+    "exercise_status_not_submitted": "Nie przesłano",
+    "no_exercises": "Brak nadchodzących ćwiczeń",
+    "no_exercises_description": "Tutaj pojawią się ćwiczenia, które musisz przesłać.",
+    "upcoming_exercises": "Nadchodzące ćwiczenia"
   },
   "schedule": {
     "title": "Twój harmonogram",

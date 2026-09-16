@@ -1856,7 +1856,6 @@
     "upcoming_sessions_heading": "Live Sessions",
     "pick_up_where_you_left_off": "Pick up where you left off",
     "get_your_certificate": "Get your certificate",
-    "course_awaits_you": "{title} awaits you",
     "learning_awaits_you": "Your next course awaits you",
     "my_certificate": "My Certificate",
     "lms_today_progress": "You're {progress}% through your learning - every step counts.",
@@ -1910,12 +1909,15 @@
     "explore_courses_hours": "{count} courses · {hours}h",
     "explore_lessons_count": "{count} lessons",
     "explore_something_new": "Explore Something New",
+    "exercise_status_in_progress": "In Progress",
+    "exercise_status_overdue": "Overdue",
+    "exercise_status_not_submitted": "Not Submitted",
     "lessons_done": "{completed} of {total} lessons done",
-    "no_assignments": "No upcoming assignments",
-    "no_assignments_description": "Assignments you need to submit will appear here.",
+    "no_exercises": "No upcoming exercises",
+    "no_exercises_description": "Exercises you need to submit will appear here.",
     "no_recommendations": "Nothing recommended yet",
     "no_recommendations_description": "Explore the catalog to find your next course or learning path.",
-    "upcoming_assignments": "Upcoming Assignments"
+    "upcoming_exercises": "Upcoming Exercises"
   },
   "ai": {
     "help_me": "Help me write",

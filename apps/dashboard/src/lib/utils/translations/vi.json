@@ -2958,7 +2958,6 @@
     "progress": "Tiến độ",
     "pick_up_where_you_left_off": "Tiếp tục nơi bạn đã dừng lại",
     "get_your_certificate": "Nhận chứng chỉ của bạn",
-    "course_awaits_you": "{title} đang chờ bạn",
     "learning_awaits_you": "Khóa học tiếp theo đang chờ bạn",
     "my_certificate": "Chứng chỉ của tôi",
     "lms_today_progress": "Bạn đã đạt được {progress}% trong quá trình học tập - mỗi bước đều có giá trị.",
@@ -2988,11 +2987,14 @@
     "explore_lessons_count": "{count} bài học",
     "explore_something_new": "Khám phá điều mới mẻ",
     "lessons_done": "{completed} trong tổng số {total} bài học đã hoàn thành",
-    "no_assignments": "Không có bài tập sắp tới",
-    "no_assignments_description": "Các bài tập bạn cần nộp sẽ hiển thị ở đây.",
     "no_recommendations": "Chưa có đề xuất nào",
     "no_recommendations_description": "Khám phá danh mục để tìm khóa học hoặc lộ trình học tập tiếp theo của bạn.",
-    "upcoming_assignments": "Bài tập sắp tới"
+    "exercise_status_in_progress": "Đang tiến hành",
+    "exercise_status_overdue": "Quá hạn",
+    "exercise_status_not_submitted": "Chưa gửi",
+    "no_exercises": "Không có bài tập sắp tới",
+    "no_exercises_description": "Bài tập bạn cần nộp sẽ xuất hiện ở đây.",
+    "upcoming_exercises": "Bài tập sắp tới"
   },
   "schedule": {
     "title": "Lịch trình của bạn",

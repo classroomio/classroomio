@@ -2958,7 +2958,6 @@
     "progress": "Progresso",
     "pick_up_where_you_left_off": "Continue de onde parou",
     "get_your_certificate": "Obtenha seu certificado",
-    "course_awaits_you": "{title} espera por você",
     "learning_awaits_you": "Seu próximo curso espera por você",
     "my_certificate": "Meu certificado",
     "lms_today_progress": "Você está {progress}% em seu aprendizado - cada etapa conta.",
@@ -2988,11 +2987,14 @@
     "explore_lessons_count": "{count} aulas",
     "explore_something_new": "Explore Algo Novo",
     "lessons_done": "{completed} de {total} aulas concluídas",
-    "no_assignments": "Nenhuma tarefa futura",
-    "no_assignments_description": "As tarefas que você precisa enviar aparecerão aqui.",
     "no_recommendations": "Nada recomendado ainda",
     "no_recommendations_description": "Explore o catálogo para encontrar seu próximo curso ou caminho de aprendizado.",
-    "upcoming_assignments": "Próximas Tarefas"
+    "exercise_status_in_progress": "Em andamento",
+    "exercise_status_overdue": "Atrasado",
+    "exercise_status_not_submitted": "Não enviado",
+    "no_exercises": "Não há exercícios futuros",
+    "no_exercises_description": "Os exercícios que você precisa enviar aparecerão aqui.",
+    "upcoming_exercises": "Próximos exercícios"
   },
   "schedule": {
     "title": "Sua programação",

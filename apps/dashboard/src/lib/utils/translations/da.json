@@ -2958,7 +2958,6 @@
     "progress": "Fremskridt",
     "pick_up_where_you_left_off": "Fortsæt hvor du slap",
     "get_your_certificate": "Hent dit certifikat",
-    "course_awaits_you": "{title} venter på dig",
     "learning_awaits_you": "Dit næste kursus venter på dig",
     "my_certificate": "Mit certifikat",
     "lms_today_progress": "Du er {progress} % gennem din læring - hvert skridt tæller.",
@@ -2988,11 +2987,14 @@
     "explore_lessons_count": "{count} lektioner",
     "explore_something_new": "Udforsk noget nyt",
     "lessons_done": "{completed} af {total} lektioner gennemført",
-    "no_assignments": "Ingen kommende opgaver",
-    "no_assignments_description": "Opgaver, du skal indsende, vises her.",
     "no_recommendations": "Intet anbefalet endnu",
     "no_recommendations_description": "Udforsk kataloget for at finde dit næste kursus eller din næste læringssti.",
-    "upcoming_assignments": "Kommende opgaver"
+    "exercise_status_in_progress": "Igangværende",
+    "exercise_status_overdue": "Forfalden",
+    "exercise_status_not_submitted": "Ikke indsendt",
+    "no_exercises": "Ingen kommende øvelser",
+    "no_exercises_description": "Øvelser, du skal indsende, vises her.",
+    "upcoming_exercises": "Kommende øvelser"
   },
   "schedule": {
     "title": "Dit skema",
