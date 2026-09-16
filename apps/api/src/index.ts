@@ -10,11 +10,14 @@ import { preloadVerifiedCustomDomainOriginsRegistry } from '@api/utils/origins';
 import { registerProcessErrorGuards } from '@api/process-error-guards';
 import { serve } from '@hono/node-server';
 import { showRoutes } from 'hono/dev';
+import { initializePluginRuntime } from '@api/services/plugin/runtime';
 
 registerProcessErrorGuards();
 
 // Start server
 async function startServer() {
+  initializePluginRuntime();
+
   console.log('Starting server on port:', API_PORT);
 
   // Connect to Redis (non-blocking: API starts even if Redis fails)
