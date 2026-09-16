@@ -755,6 +755,14 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
+    /**
+     * When true, learners cannot take this course on its own. Public enroll, Explore,
+     * course invite links, and People → Add are rejected. Access is a live
+     * `LEARNING_PATH` grant (join the path). Already-held independent grants are not
+     * revoked when the flag is turned on. Default false: the course stays independently
+     * sellable even if it also sits in a path.
+     */
+    requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
     /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
     displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
