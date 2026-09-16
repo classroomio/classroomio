@@ -32,7 +32,12 @@ const createInviteRateLimit = createRateLimiter({
   message: 'Too many invite creation attempts. Please try again later.',
   keyGenerator: (c) => {
     const user = c.get('user');
-    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    const automationKey = c.get('automationKey');
+    const actor = user?.id
+      ? `user:${user.id}`
+      : automationKey
+        ? `key:${automationKey.id}`
+        : `ip:${extractClientIp(c)}`;
     return `course_invite_create:${actor}:${c.req.param('courseId')}`;
   }
 });

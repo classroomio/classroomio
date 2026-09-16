@@ -76,27 +76,27 @@ export class ClassroomIoApiClient {
   }
 
   async getCourseStructure(courseId: TCourseImportCourseParam['courseId']) {
-    return this.request(`/organization/course-import/courses/${courseId}/structure`, {
+    return this.request(`/organization/course-import/courses/${encodeURIComponent(courseId)}/structure`, {
       method: 'GET'
     });
   }
 
   async updateCourseLandingPage(courseId: TCourseImportCourseParam['courseId'], payload: TCourseLandingPageUpdate) {
-    return this.request(`/course/${courseId}/landing-page`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/landing-page`, {
       method: 'PUT',
       body: payload
     });
   }
 
   async reorderCourseContent(courseId: TCourseUpdateParam['courseId'], payload: TCourseContentReorder) {
-    return this.request(`/course/${courseId}/content/reorder`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/content/reorder`, {
       method: 'PUT',
       body: payload
     });
   }
 
   async getCourseDraft(draftId: string) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
+    return this.request(`/organization/course-import/drafts/${encodeURIComponent(draftId)}`, {
       method: 'GET'
     });
   }
@@ -117,19 +117,19 @@ export class ClassroomIoApiClient {
     if (query.sectionId) searchParams.set('sectionId', query.sectionId);
 
     const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/course/${courseId}/exercise${querySuffix}`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/exercise${querySuffix}`, {
       method: 'GET'
     });
   }
 
   async getCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId']) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/exercise/${encodeURIComponent(exerciseId)}`, {
       method: 'GET'
     });
   }
 
   async createCourseExercise(courseId: string, payload: Omit<TExerciseCreate, 'courseId'>) {
-    return this.request(`/course/${courseId}/exercise`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/exercise`, {
       method: 'POST',
       body: {
         ...payload,
@@ -139,42 +139,42 @@ export class ClassroomIoApiClient {
   }
 
   async createCourseExerciseFromTemplate(courseId: string, payload: TExerciseFromTemplate) {
-    return this.request(`/course/${courseId}/exercise/from-template`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/exercise/from-template`, {
       method: 'POST',
       body: payload
     });
   }
 
   async updateCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId'], payload: TExerciseUpdate) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/exercise/${encodeURIComponent(exerciseId)}`, {
       method: 'PUT',
       body: payload
     });
   }
 
   async updateCourseDraft(draftId: string, payload: TCourseImportDraftUpdate) {
-    return this.request(`/organization/course-import/drafts/${draftId}`, {
+    return this.request(`/organization/course-import/drafts/${encodeURIComponent(draftId)}`, {
       method: 'PUT',
       body: payload
     });
   }
 
   async tagCourseDraft(draftId: TAutomationDraftTagParam['draftId'], payload: TAutomationDraftTagAssignment) {
-    return this.request(`/organization/course-import/drafts/${draftId}/tags`, {
+    return this.request(`/organization/course-import/drafts/${encodeURIComponent(draftId)}/tags`, {
       method: 'PUT',
       body: payload
     });
   }
 
   async publishCourseDraft(draftId: string, payload: TCourseImportDraftPublish) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish`, {
+    return this.request(`/organization/course-import/drafts/${encodeURIComponent(draftId)}/publish`, {
       method: 'POST',
       body: payload
     });
   }
 
   async publishCourseDraftToExistingCourse(draftId: string, payload: TCourseImportDraftPublishToCourse) {
-    return this.request(`/organization/course-import/drafts/${draftId}/publish-existing-course`, {
+    return this.request(`/organization/course-import/drafts/${encodeURIComponent(draftId)}/publish-existing-course`, {
       method: 'POST',
       body: payload
     });
@@ -197,33 +197,33 @@ export class ClassroomIoApiClient {
     if (query.roleId) searchParams.set('roleId', String(query.roleId));
 
     const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/course/${courseId}/members${querySuffix}`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/members${querySuffix}`, {
       method: 'GET'
     });
   }
 
   async addCourseMembers(courseId: string, payload: TAddCourseMembers) {
-    return this.request(`/course/${courseId}/members`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/members`, {
       method: 'POST',
       body: payload
     });
   }
 
   async updateCourseMember(courseId: string, memberId: string, payload: TUpdateCourseMember) {
-    return this.request(`/course/${courseId}/members/${memberId}`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/members/${encodeURIComponent(memberId)}`, {
       method: 'PUT',
       body: payload
     });
   }
 
   async deleteCourseMember(courseId: string, memberId: string) {
-    return this.request(`/course/${courseId}/members/${memberId}`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/members/${encodeURIComponent(memberId)}`, {
       method: 'DELETE'
     });
   }
 
   async resetCourseMemberProgress(courseId: string, memberId: string) {
-    return this.request(`/course/${courseId}/members/${memberId}/reset-progress`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/members/${encodeURIComponent(memberId)}/reset-progress`, {
       method: 'POST'
     });
   }
@@ -239,51 +239,51 @@ export class ClassroomIoApiClient {
     }
 
     const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/course/${courseId}/members/${userId}/analytics${querySuffix}`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/members/${encodeURIComponent(userId)}/analytics${querySuffix}`, {
       method: 'GET'
     });
   }
 
   async listCourseInvites(courseId: string) {
-    return this.request(`/course/${courseId}/invites`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/invites`, {
       method: 'GET'
     });
   }
 
   async createCourseInvite(courseId: string, payload: TCreateCourseInvite) {
-    return this.request(`/course/${courseId}/invites`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/invites`, {
       method: 'POST',
       body: payload
     });
   }
 
   async getCourseInviteLink(courseId: string) {
-    return this.request(`/course/${courseId}/invites/link`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/invites/link`, {
       method: 'GET'
     });
   }
 
   async createCourseInviteLink(courseId: string) {
-    return this.request(`/course/${courseId}/invites/link`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/invites/link`, {
       method: 'POST'
     });
   }
 
   async toggleCourseInviteLink(courseId: string, payload: TToggleInviteLink) {
-    return this.request(`/course/${courseId}/invites/link`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/invites/link`, {
       method: 'PATCH',
       body: payload
     });
   }
 
   async revokeCourseInvite(courseId: string, inviteId: string) {
-    return this.request(`/course/${courseId}/invites/${inviteId}/revoke`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/invites/${encodeURIComponent(inviteId)}/revoke`, {
       method: 'POST'
     });
   }
 
   async getCourseInviteAudit(courseId: string, inviteId: string) {
-    return this.request(`/course/${courseId}/invites/${inviteId}/audit`, {
+    return this.request(`/course/${encodeURIComponent(courseId)}/invites/${encodeURIComponent(inviteId)}/audit`, {
       method: 'GET'
     });
   }

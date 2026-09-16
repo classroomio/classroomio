@@ -29,9 +29,10 @@ const OTHER_ORG_ID = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 const COURSE_ID = 'b2f0a5d4-8c1e-4a6b-9d3f-2e7c8a1b4d5e';
 const ACTOR_ID = 'a1b2c3d4-1234-5678-9abc-def012345678';
 
-function buildApp(automationKey: Record<string, unknown> | null) {
+function buildApp(automationKey: Record<string, unknown> | null, user: { id: string } | null = null) {
   const setContext = async (c: Context, next: Next) => {
     c.set('automationKey', automationKey);
+    c.set('user', user);
     await next();
   };
 
@@ -99,5 +100,16 @@ describe('courseTeamMemberOrAutomationKeyMiddleware', () => {
     const body = await response.json();
     expect(body.fellBack).toBe(true);
     expect(mocks.getCourseOrganizationId).not.toHaveBeenCalled();
+  });
+
+  it('sets actorId to the session user id when courseTeamMemberMiddleware allows the request through', async () => {
+    mocks.courseTeamMemberMiddleware.mockImplementation(async (c: Context, next: Next) => next());
+
+    const app = buildApp(null, { id: ACTOR_ID });
+    const response = await app.request(`/course/${COURSE_ID}/members`);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.actorId).toBe(ACTOR_ID);
   });
 });
