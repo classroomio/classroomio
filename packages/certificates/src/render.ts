@@ -1,4 +1,10 @@
-import { CERTIFICATE_WIDTH, DEFAULT_CERTIFICATE_DESIGN, FONTS_READY_CLASS, LEGACY_THEME_MAP } from './constants';
+import {
+  CERTIFICATE_TEMPLATES,
+  CERTIFICATE_WIDTH,
+  DEFAULT_CERTIFICATE_DESIGN,
+  FONTS_READY_CLASS,
+  LEGACY_THEME_MAP
+} from './constants';
 import type {
   CertificateDesign,
   CertificateRenderData,
@@ -6,15 +12,16 @@ import type {
   CertificateTemplateId,
   StoredCertificateRecord
 } from './types';
+import { isDefinedCertificateTemplate, type CertificateTemplateDefinition } from '@cio/sdk';
 import { CERTIFICATE_TEMPLATE_IDS } from './types';
 import { renderBrutalist } from './templates/brutalist';
 import { renderClassique } from './templates/classique';
 import { renderMinimal } from './templates/minimal';
 import { renderNoir } from './templates/noir';
 import { renderPoster } from './templates/poster';
-import { BASE_STYLES, FONTS_LINK_HREF, type TemplateRenderer } from './templates/shared';
+import { BASE_STYLES, escapeHtml, FONTS_LINK_HREF, type TemplateRenderer } from './templates/shared';
 
-const RENDERERS: Record<CertificateTemplateId, TemplateRenderer> = {
+const RENDERERS: Record<string, TemplateRenderer> = {
   classique: renderClassique,
   brutalist: renderBrutalist,
   noir: renderNoir,
@@ -22,9 +29,95 @@ const RENDERERS: Record<CertificateTemplateId, TemplateRenderer> = {
   minimal: renderMinimal
 };
 
+const BUILT_IN_TEMPLATE_IDS = new Set<string>(CERTIFICATE_TEMPLATE_IDS);
+const PLACEHOLDER_PATTERN = /{{\s*([a-zA-Z][a-zA-Z0-9]*)\s*}}/g;
+const DEFAULT_DECLARATIVE_LABELS = {
+  certificateTitle: 'Certificate of completion',
+  completionLabel: 'For successful completion of',
+  presentedToLabel: 'This is proudly presented to',
+  verifiedCredentialLabel: 'Verified credential'
+};
+
+function interpolateTemplate(source: string, values: Record<string, string>): string {
+  return source.replace(PLACEHOLDER_PATTERN, (_placeholder, token: string) => values[token] ?? '');
+}
+
+function createDeclarativeRenderer(template: CertificateTemplateDefinition): TemplateRenderer {
+  return ({ design, data }) => {
+    const signatoryOne = design.signatories[0];
+    const signatoryTwo = design.signatories[1];
+    const accentColor = /^#[0-9a-fA-F]{6}$/.test(design.accentColor) ? design.accentColor : '#d4af37';
+    const labels = {
+      certificateTitle: data.labels?.certificateTitle ?? DEFAULT_DECLARATIVE_LABELS.certificateTitle,
+      completionLabel: data.labels?.completionLabel ?? DEFAULT_DECLARATIVE_LABELS.completionLabel,
+      presentedToLabel: data.labels?.presentedToLabel ?? DEFAULT_DECLARATIVE_LABELS.presentedToLabel,
+      verifiedCredentialLabel:
+        data.labels?.verifiedCredentialLabel ?? DEFAULT_DECLARATIVE_LABELS.verifiedCredentialLabel
+    };
+    const textValues = {
+      certificateTitle: labels.certificateTitle,
+      certificateId: data.certificateId,
+      completionLabel: labels.completionLabel,
+      courseDescription: design.descriptionOverride || data.courseDescription,
+      courseName: data.courseName,
+      date: data.date,
+      orgName: data.orgName,
+      presentedToLabel: labels.presentedToLabel,
+      recipientName: data.recipientName,
+      signatoryOneName: signatoryOne?.enabled ? signatoryOne.name : '',
+      signatoryOneRole: signatoryOne?.enabled ? signatoryOne.role : '',
+      signatoryOneState: signatoryOne?.enabled ? 'enabled' : 'disabled',
+      signatoryTwoName: signatoryTwo?.enabled ? signatoryTwo.name : '',
+      signatoryTwoRole: signatoryTwo?.enabled ? signatoryTwo.role : '',
+      signatoryTwoState: signatoryTwo?.enabled ? 'enabled' : 'disabled',
+      subtitle: design.subtitle ?? '',
+      verifiedCredentialLabel: labels.verifiedCredentialLabel
+    };
+    const escapedValues = Object.fromEntries(
+      Object.entries(textValues).map(([key, value]) => [key, escapeHtml(value)])
+    );
+    const values = { ...escapedValues, accentColor };
+
+    return {
+      body: interpolateTemplate(template.body, values),
+      styles: interpolateTemplate(template.styles, values)
+    };
+  };
+}
+
+/** Registers SDK-validated, data-only templates with the host rendering engine. */
+export function registerCertificateTemplates(templates: readonly CertificateTemplateDefinition[]): void {
+  for (const template of templates) {
+    if (!isDefinedCertificateTemplate(template)) {
+      throw new Error('Certificate templates must be created with defineCertificateTemplate().');
+    }
+
+    if (BUILT_IN_TEMPLATE_IDS.has(template.id)) {
+      throw new Error(`Certificate template "${template.id}" cannot replace a built-in template.`);
+    }
+
+    RENDERERS[template.id] = createDeclarativeRenderer(template);
+
+    const existingIndex = CERTIFICATE_TEMPLATES.findIndex((candidate) => candidate.id === template.id);
+    const metadata = {
+      id: template.id as CertificateTemplateId,
+      label: template.label ?? template.id,
+      labelKey: template.labelKey,
+      description: template.description ?? '',
+      descriptionKey: template.descriptionKey
+    };
+
+    if (existingIndex >= 0) {
+      CERTIFICATE_TEMPLATES[existingIndex] = metadata;
+    } else {
+      CERTIFICATE_TEMPLATES.push(metadata);
+    }
+  }
+}
+
 export function resolveTemplateId(value: string | undefined | null): CertificateTemplateId {
   if (!value) return 'classique';
-  if (CERTIFICATE_TEMPLATE_IDS.includes(value as CertificateTemplateId)) {
+  if (value in RENDERERS) {
     return value as CertificateTemplateId;
   }
   if (value in LEGACY_THEME_MAP) {

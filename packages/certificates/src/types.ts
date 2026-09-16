@@ -1,5 +1,6 @@
 export const CERTIFICATE_TEMPLATE_IDS = ['classique', 'brutalist', 'noir', 'poster', 'minimal'] as const;
-export type CertificateTemplateId = (typeof CERTIFICATE_TEMPLATE_IDS)[number];
+export type BuiltInCertificateTemplateId = (typeof CERTIFICATE_TEMPLATE_IDS)[number];
+export type CertificateTemplateId = BuiltInCertificateTemplateId | (string & {});
 
 export interface CertificateSignatory {
   name: string;
@@ -54,6 +55,14 @@ export interface CertificateRenderData {
   orgLogoUrl?: string;
   date: string;
   certificateId: string;
+  labels?: Partial<CertificateRenderLabels>;
+}
+
+export interface CertificateRenderLabels {
+  certificateTitle: string;
+  completionLabel: string;
+  presentedToLabel: string;
+  verifiedCredentialLabel: string;
 }
 
 export interface CertificateRenderResult {
@@ -64,5 +73,7 @@ export interface CertificateRenderResult {
 export interface CertificateTemplateMeta {
   id: CertificateTemplateId;
   label: string;
+  labelKey?: string;
   description: string;
+  descriptionKey?: string;
 }
