@@ -29,7 +29,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <PathsListing initialPaths={data.paths} />
+      <PathsListing />
     {/snippet}
   </Page.Body>
 </Page.Root>

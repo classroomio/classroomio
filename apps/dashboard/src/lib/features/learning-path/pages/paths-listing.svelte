@@ -28,13 +28,7 @@
     type PathSortBy,
     type PathSortOrder
   } from '../utils/constants';
-  import type { StatusFilter, EnrollmentFilter, CompletionFilter, ViewMode, LearningPathDetail } from '../utils/types';
-
-  interface Props {
-    initialPaths?: LearningPathDetail[];
-  }
-
-  let { initialPaths }: Props = $props();
+  import type { StatusFilter, EnrollmentFilter, CompletionFilter, ViewMode } from '../utils/types';
 
   let searchQuery = $state('');
   let sortKey = $state<PathSortBy>(DEFAULT_PATH_SORT);
