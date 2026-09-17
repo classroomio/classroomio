@@ -25,9 +25,16 @@ export async function createCohortGoal(data: TNewCohortGoal): Promise<TCohortGoa
   }
 }
 
-export async function getCohortGoalById(goalId: string): Promise<TCohortGoal | null> {
+export async function getCohortGoalById(goalId: string, cohortId?: string): Promise<TCohortGoal | null> {
   try {
-    const [goal] = await db.select().from(schema.cohortGoal).where(eq(schema.cohortGoal.id, goalId)).limit(1);
+    const conditions = [eq(schema.cohortGoal.id, goalId)];
+    if (cohortId) conditions.push(eq(schema.cohortGoal.cohortId, cohortId));
+
+    const [goal] = await db
+      .select()
+      .from(schema.cohortGoal)
+      .where(and(...conditions))
+      .limit(1);
 
     return goal ?? null;
   } catch (error) {
@@ -165,12 +172,16 @@ export async function listAssignmentsForReminderScan(): Promise<
   }
 }
 
-export async function updateCohortGoal(goalId: string, data: Partial<TNewCohortGoal>): Promise<TCohortGoal | null> {
+export async function updateCohortGoal(
+  cohortId: string,
+  goalId: string,
+  data: Partial<TNewCohortGoal>
+): Promise<TCohortGoal | null> {
   try {
     const [updated] = await db
       .update(schema.cohortGoal)
       .set({ ...data, updatedAt: sql`now()` })
-      .where(eq(schema.cohortGoal.id, goalId))
+      .where(and(eq(schema.cohortGoal.id, goalId), eq(schema.cohortGoal.cohortId, cohortId)))
       .returning();
 
     return updated ?? null;
@@ -182,9 +193,12 @@ export async function updateCohortGoal(goalId: string, data: Partial<TNewCohortG
   }
 }
 
-export async function deleteCohortGoal(goalId: string): Promise<TCohortGoal | null> {
+export async function deleteCohortGoal(cohortId: string, goalId: string): Promise<TCohortGoal | null> {
   try {
-    const [deleted] = await db.delete(schema.cohortGoal).where(eq(schema.cohortGoal.id, goalId)).returning();
+    const [deleted] = await db
+      .delete(schema.cohortGoal)
+      .where(and(eq(schema.cohortGoal.id, goalId), eq(schema.cohortGoal.cohortId, cohortId)))
+      .returning();
 
     return deleted ?? null;
   } catch (error) {
