@@ -139,13 +139,7 @@ export default defineConfig({
                 root: '/get-started/create-and-manage-workspaces'
               }
             ]
-          },
-          '/get-started/compare-plans-and-feature-limits',
-          '/get-started/create-and-manage-workspaces',
-          '/get-started/customize-your-academy-profile',
-          '/get-started/manage-your-subscription-and-billing',
-          '/get-started/preview-your-academy-as-a-learner',
-          '/get-started/understand-usage-and-plan-limits'
+          }
         ]
       },
       {
@@ -172,30 +166,7 @@ export default defineConfig({
               {
                 label: 'Duplicate or import a course',
                 root: '/build-courses/duplicate-or-import-a-course'
-              },
-              '/build-courses/add-a-course-callout',
-              '/build-courses/add-documents-and-downloads',
-              '/build-courses/add-or-upload-a-video',
-              '/build-courses/add-slides-and-presentations',
-              '/build-courses/choose-an-exercise-question-type',
-              '/build-courses/create-a-compliance-course',
-              '/build-courses/create-a-live-class-course',
-              '/build-courses/create-a-public-course',
-              '/build-courses/create-a-self-paced-course',
-              '/build-courses/create-an-exercise-with-ai-or-a-template',
-              '/build-courses/create-and-edit-a-lesson',
-              '/build-courses/create-and-reorder-lessons-and-exercises',
-              '/build-courses/enable-comments-and-course-downloads',
-              '/build-courses/organize-content-with-sections',
-              '/build-courses/preview-an-exercise-before-publishing',
-              '/build-courses/publish-a-course-and-allow-self-enrollment',
-              '/build-courses/recover-drafts-and-use-version-history',
-              '/build-courses/reorder-exercise-questions',
-              '/build-courses/set-answers-points-and-automatic-grading',
-              '/build-courses/set-course-order-and-content-grouping',
-              '/build-courses/turn-content-grouping-on-or-off',
-              '/build-courses/update-course-details-and-cover-image',
-              '/build-courses/write-lesson-content-in-the-editor'
+              }
             ]
           },
           {
@@ -387,19 +358,7 @@ export default defineConfig({
               {
                 label: 'Restrict enrollment to your organization',
                 root: '/manage-students/enrollment-access-control'
-              },
-              '/manage-learners/add-and-remove-people-from-a-course',
-              '/manage-learners/add-courses-to-a-cohort',
-              '/manage-learners/assign-learners-to-a-cohort',
-              '/manage-learners/assign-learners-to-courses-in-bulk',
-              '/manage-learners/browse-search-and-filter-your-audience',
-              '/manage-learners/configure-cohort-goals-and-settings',
-              '/manage-learners/export-your-audience',
-              '/manage-learners/import-learners-from-a-csv-file',
-              '/manage-learners/manage-pending-invitations',
-              '/manage-learners/post-to-a-cohort-news-feed',
-              '/manage-learners/review-a-learners-course-progress',
-              '/manage-learners/view-a-learner-profile-and-activity'
+              }
             ]
           },
           {
@@ -509,30 +468,7 @@ export default defineConfig({
               {
                 label: 'Take attendance',
                 root: '/create-and-deliver/take-attendance'
-              },
-              '/deliver-and-engage/add-certificate-signatories',
-              '/deliver-and-engage/choose-free-or-sequential-progression',
-              '/deliver-and-engage/configure-recurring-compliance-training',
-              '/deliver-and-engage/design-a-course-certificate',
-              '/deliver-and-engage/grade-an-exercise-with-ai',
-              '/deliver-and-engage/help-a-learner-download-a-certificate',
-              '/deliver-and-engage/manage-active-compliance-cycles',
-              '/deliver-and-engage/moderate-community-questions-and-answers',
-              '/deliver-and-engage/monitor-organization-compliance',
-              '/deliver-and-engage/notify-learners-about-an-exercise',
-              '/deliver-and-engage/override-ai-tutor-settings-for-a-course',
-              '/deliver-and-engage/post-a-course-announcement',
-              '/deliver-and-engage/review-certificate-reports',
-              '/deliver-and-engage/review-learner-compliance-history',
-              '/deliver-and-engage/set-certificate-eligibility-rules',
-              '/deliver-and-engage/set-exercise-completion-rules',
-              '/deliver-and-engage/set-lesson-completion-rules',
-              '/deliver-and-engage/set-organization-wide-ai-tutor-defaults',
-              '/deliver-and-engage/understand-compliance-courses',
-              '/deliver-and-engage/understand-locked-course-content',
-              '/deliver-and-engage/understand-the-submission-workflow',
-              '/deliver-and-engage/use-ai-tutor-as-a-learner',
-              '/deliver-and-engage/view-and-export-marks'
+              }
             ]
           },
           {
@@ -829,30 +765,7 @@ export default defineConfig({
                 root: '/publish-and-brand/archive-or-restore-a-widget'
               }
             ]
-          },
-          '/publish-and-brand/add-a-custom-favicon-or-custom-code',
-          '/publish-and-brand/add-embeds-links-and-callouts',
-          '/publish-and-brand/add-the-required-dns-records',
-          '/publish-and-brand/archive-or-restore-a-widget',
-          '/publish-and-brand/choose-an-academy-landing-page-theme',
-          '/publish-and-brand/choose-courses-layout-and-design',
-          '/publish-and-brand/choose-which-lms-navigation-tabs-learners-see',
-          '/publish-and-brand/configure-enrollment-calls-to-action',
-          '/publish-and-brand/configure-polls-and-live-comments',
-          '/publish-and-brand/configure-the-course-catalog-section',
-          '/publish-and-brand/create-a-course-widget',
-          '/publish-and-brand/customize-the-learner-dashboard-banner',
-          '/publish-and-brand/customize-the-sign-in-background',
-          '/publish-and-brand/edit-navigation-and-hero-actions',
-          '/publish-and-brand/edit-the-academy-footer',
-          '/publish-and-brand/embed-a-widget-on-another-website',
-          '/publish-and-brand/preview-and-publish-a-course-landing-page',
-          '/publish-and-brand/preview-and-publish-the-academy-landing-page',
-          '/publish-and-brand/reconnect-a-domain-that-needs-attention',
-          '/publish-and-brand/set-course-pricing-and-currency',
-          '/publish-and-brand/show-course-news-feeds-and-grading',
-          '/publish-and-brand/use-widget-version-history',
-          '/publish-and-brand/verify-your-domain-and-ssl-certificate'
+          }
         ]
       },
       {
@@ -912,13 +825,7 @@ export default defineConfig({
           {
             label: 'Report on compliance status',
             root: '/analytics-and-reporting/report-on-compliance-status'
-          },
-          '/analytics-and-reporting/analyze-landing-views-enrollments-and-completions',
-          '/analytics-and-reporting/compare-your-top-courses',
-          '/analytics-and-reporting/read-your-organization-analytics-overview',
-          '/analytics-and-reporting/review-course-performance-and-learner-progress',
-          '/analytics-and-reporting/view-submissions-and-completion-data',
-          '/analytics-and-reporting/view-top-countries-and-popular-course-types'
+          }
         ]
       },
       {
@@ -1024,20 +931,7 @@ export default defineConfig({
                 root: '/account-team-security/set-up-token-based-authentication'
               }
             ]
-          },
-          '/account-team-security/choose-allowed-sign-in-methods',
-          '/account-team-security/configure-sso-access-policies',
-          '/account-team-security/create-another-workspace',
-          '/account-team-security/delete-a-workspace',
-          '/account-team-security/invite-a-team-member-by-email',
-          '/account-team-security/invite-a-team-member-with-a-link',
-          '/account-team-security/remove-a-team-member',
-          '/account-team-security/set-up-token-based-authentication',
-          '/account-team-security/switch-between-workspaces',
-          '/account-team-security/understand-primary-and-secondary-workspaces',
-          '/account-team-security/understand-student-and-workspace-limits',
-          '/account-team-security/view-and-change-your-plan',
-          '/account-team-security/view-and-manage-ai-credits'
+          }
         ]
       },
       {
@@ -1093,13 +987,7 @@ export default defineConfig({
           {
             label: 'Open the developer documentation',
             href: 'https://classroomio.com/docs/developers'
-          },
-          '/integrations-and-automation/authenticate-an-api-request',
-          '/integrations-and-automation/connect-claude-code-codex-cursor-or-opencode',
-          '/integrations-and-automation/create-and-manage-api-keys',
-          '/integrations-and-automation/create-rotate-and-revoke-mcp-keys',
-          '/integrations-and-automation/understand-classroomio-mcp',
-          '/integrations-and-automation/understand-mcp-limits-and-permissions'
+          }
         ]
       },
       {
@@ -1130,17 +1018,7 @@ export default defineConfig({
               {
                 label: 'Update your profile and preferences',
                 root: '/learner-guides/update-your-profile-and-preferences'
-              },
-              '/learner-guides/answer-edit-or-remove-a-post',
-              '/learner-guides/complete-and-submit-an-exercise',
-              '/learner-guides/discover-courses-in-explore',
-              '/learner-guides/find-courses-in-my-learning',
-              '/learner-guides/know-when-you-qualify-for-a-certificate',
-              '/learner-guides/navigate-lessons-and-exercises',
-              '/learner-guides/understand-locked-content-and-progression',
-              '/learner-guides/view-and-download-your-certificates',
-              '/learner-guides/view-marks-and-instructor-feedback',
-              '/learner-guides/view-your-cohorts-and-goals'
+              }
             ]
           },
           {
@@ -1330,18 +1208,7 @@ export default defineConfig({
           {
             label: 'ClassroomIO glossary',
             root: '/reference/glossary'
-          },
-          '/troubleshooting-and-reference/certificate-and-compliance-cycle',
-          '/troubleshooting-and-reference/cohort',
-          '/troubleshooting-and-reference/community',
-          '/troubleshooting-and-reference/section-lesson-and-exercise',
-          '/troubleshooting-and-reference/troubleshoot-course-access-and-enrollment',
-          '/troubleshooting-and-reference/troubleshoot-course-publishing-and-visibility',
-          '/troubleshooting-and-reference/troubleshoot-custom-domains-and-ssl',
-          '/troubleshooting-and-reference/troubleshoot-invitation-and-notification-emails',
-          '/troubleshooting-and-reference/troubleshoot-login-and-verification-emails',
-          '/troubleshooting-and-reference/troubleshoot-video-uploads-and-playback',
-          '/troubleshooting-and-reference/workspace'
+          }
         ]
       }
     ]

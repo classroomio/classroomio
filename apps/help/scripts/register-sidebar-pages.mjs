@@ -1,10 +1,10 @@
 /**
- * Registers newly added content/help/**\/*.mdx pages into the matching group
+ * Registers newly added content/help/**\/*.mdx pages into the matching section
  * of `navigation.sidebar` in blume.config.ts — otherwise a CMS-added page is
  * invisible in navigation until someone adds it by hand. Safe to automate
  * because the CMS can only add pages under an existing content/help/<folder>,
- * so a new page's target group is always determinable from its folder name.
- * New pages are appended at the end of their group; ordering isn't decided.
+ * so a new page's target section is always determinable from its folder name.
+ * New pages are appended at the end of their section; ordering isn't decided.
  *
  * Run from apps/help/: `node scripts/register-sidebar-pages.mjs [baseRef]`
  * (baseRef defaults to origin/main). Only touches blume.config.ts on disk —
@@ -73,17 +73,6 @@ function getSidebarArray(sourceFile) {
   return sidebar;
 }
 
-function findGroupForFolder(sidebarArray, folder) {
-  for (const element of sidebarArray.getElements()) {
-    if (!element.asKind(SyntaxKind.ObjectLiteralExpression)) continue;
-
-    const found = findGroupInObject(element.asKindOrThrow(SyntaxKind.ObjectLiteralExpression), folder);
-    if (found) return found;
-  }
-
-  return null;
-}
-
 function pagePathOf(element) {
   const stringPage = element.asKind(SyntaxKind.StringLiteral);
   if (stringPage) return stringPage.getLiteralText();
@@ -95,26 +84,45 @@ function pagePathOf(element) {
   return rootValue?.getLiteralText() ?? null;
 }
 
-// navigation.sidebar is three levels deep, so items may hold nested groups.
-function findGroupInObject(group, folder) {
+function itemsArrayOf(group) {
   const itemsProp = group.getProperty('items');
   if (!itemsProp) return null;
 
-  const itemsArray = itemsProp
+  return itemsProp
     .asKindOrThrow(SyntaxKind.PropertyAssignment)
     .getInitializerOrThrow(SyntaxKind.ArrayLiteralExpression);
-  const elements = itemsArray.getElements();
+}
 
-  const existingPaths = elements.map(pagePathOf).filter(Boolean);
-  if (existingPaths.some((path) => path === `/${folder}` || path.startsWith(`/${folder}/`))) {
-    return itemsArray;
+// navigation.sidebar is three levels deep, so collect pages recursively.
+function collectPagePaths(itemsArray) {
+  const paths = [];
+
+  for (const element of itemsArray.getElements()) {
+    const pagePath = pagePathOf(element);
+    if (pagePath) paths.push(pagePath);
+
+    const group = element.asKind(SyntaxKind.ObjectLiteralExpression);
+    if (!group) continue;
+
+    const nestedItems = itemsArrayOf(group);
+    if (nestedItems) paths.push(...collectPagePaths(nestedItems));
   }
 
-  for (const el of elements) {
-    const nestedGroup = el.asKind(SyntaxKind.ObjectLiteralExpression);
-    if (!nestedGroup) continue;
-    const found = findGroupInObject(nestedGroup, folder);
-    if (found) return found;
+  return paths;
+}
+
+function findSectionForFolder(sidebarArray, folder) {
+  for (const element of sidebarArray.getElements()) {
+    const section = element.asKind(SyntaxKind.ObjectLiteralExpression);
+    if (!section) continue;
+
+    const itemsArray = itemsArrayOf(section);
+    if (!itemsArray) continue;
+
+    const sectionPaths = collectPagePaths(itemsArray);
+    if (sectionPaths.some((path) => path === `/${folder}` || path.startsWith(`/${folder}/`))) {
+      return itemsArray;
+    }
   }
 
   return null;
@@ -130,33 +138,35 @@ if (addedFiles.length === 0) {
 const project = new Project();
 const sourceFile = project.addSourceFileAtPath(configPath);
 const sidebarArray = getSidebarArray(sourceFile);
+const registeredPaths = new Set(collectPagePaths(sidebarArray));
 
 let changed = false;
 
 for (const file of addedFiles) {
   const sitePath = toSitePath(file);
   const folder = folderOf(sitePath);
-  const itemsArray = findGroupForFolder(sidebarArray, folder);
+
+  if (registeredPaths.has(sitePath)) {
+    console.log(`[help] ${sitePath} is already registered in navigation.sidebar — skipping.`);
+    continue;
+  }
+
+  const itemsArray = findSectionForFolder(sidebarArray, folder);
 
   if (!itemsArray) {
     console.warn(
-      `[help] No existing sidebar group found for folder "${folder}" (page ${sitePath}) — leaving ` +
+      `[help] No existing sidebar section found for folder "${folder}" (page ${sitePath}) — leaving ` +
         'navigation.sidebar untouched for this page. This should not happen for a page added through ' +
-        'the CMS, since it can only add pages under folders that already have a collection/group; ' +
+        'the CMS, since it can only add pages under folders represented by an existing section; ' +
         'register it in apps/help/blume.config.ts by hand.'
     );
     continue;
   }
 
-  const existingPaths = itemsArray.getElements().map(pagePathOf).filter(Boolean);
-  if (existingPaths.includes(sitePath)) {
-    console.log(`[help] ${sitePath} is already registered in navigation.sidebar — skipping.`);
-    continue;
-  }
-
   itemsArray.addElement(`'${sitePath}'`);
+  registeredPaths.add(sitePath);
   changed = true;
-  console.log(`[help] Registered ${sitePath} in its sidebar group.`);
+  console.log(`[help] Registered ${sitePath} in its sidebar section.`);
 }
 
 if (changed) {
