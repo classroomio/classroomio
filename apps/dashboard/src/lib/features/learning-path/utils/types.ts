@@ -63,6 +63,7 @@ export interface LearningPathCourse {
   slug?: string;
   coverImage?: string;
   coverGradient?: string;
+  courseType?: string;
   lessonCount: number;
   exerciseCount: number;
   lessonsCompleted: number;
@@ -130,6 +131,7 @@ export type LearningPathCourseProgress = {
   slug?: string;
   coverGradient?: string;
   coverImage?: string;
+  courseType?: string;
 };
 
 export type LearningPathEnrollment = {

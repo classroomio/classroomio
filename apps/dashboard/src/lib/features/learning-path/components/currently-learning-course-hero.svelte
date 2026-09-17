@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import LearningPathBadge from './learning-path-badge.svelte';
-  import LearningPathProgress from './learning-path-progress.svelte';
+  import { LearningPathBadge, LearningPathProgress } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import BookIcon from '@lucide/svelte/icons/book-open';
@@ -11,7 +10,6 @@
     href: string;
     coverGradient?: string;
     coverImage?: string;
-    weeksLabel: string;
     partOfPathName?: string | null;
     pathHref?: string;
     progressPercent: number;
@@ -23,7 +21,6 @@
     href,
     coverGradient = 'linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))',
     coverImage,
-    weeksLabel,
     partOfPathName = null,
     pathHref = '/lms/mylearning',
     progressPercent,
@@ -49,7 +46,7 @@
     {:else}
       <BookIcon class="size-20 text-white/40 transition-transform duration-300 group-hover:scale-110" />
     {/if}
-    <LearningPathBadge type="course" onCover class="absolute top-3 left-3" />
+    <LearningPathBadge label={$t('learningPath.badge.course')} onCover class="absolute top-3 left-3" />
   </a>
 
   <div class="flex min-w-0 flex-1 flex-col gap-5 p-5 md:gap-6">
@@ -59,7 +56,6 @@
       </a>
 
       <p class="ui:text-muted-foreground mt-0.5 text-sm">
-        {weeksLabel}
         {#if partOfPathName}
           <span class="inline-flex items-center gap-1">
             · {$t('learningPath.course.part_of')}:

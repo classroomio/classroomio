@@ -10,39 +10,7 @@
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import GitBranchIcon from '@lucide/svelte/icons/git-branch';
   import { DEFAULT_COURSE_BANNER_IMAGE } from './constants';
-
-  export interface CourseCardLabels {
-    /** "Course" cover badge */
-    courseBadge: string;
-    lesson: string;
-    lessons: string;
-    exercise: string;
-    exercises: string;
-    /** e.g. "Completed" */
-    completedLabel: string;
-    /** e.g. "progress" */
-    progressLabel: string;
-    /** e.g. "Earned on" */
-    earnedOn: string;
-    /** e.g. "Part of" */
-    partOf: string;
-    learnMore: string;
-    continueCourse: string;
-    reviewCourse: string;
-    viewCertificate: string;
-    manage: string;
-    published: string;
-    unpublished: string;
-    /** e.g. "students" */
-    students: string;
-  }
-
-  export interface CourseCardCompliance {
-    statusLabel?: string;
-    statusVariant: BadgeVariant;
-    dateLabel?: string;
-    dateValue?: string;
-  }
+  import type { CourseCardCompliance, CourseCardLabels } from './course-card.svelte';
 
   type CourseSurface = 'certificate' | 'admin' | 'explore' | 'landing' | 'lms';
 
@@ -57,7 +25,6 @@
       icon: Component;
       iconClass?: string;
     } | null;
-    /** e.g. public-course indicator on the banner */
     visibilityBadge?: {
       label: string;
       icon: Component;
@@ -66,7 +33,6 @@
     lessonCount?: number;
     exerciseCount?: number;
     progressPercent?: number;
-    /** Enrollment state, meaningful on LMS/certificate surfaces */
     status?: string;
     totalStudents?: number;
     isPublished?: boolean;
@@ -78,14 +44,11 @@
     isCertificateView?: boolean;
     isAdmin?: boolean;
     isOnLandingPage?: boolean;
-    /** Overrides the surface-derived CTA label */
     ctaLabel?: string;
     onExploreClick?: () => void;
     labels: CourseCardLabels;
     class?: string;
-    /** Optional overlay inside the cover (e.g. admin dropdown), typically absolutely positioned */
     overlay?: Snippet;
-    /** Optional tags row (e.g. CourseTagsOverflow) */
     tags?: Snippet;
   }
 
@@ -143,7 +106,6 @@
 
   const isExploreClickable = $derived(surface === 'explore' && !!onExploreClick);
 
-  /** Suppresses inner navigation so the whole card opens the explore modal */
   const innerHref = $derived(isExploreClickable ? undefined : href);
 
   const ctaVariant = $derived(surface === 'lms' && !done ? 'default' : 'outline');
@@ -164,8 +126,6 @@
                 ? labels.reviewCourse
                 : labels.continueCourse)
   );
-
-  const showLessonExerciseCount = $derived(typeof lessonCount === 'number' || typeof exerciseCount === 'number');
 
   function handleCardClick(event: MouseEvent) {
     if (!isExploreClickable) return;
@@ -200,7 +160,7 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
   class={cn(
-    'ui:group ui:flex ui:flex-col ui:overflow-hidden ui:rounded-xl ui:border ui:shadow-sm ui:hover:border-primary/40 ui:w-full',
+    'ui:group ui:flex ui:items-center ui:gap-4 ui:rounded-xl ui:border ui:p-4 ui:shadow-xs ui:transition-colors ui:hover:border-primary/40 ui:w-full',
     className
   )}
   onclick={isExploreClickable ? handleCardClick : undefined}
@@ -208,9 +168,11 @@
   role={isExploreClickable ? 'button' : undefined}
   tabindex={isExploreClickable ? 0 : -1}
 >
-  <div
-    class="ui:relative ui:flex ui:h-50 ui:items-center ui:justify-center ui:overflow-hidden"
+  <a
+    href={innerHref}
+    class="ui:relative ui:flex ui:h-20 ui:w-28 ui:shrink-0 ui:items-center ui:justify-center ui:overflow-hidden ui:rounded-lg"
     style="background: {coverGradient}"
+    aria-label={title}
   >
     {#if coverImage}
       <img
@@ -227,11 +189,13 @@
         class="ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-cover"
       />
     {/if}
+  </a>
 
-    <div class="ui:absolute ui:inset-x-0 ui:top-0 ui:flex ui:items-center ui:gap-2 ui:px-[13px] ui:py-[11px]">
+  <div class="ui:min-w-0 ui:flex-1">
+    <div class="ui:mb-1 ui:flex ui:flex-wrap ui:items-center ui:gap-2">
       <Badge
         variant="outline"
-        class="ui:border-white/30 ui:bg-white/15 ui:text-white ui:text-[10px] ui:font-semibold ui:tracking-[0.08em] ui:uppercase ui:backdrop-blur"
+        class="ui:border-primary/30 ui:bg-primary/10 ui:text-primary ui:text-[10px] ui:font-semibold ui:tracking-[0.08em] ui:uppercase"
       >
         {labels.courseBadge}
       </Badge>
@@ -240,7 +204,7 @@
         {@const Icon = typeBadge.icon}
         <Badge
           variant="outline"
-          class="ui:bg-white ui:text-zinc-900 ui:border-zinc-200/80 ui:shadow-sm ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:dark:border-border"
+          class="ui:border-zinc-200/80 ui:bg-white ui:text-zinc-900 ui:shadow-xs ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:dark:border-border"
         >
           <Icon class={typeBadge.iconClass} />
           {typeBadge.label}
@@ -251,123 +215,114 @@
         {@const VIcon = visibilityBadge.icon}
         <Badge
           variant="outline"
-          class="ui:bg-white ui:text-zinc-900 ui:border-zinc-200/80 ui:shadow-sm ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:dark:border-border"
+          class="ui:border-zinc-200/80 ui:bg-white ui:text-zinc-900 ui:shadow-xs ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:dark:border-border"
         >
-          <VIcon class={VIcon.iconClass} />
+          <VIcon class={visibilityBadge.iconClass} />
           {visibilityBadge.label}
+        </Badge>
+      {/if}
+
+      {#if showPublishAndStudents}
+        <Badge variant={isPublished ? 'default' : 'outline'}>
+          {isPublished ? labels.published : labels.unpublished}
+        </Badge>
+      {/if}
+
+      {#if showCompletedBadge}
+        <Badge
+          variant="outline"
+          class="ui:gap-1 ui:border-emerald-500/30 ui:bg-emerald-500/10 ui:text-emerald-600 ui:dark:text-emerald-400"
+        >
+          <CheckCircleIcon class="ui:size-3" />
+          {labels.completedLabel}
         </Badge>
       {/if}
     </div>
 
-    {#if overlay}
-      <div class="ui:absolute ui:top-0 ui:right-0 ui:z-40" onclick={(event) => event.stopPropagation()}>
-        {@render overlay()}
-      </div>
-    {/if}
-  </div>
-
-  <div class="ui:flex ui:flex-1 ui:flex-col ui:gap-[9px] ui:p-4">
     <a href={innerHref} class="ui:w-fit">
-      <h3 class="ui:line-clamp-2 ui:text-sm ui:font-semibold ui:tracking-tight ui:hover:text-primary">{title}</h3>
+      <h3 class="ui:truncate ui:text-sm ui:font-semibold ui:tracking-tight ui:hover:text-primary">{title}</h3>
     </a>
 
     {#if description}
-      <p class="ui:line-clamp-2 ui:min-h-[33px] ui:text-xs ui:leading-snug ui:text-muted-foreground">{description}</p>
+      <p class="ui:mt-0.5 ui:truncate ui:text-xs ui:text-muted-foreground">{description}</p>
     {/if}
 
     {#if tags}
-      <div class="ui:mt-1">@render tags()</div>
-    {/if}
-
-    {#if showLessonExerciseCount}
-      <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
-        {#if typeof lessonCount === 'number'}
-          <span class="ui:inline-flex ui:items-center ui:gap-1">
-            <BookOpenIcon class="ui:size-3.5" />
-            {lessonCount}
-            {lessonCount === 1 ? labels.lesson : labels.lessons}
-          </span>
-        {/if}
-        {#if typeof exerciseCount === 'number'}
-          <span class="ui:inline-flex ui:items-center ui:gap-1">
-            <ClipboardCheckIcon class="ui:size-3.5" />
-            {exerciseCount}
-            {exerciseCount === 1 ? labels.exercise : labels.exercises}
-          </span>
-        {/if}
+      <div class="ui:mt-1.5">
+        {@render tags()}
       </div>
     {/if}
 
-    {#if showCompletedBadge}
-      <span
-        class="ui:inline-flex ui:items-center ui:gap-1.5 ui:text-xs ui:font-medium ui:text-emerald-600 ui:dark:text-emerald-400"
-      >
-        <CheckCircleIcon class="ui:size-3.5" strokeWidth={2.4} />
-        {labels.completedLabel}
-      </span>
-    {:else if showEarnedAt}
-      <p class="ui:text-xs ui:text-muted-foreground">
-        {labels.earnedOn}: {formatDate(certificateEarnedAt as string)}
-      </p>
-    {:else if showProgress}
-      <div class="ui:flex ui:items-baseline ui:justify-between ui:text-xs">
-        <span class="ui:text-muted-foreground">{labels.progressLabel}</span>
-        <span class="ui:tabular-nums ui:font-semibold">{progressPercent}%</span>
-      </div>
-      <Progress value={progressPercent} class="ui:h-1.5 ui:rounded-full" />
-    {/if}
-
-    {#if showCompliance}
-      <div class="ui:mt-1 ui:flex ui:flex-wrap ui:items-center ui:gap-2">
+    <div class="ui:mt-2 ui:flex ui:flex-wrap ui:items-center ui:gap-x-4 ui:gap-y-1 ui:text-xs ui:text-muted-foreground">
+      {#if typeof lessonCount === 'number'}
+        <span class="ui:inline-flex ui:items-center ui:gap-1">
+          <BookOpenIcon class="ui:size-3.5" />
+          {lessonCount}
+          {lessonCount === 1 ? labels.lesson : labels.lessons}
+        </span>
+      {/if}
+      {#if typeof exerciseCount === 'number'}
+        <span class="ui:inline-flex ui:items-center ui:gap-1">
+          <ClipboardCheckIcon class="ui:size-3.5" />
+          {exerciseCount}
+          {exerciseCount === 1 ? labels.exercise : labels.exercises}
+        </span>
+      {/if}
+      {#if showPublishAndStudents && (totalStudents ?? 0) > 0}
+        <span class="ui:inline-flex ui:items-center ui:gap-1">
+          {totalStudents}
+          {labels.students}
+        </span>
+      {/if}
+      {#if showEarnedAt}
+        <span>{labels.earnedOn}: {formatDate(certificateEarnedAt as string)}</span>
+      {/if}
+      {#if partOfPath}
+        <span class="ui:inline-flex ui:items-center ui:gap-1.5">
+          <GitBranchIcon class="ui:size-3.5 ui:shrink-0" />
+          {labels.partOf}:
+          <a
+            href={innerHref ? partOfPath.href : undefined}
+            class="ui:font-medium ui:text-foreground ui:hover:text-primary"
+          >
+            <strong>{partOfPath.name}</strong>
+          </a>
+        </span>
+      {/if}
+      {#if showCompliance && compliance}
         {#if compliance.statusLabel}
           <Badge variant={compliance.statusVariant}>{compliance.statusLabel}</Badge>
         {/if}
         {#if compliance.dateLabel && compliance.dateValue}
-          <p class="ui:text-xs ui:text-muted-foreground">
-            {compliance.dateLabel}: {compliance.dateValue}
-          </p>
+          <span>{compliance.dateLabel}: {compliance.dateValue}</span>
         {/if}
-      </div>
-    {/if}
-
-    {#if showPublishAndStudents}
-      <div class="ui:flex ui:items-center ui:gap-2 ui:text-xs">
-        <Badge variant={isPublished ? 'default' : 'outline'}>
-          {isPublished ? labels.published : labels.unpublished}
-        </Badge>
-        {#if (totalStudents ?? 0) > 0}
-          <span class="ui:text-muted-foreground">
-            {totalStudents}
-            {labels.students}
-          </span>
-        {/if}
-      </div>
-    {/if}
-
-    {#if partOfPath}
-      <span class="ui:inline-flex ui:items-center ui:gap-1.5 ui:text-xs ui:text-muted-foreground">
-        <GitBranchIcon class="ui:size-3.5 ui:shrink-0" />
-        {labels.partOf}:
-        <a
-          href={innerHref ? partOfPath.href : undefined}
-          class="ui:font-medium ui:text-foreground ui:hover:text-primary"
-        >
-          <strong>{partOfPath.name}</strong>
-        </a>
-      </span>
-    {/if}
-
-    <div class="ui:mt-1 ui:flex ui:flex-1 ui:items-end">
-      <Button
-        href={innerHref}
-        variant={ctaVariant}
-        size="sm"
-        class="ui:w-full"
-        onclick={isExploreClickable ? handleCtaClick : undefined}
-      >
-        {ctaLabelText}
-        {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
-      </Button>
+      {/if}
     </div>
+  </div>
+
+  <div class="ui:flex ui:shrink-0 ui:flex-col ui:items-end ui:justify-between ui:gap-2">
+    {#if overlay}
+      <div class="ui:self-end" onclick={(event) => event.stopPropagation()}>
+        {@render overlay()}
+      </div>
+    {/if}
+
+    {#if showProgress && !done && typeof progressPercent === 'number'}
+      <div class="ui:flex ui:w-36 ui:items-center ui:gap-2">
+        <Progress value={progressPercent} class="ui:h-1.5 ui:flex-1 ui:rounded-full" />
+        <span class="ui:text-xs ui:font-medium ui:tabular-nums">{progressPercent}%</span>
+      </div>
+    {/if}
+
+    <Button
+      href={innerHref}
+      variant={ctaVariant}
+      size="sm"
+      class="ui:min-w-24"
+      onclick={isExploreClickable ? handleCtaClick : undefined}
+    >
+      {ctaLabelText}
+      {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
+    </Button>
   </div>
 </div>

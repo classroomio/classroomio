@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import LearningPathBadge from './learning-path-badge.svelte';
-  import LearningPathProgress from './learning-path-progress.svelte';
+  import { LearningPathBadge, LearningPathProgress } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -10,14 +9,10 @@
     coverGradient?: string;
     coverImage?: string;
     courseCount: number;
-    totalHours: number;
     progressPercent: number;
     coursesCompleted: number;
     href: string;
   }
-
-  const hours = (totalHours: number) =>
-    globalThis.Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(totalHours);
 
   const ctaLabel = (completed: number, count: number) =>
     completed === count && count > 0
@@ -32,7 +27,6 @@
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
     coverImage,
     courseCount,
-    totalHours,
     progressPercent,
     coursesCompleted,
     href
@@ -56,7 +50,7 @@
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
     {/if}
-    <LearningPathBadge type="path" onCover class="absolute top-3 left-3" />
+    <LearningPathBadge label={$t('learningPath.badge.learning_path')} onCover class="absolute top-3 left-3" />
   </a>
 
   <!-- Content -->
@@ -67,7 +61,7 @@
       </a>
       <p class="ui:text-muted-foreground mt-0.5 text-sm">
         {courseCount}
-        {courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')} · ~{hours(totalHours)}h
+        {courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')}
       </p>
 
       <div class="mt-4 flex items-center justify-between gap-3">

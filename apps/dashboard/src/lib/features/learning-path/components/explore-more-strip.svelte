@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import LearningPathBadge from './learning-path-badge.svelte';
+  import { LearningPathBadge } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import { GitBranch } from '@lucide/svelte';
@@ -54,7 +54,11 @@
             />
           {/if}
           <GitBranch size={20} class="absolute top-3 right-3 z-10" color="white" />
-          <LearningPathBadge type="path" onCover class="absolute top-3 left-3 z-10" />
+          <LearningPathBadge
+            label={$t('learningPath.badge.learning_path')}
+            onCover
+            class="absolute top-3 left-3 z-10"
+          />
         </div>
         <div class="flex flex-1 flex-col p-4">
           <h3 class="line-clamp-1 text-sm font-semibold">{path.name}</h3>
