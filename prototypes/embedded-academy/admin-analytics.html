@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Academy analytics · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      body { margin: 0; }
+      .ed { display: flex; flex-direction: column; min-height: 100dvh; background: var(--background); color: var(--foreground); }
+      .ed-top { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+      .ed-top .nm { font-size: 14.5px; font-weight: 600; } .ed-top .sp { flex: 1; }
+      .abody { padding: 28px 34px 70px; max-width: 940px; }
+      .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 26px; }
+      .sec-analytics { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--card); }
+      .sa-row { display: grid; grid-template-columns: 26px 1fr 108px 108px 92px; align-items: center; gap: 14px; padding: 13px 16px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+      .sa-row:last-child { border-bottom: 0; }
+      .sa-row.head { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); font-weight: 650; background: color-mix(in oklab, var(--foreground) 3%, transparent); }
+      .sa-row .rk { color: var(--muted-foreground); font-size: 12px; }
+      .sa-row .nm { font-weight: 550; } .sa-row .ty { font-size: 11.8px; color: var(--muted-foreground); margin-top: 2px; }
+      .sa-row .num { text-align: right; font-variant-numeric: tabular-nums; }
+      .sa-row .ctr { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+      .bar-mini { height: 5px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 15%, transparent); overflow: hidden; margin-top: 6px; }
+      .bar-mini > span { display: block; height: 100%; background: var(--primary); }
+      h2.st { font-size: 14px; font-weight: 650; margin: 30px 0 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="ed">
+      <header class="ed-top">
+        <a class="btn btn-sm btn-ghost" href="admin-academies.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Academies</a>
+        <span class="nm">Northwind Learn</span>
+        <span class="badge badge-success">Published · v7</span>
+        <span class="sp"></span>
+        <div class="seg-toggle"><button>7 days</button><button class="on">30 days</button><button>90 days</button></div>
+        <a class="btn btn-sm btn-outline" href="admin-editor.html">Edit sections</a>
+      </header>
+
+      <div class="abody" id="filled">
+        <div class="stats">
+          <div class="card card-pad stat-card"><div class="k">Page views</div><div class="v tnum">12,480</div><div class="s">+18% vs previous 30 days</div></div>
+          <div class="card card-pad stat-card"><div class="k">Course clicks</div><div class="v tnum">3,207</div><div class="s">25.7% of views</div></div>
+          <div class="card card-pad stat-card"><div class="k">Enrolments</div><div class="v tnum">846</div><div class="s">26.4% of clicks</div></div>
+          <div class="card card-pad stat-card"><div class="k">Completions</div><div class="v tnum">291</div><div class="s">34.4% of enrolments</div></div>
+        </div>
+
+        <h2 class="st">By section</h2>
+        <div class="sec-analytics">
+          <div class="sa-row head"><span></span><span>Section</span><span class="num">Impressions</span><span class="num">Clicks</span><span class="ctr">CTR</span></div>
+          <div class="sa-row"><span class="rk">1</span><span><span class="nm">Jump back in</span><span class="ty">continue_learning</span><span class="bar-mini"><span style="width: 100%"></span></span></span><span class="num tnum">7,910</span><span class="num tnum">1,486</span><span class="ctr">18.8%</span></div>
+          <div class="sa-row"><span class="rk">2</span><span><span class="nm">Featured courses</span><span class="ty">compact_list</span><span class="bar-mini"><span style="width: 84%"></span></span></span><span class="num tnum">12,401</span><span class="num tnum">982</span><span class="ctr">7.9%</span></div>
+          <div class="sa-row"><span class="rk">3</span><span><span class="nm">Browse by role</span><span class="ty">category_grid</span><span class="bar-mini"><span style="width: 52%"></span></span></span><span class="num tnum">9,140</span><span class="num tnum">514</span><span class="ctr">5.6%</span></div>
+          <div class="sa-row"><span class="rk">4</span><span><span class="nm">Getting started</span><span class="ty">card_grid</span><span class="bar-mini"><span style="width: 24%"></span></span></span><span class="num tnum">10,882</span><span class="num tnum">225</span><span class="ctr">2.1%</span></div>
+        </div>
+        <p style="font-size: 12.5px; color: var(--muted-foreground); margin: 11px 2px 0; line-height: 1.6">Impressions count a section entering the viewport once per session. <b>Jump back in</b> is seen by fewer people — only signed-in learners with progress — but converts more than twice as well as anything else on the page.</p>
+
+        <h2 class="st">Top courses</h2>
+        <div class="sec-analytics">
+          <div class="sa-row head"><span></span><span>Course</span><span class="num">Clicks</span><span class="num">Enrolments</span><span class="ctr">Completed</span></div>
+          <div class="sa-row"><span class="rk">1</span><span class="nm">Automations for Support Teams</span><span class="num tnum">1,142</span><span class="num tnum">388</span><span class="ctr tnum">126</span></div>
+          <div class="sa-row"><span class="rk">2</span><span class="nm">Northwind 101</span><span class="num tnum">903</span><span class="num tnum">271</span><span class="ctr tnum">104</span></div>
+          <div class="sa-row"><span class="rk">3</span><span class="nm">Building on the Northwind API</span><span class="num tnum">618</span><span class="num tnum">122</span><span class="ctr tnum">39</span></div>
+          <div class="sa-row"><span class="rk">4</span><span class="nm">Advanced Data Modelling</span><span class="num tnum">544</span><span class="num tnum">65</span><span class="ctr tnum">22</span></div>
+        </div>
+        <p style="font-size: 12.5px; color: var(--muted-foreground); margin: 11px 2px 0">Enrolments and completions are attributed to this academy only when the learner arrived through it.</p>
+      </div>
+
+      <div class="abody" id="empty" style="display: none">
+        <div class="ac-empty" style="border-color: var(--border); color: var(--muted-foreground); padding: 52px">
+          <div style="font-size: 15px; font-weight: 600; color: var(--foreground); margin-bottom: 6px">No events yet</div>
+          Analytics start collecting the first time a learner loads the published academy. Events appear here within a minute.
+          <div style="margin-top: 16px"><a class="btn btn-outline" href="admin-embed.html">Get the embed code</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on" onclick="setState('filled', this)">With data</button>
+      <button onclick="setState('empty', this)">Empty</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+
+    <script>
+      function setState(state, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        document.getElementById('filled').style.display = state === 'filled' ? 'block' : 'none';
+        document.getElementById('empty').style.display = state === 'empty' ? 'block' : 'none';
+      }
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

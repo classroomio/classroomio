@@ -18,19 +18,19 @@
 
 <Story name="Default">
   {#snippet template()}
-    <NavigationMenu.Root class="ui:relative">
-      <NavigationMenu.List class="ui:flex ui:gap-2">
+    <NavigationMenu.Root class="relative">
+      <NavigationMenu.List class="flex gap-2">
         <NavigationMenu.Item>
           <NavigationMenu.Trigger>Getting started</NavigationMenu.Trigger>
           <NavigationMenu.Content>
-            <ul class="ui:grid ui:gap-3 ui:p-6 ui:md:w-[400px] ui:lg:w-[500px] ui:lg:grid-cols-[.75fr_1fr]">
-              <li class="ui:row-span-3">
+            <ul class="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <li class="row-span-3">
                 <NavigationMenu.Link
                   href="/"
-                  class="ui:from-muted/50 ui:to-muted ui:flex ui:h-full ui:w-full ui:select-none ui:flex-col ui:justify-end ui:rounded-md ui:bg-gradient-to-b ui:p-6 ui:no-underline ui:outline-none ui:focus:shadow-md"
+                  class="ui:from-muted/50 ui:to-muted flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
                 >
-                  <div class="ui:mb-2 ui:mt-4 ui:text-lg ui:font-medium">ClassroomIO</div>
-                  <p class="ui:text-muted-foreground ui:text-sm ui:leading-tight">
+                  <div class="mt-4 mb-2 text-lg font-medium">ClassroomIO</div>
+                  <p class="ui:text-muted-foreground text-sm leading-tight">
                     A powerful learning management system for creating and managing online courses.
                   </p>
                 </NavigationMenu.Link>
@@ -38,10 +38,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/docs"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Introduction</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Introduction</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     Learn how to get started with ClassroomIO.
                   </p>
                 </NavigationMenu.Link>
@@ -49,10 +49,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/docs/installation"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Installation</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Installation</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     How to install and configure your instance.
                   </p>
                 </NavigationMenu.Link>
@@ -60,10 +60,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/docs/components"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Components</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Components</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     Explore the available UI components.
                   </p>
                 </NavigationMenu.Link>
@@ -75,14 +75,14 @@
         <NavigationMenu.Item>
           <NavigationMenu.Trigger>Features</NavigationMenu.Trigger>
           <NavigationMenu.Content>
-            <ul class="ui:grid ui:w-[400px] ui:gap-3 ui:p-4 md:ui:w-[500px] md:ui:grid-cols-2 lg:ui:w-[600px]">
+            <ul class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
               <li>
                 <NavigationMenu.Link
                   href="/courses"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Course Management</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Course Management</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     Create and organize your courses with ease.
                   </p>
                 </NavigationMenu.Link>
@@ -90,10 +90,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/students"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Student Tracking</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Student Tracking</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     Monitor student progress and performance.
                   </p>
                 </NavigationMenu.Link>
@@ -101,10 +101,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/assessments"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Assessments</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Assessments</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     Create quizzes, assignments, and exams.
                   </p>
                 </NavigationMenu.Link>
@@ -112,10 +112,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/analytics"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Analytics</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Analytics</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     View detailed analytics and reports.
                   </p>
                 </NavigationMenu.Link>
@@ -123,10 +123,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/collaboration"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Collaboration</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Collaboration</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     Enable team collaboration and discussions.
                   </p>
                 </NavigationMenu.Link>
@@ -134,10 +134,10 @@
               <li>
                 <NavigationMenu.Link
                   href="/integrations"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
+                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
                 >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Integrations</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
+                  <div class="text-sm leading-none font-medium">Integrations</div>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm leading-snug">
                     Connect with your favorite tools.
                   </p>
                 </NavigationMenu.Link>

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Mocked coverage for concurrent Railway preview deploys and log-stream recovery.
+# Mocked coverage for concurrent Railway preview deploys and false-negative recovery.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -61,6 +61,18 @@ case "\$cmd" in
         echo "Failed to stream build logs: connection reset"
         exit 1
         ;;
+      network-glitch:cio-api)
+        # Reproduces run 32691070307: the upload succeeded and Railway published a
+        # deployment, then the CLI timed out talking to backboard.railway.com.
+        echo "Deploying cio-api..."
+        echo "  Build Logs: https://railway.com/project/p/service/s?id=bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&"
+        echo "CI mode enabled"
+        echo "reqwest error"
+        echo "Caused by:"
+        echo "    0: error sending request for url (https://backboard.railway.com/graphql/v2)"
+        echo "    1: operation timed out"
+        exit 1
+        ;;
       other-failure:cio-api)
         echo "Deploying cio-api..."
         echo "error: build failed before a deployment id was published"
@@ -71,7 +83,7 @@ case "\$cmd" in
         echo "error: dashboard build failed"
         exit 1
         ;;
-      stream-success:*|stream-failed:*|other-failure:*|partial-failure:*)
+      stream-success:*|stream-failed:*|network-glitch:*|other-failure:*|partial-failure:*)
         echo "Deploying \$service..."
         echo "https://railway.com/project/p/service/s/deployments?id=eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
         exit 0
@@ -102,6 +114,9 @@ case "\$cmd" in
         ;;
       stream-failed:cio-api)
         printf '%s\\n' '[{"id":"dddddddd-dddd-dddd-dddd-dddddddddddd","status":"FAILED"}]'
+        ;;
+      network-glitch:cio-api)
+        printf '%s\\n' '[{"id":"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb","status":"SUCCESS"}]'
         ;;
       *)
         printf '%s\\n' '[]'
@@ -147,8 +162,11 @@ assert_exit 0 "stream error followed by SUCCESS" deploy_app_services_in_parallel
 write_mock_railway stream-failed
 assert_exit 1 "stream error followed by FAILED" deploy_app_services_in_parallel
 
+write_mock_railway network-glitch
+assert_exit 0 "network error after deployment id followed by SUCCESS" deploy_app_services_in_parallel
+
 write_mock_railway other-failure
-assert_exit 1 "non-stream failure does not poll" deploy_app_services_in_parallel
+assert_exit 1 "failure before any deployment id does not poll" deploy_app_services_in_parallel
 
 write_mock_railway partial-failure
 assert_exit 1 "partial concurrent failure" deploy_app_services_in_parallel

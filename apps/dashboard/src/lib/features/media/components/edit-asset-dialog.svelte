@@ -123,7 +123,7 @@
 
         <div class="space-y-2">
           <p class="text-sm font-medium">{$t('media_manager.form.thumbnail_upload')}</p>
-          <div class={isThumbnailUploading ? 'ui:pointer-events-none ui:opacity-50' : ''}>
+          <div class={isThumbnailUploading ? 'pointer-events-none opacity-50' : ''}>
             <FileDropZone.Root
               accept={FileDropZone.ACCEPT_IMAGE}
               maxFiles={1}

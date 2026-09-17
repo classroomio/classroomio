@@ -6,6 +6,7 @@ import {
   createCourseSections,
   deleteCourse as deleteCourseQuery,
   getCourseById,
+  getCourseContentItems,
   getCourseProgress as getCourseProgressQuery,
   getCourseWithRelations,
   getOrgIdByCourseId,
@@ -15,7 +16,9 @@ import {
 import {
   addGroupMember,
   createGroup,
+  getCourseOrgAdminAccess,
   getCourseProgramAccess,
+  getGroupMemberIdByCourseAndProfile,
   insertGroupMembersOnConflictDoNothing
 } from '@cio/db/queries/group';
 import {
@@ -31,7 +34,8 @@ import { getCourseGroupId } from '@cio/db/queries/course/people';
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
-import type { TCourseCreate } from '@cio/utils/validation/course';
+import type { DbOrTxClient } from '@cio/db/drizzle';
+import { validatePaidCourseState, type TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
@@ -126,6 +130,27 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   }
 
   return true;
+}
+
+/**
+ * Resolves the `groupmember` row a user authors course content as, backfilling it for org
+ * admins who were never added to the course group. Email is left null so it cannot collide
+ * with `unique_group_email` on a pending invite.
+ *
+ * @returns the group member ID, or null when the user has no claim to the course
+ */
+export async function ensureCourseGroupMemberId(courseId: string, profileId: string): Promise<string | null> {
+  const existingGroupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, profileId);
+  if (existingGroupMemberId) return existingGroupMemberId;
+
+  const orgAdminAccess = await getCourseOrgAdminAccess(courseId, profileId);
+  if (!orgAdminAccess) return null;
+
+  await insertGroupMembersOnConflictDoNothing([
+    { groupId: orgAdminAccess.courseGroupId, roleId: ROLE.ADMIN, profileId }
+  ]);
+
+  return getGroupMemberIdByCourseAndProfile(courseId, profileId);
 }
 
 function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {
@@ -339,9 +364,9 @@ export async function createCourse(
  * @param data Course update data
  * @returns Updated course
  */
-export async function updateCourse(courseId: string, data: Partial<TCourse>) {
+export async function updateCourse(courseId: string, data: Partial<TCourse>, dbClient: DbOrTxClient = db) {
   try {
-    const [existingCourse] = await getCourseById(courseId);
+    const [existingCourse] = await getCourseById(courseId, dbClient);
 
     const effectiveCost = data.cost !== undefined ? data.cost : (existingCourse?.cost ?? 0);
     const effectivePaymentLink =
@@ -364,16 +389,26 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       slug: data.slug
     };
 
-    const [currentCourse] = await getCourseById(courseId);
+    const [currentCourse] = await getCourseById(courseId, dbClient);
     if (!currentCourse) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
+
+    if (data.cost !== undefined || data.metadata !== undefined) {
+      const nextCost = data.cost === undefined ? (currentCourse.cost ?? 0) : (data.cost ?? 0);
+      const nextMetadata = sanitizedData.metadata ?? currentCourse.metadata;
+      const paidCourseIssue = validatePaidCourseState(nextCost, nextMetadata)[0];
+      if (paidCourseIssue) {
+        throw new AppError(paidCourseIssue.message, ErrorCodes.VALIDATION_ERROR, 400);
+      }
     }
 
     if (data.type !== undefined) {
       await guardCourseTypeTransition({
         courseId,
         currentType: currentCourse.type ?? null,
-        nextType: data.type
+        nextType: data.type,
+        dbClient
       });
     }
 
@@ -397,15 +432,15 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
     }
 
     if (data.certificate?.requiredExerciseId) {
-      const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId);
+      const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId, dbClient);
       if (!ok) {
         throw new AppError('Certification exercise must belong to this course', ErrorCodes.VALIDATION_ERROR, 400);
       }
 
-      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true });
+      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true }, dbClient);
     }
 
-    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData));
+    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData), dbClient);
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
@@ -413,16 +448,20 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
     const isContentGroupingEnabled = (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) === true;
 
     if (isContentGroupingEnabled) {
-      const courseWithRelations = await getCourseWithRelations(courseId);
-      if (courseWithRelations) {
-        const contentItems = courseWithRelations.contentItems;
+      const courseWithRelations = dbClient === db ? await getCourseWithRelations(courseId) : null;
+      const contentItems =
+        dbClient === db
+          ? courseWithRelations?.contentItems
+          : await getCourseContentItems(courseId, undefined, dbClient);
+
+      if (contentItems) {
         const hasSections = contentItems.some((item) => item.type === ContentType.Section);
         const hasUngroupedItems = contentItems.some(
           (item) => (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === null
         );
 
         if (!hasSections && hasUngroupedItems) {
-          await db.transaction(async (tx) => {
+          const createSectionAndMoveContent = async (transactionClient: DbOrTxClient) => {
             const [section] = await createCourseSections(
               [
                 {
@@ -431,22 +470,28 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
                   courseId
                 }
               ],
-              tx
+              transactionClient
             );
 
             if (!section) {
               throw new AppError('Failed to create course section', ErrorCodes.COURSE_SECTION_NOT_FOUND, 500);
             }
 
-            await updateLessonsSectionId(courseId, section.id, tx);
-            await updateExercisesSectionId(courseId, section.id, tx);
-          });
+            await updateLessonsSectionId(courseId, section.id, transactionClient);
+            await updateExercisesSectionId(courseId, section.id, transactionClient);
+          };
+
+          if (dbClient === db) {
+            await db.transaction((tx) => createSectionAndMoveContent(tx));
+          } else {
+            await createSectionAndMoveContent(dbClient);
+          }
         }
       }
     }
 
     if (data.status !== undefined) {
-      const statsOrgId = await getOrgIdByCourseId(courseId);
+      const statsOrgId = await getOrgIdByCourseId(courseId, dbClient);
       await invalidateOrgStats(statsOrgId);
     }
 
@@ -566,7 +611,13 @@ export async function getCourseAnalytics(courseId: string) {
 
             const lessonsCompleted = courseProgress.lessonsCompleted || 0;
             const totalLessons = courseProgress.lessonsCount || 0;
-            const progressPercentage = calcPercentageWithRounding(lessonsCompleted, totalLessons);
+            // Lessons and exercises together, matching `calcCourseProgress` in
+            // the dashboard and the audience roster. Counting lessons alone
+            // reported a learner who had submitted nothing as fully complete.
+            const progressPercentage = calcPercentageWithRounding(
+              lessonsCompleted + completedExercises,
+              totalLessons + totalExercises
+            );
             const lastSeen = lastSeenByProfileId.get(student.profileId!) ?? undefined;
 
             return {
@@ -661,27 +712,41 @@ export async function getUserCourseAnalytics(
 
     const lastSeen = await getLastLogin(userId);
 
-    // Fetch user exercises stats, lessons with completion, and course progress
+    // Fetch user exercises stats, lessons with completion, and course progress.
+    // failOnError makes this single-student detail page distinguish a failed
+    // query from an empty one — an error here must render an error, not the
+    // "no exercises" empty state.
     const [userExercisesStats, lessons, courseProgress] = await Promise.all([
-      getUserExercisesStats(courseId, userId),
+      getUserExercisesStats(courseId, userId, { failOnError: true }),
       getLessonsWithCompletion(courseId, userId),
-      getProfileCourseProgress(courseId, userId)
+      getProfileCourseProgress(courseId, userId, { failOnError: true })
     ]);
 
     if (!userExercisesStats || !lessons || !courseProgress) {
       throw new AppError('Failed to fetch course analytics data', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
-    // Calculate metrics
-    const totalEarnedPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.score, 0);
-    const totalPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
-    const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
+    // Calculate metrics. Only graded submissions produce a grade — exercises
+    // the student has not submitted, or submitted but not yet graded, are
+    // absence and must not drag the grade toward zero (em-dash, never a 0).
+    const gradedExercises = userExercisesStats.filter((exercise) => exercise.status === 3);
+    const totalEarnedPoints = gradedExercises.reduce((sum, exercise) => sum + exercise.score, 0);
+    const totalPoints = gradedExercises.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
+
+    // A course is gradeable only if its graded exercises carry points (authored
+    // exercise worth 0 points cannot produce a grade). Course grades are
+    // already percentages, so this is a plain percentage, not a percent-of-
+    // percents. null = "no grade yet", never 0.
+    const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
     const completedLessons = lessons.filter((lesson) => lesson.completed);
     const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
 
     const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
+
+    const lessonsCompleted = courseProgress.lessons_completed || 0;
+    const lessonsCount = courseProgress.lessons_count || 0;
 
     let progressImpact = null;
 
@@ -717,6 +782,8 @@ export async function getUserCourseAnalytics(
       userExercisesStats,
       totalExercises,
       completedExercises,
+      lessonsCompleted,
+      lessonsCount,
       progressPercentage,
       progressImpact
     };

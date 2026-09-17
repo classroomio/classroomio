@@ -7,6 +7,7 @@
   import * as Page from '@cio/ui/base/page';
   import { RefreshPageData, RoleBasedSecurity, preloadTextEditor } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import type { AccountOrg } from '$features/app/types';
   import { newsfeedApi } from '$features/course/api';
@@ -43,9 +44,11 @@
       </Page.HeaderContent>
       <Page.Action>
         <div class="flex items-center gap-2">
-          <Button onmouseenter={() => preloadTextEditor()} onclick={() => newsfeedApi.openNewFeedModal()}>
-            {$t('course.navItem.news_feed.heading_button.title')}
-          </Button>
+          {#if !$isOrgStudent}
+            <Button onmouseenter={() => preloadTextEditor()} onclick={() => newsfeedApi.openNewFeedModal()}>
+              {$t('course.navItem.news_feed.heading_button.title')}
+            </Button>
+          {/if}
           <RefreshPageData onRefresh={() => newsfeedApi.list(data.courseId)} />
         </div>
       </Page.Action>

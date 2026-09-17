@@ -19,23 +19,23 @@
 
 <AuthUI handleSubmit={() => forgotApi.submit(fields)} showOnlyContent={true} showLogo={!forgotApi.success}>
   {#if forgotApi.success}
-    <div class="ui:flex ui:flex-col ui:items-center ui:justify-center ui:gap-4">
+    <div class="flex flex-col items-center justify-center gap-4">
       <EmailSentIcon />
-      <Card.Title class="ui:text-xl">Email Sent!</Card.Title>
-      <p class="ui:text-center ui:text-sm ui:text-muted-foreground">
+      <Card.Title class="text-xl">Email Sent!</Card.Title>
+      <p class="ui:text-muted-foreground text-center text-sm">
         We have sent a confirmation email to <span class="ui:text-primary">{fields.email}</span>. Kindly check your
         inbox to reset password or spam to reset your password.
       </p>
     </div>
 
-    <div class="ui:mt-6 ui:flex ui:w-full ui:items-center ui:justify-end">
-      <Button type="button" class="ui:w-full" onclick={() => goto(ROUTE.LOGIN)}>Okay</Button>
+    <div class="mt-6 flex w-full items-center justify-end">
+      <Button type="button" class="w-full" onclick={() => goto(ROUTE.LOGIN)}>Okay</Button>
     </div>
   {:else}
-    <div class="ui:flex ui:flex-col ui:gap-6">
+    <div class="flex flex-col gap-6">
       <div>
-        <Card.Title class="ui:text-xl">Forgot Password</Card.Title>
-        <Card.Description class="ui:mt-2">We will send you a reset link to your email</Card.Description>
+        <Card.Title class="text-xl">Forgot Password</Card.Title>
+        <Card.Description class="mt-2">We will send you a reset link to your email</Card.Description>
       </div>
       <Field.Field>
         <Field.Label for="email">Your email</Field.Label>
@@ -55,11 +55,11 @@
         </Field.Content>
       </Field.Field>
 
-      <div class="ui:flex ui:w-full ui:flex-col ui:gap-2">
-        <Button type="submit" disabled={forgotApi.isLoading} loading={forgotApi.isLoading} class="ui:w-full">
+      <div class="flex w-full flex-col gap-2">
+        <Button type="submit" disabled={forgotApi.isLoading} loading={forgotApi.isLoading} class="w-full">
           Reset Password
         </Button>
-        <Button type="button" variant="ghost" class="ui:w-full" onclick={() => goto(ROUTE.LOGIN)}>Cancel</Button>
+        <Button type="button" variant="ghost" class="w-full" onclick={() => goto(ROUTE.LOGIN)}>Cancel</Button>
       </div>
     </div>
   {/if}

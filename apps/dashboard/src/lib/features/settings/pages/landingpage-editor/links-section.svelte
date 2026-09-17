@@ -153,7 +153,7 @@
         <Field.Field>
           <Field.Label>{$t('settings.landing_page.editor.links.description')}</Field.Label>
           <Textarea
-            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
+            class="box-border [field-sizing:fixed] w-full max-w-full min-w-0 resize-y"
             value={settings.links.description ?? ''}
             placeholder={$t('settings.landing_page.editor.links.description_placeholder')}
             oninput={(event) => setter(event.currentTarget.value, 'links.description')}
@@ -234,7 +234,7 @@
             <Field.Field>
               <Field.Label>{$t('settings.landing_page.editor.links.card_description')}</Field.Label>
               <Textarea
-                class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
+                class="box-border [field-sizing:fixed] w-full max-w-full min-w-0 resize-y"
                 value={card.description}
                 placeholder={$t('settings.landing_page.editor.links.card_description_placeholder')}
                 oninput={(event) => setter(event.currentTarget.value, `links.cards.${index}.description`)}
@@ -256,7 +256,7 @@
           {$t('settings.landing_page.editor.links.add_card')}
         </Button>
         {#if settings.links.cards.length >= 3}
-          <p class="text-muted-foreground text-xs">{$t('settings.landing_page.editor.links.max_reached')}</p>
+          <p class="ui:text-muted-foreground text-xs">{$t('settings.landing_page.editor.links.max_reached')}</p>
         {/if}
       {/if}
     </div>

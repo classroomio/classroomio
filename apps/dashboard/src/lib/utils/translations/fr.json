@@ -5,8 +5,14 @@
       "message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir partir ?",
       "label": "Modifications non enregistrées"
     },
+    "app_update": {
+      "title": "Une nouvelle version est disponible.",
+      "description": "Rechargez pour obtenir les dernières fonctionnalités et corrections.",
+      "reload": "Recharger"
+    },
     "discard": "Abandonner les modifications",
-    "save_changes": "Enregistrer les modifications"
+    "save_changes": "Enregistrer les modifications",
+    "scroll_to_top": "Remonter en haut"
   },
   "validations": {
     "generic": {
@@ -55,12 +61,12 @@
     },
     "reset": {
       "password": {
-        "min_char": "Doit contenir au moins 6 caractères"
+        "min_char": "Doit contenir au moins 8 caractères"
       }
     },
     "auth": {
       "password": {
-        "min_char": "Doit contenir au moins 6 caractères"
+        "min_char": "Doit contenir au moins 8 caractères"
       },
       "email": {
         "invalid_email": "Adresse e-mail invalide"
@@ -137,7 +143,8 @@
   "generic": {
     "locked": "Verrouillé",
     "unlocked": "Débloqué",
-    "loading": "Chargement"
+    "loading": "Chargement",
+    "progress": "Progression"
   },
   "content": {
     "heading": "Internationalisation dans SvelteKit",
@@ -220,6 +227,7 @@
       },
       "success": {
         "complete_marked": "Marqué comme terminé",
+        "complete_unmarked": "Marqué comme incomplet",
         "complete_download": "Téléchargement terminé",
         "version_restored": "Version restaurée avec succès"
       },
@@ -253,14 +261,16 @@
     },
     "landing_page_settings": {
       "success": {
-        "complete": "Complet :)"
+        "complete": "Complet :)",
+        "courses_reordered": "Ordre des cours mis à jour"
       },
       "error": {
         "file_size": "La taille du fichier ne doit pas dépasser 500 Ko",
         "try_again": "Réessayez",
         "label": "Télécharger une image",
         "fetch_error": "Erreur lors de la récupération des images depuis Unsplash",
-        "upload_failed": "Échec du téléchargement de l'image. Veuillez réessayer."
+        "upload_failed": "Échec du téléchargement de l'image. Veuillez réessayer.",
+        "courses_reorder_failed": "Échec de la mise à jour de l'ordre des cours. Veuillez réessayer."
       }
     },
     "team_members": {
@@ -374,7 +384,8 @@
       "delete_success": "Vidéo supprimée",
       "delete_in_use": "Cette vidéo est toujours jointe à une leçon. Retirez-le d'abord.",
       "delete_failed": "Échec de la suppression de la vidéo",
-      "added_to_lesson": "Vidéo ajoutée à la leçon"
+      "added_to_lesson": "Vidéo ajoutée à la leçon",
+      "transcript_unavailable": "Transcription indisponible"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -496,7 +507,7 @@
     "go_to_my_learning": "Aller à Mon apprentissage"
   },
   "lms_navigation": {
-    "home": "Accueil",
+    "home": "Tableau de bord",
     "my_learning": "Mon apprentissage",
     "certificates": "Certificats",
     "exercise": "Exercice",
@@ -593,6 +604,14 @@
         "PUBLIC": "Publique"
       }
     },
+    "topCourses": {
+      "heading": "Meilleurs cours par vues",
+      "description": "Cours classés par pages vues",
+      "subtitle": "Classés par pages vues sur cette période",
+      "empty": "Aucune consultation de page de cours pour l'instant",
+      "course": "Cours",
+      "views": "Vues"
+    },
     "countries": {
       "heading": "Principaux pays",
       "subtitle": "{total} visiteurs au total",
@@ -645,7 +664,15 @@
       "kpi_team_tutors": "{count, plural, one {# tuteur dans l'équipe du cours} other {# tuteurs dans l'équipe du cours}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercice} other {# exercices}} mappés aux leçons",
       "kpi_progress_grade": "{grade} % de note d'exercice moyenne parmi les étudiants inscrits"
-    }
+    },
+    "exercises_completed": "Exercices terminés",
+    "course_progress": "Progression du cours",
+    "just_now": "À l'instant",
+    "minutes_ago": "{count, plural, one {il y a # minute} other {il y a # minutes}}",
+    "hours_ago": "{count, plural, one {il y a # heure} other {il y a # heures}}",
+    "days_ago": "{count, plural, one {il y a # jour} other {il y a # jours}}",
+    "months_ago": "{count, plural, one {il y a # mois} other {il y a # mois}}",
+    "years_ago": "{count, plural, one {il y a # an} other {il y a # ans}}"
   },
   "audience": {
     "title": "Public",
@@ -697,7 +724,6 @@
       "select_courses": "Sélectionnez des cours spécifiques",
       "select_courses_placeholder": "Choisissez des cours...",
       "send_email": "Envoyer un e-mail d'invitation aux utilisateurs importés",
-      "submit": "Importer des utilisateurs",
       "back": "Retour au public",
       "snackbar_success": "{imported} nouvelles invitations, {assigned} étudiants existants avec accès au cours, {pendingInvitesRenewed} invitations en attente renouvelées ({emailsSent} e-mails envoyés)",
       "snackbar_no_emails": "Veuillez saisir au moins une adresse e-mail",
@@ -707,12 +733,63 @@
       "no_cohorts": "Aucune attribution de cohorte",
       "all_cohorts": "Toutes les cohortes",
       "select_cohorts": "Sélectionnez des cohortes spécifiques",
-      "select_cohorts_placeholder": "Choisissez des cohortes..."
+      "select_cohorts_placeholder": "Choisissez des cohortes...",
+      "drop_csv": "Déposez un fichier CSV ici, ou cliquez pour en choisir un.",
+      "csv_hint": "Fichier CSV UTF-8 avec une colonne d'adresse e-mail. Jusqu'à {rows} lignes, 5 Mo.",
+      "download_template": "Téléchargez le modèle",
+      "paste_hint": "Une adresse par ligne, ou séparées par des virgules.",
+      "review": "Revoir",
+      "done": "Fait",
+      "count_ready": "{count} prêt",
+      "count_duplicate": "{count} déjà listé",
+      "count_invalid": "{count} ont besoin d'attention",
+      "truncated": "{count} lignes au-delà de la limite de {rows} lignes ont été ignorées. Divisez le fichier et importez le reste.",
+      "unknown_columns": "Colonnes non reconnues ignorées : {columns}",
+      "download_errors": "Télécharger les lignes qui ont échoué",
+      "status": {
+        "ready": "Prêt",
+        "already_member": "Déjà dans le public",
+        "invalid_email": "Adresse e-mail invalide",
+        "duplicate_in_file": "Duplicata dans le fichier",
+        "over_seat_limit": "Plus de places disponibles",
+        "missing_email": "Pas d'email",
+        "is_staff": "Personnel non étudiant"
+      },
+      "submit_count": "Importer {count} étudiants",
+      "result_heading": "{count} étudiants importés",
+      "start_over": "Choisissez un autre fichier"
     },
     "page_subtitle": "Découvrez qui appartient à votre organisation, qui apprend, qui est invité et comment les contacter.",
     "user_analytics": {
       "title": "Profil étudiant",
-      "page_subtitle": "Progression, notes et activité dans leurs cours."
+      "page_subtitle": "Progression, notes et activité dans leurs cours.",
+      "in_progress": "En cours",
+      "not_started": "Non commencé",
+      "awaiting_grade": "En attente de note",
+      "not_submitted": "Non remis",
+      "course_level_exercise": "Exercice du cours",
+      "score": "Note",
+      "status": "Statut",
+      "export_progress": "Exporter la progression",
+      "student_actions": "Actions de l'étudiant",
+      "no_courses_title": "Aucun cours pour le moment",
+      "no_courses_description": "Inscrivez cet étudiant pour commencer le suivi de sa progression.",
+      "no_exercises_title": "Aucun exercice dans ce cours",
+      "no_exercises_description": "Ajoutez un exercice à une leçon et les tentatives de chaque étudiant s'afficheront ici.",
+      "no_grades_title": "Aucune note attribuée pour le moment",
+      "no_grades_description": "Les notes s'afficheront une fois que cet étudiant aura remis un exercice.",
+      "load_failed_title": "Impossible de charger cet étudiant",
+      "load_failed_description": "Une erreur s'est produite lors du chargement de cet étudiant. Veuillez réessayer.",
+      "retry": "Réessayer",
+      "exercise": "Exercice",
+      "exercise_load_failed": "Impossible de charger les exercices de ce cours.",
+      "tabs": {
+        "courses": "Cours",
+        "grades": "Notes",
+        "activity": "Activité"
+      },
+      "activity_empty_title": "Calendrier des activités : Prochainement",
+      "activity_empty_description": "Un calendrier des leçons terminées et des exercices rendus pour l’ensemble des cours sera disponible dans une prochaine version."
     },
     "delete": {
       "action": "Supprimer",
@@ -723,7 +800,100 @@
       "confirm": "Supprimer",
       "snackbar_success": "Membre supprimé"
     },
-    "import_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour importer plus d'étudiants."
+    "import_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour importer plus d'étudiants.",
+    "never": "Jamais",
+    "progress": "Progrès",
+    "enrolled_ratio": "{completed} / {total}",
+    "bulk": {
+      "actions": "Actions",
+      "select_all_matching": "Sélectionner les {count} correspondants",
+      "clear_selection": "Effacer la sélection",
+      "sample_heading": "Comprend",
+      "sample_more": "et {count} plus",
+      "export_first": "Exporter cette liste d'abord",
+      "reason_label": "Raison (facultatif)",
+      "reason_hint": "Consigné dans l'audit pour pouvoir répondre ultérieurement.",
+      "type_count_label": "Tapez {count} pour confirmer",
+      "delete_is_permanent": "La suppression est irréversible.",
+      "partial_success": "{succeeded} mis à jour, {failed} ignorés",
+      "undo_available": "Appliqué. Vous pouvez encore annuler cette action.",
+      "undo": "Annuler",
+      "undo_success": "Modifications annulées",
+      "confirm_action": {
+        "archive": "Archiver",
+        "deactivate": "Désactiver",
+        "reactivate": "Réactiver",
+        "unarchive": "Déarchiver",
+        "delete": "Supprimer définitivement"
+      },
+      "confirm_body": {
+        "archive": "Ils perdent l'accès et libèrent une place dans votre forfait. Vous pouvez les désarchiver à tout moment.",
+        "deactivate": "Ils perdent l'accès à votre forfait, mais conservent leur place. Vous pouvez les réactiver à tout moment.",
+        "reactivate": "Ils retrouvent l'accès à votre organisation et à ses cours.",
+        "unarchive": "Ils reprennent accès et reprennent place dans votre plan.",
+        "delete": "Cette décision les exclut définitivement de l'organisation. Leur compte, leurs contributions et leurs résultats sont conservés."
+      },
+      "confirm_title": {
+        "archive": "Archiver {count} étudiants ?",
+        "deactivate": "Désactiver {count} étudiants ?",
+        "reactivate": "Réactiver {count} étudiants ?",
+        "unarchive": "Désarchiver {count} étudiants ?",
+        "delete": "Supprimer définitivement {count} étudiants ?"
+      },
+      "action": {
+        "archive": "Archiver {count} étudiants",
+        "deactivate": "Désactiver {count} étudiants",
+        "reactivate": "Réactiver {count} étudiants",
+        "unarchive": "Désarchiver {count} étudiants",
+        "delete": "Supprimer {count} étudiants"
+      },
+      "queued_failed": "Cette action groupée n’a pas abouti. Aucune autre action n’a été appliquée.",
+      "queued_lost": "Cette exécution a été interrompue. Rechargez la page pour afficher l’état actuel.",
+      "all_matching_selected": "Tous les {count} étudiants correspondants sélectionnés",
+      "not_archived_blocker": "{count} de ces étudiants ne sont pas archivés. Veuillez les archiver d'abord.",
+      "success": "Étudiants mis à jour",
+      "queued_running": "Candidature en cours auprès de {count} étudiants. Vous pouvez continuer à travailler ; nous vous informerons lorsque l'opération sera terminée.",
+      "undo_dismiss": "Fermer",
+      "clear": "Effacer"
+    },
+    "filter": {
+      "status": "Statut de membre",
+      "status_active": "Actif",
+      "status_deactivated": "Désactivé",
+      "status_archived": "Archivé",
+      "last_login": "Dernière connexion",
+      "last_activity": "Dernière activité",
+      "no_login_since": "Aucune connexion depuis",
+      "no_activity_since": "Aucune activité dans",
+      "window_7d": "7 jours",
+      "window_30d": "30 jours",
+      "window_90d": "90 jours",
+      "window_180d": "180 jours",
+      "window_never": "Jamais",
+      "enrollment": "Inscription",
+      "enrolled": "Inscrit",
+      "not_enrolled": "Non inscrit",
+      "completion": "Achèvement",
+      "not_started": "Pas encore commencé",
+      "in_progress": "En cours",
+      "completed": "Complété",
+      "exclude_recent_joiners": "Exclure les nouveaux inscrits",
+      "clear": "Effacer les filtres",
+      "empty_description": "Essayez d'élargir la plage de dates ou de supprimer un filtre.",
+      "exclude_recent_joiners_hint": "Les étudiants inscrits trop récemment pour être considérés comme inactifs sont exclus.",
+      "empty_title": "Aucun étudiant ne correspond à ces filtres.",
+      "invite_status": "Statut de l'invitation"
+    },
+    "views": {
+      "never_logged_in": "Jamais connecté",
+      "inactive_90d": "Inactif depuis plus de 90 jours",
+      "inactive_180d": "Inactif depuis plus de 180 jours",
+      "enrolled_not_started": "Inscrit, jamais commencé",
+      "archived": "Archivé",
+      "custom": "Filtres personnalisés",
+      "all": "Tous les étudiants"
+    },
+    "learner_count": "{count} étudiants"
   },
   "community": {
     "title": "Communauté",
@@ -792,16 +962,22 @@
         "content_grouping_title": "Regroupement de contenu",
         "content_grouping_description": "Cours collectifs et exercices par section dans la liste des contenus.",
         "progression_mode_title": "Progression des étudiants",
-        "progression_mode_description": "Contrôlez si les étudiants peuvent accéder à tout le contenu débloqué ou doivent terminer les éléments dans l'ordre.",
         "progression_mode_free": "Libre — le contenu débloqué est accessible",
         "progression_mode_sequential": "Séquentiel — terminer les éléments précédents pour débloquer le suivant",
+        "comments": {
+          "title": "Commentaires des leçons",
+          "description": "Autorisez les étudiants à consulter et ajouter des commentaires dans les leçons de ce cours. Les commentaires peuvent toujours être désactivés pour chaque leçon.",
+          "enabled": "Commentaires activés pour ce cours",
+          "disabled": "Commentaires désactivés pour ce cours"
+        },
         "lesson_download": "Téléchargement des leçons",
         "available": "Rendre la leçon disponible en téléchargement en pdf pour les étudiants inscrits",
         "course_download": "Téléchargement du cours",
         "course_avail": "Téléchargez une copie de ce cours.",
         "download": "Télécharger",
         "allow": "Les étudiants peuvent s'inscrire eux-mêmes",
-        "access": "Lorsque cette option est désactivée, les étudiants ne peuvent rejoindre le cours que via un lien d'invitation ou en étant ajoutés depuis Personnes.",
+        "access": "Lorsque cette option est désactivée, les étudiants ne peuvent rejoindre le cours que via un lien d'invitation ou en étant ajoutés depuis {people}.",
+        "access_people": "Personnes",
         "publish": "Publier un cours",
         "determines": "Cela détermine si votre cours s'affiche sur votre page de destination",
         "published": "Publié",
@@ -819,7 +995,11 @@
           "empty": "Aucune balise sélectionnée",
           "add": "Ajouter une balise",
           "popover_title": "Sélectionnez les balises",
-          "empty_groups": "Aucun tag disponible pour l'instant"
+          "empty_groups": "Aucun tag disponible pour l'instant",
+          "create_tag": "Créer une balise",
+          "none_created": "Aucune balise créée pour l'instant",
+          "search_placeholder": "Rechercher des balises...",
+          "no_results": "Aucune balise trouvée"
         },
         "compliance": "Conformité",
         "public": "Publique",
@@ -862,14 +1042,16 @@
           "description_live": "Les leçons et les exercices verrouillés restent cachés aux étudiants jusqu'à ce que vous les déverrouilliez, ce qui est utile si vous publiez du contenu semaine après semaine.",
           "unlock_all": "Débloquez tout"
         },
+        "certificate_deadline_required": "Définir d'abord la date limite du certificat",
+        "go_to_certificate_settings": "Accédez aux paramètres du certificat",
+        "completion_deadline_label": "Date limite de fin de cours",
+        "completion_deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite.",
+        "go_to_completion_deadline": "Accéder à la date limite d'achèvement",
         "generate_link": "Générer un nouveau lien",
         "open_link": "Ouvrir le lien dans un nouvel onglet",
         "copy_link": "Copier le lien",
-        "certificate_deadline_required": "Définir d'abord la date limite du certificat",
-        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du cours avant de publier.",
-        "go_to_completion_deadline": "Accéder à la date limite d'achèvement",
-        "completion_deadline_label": "Date limite de fin de cours",
-        "completion_deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite."
+        "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication.",
+        "progression_mode_description": "Contrôlez si les élèves peuvent accéder à tout le contenu déverrouillé ou doivent terminer les éléments dans l'ordre. La fin du visionnage de vidéos ne suit que les vidéos téléversées."
       },
       "analytics": {
         "title": "Analytique"
@@ -956,7 +1138,13 @@
             "yes": "Oui",
             "percent": "Pourcentage de remise",
             "gift": "À propos du cadeau",
-            "payment_required": "Un lien de paiement est requis pour les cours payants"
+            "payment_required": "Un lien de paiement est requis pour les cours payants",
+            "enable_paid": "Activer le paiement",
+            "payment_invalid_url": "Veuillez saisir une URL valide (par exemple https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy ou tout autre lien de paiement",
+            "percentage_helper": "En pourcentage %",
+            "gift_on_completion": "Cadeau à la fin",
+            "payment_cost_required": "Les cours payants doivent avoir un coût supérieur à 0"
           },
           "instructor_form": {
             "upload": "Logo de l'instructeur",
@@ -1118,6 +1306,12 @@
         "you": "Vous",
         "pending": "En attente",
         "name": "Nom",
+        "progress": "Progression",
+        "stage": "Étape",
+        "last_login_at": "Dernière connexion",
+        "enrolled_at": "Inscrit le",
+        "certificate_earned": "Certificat obtenu",
+        "not_started": "Pas commencé",
         "role": "Rôle",
         "action": "Action",
         "feedback": "E-mail copié dans le presse-papiers",
@@ -1267,7 +1461,8 @@
             "custom": "Personnalisé"
           },
           "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants."
-        }
+        },
+        "learner": "Étudiant"
       },
       "marks": {
         "title": "Marques",
@@ -1375,7 +1570,17 @@
           "title": "Historique des versions",
           "fetch_more_versions": "Récupérer plus de versions",
           "current_version": "Version actuelle",
-          "restore_version": "Restaurer cette version"
+          "restore_version": "Restaurer cette version",
+          "edit_count": "{count, plural, one {# modification} other {# modifications}}",
+          "today": "Aujourd'hui",
+          "yesterday": "Hier",
+          "by_author": "Par {name}",
+          "empty": "Aucune version pour l'instant",
+          "kind": {
+            "auto": "Sauvegarde automatique",
+            "manual": "Version enregistrée",
+            "publish": "Publié"
+          }
         },
         "poll": {
           "voted": "A voté",
@@ -1471,7 +1676,9 @@
                 "status_pending": "En attente",
                 "counts_as_complete": "Compte comme terminé",
                 "passed": "Réussi",
-                "not_passed": "Non réussi"
+                "not_passed": "Non réussi",
+                "no_submission_title": "Cet utilisateur n'a soumis aucune réponse pour cet exercice.",
+                "no_submission_description": "Les réponses apparaîtront ici une fois que cet étudiant aura terminé l'exercice."
               },
               "summary": {
                 "heading": "Résumé",
@@ -2090,12 +2297,32 @@
                   "completed": "Traitement terminé",
                   "failed": "Échec du traitement",
                   "canceled": "Traitement annulé"
-                }
+                },
+                "vimeo_link": "Lien Vimeo",
+                "invalid_vimeo": "Lien Vimeo invalide(s)",
+                "vimeo_privacy_hint_prefix": "Pour les vidéos soumises à des restrictions de domaine, ajoutez",
+                "vimeo_privacy_hint_suffix": "aux paramètres de confidentialité de Vimeo.",
+                "vimeo_privacy_error_title": "Intégration restreinte par les paramètres de confidentialité de Vimeo",
+                "vimeo_privacy_error_prefix": "Cette vidéo est soumise à des restrictions de confidentialité au niveau du domaine. Pour autoriser la lecture, ajoutez",
+                "vimeo_privacy_error_suffix": "aux domaines autorisés de la vidéo dans vos paramètres vidéo Vimeo.",
+                "vimeo_retry_label": "Réessayer la lecture",
+                "vimeo_learner_error_title": "Vidéo indisponible",
+                "vimeo_learner_error_description": "Cette vidéo est temporairement indisponible. Veuillez en informer votre professeur.",
+                "duplicate_video_error": "Cette vidéo a déjà été ajoutée à cette leçon.",
+                "duplicates_skipped": "Les vidéos en double ont été ignorées.",
+                "add_video_failed": "Impossible d'ajouter la vidéo. Veuillez réessayer.",
+                "some_videos_failed": "Certaines vidéos n'ont pas pu être ajoutées. Veuillez réessayer.",
+                "vimeo_privacy_error_description": "La lecture a été bloquée par les paramètres de confidentialité de Vimeo. Voici quelques raisons possibles à vérifier :",
+                "vimeo_privacy_error_unlisted_hint": "Le lien de la vidéo non répertoriée ne contient peut-être pas sa clé de confidentialité (hash).",
+                "vimeo_privacy_error_domain_prefix": "Restrictions de domaine sur Vimeo (assurez-vous que",
+                "vimeo_privacy_error_domain_suffix": "est autorisé dans les paramètres de la vidéo).",
+                "vimeo_privacy_error_other_hint": "Autres paramètres de confidentialité de Vimeo"
               },
               "empty_title": "Aucune vidéo pour l'instant",
               "empty_description": "Ajoutez des vidéos de YouTube, téléchargez-les ou de votre bibliothèque multimédia",
               "google_drive": "Google Drive",
               "generate_transcript": "Générer la transcription",
+              "transcript_in_progress": "Récupération de la transcription…",
               "generate_transcript_in_progress": "Transcription en cours…",
               "transcript": {
                 "title": "Transcription",
@@ -2119,7 +2346,8 @@
                 "kind_generic": "Intégré",
                 "course_fallback": "Cours",
                 "menu_aria": "Options vidéo",
-                "transcription_in_progress": "(Génération de transcription en cours)"
+                "transcription_in_progress": "(Génération de transcription en cours)",
+                "kind_vimeo": "Vimeo"
               },
               "view_transcript": "Voir la transcription",
               "playback_error": "Le chargement de cette vidéo a échoué.",
@@ -2130,7 +2358,8 @@
               "generate_1080_unavailable": "1080p indisponible pour cette vidéo source",
               "loading": "Chargement de la vidéo…",
               "playback_auth_error": "Votre session a expiré. Veuillez vous reconnecter pour regarder cette vidéo.",
-              "playback_auth_action": "Se connecter"
+              "playback_auth_action": "Se connecter",
+              "vimeo_link": "Lien Vimeo"
             },
             "slide": {
               "title": "Diapositive",
@@ -2198,21 +2427,31 @@
           "manual_label": "Manuel",
           "manual_description": "Les étudiants marquent eux-mêmes la leçon comme terminée.",
           "video_watch_label": "Visionnage vidéo",
-          "video_watch_description": "La leçon se termine automatiquement après que les étudiants aient regardé les vidéos sélectionnées.",
           "none_label": "Aucune",
           "none_description": "Cette leçon ne bloque pas la progression du cours.",
-          "watch_threshold": "Seuil de visionnage (%)"
+          "watch_threshold": "Seuil de visionnage (%)",
+          "video_watch_description": "La leçon se termine automatiquement une fois que les élèves ont regardé les vidéos téléversées sélectionnées. YouTube et les intégrations externes ne peuvent pas être suivis."
         },
         "settings": {
+          "comments": {
+            "title": "Commentaires de la leçon",
+            "description": "Choisissez si les étudiants peuvent consulter et ajouter des commentaires à cette leçon.",
+            "enabled": "Commentaires activés",
+            "disabled": "Commentaires désactivés",
+            "disabled_by_course": "Les commentaires sont désactivés pour tout le cours. Ce paramètre de leçon ne peut donc pas être modifié.",
+            "change_course_setting": "Modifier dans les paramètres du cours"
+          },
           "progression": {
             "heading": "Progression",
             "intro": "Choisissez comment les étudiants terminent cette leçon et avancent dans le cours.",
             "option_guide_heading": "Ce que signifie chaque option",
             "watch_videos_heading": "Vidéos à appliquer",
             "watch_videos_helper": "Seules les vidéos téléversées peuvent être appliquées. YouTube et les intégrations externes ne peuvent pas être suivies.",
-            "watch_videos_empty": "Ajoutez une vidéo téléversée dans l'onglet Vidéo pour utiliser le suivi de visionnage.",
             "watch_videos_required": "Sélectionnez au moins une vidéo pour le suivi de visionnage.",
-            "students_only_note": "Ces règles s'appliquent aux étudiants uniquement. Vous pouvez prévisualiser et naviguer librement en mode enseignant."
+            "students_only_note": "Ces règles s'appliquent aux étudiants uniquement. Vous pouvez prévisualiser et naviguer librement en mode enseignant.",
+            "watch_videos_empty": "La surveillance vidéo ne suit que les vidéos téléversées. YouTube et les intégrations externes ne peuvent pas être suivis. Cette leçon ne peut donc pas se terminer automatiquement et les élèves ne peuvent pas la marquer comme terminée. Téléversez la vidéo dans l'onglet Vidéo ou définissez la règle d'achèvement sur Manuel.",
+            "watch_videos_no_uploads_title": "Aucune vidéo téléversée dans cette leçon",
+            "watch_videos_learn_more": "Apprendre encore plus"
           }
         },
         "watch_progress": {
@@ -2263,7 +2502,9 @@
           "starts_in": "Commence dans",
           "session_ended": "Séance terminée",
           "link_copied": "Lien copié"
-        }
+        },
+        "student_share_your_knowledge": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard.",
+        "student_body_content": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard."
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -2329,7 +2570,8 @@
           "description": "Êtes-vous sûr de vouloir supprimer ce flux ?",
           "no": "Non",
           "yes": "Oui"
-        }
+        },
+        "student_body_content": "Aucun message n'a encore été publié dans ce cours."
       },
       "compliance": {
         "title": "Conformité",
@@ -2464,7 +2706,8 @@
       "nav_landing_page": "Page de destination",
       "nav_settings": "Paramètres",
       "nav_ai_assistant": "Assistante",
-      "nav_ai_tutor": "Tuteur IA"
+      "nav_ai_tutor": "Tuteur IA",
+      "exit_course": "Quitter le cours"
     },
     "completion": {
       "modal": {
@@ -2503,8 +2746,8 @@
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !",
       "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné.",
       "deadline_required": "Les cours de conformité nécessitent une date limite d'achèvement avant de pouvoir être publiés.",
-      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits.",
-      "deadline_invalid": "La date limite d'achèvement du cours n'est pas valide."
+      "deadline_invalid": "La date limite d'achèvement du cours n'est pas valide.",
+      "deadline_required_enroll": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants."
     },
     "creator": {
       "heading": "Quel cours souhaitez-vous créer ?",
@@ -2632,7 +2875,12 @@
         "copy_course_url": "Copier l’URL du cours"
       },
       "due_date": "Échéance",
-      "valid_until": "Valable jusqu'au"
+      "valid_until": "Valable jusqu'au",
+      "student_empty_title": "Aucun cours disponible pour le moment",
+      "student_empty_description": "Aucun cours n'est disponible pour le moment dans cet organisme. Veuillez réessayer plus tard.",
+      "updated_at": "Mise à jour : {date}",
+      "lessons_count": "{count, plural, one {# leçon} other {# leçons}}",
+      "exercises_count": "{count, plural, one {# exercice} other {# exercices}}"
     },
     "course_filter": {
       "date_created_newest": "Date de création : plus récent d'abord",
@@ -2867,6 +3115,7 @@
     "discussion": "Discussion",
     "people": "Les gens",
     "goto_lms": "Aller au LMS",
+    "join_academy": "Rejoindre l’académie",
     "goto_home": "Accéder à l'accueil ClassroomIO",
     "login": "Connexion",
     "signup": "S'inscrire",
@@ -2967,8 +3216,14 @@
     "compliance": "Conformité",
     "cohorts": "Cohortes",
     "upgrade_now": "Mettre à niveau maintenant",
+    "upgrade_label": "Mettre à niveau",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} sur {studentLimit} étudiants",
-    "upgrade_left": "Il reste {count}"
+    "upgrade_left": "Il reste {count}",
+    "back_to_app": "Retour à l'application",
+    "create": "Créer",
+    "distribute": "Distribuer",
+    "tools": "Outils"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -3050,7 +3305,8 @@
       "youtube": "YouTube",
       "generic": "Générique",
       "external_url": "URL externe",
-      "google_drive": "Google Drive"
+      "google_drive": "Google Drive",
+      "vimeo": "Vimeo"
     },
     "kind": {
       "video": "Vidéo",
@@ -3115,6 +3371,18 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Espace de travail",
+      "personal": "Personnel",
+      "product": "Produit",
+      "connections": "Connexions",
+      "security": "Sécurité",
+      "billing": "Facturation",
+      "branding": "Image de marque",
+      "ai": "IA",
+      "search": "Rechercher dans les paramètres...",
+      "extensions": "Rallonges"
+    },
     "heading": "Paramètres",
     "billing": {
       "sub_title": "Détails de facturation",
@@ -3212,7 +3480,8 @@
         "title": "Titre",
         "content": "Contenu",
         "upload_an_image": "Télécharger une image",
-        "select_image": "Sélectionnez une image"
+        "select_image": "Sélectionnez une image",
+        "create": "Créer"
       },
       "actions": {
         "heading": "Actions",
@@ -3324,6 +3593,9 @@
           "remove": "Supprimer le lien de navigation"
         },
         "hero": {
+          "eyebrow": "Surtitre",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Libellé facultatif au-dessus du titre (utilisé par les modèles qui le prennent en charge, p. ex. Tech). Laissez vide pour le masquer.",
           "heading": "Rubrique",
           "subheading": "Sous-titre",
           "primary_label": "Étiquette du bouton principal",
@@ -3357,7 +3629,9 @@
           "footer": "Pied de page",
           "footer_desc": "Ligne de marque, réseaux sociaux, liens multi-colonnes et ligne légale en bas.",
           "links": "Liens",
-          "links_desc": "Bloc optionnel de liens externes (centre d'aide, communauté, webinaires) affichés après les cours."
+          "links_desc": "Bloc optionnel de liens externes (centre d'aide, communauté, webinaires) affichés après les cours.",
+          "courses": "Cours",
+          "courses_desc": "Faites glisser pour définir l'ordre des cours publiés sur la page d'accueil."
         },
         "links": {
           "toggle": "Afficher la section des liens",
@@ -3395,6 +3669,16 @@
             "calendar": "Événements",
             "mail": "E-mail"
           }
+        },
+        "courses": {
+          "drag_hint": "Faites glisser les cours pour les réorganiser sur la page d'accueil.",
+          "empty": "Aucun cours publié pour le moment. Publiez un cours pour le prévisualiser ici.",
+          "load_failed": "Échec du chargement des cours publiés.",
+          "add_button": "Ajouter",
+          "popover_title": "Sélectionner des cours",
+          "popover_empty": "Aucun cours publié disponible.",
+          "search_no_results": "Aucun cours ne correspond à votre recherche.",
+          "search_placeholder": "Rechercher des cours..."
         }
       },
       "content": {
@@ -3445,6 +3729,10 @@
           "editorial": {
             "title": "Éditorial",
             "description": "Palette de crème chaude, héros pictural, sensation de magazine raffinée"
+          },
+          "quartz": {
+            "title": "Quartz",
+            "description": "Grille monochrome à traits fins, rangées de cours lignées, rail d'inscription adhésif"
           }
         }
       },
@@ -3832,13 +4120,17 @@
       "full_name": "Nom complet",
       "password": "Votre mot de passe",
       "confirm_password": "Confirmer le mot de passe",
-      "password_helper_message": "Le mot de passe doit comporter plus de 8 caractères",
+      "password_helper_message": "Le mot de passe doit comporter 8 caractères ou plus",
       "create_account": "Créer un compte"
     },
     "signup_disabled": {
       "title": "Inscription désactivée",
       "invite_only_message": "L'inscription se fait sur invitation uniquement. Veuillez utiliser un lien d'invitation pour créer un compte.",
       "go_to_login": "Allez dans Connexion"
+    },
+    "reset_password": {
+      "heading": "Nouveau mot de passe",
+      "description": "Entrez les détails de votre nouveau mot de passe"
     },
     "continue_with": "Ou continuer avec"
   },
@@ -3962,7 +4254,11 @@
     "resend": "Renvoyer le code de vérification",
     "resend_in": "Renvoyer la vérification dans",
     "seconds": "secondes",
-    "snackbar_error": "erreur lors de l'envoi du code"
+    "snackbar_error": "erreur lors de l'envoi du code",
+    "wrong_address": "Vous vous êtes inscrit avec une mauvaise adresse ?",
+    "switch_account": "Changer de compte",
+    "confirm_link_prefix": "Cliquez sur le lien que nous avons envoyé à",
+    "confirm_link_suffix": "pour confirmer votre email"
   },
   "public_courses": {
     "page_title": "Cours - ClassroomIO",
@@ -4006,7 +4302,9 @@
       "color": "Couleur",
       "color_help": "Choisissez une des 10 couleurs",
       "select_category": "Sélectionnez une catégorie",
-      "no_groups": "Créez un groupe de balises avant de créer des balises"
+      "no_groups": "Créez un groupe de balises avant de créer des balises",
+      "search_category": "Catégorie de recherche",
+      "no_results": "Aucune catégorie trouvée"
     },
     "group_modal": {
       "create_title": "Créer un groupe de balises",
@@ -4060,8 +4358,11 @@
         "accepted": "Cette invitation a déjà été utilisée.",
         "invalid": "Ce lien d'invitation n'est pas valide.",
         "joined": "Organisation rejointe",
-        "join_failed": "Impossible de rejoindre l'organisation"
-      }
+        "join_failed": "Impossible de rejoindre l'organisation",
+        "try_again": "Réessayer"
+      },
+      "not_found": "Cette invitation n'est plus disponible.",
+      "loading": "Chargement de l'invitation…"
     },
     "link": {
       "page_title": "Rejoignez {orgName} sur ClassroomIO",
@@ -4221,7 +4522,7 @@
     "tool": {
       "pending": {
         "working": "En cours",
-        "unknown_tool": "Exécution de {toolName}",
+        "unknown_tool": "Travail sur {toolName}",
         "get_course_structure": "Lecture de la structure du cours",
         "get_lesson_content": "Lecture du contenu de la leçon",
         "get_exercise_details": "Lecture de l'exercice",
@@ -4243,7 +4544,10 @@
         "generate_course_plan": "Génération du plan de cours",
         "ask_template_questions": "Préparation du formulaire modèle",
         "fetch_documentation_url": "Lecture de la page de documentation",
-        "fetch_documentation_url_with_url": "Lecture de {url}"
+        "fetch_documentation_url_with_url": "Lecture de {url}",
+        "list_youtube_playlist_videos": "Affichage des vidéos de la playlist",
+        "get_lesson_transcript": "Lecture de la transcription de la vidéo",
+        "add_youtube_video_to_lesson": "Intégration de la vidéo YouTube"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# caractère} other {# caractères}})",
@@ -4275,7 +4579,15 @@
         "go_live_not_published": "Le cours n'a pas été publié",
         "generate_course_plan": "Plan de cours généré",
         "ask_template_questions": "Formulaire modèle prêt",
-        "fetch_documentation_url": "Lire {url}"
+        "fetch_documentation_url": "Lire {url}",
+        "list_youtube_playlist_videos": "{count} vidéos trouvées dans la playlist",
+        "list_youtube_playlist_videos_unavailable": "Impossible d'afficher les vidéos de la playlist",
+        "get_lesson_transcript": "Transcription de {title} lue",
+        "get_lesson_transcript_fetching": "Récupération de la transcription de {title}",
+        "get_lesson_transcript_plan_gated": "Les transcriptions nécessitent un forfait payant",
+        "get_lesson_transcript_no_credits": "Plus de crédits IA pour récupérer les transcriptions",
+        "get_lesson_transcript_unavailable": "Aucune transcription disponible pour {title}",
+        "add_youtube_video_to_lesson": "Vidéo intégrée : {title}"
       }
     },
     "student_empty_state": "Demandez-moi n'importe quoi sur ce cours : obtenez des explications, posez-vous des questions ou résumez ce que vous lisez.",
@@ -4316,14 +4628,14 @@
     "retry": "Réessayer",
     "run_monitor_aria": "Génération de cours en cours",
     "run_summary": {
-      "completed": "Exécution terminée.",
-      "completed_with_counts": "Exécution terminée – créé {counts}.",
-      "failed": "L'exécution a échoué.",
-      "failed_with_reason": "Échec de l'exécution – {reason}.",
-      "canceled": "Exécution annulée.",
-      "canceled_with_counts": "Exécution annulée – créé {counts} avant de s'arrêter.",
-      "paused": "Exécution en pause. Reprendre pour continuer.",
-      "paused_with_counts": "Exécution en pause – créé {counts} jusqu'à présent. Reprendre pour continuer."
+      "completed": "Génération du cours terminée.",
+      "completed_with_counts": "Génération du cours terminée — {counts} créé(s).",
+      "failed": "La génération du cours a échoué.",
+      "failed_with_reason": "La génération du cours a échoué — {reason}.",
+      "canceled": "Génération du cours annulée.",
+      "canceled_with_counts": "Génération du cours annulée — {counts} créé(s) avant l’arrêt.",
+      "paused": "Génération du cours en pause. Reprenez pour continuer.",
+      "paused_with_counts": "Génération du cours en pause — {counts} créé(s) jusqu’ici. Reprenez pour continuer."
     },
     "changes_card": {
       "summary_count": "{count} éléments modifiés",
@@ -4350,16 +4662,16 @@
       "collapse": "Plan d'effondrement"
     },
     "run_monitor": {
-      "cancel": "Annuler l'exécution",
+      "cancel": "Annuler la génération",
       "dismiss": "Rejeter",
       "now_doing": "Maintenant",
       "input_disabled_hint": "La conversation est suspendue pendant que l'agent termine la création du cours. Annulez ou attendez qu'il soit terminé.",
       "dismiss_confirm": "S'éloigner",
-      "dismiss_cancel": "Continuez à courir",
-      "dismiss_confirm_body": "S'éloigner de cette course annulée ? Le bouton Reprendre disparaîtra : toute nouvelle discussion recommencera à zéro et ne poursuivra pas le plan.",
+      "dismiss_cancel": "Rester ici",
+      "dismiss_confirm_body": "Quitter cette génération annulée ? Le bouton Reprendre disparaîtra : toute nouvelle discussion recommencera à zéro et ne poursuivra pas le plan.",
       "stuck_queued": {
         "title": "Le travailleur ne répond pas",
-        "body": "Cette exécution attend depuis plus de 30 secondes sans qu'aucun travailleur ne soit récupéré. Le travailleur en arrière-plan est peut-être en panne ou redémarre."
+        "body": "La génération du cours attend depuis plus de 30 secondes sans qu’aucun processus en arrière-plan ne la prenne en charge. Le processus en arrière-plan est peut-être hors service ou en cours de redémarrage."
       }
     },
     "ask_ai": "Demandez à l'IA",
@@ -4374,6 +4686,11 @@
     "heading": "Widgets",
     "subtitle": "Publiez des collections de cours de marque pour des sites Web externes.",
     "empty_state": "Aucun widget pour l'instant. Créez-en un pour générer un bloc de cours intégrable.",
+    "archived": {
+      "heading": "Widgets archivés",
+      "empty": "Aucun widget archivé",
+      "empty_description": "Les widgets archivés apparaîtront ici. Vous pouvez les restaurer à tout moment."
+    },
     "filter": {
       "status": "Statut",
       "all": "Tout",
@@ -4385,8 +4702,14 @@
       "saved": "Widget enregistré",
       "published": "Widget publié",
       "rolled_back": "Widget restauré",
-      "deleted": "Widget archivé",
-      "validation_failed": "Certains champs ne sont pas valides. Vérifiez les entrées en surbrillance."
+      "restored": "Widget restauré",
+      "archived_load_failed": "Impossible de charger les widgets archivés",
+      "restore_failed": "Impossible de restaurer le widget",
+      "validation_failed": "Certains champs ne sont pas valides. Vérifiez les entrées en surbrillance.",
+      "archived": "Widget archivé",
+      "archive_failed": "Impossible d'archiver le widget",
+      "permanently_deleted": "Widget supprimé définitivement",
+      "delete_failed": "Impossible de supprimer le widget"
     },
     "form": {
       "name": "Nom du widget",
@@ -4436,7 +4759,7 @@
       "copy_embed": "Copier l'intégration",
       "copy_url": "Copier l'URL",
       "rename": "Renommer",
-      "delete": "Supprimer"
+      "delete_permanently": "Supprimer définitivement"
     },
     "embed": {
       "tabs": {
@@ -4568,13 +4891,19 @@
         "mobile": "Mobile",
         "tablet": "Tablette",
         "desktop": "Bureau"
-      }
+      },
+      "current_version": "Version actuelle",
+      "active_badge": "Actif",
+      "active_badge_description": "Cette version est actuellement en ligne sur votre intégration",
+      "upgrade_callout": "Passez à la version supérieure pour débloquer des thèmes, des couleurs, des typographies et des styles personnalisés."
     },
     "tabs": {
       "select_courses": "Sélectionnez des cours",
       "layout": "Mise en page",
       "design": "Design",
-      "embed": "Code intégré"
+      "embed": "Code intégré",
+      "active": "Actifs",
+      "archived": "Archivés"
     },
     "defaults": {
       "name_prefix": "Widget de cours"
@@ -4582,6 +4911,10 @@
     "empty": {
       "heading": "Pas encore de widget",
       "description": "Créez un widget pour générer un bloc de cours intégrable pour les sites Web externes."
+    },
+    "delete_modal": {
+      "title": "Supprimer définitivement le widget",
+      "description": "Êtes-vous sûr de vouloir supprimer définitivement « {name} » ? Cette action est irréversible."
     }
   },
   "side_panel": {
@@ -4821,8 +5154,8 @@
     },
     "stage": {
       "probing": "Lecture de la vidéo…",
-      "encoding": "Encodage de {rung} ({percent} %)",
-      "uploading": "Segments en ligne ({uploaded}/{total})",
+      "encoding": "Encodage de la vidéo…",
+      "uploading": "Téléversement…",
       "thumbnail": "Générer une vignette…",
       "finalizing": "Sauvegarde…",
       "done": "Prêt",
@@ -5035,5 +5368,80 @@
         "cancel": "Annuler"
       }
     }
+  },
+  "invite_link": {
+    "tab_label": "Lien d'invitation",
+    "title": "Lien d'invitation",
+    "description": "Toute personne disposant de ce lien peut s'inscrire. Partagez-le plutôt que de saisir les adresses e-mail une par une.",
+    "course_description": "Toute personne disposant de ce lien peut s'inscrire à ce cours en tant qu'étudiant. Partagez-le plutôt que de saisir les adresses e-mail une par une.",
+    "cohort_description": "Toute personne disposant de ce lien peut rejoindre cette cohorte et tous les cours qui la composent. Partagez-le plutôt que de saisir les adresses e-mail une par une.",
+    "generate": "Créer un lien d'invitation",
+    "copy": "Copier le lien d'invitation",
+    "copied": "Lien d'invitation copié",
+    "copy_failed": "Impossible de copier le lien d'invitation",
+    "toggle_label": "Lien actif",
+    "disabled_notice": "Ce lien est désactivé. Personne ne peut s'inscrire avec ce lien tant que vous ne l'aurez pas réactivé.",
+    "join_count": "{count} personnes se sont inscrites via ce lien",
+    "snackbar": {
+      "enabled": "Lien d'invitation activé",
+      "disabled": "Lien d'invitation désactivé"
+    },
+    "join": {
+      "page_title": "Rejoindre {resourceName} sur ClassroomIO",
+      "invitation": "Vous avez été invité(e) à rejoindre {resourceName} sur {orgName}.",
+      "course_button": "Rejoindre le cours",
+      "cohort_button": "Rejoindre la cohorte",
+      "disabled": "Ce lien d'invitation est désactivé.",
+      "closed": "Les nouvelles inscriptions ne sont plus acceptées.",
+      "succeeded": "Vous vous êtes inscrit(e)",
+      "failed": "Impossible de vous inscrire. Veuillez réessayer."
+    },
+    "load_failed": "Impossible de charger le lien d'invitation",
+    "generate_failed": "Impossible de créer le lien d'invitation",
+    "toggle_failed": "Impossible de mettre à jour le lien d'invitation"
+  },
+  "lms": {
+    "view_landing_page": "Accueil"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty_title": "Aucune notification",
+    "empty_description": "Vous êtes à jour. Les nouvelles notifications apparaîtront ici.",
+    "refresh": "Actualiser",
+    "pending_invite": {
+      "heading": "Invitation de l'organisation",
+      "body": "{orgName} vous a invité(e) à rejoindre l'organisation en tant que {role}.",
+      "action": "Voir l'invitation"
+    },
+    "latest": "Dernières publications",
+    "only_show_unread": "Afficher uniquement les publications non lues",
+    "unread": "Publications non lues",
+    "more_options": "Plus d'options",
+    "give_feedback": "Donner votre avis",
+    "watching_empty_title": "Rien à regarder pour le moment",
+    "watching_empty_description": "Les mises à jour concernant les publications que vous suivez s'afficheront ici.",
+    "tabs": {
+      "direct": "Direct",
+      "watching": "En cours de visionnage"
+    }
+  },
+  "export": {
+    "as_csv": "Exporter au format CSV",
+    "as_excel": "Exporter au format Excel",
+    "as_pdf": "Exporter au format PDF",
+    "as_html": "Exporter au format HTML",
+    "more_formats": "Plus de formats d'exportation",
+    "pdf_too_many_rows": "Trop de lignes — utilisez un fichier CSV ou Excel au-dessus de {limit}",
+    "nothing_to_export": "Il n'y a rien à exporter",
+    "failed": "L'exportation a échoué.",
+    "label": "Exporter",
+    "copy": "Copier",
+    "format_csv": "CSV",
+    "format_excel": "Exceller",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "Copié dans le presse-papiers",
+    "copy_failed": "Impossible de copier dans le presse-papiers"
   }
 }

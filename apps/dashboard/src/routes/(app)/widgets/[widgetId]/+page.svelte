@@ -39,15 +39,15 @@
   });
 </script>
 
-<div class="bg-background min-h-screen w-full">
+<div class="ui:bg-background min-h-screen w-full">
   {#if !$currentOrg.id}
     <div class="flex min-h-[50vh] flex-col items-center justify-center px-4">
       <Spinner class="size-8!" />
-      <p class="text-muted-foreground mt-4 text-sm">{$t('widgets.editor.waiting_org')}</p>
+      <p class="ui:text-muted-foreground mt-4 text-sm">{$t('widgets.editor.waiting_org')}</p>
     </div>
   {:else if loadError}
     <div class="flex min-h-[50vh] flex-col items-center justify-center px-4">
-      <p class="text-destructive max-w-md text-center text-sm">{loadError}</p>
+      <p class="ui:text-destructive max-w-md text-center text-sm">{loadError}</p>
       <Button class="mt-4" href={resolve(`${$currentOrgPath}/widgets`, {})}>
         {$t('widgets.actions.back')}
       </Button>

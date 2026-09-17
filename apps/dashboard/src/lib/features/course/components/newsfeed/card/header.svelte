@@ -54,7 +54,7 @@
               {$t('course.navItem.news_feed.card.edit')}
             </span>
           </DropdownMenu.Item>
-          <DropdownMenu.Item class="text-destructive focus:text-destructive" onclick={onRequestDelete}>
+          <DropdownMenu.Item class="ui:text-destructive ui:focus:text-destructive" onclick={onRequestDelete}>
             <span class="flex items-center gap-2">
               <Trash2Icon size={14} />
               {$t('course.navItem.news_feed.card.delete')}

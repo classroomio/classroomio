@@ -8,6 +8,7 @@
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import LogOutIcon from '@lucide/svelte/icons/log-out';
   import MessageSquarePlusIcon from '@lucide/svelte/icons/message-square-plus';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { useSidebar } from '@cio/ui/base/sidebar';
@@ -67,7 +68,7 @@
 {/snippet}
 
 {#snippet themetoggle()}
-  <DropdownMenu.Label class="p-0 font-normal">
+  <DropdownMenu.Label class="ui:py-0 font-normal">
     <ThemeToggle />
   </DropdownMenu.Label>
 {/snippet}
@@ -85,6 +86,7 @@
         {#snippet child({ props })}
           <Sidebar.MenuButton
             size="lg"
+            data-testid="app-user-menu-trigger"
             class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
             {...props}
           >
@@ -96,7 +98,7 @@
 
       <!-- DROPDOWN CONTENT -->
       <DropdownMenu.Content
-        class="ui:w-(--bits-dropdown-menu-anchor-width) ui:min-w-56 ui:rounded-lg"
+        class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
         side={sidebar.isMobile ? 'bottom' : 'right'}
         align="end"
         sideOffset={4}
@@ -105,6 +107,15 @@
 
         <DropdownMenu.Separator />
         {@render themetoggle()}
+
+        <DropdownMenu.Separator />
+
+        <DropdownMenu.Item class="m-0">
+          <a href={resolve(`${$basePath}/settings`, {})} class="flex w-full items-center gap-2">
+            <SettingsIcon size={16} />
+            <p class="text-sm">{$t('org_navigation.settings')}</p>
+          </a>
+        </DropdownMenu.Item>
 
         <DropdownMenu.Separator />
 

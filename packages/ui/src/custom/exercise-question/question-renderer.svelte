@@ -13,7 +13,8 @@
   import { Input } from '../../base/input';
   import { Textarea } from '../../base/textarea';
   import { IconButton } from '../icon-button';
-  import { MediaPlayer, isYoutubeUrl } from '../media-player';
+  import { MediaPlayer, getVideoMediaType, isYoutubeUrl, isVimeoUrl } from '../media-player';
+  import { dedupe } from '@cio/utils';
   import NumberBadge from '$src/base/number-badge/number-badge.svelte';
   import QuestionTitle from './question-title.svelte';
   import { YoutubeLinkForm } from '../youtube-link-form';
@@ -99,7 +100,7 @@
           : null;
       })
       .filter((entry): entry is { key: string; sourceIndex: number; sourceUrl: string } =>
-        Boolean(entry && isYoutubeUrl(entry.sourceUrl))
+        Boolean(entry && (isYoutubeUrl(entry.sourceUrl) || isVimeoUrl(entry.sourceUrl)))
       )
   );
 
@@ -137,7 +138,7 @@
   }
 
   function setQuestionImageUrls(nextUrls: string[]) {
-    const deduped = Array.from(new Set(nextUrls.map((value) => value.trim()).filter(Boolean)));
+    const deduped = dedupe(nextUrls.map((value) => value.trim()).filter(Boolean));
     const nextSettings = {
       ...(contract.question.settings ?? {}),
       imageUrls: deduped
@@ -151,7 +152,7 @@
   }
 
   function setQuestionVideoUrls(nextUrls: string[]) {
-    const deduped = Array.from(new Set(nextUrls.map((value) => value.trim()).filter(Boolean)));
+    const deduped = dedupe(nextUrls.map((value) => value.trim()).filter(Boolean));
     const nextSettings = {
       ...(contract.question.settings ?? {}),
       videoUrls: deduped
@@ -381,7 +382,7 @@
             <div class="ui:group ui:relative ui:max-w-xl ui:rounded-md ui:border">
               <MediaPlayer
                 source={{
-                  type: 'youtube',
+                  type: getVideoMediaType(video.sourceUrl),
                   url: video.sourceUrl
                 }}
                 options={{
@@ -458,7 +459,7 @@
             <div class="ui:max-w-xl ui:overflow-hidden ui:rounded-md ui:border">
               <MediaPlayer
                 source={{
-                  type: 'youtube',
+                  type: getVideoMediaType(video.sourceUrl),
                   url: video.sourceUrl
                 }}
                 options={{

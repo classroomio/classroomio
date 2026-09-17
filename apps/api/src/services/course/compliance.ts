@@ -14,7 +14,7 @@ import {
   updateCourseCompletionRecord,
   type OrgComplianceLearnerRow
 } from '@cio/db/queries/course/compliance';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
 
 import { ROLE } from '@cio/utils/constants';
@@ -90,8 +90,8 @@ function getStatusCounts(records: Array<{ record: TCourseCompletionRecord | null
   return counts;
 }
 
-async function getComplianceCourseOrThrow(courseId: string) {
-  const [course] = await getCourseById(courseId);
+async function getComplianceCourseOrThrow(courseId: string, dbClient: DbOrTxClient = db) {
+  const [course] = await getCourseById(courseId, dbClient);
 
   if (!course) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
@@ -210,33 +210,45 @@ async function getComplianceCompletionSnapshot(params: {
   };
 }
 
-async function ensureComplianceEnrollmentRecordForLearner(courseId: string, groupMemberId: string, profileId: string) {
-  const course = await getComplianceCourseOrThrow(courseId);
+async function ensureComplianceEnrollmentRecordForLearner(
+  courseId: string,
+  groupMemberId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+) {
+  const course = await getComplianceCourseOrThrow(courseId, dbClient);
   const dueDate = getComplianceInitialDueDate(course);
 
   if (!dueDate) {
     return null;
   }
 
-  const [existingRecord] = await getLatestComplianceRecordsByProfiles(courseId, [profileId]);
+  const [existingRecord] = await getLatestComplianceRecordsByProfiles(courseId, [profileId], dbClient);
 
   if (existingRecord) {
     return existingRecord;
   }
 
-  return createCourseCompletionRecord({
-    courseId,
-    groupMemberId,
-    profileId,
-    cycleNumber: 1,
-    status: 'not_started',
-    dueDate,
-    attempts: 0,
-    timeSpentMinutes: 0
-  });
+  return createCourseCompletionRecord(
+    {
+      courseId,
+      groupMemberId,
+      profileId,
+      cycleNumber: 1,
+      status: 'not_started',
+      dueDate,
+      attempts: 0,
+      timeSpentMinutes: 0
+    },
+    dbClient
+  );
 }
 
-export async function ensureComplianceEnrollmentRecordsForProfiles(courseIds: string[], profileIds: string[]) {
+export async function ensureComplianceEnrollmentRecordsForProfiles(
+  courseIds: string[],
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+) {
   if (courseIds.length === 0 || profileIds.length === 0) {
     return {
       createdCount: 0
@@ -246,7 +258,7 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(courseIds: st
   let createdCount = 0;
 
   for (const courseId of courseIds) {
-    const [course] = await getCourseById(courseId);
+    const [course] = await getCourseById(courseId, dbClient);
 
     if (!course || course.type !== 'COMPLIANCE' || !course.compliance) {
       continue;
@@ -257,19 +269,19 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(courseIds: st
       continue;
     }
 
-    const learners = await getStudentCourseMembersForCompliance(courseId, profileIds);
+    const learners = await getStudentCourseMembersForCompliance(courseId, profileIds, dbClient);
     for (const learner of learners) {
       const profileId = learner.member.profileId;
       if (!profileId) {
         continue;
       }
 
-      const [existingRecord] = await getLatestComplianceRecordsByProfiles(courseId, [profileId]);
+      const [existingRecord] = await getLatestComplianceRecordsByProfiles(courseId, [profileId], dbClient);
       if (existingRecord) {
         continue;
       }
 
-      await ensureComplianceEnrollmentRecordForLearner(courseId, learner.member.id, profileId);
+      await ensureComplianceEnrollmentRecordForLearner(courseId, learner.member.id, profileId, dbClient);
       createdCount += 1;
     }
   }

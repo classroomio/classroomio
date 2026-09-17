@@ -22,6 +22,11 @@ Documenting my thoughts on how authentication works in the app.
 - create email and password
 - join org as student (automatically).
 
+### lms - existing account
+
+- login returns the non-member to the academy landing page.
+- select Join Academy to explicitly join an open academy as a student.
+
 ### lms - invite
 
 - click invite link

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slide Builder — prototypes · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="deck.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .page { max-width: 1040px; margin: 0 auto; padding: 56px 28px 96px; }
+      .eyebrow { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted-foreground); font-weight: 600; }
+      h1 { font-size: 34px; letter-spacing: -0.025em; margin: 10px 0 12px; font-weight: 500; }
+      .lead { font-size: 15px; line-height: 1.7; color: var(--muted-foreground); max-width: 660px; margin: 0; }
+      .lead code { font-size: 13px; }
+      .sec { position: relative; font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted-foreground); margin: 44px 0 16px; display: flex; align-items: center; gap: 12px; }
+      .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .shot { display: block; text-decoration: none; color: inherit; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); transition: border-color 0.14s, transform 0.14s; }
+      .shot:hover { border-color: color-mix(in oklch, var(--primary) 50%, var(--border)); transform: translateY(-2px); }
+      .cover { aspect-ratio: 16/9; display: grid; place-items: center; color: #fff; }
+      .cover svg { width: 26px; height: 26px; stroke-width: 1.6; }
+      .b { padding: 13px 14px; display: grid; gap: 3px; }
+      .n { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); font-weight: 600; }
+      .t { font-size: 14px; font-weight: 500; }
+      .d { font-size: 12.5px; color: var(--muted-foreground); line-height: 1.55; }
+      .foot { margin-top: 52px; border-top: 1px solid var(--border); padding-top: 20px; font-size: 13px; line-height: 1.9; color: var(--muted-foreground); }
+      .foot b { color: var(--foreground); }
+      @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="eyebrow">ClassroomIO · Prototype + PRD handoff</div>
+      <h1>Slide Builder</h1>
+      <p class="lead">
+        A native slide deck teachers author, theme, present and export inside ClassroomIO — no round trip to Google Slides or Canva.
+        Slides are structured data, so the assistant and MCP can write them, and the platform can measure them.
+        The engineering PRD lives at <code>prd/slide-builder/README.md</code>.
+      </p>
+
+      <div class="sec">1 · Teacher — authoring</div>
+      <div class="grid">
+        <a class="shot" href="deck-library.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div class="b"><span class="n">Org · Decks</span><span class="t">Deck library</span><span class="d">Every deck you own, reusable across lessons. Try the empty-state toggle in the header.</span></div>
+        </a>
+
+        <a class="shot" href="lesson-slide-tab.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.546 0.245 262.881), oklch(0.809 0.105 251.813))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20v12H2zM12 15v6M8 21h8"/></svg>
+          </div>
+          <div class="b"><span class="n">Lesson · Slide tab</span><span class="t">Embed or build</span><span class="d">The two modes on one tab. Switch between them — neither destroys the other's data.</span></div>
+        </a>
+
+        <a class="shot" href="deck-editor.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.424 0.199 265.638), oklch(0.546 0.245 262.881))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div class="b"><span class="n">Editor · Layout mode</span><span class="t">Deck editor</span><span class="d">Rail, canvas, inspector. Drag thumbnails to reorder, click a block to edit, change the layout.</span></div>
+        </a>
+
+        <a class="shot" href="deck-editor-free.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 5h6v6H5zM13 13h6v6h-6z"/></svg>
+          </div>
+          <div class="b"><span class="n">Editor · Free position</span><span class="t">Free canvas + the overflow guard</span><span class="d">Drag blocks anywhere. One block is deliberately past the edge — Save stays blocked until it fits.</span></div>
+        </a>
+
+        <a class="shot" href="deck-themes.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="14" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2a10 10 0 1 0 0 20 2 2 0 0 0 0-4 2 2 0 0 1 0-4h2a6 6 0 0 0 0-12z"/></svg>
+          </div>
+          <div class="b"><span class="n">Editor · Theme</span><span class="t">Themes</span><span class="d">Five token sets previewed on real slides, with your brand seeded first.</span></div>
+        </a>
+
+        <a class="shot" href="presenter.html">
+          <div class="cover" style="background: linear-gradient(135deg, #0b0d12, #2a3140)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20v12H2zM12 15v6M8 21h8"/></svg>
+          </div>
+          <div class="b"><span class="n">Teacher · Live</span><span class="t">Presenter mode</span><span class="d">Next slide, notes and a timer. Arrows to advance, O for overview, B to black out.</span></div>
+        </a>
+      </div>
+
+      <div class="sec">2 · Teacher — AI, import, export</div>
+      <div class="grid">
+        <a class="shot" href="deck-ai.html">
+          <div class="cover" style="background: linear-gradient(135deg, #7c3aed, #a78bfa)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
+          </div>
+          <div class="b"><span class="n">Assistant</span><span class="t">AI authoring + comment pins</span><span class="d">Plan → durable run, slides streaming into the rail, and pins the agent applies. Try “Apply all pins”.</span></div>
+        </a>
+
+        <a class="shot" href="deck-import.html">
+          <div class="cover" style="background: linear-gradient(135deg, #d24726, #f2a08a)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <div class="b"><span class="n">Migration</span><span class="t">PowerPoint import</span><span class="d">Per-slide mapping review and an unplaced-images tray. Toggle back to the upload step in the header.</span></div>
+        </a>
+
+        <a class="shot" href="deck-export.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.556 0 0), oklch(0.708 0 0))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          </div>
+          <div class="b"><span class="n">Output</span><span class="t">Export to PDF / PPTX</span><span class="d">The dialog states what each format actually produces. Running, finished and failed jobs all shown.</span></div>
+        </a>
+      </div>
+
+      <div class="sec">3 · Learner and public visitor</div>
+      <div class="grid">
+        <a class="shot" href="lesson-deck-player.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.83 0.12 165))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+          </div>
+          <div class="b"><span class="n">LMS · Lesson</span><span class="t">Learner deck player</span><span class="d">Keyboard nav, overview grid, and progress gating completion. Toggle the locked state in the header.</span></div>
+        </a>
+
+        <a class="shot" href="public-course-lesson.html">
+          <div class="cover" style="background: linear-gradient(135deg, #0ea5e9, #7dd3fc)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>
+          </div>
+          <div class="b"><span class="n">Org site · Public</span><span class="t">Public course page</span><span class="d">A deck rendered for anonymous visitors — something the public path cannot do at all today.</span></div>
+        </a>
+      </div>
+
+      <div class="foot">
+        <b>Key product decisions baked into these prototypes:</b><br />
+        · The Slide tab has <b>two modes</b> — embed an external deck, or build a native one. Both persist; <code>slideMode</code> decides what renders.<br />
+        · Decks are an <b>org-level library</b> with a nullable lesson link, so one deck can serve many lessons.<br />
+        · A slide is <b>layout slots plus a free-position escape hatch</b>. Slots own geometry; free blocks declare an explicit box.<br />
+        · <b>Overflow is arithmetic</b>, rejected at the API boundary — neither a teacher nor an agent can save a cropped slide.<br />
+        · Themes are <b>token sets</b> carrying no content, with one seeded from the organisation's brand.<br />
+        · <b>Heavy AI tools run as durable jobs</b>, not inline in chat — cancellable, resumable, with progress.<br />
+        · Deck content is <b>structured jsonb rendered by components</b>, never HTML through the lesson sanitizer.<br />
+        · Exports are <b>PDF and PPTX</b> in v1, and the dialog is honest that PPTX slides arrive as images.
+      </div>
+    </div>
+
+    <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme" style="position: fixed; bottom: 18px; right: 18px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    </button>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

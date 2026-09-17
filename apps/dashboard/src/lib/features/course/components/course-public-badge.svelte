@@ -10,10 +10,7 @@
   let { class: className = '' }: Props = $props();
 </script>
 
-<Badge
-  variant="secondary"
-  class="ui:inline-flex ui:shrink-0 ui:items-center ui:gap-1 ui:rounded-md! ui:text-xs ui:capitalize {className}"
->
+<Badge variant="secondary" class="inline-flex shrink-0 items-center gap-1 rounded-md! text-xs capitalize {className}">
   <GlobeIcon class="size-3.5 shrink-0" />
   {$t('courses.course_card.public_badge')}
 </Badge>

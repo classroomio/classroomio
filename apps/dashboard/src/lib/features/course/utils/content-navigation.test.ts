@@ -13,7 +13,6 @@ describe('isContentItemInPath', () => {
   });
 });
 
-
 describe('isContentItemInPath', () => {
   it('returns false when the current path is missing', () => {
     expect(isContentItemInPath('lesson-1', undefined)).toBe(false);

@@ -2,15 +2,20 @@
   import { lessonApi, courseApi } from '$features/course/api';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Checkbox } from '@cio/ui/base/checkbox';
+  import { Switch } from '@cio/ui/base/switch';
   import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Field from '@cio/ui/base/field';
   import * as Select from '@cio/ui/base/select';
   import * as Tooltip from '@cio/ui/base/tooltip';
+  import * as Alert from '@cio/ui/base/alert';
   import InfoIcon from '@lucide/svelte/icons/info';
+  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { toast } from '@cio/ui/base/sonner';
   import { classroomio } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
+  import { goAndHighlight } from '$lib/routing/go-and-highlight';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
   import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
 
@@ -54,7 +59,7 @@
     const currentTz = courseApi.course?.metadata?.sessionTimezone || getBrowserTimezone();
 
     return (
-      sessionCallUrl !== (lessonApi.lesson?.callUrl ?? '') ||
+      sessionCallUrl.trim() !== (lessonApi.lesson?.callUrl ?? '') ||
       computeNewInstant() !== (lessonApi.lesson?.lessonAt ?? '') ||
       sessionTimezone !== currentTz
     );
@@ -68,8 +73,8 @@
     isSavingSession = true;
     try {
       await lessonApi.update(courseId, lessonId, {
-        callUrl: sessionCallUrl || undefined,
-        lessonAt: computeNewInstant() || undefined
+        callUrl: sessionCallUrl.trim() || null,
+        lessonAt: computeNewInstant() || null
       });
 
       const currentTz = courseApi.course?.metadata?.sessionTimezone || '';
@@ -119,6 +124,8 @@
   }
 
   const completionPolicy = $derived(lessonApi.lesson?.completionPolicy ?? 'manual');
+  const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
+  const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
   const videoWatchThreshold = $derived(lessonApi.lesson?.videoWatchThreshold ?? 95);
   const videos = $derived(lessonApi.lesson?.videos ?? []);
 
@@ -168,6 +175,21 @@
   function isVideoWatchEnforced(video: LessonVideo): boolean {
     return Boolean(video.watchEnforced);
   }
+
+  function handleLessonCommentsChange(checked: boolean) {
+    if (!courseCommentsEnabled) return;
+
+    lessonApi.updateLessonState('commentsEnabled', checked);
+  }
+
+  function goToCourseCommentsSettings() {
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    goAndHighlight(ROUTE_NAME.COURSE_SETTINGS, ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS, {
+      id: courseId
+    });
+  }
 </script>
 
 <div class="p-4">
@@ -193,7 +215,7 @@
             <input
               id="session-datetime"
               type="datetime-local"
-              class="ui:border-input ui:bg-background ui:text-foreground ui:shadow-xs ui:flex ui:h-9 ui:w-full ui:rounded-md ui:border ui:px-3 ui:py-1 ui:text-sm ui:outline-none"
+              class="ui:border-input ui:bg-background ui:text-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none"
               value={sessionWallClock}
               oninput={(e) => (sessionWallClock = (e.currentTarget as HTMLInputElement).value)}
             />
@@ -203,7 +225,7 @@
             <Field.Label for="session-timezone">{$t('course.navItem.lessons.session.timezone_label')}</Field.Label>
             <select
               id="session-timezone"
-              class="ui:border-input ui:bg-background ui:text-foreground ui:shadow-xs ui:flex ui:h-9 ui:w-full ui:rounded-md ui:border ui:px-3 ui:py-1 ui:text-sm ui:outline-none"
+              class="ui:border-input ui:bg-background ui:text-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none"
               value={sessionTimezone}
               onchange={(e) => (sessionTimezone = (e.currentTarget as HTMLSelectElement).value)}
             >
@@ -314,9 +336,25 @@
             >
 
             {#if enforceableVideos.length === 0}
-              <Field.Description
-                >{$t('course.navItem.lessons.settings.progression.watch_videos_empty')}</Field.Description
-              >
+              <Alert.Root variant="warning">
+                <TriangleAlertIcon />
+                <Alert.Title>
+                  {$t('course.navItem.lessons.settings.progression.watch_videos_no_uploads_title')}
+                </Alert.Title>
+                <Alert.Description>
+                  <p>
+                    {$t('course.navItem.lessons.settings.progression.watch_videos_empty')}
+                    <a
+                      href="https://classroomio.com/help/create-and-deliver/course-progression"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="ui:text-primary underline"
+                    >
+                      {$t('course.navItem.lessons.settings.progression.watch_videos_learn_more')}
+                    </a>
+                  </p>
+                </Alert.Description>
+              </Alert.Root>
             {:else}
               <Field.Group class="gap-3">
                 {#each enforceableVideos as { video, index } (video.assetId ?? index)}
@@ -332,14 +370,44 @@
                   </Field.Field>
                 {/each}
               </Field.Group>
-            {/if}
 
-            {#if showWatchVideosError}
-              <Field.Error>{$t('course.navItem.lessons.settings.progression.watch_videos_required')}</Field.Error>
+              {#if showWatchVideosError}
+                <Field.Error>{$t('course.navItem.lessons.settings.progression.watch_videos_required')}</Field.Error>
+              {/if}
             {/if}
           </Field.Field>
         {/if}
       </Field.Group>
+    </Field.Set>
+
+    <Field.Separator />
+
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.lessons.settings.comments.title')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.lessons.settings.comments.description')}</Field.Description>
+
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="lesson-comments"
+          checked={courseCommentsEnabled && lessonCommentsEnabled}
+          disabled={!courseCommentsEnabled}
+          onCheckedChange={handleLessonCommentsChange}
+        />
+        <Field.Label for="lesson-comments">
+          {courseCommentsEnabled && lessonCommentsEnabled
+            ? $t('course.navItem.lessons.settings.comments.enabled')
+            : $t('course.navItem.lessons.settings.comments.disabled')}
+        </Field.Label>
+      </Field.Field>
+
+      {#if !courseCommentsEnabled}
+        <Field.Description>
+          {$t('course.navItem.lessons.settings.comments.disabled_by_course')}
+          <Button variant="link" class="h-auto p-0" onclick={goToCourseCommentsSettings}>
+            {$t('course.navItem.lessons.settings.comments.change_course_setting')}
+          </Button>
+        </Field.Description>
+      {/if}
     </Field.Set>
   </Field.Group>
 </div>

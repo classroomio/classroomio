@@ -175,9 +175,7 @@
     if (!isOpen) resetState();
   }}
 >
-  <Dialog.Content
-    class="ui:max-h-[85vh] ui:w-[95%] ui:max-w-3xl ui:overflow-hidden ui:grid-rows-[auto_minmax(0,1fr)_auto] ui:pb-0"
-  >
+  <Dialog.Content class="max-h-[85vh] w-[95%] max-w-3xl grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden pb-0">
     <Dialog.Header>
       <Dialog.Title>{$t('media_manager.thumbnails.manage_title')}</Dialog.Title>
       <Dialog.Description>{$t('media_manager.thumbnails.manage_description')}</Dialog.Description>
@@ -185,7 +183,7 @@
 
     {#if asset}
       {@const activeAsset = asset}
-      <div class="ui:min-h-0 ui:overflow-y-auto">
+      <div class="min-h-0 overflow-y-auto">
         <div class="space-y-5 p-1">
           <div class="ui:bg-muted/40 aspect-video w-full overflow-hidden rounded-md border">
             {#if isVideoLoading}
@@ -286,7 +284,7 @@
 
           <div class="space-y-2">
             <p class="text-sm font-medium">{$t('media_manager.thumbnails.upload_custom')}</p>
-            <div class={isUploading ? 'ui:pointer-events-none ui:opacity-50' : ''}>
+            <div class={isUploading ? 'pointer-events-none opacity-50' : ''}>
               <FileDropZone.Root
                 accept={FileDropZone.ACCEPT_IMAGE}
                 maxFiles={1}
@@ -318,7 +316,7 @@
       </div>
     {/if}
 
-    <Dialog.Footer class="ui:border-border ui:-mx-6 ui:border-t ui:px-6 ui:py-4">
+    <Dialog.Footer class="ui:border-border -mx-6 border-t px-6 py-4">
       <Button variant="outline" onclick={() => (open = false)} disabled={isSaving || isRegenerating}>
         {$t('media_manager.edit.cancel')}
       </Button>

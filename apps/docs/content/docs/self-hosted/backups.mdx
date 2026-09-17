@@ -48,18 +48,15 @@ docker run --rm -v classroomio_minio-data:/data:ro -v "$PWD/backups":/backup \
 
 ## Restoring
 
-<Steps>
-<Step>
-### Stop the app services
+### 1. Stop the app services
 
 Keep Postgres running, stop everything that writes to it:
 
 ```zsh title="Terminal"
 docker compose --env-file .env -p classroomio -f docker-compose.images.yaml stop api dashboard jobs
 ```
-</Step>
-<Step>
-### Restore the database
+
+### 2. Restore the database
 
 ```zsh title="Terminal"
 gunzip -c backups/classroomio-db-<timestamp>.sql.gz | \
@@ -70,23 +67,19 @@ gunzip -c backups/classroomio-db-<timestamp>.sql.gz | \
 Restoring into a non-empty database can conflict with existing rows. For a clean restore, drop and
 recreate the database first (`dropdb`/`createdb` inside the postgres container), then run the
 command above.
-</Step>
-<Step>
-### Restore object storage
+
+### 3. Restore object storage
 
 ```zsh title="Terminal"
 docker run --rm -v classroomio_minio-data:/data -v "$PWD/backups":/backup \
   alpine sh -c "cd /data && tar xzf /backup/classroomio-minio-<timestamp>.tar.gz"
 ```
-</Step>
-<Step>
-### Start everything again
+
+### 4. Start everything again
 
 ```zsh title="Terminal"
 ./classroomio.sh start
 ```
-</Step>
-</Steps>
 
 :::danger[The fastest way to lose data is a cleanup command]
 `docker compose down -v` and `docker volume prune` **delete** the `postgres-data`, `redis-data`,

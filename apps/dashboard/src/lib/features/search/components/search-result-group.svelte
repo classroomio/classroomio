@@ -18,11 +18,11 @@
     {#each items as item (item.kind + item.id)}
       {@const Icon = item.icon ?? fallbackIcon}
       <Command.Item value={`${item.kind}:${item.id}`} onSelect={() => onSelect(item)}>
-        <Icon class="ui:size-4" />
-        <div class="ui:min-w-0 ui:flex-1">
-          <div class="ui:truncate ui:font-medium">{item.title}</div>
+        <Icon class="size-4" />
+        <div class="min-w-0 flex-1">
+          <div class="truncate font-medium">{item.title}</div>
           {#if item.subtitle}
-            <div class="ui:text-muted-foreground ui:truncate ui:text-xs">{item.subtitle}</div>
+            <div class="ui:text-muted-foreground truncate text-xs">{item.subtitle}</div>
           {/if}
         </div>
       </Command.Item>

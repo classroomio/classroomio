@@ -158,7 +158,7 @@
     <button
       type="button"
       onclick={toggleCard}
-      class="ui:text-muted-foreground hover:ui:text-foreground mt-0.5 shrink-0"
+      class="ui:text-muted-foreground ui:hover:text-foreground mt-0.5 shrink-0"
       aria-label={isExpanded ? $t('ai_assistant.plan_view.collapse') : $t('ai_assistant.plan_view.expand')}
     >
       {#if isExpanded}
@@ -175,13 +175,13 @@
           bind:value={editablePlan.title}
           onblur={stopEditing}
           onkeydown={handleEditKeydown}
-          class="ui:bg-muted/50 focus:ui:ring-primary w-full rounded border px-1 py-0.5 text-sm font-semibold focus:ring-1 focus:outline-none"
+          class="ui:bg-muted/50 ui:focus:ring-primary w-full rounded border px-1 py-0.5 text-sm font-semibold focus:ring-1 focus:outline-none"
           autofocus
         />
       {:else}
         <button
           onclick={() => startEditing('plan-title')}
-          class="group hover:ui:text-primary flex items-center gap-1 text-left text-sm font-semibold"
+          class="group ui:hover:text-primary flex items-center gap-1 text-left text-sm font-semibold"
         >
           {editablePlan.title}
           <PencilIcon size={10} class="opacity-0 group-hover:opacity-50" />
@@ -215,13 +215,13 @@
                 bind:value={editablePlan.sections[sectionIndex].title}
                 onblur={stopEditing}
                 onkeydown={handleEditKeydown}
-                class="ui:bg-muted/50 focus:ui:ring-primary flex-1 rounded border px-1 py-0.5 text-xs focus:ring-1 focus:outline-none"
+                class="ui:bg-muted/50 ui:focus:ring-primary flex-1 rounded border px-1 py-0.5 text-xs focus:ring-1 focus:outline-none"
                 autofocus
               />
             {:else}
               <button
                 onclick={() => startEditing(`section-${sectionIndex}-title`)}
-                class="group hover:ui:text-primary flex items-center gap-1 text-left"
+                class="group ui:hover:text-primary flex items-center gap-1 text-left"
               >
                 Section {section.order}: {section.title}
                 <PencilIcon size={9} class="opacity-0 group-hover:opacity-50" />
@@ -245,13 +245,13 @@
                         bind:value={editablePlan.sections[sectionIndex].items[itemIndex].title}
                         onblur={stopEditing}
                         onkeydown={handleEditKeydown}
-                        class="ui:bg-muted/50 focus:ui:ring-primary w-full rounded border px-1 py-0.5 text-xs font-medium focus:ring-1 focus:outline-none"
+                        class="ui:bg-muted/50 ui:focus:ring-primary w-full rounded border px-1 py-0.5 text-xs font-medium focus:ring-1 focus:outline-none"
                         autofocus
                       />
                     {:else}
                       <button
                         onclick={() => startEditing(`item-${sectionIndex}-${itemIndex}-title`)}
-                        class="group hover:ui:text-primary flex items-center gap-1 text-left font-medium"
+                        class="group ui:hover:text-primary flex items-center gap-1 text-left font-medium"
                       >
                         {#if item.type === 'exercise'}
                           <span class="ui:text-primary">{item.title}</span>
@@ -268,13 +268,13 @@
                         onblur={stopEditing}
                         onkeydown={handleEditKeydown}
                         rows={2}
-                        class="ui:bg-muted/50 ui:text-muted-foreground focus:ui:ring-primary mt-0.5 w-full rounded border px-1 py-0.5 text-xs focus:ring-1 focus:outline-none"
+                        class="ui:bg-muted/50 ui:text-muted-foreground ui:focus:ring-primary mt-0.5 w-full rounded border px-1 py-0.5 text-xs focus:ring-1 focus:outline-none"
                         autofocus
                       ></textarea>
                     {:else}
                       <button
                         onclick={() => startEditing(`item-${sectionIndex}-${itemIndex}-desc`)}
-                        class="group ui:text-muted-foreground hover:ui:text-foreground mt-0.5 flex items-start gap-1 text-left"
+                        class="group ui:text-muted-foreground ui:hover:text-foreground mt-0.5 flex items-start gap-1 text-left"
                       >
                         <span class="line-clamp-2">{item.description}</span>
                         <PencilIcon size={9} class="mt-0.5 flex-shrink-0 opacity-0 group-hover:opacity-50" />
@@ -329,7 +329,7 @@
             rows={1}
             disabled={isBusy}
             onkeydown={handleChangeKeydown}
-            class="ui:min-h-9! ui:resize-none ui:py-2 ui:text-sm"
+            class="min-h-9! resize-none py-2 text-sm"
           />
           <Button
             size="icon-sm"
@@ -338,7 +338,7 @@
             onclick={submitChangeRequest}
             aria-label={$t('ai_assistant.plan_ask_changes_send_aria')}
           >
-            <ArrowUpIcon class="ui:size-4" />
+            <ArrowUpIcon class="size-4" />
           </Button>
         </div>
       </div>

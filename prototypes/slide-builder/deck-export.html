@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Export deck · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="deck.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .scrim { position: fixed; inset: 0; background: rgb(0 0 0 / 0.5); display: grid; place-items: center; z-index: 200; padding: 20px; }
+      .modal { background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-lg); width: min(100%, 560px); padding: 24px; display: grid; gap: 16px; box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1)); }
+      .modal h2 { margin: 0; font-size: 18px; font-weight: 600; }
+      .modal .sub { margin: 0; font-size: 13.5px; color: var(--muted-foreground); }
+      .fmt { display: grid; gap: 10px; }
+      .fopt { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px 14px; display: grid; grid-template-columns: 20px 1fr; gap: 12px; cursor: pointer; background: var(--card); }
+      .fopt.on { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in oklch, var(--primary) 18%, transparent); }
+      .fopt .radio { width: 18px; height: 18px; border-radius: 999px; border: 1.5px solid var(--border); margin-top: 2px; display: grid; place-items: center; }
+      .fopt.on .radio { border-color: var(--primary); }
+      .fopt.on .radio::after { content: ''; width: 9px; height: 9px; border-radius: 999px; background: var(--primary); }
+      .fopt h4 { margin: 0 0 3px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+      .fopt p { margin: 0; font-size: 12.5px; color: var(--muted-foreground); line-height: 1.55; }
+      .jobrow { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 11px 13px; font-size: 13px; background: var(--card); }
+      .jobrow .g { width: 30px; height: 30px; border-radius: var(--radius-sm); display: grid; place-items: center; background: var(--muted); flex-shrink: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="nav-label">Content</div>
+        <a class="nav-item active" href="deck-library.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20v12H2zM12 15v6M8 21h8"/></svg>Decks</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="crumbs"><a href="deck-library.html">Decks</a><span class="sep">/</span><a href="deck-editor.html">Designing Effective Assessments</a><span class="sep">/</span><span>Export</span></div>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 800px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Exports</h1>
+                <p class="page-sub">Exports run in the background, so you can close this page and come back to the file.</p>
+              </div>
+              <button class="btn btn-primary" onclick="document.getElementById('scrim').hidden=false">New export</button>
+            </div>
+
+            <div style="display: grid; gap: 10px">
+              <div class="jobrow">
+                <span class="g"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                <div style="flex: 1; min-width: 0">
+                  <div style="font-weight: 500">Designing Effective Assessments.pdf</div>
+                  <div class="hint" style="margin: 0">8 pages · 4.2 MB · finished 3 minutes ago</div>
+                </div>
+                <button class="btn btn-outline btn-sm">Download</button>
+              </div>
+
+              <div class="jobrow">
+                <span class="g"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"><path d="M2 3h20v12H2zM12 15v6M8 21h8"/></svg></span>
+                <div style="flex: 1; min-width: 0">
+                  <div style="font-weight: 500">Designing Effective Assessments.pptx</div>
+                  <div class="hint" style="margin: 0">Capturing slide 5 of 8…</div>
+                  <div class="progress progress-thin" style="margin-top: 7px"><span style="width: 62%"></span></div>
+                </div>
+                <button class="btn btn-ghost btn-sm">Cancel</button>
+              </div>
+
+              <div class="jobrow" style="opacity: 0.8">
+                <span class="g"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+                <div style="flex: 1; min-width: 0">
+                  <div style="font-weight: 500">Rubric Clinic.pptx</div>
+                  <div class="hint" style="margin: 0">Failed — a slide image could not be loaded. Retry to run it again.</div>
+                </div>
+                <button class="btn btn-outline btn-sm">Retry</button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- export dialog -->
+    <div class="scrim" id="scrim">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exTitle">
+        <div>
+          <h2 id="exTitle">Export deck</h2>
+          <p class="sub">Designing Effective Assessments · 8 slides</p>
+        </div>
+
+        <div class="fmt">
+          <label class="fopt on" id="optPdf">
+            <span class="radio"></span>
+            <span>
+              <h4>PDF <span class="badge badge-success-soft">Best fidelity</span></h4>
+              <p>One 1920×1080 page per slide. Text stays selectable and vector where the theme allows, so it prints and zooms cleanly.</p>
+            </span>
+          </label>
+
+          <label class="fopt" id="optPptx">
+            <span class="radio"></span>
+            <span>
+              <h4>PowerPoint (.pptx)</h4>
+              <p>One full-bleed image per slide. Opens anywhere, keeps your theme exactly — but the text is <b>not editable</b> in PowerPoint. Presenter notes are carried across.</p>
+            </span>
+          </label>
+        </div>
+
+        <div class="note-strip" id="longWarn" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <span>PowerPoint export captures each slide separately, so a deck this long takes about <b>40 seconds</b>. It runs in the background — you can leave this page.</span>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <button class="btn btn-outline" onclick="document.getElementById('scrim').hidden=true">Cancel</button>
+          <button class="btn btn-primary" onclick="document.getElementById('scrim').hidden=true">Start export</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const pdf = document.getElementById('optPdf');
+      const pptx = document.getElementById('optPptx');
+      const warn = document.getElementById('longWarn');
+
+      pdf.onclick = () => { pdf.classList.add('on'); pptx.classList.remove('on'); warn.hidden = true; };
+      pptx.onclick = () => { pptx.classList.add('on'); pdf.classList.remove('on'); warn.hidden = false; };
+
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

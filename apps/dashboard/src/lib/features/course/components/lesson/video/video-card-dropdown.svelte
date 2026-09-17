@@ -65,7 +65,8 @@
 
   const assetId = $derived((video as LessonVideo & { assetId?: string }).assetId ?? null);
 
-  const canGenerateTranscript = $derived(video.type === 'upload' && !!assetId);
+  const canGenerateTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
+  const canViewTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
   const canManageThumbnails = $derived(video.type === 'upload' && !!assetId);
   const hls1080Status = $derived(getHls1080Status(video));
   const showGenerate1080 = $derived(canGenerateHls1080(video) && !isGenerating1080);
@@ -121,6 +122,19 @@
     });
   }
 
+  /** A caption job completes even when its result is `unavailable` or `skipped`, so completion is not proof of a transcript. */
+  async function confirmTranscriptAfterJob(afterAssetId: string) {
+    const data = await mediaApi.getAssetTranscript(afterAssetId);
+    hasTranscript = !!data?.segments?.length;
+
+    if (hasTranscript) {
+      snackbar.success('snackbar.media_manager.transcription_completed');
+      return;
+    }
+
+    snackbar.error('snackbar.media_manager.transcript_unavailable');
+  }
+
   async function startTranscriptionPoll(afterAssetId: string) {
     activePoller?.stop();
     activePoller = null;
@@ -136,8 +150,7 @@
 
     if (latest.job.status === 'completed') {
       setIsTranscribing(false);
-      hasTranscript = true;
-      snackbar.success('snackbar.media_manager.transcription_completed');
+      await confirmTranscriptAfterJob(afterAssetId);
 
       return;
     }
@@ -155,8 +168,7 @@
           activePoller?.stop();
           activePoller = null;
           setIsTranscribing(false);
-          hasTranscript = true;
-          snackbar.success('snackbar.media_manager.transcription_completed');
+          void confirmTranscriptAfterJob(afterAssetId);
         }
 
         if (envelope.job.status === 'failed' || envelope.job.status === 'canceled') {
@@ -312,8 +324,8 @@
 >
   <DropdownMenu.Trigger
     class={menuPlacement === 'corner'
-      ? 'ui:data-[state=open]:opacity-100 absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100'
-      : 'ui:data-[state=open]:opacity-100 -mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100'}
+      ? 'absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100'
+      : '-mt-0.5 -mr-1 flex shrink-0 items-center justify-center opacity-100 data-[state=open]:opacity-100'}
     aria-label={$t('course.navItem.lessons.materials.tabs.video.simple_card.menu_aria')}
     onclick={(e) => e.stopPropagation()}
   >
@@ -367,9 +379,16 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    {#if canGenerateTranscript && !hasTranscript}
+    {#if canGenerateTranscript && !hasTranscript && isTranscribing}
+      <DropdownMenu.Item disabled>
+        <span class="flex items-center gap-2">
+          <CaptionsIcon size={14} />
+          {$t('course.navItem.lessons.materials.tabs.video.transcript_in_progress')}
+        </span>
+      </DropdownMenu.Item>
+    {/if}
+    {#if canGenerateTranscript && !hasTranscript && !isTranscribing}
       <DropdownMenu.Item
-        disabled={isTranscribing}
         onclick={() => {
           void handleGenerateTranscript();
         }}
@@ -380,7 +399,7 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    {#if canGenerateTranscript && hasTranscript}
+    {#if canViewTranscript && hasTranscript}
       <DropdownMenu.Item
         onclick={() => {
           void handleViewTranscript();
@@ -392,7 +411,7 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    <DropdownMenu.Item class="ui:text-red-600" onclick={onRemove}>
+    <DropdownMenu.Item class="text-red-600" onclick={onRemove}>
       <span class="flex items-center gap-2">
         <Trash2Icon size={14} />
         {$t('course.navItem.lessons.materials.tabs.video.remove_video')}

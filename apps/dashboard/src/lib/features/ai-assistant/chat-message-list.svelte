@@ -157,7 +157,7 @@
 <div class="flex-1 overflow-y-auto p-4" bind:this={messagesContainer} onscroll={handleScroll}>
   {#if isLoadingHistory}
     <div class="flex h-full items-center justify-center">
-      <Spinner class="ui:size-6 ui:text-muted-foreground" />
+      <Spinner class="ui:text-muted-foreground size-6" />
     </div>
   {:else if isEmpty}
     <!-- Empty state with quick actions -->
@@ -173,7 +173,7 @@
         {#each quickActions as option (option.key)}
           <button
             onclick={() => onQuickAction(option.prompt)}
-            class="ui:text-muted-foreground hover:ui:bg-muted cursor-pointer rounded-full border px-3 py-1.5 text-xs transition-colors"
+            class="ui:text-muted-foreground ui:hover:bg-muted cursor-pointer rounded-full border px-3 py-1.5 text-xs transition-colors"
           >
             {$t(option.key)}
           </button>

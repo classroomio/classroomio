@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Embedded Academy · Prototype map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      body { margin: 0; background: var(--background); color: var(--foreground); font-family: Geist, ui-sans-serif, system-ui, sans-serif; }
+      .page { max-width: 1000px; margin: 0 auto; padding: 60px 32px 100px; }
+      .hero h1 { font-family: 'Instrument Serif', Georgia, serif; font-size: 44px; font-weight: 400; letter-spacing: -0.015em; margin: 0; }
+      .hero p { font-size: 15.5px; color: var(--muted-foreground); line-height: 1.65; max-width: 620px; margin: 12px 0 0; }
+      .hero .meta { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+      .journey { margin-top: 52px; }
+      .journey h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted-foreground); font-weight: 650; margin: 0 0 4px; }
+      .journey .jd { font-size: 13.5px; color: var(--muted-foreground); margin: 0 0 16px; }
+      .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; }
+      .pcard { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); padding: 17px 18px 18px; text-decoration: none; color: inherit; box-shadow: var(--shadow-2xs); display: block; transition: border-color 0.13s, transform 0.13s; }
+      .pcard:hover { border-color: var(--primary); transform: translateY(-2px); }
+      .pcard .n { font-size: 10.5px; font-family: ui-monospace, monospace; color: var(--muted-foreground); }
+      .pcard .t { font-size: 15px; font-weight: 600; margin: 7px 0 5px; }
+      .pcard .d { font-size: 12.8px; color: var(--muted-foreground); line-height: 1.55; }
+      .pcard .states { margin-top: 11px; display: flex; gap: 5px; flex-wrap: wrap; }
+      .pcard .states span { font-size: 10.5px; border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; color: var(--muted-foreground); }
+      .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted-foreground); margin: 14px 0 0; font-family: ui-monospace, monospace; }
+      .flow b { color: var(--foreground); font-weight: 600; }
+      .note-box { border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: var(--radius-md); padding: 16px 18px; margin-top: 46px; font-size: 13.3px; line-height: 1.65; color: var(--muted-foreground); background: var(--card); }
+      .note-box b { color: var(--foreground); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="hero">
+        <h1>Embedded Academy</h1>
+        <p>A ClassroomIO widget that renders a whole page instead of one block of course cards — then keeps going, all the way through course detail, lessons, and exercises, inside the customer's own product.</p>
+        <div class="meta">
+          <span class="badge badge-warning">Draft PRD</span>
+          <span class="badge badge-outline">10 screens</span>
+          <span class="badge badge-outline">Reference: the Claude app's Learn page</span>
+        </div>
+        <div class="flow"><b>Index</b> → <b>Category</b> → <b>Course</b> → <b>Lesson</b> → <b>Exercise</b> · never leaving the host app</div>
+      </div>
+
+      <section class="journey">
+        <h2>Learner — inside the customer's product</h2>
+        <p class="jd">Every screen renders in a mock host app so the embed's boundary is visible. Use the <b>Bounds</b> toggle to show where the widget starts and ends, and <b>Inherit host</b> to see the theme adopt the host's typography.</p>
+        <div class="cards">
+          <a class="pcard" href="embed-learn.html">
+            <div class="n">embed-learn.html</div>
+            <div class="t">Academy index · signed in</div>
+            <div class="d">The reference screen. Page header, continue learning, featured list, tutorial grid, and browse-by-role with the For-you badge.</div>
+            <div class="states"><span>personalized</span><span>overlay loading</span></div>
+          </a>
+          <a class="pcard" href="embed-learn-anon.html">
+            <div class="n">embed-learn-anon.html</div>
+            <div class="t">Academy index · anonymous</div>
+            <div class="d">Same page from the cached snapshot with no identity. Continue learning collapses; no progress, no For-you.</div>
+            <div class="states"><span>anonymous</span><span>overlay failed</span></div>
+          </a>
+          <a class="pcard" href="embed-category.html">
+            <div class="n">embed-category.html</div>
+            <div class="t">Category view</div>
+            <div class="d">Browse-by-role tile opens a filtered list in place. Shows the query router writing ?cio= to the host URL.</div>
+            <div class="states"><span>results</span><span>empty</span></div>
+          </a>
+          <a class="pcard" href="embed-course.html">
+            <div class="n">embed-course.html</div>
+            <div class="t">Course detail</div>
+            <div class="d">Hero, outcomes, and curriculum from the shared public-course components. The CTA carries all four enrolment states.</div>
+            <div class="states"><span>free</span><span>enrolled</span><span>paid</span><span>anonymous</span></div>
+          </a>
+          <a class="pcard" href="embed-lesson.html">
+            <div class="n">embed-lesson.html</div>
+            <div class="t">Lesson player</div>
+            <div class="d">Course sidebar, video, prose, and mark-complete — writing to the same completion record the LMS uses.</div>
+            <div class="states"><span>in progress</span><span>complete</span><span>not enrolled</span></div>
+          </a>
+          <a class="pcard" href="embed-exercise.html">
+            <div class="n">embed-exercise.html</div>
+            <div class="t">Exercise player</div>
+            <div class="d">Shipped question types inside the embed. Signed-in submissions post to the LMS; anonymous attempts stay in the browser.</div>
+            <div class="states"><span>in progress</span><span>graded</span><span>anonymous</span></div>
+          </a>
+        </div>
+      </section>
+
+      <section class="journey">
+        <h2>Admin — the ClassroomIO dashboard</h2>
+        <p class="jd">The academy is a new kind of widget, authored in the existing widget editor.</p>
+        <div class="cards">
+          <a class="pcard" href="admin-academies.html">
+            <div class="n">admin-academies.html</div>
+            <div class="t">Widgets list</div>
+            <div class="d">Blocks and Academies split into tabs, with the three starting templates.</div>
+            <div class="states"><span>has academies</span><span>empty</span><span>free plan</span></div>
+          </a>
+          <a class="pcard" href="admin-editor.html">
+            <div class="n">admin-editor.html</div>
+            <div class="t">Academy editor</div>
+            <div class="d">Section list with drag reorder and an add menu, per-section settings, and a live preview that toggles between signed-in and anonymous.</div>
+            <div class="states"><span>section list</span><span>settings open</span><span>drag</span></div>
+          </a>
+          <a class="pcard" href="admin-embed.html">
+            <div class="n">admin-embed.html</div>
+            <div class="t">Embed &amp; identity</div>
+            <div class="d">The snippet, the server-side token signing, the three router modes, and the allowed-origins guard.</div>
+            <div class="states"><span>identity active</span><span>not configured</span></div>
+          </a>
+          <a class="pcard" href="admin-analytics.html">
+            <div class="n">admin-analytics.html</div>
+            <div class="t">Analytics</div>
+            <div class="d">Per-section impressions and CTR, top courses, and the view→click→enrol→complete funnel.</div>
+            <div class="states"><span>with data</span><span>empty</span></div>
+          </a>
+        </div>
+      </section>
+
+      <div class="note-box">
+        <b>These prototypes are the UX source of truth.</b> Where the PRD at <code>prd/embedded-academy/README.md</code> and a screen here disagree on a UI detail, the screen wins. Every page has a state switcher and a light/dark toggle in the bottom-right.
+      </div>
+    </div>
+
+    <div class="proto-bar">
+      <button onclick="toggleTheme(this)">Dark</button>
+    </div>
+    <script>
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+    </script>
+  </body>
+</html>

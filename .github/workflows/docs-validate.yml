@@ -1,0 +1,73 @@
+name: Docs validate
+
+# Plain pull_request, not pull_request_target: this job checks out and runs
+# PR-head content (pnpm install, blume, Vale), which pull_request_target
+# must never do — that trigger runs with a repo-write token even for fork
+# PRs, and executing untrusted install scripts there is a real hole (see
+# root CONTRIBUTING.md's warning against pull_request_target workflows that
+# check out or build PR code).
+#
+# Trade-off of staying on plain pull_request: fork PRs get a read-only
+# token, so Vale's github-pr-check reporter can't publish annotations there
+# (continue-on-error hides the failure). Same-repo PRs are unaffected.
+# Known v1 limitation, not fixed here — see apps/docs/WORKFLOW.md.
+#
+# Scoped to apps/docs/** and apps/help/**, so this never runs on code-only
+# PRs. Advisory only. Never add this to branch protection's required checks:
+# a path-filtered required check that never runs on some PRs leaves those
+# PRs stuck pending forever.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/docs/**'
+      - 'apps/help/**'
+      - '.github/workflows/docs-validate.yml'
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  validate:
+    name: Lint docs content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: blume validate (docs)
+        continue-on-error: true
+        run: pnpm --filter @cio/docs validate
+
+      - name: blume validate (help)
+        continue-on-error: true
+        run: pnpm --filter @cio/help validate
+
+      - name: Vale (docs)
+        continue-on-error: true
+        uses: errata-ai/vale-action@v2
+        with:
+          files: apps/docs/content/docs
+          vale_flags: '--config=apps/docs/.vale.ini'
+          reporter: github-pr-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Vale (help)
+        continue-on-error: true
+        uses: errata-ai/vale-action@v2
+        with:
+          files: apps/help/content/help
+          vale_flags: '--config=apps/help/.vale.ini'
+          reporter: github-pr-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

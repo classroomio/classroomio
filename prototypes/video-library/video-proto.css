@@ -1,0 +1,507 @@
+/*
+ * video-proto.css — video-specific recipes for the APP-context prototypes
+ * (media library, publish, settings editor, widget editor, analytics, LMS).
+ * Depends on app-theme.css tokens only. Mirrors @cio/ui Item/Card/Badge shapes.
+ */
+
+/* ---------- video card grid (media library, pickers, LMS) ---------- */
+.vgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+  gap: 14px;
+}
+.vgrid-2 {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.vcard {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.vcard:hover {
+  border-color: var(--ring);
+  box-shadow: var(--shadow-md);
+}
+.vcard.is-processing {
+  opacity: 0.72;
+}
+
+.vthumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  color: oklch(1 0 0 / 0.92);
+  overflow: hidden;
+}
+.vthumb svg.play {
+  width: 34px;
+  height: 34px;
+  stroke-width: 1.6;
+  filter: drop-shadow(0 1px 6px rgb(0 0 0 / 0.35));
+}
+.vthumb .dur {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  background: oklch(0 0 0 / 0.74);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.vthumb .src {
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: oklch(0 0 0 / 0.68);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.vthumb .src svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 2.4;
+}
+.vthumb .veil {
+  position: absolute;
+  inset: 0;
+  background: oklch(0 0 0 / 0.45);
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.vbody {
+  padding: 12px 13px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+}
+.vtitle {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.vmeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  flex-wrap: wrap;
+}
+.vmeta .m {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.vmeta svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2;
+}
+.vtags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.vfoot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* tag chip tinted by tag color, like @cio/ui tag badges */
+.tchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.tchip .sw {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* ---------- dialog ---------- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: oklch(0 0 0 / 0.55);
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: auto;
+}
+.dialog {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.35);
+  width: 100%;
+  max-width: 620px;
+}
+.dialog-lg {
+  max-width: 780px;
+}
+.dialog-head {
+  padding: 18px 20px 0;
+}
+.dialog-title {
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.dialog-desc {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin: 0;
+  line-height: 1.55;
+}
+.dialog-body {
+  padding: 16px 20px;
+}
+.dialog-foot {
+  padding: 14px 20px 18px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+/* ---------- underline tabs (@cio/ui custom/underline-tabs) ---------- */
+.utabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+}
+.utab {
+  padding: 9px 13px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.utab:hover {
+  color: var(--foreground);
+}
+.utab.active {
+  color: var(--foreground);
+  border-bottom-color: var(--primary);
+}
+.utab svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+}
+.utab .zap {
+  width: 13px;
+  height: 13px;
+  color: var(--warning);
+  fill: var(--warning);
+  stroke: none;
+}
+.upane {
+  padding: 16px 0 2px;
+}
+
+/* ---------- dropzone ---------- */
+.drop {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 30px 20px;
+  text-align: center;
+  background: var(--muted);
+}
+.drop svg {
+  width: 26px;
+  height: 26px;
+  stroke-width: 1.7;
+  color: var(--muted-foreground);
+  margin-bottom: 8px;
+}
+.drop .t {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 3px;
+}
+.drop .h {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin: 0 0 12px;
+}
+.drop.locked {
+  position: relative;
+}
+
+/* ---------- callouts ---------- */
+.callout {
+  display: flex;
+  gap: 10px;
+  padding: 12px 13px;
+  border-radius: var(--radius-md);
+  font-size: 12.8px;
+  line-height: 1.55;
+  border: 1px solid;
+}
+.callout svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.callout b {
+  font-weight: 600;
+}
+.callout-warn {
+  background: var(--warning-soft);
+  border-color: color-mix(in oklab, var(--warning), transparent 60%);
+  color: var(--foreground);
+}
+.callout-warn svg {
+  color: var(--warning);
+}
+.callout-info {
+  background: var(--muted);
+  border-color: var(--border);
+  color: var(--muted-foreground);
+}
+.callout-info b {
+  color: var(--foreground);
+}
+
+/* ---------- settings editor split ---------- */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.preview-frame {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: sticky;
+  top: 16px;
+  background: var(--card);
+}
+.preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.preview-bar .dots {
+  display: flex;
+  gap: 5px;
+}
+.preview-bar .dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+  display: block;
+}
+.preview-body {
+  padding: 20px 18px 24px;
+}
+
+/* fieldset shapes matching Field.Set / Field.Legend / Field.Separator */
+.fset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+.flegend {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 3px;
+  padding: 0;
+}
+.fdesc {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+.fsep {
+  height: 1px;
+  background: var(--border);
+  border: none;
+  margin: 20px 0;
+}
+.frow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.frow .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+/* pinned/orderable rows */
+.pin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.pin {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+.pin .grip {
+  color: var(--muted-foreground);
+  cursor: grab;
+  display: grid;
+  place-items: center;
+}
+.pin .grip svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+}
+.pin .mini {
+  width: 54px;
+  aspect-ratio: 16/9;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  color: oklch(1 0 0 / 0.9);
+  flex-shrink: 0;
+}
+.pin .mini svg {
+  width: 13px;
+  height: 13px;
+}
+.pin .nm {
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.pin.gone .nm {
+  text-decoration: line-through;
+  color: var(--muted-foreground);
+}
+.pin[draggable='true']:active {
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- analytics ---------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 130px;
+}
+.bars .b {
+  flex: 1;
+  background: color-mix(in oklab, var(--primary), transparent 25%);
+  border-radius: 3px 3px 0 0;
+  position: relative;
+  min-height: 3px;
+}
+.bars .b:hover {
+  background: var(--primary);
+}
+.xaxis {
+  display: flex;
+  gap: 6px;
+  margin-top: 7px;
+}
+.xaxis span {
+  flex: 1;
+  text-align: center;
+  font-size: 10.5px;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 46px;
+}
+.spark i {
+  flex: 1;
+  background: color-mix(in oklab, var(--primary), transparent 45%);
+  border-radius: 2px 2px 0 0;
+  display: block;
+}
+
+@media (max-width: 1000px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+  .preview-frame {
+    position: static;
+  }
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

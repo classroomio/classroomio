@@ -399,7 +399,7 @@
         {#snippet child()}
           <div class="space-y-4">
             {#each Array.from({ length: 8 }) as _, index (index)}
-              <div class="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
+              <div class="ui:text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
                 Settings section {index + 1}
               </div>
             {/each}
@@ -428,7 +428,7 @@
       </Page.Header>
       <Page.Body>
         {#snippet child()}
-          <div class="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
+          <div class="ui:text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
             All changes saved. The compact save card stays hidden until the form is dirty.
           </div>
         {/snippet}

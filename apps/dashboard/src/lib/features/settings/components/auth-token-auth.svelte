@@ -139,7 +139,7 @@ openCourseInLMS();`;
                   {$t('settings.token_auth.rotate')}
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
-                <DropdownMenu.Item class="ui:text-red-600" onclick={onDelete} disabled={isDeleting}>
+                <DropdownMenu.Item class="text-red-600" onclick={onDelete} disabled={isDeleting}>
                   {$t('settings.token_auth.delete')}
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -149,7 +149,7 @@ openCourseInLMS();`;
 
         {#if isGenerated}
           <div class="mt-4 rounded border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950/30">
-            <p class="ui:text-amber-800 dark:ui:text-amber-200 text-sm font-medium">
+            <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
               {$t('settings.token_auth.secret_shown_once')}
             </p>
             <div class="mt-2">
@@ -158,7 +158,7 @@ openCourseInLMS();`;
                 lang="bash"
                 hideLines={true}
                 variant="secondary"
-                class="ui:break-all ui:text-xs"
+                class="text-xs break-all"
               />
             </div>
           </div>
@@ -214,10 +214,10 @@ openCourseInLMS();`;
       <Field.Description>
         {$t('settings.token_auth.integration_description')}
       </Field.Description>
-      <div class="ui:w-full ui:rounded-lg ui:border ui:border-border mt-4">
+      <div class="ui:border-border mt-4 w-full rounded-lg border">
         <Code.FileName filename="integration.js" />
         <Code.Overflow>
-          <Code.Root code={codeExample} lang="javascript" class="ui:w-full ui:border-none">
+          <Code.Root code={codeExample} lang="javascript" class="w-full border-none">
             <Code.CopyButton />
           </Code.Root>
         </Code.Overflow>

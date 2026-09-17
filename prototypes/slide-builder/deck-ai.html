@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deck editor — AI · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="deck.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      body { overflow: hidden; }
+      .ed-head { height: 56px; border-bottom: 1px solid var(--border); background: var(--background); display: flex; align-items: center; gap: 10px; padding: 0 12px; flex-shrink: 0; }
+      .ed-head .t { font-size: 15px; letter-spacing: -0.01em; }
+      .ed-head .sp { flex: 1; }
+      .deck-shell { grid-template-columns: 232px 1fr 340px; }
+      .ai { border-left: 1px solid var(--border); display: flex; flex-direction: column; min-height: 0; background: var(--background); }
+      .ai-head { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+      .ai-body { flex: 1; overflow-y: auto; padding: 12px; display: grid; gap: 12px; align-content: start; }
+      .ai-foot { border-top: 1px solid var(--border); padding: 10px 12px; display: grid; gap: 8px; }
+      .msg { font-size: 13px; line-height: 1.6; }
+      .msg.me { justify-self: end; background: var(--muted); border-radius: var(--radius-md); padding: 8px 11px; max-width: 88%; }
+      .tool { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 9px 11px; display: flex; align-items: center; gap: 8px; font-size: 12.5px; background: var(--card); }
+      .tool .ic { width: 18px; height: 18px; border-radius: 999px; display: grid; place-items: center; flex-shrink: 0; }
+      .tool .ic.ok { background: var(--success-soft); color: var(--success); }
+      .tool .ic.run { background: color-mix(in oklch, var(--primary) 15%, transparent); color: var(--primary); }
+      .tool code { font-size: 11.5px; }
+      .plan { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); overflow: hidden; }
+      .plan .ph { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12.5px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
+      .plan ol { margin: 0; padding: 10px 12px 10px 28px; font-size: 12.5px; line-height: 1.75; color: var(--muted-foreground); }
+      .plan .pf { padding: 10px 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+      .runcard { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); padding: 11px 12px; display: grid; gap: 9px; }
+      .runcard .rh { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; font-weight: 500; }
+      .pinlist { display: grid; gap: 8px; }
+      .pincard { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 11px; display: grid; gap: 6px; font-size: 12.5px; background: var(--card); }
+      .pincard .ph { display: flex; align-items: center; gap: 7px; font-weight: 500; }
+      .pinbadge { width: 18px; height: 18px; border-radius: 999px 999px 999px 3px; background: var(--warning); color: #fff; display: grid; place-items: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+      .pinbadge.done { background: var(--success); }
+      .pincard p { margin: 0; color: var(--muted-foreground); line-height: 1.55; }
+    </style>
+  </head>
+  <body>
+    <header class="ed-head">
+      <a class="icon-btn" href="deck-editor.html" title="Back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 19-7-7 7-7M19 12H5" /></svg></a>
+      <span class="t">Designing Effective Assessments</span>
+      <span class="badge badge-primary-soft">AI run · slide 9 of 20</span>
+      <span class="sp"></span>
+      <button class="btn btn-outline btn-sm">Cancel run</button>
+    </header>
+
+    <div class="deck-shell">
+      <aside class="slide-rail" id="rail">
+        <div class="slide-rail-head"><span>Slides</span><span class="tnum" id="ct">8</span></div>
+      </aside>
+
+      <section class="stage">
+        <div class="stage-inner">
+          <div class="stage-bar">
+            <div class="stage-meta"><span>Slide 3 of 8</span><span>·</span><span>Two column</span></div>
+            <div class="segctl">
+              <button class="active" type="button">Comment pins</button>
+              <button type="button" onclick="location.href='deck-editor.html'">Edit</button>
+            </div>
+          </div>
+          <div class="stage-frame" id="stageFrame"></div>
+          <p class="insp-hint" style="margin-top: 10px; text-align: center">
+            Click anywhere on a block to drop a pin and describe the change. Pins collect on the right — the agent applies them to the blocks they address.
+          </p>
+        </div>
+      </section>
+
+      <aside class="ai">
+        <div class="ai-head">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
+          Assistant
+          <span class="sp" style="flex: 1"></span>
+          <span class="badge badge-muted">Claude</span>
+        </div>
+
+        <div class="ai-body">
+          <div class="msg me">Build a deck from this lesson. Keep it under 20 slides and use our brand theme.</div>
+
+          <div class="msg">I read the lesson and drafted a plan. This is a lot of slides, so it runs as a background job you can cancel or resume — not inline in chat.</div>
+
+          <div class="plan">
+            <div class="ph">Plan <span class="badge badge-muted">20 slides</span></div>
+            <ol>
+              <li>Cover + agenda</li>
+              <li>Part 1 — outcomes before items (4 slides)</li>
+              <li>Part 2 — the four traits (5 slides)</li>
+              <li>Part 3 — rubrics as a contract (4 slides)</li>
+              <li>Evidence from the 2025 cohort (3 slides)</li>
+              <li>Close + assignment (2 slides)</li>
+            </ol>
+            <div class="pf">
+              <button class="btn btn-primary btn-sm" style="flex: 1" disabled>Running…</button>
+              <button class="btn btn-outline btn-sm">Edit plan</button>
+            </div>
+          </div>
+
+          <div class="tool"><span class="ic ok"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span><span><code>create_slide_deck</code> — created “Cohort Kickoff”</span></div>
+          <div class="tool"><span class="ic ok"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span><span><code>apply_deck_theme</code> — Your brand</span></div>
+          <div class="tool"><span class="ic run"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v4M12 18v4M4.9 4.9l2.9 2.9M16.2 16.2l2.9 2.9M2 12h4M18 12h4"/></svg></span><span><code>add_slides</code> — writing slide 9 of 20</span></div>
+
+          <div class="runcard">
+            <div class="rh"><span>Run progress</span><span class="tnum">9 / 20</span></div>
+            <div class="progress"><span style="width: 45%"></span></div>
+            <div style="display: flex; gap: 8px">
+              <button class="btn btn-outline btn-sm" style="flex: 1">Pause</button>
+              <button class="btn btn-outline btn-sm" style="flex: 1">Cancel</button>
+            </div>
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid var(--border); margin: 4px 0" />
+
+          <div class="ai-head" style="padding: 0; border: 0">Comment pins <span class="badge badge-muted" style="margin-left: auto" id="pinCount">2 open</span></div>
+
+          <div class="pinlist" id="pins">
+            <div class="pincard">
+              <div class="ph"><span class="pinbadge">1</span>Heading · slide 3</div>
+              <p>“Tighten this to six words — it wraps to two lines on the projector.”</p>
+              <div style="display: flex; gap: 6px"><button class="btn btn-primary btn-sm" style="flex: 1" onclick="applyPin(this)">Apply</button><button class="btn btn-ghost btn-sm">Dismiss</button></div>
+            </div>
+            <div class="pincard">
+              <div class="ph"><span class="pinbadge">2</span>Text · slide 3</div>
+              <p>“Cut the second sentence and make the first one the takeaway.”</p>
+              <div style="display: flex; gap: 6px"><button class="btn btn-primary btn-sm" style="flex: 1" onclick="applyPin(this)">Apply</button><button class="btn btn-ghost btn-sm">Dismiss</button></div>
+            </div>
+            <div class="pincard" style="opacity: 0.75">
+              <div class="ph"><span class="pinbadge done"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg></span>Image · slide 3 — applied</div>
+              <p>Swapped for the rubric photo. Recorded in history as <b>agent</b>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-foot">
+          <textarea class="input" rows="2" placeholder="Ask for a change…" style="resize: none"></textarea>
+          <div style="display: flex; gap: 8px">
+            <button class="btn btn-outline btn-sm" style="flex: 1" onclick="applyAll()">Apply all pins</button>
+            <button class="btn btn-primary btn-sm">Send</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <script src="deck-data.js"></script>
+    <script>
+      const rail = document.getElementById('rail');
+      DECK.slides.forEach((slide, index) => {
+        const row = document.createElement('div');
+        row.className = 'thumb-row' + (index === 2 ? ' active' : '');
+        row.innerHTML = `<span class="n">${index + 1}</span><div class="thumb${index === 2 ? ' active' : ''}">${renderSlide(slide, { chrome: false })}</div>`;
+        rail.appendChild(row);
+      });
+
+      /* new slides streaming in from the run */
+      let streamed = 8;
+      const streamTimer = setInterval(() => {
+        if (streamed >= 12) return clearInterval(streamTimer);
+
+        streamed += 1;
+        const row = document.createElement('div');
+        row.className = 'thumb-row';
+        row.style.opacity = '0';
+        row.innerHTML = `<span class="n">${streamed}</span><div class="thumb">${renderSlide(DECK.slides[streamed % DECK.slides.length], { theme: 'brand', chrome: false })}</div>`;
+        rail.appendChild(row);
+        requestAnimationFrame(() => { row.style.transition = 'opacity .5s'; row.style.opacity = '1'; });
+        document.getElementById('ct').textContent = streamed;
+      }, 2200);
+
+      /* canvas + pins */
+      const stageFrame = document.getElementById('stageFrame');
+      stageFrame.innerHTML = renderSlide(DECK.slides[2]);
+
+      const PINS = [
+        { n: 1, x: 18, y: 32 },
+        { n: 2, x: 20, y: 58 },
+        { n: 3, x: 74, y: 46, done: true }
+      ];
+      PINS.forEach((pin) => {
+        const el = document.createElement('span');
+        el.className = 'pin' + (pin.done ? ' done' : '');
+        el.style.left = pin.x + '%';
+        el.style.top = pin.y + '%';
+        el.innerHTML = pin.done
+          ? '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>'
+          : pin.n;
+        stageFrame.appendChild(el);
+      });
+
+      function applyPin(button) {
+        const card = button.closest('.pincard');
+        card.style.opacity = '0.75';
+        card.querySelector('.pinbadge').classList.add('done');
+        card.querySelector('.pinbadge').innerHTML = '<svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>';
+        card.querySelector('.ph').lastChild.textContent = card.querySelector('.ph').lastChild.textContent + ' — applied';
+        button.parentElement.remove();
+        recount();
+      }
+
+      function applyAll() {
+        document.querySelectorAll('.pincard button.btn-primary').forEach((b) => applyPin(b));
+      }
+
+      function recount() {
+        const open = document.querySelectorAll('.pincard button.btn-primary').length;
+        document.getElementById('pinCount').textContent = open ? open + ' open' : 'all applied';
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') clearInterval(streamTimer);
+      });
+    </script>
+  </body>
+</html>

@@ -273,6 +273,20 @@ export const askTemplateQuestionsParam = z.object({
 export const fetchDocumentationUrlParam = z.object({
   url: z.string().url()
 });
+export const listYoutubePlaylistVideosParam = z.object({
+  playlistUrl: z.string().describe('Public YouTube playlist URL containing a `list=` playlist id'),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(50)
+    .optional()
+    .describe('Maximum number of videos to return (default 30, hard cap 50)')
+});
+export const addYoutubeVideoToLessonParam = z.object({
+  lessonId: z.string().describe('ID of the lesson to embed the video in'),
+  videoUrl: z.string().describe('YouTube watch, youtu.be, shorts, or embed URL for a single video')
+});
 
 // Gemini's tool-schema validator only accepts string enums, so numeric/boolean
 // `z.literal` values must be relaxed to plain types in the schemas the model sees.

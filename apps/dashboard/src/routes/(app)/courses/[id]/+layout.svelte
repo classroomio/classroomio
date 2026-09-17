@@ -20,6 +20,7 @@
   } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { initialChatPrompt, openAiAssistant } from '$features/ai-assistant/utils/store';
   import { sidePanel, SidePanelRail } from '$features/side-panel';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { transcriptPanelDefinition } from '$features/course/components/lesson/video/transcript-panel-definition';
   import { get } from 'svelte/store';
   import { page } from '$app/state';
@@ -40,7 +41,10 @@
     COURSE_SIDEBAR_STORAGE_KEY
   } from '$features/course/components/sidebar/constants';
 
-  sidePanel.register(aiAssistantPanelDefinition);
+  if (IS_AI_ENABLED) {
+    sidePanel.register(aiAssistantPanelDefinition);
+  }
+
   sidePanel.register(transcriptPanelDefinition);
 
   interface Props {
@@ -108,6 +112,7 @@
   const showContentAskAiBar = $derived(
     isCourseReady &&
       isLessonOrExercisePage &&
+      IS_AI_ENABLED &&
       !($isCourseLearnerView && isContentLockedForStudent) &&
       sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
   );
@@ -122,7 +127,8 @@
     })
   );
 
-  const contentAskAiBarBottomClass = $derived(showMobileBottomNav ? 'bottom-16' : 'bottom-4');
+  const contentAskAiBarBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-4');
+  const contentAskAiBarExpandedBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-0');
 
   function clampSidebarWidth(width: number) {
     return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
@@ -155,7 +161,7 @@
 
     hasLoadedSidebarWidth = true;
 
-    if (get(initialChatPrompt)) {
+    if (IS_AI_ENABLED && get(initialChatPrompt)) {
       openAiAssistant();
     }
   });
@@ -216,7 +222,7 @@
     onSidebarWidthChange={handleSidebarWidthChange}
   />
 
-  <Sidebar.Inset class="ui:min-w-0 ui:flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
+  <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
     <CourseHeader />
     <ContentCreateModal />
     <CourseCompletionModal />
@@ -239,7 +245,11 @@
       {@render children?.()}
 
       {#if showContentAskAiBar}
-        <ContentAskAiBar class={contentAskAiWidthClass} bottomClass={contentAskAiBarBottomClass} />
+        <ContentAskAiBar
+          class={contentAskAiWidthClass}
+          bottomClass={contentAskAiBarBottomClass}
+          expandedBottomClass={contentAskAiBarExpandedBottomClass}
+        />
       {/if}
 
       {#if showMobileBottomNav}

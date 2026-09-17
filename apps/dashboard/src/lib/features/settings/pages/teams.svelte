@@ -124,7 +124,7 @@
 
       <div class="w-full lg:w-64">
         <Select.Root type="single" bind:value={role} disabled={$isFreePlan}>
-          <Select.Trigger id="invite-role" class="ui:w-full ui:max-w-none">
+          <Select.Trigger id="invite-role" class="w-full max-w-none">
             <p>{role ? $t(ROLE_LABEL[role]) : $t('course.navItem.people.teams.select_role')}</p>
           </Select.Trigger>
           <Select.Content>

@@ -255,7 +255,7 @@
       </p>
       <a
         href={resolve(`/course/${data.course?.slug ?? ''}`, {})}
-        class="ui:text-primary ui:underline mt-3 block text-center text-sm"
+        class="ui:text-primary mt-3 block text-center text-sm underline"
       >
         {$t('course.navItem.landing_page.enroll_page.back_to_course')}
       </a>

@@ -47,11 +47,11 @@
     {#each segments as segment, index (segment.start + segment.end + index)}
       <button
         type="button"
-        class="ui:text-foreground hover:ui:bg-muted/80 focus:ui:outline-none focus-visible:ui:ring-2 focus-visible:ui:ring-ring mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm leading-snug transition-colors last:mb-0 {isActiveSegment(
+        class="ui:text-foreground ui:hover:bg-muted/80 ui:focus-visible:ring-ring mb-1 w-full rounded-md px-2 py-1.5 text-left text-sm leading-snug transition-colors last:mb-0 focus:outline-none focus-visible:ring-2 {isActiveSegment(
           segment,
           index
         )
-          ? 'ui:bg-primary/10 ui:font-medium'
+          ? 'ui:bg-primary/10 font-medium'
           : ''}"
         data-active={isActiveSegment(segment, index) ? 'true' : undefined}
         onclick={() => onSeek(segment.start)}

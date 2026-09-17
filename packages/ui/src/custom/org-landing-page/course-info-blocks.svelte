@@ -27,6 +27,7 @@
     corporate: 'prose-grid',
     terminal: 'mono-blocks',
     editorial: 'editorial',
+    quartz: 'prose-grid',
     vibrant: 'oversized'
   };
 

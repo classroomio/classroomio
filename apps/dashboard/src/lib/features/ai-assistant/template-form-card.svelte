@@ -198,11 +198,11 @@
             <Field.Label>
               {resolveFieldLabel(field)}
               {#if field.required}
-                <span class="ui:text-red-700">*</span>
+                <span class="text-red-700">*</span>
               {/if}
             </Field.Label>
             <Select.Root type="single" bind:value={answers[field.id]} disabled={disableFormInputs}>
-              <Select.Trigger class="ui:w-full">
+              <Select.Trigger class="w-full">
                 {(field.options ?? []).find((option) => option.value === answers[field.id])?.label ?? ''}
               </Select.Trigger>
               <Select.Content style="z-index: 251">
@@ -242,7 +242,7 @@
         </Button>
         <button
           type="button"
-          class="ui:text-muted-foreground hover:ui:text-foreground text-xs underline-offset-2 hover:underline"
+          class="ui:text-muted-foreground ui:hover:text-foreground text-xs underline-offset-2 hover:underline"
           disabled={disableFormInputs}
           onclick={() => onSkip({ templateId })}
         >

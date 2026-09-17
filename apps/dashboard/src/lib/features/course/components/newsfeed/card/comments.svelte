@@ -178,13 +178,13 @@
   };
 </script>
 
-<section class="ui:border-t ui:border-border/60 px-3 pb-3">
+<section class="ui:border-border/60 border-t px-3 pb-3">
   {#if focusedRootId !== null}
     <Button
       variant="ghost"
       size="sm"
       onclick={handleBackToComments}
-      class="ui:text-muted-foreground ui:hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-2 text-sm font-medium"
+      class="ui:text-muted-foreground ui:hover:text-foreground mb-2 h-auto justify-start p-0 text-sm font-medium transition-colors"
     >
       {$t('course.navItem.news_feed.comments.back_to_comments')}
     </Button>

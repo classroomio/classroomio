@@ -22,8 +22,8 @@ export const ZLessonUpdate = z.object({
   note: z.string().optional(),
   sectionId: z.string().optional(),
   order: z.number().int().min(0).optional(),
-  callUrl: z.string().optional(),
-  lessonAt: z.string().optional(),
+  callUrl: z.string().nullable().optional(),
+  lessonAt: z.string().nullable().optional(),
   teacherId: z.string().optional(),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
@@ -31,12 +31,13 @@ export const ZLessonUpdate = z.object({
   isComplete: z.boolean().optional(),
   completionPolicy: z.enum(['manual', 'video_watch', 'none']).optional(),
   videoWatchThreshold: z.number().int().min(1).max(100).optional(),
+  commentsEnabled: z.boolean().optional(),
   videoUrl: z.url().optional(),
   slideUrl: z.url().optional(),
   videos: z
     .array(
       z.object({
-        type: z.enum(['youtube', 'generic', 'upload', 'google_drive']),
+        type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
         link: z.string(),
         key: z.string().optional(),
         assetId: z.string().uuid().optional(),
@@ -79,7 +80,9 @@ export type TLessonHistoryParam = z.infer<typeof ZLessonHistoryParam>;
 
 export const ZLessonHistoryQuery = z.object({
   locale: z.string().min(1),
-  endRange: z.string().transform(Number).pipe(z.number().int().min(0))
+  limit: z.string().transform(Number).pipe(z.number().int().min(1).max(50)).default(10),
+  /** Keyset cursor from the previous page, formatted `<iso timestamp>|<id>`. */
+  cursor: z.string().min(1).optional()
 });
 export type TLessonHistoryQuery = z.infer<typeof ZLessonHistoryQuery>;
 export type TLessonListQuery = z.infer<typeof ZLessonListQuery>;

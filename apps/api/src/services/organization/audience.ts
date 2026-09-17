@@ -1,4 +1,11 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import {
+  type AudienceImportResult,
+  type ParsedImportRow,
+  type TAudienceImportRowStatus,
+  isImportableEmail,
+  parseAudienceImportCsv
+} from '@cio/utils/validation/organization';
 import type {
   TAssignAudienceCourses,
   TAudienceInviteByEmail,
@@ -34,7 +41,7 @@ import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { assertStudentCapacityOrThrow } from './student-limit';
+import { assertStudentCapacityOrThrow, getRemainingStudentSeats } from './student-limit';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 import { getWelcomeSessionIcs } from '../course/session-invite';
@@ -83,45 +90,6 @@ function getExpiryLabel(expiresAtIso: string): string {
     timeStyle: 'short',
     timeZone: 'UTC'
   });
-}
-
-function parseRecipientCsv(recipientCsv: string): string[] {
-  return recipientCsv
-    .split(/[\n,;\t ]+/g)
-    .map((value) => value.trim())
-    .filter(Boolean);
-}
-
-function getNormalizedRecipients(recipientCsv: string): {
-  valid: string[];
-  invalid: string[];
-  duplicates: string[];
-} {
-  const raw = parseRecipientCsv(recipientCsv);
-  const seen = new Set<string>();
-  const valid: string[] = [];
-  const invalid: string[] = [];
-  const duplicates: string[] = [];
-
-  for (const recipient of raw) {
-    const normalized = recipient.toLowerCase().trim();
-    if (!normalized) continue;
-
-    if (!EMAIL_REGEX.test(normalized)) {
-      invalid.push(normalized);
-      continue;
-    }
-
-    if (seen.has(normalized)) {
-      duplicates.push(normalized);
-      continue;
-    }
-
-    seen.add(normalized);
-    valid.push(normalized);
-  }
-
-  return { valid, invalid, duplicates };
 }
 
 async function resolveCourseIdsAndNamesForImport(orgId: string, data: TImportAudienceMembers) {
@@ -485,54 +453,88 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
   }
 
-  const recipients = getNormalizedRecipients(data.recipientCsv);
+  // Structured rows when the client parsed a file; otherwise parse the pasted
+  // list here so both paths classify identically.
+  const parsed = data.recipients?.length
+    ? {
+        rows: data.recipients.map((recipient, index) => ({
+          line: index + 1,
+          email: recipient.email.trim().toLowerCase(),
+          name: recipient.name,
+          courses: recipient.courses ?? [],
+          status: isImportableEmail(recipient.email) ? ('ready' as const) : ('invalid_email' as const)
+        })),
+        truncated: 0
+      }
+    : parseAudienceImportCsv(data.recipientCsv ?? '');
 
-  if (recipients.invalid.length > 0) {
-    throw new AppError(
-      `Invalid emails found: ${recipients.invalid.slice(0, 5).join(', ')}`,
-      ErrorCodes.VALIDATION_ERROR,
-      400,
-      'recipientCsv'
-    );
+  // Re-check duplicates across the whole set: the client may have sent
+  // structured rows without deduplicating them.
+  const seenEmails = new Set<string>();
+  const rows: (ParsedImportRow & { status: TAudienceImportRowStatus })[] = parsed.rows.map((row) => {
+    if (row.status !== 'ready') return row;
+    if (seenEmails.has(row.email)) return { ...row, status: 'duplicate_in_file' as const };
+
+    seenEmails.add(row.email);
+    return row;
+  });
+
+  const candidateEmails = rows.filter((row) => row.status === 'ready').map((row) => row.email);
+
+  if (candidateEmails.length === 0) {
+    // Nothing importable at all is still a successful call with per-row
+    // reasons, so the UI can show which rows failed and why.
+    return buildImportResult(rows, { imported: 0, enrolled: 0, emailsSent: 0, emailsFailed: 0 });
   }
 
-  if (recipients.valid.length === 0) {
-    throw new AppError('No valid emails provided', ErrorCodes.VALIDATION_ERROR, 400, 'recipientCsv');
-  }
-
-  const memberRows = await getOrganizationMembersByNormalizedEmails(orgId, recipients.valid);
+  const memberRows = await getOrganizationMembersByNormalizedEmails(orgId, candidateEmails);
   const memberByEmail = new Map(memberRows.map((m) => [m.normalizedEmail, m]));
 
   const newEmails: string[] = [];
   const existingStudentProfileIds: string[] = [];
   const pendingStudentEmails: string[] = [];
-  const teamEmails: string[] = [];
 
-  for (const email of recipients.valid) {
-    const m = memberByEmail.get(email);
+  for (const row of rows) {
+    if (row.status !== 'ready') continue;
+
+    const m = memberByEmail.get(row.email);
+
     if (!m) {
-      newEmails.push(email);
+      newEmails.push(row.email);
       continue;
     }
+
+    // Staff addresses are reported per row rather than rejecting the file: an
+    // admin's own address pasted into a 900-row list should not block it.
     if (m.roleId !== ROLE.STUDENT) {
-      teamEmails.push(email);
+      row.status = 'is_staff';
       continue;
     }
+
     if (!m.profileId) {
-      pendingStudentEmails.push(email);
+      pendingStudentEmails.push(row.email);
+      row.status = 'already_member';
       continue;
     }
+
     existingStudentProfileIds.push(m.profileId);
+    row.status = 'already_member';
   }
 
-  if (teamEmails.length > 0) {
-    throw new AppError(
-      `These emails belong to organization staff, not students: ${teamEmails.slice(0, 8).join(', ')}${teamEmails.length > 8 ? '…' : ''}`,
-      ErrorCodes.VALIDATION_ERROR,
-      400,
-      'recipientCsv'
-    );
+  // Import what the plan allows and report the overflow, rather than refusing
+  // the whole file when it does not fit.
+  const remainingSeats = await getRemainingStudentSeats(orgId);
+  // `slice` even when unlimited: aliasing `newEmails` here and clearing it below
+  // would empty both.
+  const admittedEmails = newEmails.slice(0, Number.isFinite(remainingSeats) ? remainingSeats : undefined);
+  const rejectedForSeats = new Set(newEmails.slice(admittedEmails.length));
+
+  for (const row of rows) {
+    if (rejectedForSeats.has(row.email)) row.status = 'over_seat_limit';
   }
+
+  newEmails.length = 0;
+  newEmails.push(...admittedEmails);
 
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
   const { cohortIds, cohortNames } = await resolveCohortIdsAndNamesForImport(orgId, data);
@@ -559,6 +561,8 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   let importEmailsFailed = 0;
 
   if (newEmails.length > 0) {
+    // Capacity was already resolved above; this keeps the milestone emails
+    // firing and guards against a concurrent import filling the last seats.
     await assertStudentCapacityOrThrow(orgId, newEmails.length);
 
     await createOrganizationMembers(
@@ -634,14 +638,33 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   }
 
   return {
-    imported,
+    ...buildImportResult(rows, {
+      imported,
+      enrolled: assignedToCourses.assigned + assignedToCohorts.assigned,
+      emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent + importEmailsSent + pendingEmailsSent,
+      emailsFailed: importEmailsFailed + pendingEmailsFailed
+    }),
+    // Kept for the existing snackbar, which reads these directly.
     assigned: assignedToCourses.assigned + assignedToCohorts.assigned,
     alreadyEnrolledInCourses: assignedToCourses.alreadyEnrolled,
     alreadyEnrolledInCohorts: assignedToCohorts.alreadyEnrolled,
     pendingInvitesRenewed: pendingStudentEmails.length,
-    duplicates: recipients.duplicates.length,
-    emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent + importEmailsSent + pendingEmailsSent,
-    emailsFailed: importEmailsFailed + pendingEmailsFailed
+    truncated: parsed.truncated
+  };
+}
+
+/** One row per submitted recipient, in order, with the outcome for each. */
+function buildImportResult(
+  rows: (ParsedImportRow & { status: TAudienceImportRowStatus })[],
+  totals: { imported: number; enrolled: number; emailsSent: number; emailsFailed: number }
+): AudienceImportResult {
+  return {
+    ...totals,
+    rows: rows.map((row) => ({
+      email: row.email,
+      name: row.name,
+      status: row.status
+    }))
   };
 }
 

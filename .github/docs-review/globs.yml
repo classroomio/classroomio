@@ -1,0 +1,18 @@
+# Source of truth for "does this PR touch the user-facing product surface."
+# Read by .github/workflows/docs-label.yml via dorny/paths-filter.
+#
+# apps/api/** is deliberately not here: the API reference is generated from
+# the OpenAPI spec (see upload-openapi-spec.yml), so it can't go stale the
+# way hand-written docs can. Adding it here would just create noise.
+user_facing:
+  - 'apps/dashboard/src/routes/**/+page.svelte'
+  - 'apps/dashboard/src/routes/**/+layout.svelte'
+  - 'apps/dashboard/src/lib/features/ui/navigation/*.ts'
+  - 'apps/dashboard/src/lib/features/**/components/**'
+  - 'apps/dashboard/src/lib/features/**/pages/**'
+  - 'apps/dashboard/src/lib/components/**'
+  - 'packages/ui/src/custom/**' # not src/base, primitives are too low-signal
+  - 'apps/dashboard/src/lib/utils/translations/en.json' # source copy only, not translations
+  - '!**/*.test.ts'
+  - '!**/*.spec.ts'
+  - '!**/*.stories.*'

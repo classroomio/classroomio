@@ -85,7 +85,7 @@
       </div>
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div class="bg-card flex min-h-[45vh] w-full flex-col rounded-xl border p-3 md:p-5 dark:text-white">
+        <div class="ui:bg-card flex min-h-[45vh] w-full flex-col rounded-xl border p-3 md:p-5 dark:text-white">
           <div class="mb-4 flex items-center justify-between">
             <h3 class="text-lg font-semibold tracking-tight">
               {$t('dashboard.top_courses')}
@@ -120,12 +120,9 @@
                       <span
                         class={[
                           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums',
-                          rank === 1 &&
-                            'ui:bg-amber-100 ui:text-amber-900 ui:dark:bg-amber-500/20 ui:dark:text-amber-200',
-                          rank === 2 &&
-                            'ui:bg-slate-100 ui:text-slate-700 ui:dark:bg-slate-500/20 ui:dark:text-slate-200',
-                          rank === 3 &&
-                            'ui:bg-orange-100 ui:text-orange-800 ui:dark:bg-orange-500/20 ui:dark:text-orange-200',
+                          rank === 1 && 'bg-amber-100 text-amber-900 dark:bg-amber-500/20 dark:text-amber-200',
+                          rank === 2 && 'bg-slate-100 text-slate-700 dark:bg-slate-500/20 dark:text-slate-200',
+                          rank === 3 && 'bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-200',
                           rank > 3 && 'ui:bg-muted ui:text-muted-foreground'
                         ]}
                       >
@@ -153,7 +150,7 @@
                             </span>
                             <span class="text-xs font-semibold tabular-nums">{course.completion}%</span>
                           </div>
-                          <Progress value={course.completion} class="ui:h-1.5" />
+                          <Progress value={course.completion} class="h-1.5" />
                         </div>
                         <div class="space-y-1">
                           <div class="flex items-baseline justify-between gap-1">
@@ -162,7 +159,7 @@
                             </span>
                             <span class="text-xs font-semibold tabular-nums">{course.certification}%</span>
                           </div>
-                          <Progress value={course.certification} class="ui:h-1.5" />
+                          <Progress value={course.certification} class="h-1.5" />
                         </div>
                       </div>
 

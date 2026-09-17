@@ -38,7 +38,7 @@
 </script>
 
 {#if currentTab}
-  <div class="mb-6 px-2">
+  <div class="mb-2 px-2">
     <UnderlineTabs.Root value={currentTab} onValueChange={(event) => handleTabChange(event)}>
       <UnderlineTabs.List class="flex flex-wrap gap-2 border-b">
         {#each orgSettingsTabs as tab}

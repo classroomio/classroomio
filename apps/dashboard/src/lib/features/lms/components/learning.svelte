@@ -97,7 +97,7 @@
                 {$t('dashboard.continue')}
               </Button>
             </span>
-            <Progress value={getStudentCourseProgressPercent(course)} max={100} class="ui:h-1" />
+            <Progress value={getStudentCourseProgressPercent(course)} max={100} class="h-1" />
           </div>
         {/each}
       </div>

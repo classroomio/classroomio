@@ -32,18 +32,24 @@ Never describe behavior you haven't verified in the source code or UI.
 
 ## Settings navigation paths
 
-These are the exact sidebar paths in the admin dashboard:
+Settings is opened from the **account menu** in the sidebar footer, not from the org nav. Use these exact paths:
 
 - `Settings → Profile` — personal profile settings
-- `Settings → Organization` — org name, logo, theme, and links to Custom Domain and Teams sub-pages
-- `Settings → Organization → Custom Domain` — navigated to via "Edit domain" button inside Organization
-- `Settings → Organization → Teams` — navigated to via "Manage Team" button inside Organization
-- `Settings → Landing Page` — academy landing page editor
-- `Settings → Authentication` — signup rules, SSO, token auth; sub-tabs: General, SSO, Token Auth
-- `Settings → Authentication → General` — signup toggle, Internal Enrollment Only
+- `Settings → Notifications` — personal email notification preferences
+- `Settings → Branding` — org name, logo, and brand color
+- `Settings → Domains` — academy subdomain, custom domain, and favicon
+- `Settings → Teams` — invite and manage admins and tutors
+- `Settings → Customize LMS` — LMS feature toggles
 - `Settings → Billing` — plan and billing
-- `Settings → AI Credits` — token usage
 - `Settings → AI Tutor` — per-org AI tutor toggle
+- `Settings → AI Credits` — token usage
+- `Settings → Authentication` — signup rules, SSO, token auth; tabs: General, SSO, Token Auth
+- `Settings → Authentication → General` — signup toggle, Internal Enrollment Only
+- `Settings → Authentication → SSO` — enterprise SSO connections
+- `Settings → Authentication → Token Auth` — Token Auth signing secret
+- `Distribute → Landing Page` — academy landing page editor (org sidebar, not Settings)
+
+Do not write `Settings → Organization` or `Settings → Landing Page`. Those paths are gone.
 
 ## MDX format conventions
 
@@ -57,18 +63,21 @@ Certificate features require a paid plan.
 :::
 ```
 
-**Steps** for sequential procedures. Keep an `###` heading inside each `<Step>` — it is what
-generates the linkable anchor:
+**Numbered `###` headings** for sequential procedures. Do not use a `<Steps>`/`<Step>` component: the
+CMS reads the raw markdown, where those tags render as literal text. The heading also generates the
+linkable anchor.
 
 ```mdx
-<Steps>
-<Step>
-### Enable downloadable certificates
+### 1. Enable downloadable certificates
 
 Turn on **Allow students download certificate**.
-</Step>
-</Steps>
+
+### 2. Set the completion threshold
+
+Choose the percentage a student must reach.
 ```
+
+A short summary of a procedure the page then covers in full can be a plain numbered list instead.
 
 Also available without imports: `<Tabs>`/`<Tab>`, `<Card>`, `<Accordion>`, `<YouTube id="..." />`,
 `<CodeGroup>`, `<Frame>`. Code fences take a title: ` ```zsh title="Terminal" `. Mermaid fences render
@@ -101,7 +110,7 @@ a page that isn't listed there will not appear in the nav.
 - Use **bold** for UI element names exactly as they appear in the product (match translations).
 - Use `code` for paths, values, slugs, and field names.
 - Tables for comparisons and reference lists.
-- Steps component for sequential procedures (not numbered markdown lists).
+- Numbered `###` headings for sequential procedures (never a `<Steps>` component).
 - End every substantive page with a `## Related guides` section linking to connected pages.
 - Remove the "Work in Progress" callout when replacing it with real content.
 
@@ -116,7 +125,7 @@ a page that isn't listed there will not appear in the nav.
 **How-to guide** (how to do something):
 1. One-sentence context (what and why)
 2. Prerequisites if any
-3. Steps component with the procedure
+3. The procedure, as numbered `###` headings
 4. Common scenarios or edge cases (Callout blocks)
 5. Related guides
 
