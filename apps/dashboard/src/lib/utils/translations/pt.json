@@ -961,7 +961,6 @@
         "content_grouping_title": "Agrupamento de conteúdo",
         "content_grouping_description": "Aulas e exercícios em grupo por seção na lista de conteúdo.",
         "progression_mode_title": "Progressão do aluno",
-        "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou devem concluir os itens em ordem.",
         "progression_mode_free": "Livre — conteúdo desbloqueado é acessível",
         "progression_mode_sequential": "Sequencial — concluir itens anteriores para desbloquear o próximo",
         "comments": {
@@ -1050,7 +1049,8 @@
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
         "copy_link": "Copiar link",
-        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar."
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
+        "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou se devem completar os itens em ordem. A conclusão da exibição do vídeo rastreia apenas os vídeos enviados."
       },
       "analytics": {
         "title": "Análises"
@@ -2425,10 +2425,10 @@
           "manual_label": "Manual",
           "manual_description": "Os alunos marcam a lição como concluída.",
           "video_watch_label": "Assistir vídeo",
-          "video_watch_description": "A lição conclui automaticamente depois que os alunos assistem aos vídeos selecionados.",
           "none_label": "Nenhuma",
           "none_description": "Esta lição não bloqueia a progressão do curso.",
-          "watch_threshold": "Limite de visualização (%)"
+          "watch_threshold": "Limite de visualização (%)",
+          "video_watch_description": "A lição é concluída automaticamente depois que os alunos assistem aos vídeos enviados selecionados. As incorporações externas e do YouTube não podem ser rastreadas."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2445,10 @@
             "option_guide_heading": "O que cada opção significa",
             "watch_videos_heading": "Vídeos a aplicar",
             "watch_videos_helper": "Apenas vídeos enviados podem ser aplicados. YouTube e incorporações externas não podem ser rastreados.",
-            "watch_videos_empty": "Adicione um vídeo enviado na aba Vídeo para usar o rastreamento de visualização.",
             "watch_videos_required": "Selecione pelo menos um vídeo para rastreamento de visualização.",
-            "students_only_note": "Estas regras aplicam-se apenas aos alunos. Você pode pré-visualizar e navegar livremente ao ensinar."
+            "students_only_note": "Estas regras aplicam-se apenas aos alunos. Você pode pré-visualizar e navegar livremente ao ensinar.",
+            "watch_videos_empty": "A exibição de vídeo rastreia apenas os vídeos enviados. As incorporações externas e do YouTube não podem ser rastreadas, portanto esta lição não pode ser concluída automaticamente e os alunos não podem marcá-la como concluída. Carregue o vídeo na guia Vídeo ou defina a regra de conclusão como Manual.",
+            "watch_videos_no_uploads_title": "Nenhum vídeo enviado nesta lição"
           }
         },
         "watch_progress": {

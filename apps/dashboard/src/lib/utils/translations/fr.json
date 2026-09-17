@@ -961,7 +961,6 @@
         "content_grouping_title": "Regroupement de contenu",
         "content_grouping_description": "Cours collectifs et exercices par section dans la liste des contenus.",
         "progression_mode_title": "Progression des étudiants",
-        "progression_mode_description": "Contrôlez si les étudiants peuvent accéder à tout le contenu débloqué ou doivent terminer les éléments dans l'ordre.",
         "progression_mode_free": "Libre — le contenu débloqué est accessible",
         "progression_mode_sequential": "Séquentiel — terminer les éléments précédents pour débloquer le suivant",
         "comments": {
@@ -1050,7 +1049,8 @@
         "generate_link": "Générer un nouveau lien",
         "open_link": "Ouvrir le lien dans un nouvel onglet",
         "copy_link": "Copier le lien",
-        "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication."
+        "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication.",
+        "progression_mode_description": "Contrôlez si les élèves peuvent accéder à tout le contenu déverrouillé ou doivent terminer les éléments dans l'ordre. La fin du visionnage de vidéos ne suit que les vidéos téléchargées."
       },
       "analytics": {
         "title": "Analytique"
@@ -2425,10 +2425,10 @@
           "manual_label": "Manuel",
           "manual_description": "Les étudiants marquent eux-mêmes la leçon comme terminée.",
           "video_watch_label": "Visionnage vidéo",
-          "video_watch_description": "La leçon se termine automatiquement après que les étudiants aient regardé les vidéos sélectionnées.",
           "none_label": "Aucune",
           "none_description": "Cette leçon ne bloque pas la progression du cours.",
-          "watch_threshold": "Seuil de visionnage (%)"
+          "watch_threshold": "Seuil de visionnage (%)",
+          "video_watch_description": "La leçon se termine automatiquement une fois que les élèves ont regardé les vidéos téléchargées sélectionnées. YouTube et les intégrations externes ne peuvent pas être suivis."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2445,10 @@
             "option_guide_heading": "Ce que signifie chaque option",
             "watch_videos_heading": "Vidéos à appliquer",
             "watch_videos_helper": "Seules les vidéos téléversées peuvent être appliquées. YouTube et les intégrations externes ne peuvent pas être suivies.",
-            "watch_videos_empty": "Ajoutez une vidéo téléversée dans l'onglet Vidéo pour utiliser le suivi de visionnage.",
             "watch_videos_required": "Sélectionnez au moins une vidéo pour le suivi de visionnage.",
-            "students_only_note": "Ces règles s'appliquent aux étudiants uniquement. Vous pouvez prévisualiser et naviguer librement en mode enseignant."
+            "students_only_note": "Ces règles s'appliquent aux étudiants uniquement. Vous pouvez prévisualiser et naviguer librement en mode enseignant.",
+            "watch_videos_empty": "La surveillance vidéo ne suit que les vidéos téléchargées. YouTube et les intégrations externes ne peuvent pas être suivis. Cette leçon ne peut donc pas se terminer automatiquement et les élèves ne peuvent pas la marquer comme terminée. Téléchargez la vidéo dans l'onglet Vidéo ou définissez la règle d'achèvement sur Manuel.",
+            "watch_videos_no_uploads_title": "Aucune vidéo téléchargée dans cette leçon"
           }
         },
         "watch_progress": {

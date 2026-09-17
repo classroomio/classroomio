@@ -961,7 +961,6 @@
         "content_grouping_title": "Indholdsgruppering",
         "content_grouping_description": "Gruppelektioner og øvelser efter afsnit i indholdslisten.",
         "progression_mode_title": "Elevprogression",
-        "progression_mode_description": "Styr om elever kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge.",
         "progression_mode_free": "Fri — ulåst indhold er tilgængeligt",
         "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
         "comments": {
@@ -1050,7 +1049,8 @@
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
         "copy_link": "Kopiér link",
-        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer."
+        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
+        "progression_mode_description": "Kontroller, om eleverne kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge. Afslutning af videoafspilning sporer kun uploadede videoer."
       },
       "analytics": {
         "title": "Analyse"
@@ -2425,10 +2425,10 @@
           "manual_label": "Manuel",
           "manual_description": "Elever markerer selv lektionen som fuldført.",
           "video_watch_label": "Videoafspilning",
-          "video_watch_description": "Lektionen fuldføres automatisk, når elever har set de valgte videoer.",
           "none_label": "Ingen",
           "none_description": "Denne lektion blokerer ikke kursusprogression.",
-          "watch_threshold": "Segrænse (%)"
+          "watch_threshold": "Segrænse (%)",
+          "video_watch_description": "Lektionen afsluttes automatisk, når eleverne har set de valgte uploadede videoer. YouTube og eksterne indlejringer kan ikke spores."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2445,10 @@
             "option_guide_heading": "Hvad hver mulighed betyder",
             "watch_videos_heading": "Videoer der håndhæves",
             "watch_videos_helper": "Kun uploadede videoer kan håndhæves. YouTube og eksterne indlejringer kan ikke spores.",
-            "watch_videos_empty": "Tilføj en uploadet video i fanen Video for at bruge visningskontrol.",
             "watch_videos_required": "Vælg mindst én video ved videoafspilning.",
-            "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser."
+            "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser.",
+            "watch_videos_empty": "Videose sporer kun uploadede videoer. YouTube og eksterne indlejringer kan ikke spores, så denne lektion kan ikke fuldføres automatisk, og eleverne kan ikke markere den som fuldført. Upload videoen på fanen Video, eller indstil fuldførelsesreglen til Manuel.",
+            "watch_videos_no_uploads_title": "Ingen uploadede videoer i denne lektion"
           }
         },
         "watch_progress": {

@@ -961,7 +961,6 @@
         "content_grouping_title": "Inhaltsgruppierung",
         "content_grouping_description": "Gruppieren Sie Lektionen und Übungen nach Abschnitten in der Inhaltsliste.",
         "progression_mode_title": "Schülerfortschritt",
-        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen.",
         "progression_mode_free": "Frei — freigeschaltete Inhalte sind zugänglich",
         "progression_mode_sequential": "Sequenziell — vorherige Elemente abschließen, um das nächste freizuschalten",
         "comments": {
@@ -1050,7 +1049,8 @@
         "generate_link": "Neuen Link generieren",
         "open_link": "Link in neuem Tab öffnen",
         "copy_link": "Link kopieren",
-        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest."
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen. Beim Abschluss der Videowiedergabe werden nur hochgeladene Videos erfasst."
       },
       "analytics": {
         "title": "Analysen"
@@ -2425,10 +2425,10 @@
           "manual_label": "Manuell",
           "manual_description": "Schüler markieren die Lektion selbst als abgeschlossen.",
           "video_watch_label": "Video ansehen",
-          "video_watch_description": "Die Lektion wird automatisch abgeschlossen, nachdem Schüler die ausgewählten Videos angesehen haben.",
           "none_label": "Keine",
           "none_description": "Diese Lektion blockiert den Kursfortschritt nicht.",
-          "watch_threshold": "Wiedergabeschwelle (%)"
+          "watch_threshold": "Wiedergabeschwelle (%)",
+          "video_watch_description": "Die Lektion wird automatisch abgeschlossen, nachdem die Schüler die ausgewählten hochgeladenen Videos angesehen haben. YouTube- und externe Einbettungen können nicht verfolgt werden."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2445,10 @@
             "option_guide_heading": "Was jede Option bedeutet",
             "watch_videos_heading": "Zu überwachende Videos",
             "watch_videos_helper": "Nur hochgeladene Videos können erzwungen werden. YouTube und externe Einbettungen können nicht verfolgt werden.",
-            "watch_videos_empty": "Fügen Sie im Video-Tab ein hochgeladenes Video hinzu, um die Wiedergabeüberwachung zu nutzen.",
             "watch_videos_required": "Wählen Sie mindestens ein Video für die Video-Wiedergabeüberwachung.",
-            "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren."
+            "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren.",
+            "watch_videos_empty": "Bei der Videowiedergabe werden nur hochgeladene Videos verfolgt. YouTube- und externe Einbettungen können nicht nachverfolgt werden, daher kann diese Lektion nicht automatisch abgeschlossen werden und die Schüler können sie nicht als abgeschlossen markieren. Laden Sie das Video auf der Registerkarte „Video“ hoch oder stellen Sie die Abschlussregel auf „Manuell“ ein.",
+            "watch_videos_no_uploads_title": "In dieser Lektion wurden keine Videos hochgeladen"
           }
         },
         "watch_progress": {

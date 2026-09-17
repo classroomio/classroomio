@@ -961,7 +961,6 @@
         "content_grouping_title": "Nhóm nội dung",
         "content_grouping_description": "Nhóm các bài học, bài tập theo từng phần trong danh sách nội dung.",
         "progression_mode_title": "Tiến trình học viên",
-        "progression_mode_description": "Kiểm soát học viên có thể truy cập mọi nội dung đã mở khóa hay phải hoàn thành theo thứ tự.",
         "progression_mode_free": "Tự do — nội dung đã mở khóa có thể truy cập",
         "progression_mode_sequential": "Tuần tự — hoàn thành mục trước để mở mục tiếp theo",
         "comments": {
@@ -1050,7 +1049,8 @@
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
         "copy_link": "Sao chép liên kết",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản."
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
+        "progression_mode_description": "Kiểm soát xem học sinh có thể truy cập tất cả nội dung đã mở khóa hay phải hoàn thành các mục theo thứ tự. Việc xem xong video chỉ theo dõi các video đã tải lên."
       },
       "analytics": {
         "title": "Phân tích"
@@ -2425,10 +2425,10 @@
           "manual_label": "Thủ công",
           "manual_description": "Học viên tự đánh dấu bài học là hoàn thành.",
           "video_watch_label": "Xem video",
-          "video_watch_description": "Bài học tự hoàn thành sau khi học viên xem các video đã chọn.",
           "none_label": "Không",
           "none_description": "Bài học này không chặn tiến trình khóa học.",
-          "watch_threshold": "Ngưỡng xem (%)"
+          "watch_threshold": "Ngưỡng xem (%)",
+          "video_watch_description": "Bài học tự động hoàn thành sau khi học sinh xem các video đã tải lên đã chọn. Không thể theo dõi YouTube và các nội dung nhúng bên ngoài."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2445,10 @@
             "option_guide_heading": "Ý nghĩa từng tùy chọn",
             "watch_videos_heading": "Video cần áp dụng",
             "watch_videos_helper": "Chỉ video đã tải lên mới có thể áp dụng. YouTube và nhúng bên ngoài không thể theo dõi.",
-            "watch_videos_empty": "Thêm video đã tải lên trong tab Video để dùng theo dõi xem.",
             "watch_videos_required": "Chọn ít nhất một video khi dùng theo dõi xem.",
-            "students_only_note": "Các quy tắc này chỉ áp dụng cho học viên. Giảng viên có thể xem trước và điều hướng tự do."
+            "students_only_note": "Các quy tắc này chỉ áp dụng cho học viên. Giảng viên có thể xem trước và điều hướng tự do.",
+            "watch_videos_empty": "Xem video chỉ theo dõi các video đã tải lên. Không thể theo dõi nội dung nhúng trên YouTube và bên ngoài, vì vậy bài học này không thể tự động hoàn thành và học sinh không thể đánh dấu bài học là hoàn thành. Tải video lên trong tab Video hoặc đặt quy tắc hoàn thành thành Thủ công.",
+            "watch_videos_no_uploads_title": "Không có video nào được tải lên trong bài học này"
           }
         },
         "watch_progress": {
