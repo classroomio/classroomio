@@ -12,15 +12,11 @@
     },
     "./components/linkedin-certificate-button": {
       "svelte": "./integration/linkedin-certificate/components/linkedin-button.svelte",
-      "default": "./dist/integration/linkedin-certificate/components/linkedin-button.svelte"
-    },
-    "./components/modern-gold-preview": {
-      "svelte": "./certificate/certificate-modern-gold/preview.svelte",
-      "default": "./dist/certificate/certificate-modern-gold/preview.svelte"
+      "default": "./integration/linkedin-certificate/components/linkedin-button.svelte"
     }
   },
   "scripts": {
-    "build": "tsc && tsc-alias && node scripts/copy-svelte-assets.mjs",
+    "build": "tsc && tsc-alias",
     "dev": "tsc --watch",
     "format": "prettier --write ."
   },

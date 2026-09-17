@@ -8,7 +8,7 @@ export interface ModernGoldCertificateOptions {
 
 /**
  * Modern Gold Certificate Plugin.
- * Registers the prestigious dark slate and gold certificate template and preview component.
+ * Registers the prestigious dark slate and gold certificate template.
  */
 export function modernGoldCertificate(options: ModernGoldCertificateOptions = {}): PluginDefinition {
   return definePlugin({
@@ -19,10 +19,7 @@ export function modernGoldCertificate(options: ModernGoldCertificateOptions = {}
     description:
       options.description ??
       'A prestigious dark slate and gold certificate template with custom typography and official seal.',
-    certificateTemplates: [createModernGoldTemplate(options)],
-    slots: {
-      'certificate.template': () => import('./preview.svelte')
-    }
+    certificateTemplates: [createModernGoldTemplate(options)]
   });
 }
 

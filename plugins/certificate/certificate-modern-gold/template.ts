@@ -8,10 +8,8 @@ export interface ModernGoldTemplateOptions {
 export function createModernGoldTemplate(options: ModernGoldTemplateOptions = {}): CertificateTemplateDefinition {
   return defineCertificateTemplate({
     id: 'modern_gold',
-    ...(options.label ? { label: options.label } : { labelKey: 'plugins.certificate_modern_gold.template_name' }),
-    ...(options.description
-      ? { description: options.description }
-      : { descriptionKey: 'plugins.certificate_modern_gold.template_description' }),
+    label: options.label ?? 'Modern Gold',
+    description: options.description ?? 'Prestigious dark slate design with gold geometric borders and royal insignia.',
     body: `
       <div class="t-modern-gold">
         <div class="outer-frame">
