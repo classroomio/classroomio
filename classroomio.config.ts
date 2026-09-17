@@ -14,6 +14,5 @@ export default defineConfig({
     rename: {},
     add: []
   },
-  terminology: {},
   plugins: configuredPlugins
 });

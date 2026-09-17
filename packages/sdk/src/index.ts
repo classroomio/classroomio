@@ -1,6 +1,5 @@
 export * from './types';
 export * from './config';
-export * from './terminology';
 export * from './nav-resolver';
 export * from './plugin';
 export * from './event-bus';
