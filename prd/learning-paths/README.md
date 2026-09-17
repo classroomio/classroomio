@@ -229,7 +229,7 @@ Independent taking (live non-path grant, `requiresLearningPath` false) stays at 
 
 ### 4. Access control
 
-- Org admins manage all paths; path-level TUTOR role can manage content but not delete (mirror Programs roles: ADMIN/TUTOR/STUDENT via `roleId`).
+- Org admins manage all paths; tutors can view/list and manage assigned paths (or content), but cannot create, clone, or delete (mirror Programs roles: ADMIN/TUTOR/STUDENT via `roleId`).
 - Students: read path data they're members of (including unpublished paths they already joined). Public endpoints serve published paths only.
 - Unpublished paths: admin/tutor only on public/catalog surfaces. Self-enrollment and public invite-link enrollment are rejected, matching `enrollInCourse`'s `isPublished` gate. Teachers can still add members from the People page. Unpublishing does not revoke existing grants.
 
@@ -433,7 +433,7 @@ Follow the standard layering (validation in `packages/utils/src/validation/learn
 
 | Method | Path | Auth | Description |
 | --- | --- | --- | --- |
-| GET | `/learning-path` | org admin | List org paths (admin) |
+| GET | `/learning-path` | admin/tutor | List org paths (admin: all; tutor: assigned paths) |
 | POST | `/learning-path` | org admin | Create (name, description) → unpublished |
 | GET | `/learning-path/:pathId` | member/admin | Detail incl. ordered courses + caller progress |
 | PUT | `/learning-path/:pathId` | admin/tutor | Update settings/pricing/landingPage/isPublished |

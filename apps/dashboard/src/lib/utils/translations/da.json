@@ -2822,8 +2822,12 @@
       "course_description_label": "Kursusbeskrivelse",
       "course_description_placeholder": "Indtast en beskrivelse af dit kursus",
       "create_button": "Opret",
+      "title_copy_format": "{title} (Kopi)",
       "error": {
         "failed_to_clone": "Kurset kunne ikke klones"
+      },
+      "success": {
+        "course_cloned": "Kurset blev kopieret"
       }
     },
     "new_course_modal": {
@@ -2904,7 +2908,8 @@
       "tags": "Tags",
       "empty_tags": "Ingen tags tilgængelige"
     },
-    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger."
+    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger.",
+    "pricing_free": "Gratis"
   },
   "ai": {
     "help_me": "Hjælp mig med at skrive",
@@ -3221,7 +3226,8 @@
     "back_to_app": "Tilbage til app",
     "create": "Opret",
     "distribute": "Fordel",
-    "tools": "Værktøjer"
+    "tools": "Værktøjer",
+    "learning_paths": "Læringsstier"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -4161,7 +4167,9 @@
       }
     },
     "cancel": "Annuller",
-    "save": "Gem"
+    "save": "Gem",
+    "previous": "Forrige",
+    "next": "Næste"
   },
   "welcome_modal": {
     "we_at": "Vi kl",
@@ -5214,7 +5222,9 @@
       "pagination_status": "Side {page} af {totalPages}",
       "published_access_callout_title": "Studerendes adgang",
       "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i denne kohorte for dit team, mens de stadig ikke er udgivet, men de forbliver skjulte for eleverne, indtil du udgiver dem.",
-      "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte."
+      "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte.",
+      "add_count": "Tilføj {count} {count, plural, =1 {kursus} other {kurser}}",
+      "adding": "Tilføjer kurser..."
     },
     "newsfeed": {
       "post": "Nyt indlæg",
@@ -5441,5 +5451,213 @@
     "format_json": "JSON",
     "copied": "Kopieret til udklipsholder",
     "copy_failed": "Kunne ikke kopiere til udklipsholder"
+  },
+  "learningPath": {
+    "modals": {
+      "remove_course": {
+        "title": "Fjern kursus fra sti?",
+        "description": "Kurset vil blive fjernet fra denne sti. Elever, der allerede er tilmeldt kurset, beholder deres adgang og fremskridt.",
+        "cancel": "Annuller",
+        "confirm": "Fjern kursus"
+      },
+      "add_courses": {
+        "title": "Tilføj kurser til sti",
+        "search_placeholder": "Søg efter kurser…",
+        "no_courses": "Ingen tilgængelige kurser at tilføje.",
+        "no_matches": "Ingen kurser matcher din søgning.",
+        "cancel": "Annuller",
+        "submit": "Tilføj {count} {count, plural, =1 {Kursus} other {Kurser}}",
+        "submitting": "Tilføjer kurser…",
+        "select_courses": "Vælg kurser",
+        "pagination_status": "Side {page} af {totalPages}"
+      },
+      "create": {
+        "title": "Opret læringssti",
+        "description": "Angiv en titel og beskrivelse til din nye læringssti.",
+        "name_label": "Stinavn",
+        "name_placeholder": "f.eks. Fullstack webudvikling",
+        "slug_label": "URL-slug",
+        "slug_placeholder": "fullstack-web-development",
+        "desc_label": "Beskrivelse",
+        "desc_placeholder": "En kort opsummering af, hvad eleverne vil opnå...",
+        "cancel": "Annuller",
+        "submit": "Opret læringssti",
+        "creating": "Opretter…",
+        "failed": "Det lykkedes ikke at oprette læringsvej"
+      },
+      "clone": {
+        "title": "Klon læringssti",
+        "description": "Opret en kopi af denne læringssti med alle dens kurser.",
+        "submit": "Klon",
+        "title_copy_format": "{name} (Kopi)",
+        "failed": "Kunne ikke klone læringsstien"
+      }
+    },
+    "workspace": {
+      "all_paths": "Alle læringsstier",
+      "finish_setup": "Afslut opsætning · {percent}%",
+      "view_path_site": "Se stiwebsted",
+      "active": "Aktiv",
+      "draft": "Kladde",
+      "archived": "Arkiveret",
+      "coming_soon": {
+        "title": "{tab} — Kommer snart",
+        "description": "Denne arbejdsområdefane vil være tilgængelig i fase 3. Kursusadministration og opsætning er fuldt funktionel i denne udgivelse."
+      },
+      "tabs": {
+        "courses": "Kurser",
+        "people": "Personer",
+        "analytics": "Analyse",
+        "landing": "Landingsside",
+        "certificate": "Certifikat",
+        "settings": "Indstillinger",
+        "setup": "Opsætning"
+      },
+      "activate_path": "Aktiver sti",
+      "deactivate_path": "Deaktiver stien",
+      "activated": "Læringsvej aktiveret",
+      "deactivated": "Læringsvej deaktiveret",
+      "publish_path": "Udgiv sti",
+      "unpublish_path": "Fjern udgivelse af sti",
+      "published": "Læringsvej offentliggjort",
+      "unpublished": "Læringsvej upubliceret",
+      "publish_failed": "Kunne ikke udgive læringsstien",
+      "not_found_title": "Læringssti ikke fundet",
+      "not_found_description": "Den læringssti, du leder efter, findes ikke eller er blevet slettet.",
+      "back_to_paths": "Tilbage til læringsstier",
+      "copy_path_url": "Kopiér sti-URL",
+      "preview_missing_slug": "Generer og gem en stisnegl før forhåndsvisning.",
+      "url_copied": "Læringssti-URL kopieret til udklipsholder",
+      "cloned": "Læringssti klonet med succes",
+      "loading_title": "Indlæser læringssti...",
+      "loading_description": "Vent venligst, mens vi indlæser dine læringsstidata."
+    },
+    "setup": {
+      "title": "Opsæt din sti",
+      "subtitle": "Færdiggør disse trin for at lancere {name} til dine elever.",
+      "summary": "En sti går live, når dens kurser er bestilt, prissat og indstillet til Aktiv.",
+      "progress": "{completed} af {total} fuldført",
+      "done": "Udført",
+      "launch_title": "{count} {count, plural, =1 {trin} other {trin}} tilbage til lancering",
+      "launch_desc": "Bestil kurserne, angiv en pris, finpudse landingssiden og aktivér.",
+      "activate_now": "Aktivér nu",
+      "step_name_title": "Navngiv og beskriv din sti",
+      "step_name_desc": "Giv stien et klart, resultatbaseret navn og en kort opsummering.",
+      "step_name_action": "Rediger detaljer",
+      "step_courses_title": "Tilføj kurser",
+      "step_courses_desc": "Vælg de kurser, der udgør denne læringssti.",
+      "step_courses_action": "Tilføj kurser",
+      "step_order_title": "Angiv kursusrækkefølgen",
+      "step_order_desc": "Træk kurser ind i den rækkefølge, som eleverne skal gennemføre dem.",
+      "step_order_action": "Angiv rækkefølge",
+      "step_price_title": "Angiv din pris",
+      "step_price_desc": "Pris stien som en pakke — eleverne ser besparelserne i forhold til individuelle kurser.",
+      "step_price_action": "Angiv pris",
+      "step_landing_title": "Tilpas din landingsside",
+      "step_landing_desc": "Resultater, færdigheder, instruktører, udtalelser og ofte stillede spørgsmål på den offentlige stiside.",
+      "step_landing_action": "Tilpas",
+      "step_activate_title": "Aktiver stien",
+      "step_activate_desc": "Angiv status til Aktiv, så den vises på din landingsside og LMS.",
+      "step_activate_action": "Aktiver",
+      "step_publish_title": "Udgiv stien",
+      "step_publish_desc": "Udgiv stien, så den vises på din landingsside og dit LMS.",
+      "step_publish_action": "Udgiv",
+      "reorder_action": "Genbestil"
+    },
+    "builder": {
+      "title": "Kurser",
+      "subtitle": "Tilføj kurser, og træk for at indstille den rækkefølge, eleverne bevæger sig gennem dem.",
+      "unlock_rule_title": "Lås kurser op i rækkefølge",
+      "unlock_rule_desc": "Hvert kursus forbliver låst, indtil en elev gennemfører det forrige kursuss lektioner og øvelser. Slå fra for at tillade enhver rækkefølge.",
+      "list_head": "{count} {count, plural, =1 {kursus} other {kurser}} i denne sti",
+      "drag_hint": "Træk for at ændre rækkefølgen",
+      "lessons_count": "{count} {count, plural, =1 {lektion} other {lektioner}}",
+      "exercises_count": "{count} {count, plural, =1 {øvelse} other {øvelser}}",
+      "open_course": "Åbn kursus",
+      "remove_course": "Fjern fra sti",
+      "add_course_button": "Tilføj kursus til sti",
+      "certificate_title": "Sticertifikat",
+      "certificate_desc": "Tildeles automatisk, når en studerende gennemfører alle {count} kurser.",
+      "configure_certificate": "Konfigurer certifikat",
+      "empty_title": "Ingen kurser i denne læringsvej endnu",
+      "empty_description": "Tilføj kurser for at guide eleverne gennem en struktureret sekvens. Start med at klikke på knappen Tilføj."
+    },
+    "listing": {
+      "title": "Læringsstier",
+      "subtitle": "Opret og administrer strukturerede læringsoplevelser, der guider eleverne gennem flere kurser.",
+      "create_path": "Opret læringssti",
+      "create_course": "Opret kursus",
+      "empty": {
+        "title": "Opret din første læringssti",
+        "description": "Saml flere kurser i en ordnet rækkefølge med milepælssporing, gating og et valgfrit færdiggørelsescertifikat.",
+        "create_path": "Opret læringssti",
+        "create_course": "Opret kursus",
+        "no_matches_title": "Ingen læringsstier matcher dine aktive filtre",
+        "no_matches_description": "Prøv at rydde dine filtre eller ændre din søgeforespørgsel."
+      },
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {kursus} other {kurser}}",
+        "learners_count": "{count} {count, plural, =1 {elev} other {elever}}",
+        "not_published": "Ikke udgivet endnu",
+        "completion": "Afslutning",
+        "manage": "Administrer",
+        "continue_setup": "Fortsæt opsætning"
+      },
+      "filters": {
+        "title": "Filtre",
+        "clear_all": "Ryd alle",
+        "group_status": "Status",
+        "group_enrollment": "Tilmelding",
+        "group_completion": "Fuldførelsesprocent",
+        "all": "Alle",
+        "draft": "Kladde",
+        "published": "Udgivet",
+        "archived": "Arkiveret",
+        "no_learners": "Ingen elever endnu",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "low": "Lav (under 25%)",
+        "medium": "Mellem (25–75%)",
+        "high": "Høj (75%+)",
+        "sort_date_created": "Dato oprettet",
+        "sort_last_updated_at": "Sidst opdateret kl",
+        "sort_published": "Udgivet",
+        "sort_courses": "Kurser"
+      },
+      "toolbar": {
+        "search_placeholder": "Søg i læringsstier…",
+        "preview_empty": "Forhåndsvisning af tom tilstand",
+        "exit_preview_empty": "Afslut forhåndsvisning",
+        "grid_view": "Gittervisning",
+        "list_view": "Listevisning"
+      },
+      "overview": {
+        "active_paths": "Aktive stier",
+        "enrolled_learners": "Tilmeldte elever",
+        "completions": "Fuldførelser",
+        "completion_rate": "Fuldførelsesprocent",
+        "across_all_paths": "På tværs af alle stier"
+      }
+    },
+    "view_path_site": {
+      "unpublished_title": "Offentliggør din læringsvej",
+      "unpublished_description": "Du bør offentliggøre denne læringssti, før du kan se webstedet",
+      "cancel": "Annuller",
+      "publish_path": "Udgiv sti"
+    },
+    "context_menu": {
+      "open": "Åbn",
+      "clone": "Klon",
+      "share": "Del",
+      "invite": "Inviter",
+      "delete": "Slet"
+    },
+    "card": {
+      "actions_menu_aria": "Stihandlinger",
+      "updated_at": "Opdateret {date}",
+      "published": "Udgivet",
+      "unpublished": "Upubliceret",
+      "badge": "Læringsvej"
+    }
   }
 }

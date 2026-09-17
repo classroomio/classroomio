@@ -13,6 +13,7 @@
   import { courseApi } from '$features/course/api';
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
+  import CopyCourseModal from '$features/course/components/copy-course-modal.svelte';
   import { aiAssistantPanelDefinition, ContentAskAiBar, AI_ASSISTANT_PANEL_ID } from '$features/ai-assistant';
   import {
     getContentAskAiBarWidthClass,
@@ -226,6 +227,7 @@
     <CourseHeader />
     <ContentCreateModal />
     <CourseCompletionModal />
+    <CopyCourseModal />
 
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">

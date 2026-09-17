@@ -94,7 +94,7 @@
 <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-5xl">
   <Page.Header>
     <Page.HeaderContent class="min-w-0 flex-1">
-      <Page.Title>{$t('cohorts.sidebar.courses') || 'Courses'}</Page.Title>
+      <Page.Title>{$t('cohorts.sidebar.courses')}</Page.Title>
       {#if !$isStudentExperience}
         <Alert.Callout
           variant="information"
@@ -108,7 +108,7 @@
       <Page.Action>
         <Button onclick={() => (showAddCourseModal = true)}>
           <Plus size={16} />
-          {$t('cohorts.courses.add') || 'Add Course'}
+          {$t('cohorts.courses.add')}
         </Button>
       </Page.Action>
     {/if}
@@ -131,19 +131,19 @@
 
       {#if filteredCourses.length === 0}
         <Empty
-          title={$t('cohorts.courses.empty_title') || 'No courses yet'}
+          title={$t('cohorts.courses.empty_title')}
           description={searchValue.trim()
-            ? $t('cohorts.courses.no_matching_cohort_courses') || 'No cohort courses match your search.'
+            ? $t('cohorts.courses.no_matching_cohort_courses')
             : $isStudentExperience
-              ? $t('cohorts.courses.empty_student_description') || 'There are no published courses in this cohort yet.'
-              : $t('cohorts.courses.empty_description') || 'Add courses to this cohort.'}
+              ? $t('cohorts.courses.empty_student_description')
+              : $t('cohorts.courses.empty_description')}
           icon={BookOpenIcon}
           variant="page"
         >
           {#if !searchValue.trim() && !$isStudentExperience}
             <Button onclick={() => (showAddCourseModal = true)}>
               <Plus size={16} />
-              {$t('cohorts.courses.add') || 'Add Course'}
+              {$t('cohorts.courses.add')}
             </Button>
           {/if}
         </Empty>
