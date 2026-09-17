@@ -46,7 +46,6 @@ import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUr
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
-import { getEventBus } from '@cio/sdk';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
@@ -78,38 +77,6 @@ const LEGACY_STATUS_TO_GRADING_STATE: Record<number, SubmissionGradingState> = {
   2: 'processing',
   3: 'completed'
 };
-
-async function dispatchExerciseGradedSafely(
-  courseId: string,
-  exerciseId: string,
-  groupMemberId: string,
-  score: number
-): Promise<void> {
-  const [profile, courseWithOrg] = await Promise.all([
-    getProfileByGroupMemberId(groupMemberId),
-    getCourseWithOrgData(courseId)
-  ]);
-
-  if (!profile || !courseWithOrg) {
-    console.error('Failed to dispatch plugin event for exercise.graded: grading context was not found.');
-
-    return;
-  }
-
-  const eventBus = getEventBus();
-
-  void eventBus
-    .dispatch('exercise.graded', {
-      userId: profile.id,
-      exerciseId,
-      score,
-      orgId: courseWithOrg.orgId,
-      courseId
-    })
-    .catch((error) => {
-      console.error('Failed to dispatch plugin event for exercise.graded:', error);
-    });
-}
 
 const GRADING_STATE_TO_LEGACY_STATUS: Record<SubmissionGradingState, number> = {
   queued: 1,
@@ -752,9 +719,6 @@ export async function createSubmissionService(
 
         await syncComplianceProgressFromSubmission(courseId, submittedBy);
         await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
-        void dispatchExerciseGradedSafely(courseId, exerciseId, submittedBy, total).catch((error) => {
-          console.error('Failed to prepare plugin event for exercise.graded:', error);
-        });
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
@@ -926,14 +890,6 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
-      void dispatchExerciseGradedSafely(
-        updated.courseId,
-        updated.exerciseId ?? submission.exerciseId,
-        updated.submittedBy,
-        updated.total ?? data.total
-      ).catch((error) => {
-        console.error('Failed to prepare plugin event for exercise.graded:', error);
-      });
     }
 
     return updated;

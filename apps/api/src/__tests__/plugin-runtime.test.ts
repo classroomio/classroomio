@@ -1,27 +1,29 @@
-import { describe, expect, it, vi } from 'vitest';
-import { definePlugin, getEventBus } from '@cio/sdk';
+import { describe, expect, it } from 'vitest';
+import { definePlugin } from '@cio/sdk';
 import { initializePluginRuntime } from '@api/services/plugin/runtime';
+import { getCertificateTemplate } from '@cio/certificates';
 
 describe('API plugin runtime bootstrap', () => {
-  it('registers configured server hooks with the process event bus', async () => {
-    const handler = vi.fn();
+  it('registers configured certificate templates from plugins', () => {
     const plugin = definePlugin({
-      id: 'integration_runtime_test',
-      name: 'Runtime test integration',
+      id: 'certificate_runtime_test',
+      name: 'Runtime test certificate',
       version: '1.0.0',
-      category: 'integration',
+      category: 'certificate',
       description: 'Verifies API plugin bootstrap.',
-      on: {
-        'certificate.issued': handler
-      }
+      certificateTemplates: [
+        {
+          id: 'runtime_test_template',
+          label: 'Runtime Test Template',
+          renderHtml: () => '<div>Test</div>'
+        }
+      ]
     });
 
     initializePluginRuntime([plugin]);
-    await getEventBus().dispatch('certificate.issued', { certificateId: 'cert-1' });
+    const template = getCertificateTemplate('runtime_test_template');
 
-    expect(handler).toHaveBeenCalledWith(
-      { certificateId: 'cert-1' },
-      expect.objectContaining({ timestamp: expect.any(Date) })
-    );
+    expect(template).toBeDefined();
+    expect(template?.label).toBe('Runtime Test Template');
   });
 });

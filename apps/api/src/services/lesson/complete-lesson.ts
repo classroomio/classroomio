@@ -1,4 +1,3 @@
-import { getEventBus } from '@cio/sdk';
 import { upsertLessonCompletionService } from '@cio/core/services/lesson/lesson';
 import { getLessonById } from '@cio/db/queries/lesson';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
@@ -23,12 +22,5 @@ export async function completeLessonService({ userId, lessonId, orgId }: Complet
     throw new AppError('Lesson does not belong to this organization', ErrorCodes.FORBIDDEN, 403);
   }
 
-  const result = await upsertLessonCompletionService(lessonId, userId, true);
-  const eventBus = getEventBus();
-
-  void eventBus.dispatch('lesson.completed', { userId, lessonId, orgId }).catch((error) => {
-    console.error('Failed to dispatch plugin event for lesson.completed:', error);
-  });
-
-  return result;
+  return upsertLessonCompletionService(lessonId, userId, true);
 }
