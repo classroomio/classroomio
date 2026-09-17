@@ -5681,20 +5681,16 @@
       "courses_title": "Meine Kurse",
       "course_paths_title": "Kurspfade",
       "course_paths_description": "Kurse, die Teil eines Lernpfads sind, zeigen an, zu welchem ​​Pfad sie gehören.",
-      "currently_learning": "Aktuell im Lernprozess",
-      "paths_section_title": "Lernpfade",
-      "courses_section_title": "Weitere Kurse"
+      "currently_learning": "Aktuell im Lernprozess"
     },
     "empty": {
       "title": "Noch keine Lernpfade",
       "description": "Hier werden die strukturierten Lernpfade angezeigt, in denen Sie eingeschrieben sind. Melden Sie sich aus dem Katalog für einen Lernpfad an, um die Kurse der Reihe nach zu beginnen.",
       "back_to_paths": "Zurück zu den Lernpfaden",
-      "no_results_title": "Keine Lernpfade gefunden",
-      "no_results_description": "Versuchen Sie eine andere Suche oder löschen Sie Ihre Filter.",
       "path_not_found_title": "Lernpfad nicht gefunden",
       "path_not_found_description": "Dieser Lernpfad wurde möglicherweise deaktiviert oder entfernt.",
-      "courses_empty_title": "Keine Kurse entsprechen Ihrer Suche",
-      "courses_empty_description": "Versuchen Sie einen anderen Suchbegriff."
+      "library_no_results_title": "Nichts entspricht Ihren Filtern",
+      "library_no_results_description": "Probieren Sie einen anderen Filter aus oder löschen Sie die Filter, um alles zu sehen."
     },
     "explore": {
       "title": "Entdecke weitere Wege",
@@ -5715,11 +5711,6 @@
       "clear_all": "Alle löschen",
       "status": "Status",
       "all": "Alle",
-      "duration": "Dauer",
-      "duration_any": "Beliebig",
-      "duration_under4": "Unter 4 Std.",
-      "duration_4to10": "4–10 Std.",
-      "duration_10up": "Über 10 Std.",
       "grid_view": "Rasteransicht",
       "list_view": "Listenansicht",
       "results": "Ergebnisse",
@@ -5727,10 +5718,7 @@
       "difficulty_any": "Beliebig",
       "difficulty_beginner": "Anfänger",
       "difficulty_intermediate": "Mittelstufe",
-      "difficulty_advanced": "Fortgeschritten",
-      "duration_under1": "Unter 1 Stunde",
-      "duration_1to4": "1–4 Stunden",
-      "duration_4up": "4 Stunden und mehr"
+      "difficulty_advanced": "Fortgeschritten"
     },
     "row": {
       "completed": "Abgeschlossen"
@@ -5741,7 +5729,11 @@
       "part_of": "Teil von",
       "of": "von",
       "view_certificate": "Zertifikat anzeigen",
-      "certificate_earned": "Erworbenes Zertifikat"
+      "certificate_earned": "Erworbenes Zertifikat",
+      "lesson": "Lektion",
+      "lessons": "Unterricht",
+      "exercise": "Übung",
+      "exercises": "Übungen"
     },
     "hero": {
       "currently_learning": "Aktuell im Lernprozess",
@@ -5779,12 +5771,14 @@
       "continue_course": "Kurs fortsetzen",
       "review_course": "Kurs bewerten",
       "completed_label": "Abgeschlossen",
-      "weeks": "Wochen",
-      "time_left": "Verbleibend",
       "view_course": "Kurs ansehen",
       "view_more": "Mehr anzeigen",
       "explore_more_title": "Weitere Kurse entdecken",
-      "explore_more_tagline": "Einige Kurse, basierend auf Ihren aktuellen Kursen."
+      "explore_more_tagline": "Einige Kurse, basierend auf Ihren aktuellen Kursen.",
+      "type_self_paced": "Im eigenen Tempo",
+      "type_live_class": "Live-Klasse",
+      "type_compliance": "Compliance",
+      "type_public": "Öffentlich"
     }
   }
 }

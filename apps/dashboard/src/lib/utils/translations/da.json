@@ -5681,20 +5681,16 @@
       "courses_title": "Mine kurser",
       "course_paths_title": "Kursusstier",
       "course_paths_description": "Kurser, der er en del af et læringssti, viser, hvilket sti de tilhører.",
-      "currently_learning": "Lærer i øjeblikket",
-      "paths_section_title": "Læringsveje",
-      "courses_section_title": "Flere kurser"
+      "currently_learning": "Lærer i øjeblikket"
     },
     "empty": {
       "title": "Ingen læringsstier endnu",
       "description": "Strukturerede spor, du er tilmeldt, vises her. Tilmeld dig et sti fra kataloget for at starte læringen i rækkefølge.",
       "back_to_paths": "Tilbage til læringsstier",
-      "no_results_title": "Ingen stier fundet",
-      "no_results_description": "Prøv en anden søgning, eller ryd dine filtre.",
       "path_not_found_title": "Sti ikke fundet",
       "path_not_found_description": "Denne læringssti er muligvis blevet afpubliceret eller fjernet.",
-      "courses_empty_title": "Ingen kurser matcher din søgning",
-      "courses_empty_description": "Prøv et andet søgeord."
+      "library_no_results_title": "Intet matcher dine filtre",
+      "library_no_results_description": "Prøv et andet filter, eller ryd dem for at se alt."
     },
     "explore": {
       "title": "Udforsk flere stier",
@@ -5715,11 +5711,6 @@
       "clear_all": "Ryd alle",
       "status": "Status",
       "all": "Alle",
-      "duration": "Varighed",
-      "duration_any": "Enhver",
-      "duration_under4": "Under 4 timer",
-      "duration_4to10": "4 - 10 timer",
-      "duration_10up": "10 timer+",
       "grid_view": "Gittervisning",
       "list_view": "Listevisning",
       "results": "resultater",
@@ -5727,10 +5718,7 @@
       "difficulty_any": "Enhver",
       "difficulty_beginner": "Begynder",
       "difficulty_intermediate": "Mellemniveau",
-      "difficulty_advanced": "Avanceret",
-      "duration_under1": "Under 1 time",
-      "duration_1to4": "1 - 4 timer",
-      "duration_4up": "4 timer+"
+      "difficulty_advanced": "Avanceret"
     },
     "row": {
       "completed": "Afsluttet"
@@ -5741,7 +5729,11 @@
       "part_of": "Del af",
       "of": "af",
       "view_certificate": "Vis certifikat",
-      "certificate_earned": "Opnået certifikat"
+      "certificate_earned": "Opnået certifikat",
+      "lesson": "lektion",
+      "lessons": "lektioner",
+      "exercise": "øvelse",
+      "exercises": "øvelser"
     },
     "hero": {
       "currently_learning": "Under uddannelse",
@@ -5779,12 +5771,14 @@
       "continue_course": "Fortsæt kursus",
       "review_course": "Gennemgå kursus",
       "completed_label": "Afsluttet",
-      "weeks": "uger",
-      "time_left": "tilbage",
       "view_course": "Se kursus",
       "view_more": "Se mere",
       "explore_more_title": "Udforsk flere kurser",
-      "explore_more_tagline": "Et par kurser valgt baseret på, hvad du tager nu."
+      "explore_more_tagline": "Et par kurser valgt baseret på, hvad du tager nu.",
+      "type_self_paced": "Selv-tempo",
+      "type_live_class": "Live klasse",
+      "type_compliance": "Overholdelse",
+      "type_public": "Offentlig"
     }
   }
 }

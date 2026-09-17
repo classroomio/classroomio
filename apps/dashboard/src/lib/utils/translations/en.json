@@ -5501,6 +5501,10 @@
     "card": {
       "course": "course",
       "courses": "courses",
+      "lesson": "lesson",
+      "lessons": "lessons",
+      "exercise": "exercise",
+      "exercises": "exercises",
       "part_of": "Part of",
       "of": "of",
       "view_certificate": "View Certificate",
@@ -5511,12 +5515,14 @@
       "continue_course": "Continue Course",
       "review_course": "Review Course",
       "completed_label": "Completed",
-      "weeks": "weeks",
-      "time_left": "left",
       "view_course": "View Course",
       "view_more": "View more",
       "explore_more_title": "Explore More Courses",
-      "explore_more_tagline": "A few courses picked based on what you're taking now."
+      "explore_more_tagline": "A few courses picked based on what you're taking now.",
+      "type_self_paced": "Self-paced",
+      "type_live_class": "Live class",
+      "type_compliance": "Compliance",
+      "type_public": "Public"
     },
     "row": {
       "completed": "Completed"
@@ -5532,14 +5538,6 @@
       "difficulty_beginner": "Beginner",
       "difficulty_intermediate": "Intermediate",
       "difficulty_advanced": "Advanced",
-      "duration": "Duration",
-      "duration_any": "Any",
-      "duration_under4": "Under 4h",
-      "duration_4to10": "4 - 10h",
-      "duration_10up": "10h+",
-      "duration_under1": "Under 1h",
-      "duration_1to4": "1 - 4h",
-      "duration_4up": "4h+",
       "grid_view": "Grid view",
       "list_view": "List view",
       "results": "results"
@@ -5561,12 +5559,10 @@
       "title": "No learning paths yet",
       "description": "Structured tracks you're enrolled in will appear here. Enroll in a path from the catalog to start learning in order.",
       "back_to_paths": "Back to learning paths",
-      "no_results_title": "No paths found",
-      "no_results_description": "Try a different search or clear your filters.",
       "path_not_found_title": "Path not found",
       "path_not_found_description": "This learning path may have been unpublished or removed.",
-      "courses_empty_title": "No courses match your search",
-      "courses_empty_description": "Try a different search term."
+      "library_no_results_title": "Nothing matches your filters",
+      "library_no_results_description": "Try a different filter or clear them to see everything."
     },
     "my_learning": {
       "heading": "My Learning",
@@ -5575,11 +5571,9 @@
       "heading_courses": "My Courses",
       "courses_subtitle": "Every course you've started, wherever it lives.",
       "paths_title": "Learning Paths",
-      "courses_title": "My Courses",
+      "courses_title": "Courses",
       "course_paths_title": "Course paths",
       "course_paths_description": "Courses that are part of a learning path show which path they belong to.",
-      "paths_section_title": "Learning Paths",
-      "courses_section_title": "More Courses",
       "currently_learning": "Currently Learning"
     },
     "detail": {

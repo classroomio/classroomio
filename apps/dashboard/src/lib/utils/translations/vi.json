@@ -5681,20 +5681,16 @@
       "courses_title": "Các khóa học của tôi",
       "course_paths_title": "Các lộ trình khóa học",
       "course_paths_description": "Các khóa học thuộc một lộ trình học tập sẽ hiển thị lộ trình mà chúng thuộc về.",
-      "currently_learning": "Đang học",
-      "paths_section_title": "Lộ trình học tập",
-      "courses_section_title": "Thêm khóa học"
+      "currently_learning": "Đang học"
     },
     "empty": {
       "title": "Chưa có lộ trình học tập nào",
       "description": "Các lộ trình học tập có cấu trúc mà bạn đã đăng ký sẽ xuất hiện ở đây. Đăng ký một lộ trình từ danh mục để bắt đầu học theo thứ tự.",
       "back_to_paths": "Quay lại các lộ trình học tập",
-      "no_results_title": "Không tìm thấy lộ trình nào",
-      "no_results_description": "Hãy thử tìm kiếm khác hoặc xóa bộ lọc của bạn.",
       "path_not_found_title": "Không tìm thấy lộ trình",
       "path_not_found_description": "Lộ trình học tập này có thể đã bị hủy xuất bản hoặc bị xóa.",
-      "courses_empty_title": "Không có khóa học nào phù hợp với tìm kiếm của bạn",
-      "courses_empty_description": "Hãy thử một cụm từ tìm kiếm khác."
+      "library_no_results_title": "Không có gì phù hợp với bộ lọc của bạn",
+      "library_no_results_description": "Hãy thử một bộ lọc khác hoặc xóa chúng để xem mọi thứ."
     },
     "explore": {
       "title": "Khám phá thêm nhiều con đường",
@@ -5715,11 +5711,6 @@
       "clear_all": "Xóa tất cả",
       "status": "Trạng thái",
       "all": "Tất cả",
-      "duration": "Thời lượng",
-      "duration_any": "Bất kỳ",
-      "duration_under4": "Dưới 4 giờ",
-      "duration_4to10": "4 - 10 giờ",
-      "duration_10up": "Trên 10 giờ",
       "grid_view": "Chế độ xem lưới",
       "list_view": "Chế độ xem danh sách",
       "results": "Kết quả",
@@ -5727,10 +5718,7 @@
       "difficulty_any": "Bất kỳ",
       "difficulty_beginner": "Sơ cấp",
       "difficulty_intermediate": "Trung cấp",
-      "difficulty_advanced": "Nâng cao",
-      "duration_under1": "Dưới 1 giờ",
-      "duration_1to4": "1 - 4 giờ",
-      "duration_4up": "4 giờ trở lên"
+      "difficulty_advanced": "Nâng cao"
     },
     "row": {
       "completed": "Đã hoàn thành"
@@ -5741,7 +5729,11 @@
       "part_of": "Một phần của",
       "of": "của",
       "view_certificate": "Xem chứng chỉ",
-      "certificate_earned": "Chứng chỉ đã nhận được"
+      "certificate_earned": "Chứng chỉ đã nhận được",
+      "lesson": "bài học",
+      "lessons": "bài học",
+      "exercise": "tập thể dục",
+      "exercises": "bài tập"
     },
     "hero": {
       "currently_learning": "Đang học",
@@ -5779,12 +5771,14 @@
       "continue_course": "Tiếp tục khóa học",
       "review_course": "Ôn tập khóa học",
       "completed_label": "Đã hoàn thành",
-      "weeks": "tuần",
-      "time_left": "còn lại",
       "view_course": "Xem khóa học",
       "view_more": "Xem thêm",
       "explore_more_title": "Khám phá thêm các khóa học",
-      "explore_more_tagline": "Một vài khóa học được chọn dựa trên những gì bạn đang học hiện tại."
+      "explore_more_tagline": "Một vài khóa học được chọn dựa trên những gì bạn đang học hiện tại.",
+      "type_self_paced": "Tự nhịp độ",
+      "type_live_class": "Lớp học trực tiếp",
+      "type_compliance": "Tuân thủ",
+      "type_public": "công cộng"
     }
   }
 }

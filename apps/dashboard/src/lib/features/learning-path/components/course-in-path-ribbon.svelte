@@ -2,7 +2,7 @@
   import CheckIcon from '@lucide/svelte/icons/check';
   import LockIcon from '@lucide/svelte/icons/lock';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-  import LearningPathBadge from './learning-path-badge.svelte';
+  import { LearningPathBadge } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import type { CourseInPathNode } from './types';
 
@@ -33,7 +33,7 @@
 
 <div class="ui:bg-secondary/50 ui:border-border flex flex-wrap items-center gap-x-4 gap-y-2 border-y px-4 py-2.5">
   <a href={pathHref} onclick={onClick} class="group flex min-w-0 items-center gap-2">
-    <LearningPathBadge type="path" />
+    <LearningPathBadge label={$t('learningPath.badge.learning_path')} />
     <span class="ui:text-muted-foreground ui:group-hover:text-foreground min-w-0 truncate text-xs font-medium">
       {$t('learningPath.ribbon.path_label')}:
       <strong class="ui:text-foreground font-semibold">{pathName}</strong>

@@ -5681,20 +5681,16 @@
       "courses_title": "मेरे पाठ्यक्रम",
       "course_paths_title": "पाठ्यक्रम पथ",
       "course_paths_description": "किसी शिक्षण मार्ग का हिस्सा बनने वाले पाठ्यक्रम यह दर्शाते हैं कि वे किस मार्ग से संबंधित हैं।",
-      "currently_learning": "वर्तमान में सीख रहा हूँ",
-      "paths_section_title": "सीखने के रास्ते",
-      "courses_section_title": "अधिक पाठ्यक्रम"
+      "currently_learning": "वर्तमान में सीख रहा हूँ"
     },
     "empty": {
       "title": "अभी तक कोई लर्निंग पाथ उपलब्ध नहीं हैं।",
       "description": "यहां आपको वे संरचित पाठ्यक्रम दिखाई देंगे जिनमें आपने नामांकन किया है। क्रमबद्ध तरीके से सीखना शुरू करने के लिए कैटलॉग से एक पाठ्यक्रम में नामांकन करें।",
       "back_to_paths": "सीखने के रास्तों पर वापस जाएँ",
-      "no_results_title": "कोई मार्ग नहीं मिला",
-      "no_results_description": "कोई दूसरा सर्च तरीका आजमाएं या अपने फ़िल्टर साफ़ करें।",
       "path_not_found_title": "पथ नहीं मिला",
       "path_not_found_description": "यह शिक्षण मार्ग अप्रकाशित या हटा दिया गया हो सकता है।",
-      "courses_empty_title": "आपकी खोज से मेल खाने वाले कोई पाठ्यक्रम नहीं हैं।",
-      "courses_empty_description": "किसी दूसरे खोज शब्द का प्रयोग करके देखें।"
+      "library_no_results_title": "आपके फ़िल्टर से कुछ भी मेल नहीं खाता",
+      "library_no_results_description": "सब कुछ देखने के लिए एक अलग फ़िल्टर आज़माएँ या उन्हें साफ़ करें।"
     },
     "explore": {
       "title": "और भी रास्ते तलाशें",
@@ -5715,11 +5711,6 @@
       "clear_all": "सभी साफ करें",
       "status": "स्थिति",
       "all": "सभी",
-      "duration": "अवधि",
-      "duration_any": "कोई",
-      "duration_under4": "4 घंटे से कम",
-      "duration_4to10": "4 - 10 घंटे",
-      "duration_10up": "10 घंटे से अधिक",
       "grid_view": "जालक दृश्य",
       "list_view": "लिस्ट व्यू",
       "results": "परिणाम",
@@ -5727,10 +5718,7 @@
       "difficulty_any": "कोई भी",
       "difficulty_beginner": "शुरुआती",
       "difficulty_intermediate": "मध्यवर्ती",
-      "difficulty_advanced": "उन्नत",
-      "duration_under1": "1 घंटे से कम",
-      "duration_1to4": "1 - 4 घंटे",
-      "duration_4up": "4 घंटे से अधिक"
+      "difficulty_advanced": "उन्नत"
     },
     "row": {
       "completed": "पुरा होना।"
@@ -5741,7 +5729,11 @@
       "part_of": "का हिस्सा",
       "of": "का",
       "view_certificate": "प्रमाणपत्र देखें",
-      "certificate_earned": "प्राप्त प्रमाण पत्र"
+      "certificate_earned": "प्राप्त प्रमाण पत्र",
+      "lesson": "सबक",
+      "lessons": "सबक",
+      "exercise": "व्यायाम",
+      "exercises": "व्यायाम"
     },
     "hero": {
       "currently_learning": "वर्तमान में सीख रहा हूँ",
@@ -5779,12 +5771,14 @@
       "continue_course": "कोर्स जारी रखें",
       "review_course": "कोर्स की समीक्षा करें",
       "completed_label": "पूरा हो गया",
-      "weeks": "हफ़्ते",
-      "time_left": "बाकी",
       "view_course": "कोर्स देखें",
       "view_more": "और देखें",
       "explore_more_title": "और कोर्स देखें",
-      "explore_more_tagline": "आपके मौजूदा कोर्स के आधार पर कुछ कोर्स चुने गए हैं।"
+      "explore_more_tagline": "आपके मौजूदा कोर्स के आधार पर कुछ कोर्स चुने गए हैं।",
+      "type_self_paced": "स्वयं गतिमान",
+      "type_live_class": "लाइव क्लास",
+      "type_compliance": "अनुपालन",
+      "type_public": "सार्वजनिक"
     }
   }
 }

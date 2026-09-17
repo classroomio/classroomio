@@ -1,25 +1,23 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
-  import type { LearningPathStatus, PathDifficulty } from '../utils/types';
-  import type { LearningPathView, DurationFilter } from './types';
+  import type { PathDifficulty } from '../utils/types';
+  import type { CourseStatus, LearningPathView } from './types';
   import FilterPopover, { type FilterGroup } from './filter-popover.svelte';
   import ViewToggle from './view-toggle.svelte';
 
   interface Props {
-    status?: LearningPathStatus | 'ALL';
+    status?: CourseStatus | 'ALL';
     difficulty?: PathDifficulty | 'ALL';
-    duration?: DurationFilter | 'ALL';
     view?: LearningPathView;
   }
 
   let {
-    status = $bindable<LearningPathStatus | 'ALL'>('ALL'),
+    status = $bindable<CourseStatus | 'ALL'>('ALL'),
     difficulty = $bindable<PathDifficulty | 'ALL'>('ALL'),
-    duration = $bindable<DurationFilter | 'ALL'>('ALL'),
     view = $bindable<LearningPathView>('grid')
   }: Props = $props();
 
-  const selected = $derived<Record<string, string>>({ status, difficulty, duration });
+  const selected = $derived<Record<string, string>>({ status, difficulty });
 
   const groups = $derived<FilterGroup[]>([
     {
@@ -41,23 +39,12 @@
         { value: 'Intermediate', label: $t('learningPath.toolbar.difficulty_intermediate') },
         { value: 'Advanced', label: $t('learningPath.toolbar.difficulty_advanced') }
       ]
-    },
-    {
-      id: 'duration',
-      label: $t('learningPath.toolbar.duration'),
-      options: [
-        { value: 'ALL', label: $t('learningPath.toolbar.duration_any') },
-        { value: 'under-4', label: $t('learningPath.toolbar.duration_under4') },
-        { value: '4-10', label: $t('learningPath.toolbar.duration_4to10') },
-        { value: '10-up', label: $t('learningPath.toolbar.duration_10up') }
-      ]
     }
   ]);
 
   function handleChange(groupId: string, value: string) {
-    if (groupId === 'status') status = value as LearningPathStatus | 'ALL';
+    if (groupId === 'status') status = value as CourseStatus | 'ALL';
     if (groupId === 'difficulty') difficulty = value as PathDifficulty | 'ALL';
-    if (groupId === 'duration') duration = value as DurationFilter | 'ALL';
   }
 </script>
 

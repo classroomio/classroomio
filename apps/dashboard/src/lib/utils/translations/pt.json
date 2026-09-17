@@ -5681,20 +5681,16 @@
       "courses_title": "Meus cursos",
       "course_paths_title": "Percursos do curso",
       "course_paths_description": "Os cursos que fazem parte de um percurso de aprendizagem indicam a qual percurso pertencem.",
-      "currently_learning": "Atualmente aprendendo",
-      "paths_section_title": "Caminhos de aprendizagem",
-      "courses_section_title": "Mais cursos"
+      "currently_learning": "Atualmente aprendendo"
     },
     "empty": {
       "title": "Ainda não existem percursos de aprendizagem.",
       "description": "Os cursos estruturados nos quais você está matriculado aparecerão aqui. Matricule-se em um curso do catálogo para começar a aprender na ordem correta.",
       "back_to_paths": "Voltar aos percursos de aprendizagem",
-      "no_results_title": "Nenhum caminho encontrado",
-      "no_results_description": "Tente uma pesquisa diferente ou limpe seus filtros.",
       "path_not_found_title": "Caminho não encontrado",
       "path_not_found_description": "Este percurso de aprendizagem pode ter sido despublicado ou removido.",
-      "courses_empty_title": "Nenhum curso corresponde à sua pesquisa.",
-      "courses_empty_description": "Tente usar um termo de pesquisa diferente."
+      "library_no_results_title": "Nada corresponde aos seus filtros",
+      "library_no_results_description": "Experimente um filtro diferente ou limpe-os para ver tudo."
     },
     "explore": {
       "title": "Explore mais caminhos",
@@ -5715,11 +5711,6 @@
       "clear_all": "Limpar tudo",
       "status": "Status",
       "all": "Todos",
-      "duration": "Duração",
-      "duration_any": "Qualquer",
-      "duration_under4": "Menos de 4 horas",
-      "duration_4to10": "4 a 10 horas",
-      "duration_10up": "10h+",
       "grid_view": "Visualização em grade",
       "list_view": "Visualização em lista",
       "results": "resultados",
@@ -5727,10 +5718,7 @@
       "difficulty_any": "Qualquer",
       "difficulty_beginner": "Iniciante",
       "difficulty_intermediate": "Intermediário",
-      "difficulty_advanced": "Avançado",
-      "duration_under1": "Menos de 1 hora",
-      "duration_1to4": "1 a 4 horas",
-      "duration_4up": "4 horas ou mais"
+      "difficulty_advanced": "Avançado"
     },
     "row": {
       "completed": "Concluído"
@@ -5741,7 +5729,11 @@
       "part_of": "Parte de",
       "of": "de",
       "view_certificate": "Ver certificado",
-      "certificate_earned": "Certificado obtido"
+      "certificate_earned": "Certificado obtido",
+      "lesson": "lição",
+      "lessons": "lições",
+      "exercise": "exercício",
+      "exercises": "exercícios"
     },
     "hero": {
       "currently_learning": "Atualmente aprendendo",
@@ -5779,12 +5771,14 @@
       "continue_course": "Continuar o curso",
       "review_course": "Revisar o curso",
       "completed_label": "Concluído",
-      "weeks": "Semanas",
-      "time_left": "Restam",
       "view_course": "Ver curso",
       "view_more": "Ver mais",
       "explore_more_title": "Explorar mais cursos",
-      "explore_more_tagline": "Alguns cursos selecionados com base no que você está fazendo agora."
+      "explore_more_tagline": "Alguns cursos selecionados com base no que você está fazendo agora.",
+      "type_self_paced": "Individualizado",
+      "type_live_class": "Aula ao vivo",
+      "type_compliance": "Conformidade",
+      "type_public": "Público"
     }
   }
 }

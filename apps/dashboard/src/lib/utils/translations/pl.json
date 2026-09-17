@@ -5681,20 +5681,16 @@
       "courses_title": "Moje kursy",
       "course_paths_title": "Ścieżki kursów",
       "course_paths_description": "Kursy, które są częścią ścieżki edukacyjnej, pokazują, do której ścieżki należą.",
-      "currently_learning": "Aktualnie się uczysz",
-      "paths_section_title": "Ścieżki uczenia się",
-      "courses_section_title": "Więcej kursów"
+      "currently_learning": "Aktualnie się uczysz"
     },
     "empty": {
       "title": "Brak ścieżek edukacyjnych",
       "description": "Tutaj pojawią się ścieżki strukturalne, na które jesteś zapisany. Zapisz się na ścieżkę z katalogu, aby rozpocząć naukę w kolejności.",
       "back_to_paths": "Powrót do ścieżek edukacyjnych",
-      "no_results_title": "Nie znaleziono ścieżek",
-      "no_results_description": "Spróbuj innego wyszukiwania lub wyczyść filtry.",
       "path_not_found_title": "Nie znaleziono ścieżki",
       "path_not_found_description": "Ta ścieżka edukacyjna mogła zostać wycofana z publikacji lub usunięta.",
-      "courses_empty_title": "Brak kursów pasujących do Twojego wyszukiwania",
-      "courses_empty_description": "Spróbuj innego hasła wyszukiwania."
+      "library_no_results_title": "Nic nie pasuje do Twoich filtrów",
+      "library_no_results_description": "Wypróbuj inny filtr lub wyczyść go, aby zobaczyć wszystko."
     },
     "explore": {
       "title": "Odkryj więcej ścieżek",
@@ -5715,11 +5711,6 @@
       "clear_all": "Wyczyść wszystko",
       "status": "Status",
       "all": "Wszystkie",
-      "duration": "Czas trwania",
-      "duration_any": "Dowolny",
-      "duration_under4": "Poniżej 4 godz.",
-      "duration_4to10": "4 - 10 godz.",
-      "duration_10up": "10 godz.+",
       "grid_view": "Widok siatki",
       "list_view": "Widok listy",
       "results": "wyniki",
@@ -5727,10 +5718,7 @@
       "difficulty_any": "Dowolny",
       "difficulty_beginner": "Początkujący",
       "difficulty_intermediate": "Średniozaawansowany",
-      "difficulty_advanced": "Zaawansowany",
-      "duration_under1": "Poniżej 1 godz.",
-      "duration_1to4": "1–4 godz.",
-      "duration_4up": "4 godz.+"
+      "difficulty_advanced": "Zaawansowany"
     },
     "row": {
       "completed": "Ukończono"
@@ -5741,7 +5729,11 @@
       "part_of": "Część",
       "of": "z",
       "view_certificate": "Wyświetl certyfikat",
-      "certificate_earned": "Zdobyty certyfikat"
+      "certificate_earned": "Zdobyty certyfikat",
+      "lesson": "lekcja",
+      "lessons": "lekcje",
+      "exercise": "ćwiczenia",
+      "exercises": "ćwiczenia"
     },
     "hero": {
       "currently_learning": "Aktualnie się uczę",
@@ -5779,12 +5771,14 @@
       "continue_course": "Kontynuuj kurs",
       "review_course": "Przejrzyj kurs",
       "completed_label": "Ukończono",
-      "weeks": "tygodni",
-      "time_left": "pozostało",
       "view_course": "Wyświetl kurs",
       "view_more": "Wyświetl więcej",
       "explore_more_title": "Odkryj więcej kursów",
-      "explore_more_tagline": "Kilka kursów wybranych na podstawie tego, co aktualnie robisz."
+      "explore_more_tagline": "Kilka kursów wybranych na podstawie tego, co aktualnie robisz.",
+      "type_self_paced": "We własnym tempie",
+      "type_live_class": "Zajęcia na żywo",
+      "type_compliance": "Zgodność",
+      "type_public": "Publiczne"
     }
   }
 }
