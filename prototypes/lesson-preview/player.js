@@ -147,7 +147,10 @@
     const previews = previewLessons(state.lessons);
     const current = previews.find((lesson) => lesson.id === state.currentId) || previews[0];
     const more = remaining(state.lessons, current?.id);
-    const lockedLeft = (state.lessons || data.lessons).filter((lesson) => !lesson.preview).length;
+    const lockedLeft = Math.max(
+      (data.course.lessonCount || (state.lessons || data.lessons).length) - previews.length,
+      0
+    );
 
     return `
       <div class="pv-rail">
@@ -209,7 +212,13 @@
     function render() {
       const lesson = current();
       root.innerHTML = `${renderStage(lesson, state)}${options.hideRail ? '' : renderRail(state)}`;
-      state.onChange({ ...state, lesson });
+      queueMicrotask(() => {
+        try {
+          state.onChange({ ...state, lesson });
+        } catch (error) {
+          console.error(error);
+        }
+      });
     }
 
     function select(id, play) {

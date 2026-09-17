@@ -394,9 +394,9 @@
       }
 
       function highlightCurriculum() {
-        const id = player.getState().currentId;
+        const currentId = player.getState().currentId;
         document.querySelectorAll('.curr-row').forEach((row) => {
-          row.style.background = row.getAttribute('data-lesson') === id ? 'var(--landing-accent-soft)' : '';
+          row.style.background = row.getAttribute('data-lesson') === currentId ? 'var(--landing-accent-soft)' : '';
         });
       }
 
