@@ -2448,7 +2448,8 @@
             "watch_videos_required": "Selecione pelo menos um vídeo para rastreamento de visualização.",
             "students_only_note": "Estas regras aplicam-se apenas aos alunos. Você pode pré-visualizar e navegar livremente ao ensinar.",
             "watch_videos_empty": "A exibição de vídeo rastreia apenas os vídeos enviados. As incorporações externas e do YouTube não podem ser rastreadas, portanto esta lição não pode ser concluída automaticamente e os alunos não podem marcá-la como concluída. Carregue o vídeo na guia Vídeo ou defina a regra de conclusão como Manual.",
-            "watch_videos_no_uploads_title": "Nenhum vídeo enviado nesta lição"
+            "watch_videos_no_uploads_title": "Nenhum vídeo enviado nesta lição",
+            "watch_videos_learn_more": "Saber mais"
           }
         },
         "watch_progress": {

@@ -2277,6 +2277,7 @@
             "watch_videos_heading": "Videos to enforce",
             "watch_videos_helper": "Only uploaded videos can be enforced. YouTube and external embeds cannot be tracked.",
             "watch_videos_empty": "Video watch only tracks uploaded videos. YouTube and external embeds can't be tracked, so this lesson can't complete automatically and students can't mark it complete. Upload the video in the Video tab, or set the completion rule to Manual.",
+            "watch_videos_learn_more": "Learn more",
             "watch_videos_no_uploads_title": "No uploaded videos in this lesson",
             "watch_videos_required": "Select at least one video when using video watch.",
             "students_only_note": "These rules apply to students only. You can preview and navigate freely while teaching."

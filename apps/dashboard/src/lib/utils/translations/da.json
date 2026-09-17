@@ -2448,7 +2448,8 @@
             "watch_videos_required": "Vælg mindst én video ved videoafspilning.",
             "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser.",
             "watch_videos_empty": "Videoafspilning sporer kun uploadede videoer. YouTube og eksterne indlejringer kan ikke spores, så denne lektion kan ikke fuldføres automatisk, og eleverne kan ikke markere den som fuldført. Upload videoen på fanen Video, eller indstil fuldførelsesreglen til Manuel.",
-            "watch_videos_no_uploads_title": "Ingen uploadede videoer i denne lektion"
+            "watch_videos_no_uploads_title": "Ingen uploadede videoer i denne lektion",
+            "watch_videos_learn_more": "Få flere oplysninger"
           }
         },
         "watch_progress": {

@@ -2448,7 +2448,8 @@
             "watch_videos_required": "Wybierz co najmniej jeden film przy egzekwowaniu obejrzenia.",
             "students_only_note": "Te zasady dotyczą tylko uczniów. Jako nauczyciel możesz swobodnie przeglądać i nawigować.",
             "watch_videos_empty": "Śledzenie oglądania obejmuje tylko przesłane filmy. Nie można śledzić filmów z YouTube ani filmów osadzonych na zewnętrznych stronach, więc ta lekcja nie może zostać ukończona automatycznie, a uczniowie nie mogą oznaczyć jej jako ukończonej. Prześlij wideo na karcie Wideo lub ustaw regułę ukończenia na Ręcznie.",
-            "watch_videos_no_uploads_title": "Brak przesłanych filmów wideo w tej lekcji"
+            "watch_videos_no_uploads_title": "Brak przesłanych filmów wideo w tej lekcji",
+            "watch_videos_learn_more": "Dowiedz się więcej"
           }
         },
         "watch_progress": {

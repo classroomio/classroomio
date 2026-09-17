@@ -2448,7 +2448,8 @@
             "watch_videos_required": "Wählen Sie mindestens ein Video für die Video-Wiedergabeüberwachung.",
             "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren.",
             "watch_videos_empty": "Bei der Videowiedergabe werden nur hochgeladene Videos verfolgt. YouTube- und externe Einbettungen können nicht nachverfolgt werden, daher kann diese Lektion nicht automatisch abgeschlossen werden und die Schüler können sie nicht als abgeschlossen markieren. Laden Sie das Video auf der Registerkarte „Video“ hoch oder stellen Sie die Abschlussregel auf „Manuell“ ein.",
-            "watch_videos_no_uploads_title": "In dieser Lektion wurden keine Videos hochgeladen"
+            "watch_videos_no_uploads_title": "In dieser Lektion wurden keine Videos hochgeladen",
+            "watch_videos_learn_more": "Erfahren Sie mehr"
           }
         },
         "watch_progress": {

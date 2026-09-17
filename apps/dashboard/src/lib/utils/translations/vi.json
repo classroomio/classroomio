@@ -2448,7 +2448,8 @@
             "watch_videos_required": "Chọn ít nhất một video khi dùng theo dõi xem.",
             "students_only_note": "Các quy tắc này chỉ áp dụng cho học viên. Giảng viên có thể xem trước và điều hướng tự do.",
             "watch_videos_empty": "Xem video chỉ theo dõi các video đã tải lên. Không thể theo dõi nội dung nhúng trên YouTube và bên ngoài, vì vậy bài học này không thể tự động hoàn thành và học sinh không thể đánh dấu bài học là hoàn thành. Tải video lên trong tab Video hoặc đặt quy tắc hoàn thành thành Thủ công.",
-            "watch_videos_no_uploads_title": "Không có video nào được tải lên trong bài học này"
+            "watch_videos_no_uploads_title": "Không có video nào được tải lên trong bài học này",
+            "watch_videos_learn_more": "Tìm hiểu thêm"
           }
         },
         "watch_progress": {

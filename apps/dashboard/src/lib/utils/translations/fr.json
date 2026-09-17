@@ -2448,7 +2448,8 @@
             "watch_videos_required": "Sélectionnez au moins une vidéo pour le suivi de visionnage.",
             "students_only_note": "Ces règles s'appliquent aux étudiants uniquement. Vous pouvez prévisualiser et naviguer librement en mode enseignant.",
             "watch_videos_empty": "La surveillance vidéo ne suit que les vidéos téléversées. YouTube et les intégrations externes ne peuvent pas être suivis. Cette leçon ne peut donc pas se terminer automatiquement et les élèves ne peuvent pas la marquer comme terminée. Téléversez la vidéo dans l'onglet Vidéo ou définissez la règle d'achèvement sur Manuel.",
-            "watch_videos_no_uploads_title": "Aucune vidéo téléversée dans cette leçon"
+            "watch_videos_no_uploads_title": "Aucune vidéo téléversée dans cette leçon",
+            "watch_videos_learn_more": "Apprendre encore plus"
           }
         },
         "watch_progress": {
