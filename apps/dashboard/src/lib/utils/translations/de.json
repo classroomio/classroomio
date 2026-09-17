@@ -2511,13 +2511,7 @@
           "link_copied": "Link kopiert"
         },
         "student_share_your_knowledge": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
-        "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
-        "activity_type": {
-          "label": "Aktivitätstyp",
-          "description": "Wählen Sie aus, ob es sich um eine Standardlektion oder eine interaktive Plugin-Aktivität handelt.",
-          "standard_label": "Standardlektion",
-          "standard_description": "Notizen, Folien, Videos und Dokumente."
-        }
+        "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei."
       },
       "news_feed": {
         "heading": "Newsfeed",

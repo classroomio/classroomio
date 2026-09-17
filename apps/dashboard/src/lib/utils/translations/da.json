@@ -2511,13 +2511,7 @@
           "link_copied": "Linket er kopieret"
         },
         "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
-        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
-        "activity_type": {
-          "label": "Aktivitetstype",
-          "description": "Vælg, om dette er en standardlektion eller en interaktiv plugin-aktivitet.",
-          "standard_label": "Standard lektion",
-          "standard_description": "Noter, dias, videoer og dokumenter."
-        }
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
       },
       "news_feed": {
         "heading": "Nyhedsfeed",

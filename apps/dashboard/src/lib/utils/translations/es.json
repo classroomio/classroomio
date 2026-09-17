@@ -2511,13 +2511,7 @@
           "link_copied": "Enlace copiado"
         },
         "student_share_your_knowledge": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde.",
-        "student_body_content": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde.",
-        "activity_type": {
-          "label": "Tipo de actividad",
-          "description": "Seleccione si se trata de una lección estándar o una actividad complementaria interactiva.",
-          "standard_label": "Lección estándar",
-          "standard_description": "Notas, diapositivas, vídeos y documentos."
-        }
+        "student_body_content": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde."
       },
       "news_feed": {
         "heading": "Noticias",

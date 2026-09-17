@@ -2511,13 +2511,7 @@
           "link_copied": "Đã sao chép liên kết"
         },
         "student_share_your_knowledge": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
-        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
-        "activity_type": {
-          "label": "Loại hoạt động",
-          "description": "Chọn xem đây là bài học tiêu chuẩn hay hoạt động bổ trợ tương tác.",
-          "standard_label": "Bài học chuẩn",
-          "standard_description": "Ghi chú, slide, video và tài liệu."
-        }
+        "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau."
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

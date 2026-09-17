@@ -2511,13 +2511,7 @@
           "link_copied": "Link copiado"
         },
         "student_share_your_knowledge": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
-        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
-        "activity_type": {
-          "label": "Tipo de atividade",
-          "description": "Selecione se esta é uma lição padrão ou uma atividade de plug-in interativa.",
-          "standard_label": "Lição padrão",
-          "standard_description": "Notas, slides, vídeos e documentos."
-        }
+        "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde."
       },
       "news_feed": {
         "heading": "Feed de notícias",

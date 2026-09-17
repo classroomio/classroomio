@@ -2511,13 +2511,7 @@
           "link_copied": "Link skopiowany"
         },
         "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
-        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
-        "activity_type": {
-          "label": "Typ aktywności",
-          "description": "Wybierz, czy jest to lekcja standardowa, czy interaktywna wtyczka.",
-          "standard_label": "Standardowa lekcja",
-          "standard_description": "Notatki, slajdy, filmy i dokumenty."
-        }
+        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później."
       },
       "news_feed": {
         "heading": "Kanał wiadomości",

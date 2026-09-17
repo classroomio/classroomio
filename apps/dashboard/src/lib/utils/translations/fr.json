@@ -2511,13 +2511,7 @@
           "link_copied": "Lien copié"
         },
         "student_share_your_knowledge": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard.",
-        "student_body_content": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard.",
-        "activity_type": {
-          "label": "Type d'activité",
-          "description": "Sélectionnez s'il s'agit d'une leçon standard ou d'une activité de plug-in interactive.",
-          "standard_label": "Leçon standard",
-          "standard_description": "Notes, diapositives, vidéos et documents."
-        }
+        "student_body_content": "Aucune leçon n'a encore été ajoutée à ce cours. Veuillez réessayer plus tard."
       },
       "news_feed": {
         "heading": "Fil d'actualité",
