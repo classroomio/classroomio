@@ -137,8 +137,10 @@ window.LessonPreview = {
       enrollPromptTitle: 'Enjoying the preview?',
       enrollPromptBody: (left) =>
         left > 0
-          ? `There are ${left} more lessons after this. Enroll to keep going — your place is saved.`
+          ? `There are ${left} more preview lessons after this. Enroll to keep going.`
           : 'That was the last free preview. Enroll to unlock the rest of the course.',
+      lockedPromptTitle: 'This lesson is locked',
+      lockedPromptBody: 'Preview lessons are open above. Enroll to unlock the rest of the curriculum.',
       playlistTitle: 'Lessons you can preview',
       articleEyebrow: 'Lesson notes',
       figureEyebrow: 'Diagram',
@@ -185,8 +187,11 @@ window.LessonPreview = {
       enrollPromptTitle: "L'aperçu vous plaît ?",
       enrollPromptBody: (left) =>
         left > 0
-          ? `Il reste ${left} leçons après celle-ci. Inscrivez-vous pour continuer — votre place est enregistrée.`
+          ? `Il reste ${left} leçons en aperçu après celle-ci. Inscrivez-vous pour continuer.`
           : "C'était le dernier aperçu gratuit. Inscrivez-vous pour débloquer le reste du cours.",
+      lockedPromptTitle: 'Cette leçon est verrouillée',
+      lockedPromptBody:
+        'Les leçons en aperçu sont ouvertes plus haut. Inscrivez-vous pour débloquer le reste du programme.',
       playlistTitle: 'Leçons en aperçu',
       articleEyebrow: 'Notes de leçon',
       figureEyebrow: 'Schéma',

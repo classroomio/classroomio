@@ -126,14 +126,15 @@
   function renderOverlay(state, lesson) {
     if (!state.gateOpen) return '<div class="pv-overlay" data-role="overlay"></div>';
     const copy = t(state.lang);
+    const locked = state.gateKind === 'locked';
     const previews = previewLessons(state.lessons);
     const index = previews.findIndex((item) => item.id === lesson.id);
     const left = Math.max(previews.length - index - 1, 0);
     return `
       <div class="pv-overlay open" data-role="overlay">
         <div class="box">
-          <h4>${copy.enrollPromptTitle}</h4>
-          <p>${copy.enrollPromptBody(left)}</p>
+          <h4>${locked ? copy.lockedPromptTitle : copy.enrollPromptTitle}</h4>
+          <p>${locked ? copy.lockedPromptBody : copy.enrollPromptBody(left)}</p>
           <div class="actions">
             <button class="lp-btn lp-btn-primary btn btn-primary" type="button" data-action="cta">${ctaLabel(state.isFree, state.lang)}</button>
             <button class="lp-btn lp-btn-secondary btn btn-outline" type="button" data-action="dismiss">${copy.close}</button>
@@ -189,6 +190,7 @@
       currentId: options.currentId || data.course.heroLessonId,
       playing: Boolean(options.playing),
       gateOpen: false,
+      gateKind: 'end',
       lessons: options.lessons || data.lessons,
       onCta: options.onCta || function () {},
       onChange: options.onChange || function () {}
@@ -226,6 +228,7 @@
       if (!lesson) return;
       state.currentId = id;
       state.gateOpen = false;
+      state.gateKind = 'end';
       state.playing = Boolean(play) && lesson.kind === 'video';
       render();
     }
@@ -252,6 +255,7 @@
         if (next) select(next.id, state.playing);
         else if (last) {
           state.playing = false;
+          state.gateKind = 'end';
           state.gateOpen = true;
           render();
         }
@@ -284,8 +288,9 @@
         render();
       },
       select,
-      openGate() {
+      openGate(kind) {
         state.playing = false;
+        state.gateKind = kind === 'locked' ? 'locked' : 'end';
         state.gateOpen = true;
         render();
       }

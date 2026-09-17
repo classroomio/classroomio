@@ -344,14 +344,13 @@
         document.getElementById('costLabel').textContent = copy().costLabel;
         document.querySelector('#costSeg [data-cost="paid"]').textContent = copy().paid;
         document.querySelector('#costSeg [data-cost="free"]').textContent = copy().free;
-        const previews = LessonPreviewPlayer.previewLessons();
         document.getElementById('previewCount').textContent = copy().previewCount(
           previews.length,
-          LessonPreview.lessons.length
+          LessonPreview.course.lessonCount
         );
         document.getElementById('currLead').textContent = copy().previewCount(
           previews.length,
-          LessonPreview.lessons.length
+          LessonPreview.course.lessonCount
         );
         const cta = LessonPreviewPlayer.ctaLabel(isFree, lang);
         document.getElementById('heroCta').textContent = cta;
@@ -410,7 +409,7 @@
           document.getElementById('player').scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
         }
-        player.openGate();
+        player.openGate('locked');
         document.getElementById('player').scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
 
