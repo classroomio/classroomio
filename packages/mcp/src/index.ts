@@ -4,6 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { getConfig } from './config';
 import { registerCourseDraftTools } from './tools/course-drafts';
+import { registerCourseMemberTools } from './tools/course-members';
 
 async function main() {
   const config = getConfig();
@@ -14,6 +15,7 @@ async function main() {
   });
 
   registerCourseDraftTools(server, apiClient);
+  registerCourseMemberTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

@@ -16,7 +16,8 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { ZCourseUserAnalyticsParam, ZCourseUserAnalyticsQuery } from '@cio/utils/validation/course';
-import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { getUserCourseAnalytics } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
@@ -29,7 +30,8 @@ export const membersRouter = new Hono()
    */
   .get(
     '/',
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:member:read']),
     zValidator('param', ZCourseMembersParam),
     zValidator('query', ZCourseMembersQuery),
     async (c) => {
@@ -65,7 +67,8 @@ export const membersRouter = new Hono()
    */
   .post(
     '/',
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:member:write']),
     zValidator('param', ZCourseMembersParam),
     zValidator('json', ZAddCourseMembers),
     async (c) => {
@@ -94,7 +97,8 @@ export const membersRouter = new Hono()
    */
   .put(
     '/:memberId',
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:member:write']),
     zValidator('param', ZCourseMembersMemberParam),
     zValidator('json', ZUpdateCourseMember),
     async (c) => {
@@ -121,22 +125,28 @@ export const membersRouter = new Hono()
    * Deletes a course member
    * Requires authentication and course team membership (admin/tutor role)
    */
-  .delete('/:memberId', courseTeamMemberMiddleware, zValidator('param', ZCourseMembersMemberParam), async (c) => {
-    try {
-      const { courseId, memberId } = c.req.valid('param');
-      const member = await deleteMember(courseId, memberId);
+  .delete(
+    '/:memberId',
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:member:write']),
+    zValidator('param', ZCourseMembersMemberParam),
+    async (c) => {
+      try {
+        const { courseId, memberId } = c.req.valid('param');
+        const member = await deleteMember(courseId, memberId);
 
-      return c.json(
-        {
-          success: true,
-          data: member
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to delete course member');
+        return c.json(
+          {
+            success: true,
+            data: member
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete course member');
+      }
     }
-  })
+  )
   /**
    * POST /course/:courseId/members/:memberId/reset-progress
    * Clears all learner progress for a course member while keeping them enrolled.
@@ -144,13 +154,14 @@ export const membersRouter = new Hono()
    */
   .post(
     '/:memberId/reset-progress',
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:member:write']),
     zValidator('param', ZResetCourseMemberProgressParam),
     async (c) => {
       try {
-        const user = c.get('user')!;
+        const actorId = c.get('actorId')!;
         const { courseId, memberId } = c.req.valid('param');
-        const summary = await resetMemberCourseProgress(courseId, memberId, user.id);
+        const summary = await resetMemberCourseProgress(courseId, memberId, actorId);
 
         return c.json(
           {
@@ -171,7 +182,8 @@ export const membersRouter = new Hono()
    */
   .get(
     '/:userId/analytics',
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:member:read']),
     zValidator('param', ZCourseUserAnalyticsParam),
     zValidator('query', ZCourseUserAnalyticsQuery),
     async (c) => {

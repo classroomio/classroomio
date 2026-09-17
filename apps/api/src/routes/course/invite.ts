@@ -18,8 +18,8 @@ import {
 } from '@api/services/invite-link';
 
 import { Hono } from '@api/utils/hono';
-import { authMiddleware } from '@api/middlewares/auth';
-import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { extractClientIp } from '@api/utils/redis/key-generators';
 import { handleError } from '@api/utils/errors';
@@ -32,7 +32,12 @@ const createInviteRateLimit = createRateLimiter({
   message: 'Too many invite creation attempts. Please try again later.',
   keyGenerator: (c) => {
     const user = c.get('user');
-    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    const automationKey = c.get('automationKey');
+    const actor = user?.id
+      ? `user:${user.id}`
+      : automationKey
+        ? `key:${automationKey.id}`
+        : `ip:${extractClientIp(c)}`;
     return `course_invite_create:${actor}:${c.req.param('courseId')}`;
   }
 });
@@ -42,40 +47,46 @@ export const invitesRouter = new Hono()
    * GET /course/:courseId/invites
    * Lists secure invites for a course (team/admin only)
    */
-  .get('/', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZCourseInviteParam), async (c) => {
-    try {
-      const { courseId } = c.req.valid('param');
-      const invites = await listStudentInvites(courseId);
+  .get(
+    '/',
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:invite:read']),
+    zValidator('param', ZCourseInviteParam),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const invites = await listStudentInvites(courseId);
 
-      return c.json(
-        {
-          success: true,
-          data: invites
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to list invites');
+        return c.json(
+          {
+            success: true,
+            data: invites
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to list invites');
+      }
     }
-  })
+  )
   /**
    * POST /course/:courseId/invites
    * Creates a secure student invite token for a course (team/admin only)
    */
   .post(
     '/',
-    authMiddleware,
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:invite:write']),
     createInviteRateLimit,
     zValidator('param', ZCourseInviteParam),
     zValidator('json', ZCreateCourseInvite),
     async (c) => {
       try {
-        const user = c.get('user')!;
+        const actorId = c.get('actorId')!;
         const { courseId } = c.req.valid('param');
         const payload = c.req.valid('json');
 
-        const invite = await createStudentInvite(courseId, user.id, payload);
+        const invite = await createStudentInvite(courseId, actorId, payload);
 
         return c.json(
           {
@@ -93,31 +104,37 @@ export const invitesRouter = new Hono()
    * GET /course/:courseId/invites/link
    * Returns the course's shareable join link, or null if one was never created.
    */
-  .get('/link', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZCourseInviteParam), async (c) => {
-    try {
-      const { courseId } = c.req.valid('param');
-      const invite = await fetchInviteLinkForResource('COURSE', courseId);
+  .get(
+    '/link',
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:invite:read']),
+    zValidator('param', ZCourseInviteParam),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const invite = await fetchInviteLinkForResource('COURSE', courseId);
 
-      return c.json({ success: true, data: invite }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to load course invite link');
+        return c.json({ success: true, data: invite }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load course invite link');
+      }
     }
-  })
+  )
   /**
    * POST /course/:courseId/invites/link
    * Returns the course's shareable join link, creating it on first call.
    */
   .post(
     '/link',
-    authMiddleware,
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:invite:write']),
     createInviteRateLimit,
     zValidator('param', ZCourseInviteParam),
     async (c) => {
       try {
-        const user = c.get('user')!;
+        const actorId = c.get('actorId')!;
         const { courseId } = c.req.valid('param');
-        const invite = await getOrCreateInviteLinkForResource('COURSE', courseId, user.id);
+        const invite = await getOrCreateInviteLinkForResource('COURSE', courseId, actorId);
 
         return c.json({ success: true, data: invite }, 200);
       } catch (error) {
@@ -131,16 +148,16 @@ export const invitesRouter = new Hono()
    */
   .patch(
     '/link',
-    authMiddleware,
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:invite:write']),
     zValidator('param', ZCourseInviteParam),
     zValidator('json', ZToggleInviteLink),
     async (c) => {
       try {
-        const user = c.get('user')!;
+        const actorId = c.get('actorId')!;
         const { courseId } = c.req.valid('param');
         const { isRevoked } = c.req.valid('json');
-        const invite = await toggleInviteLinkForResource('COURSE', courseId, isRevoked, user.id);
+        const invite = await toggleInviteLinkForResource('COURSE', courseId, isRevoked, actorId);
 
         return c.json({ success: true, data: invite }, 200);
       } catch (error) {
@@ -154,14 +171,14 @@ export const invitesRouter = new Hono()
    */
   .post(
     '/:inviteId/revoke',
-    authMiddleware,
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:invite:write']),
     zValidator('param', ZCourseInviteRevokeParam),
     async (c) => {
       try {
         const { courseId, inviteId } = c.req.valid('param');
-        const user = c.get('user')!;
-        const revoked = await revokeStudentInvite(courseId, inviteId, user.id);
+        const actorId = c.get('actorId')!;
+        const revoked = await revokeStudentInvite(courseId, inviteId, actorId);
 
         return c.json(
           {
@@ -181,8 +198,8 @@ export const invitesRouter = new Hono()
    */
   .get(
     '/:inviteId/audit',
-    authMiddleware,
-    courseTeamMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:invite:read']),
     zValidator('param', ZCourseInviteAuditParam),
     async (c) => {
       try {

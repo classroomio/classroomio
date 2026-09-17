@@ -13,7 +13,10 @@ export const courseTeamMemberOrAutomationKeyMiddleware =
       const automationKey = c.get('automationKey');
 
       if (!automationKey) {
-        return courseTeamMemberMiddleware(c, next);
+        return courseTeamMemberMiddleware(c, async () => {
+          c.set('actorId', c.get('user')!.id);
+          return next();
+        });
       }
 
       if (!organizationApiKeyHasScopes(automationKey.scopes ?? [], requiredScopes)) {
