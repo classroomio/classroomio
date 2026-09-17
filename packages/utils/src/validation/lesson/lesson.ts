@@ -80,6 +80,15 @@ export const ZLessonGetParam = z.object({
 });
 export type TLessonGetParam = z.infer<typeof ZLessonGetParam>;
 
+export const ZAttachLessonVideo = z.object({
+  fileKey: z.string().min(1),
+  downloadUrl: z.url(),
+  fileName: z.string().min(1),
+  fileType: z.string().min(1),
+  fileSize: z.number().int().min(0).optional()
+});
+export type TAttachLessonVideo = z.infer<typeof ZAttachLessonVideo>;
+
 export const ZLessonListQuery = z.object({
   sectionId: z.string().optional(),
   courseId: z.string().min(1)
