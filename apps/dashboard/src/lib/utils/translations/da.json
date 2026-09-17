@@ -2364,7 +2364,87 @@
             "slide": {
               "title": "Dias",
               "slide_link": "Diaslink",
-              "helper_message": "Du kan integrere Google Slides eller Canva Presentation"
+              "helper_message": "Du kan integrere Google Slides eller Canva Presentation",
+              "button": "Tilføj dias",
+              "remove_slide": "Fjern dias",
+              "menu_aria": "Dias-handlinger",
+              "empty_title": "Ingen dias endnu",
+              "empty_description": "Integrer Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare eller Beautiful.ai",
+              "add_slide": {
+                "title": "Tilføj en dias",
+                "search": "Søg platforme",
+                "empty_prompt": "Vælg en platform for trin-for-trin vejledning og indsæt din embed-kode.",
+                "embed_code": "Indsæt embed-kode",
+                "embed_placeholder": "Indsæt den fulde iframe embed-kode her",
+                "how_to_embed": "Sådan integrerer du",
+                "preview": "Forhåndsvisning",
+                "embed_ready": "Embed klar",
+                "invalid_embed": "Indsæt den fulde iframe embed-kode fra denne platform.",
+                "unsupported": "Den embed kommer fra en platform, vi endnu ikke understøtter."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "Fil → Del → Udgiv på nettet → Integrer",
+                  "step_1": "Åbn din præsentation og vælg Fil → Del → Udgiv på nettet.",
+                  "step_2": "Skift til fanen Integrer og klik Udgiv.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "canva": {
+                  "hint": "Del → Mere → Integrer",
+                  "step_1": "Klik Del → Mere over editoren.",
+                  "step_2": "Vælg Integrer og bekræft (gør designet offentligt).",
+                  "step_3": "Kopiér HTML embed-koden og indsæt den her."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint på nettet → Fil → Del → Integrer",
+                  "step_1": "Gem præsentationen på OneDrive og åbn den i PowerPoint på nettet.",
+                  "step_2": "Vælg Fil → Del → Integrer og vælg dimensioner.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her. Vi tilpasser afspilleren selv."
+                },
+                "keynote": {
+                  "hint": "Samarbejd → Kopiér link, derefter integrer",
+                  "step_1": "Klik Samarbejd og sæt adgang til Alle med linket · Kun visning.",
+                  "step_2": "Kopiér iCloud-linket og hent embed-koden til dit website.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "figma": {
+                  "hint": "Del en Figma Slides-fil og kopiér embed",
+                  "step_1": "Åbn din Figma Slides-fil og aktiver linkdeling.",
+                  "step_2": "Kopiér embed-koden for /slides- eller /deck-filen.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "prezi": {
+                  "hint": "Del → Integrer",
+                  "step_1": "Åbn Del på din præsentation fra dashboardet.",
+                  "step_2": "Klik Integrer og kopiér koden.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "pitch": {
+                  "hint": "Del eksternt → Kopiér embed-kode",
+                  "step_1": "Klik Del → Del eksternt og opret et offentligt link.",
+                  "step_2": "Åbn linkets Indstillinger (⋯) og vælg Kopiér embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "gamma": {
+                  "hint": "Del → aktiver offentlig adgang → kopiér iframe",
+                  "step_1": "Åbn Del og slå Tillad offentlig adgang til.",
+                  "step_2": "Kopiér den genererede iframe embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "slideshare": {
+                  "hint": "Del → Integrer under præsentationen",
+                  "step_1": "Åbn den offentlige præsentation på slideshare.net.",
+                  "step_2": "Klik Del under afspilleren og åbn fanen Integrer.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "beautiful": {
+                  "hint": "Delingsindstillinger → Offentlig → Hent embed-kode",
+                  "step_1": "Åbn Delingsindstillinger og skift præsentationen til Offentlig.",
+                  "step_2": "Klik Hent embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                }
+              },
+              "frame_title": "{platform} ({index} af {total})"
             },
             "note": {
               "title": "Bemærk",

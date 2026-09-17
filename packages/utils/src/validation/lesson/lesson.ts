@@ -1,6 +1,30 @@
 import * as z from 'zod';
 
+import { getSlidePlatformByHost, isAllowedSlideEmbedSrc, SLIDE_PLATFORM_IDS } from '../../functions/slide-embed';
 import { ZSlug } from '../shared/slug';
+
+export const ZLessonSlide = z
+  .object({
+    id: z.string().min(1),
+    src: z
+      .url()
+      .refine((src) => isAllowedSlideEmbedSrc(src), { message: 'Slide embed source is not from a supported platform' }),
+    platform: z.enum(SLIDE_PLATFORM_IDS)
+  })
+  .refine(
+    (slide) => {
+      try {
+        const hostname = new URL(slide.src).hostname.replace(/^www\./i, '').toLowerCase();
+        const platform = getSlidePlatformByHost(hostname);
+
+        return platform?.id === slide.platform;
+      } catch {
+        return false;
+      }
+    },
+    { message: 'Slide platform does not match embed source', path: ['platform'] }
+  );
+export type TLessonSlide = z.infer<typeof ZLessonSlide>;
 
 // Lesson Schemas
 export const ZLessonCreate = z.object({
@@ -33,7 +57,8 @@ export const ZLessonUpdate = z.object({
   videoWatchThreshold: z.number().int().min(1).max(100).optional(),
   commentsEnabled: z.boolean().optional(),
   videoUrl: z.url().optional(),
-  slideUrl: z.url().optional(),
+  slideUrl: z.string().optional(),
+  slides: z.array(ZLessonSlide).optional(),
   videos: z
     .array(
       z.object({

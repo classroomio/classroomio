@@ -2364,7 +2364,87 @@
             "slide": {
               "title": "फिसल पट्टी",
               "slide_link": "स्लाइड लिंक",
-              "helper_message": "आप Google स्लाइड या Canva प्रेजेंटेशन को एम्बेड कर सकते हैं"
+              "helper_message": "आप Google स्लाइड या Canva प्रेजेंटेशन को एम्बेड कर सकते हैं",
+              "button": "स्लाइड जोड़ें",
+              "remove_slide": "स्लाइड हटाएँ",
+              "menu_aria": "स्लाइड क्रियाएँ",
+              "empty_title": "अभी कोई स्लाइड नहीं",
+              "empty_description": "Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare या Beautiful.ai एम्बेड करें",
+              "add_slide": {
+                "title": "स्लाइड जोड़ें",
+                "search": "प्लेटफ़ॉर्म खोजें",
+                "empty_prompt": "चरण-दर-चरण निर्देश देखने और एम्बेड कोड पेस्ट करने के लिए प्लेटफ़ॉर्म चुनें।",
+                "embed_code": "एम्बेड कोड पेस्ट करें",
+                "embed_placeholder": "यहाँ पूरा iframe एम्बेड कोड पेस्ट करें",
+                "how_to_embed": "कैसे एम्बेड करें",
+                "preview": "पूर्वावलोकन",
+                "embed_ready": "एम्बेड तैयार",
+                "invalid_embed": "इस प्लेटफ़ॉर्म का पूरा iframe एम्बेड कोड पेस्ट करें।",
+                "unsupported": "यह एम्बेड किसी ऐसे प्लेटफ़ॉर्म से है जिसे हम अभी समर्थित नहीं करते।"
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} में से {total})"
             },
             "note": {
               "title": "नोट",
