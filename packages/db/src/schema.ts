@@ -755,13 +755,7 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
-    /**
-     * When true, learners cannot take this course on its own. Public enroll, Explore,
-     * course invite links, and People → Add are rejected. Access is a live
-     * `LEARNING_PATH` grant (join the path). Already-held independent grants are not
-     * revoked when the flag is turned on. Default false: the course stays independently
-     * sellable even if it also sits in a path.
-     */
+    /** Independent enroll blocked. Do not revoke grants that already exist. */
     requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
     /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
     displayOrder: integer('display_order'),
@@ -3498,11 +3492,6 @@ export const cohortGoalAssignment = pgTable(
 );
 
 // ─── Learning Paths ──────────────────────────────────────────────────────────
-// An ordered, sequentially unlocked, bundle-priced set of courses sold on the org's
-// public site. Distinct from cohorts/programs: ordered, priced, publicly listed, and
-// certificate-bearing. Courses stay independently sellable and are never mutated by a
-// path — membership and progress live in the tables below, course enrollment keeps
-// using `groupmember`.
 
 export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']);
 
@@ -3526,33 +3515,16 @@ export const learningPath = pgTable(
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
-    /**
-     * Short mixed-case id for dashboard/LMS URLs (`/paths/1GlQpMod/...`). Not the PK;
-     * all FKs stay on `id`. Immutable once assigned. Globally unique. Public org-site
-     * URLs still use `slug`. Alphabet `[0-9A-Za-z]`, length 8. Generated at insert;
-     * retry on unique violation. Course ids in nested taking URLs stay UUID.
-     */
+    /** URL segment for `/paths/{publicId}`. Not the PK. 8 mixed-case `[0-9A-Za-z]`, generated at insert. */
     publicId: varchar('public_id', { length: 8 }).notNull(),
     organizationId: uuid('organization_id').notNull(),
     name: varchar().notNull(),
-    /** URL segment for `/path/[slug]`; unique per org, not globally like `course.slug`. */
     slug: varchar().notNull(),
     description: text(),
     coverImage: text('cover_image'),
-    /**
-     * Same paradigm as `course.isPublished`. Unpublished paths are hidden from the public
-     * catalog and reject self-enrollment (and any public invite-link enroll). Already-enrolled
-     * learners keep access; teachers can still add members from the People tab while building.
-     */
     isPublished: boolean('is_published').default(false).notNull(),
-    /** Powers the Difficulty filter (My Learning, Explore) and the public stats row. */
     difficulty: learningPathDifficulty(),
-    /**
-     * Teacher-set total study time, shown as "~38 hours" and bucketed by the Duration
-     * filter. Stored rather than derived because courses carry no duration of their own.
-     */
     estimatedDurationMinutes: integer('estimated_duration_minutes'),
-    /** Bundle price for the whole path. Savings vs summed `course.cost` is computed at read time. */
     cost: bigint({ mode: 'number' })
       .default(sql`'0'`)
       .notNull(),
@@ -3564,20 +3536,16 @@ export const learningPath = pgTable(
     certificateEnabled: boolean('certificate_enabled').default(true).notNull(),
     certificateTitle: text('certificate_title'),
     certificateIssuer: text('certificate_issuer'),
-    /** Mirrors `course.certificate.design` so path certificates render through `@cio/certificates`. */
     certificateDesign: jsonb('certificate_design').default({}).$type<{
       templateId?: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
       accentColor?: string;
       subtitle?: string;
       descriptionOverride?: string;
       signatories?: { name: string; role: string; enabled?: boolean; signatureUrl?: string }[];
-      /** Supports `{seq}` / `{year}` / `{month}`; defaults to the `LP-XXXX-XXXX` shape. */
+      /** `{seq}` / `{year}` / `{month}`; defaults to `LP-XXXX-XXXX`. */
       idFormat?: string;
     }>(),
-    /**
-     * Public path page content owned by the Landing page tab. Holds copy only — `id` keys
-     * on testimonials/FAQs are client-generated list keys for editing, never foreign keys.
-     */
+    /** Copy only. Testimonial/FAQ `id` keys are list keys, not FKs. */
     landingPage: jsonb('landing_page').default({}).$type<{
       headline?: string;
       subheadline?: string;
@@ -3592,10 +3560,7 @@ export const learningPath = pgTable(
       showRating?: boolean;
       rating?: { average: number; count: number };
     }>(),
-    /**
-     * Set the first time a teacher confirms the drag-ordering. The only setup-checklist step
-     * that cannot be derived from data (every other step reads name/courses/cost/landingPage/status).
-     */
+    /** Set when the teacher first confirms course order; not derivable from other columns. */
     courseOrderSetAt: timestamp('course_order_set_at', { withTimezone: true, mode: 'string' }),
     createdByProfileId: uuid('created_by_profile_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -3628,13 +3593,8 @@ export const learningPathCourse = pgTable(
       .notNull(),
     learningPathId: uuid('learning_path_id').notNull(),
     courseId: uuid('course_id').notNull(),
-    /**
-     * 1-based position, and the gating sequence itself. Deliberately not uniquely
-     * constrained: reordering rewrites every row in one transaction, and a non-deferrable
-     * unique index would reject the intermediate states of a swap.
-     */
+    /** Not unique: reorder rewrites every row in one transaction. */
     order: integer().notNull(),
-    /** Per-course outcome bullets shown on the public path page; path-scoped marketing copy. */
     outcomes: jsonb().default([]).$type<string[]>(),
     addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -3651,7 +3611,6 @@ export const learningPathCourse = pgTable(
     }).onDelete('cascade'),
     unique('learning_path_course_path_id_course_id_unique').on(table.learningPathId, table.courseId),
     index('idx_learning_path_course_path_id_order').on(table.learningPathId, table.order),
-    // Unlock evaluation runs on every lesson/exercise completion and starts from the course.
     index('idx_learning_path_course_course_id').on(table.courseId)
   ]
 );
@@ -3664,31 +3623,18 @@ export const learningPathMember = pgTable(
       .primaryKey()
       .notNull(),
     learningPathId: uuid('learning_path_id').notNull(),
-    /** NULL while a batch-invited learner has not yet claimed their account. */
     profileId: uuid('profile_id'),
     email: text(),
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
     completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
-    /**
-     * Unenrolling soft-removes rather than deleting the row, because deleting it would
-     * cascade away `learning_path_member_course` and the learner's
-     * `learning_path_certificate_issue` — a certificate they legitimately earned. Also keeps
-     * drop-off answerable in analytics. Re-enrolling clears this instead of inserting again,
-     * which is what `unique(pathId, profileId)` requires.
-     */
+    /** Soft-remove so per-course cache and issued certificates are not cascaded. */
     removedAt: timestamp('removed_at', { withTimezone: true, mode: 'string' }),
-    // ── Rollup cache ──
-    // Recomputed by the same service that evaluates unlocking on lesson/exercise completion.
-    // Never a source of truth: `learning_path_member_course` plus lesson/exercise data is.
-    // Cached because People, My Learning, and the admin listing all rank and filter by it.
     status: learningPathMemberStatus().default('NOT_STARTED').notNull(),
     progressPercent: integer('progress_percent').default(0).notNull(),
     completedCourseCount: integer('completed_course_count').default(0).notNull(),
-    /** Drives "Current course" in People and "Continue Learning" on the learner surfaces. */
     currentCourseId: uuid('current_course_id'),
-    /** Backs the "active learners in the last 14 days" analytics card. */
     lastActivityAt: timestamp('last_activity_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
@@ -3719,7 +3665,7 @@ export const learningPathMember = pgTable(
   ]
 );
 
-/** Path-scoped progress cache for one member on one course. Truth is `lesson_completion` / `submission`. */
+/** Progress cache. Truth is `lesson_completion` / `submission`. */
 export const learningPathMemberCourse = pgTable(
   'learning_path_member_course',
   {
@@ -3737,7 +3683,6 @@ export const learningPathMemberCourse = pgTable(
     exercisesTotal: integer('exercises_total').default(0).notNull(),
     unlockedAt: timestamp('unlocked_at', { withTimezone: true, mode: 'string' }),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
-    /** Renders as "Finished May 12" on the path hub and feeds the course funnel counts. */
     completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
@@ -3761,11 +3706,6 @@ export const learningPathMemberCourse = pgTable(
   ]
 );
 
-/**
- * Issued path certificates. A stored row rather than a render-time id (how standard course
- * certificates work today) because the learner's Certificates page shows a stable id and a
- * downloadable file, and the admin Certificate tab counts what has been awarded.
- */
 export const learningPathCertificateIssue = pgTable(
   'learning_path_certificate_issue',
   {
@@ -3776,9 +3716,7 @@ export const learningPathCertificateIssue = pgTable(
     learningPathId: uuid('learning_path_id').notNull(),
     learningPathMemberId: uuid('learning_path_member_id').notNull(),
     profileId: uuid('profile_id').notNull(),
-    /** Human-facing id shown on the certificate face, e.g. `LP-8F42-19AC`. */
     certificateId: varchar('certificate_id').notNull(),
-    /** Frozen at issue time so a later rename of the path never rewrites history. */
     title: text().notNull(),
     issuer: text(),
     issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -3803,7 +3741,6 @@ export const learningPathCertificateIssue = pgTable(
       name: 'learning_path_certificate_issue_profile_id_fkey'
     }).onDelete('cascade'),
     unique('learning_path_certificate_issue_certificate_id_key').on(table.certificateId),
-    // One live certificate per membership; re-issuing updates the row rather than adding one.
     unique('learning_path_certificate_issue_member_id_key').on(table.learningPathMemberId),
     index('idx_learning_path_certificate_issue_profile_id').on(table.profileId),
     index('idx_learning_path_certificate_issue_learning_path_id').on(table.learningPathId)
@@ -3823,11 +3760,6 @@ export const courseEnrollmentSource = pgEnum('COURSE_ENROLLMENT_SOURCE', [
   'IMPORT'
 ]);
 
-/**
- * Why a learner has access to a course. `groupmember` is the enrolment row; this is the
- * ledger beside it. Access is the union of live grants (`revokedAt IS NULL`). Revoke, do
- * not delete the `groupmember` row.
- */
 export const courseEnrollmentGrant = pgTable(
   'course_enrollment_grant',
   {
@@ -3836,20 +3768,11 @@ export const courseEnrollmentGrant = pgTable(
       .primaryKey()
       .notNull(),
     groupmemberId: uuid('groupmember_id').notNull(),
-    /**
-     * Denormalized from `groupmember → group → course`. Segment filters and the "who came
-     * from where" roster query run per course, and this keeps them a single index hit
-     * instead of a two-hop join through `group` on every course screen.
-     */
     courseId: uuid('course_id').notNull(),
-    /** NULL while an invited learner has not yet claimed their account. */
     profileId: uuid('profile_id'),
     source: courseEnrollmentSource().notNull(),
-    /** Set when `source = 'COHORT'`, NULL otherwise. */
     cohortId: uuid('cohort_id'),
-    /** Set when `source = 'LEARNING_PATH'`, NULL otherwise. */
     learningPathId: uuid('learning_path_id'),
-    /** The teacher or admin who caused the grant, for ADMIN_ADD and INVITE. */
     grantedByProfileId: uuid('granted_by_profile_id'),
     grantedAt: timestamp('granted_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' })
@@ -3885,16 +3808,12 @@ export const courseEnrollmentGrant = pgTable(
       foreignColumns: [profile.id],
       name: 'course_enrollment_grant_granted_by_profile_id_fkey'
     }).onDelete('set null'),
-    // One grant per enrolment per source row, so re-running an enrolment is idempotent.
-    // NULLS NOT DISTINCT (Postgres 15+) is what makes this hold for the sourceless kinds:
-    // without it two SELF_ENROLL grants, both with NULL cohort and path, would not collide.
+    // NULLS NOT DISTINCT: two SELF_ENROLL grants (NULL cohort/path) must collide.
     unique('course_enrollment_grant_source_unique')
       .on(table.groupmemberId, table.source, table.cohortId, table.learningPathId)
       .nullsNotDistinct(),
-    // "Show me this course's roster, segmented by where people came from."
     index('idx_course_enrollment_grant_course_id_source').on(table.courseId, table.source),
     index('idx_course_enrollment_grant_groupmember_id').on(table.groupmemberId),
-    // "Which of this course's learners belong to cohort Y / path P?"
     index('idx_course_enrollment_grant_cohort_id_course_id').on(table.cohortId, table.courseId),
     index('idx_course_enrollment_grant_learning_path_id_course_id').on(table.learningPathId, table.courseId),
     index('idx_course_enrollment_grant_profile_id').on(table.profileId)
