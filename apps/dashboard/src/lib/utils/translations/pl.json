@@ -1050,7 +1050,7 @@
         "open_link": "Otwórz link w nowej karcie",
         "copy_link": "Skopiuj link",
         "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
-        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Zakończenie oglądania wideo śledzi tylko przesłane filmy."
+        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów."
       },
       "analytics": {
         "title": "Analityka"
@@ -2428,7 +2428,7 @@
           "none_label": "Brak",
           "none_description": "Ta lekcja nie blokuje postępu w kursie.",
           "watch_threshold": "Próg obejrzenia (%)",
-          "video_watch_description": "Lekcja kończy się automatycznie po obejrzeniu przez uczniów wybranych przesłanych filmów. Nie można śledzić YouTube i zewnętrznych osadzań."
+          "video_watch_description": "Lekcja kończy się automatycznie, gdy uczniowie obejrzą wybrane przesłane filmy. Nie można śledzić filmów z YouTube ani filmów osadzonych na zewnętrznych stronach."
         },
         "settings": {
           "comments": {
@@ -2447,7 +2447,7 @@
             "watch_videos_helper": "Tylko przesłane filmy mogą być egzekwowane. YouTube i zewnętrzne osadzenia nie mogą być śledzone.",
             "watch_videos_required": "Wybierz co najmniej jeden film przy egzekwowaniu obejrzenia.",
             "students_only_note": "Te zasady dotyczą tylko uczniów. Jako nauczyciel możesz swobodnie przeglądać i nawigować.",
-            "watch_videos_empty": "Oglądanie wideo śledzi tylko przesłane filmy. Nie można śledzić osadzania w YouTube ani na zewnętrznych stronach, więc ta lekcja nie może zostać ukończona automatycznie, a uczniowie nie mogą oznaczyć jej jako ukończonej. Prześlij wideo na karcie Wideo lub ustaw regułę ukończenia na Ręcznie.",
+            "watch_videos_empty": "Śledzenie oglądania obejmuje tylko przesłane filmy. Nie można śledzić filmów z YouTube ani filmów osadzonych na zewnętrznych stronach, więc ta lekcja nie może zostać ukończona automatycznie, a uczniowie nie mogą oznaczyć jej jako ukończonej. Prześlij wideo na karcie Wideo lub ustaw regułę ukończenia na Ręcznie.",
             "watch_videos_no_uploads_title": "Brak przesłanych filmów wideo w tej lekcji"
           }
         },
