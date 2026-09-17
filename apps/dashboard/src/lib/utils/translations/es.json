@@ -7,11 +7,7 @@
       "verified_credential": "Credencial verificada",
       "certificate_title": "Certificado de finalización",
       "presented_to": "Otorgado con orgullo a",
-      "completion_of": "Por completar",
-      "instructor_signature": "Firma del instructor",
-      "template_name": "Oro moderno",
-      "template_description": "Prestigioso diseño en pizarra oscura con bordes geométricos dorados e insignia real.",
-      "academy_director": "Director de la academia"
+      "completion_of": "Por completar"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "Volver a la aplicación",
     "create": "crear",
     "distribute": "Distribuir",
-    "tools": "Herramientas",
-    "more": "Más"
+    "tools": "Herramientas"
   },
   "media_manager": {
     "page_title": "Administrador de medios - ClassroomIO",

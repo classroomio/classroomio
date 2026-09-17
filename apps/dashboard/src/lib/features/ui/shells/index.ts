@@ -1,5 +1,4 @@
 import SidebarShell from './sidebar-shell.svelte';
-import TopNavShell from './top-nav-shell.svelte';
 
 /**
  * Maps every known layout key to its shell component.
@@ -14,8 +13,7 @@ import TopNavShell from './top-nav-shell.svelte';
  * The route layout file (`org/[slug]/+layout.svelte`) never needs to change.
  */
 export const SHELL_REGISTRY: Record<string, any> = {
-  sidebar: SidebarShell,
-  'top-nav': TopNavShell
+  sidebar: SidebarShell
 };
 
-export { SidebarShell, TopNavShell };
+export { SidebarShell };

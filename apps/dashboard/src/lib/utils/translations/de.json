@@ -7,11 +7,7 @@
       "verified_credential": "Verifizierter Nachweis",
       "certificate_title": "Abschlusszertifikat",
       "presented_to": "Stolz verliehen an",
-      "completion_of": "Für den Abschluss von",
-      "instructor_signature": "Unterschrift der Lehrkraft",
-      "template_name": "Modernes Gold",
-      "template_description": "Prestigeträchtiges dunkles Schieferdesign mit geometrischen Goldrahmen und königlichem Emblem.",
-      "academy_director": "Akademieleitung"
+      "completion_of": "Für den Abschluss von"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "Zurück zur App",
     "create": "Erstellen",
     "distribute": "Verteilen",
-    "tools": "Werkzeuge",
-    "more": "Mehr"
+    "tools": "Werkzeuge"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",

@@ -7,11 +7,7 @@
       "verified_credential": "Verificeret certifikat",
       "certificate_title": "Gennemførelsesbevis",
       "presented_to": "Stolt tildelt",
-      "completion_of": "For gennemførelse af",
-      "instructor_signature": "Underviserens underskrift",
-      "template_name": "Moderne guld",
-      "template_description": "Prestigefyldt mørk skiferstil med geometriske guldrammer og kongeligt emblem.",
-      "academy_director": "Akademidirektør"
+      "completion_of": "For gennemførelse af"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "Tilbage til app",
     "create": "Opret",
     "distribute": "Fordel",
-    "tools": "Værktøjer",
-    "more": "Mere"
+    "tools": "Værktøjer"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",

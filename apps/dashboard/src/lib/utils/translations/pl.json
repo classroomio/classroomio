@@ -7,11 +7,7 @@
       "verified_credential": "Zweryfikowane poświadczenie",
       "certificate_title": "Certyfikat ukończenia",
       "presented_to": "Z dumą przyznany",
-      "completion_of": "Za ukończenie",
-      "instructor_signature": "Podpis instruktora",
-      "template_name": "Nowoczesne złoto",
-      "template_description": "Prestiżowy ciemny projekt z geometrycznymi złotymi obramowaniami i królewskim insygnium.",
-      "academy_director": "Dyrektor akademii"
+      "completion_of": "Za ukończenie"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "Powrót do aplikacji",
     "create": "Utwórz",
     "distribute": "Rozpowszechniaj",
-    "tools": "Narzędzia",
-    "more": "Więcej"
+    "tools": "Narzędzia"
   },
   "media_manager": {
     "page_title": "Menedżer mediów - ClassroomIO",

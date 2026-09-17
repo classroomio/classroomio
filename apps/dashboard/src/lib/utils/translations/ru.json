@@ -7,11 +7,7 @@
       "verified_credential": "Подтверждённый документ",
       "certificate_title": "Сертификат об окончании",
       "presented_to": "С гордостью вручается",
-      "completion_of": "За завершение",
-      "instructor_signature": "Подпись преподавателя",
-      "template_name": "Современное золото",
-      "template_description": "Престижный дизайн в тёмных сланцевых тонах с золотыми геометрическими рамками и королевской эмблемой.",
-      "academy_director": "Директор академии"
+      "completion_of": "За завершение"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "Вернуться в приложение",
     "create": "Создать",
     "distribute": "Распространение",
-    "tools": "Инструменты",
-    "more": "Более"
+    "tools": "Инструменты"
   },
   "media_manager": {
     "page_title": "Медиаменеджер — ClassroomIO",

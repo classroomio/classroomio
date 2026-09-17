@@ -7,11 +7,7 @@
       "verified_credential": "सत्यापित प्रमाणपत्र",
       "certificate_title": "पूर्णता प्रमाणपत्र",
       "presented_to": "गर्व से प्रदान किया गया",
-      "completion_of": "पूरा करने के लिए",
-      "instructor_signature": "प्रशिक्षक के हस्ताक्षर",
-      "template_name": "आधुनिक स्वर्ण",
-      "template_description": "सुनहरे ज्यामितीय बॉर्डर और शाही प्रतीक वाला प्रतिष्ठित गहरा स्लेट डिज़ाइन।",
-      "academy_director": "अकादमी निदेशक"
+      "completion_of": "पूरा करने के लिए"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "ऐप पर वापस जाएं",
     "create": "बनाएँ",
     "distribute": "बांटो",
-    "tools": "उपकरण",
-    "more": "अधिक"
+    "tools": "उपकरण"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",

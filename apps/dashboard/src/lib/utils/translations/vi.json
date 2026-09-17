@@ -7,11 +7,7 @@
       "verified_credential": "Chứng nhận đã xác minh",
       "certificate_title": "Giấy chứng nhận hoàn thành",
       "presented_to": "Trân trọng trao tặng",
-      "completion_of": "Vì đã hoàn thành",
-      "instructor_signature": "Chữ ký giảng viên",
-      "template_name": "Vàng hiện đại",
-      "template_description": "Thiết kế đá phiến tối trang trọng với viền hình học màu vàng và huy hiệu hoàng gia.",
-      "academy_director": "Giám đốc học viện"
+      "completion_of": "Vì đã hoàn thành"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "Quay lại ứng dụng",
     "create": "Tạo",
     "distribute": "phân phối",
-    "tools": "Công cụ",
-    "more": "Hơn"
+    "tools": "Công cụ"
   },
   "media_manager": {
     "page_title": "Trình quản lý phương tiện - ClassroomIO",

@@ -7,11 +7,7 @@
       "verified_credential": "Titre vérifié",
       "certificate_title": "Certificat de réussite",
       "presented_to": "Fièrement décerné à",
-      "completion_of": "Pour avoir terminé",
-      "instructor_signature": "Signature du formateur",
-      "template_name": "Or moderne",
-      "template_description": "Élégant design ardoise sombre avec bordures géométriques dorées et insigne royal.",
-      "academy_director": "Direction de l’académie"
+      "completion_of": "Pour avoir terminé"
     }
   },
   "common": {
@@ -3240,8 +3236,7 @@
     "back_to_app": "Retour à l'application",
     "create": "Créer",
     "distribute": "Distribuer",
-    "tools": "Outils",
-    "more": "Plus"
+    "tools": "Outils"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",

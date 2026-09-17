@@ -24,18 +24,3 @@ export function sidebar(options?: LayoutOptions): LayoutDefinition {
     shell: options?.shell ?? 'sidebar'
   };
 }
-
-/**
- * Selects the top navigation bar layout.
- * Use this in `classroomio.config.ts` when you want a horizontal header + sub-nav tab strip.
- *
- * @example
- * import { topNav } from '@cio/sdk/layouts';
- * export default defineConfig({ layout: topNav() });
- */
-export function topNav(options?: LayoutOptions): LayoutDefinition {
-  return {
-    key: 'top-nav',
-    shell: options?.shell ?? 'top-nav'
-  };
-}

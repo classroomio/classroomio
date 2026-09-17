@@ -26,21 +26,15 @@ plugins/
 
 ## Enabled Plugins: One List for Dashboard and API
 
-`createConfiguredPlugins()` in `plugins/index.ts` is the single list of plugins enabled by this repository. Both
-`classroomio.config.ts` and the API runtime call it because the dashboard and API run in separate processes.
+`configuredPlugins` in `plugins/index.ts` is the single list of plugins enabled by this repository. Both
+`classroomio.config.ts` and the API runtime consume it because the dashboard and API run in separate processes.
 
-The shared list is necessary; using a function is a design choice. A constant could also hold the list, but the
-factory gives each runtime a fresh array of SDK-validated plugin definitions and prevents one consumer from mutating
-the list seen by another consumer during development or tests.
-
-Add or remove enabled plugins in `createConfiguredPlugins()` rather than adding a second list directly inside
-`classroomio.config.ts`. Keeping one factory prevents the dashboard from showing a plugin that the API has not loaded
-for server hooks or certificate rendering. The factory returns fresh, SDK-validated plugin instances for each process.
+Add or remove a plugin in this one registry. Do not add a second list or plugin-specific wiring to the dashboard,
+API, or root configuration. This prevents the dashboard from showing a plugin that the API has not loaded for server
+hooks or certificate rendering.
 
 ```typescript
-export function createConfiguredPlugins(): PluginDefinition[] {
-  return [linkedinCertificate(), modernGoldCertificate()];
-}
+export const configuredPlugins: PluginDefinition[] = [linkedinCertificate(), modernGoldCertificate()];
 ```
 
 ---
@@ -99,18 +93,16 @@ Export it in `plugins/index.ts`:
 ```typescript
 export { myService, type MyServiceOptions } from './integration/my-integration';
 
-export function createConfiguredPlugins(): PluginDefinition[] {
-  return [myService()];
-}
+export const configuredPlugins: PluginDefinition[] = [myService()];
 ```
 
 Consume it in `classroomio.config.ts`:
 
 ```typescript
-import { createConfiguredPlugins } from './plugins';
+import { configuredPlugins } from './plugins';
 
 export default defineConfig({
-  plugins: createConfiguredPlugins()
+  plugins: configuredPlugins
 });
 ```
 

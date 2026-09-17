@@ -1,4 +1,4 @@
-import { createConfiguredPlugins } from '@cio/plugins';
+import { configuredPlugins } from '@cio/plugins';
 import {
   getEventBus,
   resolveConfig,
@@ -15,7 +15,7 @@ let resolvedPluginConfig: ResolvedConfig | null = null;
  * Loads the same first-party plugin list used by the dashboard and registers
  * the server-side capabilities needed by the API process.
  */
-export function initializePluginRuntime(plugins: PluginDefinition[] = createConfiguredPlugins()): ResolvedConfig {
+export function initializePluginRuntime(plugins: PluginDefinition[] = configuredPlugins): ResolvedConfig {
   if (resolvedPluginConfig) return resolvedPluginConfig;
 
   const config = resolveConfig({ plugins });

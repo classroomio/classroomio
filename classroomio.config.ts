@@ -1,6 +1,6 @@
 import { defineConfig } from '@cio/sdk';
-import { topNav } from '@cio/sdk/layouts';
-import { createConfiguredPlugins } from './plugins';
+import { sidebar } from '@cio/sdk/layouts';
+import { configuredPlugins } from './plugins';
 
 export default defineConfig({
   theme: {
@@ -8,12 +8,12 @@ export default defineConfig({
     radius: 'sm',
     font: 'Inter'
   },
-  layout: topNav(),
+  layout: sidebar(),
   nav: {
     remove: [],
     rename: {},
     add: []
   },
   terminology: {},
-  plugins: createConfiguredPlugins()
+  plugins: configuredPlugins
 });

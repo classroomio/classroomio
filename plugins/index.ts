@@ -3,14 +3,8 @@ import type { PluginDefinition } from '@cio/sdk';
 import { linkedinCertificate } from './integration/linkedin-certificate/index.js';
 import { modernGoldCertificate } from './certificate/certificate-modern-gold/index.js';
 
-/**
- * Returns the first-party plugins enabled by the repository configuration.
- * Dashboard and API runtimes both consume this list so they cannot drift.
- * The factory form gives every caller a fresh array and fresh SDK-branded definitions.
- */
-export function createConfiguredPlugins(): PluginDefinition[] {
-  return [linkedinCertificate(), modernGoldCertificate()];
-}
+/** First-party plugins enabled in both dashboard and API runtimes. */
+export const configuredPlugins: PluginDefinition[] = [linkedinCertificate(), modernGoldCertificate()];
 
 /**
  * ClassroomIO Plugins

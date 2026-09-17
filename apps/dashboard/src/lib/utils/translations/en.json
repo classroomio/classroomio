@@ -7,11 +7,7 @@
       "verified_credential": "Verified credential",
       "certificate_title": "Certificate of completion",
       "presented_to": "Proudly presented to",
-      "completion_of": "For completion of",
-      "instructor_signature": "Instructor signature",
-      "template_name": "Modern Gold",
-      "template_description": "Prestigious dark slate design with gold geometric borders and royal insignia.",
-      "academy_director": "Academy director"
+      "completion_of": "For completion of"
     }
   },
   "aiTutor": {
@@ -1407,8 +1403,7 @@
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} of {studentLimit} students",
     "upgrade_left": "{count} left",
-    "cohorts": "Cohorts",
-    "more": "More"
+    "cohorts": "Cohorts"
   },
   "pricing": {
     "plan_names": {
