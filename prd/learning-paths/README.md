@@ -23,7 +23,7 @@ Path-specific only (do not look to courses for these): ordered course list and s
 | Concern | Course source of truth |
 | --- | --- |
 | Org listing | `org/[slug]/courses` + `features/course/pages/courses.svelte`: `Page.Root` / `Page.Header` / `Page.Body`, `Search`, filter popover, grid/list toggle (admin only), cards or `ResourceListRow`, `CreateCourseButton`, `CoursePublishBadge`, `Empty` |
-| Create | `?create=true` → `NewCourseModal` (title + description), then land in the workspace. Not a dedicated setup page |
+| Create | `?create=true` → `NewCourseModal` (title + description), then land in the workspace. Courses have no `/setup` page **yet**. Paths ship `/paths/[publicId]/setup` first (org setup chrome); courses can copy that later |
 | Workspace shell | `courses/[id]/+layout.svelte` + `CourseSidebar`: `BackButton`, identity, sidebar nav (not horizontal tabs), `CourseHeader` |
 | Settings | `courses/[id]/settings`: `Field.Group` / `Field.Set` / `Field.Separator`, `isPublished` `Switch`, `UnsavedChanges`, `Page.SettingsActions` |
 | People / enrolment | `courses/[id]/people`: header Add → `?add=true` → `invitation-modal` (existing members, bulk email, invite link), `Search` + role `Select`, table (Learner, Progress, Stage, Last login, Enrolled at, actions) |
@@ -45,7 +45,7 @@ Do not implement these as specified in the prototype. Use the course pattern ins
 | “When this document and a prototype disagree, the prototype wins” | Shared UI would drift from the app | Live course UI wins for shared patterns; prototype wins only for path-specific UX |
 | Admin listing metric cards (Active Paths, Enrolled Learners, Completions, Completion Rate ring) | Course listing has no analytics overview | Path listing matches course listing. Path analytics stay on the path Analytics tab |
 | Create Path **and** Create Course CTAs on the path listing | Course listing only creates courses | One create CTA for paths. Create course stays on the courses page |
-| Dedicated `/paths/[id]/setup` checklist as the create flow | Courses create via modal, then workspace | Create modal → path workspace at `/paths/[publicId]`. Optional in-workspace setup chip is fine if it mirrors org setup items, not a separate IA |
+| Dedicated `/paths/[id]/setup` as the **create** flow (replacing the modal) / prototype checklist chrome | Create stays a modal like courses. Prototype `teacher-path-setup.html` is not the page chrome | Create modal → `/paths/[publicId]/setup`. That **subpage** is real: copy org `/org/[slug]/setup` (`Page.*`, `Item.*`, progress). Steps deep-link into Courses / Settings / landing overlay. Same pattern is the template for a future `/courses/[id]/setup` |
 | Admin listing restyled as student cards (`.apath-card`, `.lp-row`, glass badges) | Admin courses already have `CourseCardList` / `CourseListRow` | Reuse those list/card components; add path fields (course count, etc.) |
 | Prototype pill/chip Filters (`.filter-pill`, “Clear all”, no Apply) | Courses use `CourseFilterPopover` + `SortSelect` | Same popover/select components, path-specific filter groups |
 | Grid/List on LMS My Learning | LMS course list is **grid only** (`isLMS` hides the toggle) | Same: no view toggle on LMS |
@@ -97,7 +97,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 4. **Show savings.** The public page shows the bundle price against the summed individual course prices ("$199 ~~$280~~ · Save $81 (29%)"). Toggleable per path.
 5. **Unlock rule = lessons + exercises.** Course N+1 unlocks when course N has every lesson complete AND every exercise submitted/passed. Sequential unlocking is a per-path toggle (off = take in any order).
 6. **Path certificate is a teacher toggle** with its own workspace nav item (same place as course certificates); issued automatically on full completion; appears in the learner's LMS Certificates page.
-7. **Teacher workspace sidebar**, same shell as `CourseSidebar` (not horizontal tabs): Courses (ordering; **default** at `/paths/[publicId]`, like `/courses/[id]` → lessons), People, Analytics, Landing page, Certificate, Settings. **No path newsfeed** (Programs covers cohort communication). Teachers do not view or take a course “through” the path. They edit a course at `/courses/[courseId]/…`. Path-wide funnel is `/paths/[publicId]/analytics`.
+7. **Teacher workspace sidebar**, same shell as `CourseSidebar` (not horizontal tabs): Courses (ordering; **default** at `/paths/[publicId]`, like `/courses/[id]` → lessons), People, Analytics, Landing page, Certificate, Settings. Plus a **Setup subpage** at `/paths/[publicId]/setup` (org setup chrome — not a replacement for the create modal). **No path newsfeed** (Programs covers cohort communication). Teachers do not view or take a course “through” the path. They edit a course at `/courses/[courseId]/…`. Path-wide funnel is `/paths/[publicId]/analytics`.
 8. **Visitor access is teacher-configurable**: teaser only / full syllabus / syllabus + preview lessons.
 9. **Public path page follows the Coursera professional-certificate shape**: hero with stats + enroll CTA, what-you'll-learn, skills tags, sequential course cards with per-course outcomes and lesson outlines, certificate block, instructors, testimonials, FAQ accordion, pricing card.
 10. **Org landing page: Learning Paths section sits ABOVE the Courses section.** Plus a `/paths` catalog page and `/path/[slug]` detail page mirroring how `/courses` and `/course/[slug]` work today.
@@ -105,6 +105,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 12. **Publish flag, not a status enum.** Same paradigm as `course.isPublished`: a boolean. Unpublished paths are hidden from the public catalog and reject self-enrollment. Already-enrolled learners keep access; teachers can still add members from the People page while building. No Draft / Archived / Published enum.
 13. **Dashboard/LMS path URLs use `publicId`, not UUID.** `learning_path.id` stays UUID PK; FKs stay on `id`. `publicId` is 8 mixed-case `[0-9A-Za-z]` (e.g. `1GlQpMod`), globally unique, immutable, generated at insert. Public org-site stays `/path/[slug]`. Course ids in nested taking stay UUID.
 14. **A path visit mounts the whole course tree under the path:** `/paths/[publicId]/courses/[courseId]/*` is the same children as `/courses/[courseId]/*` (`/`, `lessons`, `exercises`, `certificates`, `marks`, …). Shared course pages; ribbon binds to `publicId`. Independent taking stays `/courses/[courseId]/*`. Same `/paths/[publicId]` is the teacher Courses page and the learner hub (role split). Teachers edit a course at `/courses/[courseId]/*`, not under the path.
+15. **Setup is a workspace subpage.** `/paths/[publicId]/setup` copies org `/org/[slug]/setup` (`Page.*`, `Item.*`, progress). Create is still `?create=true` modal, then this page. Incomplete chip in the path workspace links here. Courses do not have this yet; `/courses/[id]/setup` can follow the same pattern later.
 
 ### Prototype LMS / admin exploration (Decisions 13–33) — do not implement
 
@@ -119,7 +120,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 - Public `/paths` checkbox filter sidebar (`landing-theme.css`) as a new catalog chrome — public courses already have a catalog; mirror that
 - Path landing editor as a settings form (`teacher-path-landing-editor.html`) — course landing editor is the overlay + live preview at `courses/[id]/landingpage`
 
-The prototype HTML remains useful for **path-specific** surfaces (path hub, in-course ribbon, public path page sections, bundle savings). Shared UI is implemented like courses. Path-specific product in Decisions 1–14 still stands.
+The prototype HTML remains useful for **path-specific** surfaces (path hub, in-course ribbon, public path page sections, bundle savings, **setup checklist steps**). Shared UI is implemented like courses (setup **chrome** like org setup). Path-specific product in Decisions 1–15 still stands.
 
 ## Current-State Audit
 
@@ -132,7 +133,7 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 | Course landing page | theme `course.svelte` composer: hero → anchor nav → social proof → info blocks → curriculum → chips → instructor → reviews → pricing | Path page reuses these shared components where possible |
 | Payments | course payment flow on paid enroll CTA (`course-landing-page.svelte`) | Path enroll reuses the same flow with the path as the product |
 | Certificates | course certificate system + LMS Certificates page | Add path-level issuance |
-| Setup checklist pattern | `routes/(app)/org/[slug]/setup/+page.svelte` + `PercentRingProgress` + `Item.*` | Optional in-workspace chip only. Courses do not use a dedicated setup route as the create flow; neither should paths |
+| Setup checklist pattern | `routes/(app)/org/[slug]/setup/+page.svelte` + `Item.*` + progress | **Use it.** Path setup is `/paths/[publicId]/setup` with that chrome. Prototype `teacher-path-setup.html` supplies the steps only. Future `/courses/[id]/setup` copies this. |
 
 ## Product Goals
 
@@ -140,7 +141,7 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 2. Enrolling in a path creates path membership and grants course access for courses unlocked now (not necessarily every course at once).
 3. A learner has **one** My Learning page: path cards (membership) and course cards (non-path grants only), different card components. Path hub at `/paths/[publicId]`.
 4. Opening a course from a path uses `/paths/[publicId]/courses/[courseId]/*` (same course pages as `/courses/[courseId]/*`, plus that path’s ribbon). Independent taking (when `requiresLearningPath` is false) stays `/courses/[courseId]/*` with no ribbon.
-5. Teachers create a path the same way they create a course (`?create=true` modal, title + description), then work in a `PathSidebar` workspace whose **default** is the Courses page at `/paths/[publicId]`: order courses (Start/End reorder like lessons), People (`invitation-modal`), Settings (`Page.SettingsActions`), landing editor, certificate, analytics. They do not open a course through the path. Optional in-workspace setup chip only — not a dedicated setup IA.
+5. Teachers create a path the same way they create a course (`?create=true` modal, title + description), then land on `/paths/[publicId]/setup`. Workspace default after that is the Courses page at `/paths/[publicId]`: order courses (Start/End reorder like lessons), People (`invitation-modal`), Settings (`Page.SettingsActions`), landing editor, certificate, analytics. They do not open a course through the path.
 6. Completing all courses issues the path certificate (when enabled).
 7. Programs, standalone courses, and existing enrollments are untouched (zero regression).
 
@@ -207,15 +208,18 @@ Independent taking (live non-path grant, `requiresLearningPath` false) stays at 
 
 ### 3. Teacher — admin dashboard
 
-**Org listing `/org/[slug]/paths`**: same page as `org/[slug]/courses` / `features/course/pages/courses.svelte`. `Page.Root` / `Page.Header` / `Page.Body`, one Create CTA (`?create=true` → create modal, title + description, land in the workspace), `Search`, `CourseFilterPopover` / `SortSelect`, admin grid/list toggle, `CourseCardList` / `CourseListRow` (or the shared `ResourceListRow`) with a context menu, `CoursePublishBadge`, `Empty`. Path-specific fields only: course count, etc. **No** metric cards, **no** second Create Course button, **no** prototype `.apath-card` / `.lp-row` / glass badges, **no** pill filters.
+**Org listing `/org/[slug]/paths`**: same page as `org/[slug]/courses` / `features/course/pages/courses.svelte`. `Page.Root` / `Page.Header` / `Page.Body`, one Create CTA (`?create=true` → create modal, title + description, land on `/paths/[publicId]/setup`), `Search`, `CourseFilterPopover` / `SortSelect`, admin grid/list toggle, `CourseCardList` / `CourseListRow` (or the shared `ResourceListRow`) with a context menu, `CoursePublishBadge`, `Empty`. Path-specific fields only: course count, etc. **No** metric cards, **no** second Create Course button, **no** prototype `.apath-card` / `.lp-row` / glass badges, **no** pill filters.
 
-**Create**: not a dedicated `/paths/[publicId]/setup` page. Optional in-workspace setup chip (org setup `Item.*` / ring) is allowed; it is not the create IA.
+**Create**: `?create=true` modal (title + description), then **`/paths/[publicId]/setup`**. Setup is a workspace **subpage**, not the create IA and not a replacement for Courses.
 
-**Path workspace `/paths/[publicId]/*`**: `PathSidebar` copied from `CourseSidebar` (`BackButton`, identity, **sidebar nav**, header). Not nested under `/org/[slug]`. Not horizontal tabs. Default page is **Courses** at `/paths/[publicId]` (no `/courses` suffix). Teachers do not have a path-scoped course player; opening a course from the builder goes to `/courses/[courseId]/…`.
+**Setup `/paths/[publicId]/setup`**: copy org `/org/[slug]/setup` — `Page.Root` / `Page.Header` / `Page.Body`, `Item.*` rows, progress. Prototype `teacher-path-setup.html` is the **step list** only (add courses, set order, set price, landing page, publish/`isPublished`). Name/describe is already done by the create modal. Each row deep-links to the matching workspace page (Courses, Settings publish, landing overlay). Incomplete chip in the path header links here. Do not port prototype rings/CSS. This page is the template for a later `/courses/[id]/setup`.
+
+**Path workspace `/paths/[publicId]/*`**: `PathSidebar` copied from `CourseSidebar` (`BackButton`, identity, **sidebar nav**, header). Not nested under `/org/[slug]`. Not horizontal tabs. Default content page is **Courses** at `/paths/[publicId]` (no `/courses` suffix). Teachers do not have a path-scoped course player; opening a course from the builder goes to `/courses/[courseId]/…`.
 
 | Nav | Course analogue | URL | Contents |
 | --- | --- | --- | --- |
 | Courses (default) | Lessons / content list | `/paths/[publicId]` | Sequential-unlock toggle (path-specific). Reorder with the **same Start reorder / End reorder** mode as course content (`svelte-dnd-action`); persist when reorder ends. Add-course picker; remove confirms nobody is unenrolled. Prototype always-on drag is wrong. |
+| Setup | `org/[slug]/setup` | `/paths/[publicId]/setup` | Checklist subpage (org setup chrome). Not a forever primary nav item; header chip while incomplete. Steps: add courses, order (`courseOrderSetAt`), price, landing page, publish. Template for a later `/courses/[id]/setup`. |
 | People | `courses/[id]/people` | `/paths/[publicId]/people` | Header Add → `?add=true` → `invitation-modal` (existing members, bulk email, invite link). `Search` + role `Select`. Table like course People; path-specific columns: current course, path %. Remove revokes the path grant; they keep the course only if another live grant remains. |
 | Analytics | Course analytics | `/paths/[publicId]/analytics` | Path-specific funnel across the path’s courses (enrolled, drop-off, stuck lessons/exercises). Per-course gradebook/analytics stay on the course. This is where listing metric cards belong, not the org listing. |
 | Landing page | `courses/[id]/landingpage` | `/paths/[publicId]/landingpage` | **Same editor chrome**, not a form in the path workspace. Full-screen overlay, left section list, right live path-page preview (`editMode` + `setLandingPageEditContext`). Map existing course sections: header (hero), goals (what you'll learn), chips (skills), instructor (auto from course tutors + show toggle), reviews (testimonials), certificate, pricing (add show-savings). Path-only sections: visitor access (teaser / syllabus / syllabus+preview), FAQ, sequential course series with per-course outcomes. Curriculum on a course is auto from lessons — here the series is the ordered path courses. Do not copy the prototype’s stacked cards, radio-cards, or external “View live page” link. |
@@ -294,9 +298,10 @@ Dashboard (`publicId` in the URL so workspace paths stay short):
 
 | URL | Role |
 | --- | --- |
-| `/org/[slug]/paths` | Listing (`?create=true` → modal → `/paths/[publicId]`) |
+| `/org/[slug]/paths` | Listing (`?create=true` → modal → `/paths/[publicId]/setup`) |
 | `/org/[slug]/landingpage/edit` | Org landing editor (add paths section here) |
 | `/paths/[publicId]` | Teacher default: Courses (order/add/remove). Same URL as learner hub; role split |
+| `/paths/[publicId]/setup` | Setup checklist (org setup chrome). After create, land here |
 | `/paths/[publicId]/people` | Roster (`?add=true`) |
 | `/paths/[publicId]/people/[personId]` | Member detail |
 | `/paths/[publicId]/analytics` | Funnel across the path’s courses |
@@ -306,7 +311,7 @@ Dashboard (`publicId` in the URL so workspace paths stay short):
 | `/paths/[publicId]/settings` | Path settings |
 | `/courses/[courseId]/…` | Course workspace (edit, People, course analytics). Teachers go here from the path builder, not to the learner taking URL |
 
-No `/paths/[publicId]/setup`. No `?learningPathId=` on `/courses/[courseId]/people` or other **course admin** routes. Teacher path Courses is `/paths/[publicId]`; `/paths/[publicId]/courses/[courseId]/*` is the course tree for a path visit.
+No `?learningPathId=` on `/courses/[courseId]/people` or other **course admin** routes. Teacher path Courses is `/paths/[publicId]`; `/paths/[publicId]/courses/[courseId]/*` is the course tree for a path visit. Setup is `/paths/[publicId]/setup`.
 
 Route files: `paths/[publicId]/+layout` resolves `publicId` → uuid. Workspace pages (index, people, analytics, …) use a PathSidebar layout group. `/paths/[publicId]/courses/[courseId]/*` is a sibling group that remounts the existing `(app)/courses/[id]/*` pages + ribbon — same `getNavItemRoute` children, prefix swapped.
 
@@ -448,7 +453,7 @@ Public (org-site loaders, no auth): list published paths for landing/catalog; ge
 
 Follow CLAUDE.md conventions: types in `features/learning-path/utils/types.ts` inferred from the API, API classes in `features/learning-path/api/*.svelte.ts`, thin components, all copy in `en.json` under `"learningPath"`, `ui:` prefix for theme colors.
 
-- **Admin**: nav item in `org-navigation.ts` after Courses using `PathIcon` from `@cio/ui/custom/moving-icons`; routes `org/[slug]/paths/+page.svelte` (same listing as courses) and `/paths/[publicId]` (Courses default) plus `/paths/[publicId]/{people,analytics,landingpage,certificates,settings}` with a `PathSidebar` copied from `CourseSidebar`. Reuse `Page.*`, `Search`, `CourseFilterPopover`, `Field.*`, `invitation-modal`, `Page.SettingsActions`, and the lesson **Start reorder / End reorder** + `svelte-dnd-action` pattern. Optional in-workspace setup chip only — no `/setup` create route. Teachers open a member course at `/courses/[courseId]/…`, not under the path.
+- **Admin**: nav item in `org-navigation.ts` after Courses using `PathIcon` from `@cio/ui/custom/moving-icons`; routes `org/[slug]/paths/+page.svelte` (same listing as courses) and `/paths/[publicId]` (Courses default) plus `/paths/[publicId]/{setup,people,analytics,landingpage,certificates,settings}` with a `PathSidebar` copied from `CourseSidebar`. Setup copies `org/[slug]/setup`. Reuse `Page.*`, `Search`, `CourseFilterPopover`, `Field.*`, `invitation-modal`, `Page.SettingsActions`, and the lesson **Start reorder / End reorder** + `svelte-dnd-action` pattern. Teachers open a member course at `/courses/[courseId]/…`, not under the path.
 - **LMS**: one `/lms/mylearning` grid (URL unchanged; path cards + independent course cards); Explore; hub `/paths/[publicId]`; `/paths/[publicId]/courses/[courseId]/*` remounts the existing course pages + ribbon. Do not add an LMS Paths nav item. Do not fork course pages.
 - **Public**: paths section added to org landing themes (start `minimal`) via the **existing** org landing editor; `(org-site)/paths` and `(org-site)/path/[slug]` mirroring the **existing** courses catalog and course landing. Path public-page **editor** copies `courses/[id]/landingpage` (overlay + live preview), not `teacher-path-landing-editor.html`. Reuse `CourseSectionNav`, `CourseSocialProof`, `CourseCurriculum`-style rows, `CoursePricing` card, `LandingButton`, footer. `requiresLearningPath` courses do not self-enroll from `/course/[slug]/enroll` and are not independently takeable in the public catalog.
 
@@ -466,14 +471,14 @@ pnpm format:check
 
 1. **Schema + validation + queries** (`learning_path*` tables, Zod schemas, query layer).
 2. **API**: CRUD + course ordering + members + enroll service (auto-enroll transaction, `ON CONFLICT DO NOTHING` idempotency) + unlock/completion service + enrolled-paths endpoint.
-3. **Admin UI**: listing (course listing pattern) → `PathSidebar` + Courses default at `/paths/[publicId]` (Start/End reorder) → Settings (`Page.SettingsActions`) → People (`invitation-modal`) → Landing editor → Certificate → Analytics. Optional setup chip, not a setup route.
+3. **Admin UI**: listing (course listing pattern) → create modal → `/paths/[publicId]/setup` → `PathSidebar` + Courses default at `/paths/[publicId]` (Start/End reorder) → Settings (`Page.SettingsActions`) → People (`invitation-modal`) → Landing editor → Certificate → Analytics.
 4. **LMS**: mixed cards on `/lms/mylearning` (URL unchanged); Explore; hub `/paths/[publicId]`; `/paths/[publicId]/courses/[courseId]/*` (shared course pages + ribbon). Do not rebuild LMS home, sidebar, Exercises, Community, or Settings.
 5. **Public**: landing section (minimal theme) → catalog (mirror `(org-site)/courses`) → detail page → enroll flow (free first, then paid via existing payment flow).
 6. **Certificate issuance** + existing LMS Certificates page.
 
 ## Acceptance Criteria
 
-1. Teacher can create a path (course create-modal pattern), add + reorder courses (Start/End reorder like lessons), set a bundle price, and publish it (`isPublished` + `Page.SettingsActions`).
+1. Teacher can create a path (course create-modal pattern), lands on `/paths/[publicId]/setup`, add + reorder courses (Start/End reorder like lessons), set a bundle price, and publish it (`isPublished` + `Page.SettingsActions`).
 2. Published paths appear on the org landing page above courses, in `/paths` (same catalog chrome as `/courses`), and at `/path/[slug]` with all enabled sections; unpublished paths do not.
 3. Savings displays as bundle price vs summed course prices and updates when course prices change.
 4. Visitor access level correctly gates lesson outlines/previews for non-enrolled visitors.
@@ -488,7 +493,8 @@ pnpm format:check
 13. All user-facing strings use translation keys; all builds and `pnpm format:check` pass.
 14. Shared UI matches the live course implementation: org listing, create modal, `PathSidebar`, People (`invitation-modal` + role filter), Settings (`Field.*` + `Page.SettingsActions`), filters/search, LMS My Learning (tabs + grid only, mixed path/course cards), Explore toolbar, drag-reorder mode, **landing editor** overlay. Prototype Decisions 13–33 that redesigned those surfaces are **not** acceptance criteria.
 15. `course.requiresLearningPath` blocks independent student enroll (public, Explore, course invite, course People → Add), hides the course as independently takeable in the public catalog, and does not revoke grants that already exist.
-16. Dashboard/LMS path URLs use `learning_path.publicId` (8 mixed-case `[0-9A-Za-z]`). Teachers land on `/paths/[publicId]` (Courses default). A path visit of a course is `/paths/[publicId]/courses/[courseId]/*` — the **same** course pages as `/courses/[courseId]/*`; path chrome is ribbon only. `/lms/mylearning` does not change.
+16. Dashboard/LMS path URLs use `learning_path.publicId` (8 mixed-case `[0-9A-Za-z]`). Teachers land on `/paths/[publicId]/setup` after create; Courses default is `/paths/[publicId]`. A path visit of a course is `/paths/[publicId]/courses/[courseId]/*` — the **same** course pages as `/courses/[courseId]/*`; path chrome is ribbon only. `/lms/mylearning` does not change.
+17. `/paths/[publicId]/setup` exists as a workspace subpage using org setup chrome (`Page.*`, `Item.*`). It is not the create modal. `/courses/[id]/setup` is out of scope here and can copy this later.
 
 
 
