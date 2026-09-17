@@ -3526,6 +3526,13 @@ export const learningPath = pgTable(
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
+    /**
+     * Short mixed-case id for dashboard/LMS URLs (`/paths/1GlQpMod/...`). Not the PK;
+     * all FKs stay on `id`. Immutable once assigned. Globally unique. Public org-site
+     * URLs still use `slug`. Alphabet `[0-9A-Za-z]`, length 8. Generated at insert;
+     * retry on unique violation. Course ids in nested taking URLs stay UUID.
+     */
+    publicId: varchar('public_id', { length: 8 }).notNull(),
     organizationId: uuid('organization_id').notNull(),
     name: varchar().notNull(),
     /** URL segment for `/path/[slug]`; unique per org, not globally like `course.slug`. */
@@ -3605,6 +3612,7 @@ export const learningPath = pgTable(
       foreignColumns: [profile.id],
       name: 'learning_path_created_by_profile_id_fkey'
     }),
+    unique('learning_path_public_id_unique').on(table.publicId),
     unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
     index('idx_learning_path_organization_id').on(table.organizationId),
     index('idx_learning_path_organization_id_is_published').on(table.organizationId, table.isPublished)
