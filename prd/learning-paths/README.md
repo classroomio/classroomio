@@ -3,6 +3,7 @@
 ## Status
 
 - Draft (prototyped, ready for engineering review)
+- Design conversation: [transcript.html](./transcript.html)
 
 ## Implementation source of truth — courses in the app
 
@@ -320,7 +321,7 @@ Route files: `paths/[publicId]/+layout` resolves `publicId` → uuid. Workspace 
 **B.** `/paths/[publicId]/courses/[courseId]/*` mirrors `/courses/[courseId]/*` (`/`, `lessons`, `certificates`, `marks`, …).
 
 - Shared course pages. Path-only chrome is the ribbon / lock / back to hub.
-- Teachers edit the course at `/courses/[courseId]/*`. Path Courses page is `/paths/[publicId]`. Path analytics is `/paths/[publicId]/analytics`.
+- Teachers edit the course at `/courses/[courseId]/*`. Path Courses page is `/paths/[publicId]`. Path analytics is `/paths/[publicId]/analytics`. Create lands on `/paths/[publicId]/setup` (org setup chrome).
 - `publicId` is URL-only (UUID PK unchanged). Course id in the nested segment stays UUID.
 - My Learning stays `/lms/mylearning`.
 - `requiresLearningPath` true: not independently in the public catalog; `/courses/[courseId]/*` redirects as above. False: catalog + independent enroll stay.
