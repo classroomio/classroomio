@@ -962,7 +962,6 @@
         "content_grouping_title": "Grupowanie treści",
         "content_grouping_description": "Grupuj lekcje i ćwiczenia według sekcji na liście treści.",
         "progression_mode_title": "Postęp ucznia",
-        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej treści, czy muszą kończyć elementy po kolei.",
         "progression_mode_free": "Wolny — odblokowana treść jest dostępna",
         "progression_mode_sequential": "Sekwencyjny — ukończ poprzednie elementy, aby odblokować następny",
         "comments": {
@@ -1051,7 +1050,8 @@
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
         "copy_link": "Skopiuj link",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją."
+        "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
+        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów."
       },
       "analytics": {
         "title": "Analityka"
@@ -2427,10 +2427,10 @@
           "manual_label": "Ręcznie",
           "manual_description": "Uczniowie sami oznaczają lekcję jako ukończoną.",
           "video_watch_label": "Obejrzenie wideo",
-          "video_watch_description": "Lekcja kończy się automatycznie po obejrzeniu wybranych filmów.",
           "none_label": "Brak",
           "none_description": "Ta lekcja nie blokuje postępu w kursie.",
-          "watch_threshold": "Próg obejrzenia (%)"
+          "watch_threshold": "Próg obejrzenia (%)",
+          "video_watch_description": "Lekcja kończy się automatycznie, gdy uczniowie obejrzą wybrane przesłane filmy. Nie można śledzić filmów z YouTube ani filmów osadzonych na zewnętrznych stronach."
         },
         "settings": {
           "comments": {
@@ -2447,9 +2447,11 @@
             "option_guide_heading": "Co oznacza każda opcja",
             "watch_videos_heading": "Filmy do egzekwowania",
             "watch_videos_helper": "Tylko przesłane filmy mogą być egzekwowane. YouTube i zewnętrzne osadzenia nie mogą być śledzone.",
-            "watch_videos_empty": "Dodaj przesłany film w zakładce Wideo, aby użyć egzekwowania obejrzenia.",
             "watch_videos_required": "Wybierz co najmniej jeden film przy egzekwowaniu obejrzenia.",
-            "students_only_note": "Te zasady dotyczą tylko uczniów. Jako nauczyciel możesz swobodnie przeglądać i nawigować."
+            "students_only_note": "Te zasady dotyczą tylko uczniów. Jako nauczyciel możesz swobodnie przeglądać i nawigować.",
+            "watch_videos_empty": "Śledzenie oglądania obejmuje tylko przesłane filmy. Nie można śledzić filmów z YouTube ani filmów osadzonych na zewnętrznych stronach, więc ta lekcja nie może zostać ukończona automatycznie, a uczniowie nie mogą oznaczyć jej jako ukończonej. Prześlij wideo na karcie Wideo lub ustaw regułę ukończenia na Ręcznie.",
+            "watch_videos_no_uploads_title": "Brak przesłanych filmów wideo w tej lekcji",
+            "watch_videos_learn_more": "Dowiedz się więcej"
           }
         },
         "watch_progress": {

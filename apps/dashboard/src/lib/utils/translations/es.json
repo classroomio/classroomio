@@ -962,7 +962,6 @@
         "content_grouping_title": "Agrupación de contenidos",
         "content_grouping_description": "Agrupe lecciones y ejercicios por sección en la lista de contenidos.",
         "progression_mode_title": "Progresión del estudiante",
-        "progression_mode_description": "Controla si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden.",
         "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
         "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
         "comments": {
@@ -1051,7 +1050,8 @@
         "generate_link": "Generar nuevo enlace",
         "open_link": "Abrir enlace en nueva pestaña",
         "copy_link": "Copiar enlace",
-        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo."
+        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
+        "progression_mode_description": "Controle si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden. La finalización de la visualización del video solo rastrea los videos subidos."
       },
       "analytics": {
         "title": "Analíticas"
@@ -2427,10 +2427,10 @@
           "manual_label": "Manual",
           "manual_description": "Los estudiantes marcan la lección como completada.",
           "video_watch_label": "Ver video",
-          "video_watch_description": "La lección se completa automáticamente después de que los estudiantes vean los videos seleccionados.",
           "none_label": "Ninguna",
           "none_description": "Esta lección no bloquea la progresión del curso.",
-          "watch_threshold": "Umbral de visualización (%)"
+          "watch_threshold": "Umbral de visualización (%)",
+          "video_watch_description": "La lección se completa automáticamente después de que los estudiantes vean los videos cargados seleccionados. No se pueden rastrear YouTube ni las incrustaciones externas."
         },
         "settings": {
           "comments": {
@@ -2447,9 +2447,11 @@
             "option_guide_heading": "Qué significa cada opción",
             "watch_videos_heading": "Videos a aplicar",
             "watch_videos_helper": "Solo los videos subidos pueden aplicarse. YouTube y las incrustaciones externas no se pueden rastrear.",
-            "watch_videos_empty": "Añade un video subido en la pestaña Video para usar el seguimiento de visualización.",
             "watch_videos_required": "Selecciona al menos un video para el seguimiento de visualización.",
-            "students_only_note": "Estas reglas aplican solo a estudiantes. Puedes previsualizar y navegar libremente al enseñar."
+            "students_only_note": "Estas reglas aplican solo a estudiantes. Puedes previsualizar y navegar libremente al enseñar.",
+            "watch_videos_empty": "La visualización de videos solo rastrea los videos subidos. No se puede realizar un seguimiento de YouTube ni de incrustaciones externas, por lo que esta lección no se puede completar automáticamente y los estudiantes no pueden marcarla como completada. Cargue el video en la pestaña Video o establezca la regla de finalización en Manual.",
+            "watch_videos_no_uploads_title": "No hay videos subidos en esta lección.",
+            "watch_videos_learn_more": "Más información"
           }
         },
         "watch_progress": {
