@@ -35,7 +35,7 @@
           isActive ? 'ui:bg-primary ui:text-primary-foreground' : 'ui:bg-foreground ui:text-background'
         )}
       >
-        {template.labelKey ? $t(template.labelKey) : template.label}
+        {template.label}
       </span>
     </button>
   {/each}

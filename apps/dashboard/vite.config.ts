@@ -66,8 +66,8 @@ export default ({ mode }) => {
     },
     resolve: {
       alias: {
-        '@cio/sdk/layouts': path.resolve(__dirname, '../../packages/sdk/dist/layouts/index.js'),
-        '@cio/sdk': path.resolve(__dirname, '../../packages/sdk/dist/index.js')
+        '@cio/sdk/layouts': path.resolve(__dirname, '../../packages/sdk/src/layouts/index.ts'),
+        '@cio/sdk': path.resolve(__dirname, '../../packages/sdk/src/index.ts')
       },
       mainFields: ['browser']
     }

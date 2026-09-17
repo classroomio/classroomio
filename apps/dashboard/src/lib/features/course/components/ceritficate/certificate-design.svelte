@@ -30,9 +30,8 @@
     certificateId: (design.idFormat ?? 'N° {seq}').replace('{seq}', '0247')
   });
 
-  const activeTemplate = $derived(CERTIFICATE_TEMPLATES.find((template) => template.id === design.templateId));
   const templateLabel = $derived(
-    activeTemplate?.labelKey ? $t(activeTemplate.labelKey) : (activeTemplate?.label ?? design.templateId)
+    CERTIFICATE_TEMPLATES.find((template) => template.id === design.templateId)?.label ?? design.templateId
   );
 
   const courseId = $derived(courseApi.course?.id ?? '');
