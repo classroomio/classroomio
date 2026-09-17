@@ -201,10 +201,8 @@ export interface ActivityTypeDefinition {
 /** A validated, data-only certificate template consumed by the host renderer. */
 export interface CertificateTemplateDefinition {
   id: string;
-  label?: string;
-  labelKey?: string;
-  description?: string;
-  descriptionKey?: string;
+  label: string;
+  description: string;
   body: string;
   styles: string;
 }

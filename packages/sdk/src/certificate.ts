@@ -33,20 +33,12 @@ const definedCertificateTemplates = new WeakSet<object>();
 const certificateTemplateSchema = z
   .object({
     id: z.string().regex(certificateTemplateIdPattern, 'Certificate template id is invalid.'),
-    label: z.string().trim().min(1).optional(),
-    labelKey: z.string().trim().min(1).optional(),
-    description: z.string().trim().min(1).optional(),
-    descriptionKey: z.string().trim().min(1).optional(),
+    label: z.string().trim().min(1),
+    description: z.string().trim().min(1),
     body: z.string().trim().min(1),
     styles: z.string().trim().min(1)
   })
-  .strict()
-  .refine((definition) => definition.label || definition.labelKey, {
-    message: 'Certificate templates require label or labelKey.'
-  })
-  .refine((definition) => definition.description || definition.descriptionKey, {
-    message: 'Certificate templates require description or descriptionKey.'
-  });
+  .strict();
 
 function assertSafeDeclarativeTemplate(definition: CertificateTemplateDefinition): void {
   if (unsafeMarkupPattern.test(definition.body) || unsafeStylesPattern.test(definition.body)) {

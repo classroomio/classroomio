@@ -73,7 +73,5 @@ export interface CertificateRenderResult {
 export interface CertificateTemplateMeta {
   id: CertificateTemplateId;
   label: string;
-  labelKey?: string;
   description: string;
-  descriptionKey?: string;
 }

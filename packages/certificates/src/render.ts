@@ -32,10 +32,10 @@ const RENDERERS: Record<string, TemplateRenderer> = {
 const BUILT_IN_TEMPLATE_IDS = new Set<string>(CERTIFICATE_TEMPLATE_IDS);
 const PLACEHOLDER_PATTERN = /{{\s*([a-zA-Z][a-zA-Z0-9]*)\s*}}/g;
 const DEFAULT_DECLARATIVE_LABELS = {
-  certificateTitle: 'Certificate of completion',
-  completionLabel: 'For successful completion of',
-  presentedToLabel: 'This is proudly presented to',
-  verifiedCredentialLabel: 'Verified credential'
+  certificateTitle: 'CERTIFICATE OF COMPLETION',
+  completionLabel: 'FOR SUCCESSFUL COMPLETION OF',
+  presentedToLabel: 'THIS IS PROUDLY PRESENTED TO',
+  verifiedCredentialLabel: 'VERIFIED CREDENTIAL'
 };
 
 function interpolateTemplate(source: string, values: Record<string, string>): string {
@@ -101,10 +101,8 @@ export function registerCertificateTemplates(templates: readonly CertificateTemp
     const existingIndex = CERTIFICATE_TEMPLATES.findIndex((candidate) => candidate.id === template.id);
     const metadata = {
       id: template.id as CertificateTemplateId,
-      label: template.label ?? template.id,
-      labelKey: template.labelKey,
-      description: template.description ?? '',
-      descriptionKey: template.descriptionKey
+      label: template.label,
+      description: template.description
     };
 
     if (existingIndex >= 0) {

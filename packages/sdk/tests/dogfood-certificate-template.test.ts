@@ -25,7 +25,7 @@ describe('Dogfood: Certificate Modern Gold Plugin', () => {
     expect(resolved.plugins).toHaveLength(1);
     expect(resolved.plugins[0].id).toBe('certificate_modern_gold');
     expect(resolved.plugins[0].category).toBe('certificate');
-    expect(resolved.slots['certificate.template']).toBeDefined();
+    expect(resolved.slots['certificate.template']).toBeUndefined();
     expect(resolved.certificateTemplates.modern_gold).toMatchObject({
       id: 'modern_gold',
       label: 'Modern Gold'
