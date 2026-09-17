@@ -14,6 +14,7 @@ export interface LearningPathCourseItem {
 
 export interface LearningPathSummary {
   id: string;
+  publicId: string;
   organizationId: string;
   name: string;
   slug: string;

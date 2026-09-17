@@ -26,7 +26,7 @@
 
       const baseSlug = slugify($clonePathModal.name.trim()) || 'path';
       const newSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
-      const newId = await learningPathApi.createPath({
+      const newPath = await learningPathApi.createPath({
         name: $clonePathModal.name.trim(),
         slug: newSlug,
         description: $clonePathModal.description.trim()
@@ -34,12 +34,12 @@
 
       // If source path had courses, copy them over
       if (sourcePath && sourcePath.courses && sourcePath.courses.length > 0) {
-        await learningPathApi.addCourseItems(newId, sourcePath.courses);
+        await learningPathApi.addCourseItems(newPath.id, sourcePath.courses);
       }
 
       snackbar.success('learningPath.workspace.cloned');
       clonePathModal.set({ ...clonePathModalInitialState });
-      goto(`/paths/${newId}/courses`);
+      goto(`/paths/${newPath.publicId}`);
     } catch (err: unknown) {
       errorMessage = err instanceof Error ? err.message : $t('learningPath.modals.clone.failed');
     } finally {

@@ -11,6 +11,7 @@ import { coursesApi } from '$features/course/api';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { isPathAccessibleToUser } from '../utils/learning-path-utils';
+import { generatePublicId } from '../utils/public-id';
 
 function getStorageKey(orgId?: string | null): string {
   return orgId ? `classroomio_learning_paths_state_${orgId}` : 'classroomio_learning_paths_state';
@@ -25,6 +26,10 @@ function loadStoredPaths(orgId?: string | null): LearningPathDetail[] {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
         return parsed.map((pathItem) => {
+          if (!pathItem.publicId) {
+            const matchingMock = MOCK_PATHS.find((mockItem) => mockItem.id === pathItem.id);
+            pathItem.publicId = matchingMock?.publicId || generatePublicId(8);
+          }
           if (pathItem.tutorIds === undefined) {
             const matchingMock = MOCK_PATHS.find((mockItem) => mockItem.id === pathItem.id);
             if (matchingMock && matchingMock.tutorIds) {
@@ -112,7 +117,7 @@ export class LearningPathApi extends BaseApiWithErrors {
     if (this.paths.length === 0) {
       this.paths = loadStoredPaths(this.currentOrgId);
     }
-    const found = this.paths.find((p) => p.id === pathId || p.slug === pathId);
+    const found = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
     if (found) {
       if (access && access.isAdmin !== undefined && access.isAdmin !== null) {
         const isAccessible = isPathAccessibleToUser(found, access.isAdmin, access.userProfileId);
@@ -127,11 +132,13 @@ export class LearningPathApi extends BaseApiWithErrors {
     return null;
   }
 
-  async createPath(data: CreateLearningPathInput): Promise<string> {
+  async createPath(data: CreateLearningPathInput): Promise<Pick<LearningPathDetail, 'id' | 'publicId'>> {
     const id = `lp-${Date.now()}`;
+    const publicId = generatePublicId(8);
     const organizationId = data.organizationId || this.currentOrgId || 'org-1';
     const newPath: LearningPathDetail = {
       id,
+      publicId,
       organizationId,
       name: data.name,
       slug: data.slug,
@@ -164,11 +171,11 @@ export class LearningPathApi extends BaseApiWithErrors {
     this.paths = [newPath, ...this.paths];
     this.currentPath = newPath;
     this.save();
-    return id;
+    return { id: newPath.id, publicId: newPath.publicId };
   }
 
   async updatePath(pathId: string, data: UpdateLearningPathInput): Promise<void> {
-    const idx = this.paths.findIndex((p) => p.id === pathId || p.slug === pathId);
+    const idx = this.paths.findIndex((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
     if (idx !== -1) {
       const target = this.paths[idx];
       const updated: LearningPathDetail = {
@@ -178,7 +185,7 @@ export class LearningPathApi extends BaseApiWithErrors {
       };
       this.paths[idx] = updated;
       this.paths = [...this.paths];
-      if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.slug === pathId)) {
+      if (this.currentPath?.id === pathId) {
         this.currentPath = updated;
       }
       this.save();
@@ -186,8 +193,8 @@ export class LearningPathApi extends BaseApiWithErrors {
   }
 
   async deletePath(pathId: string): Promise<void> {
-    this.paths = this.paths.filter((p) => p.id !== pathId && p.slug !== pathId);
-    if (this.currentPath?.id === pathId || this.currentPath?.slug === pathId) {
+    this.paths = this.paths.filter((p) => p.publicId !== pathId && p.id !== pathId && p.slug !== pathId);
+    if (this.currentPath?.publicId === pathId || this.currentPath?.id === pathId || this.currentPath?.slug === pathId) {
       this.currentPath = null;
     }
     this.save();
@@ -202,7 +209,7 @@ export class LearningPathApi extends BaseApiWithErrors {
     this.error = null;
 
     try {
-      const target = this.paths.find((p) => p.id === pathId || p.slug === pathId);
+      const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
       if (!target) {
         this.error = 'Learning path not found';
         return false;
@@ -243,7 +250,7 @@ export class LearningPathApi extends BaseApiWithErrors {
       target.updatedAt = new Date().toISOString();
 
       this.paths = [...this.paths];
-      if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.slug === pathId)) {
+      if (this.currentPath?.id === pathId) {
         this.currentPath = target;
       }
       this.save();
@@ -283,7 +290,7 @@ export class LearningPathApi extends BaseApiWithErrors {
     this.error = null;
 
     try {
-      const target = this.paths.find((p) => p.id === pathId || p.slug === pathId);
+      const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
       if (!target) {
         this.error = 'Learning path not found';
         return false;
@@ -304,7 +311,7 @@ export class LearningPathApi extends BaseApiWithErrors {
       target.updatedAt = new Date().toISOString();
 
       this.paths = [...this.paths];
-      if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.slug === pathId)) {
+      if (this.currentPath?.id === pathId) {
         this.currentPath = target;
       }
       this.save();
@@ -319,7 +326,7 @@ export class LearningPathApi extends BaseApiWithErrors {
   }
 
   async removeCourse(pathId: string, courseId: string): Promise<void> {
-    const target = this.paths.find((p) => p.id === pathId || p.slug === pathId);
+    const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
     if (!target || !target.courses) return;
 
     const remaining = target.courses
@@ -331,14 +338,14 @@ export class LearningPathApi extends BaseApiWithErrors {
     target.updatedAt = new Date().toISOString();
 
     this.paths = [...this.paths];
-    if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.slug === pathId)) {
+    if (this.currentPath?.id === pathId) {
       this.currentPath = target;
     }
     this.save();
   }
 
   async reorderCourses(pathId: string, orderedCourseIds: string[]): Promise<void> {
-    const target = this.paths.find((p) => p.id === pathId || p.slug === pathId);
+    const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
     if (!target || !target.courses) return;
 
     const courseMap = new Map(target.courses.map((c) => [c.id, c]));
@@ -358,7 +365,7 @@ export class LearningPathApi extends BaseApiWithErrors {
     target.updatedAt = new Date().toISOString();
 
     this.paths = [...this.paths];
-    if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.slug === pathId)) {
+    if (this.currentPath?.id === pathId) {
       this.currentPath = target;
     }
     this.save();

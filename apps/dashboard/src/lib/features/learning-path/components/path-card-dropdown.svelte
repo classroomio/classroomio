@@ -6,6 +6,7 @@
 
   interface Props {
     id: string;
+    publicId: string;
     slug?: string;
     name: string;
     description?: string;
@@ -13,7 +14,7 @@
     onDelete?: (id: string, name: string) => void;
   }
 
-  let { id, slug = '', name, description = '', isPublished = false, onDelete }: Props = $props();
+  let { id, publicId, slug = '', name, description = '', isPublished = false, onDelete }: Props = $props();
 </script>
 
 <DropdownMenu.Root>
@@ -30,6 +31,6 @@
   </DropdownMenu.Trigger>
 
   <DropdownMenu.Content align="end">
-    <PathContextMenuContent {id} {slug} {name} {description} {isPublished} {onDelete} includeOpen={false} />
+    <PathContextMenuContent {id} {publicId} {slug} {name} {description} {isPublished} {onDelete} includeOpen={false} />
   </DropdownMenu.Content>
 </DropdownMenu.Root>

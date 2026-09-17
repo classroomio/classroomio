@@ -63,6 +63,7 @@ export const MOCK_TUTOR_ID = 'mock-tutor-1';
 export const MOCK_PATHS: LearningPathDetail[] = [
   {
     id: 'lp-frontend-bootcamp',
+    publicId: '1GlQpMod',
     organizationId: 'org-1',
     name: 'Frontend Engineering Bootcamp',
     slug: 'frontend-engineering-bootcamp',
@@ -98,6 +99,7 @@ export const MOCK_PATHS: LearningPathDetail[] = [
   },
   {
     id: 'lp-data-science',
+    publicId: '2XmK9pRt',
     organizationId: 'org-1',
     name: 'Data Science with Python',
     slug: 'data-science-with-python',
@@ -132,6 +134,7 @@ export const MOCK_PATHS: LearningPathDetail[] = [
   },
   {
     id: 'lp-product-management',
+    publicId: '3JnL4vQw',
     organizationId: 'org-1',
     name: 'Product Management Fundamentals',
     slug: 'product-management-fundamentals',
@@ -165,6 +168,7 @@ export const MOCK_PATHS: LearningPathDetail[] = [
   },
   {
     id: 'lp-workplace-compliance',
+    publicId: '4BvR8mKs',
     organizationId: 'org-1',
     name: 'Workplace Compliance 2026',
     slug: 'workplace-compliance-2026',

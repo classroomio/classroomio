@@ -24,16 +24,16 @@
   let isChecked = $state(false);
 
   $effect.pre(() => {
-    if (data.pathId) {
+    if (data.publicId) {
       isChecked = false;
-      void learningPathApi.getPath(data.pathId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id }).then(() => {
+      void learningPathApi.getPath(data.publicId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id }).then(() => {
         isChecked = true;
       });
     }
   });
 
   const activePath = $derived(
-    resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
+    resolveActivePath(data.publicId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
       isAdmin: $isOrgAdmin,
       userProfileId: $profile?.id
     })

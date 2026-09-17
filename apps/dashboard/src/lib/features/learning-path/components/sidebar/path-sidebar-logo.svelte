@@ -14,8 +14,7 @@
   let { path }: Props = $props();
 
   const pathName = $derived(path?.name);
-  const pathId = $derived(path?.id);
-  const pathHref = $derived(pathId ? resolve(`/paths/${pathId}/courses`, {}) : '#');
+  const pathHref = $derived(path?.publicId ? resolve(`/paths/${path.publicId}`, {}) : '#');
 </script>
 
 <Sidebar.Menu>

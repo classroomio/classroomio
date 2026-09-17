@@ -10,7 +10,7 @@
   interface Props {
     open?: boolean;
     onClose?: () => void;
-    onCreated?: (newPathId: string) => void;
+    onCreated?: (newPathPublicId: string) => void;
   }
 
   let { open = $bindable(false), onClose = () => {}, onCreated = () => {} }: Props = $props();
@@ -47,16 +47,15 @@
     try {
       const rawSlug = slugify(name.trim());
       const generatedSlug = rawSlug || `path-${Date.now().toString().slice(-4)}`;
-      const newId = await learningPathApi.createPath({
+      const newPath = await learningPathApi.createPath({
         name: name.trim(),
         slug: generatedSlug,
         description: description.trim()
       });
 
-      const targetId = newId;
       resetForm();
       open = false;
-      onCreated(targetId);
+      onCreated(newPath.publicId);
     } catch (err: unknown) {
       errorMessage = err instanceof Error ? err.message : $t('learningPath.modals.create.failed');
     } finally {

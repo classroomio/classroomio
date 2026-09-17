@@ -24,14 +24,14 @@
 
   const currentPath = $derived(page.url.pathname);
   const pathsListPath = $derived(`${$currentOrgPath}/paths`);
-  const basePath = $derived(`/paths/${path.id}`);
+  const basePath = $derived(`/paths/${path.publicId}`);
 
   const tabs = $derived([
     {
       id: 'courses',
       label: $t('learningPath.workspace.tabs.courses'),
-      href: `${basePath}/courses`,
-      isActive: currentPath === `${basePath}/courses` || currentPath === basePath,
+      href: basePath,
+      isActive: currentPath === basePath,
       icon: CourseIcon,
       badge: path.courses ? path.courses.length : 0
     },
@@ -53,15 +53,15 @@
     {
       id: 'landing',
       label: $t('learningPath.workspace.tabs.landing'),
-      href: `${basePath}/landing`,
-      isActive: currentPath.startsWith(`${basePath}/landing`),
+      href: `${basePath}/landingpage`,
+      isActive: currentPath.startsWith(`${basePath}/landingpage`),
       icon: LandingPageIcon
     },
     {
       id: 'certificate',
       label: $t('learningPath.workspace.tabs.certificate'),
-      href: `${basePath}/certificate`,
-      isActive: currentPath.startsWith(`${basePath}/certificate`),
+      href: `${basePath}/certificates`,
+      isActive: currentPath.startsWith(`${basePath}/certificates`),
       icon: CertificateIcon
     },
     {

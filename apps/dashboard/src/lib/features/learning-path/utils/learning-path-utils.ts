@@ -45,7 +45,7 @@ export function isPathAccessibleToUser(
  * Resolves the active learning path by checking currentPath, paths list, and fallback data.
  */
 export function resolveActivePath(
-  pathId: string,
+  publicPathId: string,
   currentPath: LearningPathDetail | null,
   paths: LearningPathDetail[],
   fallback?: LearningPathDetail | null,
@@ -53,10 +53,10 @@ export function resolveActivePath(
 ): LearningPathDetail | null {
   let candidate: LearningPathDetail | null = null;
 
-  if (currentPath && (currentPath.id === pathId || currentPath.slug === pathId)) {
+  if (currentPath?.publicId === publicPathId) {
     candidate = currentPath;
   } else {
-    const found = paths.find((p) => p.id === pathId || p.slug === pathId);
+    const found = paths.find((p) => p.publicId === publicPathId);
     candidate = found || fallback || null;
   }
 

@@ -47,7 +47,7 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
       defaultDesc: 'Pick the courses that make up this learning path.',
       actionTextKey: 'learningPath.setup.step_courses_action',
       defaultAction: 'Add courses',
-      href: `${basePath}/courses`,
+      href: basePath,
       isCompleted: isAddCoursesDone
     },
     {
@@ -58,7 +58,7 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
       defaultDesc: 'Drag courses into the order learners should complete them.',
       actionTextKey: 'learningPath.setup.step_order_action',
       defaultAction: 'Set order',
-      href: `${basePath}/courses?reorder=true`,
+      href: `${basePath}?reorder=true`,
       isCompleted: isOrderDone
     },
     {
@@ -80,7 +80,7 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
       defaultDesc: 'Outcomes, skills, instructors, testimonials, and FAQs on the public path page.',
       actionTextKey: 'learningPath.setup.step_landing_action',
       defaultAction: 'Customize',
-      href: `${basePath}/landing`,
+      href: `${basePath}/landingpage`,
       isCompleted: isLandingDone
     },
     {

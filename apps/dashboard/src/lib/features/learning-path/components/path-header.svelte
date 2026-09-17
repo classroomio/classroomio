@@ -27,7 +27,7 @@
   let { path, onDelete }: Props = $props();
 
   const isPublished = $derived(path?.isPublished ?? false);
-  const basePath = $derived(path ? `/paths/${path.id}` : '');
+  const basePath = $derived(path ? `/paths/${path.publicId}` : '');
 
   const setupSteps = $derived(path ? getSetupSteps(path, basePath) : []);
   const setupProgress = $derived(getSetupProgress(setupSteps));
@@ -40,11 +40,11 @@
   const activeTabTitle = $derived.by(() => {
     const pathname = page.url.pathname;
     if (pathname.endsWith('/setup')) return $t('learningPath.workspace.tabs.setup');
-    if (pathname.endsWith('/courses') || pathname === basePath) return $t('learningPath.workspace.tabs.courses');
+    if (pathname === basePath || pathname.endsWith('/courses')) return $t('learningPath.workspace.tabs.courses');
     if (pathname.endsWith('/people')) return $t('learningPath.workspace.tabs.people');
     if (pathname.endsWith('/analytics')) return $t('learningPath.workspace.tabs.analytics');
-    if (pathname.endsWith('/landing')) return $t('learningPath.workspace.tabs.landing');
-    if (pathname.endsWith('/certificate')) return $t('learningPath.workspace.tabs.certificate');
+    if (pathname.endsWith('/landingpage')) return $t('learningPath.workspace.tabs.landing');
+    if (pathname.endsWith('/certificates')) return $t('learningPath.workspace.tabs.certificate');
     if (pathname.endsWith('/settings')) return $t('learningPath.workspace.tabs.settings');
     return '';
   });
@@ -58,7 +58,7 @@
     }
 
     openPathPreview({
-      pathId: path.id,
+      pathId: path.publicId,
       pathSlug: path.slug,
       currentOrgDomain: $currentOrgDomain
     });
@@ -122,6 +122,7 @@
           <DropdownMenu.Content align="end">
             <PathContextMenuContent
               id={path.id}
+              publicId={path.publicId}
               slug={path.slug}
               name={path.name}
               description={path.description}
@@ -139,7 +140,7 @@
 
 <ViewPathAsStudentModal
   bind:open={viewAsStudentOpen}
-  pathId={path?.id}
+  pathId={path?.publicId}
   pathSlug={path?.slug}
   currentOrgDomain={$currentOrgDomain}
 />

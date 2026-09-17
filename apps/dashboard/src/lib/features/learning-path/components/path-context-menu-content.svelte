@@ -11,6 +11,7 @@
 
   interface Props {
     id: string;
+    publicId: string;
     slug?: string;
     name: string;
     description?: string;
@@ -24,6 +25,7 @@
 
   let {
     id,
+    publicId,
     slug = '',
     name,
     description = '',
@@ -37,7 +39,7 @@
 
   function handleOpen(e: MouseEvent) {
     e.stopPropagation();
-    goto(resolve(openUrl || `/paths/${id}/courses`, {}));
+    goto(resolve(openUrl || `/paths/${publicId}`, {}));
   }
 
   function handleClone(e: MouseEvent) {
@@ -55,18 +57,18 @@
 
   function handleShare(e: MouseEvent) {
     e.stopPropagation();
-    goto(resolve(`/paths/${id}/settings#share`, {}));
+    goto(resolve(`/paths/${publicId}/settings#share`, {}));
   }
 
   function handleInvite(e: MouseEvent) {
     e.stopPropagation();
-    goto(resolve(`/paths/${id}/people?add=true`, {}));
+    goto(resolve(`/paths/${publicId}/people?add=true`, {}));
   }
 
   function handleViewPathSite(e: MouseEvent) {
     e.stopPropagation();
     openPathPreview({
-      pathId: id,
+      pathId: publicId,
       pathSlug: slug,
       currentOrgDomain: $currentOrgDomain
     });

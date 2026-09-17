@@ -38,16 +38,13 @@
     courseItems = e.detail.items;
   }
 
-  async function handleDndFinalize(e: CustomEvent<{ items: LearningPathCourseItem[] }>) {
+  function handleDndFinalize(e: CustomEvent<{ items: LearningPathCourseItem[] }>) {
     const updated = e.detail.items.map((item, index) => ({
       ...item,
       order: index + 1
     }));
     courseItems = updated;
-    await learningPathApi.reorderCourses(
-      path.id,
-      updated.map((c) => c.id)
-    );
+    path.courses = updated;
   }
 
   function handleUnlockToggle(nextChecked: boolean) {

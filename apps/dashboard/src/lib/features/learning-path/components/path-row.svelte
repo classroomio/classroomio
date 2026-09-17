@@ -27,7 +27,7 @@
   const totalStudents = $derived(path.memberCount || 0);
 
   const isDraftSetup = $derived(!isPublished && totalStudents === 0);
-  const pathUrl = $derived(isDraftSetup ? `/paths/${path.id}/setup` : `/paths/${path.id}/courses`);
+  const pathUrl = $derived(isDraftSetup ? `/paths/${path.publicId}/setup` : `/paths/${path.publicId}`);
 
   const MAX_VISIBLE_STUDENTS = 2;
 
@@ -213,6 +213,7 @@
         <DropdownMenu.Content align="end">
           <PathContextMenuContent
             id={path.id}
+            publicId={path.publicId}
             slug={path.slug}
             name={path.name}
             description={path.description}

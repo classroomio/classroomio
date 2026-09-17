@@ -8,7 +8,6 @@
   import { RefreshPageData } from '$features/ui';
   import { PathBuilder } from '$features/learning-path';
   import { learningPathApi } from '$features/learning-path/api';
-  import { Spinner } from '@cio/ui/base/spinner';
   import { t } from '$lib/utils/functions/translations';
 
   import { resolveActivePath } from '$features/learning-path/utils/learning-path-utils';
@@ -29,15 +28,15 @@
   });
 
   const activePath = $derived(
-    resolveActivePath(data.pathId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
+    resolveActivePath(data.publicId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
       isAdmin: $isOrgAdmin,
       userProfileId: $profile?.id
     })
   );
 
   function handleRefresh() {
-    if (data.pathId) {
-      learningPathApi.getPath(data.pathId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id });
+    if (data.publicId) {
+      learningPathApi.getPath(data.publicId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id });
     }
   }
 
@@ -76,10 +75,6 @@
     {#snippet child()}
       {#if activePath}
         <PathBuilder path={activePath} bind:reorder bind:showAddDialog />
-      {:else}
-        <div class="flex h-64 items-center justify-center">
-          <Spinner class="ui:text-primary size-6" />
-        </div>
       {/if}
     {/snippet}
   </Page.Body>

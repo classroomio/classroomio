@@ -168,7 +168,7 @@
   });
 
   function handleCreated(newId: string) {
-    goto(`/paths/${newId}/courses`);
+    goto(`/paths/${newId}`);
   }
 </script>
 

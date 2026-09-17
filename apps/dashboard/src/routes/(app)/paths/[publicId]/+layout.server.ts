@@ -1,14 +1,15 @@
 import { MOCK_PATHS } from '$features/learning-path/utils/mock-data';
 
 export const load = async ({ params, parent }) => {
-  const pathId = params.id;
+  const publicId = params.publicId;
   const parentData = await parent();
   const orgSlug = parentData.orgSiteName || parentData.org?.siteName || 'default';
 
-  const path = MOCK_PATHS.find((p) => p.id === pathId || p.slug === pathId) || null;
+  const path = MOCK_PATHS.find((p) => p.publicId === publicId) || null;
 
   return {
-    pathId,
+    publicId,
+    pathId: path?.id,
     orgSlug,
     path
   };
