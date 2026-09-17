@@ -33,7 +33,6 @@ describe('activity write-back context', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.completeLessonService.mockResolvedValue({ id: 'l1', isComplete: true });
-    mocks.recordLessonGrade.mockResolvedValue({ id: 'g1', score: 95 });
   });
 
   it('provides completion.mark(lessonId) that calls completeLessonService', async () => {
