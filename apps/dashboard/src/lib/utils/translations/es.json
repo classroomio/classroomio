@@ -489,7 +489,29 @@
     "submitted": "Enviado",
     "in_progress": "Calificación en progreso",
     "graded": "Calificado",
-    "lesson": "Lección"
+    "lesson": "Lección",
+    "total": "totales",
+    "completed": "Completado",
+    "overdue": "Vencido",
+    "empty": "Aún no hay ejercicios.",
+    "actions": {
+      "view": "Ver",
+      "continue": "Continuar",
+      "start": "Empezar"
+    },
+    "submission_states": {
+      "not_submitted": "No enviado",
+      "awaiting_grade": "esperando grado",
+      "submitted": "Enviado"
+    },
+    "table": {
+      "assignment": "tarea",
+      "course": "Curso",
+      "status": "Estado",
+      "due_date": "Fecha de vencimiento",
+      "submission": "Presentación",
+      "grade": "Grado"
+    }
   },
   "my_learning": {
     "heading": "Mi aprendizaje",

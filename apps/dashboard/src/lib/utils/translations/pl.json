@@ -489,7 +489,29 @@
     "submitted": "Przesłane",
     "in_progress": "Ocena w toku",
     "graded": "Ocenione",
-    "lesson": "Lekcja"
+    "lesson": "Lekcja",
+    "total": "Razem",
+    "completed": "Ukończono",
+    "overdue": "Zaległe",
+    "empty": "Nie ma jeszcze żadnych ćwiczeń.",
+    "actions": {
+      "view": "Zobacz",
+      "continue": "Kontynuuj",
+      "start": "Zacznij"
+    },
+    "submission_states": {
+      "not_submitted": "Nie przesłano",
+      "awaiting_grade": "Oczekiwanie na ocenę",
+      "submitted": "Przesłane"
+    },
+    "table": {
+      "assignment": "Przypisanie",
+      "course": "Kurs",
+      "status": "Stan",
+      "due_date": "Termin",
+      "submission": "Poddanie",
+      "grade": "Ocena"
+    }
   },
   "my_learning": {
     "heading": "Moja nauka",

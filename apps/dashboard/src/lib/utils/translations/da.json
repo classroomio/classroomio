@@ -489,7 +489,29 @@
     "submitted": "Indsendt",
     "in_progress": "Bedømmelse i gang",
     "graded": "Bedømt",
-    "lesson": "Lektion"
+    "lesson": "Lektion",
+    "total": "I alt",
+    "completed": "Afsluttet",
+    "overdue": "Forfalden",
+    "empty": "Ingen øvelser endnu.",
+    "actions": {
+      "view": "Visning",
+      "continue": "Fortsæt",
+      "start": "Start"
+    },
+    "submission_states": {
+      "not_submitted": "Ikke indsendt",
+      "awaiting_grade": "Afventer karakter",
+      "submitted": "Indsendt"
+    },
+    "table": {
+      "assignment": "Opgave",
+      "course": "Kursus",
+      "status": "Status",
+      "due_date": "Forfaldsdato",
+      "submission": "Indsendelse",
+      "grade": "Karakter"
+    }
   },
   "my_learning": {
     "heading": "Min Læring",

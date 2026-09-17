@@ -489,7 +489,29 @@
     "submitted": "Eingereicht",
     "in_progress": "Benotung läuft",
     "graded": "Benotet",
-    "lesson": "Lektion"
+    "lesson": "Lektion",
+    "total": "Insgesamt",
+    "completed": "Abgeschlossen",
+    "overdue": "Überfällig",
+    "empty": "Noch keine Übungen.",
+    "actions": {
+      "view": "Ansicht",
+      "continue": "Weiter",
+      "start": "Start"
+    },
+    "submission_states": {
+      "not_submitted": "Nicht eingereicht",
+      "awaiting_grade": "Warten auf die Note",
+      "submitted": "Eingereicht"
+    },
+    "table": {
+      "assignment": "Aufgabe",
+      "course": "Kurs",
+      "status": "Status",
+      "due_date": "Fälligkeitsdatum",
+      "submission": "Einreichung",
+      "grade": "Note"
+    }
   },
   "my_learning": {
     "heading": "Mein Lernen",

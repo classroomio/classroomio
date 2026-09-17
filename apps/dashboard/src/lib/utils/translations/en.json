@@ -4458,11 +4458,32 @@
   },
   "exercises": {
     "heading": "Exercises",
+    "total": "Total",
+    "completed": "Completed",
     "not_submitted": "Not Submitted",
     "submitted": "Submitted",
-    "in_progress": "Grading In Progress",
+    "in_progress": "In Progress",
     "graded": "Graded",
-    "lesson": "Lesson"
+    "overdue": "Overdue",
+    "empty": "No exercises yet.",
+    "table": {
+      "assignment": "Assignment",
+      "course": "Course",
+      "status": "Status",
+      "due_date": "Due Date",
+      "submission": "Submission",
+      "grade": "Grade"
+    },
+    "submission_states": {
+      "not_submitted": "Not submitted",
+      "awaiting_grade": "Awaiting grade",
+      "submitted": "Submitted"
+    },
+    "actions": {
+      "view": "View",
+      "continue": "Continue",
+      "start": "Start"
+    }
   },
   "explore": {
     "heading": "Explore",

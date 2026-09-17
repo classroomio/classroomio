@@ -489,7 +489,29 @@
     "submitted": "Отправлено",
     "in_progress": "Выставление оценок в процессе",
     "graded": "Оцененный",
-    "lesson": "Урок"
+    "lesson": "Урок",
+    "total": "Итого",
+    "completed": "Завершено",
+    "overdue": "Просрочено",
+    "empty": "Упражнений пока нет.",
+    "actions": {
+      "view": "Посмотреть",
+      "continue": "Продолжить",
+      "start": "Старт"
+    },
+    "submission_states": {
+      "not_submitted": "Не отправлено",
+      "awaiting_grade": "Ожидание оценки",
+      "submitted": "Отправлено"
+    },
+    "table": {
+      "assignment": "Назначение",
+      "course": "Курс",
+      "status": "Статус",
+      "due_date": "Срок сдачи",
+      "submission": "Представление",
+      "grade": "Оценка"
+    }
   },
   "my_learning": {
     "heading": "Мое обучение",

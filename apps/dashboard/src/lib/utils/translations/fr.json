@@ -489,7 +489,29 @@
     "submitted": "Soumis",
     "in_progress": "Classement en cours",
     "graded": "Noté",
-    "lesson": "Leçon"
+    "lesson": "Leçon",
+    "total": "Total",
+    "completed": "Terminé",
+    "overdue": "En retard",
+    "empty": "Pas encore d'exercices.",
+    "actions": {
+      "view": "Voir",
+      "continue": "Continuer",
+      "start": "Commencer"
+    },
+    "submission_states": {
+      "not_submitted": "Non soumis",
+      "awaiting_grade": "En attente de note",
+      "submitted": "Soumis"
+    },
+    "table": {
+      "assignment": "Affectation",
+      "course": "Cours",
+      "status": "Statut",
+      "due_date": "Date d'échéance",
+      "submission": "Soumission",
+      "grade": "Note"
+    }
   },
   "my_learning": {
     "heading": "Mon apprentissage",

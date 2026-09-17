@@ -489,7 +489,29 @@
     "submitted": "प्रस्तुत किया गया",
     "in_progress": "ग्रेडिंग प्रगति पर है",
     "graded": "श्रेणीबद्ध",
-    "lesson": "पाठ"
+    "lesson": "पाठ",
+    "total": "कुल",
+    "completed": "पूरा हुआ",
+    "overdue": "अतिदेय",
+    "empty": "अभी तक कोई अभ्यास नहीं.",
+    "actions": {
+      "view": "देखें",
+      "continue": "जारी रखें",
+      "start": "प्रारंभ करें"
+    },
+    "submission_states": {
+      "not_submitted": "प्रस्तुत नहीं किया गया",
+      "awaiting_grade": "ग्रेड का इंतजार है",
+      "submitted": "प्रस्तुत किया गया"
+    },
+    "table": {
+      "assignment": "असाइनमेंट",
+      "course": "पाठ्यक्रम",
+      "status": "स्थिति",
+      "due_date": "देय तिथि",
+      "submission": "समर्पण",
+      "grade": "ग्रेड"
+    }
   },
   "my_learning": {
     "heading": "मेरी सीख",

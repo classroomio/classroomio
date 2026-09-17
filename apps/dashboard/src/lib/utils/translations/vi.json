@@ -489,7 +489,29 @@
     "submitted": "Đã gửi",
     "in_progress": "Đang tiến hành chấm điểm",
     "graded": "Đã chấm điểm",
-    "lesson": "Bài học"
+    "lesson": "Bài học",
+    "total": "Tổng cộng",
+    "completed": "Đã hoàn thành",
+    "overdue": "Quá hạn",
+    "empty": "Chưa có bài tập nào.",
+    "actions": {
+      "view": "Xem",
+      "continue": "Tiếp tục",
+      "start": "Bắt đầu"
+    },
+    "submission_states": {
+      "not_submitted": "Chưa gửi",
+      "awaiting_grade": "Đang chờ lớp",
+      "submitted": "Đã gửi"
+    },
+    "table": {
+      "assignment": "Bài tập",
+      "course": "Khóa học",
+      "status": "Trạng thái",
+      "due_date": "Ngày đáo hạn",
+      "submission": "Gửi",
+      "grade": "Lớp"
+    }
   },
   "my_learning": {
     "heading": "Học tập của tôi",
