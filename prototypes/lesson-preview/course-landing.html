@@ -319,16 +319,7 @@
       const { LessonPreview, LessonPreviewPlayer } = window;
       let lang = 'en';
       let isFree = false;
-      const player = LessonPreviewPlayer.create(document.getElementById('player'), {
-        lang,
-        isFree,
-        onCta() {
-          document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
-        },
-        onChange() {
-          highlightCurriculum();
-        }
-      });
+      let player;
 
       function copy() {
         return LessonPreviewPlayer.t(lang);
@@ -344,6 +335,7 @@
         document.getElementById('costLabel').textContent = copy().costLabel;
         document.querySelector('#costSeg [data-cost="paid"]').textContent = copy().paid;
         document.querySelector('#costSeg [data-cost="free"]').textContent = copy().free;
+        const previews = LessonPreviewPlayer.previewLessons();
         document.getElementById('previewCount').textContent = copy().previewCount(
           previews.length,
           LessonPreview.course.lessonCount
@@ -393,11 +385,26 @@
       }
 
       function highlightCurriculum() {
+        if (!player) return;
         const currentId = player.getState().currentId;
         document.querySelectorAll('.curr-row').forEach((row) => {
           row.style.background = row.getAttribute('data-lesson') === currentId ? 'var(--landing-accent-soft)' : '';
         });
       }
+
+      applyCopy();
+      renderCurriculum();
+
+      player = LessonPreviewPlayer.create(document.getElementById('player'), {
+        lang,
+        isFree,
+        onCta() {
+          document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+        },
+        onChange() {
+          highlightCurriculum();
+        }
+      });
 
       document.getElementById('curriculumList').addEventListener('click', (event) => {
         const row = event.target.closest('[data-lesson]');
@@ -436,9 +443,6 @@
         document.documentElement.classList.toggle('dark');
         localStorage.cioTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
       });
-
-      applyCopy();
-      renderCurriculum();
     </script>
   </body>
 </html>
