@@ -5765,20 +5765,14 @@
       "courses_title": "Мои курсы",
       "course_paths_title": "Учебные программы",
       "course_paths_description": "Курсы, входящие в учебную программу, показывают, к какой программе они относятся.",
-      "currently_learning": "В настоящее время обучаюсь",
-      "paths_section_title": "Пути обучения",
-      "courses_section_title": "Больше курсов"
+      "currently_learning": "В настоящее время обучаюсь"
     },
     "empty": {
       "title": "Учебных программ пока нет",
       "description": "Здесь отображаются структурированные программы, в которые вы записаны. Запишитесь на программу из каталога, чтобы начать обучение в порядке очереди.",
       "back_to_paths": "Назад к учебным программам",
-      "no_results_title": "Программы не найдены",
-      "no_results_description": "Попробуйте другой поиск или сбросьте фильтры.",
       "path_not_found_title": "Программа не найдена",
-      "path_not_found_description": "Возможно, эта учебная программа была удалена или снята с публикации.",
-      "courses_empty_title": "Курсы, соответствующие вашему запросу, отсутствуют",
-      "courses_empty_description": "Попробуйте другой поисковый запрос."
+      "path_not_found_description": "Возможно, эта учебная программа была удалена или снята с публикации."
     },
     "explore": {
       "title": "Исследуйте больше путей",
@@ -5799,11 +5793,6 @@
       "clear_all": "Очистить все",
       "status": "Статус",
       "all": "Все",
-      "duration": "Продолжительность",
-      "duration_any": "Любая",
-      "duration_under4": "Менее 4 часов",
-      "duration_4to10": "4–10 часов",
-      "duration_10up": "10 часов и более",
       "grid_view": "Таблица",
       "list_view": "Список",
       "results": "результаты",
@@ -5811,10 +5800,7 @@
       "difficulty_any": "Любой",
       "difficulty_beginner": "Начинающий",
       "difficulty_intermediate": "Средний",
-      "difficulty_advanced": "Передовой",
-      "duration_under1": "Менее 1 часа",
-      "duration_1to4": "1 - 4 ч",
-      "duration_4up": "4 ч+"
+      "difficulty_advanced": "Передовой"
     },
     "row": {
       "completed": "Завершено"
@@ -5868,8 +5854,6 @@
       "continue_course": "Продолжить курс",
       "review_course": "Обзорный курс",
       "completed_label": "Завершенный",
-      "weeks": "недели",
-      "time_left": "левый",
       "view_course": "Просмотреть курс",
       "view_more": "Посмотреть больше",
       "explore_more_title": "Посмотреть другие курсы",

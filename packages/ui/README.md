@@ -208,6 +208,69 @@ Each item owns its own handler, so the component carries no behaviour: the consu
 
 See `Molecules/ComboButton` in Storybook.
 
+### Course card (`src/custom/course-card/`)
+
+Presentational course card used across the dashboard (LMS, explore, admin, certificate, and org landing surfaces). Import as `import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE, type CourseCardLabels } from '@cio/ui'` (or from `@cio/ui/custom/course-card`).
+
+The card is **labels-driven and presentational**: all copy is passed in via `labels: CourseCardLabels` from the host, so dashboard wrappers supply translated strings. The surface is derived from the boolean flags in priority order: `isCertificateView` → `isAdmin` → `isExplore` → `isOnLandingPage` → `isLMS` → admin default. Each surface selects which data rows render (progress bar, completed badge, earned-on date, publish + student count, compliance status) and the default CTA label (`manage`, `viewCertificate`, `learnMore`, `reviewCourse`/`continueCourse`, `learnMore`). `ctaLabel` overrides the derived label.
+
+| Prop                                                                        | Description                                                                                |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `href`                                                                      | Course link; omitted when the card is explore-clickable                                    |
+| `title`                                                                     | Course title                                                                               |
+| `description`                                                               | Truncated course description                                                               |
+| `coverImage`                                                                | Banner image; falls back to `coverGradient` background                                     |
+| `coverGradient`                                                             | CSS gradient behind the banner (default green brand gradient)                              |
+| `typeBadge`                                                                 | `{ label, icon, iconClass }` pill rendered next to the course badge                        |
+| `visibilityBadge`                                                           | Extra pill (e.g. "Public") rendered next to the course badge                               |
+| `lessonCount`                                                               | Renders the lesson count row when provided                                                 |
+| `exerciseCount`                                                             | Renders the exercise count row when provided                                               |
+| `progressPercent`                                                           | Progress value 0–100; only shown on LMS surfaces                                           |
+| `status`                                                                    | Enrollment state; `COMPLETED` flips the CTA to "Review course" and shows a done badge      |
+| `totalStudents`                                                             | Enrolled-student count; only shown on admin surfaces                                       |
+| `isPublished`                                                               | Publish/unpublished badge; only shown on admin surfaces (`labels.published`/`unpublished`) |
+| `certificateEarnedAt`                                                       | ISO date shown as "Earned on" on certificate surfaces                                      |
+| `compliance`                                                                | `CourseCardCompliance` (`statusLabel`, `statusVariant`, `dateLabel`, `dateValue`)          |
+| `partOfPath`                                                                | `{ name, href }` link rendered as "Part of: {name}"                                        |
+| `isLMS` / `isExplore` / `isAdmin` / `isCertificateView` / `isOnLandingPage` | Surface flags                                                                              |
+| `ctaLabel`                                                                  | Overrides the surface-derived CTA label                                                    |
+| `onExploreClick`                                                            | When set on the explore surface, the whole card (and CTA) becomes a button that fires it   |
+| `overlay`                                                                   | Optional snippet rendered inside the cover (e.g. an admin dropdown)                        |
+| `tags`                                                                      | Optional snippet rendered below the description (e.g. tag overflow)                        |
+| `labels`                                                                    | `CourseCardLabels` object with all UI copy                                                 |
+
+The old snippet/pill-driven card is preserved as `CourseCardLegacy` (used by the classic org-landing theme); new code should use `CourseCard`.
+
+See `Molecules/CourseCard` in Storybook.
+
+### Learning path card (`src/custom/learning-path-card/`)
+
+Presentational card, badge, and progress bar for learning paths. Import as `import { LearningPathCard, LearningPathBadge, LearningPathProgress, type LearningPathCardLabels } from '@cio/ui'` (or from `@cio/ui/custom/learning-path-card`).
+
+`LearningPathCard` is labels-driven like the course card. The surface is derived from the same flag priority (`isCertificateView` → `isAdmin` → `isExplore` → `isOnLandingPage` → `isLMS` → admin default). LMS and certificate surfaces show progress + a certificate badge when `done` (`certificateEarned` or `coursesCompleted === courseCount` with `courseCount > 0`); admin surfaces show a status badge (`status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'`) and a "Continue setup"/"Manage" CTA. `ctaLabel` overrides the derived label.
+
+| Prop                                                                        | Description                                                 |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `href`                                                                      | Path link                                                   |
+| `name`                                                                      | Path name                                                   |
+| `description`                                                               | Truncated path description                                  |
+| `coverGradient` / `coverImage`                                              | Banner background / image                                   |
+| `courseCount`                                                               | Number of courses in the path                               |
+| `totalHours`                                                                | Estimated duration                                          |
+| `progressPercent`                                                           | Overall progress 0–100                                      |
+| `coursesCompleted`                                                          | Courses completed so far                                    |
+| `certificateEarned`                                                         | Done state for LMS/certificate surfaces                     |
+| `certificateEarnedAt`                                                       | ISO date shown as "Earned on" on certificate surfaces       |
+| `status`                                                                    | Admin status (`DRAFT` \| `ACTIVE` \| `ARCHIVED`)            |
+| `isLMS` / `isExplore` / `isAdmin` / `isCertificateView` / `isOnLandingPage` | Surface flags                                               |
+| `onExploreClick`                                                            | Fires when the whole card is clicked on the explore surface |
+| `ctaLabel`                                                                  | Overrides the surface-derived CTA label                     |
+| `labels`                                                                    | `LearningPathCardLabels` object with all UI copy            |
+
+`LearningPathBadge` renders the small "Learning Path"/"Course" pill used on covers and rows (the `label` comes from the host; `onCover` switches to the translucent on-banner style). `LearningPathProgress` is a thin progress bar you can reuse in rows and heroes.
+
+See `Molecules/LearningPathCard` in Storybook.
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.
@@ -246,7 +309,7 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.FloatingBar`             | Shell for the bar that rises from the bottom of a page       |
 | `Page.SettingsActions`         | Compact save/discard card for dirty settings forms           |
 
-**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing *is* the notification), an optional `badge` snippet before the status, and the buttons as children.
+**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing _is_ the notification), an optional `badge` snippet before the status, and the buttons as children.
 
 Set `fixed` to pin it to the viewport instead of sticking it to the end of the page content. **Anything rendered through `Page.Body`'s `child` snippet must use `fixed`**, because `Page.Body` sets `overflow-x-hidden` and a sticky bar inside a scroll container has no travel. It is a boolean rather than a `'sticky' | 'fixed'` union deliberately: the `ui:` prefix script rewrites class-like string literals, and turns `position === 'fixed'` into `position === 'ui:fixed'`, which never matches.
 

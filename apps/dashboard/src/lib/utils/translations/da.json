@@ -5765,20 +5765,14 @@
       "courses_title": "Mine kurser",
       "course_paths_title": "Kursusstier",
       "course_paths_description": "Kurser, der er en del af et læringssti, viser, hvilket sti de tilhører.",
-      "currently_learning": "Lærer i øjeblikket",
-      "paths_section_title": "Læringsveje",
-      "courses_section_title": "Flere kurser"
+      "currently_learning": "Lærer i øjeblikket"
     },
     "empty": {
       "title": "Ingen læringsstier endnu",
       "description": "Strukturerede spor, du er tilmeldt, vises her. Tilmeld dig et sti fra kataloget for at starte læringen i rækkefølge.",
       "back_to_paths": "Tilbage til læringsstier",
-      "no_results_title": "Ingen stier fundet",
-      "no_results_description": "Prøv en anden søgning, eller ryd dine filtre.",
       "path_not_found_title": "Sti ikke fundet",
-      "path_not_found_description": "Denne læringssti er muligvis blevet afpubliceret eller fjernet.",
-      "courses_empty_title": "Ingen kurser matcher din søgning",
-      "courses_empty_description": "Prøv et andet søgeord."
+      "path_not_found_description": "Denne læringssti er muligvis blevet afpubliceret eller fjernet."
     },
     "explore": {
       "title": "Udforsk flere stier",
@@ -5799,11 +5793,6 @@
       "clear_all": "Ryd alle",
       "status": "Status",
       "all": "Alle",
-      "duration": "Varighed",
-      "duration_any": "Enhver",
-      "duration_under4": "Under 4 timer",
-      "duration_4to10": "4 - 10 timer",
-      "duration_10up": "10 timer+",
       "grid_view": "Gittervisning",
       "list_view": "Listevisning",
       "results": "resultater",
@@ -5811,10 +5800,7 @@
       "difficulty_any": "Enhver",
       "difficulty_beginner": "Begynder",
       "difficulty_intermediate": "Mellemniveau",
-      "difficulty_advanced": "Avanceret",
-      "duration_under1": "Under 1 time",
-      "duration_1to4": "1 - 4 timer",
-      "duration_4up": "4 timer+"
+      "difficulty_advanced": "Avanceret"
     },
     "row": {
       "completed": "Afsluttet"
@@ -5868,8 +5854,6 @@
       "continue_course": "Fortsæt kursus",
       "review_course": "Gennemgå kursus",
       "completed_label": "Afsluttet",
-      "weeks": "uger",
-      "time_left": "tilbage",
       "view_course": "Se kursus",
       "view_more": "Se mere",
       "explore_more_title": "Udforsk flere kurser",

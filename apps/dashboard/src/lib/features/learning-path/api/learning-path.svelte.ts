@@ -7,12 +7,14 @@ import type {
   LearningPathWithEnrollment,
   UpdateLearningPathInput
 } from '../utils/types';
+import type { CourseInPathContext, CourseInPathNode } from '../components/types';
 import {
   MOCK_PATHS,
   MOCK_LEARNER_PATHS,
   getMockPathsForUser,
   getMockPathById,
-  getCourseProgressList
+  getCourseProgressList,
+  findCourseInEnrolledMockPath
 } from '../utils/mock-data';
 import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { coursesApi } from '$features/course/api';
@@ -441,6 +443,34 @@ class LearnerPathStore {
 
   getPathCourses(path: LearningPathWithEnrollment): LearningPathCourseProgress[] {
     return getCourseProgressList(path);
+  }
+
+  getCoursePathContext(courseId?: string, courseTitle?: string): CourseInPathContext | null {
+    const match = findCourseInEnrolledMockPath(courseId, courseTitle);
+    if (!match) {
+      return null;
+    }
+
+    const { path, courseIndex } = match;
+    const progress = getCourseProgressList(path);
+    const nodes: CourseInPathNode[] = progress.map((course) => ({ title: course.title, state: course.state }));
+    const nextCourse = progress.find((course) => course.courseIndex > courseIndex && course.state !== 'COMPLETED');
+
+    return {
+      pathName: path.name,
+      pathHref: `/lms/paths/${path.id}`,
+      nodes,
+      currentPosition: courseIndex + 1,
+      next: nextCourse
+        ? {
+            position: nextCourse.courseIndex + 1,
+            title: nextCourse.title,
+            remainingLessons: Math.max(0, nextCourse.lessonCount - nextCourse.lessonsCompleted),
+            remainingExercises: Math.max(0, nextCourse.exerciseCount - nextCourse.exercisesCompleted)
+          }
+        : null,
+      isPathComplete: progress.every((course) => course.state === 'COMPLETED')
+    };
   }
 
   async ensureSelectedPath(pathId: string): Promise<void> {

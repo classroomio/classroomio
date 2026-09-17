@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
-  import LearningPathBadge from './learning-path-badge.svelte';
+  import { LearningPathBadge } from '@cio/ui';
   import { Progress } from '@cio/ui/base/progress';
   import { t } from '$lib/utils/functions/translations';
   import BookIcon from '@lucide/svelte/icons/book-open';
@@ -14,14 +14,10 @@
     coverGradient?: string;
     coverImage?: string;
     courseCount: number;
-    totalHours: number;
     progressPercent: number;
     coursesCompleted: number;
     certificateEarned?: boolean;
   }
-
-  const hours = (totalHours: number) =>
-    globalThis.Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(totalHours);
 
   let {
     href,
@@ -30,7 +26,6 @@
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
     coverImage,
     courseCount,
-    totalHours,
     progressPercent,
     coursesCompleted,
     certificateEarned = false
@@ -60,7 +55,7 @@
 
   <div class="min-w-0 flex-1">
     <div class="mb-1 flex items-center gap-2">
-      <LearningPathBadge type="path" />
+      <LearningPathBadge label={$t('learningPath.badge.learning_path')} />
     </div>
     <a {href} class="w-fit">
       <h3 class="ui:hover:text-primary truncate text-sm font-semibold">{name}</h3>
@@ -71,7 +66,7 @@
       <span class="inline-flex items-center gap-1">
         <BookIcon class="size-3.5" />
         {courseCount}
-        {courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')} · ~{hours(totalHours)}h
+        {courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')}
       </span>
       <span class="tnum inline-flex items-center gap-1">
         <Check class="size-3.5" />

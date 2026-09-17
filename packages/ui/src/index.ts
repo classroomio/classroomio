@@ -85,7 +85,21 @@ export { AIGeneratePopover } from './custom/ai-generate-popover';
 export { YoutubeLinkForm } from './custom/youtube-link-form';
 export { VimeoLinkForm } from './custom/vimeo-link-form';
 export { BackButton } from './custom/back-button';
-export { CourseCard, DEFAULT_COURSE_BANNER_IMAGE } from './custom/course-card';
+export {
+  CourseCard,
+  CourseCardLegacy,
+  CourseListRow,
+  DEFAULT_COURSE_BANNER_IMAGE,
+  type CourseCardLabels,
+  type CourseCardCompliance
+} from './custom/course-card';
+export {
+  LearningPathCard,
+  LearningPathBadge,
+  LearningPathProgress,
+  type LearningPathCardLabels,
+  type LearningPathCardStatus
+} from './custom/learning-path-card';
 export { NewsfeedReactions } from './custom/newsfeed-reactions';
 export * as PublicCourse from './custom/public-course';
 export * as CommentTree from './custom/comment-tree';

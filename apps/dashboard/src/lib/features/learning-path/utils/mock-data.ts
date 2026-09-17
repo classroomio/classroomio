@@ -20,6 +20,9 @@ const BASE_COVERS: Record<string, string> = {
   red: 'linear-gradient(135deg, oklch(0.645 0.246 16.439), oklch(0.586 0.253 17.585))'
 };
 
+const unsplash = (id: string, query?: string) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1080&q=80${query ? `&${query}` : ''}`;
+
 function makeCourse(data: {
   id: string;
   title: string;
@@ -27,6 +30,7 @@ function makeCourse(data: {
   order: number;
   coverGradient?: string;
   coverImage?: string;
+  courseType?: string;
   lessonCount: number;
   exerciseCount: number;
   lessonsCompleted: number;
@@ -51,7 +55,7 @@ const HTML_CSS = makeCourse({
   description: 'Semantic markup, the box model, flexbox, and responsive layout basics.',
   order: 1,
   coverGradient: BASE_COVERS.orange,
-  coverImage: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1547658719-da2b51169166'),
   lessonCount: 10,
   exerciseCount: 3,
   lessonsCompleted: 10,
@@ -66,7 +70,7 @@ const JS_ESSENTIALS = makeCourse({
   description: 'Types, functions, the DOM, async/await, and fetching data from APIs.',
   order: 2,
   coverGradient: BASE_COVERS.orange,
-  coverImage: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1579468118864-1b9ea3c0db4a'),
   lessonCount: 12,
   exerciseCount: 4,
   lessonsCompleted: 12,
@@ -81,7 +85,7 @@ const REACT = makeCourse({
   description: 'Components, props & state, hooks, and building interactive UIs.',
   order: 3,
   coverGradient: BASE_COVERS.sky,
-  coverImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1633356122544-f134324a6cee'),
   lessonCount: 12,
   exerciseCount: 4,
   lessonsCompleted: 9,
@@ -96,7 +100,7 @@ const REACT_ADVANCED = makeCourse({
   description: 'Context, reducers, caching, and connecting a React app to a backend.',
   order: 4,
   coverGradient: BASE_COVERS.purple,
-  coverImage: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1551288049-bebda4e38f71'),
   lessonCount: 10,
   exerciseCount: 3,
   lessonsCompleted: 0,
@@ -111,7 +115,7 @@ const CAPSTONE = makeCourse({
   description: 'Plan, build, and deploy a full project — your portfolio piece.',
   order: 5,
   coverGradient: BASE_COVERS.red,
-  coverImage: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1461749280684-dccba630e2f6'),
   lessonCount: 7,
   exerciseCount: 1,
   lessonsCompleted: 0,
@@ -126,7 +130,7 @@ const PYTHON_BASICS = makeCourse({
   description: 'Syntax, data types, and your first scripts.',
   order: 1,
   coverGradient: BASE_COVERS.green,
-  coverImage: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1526374965328-7f61d4dc18c5'),
   lessonCount: 10,
   exerciseCount: 3,
   lessonsCompleted: 3,
@@ -141,7 +145,7 @@ const PANDAS = makeCourse({
   description: 'Clean, reshape, and analyze tabular data at scale.',
   order: 2,
   coverGradient: BASE_COVERS.green,
-  coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1518186285589-2f7649de83e0'),
   lessonCount: 9,
   exerciseCount: 3,
   lessonsCompleted: 0,
@@ -156,7 +160,7 @@ const VIZ = makeCourse({
   description: 'Charts, storytelling, and dashboards that communicate clearly.',
   order: 3,
   coverGradient: BASE_COVERS.teal,
-  coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1551288049-bebda4e38f71', 'sat=1'),
   lessonCount: 8,
   exerciseCount: 2,
   lessonsCompleted: 0,
@@ -171,7 +175,7 @@ const ML_BASICS = makeCourse({
   description: 'Scikit-learn pipelines, evaluation, and a final project.',
   order: 4,
   coverGradient: BASE_COVERS.purple,
-  coverImage: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1620712943543-bcc4688e7485'),
   lessonCount: 11,
   exerciseCount: 3,
   lessonsCompleted: 0,
@@ -186,7 +190,7 @@ const SEC_AWARENESS = makeCourse({
   description: 'Phishing, passwords, device hygiene, and incident reporting.',
   order: 1,
   coverGradient: BASE_COVERS.blue,
-  coverImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1550751827-4bd374c3f58b'),
   lessonCount: 6,
   exerciseCount: 2,
   lessonsCompleted: 6,
@@ -201,7 +205,7 @@ const DATA_HANDLING = makeCourse({
   description: 'Classification, retention, and safe disposal of sensitive data.',
   order: 2,
   coverGradient: BASE_COVERS.sky,
-  coverImage: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1504868584819-f8e8b4b6d7e3'),
   lessonCount: 5,
   exerciseCount: 2,
   lessonsCompleted: 5,
@@ -216,7 +220,7 @@ const CODE_CONDUCT = makeCourse({
   description: 'Workplace behavior, reporting, and anti-harassment standards.',
   order: 3,
   coverGradient: BASE_COVERS.orange,
-  coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+  coverImage: unsplash('photo-1521791136064-7986c2920216'),
   lessonCount: 4,
   exerciseCount: 1,
   lessonsCompleted: 4,
@@ -232,7 +236,7 @@ const PRODUCT_ANALYTICS_COURSES = [
     description: 'Metrics frameworks and the analytics stack.',
     order: 1,
     coverGradient: BASE_COVERS.teal,
-    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80',
+    coverImage: unsplash('photo-1460925895917-afdab827c52f'),
     lessonCount: 6,
     exerciseCount: 2,
     lessonsCompleted: 0,
@@ -734,7 +738,7 @@ export function buildMockPaths(): LearningPath[] {
         status: 'ACTIVE',
         cost: 229,
         coverGradient: BASE_COVERS.sky,
-        coverImage: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=640&q=80',
+        coverImage: unsplash('photo-1504384308090-c894fdcc538d'),
         difficulty: 'Intermediate',
         createdAt: '2026-01-12T09:00:00.000Z',
         updatedAt: '2026-03-02T09:00:00.000Z'
@@ -822,7 +826,7 @@ export function buildMockPaths(): LearningPath[] {
       status: 'ACTIVE',
       cost: 149,
       coverGradient: BASE_COVERS.green,
-      coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=640&q=80',
+      coverImage: unsplash('photo-1526374965328-7f61d4dc18c5'),
       difficulty: 'Beginner',
       createdAt: '2026-01-05T09:00:00.000Z',
       updatedAt: '2026-02-20T09:00:00.000Z'
@@ -870,7 +874,7 @@ export function buildMockPaths(): LearningPath[] {
       status: 'ACTIVE',
       cost: 0,
       coverGradient: BASE_COVERS.blue,
-      coverImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=640&q=80',
+      coverImage: unsplash('photo-1550751827-4bd374c3f58b'),
       difficulty: 'Beginner',
       sequentialUnlock: true,
       showSavings: false,
@@ -915,7 +919,7 @@ export function buildMockPaths(): LearningPath[] {
       status: 'ACTIVE',
       cost: 89,
       coverGradient: BASE_COVERS.teal,
-      coverImage: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=640&q=80',
+      coverImage: unsplash('photo-1460925895917-afdab827c52f'),
       difficulty: 'Intermediate',
       createdAt: '2026-02-01T09:00:00.000Z',
       updatedAt: '2026-03-05T09:00:00.000Z'
@@ -939,7 +943,7 @@ export function buildMockPaths(): LearningPath[] {
       status: 'ACTIVE',
       cost: 0,
       coverGradient: BASE_COVERS.sky,
-      coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80',
+      coverImage: unsplash('photo-1552664730-d307ca884978'),
       difficulty: 'Beginner',
       showSavings: false,
       createdAt: '2026-02-05T09:00:00.000Z',
@@ -958,7 +962,7 @@ export function buildMockPaths(): LearningPath[] {
       status: 'ACTIVE',
       cost: 59,
       coverGradient: BASE_COVERS.purple,
-      coverImage: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=640&q=80',
+      coverImage: unsplash('photo-1555066931-4365d14bab8c'),
       difficulty: 'Advanced',
       createdAt: '2026-02-10T09:00:00.000Z',
       updatedAt: '2026-03-02T09:00:00.000Z'
@@ -993,7 +997,7 @@ export function buildMockPaths(): LearningPath[] {
     status: 'DRAFT',
     cost: 199,
     coverGradient: BASE_COVERS.red,
-    coverImage: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=640&q=80',
+    coverImage: unsplash('photo-1461749280684-dccba630e2f6'),
     difficulty: 'Advanced',
     sequentialUnlock: true,
     createdAt: '2026-03-08T09:00:00.000Z',
@@ -1084,9 +1088,35 @@ export function getCourseProgressList(path: LearningPath): LearningPathCoursePro
       durationHours: course.durationHours,
       slug: course.slug,
       coverGradient: course.coverGradient,
-      coverImage: course.coverImage
+      coverImage: course.coverImage,
+      courseType: course.courseType
     };
   });
+}
+
+export function findCourseInEnrolledMockPath(
+  courseId?: string,
+  courseTitle?: string
+): { path: LearningPathWithEnrollment; courseIndex: number } | null {
+  if (!courseId && !courseTitle) {
+    return null;
+  }
+
+  const normalizedTitle = courseTitle?.trim().toLowerCase() ?? '';
+
+  for (const path of getMockPathsForUser()) {
+    const courseIndex = path.courses.findIndex(
+      (course) =>
+        (Boolean(courseId) && course.id === courseId) ||
+        (normalizedTitle.length > 0 && course.title.trim().toLowerCase() === normalizedTitle)
+    );
+
+    if (courseIndex >= 0) {
+      return { path, courseIndex };
+    }
+  }
+
+  return null;
 }
 
 export function getMockPathById(pathId: string): LearningPathWithEnrollment | null {
