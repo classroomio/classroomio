@@ -91,11 +91,6 @@ export function getTotalLessons(sections: LandingPageSection[]) {
   }, 0);
 }
 
-// Nav items built from `landing.navItems` are shared with the org home page,
-// where a fragment-only href like `#about-us` scrolls to a section on that
-// same page. The course page is a different route, so the same href needs to
-// point back at the org home page's fragment instead of trying to scroll a
-// section that doesn't exist here.
 export function resolveCourseNavHref(href: string) {
   return href.startsWith('#') ? `/${href}` : href;
 }

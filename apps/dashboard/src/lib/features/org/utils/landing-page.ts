@@ -85,7 +85,10 @@ export function createDefaultFooterConfig(): OrgLandingPageFooterConfig {
 export const defaultLandingPageSettings: OrgLandingPageJson = {
   theme: 'quartz',
   hero: defaultLandingPageHero,
-  navItems: [{ label: 'Courses', href: '/courses' }],
+  navItems: [
+    { label: 'Courses', href: '/courses' }
+    // { label: 'Contact', href: '#contact' }
+  ],
   footer: createDefaultFooterConfig()
 };
 
@@ -552,39 +555,6 @@ function normalizeHeroEyebrow(value: unknown): string | undefined {
   return value.trim();
 }
 
-function isDeadContactLink(label: string, href: string): boolean {
-  const normalizedHref = href.trim();
-  const normalizedLabel = label.trim().toLowerCase();
-
-  if (normalizedHref === '#contact' || normalizedHref === '/#contact') {
-    return true;
-  }
-
-  const isContactLabel = normalizedLabel === 'contact' || normalizedLabel === 'contact us';
-  const isDeadOrAnchor =
-    normalizedHref === '#' || normalizedHref === '' || normalizedHref === '#contact' || normalizedHref === '/#contact';
-
-  return isContactLabel && isDeadOrAnchor;
-}
-
-function normalizeNavItems(
-  items: Array<{ label?: unknown; href?: unknown }> | undefined,
-  fallback: OrgLandingPageNavItem[]
-): OrgLandingPageNavItem[] {
-  if (!Array.isArray(items) || items.length === 0) {
-    return [...fallback];
-  }
-
-  const filtered = items
-    .map((navItem) => ({
-      label: normalizeText(navItem.label, ''),
-      href: normalizeHref(navItem.href, '#')
-    }))
-    .filter((navItem) => navItem.label.length > 0 && !isDeadContactLink(navItem.label, navItem.href));
-
-  return filtered.length > 0 ? filtered : [...fallback];
-}
-
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
   const defaultSettings = createDefaultLandingPageSettings();
 
@@ -598,7 +568,12 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
     return {
       theme: landingPage.theme,
       hero: normalizeHero(landingPage.hero),
-      navItems: normalizeNavItems(landingPage.navItems, defaultSettings.navItems),
+      navItems: landingPage.navItems
+        .map((navItem) => ({
+          label: normalizeText(navItem.label, ''),
+          href: normalizeHref(navItem.href, '#')
+        }))
+        .filter((navItem) => navItem.label.length > 0),
       footer: resolveFooterConfig(landingPage),
       embed: landingPage.embed
         ? {
@@ -638,7 +613,14 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
           : defaultLandingPageHero.secondaryAction,
         image: normalizeText(landingPage.hero.image, defaultLandingPageHero.image ?? '')
       },
-      navItems: normalizeNavItems(landingPage.navItems, defaultSettings.navItems),
+      navItems: landingPage.navItems?.length
+        ? landingPage.navItems
+            .map((navItem) => ({
+              label: normalizeText(navItem.label, ''),
+              href: normalizeHref(navItem.href, '#')
+            }))
+            .filter((navItem) => navItem.label.length > 0)
+        : [...defaultSettings.navItems],
       footer: resolveFooterConfig(landingPage),
       embed: landingPage.embed
         ? {
@@ -670,10 +652,12 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
       image: defaultLandingPageHero.image
     },
     navItems: landingPage.customLinks?.links?.length
-      ? normalizeNavItems(
-          landingPage.customLinks.links.map((link) => ({ label: link.label, href: link.url })),
-          defaultSettings.navItems
-        )
+      ? landingPage.customLinks.links
+          .map((link) => ({
+            label: normalizeText(link.label, ''),
+            href: normalizeHref(link.url, '#')
+          }))
+          .filter((navItem) => navItem.label.length > 0)
       : [...defaultSettings.navItems],
     footer: resolveFooterConfig(landingPage),
     embed: landingPage.embed
