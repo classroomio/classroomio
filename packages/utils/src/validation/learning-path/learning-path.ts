@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { ROLE } from '@cio/utils/constants';
+
 export const LEARNING_PATH_DIFFICULTY = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const;
 export type TLearningPathDifficultyValue = (typeof LEARNING_PATH_DIFFICULTY)[number];
 
@@ -43,8 +45,8 @@ export const ZAddLearningPathCourse = z
     courseId: z.string().uuid().optional(),
     courseIds: z.array(z.string().uuid()).min(1).optional()
   })
-  .refine((data) => Boolean(data.courseId || (data.courseIds && data.courseIds.length > 0)), {
-    message: 'Must provide either courseId or courseIds'
+  .refine((data) => Number(Boolean(data.courseId)) + Number(Boolean(data.courseIds?.length)) === 1, {
+    message: 'Must provide exactly one of courseId or courseIds'
   });
 export type TAddLearningPathCourse = z.infer<typeof ZAddLearningPathCourse>;
 
@@ -65,19 +67,31 @@ export const ZEnrollInLearningPath = z
   .optional();
 export type TEnrollInLearningPath = z.infer<typeof ZEnrollInLearningPath>;
 
+export const ZPathMembersQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  status: z.enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED']).optional()
+});
+export type TPathMembersQuery = z.infer<typeof ZPathMembersQuery>;
+
 export const ZAddLearningPathMembers = z.object({
   members: z
     .array(
       z.object({
         profileId: z.string().uuid().optional(),
         email: z.string().email().optional(),
-        roleId: z.number().int()
+        roleId: z.union([z.literal(ROLE.STUDENT), z.literal(ROLE.TUTOR)], {
+          error: 'roleId must be STUDENT or TUTOR'
+        })
       })
     )
     .min(1)
-    .refine((members) => members.every((member) => member.profileId || member.email), {
-      message: 'Each member must include a profileId or email'
-    })
+    .refine(
+      (members) => members.every((member) => Number(Boolean(member.profileId)) + Number(Boolean(member.email)) === 1),
+      {
+        message: 'Each member must provide exactly one of profileId or email'
+      }
+    )
 });
 export type TAddLearningPathMembers = z.infer<typeof ZAddLearningPathMembers>;
 

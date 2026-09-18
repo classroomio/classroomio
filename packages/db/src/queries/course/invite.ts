@@ -342,6 +342,7 @@ export type TCourseInviteAcceptBundle = {
     status: string;
     isPublished: boolean;
     metadata: Record<string, unknown> | null;
+    requiresLearningPath: boolean;
     groupId: string;
   };
   organization: {
@@ -369,6 +370,7 @@ export async function selectCourseInviteAcceptBundleByTokenHash(
           status: schema.course.status,
           isPublished: schema.course.isPublished,
           metadata: schema.course.metadata,
+          requiresLearningPath: schema.course.requiresLearningPath,
           groupId: schema.group.id
         },
         organization: {

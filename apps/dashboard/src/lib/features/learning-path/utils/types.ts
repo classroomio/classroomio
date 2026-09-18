@@ -234,3 +234,8 @@ export interface SetupStep {
   isCompleted: boolean;
   isCurrent: boolean;
 }
+
+export interface LearningPathAccessOptions {
+  isAdmin?: boolean | null;
+  userProfileId?: string | null;
+}
