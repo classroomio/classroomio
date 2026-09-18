@@ -22,6 +22,11 @@
   let showDeleteModal = $state(false);
   let isRemoving = $state(false);
   let isUpdatingUnlock = $state(false);
+  let sequentialUnlock = $state(path.sequentialUnlock);
+
+  $effect(() => {
+    sequentialUnlock = path.sequentialUnlock;
+  });
 
   $effect(() => {
     if (path && path.courses) {
@@ -52,8 +57,20 @@
     if (isUpdatingUnlock) return;
 
     isUpdatingUnlock = true;
+    const previousChecked = sequentialUnlock;
+    sequentialUnlock = nextChecked;
+
     try {
-      await learningPathApi.update(path.id, { sequentialUnlock: nextChecked });
+      const result = await learningPathApi.update(path.id, { sequentialUnlock: nextChecked });
+      if (!result) {
+        sequentialUnlock = previousChecked;
+      } else {
+        path.sequentialUnlock = result.sequentialUnlock;
+        sequentialUnlock = result.sequentialUnlock;
+      }
+    } catch (err) {
+      sequentialUnlock = previousChecked;
+      console.error('Failed to update sequential unlock setting:', err);
     } finally {
       isUpdatingUnlock = false;
     }
@@ -110,7 +127,7 @@
 
   {#if courseItems.length > 0}
     <!-- Unlock in order toggle rule -->
-    <UnlockToggle checked={path.sequentialUnlock} disabled={isUpdatingUnlock} onToggle={handleUnlockToggle} />
+    <UnlockToggle checked={sequentialUnlock} disabled={isUpdatingUnlock} onToggle={handleUnlockToggle} />
   {/if}
 
   {#if courseItems.length === 0}
