@@ -41,10 +41,12 @@
   );
 </script>
 
-<div class="ui:hover:border-primary/40 flex items-center gap-4 rounded-xl border p-4 transition-colors">
+<div class="group ui:hover:bg-muted/50 relative flex items-center gap-4 px-4 py-5 transition-colors">
+  <a {href} aria-label={name} class="absolute inset-0 z-[1]"></a>
+
   <a
     {href}
-    class="relative flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10"
+    class="relative z-10 flex h-24 w-28 shrink-0 items-center justify-center overflow-hidden rounded-sm"
     style="background: {coverGradient}"
     aria-label={name}
   >
@@ -57,7 +59,7 @@
     <div class="mb-1 flex items-center gap-2">
       <LearningPathBadge label={$t('learningPath.badge.learning_path')} />
     </div>
-    <a {href} class="w-fit">
+    <a {href} class="relative z-10 w-fit">
       <h3 class="ui:hover:text-primary truncate text-sm font-semibold">{name}</h3>
     </a>
     <p class="ui:text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
@@ -100,7 +102,12 @@
       <Progress value={progressPercent} class="h-1.5 flex-1 rounded-full" />
       <span class="tnum w-9 shrink-0 text-right text-xs font-semibold">{progressPercent}%</span>
     </div>
-    <Button href={done ? '/lms/certificates' : href} variant={done ? 'outline' : 'default'} size="sm" class="shrink-0">
+    <Button
+      href={done ? '/lms/certificates' : href}
+      variant={done ? 'outline' : 'default'}
+      size="sm"
+      class="relative z-10 shrink-0"
+    >
       {ctaLabel}
     </Button>
   </div>

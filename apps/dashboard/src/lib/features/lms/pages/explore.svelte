@@ -204,7 +204,7 @@
           description={$t('explore.paths_empty_description')}
         />
       {:else}
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-2">
           {#each filteredPaths as path}
             <LearningPathCard
               href={path.href}

@@ -146,12 +146,12 @@
 <div class="ui:group/stack ui:relative ui:mx-auto ui:w-full">
   <!-- Stacked card underlay — signals "multiple courses inside" at a glance -->
   <div
-    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-xl ui:border ui:border-border ui:bg-card ui:transition-transform ui:duration-200 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2"
+    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:bg-card ui:transition-transform ui:duration-200 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2"
     aria-hidden="true"
   ></div>
 
   <div
-    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-xl ui:border ui:bg-card ui:hover:bg-accent/50"
+    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:hover:bg-accent/50"
     onclick={isExploreClickable ? handleCardClick : undefined}
     role={isExploreClickable ? 'button' : undefined}
   >
