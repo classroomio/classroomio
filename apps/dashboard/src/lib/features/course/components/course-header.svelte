@@ -100,7 +100,7 @@
           <CoursePublishBadge {isPublished} />
         {/if}
 
-        {#if pathContext}
+        {#if $isCourseLearnerView && pathContext}
           <CourseInPathWidget
             pathName={pathContext.pathName}
             pathHref={pathContext.pathHref}

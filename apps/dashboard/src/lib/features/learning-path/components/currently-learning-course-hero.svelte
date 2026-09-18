@@ -1,9 +1,8 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import { LearningPathBadge, LearningPathProgress } from '@cio/ui';
+  import { LearningPathBadge, LearningPathProgress, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-  import BookIcon from '@lucide/svelte/icons/book-open';
 
   interface Props {
     title: string;
@@ -31,8 +30,7 @@
 <div class="flex flex-col overflow-hidden rounded-2xl border sm:flex-row">
   <a
     {href}
-    class="group relative flex aspect-[10/8] w-full shrink-0 items-center justify-center overflow-hidden focus-visible:outline-none sm:aspect-auto sm:w-56 md:w-64"
-    style="background: {coverGradient}"
+    class="group ui:bg-card relative flex aspect-[10/8] w-full shrink-0 items-center justify-center overflow-hidden focus-visible:outline-none sm:aspect-auto sm:w-56 md:w-64"
     aria-label={title}
     tabindex="-1"
   >
@@ -44,7 +42,12 @@
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
     {:else}
-      <BookIcon class="size-20 text-white/40 transition-transform duration-300 group-hover:scale-110" />
+      <img
+        src={DEFAULT_COURSE_BANNER_IMAGE}
+        alt={title}
+        loading="lazy"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
     {/if}
     <LearningPathBadge label={$t('learningPath.badge.course')} onCover class="absolute top-3 left-3" />
   </a>
