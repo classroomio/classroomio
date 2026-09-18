@@ -944,6 +944,7 @@
         "cover_image": "Imagen de portada",
         "optional_image": "Esta imagen opcional aparecerá en su página de bienvenida. Si incluyes uno, debe tener al menos 280 x 200",
         "replace": "Reemplazar",
+        "remove": "Quitar",
         "del": "Eliminar",
         "course_details": "Detalles del curso",
         "course_title": "Título del curso",
@@ -951,6 +952,7 @@
         "placeholder": "Escribe aquí la descripción de tu curso",
         "course_title_placeholder": "Escribe aquí el título del curso.",
         "setup_landing_for_link": "Configurar la página de inicio para obtener el enlace del curso",
+        "setup_landing_page": "Configurar la página de inicio",
         "coming_soon": "Próximamente",
         "link": "Enlace del curso",
         "grading": "Calificación",
@@ -1035,6 +1037,9 @@
           "description": "Personalice el correo electrónico que reciben los estudiantes después de inscribirse. Agregue una nota personal, instrucciones o un enlace de sesión en vivo.",
           "placeholder": "Escribe el mensaje de bienvenida que reciben los estudiantes cuando se matriculan..."
         },
+        "content_card_title": "Contenido",
+        "downloads_card_title": "Descargas",
+        "access_card_title": "Acceso",
         "course_type_learn_more": "Más información",
         "locked_content": {
           "title": "{count} elementos del curso están bloqueados",

@@ -944,6 +944,7 @@
         "cover_image": "Obraz na okładce",
         "optional_image": "Ten opcjonalny obraz pojawi się na stronie powitalnej. Jeśli dołączysz taki plik, powinien on mieć wymiary co najmniej 280 x 200",
         "replace": "Wymień",
+        "remove": "Usuń",
         "del": "Usuń",
         "course_details": "Szczegóły kursu",
         "course_title": "Tytuł kursu",
@@ -951,6 +952,7 @@
         "placeholder": "Wpisz tutaj opis kursu",
         "course_title_placeholder": "Wpisz tutaj tytuł kursu",
         "setup_landing_for_link": "Skonfiguruj stronę docelową, aby uzyskać link do kursu",
+        "setup_landing_page": "Skonfiguruj stronę docelową",
         "coming_soon": "Już wkrótce",
         "link": "Link do kursu",
         "grading": "Ocenianie",
@@ -1036,6 +1038,9 @@
           "description": "Dostosuj wiadomość e-mail otrzymywaną przez uczniów po zarejestrowaniu się. Dodaj osobistą notatkę, instrukcje lub link do sesji na żywo.",
           "placeholder": "Napisz wiadomość powitalną, jaką otrzymają uczniowie po zarejestrowaniu się…"
         },
+        "content_card_title": "Treść",
+        "downloads_card_title": "Pliki do pobrania",
+        "access_card_title": "Dostęp",
         "locked_content": {
           "title": "Elementy kursu: {count} są zablokowane",
           "description": "Zarejestrowani uczniowie nie będą mogli brać udziału w zablokowanych lekcjach ani ćwiczeniach, dopóki ich nie odblokujesz.",

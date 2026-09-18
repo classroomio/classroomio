@@ -944,6 +944,7 @@
         "cover_image": "Ảnh bìa",
         "optional_image": "Hình ảnh tùy chọn này sẽ hiển thị trên trang chào mừng của bạn. Nếu bạn bao gồm một cái, nó phải có kích thước tối thiểu là 280 x 200",
         "replace": "Thay thế",
+        "remove": "Xóa",
         "del": "Xóa",
         "course_details": "Chi tiết khóa học",
         "course_title": "Tên khóa học",
@@ -951,6 +952,7 @@
         "placeholder": "Viết mô tả khóa học của bạn ở đây",
         "course_title_placeholder": "Viết tiêu đề khóa học ở đây",
         "setup_landing_for_link": "Thiết lập landing page để lấy link khóa học",
+        "setup_landing_page": "Thiết lập landing page",
         "coming_soon": "Sắp có",
         "link": "Liên kết khóa học",
         "grading": "Chấm điểm",
@@ -1036,6 +1038,9 @@
           "description": "Tùy chỉnh email sinh viên nhận được sau khi đăng ký. Thêm ghi chú cá nhân, hướng dẫn hoặc liên kết phiên trực tiếp.",
           "placeholder": "Viết lời chào mừng mà học viên nhận được khi đăng ký…"
         },
+        "content_card_title": "Nội dung",
+        "downloads_card_title": "Tải xuống",
+        "access_card_title": "Truy cập",
         "locked_content": {
           "title": "{count} mục khóa học đã bị khóa",
           "description": "Học viên đã đăng ký sẽ không thể học các bài học hoặc bài tập bị khóa cho đến khi bạn mở khóa chúng.",

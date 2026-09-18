@@ -944,6 +944,7 @@
         "cover_image": "Imagem da capa",
         "optional_image": "Esta imagem opcional aparecerá na sua página de boas-vindas. Se você incluir um, ele deverá ter pelo menos 280 x 200",
         "replace": "Substituir",
+        "remove": "Remover",
         "del": "Excluir",
         "course_details": "Detalhes do curso",
         "course_title": "Título do curso",
@@ -951,6 +952,7 @@
         "placeholder": "Escreva aqui a descrição do seu curso",
         "course_title_placeholder": "Escreva o título do curso aqui",
         "setup_landing_for_link": "Configure a página de destino para obter o link do curso",
+        "setup_landing_page": "Configurar a página de destino",
         "coming_soon": "Em breve",
         "link": "Link do curso",
         "grading": "Classificação",
@@ -1036,6 +1038,9 @@
           "description": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
           "placeholder": "Escreva a mensagem de boas-vindas que os alunos recebem quando se matriculam…"
         },
+        "content_card_title": "Conteúdo",
+        "downloads_card_title": "Downloads",
+        "access_card_title": "Acesso",
         "locked_content": {
           "title": "{count} itens do curso estão bloqueados",
           "description": "Os alunos inscritos não poderão fazer aulas ou exercícios bloqueados até que você os desbloqueie.",

@@ -944,6 +944,7 @@
         "cover_image": "Image de couverture",
         "optional_image": "Cette image facultative apparaîtra sur votre page d'accueil. Si vous en incluez un, il doit mesurer au moins 280 x 200.",
         "replace": "Remplacer",
+        "remove": "Supprimer",
         "del": "Supprimer",
         "course_details": "Détails du cours",
         "course_title": "Titre du cours",
@@ -951,6 +952,7 @@
         "placeholder": "Écrivez ici la description de votre cours",
         "course_title_placeholder": "Écrivez le titre du cours ici",
         "setup_landing_for_link": "Configurer la page de destination pour obtenir le lien du cours",
+        "setup_landing_page": "Configurer la page de destination",
         "coming_soon": "Bientôt disponible",
         "link": "Lien du cours",
         "grading": "Classement",
@@ -1036,6 +1038,9 @@
           "description": "Personnalisez l'e-mail que les étudiants reçoivent après leur inscription. Ajoutez une note personnelle, des instructions ou un lien de session en direct.",
           "placeholder": "Rédigez le message de bienvenue que les étudiants reçoivent lors de leur inscription…"
         },
+        "content_card_title": "Contenu",
+        "downloads_card_title": "Téléchargements",
+        "access_card_title": "Accès",
         "locked_content": {
           "title": "{count} éléments de cours sont verrouillés",
           "description": "Les étudiants inscrits ne pourront pas suivre de leçons ou d'exercices verrouillés tant que vous ne les aurez pas déverrouillés.",
