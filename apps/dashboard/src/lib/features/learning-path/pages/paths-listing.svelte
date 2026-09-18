@@ -16,10 +16,8 @@
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import { PathCard, PathRow, PathFilterPopover, CreatePathModal, ClonePathModal } from '../components';
+  import { PathCard, PathRow, PathFilterPopover, CreatePathModal } from '../components';
   import { learningPathApi } from '../api';
-  import { isPathAccessibleToUser } from '../utils/learning-path-utils';
   import {
     LEARNING_PATHS_VIEW_MODE_KEY,
     DEFAULT_VIEW_MODE,
@@ -94,7 +92,7 @@
 
     isDeleting = true;
     try {
-      await learningPathApi.deletePath(pathToDelete.id);
+      await learningPathApi.delete(pathToDelete.id);
       deleteModalOpen = false;
       pathToDelete = null;
     } finally {
@@ -102,16 +100,8 @@
     }
   }
 
-  const visiblePaths = $derived(
-    learningPathApi.paths.filter((pathItem) => isPathAccessibleToUser(pathItem, Boolean($isOrgAdmin), $profile?.id))
-  );
-
-  $effect(() => {
-    learningPathApi.updateNavCount(visiblePaths.length);
-  });
-
   const filteredPaths = $derived.by(() => {
-    let list = visiblePaths;
+    let list = [...learningPathApi.paths];
 
     // Search filter
     const query = searchQuery.trim().toLowerCase();
@@ -153,7 +143,9 @@
       if (sortKey === 'date_created') {
         comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       } else if (sortKey === 'last_updated_at') {
-        comparison = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+        const aTime = new Date(a.updatedAt ?? a.createdAt).getTime();
+        const bTime = new Date(b.updatedAt ?? b.createdAt).getTime();
+        comparison = aTime - bTime;
       } else if (sortKey === 'published') {
         const aPub = a.isPublished ? 1 : 0;
         const bPub = b.isPublished ? 1 : 0;
@@ -168,15 +160,13 @@
   });
 
   function handleCreated(newId: string) {
-    goto(`/paths/${newId}`);
+    goto(`/paths/${newId}/setup`);
   }
 </script>
 
 <DeleteModal bind:open={deleteModalOpen} onDelete={handleConfirmDelete} isLoading={isDeleting} />
 
 <CreatePathModal bind:open={showCreateDialog} onClose={handleCloseCreateDialog} onCreated={handleCreated} />
-
-<ClonePathModal />
 
 <!-- Toolbar matching Courses Page.BodyHeader -->
 <Page.BodyHeader align="right" class="p-0!">
@@ -204,7 +194,7 @@
 
 <!-- Content Area -->
 <div class="mx-auto mt-4 w-full flex-1">
-  {#if visiblePaths.length === 0}
+  {#if learningPathApi.paths.length === 0}
     <Empty
       title={$t('learningPath.listing.empty.title')}
       description={$t('learningPath.listing.empty.description')}

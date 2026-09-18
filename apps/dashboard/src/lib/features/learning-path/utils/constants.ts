@@ -55,8 +55,8 @@ export function parsePathSortOrder(value: string | null | undefined): PathSortOr
 
 export const STATUS_FILTER_OPTIONS: { id: StatusFilter; labelKey: string }[] = [
   { id: 'all', labelKey: 'learningPath.listing.filters.all' },
-  { id: 'published', labelKey: 'learningPath.card.published' },
-  { id: 'unpublished', labelKey: 'learningPath.card.unpublished' }
+  { id: 'published', labelKey: 'learningPath.listing.filters.published' },
+  { id: 'unpublished', labelKey: 'learningPath.listing.filters.unpublished' }
 ];
 
 export const ENROLLMENT_FILTER_OPTIONS: { id: EnrollmentFilter; labelKey: string }[] = [
