@@ -21,7 +21,7 @@ export const load = async ({ parent, params, cookies, locals }) => {
   );
 
   return {
-    paths: result.ok ? result.body.data : [],
+    paths: result.ok ? result.body.data : null,
     loadError: result.ok ? null : result.message || 'Failed to load learning paths'
   };
 };
