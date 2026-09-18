@@ -8,6 +8,7 @@
   import { Search } from '@cio/ui/custom/search';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { DeleteModal } from '$features/ui';
+  import { snackbar } from '$features/ui/snackbar/store';
   import GitBranchIcon from '@lucide/svelte/icons/git-branch';
   import GridIcon from '@lucide/svelte/icons/grid-2x2';
   import ListIcon from '@lucide/svelte/icons/list';
@@ -95,9 +96,12 @@
     isDeleting = true;
     try {
       await learningPathApi.delete(pathToDelete.id);
+    } catch (err) {
+      console.error('Failed to delete learning path:', err);
+      snackbar.error();
+    } finally {
       deleteModalOpen = false;
       pathToDelete = null;
-    } finally {
       isDeleting = false;
     }
   }

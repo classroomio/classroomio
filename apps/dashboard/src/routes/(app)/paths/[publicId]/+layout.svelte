@@ -9,6 +9,7 @@
   import { learningPathApi } from '$features/learning-path/api';
   import type { LearningPathDetail } from '$features/learning-path/utils/types';
   import { DeleteModal } from '$features/ui';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPath } from '$lib/utils/store/org';
 
@@ -60,9 +61,14 @@
     isDeleting = true;
     try {
       await learningPathApi.delete(activePath.id);
-      deleteModalOpen = false;
-      goto(`${$currentOrgPath}/paths`);
+      if (learningPathApi.success) {
+        goto(`${$currentOrgPath}/paths`);
+      }
+    } catch (err) {
+      console.error('Failed to delete learning path:', err);
+      snackbar.error();
     } finally {
+      deleteModalOpen = false;
       isDeleting = false;
     }
   }
