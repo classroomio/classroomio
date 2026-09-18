@@ -27,7 +27,7 @@
 
   function handleRefresh() {
     if (data.publicId) {
-      learningPathApi.get(data.publicId);
+      learningPathApi.refreshPath(data.publicId);
     }
   }
 

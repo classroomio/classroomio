@@ -41,7 +41,7 @@ export async function addCoursesToPathService(
     return await db.transaction(async (tx) => {
       const addedCourses: TLearningPathCourse[] = [];
       const members = await listLearningPathMembers(path.id, undefined, tx);
-      const activeMemberProfileIds = members.filter((m) => Boolean(m.profileId)).map((m) => m.profileId!);
+      const activeMemberIds = members.map((member) => member.id);
 
       for (const courseId of courseIds) {
         // Validate course existence and org ownership
@@ -54,7 +54,7 @@ export async function addCoursesToPathService(
         const added = await addCourseToPath(path.id, courseId, tx);
         addedCourses.push(added);
 
-        await backfillMemberCourseProgressForAddedCourse(activeMemberProfileIds, added.id, path.sequentialUnlock, tx);
+        await backfillMemberCourseProgressForAddedCourse(activeMemberIds, added.id, path.sequentialUnlock, tx);
 
         // Auto-enroll existing students if enabled
         if (path.autoEnroll && courseRow.groupId) {

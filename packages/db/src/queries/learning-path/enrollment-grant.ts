@@ -1,4 +1,4 @@
-import { and, count, eq, isNull } from 'drizzle-orm';
+import { and, count, eq, isNull, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 
@@ -7,47 +7,38 @@ import type { TCourseEnrollmentGrant, TNewCourseEnrollmentGrant } from '../../ty
 
 /**
  * Grants access to a course and records its provenance.
- * Idempotent via unique constraint on (groupmemberId, courseId, source, cohortId, learningPathId).
+ * Idempotent via unique constraint on (groupmemberId, courseId, source, cohortId, learningPathId);
+ * an existing revoked grant is reactivated so re-adding a member restores their course access.
  */
 export async function grantCourseAccess(
   data: TNewCourseEnrollmentGrant,
   dbClient: DbOrTxClient = db
 ): Promise<TCourseEnrollmentGrant> {
   try {
-    const [created] = await dbClient
+    const [granted] = await dbClient
       .insert(schema.courseEnrollmentGrant)
       .values(data)
-      .onConflictDoNothing()
+      .onConflictDoUpdate({
+        target: [
+          schema.courseEnrollmentGrant.groupmemberId,
+          schema.courseEnrollmentGrant.courseId,
+          schema.courseEnrollmentGrant.source,
+          schema.courseEnrollmentGrant.cohortId,
+          schema.courseEnrollmentGrant.learningPathId
+        ],
+        set: {
+          revokedAt: null,
+          grantedAt: sql`now()`,
+          grantedByProfileId: sql`EXCLUDED.granted_by_profile_id`
+        }
+      })
       .returning();
 
-    if (created) {
-      return created;
-    }
-
-    // Retrieve existing grant if conflict occurred
-    const [existing] = await dbClient
-      .select()
-      .from(schema.courseEnrollmentGrant)
-      .where(
-        and(
-          eq(schema.courseEnrollmentGrant.groupmemberId, data.groupmemberId),
-          eq(schema.courseEnrollmentGrant.courseId, data.courseId),
-          eq(schema.courseEnrollmentGrant.source, data.source),
-          data.learningPathId
-            ? eq(schema.courseEnrollmentGrant.learningPathId, data.learningPathId)
-            : isNull(schema.courseEnrollmentGrant.learningPathId),
-          data.cohortId
-            ? eq(schema.courseEnrollmentGrant.cohortId, data.cohortId)
-            : isNull(schema.courseEnrollmentGrant.cohortId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
+    if (!granted) {
       throw new Error('Failed to record course enrollment grant');
     }
 
-    return existing;
+    return granted;
   } catch (error) {
     console.error('grantCourseAccess error:', error);
     throw new Error(`Failed to grant course access: ${error instanceof Error ? error.message : 'Unknown error'}`);
