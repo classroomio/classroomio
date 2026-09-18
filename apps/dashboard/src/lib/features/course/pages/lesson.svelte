@@ -661,7 +661,7 @@
         </Empty>
       {/if}
 
-      {#if pathContext && mode === MODES.view}
+      {#if $isCourseLearnerView && pathContext && mode === MODES.view}
         <CourseInPathNext
           pathHref={pathContext.pathHref}
           next={pathContext.next}

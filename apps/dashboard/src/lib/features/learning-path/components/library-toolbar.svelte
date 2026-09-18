@@ -48,7 +48,7 @@
   }
 </script>
 
-<div class="flex flex-wrap items-center justify-between gap-3">
+<div class="flex flex-wrap items-center justify-end gap-3">
   <FilterPopover {groups} {selected} onChange={handleChange} />
   <ViewToggle {view} onChange={(next) => (view = next)} />
 </div>

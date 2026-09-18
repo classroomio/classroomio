@@ -11,11 +11,24 @@
   import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
   import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import type { RecommendedCourses } from '$features/course/types';
   import pluralize from 'pluralize';
 
+  export interface CoursePreviewCourse {
+    id: string;
+    title: string;
+    description?: string | null;
+    logo?: string | null;
+    slug?: string | null;
+    lessonCount?: number | null;
+    exerciseCount?: number | null;
+    cost?: number | null;
+    currency?: string | null;
+    metadata?: CourseMetadata | null;
+    type?: string;
+  }
+
   interface Props {
-    course: RecommendedCourses[number];
+    course: CoursePreviewCourse;
     open: boolean;
   }
 
