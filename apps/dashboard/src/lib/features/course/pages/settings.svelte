@@ -551,7 +551,7 @@
     <Card.Content>
       <Field.Group>
         <Field.Field>
-          <div class="flex items-start gap-4">
+          <div class="flex flex-col items-start gap-4 sm:flex-row">
             <img
               alt={$t('course.navItem.settings.cover_image')}
               src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
@@ -682,7 +682,7 @@
     {#if courseApi.course?.slug}
       <Card.Content>
         <div class="flex items-center justify-between rounded-md border p-1">
-          <p class="text-sm">{courseLink}</p>
+          <p class="min-w-0 truncate text-sm">{courseLink}</p>
           <IconButton
             onclick={() => {
               copyToClipboard(courseLink);
@@ -981,7 +981,7 @@
         {#if $isFreePlan}
           <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
         {:else}
-          <Field.Field>
+          <Field.Field orientation="horizontal">
             <Field.Content>
               <Field.Label>{$t('course.navItem.settings.course_download')}</Field.Label>
               <Field.Description>{$t('course.navItem.settings.course_avail')}</Field.Description>
