@@ -56,12 +56,12 @@
   );
 </script>
 
-<div
-  class="ui:hover:border-primary/40 flex items-center gap-4 rounded-xl border p-4 shadow-sm transition-[box-shadow,border-color] hover:shadow-md"
->
+<div class="group ui:hover:bg-muted/50 relative flex items-center gap-4 px-4 py-5 transition-colors">
+  <a {href} aria-label={title} class="absolute inset-0 z-[1]"></a>
+
   <a
     {href}
-    class="relative flex h-24 w-28 shrink-0 items-center justify-center overflow-hidden rounded-lg"
+    class="relative z-10 flex h-24 w-28 shrink-0 items-center justify-center overflow-hidden rounded-sm"
     style="background: {coverGradient}"
     aria-label={title}
   >
@@ -106,7 +106,7 @@
         </Badge>
       {/if}
     </div>
-    <a {href} class="w-fit">
+    <a {href} class="relative z-10 w-fit">
       <h3 class="ui:hover:text-primary truncate text-sm font-semibold">{title}</h3>
     </a>
     <p class="ui:text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
@@ -130,7 +130,7 @@
         <span class="inline-flex items-center gap-1.5">
           <PathIcon class="size-3.5 shrink-0" />
           {$t('learningPath.course.part_of')}:
-          <a href={partOfPath.href} class="ui:text-foreground ui:hover:text-primary font-medium">
+          <a href={partOfPath.href} class="ui:text-foreground ui:hover:text-primary relative z-10 font-medium">
             <strong>{partOfPath.name}</strong>
           </a>
         </span>
@@ -145,7 +145,7 @@
         >{progressPercent}%</span
       >
     </div>
-    <Button {href} variant={done ? 'outline' : 'default'} size="sm" class="shrink-0">
+    <Button {href} variant={done ? 'outline' : 'default'} size="sm" class="relative z-10 shrink-0">
       {done ? $t('learningPath.course.review_course') : $t('learningPath.course.continue_course')}
       {#if !done}<ArrowRightIcon class="size-4" />{/if}
     </Button>
