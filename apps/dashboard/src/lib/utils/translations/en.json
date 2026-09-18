@@ -5442,6 +5442,7 @@
       "title": "Learning Paths",
       "subtitle": "Create and manage structured learning experiences that guide learners through multiple courses.",
       "create_path": "Create Learning Path",
+      "load_error_title": "Failed to load learning paths",
       "toolbar": {
         "search_placeholder": "Search learning paths…",
         "grid_view": "Grid view",

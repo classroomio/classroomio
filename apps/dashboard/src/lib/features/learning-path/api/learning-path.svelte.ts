@@ -6,6 +6,7 @@ import type {
   CreateLearningPathRequest,
   DeleteLearningPathRequest,
   GetLearningPathDetailRequest,
+  LearningPathAccessOptions,
   LearningPathCourseItem,
   LearningPathDetail,
   LearningPathSummary,
@@ -34,13 +35,14 @@ export class LearningPathApi extends BaseApiWithErrors {
   private loadedPathId = $state<string | null>(null);
   private isPathDirty = $state(false);
   private inFlightPathRequests = new Map<string, Promise<LearningPathDetail | null>>();
-  private pathRequestSeq = 0;
-  private activePathRequestSeq = 0;
+  private lastRequestedPathId: string | null = null;
   isNotFound = $state(false);
   loadError = $state<string | null>(null);
 
   async ensurePath(pathId: string): Promise<LearningPathDetail | null> {
     if (!pathId) return null;
+
+    this.lastRequestedPathId = pathId;
 
     if (
       !this.isPathDirty &&
@@ -54,18 +56,16 @@ export class LearningPathApi extends BaseApiWithErrors {
       return this.inFlightPathRequests.get(pathId)!;
     }
 
-    const requestSeq = (this.pathRequestSeq += 1);
-    this.activePathRequestSeq = requestSeq;
     this.isNotFound = false;
     this.loadError = null;
 
     const request = (async () => {
       try {
-        const detail = await this.get(pathId, undefined, requestSeq);
+        const detail = await this.get(pathId);
 
         // Only the latest navigation may write shared state; earlier
         // requests resolve for their caller but leave currentPath alone.
-        if (this.activePathRequestSeq !== requestSeq) {
+        if (this.lastRequestedPathId !== pathId) {
           return detail;
         }
 
@@ -80,13 +80,17 @@ export class LearningPathApi extends BaseApiWithErrors {
         }
         return detail;
       } catch (error) {
-        if (this.activePathRequestSeq !== requestSeq) {
+        if (this.lastRequestedPathId !== pathId) {
           return null;
         }
 
         const status = error instanceof ApiError ? error.status : undefined;
         this.isNotFound = status === 404;
-        this.loadError = error instanceof Error ? error.message : 'Failed to load learning path';
+        this.loadError = this.isNotFound
+          ? null
+          : error instanceof Error
+            ? error.message
+            : 'Failed to load learning path';
         return null;
       }
     })();
@@ -131,21 +135,29 @@ export class LearningPathApi extends BaseApiWithErrors {
     });
   }
 
-  async get(
-    pathId: string,
-    _access?: { isAdmin?: boolean | null; userProfileId?: string | null },
-    requestSeq?: number
-  ): Promise<LearningPathDetail | null> {
-    const seq = requestSeq ?? (this.pathRequestSeq += 1);
-    if (requestSeq === undefined) {
-      this.activePathRequestSeq = seq;
-    }
+  async get(pathId: string, _access?: LearningPathAccessOptions): Promise<LearningPathDetail | null> {
+    this.lastRequestedPathId = pathId;
+
+    let requestError: Error | null = null;
 
     await this.execute<GetLearningPathDetailRequest>({
-      requestFn: () => classroomio['learning-path'][':pathId'].$get({ param: { pathId } }),
+      requestFn: async () => {
+        const response = await classroomio['learning-path'][':pathId'].$get({ param: { pathId } });
+        if (!response.ok) {
+          const clone = response.clone();
+          const body = (await clone.json().catch(() => null)) as {
+            message?: string;
+            error?: string;
+            code?: string;
+          } | null;
+          const message = body?.error || body?.message || `HTTP ${response.status}: ${response.statusText}`;
+          requestError = new ApiError(message, response.status, response.statusText, response);
+        }
+        return response;
+      },
       logContext: 'getting learning path detail',
       onSuccess: (result) => {
-        if (this.activePathRequestSeq !== seq) {
+        if (this.lastRequestedPathId !== pathId) {
           return;
         }
 
@@ -154,14 +166,27 @@ export class LearningPathApi extends BaseApiWithErrors {
           p.id === result.data.id || p.publicId === result.data.publicId ? { ...p, ...result.data } : p
         );
       },
-      onError: () => {
-        if (this.activePathRequestSeq !== seq) {
+      onError: (err) => {
+        if (this.lastRequestedPathId !== pathId) {
           return;
         }
 
         this.currentPath = null;
+        if (!requestError) {
+          const message =
+            typeof err === 'string'
+              ? err
+              : err && typeof err === 'object' && 'error' in err && typeof err.error === 'string'
+                ? err.error
+                : 'Failed to load learning path';
+          requestError = new Error(message);
+        }
       }
     });
+
+    if (requestError) {
+      throw requestError;
+    }
 
     return this.currentPath;
   }

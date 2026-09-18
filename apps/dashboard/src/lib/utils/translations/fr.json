@@ -5591,7 +5591,8 @@
         "search_placeholder": "Rechercher des parcours d'apprentissage…",
         "grid_view": "Vue grille",
         "list_view": "Vue liste"
-      }
+      },
+      "load_error_title": "Échec du chargement des parcours d'apprentissage"
     },
     "view_path_site": {
       "unpublished_title": "Publiez votre parcours d'apprentissage",

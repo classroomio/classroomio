@@ -5591,7 +5591,8 @@
         "search_placeholder": "Lernpfade suchen…",
         "grid_view": "Rasteransicht",
         "list_view": "Listenansicht"
-      }
+      },
+      "load_error_title": "Die Lernpfade konnten nicht geladen werden"
     },
     "view_path_site": {
       "unpublished_title": "Veröffentlichen Sie Ihren Lernpfad",

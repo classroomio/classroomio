@@ -5591,7 +5591,8 @@
         "search_placeholder": "Søg i læringsstier…",
         "grid_view": "Gittervisning",
         "list_view": "Listevisning"
-      }
+      },
+      "load_error_title": "Kunne ikke indlæse læringsstier"
     },
     "view_path_site": {
       "unpublished_title": "Offentliggør din læringsvej",

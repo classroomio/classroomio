@@ -10,6 +10,7 @@ import type {
   TNewLearningPathMember,
   TNewLearningPathMemberCourse
 } from '../../types';
+import { TPathMembersQuery } from '@cio/utils';
 
 export interface TLearningPathMemberWithProfile extends TLearningPathMember {
   fullName?: string | null;
@@ -135,11 +136,11 @@ export async function getMemberById(
  */
 export async function listLearningPathMembers(
   learningPathId: string,
-  options?: { limit?: number; offset?: number; status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' },
+  { page, limit, status }: TPathMembersQuery,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathMemberWithProfile[]> {
   try {
-    let query = dbClient
+    const rows = await dbClient
       .select({
         member: schema.learningPathMember,
         fullName: schema.profile.fullname,
@@ -151,20 +152,12 @@ export async function listLearningPathMembers(
         and(
           eq(schema.learningPathMember.learningPathId, learningPathId),
           isNull(schema.learningPathMember.removedAt),
-          options?.status ? eq(schema.learningPathMember.status, options.status) : undefined
+          status ? eq(schema.learningPathMember.status, status) : undefined
         )
       )
-      .orderBy(desc(schema.learningPathMember.enrolledAt));
-
-    if (options?.limit) {
-      query = query.limit(options.limit) as typeof query;
-    }
-
-    if (options?.offset) {
-      query = query.offset(options.offset) as typeof query;
-    }
-
-    const rows = await query;
+      .orderBy(desc(schema.learningPathMember.enrolledAt))
+      .limit(limit)
+      .offset((page - 1) * limit);
 
     return rows.map((row) => ({
       ...row.member,

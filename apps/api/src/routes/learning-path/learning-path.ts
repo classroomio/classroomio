@@ -1,5 +1,4 @@
-import * as z from 'zod';
-
+import { ZPathMembersQuery } from '@cio/utils/validation/learning-path';
 import {
   ZAddLearningPathCourse,
   ZAddLearningPathMembers,
@@ -30,21 +29,16 @@ import {
   updateLearningPathService,
   verifyLearningPathCertificateService
 } from '@api/services/learning-path';
-
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
 
 const ZPathParam = z.object({ pathId: z.string().min(1) });
 const ZCourseParam = z.object({ pathId: z.string().min(1), courseId: z.string().uuid() });
 const ZMemberParam = z.object({ pathId: z.string().min(1), memberId: z.string().uuid() });
 const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
-const ZMembersQuery = z.object({
-  limit: z.coerce.number().int().positive().max(100).optional(),
-  offset: z.coerce.number().int().min(0).optional(),
-  status: z.enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED']).optional()
-});
 
 const ZSlugParam = z.object({ slug: z.string().min(1) });
 
@@ -293,13 +287,13 @@ export const learningPathRouter = new Hono()
 
   /**
    * GET /learning-path/:pathId/members
-   * Lists active members with their profiles
+   * Lists active members with their profiles (paginated)
    */
   .get(
     '/:pathId/members',
     authMiddleware,
     zValidator('param', ZPathParam),
-    zValidator('query', ZMembersQuery),
+    zValidator('query', ZPathMembersQuery),
     async (c) => {
       try {
         const user = c.get('user')!;

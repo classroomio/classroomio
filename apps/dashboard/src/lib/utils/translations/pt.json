@@ -5591,7 +5591,8 @@
         "search_placeholder": "Pesquisar trilhas de aprendizagem…",
         "grid_view": "Visualização em grade",
         "list_view": "Visualização em lista"
-      }
+      },
+      "load_error_title": "Falha ao carregar caminhos de aprendizagem"
     },
     "view_path_site": {
       "unpublished_title": "Publique seu caminho de aprendizagem",

@@ -5505,7 +5505,7 @@
       "publish_failed": "Nie udało się opublikować ścieżki szkoleniowej",
       "not_found_title": "Nie znaleziono ścieżki szkoleniowej",
       "not_found_description": "Ścieżka szkoleniowa, której szukasz nie istnieje lub została usunięta.",
-      "back_to_paths": "Wracając do ścieżek edukacyjnych",
+      "back_to_paths": "Powrót do ścieżek edukacyjnych",
       "load_failed_title": "Nie udało się wczytać tej ścieżki szkoleniowej",
       "load_failed_description": "Sprawdź połączenie i spróbuj ponownie."
     },
@@ -5591,7 +5591,8 @@
         "search_placeholder": "Wyszukaj ścieżki edukacyjne…",
         "grid_view": "Widok siatki",
         "list_view": "Widok listy"
-      }
+      },
+      "load_error_title": "Nie udało się wczytać ścieżek edukacyjnych"
     },
     "view_path_site": {
       "unpublished_title": "Opublikuj swoją ścieżkę edukacyjną",

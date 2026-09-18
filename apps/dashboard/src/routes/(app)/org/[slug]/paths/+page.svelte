@@ -2,6 +2,7 @@
   import { PathsListing, CreatePathButton } from '$features/learning-path';
   import { learningPathApi } from '$features/learning-path/api';
   import * as Page from '@cio/ui/base/page';
+  import * as Alert from '@cio/ui/base/alert';
   import { t } from '$lib/utils/functions/translations';
 
   let { data } = $props();
@@ -29,6 +30,14 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
+      {#if data.loadError}
+        <Alert.Callout
+          variant="destructive"
+          title={$t('learningPath.listing.load_error_title')}
+          description={data.loadError}
+          class="mb-6"
+        />
+      {/if}
       <PathsListing />
     {/snippet}
   </Page.Body>
