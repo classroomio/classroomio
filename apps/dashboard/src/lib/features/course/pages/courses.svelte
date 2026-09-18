@@ -4,10 +4,7 @@
   import { Search } from '@cio/ui/custom/search';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import * as Page from '@cio/ui/base/page';
-  import { SortSelect } from '$features/ui';
-  import GridIcon from '@lucide/svelte/icons/grid-2x2';
-  import ListIcon from '@lucide/svelte/icons/list';
-  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { SortSelect, ViewToggle } from '$features/ui';
 
   import {
     CourseCardList,
@@ -117,15 +114,7 @@
   {@render filterControls?.()}
 
   {#if !isLMS}
-    {#if $courseMetaDeta.view === 'list'}
-      <IconButton onclick={() => setViewPreference('grid')}>
-        <GridIcon size={16} />
-      </IconButton>
-    {:else}
-      <IconButton onclick={() => setViewPreference('list')}>
-        <ListIcon size={16} />
-      </IconButton>
-    {/if}
+    <ViewToggle view={$courseMetaDeta.view} onChange={setViewPreference} />
   {/if}
 </Page.BodyHeader>
 

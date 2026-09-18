@@ -5,16 +5,13 @@
   import * as Page from '@cio/ui/base/page';
   import * as Alert from '@cio/ui/base/alert';
   import { Search } from '@cio/ui/custom/search';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { CourseCard } from '$features/course/components';
-  import { DeleteModal } from '$features/ui';
+  import { DeleteModal, ViewToggle } from '$features/ui';
   import CoursePublishBadge from '$features/course/components/course-publish-badge.svelte';
   import { courseMetaDeta } from '$features/course/utils/store';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import GridIcon from '@lucide/svelte/icons/grid-2x2';
-  import ListIcon from '@lucide/svelte/icons/list';
   import Plus from '@lucide/svelte/icons/plus';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import { t } from '$lib/utils/functions/translations';
@@ -118,15 +115,7 @@
       <Page.BodyHeader align="right" class="p-0!">
         <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
 
-        {#if $courseMetaDeta.view === 'list'}
-          <IconButton onclick={() => setViewPreference('grid')}>
-            <GridIcon size={16} />
-          </IconButton>
-        {:else}
-          <IconButton onclick={() => setViewPreference('list')}>
-            <ListIcon size={16} />
-          </IconButton>
-        {/if}
+        <ViewToggle view={$courseMetaDeta.view} onChange={setViewPreference} />
       </Page.BodyHeader>
 
       {#if filteredCourses.length === 0}
