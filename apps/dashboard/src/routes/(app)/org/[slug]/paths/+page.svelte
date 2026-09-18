@@ -6,9 +6,9 @@
 
   let { data } = $props();
 
-  $effect.pre(() => {
-    if (data.orgId && learningPathApi.currentOrgId !== data.orgId) {
-      learningPathApi.setOrg(data.orgId, data.paths);
+  $effect(() => {
+    if (data.paths) {
+      learningPathApi.paths = data.paths;
     }
   });
 </script>

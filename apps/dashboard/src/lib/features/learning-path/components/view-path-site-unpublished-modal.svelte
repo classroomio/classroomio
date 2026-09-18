@@ -24,7 +24,7 @@
 
     isPublishing = true;
     try {
-      await learningPathApi.updatePath(path.id, { isPublished: true });
+      await learningPathApi.update(path.id, { isPublished: true }, { showSuccessToast: false });
       snackbar.success('learningPath.workspace.published');
 
       open = false;

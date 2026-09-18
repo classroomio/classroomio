@@ -133,6 +133,10 @@ export const createOrganization = async (data: TNewOrganization, dbClient: DbOrT
 };
 
 export const createOrganizationMember = async (data: TNewOrganizationmember, dbClient: DbOrTxClient = db) => {
+  if (!data.profileId && !data.email) {
+    throw new Error('Cannot create organization member without a profileId or email');
+  }
+
   const [member] = await dbClient.insert(schema.organizationmember).values(data).returning();
 
   return member;
@@ -196,6 +200,13 @@ export async function getOrganizationMemberIdByOrgAndProfile(
  * @returns Array of created members
  */
 export const createOrganizationMembers = async (data: TNewOrganizationmember[]) => {
+  if (data.length === 0) return [];
+  for (const member of data) {
+    if (!member.profileId && !member.email) {
+      throw new Error('Cannot create organization member without a profileId or email');
+    }
+  }
+
   const members = await db.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
 
   return members;
@@ -207,6 +218,11 @@ export async function insertOrganizationMembersOnConflictDoNothing(
 ): Promise<void> {
   if (data.length === 0) {
     return;
+  }
+  for (const member of data) {
+    if (!member.profileId && !member.email) {
+      throw new Error('Cannot create organization member without a profileId or email');
+    }
   }
 
   try {

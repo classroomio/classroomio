@@ -5524,7 +5524,6 @@
       "lessons": "lessons",
       "exercise": "exercise",
       "exercises": "exercises",
-      "part_of": "Part of",
       "of": "of",
       "view_certificate": "View Certificate",
       "certificate_earned": "Certificate earned",
@@ -5635,97 +5634,6 @@
       "continue_setup": "Continue setup",
       "new_path_name": "New learning path",
       "untitled_path": "Untitled path"
-    },
-    "workspace": {
-      "learning_paths_breadcrumb": "Learning Paths",
-      "loading": "Loading…",
-      "courses": "Courses",
-      "people": "People",
-      "analytics": "Analytics",
-      "landing": "Landing page",
-      "certificate": "Certificate",
-      "settings": "Settings",
-      "preview_as_student": "Preview as student",
-      "all_paths": "All Learning Paths",
-      "finish_setup": "Finish setup · {percent}%",
-      "view_path_site": "View Path site",
-      "copy_path_url": "Copy Path URL",
-      "preview_missing_slug": "Generate and save a path slug before previewing.",
-      "url_copied": "Learning path URL copied to clipboard",
-      "publish_path": "Publish Path",
-      "unpublish_path": "Unpublish Path",
-      "published": "Learning Path published",
-      "unpublished": "Learning Path unpublished",
-      "cloned": "Learning path cloned successfully",
-      "publish_failed": "Failed to publish learning path",
-      "not_found_title": "Learning path not found",
-      "not_found_description": "The learning path you are looking for does not exist or has been deleted.",
-      "back_to_paths": "Back to learning paths",
-      "loading_title": "Loading learning path…",
-      "loading_description": "Please wait while we load your learning path data.",
-      "tabs": {
-        "setup": "Setup",
-        "courses": "Courses",
-        "people": "People",
-        "analytics": "Analytics",
-        "landing": "Landing page",
-        "certificate": "Certificate",
-        "settings": "Settings"
-      },
-      "coming_soon": {
-        "title": "{tab} — Coming Soon",
-        "description": "This workspace tab will be available in Phase 3. Course management and setup are fully functional in this release."
-      }
-    },
-    "setup": {
-      "heading": "Set up your path",
-      "subtitle": "Finish these steps to launch {pathName} to your learners.",
-      "info_banner": "A path goes live once its courses are ordered, priced, and set to Active.",
-      "completed_count": "{completedCount} of {total} completed",
-      "done": "Done",
-      "continue": "Continue",
-      "activate_now": "Activate now",
-      "launch_remaining": "{remainingCount} steps left to launch",
-      "launch_hint": "Order the courses, set a price, polish the landing page, and activate.",
-      "step_name_label": "Name & describe your path",
-      "step_name_description": "Give the path a clear, outcome-based name and a short summary.",
-      "step_courses_label": "Add courses",
-      "step_courses_description": "Pick the courses that make up this learning path.",
-      "step_order_label": "Set the course order",
-      "step_order_description": "Drag courses into the order learners should complete them.",
-      "step_price_label": "Set your price",
-      "step_price_description": "Price the path as a bundle — learners see the savings vs individual courses.",
-      "step_landing_label": "Customize your landing page",
-      "step_landing_description": "Outcomes, skills, instructors, testimonials, and FAQs on the public path page.",
-      "step_activate_label": "Activate the path",
-      "step_activate_description": "Set the status to Active so it appears on your landing page and LMS.",
-      "title": "Set up your path",
-      "summary": "A path goes live once its courses are ordered, priced, and published.",
-      "progress": "{completed} of {total} completed",
-      "launch_title": "{count} {count, plural, =1 {step} other {steps}} left to launch",
-      "launch_desc": "Order the courses, set a price, polish the landing page, and publish.",
-      "step_name_title": "Name & describe your path",
-      "step_name_desc": "Give the path a clear, outcome-based name and a short summary.",
-      "step_name_action": "Edit details",
-      "step_courses_title": "Add courses",
-      "step_courses_desc": "Pick the courses that make up this learning path.",
-      "step_courses_action": "Add courses",
-      "step_order_title": "Set the course order",
-      "step_order_desc": "Drag courses into the order learners should complete them.",
-      "step_order_action": "Set order",
-      "reorder_action": "Reorder",
-      "step_price_title": "Set your price",
-      "step_price_desc": "Price the path as a bundle — learners see the savings vs individual courses.",
-      "step_price_action": "Set price",
-      "step_landing_title": "Customize your landing page",
-      "step_landing_desc": "Outcomes, skills, instructors, testimonials, and FAQs on the public path page.",
-      "step_landing_action": "Customize",
-      "step_publish_title": "Publish the Path",
-      "step_publish_desc": "Publish the Path so it appears on your landing page and LMS.",
-      "step_publish_action": "Publish",
-      "step_activate_title": "Publish the Path",
-      "step_activate_desc": "Publish the Path so it appears on your landing page and LMS.",
-      "step_activate_action": "Publish"
     },
     "courses_builder": {
       "heading": "Courses",
@@ -5850,14 +5758,6 @@
       "title": "Learning Paths",
       "subtitle": "Create and manage structured learning experiences that guide learners through multiple courses.",
       "create_path": "Create Learning Path",
-      "create_course": "Create Course",
-      "overview": {
-        "active_paths": "Active paths",
-        "enrolled_learners": "Enrolled learners",
-        "completions": "Completions",
-        "completion_rate": "Completion rate",
-        "across_all_paths": "Across all paths"
-      },
       "toolbar": {
         "search_placeholder": "Search learning paths…",
         "grid_view": "Grid view",
@@ -5870,9 +5770,8 @@
         "group_enrollment": "Enrollment",
         "group_completion": "Completion rate",
         "all": "All",
-        "draft": "Draft",
         "published": "Published",
-        "archived": "Archived",
+        "unpublished": "Unpublished",
         "no_learners": "No learners yet",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
@@ -5886,17 +5785,12 @@
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
-        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
-        "not_published": "Not published yet",
-        "completion": "Completion",
-        "manage": "Manage",
-        "continue_setup": "Continue setup"
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}"
       },
       "empty": {
         "title": "Create your first Learning Path",
         "description": "Bundle multiple courses into an ordered sequence with milestone tracking, gating, and an optional completion certificate. Start by clicking on the Add button.",
         "create_path": "Create Learning Path",
-        "create_course": "Create Course",
         "no_matches_title": "No learning paths match your active filters",
         "no_matches_description": "Try clearing your filters or changing your search query."
       }
@@ -5908,16 +5802,41 @@
       "empty_description": "Add courses to guide learners through a structured sequence. Start by clicking on the Add button.",
       "unlock_rule_title": "Unlock courses in order",
       "unlock_rule_desc": "Each course stays locked until a student completes the previous one's lessons and exercises. Turn off to allow any order.",
-      "list_head": "{count} {count, plural, =1 {course} other {courses}} in this path",
       "drag_hint": "Drag to reorder",
       "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
       "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
       "open_course": "Open course",
       "remove_course": "Remove from path",
-      "add_course_button": "Add Courses",
-      "certificate_title": "Path certificate",
-      "certificate_desc": "Awarded automatically when a student completes all {count} courses.",
-      "configure_certificate": "Configure certificate"
+      "add_course_button": "Add Courses"
+    },
+    "setup": {
+      "title": "Set up your path",
+      "subtitle": "Finish these steps to launch {name} to your learners.",
+      "summary": "A path goes live once its courses are ordered, priced, and published.",
+      "progress": "{completed} of {total} completed",
+      "done": "Done",
+      "launch_title": "{count} {count, plural, =1 {step} other {steps}} left to launch",
+      "launch_desc": "Order the courses, set a price, polish the landing page, and publish.",
+      "activate_now": "Publish now",
+      "step_name_title": "Name & describe your path",
+      "step_name_desc": "Give the path a clear, outcome-based name and a short summary.",
+      "step_name_action": "Edit details",
+      "step_courses_title": "Add courses",
+      "step_courses_desc": "Pick the courses that make up this learning path.",
+      "step_courses_action": "Add courses",
+      "step_order_title": "Set the course order",
+      "step_order_desc": "Drag courses into the order learners should complete them.",
+      "step_order_action": "Set order",
+      "reorder_action": "Reorder",
+      "step_price_title": "Set your price",
+      "step_price_desc": "Price the path as a bundle — learners see the savings vs individual courses.",
+      "step_price_action": "Set price",
+      "step_landing_title": "Customize your landing page",
+      "step_landing_desc": "Outcomes, skills, instructors, testimonials, and FAQs on the public path page.",
+      "step_landing_action": "Customize",
+      "step_publish_title": "Publish the Path",
+      "step_publish_desc": "Publish the Path so it appears on your landing page and LMS.",
+      "step_publish_action": "Publish"
     },
     "view_path_site": {
       "unpublished_title": "Publish your learning path",
@@ -5925,32 +5844,51 @@
       "cancel": "Cancel",
       "publish_path": "Publish Path"
     },
+    "workspace": {
+      "finish_setup": "Finish setup · {percent}%",
+      "view_path_site": "View Path site",
+      "copy_path_url": "Copy Path URL",
+      "preview_missing_slug": "Generate and save a path slug before previewing.",
+      "url_copied": "Learning path URL copied to clipboard",
+      "publish_path": "Publish Path",
+      "published": "Learning Path published",
+      "publish_failed": "Failed to publish learning path",
+      "not_found_title": "Learning path not found",
+      "not_found_description": "The learning path you are looking for does not exist or has been deleted.",
+      "load_failed_title": "Couldn't load this learning path",
+      "load_failed_description": "Check your connection and try again.",
+      "back_to_paths": "Back to learning paths",
+      "loading_title": "Loading learning path…",
+      "loading_description": "Please wait while we load your learning path data.",
+      "tabs": {
+        "setup": "Setup",
+        "courses": "Courses",
+        "people": "People",
+        "analytics": "Analytics",
+        "landing": "Landing page",
+        "certificate": "Certificate",
+        "settings": "Settings"
+      },
+      "coming_soon": {
+        "title": "{tab} — Coming Soon",
+        "description": "This workspace tab will be available in Phase 3. Course management and setup are fully functional in this release."
+      }
+    },
     "context_menu": {
       "open": "Open",
-      "clone": "Clone",
       "share": "Share",
       "invite": "Invite",
       "delete": "Delete"
     },
     "modals": {
-      "clone": {
-        "title": "Clone Learning Path",
-        "description": "Create a copy of this learning path with all its courses.",
-        "submit": "Clone",
-        "title_copy_format": "{name} (Copy)",
-        "failed": "Failed to clone learning path"
-      },
       "create": {
         "title": "Create a Learning Path",
         "name_label": "Path name",
         "name_placeholder": "e.g. Fullstack Web Development",
-        "slug_label": "URL Slug",
-        "slug_placeholder": "fullstack-web-development",
         "desc_label": "Description",
         "desc_placeholder": "A brief summary of what learners will achieve...",
         "cancel": "Cancel",
         "submit": "Create Learning Path",
-        "creating": "Creating…",
         "failed": "Failed to create learning path"
       },
       "add_courses": {
@@ -5963,13 +5901,16 @@
         "cancel": "Cancel",
         "submit": "Add {count} {count, plural, =1 {Course} other {Courses}}",
         "submitting": "Adding courses…"
-      },
-      "remove_course": {
-        "title": "Remove Course from Path?",
-        "description": "The course will be removed from this path. Learners already enrolled in the course will keep their access and progress.",
-        "cancel": "Cancel",
-        "confirm": "Remove Course"
       }
+    },
+    "snackbar": {
+      "created": "Learning path created",
+      "updated": "Learning path updated",
+      "deleted": "Learning path deleted",
+      "reordered": "Course order updated",
+      "course_added": "Course added",
+      "courses_added": "Courses added",
+      "course_removed": "Course removed"
     }
   }
 }
