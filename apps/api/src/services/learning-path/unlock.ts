@@ -321,6 +321,8 @@ export async function syncCourseProgressInLearningPaths(
 
     if (progressPercent > 0) {
       updatePayload.startedAt = existingProgress?.startedAt ?? nowIso;
+    } else {
+      updatePayload.startedAt = null;
     }
 
     if (isUnlocked) {
@@ -412,7 +414,7 @@ export async function syncPathProgressForMember(
           : 'LOCKED';
 
     const completedAt = stats.isComplete ? (existingProgress?.completedAt ?? nowIso) : null;
-    const startedAt = progressPercent > 0 ? (existingProgress?.startedAt ?? nowIso) : undefined;
+    const startedAt = progressPercent > 0 ? (existingProgress?.startedAt ?? nowIso) : null;
     const unlockedAt = isUnlocked ? (existingProgress?.unlockedAt ?? nowIso) : null;
 
     const updatePayload: Parameters<typeof upsertMemberCourseProgress>[2] = {
