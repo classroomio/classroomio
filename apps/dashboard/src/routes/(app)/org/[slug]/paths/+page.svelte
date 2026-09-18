@@ -37,8 +37,9 @@
           description={data.loadError}
           class="mb-6"
         />
+      {:else}
+        <PathsListing loadError={data.loadError} />
       {/if}
-      <PathsListing />
     {/snippet}
   </Page.Body>
 </Page.Root>

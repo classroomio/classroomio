@@ -28,6 +28,8 @@
   } from '../utils/constants';
   import type { StatusFilter, EnrollmentFilter, CompletionFilter, ViewMode } from '../utils/types';
 
+  let { loadError = null }: { loadError?: string | null } = $props();
+
   let searchQuery = $state('');
   let sortKey = $state<PathSortBy>(DEFAULT_PATH_SORT);
   let selectedOrder = $state<PathSortOrder>(DEFAULT_SORT_ORDER);
@@ -194,7 +196,7 @@
 
 <!-- Content Area -->
 <div class="mx-auto mt-4 w-full flex-1">
-  {#if learningPathApi.paths.length === 0}
+  {#if !loadError && learningPathApi.paths.length === 0}
     <Empty
       title={$t('learningPath.listing.empty.title')}
       description={$t('learningPath.listing.empty.description')}
