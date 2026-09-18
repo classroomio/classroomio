@@ -5454,12 +5454,6 @@
   },
   "learningPath": {
     "modals": {
-      "remove_course": {
-        "title": "Kurs aus dem Lernpfad entfernen?",
-        "description": "Der Kurs wird aus diesem Lernpfad entfernt. Bereits eingeschriebene Teilnehmer behalten ihren Zugriff und ihren Fortschritt.",
-        "cancel": "Abbrechen",
-        "confirm": "Kurs entfernen"
-      },
       "add_courses": {
         "title": "Kurse zum Lernpfad hinzufügen",
         "search_placeholder": "Kurse suchen…",
@@ -5473,33 +5467,19 @@
       },
       "create": {
         "title": "Lernpfad erstellen",
-        "description": "Geben Sie einen Titel und eine Beschreibung für Ihren neuen Lernpfad ein.",
         "name_label": "Pfadname",
         "name_placeholder": "z. B. Fullstack-Webentwicklung",
-        "slug_label": "URL-Slug",
-        "slug_placeholder": "fullstack-web-development",
         "desc_label": "Beschreibung",
         "desc_placeholder": "Eine kurze Zusammenfassung der Lernziele…",
         "cancel": "Abbrechen",
         "submit": "Lernpfad erstellen",
-        "creating": "Wird erstellt…",
         "failed": "Der Lernpfad konnte nicht erstellt werden"
-      },
-      "clone": {
-        "title": "Klon-Lernpfad",
-        "description": "Erstellen Sie eine Kopie dieses Lernpfads mit allen Kursen.",
-        "submit": "Klonen",
-        "title_copy_format": "{name} (Kopie)",
-        "failed": "Der Lernpfad konnte nicht geklont werden"
       }
     },
     "workspace": {
       "all_paths": "Alle Lernpfade",
       "finish_setup": "Einrichtung abschließen · {percent}%",
       "view_path_site": "Pfadseite anzeigen",
-      "active": "Aktiv",
-      "draft": "Entwurf",
-      "archived": "Archiviert",
       "coming_soon": {
         "title": "{tab} – Demnächst verfügbar",
         "description": "Dieser Arbeitsbereich-Tab wird in Phase 3 verfügbar sein. Kursverwaltung und -einrichtung sind in dieser Version voll funktionsfähig."
@@ -5513,10 +5493,6 @@
         "settings": "Einstellungen",
         "setup": "Aufstellen"
       },
-      "activate_path": "Pfad aktivieren",
-      "deactivate_path": "Pfad deaktivieren",
-      "activated": "Lernpfad aktiviert",
-      "deactivated": "Lernpfad deaktiviert",
       "publish_path": "Pfad veröffentlichen",
       "unpublish_path": "Veröffentlichungspfad aufheben",
       "published": "Lernpfad veröffentlicht",
@@ -5528,9 +5504,10 @@
       "copy_path_url": "Pfad-URL kopieren",
       "preview_missing_slug": "Generieren und speichern Sie vor der Vorschau einen Pfad-Slug.",
       "url_copied": "Lernpfad-URL in die Zwischenablage kopiert",
-      "cloned": "Lernpfad erfolgreich geklont",
       "loading_title": "Lernpfad wird geladen…",
-      "loading_description": "Bitte warten Sie, während wir Ihre Lernpfaddaten laden."
+      "loading_description": "Bitte warten Sie, während wir Ihre Lernpfaddaten laden.",
+      "load_failed_title": "Dieser Lernpfad konnte nicht geladen werden",
+      "load_failed_description": "Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
     },
     "setup": {
       "title": "Lernpfad einrichten",
@@ -5556,9 +5533,6 @@
       "step_landing_title": "Passen Sie Ihre Landingpage an",
       "step_landing_desc": "Ergebnisse, Fähigkeiten, Ausbilder, Erfahrungsberichte und FAQs auf der öffentlichen Pfadseite.",
       "step_landing_action": "Anpassen",
-      "step_activate_title": "Pfad aktivieren",
-      "step_activate_desc": "Stellen Sie den Status auf „Aktiv“, damit er auf Ihrer Landingpage und im LMS angezeigt wird.",
-      "step_activate_action": "Aktivieren",
       "step_publish_title": "Veröffentlichen Sie den Pfad",
       "step_publish_desc": "Veröffentlichen Sie den Pfad, damit er auf Ihrer Landingpage und Ihrem LMS erscheint.",
       "step_publish_action": "Veröffentlichen",
@@ -5569,16 +5543,12 @@
       "subtitle": "Fügen Sie Kurse hinzu und legen Sie per Drag & Drop die Reihenfolge fest, in der die Studierenden die Kurse durchlaufen.",
       "unlock_rule_title": "Kurse der Reihe nach freischalten",
       "unlock_rule_desc": "Jeder Kurs bleibt gesperrt, bis ein Teilnehmer die Lektionen und Übungen des vorherigen Kurses abgeschlossen hat. Deaktivieren Sie diese Option, um die Reihenfolge frei zu wählen.",
-      "list_head": "{count} {count, plural, =1 {Kurs} other {Kurse}} in diesem Pfad",
       "drag_hint": "Zum Neuanordnen ziehen",
       "lessons_count": "{count} {count, plural, =1 {Lektion} other {Lektionen}}",
       "exercises_count": "{count} {count, plural, =1 {Übung} other {Übungen}}",
       "open_course": "Offener Kurs",
       "remove_course": "Aus Pfad entfernen",
       "add_course_button": "Füge dem Pfad einen Kurs hinzu",
-      "certificate_title": "Pfadzertifikat",
-      "certificate_desc": "Wird automatisch vergeben, wenn ein Student alle {count} Kurse abgeschlossen hat.",
-      "configure_certificate": "Zertifikat konfigurieren",
       "empty_title": "Noch keine Kurse in diesem Lernpfad",
       "empty_description": "Fügen Sie Kurse hinzu, um die Lernenden durch eine strukturierte Abfolge zu führen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
     },
@@ -5586,22 +5556,16 @@
       "title": "Lernpfade",
       "subtitle": "Strukturierte Lernerfahrungen entwickeln und verwalten, die Lernende durch mehrere Kurse führen.",
       "create_path": "Lernpfad erstellen",
-      "create_course": "Kurs erstellen",
       "empty": {
         "title": "Erstelle deinen ersten Lernpfad",
         "description": "Mehrere Kurse lassen sich zu einer geordneten Abfolge zusammenfassen, inklusive Meilensteinverfolgung, Zugangskontrollen und optionalem Abschlusszertifikat.",
         "create_path": "Lernpfad erstellen",
-        "create_course": "Kurs erstellen",
         "no_matches_title": "Keine Lernpfade entsprechen Ihren aktiven Filtern",
         "no_matches_description": "Versuchen Sie, Ihre Filter zu löschen oder Ihre Suchanfrage zu ändern."
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {Kurs} other {Kurse}}",
-        "learners_count": "{count} {count, plural, =1 {Lernender} other {Lernende}}",
-        "not_published": "Noch nicht veröffentlicht",
-        "completion": "Fertigstellung",
-        "manage": "Verwalten",
-        "continue_setup": "Einrichtung fortsetzen"
+        "learners_count": "{count} {count, plural, =1 {Lernender} other {Lernende}}"
       },
       "filters": {
         "title": "Filter",
@@ -5610,9 +5574,7 @@
         "group_enrollment": "Teilnehmerzahlen",
         "group_completion": "Abschlussquote",
         "all": "Alle",
-        "draft": "Entwurf",
         "published": "Veröffentlicht",
-        "archived": "Archiviert",
         "no_learners": "Noch keine Teilnehmer",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
@@ -5622,21 +5584,13 @@
         "sort_date_created": "Erstellungsdatum",
         "sort_last_updated_at": "Zuletzt aktualisiert um",
         "sort_published": "Veröffentlicht",
-        "sort_courses": "Kurse"
+        "sort_courses": "Kurse",
+        "unpublished": "Unveröffentlicht"
       },
       "toolbar": {
         "search_placeholder": "Lernpfade suchen…",
-        "preview_empty": "Vorschau (leerer Zustand)",
-        "exit_preview_empty": "Vorschau beenden",
         "grid_view": "Rasteransicht",
         "list_view": "Listenansicht"
-      },
-      "overview": {
-        "active_paths": "Aktive Lernpfade",
-        "enrolled_learners": "Teilnehmer",
-        "completions": "Abschlüsse",
-        "completion_rate": "Abschlussquote",
-        "across_all_paths": "Über alle Lernpfade hinweg"
       }
     },
     "view_path_site": {
@@ -5647,7 +5601,6 @@
     },
     "context_menu": {
       "open": "Offen",
-      "clone": "Klonen",
       "share": "Teilen",
       "invite": "Einladen",
       "delete": "Löschen"
@@ -5658,6 +5611,15 @@
       "published": "Veröffentlicht",
       "unpublished": "Unveröffentlicht",
       "badge": "Lernpfad"
+    },
+    "snackbar": {
+      "created": "Lernpfad erstellt",
+      "updated": "Lernpfad aktualisiert",
+      "deleted": "Lernpfad gelöscht",
+      "reordered": "Kursreihenfolge aktualisiert",
+      "course_added": "Kurs hinzugefügt",
+      "courses_added": "Kurse hinzugefügt",
+      "course_removed": "Kurs entfernt"
     }
   }
 }

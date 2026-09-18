@@ -182,9 +182,7 @@ export async function countCohortsByOrgForProfile(organizationId: string, profil
           .select({ count: count(schema.cohort.id) })
           .from(schema.cohort)
           .innerJoin(schema.cohortMember, eq(schema.cohortMember.cohortId, schema.cohort.id))
-          .where(
-            and(eq(schema.cohort.organizationId, organizationId), eq(schema.cohortMember.profileId, profileId))
-          );
+          .where(and(eq(schema.cohort.organizationId, organizationId), eq(schema.cohortMember.profileId, profileId)));
 
     return Number(countRow?.count ?? 0);
   } catch (error) {
@@ -383,6 +381,10 @@ export async function isOrgAdminByCohortId(cohortId: string, profileId: string):
 }
 
 export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxClient = db): Promise<TCohortMember> {
+  if (!data.profileId && !data.email) {
+    throw new Error('Cannot add cohort member without a profileId or email');
+  }
+
   try {
     const [member] = await dbClient.insert(schema.cohortMember).values(data).returning();
     if (!member) throw new Error('Failed to add cohort member');
@@ -401,6 +403,10 @@ export async function insertCohortMemberIfAbsent(
   data: TNewCohortMember,
   dbClient: DbOrTxClient = db
 ): Promise<TCohortMember | null> {
+  if (!data.profileId && !data.email) {
+    throw new Error('Cannot add cohort member without a profileId or email');
+  }
+
   try {
     const [member] = await dbClient
       .insert(schema.cohortMember)

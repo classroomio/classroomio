@@ -19,7 +19,11 @@
   async function handleCopyLink() {
     if (!pathSlug) return;
 
-    await copyPublicPathPageUrl(pathSlug, currentOrgDomain);
+    try {
+      await copyPublicPathPageUrl(pathSlug, currentOrgDomain);
+    } catch (error) {
+      console.error('Failed to copy link:', error);
+    }
   }
 
   async function handleGoToLms() {
