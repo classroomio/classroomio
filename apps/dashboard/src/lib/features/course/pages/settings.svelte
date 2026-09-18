@@ -604,6 +604,51 @@
           }}
         />
 
+        <Field.Field id="share">
+          <Field.Label class="justify-between">
+            {$t('course.navItem.settings.link')}
+            {#if courseApi.course?.slug}
+              <div class="flex items-center gap-1">
+                <IconButton
+                  onclick={generateNewCourseLink}
+                  loading={isGeneratingLink}
+                  tooltip={$t('course.navItem.settings.generate_link')}
+                >
+                  <RotateCcwIcon size={16} />
+                </IconButton>
+                <IconButton
+                  href={courseLink}
+                  target="_blank"
+                  disabled={isGeneratingLink || !courseApi.course?.slug}
+                  tooltip={$t('course.navItem.settings.open_link')}
+                >
+                  <ArrowUpRightIcon size={16} />
+                </IconButton>
+              </div>
+            {/if}
+          </Field.Label>
+
+          {#if courseApi.course?.slug}
+            <div class="flex items-center justify-between rounded-md border p-1">
+              <p class="min-w-0 truncate text-sm">{courseLink}</p>
+              <IconButton
+                onclick={() => {
+                  copyToClipboard(courseLink);
+                }}
+                disabled={isGeneratingLink}
+                tooltip={$t('course.navItem.settings.copy_link')}
+              >
+                <Copy size={16} />
+              </IconButton>
+            </div>
+          {:else}
+            <Field.Description>{$t('course.navItem.settings.setup_landing_for_link')}</Field.Description>
+            <Button variant="secondary" href={landingPageHref} class="w-fit">
+              {$t('course.navItem.settings.setup_landing_page')}
+            </Button>
+          {/if}
+        </Field.Field>
+
         <Field.Field>
           <Field.Label>{$t('course.navItem.settings.tags.title')}</Field.Label>
           <Field.Description>{$t('course.navItem.settings.tags.description')}</Field.Description>
@@ -647,54 +692,6 @@
         </Field.Field>
       </Field.Group>
     </Card.Content>
-  </Card.Root>
-
-  <Card.Root id="share">
-    <Card.Header>
-      <Card.Title class="text-base">{$t('course.navItem.settings.link')}</Card.Title>
-      {#if !courseApi.course?.slug}
-        <Card.Description>{$t('course.navItem.settings.setup_landing_for_link')}</Card.Description>
-      {/if}
-      <Card.Action>
-        {#if courseApi.course?.slug}
-          <div class="flex items-center gap-1">
-            <IconButton
-              onclick={generateNewCourseLink}
-              loading={isGeneratingLink}
-              tooltip={$t('course.navItem.settings.generate_link')}
-            >
-              <RotateCcwIcon size={16} />
-            </IconButton>
-            <IconButton
-              href={courseLink}
-              target="_blank"
-              disabled={isGeneratingLink || !courseApi.course?.slug}
-              tooltip={$t('course.navItem.settings.open_link')}
-            >
-              <ArrowUpRightIcon size={16} />
-            </IconButton>
-          </div>
-        {:else}
-          <Button variant="secondary" href={landingPageHref}>{$t('course.navItem.settings.setup_landing_page')}</Button>
-        {/if}
-      </Card.Action>
-    </Card.Header>
-    {#if courseApi.course?.slug}
-      <Card.Content>
-        <div class="flex items-center justify-between rounded-md border p-1">
-          <p class="min-w-0 truncate text-sm">{courseLink}</p>
-          <IconButton
-            onclick={() => {
-              copyToClipboard(courseLink);
-            }}
-            disabled={isGeneratingLink}
-            tooltip={$t('course.navItem.settings.copy_link')}
-          >
-            <Copy size={16} />
-          </IconButton>
-        </div>
-      </Card.Content>
-    {/if}
   </Card.Root>
 
   <Card.Root>
