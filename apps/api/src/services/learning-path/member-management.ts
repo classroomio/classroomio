@@ -23,8 +23,8 @@ import { assertCanManageLearningPath, resolveLearningPath } from './learning-pat
 export async function listPathMembersService(
   pathId: string,
   userId: string,
-  orgRoles?: Record<string, number>,
-  options?: TPathMembersQuery
+  orgRoles: Record<string, number> | undefined,
+  options: TPathMembersQuery
 ) {
   const path = await resolveLearningPath(pathId);
   await assertCanManageLearningPath(path, userId, orgRoles);
