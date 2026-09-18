@@ -755,6 +755,8 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
+    /** Independent enroll blocked. Do not revoke grants that already exist. */
+    requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
     /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
     displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
@@ -3486,6 +3488,335 @@ export const cohortGoalAssignment = pgTable(
     index('idx_cohort_goal_assignment_goal_id').on(table.goalId),
     index('idx_cohort_goal_assignment_cohort_member_id').on(table.cohortMemberId),
     index('idx_cohort_goal_assignment_due_date').on(table.dueDate)
+  ]
+);
+
+// ─── Learning Paths ──────────────────────────────────────────────────────────
+
+export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']);
+
+export const learningPathMemberStatus = pgEnum('LEARNING_PATH_MEMBER_STATUS', [
+  'NOT_STARTED',
+  'IN_PROGRESS',
+  'COMPLETED'
+]);
+
+export const learningPathCourseStatus = pgEnum('LEARNING_PATH_COURSE_STATUS', [
+  'LOCKED',
+  'NOT_STARTED',
+  'IN_PROGRESS',
+  'COMPLETED'
+]);
+
+export const learningPath = pgTable(
+  'learning_path',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    /** URL segment for `/paths/{publicId}`. Not the PK. 8 mixed-case `[0-9A-Za-z]`, generated at insert. */
+    publicId: varchar('public_id', { length: 8 }).notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar().notNull(),
+    slug: varchar().notNull(),
+    description: text(),
+    coverImage: text('cover_image'),
+    isPublished: boolean('is_published').default(false).notNull(),
+    difficulty: learningPathDifficulty(),
+    estimatedDurationMinutes: integer('estimated_duration_minutes'),
+    cost: bigint({ mode: 'number' })
+      .default(sql`'0'`)
+      .notNull(),
+    currency: varchar().default('USD').notNull(),
+    showSavings: boolean('show_savings').default(true).notNull(),
+    sequentialUnlock: boolean('sequential_unlock').default(true).notNull(),
+    selfEnrollment: boolean('self_enrollment').default(true).notNull(),
+    autoEnroll: boolean('auto_enroll').default(true).notNull(),
+    certificateEnabled: boolean('certificate_enabled').default(true).notNull(),
+    certificateTitle: text('certificate_title'),
+    certificateIssuer: text('certificate_issuer'),
+    certificateDesign: jsonb('certificate_design').default({}).$type<{
+      templateId?: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
+      accentColor?: string;
+      subtitle?: string;
+      descriptionOverride?: string;
+      signatories?: { name: string; role: string; enabled?: boolean; signatureUrl?: string }[];
+      /** `{seq}` / `{year}` / `{month}`; defaults to `LP-XXXX-XXXX`. */
+      idFormat?: string;
+    }>(),
+    /** Copy only. Testimonial/FAQ `id` keys are list keys, not FKs. */
+    landingPage: jsonb('landing_page').default({}).$type<{
+      headline?: string;
+      subheadline?: string;
+      visitorAccess?: 'teaser' | 'syllabus' | 'preview';
+      outcomes?: string[];
+      skills?: string[];
+      showInstructors?: boolean;
+      showTestimonials?: boolean;
+      testimonials?: { id: string; name: string; role?: string; avatarUrl?: string; quote: string }[];
+      showFaqs?: boolean;
+      faqs?: { id: string; question: string; answer: string }[];
+      showRating?: boolean;
+      rating?: { average: number; count: number };
+    }>(),
+    /** Set when the teacher first confirms course order; not derivable from other columns. */
+    courseOrderSetAt: timestamp('course_order_set_at', { withTimezone: true, mode: 'string' }),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'learning_path_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_created_by_profile_id_fkey'
+    }),
+    unique('learning_path_public_id_unique').on(table.publicId),
+    unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
+    index('idx_learning_path_organization_id').on(table.organizationId),
+    index('idx_learning_path_organization_id_is_published').on(table.organizationId, table.isPublished)
+  ]
+);
+
+export const learningPathCourse = pgTable(
+  'learning_path_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathId: uuid('learning_path_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    /** Not unique: reorder rewrites every row in one transaction. */
+    order: integer().notNull(),
+    outcomes: jsonb().default([]).$type<string[]>(),
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_course_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'learning_path_course_course_id_fkey'
+    }).onDelete('cascade'),
+    unique('learning_path_course_path_id_course_id_unique').on(table.learningPathId, table.courseId),
+    index('idx_learning_path_course_path_id_order').on(table.learningPathId, table.order),
+    index('idx_learning_path_course_course_id').on(table.courseId)
+  ]
+);
+
+export const learningPathMember = pgTable(
+  'learning_path_member',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathId: uuid('learning_path_id').notNull(),
+    profileId: uuid('profile_id'),
+    email: text(),
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    /** Soft-remove so per-course cache and issued certificates are not cascaded. */
+    removedAt: timestamp('removed_at', { withTimezone: true, mode: 'string' }),
+    status: learningPathMemberStatus().default('NOT_STARTED').notNull(),
+    progressPercent: integer('progress_percent').default(0).notNull(),
+    completedCourseCount: integer('completed_course_count').default(0).notNull(),
+    currentCourseId: uuid('current_course_id'),
+    lastActivityAt: timestamp('last_activity_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_member_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_member_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'learning_path_member_role_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.currentCourseId],
+      foreignColumns: [course.id],
+      name: 'learning_path_member_current_course_id_fkey'
+    }).onDelete('set null'),
+    unique('learning_path_member_path_id_profile_id_unique').on(table.learningPathId, table.profileId),
+    unique('learning_path_member_path_id_email_unique').on(table.learningPathId, table.email),
+    index('idx_learning_path_member_learning_path_id').on(table.learningPathId),
+    index('idx_learning_path_member_profile_id').on(table.profileId)
+  ]
+);
+
+/** Progress cache. Truth is `lesson_completion` / `submission`. */
+export const learningPathMemberCourse = pgTable(
+  'learning_path_member_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathMemberId: uuid('learning_path_member_id').notNull(),
+    learningPathCourseId: uuid('learning_path_course_id').notNull(),
+    status: learningPathCourseStatus().default('LOCKED').notNull(),
+    progressPercent: integer('progress_percent').default(0).notNull(),
+    lessonsCompleted: integer('lessons_completed').default(0).notNull(),
+    lessonsTotal: integer('lessons_total').default(0).notNull(),
+    exercisesCompleted: integer('exercises_completed').default(0).notNull(),
+    exercisesTotal: integer('exercises_total').default(0).notNull(),
+    unlockedAt: timestamp('unlocked_at', { withTimezone: true, mode: 'string' }),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathMemberId],
+      foreignColumns: [learningPathMember.id],
+      name: 'learning_path_member_course_member_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.learningPathCourseId],
+      foreignColumns: [learningPathCourse.id],
+      name: 'learning_path_member_course_path_course_id_fkey'
+    }).onDelete('cascade'),
+    unique('learning_path_member_course_member_id_path_course_id_unique').on(
+      table.learningPathMemberId,
+      table.learningPathCourseId
+    ),
+    index('idx_learning_path_member_course_member_id').on(table.learningPathMemberId),
+    index('idx_learning_path_member_course_path_course_id').on(table.learningPathCourseId)
+  ]
+);
+
+export const learningPathCertificateIssue = pgTable(
+  'learning_path_certificate_issue',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    learningPathId: uuid('learning_path_id').notNull(),
+    learningPathMemberId: uuid('learning_path_member_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    certificateId: varchar('certificate_id').notNull(),
+    title: text().notNull(),
+    issuer: text(),
+    issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    status: varchar().default('valid').notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    fileUrl: text('file_url')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'learning_path_certificate_issue_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.learningPathMemberId],
+      foreignColumns: [learningPathMember.id],
+      name: 'learning_path_certificate_issue_member_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'learning_path_certificate_issue_profile_id_fkey'
+    }).onDelete('cascade'),
+    unique('learning_path_certificate_issue_certificate_id_key').on(table.certificateId),
+    unique('learning_path_certificate_issue_member_id_key').on(table.learningPathMemberId),
+    index('idx_learning_path_certificate_issue_profile_id').on(table.profileId),
+    index('idx_learning_path_certificate_issue_learning_path_id').on(table.learningPathId)
+  ]
+);
+
+// ─── Course Enrollment Provenance ────────────────────────────────────────────
+
+export const courseEnrollmentSource = pgEnum('COURSE_ENROLLMENT_SOURCE', [
+  'SELF_ENROLL',
+  'INVITE',
+  'ADMIN_ADD',
+  'ORG_AUDIENCE',
+  'COHORT',
+  'LEARNING_PATH',
+  'PROGRAM',
+  'IMPORT'
+]);
+
+export const courseEnrollmentGrant = pgTable(
+  'course_enrollment_grant',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    groupmemberId: uuid('groupmember_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    profileId: uuid('profile_id'),
+    source: courseEnrollmentSource().notNull(),
+    cohortId: uuid('cohort_id'),
+    learningPathId: uuid('learning_path_id'),
+    grantedByProfileId: uuid('granted_by_profile_id'),
+    grantedAt: timestamp('granted_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.groupmemberId],
+      foreignColumns: [groupmember.id],
+      name: 'course_enrollment_grant_groupmember_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_enrollment_grant_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'course_enrollment_grant_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'course_enrollment_grant_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'course_enrollment_grant_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.grantedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_enrollment_grant_granted_by_profile_id_fkey'
+    }).onDelete('set null'),
+    // NULLS NOT DISTINCT: two SELF_ENROLL grants (NULL cohort/path) must collide.
+    unique('course_enrollment_grant_source_unique')
+      .on(table.groupmemberId, table.source, table.cohortId, table.learningPathId)
+      .nullsNotDistinct(),
+    index('idx_course_enrollment_grant_course_id_source').on(table.courseId, table.source),
+    index('idx_course_enrollment_grant_groupmember_id').on(table.groupmemberId),
+    index('idx_course_enrollment_grant_cohort_id_course_id').on(table.cohortId, table.courseId),
+    index('idx_course_enrollment_grant_learning_path_id_course_id').on(table.learningPathId, table.courseId),
+    index('idx_course_enrollment_grant_profile_id').on(table.profileId)
   ]
 );
 
