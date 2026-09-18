@@ -92,6 +92,7 @@
     "db:restore-organizationmember-from-dump": "tsx src/scripts/restore-organizationmember-from-dump.ts",
     "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts",
     "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
+    "db:remove-landing-contact": "tsx src/scripts/remove-landing-page-contact-nav.ts",
     "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
   },
   "dependencies": {
