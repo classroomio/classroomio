@@ -136,11 +136,11 @@ export async function getMemberById(
  */
 export async function listLearningPathMembers(
   learningPathId: string,
-  { page, limit, status }: TPathMembersQuery,
+  options?: TPathMembersQuery,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathMemberWithProfile[]> {
   try {
-    const rows = await dbClient
+    let query = dbClient
       .select({
         member: schema.learningPathMember,
         fullName: schema.profile.fullname,
@@ -152,12 +152,20 @@ export async function listLearningPathMembers(
         and(
           eq(schema.learningPathMember.learningPathId, learningPathId),
           isNull(schema.learningPathMember.removedAt),
-          status ? eq(schema.learningPathMember.status, status) : undefined
+          options?.status ? eq(schema.learningPathMember.status, options.status) : undefined
         )
       )
-      .orderBy(desc(schema.learningPathMember.enrolledAt))
-      .limit(limit)
-      .offset((page - 1) * limit);
+      .orderBy(desc(schema.learningPathMember.enrolledAt));
+
+    if (options?.limit) {
+      query = query.limit(options.limit) as typeof query;
+    }
+
+    if (options?.page) {
+      query = query.offset((options.page - 1) * options.limit) as typeof query;
+    }
+
+    const rows = await query;
 
     return rows.map((row) => ({
       ...row.member,
