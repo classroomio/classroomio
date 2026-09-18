@@ -23,7 +23,7 @@ import {
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
 
 import { resolveLearningPath } from './learning-path';
-import { syncLearningPathProgressForMember } from './unlock';
+import { syncPathProgressForMember } from './unlock';
 
 export interface TEnrolledCourseProgress extends TLearningPathCourseDetail {
   isUnlocked: boolean;
@@ -214,7 +214,7 @@ export async function getEnrolledLearningPaths(
 
       const coursesWithProgress: TEnrolledCourseProgress[] = [];
       let completedCount = 0;
-      const driftedCourseIds: string[] = [];
+      let hasDrift = false;
 
       for (const course of courses) {
         const isComplete = completionByCourseId.get(course.courseId) ?? false;
@@ -229,28 +229,22 @@ export async function getEnrolledLearningPaths(
           isComplete
         });
 
-        // Detect cache drift to collect courses needing background sync
+        // Detect cache drift
         const cached = progressByPathCourseId.get(course.id);
         const expectedStatus = isComplete ? 'COMPLETED' : !isUnlocked ? 'LOCKED' : undefined;
         const hasStatusDrift =
           (expectedStatus && cached?.status !== expectedStatus) || (cached?.status === 'LOCKED' && isUnlocked);
         if (!cached || hasStatusDrift) {
-          driftedCourseIds.push(course.courseId);
+          hasDrift = true;
         }
       }
 
-      // Heal all drifted courses sequentially in the background
-      if (driftedCourseIds.length > 0 && !syncedPathIds.has(learningPath.id)) {
+      // Self-heal the path's cached progress once in the background
+      if (hasDrift && !syncedPathIds.has(learningPath.id)) {
         syncedPathIds.add(learningPath.id);
-        void (async () => {
-          try {
-            for (const courseId of driftedCourseIds) {
-              await syncLearningPathProgressForMember(courseId, profileId);
-            }
-          } catch (syncErr) {
-            console.error('Self-healing learning path progress cache failed:', syncErr);
-          }
-        })();
+        void syncPathProgressForMember(learningPath.id, profileId).catch((syncErr) => {
+          console.error('Self-healing learning path progress cache failed:', syncErr);
+        });
       }
 
       const totalCourses = courses.length;

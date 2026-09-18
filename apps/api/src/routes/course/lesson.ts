@@ -32,7 +32,7 @@ import {
 } from '@api/services/lesson';
 import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
 import { evaluateCourseCertification } from '@api/services/course/completion';
-import { syncLearningPathProgressForMember } from '@api/services/learning-path';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ContentType } from '@cio/utils/constants';
 
 import { Hono } from '@api/utils/hono';
@@ -278,7 +278,7 @@ export const lessonRouter = new Hono()
           });
         }
 
-        void syncLearningPathProgressForMember(courseId, user.id).catch((syncError) => {
+        void syncCourseProgressInLearningPaths(courseId, user.id).catch((syncError) => {
           console.error('Failed to sync learning path progress after lesson completion:', syncError);
         });
 

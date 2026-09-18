@@ -691,8 +691,7 @@ interface MemberRollup {
 
 /**
  * Computes the `learning_path_member_course` cache rows and the member rollup
- * from the truth tables (lesson_completion / submission), mirroring
- * `syncLearningPathProgressForMember` and `evaluatePathCompletion` in the API.
+ * from the truth tables (lesson_completion / submission).
  */
 async function buildMemberProgress(
   pathSeed: PathSeed,
