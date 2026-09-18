@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { DeleteModal } from '$features/ui';
+  import { DeleteModal, LearningEntityIcon } from '$features/ui';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import BookIcon from '@lucide/svelte/icons/book';
@@ -7,7 +8,6 @@
   import { learningPathApi } from '../api';
   import { AddCourseToPathModal, CourseRow, UnlockToggle } from '../components';
   import type { LearningPathCourseItem, LearningPathDetail } from '../utils/types';
-  import { LearningEntityIcon } from '$features/ui';
 
   interface Props {
     path: LearningPathDetail;
@@ -71,6 +71,7 @@
     } catch (err) {
       sequentialUnlock = previousChecked;
       console.error('Failed to update sequential unlock setting:', err);
+      snackbar.error();
     } finally {
       isUpdatingUnlock = false;
     }
@@ -87,9 +88,12 @@
     isRemoving = true;
     try {
       await learningPathApi.removeCourse(path.id, courseToRemove.courseId);
+    } catch (err) {
+      console.error('Failed to remove course from learning path:', err);
+      snackbar.error();
+    } finally {
       showDeleteModal = false;
       courseToRemove = null;
-    } finally {
       isRemoving = false;
     }
   }
