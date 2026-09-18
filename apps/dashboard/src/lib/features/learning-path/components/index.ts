@@ -57,8 +57,3 @@ export { default as ViewPathSiteUnpublishedModal } from './view-path-site-unpubl
 export { default as ViewPathAsStudentModal } from './view-path-as-student-modal.svelte';
 
 export { default as CourseCurrentCard } from './course-current-card.svelte';
-
-export { default as ExplorePathCard } from './explore-path-card.svelte';
-
-export { default as ExploreCourseCard } from './explore-course-card.svelte';
-
