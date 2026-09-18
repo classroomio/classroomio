@@ -5591,7 +5591,8 @@
         "search_placeholder": "Buscar rutas de aprendizaje…",
         "grid_view": "Vista de cuadrícula",
         "list_view": "Vista de lista"
-      }
+      },
+      "load_error_title": "No se pudieron cargar las rutas de aprendizaje"
     },
     "view_path_site": {
       "unpublished_title": "Publica tu ruta de aprendizaje",

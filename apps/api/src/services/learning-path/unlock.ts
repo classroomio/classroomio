@@ -167,13 +167,14 @@ export async function evaluatePathCompletion(
   }
 
   // Path is in progress or not started
-  const newStatus = completedCount > 0 ? 'IN_PROGRESS' : member.status;
+  const newStatus = completedCount > 0 ? 'IN_PROGRESS' : 'NOT_STARTED';
   const currentActivityAt = new Date().toISOString();
 
   await updateMemberProgress(
     member.id,
     {
       status: newStatus,
+      completedAt: null,
       progressPercent,
       completedCourseCount: completedCount,
       currentCourseId: currentCourseId ?? undefined,

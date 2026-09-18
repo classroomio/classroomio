@@ -5591,7 +5591,8 @@
         "search_placeholder": "सीखने के रास्ते खोजें…",
         "grid_view": "ग्रिड दृश्य",
         "list_view": "सूची दृश्य"
-      }
+      },
+      "load_error_title": "सीखने के पथ लोड करने में विफल"
     },
     "view_path_site": {
       "unpublished_title": "अपना सीखने का मार्ग प्रकाशित करें",

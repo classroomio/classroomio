@@ -19,14 +19,21 @@ export const ZCourseMembersMemberParam = z.object({
 });
 export type TCourseMembersMemberParam = z.infer<typeof ZCourseMembersMemberParam>;
 
-export const ZAddCourseMembers = z.array(
-  z.object({
-    profileId: z.uuid().optional(),
-    roleId: z.number().int().min(1),
-    email: z.email().optional(),
-    name: z.string().optional() // For email sending
-  })
-);
+export const ZAddCourseMembers = z
+  .array(
+    z.object({
+      profileId: z.uuid().optional(),
+      roleId: z.number().int().min(1),
+      email: z.email().optional(),
+      name: z.string().optional() // For email sending
+    })
+  )
+  .refine(
+    (members) => members.every((member) => Number(Boolean(member.profileId)) + Number(Boolean(member.email)) === 1),
+    {
+      message: 'Each member must provide exactly one of profileId or email'
+    }
+  );
 export type TAddCourseMembers = z.infer<typeof ZAddCourseMembers>;
 
 export const ZUpdateCourseMember = z.object({

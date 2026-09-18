@@ -13,7 +13,7 @@ import {
 } from '@cio/db/queries/learning-path';
 import { getCourseGroupIds } from '@cio/db/queries/course/course';
 import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
-import type { TAddLearningPathMembers } from '@cio/utils/validation/learning-path';
+import type { TAddLearningPathMembers, TPathMembersQuery } from '@cio/utils/validation/learning-path';
 
 import { assertCanManageLearningPath, resolveLearningPath } from './learning-path';
 
@@ -24,7 +24,7 @@ export async function listPathMembersService(
   pathId: string,
   userId: string,
   orgRoles?: Record<string, number>,
-  options?: { limit?: number; offset?: number; status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' }
+  options?: TPathMembersQuery
 ) {
   const path = await resolveLearningPath(pathId);
   await assertCanManageLearningPath(path, userId, orgRoles);

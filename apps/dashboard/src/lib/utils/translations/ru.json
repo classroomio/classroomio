@@ -5591,7 +5591,8 @@
         "search_placeholder": "Поиск учебных программ…",
         "grid_view": "Вид сеткой",
         "list_view": "Списочный вид"
-      }
+      },
+      "load_error_title": "Не удалось загрузить пути обучения."
     },
     "view_path_site": {
       "unpublished_title": "Опубликуйте свой путь обучения",

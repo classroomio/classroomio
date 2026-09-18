@@ -11,7 +11,8 @@ export const load = async ({ parent, params, cookies, locals }) => {
     return {
       orgSlug: params.slug,
       orgId,
-      paths: []
+      paths: [],
+      loadError: null
     };
   }
 
@@ -20,6 +21,7 @@ export const load = async ({ parent, params, cookies, locals }) => {
   );
 
   return {
-    paths: result.ok ? result.body.data : []
+    paths: result.ok ? result.body.data : [],
+    loadError: result.ok ? null : result.message || 'Failed to load learning paths'
   };
 };

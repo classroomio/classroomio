@@ -21,6 +21,7 @@
   let courseToRemove = $state<LearningPathCourseItem | null>(null);
   let showDeleteModal = $state(false);
   let isRemoving = $state(false);
+  let isUpdatingUnlock = $state(false);
 
   $effect(() => {
     if (path && path.courses) {
@@ -47,8 +48,15 @@
     path.courses = updated;
   }
 
-  function handleUnlockToggle(nextChecked: boolean) {
-    void learningPathApi.update(path.id, { sequentialUnlock: nextChecked });
+  async function handleUnlockToggle(nextChecked: boolean) {
+    if (isUpdatingUnlock) return;
+
+    isUpdatingUnlock = true;
+    try {
+      await learningPathApi.update(path.id, { sequentialUnlock: nextChecked });
+    } finally {
+      isUpdatingUnlock = false;
+    }
   }
 
   function handleOpenRemoveDialog(course: LearningPathCourseItem) {
@@ -102,7 +110,7 @@
 
   {#if courseItems.length > 0}
     <!-- Unlock in order toggle rule -->
-    <UnlockToggle checked={path.sequentialUnlock} onToggle={handleUnlockToggle} />
+    <UnlockToggle checked={path.sequentialUnlock} disabled={isUpdatingUnlock} onToggle={handleUnlockToggle} />
   {/if}
 
   {#if courseItems.length === 0}

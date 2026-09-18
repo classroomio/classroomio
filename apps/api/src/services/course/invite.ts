@@ -962,6 +962,10 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
     const { invite, course, organization } = inviteRow;
 
+    if (course.requiresLearningPath) {
+      throw new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
     const ipDiversity = await countInviteDistinctPreviewIps(invite.id, sinceIso);
     if (ipDiversity >= MAX_PREVIEW_IP_DIVERSITY) {

@@ -115,7 +115,14 @@ export async function addCourseToPath(
         return existingRow;
       }
 
-      // 2. Calculate the next order atomically within the transaction
+      // 2. Lock the learning path row to serialize concurrent order allocation
+      await tx
+        .select({ id: schema.learningPath.id })
+        .from(schema.learningPath)
+        .where(eq(schema.learningPath.id, learningPathId))
+        .for('update');
+
+      // 3. Calculate the next order atomically within the transaction
       const [maxRow] = await tx
         .select({
           maxOrder: sql<number>`COALESCE(MAX(${schema.learningPathCourse.order}), 0)::int`
@@ -127,7 +134,7 @@ export async function addCourseToPath(
 
       const nextOrder = (maxRow?.maxOrder ?? 0) + 1;
 
-      // 3. If it exists and was soft-deleted, update it directly by ID
+      // 4. If it exists and was soft-deleted, update it directly by ID
       if (existingRow) {
         const [restored] = await tx
           .update(schema.learningPathCourse)
@@ -141,7 +148,7 @@ export async function addCourseToPath(
         return restored;
       }
 
-      // 4. Otherwise, insert a new record.
+      // 5. Otherwise, insert a new record.
       // onConflictDoUpdate acts as a bulletproof safety net against concurrent race conditions.
       const [created] = await tx
         .insert(schema.learningPathCourse)

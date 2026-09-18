@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
 import {
@@ -13,6 +14,11 @@ import {
 } from '@cio/db/queries/learning-path';
 import { getCourseGroupIds } from '@cio/db/queries/course/course';
 import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
+import {
+  createOrganizationMember,
+  getOrganizationById,
+  getOrganizationMemberIdByOrgAndProfile
+} from '@cio/db/queries/organization';
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
 
 import { resolveLearningPath } from './learning-path';
@@ -56,6 +62,37 @@ export async function enrollInLearningPath(pathId: string, profileId: string): P
 
     if (!path.selfEnrollment) {
       throw new AppError('Self-enrollment is disabled for this learning path', ErrorCodes.FORBIDDEN, 403);
+    }
+
+    // Enforce organization-level enrollment safeguards
+    const organization = await getOrganizationById(path.organizationId, transactionClient);
+    if (!organization) {
+      throw new AppError('Organization not found', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    const isInternalOnly = organization.settings?.internalEnrollmentOnly ?? false;
+    const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(path.organizationId, profileId, transactionClient);
+
+    if (isInternalOnly && !orgMemberId) {
+      throw new AppError(
+        'This organization only allows its members to enroll. Ask an admin for an invitation.',
+        ErrorCodes.FORBIDDEN,
+        403
+      );
+    }
+
+    if (!orgMemberId) {
+      await assertStudentCapacityOrThrow(path.organizationId, 1, transactionClient);
+
+      await createOrganizationMember(
+        {
+          organizationId: path.organizationId,
+          roleId: ROLE.STUDENT,
+          profileId,
+          verified: true
+        },
+        transactionClient
+      );
     }
 
     // 1. Enroll member in learning path
@@ -132,6 +169,7 @@ export async function getEnrolledLearningPaths(
     const enrolledRows = await getEnrolledPaths(profileId, organizationId);
 
     const results: TEnrolledLearningPathWithProgress[] = [];
+    const syncedCourseIds = new Set<string>();
 
     for (const { member, learningPath } of enrolledRows) {
       const courses = await listLearningPathCourses(learningPath.id);
@@ -141,11 +179,16 @@ export async function getEnrolledLearningPaths(
       const cachedProgressRows = await getMemberCourseProgress(member.id);
       const progressByPathCourseId = new Map(cachedProgressRows.map((r) => [r.learningPathCourseId, r]));
 
+      const completedResults = await Promise.all(
+        courses.map((course) => courseCompleteForPath(profileId, course.courseId))
+      );
+
       const coursesWithProgress: TEnrolledCourseProgress[] = [];
       let completedCount = 0;
 
-      for (const course of courses) {
-        const isComplete = await courseCompleteForPath(profileId, course.courseId);
+      for (let i = 0; i < courses.length; i++) {
+        const course = courses[i];
+        const isComplete = completedResults[i];
         if (isComplete) {
           completedCount++;
         }
@@ -165,7 +208,8 @@ export async function getEnrolledLearningPaths(
         const expectedStatus = isComplete ? 'COMPLETED' : !isUnlocked ? 'LOCKED' : undefined;
         const hasStatusDrift =
           (expectedStatus && cached?.status !== expectedStatus) || (cached?.status === 'LOCKED' && isUnlocked);
-        if (!cached || hasStatusDrift) {
+        if ((!cached || hasStatusDrift) && !syncedCourseIds.has(course.courseId)) {
+          syncedCourseIds.add(course.courseId);
           void syncLearningPathProgressForMember(course.courseId, profileId).catch((syncErr) => {
             console.error('Self-healing learning path progress cache failed:', syncErr);
           });

@@ -5591,7 +5591,8 @@
         "search_placeholder": "Tìm kiếm lộ trình học tập…",
         "grid_view": "Chế độ xem lưới",
         "list_view": "Chế độ xem danh sách"
-      }
+      },
+      "load_error_title": "Không tải được lộ trình học tập"
     },
     "view_path_site": {
       "unpublished_title": "Xuất bản lộ trình học tập của bạn",
