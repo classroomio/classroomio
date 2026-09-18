@@ -6,6 +6,7 @@
   import BookIcon from '@lucide/svelte/icons/book-open';
   import CertificateIcon from '@lucide/svelte/icons/badge-check';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import { DEFAULT_COURSE_BANNER_IMAGE } from '../course-card/constants';
 
   export type LearningPathCardStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
 
@@ -146,19 +147,18 @@
 <div class="ui:group/stack ui:relative ui:mx-auto ui:w-full">
   <!-- Stacked card underlay — signals "multiple courses inside" at a glance -->
   <div
-    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:bg-card ui:transition-transform ui:duration-200 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2"
+    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:group-hover/stack:bg-primary ui:transition-transform ui:duration-300 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2"
     aria-hidden="true"
   ></div>
 
   <div
-    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:hover:bg-accent/50"
+    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:hover:bg-accent ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5"
     onclick={isExploreClickable ? handleCardClick : undefined}
     role={isExploreClickable ? 'button' : undefined}
   >
     <a
       {href}
-      class="ui:group ui:relative ui:flex ui:h-50 ui:items-center ui:justify-center ui:overflow-hidden"
-      style="background: {coverGradient}"
+      class="ui:group ui:relative ui:flex ui:h-50 ui:items-center ui:justify-center ui:overflow-hidden ui:bg-card"
       aria-label={name}
     >
       {#if coverImage}
@@ -167,6 +167,13 @@
           alt={name}
           loading="lazy"
           class="ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-cover ui:transition-transform ui:duration-300 ui:group-hover:scale-105"
+        />
+      {:else}
+        <img
+          src={DEFAULT_COURSE_BANNER_IMAGE}
+          alt={name}
+          loading="lazy"
+          class="ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-cover"
         />
       {/if}
       <LearningPathBadge label={labels.badge} onCover class="ui:absolute ui:top-3 ui:left-3" />

@@ -6,9 +6,6 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
-  import CourseInPathRibbon from '$features/learning-path/components/course-in-path-ribbon.svelte';
-  import CourseInPathNext from '$features/learning-path/components/course-in-path-next.svelte';
-  import type { CourseInPathNode, CourseInPathNextInfo } from '$features/learning-path/components';
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
   import type { Course } from '$features/course/types';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -87,51 +84,6 @@
     if (!learnerPathStore.hasLoaded) {
       learnerPathStore.listEnrolled();
     }
-  });
-
-  const coursePathContext = $derived.by(() => {
-    const courseId = courseApi.course?.id;
-    if (!courseId) return null;
-
-    for (const path of learnerPathStore.enrolledPaths) {
-      const courses = learnerPathStore.getPathCourses(path);
-      const courseIndex = courses.findIndex((course) => course.courseId === courseId);
-
-      if (courseIndex < 0) continue;
-
-      const nodes: CourseInPathNode[] = courses.map((course) => ({ title: course.title, state: course.state }));
-      const pathHref = `/lms/paths/${path.id}`;
-
-      const nextIndex = courses.findIndex((course, index) => index > courseIndex && course.state !== 'COMPLETED');
-
-      let next: CourseInPathNextInfo | null = null;
-      let isPathComplete = false;
-
-      if (nextIndex >= 0) {
-        const nextCourse = courses[nextIndex];
-        const remainingLessons = Math.max(0, nextCourse.lessonCount - nextCourse.lessonsCompleted);
-        const remainingExercises = Math.max(0, nextCourse.exerciseCount - nextCourse.exercisesCompleted);
-
-        next = {
-          position: nextIndex + 1,
-          title: nextCourse.title,
-          remainingLessons,
-          remainingExercises
-        };
-      } else {
-        isPathComplete = courses.every((course) => course.state === 'COMPLETED');
-      }
-
-      return {
-        pathName: path.name,
-        pathHref,
-        nodes,
-        next,
-        isPathComplete
-      };
-    }
-
-    return null;
   });
 
   const user: CourseMember | undefined = $derived(
@@ -280,13 +232,6 @@
 
   <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
     <CourseHeader />
-    {#if coursePathContext}
-      <CourseInPathRibbon
-        pathName={coursePathContext.pathName}
-        pathHref={coursePathContext.pathHref}
-        nodes={coursePathContext.nodes}
-      />
-    {/if}
     <ContentCreateModal />
     <CourseCompletionModal />
     <CopyCourseModal />
@@ -307,14 +252,6 @@
       {/if}
 
       {@render children?.()}
-
-      {#if coursePathContext}
-        <CourseInPathNext
-          pathHref={coursePathContext.pathHref}
-          next={coursePathContext.next}
-          isPathComplete={coursePathContext.isPathComplete}
-        />
-      {/if}
 
       {#if showContentAskAiBar}
         <ContentAskAiBar
