@@ -35,14 +35,13 @@ export class LearningPathApi extends BaseApiWithErrors {
   private loadedPathId = $state<string | null>(null);
   private isPathDirty = $state(false);
   private inFlightPathRequests = new Map<string, Promise<LearningPathDetail | null>>();
-  private lastRequestedPathId: string | null = null;
+  private pathRequestSeq = 0;
+  private activePathRequestSeq = 0;
   isNotFound = $state(false);
   loadError = $state<string | null>(null);
 
   async ensurePath(pathId: string): Promise<LearningPathDetail | null> {
     if (!pathId) return null;
-
-    this.lastRequestedPathId = pathId;
 
     if (
       !this.isPathDirty &&
@@ -52,55 +51,52 @@ export class LearningPathApi extends BaseApiWithErrors {
       return this.currentPath;
     }
 
-    if (this.inFlightPathRequests.has(pathId)) {
-      return this.inFlightPathRequests.get(pathId)!;
-    }
-
+    const navSeq = ++this.pathRequestSeq;
+    this.activePathRequestSeq = navSeq;
     this.isNotFound = false;
     this.loadError = null;
 
-    const request = (async () => {
-      try {
-        const detail = await this.get(pathId);
-
-        // Only the latest navigation may write shared state; earlier
-        // requests resolve for their caller but leave currentPath alone.
-        if (this.lastRequestedPathId !== pathId) {
-          return detail;
-        }
-
-        if (detail) {
-          this.loadedPathId = pathId;
-          this.isPathDirty = false;
-          this.isNotFound = false;
-          this.loadError = null;
-        } else {
-          this.isNotFound = true;
-          this.loadError = null;
-        }
-        return detail;
-      } catch (error) {
-        if (this.lastRequestedPathId !== pathId) {
-          return null;
-        }
-
-        const status = error instanceof ApiError ? error.status : undefined;
-        this.isNotFound = status === 404;
-        this.loadError = this.isNotFound
-          ? null
-          : error instanceof Error
-            ? error.message
-            : 'Failed to load learning path';
-        return null;
-      }
-    })();
-
-    this.inFlightPathRequests.set(pathId, request);
+    let fetchPromise = !this.isPathDirty ? this.inFlightPathRequests.get(pathId) : undefined;
+    if (!fetchPromise) {
+      fetchPromise = this.get(pathId);
+      this.inFlightPathRequests.set(pathId, fetchPromise);
+    }
 
     try {
-      return await request;
+      const detail = await fetchPromise;
+
+      // Only the latest navigation may write shared state; earlier
+      // requests resolve for their caller but leave currentPath alone.
+      if (this.activePathRequestSeq !== navSeq) {
+        return detail;
+      }
+
+      if (detail) {
+        this.currentPath = detail;
+        this.loadedPathId = pathId;
+        this.isPathDirty = false;
+        this.isNotFound = false;
+        this.loadError = null;
+      } else {
+        this.currentPath = null;
+        this.isNotFound = true;
+        this.loadError = null;
+      }
+
+      return detail;
+    } catch (error) {
+      if (this.activePathRequestSeq !== navSeq) {
+        return null;
+      }
+
+      this.currentPath = null;
+      const status = error instanceof ApiError ? error.status : undefined;
+      this.isNotFound = status === 404;
+      this.loadError = this.isNotFound ? null : error instanceof Error ? error.message : 'Failed to load learning path';
+
+      return null;
     } finally {
-      if (this.inFlightPathRequests.get(pathId) === request) {
+      if (this.inFlightPathRequests.get(pathId) === fetchPromise) {
         this.inFlightPathRequests.delete(pathId);
       }
     }
@@ -136,9 +132,8 @@ export class LearningPathApi extends BaseApiWithErrors {
   }
 
   async get(pathId: string, _access?: LearningPathAccessOptions): Promise<LearningPathDetail | null> {
-    this.lastRequestedPathId = pathId;
-
     let requestError: Error | null = null;
+    let fetchedDetail: LearningPathDetail | null = null;
 
     await this.execute<GetLearningPathDetailRequest>({
       requestFn: async () => {
@@ -157,21 +152,12 @@ export class LearningPathApi extends BaseApiWithErrors {
       },
       logContext: 'getting learning path detail',
       onSuccess: (result) => {
-        if (this.lastRequestedPathId !== pathId) {
-          return;
-        }
-
-        this.currentPath = result.data;
+        fetchedDetail = result.data;
         this.paths = this.paths.map((p) =>
           p.id === result.data.id || p.publicId === result.data.publicId ? { ...p, ...result.data } : p
         );
       },
       onError: (err) => {
-        if (this.lastRequestedPathId !== pathId) {
-          return;
-        }
-
-        this.currentPath = null;
         if (!requestError) {
           const message =
             typeof err === 'string'
@@ -188,7 +174,7 @@ export class LearningPathApi extends BaseApiWithErrors {
       throw requestError;
     }
 
-    return this.currentPath;
+    return fetchedDetail;
   }
 
   async create(data: CreateLearningPathInput): Promise<CreateLearningPathData | undefined> {
@@ -289,7 +275,9 @@ export class LearningPathApi extends BaseApiWithErrors {
   }
 
   async addCourses(pathId: string, courseIds: string[]): Promise<boolean> {
-    if (courseIds.length === 0) return false;
+    if (courseIds.length === 0) {
+      return false;
+    }
 
     const res = await this.execute<AddPathCoursesRequest>({
       requestFn: () =>
@@ -299,7 +287,7 @@ export class LearningPathApi extends BaseApiWithErrors {
         }),
       logContext: 'adding courses to learning path',
       onSuccess: async () => {
-        await this.get(pathId);
+        await this.refreshPath(pathId);
         snackbar.success(
           courseIds.length === 1 ? 'learningPath.snackbar.course_added' : 'learningPath.snackbar.courses_added'
         );

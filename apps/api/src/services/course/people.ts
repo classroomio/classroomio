@@ -20,7 +20,7 @@ import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { syncLearningPathProgressForMember } from '@api/services/learning-path';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
@@ -463,7 +463,7 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
     const statsOrgId = await getOrgIdByCourseId(courseId);
     await invalidateOrgStats(statsOrgId);
 
-    void syncLearningPathProgressForMember(courseId, member.profileId).catch((syncError) => {
+    void syncCourseProgressInLearningPaths(courseId, member.profileId).catch((syncError) => {
       console.error('Failed to sync learning path progress after resetting course progress:', syncError);
     });
 
