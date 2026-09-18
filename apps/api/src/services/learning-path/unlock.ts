@@ -249,12 +249,13 @@ export async function assertCourseNotLockedForStudent(
 }
 
 /**
- * Synchronizes the member course progress cache in `learning_path_member_course`
- * across all active learning paths containing this course for the student.
+ * Synchronizes course progress for a specific course across all active learning paths
+ * containing this course for the student.
+ * Used for course-level events (e.g. lesson completion, course enrollment).
  * If the course was completed and a path has sequential unlock, unlocks the next course.
  * Also evaluates overall learning path completion and certificate issuance.
  */
-export async function syncLearningPathProgressForMember(
+export async function syncCourseProgressInLearningPaths(
   courseId: string,
   profileId: string,
   dbClient: DbOrTxClient = db
@@ -272,12 +273,16 @@ export async function syncLearningPathProgressForMember(
 
   for (const path of enrolledPaths) {
     const member = await getMemberByPathAndProfile(path.id, profileId, dbClient);
-    if (!member) continue;
+    if (!member) {
+      continue;
+    }
 
     const pathCourses = await listLearningPathCourses(path.id, dbClient);
     const sortedPathCourses = [...pathCourses].sort((a, b) => a.order - b.order);
     const currentPathCourse = pathCourses.find((pc) => pc.courseId === courseId);
-    if (!currentPathCourse) continue;
+    if (!currentPathCourse) {
+      continue;
+    }
 
     const existingProgress = await getSingleMemberCourseProgress(member.id, currentPathCourse.id, dbClient);
 
@@ -349,4 +354,81 @@ export async function syncLearningPathProgressForMember(
 
     await evaluatePathCompletion(path.id, profileId, dbClient);
   }
+}
+
+/**
+ * Synchronizes the member progress cache for all courses in a learning path.
+ * Updates each course's cached progress and evaluates overall path completion once at the end.
+ */
+export async function syncPathProgressForMember(
+  pathId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  const path = await resolveLearningPath(pathId, dbClient);
+  const member = await getMemberByPathAndProfile(path.id, profileId, dbClient);
+  if (!member) {
+    return;
+  }
+
+  const pathCourses = await listLearningPathCourses(path.id, dbClient);
+  const sortedPathCourses = [...pathCourses].sort((a, b) => a.order - b.order);
+  const courseIds = sortedPathCourses.map((pc) => pc.courseId);
+
+  const statsResults = await Promise.all(
+    sortedPathCourses.map((pc) => getCourseCompletionStatsForProfile(pc.courseId, profileId, dbClient))
+  );
+
+  let unlockedCourseIds = courseIds;
+  if (path.sequentialUnlock) {
+    unlockedCourseIds = [];
+    for (let i = 0; i < sortedPathCourses.length; i++) {
+      const cId = sortedPathCourses[i].courseId;
+      unlockedCourseIds.push(cId);
+      if (!statsResults[i].isComplete) {
+        break;
+      }
+    }
+  }
+
+  const nowIso = new Date().toISOString();
+
+  for (let i = 0; i < sortedPathCourses.length; i++) {
+    const pathCourse = sortedPathCourses[i];
+    const stats = statsResults[i];
+    const totalItems = stats.totalLessons + stats.totalExercises;
+    const completedItems = stats.completedLessons + stats.completedExercises;
+    const progressPercent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 100;
+    const isUnlocked = unlockedCourseIds.includes(pathCourse.courseId);
+
+    const existingProgress = await getSingleMemberCourseProgress(member.id, pathCourse.id, dbClient);
+
+    const status = stats.isComplete
+      ? 'COMPLETED'
+      : progressPercent > 0
+        ? 'IN_PROGRESS'
+        : isUnlocked
+          ? 'NOT_STARTED'
+          : 'LOCKED';
+
+    const completedAt = stats.isComplete ? (existingProgress?.completedAt ?? nowIso) : null;
+    const startedAt = progressPercent > 0 ? (existingProgress?.startedAt ?? nowIso) : undefined;
+    const unlockedAt = isUnlocked ? (existingProgress?.unlockedAt ?? nowIso) : null;
+
+    const updatePayload: Parameters<typeof upsertMemberCourseProgress>[2] = {
+      status,
+      progressPercent,
+      lessonsCompleted: stats.completedLessons,
+      lessonsTotal: stats.totalLessons,
+      exercisesCompleted: stats.completedExercises,
+      exercisesTotal: stats.totalExercises,
+      completedAt,
+      startedAt,
+      unlockedAt
+    };
+
+    await upsertMemberCourseProgress(member.id, pathCourse.id, updatePayload, dbClient);
+  }
+
+  await evaluatePathCompletion(path.id, profileId, dbClient);
 }
