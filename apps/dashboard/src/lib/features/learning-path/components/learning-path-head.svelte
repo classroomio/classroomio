@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import LearningPathBadge from './learning-path-badge.svelte';
-  import LearningPathProgress from './learning-path-progress.svelte';
+  import { LearningPathBadge, LearningPathProgress } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import BookIcon from '@lucide/svelte/icons/book-open';
   import ClockIcon from '@lucide/svelte/icons/clock';
@@ -65,7 +64,7 @@
 
   <div class="flex min-w-0 flex-col">
     <div class="mb-2">
-      <LearningPathBadge type="path" />
+      <LearningPathBadge label={$t('learningPath.badge.learning_path')} />
     </div>
 
     <h1 class="text-xl font-semibold tracking-tight">{name}</h1>

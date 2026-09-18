@@ -387,17 +387,18 @@
     {:else if currentLearningCards.paths.length > 0 || currentLearningCards.courses.length > 0}
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {#each currentLearningCards.paths as path}
-          {@const totalHours = path.courses.reduce((acc, course) => acc + course.durationHours, 0)}
           <LearningPathCard
             href={`/lms/paths/${path.id}`}
             name={path.name}
             description={path.description}
             coverGradient={path.coverGradient}
+            coverImage={path.coverImage}
             courseCount={path.courses.length}
-            {totalHours}
             progressPercent={path.enrollment?.progressPercent ?? 0}
             coursesCompleted={path.enrollment?.coursesCompleted ?? 0}
             certificateEarned={Boolean(path.enrollment?.certificateId)}
+            isLMS={true}
+            labels={pathLabels}
           />
         {/each}
         {#each currentLearningCards.courses as course}
