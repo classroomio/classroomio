@@ -1038,8 +1038,8 @@
           "description": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
           "placeholder": "Escreva a mensagem de boas-vindas que os alunos recebem quando se matriculam…"
         },
+        "general_card_title": "Geral",
         "content_card_title": "Conteúdo",
-        "downloads_card_title": "Downloads",
         "access_card_title": "Acesso",
         "locked_content": {
           "title": "{count} itens do curso estão bloqueados",

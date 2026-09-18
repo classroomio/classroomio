@@ -1038,8 +1038,8 @@
           "description": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
           "placeholder": "Skriv den velkomstbesked, eleverne får, når de tilmelder sig..."
         },
+        "general_card_title": "Generelt",
         "content_card_title": "Indhold",
-        "downloads_card_title": "Downloads",
         "access_card_title": "Adgang",
         "locked_content": {
           "title": "{count} kursuselement(er) er låst",

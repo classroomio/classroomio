@@ -1038,8 +1038,8 @@
           "description": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
           "placeholder": "Schreiben Sie die Willkommensnachricht, die Studierende bei der Einschreibung erhalten …"
         },
+        "general_card_title": "Allgemein",
         "content_card_title": "Inhalt",
-        "downloads_card_title": "Downloads",
         "access_card_title": "Zugriff",
         "locked_content": {
           "title": "{count} Kurselemente sind gesperrt",

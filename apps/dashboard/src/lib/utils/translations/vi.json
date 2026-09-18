@@ -1038,8 +1038,8 @@
           "description": "Tùy chỉnh email sinh viên nhận được sau khi đăng ký. Thêm ghi chú cá nhân, hướng dẫn hoặc liên kết phiên trực tiếp.",
           "placeholder": "Viết lời chào mừng mà học viên nhận được khi đăng ký…"
         },
+        "general_card_title": "Chung",
         "content_card_title": "Nội dung",
-        "downloads_card_title": "Tải xuống",
         "access_card_title": "Truy cập",
         "locked_content": {
           "title": "{count} mục khóa học đã bị khóa",

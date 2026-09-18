@@ -1038,8 +1038,8 @@
           "description": "Dostosuj wiadomość e-mail otrzymywaną przez uczniów po zarejestrowaniu się. Dodaj osobistą notatkę, instrukcje lub link do sesji na żywo.",
           "placeholder": "Napisz wiadomość powitalną, jaką otrzymają uczniowie po zarejestrowaniu się…"
         },
+        "general_card_title": "Ogólne",
         "content_card_title": "Treść",
-        "downloads_card_title": "Pliki do pobrania",
         "access_card_title": "Dostęp",
         "locked_content": {
           "title": "Elementy kursu: {count} są zablokowane",

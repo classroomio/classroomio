@@ -1037,8 +1037,8 @@
           "description": "Personalice el correo electrónico que reciben los estudiantes después de inscribirse. Agregue una nota personal, instrucciones o un enlace de sesión en vivo.",
           "placeholder": "Escribe el mensaje de bienvenida que reciben los estudiantes cuando se matriculan..."
         },
+        "general_card_title": "General",
         "content_card_title": "Contenido",
-        "downloads_card_title": "Descargas",
         "access_card_title": "Acceso",
         "course_type_learn_more": "Más información",
         "locked_content": {

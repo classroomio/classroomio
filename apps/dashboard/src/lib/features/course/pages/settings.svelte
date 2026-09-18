@@ -548,6 +548,9 @@
 
 <div class="flex w-full flex-col gap-4">
   <Card.Root>
+    <Card.Header>
+      <Card.Title class="text-xl">{$t('course.navItem.settings.general_card_title')}</Card.Title>
+    </Card.Header>
     <Card.Content>
       <Field.Group>
         <Field.Field>
@@ -689,6 +692,23 @@
               />
             </div>
           </div>
+        </Field.Field>
+
+        <Field.Separator />
+
+        <Field.Field>
+          <Field.Label>{$t('course.navItem.settings.welcome_email.title')}</Field.Label>
+          <Field.Description>{$t('course.navItem.settings.welcome_email.description')}</Field.Description>
+          <TextEditor
+            content={$settings.welcomeEmailMessage}
+            placeholder={$t('course.navItem.settings.welcome_email.placeholder')}
+            class="w-full"
+            editorClass="h-auto! max-h-[200px] min-h-[120px]"
+            onChange={(text) => {
+              $settings.welcomeEmailMessage = text;
+              hasUnsavedChanges = true;
+            }}
+          />
         </Field.Field>
       </Field.Group>
     </Card.Content>
@@ -849,25 +869,6 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-xl">{$t('course.navItem.settings.welcome_email.title')}</Card.Title>
-      <Card.Description>{$t('course.navItem.settings.welcome_email.description')}</Card.Description>
-    </Card.Header>
-    <Card.Content>
-      <TextEditor
-        content={$settings.welcomeEmailMessage}
-        placeholder={$t('course.navItem.settings.welcome_email.placeholder')}
-        class="w-full"
-        editorClass="h-auto! max-h-[200px] min-h-[120px]"
-        onChange={(text) => {
-          $settings.welcomeEmailMessage = text;
-          hasUnsavedChanges = true;
-        }}
-      />
-    </Card.Content>
-  </Card.Root>
-
-  <Card.Root>
-    <Card.Header>
       <Card.Title class="text-xl">{$t('course.navItem.settings.content_card_title')}</Card.Title>
     </Card.Header>
     <Card.Content>
@@ -944,50 +945,6 @@
             />
           </Field.Field>
         </AttentionHighlight>
-      </Field.Group>
-    </Card.Content>
-  </Card.Root>
-
-  <Card.Root>
-    <Card.Header>
-      <Card.Title class="text-xl">{$t('course.navItem.settings.downloads_card_title')}</Card.Title>
-    </Card.Header>
-    <Card.Content>
-      <Field.Group>
-        {#if $isFreePlan}
-          <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
-        {:else}
-          <Field.Field orientation="horizontal">
-            <Field.Content>
-              <Field.Label for="lesson-download">{$t('course.navItem.settings.lesson_download')}</Field.Label>
-              <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
-            </Field.Content>
-            <Switch
-              id="lesson-download"
-              checked={$settings.lessonDownload}
-              onCheckedChange={(checked) => {
-                $settings.lessonDownload = checked;
-                hasUnsavedChanges = true;
-              }}
-            />
-          </Field.Field>
-        {/if}
-
-        <Field.Separator />
-
-        {#if $isFreePlan}
-          <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
-        {:else}
-          <Field.Field orientation="horizontal">
-            <Field.Content>
-              <Field.Label>{$t('course.navItem.settings.course_download')}</Field.Label>
-              <Field.Description>{$t('course.navItem.settings.course_avail')}</Field.Description>
-            </Field.Content>
-            <Button variant="outline" onclick={downloadCourse} disabled={isLoading} loading={isLoading}>
-              {$t('course.navItem.settings.download')}
-            </Button>
-          </Field.Field>
-        {/if}
       </Field.Group>
     </Card.Content>
   </Card.Root>
@@ -1159,6 +1116,43 @@
             </Alert.Root>
           {/if}
         </Field.Set>
+
+        <Field.Separator />
+
+        {#if $isFreePlan}
+          <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
+        {:else}
+          <Field.Field orientation="horizontal">
+            <Field.Content>
+              <Field.Label for="lesson-download">{$t('course.navItem.settings.lesson_download')}</Field.Label>
+              <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
+            </Field.Content>
+            <Switch
+              id="lesson-download"
+              checked={$settings.lessonDownload}
+              onCheckedChange={(checked) => {
+                $settings.lessonDownload = checked;
+                hasUnsavedChanges = true;
+              }}
+            />
+          </Field.Field>
+        {/if}
+
+        <Field.Separator />
+
+        {#if $isFreePlan}
+          <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
+        {:else}
+          <Field.Field orientation="horizontal">
+            <Field.Content>
+              <Field.Label>{$t('course.navItem.settings.course_download')}</Field.Label>
+              <Field.Description>{$t('course.navItem.settings.course_avail')}</Field.Description>
+            </Field.Content>
+            <Button variant="outline" onclick={downloadCourse} disabled={isLoading} loading={isLoading}>
+              {$t('course.navItem.settings.download')}
+            </Button>
+          </Field.Field>
+        {/if}
       </Field.Group>
     </Card.Content>
   </Card.Root>

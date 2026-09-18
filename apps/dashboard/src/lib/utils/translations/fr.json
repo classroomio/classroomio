@@ -1038,8 +1038,8 @@
           "description": "Personnalisez l'e-mail que les étudiants reçoivent après leur inscription. Ajoutez une note personnelle, des instructions ou un lien de session en direct.",
           "placeholder": "Rédigez le message de bienvenue que les étudiants reçoivent lors de leur inscription…"
         },
+        "general_card_title": "Général",
         "content_card_title": "Contenu",
-        "downloads_card_title": "Téléchargements",
         "access_card_title": "Accès",
         "locked_content": {
           "title": "{count} éléments de cours sont verrouillés",
