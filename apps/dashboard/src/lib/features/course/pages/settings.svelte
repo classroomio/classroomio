@@ -696,7 +696,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-base">{$t('course.navItem.settings.type')}</Card.Title>
+      <Card.Title class="text-xl">{$t('course.navItem.settings.type')}</Card.Title>
       <Card.Description>
         {$t('course.navItem.settings.course_type_desc')}
         <a
@@ -849,7 +849,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-base">{$t('course.navItem.settings.welcome_email.title')}</Card.Title>
+      <Card.Title class="text-xl">{$t('course.navItem.settings.welcome_email.title')}</Card.Title>
       <Card.Description>{$t('course.navItem.settings.welcome_email.description')}</Card.Description>
     </Card.Header>
     <Card.Content>
@@ -868,7 +868,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-base">{$t('course.navItem.settings.content_card_title')}</Card.Title>
+      <Card.Title class="text-xl">{$t('course.navItem.settings.content_card_title')}</Card.Title>
     </Card.Header>
     <Card.Content>
       <Field.Group>
@@ -950,7 +950,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-base">{$t('course.navItem.settings.downloads_card_title')}</Card.Title>
+      <Card.Title class="text-xl">{$t('course.navItem.settings.downloads_card_title')}</Card.Title>
     </Card.Header>
     <Card.Content>
       <Field.Group>
@@ -995,7 +995,7 @@
   {#if $settings.type === 'PUBLIC' && $settings.callout}
     <Card.Root>
       <Card.Header>
-        <Card.Title class="text-base">{$t('course.navItem.settings.callout.legend')}</Card.Title>
+        <Card.Title class="text-xl">{$t('course.navItem.settings.callout.legend')}</Card.Title>
         <Card.Description>{$t('course.navItem.settings.callout.description')}</Card.Description>
       </Card.Header>
       <Card.Content>
@@ -1095,7 +1095,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-base">{$t('course.navItem.settings.access_card_title')}</Card.Title>
+      <Card.Title class="text-xl">{$t('course.navItem.settings.access_card_title')}</Card.Title>
     </Card.Header>
     <Card.Content>
       <Field.Group>
@@ -1165,7 +1165,7 @@
 
   <Card.Root id="delete">
     <Card.Header>
-      <Card.Title class="text-base">{$t('course.navItem.settings.delete')}</Card.Title>
+      <Card.Title class="text-xl">{$t('course.navItem.settings.delete')}</Card.Title>
       <Card.Description>{$t('course.navItem.settings.delete_text')}</Card.Description>
     </Card.Header>
     <Card.Content>
