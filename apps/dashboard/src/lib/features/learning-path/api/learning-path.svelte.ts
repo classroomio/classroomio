@@ -1,203 +1,277 @@
-import { BaseApiWithErrors } from '$lib/utils/services/api';
+import { ApiError, BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  AddPathCoursesRequest,
+  CreateLearningPathData,
   CreateLearningPathInput,
+  CreateLearningPathRequest,
+  DeleteLearningPathRequest,
+  GetLearningPathDetailRequest,
+  LearningPathAccessOptions,
   LearningPathCourseItem,
   LearningPathDetail,
-  UpdateLearningPathInput
+  LearningPathSummary,
+  ListLearningPathsRequest,
+  ReorderPathCoursesRequest,
+  RemovePathCourseRequest,
+  UpdateLearningPathData,
+  UpdateLearningPathRequest,
+  UpdatePathCourseRequest
 } from '../utils/types';
-import { MOCK_PATHS } from '../utils/mock-data';
+import {
+  ZCreateLearningPath,
+  ZUpdateLearningPath,
+  type TUpdateLearningPath
+} from '@cio/utils/validation/learning-path';
+import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
-import { coursesApi } from '$features/course/api';
+import { currentOrg } from '$lib/utils/store/org';
+import { get } from 'svelte/store';
 import { snackbar } from '$features/ui/snackbar/store';
-import { t } from '$lib/utils/functions/translations';
-import { isPathAccessibleToUser } from '../utils/learning-path-utils';
-import { generatePublicId } from '../utils/public-id';
-
-function getStorageKey(orgId?: string | null): string {
-  return orgId ? `classroomio_learning_paths_state_${orgId}` : 'classroomio_learning_paths_state';
-}
-
-function loadStoredPaths(orgId?: string | null): LearningPathDetail[] {
-  if (typeof window === 'undefined') return [...MOCK_PATHS];
-
-  try {
-    const raw = sessionStorage.getItem(getStorageKey(orgId));
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        return parsed.map((pathItem) => {
-          if (!pathItem.publicId) {
-            const matchingMock = MOCK_PATHS.find((mockItem) => mockItem.id === pathItem.id);
-            pathItem.publicId = matchingMock?.publicId || generatePublicId(8);
-          }
-          if (pathItem.tutorIds === undefined) {
-            const matchingMock = MOCK_PATHS.find((mockItem) => mockItem.id === pathItem.id);
-            if (matchingMock && matchingMock.tutorIds) {
-              return { ...pathItem, tutorIds: matchingMock.tutorIds };
-            }
-          }
-          return pathItem;
-        });
-      }
-    }
-  } catch {
-    // Ignore JSON errors
-  }
-  return [...MOCK_PATHS];
-}
-
-function saveStoredPaths(paths: LearningPathDetail[], orgId?: string | null): boolean {
-  if (typeof window === 'undefined') return false;
-
-  try {
-    sessionStorage.setItem(getStorageKey(orgId), JSON.stringify(paths));
-    return true;
-  } catch (error) {
-    console.error('Failed to save learning paths to sessionStorage', error);
-    return false;
-  }
-}
 
 export class LearningPathApi extends BaseApiWithErrors {
-  paths = $state<LearningPathDetail[]>([]);
+  paths = $state<LearningPathSummary[]>([]);
   currentPath = $state<LearningPathDetail | null>(null);
-  currentOrgId = $state<string | null>(null);
 
-  constructor() {
-    super();
-    this.paths = loadStoredPaths(this.currentOrgId);
-    this.updateNavCount();
-  }
+  private loadedPathId = $state<string | null>(null);
+  private isPathDirty = $state(false);
+  private inFlightPathRequests = new Map<string, Promise<LearningPathDetail | null>>();
+  private pathRequestSeq = 0;
+  private activePathRequestSeq = 0;
+  isNotFound = $state(false);
+  loadError = $state<string | null>(null);
 
-  setOrg(orgId: string, initialPaths?: LearningPathDetail[]) {
-    this.currentOrgId = orgId;
-    const hasStoredState = typeof window !== 'undefined' && sessionStorage.getItem(getStorageKey(orgId)) !== null;
-    if (hasStoredState) {
-      this.paths = loadStoredPaths(orgId);
-    } else if (initialPaths && initialPaths.length > 0) {
-      this.paths = [...initialPaths];
-      this.save();
-    } else {
-      this.paths = loadStoredPaths(orgId);
-      this.save();
-    }
-    this.updateNavCount();
-  }
+  async ensurePath(pathId: string): Promise<LearningPathDetail | null> {
+    if (!pathId) return null;
 
-  setPaths(paths: LearningPathDetail[], orgId?: string) {
-    if (orgId) {
-      this.currentOrgId = orgId;
-    }
-    this.paths = [...paths];
-    this.save();
-  }
-
-  updateNavCount(count?: number) {
-    const effectiveCount = count !== undefined ? count : this.paths.length;
-    orgNavCountsApi.setCount('learningPaths', effectiveCount);
-  }
-
-  private save(): boolean {
-    const success = saveStoredPaths(this.paths, this.currentOrgId);
-    this.updateNavCount();
-    return success;
-  }
-
-  async listPaths(): Promise<void> {
-    if (this.paths.length === 0) {
-      this.paths = loadStoredPaths(this.currentOrgId);
-    }
-    this.updateNavCount();
-  }
-
-  async getPath(
-    pathId: string,
-    access?: { isAdmin?: boolean | null; userProfileId?: string | null }
-  ): Promise<LearningPathDetail | null> {
-    if (this.paths.length === 0) {
-      this.paths = loadStoredPaths(this.currentOrgId);
-    }
-    const found = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
-    if (found) {
-      if (access && access.isAdmin !== undefined && access.isAdmin !== null) {
-        const isAccessible = isPathAccessibleToUser(found, access.isAdmin, access.userProfileId);
-        if (!isAccessible) {
-          this.currentPath = null;
-          return null;
-        }
-      }
-      this.currentPath = found;
+    if (
+      !this.isPathDirty &&
+      (this.loadedPathId === pathId || this.currentPath?.publicId === pathId || this.currentPath?.id === pathId) &&
+      this.currentPath
+    ) {
       return this.currentPath;
     }
-    return null;
-  }
 
-  async createPath(data: CreateLearningPathInput): Promise<Pick<LearningPathDetail, 'id' | 'publicId'>> {
-    const id = `lp-${Date.now()}`;
-    const publicId = generatePublicId(8);
-    const organizationId = data.organizationId || this.currentOrgId || 'org-1';
-    const newPath: LearningPathDetail = {
-      id,
-      publicId,
-      organizationId,
-      name: data.name,
-      slug: data.slug,
-      description: data.description,
-      coverImage: null,
-      isPublished: false,
-      difficulty: 'BEGINNER',
-      estimatedDurationMinutes: 0,
-      cost: 0,
-      currency: 'USD',
-      showSavings: true,
-      sequentialUnlock: true,
-      selfEnrollment: true,
-      autoEnroll: true,
-      certificateEnabled: true,
-      certificateTitle: `${data.name} Certificate`,
-      certificateIssuer: 'Organization',
-      courseOrderSetAt: null,
-      courseCount: 0,
-      memberCount: 0,
-      completionsCount: 0,
-      completionRate: 0,
-      gradient: 'linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))',
-      courses: [],
-      tutorIds: [],
-      updatedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
+    const navSeq = ++this.pathRequestSeq;
+    this.activePathRequestSeq = navSeq;
+    this.isNotFound = false;
+    this.loadError = null;
 
-    this.paths = [newPath, ...this.paths];
-    this.currentPath = newPath;
-    this.save();
-    return { id: newPath.id, publicId: newPath.publicId };
-  }
+    let fetchPromise = !this.isPathDirty ? this.inFlightPathRequests.get(pathId) : undefined;
+    if (!fetchPromise) {
+      fetchPromise = this.get(pathId);
+      this.inFlightPathRequests.set(pathId, fetchPromise);
+    }
 
-  async updatePath(pathId: string, data: UpdateLearningPathInput): Promise<void> {
-    const idx = this.paths.findIndex((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
-    if (idx !== -1) {
-      const target = this.paths[idx];
-      const updated: LearningPathDetail = {
-        ...target,
-        ...data,
-        updatedAt: new Date().toISOString()
-      };
-      this.paths[idx] = updated;
-      this.paths = [...this.paths];
-      if (this.currentPath?.id === pathId) {
-        this.currentPath = updated;
+    try {
+      const detail = await fetchPromise;
+
+      // Only the latest navigation may write shared state; earlier
+      // requests resolve for their caller but leave currentPath alone.
+      if (this.activePathRequestSeq !== navSeq) {
+        return detail;
       }
-      this.save();
+
+      if (detail) {
+        this.currentPath = detail;
+        this.loadedPathId = pathId;
+        this.isPathDirty = false;
+        this.isNotFound = false;
+        this.loadError = null;
+      } else {
+        this.currentPath = null;
+        this.isNotFound = true;
+        this.loadError = null;
+      }
+
+      return detail;
+    } catch (error) {
+      if (this.activePathRequestSeq !== navSeq) {
+        return null;
+      }
+
+      this.currentPath = null;
+      const status = error instanceof ApiError ? error.status : undefined;
+      this.isNotFound = status === 404;
+      this.loadError = this.isNotFound ? null : error instanceof Error ? error.message : 'Failed to load learning path';
+
+      return null;
+    } finally {
+      if (this.inFlightPathRequests.get(pathId) === fetchPromise) {
+        this.inFlightPathRequests.delete(pathId);
+      }
     }
   }
 
-  async deletePath(pathId: string): Promise<void> {
-    this.paths = this.paths.filter((p) => p.publicId !== pathId && p.id !== pathId && p.slug !== pathId);
-    if (this.currentPath?.publicId === pathId || this.currentPath?.id === pathId || this.currentPath?.slug === pathId) {
-      this.currentPath = null;
+  invalidatePath(pathId?: string) {
+    if (
+      !pathId ||
+      this.loadedPathId === pathId ||
+      this.currentPath?.id === pathId ||
+      this.currentPath?.publicId === pathId
+    ) {
+      this.isPathDirty = true;
     }
-    this.save();
+  }
+
+  async refreshPath(pathId: string) {
+    this.invalidatePath(pathId);
+    return this.ensurePath(pathId);
+  }
+
+  async listPaths(organizationId?: string): Promise<void> {
+    const orgId = organizationId || get(currentOrg).id;
+    if (!orgId) return;
+
+    await this.execute<ListLearningPathsRequest>({
+      requestFn: () => classroomio['learning-path'].$get({ query: { organizationId: orgId } }),
+      logContext: 'listing learning paths',
+      onSuccess: (result) => {
+        this.paths = result.data;
+      }
+    });
+  }
+
+  async get(pathId: string, _access?: LearningPathAccessOptions): Promise<LearningPathDetail | null> {
+    let requestError: Error | null = null;
+    let fetchedDetail: LearningPathDetail | null = null;
+
+    await this.execute<GetLearningPathDetailRequest>({
+      requestFn: async () => {
+        const response = await classroomio['learning-path'][':pathId'].$get({ param: { pathId } });
+        if (!response.ok) {
+          const clone = response.clone();
+          const body = (await clone.json().catch(() => null)) as {
+            message?: string;
+            error?: string;
+            code?: string;
+          } | null;
+          const message = body?.error || body?.message || `HTTP ${response.status}: ${response.statusText}`;
+          requestError = new ApiError(message, response.status, response.statusText, response);
+        }
+        return response;
+      },
+      logContext: 'getting learning path detail',
+      onSuccess: (result) => {
+        fetchedDetail = result.data;
+        this.paths = this.paths.map((p) =>
+          p.id === result.data.id || p.publicId === result.data.publicId ? { ...p, ...result.data } : p
+        );
+      },
+      onError: (err) => {
+        if (!requestError) {
+          const message =
+            typeof err === 'string'
+              ? err
+              : err && typeof err === 'object' && 'error' in err && typeof err.error === 'string'
+                ? err.error
+                : 'Failed to load learning path';
+          requestError = new Error(message);
+        }
+      }
+    });
+
+    if (requestError) {
+      throw requestError;
+    }
+
+    return fetchedDetail;
+  }
+
+  async create(data: CreateLearningPathInput): Promise<CreateLearningPathData | undefined> {
+    const orgId = data.organizationId || get(currentOrg).id;
+    if (!orgId) {
+      throw new Error('No organization selected');
+    }
+
+    const validationResult = ZCreateLearningPath.safeParse({
+      name: data.name,
+      description: data.description,
+      organizationId: orgId
+    });
+
+    if (!validationResult.success) {
+      this.errors = mapZodErrorsToTranslations(validationResult.error);
+      return undefined;
+    }
+
+    const res = await this.execute<CreateLearningPathRequest>({
+      requestFn: () =>
+        classroomio['learning-path'].$post({
+          json: {
+            name: data.name,
+            description: data.description,
+            organizationId: orgId
+          }
+        }),
+      logContext: 'creating learning path',
+      onSuccess: () => {
+        orgNavCountsApi.adjustCount('learningPaths', 1);
+        snackbar.success('learningPath.snackbar.created');
+      }
+    });
+
+    return res?.data;
+  }
+
+  removePathFromLists(pathId: string) {
+    this.paths = this.paths.filter((p) => p.id !== pathId && p.publicId !== pathId);
+  }
+
+  async update(
+    pathId: string,
+    data: TUpdateLearningPath,
+    options: { showSuccessToast?: boolean } = {}
+  ): Promise<UpdateLearningPathData | null> {
+    const { showSuccessToast = true } = options;
+
+    const validationResult = ZUpdateLearningPath.safeParse(data);
+    if (!validationResult.success) {
+      this.errors = mapZodErrorsToTranslations(validationResult.error);
+      const firstError = this.errors.general ?? Object.values(this.errors).find(Boolean);
+      if (firstError) {
+        snackbar.error(firstError);
+      }
+      return null;
+    }
+
+    const res = await this.execute<UpdateLearningPathRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId'].$put({
+          param: { pathId },
+          json: validationResult.data
+        }),
+      logContext: 'updating learning path',
+      onSuccess: (result) => {
+        if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.publicId === pathId)) {
+          this.currentPath = { ...this.currentPath, ...result.data };
+        }
+        this.paths = this.paths.map((p) => (p.id === pathId || p.publicId === pathId ? { ...p, ...result.data } : p));
+        if (showSuccessToast) {
+          snackbar.success('learningPath.snackbar.updated');
+        }
+      }
+    });
+
+    return res?.data ?? null;
+  }
+
+  async delete(pathId: string): Promise<void> {
+    await this.execute<DeleteLearningPathRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId'].$delete({
+          param: { pathId }
+        }),
+      logContext: 'deleting learning path',
+      onSuccess: () => {
+        this.removePathFromLists(pathId);
+        if (this.currentPath?.id === pathId || this.currentPath?.publicId === pathId) {
+          this.currentPath = null;
+        }
+        this.invalidatePath(pathId);
+        orgNavCountsApi.adjustCount('learningPaths', -1);
+        snackbar.success('learningPath.snackbar.deleted');
+      }
+    });
   }
 
   async addCourses(pathId: string, courseIds: string[]): Promise<boolean> {
@@ -205,170 +279,93 @@ export class LearningPathApi extends BaseApiWithErrors {
       return false;
     }
 
-    this.isLoading = true;
-    this.error = null;
-
-    try {
-      const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
-      if (!target) {
-        this.error = 'Learning path not found';
-        return false;
+    const res = await this.execute<AddPathCoursesRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['courses'].$post({
+          param: { pathId },
+          json: { courseIds }
+        }),
+      logContext: 'adding courses to learning path',
+      onSuccess: async () => {
+        await this.refreshPath(pathId);
+        snackbar.success(
+          courseIds.length === 1 ? 'learningPath.snackbar.course_added' : 'learningPath.snackbar.courses_added'
+        );
       }
+    });
 
-      const existingIds = new Set((target.courses || []).map((c) => c.courseId));
-
-      const newItems = courseIds
-        .filter((cid) => !existingIds.has(cid))
-        .map((cid, index) => {
-          const orgCourse = coursesApi.orgCourses.find((ac) => ac.id === cid);
-          const order = (target.courses || []).length + index + 1;
-          const title = orgCourse?.title || 'Untitled Course';
-          const description = orgCourse?.description || 'Description';
-          const lessonsCount = orgCourse?.lessonCount ?? 0;
-          const exercisesCount = (orgCourse as { exerciseCount?: number })?.exerciseCount ?? 0;
-          const cost = orgCourse?.cost ?? 0;
-          const currency = orgCourse?.currency || 'USD';
-          const coverImage = orgCourse?.logo || null;
-
-          return {
-            id: `lpc-${Date.now()}-${index}`,
-            courseId: cid,
-            order,
-            title,
-            description,
-            lessonsCount,
-            exercisesCount,
-            cost,
-            currency,
-            coverImage
-          };
-        });
-
-      const updatedCourses = [...(target.courses || []), ...newItems];
-      target.courses = updatedCourses;
-      target.courseCount = updatedCourses.length;
-      target.updatedAt = new Date().toISOString();
-
-      this.paths = [...this.paths];
-      if (this.currentPath?.id === pathId) {
-        this.currentPath = target;
-      }
-      this.save();
-
-      const successMessage =
-        courseIds.length === 1
-          ? t.get('cohorts.course_added') || 'Course added'
-          : t.get('cohorts.multiple_added') || 'Courses added';
-
-      snackbar.success(successMessage);
-      return true;
-    } catch (error) {
-      console.error('Error in addCoursesToPath:', error);
-      this.error = error instanceof Error ? error.message : 'Failed to add courses to path';
-      return false;
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  /**
-   * Adds pre-constructed course items to a learning path, assigning fresh IDs and order.
-   * Typically used during path cloning to duplicate courses without requiring the org course catalog to be loaded.
-   *
-   * This is a temporary function till API integration is done for learning paths
-   *
-   * @param pathId The target learning path ID or slug.
-   * @param items The course items to append.
-   * @returns True if items were successfully added; false otherwise.
-   */
-  async addCourseItems(pathId: string, items: LearningPathCourseItem[]): Promise<boolean> {
-    if (!items || items.length === 0) {
-      return false;
-    }
-
-    this.isLoading = true;
-    this.error = null;
-
-    try {
-      const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
-      if (!target) {
-        this.error = 'Learning path not found';
-        return false;
-      }
-
-      const existingIds = new Set((target.courses || []).map((c) => c.courseId));
-      const newItems: LearningPathCourseItem[] = items
-        .filter((item) => !existingIds.has(item.courseId))
-        .map((item, index) => ({
-          ...item,
-          id: `lpc-${Date.now()}-${index}`,
-          order: (target.courses || []).length + index + 1
-        }));
-
-      const updatedCourses = [...(target.courses || []), ...newItems];
-      target.courses = updatedCourses;
-      target.courseCount = updatedCourses.length;
-      target.updatedAt = new Date().toISOString();
-
-      this.paths = [...this.paths];
-      if (this.currentPath?.id === pathId) {
-        this.currentPath = target;
-      }
-      this.save();
-      return true;
-    } catch (error) {
-      console.error('Error in addCourseItems:', error);
-      this.error = error instanceof Error ? error.message : 'Failed to add courses to path';
-      return false;
-    } finally {
-      this.isLoading = false;
-    }
+    return Boolean(res?.success);
   }
 
   async removeCourse(pathId: string, courseId: string): Promise<void> {
-    const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
-    if (!target || !target.courses) return;
-
-    const remaining = target.courses
-      .filter((c) => c.id !== courseId && c.courseId !== courseId)
-      .map((c, index) => ({ ...c, order: index + 1 }));
-
-    target.courses = remaining;
-    target.courseCount = remaining.length;
-    target.updatedAt = new Date().toISOString();
-
-    this.paths = [...this.paths];
-    if (this.currentPath?.id === pathId) {
-      this.currentPath = target;
-    }
-    this.save();
+    await this.execute<RemovePathCourseRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['courses'][':courseId'].$delete({
+          param: { pathId, courseId }
+        }),
+      logContext: 'removing course from learning path',
+      onSuccess: () => {
+        if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.publicId === pathId)) {
+          const remaining = this.currentPath.courses.filter((c) => c.courseId !== courseId && c.id !== courseId);
+          this.currentPath.courses = remaining.map((c, idx) => ({ ...c, order: idx + 1 }));
+        }
+        this.paths = this.paths.map((p) => {
+          if (p.id === pathId || p.publicId === pathId) {
+            return { ...p, courseCount: Math.max(0, (p.courseCount || 1) - 1) };
+          }
+          return p;
+        });
+        snackbar.success('learningPath.snackbar.course_removed');
+      }
+    });
   }
 
-  async reorderCourses(pathId: string, orderedCourseIds: string[]): Promise<void> {
-    const target = this.paths.find((p) => p.publicId === pathId || p.id === pathId || p.slug === pathId);
-    if (!target || !target.courses) return;
+  async reorderCourses(pathId: string, courseIds: string[]): Promise<void> {
+    await this.execute<ReorderPathCoursesRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['courses']['order'].$put({
+          param: { pathId },
+          json: { courseIds }
+        }),
+      logContext: 'reordering courses in learning path',
+      onSuccess: () => {
+        if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.publicId === pathId)) {
+          const courseMap = new Map(this.currentPath.courses.map((c) => [c.courseId, c]));
+          const reordered: LearningPathCourseItem[] = [];
+          courseIds.forEach((cid, index) => {
+            const match = courseMap.get(cid);
+            if (match) {
+              reordered.push({ ...match, order: index + 1 });
+            }
+          });
+          this.currentPath.courses = reordered;
+        }
+        snackbar.success('learningPath.snackbar.reordered');
+      }
+    });
+  }
 
-    const courseMap = new Map(target.courses.map((c) => [c.id, c]));
-    const reordered = orderedCourseIds
-      .map((id, index) => {
-        const item = courseMap.get(id);
-        if (!item) return null;
-        return {
-          ...item,
-          order: index + 1
-        };
-      })
-      .filter(Boolean) as typeof target.courses;
-
-    target.courses = reordered;
-    target.courseOrderSetAt = new Date().toISOString();
-    target.updatedAt = new Date().toISOString();
-
-    this.paths = [...this.paths];
-    if (this.currentPath?.id === pathId) {
-      this.currentPath = target;
-    }
-    this.save();
+  async updateCourseOutcomes(pathId: string, courseId: string, outcomes: string[]): Promise<void> {
+    await this.execute<UpdatePathCourseRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['courses'][':courseId'].$put({
+          param: { pathId, courseId },
+          json: { outcomes }
+        }),
+      logContext: 'updating course outcomes in learning path',
+      onSuccess: (result) => {
+        if (
+          result.data &&
+          this.currentPath &&
+          (this.currentPath.id === pathId || this.currentPath.publicId === pathId)
+        ) {
+          const index = this.currentPath.courses.findIndex((c) => c.courseId === courseId);
+          if (index !== -1) {
+            this.currentPath.courses[index].outcomes = result.data.outcomes;
+          }
+        }
+      }
+    });
   }
 }
 

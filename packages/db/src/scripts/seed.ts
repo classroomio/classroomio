@@ -9,6 +9,7 @@ import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
 import { seedGroupmembers } from '@db/utils/seed/groupmember';
 import { seedLearnerLifecycle } from '@db/utils/seed/learnerLifecycle';
+import { seedLearningPaths } from '@db/utils/seed/learningPath';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedNewsfeedThreads } from '@db/utils/seed/newsfeedThreads';
 import { seedOrganization } from '@db/utils/seed/organization';
@@ -62,6 +63,7 @@ const orderedSeeds = [
   'compliance',
   'react-people-progress',
   'learner-lifecycle',
+  'learning-paths',
   'newsfeed-threads'
 ] as const;
 
@@ -101,7 +103,8 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'exercises',
       'questions',
       'react-people-progress',
-      'learner-lifecycle'
+      'learner-lifecycle',
+      'learning-paths'
     ]
   },
   'coursera-test': {
@@ -201,6 +204,8 @@ Flags:
   --compliance               Seed compliance demo data (coursera-test org)
   --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
   --react-people-progress    Seed React course students with varied progress (udemy-test)
+  --learner-lifecycle        Seed the learner lifecycle roster (udemy-test)
+  --learning-paths           Seed learning paths, members, progress caches and grants (udemy-test)
   --help, -h                  Show this help message
 
 Examples:
@@ -360,6 +365,18 @@ const seedFunctions = {
       testOrgId: TEST_ORG_ID,
       reactGroupId: REACT_GROUP_ID,
       reactCourseId: REACT_COURSE_ID
+    });
+  },
+  'learning-paths': async () => {
+    console.log('📝 Seeding learning paths (udemy-test)...');
+    await seedLearningPaths({
+      testOrgId: TEST_ORG_ID,
+      adminUserId: ADMIN_USER_ID,
+      mvcCourseId: MVC_COURSE_ID,
+      reactCourseId: REACT_COURSE_ID,
+      pandasCourseId: PANDAS_COURSE_ID,
+      existingStudentUserId: STUDENT_USER_ID,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
     });
   },
   'newsfeed-threads': async () => {

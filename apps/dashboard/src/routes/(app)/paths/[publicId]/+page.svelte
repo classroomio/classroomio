@@ -10,10 +10,6 @@
   import { learningPathApi } from '$features/learning-path/api';
   import { t } from '$lib/utils/functions/translations';
 
-  import { resolveActivePath } from '$features/learning-path/utils/learning-path-utils';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-
   let { data } = $props();
 
   let reorder = $state(page.url.searchParams.get('reorder') === 'true');
@@ -27,16 +23,11 @@
     }
   });
 
-  const activePath = $derived(
-    resolveActivePath(data.publicId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
-      isAdmin: $isOrgAdmin,
-      userProfileId: $profile?.id
-    })
-  );
+  const activePath = $derived(learningPathApi.currentPath);
 
   function handleRefresh() {
     if (data.publicId) {
-      learningPathApi.getPath(data.publicId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id });
+      learningPathApi.refreshPath(data.publicId);
     }
   }
 
@@ -44,7 +35,7 @@
     if (reorder && activePath && activePath.courses && activePath.courses.length > 0) {
       await learningPathApi.reorderCourses(
         activePath.id,
-        activePath.courses.map((c) => c.id)
+        activePath.courses.map((c) => c.courseId)
       );
     }
     reorder = !reorder;

@@ -40,8 +40,7 @@
       label: $t('learningPath.workspace.tabs.people'),
       href: `${basePath}/people`,
       isActive: currentPath.startsWith(`${basePath}/people`),
-      icon: PeopleIcon,
-      badge: path.memberCount || 0
+      icon: PeopleIcon
     },
     {
       id: 'analytics',

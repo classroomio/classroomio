@@ -506,7 +506,7 @@ export async function getOrganizationNavCounts(orgId: string, userId: string, us
       countCohortsByOrgForProfile(orgId, userId),
       countAssetsByOrg(orgId),
       countTagsByOrg(orgId),
-      countLearningPathsByOrg(orgId)
+      countLearningPathsByOrg(orgId, { tutorProfileId: courseProfileId })
     ]);
 
     return { courses, cohorts, media, tags, learningPaths };

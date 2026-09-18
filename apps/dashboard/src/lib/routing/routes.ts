@@ -2,14 +2,18 @@ export enum ROUTE_NAME {
   COURSE = 'COURSE',
   COURSE_SETTINGS = 'COURSE_SETTINGS',
   COURSE_CERTIFICATE = 'COURSE_CERTIFICATE',
-  COURSE_AI_TUTOR = 'COURSE_AI_TUTOR'
+  COURSE_AI_TUTOR = 'COURSE_AI_TUTOR',
+  LEARNING_PATH = 'LEARNING_PATH',
+  LEARNING_PATH_SETTINGS = 'LEARNING_PATH_SETTINGS'
 }
 
 export const ROUTE_PATHS = {
   [ROUTE_NAME.COURSE]: '/courses/[id]',
   [ROUTE_NAME.COURSE_SETTINGS]: '/courses/[id]/settings',
   [ROUTE_NAME.COURSE_CERTIFICATE]: '/courses/[id]/certificates',
-  [ROUTE_NAME.COURSE_AI_TUTOR]: '/courses/[id]/ai-tutor'
+  [ROUTE_NAME.COURSE_AI_TUTOR]: '/courses/[id]/ai-tutor',
+  [ROUTE_NAME.LEARNING_PATH]: '/paths/[id]',
+  [ROUTE_NAME.LEARNING_PATH_SETTINGS]: '/paths/[id]/settings'
 } as const;
 
 export const ROUTE_SECTIONS = {
@@ -28,6 +32,10 @@ export const ROUTE_SECTIONS = {
   [ROUTE_NAME.COURSE_AI_TUTOR]: {
     INHERITANCE: 'inheritance',
     TUTOR_SETTINGS: 'tutor-settings'
+  },
+
+  [ROUTE_NAME.LEARNING_PATH_SETTINGS]: {
+    PUBLISH: 'publish'
   }
 } as const;
 

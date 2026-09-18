@@ -59,6 +59,7 @@ import {
   updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
+import { getEnrolledLearningPaths } from '@api/services/learning-path';
 
 import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
@@ -577,6 +578,28 @@ export const organizationRouter = new Hono()
       );
     } catch (error) {
       return handleError(c, error, 'Failed to fetch courses');
+    }
+  })
+  /**
+   * GET /organization/learning-paths/enrolled
+   * Gets caller's enrolled learning paths with live progress and per-course unlock status in an organization
+   * Requires authentication and organization membership
+   */
+  .get('/learning-paths/enrolled', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgId = c.req.header('cio-org-id')!;
+      const paths = await getEnrolledLearningPaths(user.id, orgId);
+
+      return c.json(
+        {
+          success: true,
+          data: paths
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch enrolled learning paths');
     }
   })
   /**

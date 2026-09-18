@@ -2,13 +2,14 @@
   import { PathsListing, CreatePathButton } from '$features/learning-path';
   import { learningPathApi } from '$features/learning-path/api';
   import * as Page from '@cio/ui/base/page';
+  import * as Alert from '@cio/ui/base/alert';
   import { t } from '$lib/utils/functions/translations';
 
   let { data } = $props();
 
-  $effect.pre(() => {
-    if (data.orgId && learningPathApi.currentOrgId !== data.orgId) {
-      learningPathApi.setOrg(data.orgId, data.paths);
+  $effect(() => {
+    if (data.paths) {
+      learningPathApi.paths = data.paths;
     }
   });
 </script>
@@ -29,7 +30,16 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <PathsListing />
+      {#if data.loadError}
+        <Alert.Callout
+          variant="destructive"
+          title={$t('learningPath.listing.load_error_title')}
+          description={data.loadError}
+          class="mb-6"
+        />
+      {:else}
+        <PathsListing loadError={data.loadError} />
+      {/if}
     {/snippet}
   </Page.Body>
 </Page.Root>
