@@ -316,6 +316,8 @@ export {
   type Result
 } from './utils';
 
+export { ApiError } from './types';
+
 export type { InferResponseType, InferRequestType } from '@cio/api/rpc-types';
 
 // Export base API classes

@@ -108,7 +108,7 @@
         rel="noopener noreferrer"
         variant="ghost"
         size="icon"
-        class="ui:text-muted-foreground hover:ui:text-foreground size-8"
+        class="ui:text-muted-foreground ui:hover:text-foreground size-8"
         title={$t('learningPath.builder.open_course')}
         aria-label={$t('learningPath.builder.open_course')}
       >
@@ -119,7 +119,7 @@
         type="button"
         variant="ghost"
         size="icon"
-        class="ui:text-muted-foreground hover:ui:bg-destructive/10 hover:ui:text-destructive size-8"
+        class="ui:text-muted-foreground ui:hover:bg-destructive/10 ui:hover:text-destructive size-8"
         title={$t('learningPath.builder.remove_course')}
         aria-label={$t('learningPath.builder.remove_course')}
         onclick={() => onRemove(course)}

@@ -5454,12 +5454,6 @@
   },
   "learningPath": {
     "modals": {
-      "remove_course": {
-        "title": "Supprimer le cours du parcours ?",
-        "description": "Le cours sera supprimé de ce parcours. Les apprenants déjà inscrits conserveront leur accès et leur progression.",
-        "cancel": "Annuler",
-        "confirm": "Supprimer le cours"
-      },
       "add_courses": {
         "title": "Ajouter des cours au parcours",
         "search_placeholder": "Rechercher des cours…",
@@ -5473,33 +5467,19 @@
       },
       "create": {
         "title": "Créer un parcours d'apprentissage",
-        "description": "Définissez un titre et une description pour votre nouveau parcours d'apprentissage.",
         "name_label": "Nom du parcours",
         "name_placeholder": "Exemple : Développement web Fullstack",
-        "slug_label": "URL",
-        "slug_placeholder": "fullstack-web-development",
         "desc_label": "Description",
         "desc_placeholder": "Un bref résumé des acquis des apprenants…",
         "cancel": "Annuler",
         "submit": "Créer un parcours d'apprentissage",
-        "creating": "Création en cours…",
         "failed": "Échec de la création du parcours d'apprentissage"
-      },
-      "clone": {
-        "title": "Parcours d'apprentissage du clonage",
-        "description": "Créez une copie de ce parcours d'apprentissage avec tous ses cours.",
-        "submit": "Cloner",
-        "failed": "Échec du clonage du parcours d'apprentissage",
-        "title_copy_format": "{name} (Copie)"
       }
     },
     "workspace": {
       "all_paths": "Tous les parcours d'apprentissage",
       "finish_setup": "Terminer la configuration · {percent}%",
       "view_path_site": "Voir le site du chemin",
-      "active": "Actif",
-      "draft": "Brouillon",
-      "archived": "Archivé",
       "coming_soon": {
         "title": "{tab} — Prochainement",
         "description": "Cet onglet d'espace de travail sera disponible dans la phase 3. La gestion et la configuration des cours sont entièrement fonctionnelles dans cette version."
@@ -5513,10 +5493,6 @@
         "settings": "Paramètres",
         "setup": "Installation"
       },
-      "activate_path": "Activer le chemin",
-      "deactivate_path": "Désactiver le chemin",
-      "activated": "Parcours d'apprentissage activé",
-      "deactivated": "Parcours d'apprentissage désactivé",
       "publish_path": "Chemin de publication",
       "unpublish_path": "Chemin de dépublication",
       "published": "Parcours d'apprentissage publié",
@@ -5524,13 +5500,14 @@
       "copy_path_url": "Copier l'URL du chemin",
       "preview_missing_slug": "Générez et enregistrez un slug de chemin avant de prévisualiser.",
       "url_copied": "URL du parcours d'apprentissage copiée dans le presse-papiers",
-      "cloned": "Parcours d'apprentissage cloné avec succès",
       "loading_title": "Chargement du parcours d'apprentissage…",
       "loading_description": "Veuillez patienter pendant que nous chargeons les données de votre parcours d'apprentissage.",
       "publish_failed": "Échec de la publication du parcours d'apprentissage",
       "not_found_title": "Parcours d'apprentissage introuvable",
       "not_found_description": "Le parcours de formation que vous recherchez n'existe pas ou a été supprimé.",
-      "back_to_paths": "Retour aux parcours d'apprentissage"
+      "back_to_paths": "Retour aux parcours d'apprentissage",
+      "load_failed_title": "Impossible de charger ce parcours d'apprentissage",
+      "load_failed_description": "Vérifiez votre connexion et réessayez."
     },
     "setup": {
       "title": "Configurer votre parcours",
@@ -5556,9 +5533,6 @@
       "step_landing_title": "Personnaliser la page d'accueil",
       "step_landing_desc": "Résultats, compétences, formateurs, témoignages et FAQ sur la page publique du parcours.",
       "step_landing_action": "Personnaliser",
-      "step_activate_title": "Activer le parcours",
-      "step_activate_desc": "Définir le statut sur « Actif » pour qu'il apparaisse sur votre page d'accueil et votre plateforme LMS.",
-      "step_activate_action": "Activer",
       "step_publish_title": "Publier le chemin",
       "step_publish_desc": "Publiez le chemin pour qu'il apparaisse sur votre page de destination et votre LMS.",
       "step_publish_action": "Publier",
@@ -5569,16 +5543,12 @@
       "subtitle": "Ajouter des cours et les glisser pour définir l'ordre de progression des apprenants.",
       "unlock_rule_title": "Déverrouiller les cours dans l'ordre",
       "unlock_rule_desc": "Chaque cours reste verrouillé jusqu'à ce qu'un apprenant ait terminé les leçons et exercices du cours précédent. Désactiver cette option pour autoriser l'accès dans n'importe quel ordre.",
-      "list_head": "{count} {count, plural, =1 {cours} other {cours}} dans ce parcours",
       "drag_hint": "Glisser pour réorganiser",
       "lessons_count": "{count} {count, plural, =1 {leçon} other {leçons}}",
       "exercises_count": "{count} {count, plural, =1 {exercice} other {exercices}}",
       "open_course": "Ouvrir le cours",
       "remove_course": "Retirer du parcours",
       "add_course_button": "Ajouter le cours au parcours",
-      "certificate_title": "Certificat de parcours",
-      "certificate_desc": "Délivré automatiquement lorsqu'un étudiant a terminé tous les {count} cours.",
-      "configure_certificate": "Configurer le certificat",
       "empty_title": "Aucun cours dans ce parcours d'apprentissage pour l'instant",
       "empty_description": "Ajoutez des cours pour guider les apprenants à travers une séquence structurée. Commencez par cliquer sur le bouton Ajouter."
     },
@@ -5586,22 +5556,16 @@
       "title": "Parcours d'apprentissage",
       "subtitle": "Créer et gérer des expériences d'apprentissage structurées qui guident les apprenants à travers plusieurs cours.",
       "create_path": "Créer un parcours d'apprentissage",
-      "create_course": "Créer un cours",
       "empty": {
         "title": "Créer votre premier parcours d'apprentissage",
         "description": "Regroupez plusieurs cours en une séquence ordonnée avec suivi des étapes clés, validation des acquis et certificat de réussite optionnel.",
         "create_path": "Créer un parcours d'apprentissage",
-        "create_course": "Créer un cours",
         "no_matches_title": "Aucun parcours d'apprentissage ne correspond à vos filtres actifs",
         "no_matches_description": "Essayez de supprimer vos filtres ou de modifier votre requête de recherche."
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {cours} other {cours}}",
-        "learners_count": "{count} {count, plural, =1 {apprenant} other {apprenants}}",
-        "not_published": "Non publié",
-        "completion": "Terminé",
-        "manage": "Gérer",
-        "continue_setup": "Continuer la configuration"
+        "learners_count": "{count} {count, plural, =1 {apprenant} other {apprenants}}"
       },
       "filters": {
         "title": "Filtres",
@@ -5610,9 +5574,7 @@
         "group_enrollment": "Inscriptions",
         "group_completion": "Taux d'achèvement",
         "all": "Tous",
-        "draft": "Brouillons",
         "published": "Publié",
-        "archived": "Archivé",
         "no_learners": "Aucun apprenant pour l'instant",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
@@ -5622,21 +5584,13 @@
         "sort_date_created": "Date de création",
         "sort_last_updated_at": "Dernière mise à jour à",
         "sort_published": "Publié",
-        "sort_courses": "Cours"
+        "sort_courses": "Cours",
+        "unpublished": "Inédit"
       },
       "toolbar": {
         "search_placeholder": "Rechercher des parcours d'apprentissage…",
-        "preview_empty": "Aperçu (état vide)",
-        "exit_preview_empty": "Quitter l'aperçu",
         "grid_view": "Vue grille",
         "list_view": "Vue liste"
-      },
-      "overview": {
-        "active_paths": "Parcours actifs",
-        "enrolled_learners": "Apprenants inscrits",
-        "completions": "Achèvements",
-        "completion_rate": "Taux d'achèvement",
-        "across_all_paths": "Tous parcours confondus"
       }
     },
     "view_path_site": {
@@ -5647,7 +5601,6 @@
     },
     "context_menu": {
       "open": "Ouvert",
-      "clone": "Cloner",
       "share": "Partager",
       "invite": "Inviter",
       "delete": "Supprimer"
@@ -5658,6 +5611,15 @@
       "published": "Publié",
       "unpublished": "Inédit",
       "badge": "Parcours d'apprentissage"
+    },
+    "snackbar": {
+      "created": "Parcours d'apprentissage créé",
+      "updated": "Parcours d'apprentissage mis à jour",
+      "deleted": "Parcours d'apprentissage supprimé",
+      "reordered": "Ordre des cours mis à jour",
+      "course_added": "Cours ajouté",
+      "courses_added": "Cours ajoutés",
+      "course_removed": "Cours supprimé"
     }
   }
 }

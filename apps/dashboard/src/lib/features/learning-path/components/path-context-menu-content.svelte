@@ -5,8 +5,8 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrgDomain, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { clonePathModal } from '../utils/store';
-  import { learningPathApi } from '../api';
+  import { goAndHighlight } from '$lib/routing/go-and-highlight';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { copyPublicPathPageUrl, openPathPreview } from '../utils/path-preview';
 
   interface Props {
@@ -28,7 +28,6 @@
     publicId,
     slug = '',
     name,
-    description = '',
     isPublished = false,
     openUrl,
     includeOpen = false,
@@ -40,19 +39,6 @@
   function handleOpen(e: MouseEvent) {
     e.stopPropagation();
     goto(resolve(openUrl || `/paths/${publicId}`, {}));
-  }
-
-  function handleClone(e: MouseEvent) {
-    e.stopPropagation();
-    setTimeout(() => {
-      clonePathModal.set({
-        open: true,
-        id,
-        name: $t('learningPath.modals.clone.title_copy_format', { name }),
-        description: description || '',
-        isSaving: false
-      });
-    }, 50);
   }
 
   function handleShare(e: MouseEvent) {
@@ -85,14 +71,11 @@
     }
   }
 
-  async function handlePublishPath(e: MouseEvent) {
+  function handlePublishPath(e: MouseEvent) {
     e.stopPropagation();
-    try {
-      await learningPathApi.updatePath(id, { isPublished: true });
-      snackbar.success('learningPath.workspace.published');
-    } catch {
-      snackbar.error('learningPath.workspace.publish_failed');
-    }
+    goAndHighlight(ROUTE_NAME.LEARNING_PATH_SETTINGS, ROUTE_SECTIONS[ROUTE_NAME.LEARNING_PATH_SETTINGS].PUBLISH, {
+      id: publicId
+    });
   }
 
   function handleDelete(e: MouseEvent) {
@@ -131,11 +114,6 @@
   </DropdownMenu.Item>
 {/if}
 
-{#if $isOrgAdmin}
-  <DropdownMenu.Item onclick={handleClone}>
-    {$t('learningPath.context_menu.clone')}
-  </DropdownMenu.Item>
-{/if}
 <DropdownMenu.Item onclick={handleShare}>
   {$t('learningPath.context_menu.share')}
 </DropdownMenu.Item>

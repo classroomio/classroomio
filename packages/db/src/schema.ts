@@ -755,10 +755,8 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
-    /** Independent enroll blocked. Do not revoke grants that already exist.
-     * TODO: Uncomment during API implementation phase and generate migration
-     */
-    // requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
+    /** Independent enroll blocked. Do not revoke grants that already exist. */
+    requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
     /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
     displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
@@ -3522,7 +3520,7 @@ export const learningPath = pgTable(
     organizationId: uuid('organization_id').notNull(),
     name: varchar().notNull(),
     slug: varchar().notNull(),
-    description: text(),
+    description: text().notNull(),
     coverImage: text('cover_image'),
     isPublished: boolean('is_published').default(false).notNull(),
     difficulty: learningPathDifficulty(),
@@ -3597,8 +3595,10 @@ export const learningPathCourse = pgTable(
     courseId: uuid('course_id').notNull(),
     /** Not unique: reorder rewrites every row in one transaction. */
     order: integer().notNull(),
-    outcomes: jsonb().default([]).$type<string[]>(),
-    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+    outcomes: jsonb().default([]).notNull().$type<string[]>(),
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    /** Soft-remove so member progress cache survives course removal. */
+    removedAt: timestamp('removed_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -3812,7 +3812,7 @@ export const courseEnrollmentGrant = pgTable(
     }).onDelete('set null'),
     // NULLS NOT DISTINCT: two SELF_ENROLL grants (NULL cohort/path) must collide.
     unique('course_enrollment_grant_source_unique')
-      .on(table.groupmemberId, table.source, table.cohortId, table.learningPathId)
+      .on(table.groupmemberId, table.courseId, table.source, table.cohortId, table.learningPathId)
       .nullsNotDistinct(),
     index('idx_course_enrollment_grant_course_id_source').on(table.courseId, table.source),
     index('idx_course_enrollment_grant_groupmember_id').on(table.groupmemberId),

@@ -13,6 +13,5 @@ export { default as UnlockToggle } from './unlock-toggle.svelte';
 export { default as CourseRow } from './course-row.svelte';
 export { default as AddCourseToPathModal } from './add-course-to-path-modal.svelte';
 export { default as TabComingSoon } from './tab-coming-soon.svelte';
-export { default as ClonePathModal } from './clone-path-modal.svelte';
 export { default as ViewPathSiteUnpublishedModal } from './view-path-site-unpublished-modal.svelte';
 export { default as ViewPathAsStudentModal } from './view-path-as-student-modal.svelte';

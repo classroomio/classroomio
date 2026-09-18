@@ -278,6 +278,10 @@ export async function addCourseMember(
   courseId: string,
   memberData: { profileId?: string; roleId: number; email?: string }
 ): Promise<TGroupmember> {
+  if (!memberData.profileId && !memberData.email) {
+    throw new Error('Cannot add course member without a profileId or email');
+  }
+
   try {
     const groupId = await getCourseGroupId(courseId);
     if (!groupId) {

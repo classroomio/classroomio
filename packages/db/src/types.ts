@@ -254,3 +254,28 @@ export type TNewYoutubeCaption = typeof schema.youtubeCaption.$inferInsert;
 
 export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
 export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;
+
+// ─── Learning Paths ──────────────────────────────────────────────────────────
+
+export type TLearningPath = typeof schema.learningPath.$inferSelect;
+export type TNewLearningPath = typeof schema.learningPath.$inferInsert;
+
+export type TLearningPathCourse = typeof schema.learningPathCourse.$inferSelect;
+export type TNewLearningPathCourse = typeof schema.learningPathCourse.$inferInsert;
+
+export type TLearningPathMember = typeof schema.learningPathMember.$inferSelect;
+export type TNewLearningPathMember = typeof schema.learningPathMember.$inferInsert;
+
+export type TLearningPathMemberCourse = typeof schema.learningPathMemberCourse.$inferSelect;
+export type TNewLearningPathMemberCourse = typeof schema.learningPathMemberCourse.$inferInsert;
+
+export type TLearningPathCertificateIssue = typeof schema.learningPathCertificateIssue.$inferSelect;
+export type TNewLearningPathCertificateIssue = typeof schema.learningPathCertificateIssue.$inferInsert;
+
+export type TCourseEnrollmentGrant = typeof schema.courseEnrollmentGrant.$inferSelect;
+export type TNewCourseEnrollmentGrant = typeof schema.courseEnrollmentGrant.$inferInsert;
+
+export type TLearningPathDifficulty = (typeof schema.learningPathDifficulty.enumValues)[number];
+export type TLearningPathMemberStatus = (typeof schema.learningPathMemberStatus.enumValues)[number];
+export type TLearningPathCourseStatus = (typeof schema.learningPathCourseStatus.enumValues)[number];
+export type TCourseEnrollmentSource = (typeof schema.courseEnrollmentSource.enumValues)[number];

@@ -275,7 +275,8 @@ export const ZCourseCreateBase = z.object({
   description: z.string().min(1),
   type: ZCourseType,
   organizationId: z.string().min(1),
-  compliance: ZComplianceSettings.optional()
+  compliance: ZComplianceSettings.optional(),
+  requiresLearningPath: z.boolean().optional()
 });
 
 export const ZCourseCreate = ZCourseCreateBase.refine(
@@ -502,7 +503,8 @@ export const ZCourseUpdateBase = z.object({
   certificate: ZCertificationSettings.optional(),
   tagIds: z.array(z.uuid()).max(100).optional(),
   compliance: ZComplianceSettings.optional(),
-  callout: ZCourseCalloutInput.optional()
+  callout: ZCourseCalloutInput.optional(),
+  requiresLearningPath: z.boolean().optional()
 });
 
 export const ZCourseUpdate = ZCourseUpdateBase.refine(

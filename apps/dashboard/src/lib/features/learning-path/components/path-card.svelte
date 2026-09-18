@@ -28,7 +28,7 @@
   });
 </script>
 
-<div class="group/stack ui:sm:mx-0 ui:sm:max-w-[320px] relative mx-auto w-full">
+<div class="group/stack relative mx-auto w-full sm:mx-0 sm:max-w-[320px]">
   <!-- Stacked Card Underlayer (Card Stack Effect from Design) -->
   <div
     class="ui:border-border ui:bg-card pointer-events-none absolute inset-0 -translate-x-1.5 translate-y-1.5 rounded-lg border transition-transform duration-200 group-hover/stack:-translate-x-2 group-hover/stack:translate-y-2"

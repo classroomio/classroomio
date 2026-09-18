@@ -5454,12 +5454,6 @@
   },
   "learningPath": {
     "modals": {
-      "remove_course": {
-        "title": "Usunąć kurs ze ścieżki?",
-        "description": "Kurs zostanie usunięty z tej ścieżki. Uczestnicy, którzy już zapisali się na kurs, zachowają dostęp i postępy.",
-        "cancel": "Anuluj",
-        "confirm": "Usuń kurs"
-      },
       "add_courses": {
         "title": "Dodaj kursy do ścieżki",
         "search_placeholder": "Szukaj kursów…",
@@ -5473,33 +5467,19 @@
       },
       "create": {
         "title": "Utwórz ścieżkę edukacyjną",
-        "description": "Ustaw tytuł i opis nowej ścieżki edukacyjnej.",
         "name_label": "Nazwa ścieżki",
         "name_placeholder": "np. Tworzenie stron internetowych Fullstack",
-        "slug_label": "Slug URL",
-        "slug_placeholder": "fullstack-web-development",
         "desc_label": "Opis",
         "desc_placeholder": "Krótkie podsumowanie osiągnięć uczestników...",
         "cancel": "Anuluj",
         "submit": "Utwórz ścieżkę edukacyjną",
-        "creating": "Tworzenie…",
         "failed": "Nie udało się utworzyć ścieżki szkoleniowej"
-      },
-      "clone": {
-        "title": "Ścieżka uczenia się klonowania",
-        "description": "Utwórz kopię tej ścieżki szkoleniowej ze wszystkimi jej kursami.",
-        "submit": "Klon",
-        "failed": "Nie udało się sklonować ścieżki szkoleniowej",
-        "title_copy_format": "{name} (Kopia)"
       }
     },
     "workspace": {
       "all_paths": "Wszystkie ścieżki edukacyjne",
       "finish_setup": "Zakończ konfigurację · {percent}%",
       "view_path_site": "Zobacz stronę ścieżki",
-      "active": "Aktywne",
-      "draft": "Wersja robocza",
-      "archived": "Zarchiwizowane",
       "coming_soon": {
         "title": "{tab} — Wkrótce",
         "description": "Ta karta obszaru roboczego będzie dostępna w Fazie 3. Zarządzanie kursami i ich konfiguracja są w pełni funkcjonalne w tej wersji."
@@ -5513,10 +5493,6 @@
         "settings": "Ustawienia",
         "setup": "Konfiguracja"
       },
-      "activate_path": "Aktywuj ścieżkę",
-      "deactivate_path": "Dezaktywuj ścieżkę",
-      "activated": "Ścieżka szkoleniowa aktywowana",
-      "deactivated": "Ścieżka szkoleniowa dezaktywowana",
       "publish_path": "Opublikuj ścieżkę",
       "unpublish_path": "Cofnij publikację ścieżki",
       "published": "Opublikowano ścieżkę edukacyjną",
@@ -5524,13 +5500,14 @@
       "copy_path_url": "Skopiuj adres URL ścieżki",
       "preview_missing_slug": "Wygeneruj i zapisz informację o ścieżce przed podglądem.",
       "url_copied": "Adres URL ścieżki szkoleniowej skopiowany do schowka",
-      "cloned": "Ścieżka szkoleniowa została pomyślnie sklonowana",
       "loading_title": "Ładowanie ścieżki szkoleniowej…",
       "loading_description": "Poczekaj, aż załadujemy dane Twojej ścieżki szkoleniowej.",
       "publish_failed": "Nie udało się opublikować ścieżki szkoleniowej",
       "not_found_title": "Nie znaleziono ścieżki szkoleniowej",
       "not_found_description": "Ścieżka szkoleniowa, której szukasz nie istnieje lub została usunięta.",
-      "back_to_paths": "Wracając do ścieżek edukacyjnych"
+      "back_to_paths": "Wracając do ścieżek edukacyjnych",
+      "load_failed_title": "Nie udało się wczytać tej ścieżki szkoleniowej",
+      "load_failed_description": "Sprawdź połączenie i spróbuj ponownie."
     },
     "setup": {
       "title": "Skonfiguruj swoją ścieżkę",
@@ -5556,9 +5533,6 @@
       "step_landing_title": "Dostosuj stronę docelową",
       "step_landing_desc": "Rezultaty, umiejętności, instruktorzy, opinie i często zadawane pytania na publicznej stronie ścieżki.",
       "step_landing_action": "Dostosuj",
-      "step_activate_title": "Aktywuj ścieżkę",
-      "step_activate_desc": "Ustaw status na Aktywny, aby wyświetlał się na stronie docelowej i w systemie LMS.",
-      "step_activate_action": "Aktywuj",
       "step_publish_title": "Opublikuj ścieżkę",
       "step_publish_desc": "Opublikuj ścieżkę, aby pojawiła się na Twojej stronie docelowej i LMS-ie.",
       "step_publish_action": "Publikuj",
@@ -5569,16 +5543,12 @@
       "subtitle": "Dodaj kursy i przeciągnij je, aby ustawić kolejność, w jakiej uczniowie będą je przechodzić.",
       "unlock_rule_title": "Odblokuj kursy w kolejności",
       "unlock_rule_desc": "Każdy kurs pozostaje zablokowany, dopóki uczeń nie ukończy lekcji i ćwiczeń z poprzedniego kursu. Wyłącz, aby zezwolić na dowolną kolejność.",
-      "list_head": "{count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}} w tej ścieżce",
       "drag_hint": "Przeciągnij, aby zmienić kolejność",
       "lessons_count": "{count} {count, plural, one {lekcja} few {lekcje} many {lekcji} other {lekcji}}",
       "exercises_count": "{count} {count, plural, one {ćwiczenie} few {ćwiczenia} many {ćwiczeń} other {ćwiczeń}}",
       "open_course": "Otwórz kurs",
       "remove_course": "Usuń ze ścieżki",
       "add_course_button": "Dodaj kurs do ścieżki",
-      "certificate_title": "Certyfikat ścieżki",
-      "certificate_desc": "Przyznawany automatycznie po ukończeniu przez ucznia wszystkich {count} kursów.",
-      "configure_certificate": "Skonfiguruj certyfikat",
       "empty_title": "Nie ma jeszcze kursów w tej ścieżce szkoleniowej",
       "empty_description": "Dodaj kursy, które poprowadzą uczniów przez ustrukturyzowaną sekwencję. Zacznij od kliknięcia przycisku Dodaj."
     },
@@ -5586,22 +5556,16 @@
       "title": "Ścieżki edukacyjne",
       "subtitle": "Twórz i zarządzaj ustrukturyzowanymi doświadczeniami edukacyjnymi, które prowadzą uczniów przez wiele kursów.",
       "create_path": "Utwórz ścieżkę edukacyjną",
-      "create_course": "Utwórz kurs",
       "empty": {
         "title": "Utwórz swoją pierwszą ścieżkę edukacyjną",
         "description": "Połącz wiele kursów w uporządkowaną sekwencję ze śledzeniem kamieni milowych, bramkami i opcjonalnym certyfikatem ukończenia.",
         "create_path": "Utwórz ścieżkę edukacyjną",
-        "create_course": "Utwórz kurs",
         "no_matches_title": "Żadna ścieżka szkoleniowa nie pasuje do Twoich aktywnych filtrów",
         "no_matches_description": "Spróbuj wyczyścić filtry lub zmienić wyszukiwane hasło."
       },
       "card": {
         "courses_count": "{count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}",
-        "learners_count": "{count} {count, plural, one {uczestnik} few {uczestnicy} many {uczestników} other {uczestników}}",
-        "not_published": "Nieopublikowane jeszcze",
-        "completion": "Ukończenie",
-        "manage": "Zarządzaj",
-        "continue_setup": "Kontynuuj konfigurację"
+        "learners_count": "{count} {count, plural, one {uczestnik} few {uczestnicy} many {uczestników} other {uczestników}}"
       },
       "filters": {
         "title": "Filtry",
@@ -5610,9 +5574,7 @@
         "group_enrollment": "Zapisy",
         "group_completion": "Wskaźnik ukończenia",
         "all": "Wszystkie",
-        "draft": "Wersja robocza",
         "published": "Opublikowano",
-        "archived": "Zarchiwizowano",
         "no_learners": "Brak uczestników",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
@@ -5622,21 +5584,13 @@
         "sort_date_created": "Data utworzenia",
         "sort_last_updated_at": "Ostatnia aktualizacja o godz",
         "sort_published": "Opublikowano",
-        "sort_courses": "Kursy"
+        "sort_courses": "Kursy",
+        "unpublished": "Niepublikowane"
       },
       "toolbar": {
         "search_placeholder": "Wyszukaj ścieżki edukacyjne…",
-        "preview_empty": "Podgląd – stan pusty",
-        "exit_preview_empty": "Zamknij podgląd",
         "grid_view": "Widok siatki",
         "list_view": "Widok listy"
-      },
-      "overview": {
-        "active_paths": "Aktywne ścieżki",
-        "enrolled_learners": "Zapisani uczestnicy",
-        "completions": "Ukończenia",
-        "completion_rate": "Wskaźnik ukończenia",
-        "across_all_paths": "We wszystkich ścieżkach"
       }
     },
     "view_path_site": {
@@ -5647,7 +5601,6 @@
     },
     "context_menu": {
       "open": "Otwórz",
-      "clone": "Klon",
       "share": "Udostępnij",
       "invite": "Zaproś",
       "delete": "Usuń"
@@ -5658,6 +5611,15 @@
       "published": "Opublikowano",
       "unpublished": "Niepublikowane",
       "badge": "Ścieżka edukacyjna"
+    },
+    "snackbar": {
+      "created": "Utworzono ścieżkę edukacyjną",
+      "updated": "Zaktualizowano ścieżkę edukacyjną",
+      "deleted": "Ścieżka szkoleniowa została usunięta",
+      "reordered": "Zaktualizowano kolejność kursów",
+      "course_added": "Kurs dodany",
+      "courses_added": "Dodano kursy",
+      "course_removed": "Kurs usunięty"
     }
   }
 }

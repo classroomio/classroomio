@@ -5,15 +5,22 @@
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
-  import { PathSidebar, PathHeader, ClonePathModal } from '$features/learning-path';
+  import { PathSidebar, PathHeader } from '$features/learning-path';
   import { learningPathApi } from '$features/learning-path/api';
-  import { resolveActivePath } from '$features/learning-path/utils/learning-path-utils';
+  import type { LearningPathDetail } from '$features/learning-path/utils/types';
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
+  import { currentOrgPath } from '$lib/utils/store/org';
 
-  let { data, children } = $props();
+  interface Props {
+    children?: import('svelte').Snippet;
+    data: {
+      publicId: string;
+      path?: LearningPathDetail;
+    };
+  }
+
+  let { data, children }: Props = $props();
 
   let sidebarWidth = $state(256);
   let hasLoadedSidebarWidth = $state(false);
@@ -21,25 +28,23 @@
 
   let deleteModalOpen = $state(false);
   let isDeleting = $state(false);
-  let isChecked = $state(false);
 
-  $effect.pre(() => {
-    if (data.publicId) {
-      isChecked = false;
-      void learningPathApi.getPath(data.publicId, { isAdmin: $isOrgAdmin, userProfileId: $profile?.id }).then(() => {
-        isChecked = true;
-      });
+  $effect(() => {
+    if (!data.publicId) return;
+
+    if (data.path) {
+      learningPathApi.currentPath = data.path;
+      return;
     }
+
+    learningPathApi.ensurePath(data.publicId);
   });
 
-  const activePath = $derived(
-    resolveActivePath(data.publicId, learningPathApi.currentPath, learningPathApi.paths, data.path, {
-      isAdmin: $isOrgAdmin,
-      userProfileId: $profile?.id
-    })
-  );
-
-  const isPathReady = $derived(!!activePath);
+  const activePath = $derived(learningPathApi.currentPath);
+  const isPathReady = $derived.by(() => {
+    if (!activePath) return false;
+    return activePath.publicId === data.publicId;
+  });
 
   function handleSidebarWidthPreview(width: number) {
     sidebarProviderElement?.style.setProperty('--sidebar-width', `${width}px`);
@@ -54,7 +59,7 @@
 
     isDeleting = true;
     try {
-      await learningPathApi.deletePath(activePath.id);
+      await learningPathApi.delete(activePath.id);
       deleteModalOpen = false;
       goto(`${$currentOrgPath}/paths`);
     } finally {
@@ -90,8 +95,6 @@
 
 <DeleteModal bind:open={deleteModalOpen} onDelete={handleDeletePath} isLoading={isDeleting} />
 
-<ClonePathModal />
-
 <Sidebar.Provider
   bind:ref={sidebarProviderElement}
   data-sveltekit-preload-data="off"
@@ -108,29 +111,50 @@
   <Sidebar.Inset class="min-w-0 flex-1">
     <PathHeader path={activePath} onDelete={() => (deleteModalOpen = true)} />
 
-    {#if !isPathReady}
+    {#if learningPathApi.isLoading || (!isPathReady && !learningPathApi.isNotFound && !learningPathApi.loadError)}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
-        {#if isChecked}
-          <Empty
-            title={$t('learningPath.workspace.not_found_title')}
-            description={$t('learningPath.workspace.not_found_description')}
-            variant="page"
-          >
-            <div class="mt-4 flex justify-center">
-              <Button href={`${$currentOrgPath}/paths`} variant="outline">
-                {$t('learningPath.workspace.back_to_paths')}
-              </Button>
-            </div>
-          </Empty>
-        {:else}
-          <Empty
-            title={$t('learningPath.workspace.loading_title')}
-            description={$t('learningPath.workspace.loading_description')}
-            icon={Spinner}
-            iconClass="h-8 w-8"
-            variant="page"
-          />
-        {/if}
+        <Empty
+          title={$t('learningPath.workspace.loading_title')}
+          description={$t('learningPath.workspace.loading_description')}
+          icon={Spinner}
+          iconClass="h-8 w-8"
+          variant="page"
+        />
+      </div>
+    {:else if learningPathApi.loadError && !learningPathApi.isNotFound}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty
+          title={$t('learningPath.workspace.load_failed_title')}
+          description={$t('learningPath.workspace.load_failed_description')}
+          variant="page"
+        >
+          <div class="mt-4 flex justify-center gap-2">
+            <Button
+              variant="outline"
+              onclick={() => learningPathApi.refreshPath(data.publicId)}
+              disabled={learningPathApi.isLoading}
+            >
+              {$t('common.refresh')}
+            </Button>
+            <Button href={`${$currentOrgPath}/paths`} variant="outline">
+              {$t('learningPath.workspace.back_to_paths')}
+            </Button>
+          </div>
+        </Empty>
+      </div>
+    {:else if !isPathReady || learningPathApi.isNotFound}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty
+          title={$t('learningPath.workspace.not_found_title')}
+          description={$t('learningPath.workspace.not_found_description')}
+          variant="page"
+        >
+          <div class="mt-4 flex justify-center">
+            <Button href={`${$currentOrgPath}/paths`} variant="outline">
+              {$t('learningPath.workspace.back_to_paths')}
+            </Button>
+          </div>
+        </Empty>
       </div>
     {:else}
       {@render children?.()}

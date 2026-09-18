@@ -5442,14 +5442,6 @@
       "title": "Learning Paths",
       "subtitle": "Create and manage structured learning experiences that guide learners through multiple courses.",
       "create_path": "Create Learning Path",
-      "create_course": "Create Course",
-      "overview": {
-        "active_paths": "Active paths",
-        "enrolled_learners": "Enrolled learners",
-        "completions": "Completions",
-        "completion_rate": "Completion rate",
-        "across_all_paths": "Across all paths"
-      },
       "toolbar": {
         "search_placeholder": "Search learning paths…",
         "grid_view": "Grid view",
@@ -5462,9 +5454,8 @@
         "group_enrollment": "Enrollment",
         "group_completion": "Completion rate",
         "all": "All",
-        "draft": "Draft",
         "published": "Published",
-        "archived": "Archived",
+        "unpublished": "Unpublished",
         "no_learners": "No learners yet",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
@@ -5478,17 +5469,12 @@
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
-        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}",
-        "not_published": "Not published yet",
-        "completion": "Completion",
-        "manage": "Manage",
-        "continue_setup": "Continue setup"
+        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}"
       },
       "empty": {
         "title": "Create your first Learning Path",
         "description": "Bundle multiple courses into an ordered sequence with milestone tracking, gating, and an optional completion certificate. Start by clicking on the Add button.",
         "create_path": "Create Learning Path",
-        "create_course": "Create Course",
         "no_matches_title": "No learning paths match your active filters",
         "no_matches_description": "Try clearing your filters or changing your search query."
       }
@@ -5500,16 +5486,12 @@
       "empty_description": "Add courses to guide learners through a structured sequence. Start by clicking on the Add button.",
       "unlock_rule_title": "Unlock courses in order",
       "unlock_rule_desc": "Each course stays locked until a student completes the previous one's lessons and exercises. Turn off to allow any order.",
-      "list_head": "{count} {count, plural, =1 {course} other {courses}} in this path",
       "drag_hint": "Drag to reorder",
       "lessons_count": "{count} {count, plural, =1 {lesson} other {lessons}}",
       "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
       "open_course": "Open course",
       "remove_course": "Remove from path",
-      "add_course_button": "Add Courses",
-      "certificate_title": "Path certificate",
-      "certificate_desc": "Awarded automatically when a student completes all {count} courses.",
-      "configure_certificate": "Configure certificate"
+      "add_course_button": "Add Courses"
     },
     "setup": {
       "title": "Set up your path",
@@ -5538,10 +5520,7 @@
       "step_landing_action": "Customize",
       "step_publish_title": "Publish the Path",
       "step_publish_desc": "Publish the Path so it appears on your landing page and LMS.",
-      "step_publish_action": "Publish",
-      "step_activate_title": "Publish the Path",
-      "step_activate_desc": "Publish the Path so it appears on your landing page and LMS.",
-      "step_activate_action": "Publish"
+      "step_publish_action": "Publish"
     },
     "view_path_site": {
       "unpublished_title": "Publish your learning path",
@@ -5560,10 +5539,11 @@
       "unpublish_path": "Unpublish Path",
       "published": "Learning Path published",
       "unpublished": "Learning Path unpublished",
-      "cloned": "Learning path cloned successfully",
       "publish_failed": "Failed to publish learning path",
       "not_found_title": "Learning path not found",
       "not_found_description": "The learning path you are looking for does not exist or has been deleted.",
+      "load_failed_title": "Couldn't load this learning path",
+      "load_failed_description": "Check your connection and try again.",
       "back_to_paths": "Back to learning paths",
       "loading_title": "Loading learning path…",
       "loading_description": "Please wait while we load your learning path data.",
@@ -5590,30 +5570,19 @@
     },
     "context_menu": {
       "open": "Open",
-      "clone": "Clone",
       "share": "Share",
       "invite": "Invite",
       "delete": "Delete"
     },
     "modals": {
-      "clone": {
-        "title": "Clone Learning Path",
-        "description": "Create a copy of this learning path with all its courses.",
-        "submit": "Clone",
-        "title_copy_format": "{name} (Copy)",
-        "failed": "Failed to clone learning path"
-      },
       "create": {
         "title": "Create a Learning Path",
         "name_label": "Path name",
         "name_placeholder": "e.g. Fullstack Web Development",
-        "slug_label": "URL Slug",
-        "slug_placeholder": "fullstack-web-development",
         "desc_label": "Description",
         "desc_placeholder": "A brief summary of what learners will achieve...",
         "cancel": "Cancel",
         "submit": "Create Learning Path",
-        "creating": "Creating…",
         "failed": "Failed to create learning path"
       },
       "add_courses": {
@@ -5626,13 +5595,16 @@
         "cancel": "Cancel",
         "submit": "Add {count} {count, plural, =1 {Course} other {Courses}}",
         "submitting": "Adding courses…"
-      },
-      "remove_course": {
-        "title": "Remove Course from Path?",
-        "description": "The course will be removed from this path. Learners already enrolled in the course will keep their access and progress.",
-        "cancel": "Cancel",
-        "confirm": "Remove Course"
       }
+    },
+    "snackbar": {
+      "created": "Learning path created",
+      "updated": "Learning path updated",
+      "deleted": "Learning path deleted",
+      "reordered": "Course order updated",
+      "course_added": "Course added",
+      "courses_added": "Courses added",
+      "course_removed": "Course removed"
     }
   }
 }

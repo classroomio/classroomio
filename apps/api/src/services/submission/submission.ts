@@ -45,6 +45,7 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
+import { syncLearningPathProgressForMember } from '@api/services/learning-path';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
@@ -59,6 +60,11 @@ async function triggerCertificationIfExerciseComplete(
   if (!profile?.id) return;
 
   const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
+
+  void syncLearningPathProgressForMember(courseId, profile.id).catch((syncError) => {
+    console.error('Failed to sync learning path progress after exercise submission:', syncError);
+  });
+
   if (!isComplete) return;
 
   void evaluateCourseCertification(courseId, profile.id).catch((certError) => {

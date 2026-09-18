@@ -48,7 +48,7 @@
   }
 
   function handleUnlockToggle(nextChecked: boolean) {
-    void learningPathApi.updatePath(path.id, { sequentialUnlock: nextChecked });
+    void learningPathApi.update(path.id, { sequentialUnlock: nextChecked });
   }
 
   function handleOpenRemoveDialog(course: LearningPathCourseItem) {
@@ -61,7 +61,7 @@
 
     isRemoving = true;
     try {
-      await learningPathApi.removeCourse(path.id, courseToRemove.id);
+      await learningPathApi.removeCourse(path.id, courseToRemove.courseId);
       showDeleteModal = false;
       courseToRemove = null;
     } finally {

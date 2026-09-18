@@ -661,6 +661,10 @@ export async function enrollInCourse(
     throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
+  if (courseWithRelations.requiresLearningPath) {
+    throw new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   const courseMetadata =
     (courseWithRelations.metadata as {
       allowSelfEnrollment?: boolean;

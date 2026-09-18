@@ -5454,12 +5454,6 @@
   },
   "learningPath": {
     "modals": {
-      "remove_course": {
-        "title": "¿Eliminar curso de la ruta?",
-        "description": "El curso se eliminará de esta ruta. Los alumnos ya inscritos conservarán su acceso y progreso.",
-        "cancel": "Cancelar",
-        "confirm": "Eliminar curso"
-      },
       "add_courses": {
         "title": "Añadir cursos a la ruta",
         "search_placeholder": "Buscar cursos…",
@@ -5473,33 +5467,19 @@
       },
       "create": {
         "title": "Crear ruta de aprendizaje",
-        "description": "Establezca un título y una descripción para su nueva ruta de aprendizaje.",
         "name_label": "Nombre de la ruta",
         "name_placeholder": "Ej. Desarrollo web fullstack",
-        "slug_label": "URL",
-        "slug_placeholder": "desarrollo web fullstack",
         "desc_label": "Descripción",
         "desc_placeholder": "Un breve resumen de lo que los estudiantes lograrán...",
         "cancel": "Cancelar",
         "submit": "Crear ruta de aprendizaje",
-        "creating": "Creando…",
         "failed": "No se pudo crear la ruta de aprendizaje"
-      },
-      "clone": {
-        "title": "Clonar ruta de aprendizaje",
-        "description": "Cree una copia de esta ruta de aprendizaje con todos sus cursos.",
-        "submit": "clonar",
-        "failed": "No se pudo clonar la ruta de aprendizaje",
-        "title_copy_format": "{name} (Copia)"
       }
     },
     "workspace": {
       "all_paths": "Todas las rutas de aprendizaje",
       "finish_setup": "Finalizar configuración · {percent}%",
       "view_path_site": "Ver sitio de ruta",
-      "active": "Activo",
-      "draft": "Borrador",
-      "archived": "Archivado",
       "coming_soon": {
         "title": "{tab} — Próximamente",
         "description": "Esta pestaña del espacio de trabajo estará disponible en la Fase 3. La gestión y configuración del curso son totalmente funcionales en esta versión."
@@ -5513,10 +5493,6 @@
         "settings": "Configuración",
         "setup": "Configuración"
       },
-      "activate_path": "Activar ruta",
-      "deactivate_path": "Desactivar ruta",
-      "activated": "Ruta de aprendizaje activada",
-      "deactivated": "Ruta de aprendizaje desactivada",
       "publish_path": "Publicar ruta",
       "unpublish_path": "Ruta de despublicación",
       "published": "Ruta de aprendizaje publicada",
@@ -5524,13 +5500,14 @@
       "copy_path_url": "Copiar URL de ruta",
       "preview_missing_slug": "Genere y guarde un slug de ruta antes de obtener una vista previa.",
       "url_copied": "URL de la ruta de aprendizaje copiada al portapapeles",
-      "cloned": "Ruta de aprendizaje clonada con éxito",
       "loading_title": "Cargando ruta de aprendizaje…",
       "loading_description": "Espere mientras cargamos los datos de su ruta de aprendizaje.",
       "publish_failed": "No se pudo publicar la ruta de aprendizaje",
       "not_found_title": "Ruta de aprendizaje no encontrada",
       "not_found_description": "La ruta de aprendizaje que estás buscando no existe o ha sido eliminada.",
-      "back_to_paths": "Volver a los caminos del aprendizaje"
+      "back_to_paths": "Volver a los caminos del aprendizaje",
+      "load_failed_title": "No se pudo cargar esta ruta de aprendizaje",
+      "load_failed_description": "Comprueba tu conexión y vuelve a intentarlo."
     },
     "setup": {
       "title": "Configura tu ruta",
@@ -5556,9 +5533,6 @@
       "step_landing_title": "Personalizar la página de inicio",
       "step_landing_desc": "Resultados, habilidades, instructores, testimonios y preguntas frecuentes en la página pública del curso.",
       "step_landing_action": "Personalizar",
-      "step_activate_title": "Activar el curso",
-      "step_activate_desc": "Establece el estado como Activo para que aparezca en tu página de inicio y en la plataforma de aprendizaje en línea (LMS).",
-      "step_activate_action": "Activar",
       "step_publish_title": "Publicar el camino",
       "step_publish_desc": "Publique la ruta para que aparezca en su página de destino y en su LMS.",
       "step_publish_action": "Publicar",
@@ -5569,16 +5543,12 @@
       "subtitle": "Agrega cursos y arrástralos para establecer el orden en que los alumnos avanzan por ellos.",
       "unlock_rule_title": "Desbloquear cursos en orden",
       "unlock_rule_desc": "Cada curso permanece bloqueado hasta que el alumno completa las lecciones y ejercicios del anterior. Desactiva esta opción para permitir cualquier orden.",
-      "list_head": "{count} {count, plural, =1 {curso} other {cursos}} en esta ruta",
       "drag_hint": "Arrastra para reordenar",
       "lessons_count": "{count} {count, plural, =1 {lección} other {lecciones}}",
       "exercises_count": "{count} {count, plural, =1 {ejercicio} other {ejercicios}}",
       "open_course": "Abrir curso",
       "remove_course": "Eliminar de la ruta",
       "add_course_button": "Añadir curso a la ruta",
-      "certificate_title": "Certificado de ruta",
-      "certificate_desc": "Se otorga automáticamente cuando un estudiante completa todos los {count} cursos.",
-      "configure_certificate": "Configurar certificado",
       "empty_title": "Aún no hay cursos en esta ruta de aprendizaje",
       "empty_description": "Agregue cursos para guiar a los alumnos a través de una secuencia estructurada. Comience haciendo clic en el botón Agregar."
     },
@@ -5586,22 +5556,16 @@
       "title": "Rutas de aprendizaje",
       "subtitle": "Crea y gestiona experiencias de aprendizaje estructuradas que guían a los estudiantes a través de múltiples cursos.",
       "create_path": "Crear ruta de aprendizaje",
-      "create_course": "Crear curso",
       "empty": {
         "title": "Crea tu primera ruta de aprendizaje",
         "description": "Agrupa varios cursos en una secuencia ordenada con seguimiento de hitos, acceso controlado y un certificado de finalización opcional.",
         "create_path": "Crear ruta de aprendizaje",
-        "create_course": "Crear curso",
         "no_matches_title": "Ninguna ruta de aprendizaje coincide con tus filtros activos",
         "no_matches_description": "Intente borrar sus filtros o cambiar su consulta de búsqueda."
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {curso} other {cursos}}",
-        "learners_count": "{count} {count, plural, =1 {alumno} other {alumnos}}",
-        "not_published": "Aún no publicado",
-        "completion": "Finalización",
-        "manage": "Gestionar",
-        "continue_setup": "Continuar configuración"
+        "learners_count": "{count} {count, plural, =1 {alumno} other {alumnos}}"
       },
       "filters": {
         "title": "Filtros",
@@ -5610,9 +5574,7 @@
         "group_enrollment": "Inscripciones",
         "group_completion": "Tasa de finalización",
         "all": "Todos",
-        "draft": "Borradores",
         "published": "Publicados",
-        "archived": "Archivados",
         "no_learners": "Sin alumnos aún",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
@@ -5622,21 +5584,13 @@
         "sort_date_created": "Fecha de creación",
         "sort_last_updated_at": "Última actualización en",
         "sort_published": "Publicado",
-        "sort_courses": "Cursos"
+        "sort_courses": "Cursos",
+        "unpublished": "Inédito"
       },
       "toolbar": {
         "search_placeholder": "Buscar rutas de aprendizaje…",
-        "preview_empty": "Vista previa del estado vacío",
-        "exit_preview_empty": "Salir de la vista previa",
         "grid_view": "Vista de cuadrícula",
         "list_view": "Vista de lista"
-      },
-      "overview": {
-        "active_paths": "Rutas activas",
-        "enrolled_learners": "Alumnos inscritos",
-        "completions": "Finalizaciones",
-        "completion_rate": "Tasa de finalización",
-        "across_all_paths": "En todas las rutas"
       }
     },
     "view_path_site": {
@@ -5647,7 +5601,6 @@
     },
     "context_menu": {
       "open": "Abierto",
-      "clone": "clonar",
       "share": "Compartir",
       "invite": "invitar",
       "delete": "Eliminar"
@@ -5658,6 +5611,15 @@
       "published": "Publicado",
       "unpublished": "Inédito",
       "badge": "Ruta de aprendizaje"
+    },
+    "snackbar": {
+      "created": "Ruta de aprendizaje creada",
+      "updated": "Ruta de aprendizaje actualizada",
+      "deleted": "Ruta de aprendizaje eliminada",
+      "reordered": "Orden del curso actualizado",
+      "course_added": "Curso agregado",
+      "courses_added": "Cursos agregados",
+      "course_removed": "Curso eliminado"
     }
   }
 }

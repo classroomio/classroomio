@@ -202,7 +202,7 @@
               {...props}
               variant="ghost"
               size="icon"
-              class="ui:text-muted-foreground hover:ui:text-foreground size-7 p-0.5 @3xl:size-8"
+              class="ui:text-muted-foreground ui:hover:text-foreground size-7 p-0.5 @3xl:size-8"
               aria-label={$t('learningPath.card.actions_menu_aria')}
               onclick={stopNavigation}
             >
