@@ -16,7 +16,14 @@ const mocks = vi.hoisted(() => ({
   isCourseTeamMemberOrOrgAdmin: vi.fn(),
   getPathsContainingCourseForMember: vi.fn(),
   getActiveGrantsForCourseAndProfile: vi.fn(),
-  getCourseCompletionStatsForProfile: vi.fn()
+  getCourseCompletionStatsForProfile: vi.fn(),
+  listLearningPathCourses: vi.fn(),
+  enrollMember: vi.fn(),
+  initializeMemberCourseProgress: vi.fn(),
+  grantCourseAccess: vi.fn(),
+  getCourseGroupIds: vi.fn(),
+  getGroupMemberIdByGroupAndProfile: vi.fn(),
+  insertGroupMembersOnConflictDoNothing: vi.fn()
 }));
 
 const transactionClient = { id: 'test-transaction-client' };
@@ -39,11 +46,21 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   reorderLearningPathCourses: mocks.reorderLearningPathCourses,
   getPathsContainingCourseForMember: mocks.getPathsContainingCourseForMember,
   getActiveGrantsForCourseAndProfile: mocks.getActiveGrantsForCourseAndProfile,
-  getCourseCompletionStatsForProfile: mocks.getCourseCompletionStatsForProfile
+  getCourseCompletionStatsForProfile: mocks.getCourseCompletionStatsForProfile,
+  listLearningPathCourses: mocks.listLearningPathCourses,
+  enrollMember: mocks.enrollMember,
+  initializeMemberCourseProgress: mocks.initializeMemberCourseProgress,
+  grantCourseAccess: mocks.grantCourseAccess
 }));
 
 vi.mock('@cio/db/queries/group', () => ({
-  isCourseTeamMemberOrOrgAdmin: mocks.isCourseTeamMemberOrOrgAdmin
+  isCourseTeamMemberOrOrgAdmin: mocks.isCourseTeamMemberOrOrgAdmin,
+  getGroupMemberIdByGroupAndProfile: mocks.getGroupMemberIdByGroupAndProfile,
+  insertGroupMembersOnConflictDoNothing: mocks.insertGroupMembersOnConflictDoNothing
+}));
+
+vi.mock('@cio/db/queries/course/course', () => ({
+  getCourseGroupIds: mocks.getCourseGroupIds
 }));
 
 import {
@@ -54,6 +71,7 @@ import {
 } from '../learning-path';
 import { assertCourseNotLockedForStudent, unlockedCourses } from '../unlock';
 import { reorderPathCoursesService } from '../course-management';
+import { addPathMembersService } from '../member-management';
 
 describe('learning-path services', () => {
   beforeEach(() => {
@@ -290,6 +308,60 @@ describe('learning-path services', () => {
         transactionClient
       );
       expect(result).toEqual({ reordered: true });
+    });
+  });
+
+  describe('addPathMembersService', () => {
+    const validPath = {
+      id: '11111111-1111-1111-1111-111111111111',
+      organizationId: 'org-1',
+      autoEnroll: true,
+      sequentialUnlock: false
+    };
+
+    it('rejects tutor trying to assign ROLE.TUTOR to a member', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.getMemberByPathAndProfile.mockResolvedValue({
+        id: 'caller-member',
+        roleId: ROLE.TUTOR,
+        removedAt: null
+      });
+
+      await expect(
+        addPathMembersService(
+          validPath.id,
+          { members: [{ profileId: '00000000-0000-0000-0000-000000000002', roleId: ROLE.TUTOR }] },
+          'caller-tutor',
+          { 'org-1': ROLE.TUTOR }
+        )
+      ).rejects.toThrowError(
+        new AppError('Only organization admins can assign tutor roles', ErrorCodes.UNAUTHORIZED, 403)
+      );
+    });
+
+    it('allows org admin to assign ROLE.TUTOR on the path but ensures course group membership receives ROLE.STUDENT', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.listLearningPathCourses.mockResolvedValue([{ id: 'pc-1', courseId: 'c-1', order: 0 }]);
+      mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-2', roleId: ROLE.TUTOR });
+      mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-2');
+
+      const result = await addPathMembersService(
+        validPath.id,
+        { members: [{ profileId: '00000000-0000-0000-0000-000000000002', roleId: ROLE.TUTOR }] },
+        'admin-1',
+        { 'org-1': ROLE.ADMIN }
+      );
+
+      expect(mocks.enrollMember).toHaveBeenCalledWith(
+        expect.objectContaining({ roleId: ROLE.TUTOR }),
+        transactionClient
+      );
+      expect(mocks.insertGroupMembersOnConflictDoNothing).toHaveBeenCalledWith(
+        [{ groupId: 'g-1', profileId: '00000000-0000-0000-0000-000000000002', roleId: ROLE.STUDENT }],
+        transactionClient
+      );
+      expect(result).toHaveLength(1);
     });
   });
 });

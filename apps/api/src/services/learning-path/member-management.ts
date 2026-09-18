@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
 import {
   enrollMember,
@@ -45,6 +46,11 @@ export async function addPathMembersService(
   const path = await resolveLearningPath(pathId);
   await assertCanManageLearningPath(path, userId, orgRoles);
 
+  const hasTutorRole = payload.members.some((member) => member.roleId === ROLE.TUTOR);
+  if (hasTutorRole && orgRoles?.[path.organizationId] !== ROLE.ADMIN) {
+    throw new AppError('Only organization admins can assign tutor roles', ErrorCodes.UNAUTHORIZED, 403);
+  }
+
   return await db.transaction(async (tx) => {
     const courses = await listLearningPathCourses(path.id, tx);
     const courseIds = courses.map((course) => course.courseId);
@@ -80,7 +86,7 @@ export async function addPathMembersService(
             .map((entry) => ({
               groupId: entry.groupId,
               profileId: memberInput.profileId!,
-              roleId: memberInput.roleId
+              roleId: ROLE.STUDENT
             }));
 
           await insertGroupMembersOnConflictDoNothing(groupMemberValues, tx);
