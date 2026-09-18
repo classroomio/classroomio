@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as ResourceListRow from '@cio/ui/custom/resource-list-row';
   import { Empty } from '@cio/ui/custom/empty';
   import { Search } from '@cio/ui/custom/search';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
@@ -146,7 +147,7 @@
   {:else if isLMS || $courseMetaDeta.view === 'grid'}
     <CourseCardList {courses} {isExplore} {isLMS} {onCardClick} />
   {:else}
-    <div class="flex flex-col gap-3">
+    <ResourceListRow.Group class="@container">
       {#each courses as courseData (courseData.id)}
         <CourseListRow
           id={courseData.id}
@@ -170,6 +171,6 @@
           {isLMS}
         />
       {/each}
-    </div>
+    </ResourceListRow.Group>
   {/if}
 </div>

@@ -144,6 +144,35 @@
   {/snippet}
 </Story>
 
+<Story name="Admin with overlay dropdown">
+  {#snippet template()}
+    <div class="w-80">
+      <CourseCard
+        href="/courses/modern-web-development"
+        title="Modern Web Development with React"
+        description="Build fast, interactive user interfaces with React, hooks, and modern JavaScript tooling."
+        coverGradient={COVER_GRADIENT}
+        lessonCount={24}
+        exerciseCount={12}
+        isPublished
+        totalStudents={128}
+        isAdmin
+        {labels}
+      >
+        {#snippet overlay()}
+          <button
+            type="button"
+            aria-label="Course actions"
+            class="ui:relative ui:z-40 ui:flex ui:size-8 ui:items-center ui:justify-center ui:rounded-full ui:border ui:bg-background/80 ui:text-muted-foreground ui:backdrop-blur"
+          >
+            •••
+          </button>
+        {/snippet}
+      </CourseCard>
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Certificate view — earned on">
   {#snippet template()}
     <div class="w-80">

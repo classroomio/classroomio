@@ -200,7 +200,7 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
   class={cn(
-    'ui:group ui:flex ui:flex-col ui:overflow-hidden ui:rounded-xl ui:border ui:shadow-sm ui:hover:border-primary/40 ui:w-full',
+    'group ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:hover:border-primary/40 ui:w-full',
     className
   )}
   onclick={isExploreClickable ? handleCardClick : undefined}
@@ -208,6 +208,10 @@
   role={isExploreClickable ? 'button' : undefined}
   tabindex={isExploreClickable ? 0 : -1}
 >
+  {#if innerHref}
+    <a href={innerHref} aria-label={title} class="ui:absolute ui:inset-0 ui:z-[1]"></a>
+  {/if}
+
   <div
     class="ui:relative ui:flex ui:h-50 ui:items-center ui:justify-center ui:overflow-hidden"
     style="background: {coverGradient}"
@@ -267,16 +271,20 @@
   </div>
 
   <div class="ui:flex ui:flex-1 ui:flex-col ui:gap-[9px] ui:p-4">
-    <a href={innerHref} class="ui:w-fit">
+    {#if innerHref}
+      <a href={innerHref} class="ui:relative ui:z-10 ui:w-fit">
+        <h3 class="ui:line-clamp-2 ui:text-sm ui:font-semibold ui:tracking-tight ui:hover:text-primary">{title}</h3>
+      </a>
+    {:else}
       <h3 class="ui:line-clamp-2 ui:text-sm ui:font-semibold ui:tracking-tight ui:hover:text-primary">{title}</h3>
-    </a>
+    {/if}
 
     {#if description}
       <p class="ui:line-clamp-2 ui:min-h-[33px] ui:text-xs ui:leading-snug ui:text-muted-foreground">{description}</p>
     {/if}
 
     {#if tags}
-      <div class="ui:mt-1">@render tags()</div>
+      <div class="ui:mt-1">{@render tags()}</div>
     {/if}
 
     {#if showLessonExerciseCount}
@@ -350,7 +358,7 @@
         {labels.partOf}:
         <a
           href={innerHref ? partOfPath.href : undefined}
-          class="ui:font-medium ui:text-foreground ui:hover:text-primary"
+          class="ui:relative ui:z-10 ui:font-medium ui:text-foreground ui:hover:text-primary"
         >
           <strong>{partOfPath.name}</strong>
         </a>
@@ -362,7 +370,7 @@
         href={innerHref}
         variant={ctaVariant}
         size="sm"
-        class="ui:w-full"
+        class="ui:relative ui:z-10 ui:w-full"
         onclick={isExploreClickable ? handleCtaClick : undefined}
       >
         {ctaLabelText}

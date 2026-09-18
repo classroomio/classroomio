@@ -351,7 +351,7 @@
           {/each}
         </div>
       {:else}
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 divide-y rounded-md border">
           {#each combinedItems as entry (entry.kind === 'path' ? entry.path.id : entry.item.id)}
             {#if entry.kind === 'path'}
               <LearningPathRow

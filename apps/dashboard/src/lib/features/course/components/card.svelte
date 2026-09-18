@@ -284,9 +284,9 @@
     {/if}
   {/snippet}
 
-  {#if !isLMS}
-    {#snippet tags()}
+  {#snippet tags()}
+    {#if !isLMS}
       <CourseTagsOverflow tags={courseTags} variant="card" />
-    {/snippet}
-  {/if}
+    {/if}
+  {/snippet}
 </CourseCard>

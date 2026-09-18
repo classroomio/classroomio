@@ -88,7 +88,6 @@ export { BackButton } from './custom/back-button';
 export {
   CourseCard,
   CourseCardLegacy,
-  CourseListRow,
   DEFAULT_COURSE_BANNER_IMAGE,
   type CourseCardLabels,
   type CourseCardCompliance
