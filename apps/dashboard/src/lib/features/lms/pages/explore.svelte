@@ -11,14 +11,32 @@
   import { MOCK_PATHS, MOCK_STANDALONE_COURSES } from '$features/learning-path/utils/mock-data';
   import type { PathDifficulty } from '$features/learning-path/utils/types';
   import FilterPopover, { type FilterGroup } from '$features/learning-path/components/filter-popover.svelte';
+  import CoursePreviewModal, { type CoursePreviewCourse } from '$features/lms/components/course-preview-modal.svelte';
 
   type ContentTypeFilter = 'ALL' | 'paths' | 'courses';
+
+  interface ExploreCourseCard {
+    id: string;
+    title: string;
+    description: string;
+    coverGradient?: string;
+    coverImage?: string;
+    lessonCount: number;
+    exerciseCount: number;
+    difficulty: PathDifficulty;
+    partOfPath: { name: string; href: string } | null;
+    href: string;
+    slug?: string;
+    cost: number;
+  }
 
   const COURSE_DIFFICULTIES: PathDifficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
 
   let searchValue = $state('');
   let contentType = $state<ContentTypeFilter>('ALL');
   let difficulty = $state<PathDifficulty | 'ALL'>('ALL');
+  let selectedCourse = $state<CoursePreviewCourse | null>(null);
+  let previewOpen = $state(false);
 
   function difficultyForId(id: string): PathDifficulty {
     const sum = Array.from(id).reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -50,7 +68,7 @@
     }))
   );
 
-  const courseItems = $derived([
+  const courseItems = $derived<ExploreCourseCard[]>([
     ...catalogPaths
       .map((path) => {
         const course = path.courses[0];
@@ -66,7 +84,9 @@
           exerciseCount: course.exerciseCount,
           difficulty: path.difficulty,
           partOfPath: { name: path.name, href: `/lms/paths/${path.id}` },
-          href: `/lms/paths/${path.id}`
+          href: `/lms/paths/${path.id}`,
+          slug: course.slug,
+          cost: course.cost
         };
       })
       .filter((item): item is NonNullable<typeof item> => item !== null),
@@ -80,7 +100,9 @@
       exerciseCount: course.exerciseCount,
       difficulty: difficultyForId(course.id),
       partOfPath: null,
-      href: '/lms/mylearning'
+      href: '/lms/mylearning',
+      slug: course.slug,
+      cost: course.cost
     }))
   ]);
 
@@ -170,6 +192,23 @@
     if (groupId === 'contentType') contentType = value as ContentTypeFilter;
     if (groupId === 'difficulty') difficulty = value as PathDifficulty | 'ALL';
   }
+
+  function openCoursePreview(course: ExploreCourseCard) {
+    selectedCourse = {
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      logo: course.coverImage ?? null,
+      slug: course.slug,
+      lessonCount: course.lessonCount,
+      exerciseCount: course.exerciseCount,
+      cost: course.cost,
+      currency: 'USD',
+      metadata: { allowSelfEnrollment: true },
+      type: 'PUBLIC'
+    };
+    previewOpen = true;
+  }
 </script>
 
 {#if !learningPathApi.hasLoaded}
@@ -179,7 +218,7 @@
 {:else}
   <div class="mb-6 flex flex-wrap items-center gap-3">
     <Search
-      class="ui:w-full ui:max-w-none min-w-[220px] flex-1"
+      class="max-w-sm flex-1 border md:w-2/3"
       placeholder={$t('explore.search_placeholder')}
       bind:value={searchValue}
     />
@@ -204,7 +243,7 @@
           description={$t('explore.paths_empty_description')}
         />
       {:else}
-        <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-3">
           {#each filteredPaths as path}
             <LearningPathCard
               href={path.href}
@@ -254,6 +293,7 @@
               exerciseCount={course.exerciseCount}
               partOfPath={course.partOfPath}
               isExplore={true}
+              onExploreClick={() => openCoursePreview(course)}
               labels={courseLabels}
             />
           {/each}
@@ -261,4 +301,8 @@
       {/if}
     </section>
   {/if}
+{/if}
+
+{#if selectedCourse}
+  <CoursePreviewModal course={selectedCourse} bind:open={previewOpen} />
 {/if}
