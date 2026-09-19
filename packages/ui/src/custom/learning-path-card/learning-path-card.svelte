@@ -145,28 +145,40 @@
 </script>
 
 <div class="ui:group/stack ui:relative ui:mx-auto ui:w-full">
-  <!-- Stacked card underlay — signals "multiple courses inside" at a glance -->
+  <!-- Stacked card underlay -->
   <div
-    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:group-hover/stack:bg-primary ui:transition-transform ui:duration-300 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2"
+    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:transition-all ui:duration-300 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2 ui:group-hover/stack:bg-primary/65"
     aria-hidden="true"
   ></div>
 
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
     class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5"
     onclick={isExploreClickable ? handleCardClick : undefined}
+    onkeydown={isExploreClickable
+      ? (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onExploreClick?.();
+          }
+        }
+      : undefined}
     role={isExploreClickable ? 'button' : undefined}
+    tabindex={isExploreClickable ? 0 : -1}
   >
-    <a
-      {href}
-      class="ui:group ui:relative ui:flex ui:h-50 ui:items-center ui:justify-center ui:overflow-hidden ui:bg-card"
-      aria-label={name}
-    >
+    <!-- Full-card clickable overlay (same pattern as Course card) -->
+    {#if !isExploreClickable}
+      <a {href} aria-label={name} class="ui:absolute ui:inset-0 ui:z-[1]"></a>
+    {/if}
+
+    <!-- Cover -->
+    <div class="ui:relative ui:flex ui:h-50 ui:items-center ui:justify-center ui:overflow-hidden ui:bg-card">
       {#if coverImage}
         <img
           src={coverImage}
           alt={name}
           loading="lazy"
-          class="ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-cover ui:transition-transform ui:duration-300 ui:group-hover:scale-105"
+          class="ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-cover ui:transition-transform ui:duration-300 ui:group-hover/stack:scale-105"
         />
       {:else}
         <img
@@ -177,14 +189,19 @@
         />
       {/if}
       <LearningPathBadge label={labels.badge} onCover class="ui:absolute ui:top-3 ui:left-3" />
-    </a>
+    </div>
 
+    <!-- Body -->
     <div class="ui:flex ui:flex-1 ui:flex-col ui:gap-2 ui:p-4 ui:pt-3">
-      <a {href} class="ui:w-fit">
-        <h3 class="ui:line-clamp-2 ui:text-sm ui:leading-snug ui:font-semibold ui:hover:text-primary">{name}</h3>
+      <a href={isExploreClickable ? undefined : href} class="ui:relative ui:z-10 ui:w-fit">
+        <h3 class="ui:line-clamp-2 ui:text-sm ui:leading-snug ui:font-semibold ui:hover:text-primary">
+          {name}
+        </h3>
       </a>
 
-      <p class="ui:line-clamp-2 ui:h-10 ui:text-xs ui:leading-relaxed ui:text-muted-foreground">{description}</p>
+      <p class="ui:line-clamp-2 ui:h-10 ui:text-xs ui:leading-relaxed ui:text-muted-foreground">
+        {description}
+      </p>
 
       <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
         <span class="ui:inline-flex ui:items-center ui:gap-1">
@@ -200,9 +217,7 @@
         {/if}
       </div>
 
-      {#if showStatusBadge}
-        <!-- status badge is rendered inline with the button below -->
-      {:else if showEarnedAt}
+      {#if showEarnedAt}
         <p class="ui:text-xs ui:text-muted-foreground">
           {labels.earnedOn}: {formatDate(certificateEarnedAt as string)}
         </p>
@@ -212,9 +227,9 @@
         <div class="ui:mt-2">
           <div class="ui:mb-1.5 ui:flex ui:items-center ui:justify-between">
             <span class="ui:text-xs ui:text-muted-foreground">{labels.progressLabel}</span>
-            <span class="ui:text-xs ui:font-semibold ui:tabular-nums {done ? 'ui:text-emerald-600' : ''}"
-              >{progressPercent}%</span
-            >
+            <span class="ui:text-xs ui:font-semibold ui:tabular-nums {done ? 'ui:text-emerald-600' : ''}">
+              {progressPercent}%
+            </span>
           </div>
           <LearningPathProgress value={progressPercent} />
           <p class="ui:mt-1.5 ui:text-xs ui:tabular-nums ui:text-muted-foreground">
@@ -226,17 +241,40 @@
         </div>
       {/if}
 
-      <div class="ui:mt-1 ui:flex ui:flex-1 ui:items-end">
+      <div class="ui:relative ui:z-10 ui:mt-1 ui:flex ui:flex-1 ui:items-end">
         {#if showStatusBadge}
           <div class="ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-2">
             <Badge variant={statusBadgeVariant} class="ui:shrink-0">{statusBadgeLabel}</Badge>
-            <Button href={isExploreClickable ? undefined : ctaHref} variant={ctaVariant} size="sm">
+            <Button
+              href={isExploreClickable ? undefined : ctaHref}
+              variant={ctaVariant}
+              size="sm"
+              onclick={isExploreClickable
+                ? (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onExploreClick?.();
+                  }
+                : undefined}
+            >
               {ctaLabelText}
               {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
             </Button>
           </div>
         {:else}
-          <Button href={isExploreClickable ? undefined : ctaHref} variant={ctaVariant} size="sm" class="ui:w-full">
+          <Button
+            href={isExploreClickable ? undefined : ctaHref}
+            variant={ctaVariant}
+            size="sm"
+            class="ui:w-full"
+            onclick={isExploreClickable
+              ? (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onExploreClick?.();
+                }
+              : undefined}
+          >
             {ctaLabelText}
             {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
           </Button>
