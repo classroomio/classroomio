@@ -123,13 +123,15 @@
     >
       <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE}>
         {#snippet titleActions()}
-          <PublicCourse.CopyPageButton
-            class="ui:lg:hidden"
-            markdownUrl={DEMO_MARKDOWN_URL}
-            chatgptUrl={DEMO_CHATGPT_URL}
-            claudeUrl={DEMO_CLAUDE_URL}
-            labels={COPY_PAGE_LABELS}
-          />
+          <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:lg:hidden">
+            <PublicCourse.CopyPageButton
+              markdownUrl={DEMO_MARKDOWN_URL}
+              chatgptUrl={DEMO_CHATGPT_URL}
+              claudeUrl={DEMO_CLAUDE_URL}
+              labels={COPY_PAGE_LABELS}
+            />
+            <PublicCourse.ShareButton pageUrl={DEMO_PAGE_URL} pageTitle={LESSON_FIXTURE.title} labels={RAIL_LABELS} />
+          </div>
         {/snippet}
         {#snippet outlineActions()}
           <PublicCourse.OutlineRailActions

@@ -128,24 +128,37 @@
       outlineLabel={$t('public_course.outline.label')}
     >
       {#snippet titleActions()}
-        {#if showCopyPage}
-          <PublicCourse.CopyPageButton
-            class="ui:lg:hidden"
-            {markdownUrl}
-            {chatgptUrl}
-            {claudeUrl}
+        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:lg:hidden">
+          {#if showCopyPage}
+            <PublicCourse.CopyPageButton
+              {markdownUrl}
+              {chatgptUrl}
+              {claudeUrl}
+              labels={{
+                copy: $t('public_course.copy_page.copy'),
+                copied: $t('public_course.copy_page.copied'),
+                viewAsMarkdown: $t('public_course.copy_page.view_as_markdown'),
+                openInChatGPT: $t('public_course.copy_page.open_in_chatgpt'),
+                openInClaude: $t('public_course.copy_page.open_in_claude'),
+                moreActions: $t('public_course.copy_page.more_actions')
+              }}
+              onCopied={() => snackbar.success('public_course.copy_page.copied')}
+              onCopyError={() => snackbar.error('public_course.copy_page.copy_failed')}
+            />
+          {/if}
+          <PublicCourse.ShareButton
+            pageUrl={publicItemUrl}
+            {pageTitle}
             labels={{
-              copy: $t('public_course.copy_page.copy'),
-              copied: $t('public_course.copy_page.copied'),
-              viewAsMarkdown: $t('public_course.copy_page.view_as_markdown'),
-              openInChatGPT: $t('public_course.copy_page.open_in_chatgpt'),
-              openInClaude: $t('public_course.copy_page.open_in_claude'),
-              moreActions: $t('public_course.copy_page.more_actions')
+              share: $t('public_course.share.label'),
+              facebook: $t('public_course.share.facebook'),
+              linkedin: $t('public_course.share.linkedin'),
+              x: $t('public_course.share.x'),
+              instagram: $t('public_course.share.instagram')
             }}
-            onCopied={() => snackbar.success('public_course.copy_page.copied')}
-            onCopyError={() => snackbar.error('public_course.copy_page.copy_failed')}
+            onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
           />
-        {/if}
+        </div>
       {/snippet}
       {#snippet outlineActions()}
         <PublicCourse.OutlineRailActions
@@ -177,6 +190,22 @@
       summaryTemplate={$t('public_course.exercise.summary_template')}
       outlineLabel={$t('public_course.outline.label')}
     >
+      {#snippet titleActions()}
+        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:lg:hidden">
+          <PublicCourse.ShareButton
+            pageUrl={publicItemUrl}
+            {pageTitle}
+            labels={{
+              share: $t('public_course.share.label'),
+              facebook: $t('public_course.share.facebook'),
+              linkedin: $t('public_course.share.linkedin'),
+              x: $t('public_course.share.x'),
+              instagram: $t('public_course.share.instagram')
+            }}
+            onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
+          />
+        </div>
+      {/snippet}
       {#snippet outlineActions()}
         <PublicCourse.OutlineRailActions
           pageUrl={publicItemUrl}

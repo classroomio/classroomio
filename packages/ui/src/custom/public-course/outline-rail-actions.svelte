@@ -5,20 +5,15 @@
   import MessageCircleIcon from '@lucide/svelte/icons/message-circle';
   import Share2Icon from '@lucide/svelte/icons/share-2';
   import SquareArrowOutUpRightIcon from '@lucide/svelte/icons/square-arrow-out-up-right';
-  import { siClaude, siFacebook, siInstagram, siX } from 'simple-icons';
+  import { siClaude } from 'simple-icons';
   import * as DropdownMenu from '../../base/dropdown-menu';
   import { UseClipboard } from '../../hooks/use-clipboard.svelte';
   import { cn } from '../../tools';
   import BrandMark from './brand-mark.svelte';
-  import { CHATGPT_ICON_PATH, LINKEDIN_ICON_PATH } from './copy-page-icons';
+  import { CHATGPT_ICON_PATH } from './copy-page-icons';
   import { fetchLessonMarkdown } from './copy-page-utils';
-  import {
-    buildFacebookShareUrl,
-    buildLinkedInShareUrl,
-    buildXShareUrl,
-    openShareWindow,
-    type OutlineRailActionLabels
-  } from './share-utils';
+  import ShareMenu from './share-menu.svelte';
+  import { type OutlineRailActionLabels } from './share-utils';
 
   interface Props {
     pageUrl: string;
@@ -47,7 +42,6 @@
   }: Props = $props();
 
   const markdownClipboard = new UseClipboard({ delay: 2000 });
-  const instagramClipboard = new UseClipboard({ delay: 2000 });
   let copyingMarkdown = $state(false);
 
   const hasCopy = $derived(Boolean(markdownUrl));
@@ -55,10 +49,6 @@
   const hasShare = $derived(Boolean(pageUrl));
   const hasActions = $derived(hasCopy || hasChat || hasShare);
   const copyLabel = $derived(markdownClipboard.copied ? labels.copied : labels.copyAsMarkdown);
-
-  const facebookShareUrl = $derived(buildFacebookShareUrl(pageUrl));
-  const linkedInShareUrl = $derived(buildLinkedInShareUrl(pageUrl));
-  const xShareUrl = $derived(buildXShareUrl(pageUrl, pageTitle));
 
   const rowClass =
     'ui:flex ui:w-full ui:items-center ui:gap-2 ui:rounded-md ui:px-1 ui:py-1.5 ui:text-left ui:text-sm ui:text-muted-foreground ui:transition-colors ui:hover:bg-muted/60 ui:hover:text-foreground ui:focus-visible:outline-none ui:focus-visible:ring-2 ui:focus-visible:ring-ring';
@@ -90,14 +80,6 @@
 
     onCopyError?.();
   }
-
-  async function handleInstagramShare() {
-    const status = await instagramClipboard.copy(pageUrl);
-
-    if (status === 'success') {
-      onInstagramCopied?.();
-    }
-  }
 </script>
 
 {#if hasActions}
@@ -114,42 +96,19 @@
     {/if}
 
     {#if hasShare}
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          {#snippet child({ props })}
-            <button
-              {...props}
-              type="button"
-              class={cn(rowClass, 'ui:[&[data-state=open]_svg:last-child]:rotate-180', props.class)}
-            >
-              <Share2Icon class="ui:size-3.5 ui:shrink-0" aria-hidden="true" />
-              <span class="ui:min-w-0 ui:flex-1">{labels.share}</span>
-              <ChevronDownIcon class="ui:ml-auto ui:size-3.5 ui:shrink-0 ui:transition-transform" aria-hidden="true" />
-            </button>
-          {/snippet}
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content align="end" side="bottom" class="ui:w-52">
-          <DropdownMenu.Item onclick={() => openShareWindow(facebookShareUrl)}>
-            <BrandMark path={siFacebook.path} class="ui:size-3.5" />
-            {labels.facebook}
-            <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
-          </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={() => openShareWindow(linkedInShareUrl)}>
-            <BrandMark path={LINKEDIN_ICON_PATH} class="ui:size-3.5" />
-            {labels.linkedin}
-            <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
-          </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={() => openShareWindow(xShareUrl)}>
-            <BrandMark path={siX.path} class="ui:size-3.5" />
-            {labels.x}
-            <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
-          </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={handleInstagramShare}>
-            <BrandMark path={siInstagram.path} class="ui:size-3.5" />
-            {labels.instagram}
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+      <ShareMenu {pageUrl} {pageTitle} {labels} {onInstagramCopied}>
+        {#snippet trigger({ props })}
+          <button
+            {...props}
+            type="button"
+            class={cn(rowClass, 'ui:[&[data-state=open]_svg:last-child]:rotate-180', props.class)}
+          >
+            <Share2Icon class="ui:size-3.5 ui:shrink-0" aria-hidden="true" />
+            <span class="ui:min-w-0 ui:flex-1">{labels.share}</span>
+            <ChevronDownIcon class="ui:ml-auto ui:size-3.5 ui:shrink-0 ui:transition-transform" aria-hidden="true" />
+          </button>
+        {/snippet}
+      </ShareMenu>
     {/if}
 
     {#if hasChat}

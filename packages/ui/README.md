@@ -102,7 +102,11 @@ Presentational list for lesson (or similar) file attachments with **view** and *
 
 ### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
 
-Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyPrompt`, `buildChatGptUrl`, `buildClaudeUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title **on viewports below `lg`**. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyPrompt`, `buildChatGptUrl`, `buildClaudeUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title **on viewports below `lg`**, with `ShareButton` to its right. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+
+### Public course Share button (`src/custom/public-course/share-button.svelte`)
+
+Icon-only share control for the public lesson/exercise title row on viewports below `lg`. Opens the same Facebook / LinkedIn / X / Instagram menu as `OutlineRailActions`. Copy is passed via `labels: ShareActionLabels`. Instagram copies the page URL and the host shows a snackbar via `onInstagramCopied`.
 
 ### Public course outline rail actions (`src/custom/public-course/outline-rail-actions.svelte`)
 
@@ -266,7 +270,7 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.FloatingBar`             | Shell for the bar that rises from the bottom of a page       |
 | `Page.SettingsActions`         | Compact save/discard card for dirty settings forms           |
 
-**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing *is* the notification), an optional `badge` snippet before the status, and the buttons as children.
+**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing _is_ the notification), an optional `badge` snippet before the status, and the buttons as children.
 
 Set `fixed` to pin it to the viewport instead of sticking it to the end of the page content. **Anything rendered through `Page.Body`'s `child` snippet must use `fixed`**, because `Page.Body` sets `overflow-x-hidden` and a sticky bar inside a scroll container has no travel. It is a boolean rather than a `'sticky' | 'fixed'` union deliberately: the `ui:` prefix script rewrites class-like string literals, and turns `position === 'fixed'` into `position === 'ui:fixed'`, which never matches.
 
