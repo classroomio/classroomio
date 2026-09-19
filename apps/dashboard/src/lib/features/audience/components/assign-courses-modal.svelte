@@ -69,9 +69,7 @@
 </script>
 
 <Dialog.Root bind:open onOpenChange={(v) => !v && handleClose()}>
-  <!-- `sm:max-w-md` as well as `max-w-md`: without the variant, Dialog.Content's
-       own `sm:max-w-lg` survives the class merge and wins above 640px. -->
-  <Dialog.Content class="mx-auto w-4/5 max-w-md sm:max-w-md">
+  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
     <Dialog.Header>
       <Dialog.Title>{$t('audience.assign.title')}</Dialog.Title>
       <Dialog.Description>{$t('audience.assign.description')}</Dialog.Description>
