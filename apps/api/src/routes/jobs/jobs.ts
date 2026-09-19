@@ -11,7 +11,7 @@ import {
   listMediaJobEnvelopes,
   listMediaJobsForAssetEnvelopes,
   startThumbnailRegenJob,
-  startTranscriptionOnlyMediaJob
+  startAssetTranscriptJob
 } from '@api/services/jobs';
 
 import type { JobEnvelope } from '@cio/jobs/status';
@@ -98,7 +98,7 @@ export const jobsRouter = new Hono()
         const orgId = c.req.header('cio-org-id')!;
         const user = c.get('user')!;
         const { assetId } = c.req.valid('param');
-        const job = await startTranscriptionOnlyMediaJob({
+        const job = await startAssetTranscriptJob({
           organizationId: orgId,
           assetId,
           triggeredByProfileId: user?.id ?? null

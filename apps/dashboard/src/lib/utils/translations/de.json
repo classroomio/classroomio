@@ -11,7 +11,8 @@
       "reload": "Neu laden"
     },
     "discard": "Verwerfen",
-    "save_changes": "Änderungen speichern"
+    "save_changes": "Änderungen speichern",
+    "scroll_to_top": "Zum Seitenanfang scrollen"
   },
   "validations": {
     "generic": {
@@ -142,7 +143,8 @@
   "generic": {
     "locked": "Gesperrt",
     "unlocked": "Entsperrt",
-    "loading": "Laden"
+    "loading": "Laden",
+    "progress": "Fortschritt"
   },
   "content": {
     "heading": "Internationalisierung in SvelteKit",
@@ -382,7 +384,8 @@
       "delete_success": "Video gelöscht",
       "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
       "delete_failed": "Video konnte nicht gelöscht werden",
-      "added_to_lesson": "Video zur Lektion hinzugefügt"
+      "added_to_lesson": "Video zur Lektion hinzugefügt",
+      "transcript_unavailable": "Transkript nicht verfügbar"
     },
     "tags": {
       "group_created": "Tag-Gruppe erstellt",
@@ -661,7 +664,15 @@
       "kpi_team_tutors": "{count, plural, one {# Tutor im Kurs-Team} other {# Tutoren im Kurs-Team}}",
       "kpi_lessons_exercises": "{count, plural, one {# Übung} other {# Übungen}}, zugeordnet zu Lektionen",
       "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler"
-    }
+    },
+    "exercises_completed": "Übungen abgeschlossen",
+    "course_progress": "Kursfortschritt",
+    "just_now": "Gerade eben",
+    "minutes_ago": "{count, plural, one {vor # Minute} other {vor # Minuten}}",
+    "hours_ago": "{count, plural, one {vor # Stunde} other {vor # Stunden}}",
+    "days_ago": "{count, plural, one {vor # Tag} other {vor # Tagen}}",
+    "months_ago": "{count, plural, one {vor # Monat} other {vor # Monaten}}",
+    "years_ago": "{count, plural, one {vor # Jahr} other {vor # Jahren}}"
   },
   "audience": {
     "title": "Publikum",
@@ -713,7 +724,6 @@
       "select_courses": "Wählen Sie bestimmte Kurse aus",
       "select_courses_placeholder": "Kurse auswählen...",
       "send_email": "Senden Sie Einladungs-E-Mails an importierte Benutzer",
-      "submit": "Benutzer importieren",
       "back": "Zurück zum Publikum",
       "snackbar_success": "{imported} neue Einladungen, {assigned} bestehende Studierende mit Kurszugang, {pendingInvitesRenewed} ausstehende Einladungen erneuert ({emailsSent} E-Mails gesendet)",
       "snackbar_no_emails": "Bitte geben Sie mindestens eine E-Mail-Adresse ein",
@@ -723,12 +733,63 @@
       "no_cohorts": "Keine Kohortenzuweisung",
       "all_cohorts": "Alle Kohorten",
       "select_cohorts": "Bestimmte Kohorten auswählen",
-      "select_cohorts_placeholder": "Kohorten auswählen..."
+      "select_cohorts_placeholder": "Kohorten auswählen...",
+      "drop_csv": "Hier eine CSV-Datei einfügen oder klicken, um eine auszuwählen.",
+      "csv_hint": "UTF-8-CSV-Datei mit einer E-Mail-Spalte. Bis zu {rows} Zeilen, 5 MB.",
+      "download_template": "Laden Sie die Vorlage herunter",
+      "paste_hint": "Eine Adresse pro Zeile oder durch Komma getrennt.",
+      "review": "Rezension",
+      "done": "Erledigt",
+      "count_ready": "{count} bereit",
+      "count_duplicate": "{count} bereits aufgeführt",
+      "count_invalid": "{count} benötigen Aufmerksamkeit",
+      "truncated": "{count} Zeilen, die das Limit von {rows} Zeilen überschritten, wurden ausgelassen. Teilen Sie die Datei und importieren Sie den Rest.",
+      "unknown_columns": "Ignorierte, nicht erkannte Spalten: {columns}",
+      "download_errors": "Laden Sie die Zeilen herunter, die nicht funktioniert haben.",
+      "status": {
+        "ready": "Bereit",
+        "already_member": "Bereits im Publikum",
+        "invalid_email": "Ungültige E-Mail-Adresse",
+        "duplicate_in_file": "Duplikat in der Datei",
+        "over_seat_limit": "Alle Plätze belegt",
+        "missing_email": "Keine E-Mail-Adresse",
+        "is_staff": "Mitarbeiter/in (keine/r Studierende/r)"
+      },
+      "submit_count": "{count} Studierende importieren",
+      "result_heading": "{count} Studierende importiert",
+      "start_over": "Wählen Sie eine andere Datei"
     },
     "page_subtitle": "Sehen Sie, wer zu Ihrer Organisation gehört, wer lernt, wer eingeladen ist und wie Sie sie erreichen.",
     "user_analytics": {
       "title": "Studentenprofil",
-      "page_subtitle": "Fortschritt, Noten und Aktivität in ihren Kursen."
+      "page_subtitle": "Fortschritt, Noten und Aktivität in ihren Kursen.",
+      "in_progress": "In Bearbeitung",
+      "not_started": "Nicht begonnen",
+      "awaiting_grade": "Wartet auf Note",
+      "not_submitted": "Nicht abgegeben",
+      "course_level_exercise": "Übung auf Kursebene",
+      "score": "Punktzahl",
+      "status": "Status",
+      "export_progress": "Fortschritt exportieren",
+      "student_actions": "Aktionen der Studierenden",
+      "no_courses_title": "Noch keine Kurse",
+      "no_courses_description": "Melden Sie diesen Studierenden an, um den Fortschritt zu verfolgen.",
+      "no_exercises_title": "Keine Übungen in diesem Kurs",
+      "no_exercises_description": "Fügen Sie einer Lektion eine Übung hinzu. Die Versuche jedes Studierenden werden hier angezeigt.",
+      "no_grades_title": "Noch nicht bewertet",
+      "no_grades_description": "Noten werden angezeigt, sobald dieser Studierende eine Übung abgibt.",
+      "load_failed_title": "Dieser Student konnte nicht geladen werden.",
+      "load_failed_description": "Beim Laden dieses Studenten ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+      "retry": "Wiederholen",
+      "exercise": "Übung",
+      "exercise_load_failed": "Übungen für diesen Kurs konnten nicht geladen werden.",
+      "tabs": {
+        "courses": "Kurse",
+        "grades": "Noten",
+        "activity": "Aktivität"
+      },
+      "activity_empty_title": "Aktivitätsübersicht – In Kürze verfügbar",
+      "activity_empty_description": "Eine Übersicht über den Abschluss von Lektionen und die Abgabe von Übungen in den verschiedenen Kursen wird in einer zukünftigen Version verfügbar sein."
     },
     "delete": {
       "action": "Löschen",
@@ -739,7 +800,100 @@
       "confirm": "Löschen",
       "snackbar_success": "Mitglied gelöscht"
     },
-    "import_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um mehr Schüler zu importieren."
+    "import_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um mehr Schüler zu importieren.",
+    "never": "Niemals",
+    "progress": "Fortschritt",
+    "enrolled_ratio": "{completed} / {total}",
+    "bulk": {
+      "actions": "Aktionen",
+      "select_all_matching": "Alle {count} übereinstimmenden auswählen",
+      "clear_selection": "Auswahl löschen",
+      "sample_heading": "Beinhaltet",
+      "sample_more": "und {count} mehr",
+      "export_first": "Exportieren Sie zuerst diese Liste.",
+      "reason_label": "Grund (optional)",
+      "reason_hint": "Wurde im Prüfprotokoll protokolliert, sodass dies später beantwortet werden kann.",
+      "type_count_label": "Geben Sie {count} ein, um zu bestätigen.",
+      "delete_is_permanent": "Gelöschte Vorgänge können nicht rückgängig gemacht werden.",
+      "partial_success": "{succeeded} aktualisiert, {failed} übersprungen",
+      "undo_available": "Angewendet. Sie können dies weiterhin rückgängig machen.",
+      "undo": "Rückgängig machen",
+      "undo_success": "Zurückgesetzt",
+      "confirm_action": {
+        "archive": "Archivieren",
+        "deactivate": "Deaktivieren",
+        "reactivate": "Reaktivieren",
+        "unarchive": "Entarchivieren",
+        "delete": "Endgültig löschen"
+      },
+      "confirm_body": {
+        "archive": "Sie verlieren dadurch ihren Zugriff und geben einen Platz in Ihrem Abonnement frei. Sie können sie jederzeit wiederherstellen.",
+        "deactivate": "Sie verlieren zwar den Zugriff, behalten aber ihren Platz in Ihrem Plan. Sie können ihn jederzeit reaktivieren.",
+        "reactivate": "Sie erhalten wieder Zugang zu Ihrer Organisation und deren Kursen.",
+        "unarchive": "Sie erhalten wieder Zugriff und nehmen wieder an Ihrem Plan teil.",
+        "delete": "Dies führt zum Ausschluss aus dieser Organisation und kann nicht rückgängig gemacht werden. Ihr Konto, ihre Beiträge und Ergebnisse bleiben erhalten."
+      },
+      "confirm_title": {
+        "archive": "{count} Studierende archivieren?",
+        "deactivate": "{count} Studierende deaktivieren?",
+        "reactivate": "{count} Studierende reaktivieren?",
+        "unarchive": "{count} Studierende aus dem Archiv entfernen?",
+        "delete": "{count} Studierende dauerhaft entfernen?"
+      },
+      "action": {
+        "archive": "{count} Studierende archivieren",
+        "deactivate": "{count} Studierende deaktivieren",
+        "reactivate": "{count} Studierende reaktivieren",
+        "unarchive": "{count} Studierende aus dem Archiv entfernen",
+        "delete": "{count} Studierende löschen"
+      },
+      "queued_failed": "Diese Massenaktion wurde nicht abgeschlossen. Es wurden keine weiteren Aktionen durchgeführt.",
+      "queued_lost": "Der Status dieses Durchlaufs ist verloren gegangen. Laden Sie die Seite neu, um den aktuellen Stand anzuzeigen.",
+      "all_matching_selected": "Alle {count} passenden Studierenden ausgewählt",
+      "not_archived_blocker": "{count} dieser Studierenden sind nicht archiviert. Archivieren Sie sie zuerst.",
+      "success": "Studierende aktualisiert",
+      "queued_running": "Wird auf {count} Studierende angewendet. Sie können weiterarbeiten – wir benachrichtigen Sie, sobald der Vorgang abgeschlossen ist.",
+      "undo_dismiss": "Schließen",
+      "clear": "Löschen"
+    },
+    "filter": {
+      "status": "Mitgliedsstatus",
+      "status_active": "Aktiv",
+      "status_deactivated": "Deaktiviert",
+      "status_archived": "Archiviert",
+      "last_login": "Letzter Login",
+      "last_activity": "Letzte Aktivität",
+      "no_login_since": "Kein Login",
+      "no_activity_since": "Keine Aktivität in",
+      "window_7d": "7 Tage",
+      "window_30d": "30 Tage",
+      "window_90d": "90 Tage",
+      "window_180d": "180 Tage",
+      "window_never": "Niemals",
+      "enrollment": "Einschreibung",
+      "enrolled": "Eingeschrieben",
+      "not_enrolled": "Nicht eingeschrieben",
+      "completion": "Fertigstellung",
+      "not_started": "Nicht gestartet",
+      "in_progress": "Im Gange",
+      "completed": "Vollendet",
+      "exclude_recent_joiners": "Neu hinzugekommene Mitarbeiter ausschließen",
+      "clear": "Filter löschen",
+      "empty_description": "Versuchen Sie, den Datumsbereich zu erweitern oder einen Filter zu löschen.",
+      "exclude_recent_joiners_hint": "Studierende, die erst kürzlich beigetreten sind und daher nicht als inaktiv gelten, werden nicht berücksichtigt.",
+      "empty_title": "Keine Studierenden entsprechen diesen Filtern.",
+      "invite_status": "Einladungsstatus"
+    },
+    "views": {
+      "never_logged_in": "Nie angemeldet",
+      "inactive_90d": "Inaktiv seit über 90 Tagen",
+      "inactive_180d": "Inaktiv seit über 180 Tagen",
+      "enrolled_not_started": "Eingeschrieben, aber nie angefangen",
+      "archived": "Archiviert",
+      "custom": "Benutzerdefinierte Filter",
+      "all": "Alle Studierenden"
+    },
+    "learner_count": "{count} Studierende"
   },
   "community": {
     "title": "Gemeinschaft",
@@ -808,7 +962,6 @@
         "content_grouping_title": "Inhaltsgruppierung",
         "content_grouping_description": "Gruppieren Sie Lektionen und Übungen nach Abschnitten in der Inhaltsliste.",
         "progression_mode_title": "Schülerfortschritt",
-        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen.",
         "progression_mode_free": "Frei — freigeschaltete Inhalte sind zugänglich",
         "progression_mode_sequential": "Sequenziell — vorherige Elemente abschließen, um das nächste freizuschalten",
         "comments": {
@@ -890,14 +1043,15 @@
           "unlock_all": "Schalte alle frei"
         },
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
-        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
         "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
         "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
         "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
         "generate_link": "Neuen Link generieren",
         "open_link": "Link in neuem Tab öffnen",
-        "copy_link": "Link kopieren"
+        "copy_link": "Link kopieren",
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen. Beim Abschluss der Videowiedergabe werden nur hochgeladene Videos erfasst."
       },
       "analytics": {
         "title": "Analysen"
@@ -1152,7 +1306,6 @@
         "you": "Du",
         "pending": "Ausstehend",
         "name": "Name",
-        "learner": "Lernender",
         "progress": "Fortschritt",
         "stage": "Phase",
         "last_login_at": "Letzte Anmeldung",
@@ -1308,7 +1461,8 @@
             "custom": "Benutzerdefiniert"
           },
           "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
-        }
+        },
+        "learner": "Studierende/r"
       },
       "marks": {
         "title": "Markierungen",
@@ -1522,7 +1676,9 @@
                 "status_pending": "Ausstehend",
                 "counts_as_complete": "Zählt als abgeschlossen",
                 "passed": "Bestanden",
-                "not_passed": "Nicht bestanden"
+                "not_passed": "Nicht bestanden",
+                "no_submission_title": "Dieser Benutzer hat noch keine Abgabe für diese Übung eingereicht.",
+                "no_submission_description": "Abgaben werden hier angezeigt, sobald dieser Student die Übung abgeschlossen hat."
               },
               "summary": {
                 "heading": "Zusammenfassung",
@@ -2166,6 +2322,7 @@
               "empty_description": "Fügen Sie Videos von YouTube hinzu, laden Sie sie hoch oder laden Sie sie aus Ihrer Medienbibliothek herunter",
               "google_drive": "Google Drive",
               "generate_transcript": "Transkript generieren",
+              "transcript_in_progress": "Transkript wird abgerufen…",
               "generate_transcript_in_progress": "Transkription läuft…",
               "transcript": {
                 "title": "Transkript",
@@ -2270,10 +2427,10 @@
           "manual_label": "Manuell",
           "manual_description": "Schüler markieren die Lektion selbst als abgeschlossen.",
           "video_watch_label": "Video ansehen",
-          "video_watch_description": "Die Lektion wird automatisch abgeschlossen, nachdem Schüler die ausgewählten Videos angesehen haben.",
           "none_label": "Keine",
           "none_description": "Diese Lektion blockiert den Kursfortschritt nicht.",
-          "watch_threshold": "Wiedergabeschwelle (%)"
+          "watch_threshold": "Wiedergabeschwelle (%)",
+          "video_watch_description": "Die Lektion wird automatisch abgeschlossen, nachdem die Schüler die ausgewählten hochgeladenen Videos angesehen haben. YouTube- und externe Einbettungen können nicht verfolgt werden."
         },
         "settings": {
           "comments": {
@@ -2290,9 +2447,11 @@
             "option_guide_heading": "Was jede Option bedeutet",
             "watch_videos_heading": "Zu überwachende Videos",
             "watch_videos_helper": "Nur hochgeladene Videos können erzwungen werden. YouTube und externe Einbettungen können nicht verfolgt werden.",
-            "watch_videos_empty": "Fügen Sie im Video-Tab ein hochgeladenes Video hinzu, um die Wiedergabeüberwachung zu nutzen.",
             "watch_videos_required": "Wählen Sie mindestens ein Video für die Video-Wiedergabeüberwachung.",
-            "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren."
+            "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren.",
+            "watch_videos_empty": "Bei der Videowiedergabe werden nur hochgeladene Videos verfolgt. YouTube- und externe Einbettungen können nicht nachverfolgt werden, daher kann diese Lektion nicht automatisch abgeschlossen werden und die Schüler können sie nicht als abgeschlossen markieren. Laden Sie das Video auf der Registerkarte „Video“ hoch oder stellen Sie die Abschlussregel auf „Manuell“ ein.",
+            "watch_videos_no_uploads_title": "In dieser Lektion wurden keine Videos hochgeladen",
+            "watch_videos_learn_more": "Erfahren Sie mehr"
           }
         },
         "watch_progress": {
@@ -2587,8 +2746,8 @@
       "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
       "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet.",
       "deadline_required": "Für Compliance-Kurse ist eine Abschlussfrist erforderlich, bevor sie veröffentlicht werden können.",
-      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können.",
-      "deadline_invalid": "Die Abschlussfrist des Kurses ist ungültig."
+      "deadline_invalid": "Die Abschlussfrist des Kurses ist ungültig.",
+      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können."
     },
     "creator": {
       "heading": "Welchen Kurs möchten Sie erstellen?",
@@ -3057,8 +3216,14 @@
     "compliance": "Compliance",
     "cohorts": "Kohorten",
     "upgrade_now": "Jetzt upgraden",
+    "upgrade_label": "Upgrade",
+    "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} von {studentLimit} Studenten",
-    "upgrade_left": "{count} übrig"
+    "upgrade_left": "{count} übrig",
+    "back_to_app": "Zurück zur App",
+    "create": "Erstellen",
+    "distribute": "Verteilen",
+    "tools": "Werkzeuge"
   },
   "media_manager": {
     "page_title": "Medienverwaltung - ClassroomIO",
@@ -3206,6 +3371,18 @@
     }
   },
   "settings": {
+    "sidebar": {
+      "workspace": "Arbeitsbereich",
+      "personal": "Persönlich",
+      "product": "Produkt",
+      "connections": "Verbindungen",
+      "security": "Sicherheit",
+      "billing": "Abrechnung",
+      "branding": "Branding",
+      "ai": "KI",
+      "search": "Einstellungen durchsuchen...",
+      "extensions": "Erweiterungen"
+    },
     "heading": "Einstellungen",
     "billing": {
       "sub_title": "Rechnungsdetails",
@@ -3303,7 +3480,8 @@
         "title": "Titel",
         "content": "Inhalt",
         "upload_an_image": "Laden Sie ein Bild hoch",
-        "select_image": "Wählen Sie Bild aus"
+        "select_image": "Wählen Sie Bild aus",
+        "create": "Erstellen"
       },
       "actions": {
         "heading": "Aktionen",
@@ -4344,7 +4522,7 @@
     "tool": {
       "pending": {
         "working": "In Arbeit",
-        "unknown_tool": "{toolName} wird ausgeführt",
+        "unknown_tool": "Arbeite an {toolName}",
         "get_course_structure": "Kursstruktur wird gelesen",
         "get_lesson_content": "Lektionsinhalt wird gelesen",
         "get_exercise_details": "Übung wird gelesen",
@@ -4366,7 +4544,10 @@
         "generate_course_plan": "Kursplan wird generiert",
         "ask_template_questions": "Vorlageformular vorbereiten",
         "fetch_documentation_url": "Seite „Dokumente lesen“.",
-        "fetch_documentation_url_with_url": "{url} wird gelesen"
+        "fetch_documentation_url_with_url": "{url} wird gelesen",
+        "list_youtube_playlist_videos": "Playlist-Videos werden aufgelistet",
+        "get_lesson_transcript": "Videotranskript lesen",
+        "add_youtube_video_to_lesson": "YouTube-Video wird eingebettet"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# Zeichen} other {# Zeichen}})",
@@ -4398,7 +4579,15 @@
         "go_live_not_published": "Kurs wurde nicht veröffentlicht",
         "generate_course_plan": "Kursplan generiert",
         "ask_template_questions": "Vorlageformular fertig",
-        "fetch_documentation_url": "{url} lesen"
+        "fetch_documentation_url": "{url} lesen",
+        "list_youtube_playlist_videos": "{count} Videos in der Playlist gefunden",
+        "list_youtube_playlist_videos_unavailable": "Playlist-Videos konnten nicht aufgelistet werden",
+        "get_lesson_transcript": "Transkript für {title} gelesen",
+        "get_lesson_transcript_fetching": "Transkript für {title} wird abgerufen",
+        "get_lesson_transcript_plan_gated": "Transkripte erfordern einen kostenpflichtigen Tarif",
+        "get_lesson_transcript_no_credits": "Keine KI-Credits mehr für Transkripte",
+        "get_lesson_transcript_unavailable": "Kein Transkript für {title} verfügbar",
+        "add_youtube_video_to_lesson": "Eingebettetes Video: {title}"
       }
     },
     "student_empty_state": "Fragen Sie mich zu diesem Kurs – holen Sie sich Erklärungen, stellen Sie selbst ein Quiz oder fassen Sie zusammen, was Sie gerade lesen.",
@@ -4439,14 +4628,14 @@
     "retry": "Versuchen Sie es noch einmal",
     "run_monitor_aria": "Kursgenerierung läuft",
     "run_summary": {
-      "completed": "Lauf abgeschlossen.",
-      "completed_with_counts": "Lauf abgeschlossen – {counts} erstellt.",
-      "failed": "Ausführung fehlgeschlagen.",
-      "failed_with_reason": "Ausführung fehlgeschlagen – {reason}.",
-      "canceled": "Lauf abgebrochen.",
-      "canceled_with_counts": "Lauf abgebrochen – {counts} vor dem Stoppen erstellt.",
-      "paused": "Lauf pausiert. Fortfahren, um fortzufahren.",
-      "paused_with_counts": "Ausführung pausiert – bisher {counts} erstellt. Fortfahren, um fortzufahren."
+      "completed": "Kursgenerierung abgeschlossen.",
+      "completed_with_counts": "Kursgenerierung abgeschlossen — {counts} erstellt.",
+      "failed": "Kursgenerierung fehlgeschlagen.",
+      "failed_with_reason": "Kursgenerierung fehlgeschlagen — {reason}.",
+      "canceled": "Kursgenerierung abgebrochen.",
+      "canceled_with_counts": "Kursgenerierung abgebrochen — {counts} vor dem Stoppen erstellt.",
+      "paused": "Kursgenerierung pausiert. Fortsetzen, um weiterzumachen.",
+      "paused_with_counts": "Kursgenerierung pausiert — bisher {counts} erstellt. Fortsetzen, um weiterzumachen."
     },
     "changes_card": {
       "summary_count": "{count} Elemente geändert",
@@ -4473,16 +4662,16 @@
       "collapse": "Plan zusammenbrechen"
     },
     "run_monitor": {
-      "cancel": "Lauf abbrechen",
+      "cancel": "Generierung abbrechen",
       "dismiss": "Entlassen",
       "now_doing": "Jetzt",
       "input_disabled_hint": "Der Chat wird angehalten, während der Agent mit der Erstellung des Kurses fertig ist. Brechen Sie den Vorgang ab oder warten Sie, bis der Vorgang abgeschlossen ist.",
       "dismiss_confirm": "Geh weg",
-      "dismiss_cancel": "Lauf weiter",
-      "dismiss_confirm_body": "Von diesem abgesagten Lauf weggehen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
+      "dismiss_cancel": "Hier bleiben",
+      "dismiss_confirm_body": "Diese abgebrochene Generierung verlassen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
       "stuck_queued": {
         "title": "Arbeiter reagiert nicht",
-        "body": "Dieser Lauf hat mehr als 30 Sekunden gewartet, ohne dass ein Arbeiter abgeholt wurde. Der Hintergrund-Worker ist möglicherweise nicht verfügbar oder wird neu gestartet."
+        "body": "Die Kursgenerierung wartet seit mehr als 30 Sekunden, ohne dass ein Hintergrundprozess sie übernommen hat. Der Hintergrundprozess ist möglicherweise ausgefallen oder wird neu gestartet."
       }
     },
     "ask_ai": "Fragen Sie die KI",
@@ -4965,8 +5154,8 @@
     },
     "stage": {
       "probing": "Video lesen…",
-      "encoding": "Codierung {rung} ({percent}%)",
-      "uploading": "Segmente werden hochgeladen ({uploaded}/{total})",
+      "encoding": "Video wird codiert…",
+      "uploading": "Wird hochgeladen…",
       "thumbnail": "Miniaturbild wird erstellt…",
       "finalizing": "Sparen…",
       "done": "Bereit",
@@ -5257,5 +5446,24 @@
       "direct": "Direkt",
       "watching": "Beobachtet"
     }
+  },
+  "export": {
+    "as_csv": "Als CSV exportieren",
+    "as_excel": "Als Excel exportieren",
+    "as_pdf": "Als PDF exportieren",
+    "as_html": "Als HTML exportieren",
+    "more_formats": "Weitere Exportformate",
+    "pdf_too_many_rows": "Zu viele Zeilen – verwenden Sie CSV oder Excel oberhalb von {limit}",
+    "nothing_to_export": "Es gibt nichts zu exportieren",
+    "failed": "Export fehlgeschlagen",
+    "label": "Exportieren",
+    "copy": "Kopieren",
+    "format_csv": "CSV",
+    "format_excel": "Excel",
+    "format_pdf": "PDF",
+    "format_html": "HTML",
+    "format_json": "JSON",
+    "copied": "In die Zwischenablage kopiert",
+    "copy_failed": "Konnte nicht in die Zwischenablage kopieren"
   }
 }

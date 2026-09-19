@@ -21,3 +21,4 @@ export * from './jobs';
 export * from './media-transcript';
 export * from './report';
 export * from './invite-link';
+export * from './youtube-caption';

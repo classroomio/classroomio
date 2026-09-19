@@ -24,6 +24,10 @@
       "types": "./dist/utils/*.d.ts",
       "default": "./dist/utils/*.js"
     },
+    "./utils/*/*": {
+      "types": "./dist/utils/*/*.d.ts",
+      "default": "./dist/utils/*/*.js"
+    },
     "./config/*": {
       "types": "./dist/config/*.d.ts",
       "default": "./dist/config/*.js"
@@ -54,6 +58,7 @@
     "nanoid": "^5.1.5",
     "pdf-parse": "^1.1.1",
     "redis": "^4.7.0",
+    "@supadata/js": "^1.4.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {

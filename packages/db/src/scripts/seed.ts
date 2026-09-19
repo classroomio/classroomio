@@ -8,6 +8,7 @@ import { seedExercise } from '@db/utils/seed/exercise';
 import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
 import { seedGroupmembers } from '@db/utils/seed/groupmember';
+import { seedLearnerLifecycle } from '@db/utils/seed/learnerLifecycle';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedNewsfeedThreads } from '@db/utils/seed/newsfeedThreads';
 import { seedOrganization } from '@db/utils/seed/organization';
@@ -60,6 +61,7 @@ const orderedSeeds = [
   'templates',
   'compliance',
   'react-people-progress',
+  'learner-lifecycle',
   'newsfeed-threads'
 ] as const;
 
@@ -98,7 +100,8 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'lessons',
       'exercises',
       'questions',
-      'react-people-progress'
+      'react-people-progress',
+      'learner-lifecycle'
     ]
   },
   'coursera-test': {
@@ -350,6 +353,14 @@ const seedFunctions = {
   compliance: async () => {
     console.log('📝 Seeding compliance demo data (coursera-test)...');
     await seedCompliance({ enterpriseOrgId: ENTERPRISE_ORG_ID });
+  },
+  'learner-lifecycle': async () => {
+    console.log('📝 Seeding learner lifecycle roster (udemy-test)...');
+    await seedLearnerLifecycle({
+      testOrgId: TEST_ORG_ID,
+      reactGroupId: REACT_GROUP_ID,
+      reactCourseId: REACT_COURSE_ID
+    });
   },
   'newsfeed-threads': async () => {
     console.log('📝 Seeding nested newsfeed threads (coursera-test)...');
