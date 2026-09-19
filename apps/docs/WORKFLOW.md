@@ -18,14 +18,13 @@ This applies equally to `apps/docs` (Developers, self-hosting, API reference) an
 |---|---|
 | `.github/docs-review/globs.yml` | Defines "user-facing." Edit this to tune the label. |
 | `.github/workflows/docs-label.yml` | Labels/comments on PRs matching the globs. Advisory. |
-| `.github/workflows/docs-validate.yml` | Lints `apps/docs/**` and `apps/help/**` PRs (links + prose), each app checked separately. Advisory. |
 | `apps/docs/.vale.ini`, `apps/help/.vale.ini` | Vale config per app: Google + write-good, warnings only. |
 | `apps/docs/CONTRIBUTING.md` | Placement rules, doc types, voice/style — for `apps/docs`. |
 | `apps/docs/scripts/check-stale-docs.mjs`, `apps/help/scripts/check-stale-docs.mjs` | `pnpm docs:check-stale` / `pnpm help:check-stale`: stale-page worklists, one per app. |
 
 ## Making it blocking later
 
-`docs-label.yml` has a `TODO(make-blocking)` comment marking the one line to change. Don't add `docs-validate.yml` to required checks, ever: it's path-filtered to `apps/docs/**`, so a required check there would leave code-only PRs stuck pending forever.
+`docs-label.yml` has a `TODO(make-blocking)` comment marking the one line to change.
 
 ## Running things locally
 
@@ -40,10 +39,6 @@ pnpm help:check-stale
 ```
 
 Swap `apps/docs` for `apps/help` (and its own `.vale.ini`) to run Vale against the Help Center content instead.
-
-## Known limitation
-
-`docs-validate.yml` runs on plain `pull_request`, not `pull_request_target`, because it checks out and builds PR content, and doing that under `pull_request_target` would hand a repo-write token to whatever install scripts a PR's `package.json` declares (see the comment in that file). The cost: fork PRs get a read-only token, so Vale's `github-pr-check` reporter can't publish inline annotations there, and the step's `continue-on-error` hides that silently. Same-repo PRs are unaffected. Fixing this properly means a `pull_request` job that safely lints PR content and saves the results as an artifact, plus a separate `workflow_run` job with elevated permissions that only reads that artifact and posts the annotations, never touching PR code. Worth doing if fork contributions to `apps/docs` become common; not built now.
 
 ## Deferred for later
 
