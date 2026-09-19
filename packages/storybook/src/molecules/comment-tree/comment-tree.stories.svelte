@@ -209,6 +209,28 @@
         canDelete
         onDelete={() => console.log('delete')}
       />
+      <CommentTree.Header
+        avatarUrl={AUTHORS[0].avatarUrl}
+        fullname="Ada Lovelace"
+        dateLabel="4 h ago"
+        canReport
+        onReport={() => console.log('report')}
+        reportLabel="Report"
+      />
+      <CommentTree.Header
+        avatarUrl={AUTHORS[1].avatarUrl}
+        fullname="Grace Hopper"
+        dateLabel="6 h ago"
+        canEdit
+        canDelete
+        canReport
+        onEdit={() => console.log('edit')}
+        onDelete={() => console.log('delete')}
+        onReport={() => console.log('report')}
+        editLabel="Edit"
+        deleteLabel="Delete"
+        reportLabel="Report"
+      />
     </div>
   {/snippet}
 </Story>

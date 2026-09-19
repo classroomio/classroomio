@@ -172,6 +172,11 @@
       "generate_fail": "Falha ao gerar sucesso",
       "failed": "Falha, tente novamente mais tarde"
     },
+    "report": {
+      "success": "Obrigado. Vamos analisar esta denúncia.",
+      "error": "Não foi possível enviar a denúncia. Tente novamente.",
+      "already_submitted": "Já denunciou este conteúdo."
+    },
     "signup": {
       "disposable": "O e-mail que você forneceu é descartável"
     },
@@ -5367,6 +5372,28 @@
         "save": "Salvar",
         "cancel": "Cancelar"
       }
+    }
+  },
+  "report": {
+    "menu": "Denunciar",
+    "title": "Denunciar conteúdo",
+    "description": "Diga-nos o que está errado. A nossa equipa irá analisar esta denúncia.",
+    "reason_label": "Motivo",
+    "reason_placeholder": "Selecione um motivo",
+    "reason_required": "Escolha um motivo",
+    "details_label": "Detalhes adicionais",
+    "details_placeholder": "Adicione qualquer contexto que nos ajude a analisar isto (opcional)",
+    "submit": "Enviar denúncia",
+    "cancel": "Cancelar",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Assédio ou intimidação",
+      "hate_speech": "Discurso de ódio",
+      "sexual_content": "Conteúdo sexual",
+      "violence": "Violência ou ameaças",
+      "misinformation": "Desinformação",
+      "privacy": "Violação de privacidade",
+      "other": "Outro"
     }
   },
   "invite_link": {
