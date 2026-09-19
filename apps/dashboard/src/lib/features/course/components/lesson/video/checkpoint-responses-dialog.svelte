@@ -64,6 +64,26 @@
       });
     }
 
+    nextRows.sort((left, right) => {
+      const leftAnswered = Boolean(left.answer);
+      const rightAnswered = Boolean(right.answer);
+
+      if (leftAnswered !== rightAnswered) {
+        return leftAnswered ? -1 : 1;
+      }
+
+      if (leftAnswered) {
+        const leftCorrect = Boolean(left.answer?.isCorrect);
+        const rightCorrect = Boolean(right.answer?.isCorrect);
+
+        if (leftCorrect !== rightCorrect) {
+          return leftCorrect ? -1 : 1;
+        }
+      }
+
+      return left.displayName.localeCompare(right.displayName);
+    });
+
     return nextRows;
   });
 
