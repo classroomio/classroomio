@@ -4,6 +4,7 @@
   import { Progress } from '@cio/ui/base/progress';
   import { cn } from '@cio/ui/tools';
   import { t } from '$lib/utils/functions/translations';
+  import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
   import type { LearningPathCourseProgress } from '../utils/types';
   import BookIcon from '@lucide/svelte/icons/book-open';
   import CheckIcon from '@lucide/svelte/icons/check';
@@ -14,13 +15,18 @@
 
   interface Props {
     courses: LearningPathCourseProgress[];
-    courseHref: (order: number) => string;
+    courseHref?: (order: number) => string;
     certificateEnabled: boolean;
     certificateTitle: string;
     certificateEarned: boolean;
   }
 
   let { courses, courseHref, certificateEnabled, certificateTitle, certificateEarned }: Props = $props();
+
+  const resolveCourseHref = (course: LearningPathCourseProgress) => {
+    if (courseHref) return courseHref(course.order);
+    return getStudentCourseContinuePath(course.courseId);
+  };
 
   const isCompleted = (course: LearningPathCourseProgress) => course.state === 'COMPLETED';
   const isLocked = (course: LearningPathCourseProgress) => course.state === 'LOCKED';
@@ -69,7 +75,7 @@
         )}
       >
         <a
-          href={isLocked(course) ? undefined : courseHref(course.order)}
+          href={isLocked(course) ? undefined : resolveCourseHref(course)}
           class={cn(
             'relative flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg',
             isLocked(course) && 'pointer-events-none'
@@ -121,7 +127,7 @@
             {/if}
           </div>
 
-          <a href={isLocked(course) ? undefined : courseHref(course.order)} class="mt-1 w-fit">
+          <a href={isLocked(course) ? undefined : resolveCourseHref(course)} class="mt-1 w-fit">
             <h3 class="text-sm leading-snug font-semibold {isLocked(course) ? '' : 'ui:hover:text-primary'}">
               {course.title}
             </h3>
@@ -172,13 +178,13 @@
 
         <div class="flex shrink-0 flex-col items-end justify-between py-0.5">
           {#if isCurrent(course)}
-            <Button href={courseHref(course.order)} variant="default" size="sm">
+            <Button href={resolveCourseHref(course)} variant="default" size="sm">
               {course.progressPercent > 0
                 ? $t('learningPath.hero.continue_learning')
                 : $t('learningPath.hero.start_learning')}
             </Button>
           {:else if isCompleted(course)}
-            <Button href={courseHref(course.order)} variant="outline" size="sm">
+            <Button href={resolveCourseHref(course)} variant="outline" size="sm">
               {$t('learningPath.detail.review')}
             </Button>
           {:else}
