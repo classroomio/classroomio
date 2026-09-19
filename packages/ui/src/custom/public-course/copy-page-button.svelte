@@ -9,6 +9,7 @@
   import * as DropdownMenu from '../../base/dropdown-menu';
   import { UseClipboard } from '../../hooks/use-clipboard.svelte';
   import { cn } from '../../tools';
+  import BrandMark from './brand-mark.svelte';
   import { CHATGPT_ICON_PATH } from './copy-page-icons';
   import { fetchLessonMarkdown, type CopyPageLabels } from './copy-page-utils';
 
@@ -40,7 +41,7 @@
 
     const markdown = await fetchLessonMarkdown(markdownUrl);
 
-    if (!markdown) {
+    if (markdown === null) {
       copying = false;
       onCopyError?.();
       return;
@@ -96,15 +97,11 @@
         {labels.viewAsMarkdown}
       </DropdownMenu.Item>
       <DropdownMenu.Item onclick={() => openUrl(chatgptUrl)}>
-        <svg viewBox="0 0 24 24" class="ui:size-4" fill="currentColor" aria-hidden="true">
-          <path d={CHATGPT_ICON_PATH} />
-        </svg>
+        <BrandMark path={CHATGPT_ICON_PATH} />
         {labels.openInChatGPT}
       </DropdownMenu.Item>
       <DropdownMenu.Item onclick={() => openUrl(claudeUrl)}>
-        <svg viewBox="0 0 24 24" class="ui:size-4" fill="currentColor" aria-hidden="true">
-          <path d={siClaude.path} />
-        </svg>
+        <BrandMark path={siClaude.path} />
         {labels.openInClaude}
       </DropdownMenu.Item>
     </DropdownMenu.Content>

@@ -9,6 +9,7 @@
   import * as DropdownMenu from '../../base/dropdown-menu';
   import { UseClipboard } from '../../hooks/use-clipboard.svelte';
   import { cn } from '../../tools';
+  import BrandMark from './brand-mark.svelte';
   import { CHATGPT_ICON_PATH, LINKEDIN_ICON_PATH } from './copy-page-icons';
   import { fetchLessonMarkdown } from './copy-page-utils';
   import {
@@ -73,7 +74,7 @@
 
     const markdown = await fetchLessonMarkdown(markdownUrl);
 
-    if (!markdown) {
+    if (markdown === null) {
       copyingMarkdown = false;
       onCopyError?.();
       return;
@@ -129,30 +130,22 @@
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end" side="bottom" class="ui:w-52">
           <DropdownMenu.Item onclick={() => openShareWindow(facebookShareUrl)}>
-            <svg viewBox="0 0 24 24" class="ui:size-3.5" fill="currentColor" aria-hidden="true">
-              <path d={siFacebook.path} />
-            </svg>
+            <BrandMark path={siFacebook.path} class="ui:size-3.5" />
             {labels.facebook}
             <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
           </DropdownMenu.Item>
           <DropdownMenu.Item onclick={() => openShareWindow(linkedInShareUrl)}>
-            <svg viewBox="0 0 24 24" class="ui:size-3.5" fill="currentColor" aria-hidden="true">
-              <path d={LINKEDIN_ICON_PATH} />
-            </svg>
+            <BrandMark path={LINKEDIN_ICON_PATH} class="ui:size-3.5" />
             {labels.linkedin}
             <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
           </DropdownMenu.Item>
           <DropdownMenu.Item onclick={() => openShareWindow(xShareUrl)}>
-            <svg viewBox="0 0 24 24" class="ui:size-3.5" fill="currentColor" aria-hidden="true">
-              <path d={siX.path} />
-            </svg>
+            <BrandMark path={siX.path} class="ui:size-3.5" />
             {labels.x}
             <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
           </DropdownMenu.Item>
           <DropdownMenu.Item onclick={handleInstagramShare}>
-            <svg viewBox="0 0 24 24" class="ui:size-3.5" fill="currentColor" aria-hidden="true">
-              <path d={siInstagram.path} />
-            </svg>
+            <BrandMark path={siInstagram.path} class="ui:size-3.5" />
             {labels.instagram}
           </DropdownMenu.Item>
         </DropdownMenu.Content>
@@ -178,9 +171,7 @@
           {#if chatgptUrl}
             {@const chatGptHref = chatgptUrl}
             <DropdownMenu.Item onclick={() => openUrl(chatGptHref)}>
-              <svg viewBox="0 0 24 24" class="ui:size-3.5" fill="currentColor" aria-hidden="true">
-                <path d={CHATGPT_ICON_PATH} />
-              </svg>
+              <BrandMark path={CHATGPT_ICON_PATH} class="ui:size-3.5" />
               {labels.openInChatGPT}
               <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
             </DropdownMenu.Item>
@@ -188,9 +179,7 @@
           {#if claudeUrl}
             {@const claudeHref = claudeUrl}
             <DropdownMenu.Item onclick={() => openUrl(claudeHref)}>
-              <svg viewBox="0 0 24 24" class="ui:size-3.5" fill="currentColor" aria-hidden="true">
-                <path d={siClaude.path} />
-              </svg>
+              <BrandMark path={siClaude.path} class="ui:size-3.5" />
               {labels.openInClaude}
               <SquareArrowOutUpRightIcon class="ui:ml-auto ui:size-3" aria-hidden="true" />
             </DropdownMenu.Item>

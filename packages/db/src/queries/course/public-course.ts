@@ -2,6 +2,7 @@ import { and, asc, eq, or } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { pickLessonLanguageBody } from './lesson-language-body';
 
 /**
  * Queries backing the anonymous public-course surface under
@@ -384,9 +385,6 @@ export async function getPublicCourseItem(
             .limit(1)
         : [];
 
-      // Lesson body lives in `lesson_language` (one row per locale). Prefer the
-      // English row when present; otherwise fall back to the first row, then to
-      // the legacy `lesson.note` column for very old lessons that predate i18n.
       const languageRows = await db
         .select({
           content: schema.lessonLanguage.content,
@@ -395,9 +393,7 @@ export async function getPublicCourseItem(
         .from(schema.lessonLanguage)
         .where(eq(schema.lessonLanguage.lessonId, lessonRow.id));
 
-      const englishRow = languageRows.find((row) => row.locale === 'en');
-      const fallbackRow = languageRows.find((row) => typeof row.content === 'string' && row.content.length > 0);
-      const body = englishRow?.content ?? fallbackRow?.content ?? lessonRow.note ?? '';
+      const body = pickLessonLanguageBody(languageRows, lessonRow.note);
 
       const firstVideo =
         Array.isArray(lessonRow.videos) && lessonRow.videos.length > 0
@@ -541,9 +537,7 @@ export async function getPublicLessonMarkdownSource(
       .from(schema.lessonLanguage)
       .where(eq(schema.lessonLanguage.lessonId, lessonRow.id));
 
-    const englishRow = languageRows.find((row) => row.locale === 'en');
-    const fallbackRow = languageRows.find((row) => typeof row.content === 'string' && row.content.length > 0);
-    const body = englishRow?.content ?? fallbackRow?.content ?? lessonRow.note ?? '';
+    const body = pickLessonLanguageBody(languageRows, lessonRow.note);
     const isUnlocked = lessonRow.isUnlocked ?? false;
 
     return {
