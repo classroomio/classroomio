@@ -29,7 +29,7 @@ Not in v1: auto-hide, org-admin moderation queues, appeals, AI classifiers.
 5. Staff review from email + DB / `GET /internal/moderation/reports`.
 6. Staff record the outcome with `PATCH /internal/moderation/reports/:id`.
 
-Duplicate active reports (`open` or `in_review`) from the same reporter against the same target **in the same organization** are rejected. Reporting does not hide or delete the content.
+Duplicate active reports (`open` or `in_review`) from the same reporter against the same target **in the same organization** are rejected. The stored `target_id` is the canonical database identifier, so equivalent ID spellings share the same uniqueness key. Reporting does not hide or delete the content.
 
 Course and cohort targets also require the same visibility as the matching read endpoints (course member or org admin; cohort member or org admin). Community posts and profiles are org-scoped. The migration is `0019_content_report`.
 

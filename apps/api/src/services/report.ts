@@ -152,7 +152,7 @@ export async function submitContentReport(input: { orgId: string; reporterId: st
     organizationId: input.orgId,
     reporterId: input.reporterId,
     targetType: input.payload.targetType,
-    targetId: input.payload.targetId
+    targetId: target.targetId
   });
 
   if (existingReport) {
@@ -175,7 +175,7 @@ export async function submitContentReport(input: { orgId: string; reporterId: st
       organizationId: input.orgId,
       reporterId: input.reporterId,
       targetType: input.payload.targetType,
-      targetId: input.payload.targetId,
+      targetId: target.targetId,
       targetAuthorId: target.authorProfileId,
       reason: input.payload.reason,
       details: input.payload.details,
@@ -200,7 +200,7 @@ export async function submitContentReport(input: { orgId: string; reporterId: st
     reason: input.payload.reason,
     details: input.payload.details,
     targetType: input.payload.targetType,
-    targetId: input.payload.targetId,
+    targetId: target.targetId,
     orgId: input.orgId,
     orgName,
     reporterId: input.reporterId,
