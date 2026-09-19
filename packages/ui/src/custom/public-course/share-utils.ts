@@ -1,11 +1,14 @@
-export interface OutlineRailActionLabels {
-  copyAsMarkdown: string;
-  copied: string;
+export interface ShareActionLabels {
   share: string;
   facebook: string;
   linkedin: string;
   x: string;
   instagram: string;
+}
+
+export interface OutlineRailActionLabels extends ShareActionLabels {
+  copyAsMarkdown: string;
+  copied: string;
   openInChat: string;
   openInChatGPT: string;
   openInClaude: string;
