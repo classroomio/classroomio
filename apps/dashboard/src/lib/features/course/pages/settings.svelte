@@ -549,7 +549,7 @@
 <div class="flex w-full flex-col gap-4">
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-xl">{$t('course.navItem.settings.general_card_title')}</Card.Title>
+      <Card.Title class="text-2xl">{$t('course.navItem.settings.general_card_title')}</Card.Title>
     </Card.Header>
     <Card.Content>
       <Field.Group>
@@ -694,7 +694,7 @@
           </div>
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="my-[0.4rem]! h-4!" />
 
         <Field.Field>
           <Field.Label>{$t('course.navItem.settings.welcome_email.title')}</Field.Label>
@@ -716,7 +716,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-xl">{$t('course.navItem.settings.type')}</Card.Title>
+      <Card.Title class="text-2xl">{$t('course.navItem.settings.type')}</Card.Title>
       <Card.Description>
         {$t('course.navItem.settings.course_type_desc')}
         <a
@@ -869,7 +869,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-xl">{$t('course.navItem.settings.content_card_title')}</Card.Title>
+      <Card.Title class="text-2xl">{$t('course.navItem.settings.content_card_title')}</Card.Title>
     </Card.Header>
     <Card.Content>
       <Field.Group>
@@ -883,7 +883,7 @@
           />
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="my-[0.4rem]! h-4!" />
 
         <Field.Field orientation="horizontal">
           <Field.Content>
@@ -900,7 +900,7 @@
           />
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="my-[0.4rem]! h-4!" />
 
         <Field.Field>
           <Field.Label>{$t('course.navItem.settings.progression_mode_title')}</Field.Label>
@@ -927,7 +927,7 @@
           </RadioGroup.Root>
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="my-[0.4rem]! h-4!" />
 
         <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS}>
           <Field.Field orientation="horizontal">
@@ -952,7 +952,7 @@
   {#if $settings.type === 'PUBLIC' && $settings.callout}
     <Card.Root>
       <Card.Header>
-        <Card.Title class="text-xl">{$t('course.navItem.settings.callout.legend')}</Card.Title>
+        <Card.Title class="text-2xl">{$t('course.navItem.settings.callout.legend')}</Card.Title>
         <Card.Description>{$t('course.navItem.settings.callout.description')}</Card.Description>
       </Card.Header>
       <Card.Content>
@@ -1052,7 +1052,7 @@
 
   <Card.Root>
     <Card.Header>
-      <Card.Title class="text-xl">{$t('course.navItem.settings.access_card_title')}</Card.Title>
+      <Card.Title class="text-2xl">{$t('course.navItem.settings.access_card_title')}</Card.Title>
     </Card.Header>
     <Card.Content>
       <Field.Group>
@@ -1079,7 +1079,7 @@
           </Field.Field>
         </Field.Set>
 
-        <Field.Separator />
+        <Field.Separator class="my-[0.4rem]! h-4!" />
 
         <Field.Set id="publish">
           <AttentionHighlight id="publish">
@@ -1117,7 +1117,7 @@
           {/if}
         </Field.Set>
 
-        <Field.Separator />
+        <Field.Separator class="my-[0.4rem]! h-4!" />
 
         {#if $isFreePlan}
           <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
@@ -1138,7 +1138,7 @@
           </Field.Field>
         {/if}
 
-        <Field.Separator />
+        <Field.Separator class="my-[0.4rem]! h-4!" />
 
         {#if $isFreePlan}
           <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
@@ -1159,7 +1159,7 @@
 
   <Card.Root id="delete">
     <Card.Header>
-      <Card.Title class="text-xl">{$t('course.navItem.settings.delete')}</Card.Title>
+      <Card.Title class="text-2xl">{$t('course.navItem.settings.delete')}</Card.Title>
       <Card.Description>{$t('course.navItem.settings.delete_text')}</Card.Description>
     </Card.Header>
     <Card.Content>
