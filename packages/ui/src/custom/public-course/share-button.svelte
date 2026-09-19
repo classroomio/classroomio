@@ -21,7 +21,7 @@
     <Button
       {...props}
       type="button"
-      variant="secondary"
+      variant="outline"
       size="icon-sm"
       aria-label={labels.share}
       class={cn(props.class, className)}
