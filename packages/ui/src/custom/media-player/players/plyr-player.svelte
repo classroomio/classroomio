@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
   import 'plyr/dist/plyr.css';
   import CaptionsIcon from '@lucide/svelte/icons/captions';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
@@ -24,6 +24,7 @@
   }
 
   let { src, poster, hls = false, options = {}, tracks = [] }: Props = $props();
+  const playerShellId = $props.id();
 
   let hlsInstance = $state<import('hls.js').default | null>(null);
 
@@ -57,7 +58,23 @@
    * progress-bar `seek` listener (set at Plyr construction) and the playback
    * tracker in `attachSeekEnforcement`, which advances it as the user watches.
    */
-  let seekLockFurthestSeconds = options.seekPolicy?.initialFurthestSeconds ?? 0;
+  let seekLockFurthestSeconds = untrack(() => options.seekPolicy?.initialFurthestSeconds ?? 0);
+
+  function syncCheckpointMarkers(player: Plyr): void {
+    const progress = player.elements?.progress;
+    if (!progress) return;
+
+    progress.querySelectorAll('[data-cio-checkpoint-marker]').forEach((node) => node.remove());
+
+    const markers = options.checkpointMarkers ?? [];
+    for (const marker of markers) {
+      const percent = Math.min(100, Math.max(0, marker.percent));
+      const markerEl = document.createElement('span');
+      markerEl.setAttribute('data-cio-checkpoint-marker', marker.id);
+      markerEl.style.left = `${percent}%`;
+      progress.appendChild(markerEl);
+    }
+  }
 
   /**
    * Plyr progress-bar seek handler. Returning `false` skips Plyr's default
@@ -362,6 +379,10 @@
     };
   }
 
+  function clearElementChildren(host: HTMLElement): void {
+    host.replaceChildren();
+  }
+
   function teardownPlyrInstance(): void {
     timeupdateCleanup?.();
     firstPlayCleanup?.();
@@ -410,6 +431,9 @@
         ratio: '16:9',
         iconUrl: '/plyr.svg',
         iconPrefix: 'plyr',
+        ...(options.checkpointOverlay
+          ? { fullscreen: { container: `[data-cio-player-shell="${playerShellId}"]` } }
+          : {}),
         ...(options.seekPolicy?.mode === 'locked_until_complete' ? { listeners: { seek: handleSeekAttempt } } : {}),
         ...(qualityConfig
           ? {
@@ -423,6 +447,7 @@
       plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
       playerInstance.on('ready', () => {
         isPlayerReady = true;
+        if (playerInstance) syncCheckpointMarkers(playerInstance);
       });
       options.onPlayerReady?.(playerInstance);
     } finally {
@@ -531,6 +556,15 @@
       // Plyr may not have finished its setup yet — caller can retry.
     }
   }
+
+  $effect(() => {
+    const player = playerInstance;
+    const markers = options.checkpointMarkers ?? [];
+    if (!player || !isPlayerReady) return;
+
+    void markers;
+    syncCheckpointMarkers(player);
+  });
 
   $effect(() => {
     const element = videoElement;
@@ -705,8 +739,9 @@
 
     teardownPlyrInstance();
 
-    if (isYouTube && containerElement) {
-      containerElement.replaceChildren();
+    const youtubeHost = containerElement;
+    if (isYouTube && youtubeHost) {
+      clearElementChildren(youtubeHost);
     }
   });
 </script>
@@ -716,6 +751,7 @@
 
 <div
   class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:rounded-md"
+  data-cio-player-shell={playerShellId}
   style="max-height: {maxHeight}; min-height: {options.minHeight}; height: {options.height};"
 >
   {#if isYouTube && youtubeVideoId}
@@ -797,6 +833,10 @@
       <span class="plyr__tooltip" role="tooltip">{options.transcriptPanelControl.label}</span>
     </button>
   {/if}
+
+  {#if options.checkpointOverlay}
+    {@render options.checkpointOverlay()}
+  {/if}
 </div>
 
 <style>
@@ -813,5 +853,20 @@
     height: 18px;
     fill: none;
     stroke: currentColor;
+  }
+  :global(.plyr__progress) {
+    position: relative;
+  }
+  :global(.plyr__progress [data-cio-checkpoint-marker]) {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--primary);
+    box-shadow: 0 0 0 2px var(--background);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 3;
   }
 </style>

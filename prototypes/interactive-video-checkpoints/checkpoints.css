@@ -206,7 +206,7 @@
   height: 10px;
   margin-left: -5px;
   margin-top: -5px;
-  background: var(--warning);
+  background: var(--primary);
   border: 2px solid #fff;
   border-radius: 99px;
   box-shadow: 0 0 0 1px rgb(0 0 0 / 0.25);
@@ -610,8 +610,7 @@
   border-radius: var(--radius-lg);
   padding: 40px 36px;
   text-align: center;
-  background:
-    linear-gradient(180deg, color-mix(in oklch, var(--primary) 8%, var(--card)), var(--card) 40%);
+  background: linear-gradient(180deg, color-mix(in oklch, var(--primary) 8%, var(--card)), var(--card) 40%);
 }
 .cert .org {
   font-size: 12px;

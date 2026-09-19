@@ -14,6 +14,10 @@
   import LessonVideoPlayer from './lesson-video-player.svelte';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
+  import { lessonVideoCheckpointStore } from './checkpoint-store.svelte';
+  import CheckpointTimeline from './checkpoint-timeline.svelte';
+  import CheckpointBlockedState from './checkpoint-blocked-state.svelte';
+  import { getVideoDurationSeconds, type LessonVideo } from './video-card-utils';
 
   interface Props {
     mode?: (typeof MODES)[keyof typeof MODES];
@@ -32,6 +36,20 @@
 
   let openDeleteVideoModal = $state(false);
   let videoIndexToDelete = $state<number | null>(null);
+  let selectedVideoIndex = $state(0);
+
+  const selectedVideo = $derived.by((): LessonVideo | null => {
+    if (!videos.length) return null;
+
+    return videos[Math.min(selectedVideoIndex, videos.length - 1)] ?? null;
+  });
+  const selectedAssetId = $derived(
+    selectedVideo?.type === 'upload' ? ((selectedVideo as LessonVideo & { assetId?: string }).assetId ?? null) : null
+  );
+  const selectedIsEnforceable = $derived(Boolean(selectedAssetId));
+  const selectedDurationSeconds = $derived(
+    selectedVideo ? getVideoDurationSeconds(selectedVideo) || lessonVideoBus.durationSeconds : 0
+  );
 
   const openAddVideoModal = () => {
     $lessonVideoUpload.isModalOpen = true;
@@ -44,6 +62,15 @@
 
   function confirmRemoveVideo() {
     if (videoIndexToDelete !== null) {
+      const videoToDelete = videos[videoIndexToDelete] as LessonVideo | undefined;
+      const assetId =
+        videoToDelete?.type === 'upload'
+          ? ((videoToDelete as LessonVideo & { assetId?: string }).assetId ?? null)
+          : null;
+      if (assetId) {
+        lessonVideoCheckpointStore.removeForAsset(lessonId, assetId);
+      }
+
       lessonApi.deleteLessonVideo(videoIndexToDelete);
       videoIndexToDelete = null;
     }
@@ -79,10 +106,36 @@
       naturally instead of squeezing the cards.
     -->
     <Item.Group class="grid! w-full grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-5 gap-y-8">
-      {#each videos as video, index}
-        <LessonVideoSimpleCard {video} {index} isEditMode={true} onRemove={() => requestRemoveVideo(index)} />
+      {#each videos as video, index (`${index}-${(video as LessonVideo & { assetId?: string }).assetId ?? video.link}`)}
+        <LessonVideoSimpleCard
+          {video}
+          {index}
+          isEditMode={true}
+          selected={index === Math.min(selectedVideoIndex, videos.length - 1)}
+          onSelect={() => (selectedVideoIndex = index)}
+          onRemove={() => requestRemoveVideo(index)}
+        />
       {/each}
     </Item.Group>
+
+    {#if selectedVideo && selectedIsEnforceable && selectedAssetId}
+      <div class="mt-8 w-full">
+        {#key selectedAssetId}
+          <LessonVideoPlayer
+            video={selectedVideo}
+            {courseId}
+            {lessonId}
+            videoIndex={Math.min(selectedVideoIndex, videos.length - 1)}
+            enableCheckpoints={false}
+          />
+        {/key}
+        <CheckpointTimeline {courseId} {lessonId} assetId={selectedAssetId} durationSeconds={selectedDurationSeconds} />
+      </div>
+    {:else if selectedVideo}
+      <div class="mt-8">
+        <CheckpointBlockedState onUpload={openAddVideoModal} />
+      </div>
+    {/if}
   {:else}
     <Empty
       title={$t('course.navItem.lessons.materials.tabs.video.empty_title')}
@@ -96,7 +149,7 @@
   <!-- View Mode -->
   {#if videos.length}
     <div class="w-full">
-      {#each videos as video, index}
+      {#each videos as video, index (`${index}-${(video as LessonVideo & { assetId?: string }).assetId ?? video.link}`)}
         <div class="{index < videos.length - 1 ? 'mb-5' : ''} w-full overflow-hidden">
           {@render content(video, index)}
         </div>

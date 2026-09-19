@@ -2469,6 +2469,58 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Previous video transcript",
                 "next_video": "Next video transcript"
+              },
+              "checkpoints": {
+                "heading": "Questions on this video",
+                "subheading": "They pause playback at that time. Students answer in place, then the video continues.",
+                "add_at": "Add question at {time}",
+                "add_title": "Add a question",
+                "edit_title": "Edit question",
+                "edit": "Edit",
+                "delete": "Delete",
+                "save": "Save question",
+                "cancel": "Cancel",
+                "close": "Close",
+                "continue": "Continue",
+                "saved": "Question saved",
+                "empty": "Pause the video with a question. Students answer in place, then the video keeps playing.",
+                "untitled": "Untitled question",
+                "kicker": "Question · {time} · {type}",
+                "try_again": "Try again — that is not the correct answer.",
+                "time_label": "Time in video",
+                "type_label": "Question type",
+                "timeline_label": "Question times on this video",
+                "editor_description": "Any auto-gradable type. The video pauses here; after they answer, it continues from this time.",
+                "resume_label": "When they answer",
+                "resume_any": "Continue after they answer",
+                "resume_any_help": "Playback resumes as soon as they submit a complete answer.",
+                "resume_correct": "Require the correct answer",
+                "resume_correct_help": "Wrong answers stay on this screen with Try again.",
+                "blocked_title": "Upload a video to add questions",
+                "blocked_description": "In-video questions only work on uploaded videos. YouTube, Google Drive, and other embeds cannot pause at a timestamp.",
+                "blocked_cta": "Upload a video instead",
+                "responses_title": "Student answers",
+                "responses_description": "{time} · {prompt}",
+                "responses_count": "{count, plural, one {# answer} other {# answers}}",
+                "responses_summary": "{answered} of {total} answered · {correct} correct",
+                "responses_formative": "These answers do not appear as exercise submissions or affect the certificate exam.",
+                "responses_loading": "Loading students…",
+                "responses_empty": "No student answers yet. Preview the lesson and answer, or wait for students to watch.",
+                "responses_correct": "Correct",
+                "responses_answered": "Answered",
+                "responses_waiting": "Not yet",
+                "unnamed_student": "Student",
+                "true_label": "True",
+                "false_label": "False",
+                "errors": {
+                  "timestamp": "Enter a time like 1:20",
+                  "timestamp_range": "That time is past the end of the video",
+                  "collision": "Another question is already within two seconds of this time",
+                  "title": "Add a question prompt",
+                  "options": "Add at least two options",
+                  "correct": "Mark the correct answer",
+                  "template": "Add at least one ___ blank in the template"
+                }
               }
             },
             "document": {
@@ -4266,7 +4318,9 @@
     },
     "lesson_video": {
       "generate_1080_completed": "1080p rendition added",
-      "generate_1080_failed": "Could not generate 1080p rendition"
+      "generate_1080_failed": "Could not generate 1080p rendition",
+      "checkpoint_saved": "Question saved",
+      "checkpoint_collision": "Another question is already within two seconds of this time"
     },
     "poll": {
       "error": {

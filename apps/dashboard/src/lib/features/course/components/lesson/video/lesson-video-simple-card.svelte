@@ -19,10 +19,12 @@
     video: LessonVideo;
     index: number;
     isEditMode: boolean;
+    selected?: boolean;
+    onSelect?: () => void;
     onRemove: () => void;
   }
 
-  let { video, index, isEditMode, onRemove }: Props = $props();
+  let { video, index, isEditMode, selected = false, onSelect, onRemove }: Props = $props();
 
   let isTranscribingForVideo = $state(false);
 
@@ -68,29 +70,62 @@
 </script>
 
 <!-- YouTube-like: thumbnail on top; avatar + stacked text + overflow menu -->
-<div class="group w-full max-w-full min-w-0 {isEditMode ? 'rounded-lg border' : ''}">
-  <div class="ui:bg-muted relative aspect-video w-full min-w-0 overflow-hidden rounded-md">
-    {#if thumbnailUrl}
-      <Image src={thumbnailUrl} alt={title} className="absolute inset-0 block h-full w-full object-cover" />
-    {:else}
-      <div
-        class="flex h-full min-h-0 w-full flex-col items-center justify-center gap-2 px-3 py-4"
-        role="img"
-        aria-label={title}
-      >
-        <VideoIcon class="ui:text-muted-foreground size-12 shrink-0" />
-        <span class="ui:text-muted-foreground line-clamp-2 max-w-full text-center text-xs font-medium">
-          {title}
-        </span>
-      </div>
-    {/if}
+<div
+  class="group w-full max-w-full min-w-0 {isEditMode ? 'rounded-lg border' : ''} {selected
+    ? 'ui:ring-primary ring-2'
+    : ''}"
+>
+  {#if onSelect}
+    <button
+      type="button"
+      class="ui:bg-muted relative aspect-video w-full min-w-0 overflow-hidden rounded-md"
+      onclick={onSelect}
+    >
+      {#if thumbnailUrl}
+        <Image src={thumbnailUrl} alt={title} className="absolute inset-0 block h-full w-full object-cover" />
+      {:else}
+        <div
+          class="flex h-full min-h-0 w-full flex-col items-center justify-center gap-2 px-3 py-4"
+          role="img"
+          aria-label={title}
+        >
+          <VideoIcon class="ui:text-muted-foreground size-12 shrink-0" />
+          <span class="ui:text-muted-foreground line-clamp-2 max-w-full text-center text-xs font-medium">
+            {title}
+          </span>
+        </div>
+      {/if}
 
-    {#if durationFormatted}
-      <div class="absolute right-2 bottom-2 rounded bg-black/80 px-1.5 py-0.5 text-xs font-medium text-white">
-        {durationFormatted}
-      </div>
-    {/if}
-  </div>
+      {#if durationFormatted}
+        <div class="absolute right-2 bottom-2 rounded bg-black/80 px-1.5 py-0.5 text-xs font-medium text-white">
+          {durationFormatted}
+        </div>
+      {/if}
+    </button>
+  {:else}
+    <div class="ui:bg-muted relative aspect-video w-full min-w-0 overflow-hidden rounded-md">
+      {#if thumbnailUrl}
+        <Image src={thumbnailUrl} alt={title} className="absolute inset-0 block h-full w-full object-cover" />
+      {:else}
+        <div
+          class="flex h-full min-h-0 w-full flex-col items-center justify-center gap-2 px-3 py-4"
+          role="img"
+          aria-label={title}
+        >
+          <VideoIcon class="ui:text-muted-foreground size-12 shrink-0" />
+          <span class="ui:text-muted-foreground line-clamp-2 max-w-full text-center text-xs font-medium">
+            {title}
+          </span>
+        </div>
+      {/if}
+
+      {#if durationFormatted}
+        <div class="absolute right-2 bottom-2 rounded bg-black/80 px-1.5 py-0.5 text-xs font-medium text-white">
+          {durationFormatted}
+        </div>
+      {/if}
+    </div>
+  {/if}
 
   <div class="mt-3 flex min-w-0 gap-3 px-3 py-3">
     <div class="min-w-0 flex-1">
@@ -120,14 +155,16 @@
           {/if}
         </div>
         {#if isEditMode}
-          <VideoCardDropdown
-            {video}
-            {onRemove}
-            onThumbnailSaved={(url) => lessonApi.updateLessonVideoThumbnail(index, url)}
-            onHlsMetadataUpdated={(metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)}
-            onTranscribingChange={(v) => (isTranscribingForVideo = v)}
-            menuPlacement="inline"
-          />
+          <div role="presentation" onpointerdown={(event) => event.stopPropagation()}>
+            <VideoCardDropdown
+              {video}
+              {onRemove}
+              onThumbnailSaved={(url) => lessonApi.updateLessonVideoThumbnail(index, url)}
+              onHlsMetadataUpdated={(metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)}
+              onTranscribingChange={(v) => (isTranscribingForVideo = v)}
+              menuPlacement="inline"
+            />
+          </div>
         {/if}
       </div>
       <p class="ui:text-muted-foreground mt-0.5 line-clamp-1 text-sm leading-snug">

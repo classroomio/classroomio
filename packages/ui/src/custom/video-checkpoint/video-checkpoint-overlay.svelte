@@ -62,6 +62,7 @@
     <div class="ui:mt-3 ui:flex ui:shrink-0 ui:justify-end">
       <Button
         type="button"
+        variant="secondary"
         testId="video-checkpoint-continue"
         disabled={continueDisabled}
         onclick={() => onContinue?.()}

@@ -36,8 +36,10 @@
       <div class="absolute inset-y-0 left-0 rounded-full bg-white" style:width="{clampedProgress}%"></div>
       {#each markerPercents as markerPercent (markerPercent)}
         <span
-          class="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-400"
+          class="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
           style:left="{Math.min(100, Math.max(0, markerPercent))}%"
+          style:background="var(--primary)"
+          style:box-shadow="0 0 0 2px var(--background)"
         ></span>
       {/each}
     </div>
