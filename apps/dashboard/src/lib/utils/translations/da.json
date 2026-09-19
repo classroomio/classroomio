@@ -172,6 +172,11 @@
       "generate_fail": "Det lykkedes ikke at skabe succes",
       "failed": "Mislykkedes. Prøv venligst igen senere"
     },
+    "report": {
+      "success": "Tak. Vi gennemgår denne anmeldelse.",
+      "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
+      "already_submitted": "Du har allerede anmeldt dette."
+    },
     "signup": {
       "disposable": "Den e-mail, du har angivet, er til engangsbrug"
     },

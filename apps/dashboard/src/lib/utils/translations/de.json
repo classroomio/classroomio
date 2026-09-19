@@ -172,6 +172,11 @@
       "generate_fail": "Es konnte kein Erfolg generiert werden",
       "failed": "Fehlgeschlagen, bitte versuchen Sie es später noch einmal"
     },
+    "report": {
+      "success": "Danke. Wir prüfen diese Meldung.",
+      "error": "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "already_submitted": "Sie haben diesen Inhalt bereits gemeldet."
+    },
     "signup": {
       "disposable": "Die von Ihnen angegebene E-Mail-Adresse ist wegwerfbar"
     },

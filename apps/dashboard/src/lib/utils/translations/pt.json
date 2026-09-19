@@ -172,6 +172,11 @@
       "generate_fail": "Falha ao gerar sucesso",
       "failed": "Falha, tente novamente mais tarde"
     },
+    "report": {
+      "success": "Obrigado. Vamos analisar esta denúncia.",
+      "error": "Não foi possível enviar a denúncia. Tente novamente.",
+      "already_submitted": "Já denunciou este conteúdo."
+    },
     "signup": {
       "disposable": "O e-mail que você forneceu é descartável"
     },

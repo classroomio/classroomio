@@ -172,6 +172,11 @@
       "generate_fail": "No se pudo generar éxito",
       "failed": "Error, inténtelo de nuevo más tarde"
     },
+    "report": {
+      "success": "Gracias. Revisaremos este informe.",
+      "error": "No se pudo enviar el informe. Inténtalo de nuevo.",
+      "already_submitted": "Ya has denunciado este contenido."
+    },
     "signup": {
       "disposable": "El correo electrónico que proporcionaste es desechable."
     },

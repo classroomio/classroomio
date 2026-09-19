@@ -172,6 +172,11 @@
       "generate_fail": "N'a pas réussi à générer du succès",
       "failed": "Échec, veuillez réessayer plus tard"
     },
+    "report": {
+      "success": "Merci. Nous examinerons ce signalement.",
+      "error": "Impossible d'envoyer le signalement. Veuillez réessayer.",
+      "already_submitted": "Vous avez déjà signalé ce contenu."
+    },
     "signup": {
       "disposable": "L'e-mail que vous avez fourni est jetable"
     },

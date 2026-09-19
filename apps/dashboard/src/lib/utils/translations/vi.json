@@ -172,6 +172,11 @@
       "generate_fail": "Không tạo được thành công",
       "failed": "Không thành công, vui lòng thử lại sau"
     },
+    "report": {
+      "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
+      "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
+      "already_submitted": "Bạn đã báo cáo nội dung này rồi."
+    },
     "signup": {
       "disposable": "Email bạn cung cấp chỉ dùng một lần"
     },
