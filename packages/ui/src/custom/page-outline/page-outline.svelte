@@ -50,6 +50,8 @@
   }
 
   function handleSelect(event: MouseEvent, id: string) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
     event.preventDefault();
     activeId = id;
     setHash(id);

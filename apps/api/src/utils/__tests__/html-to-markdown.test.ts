@@ -28,6 +28,21 @@ describe('stripVideoEmbeds', () => {
     expect(stripped).not.toContain('vimeo.com');
     expect(stripped).not.toContain('loom.com');
   });
+
+  it('strips video hosts whose hostname has a trailing dot', () => {
+    const html = [
+      '<p>Watch <a href="https://youtube.com./watch?v=abc">this clip</a>.</p>',
+      '<p>Also <a href="https://www.vimeo.com./123">this one</a>.</p>',
+      '<p>Keep <a href="https://classroomio.com/docs">docs</a>.</p>'
+    ].join('');
+
+    const stripped = stripVideoEmbeds(html);
+
+    expect(stripped).toContain('Keep');
+    expect(stripped).toContain('https://classroomio.com/docs');
+    expect(stripped).not.toContain('youtube.com');
+    expect(stripped).not.toContain('vimeo.com');
+  });
 });
 
 describe('htmlToMarkdown', () => {

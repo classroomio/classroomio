@@ -7,5 +7,6 @@ export * from './people';
 export * from './reset-progress';
 export * from './invite';
 export * from './public-course';
+export * from './lesson-language-body';
 export * from './session';
 export * from './member-progress';

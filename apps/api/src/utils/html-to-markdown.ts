@@ -47,8 +47,9 @@ turndown.addRule('table', {
 function isVideoHostUrl(href: string): boolean {
   try {
     const parsed = new URL(href, 'https://invalid.example');
+    const hostname = parsed.hostname.replace(/\.+$/, '');
 
-    return VIDEO_HOST_RE.test(parsed.hostname);
+    return VIDEO_HOST_RE.test(hostname);
   } catch {
     return false;
   }
