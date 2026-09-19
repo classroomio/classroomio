@@ -11,7 +11,6 @@ export { default as CurrentlyLearningHero } from './currently-learning-hero.svel
 export { default as ExploreMoreStrip } from './explore-more-strip.svelte';
 export { default as FilterPopover } from './filter-popover.svelte';
 export { default as ViewToggle } from './view-toggle.svelte';
-export { default as CurrentlyLearningCourseHero } from './currently-learning-course-hero.svelte';
 export { default as CourseLibraryRow } from './course-library-row.svelte';
 export { default as ExploreMoreCourses } from './explore-more-courses.svelte';
 export { default as CourseInPathWidget } from './course-in-path-widget.svelte';
