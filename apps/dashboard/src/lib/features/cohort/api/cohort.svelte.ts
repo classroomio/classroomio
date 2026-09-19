@@ -20,6 +20,7 @@ import type {
   TAssignExistingStudentsToCohort
 } from '@cio/utils/validation/cohort';
 import { currentOrg } from '$lib/utils/store/org';
+import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { get } from 'svelte/store';
 import { isStudentExperience } from '$lib/utils/store/app';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -131,6 +132,7 @@ class CohortApi extends BaseApiWithErrors {
         }),
       onSuccess: (res) => {
         this.cohorts = [res.data, ...this.cohorts];
+        orgNavCountsApi.adjustCount('cohorts', 1);
         snackbar.success(t.get('cohorts.create_success'));
       },
       logContext: 'createCohort'
@@ -158,6 +160,7 @@ class CohortApi extends BaseApiWithErrors {
       requestFn: () => classroomio.cohort[':cohortId'].$delete({ param: { cohortId } }),
       onSuccess: () => {
         this.cohorts = this.cohorts.filter((p) => p.id !== cohortId);
+        orgNavCountsApi.adjustCount('cohorts', -1);
         snackbar.success(t.get('cohorts.delete_success'));
       },
       logContext: 'deleteCohort'

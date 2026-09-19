@@ -2,7 +2,7 @@ import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 import merge from 'lodash/merge';
 
-import type { AccountOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
 import {
   canUseBasicAuthSettings,
@@ -27,11 +27,19 @@ export const DEFAULT_ORG_CUSTOMIZATION = {
   auth: { backgroundImage: '' }
 } as NonNullable<AccountOrg['customization']>;
 
-export function mergeAccountOrgFromServer(org: AccountOrg): AccountOrg {
+export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountOrg {
+  const plans = org.plans.map((plan) => ({
+    provider: null,
+    subscriptionId: null,
+    customerId: null,
+    ...plan
+  }));
+
   return {
     ...org,
+    plans,
     customization: merge({}, DEFAULT_ORG_CUSTOMIZATION, org.customization ?? {}) as AccountOrg['customization']
-  };
+  } as AccountOrg;
 }
 
 export const orgs = writable<AccountOrg[]>([]);

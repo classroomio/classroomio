@@ -10,7 +10,7 @@
   import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { importCourseLandingPageTheme, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
   import type { Course } from '$features/course/utils/types';
-  import type { AccountOrg } from '$features/app/types';
+  import type { AccountOrg, PublicOrg } from '$features/app/types';
   import UploadWidget from '$features/ui/upload-widget/upload-widget.svelte';
   import PaymentModal from './components/payment-modal.svelte';
   import { buildCourseLandingPageProps } from './utils';
@@ -23,7 +23,7 @@
   interface Props {
     editMode?: boolean;
     courseData: Course;
-    org?: AccountOrg | null;
+    org?: AccountOrg | PublicOrg | null;
     /** Pre-resolved theme component from the route's load function (eliminates the flash on SSR pages). */
     themeComponent?: Component | null;
   }

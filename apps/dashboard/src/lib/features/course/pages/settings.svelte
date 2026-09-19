@@ -659,7 +659,7 @@
     <Field.Description>
       {$t('course.navItem.settings.course_type_desc')}
       <a
-        href="https://classroomio.com/help/build-a-course/course-types"
+        href="https://classroomio.com/help/create-and-deliver/course-types"
         target="_blank"
         rel="noopener noreferrer"
         class="ui:text-primary underline"

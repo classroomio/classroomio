@@ -18,7 +18,8 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "ci": "cp .env.example .env && vite build && vite preview",
-    "translate": "node ./scripts/translate.cjs"
+    "translate": "node ./scripts/translate.cjs",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@ai-sdk/svelte": "^4.0.158",

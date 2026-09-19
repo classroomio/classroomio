@@ -5,10 +5,13 @@ import type {
   AssetTranscriptPayload,
   AssetUsage,
   AssetUsageGraph,
+  CreateAndAttachAssetData,
+  CreateAndAttachAssetRequest,
   CreateAssetRequest,
   DeleteAssetRequest,
   GetAssetTranscriptRequest,
   GetAssetUsageRequest,
+  GetVimeoMetadataRequest,
   GetYouTubeMetadataRequest,
   ListAssetsRequest,
   OrganizationAsset,
@@ -18,6 +21,7 @@ import type {
   UpdateAssetData,
   UpdateAssetRequest,
   UpdateAssetTranscriptRequest,
+  VimeoMetadata,
   YouTubeMetadata
 } from '../utils/types';
 import type {
@@ -27,15 +31,18 @@ import type {
   TAssetListQuery,
   TAssetStorageQuery,
   TAssetUpdate,
+  TVimeoMetadataQuery,
   TYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
 import {
   ZAssetAttach,
+  ZAssetCreateAndAttach,
   ZAssetCreateUpload,
   ZAssetDetach,
   ZAssetListQuery,
   ZAssetStorageQuery,
   ZAssetUpdate,
+  ZVimeoMetadataQuery,
   ZYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
 import { getAssetHlsManifestLink, isHlsAsset, mapAssetToLessonVideo } from '../utils/media-manager-utils';
@@ -43,6 +50,7 @@ import { getAssetHlsManifestLink, isHlsAsset, mapAssetToLessonVideo } from '../u
 import type { AttachAssetRequest } from '../utils/types';
 import type { DetachAssetRequest } from '../utils/types';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 import { snackbar } from '$features/ui/snackbar/store';
 import type { StartAssetTranscriptionRequest } from '$features/jobs/utils/types';
 
@@ -141,6 +149,29 @@ export class MediaApi extends BaseApiWithErrors {
     return metadata;
   }
 
+  async getVimeoMetadata(url: string): Promise<VimeoMetadata | null> {
+    const query: TVimeoMetadataQuery = { url };
+    const result = ZVimeoMetadataQuery.safeParse(query);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error);
+      return null;
+    }
+
+    let metadata: VimeoMetadata | null = null;
+    await this.execute<GetVimeoMetadataRequest>({
+      requestFn: () =>
+        classroomio.organization.assets['vimeo-metadata'].$get({
+          query: result.data
+        }),
+      logContext: 'resolving Vimeo metadata',
+      onSuccess: (response) => {
+        metadata = response.data;
+      }
+    });
+
+    return metadata;
+  }
+
   async createAsset(fields: TAssetCreateUpload): Promise<OrganizationAsset | null> {
     const normalizedFields = {
       ...fields,
@@ -162,6 +193,7 @@ export class MediaApi extends BaseApiWithErrors {
       logContext: 'creating media asset',
       onSuccess: (response) => {
         asset = response.data;
+        orgNavCountsApi.adjustCount('media', 1);
       },
       onError: () => {
         snackbar.error('snackbar.media_manager.create_failed');
@@ -169,6 +201,43 @@ export class MediaApi extends BaseApiWithErrors {
     });
 
     return asset;
+  }
+
+  async createAndAttachAsset(
+    assetFields: TAssetCreateUpload,
+    attachFields: TAssetAttach
+  ): Promise<CreateAndAttachAssetData | null> {
+    const normalizedFields = {
+      asset: {
+        ...assetFields,
+        durationSeconds: this.normalizeDurationSeconds(assetFields.durationSeconds)
+      },
+      attach: attachFields
+    };
+
+    const result = ZAssetCreateAndAttach.safeParse(normalizedFields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error);
+      return null;
+    }
+
+    let createdData: CreateAndAttachAssetData | null = null;
+    await this.execute<CreateAndAttachAssetRequest>({
+      requestFn: () =>
+        classroomio.organization.assets['create-and-attach'].$post({
+          json: result.data
+        }),
+      logContext: 'creating and attaching media asset',
+      onSuccess: (response) => {
+        createdData = response.data;
+        orgNavCountsApi.adjustCount('media', 1);
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.create_failed');
+      }
+    });
+
+    return createdData;
   }
 
   async updateAsset(assetId: string, fields: TAssetUpdate): Promise<UpdateAssetData | null> {
@@ -287,6 +356,7 @@ export class MediaApi extends BaseApiWithErrors {
       onSuccess: () => {
         deleted = true;
         this.assets = this.assets.filter((asset) => asset.id !== assetId);
+        orgNavCountsApi.adjustCount('media', -1);
         snackbar.success('snackbar.media_manager.delete_success');
       },
       onError: (error) => {

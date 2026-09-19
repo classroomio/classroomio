@@ -3,7 +3,7 @@
   import { Input } from '../../base/input';
   import { Label } from '../../base/label';
   import { cn } from '../../tools';
-  import { normalizeYoutubeLink, splitYoutubeLinks, toCanonicalYoutubeLink } from './youtube-link-utils';
+  import { extractUniqueLinks, toCanonicalYoutubeUrl } from '@cio/utils';
 
   interface Props {
     inputLabel: string;
@@ -32,7 +32,10 @@
   let isSubmitting = $state(false);
 
   function handleInputChange(event: Event) {
-    rawInput = (event.currentTarget as HTMLInputElement).value;
+    const nextValue = (event.currentTarget as HTMLInputElement).value;
+    if (nextValue === rawInput) return;
+
+    rawInput = nextValue;
     validationError = '';
     onInputChange(rawInput);
   }
@@ -40,12 +43,7 @@
   async function addYoutubeLink() {
     if (disabled || isSubmitting) return;
 
-    const links = splitYoutubeLinks(rawInput)
-      .map(normalizeYoutubeLink)
-      .map(toCanonicalYoutubeLink)
-      .filter((entry): entry is string => Boolean(entry));
-
-    const dedupedLinks = Array.from(new Set(links));
+    const dedupedLinks = extractUniqueLinks(rawInput, toCanonicalYoutubeUrl);
 
     if (dedupedLinks.length === 0) {
       validationError = invalidYoutubeMessage;
@@ -59,6 +57,8 @@
       await onSubmit(dedupedLinks);
       rawInput = '';
       onInputChange('');
+    } catch (error) {
+      validationError = typeof error === 'string' ? error : (error as Error)?.message || 'Failed to add video';
     } finally {
       isSubmitting = false;
     }
@@ -78,7 +78,7 @@
       value={rawInput}
       disabled={disabled || isSubmitting}
       placeholder={inputPlaceholder}
-      onchange={handleInputChange}
+      oninput={handleInputChange}
     />
     {#if validationError}
       <p class="ui:text-destructive ui:text-xs">{validationError}</p>

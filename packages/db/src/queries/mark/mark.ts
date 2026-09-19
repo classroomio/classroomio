@@ -20,10 +20,16 @@ export interface Mark {
  * Gets marks for a course
  * Converts the get_marks() PostgreSQL function to a Drizzle query
  * @param courseId Course ID
+ * @param submittedBy Optional group member ID. When set, only that learner's
+ * submissions are joined so other students' scores never leave the database.
  * @returns Array of mark records
  */
-export async function getMarksByCourseId(courseId: string): Promise<Mark[]> {
+export async function getMarksByCourseId(courseId: string, submittedBy?: string): Promise<Mark[]> {
   try {
+    const submissionJoin = submittedBy
+      ? and(eq(schema.exercise.id, schema.submission.exerciseId), eq(schema.submission.submittedBy, submittedBy))
+      : eq(schema.exercise.id, schema.submission.exerciseId);
+
     const result = await db
       .select({
         courseId: schema.course.id,
@@ -40,7 +46,7 @@ export async function getMarksByCourseId(courseId: string): Promise<Mark[]> {
         schema.course,
         or(eq(schema.exercise.courseId, schema.course.id), eq(schema.lesson.courseId, schema.course.id))
       )
-      .leftJoin(schema.submission, eq(schema.exercise.id, schema.submission.exerciseId))
+      .leftJoin(schema.submission, submissionJoin)
       .innerJoin(schema.question, eq(schema.question.exerciseId, schema.exercise.id))
       .where(eq(schema.course.id, courseId))
       .groupBy(

@@ -97,6 +97,14 @@ The dashboard's `<CourseLandingPage>` (`apps/dashboard/src/lib/features/ui/cours
 
 The composer wires nav/hero/footer (theme-specific files) around the shared body components, threading `variant={theme}` and the same `labels` prop into each.
 
+## Learning Paths section (home page)
+
+Every theme's `org.svelte` renders an optional "Learning Paths" section — a `LearningPathItem[]` grid using the **shared** `LearningPathCard` (`../learning-path-card.svelte`), positioned above the Courses section per the Learning Paths PRD. Unlike `CourseCard`, this card is not forked per theme: it's styled entirely from `--landing-*` tokens (`--landing-card`, `--landing-radius-card`, `--landing-shadow-card`, `--landing-accent`, …), so one implementation re-skins correctly everywhere.
+
+- `OrgLandingPageProps.learningPaths` is **optional**. A theme renders the section only when it is a non-empty array — there is no permanent empty state for it (unlike Courses), because no `learning_path` API exists yet and the real, live org home page passes nothing here today. Pass `mockLearningPaths` (from `fixtures.ts`) to preview it.
+- It is **not** wrapped in `EditableLandingSection` — there is no editable settings layer for Learning Paths content yet, so it isn't a `LandingSectionKey`. Add one (and update every `sectionIcons`/`labelFor` consumer) only once there's a real settings panel to open.
+- `hasMoreLearningPaths` + `labels.browseLearningPathsLabel` mirror `hasMoreCourses` + `labels.browseCoursesLabel`; the CTA links to `/learning-paths` (a shared, non-per-theme catalog route, same pattern as `/courses`).
+
 ## Edit context (click-to-edit)
 
 `EditableLandingSection sectionKey="…"` wraps every editable region. When a parent route calls `setLandingPageEditContext({ selectedKey, selectKey, labelFor, iconFor })`, clicking a section in the preview calls `selectKey(key)`. The Editor sidebar reads the same key from a bound prop and opens the matching form. Without a context, the wrapper is a transparent pass-through.

@@ -16,18 +16,15 @@ run it, and pick a number. New to self-hosting? Start with
 
 ## Quick start
 
-<Steps>
-<Step>
-### Get the script
+### 1. Get the script
 
 ```zsh title="Terminal"
 mkdir classroomio && cd classroomio
 curl -fsSLO https://classroomio.com/classroomio.sh
 chmod +x classroomio.sh
 ```
-</Step>
-<Step>
-### Run it and pick Install
+
+### 2. Run it and pick Install
 
 ```zsh title="Terminal"
 ./classroomio.sh
@@ -36,9 +33,8 @@ chmod +x classroomio.sh
 Choose **1) Install**. The script downloads the compose file, creates `.env` from the template,
 generates the auth secrets and MinIO credentials for you, then pulls the images and starts the
 stack. Re-running Install is safe: it never overwrites an existing `.env` or compose file.
-</Step>
-<Step>
-### Edit the required values
+
+### 3. Edit the required values
 
 Everything else is auto-generated or defaulted. For a real deployment, set only:
 
@@ -61,8 +57,6 @@ you're editing `.env` after Install has already run, see [rotating it after
 install](/self-hosted/configuration/secrets#rotating-postgres_password-after-install) —
 just restarting/recreating containers will break the DB connection instead of fixing it.
 :::
-</Step>
-</Steps>
 
 The dashboard is at http://localhost:3082, the API at http://localhost:3081, and the MinIO console
 at http://localhost:9001 (credentials are in your `.env`).

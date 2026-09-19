@@ -1,5 +1,5 @@
 import type { TNewTag, TNewTagGroup, TTag, TTagAssignment, TTagGroup } from '@db/types';
-import { and, asc, eq, ilike, inArray, sql } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, inArray, sql } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -322,6 +322,23 @@ export async function getTagGroupsWithTags(
   } catch (error) {
     console.error('getTagGroupsWithTags error:', error);
     throw new Error('Failed to get tag groups with tags');
+  }
+}
+
+export async function countTagsByOrg(orgId: string): Promise<number> {
+  try {
+    const [countRow] = await db
+      .select({ count: count(schema.tag.id) })
+      .from(schema.tag)
+      .innerJoin(schema.tagGroup, eq(schema.tag.groupId, schema.tagGroup.id))
+      .where(eq(schema.tag.organizationId, orgId));
+
+    return Number(countRow?.count ?? 0);
+  } catch (error) {
+    console.error('countTagsByOrg error:', error);
+    throw new Error(
+      `Failed to count tags for org "${orgId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
