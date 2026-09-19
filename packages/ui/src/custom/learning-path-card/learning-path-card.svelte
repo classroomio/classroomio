@@ -99,7 +99,7 @@
 
   const isExploreClickable = $derived(surface === 'explore' && !!onExploreClick);
 
-  const ctaVariant = $derived(surface === 'lms' && !done ? 'default' : 'outline');
+  const ctaVariant = 'outline';
 
   const ctaHref = $derived(surface === 'certificate' || (surface === 'lms' && done) ? '/lms/certificates' : href);
 
@@ -152,7 +152,7 @@
   ></div>
 
   <div
-    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:hover:bg-accent ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5"
+    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5"
     onclick={isExploreClickable ? handleCardClick : undefined}
     role={isExploreClickable ? 'button' : undefined}
   >
