@@ -17,6 +17,8 @@ import {
 } from '@api/services/v1/course';
 
 import { Hono } from '@api/utils/hono';
+import { v1CourseLessonsRouter } from '@api/routes/v1/course-lessons';
+import { v1CourseSectionsRouter } from '@api/routes/v1/course-sections';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
@@ -306,6 +308,8 @@ export const v1CoursesRouter = new Hono()
       }
     }
   )
+  .route('/:courseId/sections', v1CourseSectionsRouter)
+  .route('/:courseId/lessons', v1CourseLessonsRouter)
   .get(
     '/:courseId',
     describeRoute({

@@ -154,7 +154,24 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
-  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure'
+  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/courses/{courseId}/sections': 'List sections',
+  'POST /public-api/v1/courses/{courseId}/sections': 'Create a section',
+  'POST /public-api/v1/courses/{courseId}/sections/reorder': 'Reorder sections',
+  'POST /public-api/v1/courses/{courseId}/sections/promote-ungrouped': 'Promote ungrouped content into a section',
+  'PUT /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Update a section',
+  'DELETE /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Delete a section',
+  'GET /public-api/v1/courses/{courseId}/lessons': 'List lessons',
+  'POST /public-api/v1/courses/{courseId}/lessons': 'Create a lesson',
+  'POST /public-api/v1/courses/{courseId}/lessons/reorder': 'Reorder lessons',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Get a lesson',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Update a lesson',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Delete a lesson',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'List lesson translations',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'Create a lesson translation',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Get a lesson translation',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Update a lesson translation',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/history': 'Get lesson version history'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -168,6 +185,18 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Sections',
+    description: 'Add, rename, reorder, and remove the sections of a course, one at a time.'
+  },
+  {
+    name: 'Public API Lessons',
+    description: 'Add, edit, reorder, and remove individual lessons in a course.'
+  },
+  {
+    name: 'Public API Lesson Translations',
+    description: 'Create and update the translations of a lesson, and read their version history.'
   }
 ];
 
