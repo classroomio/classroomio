@@ -20,7 +20,7 @@
     type="button"
     onclick={() => onChange?.('grid')}
     class={cn(
-      'flex size-8 items-center justify-center rounded-md transition-colors',
+      'flex size-6 items-center justify-center rounded-md transition-colors',
       view === 'grid' ? 'ui:bg-primary/10' : 'ui:hover:text-foreground'
     )}
     title={$t('learningPath.toolbar.grid_view')}
@@ -33,7 +33,7 @@
     type="button"
     onclick={() => onChange?.('list')}
     class={cn(
-      'flex size-8 items-center justify-center rounded-md transition-colors',
+      'flex size-6 items-center justify-center rounded-md transition-colors',
       view === 'list' ? 'ui:bg-primary/10' : 'ui:hover:text-foreground'
     )}
     title={$t('learningPath.toolbar.list_view')}
