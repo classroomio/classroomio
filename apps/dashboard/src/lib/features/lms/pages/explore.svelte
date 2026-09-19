@@ -216,7 +216,7 @@
     <Spinner />
   </div>
 {:else}
-  <div class="mb-6 flex flex-wrap items-center gap-3">
+  <div class="mb-6 flex flex-wrap items-center justify-end gap-3">
     <Search
       class="max-w-sm flex-1 border md:w-2/3"
       placeholder={$t('explore.search_placeholder')}
