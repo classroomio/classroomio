@@ -84,7 +84,7 @@ async function resolveCourseNewsfeedPost(targetId: string): Promise<ResolvedRepo
 
   return {
     targetType: 'course_newsfeed_post',
-    targetId,
+    targetId: String(row.id),
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
     courseId: row.courseId,
@@ -129,7 +129,7 @@ async function resolveCourseNewsfeedComment(targetId: string): Promise<ResolvedR
 
   return {
     targetType: 'course_newsfeed_comment',
-    targetId,
+    targetId: String(row.id),
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
     courseId: row.courseId,
@@ -166,7 +166,7 @@ async function resolveCohortNewsfeedPost(targetId: string): Promise<ResolvedRepo
 
   return {
     targetType: 'cohort_newsfeed_post',
-    targetId,
+    targetId: String(row.id),
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
     cohortId: row.cohortId,
@@ -210,7 +210,7 @@ async function resolveCohortNewsfeedComment(targetId: string): Promise<ResolvedR
 
   return {
     targetType: 'cohort_newsfeed_comment',
-    targetId,
+    targetId: String(row.id),
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
     cohortId: row.cohortId,
@@ -252,7 +252,7 @@ async function resolveCommunityQuestion(targetId: string): Promise<ResolvedRepor
 
   return {
     targetType: 'community_question',
-    targetId,
+    targetId: String(row.id),
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
     snapshot: buildSnapshot({
@@ -288,7 +288,7 @@ async function resolveCommunityAnswer(targetId: string): Promise<ResolvedReportT
 
   return {
     targetType: 'community_answer',
-    targetId,
+    targetId: String(row.id),
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
     snapshot: buildSnapshot({
@@ -333,7 +333,7 @@ async function resolveLessonComment(targetId: string): Promise<ResolvedReportTar
 
   return {
     targetType: 'lesson_comment',
-    targetId,
+    targetId: String(row.id),
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
     courseId: row.courseId,
@@ -372,7 +372,7 @@ async function resolveProfile(orgId: string, targetId: string): Promise<Resolved
 
   return {
     targetType: 'profile',
-    targetId,
+    targetId: String(row.id),
     organizationId: orgId,
     authorProfileId: row.id,
     snapshot: buildSnapshot({
