@@ -694,7 +694,7 @@
           </div>
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="-my-2!" />
 
         <Field.Field>
           <Field.Label>{$t('course.navItem.settings.welcome_email.title')}</Field.Label>
@@ -883,7 +883,7 @@
           />
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="-my-2!" />
 
         <Field.Field orientation="horizontal">
           <Field.Content>
@@ -900,7 +900,7 @@
           />
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="-my-2!" />
 
         <Field.Field>
           <Field.Label>{$t('course.navItem.settings.progression_mode_title')}</Field.Label>
@@ -927,7 +927,7 @@
           </RadioGroup.Root>
         </Field.Field>
 
-        <Field.Separator />
+        <Field.Separator class="-my-2!" />
 
         <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS}>
           <Field.Field orientation="horizontal">
@@ -1079,7 +1079,7 @@
           </Field.Field>
         </Field.Set>
 
-        <Field.Separator />
+        <Field.Separator class="-my-2!" />
 
         <Field.Set id="publish">
           <AttentionHighlight id="publish">
@@ -1117,7 +1117,7 @@
           {/if}
         </Field.Set>
 
-        <Field.Separator />
+        <Field.Separator class="-my-2!" />
 
         {#if $isFreePlan}
           <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
@@ -1138,7 +1138,7 @@
           </Field.Field>
         {/if}
 
-        <Field.Separator />
+        <Field.Separator class="-my-2!" />
 
         {#if $isFreePlan}
           <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
