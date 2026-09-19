@@ -30,6 +30,7 @@
     "@cio/certificates": "workspace:*",
     "@cio/db": "workspace:*",
     "@cio/question-types": "workspace:*",
+    "@cio/sdk": "workspace:*",
     "@cio/ui": "workspace:*",
     "@cio/utils": "workspace:*",
     "@lucide/svelte": "^0.545.0",

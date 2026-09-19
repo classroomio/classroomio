@@ -2,20 +2,25 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import * as Sidebar from '@cio/ui/base/sidebar';
-  import { Skeleton } from '@cio/ui/base/skeleton';
   import { currentOrg } from '$lib/utils/store/org';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { appInitApi } from '$features/app/init.svelte';
-  import { AppHeader } from '$features/ui';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-
-  import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
-  import SettingsSidebar from '$features/ui/sidebar/settings-sidebar.svelte';
   import { AddOrgModal } from '$features/org';
+  import { appConfig } from '$lib/utils/config';
+  import { SHELL_REGISTRY, SidebarShell } from '$features/ui/shells';
 
   let { data, children } = $props();
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
+
+  // If the config passes a raw component (e.g. from a third-party plugin), use it
+  // directly. Otherwise look it up in the registry by key, falling back to Sidebar.
+  const ShellComponent = $derived(
+    typeof appConfig.layout.shell === 'function' ||
+      (typeof appConfig.layout.shell === 'object' && appConfig.layout.shell !== null)
+      ? appConfig.layout.shell
+      : (SHELL_REGISTRY[appConfig.layout.key] ?? SidebarShell)
+  );
 
   function redirect(siteName: string | null) {
     if (!siteName) return;
@@ -35,40 +40,12 @@
       goto(resolve('/lms', {}));
     }
   });
-
 </script>
 
 {#if PUBLIC_IS_SELFHOSTED !== 'true'}
   <AddOrgModal />
 {/if}
 
-<Sidebar.Provider>
-  {#if isSettingsRoute}
-    <SettingsSidebar />
-  {:else}
-    <OrgSidebar />
-  {/if}
-
-  <Sidebar.Inset>
-    {#if isSettingsRoute}
-      <div class="flex h-10 items-center px-3 md:hidden">
-        <Sidebar.Trigger testId="settings-sidebar-trigger-mobile" />
-      </div>
-    {:else}
-      <AppHeader />
-    {/if}
-
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
-      {#if data.orgName === '*'}
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-          <Skeleton class="aspect-video rounded-xl" />
-          <Skeleton class="aspect-video rounded-xl" />
-          <Skeleton class="aspect-video rounded-xl" />
-        </div>
-        <Skeleton class="h-[50vh] w-full rounded-xl" />
-      {:else}
-        {@render children?.()}
-      {/if}
-    </div>
-  </Sidebar.Inset>
-</Sidebar.Provider>
+<ShellComponent {isSettingsRoute} {data}>
+  {@render children?.()}
+</ShellComponent>

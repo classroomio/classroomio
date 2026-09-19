@@ -1,4 +1,15 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Thêm vào LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Chứng nhận đã xác minh",
+      "certificate_title": "Giấy chứng nhận hoàn thành",
+      "presented_to": "Trân trọng trao tặng",
+      "completion_of": "Vì đã hoàn thành"
+    }
+  },
   "common": {
     "refresh": "Làm mới",
     "unsaved_changes": {

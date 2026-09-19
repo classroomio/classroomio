@@ -1,7 +1,11 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 import mkcert from 'vite-plugin-mkcert';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -25,7 +29,7 @@ export default ({ mode }) => {
         // workspace packages (e.g. `@cio/ui/custom/editor`) emit as absolute
         // paths into their own source tree. Without it, dev 403s on those
         // `@fs/.../packages/ui/...` URLs.
-        allow: ['..', '../../packages']
+        allow: ['..', '../../packages', '../../classroomio.config.ts', '../../plugins']
       },
       watch: {
         ignored: ['**/node_modules/!(@cio)/**', '**/.git/**']
@@ -58,9 +62,13 @@ export default ({ mode }) => {
       ],
       // Workspace packages must be processed by Svelte/Vite (not pre-bundled)
       // so HMR fires when editing files under packages/*.
-      exclude: ['@cio/ui', '@cio/utils', '@cio/question-types']
+      exclude: ['@cio/ui', '@cio/utils', '@cio/question-types', '@cio/sdk']
     },
     resolve: {
+      alias: {
+        '@cio/sdk/layouts': path.resolve(__dirname, '../../packages/sdk/src/layouts/index.ts'),
+        '@cio/sdk': path.resolve(__dirname, '../../packages/sdk/src/index.ts')
+      },
       mainFields: ['browser']
     }
   });

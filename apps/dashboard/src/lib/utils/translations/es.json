@@ -1,4 +1,15 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Añadir a LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Credencial verificada",
+      "certificate_title": "Certificado de finalización",
+      "presented_to": "Otorgado con orgullo a",
+      "completion_of": "Por completar"
+    }
+  },
   "common": {
     "refresh": "Actualizar",
     "unsaved_changes": {

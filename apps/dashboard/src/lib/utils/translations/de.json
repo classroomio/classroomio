@@ -1,4 +1,15 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Zu LinkedIn hinzufügen"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Verifizierter Nachweis",
+      "certificate_title": "Abschlusszertifikat",
+      "presented_to": "Stolz verliehen an",
+      "completion_of": "Für den Abschluss von"
+    }
+  },
   "common": {
     "refresh": "Aktualisieren",
     "unsaved_changes": {

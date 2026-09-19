@@ -31,7 +31,7 @@
   });
 
   const templateLabel = $derived(
-    CERTIFICATE_TEMPLATES.find((tpl) => tpl.id === design.templateId)?.label ?? design.templateId
+    CERTIFICATE_TEMPLATES.find((template) => template.id === design.templateId)?.label ?? design.templateId
   );
 
   const courseId = $derived(courseApi.course?.id ?? '');

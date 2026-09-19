@@ -1,4 +1,15 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Add to LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Verified credential",
+      "certificate_title": "Certificate of completion",
+      "presented_to": "Proudly presented to",
+      "completion_of": "For completion of"
+    }
+  },
   "aiTutor": {
     "page": {
       "org": {

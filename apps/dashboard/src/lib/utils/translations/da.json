@@ -1,4 +1,15 @@
 {
+  "plugins": {
+    "integration_linkedin_certificate": {
+      "add_to_linkedin": "Føj til LinkedIn"
+    },
+    "certificate_modern_gold": {
+      "verified_credential": "Verificeret certifikat",
+      "certificate_title": "Gennemførelsesbevis",
+      "presented_to": "Stolt tildelt",
+      "completion_of": "For gennemførelse af"
+    }
+  },
   "common": {
     "refresh": "Opdater",
     "unsaved_changes": {

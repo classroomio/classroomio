@@ -26,7 +26,13 @@ export {
   type AccentColor
 } from './constants';
 
-export { renderCertificate, renderCertificateDocument, resolveCertificateDesign, resolveTemplateId } from './render';
+export {
+  registerCertificateTemplates,
+  renderCertificate,
+  renderCertificateDocument,
+  resolveCertificateDesign,
+  resolveTemplateId
+} from './render';
 export {
   computeFitFontSize,
   computeFieldFontSizes,

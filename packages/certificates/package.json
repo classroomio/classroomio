@@ -16,6 +16,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@cio/sdk": "workspace:*",
     "@cio/tsconfig": "workspace:*"
   },
   "devDependencies": {

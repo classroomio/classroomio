@@ -87,6 +87,14 @@ export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;
 export const ZCertificateDownloadRequest = z.object({
   studentName: z.string().min(1).max(120),
   studentId: z.string().min(1).max(64).optional(),
+  labels: z
+    .object({
+      certificateTitle: z.string().min(1).max(120),
+      completionLabel: z.string().min(1).max(120),
+      presentedToLabel: z.string().min(1).max(120),
+      verifiedCredentialLabel: z.string().min(1).max(120)
+    })
+    .optional(),
   issuedAt: z.preprocess((value) => {
     if (typeof value !== 'string' || value.trim() === '') return undefined;
 

@@ -1,0 +1,32 @@
+{
+  "name": "@cio/plugins",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./components/linkedin-certificate-button": {
+      "svelte": "./integration/linkedin-certificate/components/linkedin-button.svelte",
+      "default": "./integration/linkedin-certificate/components/linkedin-button.svelte"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "dev": "tsc --watch",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@cio/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "svelte": "^5.46.1",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.5.2"
+  }
+}

@@ -9,8 +9,10 @@
   import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
   import { formatCompactCount } from '@cio/utils/functions';
   import { orgNavCountsApi } from './org-nav-counts.svelte';
+  import { appConfig } from '$lib/utils/config';
+  import { applyNavConfig } from '@cio/sdk';
 
-  const groups = $derived(
+  const rawGroups = $derived(
     getOrgNavigationGroups(
       $currentOrgPath,
       $currentOrg,
@@ -23,6 +25,8 @@
       orgNavCountsApi.counts
     )
   );
+
+  const groups = $derived(applyNavConfig(rawGroups as any, appConfig.nav));
 </script>
 
 {#each groups as group (group.labelKey)}

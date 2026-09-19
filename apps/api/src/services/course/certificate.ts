@@ -43,7 +43,8 @@ export async function assembleCertificateRender(
       orgName: organization?.name ?? '',
       orgLogoUrl: organization?.avatarUrl ?? undefined,
       date,
-      certificateId
+      certificateId,
+      labels: body.labels
     }
   };
 }
