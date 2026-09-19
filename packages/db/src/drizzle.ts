@@ -20,7 +20,9 @@ function createDatabaseClient() {
     max: Number.parseInt(process.env.DATABASE_POOL_MAX ?? '10', 10) || 5,
     idle_timeout: 20,
     connect_timeout: 10,
-    max_lifetime: 60 * 30
+    max_lifetime: 60 * 30,
+    // PgBouncer transaction pooling (PlanetScale :6432) cannot keep named prepared statements on a backend.
+    prepare: false
   });
 }
 

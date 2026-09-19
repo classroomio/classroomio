@@ -7,7 +7,8 @@ import postgres from 'postgres';
 
 import { baselineMigrationsIfNeeded } from './baseline';
 
-const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
+const connectionString =
+  process.env.DIRECT_DATABASE_URL ?? process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 const shouldSeed = process.argv.includes('--seed') || process.argv.includes('-s');
 const shouldSyncSchema = !process.argv.includes('--skip-schema-sync');
 const scriptPath = fileURLToPath(import.meta.url);
@@ -31,7 +32,7 @@ function getArgumentValue(argumentName: string): string | undefined {
 const seedOrganization = getArgumentValue('--organization');
 
 if (!connectionString) {
-  console.error('DATABASE_URL or PRIVATE_DATABASE_URL environment variable is required');
+  console.error('DIRECT_DATABASE_URL, DATABASE_URL, or PRIVATE_DATABASE_URL environment variable is required');
   process.exit(1);
 }
 
