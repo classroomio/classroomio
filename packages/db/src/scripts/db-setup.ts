@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 import postgres from 'postgres';
 
 import { baselineMigrationsIfNeeded } from './baseline';
+import { resolveMigratorDatabaseUrl } from '../migrator-database-url';
 
-const connectionString =
-  process.env.DIRECT_DATABASE_URL ?? process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
+const connectionString = resolveMigratorDatabaseUrl();
 const shouldSeed = process.argv.includes('--seed') || process.argv.includes('-s');
 const shouldSyncSchema = !process.argv.includes('--skip-schema-sync');
 const scriptPath = fileURLToPath(import.meta.url);
