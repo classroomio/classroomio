@@ -11,6 +11,7 @@ import { and, count, db, desc, eq, inArray } from '@db/drizzle';
 const ACTIVE_REPORT_STATUSES: TContentReportStatus[] = ['open', 'in_review'];
 
 export async function findActiveContentReport(input: {
+  organizationId: string;
   reporterId: string;
   targetType: TContentReportTargetType;
   targetId: string;
@@ -21,6 +22,7 @@ export async function findActiveContentReport(input: {
       .from(schema.contentReport)
       .where(
         and(
+          eq(schema.contentReport.organizationId, input.organizationId),
           eq(schema.contentReport.reporterId, input.reporterId),
           eq(schema.contentReport.targetType, input.targetType),
           eq(schema.contentReport.targetId, input.targetId),

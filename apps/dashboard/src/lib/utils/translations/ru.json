@@ -172,6 +172,11 @@
       "generate_fail": "Не удалось добиться успеха",
       "failed": "Не удалось. Повторите попытку позже."
     },
+    "report": {
+      "success": "Спасибо. Мы рассмотрим эту жалобу.",
+      "error": "Не удалось отправить жалобу. Попробуйте ещё раз.",
+      "already_submitted": "Вы уже пожаловались на этот контент."
+    },
     "signup": {
       "disposable": "Указанный вами адрес электронной почты является одноразовым."
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Пожаловаться",
+    "title": "Пожаловаться на контент",
+    "description": "Расскажите, что не так. Наша команда рассмотрит эту жалобу.",
+    "reason_label": "Причина",
+    "reason_placeholder": "Выберите причину",
+    "reason_required": "Пожалуйста, выберите причину",
+    "details_label": "Дополнительные сведения",
+    "details_placeholder": "Добавьте контекст, который поможет нам рассмотреть жалобу (необязательно)",
+    "submit": "Отправить жалобу",
+    "cancel": "Отмена",
     "reasons": {
-      "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
-      "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "spam": "Спам",
+      "harassment": "Преследование или травля",
+      "hate_speech": "Разжигание ненависти",
+      "sexual_content": "Сексуальный контент",
+      "violence": "Насилие или угрозы",
+      "misinformation": "Дезинформация",
+      "privacy": "Нарушение конфиденциальности",
+      "other": "Другое"
     }
   },
   "invite_link": {

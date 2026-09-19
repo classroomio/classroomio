@@ -172,6 +172,11 @@
       "generate_fail": "N'a pas réussi à générer du succès",
       "failed": "Échec, veuillez réessayer plus tard"
     },
+    "report": {
+      "success": "Merci. Nous examinerons ce signalement.",
+      "error": "Impossible d'envoyer le signalement. Veuillez réessayer.",
+      "already_submitted": "Vous avez déjà signalé ce contenu."
+    },
     "signup": {
       "disposable": "L'e-mail que vous avez fourni est jetable"
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Signaler",
+    "title": "Signaler du contenu",
+    "description": "Indiquez-nous ce qui ne va pas. Notre équipe examinera ce signalement.",
+    "reason_label": "Motif",
+    "reason_placeholder": "Sélectionnez un motif",
+    "reason_required": "Veuillez choisir un motif",
+    "details_label": "Détails supplémentaires",
+    "details_placeholder": "Ajoutez tout contexte qui nous aidera à examiner ce signalement (facultatif)",
+    "submit": "Envoyer le signalement",
+    "cancel": "Annuler",
     "reasons": {
       "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
-      "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "harassment": "Harcèlement ou intimidation",
+      "hate_speech": "Discours haineux",
+      "sexual_content": "Contenu sexuel",
+      "violence": "Violence ou menaces",
+      "misinformation": "Désinformation",
+      "privacy": "Atteinte à la vie privée",
+      "other": "Autre"
     }
   },
   "invite_link": {

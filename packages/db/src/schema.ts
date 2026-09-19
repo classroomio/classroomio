@@ -4186,7 +4186,7 @@ export const contentReport = pgTable(
     index('idx_content_report_org_created').on(table.organizationId, table.createdAt),
     index('idx_content_report_target').on(table.targetType, table.targetId),
     uniqueIndex('content_report_reporter_target_open_unique')
-      .on(table.reporterId, table.targetType, table.targetId)
+      .on(table.organizationId, table.reporterId, table.targetType, table.targetId)
       .where(sql`${table.reporterId} IS NOT NULL AND ${table.status} IN ('open', 'in_review')`)
   ]
 );

@@ -172,6 +172,11 @@
       "generate_fail": "No se pudo generar éxito",
       "failed": "Error, inténtelo de nuevo más tarde"
     },
+    "report": {
+      "success": "Gracias. Revisaremos este informe.",
+      "error": "No se pudo enviar el informe. Inténtalo de nuevo.",
+      "already_submitted": "Ya has denunciado este contenido."
+    },
     "signup": {
       "disposable": "El correo electrónico que proporcionaste es desechable."
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Denunciar",
+    "title": "Denunciar contenido",
+    "description": "Cuéntanos qué está mal. Nuestro equipo revisará este informe.",
+    "reason_label": "Motivo",
+    "reason_placeholder": "Selecciona un motivo",
+    "reason_required": "Elige un motivo",
+    "details_label": "Detalles adicionales",
+    "details_placeholder": "Añade contexto que nos ayude a revisar esto (opcional)",
+    "submit": "Enviar denuncia",
+    "cancel": "Cancelar",
     "reasons": {
       "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
-      "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "harassment": "Acoso o intimidación",
+      "hate_speech": "Discurso de odio",
+      "sexual_content": "Contenido sexual",
+      "violence": "Violencia o amenazas",
+      "misinformation": "Desinformación",
+      "privacy": "Violación de la privacidad",
+      "other": "Otro"
     }
   },
   "invite_link": {

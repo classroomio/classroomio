@@ -9,6 +9,8 @@ export type ResolvedReportTarget = {
   organizationId: string;
   authorProfileId: string | null;
   snapshot: TContentReportSnapshot;
+  courseId?: string | null;
+  cohortId?: string | null;
 };
 
 function parseNumericId(value: string): number | null {
@@ -85,6 +87,7 @@ async function resolveCourseNewsfeedPost(targetId: string): Promise<ResolvedRepo
     targetId,
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
+    courseId: row.courseId,
     snapshot: buildSnapshot({
       text: row.content,
       authorId: row.authorProfileId ?? null,
@@ -129,6 +132,7 @@ async function resolveCourseNewsfeedComment(targetId: string): Promise<ResolvedR
     targetId,
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
+    courseId: row.courseId,
     snapshot: buildSnapshot({
       text: row.content,
       authorId: row.authorProfileId ?? null,
@@ -165,6 +169,7 @@ async function resolveCohortNewsfeedPost(targetId: string): Promise<ResolvedRepo
     targetId,
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
+    cohortId: row.cohortId,
     snapshot: buildSnapshot({
       text: row.content,
       authorId: row.authorProfileId ?? null,
@@ -208,6 +213,7 @@ async function resolveCohortNewsfeedComment(targetId: string): Promise<ResolvedR
     targetId,
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
+    cohortId: row.cohortId,
     snapshot: buildSnapshot({
       text: row.content,
       authorId: row.authorProfileId ?? null,
@@ -330,6 +336,7 @@ async function resolveLessonComment(targetId: string): Promise<ResolvedReportTar
     targetId,
     organizationId: row.organizationId,
     authorProfileId: row.authorProfileId ?? null,
+    courseId: row.courseId,
     snapshot: buildSnapshot({
       text: row.comment,
       authorId: row.authorProfileId ?? null,

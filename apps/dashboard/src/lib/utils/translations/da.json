@@ -172,6 +172,11 @@
       "generate_fail": "Det lykkedes ikke at skabe succes",
       "failed": "Mislykkedes. Prøv venligst igen senere"
     },
+    "report": {
+      "success": "Tak. Vi gennemgår denne anmeldelse.",
+      "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
+      "already_submitted": "Du har allerede anmeldt dette."
+    },
     "signup": {
       "disposable": "Den e-mail, du har angivet, er til engangsbrug"
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Anmeld",
+    "title": "Anmeld indhold",
+    "description": "Fortæl os, hvad der er galt. Vores team vil gennemgå denne anmeldelse.",
+    "reason_label": "Årsag",
+    "reason_placeholder": "Vælg en årsag",
+    "reason_required": "Vælg venligst en årsag",
+    "details_label": "Yderligere oplysninger",
+    "details_placeholder": "Tilføj kontekst, der kan hjælpe os med at gennemgå dette (valgfrit)",
+    "submit": "Send anmeldelse",
+    "cancel": "Annuller",
     "reasons": {
       "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
+      "harassment": "Chikane eller mobning",
+      "hate_speech": "Hadefuld tale",
+      "sexual_content": "Seksuelt indhold",
+      "violence": "Vold eller trusler",
       "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "privacy": "Brud på privatlivet",
+      "other": "Andet"
     }
   },
   "invite_link": {

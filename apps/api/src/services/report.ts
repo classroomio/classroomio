@@ -5,8 +5,10 @@ import {
   listContentReports,
   updateContentReport
 } from '@cio/db/queries/report';
-import { resolveReportTarget } from '@cio/db/queries/report/targets';
+import { resolveReportTarget, type ResolvedReportTarget } from '@cio/db/queries/report/targets';
 import { getOrganizationById } from '@cio/db/queries/organization';
+import { isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { isCohortMember, isOrgAdminByCohortId } from '@cio/db/queries/cohort';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs/email-jobs';
@@ -44,6 +46,47 @@ function toExcerpt(text: string): string {
   }
 
   return `${text.slice(0, EXCERPT_MAX_LENGTH).trimEnd()}…`;
+}
+
+async function canReporterAccessTarget(input: {
+  reporterId: string;
+  orgId: string;
+  target: ResolvedReportTarget;
+}): Promise<boolean> {
+  if (input.target.organizationId !== input.orgId) {
+    return false;
+  }
+
+  switch (input.target.targetType) {
+    case 'course_newsfeed_post':
+    case 'course_newsfeed_comment':
+    case 'lesson_comment': {
+      if (!input.target.courseId) {
+        return false;
+      }
+
+      return isUserCourseMemberOrOrgAdmin(input.target.courseId, input.reporterId);
+    }
+    case 'cohort_newsfeed_post':
+    case 'cohort_newsfeed_comment': {
+      if (!input.target.cohortId) {
+        return false;
+      }
+
+      const [member, isOrgAdmin] = await Promise.all([
+        isCohortMember(input.target.cohortId, input.reporterId),
+        isOrgAdminByCohortId(input.target.cohortId, input.reporterId)
+      ]);
+
+      return member || isOrgAdmin;
+    }
+    case 'community_question':
+    case 'community_answer':
+    case 'profile':
+      return true;
+    default:
+      return false;
+  }
 }
 
 async function notifyModerators(input: {
@@ -87,7 +130,17 @@ async function notifyModerators(input: {
 export async function submitContentReport(input: { orgId: string; reporterId: string; payload: TCreateContentReport }) {
   const target = await resolveReportTarget(input.orgId, input.payload.targetType, input.payload.targetId);
 
-  if (!target || target.organizationId !== input.orgId) {
+  if (!target) {
+    throw new AppError('Content not found', ErrorCodes.REPORT_INVALID_TARGET, 404);
+  }
+
+  const canAccessTarget = await canReporterAccessTarget({
+    reporterId: input.reporterId,
+    orgId: input.orgId,
+    target
+  });
+
+  if (!canAccessTarget) {
     throw new AppError('Content not found', ErrorCodes.REPORT_INVALID_TARGET, 404);
   }
 
@@ -96,6 +149,7 @@ export async function submitContentReport(input: { orgId: string; reporterId: st
   }
 
   const existingReport = await findActiveContentReport({
+    organizationId: input.orgId,
     reporterId: input.reporterId,
     targetType: input.payload.targetType,
     targetId: input.payload.targetId
@@ -195,17 +249,30 @@ export async function updateModerationReport(id: string, payload: TUpdateContent
 
   const nextStatus = payload.status ?? existing.status;
   const isTerminal = nextStatus === 'actioned' || nextStatus === 'dismissed';
+  const wasTerminal = existing.status === 'actioned' || existing.status === 'dismissed';
   const updatedAt = new Date().toISOString();
-  const resolvedAt = isTerminal ? existing.resolvedAt || updatedAt : existing.resolvedAt;
 
-  const updated = await updateContentReport(id, {
+  const updatePayload: Parameters<typeof updateContentReport>[1] = {
     status: payload.status,
     assignedTo: payload.assignedTo,
-    resolutionCode: payload.resolutionCode,
-    resolutionNote: payload.resolutionNote,
-    resolvedAt,
     updatedAt
-  });
+  };
+
+  if (isTerminal) {
+    updatePayload.resolutionCode = payload.resolutionCode;
+    updatePayload.resolutionNote = payload.resolutionNote;
+    updatePayload.resolvedAt = existing.resolvedAt || updatedAt;
+  } else if (wasTerminal) {
+    updatePayload.resolutionCode = null;
+    updatePayload.resolutionNote = null;
+    updatePayload.resolvedAt = null;
+    updatePayload.reviewedBy = null;
+  } else {
+    updatePayload.resolutionCode = payload.resolutionCode;
+    updatePayload.resolutionNote = payload.resolutionNote;
+  }
+
+  const updated = await updateContentReport(id, updatePayload);
 
   if (!updated) {
     throw new AppError('Failed to update report', ErrorCodes.REPORT_UPDATE_FAILED, 500);

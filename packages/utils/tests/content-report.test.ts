@@ -68,4 +68,12 @@ describe('ZUpdateContentReport', () => {
 
     expect(result.success).toBe(true);
   });
+
+  it('accepts reopening a resolved report', () => {
+    const result = ZUpdateContentReport.safeParse({
+      status: 'open'
+    });
+
+    expect(result.success).toBe(true);
+  });
 });

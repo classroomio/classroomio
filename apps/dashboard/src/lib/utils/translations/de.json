@@ -172,6 +172,11 @@
       "generate_fail": "Es konnte kein Erfolg generiert werden",
       "failed": "Fehlgeschlagen, bitte versuchen Sie es später noch einmal"
     },
+    "report": {
+      "success": "Danke. Wir prüfen diese Meldung.",
+      "error": "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "already_submitted": "Sie haben diesen Inhalt bereits gemeldet."
+    },
     "signup": {
       "disposable": "Die von Ihnen angegebene E-Mail-Adresse ist wegwerfbar"
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Melden",
+    "title": "Inhalt melden",
+    "description": "Teilen Sie uns mit, was nicht stimmt. Unser Team prüft diese Meldung.",
+    "reason_label": "Grund",
+    "reason_placeholder": "Grund auswählen",
+    "reason_required": "Bitte wählen Sie einen Grund",
+    "details_label": "Zusätzliche Angaben",
+    "details_placeholder": "Fügen Sie Kontext hinzu, der uns bei der Prüfung hilft (optional)",
+    "submit": "Meldung senden",
+    "cancel": "Abbrechen",
     "reasons": {
       "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
-      "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "harassment": "Belästigung oder Mobbing",
+      "hate_speech": "Hassrede",
+      "sexual_content": "Sexuelle Inhalte",
+      "violence": "Gewalt oder Drohungen",
+      "misinformation": "Falschinformationen",
+      "privacy": "Verletzung der Privatsphäre",
+      "other": "Sonstiges"
     }
   },
   "invite_link": {

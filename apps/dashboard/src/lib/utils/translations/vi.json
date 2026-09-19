@@ -172,6 +172,11 @@
       "generate_fail": "Không tạo được thành công",
       "failed": "Không thành công, vui lòng thử lại sau"
     },
+    "report": {
+      "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
+      "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
+      "already_submitted": "Bạn đã báo cáo nội dung này rồi."
+    },
     "signup": {
       "disposable": "Email bạn cung cấp chỉ dùng một lần"
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Báo cáo",
+    "title": "Báo cáo nội dung",
+    "description": "Hãy cho chúng tôi biết điều gì không ổn. Đội ngũ của chúng tôi sẽ xem xét báo cáo này.",
+    "reason_label": "Lý do",
+    "reason_placeholder": "Chọn một lý do",
+    "reason_required": "Vui lòng chọn một lý do",
+    "details_label": "Chi tiết bổ sung",
+    "details_placeholder": "Thêm ngữ cảnh giúp chúng tôi xem xét (không bắt buộc)",
+    "submit": "Gửi báo cáo",
+    "cancel": "Hủy",
     "reasons": {
-      "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
-      "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "spam": "Thư rác",
+      "harassment": "Quấy rối hoặc bắt nạt",
+      "hate_speech": "Ngôn từ thù địch",
+      "sexual_content": "Nội dung tình dục",
+      "violence": "Bạo lực hoặc đe dọa",
+      "misinformation": "Thông tin sai lệch",
+      "privacy": "Vi phạm quyền riêng tư",
+      "other": "Khác"
     }
   },
   "invite_link": {

@@ -172,6 +172,11 @@
       "generate_fail": "Nie udało się wygenerować sukcesu",
       "failed": "Nie udało się. Spróbuj ponownie później"
     },
+    "report": {
+      "success": "Dziękujemy. Przejrzymy to zgłoszenie.",
+      "error": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
+      "already_submitted": "Już zgłosiłeś tę treść."
+    },
     "signup": {
       "disposable": "Podany adres e-mail jest jednorazowy"
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Zgłoś",
+    "title": "Zgłoś treść",
+    "description": "Powiedz nam, co jest nie tak. Nasz zespół przejrzy to zgłoszenie.",
+    "reason_label": "Powód",
+    "reason_placeholder": "Wybierz powód",
+    "reason_required": "Wybierz powód",
+    "details_label": "Dodatkowe szczegóły",
+    "details_placeholder": "Dodaj kontekst, który pomoże nam to sprawdzić (opcjonalnie)",
+    "submit": "Wyślij zgłoszenie",
+    "cancel": "Anuluj",
     "reasons": {
       "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
-      "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "harassment": "Nękanie lub zastraszanie",
+      "hate_speech": "Mowa nienawiści",
+      "sexual_content": "Treści seksualne",
+      "violence": "Przemoc lub groźby",
+      "misinformation": "Dezinformacja",
+      "privacy": "Naruszenie prywatności",
+      "other": "Inne"
     }
   },
   "invite_link": {

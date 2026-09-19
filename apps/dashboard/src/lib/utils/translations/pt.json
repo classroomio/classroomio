@@ -172,6 +172,11 @@
       "generate_fail": "Falha ao gerar sucesso",
       "failed": "Falha, tente novamente mais tarde"
     },
+    "report": {
+      "success": "Obrigado. Vamos analisar esta denúncia.",
+      "error": "Não foi possível enviar a denúncia. Tente novamente.",
+      "already_submitted": "Já denunciou este conteúdo."
+    },
     "signup": {
       "disposable": "O e-mail que você forneceu é descartável"
     },
@@ -5370,25 +5375,25 @@
     }
   },
   "report": {
-    "menu": "Report",
-    "title": "Report content",
-    "description": "Tell us what’s wrong. Our team will review this report.",
-    "reason_label": "Reason",
-    "reason_placeholder": "Select a reason",
-    "reason_required": "Please choose a reason",
-    "details_label": "Additional details",
-    "details_placeholder": "Add any context that will help us review this (optional)",
-    "submit": "Submit report",
-    "cancel": "Cancel",
+    "menu": "Denunciar",
+    "title": "Denunciar conteúdo",
+    "description": "Diga-nos o que está errado. A nossa equipa irá analisar esta denúncia.",
+    "reason_label": "Motivo",
+    "reason_placeholder": "Selecione um motivo",
+    "reason_required": "Escolha um motivo",
+    "details_label": "Detalhes adicionais",
+    "details_placeholder": "Adicione qualquer contexto que nos ajude a analisar isto (opcional)",
+    "submit": "Enviar denúncia",
+    "cancel": "Cancelar",
     "reasons": {
       "spam": "Spam",
-      "harassment": "Harassment or bullying",
-      "hate_speech": "Hate speech",
-      "sexual_content": "Sexual content",
-      "violence": "Violence or threats",
-      "misinformation": "Misinformation",
-      "privacy": "Privacy violation",
-      "other": "Other"
+      "harassment": "Assédio ou intimidação",
+      "hate_speech": "Discurso de ódio",
+      "sexual_content": "Conteúdo sexual",
+      "violence": "Violência ou ameaças",
+      "misinformation": "Desinformação",
+      "privacy": "Violação de privacidade",
+      "other": "Outro"
     }
   },
   "invite_link": {
