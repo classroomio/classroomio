@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { isContentItemInPath } from './content-navigation';
 
 describe('isContentItemInPath', () => {
