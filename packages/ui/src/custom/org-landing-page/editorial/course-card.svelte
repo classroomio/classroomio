@@ -6,7 +6,6 @@
     course: CourseItem;
     disableCourseLinks?: boolean;
     labels?: OrgLandingPageLabels;
-    /** Index in the parent grid; used to cycle the painterly thumb gradient when the course has no logo. */
     index?: number;
   }
 
@@ -26,7 +25,9 @@
   const resolvedEnrolledLabel = $derived(labels?.enrolledLabel ?? defaultEnrolledLabel);
 
   const thumbBg = $derived(
-    course.logo ? `center / cover no-repeat url('${course.logo}')` : thumbGradients[index % thumbGradients.length]
+    course.bannerImage
+      ? `center / cover no-repeat url('${course.bannerImage}')`
+      : thumbGradients[index % thumbGradients.length]
   );
 
   const href = $derived.by(() => {

@@ -124,7 +124,7 @@
   };
 
   const deleteBannerImage = () => {
-    $settings.logo = '';
+    $settings.bannerImage = '';
     hasUnsavedChanges = true;
   };
 
@@ -214,11 +214,11 @@
     }
 
     try {
-      let logoUrl = $settings.logo;
+      let bannerImageUrl = $settings.bannerImage;
 
       // Upload image if avatar is provided
       if (avatar) {
-        logoUrl = await uploadImage(new File([avatar], avatar));
+        bannerImageUrl = await uploadImage(new File([avatar], avatar));
       }
 
       if (!courseApi.course) return;
@@ -254,7 +254,7 @@
         title: $settings.courseTitle,
         description: $settings.courseDescription,
         type: $settings.type,
-        logo: logoUrl,
+        bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
@@ -328,7 +328,7 @@
         courseTitle: course.title,
         type: (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
-        logo: course.logo || '',
+        bannerImage: course.bannerImage || '',
         tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
@@ -559,7 +559,7 @@
         </div>
         {#if $handleOpenWidget.open}
           <UploadWidget
-            bind:imageURL={$settings.logo}
+            bind:imageURL={$settings.bannerImage}
             onchange={() => {
               hasUnsavedChanges = true;
             }}
@@ -570,7 +570,7 @@
         <div class="relative w-fit">
           <img
             alt="Course cover"
-            src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
+            src={$settings.bannerImage ? $settings.bannerImage : '/images/classroomio-course-img-template.jpg'}
             class="relative mt-2 h-[200px] w-[280px] rounded-md border object-cover md:mt-0"
           />
         </div>

@@ -226,7 +226,6 @@ export async function cloneCourse(
     overview: course.overview,
     groupId: newGroup.id,
     isTemplate: course.isTemplate,
-    logo: course.logo,
     slug: newSlug ?? null,
     metadata: course.metadata,
     cost: course.cost,

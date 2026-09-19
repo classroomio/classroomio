@@ -189,7 +189,7 @@ export function formatCourseForWidget(
     slug: course.slug ?? course.id,
     title: course.title,
     description: course.description,
-    imageUrl: course.bannerImage || course.logo || null,
+    imageUrl: course.bannerImage || null,
     isPublished: course.isPublished,
     price: isPaidCourse && course.cost ? `${course.currency} ${course.cost}` : 'Free',
     lessonCount: course.lessonCount,

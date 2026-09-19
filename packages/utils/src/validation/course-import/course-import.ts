@@ -3,6 +3,7 @@ import * as z from 'zod';
 import { ZComplianceSettings, ZCourseMetadata } from '../course/course';
 import { ZCourseType } from '../course/course-type';
 import { ZExerciseQuestionTypeId } from '../exercise/exercise';
+import { ZLessonVideoItem } from '../lesson/lesson';
 
 const ZSupportedLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 const LESSON_BODY_HTML_DESCRIPTION =
@@ -51,7 +52,8 @@ export const ZCourseImportDraftLesson = z.object({
   title: z.string().min(1),
   order: z.number().int().min(0),
   isUnlocked: z.boolean().optional(),
-  public: z.boolean().optional()
+  public: z.boolean().optional(),
+  videos: z.array(ZLessonVideoItem).optional()
 });
 export type TCourseImportDraftLesson = z.infer<typeof ZCourseImportDraftLesson>;
 

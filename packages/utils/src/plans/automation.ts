@@ -29,7 +29,10 @@ export const MCP_TOOL_CREDIT_COST = {
   create_course_exercise_from_template: 1,
   update_course_exercise: 1,
   publish_course_draft: 5,
-  publish_course_draft_to_existing_course: 5
+  publish_course_draft_to_existing_course: 5,
+  upload_image: 1,
+  upload_video: 1,
+  attach_lesson_video: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;

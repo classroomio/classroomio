@@ -12,10 +12,42 @@ import {
 } from '@cio/core/utils/s3';
 
 import { Hono } from '@api/utils/hono';
-import { authMiddleware } from '@api/middlewares/auth';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import { orgTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-team-member-or-automation-key';
 import { generateFileKey } from '@cio/core/utils/upload';
-import { AppError } from '@api/utils/errors';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
+import { createOrGetAssetByStorageKey, getAssetsByStorageKeys } from '@cio/db/queries/assets';
+import type { Context } from 'hono';
+
+const requireCourseWrite = orgTeamMemberOrAutomationKeyMiddleware(['course:write']);
+
+const CourseWriteForbiddenResponse = {
+  description:
+    "Automation key is missing the required scope, caller is not an organization admin or tutor, or (download routes only) one or more requested keys do not belong to the caller's organization"
+};
+
+export async function assertCallerOwnsDownloadKeys(c: Context, keys: string[]): Promise<Response | void> {
+  const organizationId = c.get('orgId');
+  if (!organizationId) {
+    return;
+  }
+
+  const owned = await getAssetsByStorageKeys(organizationId, keys);
+  const ownedKeys = new Set(owned.map((asset) => asset.storageKey));
+  const unauthorizedKeys = keys.filter((key) => !ownedKeys.has(key));
+
+  if (unauthorizedKeys.length > 0) {
+    return c.json(
+      {
+        success: false,
+        error: 'One or more requested keys do not belong to this organization',
+        code: ErrorCodes.FORBIDDEN
+      },
+      403
+    );
+  }
+}
 
 /**
  * Advisory check on client-reported `fileSize`. Upload bytes go directly to object storage
@@ -25,6 +57,30 @@ import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
 function assertPresignFileSizeWithinLimit(fileSize: number | undefined, maxBytes: number): void {
   if (fileSize != null && fileSize > maxBytes) {
     throw new AppError(`File size exceeds maximum of ${maxBytes / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
+  }
+}
+
+export async function registerUploadedAsset(
+  c: Context,
+  params: { fileKey: string; fileType: string; fileSize: number | undefined; kind: 'video' | 'document' }
+): Promise<void> {
+  const organizationId = c.get('orgId');
+  if (!organizationId) {
+    return;
+  }
+
+  try {
+    await createOrGetAssetByStorageKey({
+      organizationId,
+      kind: params.kind,
+      provider: 'upload',
+      storageKey: params.fileKey,
+      mimeType: params.fileType,
+      byteSize: params.fileSize ?? null,
+      createdByProfileId: c.get('user')?.id ?? null
+    });
+  } catch (error) {
+    console.error('Failed to register uploaded asset for ownership checks:', error);
   }
 }
 
@@ -56,7 +112,8 @@ const PresignDownloadResponse = {
 export const presignRouter = new Hono()
   .post(
     '/video/upload',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate a pre-signed URL for video upload',
       responses: {
@@ -73,7 +130,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -89,6 +147,8 @@ export const presignRouter = new Hono()
 
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
 
+      await registerUploadedAsset(c, { fileKey, fileType, fileSize, kind: 'video' });
+
       return c.json({
         success: true,
         url: presignedUrl,
@@ -99,7 +159,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/upload',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate a pre-signed URL for document upload',
       responses: {
@@ -116,7 +177,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -132,6 +194,8 @@ export const presignRouter = new Hono()
 
       const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);
 
+      await registerUploadedAsset(c, { fileKey, fileType, fileSize, kind: 'document' });
+
       return c.json({
         success: true,
         url: presignedUrl,
@@ -142,7 +206,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/video/download',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate pre-signed URLs for video download',
       responses: {
@@ -159,7 +224,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -168,6 +234,11 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = await assertCallerOwnsDownloadKeys(c, keys);
+      if (forbidden) {
+        return forbidden;
+      }
 
       const signedUrls = await generateVideoDownloadPresignedUrls(keys);
 
@@ -180,7 +251,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/download',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate pre-signed URLs for document download',
       responses: {
@@ -197,7 +269,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: CourseWriteForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -206,6 +279,11 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = await assertCallerOwnsDownloadKeys(c, keys);
+      if (forbidden) {
+        return forbidden;
+      }
 
       const signedUrls = await generateDocumentDownloadPresignedUrls(keys);
 

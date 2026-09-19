@@ -13,7 +13,16 @@ export const courseMemberOrAutomationKeyMiddleware =
       const automationKey = c.get('automationKey');
 
       if (!automationKey) {
-        return courseMemberMiddleware(c, next);
+        return courseMemberMiddleware(c, async () => {
+          const user = c.get('user')!;
+          const courseId = c.req.param('courseId') || c.req.query('courseId');
+          const courseOrgId = courseId ? await getCourseOrganizationId(courseId) : null;
+
+          c.set('orgId', courseOrgId);
+          c.set('actorId', user.id);
+
+          return next();
+        });
       }
 
       if (!organizationApiKeyHasScopes(automationKey.scopes ?? [], requiredScopes)) {

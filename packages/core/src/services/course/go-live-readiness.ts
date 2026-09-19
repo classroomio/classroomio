@@ -34,17 +34,7 @@ export type CourseGoLiveReadiness = {
 type CourseReadinessInput = {
   course: Pick<
     TCourse,
-    | 'id'
-    | 'title'
-    | 'description'
-    | 'overview'
-    | 'slug'
-    | 'logo'
-    | 'bannerImage'
-    | 'metadata'
-    | 'type'
-    | 'cost'
-    | 'certificate'
+    'id' | 'title' | 'description' | 'overview' | 'slug' | 'bannerImage' | 'metadata' | 'type' | 'cost' | 'certificate'
   >;
   contentItems: CourseContentItemRow[];
   suggestedSlug?: string;
@@ -148,8 +138,10 @@ export function evaluateCourseGoLiveReadiness(input: CourseReadinessInput): Cour
     metadataFixes.requirements = '';
   }
 
-  if (!course.logo && !course.bannerImage) {
-    blockers.push(buildIssue('LANDING_IMAGE_MISSING', 'Add a landing-page banner or course image.', 'course.logo'));
+  if (!course.bannerImage) {
+    blockers.push(
+      buildIssue('LANDING_IMAGE_MISSING', 'Add a landing-page banner or course image.', 'course.bannerImage')
+    );
     landingPageFixes.generateImage = true;
   }
 

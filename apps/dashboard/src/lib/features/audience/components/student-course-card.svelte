@@ -26,8 +26,8 @@
 <Card.Root class="ui:gap-0 ui:overflow-hidden ui:py-0">
   <div class="flex items-start gap-3 p-4">
     <div class="h-12 w-16 shrink-0 overflow-hidden rounded-sm">
-      {#if course.logo}
-        <img src={course.logo} alt="" class="h-full w-full object-cover" />
+      {#if course.bannerImage}
+        <img src={course.bannerImage} alt="" class="h-full w-full object-cover" />
       {:else}
         <img src="/images/classroomio-course-img-template.jpg" alt="" class="h-full w-full object-cover" />
       {/if}

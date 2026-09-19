@@ -9,9 +9,9 @@ import { DEFAULT_COURSE_BANNER_IMAGE } from '../course-card/constants';
 import type { CourseItem } from './types';
 
 export function getCourseCoverImage(course: CourseItem): string {
-  const logo = course.logo?.trim();
-  if (logo) {
-    return logo;
+  const bannerImage = course.bannerImage?.trim();
+  if (bannerImage) {
+    return bannerImage;
   }
 
   const image = course.image?.trim();
