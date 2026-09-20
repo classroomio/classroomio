@@ -4,8 +4,12 @@ on:
   push:
     branches: [main]
     paths:
+      - "packages/certificates/**"
+      - "packages/email/**"
+      - "packages/question-types/**"
       - "packages/storybook/**"
       - "packages/ui/**"
+      - "packages/utils/**"
   workflow_dispatch:
 
 env:
