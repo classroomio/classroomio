@@ -98,6 +98,8 @@
                             {/if}
                             {#if item.upgrade}
                               <PremiumIcon {isHovered} size={16} class="ui:text-primary ml-auto" />
+                            {:else if item.count}
+                              <Sidebar.MenuBadge>{formatCompactCount(item.count)}</Sidebar.MenuBadge>
                             {/if}
                           </a>
                         {/if}
@@ -105,9 +107,6 @@
                     </HoverableItem>
                   {/snippet}
                 </Sidebar.MenuButton>
-                {#if item.count && !item.upgrade}
-                  <Sidebar.MenuBadge>{formatCompactCount(item.count)}</Sidebar.MenuBadge>
-                {/if}
               {/if}
               {#if item.items}
                 <Collapsible.Content>
