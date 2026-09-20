@@ -944,6 +944,7 @@
         "cover_image": "Titelbild",
         "optional_image": "Dieses optionale Bild wird auf Ihrer Willkommensseite angezeigt. Wenn Sie eines hinzufügen, sollte es mindestens 280 x 200 groß sein",
         "replace": "Ersetzen",
+        "remove": "Entfernen",
         "del": "Löschen",
         "course_details": "Kursdetails",
         "course_title": "Kurstitel",
@@ -951,6 +952,7 @@
         "placeholder": "Schreiben Sie hier Ihre Kursbeschreibung",
         "course_title_placeholder": "Schreiben Sie hier den Kurstitel",
         "setup_landing_for_link": "Richten Sie die Zielseite ein, um den Kurslink zu erhalten",
+        "setup_landing_page": "Zielseite einrichten",
         "coming_soon": "Kommt bald",
         "link": "Kurslink",
         "grading": "Benotung",
@@ -1036,6 +1038,9 @@
           "description": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
           "placeholder": "Schreiben Sie die Willkommensnachricht, die Studierende bei der Einschreibung erhalten …"
         },
+        "general_card_title": "Allgemein",
+        "content_card_title": "Inhalt",
+        "access_card_title": "Zugriff",
         "locked_content": {
           "title": "{count} Kurselemente sind gesperrt",
           "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
