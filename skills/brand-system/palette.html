@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Colour foundation · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="stage.css" />
+    <style>
+      html, body { overflow: auto; background: var(--bone); height: auto; }
+      body { color: var(--ink); padding: 0 0 120px; }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
+
+      .top { padding: 72px 0 48px; }
+      .eyebrow { font-family: ui-monospace, Menlo, monospace; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-muted); margin: 0 0 18px; display: flex; align-items: center; gap: 12px; }
+      .eyebrow::before { content: ''; width: 9px; height: 9px; background: var(--blue); }
+      h1 { font-size: 72px; letter-spacing: -0.045em; line-height: 1.02; margin: 0 0 24px; max-width: 16ch; }
+      .lede { font-size: 20px; line-height: 1.55; color: var(--fg-muted); max-width: 62ch; margin: 0 0 14px; }
+      .lede b { color: var(--ink); font-weight: 600; }
+
+      h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-muted); margin: 0 0 20px; padding-top: 52px; border-top: 1px solid var(--line); }
+
+      .ramp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; border: 1px solid var(--line); margin-bottom: 14px; }
+      .ramp div { padding: 88px 16px 18px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; line-height: 1.7; }
+      .ramp b { display: block; font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+      .note { font-size: 15px; line-height: 1.6; color: var(--fg-muted); max-width: 62ch; margin: 0 0 40px; }
+
+      .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 14px; }
+      .pair > div { padding: 40px 34px; }
+      .pair .on-light { background: var(--bone); border: 1px solid var(--line); }
+      .pair .on-dark { background: var(--ink); color: #f4efe6; }
+      .pair h3 { font-size: 38px; letter-spacing: -0.035em; margin: 0 0 10px; font-weight: 600; }
+      .pair em { font-style: normal; }
+      .pair .on-light em { color: var(--blue); }
+      .pair .on-dark em { color: var(--blue-300); }
+      .pair p { margin: 0; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; letter-spacing: 0.06em; opacity: 0.6; }
+
+      .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 34px 48px; margin-bottom: 20px; }
+      .principle h3 { font-size: 19px; letter-spacing: -0.015em; margin: 0 0 8px; }
+      .principle p { font-size: 15.5px; line-height: 1.6; color: var(--fg-muted); margin: 0; }
+
+      .uses { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+      .use { border: 1px solid var(--line); padding: 26px 28px; background: var(--paper); }
+      .use b { display: block; font-size: 17px; letter-spacing: -0.015em; margin-bottom: 8px; }
+      .use p { margin: 0; font-size: 15px; line-height: 1.58; color: var(--fg-muted); }
+      .use code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; background: var(--surface-sunk); padding: 2px 6px; }
+      @media (max-width: 900px) { .ramp, .pair, .rules, .uses { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <p class="eyebrow">ClassroomIO — colour foundation</p>
+        <h1>One warm ramp. One blue.</h1>
+        <p class="lede">
+          Every marketing asset sits on <b>Bone</b>. Changelog videos, social cuts, academy materials,
+          carousels and the site all draw from this one ramp, so they look related without being identical.
+        </p>
+        <p class="lede">
+          <b>Blue is the colour people should remember</b> — it belongs in every asset, at a size you can
+          actually see. What it must not be is the background, or sprayed across every element at once.
+          Bone is the ground that makes it register.
+        </p>
+      </div>
+
+      <h2>The ramp</h2>
+      <div class="ramp">
+        <div style="background:#fdfbf7"><b>Paper</b>#FDFBF7<br />cards, panels</div>
+        <div style="background:#f6f2e9"><b>Bone 100</b>#F6F2E9<br />raised areas</div>
+        <div style="background:#efe9dd"><b>Bone</b>#EFE9DD<br />the field</div>
+        <div style="background:#e3dacA"><b>Bone 300</b>#E3DACA<br />alternate sections</div>
+        <div style="background:#2a251d; color:#f4efe6"><b>Ink 800</b>#2A251D<br />rules, deep fills</div>
+        <div style="background:#17140f; color:#f4efe6"><b>Ink</b>#17140F<br />text, dark field</div>
+      </div>
+      <p class="note">
+        Five steps of the same warm hue, plus the ink that text is set in. Alternating Bone and Bone&nbsp;300
+        is how a carousel or a landing page gets rhythm without introducing a second colour.
+      </p>
+
+      <h2>The accent, and its pair</h2>
+      <div class="pair">
+        <div class="on-light">
+          <h3>Build what people <em>want</em>.</h3>
+          <p>BLUE #0233BD ON BONE · 8.9:1</p>
+        </div>
+        <div class="on-dark">
+          <h3>Build what people <em>want</em>.</h3>
+          <p>BLUE 300 #ADC3FF ON INK · 9.1:1</p>
+        </div>
+      </div>
+      <p class="note">
+        One blue, two values. <b>#0233BD</b> on anything light, <b>#ADC3FF</b> on ink — the deep blue goes muddy
+        on a dark field and stops reading as an accent. Both clear AA for large text and body.
+      </p>
+
+      <h2>Rules</h2>
+      <div class="rules">
+        <div class="principle">
+          <h3>Blue should be obvious, not ambient</h3>
+          <p>Every asset needs a blue element big enough to register from across a room — a filled chip, the key word in the headline, the live state, the CTA. If someone has to hunt for the blue, there is not enough of it.</p>
+        </div>
+        <div class="principle">
+          <h3>Blue is a mark, not a ground</h3>
+          <p>It goes on the things that carry meaning: the active item, the number that matters, the action — not on every badge, bar, icon and rule in the same frame. <b>.field-blue</b> is the deliberate exception, and it spends the accent: on a blue field the accent resolves to white, so nothing can be blue to stand out.</p>
+        </div>
+        <div class="principle">
+          <h3>State colour is a dot, not a scheme</h3>
+          <p>Green #1D6B40 and amber #A6620E exist for done and needs-attention. One dot or one number — never a badge, a bar and a tick for the same fact.</p>
+        </div>
+        <div class="principle">
+          <h3>Grain on every field</h3>
+          <p>A fine noise overlay is most of why flat colour reads as designed rather than default. It lives on the stage and costs nothing.</p>
+        </div>
+      </div>
+
+      <h2>Across the assets</h2>
+      <div class="uses">
+        <div class="use">
+          <b>Weekly changelog videos</b>
+          <p>Bone throughout, one Ink frame for the cover or the sign-off. The version number is a filled blue chip, and each shipped item takes the blue as it lands.</p>
+        </div>
+        <div class="use">
+          <b>Social video</b>
+          <p>Ink fields cut through a bright feed better than Bone. Use <code>data-tone="dark"</code> for the hook frame, Bone for the body.</p>
+        </div>
+        <div class="use">
+          <b>Academy materials</b>
+          <p>Bone as the page, Paper for cards and worksheets, Bone 300 to separate sections. Blue only on the action a learner should take.</p>
+        </div>
+        <div class="use">
+          <b>Marketing carousels</b>
+          <p>Alternate Bone and Bone 300 slide to slide so the deck breathes. Cover on Ink, and every slide carries one blue element — the number, the label, or the CTA.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+/* Motion language.
+
+   One easing curve, three durations, one travel distance. Motion here is
+   always an entrance — things arrive and stay. Nothing loops, nothing
+   breathes, nothing draws attention to itself after it has landed, because
+   these assets sit under a voiceover or a reader's attention and competing
+   with either is a bug.
+
+   Reveals are stepped by hand rather than timed, so a frame lands on the
+   word being spoken instead of on a stopwatch. */
+
+[data-beat] {
+  opacity: 0;
+  transform: translateY(var(--travel));
+  transition:
+    opacity var(--t-slow) var(--ease),
+    transform var(--t-slow) var(--ease),
+    color var(--t-slow) var(--ease);
+  transition-delay: var(--delay, 0s);
+}
+[data-beat].on {
+  opacity: 1;
+  transform: none;
+}
+
+.m-rise {
+  transform: translateY(var(--travel-lg));
+}
+.m-left {
+  transform: translateX(calc(var(--travel-lg) * -0.75));
+}
+.m-still {
+  transform: none;
+}
+
+[data-beat-until].gone {
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease);
+  pointer-events: none;
+}
+
+.m-dim {
+  transition: opacity var(--t-slow) var(--ease), color var(--t-slow) var(--ease);
+}
+.m-dim.faded {
+  opacity: 0.3;
+}
+
+/* A slow push-out under a product shot so a held frame is never static.
+   Long enough that it reads as camera, not animation. */
+.m-settle.on {
+  animation: m-settle var(--t-settle) var(--ease) forwards;
+}
+@keyframes m-settle {
+  from {
+    transform: scale(1.035);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-beat],
+  .m-dim {
+    transition-duration: 0.01ms;
+  }
+  .m-settle.on {
+    animation: none;
+  }
+}

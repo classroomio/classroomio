@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>05 · Rapid-fire · What companies already have</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../motion.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <link rel="stylesheet" href="../stage.css" />
+    <style>
+      .lede { position: absolute; left: 0; top: 150px; }
+      .lede .headline { color: var(--fg-muted); font-size: 54px; }
+      .list { position: absolute; left: 0; right: 0; top: 268px; }
+      .count { position: absolute; left: var(--gutter); bottom: 122px; display: flex; align-items: baseline; gap: 28px; }
+      .count .n { font-size: 116px; font-weight: 600; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--accent); }
+      .count .l { font-size: 31px; font-weight: 500; letter-spacing: -0.015em; color: var(--fg-muted); max-width: 760px; line-height: 1.25; }
+      .tail { position: absolute; right: var(--gutter); bottom: 122px; width: 620px; display: flex; flex-wrap: wrap; gap: 9px; justify-content: flex-end; }
+      .tail span { font-family: ui-monospace, Menlo, monospace; font-size: 15px; letter-spacing: 0.06em; padding: 8px 13px; border: 1px solid var(--line); color: var(--fg-faint); }
+    </style>
+  </head>
+  <body data-scene="05 · rapid-fire">
+    <div class="stage-fit">
+      <div class="stage">
+        <div class="kicker">Before ClassroomIO</div>
+
+        <div class="lede"><p class="headline">Companies already have</p></div>
+
+        <ul class="list stack">
+          <li data-beat="1" class="m-left">
+            <span class="n">01</span>
+            <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+            Academies
+          </li>
+          <li data-beat="2" class="m-left">
+            <span class="n">02</span>
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            Documentation
+          </li>
+          <li data-beat="3" class="m-left">
+            <span class="n">03</span>
+            <svg viewBox="0 0 24 24"><path d="M9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Tutorials
+          </li>
+          <li data-beat="4" class="m-left">
+            <span class="n">04</span>
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="14" height="14" rx="3"/><path d="m22 8-6 4 6 4V8Z"/></svg>
+            Videos
+          </li>
+          <li data-beat="5" class="m-left">
+            <span class="n">05</span>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            Help centres
+          </li>
+        </ul>
+
+        <div class="count" data-beat="6">
+          <span class="n">1,157</span>
+          <span class="l">pieces of customer education, and more of it than anyone knows what to do with.</span>
+        </div>
+
+        <div class="tail" data-beat="6" style="--delay: 0.18s">
+          <span>getting started</span><span>sso setup</span><span>billing faq</span><span>api keys</span>
+          <span>webhooks 101</span><span>admin roles</span><span>q2 webinar</span><span>migration guide</span>
+          <span>release 4.1</span><span>data export</span><span>slack app</span><span>custom fields</span>
+          <span>audit log</span><span>seat limits</span><span>zapier recipes</span><span>troubleshooting</span>
+        </div>
+      </div>
+    </div>
+    <script src="../stage.js"></script>
+    <script>
+      const items = [...document.querySelectorAll('.stack li')];
+
+      addEventListener('beat', (event) => {
+        items.forEach((item) => item.classList.toggle('lit', +item.dataset.beat === event.detail));
+      });
+    </script>
+  </body>
+</html>
