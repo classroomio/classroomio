@@ -28,6 +28,16 @@ YouTube thumbnails and video frames all come from the foundation here now. If yo
 asset still built on those old gradients, it predates this and should be rebuilt, not
 matched.
 
+## Scope
+
+This is the **marketing** system: video frames, thumbnails, social, academy materials,
+carousels, and marketing pages. It is not the product design system — the app has its own
+tokens in `packages/ui` with a different ground and a different blue, because a dense
+interface someone works in for an hour and a thumbnail that gets half a second in a feed
+are opposing constraints. Keep them separate: don't move these tokens into `packages/ui`,
+don't import `@cio/ui` here, and don't reconcile the palettes. `reference.md` has the
+comparison.
+
 ## The three rules that matter most
 
 **Blue should be obvious, not ambient.** `#0233BD` is the colour people should remember us

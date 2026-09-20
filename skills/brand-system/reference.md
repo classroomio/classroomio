@@ -69,8 +69,21 @@ nothing loops or breathes, because these sit under a voiceover or a reader's att
   page gutter. `.panel` is the product-shot treatment, `.chip` + `.leader` the feature
   annotation. Grain stays.
 
-## Where this should live
+## This is not the product design system
 
-It sits under `prototypes/` because that is where the work happened. When the site adopts
-it, `tokens.css` is the part that should move into `packages/ui` so the product and the
-marketing surfaces resolve the same values.
+Marketing and product are deliberately separate systems, and these tokens stay in this
+skill. Do not move them into `packages/ui`, do not import `@cio/ui` tokens here, and do
+not "reconcile" the two palettes — they are already different on purpose:
+
+| | Product (`packages/ui`) | Marketing (here) |
+| --- | --- | --- |
+| Ground | `oklch(1 0 0)` — pure white | Bone `#EFE9DD` |
+| Blue | `oklch(0.488 0.243 264.376)` | `#0233BD` |
+| Type | dense, functional, small | display type at a quarter of the canvas |
+| Job | comprehension in a dense interface, hours at a time | attention at a glance, seconds at a time |
+
+A product UI has to stay quiet while someone works inside it for an hour. A thumbnail has
+half a second in a feed. Those are opposing constraints, and a single token set serving
+both would either flatten the marketing or shout in the app.
+
+The shared thing is the brand, not the values — same logo, same Geist, same voice.
