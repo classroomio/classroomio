@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { renderHtmlDiff, tokenizeHtml } from './lesson-version-diff';
 
 const ADDED = '<ins class="version-added">';
