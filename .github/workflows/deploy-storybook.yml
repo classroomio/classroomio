@@ -15,6 +15,9 @@ on:
 env:
   NODE_VERSION: "20"
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy-storybook:
     runs-on: ubuntu-latest
@@ -23,6 +26,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
