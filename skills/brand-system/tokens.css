@@ -18,23 +18,39 @@
   --ok: #1d6b40;
   --warn: #a6620e;
 
-  /* ---- type ----------------------------------------------------------- */
+  /* ---- canvas --------------------------------------------------------
+     Every dimension below is a multiple of --u, which derives from the
+     width of whatever the asset sits in. Set --canvas and the whole system
+     rescales: a 1080-wide vertical, a 1350 carousel slide and a 390px phone
+     viewport each get type in the same proportion as the 1920 frame it was
+     drawn at. Numbers stay written at their 1920 value so they remain
+     legible; --u is the scale factor, 1 at 1920.
+
+       fixed canvas   .stage sets --canvas from data-w
+       web            .brand-web sets --canvas from the viewport
+       anything else  set --canvas yourself, in px                      */
+  --canvas: 1920px;
+  --u: calc(var(--canvas) / 1920);
+
+  /* ---- type -----------------------------------------------------------
+     Family, weights, tracking and leading are brand identity and never
+     scale. Sizes are canvas-relative. */
   --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 
-  --size-display-xl: 228px;
-  --size-display: 176px;
-  --size-display-s: 128px;
-  --size-headline: 76px;
-  --size-headline-s: 64px;
-  --size-title: 38px;
-  --size-title-s: 31px;
-  --size-body-lg: 36px;
-  --size-body: 26px;
-  --size-body-s: 21px;
-  --size-mono-lg: 22px;
-  --size-mono: 17px;
-  --size-mono-s: 15px;
+  --size-display-xl: calc(228 * var(--u));
+  --size-display: calc(176 * var(--u));
+  --size-display-s: calc(128 * var(--u));
+  --size-headline: calc(76 * var(--u));
+  --size-headline-s: calc(64 * var(--u));
+  --size-title: calc(38 * var(--u));
+  --size-title-s: calc(31 * var(--u));
+  --size-body-lg: calc(36 * var(--u));
+  --size-body: calc(26 * var(--u));
+  --size-body-s: calc(21 * var(--u));
+  --size-mono-lg: calc(22 * var(--u));
+  --size-mono: calc(17 * var(--u));
+  --size-mono-s: calc(15 * var(--u));
 
   --track-display: -0.05em;
   --track-headline: -0.035em;
@@ -52,18 +68,19 @@
   --weight-bold: 700;
 
   /* ---- space ---------------------------------------------------------- */
-  --space-1: 8px;
-  --space-2: 12px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 32px;
-  --space-6: 48px;
-  --space-7: 64px;
-  --space-8: 80px;
-  --gutter: 104px;
+  --space-1: calc(8 * var(--u));
+  --space-2: calc(12 * var(--u));
+  --space-3: calc(16 * var(--u));
+  --space-4: calc(24 * var(--u));
+  --space-5: calc(32 * var(--u));
+  --space-6: calc(48 * var(--u));
+  --space-7: calc(64 * var(--u));
+  --space-8: calc(80 * var(--u));
+  --gutter: calc(104 * var(--u));
 
-  --radius: 14px;
-  --radius-lg: 22px;
+  --radius: calc(14 * var(--u));
+  --radius-lg: calc(22 * var(--u));
+  --hairline: max(1px, calc(1.5 * var(--u)));
 
   /* ---- motion --------------------------------------------------------- */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -73,8 +90,15 @@
   --t-slow: 550ms;
   --t-settle: 9s;
   --stagger: 80ms;
-  --travel: 18px;
-  --travel-lg: 40px;
+  --travel: calc(18 * var(--u));
+  --travel-lg: calc(40 * var(--u));
+}
+
+/* Web. Type tracks the viewport but stops growing on very large screens and
+   stops shrinking past the point where a display line is still a display
+   line rather than a headline. */
+.brand-web {
+  --canvas: clamp(620px, 100vw, 1760px);
 }
 
 /* ---- fields ------------------------------------------------------------

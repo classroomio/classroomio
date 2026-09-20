@@ -31,6 +31,7 @@ body {
 .stage {
   width: var(--stage-w, 1920px);
   height: var(--stage-h, 1080px);
+  --canvas: var(--stage-w, 1920px);
   position: absolute;
   top: 0;
   left: 0;
@@ -39,6 +40,33 @@ body {
   transform-origin: top left;
   background: var(--field);
   color: var(--fg);
+}
+
+/* Grain belongs to any field, so a stage carries it without being asked. */
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: var(--grain);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Type runs hard against the gutter on a stage — that left edge is most of
+   why these read as film rather than as slides. */
+.stage .display,
+.stage .headline,
+.stage .stack {
+  padding-left: var(--gutter);
+}
+.stage .display {
+  white-space: nowrap;
+}
+.stage .display.wrap {
+  font-size: var(--size-display);
+  white-space: normal;
 }
 
 .stage .kicker {

@@ -57,6 +57,55 @@ real brand blue on every field.
 Alternate Bone and Bone 300 across a sequence or down a page so it breathes. Drop in a dark
 or blue field at most once per run.
 
+## Sizing: set the canvas, not the numbers
+
+Nothing in this system is tied to 1920×1080. Every dimension is a multiple of `--u`,
+which derives from `--canvas` — the width of whatever the asset lives in. Set the canvas
+and type, gutter, spacing and travel all rescale in proportion, so a carousel slide, a
+vertical cut and a web hero are the same design at different sizes rather than three
+different designs.
+
+```html
+<!-- fixed canvas: .stage sets --canvas from data-w -->
+<div class="stage" data-w="1080" data-h="1350" style="--stage-w:1080px; --stage-h:1350px">
+
+<!-- web: --canvas tracks the viewport, clamped at both ends -->
+<body class="brand-web">
+
+<!-- anything else -->
+<div style="--canvas: 1200px">
+```
+
+Sizes are written at their 1920 value (`--size-display-xl` is `228 * --u`) so the numbers
+stay legible; `--u` is 1 at 1920 and 0.5625 at 1080.
+
+What scales: type sizes, gutter, spacing, radius, travel distance.
+What never scales, because it is identity rather than dimension: colour, font family,
+weights, tracking (already in `em`), leading (unitless), easing curves and durations.
+
+**Design at the canvas you will ship at.** Don't build at 1920 and shrink — a 16:9 frame
+reflowed to 9:16 needs its content rebalanced into bands, not squashed. The system keeps
+the proportions right; it can't decide the composition for you.
+
+## How much text
+
+There is no single ceiling, because the constraint is how the asset is consumed. The two
+questions that decide it: **is it watched or read**, and **is anything other than the
+screen carrying the meaning**. Social autoplays muted, which is why it gets more text than
+a film frame with a voiceover, not less.
+
+| Surface | Ceiling | Why |
+| --- | --- | --- |
+| Thumbnail in a grid | ≤5 words total, one idea | seen at ~320px against dozens of others |
+| Film frame with voiceover | headline ≤8 words, no sub-paragraph | the voice carries the argument; the screen just lands the word |
+| Social video, muted autoplay | headline ≤8 words + one sub line ≤12 | nothing else is carrying it |
+| Carousel slide | headline + ≤25 words | held in the hand and read at the reader's pace |
+| Academy material, web section | headline + a short paragraph | read, not watched |
+
+When you are over the ceiling, **cut the sentence — never shrink the type**. Shrinking is
+what turns one of these into a slide: the composition depends on display type being
+genuinely large against the field.
+
 ## Type, space, motion
 
 Type is the subject: display runs 176–228px hard against the 104px gutter and may bleed off
