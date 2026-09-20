@@ -211,8 +211,6 @@
       "section_update_failed": "Falha ao atualizar a seção do curso",
       "sections_reordered": "Seções do curso reordenadas com sucesso",
       "sections_reorder_failed": "Falha ao reordenar as seções do curso",
-      "lessons_reordered": "Lições reordenadas com sucesso",
-      "lessons_reorder_failed": "Falha ao reordenar aulas",
       "comment_fetch_failed": "Falha ao buscar comentários da lição",
       "load_more_comments_failed": "Falha ao carregar mais comentários",
       "comment_add_failed": "Falha ao adicionar comentário",

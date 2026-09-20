@@ -211,8 +211,6 @@
       "section_update_failed": "Không thể cập nhật phần khóa học",
       "sections_reordered": "Các phần khóa học đã được sắp xếp lại thành công",
       "sections_reorder_failed": "Không thể sắp xếp lại các phần khóa học",
-      "lessons_reordered": "Bài học được sắp xếp lại thành công",
-      "lessons_reorder_failed": "Không thể sắp xếp lại bài học",
       "comment_fetch_failed": "Không thể lấy nhận xét bài học",
       "load_more_comments_failed": "Không thể tải thêm bình luận",
       "comment_add_failed": "Không thể thêm nhận xét",

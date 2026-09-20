@@ -63,12 +63,6 @@ export type PromoteUngroupedSectionResponse = InferResponseType<PromoteUngrouped
 export type PromoteUngroupedSectionSuccess = Extract<PromoteUngroupedSectionResponse, { success: true }>;
 export type PromoteUngroupedSectionData = PromoteUngroupedSectionSuccess['data'];
 
-// Reorder lessons types
-export type ReorderLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['reorder']['$post'];
-export type ReorderLessonsResponse = InferResponseType<ReorderLessonsRequest>;
-export type ReorderLessonsSuccess = Extract<ReorderLessonsResponse, { success: true }>;
-export type ReorderLessonsData = ReorderLessonsSuccess['data'];
-
 // Course Section type (derived from Course API response which includes course_section array)
 // Since sections are returned as part of Course, we can use CreateCourseSectionData or UpdateCourseSectionData
 // But for consistency, we'll use the create response as the base type

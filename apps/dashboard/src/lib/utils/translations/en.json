@@ -4677,8 +4677,6 @@
       "section_update_failed": "Failed to update course section",
       "sections_reordered": "Course sections reordered successfully",
       "sections_reorder_failed": "Failed to reorder course sections",
-      "lessons_reordered": "Lessons reordered successfully",
-      "lessons_reorder_failed": "Failed to reorder lessons",
       "comment_fetch_failed": "Failed to fetch lesson comments",
       "load_more_comments_failed": "Failed to load more comments",
       "comment_add_failed": "Failed to add comment",

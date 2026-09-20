@@ -211,8 +211,6 @@
       "section_update_failed": "Échec de la mise à jour de la section du cours",
       "sections_reordered": "Sections de cours réorganisées avec succès",
       "sections_reorder_failed": "Échec de la réorganisation des sections de cours",
-      "lessons_reordered": "Leçons réorganisées avec succès",
-      "lessons_reorder_failed": "Échec de la réorganisation des cours",
       "comment_fetch_failed": "Échec de la récupération des commentaires de la leçon",
       "load_more_comments_failed": "Échec du chargement de plus de commentaires",
       "comment_add_failed": "Échec de l'ajout d'un commentaire",

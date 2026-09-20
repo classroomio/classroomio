@@ -211,8 +211,6 @@
       "section_update_failed": "Не удалось обновить раздел курса.",
       "sections_reordered": "Разделы курса успешно изменены",
       "sections_reorder_failed": "Не удалось изменить порядок разделов курса.",
-      "lessons_reordered": "Уроки успешно изменены",
-      "lessons_reorder_failed": "Не удалось изменить порядок уроков.",
       "comment_fetch_failed": "Не удалось получить комментарии к уроку.",
       "load_more_comments_failed": "Не удалось загрузить больше комментариев.",
       "comment_add_failed": "Не удалось добавить комментарий",

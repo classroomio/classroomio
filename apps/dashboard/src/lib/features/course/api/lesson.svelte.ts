@@ -19,7 +19,6 @@ import type {
   LessonComments,
   PromoteUngroupedSectionRequest,
   ReorderCourseSectionsRequest,
-  ReorderLessonsRequest,
   UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
@@ -36,7 +35,7 @@ import type {
   TCourseSectionReorder,
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
-import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
 import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
 import {
   ZCourseSectionCreate,
@@ -44,13 +43,7 @@ import {
   ZCourseSectionReorder,
   ZCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
-import {
-  ZLessonCommentCreate,
-  ZLessonCommentUpdate,
-  ZLessonCreate,
-  ZLessonReorder,
-  ZLessonUpdate
-} from '@cio/utils/validation/lesson';
+import { ZLessonCommentCreate, ZLessonCommentUpdate, ZLessonCreate, ZLessonUpdate } from '@cio/utils/validation/lesson';
 
 import type { TLocale } from '@cio/db/types';
 import { get } from 'svelte/store';
@@ -377,38 +370,6 @@ export class LessonApi extends BaseApiWithErrors {
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('snackbar.lessons.sections_reorder_failed');
-        }
-      }
-    });
-  }
-
-  /**
-   * Reorders lessons
-   */
-  async reorderLessons(courseId: string, lessons: TLessonReorder['lessons']) {
-    const result = ZLessonReorder.safeParse({ lessons });
-    if (!result.success) {
-      this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
-      return;
-    }
-
-    await this.execute<ReorderLessonsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson.reorder.$post({
-          param: { courseId },
-          json: result.data
-        }),
-      logContext: 'reordering lessons',
-      onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('snackbar.lessons.lessons_reordered');
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lessons_reorder_failed');
         }
       }
     });
