@@ -11,8 +11,8 @@ export { default as PublicCourseCallout } from './callout.svelte';
 export { default as CopyPageButton } from './copy-page-button.svelte';
 export { default as ShareButton } from './share-button.svelte';
 export { default as OutlineRailActions } from './outline-rail-actions.svelte';
-export { buildChatGptUrl, buildClaudeUrl, buildStudyPrompt, fetchLessonMarkdown } from './copy-page-utils';
-export type { CopyPageLabels } from './copy-page-utils';
+export { buildStudyChatUrl, fetchLessonMarkdown } from './copy-page-utils';
+export type { CopyPageLabels, StudyChatInput, StudyChatTarget } from './copy-page-utils';
 export { buildFacebookShareUrl, buildLinkedInShareUrl, buildXShareUrl, openShareWindow } from './share-utils';
 export type { OutlineRailActionLabels, ShareActionLabels } from './share-utils';
 

@@ -7,24 +7,28 @@ export interface CopyPageLabels {
   moreActions: string;
 }
 
-export function buildStudyPrompt(input: { lessonTitle: string; courseTitle: string; publicLessonUrl: string }): string {
-  return [
+export type StudyChatTarget = 'chatgpt' | 'claude';
+
+export interface StudyChatInput {
+  lessonTitle: string;
+  courseTitle: string;
+  publicLessonUrl: string;
+}
+
+export function buildStudyChatUrl(target: StudyChatTarget, input: StudyChatInput): string {
+  const prompt = [
     `I'm studying "${input.lessonTitle}" from the course "${input.courseTitle}" (${input.publicLessonUrl}).`,
     'Help me understand the concepts, give examples, or help debug based on it.'
   ].join('\n');
-}
+  const encodedPrompt = encodeURIComponent(prompt);
 
-export function buildChatGptUrl(prompt: string): string {
-  return `https://chatgpt.com/?prompt=${encodeURIComponent(prompt)}`;
-}
-
-/**
- * Claude's web composer historically accepted `q`. That param is unofficial
- * and has broken before; callers still open `/new` so the learner can paste
- * if the prompt is ignored.
- */
-export function buildClaudeUrl(prompt: string): string {
-  return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+  switch (target) {
+    case 'chatgpt':
+      return `https://chatgpt.com/?prompt=${encodedPrompt}`;
+    case 'claude':
+      // Claude's /new composer only unofficially reads `q`; open `/new` so learners can paste if it is ignored.
+      return `https://claude.ai/new?q=${encodedPrompt}`;
+  }
 }
 
 /** Fetches the lesson Markdown document, or `null` when the request fails. */

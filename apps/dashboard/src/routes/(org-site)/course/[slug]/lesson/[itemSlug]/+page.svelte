@@ -4,9 +4,7 @@
   import { toPublicExerciseView, toPublicLessonView } from '$features/course/utils/public-course-mappers';
   import { snackbar } from '$features/ui/snackbar/store';
   import {
-    buildChatGptUrl,
-    buildClaudeUrl,
-    buildStudyPrompt,
+    buildStudyChatUrl,
     publicExerciseAttemptsStorageKey,
     type PublicLessonViewData,
     type PublicExerciseViewData,
@@ -58,16 +56,14 @@
   );
   const markdownUrl = $derived(`/course/${data.tree.course.slug}/lesson/${itemSlug}/markdown`);
   const publicItemUrl = $derived(`${page.url.origin}${page.url.pathname}`);
-  const studyPrompt = $derived(
-    buildStudyPrompt({
-      lessonTitle: 'title' in data.item ? data.item.title : data.tree.course.title,
-      courseTitle: data.tree.course.title,
-      publicLessonUrl: publicItemUrl
-    })
-  );
-  const chatgptUrl = $derived(buildChatGptUrl(studyPrompt));
-  const claudeUrl = $derived(buildClaudeUrl(studyPrompt));
   const pageTitle = $derived('title' in data.item ? data.item.title : data.tree.course.title);
+  const studyChatInput = $derived({
+    lessonTitle: pageTitle,
+    courseTitle: data.tree.course.title,
+    publicLessonUrl: publicItemUrl
+  });
+  const chatgptUrl = $derived(buildStudyChatUrl('chatgpt', studyChatInput));
+  const claudeUrl = $derived(buildStudyChatUrl('claude', studyChatInput));
 
   const railLabels = $derived<OutlineRailActionLabels>({
     copyAsMarkdown: t.get('public_course.rail.copy_as_markdown'),
