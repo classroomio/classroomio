@@ -135,6 +135,7 @@
                         <DropdownMenu.Trigger class="flex shrink-0 items-center justify-center">
                           <IconButton
                             variant="outline"
+                            size="icon-sm"
                             class="pointer-events-none opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100"
                             aria-label={$t('tags_admin.actions.actions_menu')}
                           >
@@ -186,6 +187,7 @@
                           <DropdownMenu.Trigger class="inline-flex items-center justify-center">
                             <IconButton
                               variant="outline"
+                              size="icon-sm"
                               class="pointer-events-none opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100"
                               aria-label={$t('tags_admin.actions.actions_menu')}
                             >
