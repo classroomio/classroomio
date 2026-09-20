@@ -124,7 +124,7 @@
               {#each tagApi.tagGroups as group (group.id)}
                 <Table.Row class="group ui:bg-muted/20">
                   <Table.Cell colspan={5}>
-                    <div class="flex items-start justify-between gap-4 py-1">
+                    <div class="flex items-center justify-between gap-4 py-1">
                       <div class="space-y-1">
                         <p class="text-sm font-semibold">{group.name}</p>
                         {#if group.description}
