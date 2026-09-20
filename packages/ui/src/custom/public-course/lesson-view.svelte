@@ -34,7 +34,7 @@
     playbackReloadLabel?: string;
     callout?: PublicCourseCalloutData | null;
     calloutAnimation?: PublicCourseCalloutAnimation;
-    /** Actions rendered beside the lesson title (e.g. Copy Page on small screens). */
+    /** Actions rendered beside the lesson title (e.g. Copy Page, Share). */
     titleActions?: Snippet;
     /** Actions rendered under the page outline (copy, share, open in chat). */
     outlineActions?: Snippet;

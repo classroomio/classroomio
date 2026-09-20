@@ -128,7 +128,7 @@
       outlineLabel={$t('public_course.outline.label')}
     >
       {#snippet titleActions()}
-        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:lg:hidden">
+        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
           {#if showCopyPage}
             <PublicCourse.CopyPageButton
               {markdownUrl}
@@ -191,7 +191,7 @@
       outlineLabel={$t('public_course.outline.label')}
     >
       {#snippet titleActions()}
-        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:lg:hidden">
+        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
           <PublicCourse.ShareButton
             pageUrl={publicItemUrl}
             {pageTitle}

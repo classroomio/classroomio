@@ -123,7 +123,7 @@
     >
       <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE}>
         {#snippet titleActions()}
-          <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2 ui:lg:hidden">
+          <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
             <PublicCourse.CopyPageButton
               markdownUrl={DEMO_MARKDOWN_URL}
               chatgptUrl={DEMO_CHATGPT_URL}
