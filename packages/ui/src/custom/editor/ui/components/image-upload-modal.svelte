@@ -17,9 +17,19 @@
     onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
     onImageSelect?: (url: string) => void;
     cropAspect?: number;
+    /** Crop after upload when an aspect ratio is required. Off by default (editor images have no size rule). */
+    enableCrop?: boolean;
   }
 
-  let { editor, open = $bindable(false), onImageUpload, onSearchUnsplash, onImageSelect, cropAspect }: Props = $props();
+  let {
+    editor,
+    open = $bindable(false),
+    onImageUpload,
+    onSearchUnsplash,
+    onImageSelect,
+    cropAspect,
+    enableCrop = !!cropAspect
+  }: Props = $props();
 
   const tabs = $derived([
     ...(onImageUpload ? [{ label: 'Upload', value: 'upload' }] : []),
@@ -48,11 +58,10 @@
     open = false;
   }
 
-  async function handleCropped(croppedUrl: string) {
+  async function uploadSelectedFile(file: File) {
     if (!onImageUpload) return;
     try {
       isUploading = true;
-      const file = await ImageCropper.getFileFromUrl(croppedUrl);
       const url = await onImageUpload(file);
       if (url) handleImageSelect(url);
     } catch (error) {
@@ -61,6 +70,11 @@
     } finally {
       isUploading = false;
     }
+  }
+
+  async function handleCropped(croppedUrl: string) {
+    const file = await ImageCropper.getFileFromUrl(croppedUrl);
+    await uploadSelectedFile(file);
   }
 
   function handleUnsupportedFile(file: File) {
@@ -108,9 +122,11 @@
               <ImageCropper.Root
                 bind:src={cropperSrc}
                 onCropped={handleCropped}
+                onFileSelected={enableCrop ? undefined : uploadSelectedFile}
                 onUnsupportedFile={handleUnsupportedFile}
                 accept=".jpg, .jpeg, .png, .webp"
                 disabled={isUploading}
+                skipCrop={!enableCrop}
               >
                 <ImageCropper.UploadTrigger
                   class="ui:flex ui:w-full ui:cursor-pointer ui:flex-col ui:items-center ui:justify-center ui:gap-2 ui:rounded-lg ui:border-2 ui:border-dashed ui:border-input ui:bg-muted/30 ui:px-6 ui:py-10 ui:text-center ui:transition-colors ui:hover:bg-muted/60"
@@ -125,13 +141,15 @@
                   {/if}
                 </ImageCropper.UploadTrigger>
 
-                <ImageCropper.Dialog class="ui:z-[350]!">
-                  <ImageCropper.Cropper cropShape="rect" {...cropAspect ? { aspect: cropAspect } : {}} />
-                  <ImageCropper.Controls>
-                    <ImageCropper.Cancel />
-                    <ImageCropper.Crop />
-                  </ImageCropper.Controls>
-                </ImageCropper.Dialog>
+                {#if enableCrop}
+                  <ImageCropper.Dialog class="ui:z-[350]!">
+                    <ImageCropper.Cropper cropShape="rect" {...cropAspect ? { aspect: cropAspect } : {}} />
+                    <ImageCropper.Controls>
+                      <ImageCropper.Cancel />
+                      <ImageCropper.Crop />
+                    </ImageCropper.Controls>
+                  </ImageCropper.Dialog>
+                {/if}
               </ImageCropper.Root>
             </div>
           </UnderlineTabs.Content>

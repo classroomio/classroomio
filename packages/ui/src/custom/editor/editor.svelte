@@ -150,7 +150,7 @@
       {/if}
     {/if}
     <EdraEditor
-      class={cn('ui:relative ui:h-128 ui:overflow-auto ui:p-4', editorClass)}
+      class={cn('ui:relative ui:h-full ui:overflow-auto ui:p-4', editorClass)}
       bind:editor
       {editable}
       {content}

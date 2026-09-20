@@ -510,12 +510,13 @@ input[type='checkbox'] {
   border: 1px solid darkred;
 }
 
-/* Image & Media Styling */
+/* Image & Media Styling — mirror dashboard `.prose img` rounding */
 .tiptap img,
 .prose img {
   max-width: 100%;
   height: auto;
   box-sizing: border-box;
+  border-radius: var(--radius-md, 0.375rem);
 }
 
 .tiptap img[data-align='center'],
