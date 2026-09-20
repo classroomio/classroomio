@@ -6,9 +6,8 @@ import { fileURLToPath } from 'node:url';
 import postgres from 'postgres';
 
 import { baselineMigrationsIfNeeded } from './baseline';
-import { resolveMigratorDatabaseUrl } from '../migrator-database-url';
 
-const connectionString = resolveMigratorDatabaseUrl();
+const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 const shouldSeed = process.argv.includes('--seed') || process.argv.includes('-s');
 const shouldSyncSchema = !process.argv.includes('--skip-schema-sync');
 const scriptPath = fileURLToPath(import.meta.url);
@@ -32,7 +31,7 @@ function getArgumentValue(argumentName: string): string | undefined {
 const seedOrganization = getArgumentValue('--organization');
 
 if (!connectionString) {
-  console.error('DIRECT_DATABASE_URL, DATABASE_URL, or PRIVATE_DATABASE_URL environment variable is required');
+  console.error('DATABASE_URL or PRIVATE_DATABASE_URL environment variable is required');
   process.exit(1);
 }
 
