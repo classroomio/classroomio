@@ -29,6 +29,11 @@ const envSchema = z.object({
   TRANSCRIBE_WORKER_CONCURRENCY: z.string().optional(),
   EMAIL_WORKER_CONCURRENCY: z.string().optional(),
   AGENT_COURSE_GENERATION_WORKER_CONCURRENCY: z.string().optional(),
+  HLS_WORKER_CONCURRENCY: z.string().optional(),
+
+  HLS_SERVER_ENCODE_ENABLED: z.string().optional(),
+  HLS_ENCODE_MAX_SOURCE_MB: z.string().optional(),
+  HLS_ENCODE_MAX_DURATION_MIN: z.string().optional(),
 
   /** Optional OpenAI key — when unset, transcribe-audio jobs no-op and OpenAI-backed agent runs fail config checks. */
   OPENAI_API_KEY: z.string().optional(),

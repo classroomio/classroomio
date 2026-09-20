@@ -118,6 +118,23 @@ export async function enqueueLessonVideoPipeline(
   };
 }
 
+export async function enqueueHlsEncode(input: {
+  mediaJobId: string;
+  assetId: string;
+  storageKey: string;
+  actorContext: TActorContext;
+}): Promise<EnqueueLessonVideoPipelineResult> {
+  const job = await getQueue(QUEUE_NAMES.mediaHls).add(JOB_NAMES.mediaHls.hlsEncode, input, {
+    ...QUEUE_DEFAULTS[QUEUE_NAMES.mediaHls],
+    jobId: `hls-encode-${input.assetId}`
+  });
+
+  return {
+    rootJobId: job.id ?? '',
+    jobIds: { [JOB_NAMES.mediaHls.hlsEncode]: job.id ?? '' }
+  };
+}
+
 /**
  * Enqueue only generate-thumbnail (new `media_job` row required). Used by the
  * "regenerate thumbnails" action from the media manager. Skips probe — the

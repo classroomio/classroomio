@@ -1104,6 +1104,7 @@ export const asset = pgTable(
     aspectRatio: text('aspect_ratio'),
     isExternal: boolean('is_external').default(false).notNull(),
     status: varchar().default('active').notNull(),
+    hlsStatus: varchar('hls_status').default('none').notNull(),
     metadata: jsonb().default({}),
     createdByProfileId: uuid('created_by_profile_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),

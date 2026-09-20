@@ -1,7 +1,7 @@
 import { GetObjectCommand, HeadObjectCommand, NotFound, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'node:stream';
 import { createWriteStream } from 'node:fs';
-import { mkdir, readFile, unlink } from 'node:fs/promises';
+import { mkdir, readdir, readFile, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
@@ -66,6 +66,58 @@ export async function uploadFileToBucket(
       CacheControl: cacheControl
     })
   );
+}
+
+const HLS_CONTENT_TYPES: Record<string, string> = {
+  '.m3u8': 'application/vnd.apple.mpegurl',
+  '.ts': 'video/mp2t'
+};
+
+async function listFilesRecursive(dir: string, base = dir): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files: string[] = [];
+
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await listFilesRecursive(full, base)));
+    } else {
+      files.push(path.relative(base, full).split(path.sep).join('/'));
+    }
+  }
+
+  return files;
+}
+
+export async function uploadHlsDirectory(
+  bucket: string,
+  localDir: string,
+  keyPrefix: string,
+  concurrency = 6
+): Promise<string[]> {
+  const files = await listFilesRecursive(localDir);
+  const master = files.filter((file) => file === 'master.m3u8');
+  const rest = files.filter((file) => file !== 'master.m3u8');
+
+  const uploadOne = async (relativePath: string) => {
+    const contentType = HLS_CONTENT_TYPES[path.extname(relativePath)] ?? 'application/octet-stream';
+    await uploadFileToBucket(bucket, `${keyPrefix}/${relativePath}`, path.join(localDir, relativePath), contentType);
+  };
+
+  let next = 0;
+  const workers = Array.from({ length: Math.min(concurrency, rest.length) }, async () => {
+    while (next < rest.length) {
+      const current = rest[next++];
+      await uploadOne(current);
+    }
+  });
+  await Promise.all(workers);
+
+  for (const file of master) {
+    await uploadOne(file);
+  }
+
+  return files;
 }
 
 export async function uploadBufferToBucket(

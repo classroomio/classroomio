@@ -1,4 +1,4 @@
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 
 import { log } from './logger';
@@ -23,6 +23,12 @@ export interface FfprobeStream {
   width?: number;
   height?: number;
   duration?: string;
+  pix_fmt?: string;
+  profile?: string;
+  r_frame_rate?: string;
+  avg_frame_rate?: string;
+  tags?: { rotate?: string };
+  side_data_list?: Array<{ rotation?: number }>;
 }
 
 export interface FfprobeFormat {
@@ -82,21 +88,126 @@ export async function ffmpegRun(args: string[]): Promise<void> {
   }
 }
 
+export async function ffprobeKeyframeTimes(localPath: string): Promise<number[]> {
+  const args = [
+    '-v',
+    'error',
+    '-select_streams',
+    'v:0',
+    '-skip_frame',
+    'nokey',
+    '-show_entries',
+    'frame=pts_time',
+    '-of',
+    'csv=p=0',
+    localPath
+  ];
+  const { stdout } = await execFileAsync(FFPROBE_BIN, args, { maxBuffer: MAX_OUTPUT_BYTES });
+
+  return stdout
+    .split('\n')
+    .map((line) => Number.parseFloat(line.trim()))
+    .filter((value) => Number.isFinite(value));
+}
+
+export interface FfmpegProgressOptions {
+  timeoutMs: number;
+  onProgress?: (outSeconds: number) => void;
+}
+
+export function ffmpegRunWithProgress(args: string[], options: FfmpegProgressOptions): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      FFMPEG_BIN,
+      ['-nostdin', '-hide_banner', '-loglevel', 'error', '-nostats', '-progress', 'pipe:1', ...args],
+      {
+        stdio: ['ignore', 'pipe', 'pipe']
+      }
+    );
+
+    let stderrTail = '';
+    let timedOut = false;
+    let lastReport = 0;
+
+    const timer = setTimeout(() => {
+      timedOut = true;
+      child.kill('SIGKILL');
+    }, options.timeoutMs);
+
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk: string) => {
+      const match = chunk
+        .match(/out_time_us=(\d+)/g)
+        ?.pop()
+        ?.match(/(\d+)/);
+      if (!match || !options.onProgress) return;
+
+      const now = Date.now();
+      if (now - lastReport < 2000) return;
+
+      lastReport = now;
+      options.onProgress(Number(match[1]) / 1_000_000);
+    });
+
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', (chunk: string) => {
+      stderrTail = (stderrTail + chunk).slice(-4000);
+    });
+
+    child.on('error', (error: Error & { code?: string }) => {
+      clearTimeout(timer);
+      if (error.code === 'ENOENT') {
+        reject(
+          new Error(
+            `ffmpeg binary not found at "${FFMPEG_BIN}". Ensure ffmpeg is installed and available on PATH or set FFMPEG_PATH.`,
+            { cause: error }
+          )
+        );
+        return;
+      }
+      reject(error);
+    });
+
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (timedOut) {
+        reject(new Error(`ffmpeg timed out after ${Math.round(options.timeoutMs / 1000)}s`));
+        return;
+      }
+      if (code === 0) {
+        resolve();
+        return;
+      }
+      const tail = stderrTail.split('\n').filter(Boolean).slice(-5).join(' | ');
+      reject(new Error(`ffmpeg exited with code ${code}: ${tail}`));
+    });
+  });
+}
+
 /**
  * Compute the mean luminance (`YAVG`) of an image or single video frame using
  * ffmpeg's `signalstats` filter. Returned on the original 0-255 scale; a fully
  * black frame is ~0, fully white ~255. Throws if ffmpeg fails or the value is
- * not present in stderr.
+ * not present in the output.
  */
 export async function ffmpegProbeLuma(filePath: string): Promise<number> {
-  const args = ['-hide_banner', '-nostats', '-i', filePath, '-vf', 'signalstats', '-f', 'null', '-'];
-  let stderr = '';
+  const args = [
+    '-hide_banner',
+    '-nostats',
+    '-i',
+    filePath,
+    '-vf',
+    'signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=-',
+    '-f',
+    'null',
+    '-'
+  ];
+  let output = '';
   try {
     const result = await execFileAsync(FFMPEG_BIN, args, { maxBuffer: MAX_OUTPUT_BYTES });
-    const raw = result.stderr as string | Buffer | undefined;
-    stderr = typeof raw === 'string' ? raw : (raw?.toString('utf8') ?? '');
+    output = `${result.stdout}\n${result.stderr}`;
   } catch (error) {
-    const err = error as Error & { stderr?: string | Buffer; code?: string };
+    const err = error as Error & { stdout?: string | Buffer; stderr?: string | Buffer; code?: string };
     if (err.code === 'ENOENT') {
       throw new Error(
         `ffmpeg binary not found at "${FFMPEG_BIN}". Ensure ffmpeg is installed and available on PATH or set FFMPEG_PATH.`,
@@ -104,19 +215,23 @@ export async function ffmpegProbeLuma(filePath: string): Promise<number> {
       );
     }
 
-    const raw = err.stderr;
-    stderr = typeof raw === 'string' ? raw : (raw?.toString('utf8') ?? '');
-    if (!stderr) {
+    output = `${err.stdout?.toString('utf8') ?? ''}\n${err.stderr?.toString('utf8') ?? ''}`;
+    if (!output.trim()) {
       throw error as Error;
     }
   }
 
-  const match = stderr.match(/YAVG:([0-9]+(?:\.[0-9]+)?)/);
-  if (!match) {
+  const yavg = parseSignalstatsYavg(output);
+  if (yavg === null) {
     throw new Error('ffmpegProbeLuma: signalstats YAVG not found in ffmpeg output');
   }
 
-  return Number.parseFloat(match[1]);
+  return yavg;
+}
+
+export function parseSignalstatsYavg(output: string): number | null {
+  const match = output.match(/lavfi\.signalstats\.YAVG=([0-9]+(?:\.[0-9]+)?)/);
+  return match ? Number.parseFloat(match[1]) : null;
 }
 
 /**
@@ -133,6 +248,15 @@ export async function warnIfFfmpegMissing(): Promise<void> {
 
   if (missing.length === 0) {
     log.info('ffmpeg-binaries-resolved', { ffmpeg: FFMPEG_BIN, ffprobe: FFPROBE_BIN });
+
+    if (process.env.HLS_SERVER_ENCODE_ENABLED === 'true') {
+      const encoders = await execFileAsync(FFMPEG_BIN, ['-hide_banner', '-encoders'], {
+        maxBuffer: MAX_OUTPUT_BYTES
+      }).catch(() => null);
+      if (encoders && !encoders.stdout.includes('libx264')) {
+        log.warn('ffmpeg-libx264-missing', { hint: 'HLS_SERVER_ENCODE_ENABLED needs an ffmpeg build with libx264.' });
+      }
+    }
     return;
   }
 

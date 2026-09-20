@@ -78,13 +78,19 @@ function applyCanonicalVideoMetadata(
       ...(typeof assetMetadata.hls1080Status === 'string' ? { hls1080Status: assetMetadata.hls1080Status } : {})
     };
 
+    const hasHlsManifest = asset.provider === 'upload' && Boolean(asset.hlsManifestKey);
+
     return {
       ...video,
       type: mapProviderToVideoType(asset.provider),
-      key: asset.storageKey ?? video.key,
-      link: asset.provider === 'upload' ? video.link : (asset.sourceUrl ?? video.link),
+      key: hasHlsManifest ? undefined : (asset.storageKey ?? video.key),
+      link: hasHlsManifest
+        ? `/hls/${asset.hlsManifestKey}`
+        : asset.provider === 'upload'
+          ? video.link
+          : (asset.sourceUrl ?? video.link),
       fileName: asset.title ?? video.fileName,
-      metadata: mergedMetadata
+      metadata: hasHlsManifest ? { ...mergedMetadata, hls: true } : mergedMetadata
     };
   });
 }

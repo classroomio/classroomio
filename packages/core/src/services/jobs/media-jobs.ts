@@ -13,6 +13,7 @@ import {
 import { getAssetById } from '@cio/db/queries/assets';
 import {
   enqueueGenerateThumbnailOnly,
+  enqueueHlsEncode,
   enqueueLessonVideoPipeline,
   enqueueTranscriptionOnly,
   enqueueYoutubeCaptionsFetch,
@@ -252,6 +253,60 @@ export async function startMediaJob(input: StartMediaJobInput): Promise<TMediaJo
     });
 
     throw new AppError(error instanceof Error ? error : 'Failed to enqueue media job', ErrorCodes.INTERNAL_ERROR, 500);
+  }
+}
+
+export function isServerHlsEncodeEnabled(): boolean {
+  return process.env.HLS_SERVER_ENCODE_ENABLED === 'true';
+}
+
+export interface StartHlsEncodeMediaJobInput {
+  organizationId: string;
+  assetId: string;
+  storageKey: string;
+  triggeredByProfileId: string | null;
+}
+
+export async function startHlsEncodeMediaJob(input: StartHlsEncodeMediaJobInput): Promise<TMediaJob | null> {
+  if (!isRedisConfigured()) return null;
+
+  const job = await createMediaJob({
+    organizationId: input.organizationId,
+    assetId: input.assetId,
+    triggeredByProfileId: input.triggeredByProfileId,
+    status: 'queued',
+    stage: 'hls-queued',
+    progressPercent: 0
+  });
+
+  try {
+    const enqueueResult = await enqueueHlsEncode({
+      mediaJobId: job.id,
+      assetId: input.assetId,
+      storageKey: input.storageKey,
+      actorContext: {
+        userId: input.triggeredByProfileId,
+        organizationId: input.organizationId
+      }
+    });
+
+    const updated = await updateMediaJob(job.id, {
+      rootJobId: enqueueResult.rootJobId,
+      jobIds: enqueueResult.jobIds
+    });
+
+    return updated ?? job;
+  } catch (error) {
+    console.error('startHlsEncodeMediaJob enqueue failed:', error);
+    await updateMediaJob(job.id, {
+      status: 'failed',
+      stage: 'failed',
+      error: {
+        code: 'ENQUEUE_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to enqueue HLS encode job'
+      }
+    });
+    return null;
   }
 }
 

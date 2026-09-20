@@ -1,5 +1,11 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
-import { startMediaJob, startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
+import {
+  isServerHlsEncodeEnabled,
+  startHlsEncodeMediaJob,
+  startMediaJob,
+  startTranscriptionOnlyMediaJob,
+  startYoutubeCaptionsJob
+} from '../jobs/media-jobs';
 import type {
   TAssetAttach,
   TAssetCreateAndAttach,
@@ -466,6 +472,15 @@ function scheduleAssetBackgroundWork(
       storageKey: asset.storageKey,
       triggeredByProfileId: profileId
     });
+
+    if (isServerHlsEncodeEnabled() && !asset.hlsManifestKey && asset.hlsStatus === 'none') {
+      void startHlsEncodeMediaJob({
+        organizationId: orgId,
+        assetId: asset.id,
+        storageKey: asset.storageKey,
+        triggeredByProfileId: profileId
+      }).catch((error) => console.error('startHlsEncodeMediaJob failed:', error));
+    }
   }
 
   // Fire-and-forget: enqueue YouTube captions fetch for new YouTube embeds.

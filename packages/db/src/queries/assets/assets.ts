@@ -178,7 +178,9 @@ export async function getAssetsByStorageKeys(orgId: string, storageKeys: string[
       .where(and(eq(schema.asset.organizationId, orgId), inArray(schema.asset.storageKey, storageKeys)));
   } catch (error) {
     console.error('getAssetsByStorageKeys error:', error);
-    throw new Error(`Failed to get assets by storage keys: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to get assets by storage keys: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -348,6 +350,111 @@ export async function finalizeHlsAsset(
   } catch (error) {
     console.error('finalizeHlsAsset error:', error);
     throw new Error(`Failed to finalize HLS asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function mergeAssetMetadata(
+  assetId: string,
+  orgId: string,
+  patch: Record<string, unknown>,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  try {
+    await dbClient
+      .update(schema.asset)
+      .set({
+        metadata: sql`coalesce(${schema.asset.metadata}, '{}'::jsonb) || ${JSON.stringify(patch)}::jsonb`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)));
+  } catch (error) {
+    console.error('mergeAssetMetadata error:', error);
+    throw new Error(`Failed to merge asset metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export type AssetHlsStatus = 'none' | 'pending' | 'converting' | 'ready' | 'failed' | 'skipped';
+
+export async function claimAssetForHlsEncode(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [claimed] = await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'converting', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          sql`(${schema.asset.hlsStatus} IN ('none', 'pending', 'failed') OR (${schema.asset.hlsStatus} = 'converting' AND ${schema.asset.updatedAt} < now() - interval '30 minutes'))`,
+          sql`${schema.asset.hlsManifestKey} IS NULL`
+        )
+      )
+      .returning();
+
+    return claimed || null;
+  } catch (error) {
+    console.error('claimAssetForHlsEncode error:', error);
+    throw new Error(
+      `Failed to claim asset for HLS encode: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function setAssetHlsStatus(
+  assetId: string,
+  orgId: string,
+  hlsStatus: AssetHlsStatus,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  try {
+    await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus, updatedAt: new Date().toISOString() })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)));
+  } catch (error) {
+    console.error('setAssetHlsStatus error:', error);
+    throw new Error(`Failed to set asset HLS status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export interface FinalizeServerHlsInput {
+  manifestKey: string;
+  audioKey: string | null;
+  metadata: Record<string, unknown>;
+}
+
+export async function finalizeServerHls(
+  assetId: string,
+  orgId: string,
+  input: FinalizeServerHlsInput,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.asset)
+      .set({
+        hlsManifestKey: input.manifestKey,
+        hlsAudioKey: input.audioKey,
+        hlsStatus: 'ready',
+        metadata: sql`coalesce(${schema.asset.metadata}, '{}'::jsonb) || ${JSON.stringify(input.metadata)}::jsonb`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('finalizeServerHls error:', error);
+    throw new Error(`Failed to finalize server HLS: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
