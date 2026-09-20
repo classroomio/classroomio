@@ -1,0 +1,126 @@
+/* Fixed-canvas runtime for video frames and thumbnails. Layout only — all
+   values come from tokens.css. Set the canvas per asset:
+   <div class="stage" data-w="1080" data-h="1920" style="--stage-w:1080px; --stage-h:1920px"> */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--field-deep);
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage-fit {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.stage {
+  width: var(--stage-w, 1920px);
+  height: var(--stage-h, 1080px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(var(--fit, 1));
+  transform-origin: top left;
+  background: var(--field);
+  color: var(--fg);
+}
+
+.stage .kicker {
+  position: absolute;
+  top: 72px;
+  left: var(--gutter);
+  z-index: 20;
+}
+
+.stage .foot {
+  position: absolute;
+  bottom: 68px;
+  left: var(--gutter);
+  right: var(--gutter);
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.stage .chip,
+.stage .leader,
+.stage .panel {
+  position: absolute;
+}
+.stage .chip {
+  z-index: 30;
+}
+.stage .leader {
+  z-index: 29;
+}
+.stage .panel {
+  z-index: 10;
+}
+
+/* Operator HUD. Lives outside the stage so a crop never includes it. */
+.hud {
+  position: fixed;
+  left: 18px;
+  bottom: 16px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgb(16 16 20 / 0.82);
+  color: #fff;
+  font: 500 13px/1 var(--font);
+  transition: opacity var(--t-fast);
+}
+.hud.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.hud .scene {
+  color: #9aa4b8;
+}
+.hud .theme {
+  font: 500 11px/1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--blue-300);
+}
+.hud .dots {
+  display: flex;
+  gap: 5px;
+}
+.hud .dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.24);
+  transition: background var(--t-fast);
+}
+.hud .dots i.on {
+  background: var(--blue-300);
+}
+.hud kbd {
+  font: 500 11px/1 var(--font-mono);
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: rgb(255 255 255 / 0.12);
+}

@@ -1,0 +1,142 @@
+/* ClassroomIO design tokens — the single source of truth.
+   Values only. No components, no layout. Every other file reads from here. */
+
+:root {
+  /* ---- warm ramp ------------------------------------------------------ */
+  --paper: #fdfbf7;
+  --bone-100: #f6f2e9;
+  --bone: #efe9dd;
+  --bone-300: #e3daca;
+  --ink-800: #2a251d;
+  --ink: #17140f;
+
+  /* ---- brand blue ----------------------------------------------------- */
+  --blue: #0233bd;
+  --blue-300: #adc3ff;
+
+  /* ---- state ---------------------------------------------------------- */
+  --ok: #1d6b40;
+  --warn: #a6620e;
+
+  /* ---- type ----------------------------------------------------------- */
+  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --size-display-xl: 228px;
+  --size-display: 176px;
+  --size-display-s: 128px;
+  --size-headline: 76px;
+  --size-headline-s: 64px;
+  --size-title: 38px;
+  --size-title-s: 31px;
+  --size-body-lg: 36px;
+  --size-body: 26px;
+  --size-body-s: 21px;
+  --size-mono-lg: 22px;
+  --size-mono: 17px;
+  --size-mono-s: 15px;
+
+  --track-display: -0.05em;
+  --track-headline: -0.035em;
+  --track-title: -0.02em;
+  --track-body: -0.01em;
+  --track-mono: 0.12em;
+
+  --leading-display: 0.92;
+  --leading-headline: 1.04;
+  --leading-body: 1.42;
+
+  --weight-regular: 500;
+  --weight-medium: 550;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ---- space ---------------------------------------------------------- */
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 80px;
+  --gutter: 104px;
+
+  --radius: 14px;
+  --radius-lg: 22px;
+
+  /* ---- motion --------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 200ms;
+  --t-base: 400ms;
+  --t-slow: 550ms;
+  --t-settle: 9s;
+  --stagger: 80ms;
+  --travel: 18px;
+  --travel-lg: 40px;
+}
+
+/* ---- fields ------------------------------------------------------------
+   A field is the ground an asset sits on. It sets every contextual colour,
+   so a whole asset changes with one class. `--accent` is always the real
+   brand blue, on every field: on dark it carries a fill rather than type,
+   which is what keeps #0233BD in the asset instead of a tint of it. */
+
+.field-bone,
+:root {
+  --field: var(--bone);
+  --field-deep: var(--bone-300);
+  --fg: var(--ink);
+  --fg-muted: rgb(23 20 15 / 0.62);
+  --fg-faint: rgb(23 20 15 / 0.32);
+  --line: rgb(23 20 15 / 0.18);
+  --accent: var(--blue);
+  --accent-ink: var(--paper);
+  --accent-text: var(--blue);
+  --surface: var(--paper);
+  --surface-fg: var(--ink);
+  --surface-line: rgb(23 20 15 / 0.12);
+  --surface-sunk: rgb(23 20 15 / 0.05);
+  --shadow: rgb(23 20 15 / 0.22);
+  --logo-filter: none;
+  --grain: 0.22;
+}
+
+.field-dark {
+  --field: var(--ink);
+  --field-deep: #0f0c09;
+  --fg: #f4efe6;
+  --fg-muted: rgb(244 239 230 / 0.6);
+  --fg-faint: rgb(244 239 230 / 0.32);
+  --line: rgb(244 239 230 / 0.17);
+  --accent: var(--blue);
+  --accent-ink: #ffffff;
+  --accent-text: var(--blue-300);
+  --surface: #f4efe6;
+  --surface-fg: var(--ink);
+  --surface-line: rgb(23 20 15 / 0.14);
+  --surface-sunk: rgb(23 20 15 / 0.07);
+  --shadow: rgb(8 6 4 / 0.62);
+  --logo-filter: brightness(0) invert(1);
+  --grain: 0.32;
+}
+
+.field-blue {
+  --field: var(--blue);
+  --field-deep: #012a9e;
+  --fg: #ffffff;
+  --fg-muted: rgb(255 255 255 / 0.7);
+  --fg-faint: rgb(255 255 255 / 0.4);
+  --line: rgb(255 255 255 / 0.26);
+  --accent: #ffffff;
+  --accent-ink: var(--blue);
+  --accent-text: #ffffff;
+  --surface: #ffffff;
+  --surface-fg: var(--ink);
+  --surface-line: rgb(23 20 15 / 0.12);
+  --surface-sunk: rgb(23 20 15 / 0.06);
+  --shadow: rgb(1 12 60 / 0.5);
+  --logo-filter: brightness(0) invert(1);
+  --grain: 0.28;
+}
