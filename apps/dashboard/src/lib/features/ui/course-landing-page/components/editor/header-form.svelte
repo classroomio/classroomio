@@ -6,7 +6,7 @@
   import { handleOpenWidget } from '../../store';
   import { t } from '$lib/utils/functions/translations';
 
-  let { course = $bindable() } = $props();
+  let { course = $bindable(), markDirty } = $props();
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -18,12 +18,16 @@
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.header_form.title')}
   bind:value={course.title}
+  oninput={markDirty}
 >
   {#snippet labelAction()}
     <AIGenerateButton
       courseId={course.id}
       context="the title field on the landing page for an online course"
-      onInsert={(text) => (course.title = text)}
+      onInsert={(text) => {
+        course.title = text;
+        markDirty?.();
+      }}
     />
   {/snippet}
 </InputField>
@@ -34,12 +38,16 @@
   rows={6}
   className="mt-5"
   labelClassName="font-bold"
+  oninput={markDirty}
 >
   {#snippet labelAction()}
     <AIGenerateButton
       courseId={course.id}
       context={`the short description on the landing page of a course${course.title ? ` called "${course.title}"` : ''}`}
-      onInsert={(text) => (course.description = text)}
+      onInsert={(text) => {
+        course.description = text;
+        markDirty?.();
+      }}
     />
   {/snippet}
 </TextareaField>
@@ -52,6 +60,7 @@
   helperMessage={$t('course.navItem.landing_page.editor.header_form.helper')}
   type="text"
   bind:value={course.metadata.videoUrl}
+  oninput={markDirty}
 />
 <div class="mt-7">
   <p class="mb-3 font-bold">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
@@ -73,7 +82,13 @@
       {$t('course.navItem.landing_page.editor.header_form.replace')}
     </Button>
     {#if course.logo}
-      <Button variant="outline" onclick={() => (course.logo = '')}>
+      <Button
+        variant="outline"
+        onclick={() => {
+          course.logo = '';
+          markDirty?.();
+        }}
+      >
         {$t('course.navItem.landing_page.editor.header_form.remove')}
       </Button>
     {/if}

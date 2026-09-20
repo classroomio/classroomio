@@ -10,12 +10,12 @@
   import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { importCourseLandingPageTheme, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
   import type { Course } from '$features/course/utils/types';
-  import type { AccountOrg } from '$features/app/types';
+  import type { AccountOrg, PublicOrg } from '$features/app/types';
   import UploadWidget from '$features/ui/upload-widget/upload-widget.svelte';
   import PaymentModal from './components/payment-modal.svelte';
   import { buildCourseLandingPageProps } from './utils';
   import { handleOpenWidget } from './store';
-  import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+  import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { appInitApi } from '$features/app/init.svelte';
   import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
@@ -23,7 +23,7 @@
   interface Props {
     editMode?: boolean;
     courseData: Course;
-    org?: AccountOrg | null;
+    org?: AccountOrg | PublicOrg | null;
     /** Pre-resolved theme component from the route's load function (eliminates the flash on SSR pages). */
     themeComponent?: Component | null;
   }
@@ -67,9 +67,7 @@
   const enrollmentsOpen = $derived(isSelfEnrollmentAllowed(courseData?.metadata));
   const enrollDisabled = $derived(editMode || !enrollmentsOpen);
 
-  const discount = $derived(get(courseData, 'metadata.discount', 0));
-  const showDiscount = $derived(get(courseData, 'metadata.showDiscount', false));
-  const calculatedCost = $derived(calcCourseDiscount(discount, courseData.cost || 0, !!showDiscount));
+  const calculatedCost = $derived(calcCourseCost(courseData));
   const isFree = $derived(isCourseFree(calculatedCost));
 
   function handlePaidEnrollClick(event: MouseEvent) {

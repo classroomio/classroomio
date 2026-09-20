@@ -18,7 +18,7 @@
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
-  import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+  import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
   import { Badge } from '@cio/ui/base/badge';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -235,11 +235,6 @@
     }
 
     const sanitizedDomain = sanitizeDomain(customDomain);
-
-    if (sanitizedDomain.includes(BRAND_ROOT_DOMAIN) || sanitizedDomain.includes(TENANT_ROOT_DOMAIN)) {
-      errors.customDomain = $t('components.settings.domains.custom_domain_not_classroomio');
-      return;
-    }
 
     isCustomDomainLoading = true;
 

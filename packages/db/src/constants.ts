@@ -9,6 +9,7 @@ const dashboardOrigin = DASHBOARD_ORIGIN?.trim().replace(/\/$/, '');
 
 const DEFAULT_TRUSTED_ORIGINS = [
   'http://localhost:5173',
+  'https://localhost:5173',
   'https://*.classroomio.com',
   'https://*.myclassroomio.com',
   // Common OIDC IdP discovery origins (SSO registration fetches .well-known/openid-configuration)

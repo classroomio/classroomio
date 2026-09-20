@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Category view · Embedded Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Instrument+Serif&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="academy.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .url-bar { display: flex; align-items: center; gap: 8px; margin: 0 0 18px; padding: 7px 12px; border: 1px solid var(--ac-line); border-radius: 8px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 12px; color: var(--ac-muted); background: color-mix(in oklab, var(--ac-fg) 3%, transparent); }
+      .url-bar svg { width: 13px; height: 13px; stroke-width: 2; }
+      .url-bar b { color: var(--ac-fg); font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div class="host">
+      <aside class="host-side">
+        <div class="host-brand"><span class="mk">N</span>Northwind</div>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="host-nav" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Reports</a>
+        <div class="host-sec">Resources</div>
+        <a class="host-nav on" href="embed-learn.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Learn</a>
+        <div class="host-foot"><span class="av">RA</span><div><div class="nm">Ruth Adeyemi</div><div class="rl">Engineering</div></div></div>
+      </aside>
+
+      <main class="host-main">
+        <div class="embed-wrap" id="embed">
+          <div class="ac">
+            <div class="ac-page">
+              <a class="ac-back" href="embed-learn.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All of Learn</a>
+
+              <div class="url-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+                app.northwind.com/learn<b>?cio=category/engineering</b>
+                <span style="margin-left: auto">router: query</span>
+              </div>
+
+              <h1 class="ac-h1">Engineering</h1>
+              <p class="ac-lead">Build, extend, and debug on the Northwind platform. 6 courses.</p>
+
+              <section class="ac-sec" style="margin-top: 34px">
+                <div class="ac-rows">
+                  <a class="ac-row" href="embed-course.html">
+                    <div class="thumb" style="background: var(--ac-tint-a)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+                    <div><div class="ac-eyebrow">Course · 8 lessons</div><h3>Building on the Northwind API</h3><p>Authentication, pagination, webhooks, and the rate limits that matter in production.</p></div>
+                    <span class="ac-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </a>
+                  <a class="ac-row" href="embed-course.html">
+                    <div class="thumb" style="background: var(--ac-tint-c)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7h-9M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></div>
+                    <div>
+                      <div class="ac-eyebrow">Course · 8 lessons</div><h3>Automations for Support Teams</h3><p>Route, escalate, and resolve tickets automatically.</p>
+                      <div class="ac-prog"><span style="width: 62%"></span></div><div class="ac-pmeta">5 of 8 lessons complete</div>
+                    </div>
+                    <span class="ac-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </a>
+                  <a class="ac-row" href="embed-course.html">
+                    <div class="thumb" style="background: var(--ac-tint-d)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div>
+                    <div><div class="ac-eyebrow">Course · 12 lessons · $149</div><h3>Advanced Data Modelling</h3><p>Schema design, migrations, and performance for large workspaces.</p></div>
+                    <span class="ac-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </a>
+                </div>
+              </section>
+
+              <div class="ac-sec" style="text-align: center; font-size: 12px; color: var(--ac-muted)">Powered by ClassroomIO</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="proto-bar">
+      <span class="lbl">State</span>
+      <button class="on" onclick="showState('results', this)">Results</button>
+      <button onclick="showState('empty', this)">Empty</button>
+      <span class="lbl">View</span>
+      <button onclick="document.getElementById('embed').classList.toggle('show-bounds')">Bounds</button>
+      <button onclick="toggleTheme(this)">Dark</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">Map</a>
+    </div>
+    <script>
+      function toggleTheme(el) {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        el.textContent = dark ? 'Light' : 'Dark';
+      }
+      function showState(state, el) {
+        el.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+        el.classList.add('on');
+        const rows = document.querySelector('.ac-rows');
+        let empty = document.getElementById('empty-state');
+        if (state === 'empty') {
+          rows.style.display = 'none';
+          if (!empty) {
+            empty = document.createElement('div');
+            empty.id = 'empty-state';
+            empty.className = 'ac-empty';
+            empty.textContent = 'No published courses carry this tag yet.';
+            rows.parentElement.appendChild(empty);
+          }
+          empty.style.display = 'block';
+        } else {
+          rows.style.display = 'block';
+          if (empty) empty.style.display = 'none';
+        }
+      }
+    </script>
+  </body>
+</html>

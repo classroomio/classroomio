@@ -17,9 +17,22 @@ vi.mock('@cio/db/queries/course/reset-progress', () => ({
   resetStudentCourseProgress: vi.fn()
 }));
 
+// Resetting progress busts the org stats cache after the reset commits; without
+// these the service reaches a real database and Redis.
+vi.mock('@cio/db/queries/course', () => ({
+  getCourseWithOrgData: vi.fn(),
+  getOrgIdByCourseId: vi.fn().mockResolvedValue('org-1')
+}));
+
+vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
+  invalidateOrgStats: vi.fn()
+}));
+
 import { AppError } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { getCourseMember } from '@cio/db/queries/course/people';
+import { getOrgIdByCourseId } from '@cio/db/queries/course';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 import { resetMemberCourseProgress } from '@api/services/course/people';
 
@@ -79,6 +92,7 @@ describe('resetMemberCourseProgress', () => {
       roleId: ROLE.STUDENT
     } as Awaited<ReturnType<typeof getCourseMember>>);
     vi.mocked(resetStudentCourseProgress).mockResolvedValue(summary);
+    vi.mocked(getOrgIdByCourseId).mockResolvedValue('org-1');
 
     const result = await resetMemberCourseProgress('course-1', 'member-1', 'actor-1');
 
@@ -88,5 +102,6 @@ describe('resetMemberCourseProgress', () => {
       profileId: 'profile-1'
     });
     expect(result).toEqual(summary);
+    expect(invalidateOrgStats).toHaveBeenCalledWith('org-1');
   });
 });

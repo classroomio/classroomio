@@ -1,6 +1,6 @@
 # Org + Course landing pages
 
-This folder holds the entire landing-page system: the public org site (`{theme}.org`) and the per-course landing (`{theme}.course`), in 10 themes.
+This folder holds the entire landing-page system: the public org site (`{theme}.org`) and the per-course landing (`{theme}.course`), in 11 themes.
 
 Both surfaces share the same nav, hero, footer, tokens, and edit context. A course landing inherits its theme from the org's `landingpage.theme` — courses don't pick their own.
 
@@ -27,7 +27,7 @@ packages/ui/src/custom/org-landing-page/
 ├── landing-page-footer.tokens.ts
 │
 ├── {theme}/                       Everything for one theme (minimal, bold, classic, saas, tech,
-│   │                              studio, corporate, terminal, editorial, vibrant)
+│   │                              studio, corporate, terminal, editorial, vibrant, quartz)
 │   ├── index.ts                   re-exports { nav, hero, courseCard, org, course }
 │   ├── nav.svelte                 reused by both org and course
 │   ├── hero.svelte                reused; course populates with course-shaped hero data
@@ -60,7 +60,7 @@ The central registries (`theme-style.ts`, `course-landing-page.tokens.ts`, `inde
    ▼
 ┌────────────────────────────────────────┐
 │ course-*.svelte           (shared body) │  ← one component per section
-│   • course-section-nav                  │    used by all 10 themes
+│   • course-section-nav                  │    used by all 11 themes
 │   • course-social-proof                 │
 │   • course-info-blocks                  │
 │   • course-curriculum                   │
@@ -96,6 +96,14 @@ The dashboard's `<CourseLandingPage>` (`apps/dashboard/src/lib/features/ui/cours
 3. Lazy-loads the theme bundle via `importThemeBundle(theme)` — one bundle per theme; the other nine never download. The bundle exposes `{ nav, hero, courseCard, org, course }`.
 
 The composer wires nav/hero/footer (theme-specific files) around the shared body components, threading `variant={theme}` and the same `labels` prop into each.
+
+## Learning Paths section (home page)
+
+Every theme's `org.svelte` renders an optional "Learning Paths" section — a `LearningPathItem[]` grid using the **shared** `LearningPathCard` (`../learning-path-card.svelte`), positioned above the Courses section per the Learning Paths PRD. Unlike `CourseCard`, this card is not forked per theme: it's styled entirely from `--landing-*` tokens (`--landing-card`, `--landing-radius-card`, `--landing-shadow-card`, `--landing-accent`, …), so one implementation re-skins correctly everywhere.
+
+- `OrgLandingPageProps.learningPaths` is **optional**. A theme renders the section only when it is a non-empty array — there is no permanent empty state for it (unlike Courses), because no `learning_path` API exists yet and the real, live org home page passes nothing here today. Pass `mockLearningPaths` (from `fixtures.ts`) to preview it.
+- It is **not** wrapped in `EditableLandingSection` — there is no editable settings layer for Learning Paths content yet, so it isn't a `LandingSectionKey`. Add one (and update every `sectionIcons`/`labelFor` consumer) only once there's a real settings panel to open.
+- `hasMoreLearningPaths` + `labels.browseLearningPathsLabel` mirror `hasMoreCourses` + `labels.browseCoursesLabel`; the CTA links to `/learning-paths` (a shared, non-per-theme catalog route, same pattern as `/courses`).
 
 ## Edit context (click-to-edit)
 

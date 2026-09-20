@@ -22,6 +22,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
+import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
@@ -68,7 +69,7 @@ function buildTeamInviteLink(token: string): string {
   return `${getAppBaseUrl()}/invite/${encodeURIComponent(token)}`;
 }
 
-function getRoleLabel(roleId: number): string {
+export function getRoleLabel(roleId: number): string {
   if (roleId === ROLE.ADMIN) return 'Admin';
   if (roleId === ROLE.TUTOR) return 'Tutor';
   if (roleId === ROLE.STUDENT) return 'Student';
@@ -470,6 +471,11 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     };
   });
 
+  // Must run after commit: the reconcile reads the org role outside this transaction.
+  if (!result.alreadyAccepted) {
+    await scheduleCourseRoleReconcile(result.organization.id, user.id);
+  }
+
   const siteName = result.organization.siteName || '';
 
   if (!result.alreadyAccepted) {
@@ -631,6 +637,9 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
     return { organization: row.organization, roleId: row.invite.roleId, inviteId: row.invite.id };
   });
 
+  // Must run after commit: the reconcile reads the org role outside this transaction.
+  await scheduleCourseRoleReconcile(result.organization.id, user.id);
+
   await recordOrganizationInviteAudit(result.inviteId, result.organization.id, 'ACCEPTED', {
     actorProfileId: user.id,
     targetEmail: normalizedEmail,
@@ -747,6 +756,9 @@ export async function acceptOrganizationInviteById(
   });
 
   if (!result.alreadyAccepted) {
+    // Must run after commit: the reconcile reads the org role outside this transaction.
+    await scheduleCourseRoleReconcile(result.invite.organizationId, user.id);
+
     await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
       actorProfileId: user.id,
       targetEmail: normalizedEmail,

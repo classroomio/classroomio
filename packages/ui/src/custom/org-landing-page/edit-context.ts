@@ -7,7 +7,7 @@ import type { Component } from 'svelte';
  * course landing page sections — the same `EditableLandingSection` wrapper
  * is used in both contexts.
  *
- * Org sections: hero, navigation, callout, embed, links, footer.
+ * Org sections: hero, navigation, callout, embed, links, footer, courses.
  * Course sections: header (course hero), requirement, description, goals,
  * certificate, curriculum, chips (skills/tools), instructor, reviews, pricing.
  */
@@ -18,6 +18,7 @@ export type LandingSectionKey =
   | 'embed'
   | 'links'
   | 'footer'
+  | 'courses'
   | 'header'
   | 'requirement'
   | 'description'

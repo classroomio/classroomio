@@ -7,6 +7,7 @@
   import { Input } from '@cio/ui/base/input';
   import { Switch } from '@cio/ui/base/switch';
   import { Textarea } from '@cio/ui/base/textarea';
+  import { DEFAULT_TECH_HERO_EYEBROW } from '@cio/ui/custom/org-landing-page';
   import AIGenerateButton from '$features/agent/components/ai-generate-button.svelte';
   import { UploadWidget } from '$features/ui';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
@@ -23,6 +24,8 @@
   let { settings = $bindable(), markDirty }: Props = $props();
 
   let activeWidget = $state<'hero-image' | ''>('');
+
+  const eyebrowValue = $derived(settings.hero.eyebrow ?? (settings.theme === 'tech' ? DEFAULT_TECH_HERO_EYEBROW : ''));
 
   const MAX_STATS = 4;
 
@@ -93,6 +96,22 @@
     <Field.Legend>{$t('settings.landing_page.editor.sections.hero')}</Field.Legend>
 
     <div class="space-y-4">
+      <Field.Field>
+        <div class="flex items-center justify-between">
+          <Field.Label>{$t('settings.landing_page.editor.hero.eyebrow')}</Field.Label>
+          <AIGenerateButton
+            context="a short uppercase kicker or eyebrow label above the hero heading on an organization's course platform landing page"
+            onInsert={(text) => setter(text, 'hero.eyebrow')}
+          />
+        </div>
+        <Input
+          value={eyebrowValue}
+          placeholder={$t('settings.landing_page.editor.hero.eyebrow_placeholder')}
+          oninput={(event) => setter(event.currentTarget.value, 'hero.eyebrow')}
+        />
+        <Field.Description>{$t('settings.landing_page.editor.hero.eyebrow_description')}</Field.Description>
+      </Field.Field>
+
       <Field.Field>
         <div class="flex items-center justify-between">
           <Field.Label>{$t('settings.landing_page.editor.hero.heading')}</Field.Label>

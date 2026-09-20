@@ -1,0 +1,5 @@
+# Copy to .dev.vars (gitignored) for local `wrangler dev`.
+
+GITHUB_CLIENT_ID=your-dev-oauth-app-client-id
+GITHUB_CLIENT_SECRET=your-dev-oauth-app-client-secret
+ALLOWED_ORIGINS=http://localhost:4321

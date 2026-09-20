@@ -11,6 +11,8 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { getDashboardBaseUrl } from '../../config/dashboard-url';
 import { updateCourse } from './course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
+import { sealLessonVersionsOnPublish } from '../lesson-version';
+import { db } from '@cio/db/drizzle';
 
 export type CourseGoLiveIssue = {
   code: string;
@@ -280,7 +282,15 @@ export async function publishCourseWhenReady(courseId: string) {
   }
 
   const slug = await ensureCourseSlug(courseId, course.title);
-  const publishedCourse = await updateCourse(courseId, { slug, isPublished: true });
+
+  // Publishing seals the snapshot students were served, so both writes share one transaction.
+  const publishedCourse = await db.transaction(async (tx) => {
+    const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
+    await sealLessonVersionsOnPublish(courseId, tx);
+
+    return updated;
+  });
+
   const publishedReadiness = await getCourseGoLiveReadiness(courseId);
 
   return {

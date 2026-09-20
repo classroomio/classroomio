@@ -2,7 +2,7 @@
   import get from 'lodash/get';
   import { Button } from '@cio/ui/base/button';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { isCourseFree, calcCourseDiscount } from '$lib/utils/functions/course';
+  import { isCourseFree, calcCourseCost, isCoursePaid } from '$lib/utils/functions/course';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
@@ -33,10 +33,9 @@
   let formatter: Intl.NumberFormat | undefined = $state();
 
   const discount = $derived(get(courseData, 'metadata.discount', 0));
-  const calculatedCost = $derived(
-    calcCourseDiscount(discount, courseData.cost || 0, !!courseData.metadata?.showDiscount)
-  );
+  const calculatedCost = $derived(calcCourseCost(courseData));
   const isFree = $derived(isCourseFree(calculatedCost));
+  const isPaid = $derived(isCoursePaid(courseData));
   const selfEnrollmentAllowed = $derived(isSelfEnrollmentAllowed(courseData?.metadata));
 
   async function handleJoinCourse() {
@@ -96,7 +95,7 @@
                 </span>
               {/if}
             </p>
-            {#if courseData?.metadata?.showDiscount}
+            {#if isPaid && courseData?.metadata?.showDiscount}
               <p class="text-sm font-light text-gray-500 dark:text-white">
                 {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
                 <span class="line-through">
@@ -140,7 +139,7 @@
               </span>
             {/if}
           </p>
-          {#if courseData?.metadata?.showDiscount}
+          {#if isPaid && courseData?.metadata?.showDiscount}
             <p class="mt-1 text-sm font-light text-gray-500 dark:text-white">
               {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
               <span class="line-through">
@@ -166,7 +165,7 @@
             ? $t('course.navItem.landing_page.pricing_section.enroll')
             : $t('course.navItem.landing_page.pricing_section.buy')}
         </Button>
-        {#if courseData?.metadata?.showDiscount && selfEnrollmentAllowed}
+        {#if isPaid && courseData?.metadata?.showDiscount && selfEnrollmentAllowed}
           <p class="text-sm font-light text-gray-500 dark:text-white">
             {$t('course.navItem.landing_page.pricing_section.bird')}
           </p>

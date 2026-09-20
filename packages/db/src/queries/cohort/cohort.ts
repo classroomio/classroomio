@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -112,6 +112,83 @@ export async function getCohortsByOrg(
     console.error('getCohortsByOrg error:', error);
     throw new Error(
       `Failed to get cohorts for org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Returns org cohorts the given profile can access.
+ * Org admins see all cohorts; other members see only cohorts they belong to.
+ */
+export async function getCohortsByOrgForProfile(
+  organizationId: string,
+  profileId: string
+): Promise<Array<TCohort & { courseCount: number; studentCount: number }>> {
+  try {
+    const [adminRow] = await db
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        )
+      )
+      .limit(1);
+
+    if (adminRow) {
+      return getCohortsByOrg(organizationId);
+    }
+
+    const memberRows = await db
+      .select({ cohortId: schema.cohortMember.cohortId })
+      .from(schema.cohortMember)
+      .innerJoin(schema.cohort, eq(schema.cohortMember.cohortId, schema.cohort.id))
+      .where(and(eq(schema.cohortMember.profileId, profileId), eq(schema.cohort.organizationId, organizationId)));
+
+    const cohortIds = memberRows.map((r) => r.cohortId);
+    if (cohortIds.length === 0) return [];
+
+    return getCohortsByOrg(organizationId, cohortIds);
+  } catch (error) {
+    console.error('getCohortsByOrgForProfile error:', error);
+    throw new Error(
+      `Failed to get cohorts for profile "${profileId}" in org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function countCohortsByOrgForProfile(organizationId: string, profileId: string): Promise<number> {
+  try {
+    const [adminRow] = await db
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN)
+        )
+      )
+      .limit(1);
+
+    const [countRow] = adminRow
+      ? await db
+          .select({ count: count(schema.cohort.id) })
+          .from(schema.cohort)
+          .where(eq(schema.cohort.organizationId, organizationId))
+      : await db
+          .select({ count: count(schema.cohort.id) })
+          .from(schema.cohort)
+          .innerJoin(schema.cohortMember, eq(schema.cohortMember.cohortId, schema.cohort.id))
+          .where(and(eq(schema.cohort.organizationId, organizationId), eq(schema.cohortMember.profileId, profileId)));
+
+    return Number(countRow?.count ?? 0);
+  } catch (error) {
+    console.error('countCohortsByOrgForProfile error:', error);
+    throw new Error(
+      `Failed to count cohorts for profile "${profileId}" in org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -314,9 +391,54 @@ export async function addCohortMember(data: TNewCohortMember, dbClient: DbOrTxCl
   }
 }
 
-export async function removeCohortMember(memberId: string): Promise<TCohortMember | null> {
+/**
+ * Inserts a cohort member if absent, relying on the unique constraint rather than a
+ * read-then-write. Returns null when the membership already existed.
+ */
+export async function insertCohortMemberIfAbsent(
+  data: TNewCohortMember,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
   try {
-    const [deleted] = await db.delete(schema.cohortMember).where(eq(schema.cohortMember.id, memberId)).returning();
+    const [member] = await dbClient
+      .insert(schema.cohortMember)
+      .values(data)
+      .onConflictDoNothing({ target: [schema.cohortMember.cohortId, schema.cohortMember.profileId] })
+      .returning();
+
+    return member ?? null;
+  } catch (error) {
+    console.error('insertCohortMemberIfAbsent error:', error);
+    throw new Error(`Failed to add cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Locks the cohort row so a concurrent status change can't slip past an accept in progress. */
+export async function lockCohortStatusForAccept(
+  dbClient: DbOrTxClient,
+  cohortId: string
+): Promise<{ status: string } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ status: schema.cohort.status })
+      .from(schema.cohort)
+      .where(eq(schema.cohort.id, cohortId))
+      .limit(1)
+      .for('update');
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockCohortStatusForAccept error:', error);
+    throw new Error(`Failed to lock cohort: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function removeCohortMember(cohortId: string, memberId: string): Promise<TCohortMember | null> {
+  try {
+    const [deleted] = await db
+      .delete(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
+      .returning();
     return deleted || null;
   } catch (error) {
     console.error('removeCohortMember error:', error);
@@ -327,6 +449,7 @@ export async function removeCohortMember(memberId: string): Promise<TCohortMembe
 }
 
 export async function updateCohortMember(
+  cohortId: string,
   memberId: string,
   data: Partial<TNewCohortMember>
 ): Promise<TCohortMember | null> {
@@ -334,7 +457,7 @@ export async function updateCohortMember(
     const [updated] = await db
       .update(schema.cohortMember)
       .set(data)
-      .where(eq(schema.cohortMember.id, memberId))
+      .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
       .returning();
     return updated || null;
   } catch (error) {
@@ -622,9 +745,13 @@ export async function getCohortNewsfeed(
   }
 }
 
-export async function getCohortNewsfeedById(feedId: string): Promise<TCohortNewsfeed | null> {
+export async function getCohortNewsfeedById(cohortId: string, feedId: string): Promise<TCohortNewsfeed | null> {
   try {
-    const [feed] = await db.select().from(schema.cohortNewsfeed).where(eq(schema.cohortNewsfeed.id, feedId)).limit(1);
+    const [feed] = await db
+      .select()
+      .from(schema.cohortNewsfeed)
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
+      .limit(1);
     return feed || null;
   } catch (error) {
     console.error('getCohortNewsfeedById error:', error);
@@ -646,6 +773,7 @@ export async function createCohortNewsfeed(data: TNewCohortNewsfeed): Promise<TC
 }
 
 export async function updateCohortNewsfeed(
+  cohortId: string,
   feedId: string,
   data: Partial<TNewCohortNewsfeed>
 ): Promise<TCohortNewsfeed | null> {
@@ -653,7 +781,7 @@ export async function updateCohortNewsfeed(
     const [updated] = await db
       .update(schema.cohortNewsfeed)
       .set(data)
-      .where(eq(schema.cohortNewsfeed.id, feedId))
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
       .returning();
     return updated || null;
   } catch (error) {
@@ -665,6 +793,7 @@ export async function updateCohortNewsfeed(
 }
 
 export async function updateCohortNewsfeedReaction(
+  cohortId: string,
   feedId: string,
   reaction: { clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }
 ): Promise<TCohortNewsfeed | null> {
@@ -672,7 +801,7 @@ export async function updateCohortNewsfeedReaction(
     const [updated] = await db
       .update(schema.cohortNewsfeed)
       .set({ reaction })
-      .where(eq(schema.cohortNewsfeed.id, feedId))
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
       .returning();
     return updated || null;
   } catch (error) {
@@ -683,9 +812,12 @@ export async function updateCohortNewsfeedReaction(
   }
 }
 
-export async function deleteCohortNewsfeed(feedId: string): Promise<TCohortNewsfeed | null> {
+export async function deleteCohortNewsfeed(cohortId: string, feedId: string): Promise<TCohortNewsfeed | null> {
   try {
-    const [deleted] = await db.delete(schema.cohortNewsfeed).where(eq(schema.cohortNewsfeed.id, feedId)).returning();
+    const [deleted] = await db
+      .delete(schema.cohortNewsfeed)
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
+      .returning();
     return deleted || null;
   } catch (error) {
     console.error('deleteCohortNewsfeed error:', error);
@@ -697,7 +829,10 @@ export async function deleteCohortNewsfeed(feedId: string): Promise<TCohortNewsf
 
 // ─── Program Newsfeed Comments ────────────────────────────────────────────────
 
-export async function getCohortNewsfeedComments(feedId: string): Promise<
+export async function getCohortNewsfeedComments(
+  cohortId: string,
+  feedId: string
+): Promise<
   Array<
     TCohortNewsfeedComment & {
       authorProfileId: string | null;
@@ -714,9 +849,12 @@ export async function getCohortNewsfeedComments(feedId: string): Promise<
         profile: schema.profile
       })
       .from(schema.cohortNewsfeedComment)
+      .innerJoin(schema.cohortNewsfeed, eq(schema.cohortNewsfeed.id, schema.cohortNewsfeedComment.cohortNewsfeedId))
       .leftJoin(schema.cohortMember, eq(schema.cohortNewsfeedComment.authorId, schema.cohortMember.id))
       .leftJoin(schema.profile, eq(schema.cohortMember.profileId, schema.profile.id))
-      .where(eq(schema.cohortNewsfeedComment.cohortNewsfeedId, feedId))
+      .where(
+        and(eq(schema.cohortNewsfeedComment.cohortNewsfeedId, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId))
+      )
       .orderBy(asc(schema.cohortNewsfeedComment.createdAt));
 
     return result.map((row) => ({
@@ -747,11 +885,16 @@ export async function createCohortNewsfeedComment(data: TNewCohortNewsfeedCommen
   }
 }
 
-export async function deleteCohortNewsfeedComment(commentId: number): Promise<TCohortNewsfeedComment | null> {
+export async function deleteCohortNewsfeedComment(
+  feedId: string,
+  commentId: number
+): Promise<TCohortNewsfeedComment | null> {
   try {
     const [deleted] = await db
       .delete(schema.cohortNewsfeedComment)
-      .where(eq(schema.cohortNewsfeedComment.id, commentId))
+      .where(
+        and(eq(schema.cohortNewsfeedComment.id, commentId), eq(schema.cohortNewsfeedComment.cohortNewsfeedId, feedId))
+      )
       .returning();
     return deleted || null;
   } catch (error) {

@@ -12,6 +12,12 @@ export type UpdateTagGroupRequest = (typeof classroomio.organization)['tags']['g
 export type CreateTagRequest = (typeof classroomio.organization)['tags']['$post'];
 export type UpdateTagRequest = (typeof classroomio.organization)['tags'][':tagId']['$put'];
 
+export type CreateTagGroupResponse = InferResponseType<CreateTagGroupRequest>;
+export type CreatedTagGroup = Extract<CreateTagGroupResponse, { success: true }>['data'];
+
+export type CreateTagResponse = InferResponseType<CreateTagRequest>;
+export type CreatedTag = Extract<CreateTagResponse, { success: true }>['data'];
+
 export type GetCourseTagsRequest = (typeof classroomio.course)[':courseId']['tags']['$get'];
 export type UpdateCourseTagsRequest = (typeof classroomio.course)[':courseId']['tags']['$put'];
 export type GetCourseTagsResponse = InferResponseType<GetCourseTagsRequest>;

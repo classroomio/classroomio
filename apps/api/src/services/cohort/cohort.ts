@@ -28,6 +28,7 @@ import {
   getCohortNewsfeedCommentById,
   getCohortNewsfeedComments,
   getCohortsByOrg,
+  getCohortsByOrgForProfile,
   getCoursesByCohort,
   getCohortMemberRole,
   isCohortCourse,
@@ -158,9 +159,9 @@ export async function getCohort(cohortId: string) {
   }
 }
 
-export async function listOrgCohorts(organizationId: string) {
+export async function listOrgCohorts(organizationId: string, profileId: string) {
   try {
-    return getCohortsByOrg(organizationId);
+    return getCohortsByOrgForProfile(organizationId, profileId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -334,9 +335,9 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
   }
 }
 
-export async function removeCohortMemberService(_cohortId: string, memberId: string) {
+export async function removeCohortMemberService(cohortId: string, memberId: string) {
   try {
-    const deleted = await removeCohortMember(memberId);
+    const deleted = await removeCohortMember(cohortId, memberId);
     if (!deleted) {
       throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
     }
@@ -351,9 +352,9 @@ export async function removeCohortMemberService(_cohortId: string, memberId: str
   }
 }
 
-export async function updateCohortMemberService(_cohortId: string, memberId: string, data: TUpdateCohortMember) {
+export async function updateCohortMemberService(cohortId: string, memberId: string, data: TUpdateCohortMember) {
   try {
-    const updated = await updateCohortMemberQuery(memberId, { roleId: data.roleId });
+    const updated = await updateCohortMemberQuery(cohortId, memberId, { roleId: data.roleId });
     if (!updated) {
       throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
     }
@@ -494,13 +495,13 @@ export async function createCohortNewsfeedService(cohortId: string, profileId: s
   }
 }
 
-export async function updateCohortNewsfeedService(feedId: string, data: TUpdateCohortNewsfeed) {
+export async function updateCohortNewsfeedService(cohortId: string, feedId: string, data: TUpdateCohortNewsfeed) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return updateCohortNewsfeedQuery(feedId, data);
+    return updateCohortNewsfeedQuery(cohortId, feedId, data);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -511,13 +512,17 @@ export async function updateCohortNewsfeedService(feedId: string, data: TUpdateC
   }
 }
 
-export async function updateCohortNewsfeedReactionService(feedId: string, data: TUpdateCohortReaction) {
+export async function updateCohortNewsfeedReactionService(
+  cohortId: string,
+  feedId: string,
+  data: TUpdateCohortReaction
+) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return updateCohortNewsfeedReaction(feedId, data.reaction);
+    return updateCohortNewsfeedReaction(cohortId, feedId, data.reaction);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -528,13 +533,13 @@ export async function updateCohortNewsfeedReactionService(feedId: string, data: 
   }
 }
 
-export async function deleteCohortNewsfeedService(feedId: string) {
+export async function deleteCohortNewsfeedService(cohortId: string, feedId: string) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return deleteCohortNewsfeedQuery(feedId);
+    return deleteCohortNewsfeedQuery(cohortId, feedId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -547,13 +552,13 @@ export async function deleteCohortNewsfeedService(feedId: string) {
 
 // ─── Cohort Newsfeed Comments ────────────────────────────────────────────────
 
-export async function listCohortNewsfeedComments(feedId: string) {
+export async function listCohortNewsfeedComments(cohortId: string, feedId: string) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return getCohortNewsfeedComments(feedId);
+    return getCohortNewsfeedComments(cohortId, feedId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -565,12 +570,13 @@ export async function listCohortNewsfeedComments(feedId: string) {
 }
 
 export async function createCohortNewsfeedCommentService(
+  cohortId: string,
   feedId: string,
   profileId: string,
   data: TCreateCohortNewsfeedComment
 ) {
   try {
-    const feed = await getCohortNewsfeedById(feedId);
+    const feed = await getCohortNewsfeedById(cohortId, feedId);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
@@ -593,17 +599,20 @@ export async function createCohortNewsfeedCommentService(
   }
 }
 
-export async function deleteCohortNewsfeedCommentService(commentId: number) {
+export async function deleteCohortNewsfeedCommentService(cohortId: string, feedId: string, commentId: number) {
   try {
     const comment = await getCohortNewsfeedCommentById(commentId);
     if (!comment) {
       throw new AppError('Comment not found', ErrorCodes.COHORT_NEWSFEED_COMMENT_NOT_FOUND, 404);
     }
-    const feed = await getCohortNewsfeedById(comment.cohortNewsfeedId!);
+    const feed = await getCohortNewsfeedById(cohortId, comment.cohortNewsfeedId!);
     if (!feed) {
       throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
     }
-    return deleteCohortNewsfeedCommentQuery(commentId);
+    if (feed.id !== feedId) {
+      throw new AppError('Comment not found', ErrorCodes.COHORT_NEWSFEED_COMMENT_NOT_FOUND, 404);
+    }
+    return deleteCohortNewsfeedCommentQuery(feedId, commentId);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

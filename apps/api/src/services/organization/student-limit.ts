@@ -56,6 +56,26 @@ export async function notifyStudentMilestone(notification: StudentMilestoneNotif
 }
 
 /**
+ * How many more students the org can take, or `Infinity` when unlimited.
+ *
+ * The counterpart to `assertStudentCapacityOrThrow` for callers that must
+ * partially succeed: an import of 900 learners with 300 seats left should add
+ * 300 and report the rest, not reject the file.
+ */
+export async function getRemainingStudentSeats(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') return Number.POSITIVE_INFINITY;
+
+  const activePlan = await getActiveOrganizationPlan(orgId, dbClient);
+  const limit = getStudentLimit(activePlan?.planName);
+
+  if (!Number.isFinite(limit)) return Number.POSITIVE_INFINITY;
+
+  const currentCount = await countActiveStudents(orgId, dbClient);
+
+  return Math.max(0, limit - currentCount);
+}
+
+/**
  * Throws `UPGRADE_REQUIRED` when adding `additionalStudents` new student-role
  * members would push the org past its plan's student limit. Self-hosted orgs
  * and plans with an unlimited allowance are exempt.

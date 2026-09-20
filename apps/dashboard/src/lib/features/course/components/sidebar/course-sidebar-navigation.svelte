@@ -69,6 +69,9 @@
   });
   const showContentCount = $derived(sidebar.open && !sidebar.isMobile && contentCount.total > 0);
   const studentComplianceRecord = $derived(complianceApi.learnerHistory?.currentRecord ?? null);
+  const showComplianceBanner = $derived(
+    isStudent && courseApi.course?.type === 'COMPLIANCE' && (sidebar.open || sidebar.isMobile)
+  );
 
   const navItems = $derived(
     [
@@ -144,10 +147,7 @@
         url: getNavItemRoute(id, 'marks'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'marks'),
         show() {
-          if (courseApi.course?.type === 'LIVE_CLASS') {
-            return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
-          }
-          return false;
+          return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
         },
         icon: getNavIcon(NAV_IDS.MARKS)
       },
@@ -307,7 +307,7 @@
 <Sidebar.Group class="pt-0!">
   <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.courses')} class="px-2! py-2!" />
 
-  {#if isStudent && courseApi.course?.type === 'COMPLIANCE'}
+  {#if showComplianceBanner}
     <div
       class="mx-2 mb-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/20"
     >
