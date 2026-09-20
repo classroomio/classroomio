@@ -31,7 +31,7 @@ Example public course link:
 https://clmio.com/K7mQ2p
 ```
 
-Short links are aliases, not a second authorization system. Public course aliases resolve to the course's current canonical public URL. Invite aliases inherit all authorization, revocation, expiry, capacity, and acceptance rules from the underlying invitation.
+Short links are aliases, not a second authorization or lifecycle system. Public course aliases resolve to the course's current canonical public URL. Invite aliases redirect to the canonical invite URL, where the existing application flow enforces revocation, expiry where supported, capacity, resource availability, and acceptance rules.
 
 ## Problem Statement
 
@@ -71,6 +71,8 @@ The current experience creates several problems:
 12. Redirects use HTTP `302`; the service does not use permanent redirects because slugs, domains, publication state, and invite state can change.
 13. Incoming query parameters are discarded in v1 rather than copied to the destination.
 14. Short-link access does not count as invitation acceptance or resource membership.
+15. A short link's code and target association are immutable in v1; users cannot edit, retarget, or regenerate them.
+16. The redirect service does not duplicate expiry, revocation, or resource-availability enforcement from the canonical destination.
 
 ## Why the Code Lengths Differ
 
@@ -99,7 +101,7 @@ These links are intentionally longer than public course aliases. Shortening a pr
 1. Make copied public course links compact and brand-recognizable.
 2. Make reusable course, cohort, and organization role invites easier to share without weakening their security model.
 3. Keep short links stable when a public course slug, tenant domain, or verified custom domain changes.
-4. Centralize short-link creation, resolution, lifecycle, and abuse controls.
+4. Centralize short-link creation, resolution, immutable mapping, and abuse controls.
 5. Preserve every existing invitation validation and acceptance rule.
 6. Provide a safe path for future QR and SMS sharing without changing canonical URLs.
 
@@ -128,13 +130,13 @@ When opened, the alias resolves the current course and organization data and red
 
 An authorized team member creates or views an existing course or cohort invite link and copies it. ClassroomIO creates or retrieves a 12-character alias tied to the existing `invite_link` record.
 
-Opening the alias redirects to the existing invite preview and join flow. Disabling or closing the underlying invite immediately makes the alias unusable.
+Opening the alias redirects to the existing invite preview and join flow. Disabling or closing the underlying invite does not change the short alias; the canonical invite flow displays and enforces the appropriate unavailable state.
 
 ### UC-3: Copy a Reusable Admin or Tutor Quick Invite
 
 An authorized organization admin creates a reusable admin or tutor quick-invite link from team settings. ClassroomIO creates or retrieves a 22-character alias tied to the existing organization `LINK` invite.
 
-The alias inherits the role, revocation state, and acceptance checks of the underlying organization invite. It is not used for email-specific team invitations.
+The alias always redirects to the canonical organization invite flow, which remains responsible for role, revocation, and acceptance checks. It is not used for email-specific team invitations.
 
 ### UC-4: Share Through a QR Code or Limited-Space Channel
 
@@ -203,29 +205,29 @@ ClassroomIO already runs a Cloudflare Worker for browser-facing host routing in 
 
 ### FR-2: Resolve a Public Course Alias
 
-1. The resolver loads the current published course and organization.
+1. The resolver loads the current course and organization needed to construct the canonical public URL.
 2. It derives the destination using the current course slug and public organization base URL.
-3. Unpublished, deleted, or otherwise inaccessible courses do not redirect.
+3. The resolver does not duplicate publication or visibility decisions from the canonical course route.
 4. The redirect discards incoming query parameters in v1.
 5. Resolution never changes course or organization state.
 
 ### FR-3: Resolve an Invite Alias
 
 1. The alias resolves through its underlying invite record.
-2. The resolver validates that the underlying record still exists and is not revoked or expired before redirecting.
-3. Course and cohort availability rules remain enforced by their existing preview and acceptance flows.
-4. Organization role and authorization rules remain enforced by the existing organization invite flow.
+2. While the underlying invite identity exists, the resolver redirects to its canonical invite URL without independently evaluating revocation, expiry, or resource availability.
+3. Course and cohort revocation and availability rules remain enforced by their existing preview and acceptance flows.
+4. Organization role, revocation, expiry where supported, and authorization rules remain enforced by the existing organization invite flow.
 5. A redirect request never enrolls, joins, accepts, or consumes an invite.
 6. Social preview bots and email scanners therefore cannot accept an invite by opening the alias.
 
-### FR-4: Lifecycle
+### FR-4: Immutable Mapping and Lifecycle Ownership
 
 1. A public course alias remains stable across slug and public-domain changes.
-2. Deleting a course invalidates its alias.
-3. Revoking an invite invalidates its alias without requiring a separate short-link update.
-4. Re-enabling the same invite restores the same alias unless the invite itself was regenerated.
-5. Regenerating an underlying invite permanently invalidates aliases tied to the previous invite.
-6. Unsupported, unavailable, expired, and revoked targets use a generic unavailable response that does not disclose sensitive target details.
+2. A short-link record cannot be edited, retargeted, or regenerated in v1.
+3. Revoking, expiring, closing, or re-enabling an invite does not modify its short-link record.
+4. The alias continues redirecting to the same canonical invite identity, and that destination renders or enforces its current lifecycle state.
+5. V1 does not add invite-token regeneration. Any future rotation must create a new invite identity or generation and a new short alias; the old alias must never be retargeted.
+6. Deleted targets and operationally disabled aliases use a generic unavailable response that does not disclose sensitive target details.
 
 ### FR-5: Copy Fallback
 
@@ -249,7 +251,7 @@ ClassroomIO already runs a Cloudflare Worker for browser-facing host routing in 
 3. Public course settings may display the short URL while **Open link** continues opening the canonical course page.
 4. Invite settings display the short alias intended for sharing, not the underlying canonical token URL.
 5. The UI does not describe six-character public codes as secure invitation tokens.
-6. Existing revoke, enable, regenerate, join-count, and last-used controls remain authoritative.
+6. Existing revoke, enable, join-count, and last-used controls remain authoritative.
 7. User-facing copy uses dashboard translation keys.
 
 ## Recommended Architecture
@@ -276,7 +278,7 @@ The API owns:
 - Code generation and collision handling.
 - Query-layer access to short-link and target records.
 - Current canonical destination derivation.
-- Invite lifecycle validation.
+- Canonical invite URL construction without duplicating destination lifecycle checks.
 - A service-authenticated resolver contract for the edge Worker.
 
 The public Worker-to-API resolver must use a dedicated shared secret or equivalent service authentication. It must not expose an unauthenticated arbitrary resolution API.
@@ -320,12 +322,13 @@ The client cannot request a shorter code or supply a custom code in v1.
 
 ### Caching
 
-PostgreSQL remains authoritative.
+PostgreSQL remains authoritative for alias ownership, immutable target relationships, and operational disables.
 
-- Invitation resolution is not stored solely in Cloudflare KV or a long-lived edge cache because revocation must take effect promptly.
+- Invite revocation and expiry do not require short-link cache invalidation because the canonical destination enforces those states.
+- Invitation redirects retain `no-store` in v1 so an operational disable or incident kill switch takes effect without a browser retaining the redirect.
 - Public course resolution may be cached briefly after the correctness path is implemented and measured.
-- A cached public result must have a bounded lifetime and must not outlive a course-state change indefinitely.
-- Negative lookups and sensitive invite outcomes are not cached long-term.
+- A cached public result must have a bounded lifetime and must not outlive deletion or an operational disable indefinitely.
+- Negative lookups are not cached long-term.
 
 ## API Shape
 
@@ -373,7 +376,7 @@ The API never returns the destination supplied by the browser because the browse
 1. Allow only ClassroomIO resource targets and verified organization custom domains derived by server code.
 2. Apply rate limits by client IP and code, with stricter unknown-code limits.
 3. Do not log raw invite codes, canonical invite tokens, cookies, or authorization headers.
-4. Return a generic unavailable response for unknown, revoked, expired, or inaccessible sensitive aliases.
+4. Return a generic unavailable response for unknown, operationally disabled, or deleted aliases; revoked and expired invites still redirect to their canonical flow.
 5. Do not place membership or enrollment side effects on `GET` or `HEAD`.
 6. Keep acceptance as an authenticated `POST` in the existing application flow.
 7. Add a per-link operational disable mechanism for abuse response without mutating the underlying resource.
@@ -428,14 +431,14 @@ Avoid persistent raw-IP storage. If approximate unique-open measurement is added
 ### Phase 3: Resource Invite Copying
 
 1. Integrate the shared invite-link component for course and cohort targets.
-2. Confirm disabled, re-enabled, closed, deleted, and regenerated invite behavior.
+2. Confirm disabled, re-enabled, closed, and deleted invite behavior while keeping alias mappings immutable.
 3. Verify that link scanners cannot join a resource.
 
 ### Phase 4: Organization Role Quick Invites
 
 1. Integrate the team-settings quick-invite copy action.
 2. Verify the 22-character policy and existing role authorization.
-3. Confirm revocation, regeneration, and acceptance behavior.
+3. Confirm revocation and acceptance behavior remains owned by the canonical invite flow.
 4. Keep targeted team invitation emails on direct canonical URLs.
 
 ### Phase 5: Optional Share Channels
@@ -467,8 +470,9 @@ After the core system is stable, reuse existing aliases for QR, SMS, slide, and 
 - Concurrent creation returns one stable alias.
 - Published course resolves to the current tenant or verified custom domain.
 - Slug and domain changes preserve the alias.
-- Unpublishing or deleting a course stops resolution.
-- Revoked, expired, closed, or regenerated invitations stop resolution.
+- Unpublishing a course still redirects to the canonical route, which enforces visibility; deleting the course returns the generic unavailable response.
+- Revoked, expired where supported, or closed invitations still redirect, and the canonical flow rejects or explains their current state.
+- Short-link codes and target associations cannot be edited, retargeted, or regenerated.
 - Re-enabled invites restore their existing alias when the underlying invite is unchanged.
 - Invite redirect `GET` and `HEAD` do not enroll or accept.
 - Authorization prevents cross-organization alias creation.
@@ -494,7 +498,9 @@ After the core system is stable, reuse existing aliases for QR, SMS, slide, and 
 - Targeted transactional emails continue using direct canonical URLs.
 - Users cannot create redirects to arbitrary destinations.
 - Slug and organization-domain changes do not break public course aliases.
-- Revocation, expiry, deletion, unpublishing, and regeneration invalidate aliases through the underlying target lifecycle.
+- Revoked, expired where supported, closed, or unpublished targets still redirect to canonical application routes that enforce their lifecycle state.
+- Deleted targets and operationally disabled aliases return the generic unavailable response.
+- Short-link codes and target associations are immutable and have no edit or regeneration endpoint.
 - Opening an invite alias cannot accept the invite or mutate membership.
 - Copy actions fall back to the canonical URL if short-link creation fails.
 - Short-link responses are not indexed and sensitive redirects are not cached.
@@ -519,9 +525,9 @@ Public six-character aliases are discoverable at sufficient request volume. They
 
 Short domains can be associated with phishing. Restrict creation to known internal resource types, disable indexing, monitor abuse, provide a kill switch, and never offer arbitrary destination shortening.
 
-### Revocation Lag
+### Duplicated Invite Lifecycle Logic
 
-Long-lived edge or KV caching could keep a revoked invite redirecting. Do not use eventually consistent storage as the authority for invitation state, and apply `no-store` to sensitive redirects. The acceptance flow still revalidates the invitation even if a stale redirect occurs.
+If the redirect service independently evaluates expiry, revocation, or resource availability, it can drift from the canonical invite flow. The shortener therefore resolves only the immutable mapping and redirects; the canonical preview and acceptance routes remain the single source of truth for invitation state.
 
 ### Link Scanner Traffic
 
@@ -542,7 +548,7 @@ Persisting full destination URLs would freeze old slugs and domains. Store targe
 - [Rebrandly link creation documentation](https://developers.rebrandly.com/docs/create-a-new-link) describes adaptive 3-to-8-character aliases and collision allocation.
 - [OWASP Unvalidated Redirects and Forwards](https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html) recommends mapping server-side identifiers to approved destinations instead of redirecting to user-supplied URLs.
 - [Cloudflare Workers Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/) supports using a Worker as the origin for a dedicated hostname.
-- [Cloudflare Workers KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works/) documents eventually consistent propagation, which is unsuitable as the sole authority for invite revocation.
+- [Cloudflare Workers KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works/) documents eventually consistent propagation, so PostgreSQL remains authoritative for alias creation, deletion, and operational disable state.
 
 ## Open Operational Prerequisites
 
