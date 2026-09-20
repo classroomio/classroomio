@@ -18,13 +18,13 @@
   import ExerciseCreateStepper from './exercise-create-stepper.svelte';
   import SectionCreateStepper from './section-create-stepper.svelte';
   import LessonCreateStepper from './lesson-create-stepper.svelte';
-  import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
+  import * as Alert from '@cio/ui/base/alert';
   import { getContentRoute } from '$features/course/utils/content';
   import type { CreatedContent, LockedSection, StepperRef, StepperState } from './types';
   import { DEFAULT_STEPPER_STATE, CONTENT_OPTIONS, SUCCESS_SENTENCE_KEYS, REPEAT_LABEL_KEYS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { tick, untrack, onDestroy } from 'svelte';
-  import { CheckIcon } from '@lucide/svelte';
+  import CheckCircle2Icon from '@lucide/svelte/icons/check-circle-2';
 
   type ModalPhase = 'form' | 'success';
 
@@ -307,46 +307,20 @@
 
     <div class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-1">
       {#if phase === 'success' && createdContent}
-        <div class="ui:border-border rounded-lg border p-[20px_16px]" style="background: var(--sidebar);">
-          <div class="mb-3 flex min-w-0 items-center gap-3">
-            <div
-              class="relative grid shrink-0 place-items-center rounded-lg"
-              style="width: 36px; height: 36px; background: color-mix(in oklch, var(--primary) 12%, white); color: var(--primary);"
-            >
-              <CourseContentIcon type={createdContent.type} size={18} />
-              <span
-                class="absolute grid place-items-center rounded-full pt-[1.5px] text-white"
-                style="right: -4px; bottom: -4px; width: 18px; height: 18px; background: var(--success); border: 2px solid var(--background);"
-              >
-                <CheckIcon size={12} class="custom" />
-              </span>
-            </div>
-            <p class="min-w-0 truncate text-[15px] font-[650]" style="margin: 0;" title={createdContent.title}>
-              {createdContent.title}
-            </p>
-          </div>
-          <p
-            class="flex items-center gap-2 text-sm font-semibold"
-            style="color: var(--success); margin: 0;"
-            aria-hidden="true"
-          >
-            <CheckIcon size={16} class="custom shrink-0" />
-            {$t(successSentenceKey)}
-          </p>
-        </div>
+        <Alert.Root>
+          <CheckCircle2Icon />
+          <Alert.Title>{$t(successSentenceKey)}</Alert.Title>
+          <Alert.Description>{createdContent.title}</Alert.Description>
+        </Alert.Root>
         <Dialog.Footer class="mt-6 flex flex-row flex-wrap items-center justify-between gap-2.5 sm:justify-between">
-          <Button
-            variant="ghost-default"
-            class="ui:border ui:border-primary ui:bg-background"
-            onclick={handleCreateAnother}
-          >
+          <Button variant="ghost" size="sm" onclick={handleCreateAnother}>
             {$t(repeatLabelKey)}
           </Button>
           <div class="flex items-center gap-2">
-            <Button variant="secondary" onclick={handleLater}>
+            <Button variant="outline" size="sm" onclick={handleLater}>
               {$t('course.navItem.lessons.add_content_later')}
             </Button>
-            <Button bind:ref={primarySuccessButton} onclick={handlePrimarySuccess}>
+            <Button bind:ref={primarySuccessButton} size="sm" onclick={handlePrimarySuccess}>
               {primarySuccessLabel}
             </Button>
           </div>
