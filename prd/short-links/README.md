@@ -73,6 +73,10 @@ The current experience creates several problems:
 14. Short-link access does not count as invitation acceptance or resource membership.
 15. A short link's code and target association are immutable in v1; users cannot edit, retarget, or regenerate them.
 16. The redirect service does not duplicate expiry, revocation, or resource-availability enforcement from the canonical destination.
+17. Alias creation is idempotent on `(targetType, targetId)`; the target type defines the sharing purpose in v1.
+18. A code is permanently reserved after creation. Short-link records are never hard-deleted, and codes are never reused.
+19. Operationally disabled and tombstoned records remain part of the idempotency and uniqueness rules and cannot be replaced with a new alias.
+20. Any future invite rotation must create a new invite database row. The original invite row and its alias remain bound together and are retained in a revoked or tombstoned state.
 
 ## Why the Code Lengths Differ
 
@@ -199,9 +203,9 @@ ClassroomIO already runs a Cloudflare Worker for browser-facing host routing in 
 1. Only authenticated and authorized users may request aliases from dashboard copy/share actions.
 2. The request identifies a supported target type and target ID; it never submits a destination URL.
 3. The API verifies access to the target before returning an alias.
-4. Repeated requests for the same active target and purpose return the same alias.
+4. Repeated requests for the same `(targetType, targetId)` return the existing alias record, including when it is operationally disabled or tombstoned; they never create a replacement alias.
 5. Concurrent first requests must converge on one alias through database uniqueness and retry handling.
-6. The response contains one stable shape with the short URL and link type.
+6. The response contains one stable shape with the short URL, link type, and availability state so the client can use its canonical-copy fallback when the existing alias is unavailable.
 
 ### FR-2: Resolve a Public Course Alias
 
@@ -226,12 +230,14 @@ ClassroomIO already runs a Cloudflare Worker for browser-facing host routing in 
 2. A short-link record cannot be edited, retargeted, or regenerated in v1.
 3. Revoking, expiring, closing, or re-enabling an invite does not modify its short-link record.
 4. The alias continues redirecting to the same canonical invite identity, and that destination renders or enforces its current lifecycle state.
-5. V1 does not add invite-token regeneration. Any future rotation must create a new invite identity or generation and a new short alias; the old alias must never be retargeted.
-6. Deleted targets and operationally disabled aliases use a generic unavailable response that does not disclose sensitive target details.
+5. V1 does not add invite-token regeneration. Any future rotation must create a new invite database row and a new short alias rather than changing the token on the existing row.
+6. The original invite row must be retained as revoked or tombstoned so its alias continues to resolve only to that original canonical invite identity and can never expose the replacement token.
+7. Deleting a target tombstones its short-link record instead of deleting it. The code remains permanently reserved and resolves to a generic unavailable response.
+8. Operationally disabled aliases use the same generic unavailable response without changing their immutable mapping. Re-enabling the same record restores the same alias.
 
 ### FR-5: Copy Fallback
 
-1. If alias creation fails before copying, the dashboard copies the canonical URL instead.
+1. If alias creation fails or the existing alias is operationally disabled or tombstoned, the dashboard copies the canonical URL instead.
 2. The user receives the normal copy-success feedback when the canonical fallback succeeds.
 3. The client records an operational error without displaying secret tokens or destination details in logs.
 
@@ -292,9 +298,10 @@ Add one `short_link` table in one migration. The model should include:
 - Hashed code used for lookup.
 - Application-encrypted code material only where a stable copyable alias must be returned again.
 - Organization ID.
+- Immutable target identity key used for idempotency after the target is deleted.
 - Exactly one supported target relationship.
 - Creator profile ID.
-- Optional operational disable state.
+- Availability state covering active, operationally disabled, and tombstoned records.
 - Created and updated timestamps.
 
 Supported target relationships in v1:
@@ -303,7 +310,7 @@ Supported target relationships in v1:
 - Resource invite-link ID.
 - Organization link-invite ID.
 
-Database checks must ensure the selected target relationship matches the link type. Unique constraints must enforce one active alias per target and purpose.
+Database checks must ensure the selected target relationship matches the link type. An unconditional unique constraint on `(link type, immutable target identity key)` must enforce one alias per target across active, operationally disabled, and tombstoned records. Target deletion must clear or tombstone the resolvable relationship without deleting the short-link row or its identity key.
 
 The table must not store a copied destination URL. Destination URLs are derived from live target data at resolution time.
 
@@ -315,7 +322,8 @@ Use a shared server-side generator with these rules:
 - Base58 alphabet without ambiguous characters.
 - Length selected exclusively from the server-owned link-type policy.
 - Profanity and reserved-word rejection.
-- Unique constraint followed by bounded retry on collision.
+- Unique code constraint across every record, including tombstones, followed by bounded retry on collision.
+- Permanent code reservation with no reuse after target deletion or operational disablement.
 - No sequential IDs, timestamps, truncated database IDs, or reversible identifiers.
 
 The client cannot request a shorter code or supply a custom code in v1.
@@ -351,6 +359,7 @@ The success response uses one stable shape:
   "data": {
     "id": "short-link-uuid",
     "targetType": "PUBLIC_COURSE",
+    "availability": "ACTIVE",
     "shortUrl": "https://clmio.com/K7mQ2p"
   }
 }
@@ -406,7 +415,7 @@ Avoid persistent raw-IP storage. If approximate unique-open measurement is added
 
 1. The redirect path must remain lightweight and independently deployable.
 2. API or analytics failures must not cause target-state mutations.
-3. Alias creation is idempotent per target and purpose.
+3. Alias creation is idempotent per `(targetType, targetId)` across active, operationally disabled, and tombstoned records.
 4. The Worker returns a controlled response for API timeouts or malformed resolver payloads.
 5. Operational metrics distinguish Worker failures, API failures, unavailable targets, and invalid codes.
 6. Deployment includes a health check that does not require a real alias.
@@ -452,6 +461,7 @@ After the core system is stable, reuse existing aliases for QR, SMS, slide, and 
 3. Keep all existing canonical links valid indefinitely according to their current lifecycle.
 4. Do not rewrite links in previously sent emails, persisted content, or audit records.
 5. Do not redirect canonical URLs to `clmio.com`; the short domain redirects only toward canonical destinations.
+6. Retain every created short-link row as a permanent code reservation, including after its target is deleted.
 
 ## Testing Strategy
 
@@ -473,7 +483,10 @@ After the core system is stable, reuse existing aliases for QR, SMS, slide, and 
 - Unpublishing a course still redirects to the canonical route, which enforces visibility; deleting the course returns the generic unavailable response.
 - Revoked, expired where supported, or closed invitations still redirect, and the canonical flow rejects or explains their current state.
 - Short-link codes and target associations cannot be edited, retargeted, or regenerated.
+- Operationally disabling an alias preserves its uniqueness key; later creation requests find the same record and cannot create a replacement.
+- Deleting a target tombstones its alias, and collision handling never reallocates the reserved code.
 - Re-enabled invites restore their existing alias when the underlying invite is unchanged.
+- A future invite-rotation implementation creates a new invite row and alias while the original alias remains bound to the retained original row.
 - Invite redirect `GET` and `HEAD` do not enroll or accept.
 - Authorization prevents cross-organization alias creation.
 - Unknown-code rate limits and generic responses work as intended.
@@ -501,6 +514,9 @@ After the core system is stable, reuse existing aliases for QR, SMS, slide, and 
 - Revoked, expired where supported, closed, or unpublished targets still redirect to canonical application routes that enforce their lifecycle state.
 - Deleted targets and operationally disabled aliases return the generic unavailable response.
 - Short-link codes and target associations are immutable and have no edit or regeneration endpoint.
+- Repeated creation requests use `(targetType, targetId)` and cannot create a replacement for a disabled or tombstoned alias.
+- Deleted aliases are tombstoned, and their codes can never be reused for another target.
+- Future invite rotation requires a new invite row; an existing invite row and alias can never resolve to a replacement token.
 - Opening an invite alias cannot accept the invite or mutate membership.
 - Copy actions fall back to the canonical URL if short-link creation fails.
 - Short-link responses are not indexed and sensitive redirects are not cached.
