@@ -585,7 +585,7 @@
 {/if}
 
 <Dialog.Root bind:open={isBulkActionModalOpen} onOpenChange={handleBulkActionModalChange}>
-  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
+  <Dialog.Content class="sm:max-w-md">
     <Dialog.Header>
       <Dialog.Title>{getBulkActionTitle()}</Dialog.Title>
       <Dialog.Description>

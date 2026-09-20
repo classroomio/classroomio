@@ -108,7 +108,7 @@
 </script>
 
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
-  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
+  <Dialog.Content class="sm:max-w-lg">
     <Dialog.Header>
       <Dialog.Title>
         {$t(mode === 'edit' ? 'tags_admin.tag_modal.edit_title' : 'tags_admin.tag_modal.create_title')}

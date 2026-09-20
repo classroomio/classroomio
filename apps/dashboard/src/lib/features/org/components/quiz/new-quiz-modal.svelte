@@ -101,7 +101,7 @@
     if (!isOpen) handleClose();
   }}
 >
-  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
+  <Dialog.Content class="w-4/5 md:w-2/5">
     <Dialog.Header>
       <Dialog.Title>
         {$createQuizModal.openEdit ? $t('components.quiz.update') : $t('components.quiz.create')}

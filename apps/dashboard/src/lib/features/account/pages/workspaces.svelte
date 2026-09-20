@@ -137,7 +137,7 @@
 {/if}
 
 <Dialog.Root bind:open={isCreateOpen}>
-  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
+  <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>{$t('account.workspaces.create_modal_title')}</Dialog.Title>
     </Dialog.Header>

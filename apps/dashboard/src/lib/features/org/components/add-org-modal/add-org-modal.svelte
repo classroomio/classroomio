@@ -37,7 +37,7 @@
     if (!isOpen) $newOrgModal.open = false;
   }}
 >
-  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
+  <Dialog.Content class="w-96">
     <Dialog.Header>
       <Dialog.Title>{$t('add_org.create_org')}</Dialog.Title>
     </Dialog.Header>
