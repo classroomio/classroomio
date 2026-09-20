@@ -151,7 +151,7 @@ Split button used on public lesson pages when the course has Markdown export ena
 
 ### Public course Share button (`src/custom/public-course/share-button.svelte`)
 
-Icon-only share control for the public lesson/exercise title row. Opens the same Facebook / LinkedIn / X / Instagram menu as `OutlineRailActions`. Copy is passed via `labels: ShareActionLabels`. Instagram copies the page URL and the host shows a snackbar via `onInstagramCopied`. The outline rail keeps its own share row on `lg+`.
+Icon-only secondary share control for the public lesson/exercise title row. Opens the same Facebook / LinkedIn / X / Instagram menu as `OutlineRailActions`. Copy is passed via `labels: ShareActionLabels`. Instagram copies the page URL and the host shows a snackbar via `onInstagramCopied`. The outline rail keeps its own share row on `lg+`.
 
 ### Public course outline rail actions (`src/custom/public-course/outline-rail-actions.svelte`)
 

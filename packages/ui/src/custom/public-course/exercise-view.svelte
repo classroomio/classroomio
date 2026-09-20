@@ -419,13 +419,13 @@
 
         <div
           class={cn(
-            'ui:flex ui:flex-wrap ui:items-center ui:justify-between ui:gap-3',
+            'ui:flex ui:items-center ui:justify-between ui:gap-2 ui:md:items-start',
             showAttemptsPicker ? 'ui:mt-4' : 'ui:mt-2'
           )}
         >
           <h1
             id={titleId}
-            class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
+            class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:font-semibold ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
           >
             {exercise.title}
           </h1>
