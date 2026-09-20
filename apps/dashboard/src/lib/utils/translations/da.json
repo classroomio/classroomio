@@ -944,6 +944,7 @@
         "cover_image": "Forsidebillede",
         "optional_image": "Dette valgfrie billede vises på din velkomstside. Hvis du inkluderer en, skal den være mindst 280 x 200",
         "replace": "Udskift",
+        "remove": "Fjern",
         "del": "Slet",
         "course_details": "Kursusdetaljer",
         "course_title": "Kursus titel",
@@ -951,6 +952,7 @@
         "placeholder": "Skriv din kursusbeskrivelse her",
         "course_title_placeholder": "Skriv kursets titel her",
         "setup_landing_for_link": "Opsæt landingsside for at få kursuslink",
+        "setup_landing_page": "Opsæt landingsside",
         "coming_soon": "Kommer snart",
         "link": "Kursus link",
         "grading": "Bedømmelse",
@@ -1036,6 +1038,9 @@
           "description": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
           "placeholder": "Skriv den velkomstbesked, eleverne får, når de tilmelder sig..."
         },
+        "general_card_title": "Generelt",
+        "content_card_title": "Indhold",
+        "access_card_title": "Adgang",
         "locked_content": {
           "title": "{count} kursuselement(er) er låst",
           "description": "Tilmeldte elever vil ikke kunne tage låste lektioner eller øvelser, før du låser dem op.",

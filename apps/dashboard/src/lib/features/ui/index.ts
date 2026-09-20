@@ -21,6 +21,8 @@ export { default as PoweredBy } from './powered-by.svelte';
 export { default as RefreshPageData } from './refresh-page-data.svelte';
 export { default as RoleBasedSecurity } from './role-based-security.svelte';
 export { default as Search } from './search.svelte';
+export { default as SettingsCard } from './settings-card.svelte';
+export { default as SettingsSeparator } from './settings-separator.svelte';
 export { default as SenjaEmbed } from './senja-embed.svelte';
 export { default as Snackbar } from './snackbar/snackbar.svelte';
 export { default as TablePagination } from './table-pagination.svelte';

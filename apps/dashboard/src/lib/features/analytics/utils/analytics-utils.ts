@@ -138,11 +138,16 @@ export function formatChartTooltipDate(date: Date, point?: BucketedChartPoint): 
   const isSameMonth =
     point.date.getMonth() === point.endDate.getMonth() && point.date.getFullYear() === point.endDate.getFullYear();
 
-  const endFormatted = point.endDate.toLocaleDateString('en-US', {
-    month: isSameMonth ? undefined : 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
+  // Passing only `day` + `year` to Intl renders a malformed fallback like
+  // "2026 (day: 7)" on some ICU builds, so compose the year manually for
+  // same-month ranges.
+  const endFormatted = isSameMonth
+    ? `${point.endDate.toLocaleDateString('en-US', { day: 'numeric' })}, ${point.endDate.getFullYear()}`
+    : point.endDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
 
   return `${startFormatted} – ${endFormatted}`;
 }
