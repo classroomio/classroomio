@@ -6,7 +6,7 @@ import postgres, { type Sql } from 'postgres';
 
 // import * as schema from './schema';
 
-const pgbouncerUrl = process.env.PGBOUNCER_DATABASE_URL;
+const pgbouncerUrl = process.env.PGBOUNCER_DATABASE_URL?.trim() || undefined;
 const connectionString = pgbouncerUrl ?? process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 
 type DatabaseClient = ReturnType<typeof drizzle>;
