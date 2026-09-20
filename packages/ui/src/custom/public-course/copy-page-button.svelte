@@ -62,7 +62,7 @@
 <ButtonGroup.Root class={cn('ui:shrink-0', className)}>
   <Button
     type="button"
-    variant="outline"
+    variant="secondary"
     size="sm"
     loading={copying}
     aria-busy={copying}
@@ -82,7 +82,7 @@
         <Button
           {...props}
           type="button"
-          variant="outline"
+          variant="secondary"
           size="sm"
           class={cn('ui:px-2', props.class)}
           aria-label={labels.moreActions}

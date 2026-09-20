@@ -115,7 +115,7 @@
         <div class="ui:mt-2 ui:flex ui:items-center ui:justify-between ui:gap-2 ui:md:items-start">
           <h1
             id={titleId}
-            class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:font-semibold ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
+            class="ui:min-w-0 ui:flex-1 ui:scroll-mt-24 ui:text-2xl ui:tracking-tight ui:text-foreground ui:sm:text-3xl"
           >
             {lesson.title}
           </h1>
