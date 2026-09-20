@@ -5,6 +5,9 @@ Inlines local stylesheets (including their @import chain) and embeds Geist and t
 ClassroomIO logo as base64, so a render never races a webfont request — the single
 most common cause of an asset rendering in a fallback face.
 
+Animations and transitions are zeroed for the capture, so a frame lands on its final
+state rather than wherever a 9s push-out happened to be when Chrome fired.
+
 Usage:
   python3 render.py <input.html[?params]> <output.png> [WIDTHxHEIGHT]
 
@@ -90,6 +93,13 @@ def main() -> None:
     html = inline_stylesheets(html, src.parent)
     html = html.replace("__GEIST_WOFF2_B64__", b64(GEIST))
     html = html.replace("__CIO_LOGO_B64__", b64(LOGO))
+
+    still = (
+        "<style>*,*::before,*::after{animation-duration:0s!important;"
+        "animation-delay:0s!important;transition-duration:0s!important;"
+        "transition-delay:0s!important;}</style>"
+    )
+    html = html.replace("</head>", still + "</head>", 1)
 
     font = (
         "<style>@font-face{font-family:'Geist';font-style:normal;font-weight:100 900;"

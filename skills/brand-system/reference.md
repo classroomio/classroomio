@@ -14,9 +14,9 @@ stage.js        beat stepping, field switching, fit-to-window
 Consume it as:
 
 ```html
-<link rel="stylesheet" href="../design-system/tokens.css" />
-<link rel="stylesheet" href="../design-system/motion.css" />
-<link rel="stylesheet" href="../design-system/components.css" />
+<link rel="stylesheet" href="<skill>/tokens.css" />
+<link rel="stylesheet" href="<skill>/motion.css" />
+<link rel="stylesheet" href="<skill>/components.css" />
 ```
 
 ## Fields
@@ -43,7 +43,9 @@ keeps `#0233BD` in the asset instead of a tint of it.
 register at a glance. If someone has to hunt for it, there is not enough.
 
 **Blue is a mark, not a ground.** It goes on the active item, the number that matters, the
-action. Not on the field, and not on every badge, bar and icon at once.
+action — not on every badge, bar and icon at once. `.field-blue` is the deliberate
+exception, and using it spends the accent: on a blue field the accent resolves to white,
+so nothing can be blue to stand out. Use it for an asset that shouts, not one that points.
 
 **Type is the subject.** Display runs 176–228px hard against the gutter and may bleed off
 the edge. Nothing is centred.

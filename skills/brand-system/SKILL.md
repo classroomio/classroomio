@@ -45,8 +45,11 @@ by, so every asset needs a blue element big enough to register at a glance — a
 the key word in a headline, the live state, the CTA. If someone has to hunt for the blue,
 there isn't enough of it.
 
-**Blue is a mark, not a ground.** It goes on the thing that carries meaning. It does not go
-on the field, and it does not land on every badge, bar and icon in the same frame.
+**Blue is a mark, not a ground.** It goes on the thing that carries meaning, and it does not
+land on every badge, bar and icon in the same frame. `.field-blue` is the one deliberate
+exception — and it costs you the accent, because once the field is blue nothing on it can
+be blue to stand out. Spend it on an asset whose job is to shout, not on one that needs to
+point at something.
 
 **On a dark field, blue is a fill, not type.** `#0233BD` is too dark to read as letterforms
 on Ink, so as type it has to step to `#ADC3FF` — a tint, not the brand colour. Put it behind

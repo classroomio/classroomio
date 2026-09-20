@@ -29,6 +29,10 @@
 
     const w = +stage.dataset.w || 1920;
     const h = +stage.dataset.h || 1080;
+
+    stage.style.setProperty('--stage-w', w + 'px');
+    stage.style.setProperty('--stage-h', h + 'px');
+
     const scale = Math.min(window.innerWidth / w, window.innerHeight / h);
     if (!scale) return;
 
