@@ -44,6 +44,7 @@
                 {#snippet child({ props })}
                   <Button
                     {...props}
+                    variant="secondary"
                     onclick={addContent}
                     disabled={!!$contentEditingStore}
                     aria-keyshortcuts="Control+Shift+N"
