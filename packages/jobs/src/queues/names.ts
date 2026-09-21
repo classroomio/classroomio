@@ -5,12 +5,14 @@
 export const QUEUE_NAMES = {
   media: 'media',
   mediaTranscribe: 'media-transcribe',
+  youtubeCaptions: 'youtube-captions',
   emails: 'emails',
   notifications: 'notifications',
   webhooks: 'webhooks',
   courseImports: 'course-imports',
   agentCourseGeneration: 'agent-course-generation',
   onboardingBootstrap: 'onboarding-bootstrap',
+  audience: 'audience',
   maintenance: 'maintenance'
 } as const;
 
@@ -30,6 +32,9 @@ export const JOB_NAMES = {
   mediaTranscribe: {
     transcribeAudio: 'transcribe-audio'
   },
+  youtubeCaptions: {
+    fetchCaptions: 'fetch-captions'
+  },
   emails: {
     send: 'send'
   },
@@ -44,6 +49,9 @@ export const JOB_NAMES = {
   agentCourseGeneration: {
     run: 'run'
   },
+  audience: {
+    bulkAction: 'bulk-action'
+  },
   maintenance: {
     retentionCompact: 'retention-compact',
     lessonVersionRetention: 'lesson-version-retention',
@@ -51,6 +59,7 @@ export const JOB_NAMES = {
     mediaJobReap: 'media-job-reap',
     analyticsDailyRollup: 'analytics-daily-rollup',
     assetStorageCleanup: 'asset-storage-cleanup',
-    courseRoleReconcile: 'course-role-reconcile'
+    courseRoleReconcile: 'course-role-reconcile',
+    memberActivityReconcile: 'member-activity-reconcile'
   }
 } as const;

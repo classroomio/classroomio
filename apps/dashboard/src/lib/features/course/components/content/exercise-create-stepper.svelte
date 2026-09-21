@@ -109,7 +109,7 @@
     try {
       const createdExercise = await exerciseApi.createFromTemplate(courseId, String(template.id), {
         sectionId,
-        order,
+        order: order ?? 1,
         silent: true
       });
       if (createdExercise) {

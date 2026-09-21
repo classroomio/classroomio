@@ -91,6 +91,10 @@ export function getTotalLessons(sections: LandingPageSection[]) {
   }, 0);
 }
 
+export function resolveCourseNavHref(href: string) {
+  return href.startsWith('#') ? `/${href}` : href;
+}
+
 export function filterNavItems(course: Course, reviews: Review[]) {
   const rules = get(course, 'metadata.sectionDisplay', {});
 
@@ -175,7 +179,7 @@ export function buildCourseLandingPageProps(
     theme: landing.theme as OrgLandingPageTheme,
     orgName: org.name ?? '',
     logoUrl: org.avatarUrl ?? undefined,
-    navItems: landing.navItems,
+    navItems: landing.navItems.map((item) => ({ ...item, href: resolveCourseNavHref(item.href) })),
     authAction: options.authAction,
     hero: {
       heading: course.title ?? landing.hero.heading,

@@ -1,0 +1,166 @@
+/* ClassroomIO design tokens — the single source of truth.
+   Values only. No components, no layout. Every other file reads from here. */
+
+:root {
+  /* ---- warm ramp ------------------------------------------------------ */
+  --paper: #fdfbf7;
+  --bone-100: #f6f2e9;
+  --bone: #efe9dd;
+  --bone-300: #e3daca;
+  --ink-800: #2a251d;
+  --ink: #17140f;
+
+  /* ---- brand blue ----------------------------------------------------- */
+  --blue: #0233bd;
+  --blue-300: #adc3ff;
+
+  /* ---- state ---------------------------------------------------------- */
+  --ok: #1d6b40;
+  --warn: #a6620e;
+
+  /* ---- canvas --------------------------------------------------------
+     Every dimension below is a multiple of --u, which derives from the
+     width of whatever the asset sits in. Set --canvas and the whole system
+     rescales: a 1080-wide vertical, a 1350 carousel slide and a 390px phone
+     viewport each get type in the same proportion as the 1920 frame it was
+     drawn at. Numbers stay written at their 1920 value so they remain
+     legible; --u is the scale factor, 1 at 1920.
+
+       fixed canvas   .stage sets --canvas from data-w
+       web            .brand-web sets --canvas from the viewport
+       anything else  set --canvas yourself, in px                      */
+  --canvas: 1920px;
+  --u: calc(var(--canvas) / 1920);
+
+  /* ---- type -----------------------------------------------------------
+     Family, weights, tracking and leading are brand identity and never
+     scale. Sizes are canvas-relative. */
+  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --size-display-xl: calc(228 * var(--u));
+  --size-display: calc(176 * var(--u));
+  --size-display-s: calc(128 * var(--u));
+  --size-headline: calc(76 * var(--u));
+  --size-headline-s: calc(64 * var(--u));
+  --size-title: calc(38 * var(--u));
+  --size-title-s: calc(31 * var(--u));
+  --size-body-lg: calc(36 * var(--u));
+  --size-body: calc(26 * var(--u));
+  --size-body-s: calc(21 * var(--u));
+  --size-mono-lg: calc(22 * var(--u));
+  --size-mono: calc(17 * var(--u));
+  --size-mono-s: calc(15 * var(--u));
+
+  --track-display: -0.05em;
+  --track-headline: -0.035em;
+  --track-title: -0.02em;
+  --track-body: -0.01em;
+  --track-mono: 0.12em;
+
+  --leading-display: 0.92;
+  --leading-headline: 1.04;
+  --leading-body: 1.42;
+
+  --weight-regular: 500;
+  --weight-medium: 550;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ---- space ---------------------------------------------------------- */
+  --space-1: calc(8 * var(--u));
+  --space-2: calc(12 * var(--u));
+  --space-3: calc(16 * var(--u));
+  --space-4: calc(24 * var(--u));
+  --space-5: calc(32 * var(--u));
+  --space-6: calc(48 * var(--u));
+  --space-7: calc(64 * var(--u));
+  --space-8: calc(80 * var(--u));
+  --gutter: calc(104 * var(--u));
+
+  --radius: calc(14 * var(--u));
+  --radius-lg: calc(22 * var(--u));
+  --hairline: max(1px, calc(1.5 * var(--u)));
+
+  /* ---- motion --------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 200ms;
+  --t-base: 400ms;
+  --t-slow: 550ms;
+  --t-settle: 9s;
+  --stagger: 80ms;
+  --travel: calc(18 * var(--u));
+  --travel-lg: calc(40 * var(--u));
+}
+
+/* Web. Type tracks the viewport but stops growing on very large screens and
+   stops shrinking past the point where a display line is still a display
+   line rather than a headline. */
+.brand-web {
+  --canvas: clamp(620px, 100vw, 1760px);
+}
+
+/* ---- fields ------------------------------------------------------------
+   A field is the ground an asset sits on. It sets every contextual colour,
+   so a whole asset changes with one class. `--accent` is always the real
+   brand blue, on every field: on dark it carries a fill rather than type,
+   which is what keeps #0233BD in the asset instead of a tint of it. */
+
+.field-bone,
+:root {
+  --field: var(--bone);
+  --field-deep: var(--bone-300);
+  --fg: var(--ink);
+  --fg-muted: rgb(23 20 15 / 0.62);
+  --fg-faint: rgb(23 20 15 / 0.32);
+  --line: rgb(23 20 15 / 0.18);
+  --accent: var(--blue);
+  --accent-ink: var(--paper);
+  --accent-text: var(--blue);
+  --surface: var(--paper);
+  --surface-fg: var(--ink);
+  --surface-line: rgb(23 20 15 / 0.12);
+  --surface-sunk: rgb(23 20 15 / 0.05);
+  --shadow: rgb(23 20 15 / 0.22);
+  --logo-filter: none;
+  --grain: 0.22;
+}
+
+.field-dark {
+  --field: var(--ink);
+  --field-deep: #0f0c09;
+  --fg: #f4efe6;
+  --fg-muted: rgb(244 239 230 / 0.6);
+  --fg-faint: rgb(244 239 230 / 0.32);
+  --line: rgb(244 239 230 / 0.17);
+  --accent: var(--blue);
+  --accent-ink: #ffffff;
+  --accent-text: var(--blue-300);
+  --surface: #f4efe6;
+  --surface-fg: var(--ink);
+  --surface-line: rgb(23 20 15 / 0.14);
+  --surface-sunk: rgb(23 20 15 / 0.07);
+  --shadow: rgb(8 6 4 / 0.62);
+  --logo-filter: brightness(0) invert(1);
+  --grain: 0.32;
+}
+
+.field-blue {
+  --field: var(--blue);
+  --field-deep: #012a9e;
+  --fg: #ffffff;
+  --fg-muted: rgb(255 255 255 / 0.7);
+  --fg-faint: rgb(255 255 255 / 0.4);
+  --line: rgb(255 255 255 / 0.26);
+  --accent: #ffffff;
+  --accent-ink: var(--blue);
+  --accent-text: #ffffff;
+  --surface: #ffffff;
+  --surface-fg: var(--ink);
+  --surface-line: rgb(23 20 15 / 0.12);
+  --surface-sunk: rgb(23 20 15 / 0.06);
+  --shadow: rgb(1 12 60 / 0.5);
+  --logo-filter: brightness(0) invert(1);
+  --grain: 0.28;
+}

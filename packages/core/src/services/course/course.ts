@@ -35,7 +35,11 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
-import { validatePaidCourseState, type TCourseCreate } from '@cio/utils/validation/course';
+import {
+  validatePaidCourseState,
+  NonAutoGradableQuestionOffender,
+  type TCourseCreate
+} from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
@@ -53,7 +57,12 @@ import { env } from '../../config/env';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
-import { guardCourseTypeTransition } from './public-course-guard';
+import { getPublicConversionOffenders } from './public-course-guard';
+
+export interface UpdateCourseResult {
+  course: TCourse;
+  conversionOffenders?: NonAutoGradableQuestionOffender[] | null;
+}
 
 /**
  * Whether a *new* student would be turned away from this org right now
@@ -364,7 +373,11 @@ export async function createCourse(
  * @param data Course update data
  * @returns Updated course
  */
-export async function updateCourse(courseId: string, data: Partial<TCourse>, dbClient: DbOrTxClient = db) {
+export async function updateCourse(
+  courseId: string,
+  data: Partial<TCourse>,
+  dbClient: DbOrTxClient = db
+): Promise<UpdateCourseResult> {
   try {
     const [existingCourse] = await getCourseById(courseId, dbClient);
 
@@ -403,16 +416,23 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>, dbC
       }
     }
 
+    let conversionOffenders: NonAutoGradableQuestionOffender[] | null = null;
+
     if (data.type !== undefined) {
-      await guardCourseTypeTransition({
+      const offenders = await getPublicConversionOffenders({
         courseId,
         currentType: currentCourse.type ?? null,
         nextType: data.type,
         dbClient
       });
+
+      if (offenders.length > 0) {
+        conversionOffenders = offenders;
+        delete sanitizedData.type;
+      }
     }
 
-    const nextType = data.type ?? currentCourse.type;
+    const nextType = sanitizedData.type ?? currentCourse.type;
     const nextIsPublished = data.isPublished ?? currentCourse.isPublished;
     const nextDeadline = resolveCourseCertificateDeadline(currentCourse.certificate?.deadline, data.certificate);
 
@@ -495,7 +515,7 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>, dbC
       await invalidateOrgStats(statsOrgId);
     }
 
-    return updated;
+    return { course: updated, conversionOffenders };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -611,7 +631,13 @@ export async function getCourseAnalytics(courseId: string) {
 
             const lessonsCompleted = courseProgress.lessonsCompleted || 0;
             const totalLessons = courseProgress.lessonsCount || 0;
-            const progressPercentage = calcPercentageWithRounding(lessonsCompleted, totalLessons);
+            // Lessons and exercises together, matching `calcCourseProgress` in
+            // the dashboard and the audience roster. Counting lessons alone
+            // reported a learner who had submitted nothing as fully complete.
+            const progressPercentage = calcPercentageWithRounding(
+              lessonsCompleted + completedExercises,
+              totalLessons + totalExercises
+            );
             const lastSeen = lastSeenByProfileId.get(student.profileId!) ?? undefined;
 
             return {
@@ -706,27 +732,41 @@ export async function getUserCourseAnalytics(
 
     const lastSeen = await getLastLogin(userId);
 
-    // Fetch user exercises stats, lessons with completion, and course progress
+    // Fetch user exercises stats, lessons with completion, and course progress.
+    // failOnError makes this single-student detail page distinguish a failed
+    // query from an empty one — an error here must render an error, not the
+    // "no exercises" empty state.
     const [userExercisesStats, lessons, courseProgress] = await Promise.all([
-      getUserExercisesStats(courseId, userId),
+      getUserExercisesStats(courseId, userId, { failOnError: true }),
       getLessonsWithCompletion(courseId, userId),
-      getProfileCourseProgress(courseId, userId)
+      getProfileCourseProgress(courseId, userId, { failOnError: true })
     ]);
 
     if (!userExercisesStats || !lessons || !courseProgress) {
       throw new AppError('Failed to fetch course analytics data', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
-    // Calculate metrics
-    const totalEarnedPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.score, 0);
-    const totalPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
-    const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
+    // Calculate metrics. Only graded submissions produce a grade — exercises
+    // the student has not submitted, or submitted but not yet graded, are
+    // absence and must not drag the grade toward zero (em-dash, never a 0).
+    const gradedExercises = userExercisesStats.filter((exercise) => exercise.status === 3);
+    const totalEarnedPoints = gradedExercises.reduce((sum, exercise) => sum + exercise.score, 0);
+    const totalPoints = gradedExercises.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
+
+    // A course is gradeable only if its graded exercises carry points (authored
+    // exercise worth 0 points cannot produce a grade). Course grades are
+    // already percentages, so this is a plain percentage, not a percent-of-
+    // percents. null = "no grade yet", never 0.
+    const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
     const completedLessons = lessons.filter((lesson) => lesson.completed);
     const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
 
     const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
+
+    const lessonsCompleted = courseProgress.lessons_completed || 0;
+    const lessonsCount = courseProgress.lessons_count || 0;
 
     let progressImpact = null;
 
@@ -762,6 +802,8 @@ export async function getUserCourseAnalytics(
       userExercisesStats,
       totalExercises,
       completedExercises,
+      lessonsCompleted,
+      lessonsCount,
       progressPercentage,
       progressImpact
     };

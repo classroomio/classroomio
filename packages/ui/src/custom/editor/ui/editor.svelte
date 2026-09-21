@@ -29,6 +29,7 @@
   import Link from './menus/Link.svelte';
   import slashcommand from '../extensions/slash-command/slashcommand';
   import SlashCommandList from './components/SlashCommandList.svelte';
+  import ImageUploadModal from './components/image-upload-modal.svelte';
 
   import '../editor.css';
   import './style.css';
@@ -48,8 +49,12 @@
     onUpdate,
     autofocus = false,
     class: className,
-    placeholder = ''
+    placeholder = '',
+    onImageUpload,
+    onSearchUnsplash
   }: EdraEditorProps = $props();
+
+  let isImageModalOpen = $state(false);
 
   onMount(() => {
     editor = initEditor(
@@ -63,7 +68,9 @@
             return SvelteNodeViewRenderer(CodeBlock);
           }
         }),
-        ImagePlaceholder(ImagePlaceholderComp),
+        ImagePlaceholder(ImagePlaceholderComp).configure({
+          onOpenModal: () => (isImageModalOpen = true)
+        }),
         ImageExtended(ImageExtendedComp),
         VideoPlaceholder(VideoPlaceHolderComp),
         VideoExtended(VideoExtendedComp),
@@ -109,3 +116,7 @@
   }}
   class={cn('edra-editor ui:h-full ui:w-full ui:cursor-auto ui:px-4 *:outline-none', className)}
 ></div>
+
+{#if editor && !editor.isDestroyed}
+  <ImageUploadModal {editor} bind:open={isImageModalOpen} {onImageUpload} {onSearchUnsplash} />
+{/if}

@@ -160,7 +160,7 @@
 
   const ThemeComponent = $derived(landingPageThemeComponents[currentTheme] ?? landingPageThemeComponents.minimal);
 
-  const customizeHref = $derived(resolve(`${$currentOrgPath}/settings/landingpage/edit`, {}));
+  const customizeHref = $derived(resolve(`${$currentOrgPath}/landingpage/edit`, {}));
 
   function handleAddTheme(theme: LandingPageTheme) {
     if ($isFreePlan && isPaidTheme(theme)) {
@@ -168,7 +168,7 @@
       return;
     }
 
-    goto(resolve(`${$currentOrgPath}/settings/landingpage/edit?theme=${theme}`, {}));
+    goto(resolve(`${$currentOrgPath}/landingpage/edit?theme=${theme}`, {}));
   }
 
   async function handleApplyTheme(theme: LandingPageTheme) {

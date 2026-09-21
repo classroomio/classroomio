@@ -284,7 +284,7 @@ export async function publishCourseWhenReady(courseId: string) {
   const slug = await ensureCourseSlug(courseId, course.title);
 
   // Publishing seals the snapshot students were served, so both writes share one transaction.
-  const publishedCourse = await db.transaction(async (tx) => {
+  const { course: publishedCourse } = await db.transaction(async (tx) => {
     const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
     await sealLessonVersionsOnPublish(courseId, tx);
 

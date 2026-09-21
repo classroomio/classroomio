@@ -1,6 +1,7 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   CreateExerciseFromTemplateRequest,
+  CreateExerciseFromTemplateOptions,
   CreateExerciseRequest,
   DeleteExerciseRequest,
   Exercise,
@@ -363,11 +364,7 @@ export class ExerciseApi extends BaseApiWithErrors {
    * @param templateId Template ID
    * @returns The created exercise data or null on error
    */
-  async createFromTemplate(
-    courseId: string,
-    templateId: number | string,
-    options: { lessonId?: string; sectionId?: string; order?: number; silent?: boolean } = {}
-  ) {
+  async createFromTemplate(courseId: string, templateId: number | string, options: CreateExerciseFromTemplateOptions) {
     const silent = options.silent ?? false;
     let createdExercise: Exercise | undefined;
     const templateIdValue = Number(templateId);

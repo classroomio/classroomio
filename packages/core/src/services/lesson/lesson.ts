@@ -1,7 +1,7 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { sanitizeHtml } from '../../utils/sanitize-html';
 import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
-import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
   createLessonComment,
   createLessons,
@@ -216,38 +216,6 @@ export async function listLessons(courseId: string, sectionId?: string): Promise
     );
   }
 }
-
-/**
- * Reorders lessons
- * @param lessons Array of lesson IDs, orders, and optional sectionIds
- * @returns Updated lessons
- */
-export async function reorderLessons(lessons: TLessonReorder['lessons']): Promise<TLesson[]> {
-  try {
-    // Update each lesson's order and optionally sectionId
-    const updatePromises = lessons.map(({ id, order, sectionId }) =>
-      updateLesson(id, { order, ...(sectionId !== undefined && { sectionId }) })
-    );
-
-    const updated = await Promise.all(updatePromises);
-    const validLessons = updated.filter((l): l is TLesson => l !== null);
-
-    const courseId = validLessons[0]?.courseId;
-    if (courseId) {
-      await touchCourseUpdatedAt(courseId);
-    }
-
-    return validLessons;
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to reorder lessons',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-// Lesson Comment Services
 
 async function assertLessonCommentsEnabled(lessonId: string) {
   const availability = await getLessonCommentsAvailability(lessonId);

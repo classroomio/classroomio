@@ -2,6 +2,10 @@
 
 This document collects implementation rules and workflow conventions for code changes.
 
+## Writing Code
+
+**Read [`skills/writing-code/SKILL.md`](skills/writing-code/SKILL.md) before writing or editing any code.** The comment policy there is mandatory: default to no comments, use JSDoc only for function contracts, and never add an inline comment to explain a design choice — refactor the code instead. The only allowed inline comments record an external constraint the code cannot express.
+
 ## Research Requirements
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
@@ -52,6 +56,37 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
   ```
 
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
+## Database migrations
+
+**One migration file per PR.** However many schema changes a branch makes, and however many times
+you revise them while the PR is in review, they ship as a single migration. Fold later changes into
+the file the branch already added rather than adding a second one.
+
+**Block the merge if a new migration's `when` is not later than every migration already on `main`.**
+
+`drizzle-orm` keeps no record of which migrations ran. It reads one high-water mark
+(`select ... order by created_at desc limit 1`) and applies a migration only when
+`lastCreatedAt < migration.folderMillis`, where `folderMillis` is the `when` in
+`packages/db/src/migrations/meta/_journal.json`. A migration stamped below that mark never runs,
+never errors, and never appears in `drizzle.__drizzle_migrations`: the objects it creates simply do
+not exist. A future-dated `when` is the same bug mirrored, marking the ledger ahead of reality so
+later migrations are skipped.
+
+Fresh databases apply everything in journal order and are unaffected, so this passes on a rebuilt
+local database and on CI, then silently no-ops everywhere else.
+
+Check before merging any PR that adds a migration:
+
+```bash
+git show origin/main:packages/db/src/migrations/meta/_journal.json |
+  python3 -c "import json,sys; print(max(e['when'] for e in json.load(sys.stdin)['entries']))"
+python3 -c "import json; print(max(e['when'] for e in json.load(open('packages/db/src/migrations/meta/_journal.json'))['entries']))"
+```
+
+The branch value must be greater. If it is not, restamp the new entry to `int(time.time() * 1000)`
+and renumber the file so its index follows main's last migration. Renumber on a plain index
+collision too: two branches both adding `0016_*` is the usual way this arises.
 
 ## Naming Convention
 
@@ -488,7 +523,13 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
 - In app-level form UIs, do not introduce native form controls (`<input>`, `<textarea>`, `<label>`) when equivalent `packages/ui` components exist.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
-- **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
+- **`ui:` prefix rules in consumer code (`apps/dashboard/**` & `packages/storybook/**`):**
+  - **Theme tokens and semantic colors:** Prefix with `ui:` for classes binding to `@cio/ui` theme variables (e.g. `ui:bg-background`, `ui:text-muted-foreground`, `ui:border-input`, `ui:ring-ring`, `ui:text-primary`, `ui:bg-muted`, `ui:border-border`).
+  - **Named z-index scale:** Prefix with `ui:` for custom stacking layers defined in `@cio/ui` (`ui:z-app-bar`, `ui:z-app-bar-elevated`, `ui:z-modal`, `ui:z-menu-elevated`).
+  - **Custom animations and font tokens:** Prefix with `ui:` for custom animations and font utilities in `@cio/ui` (e.g. `ui:font-cio`, `ui:animate-meteor`, `ui:animate-shine`).
+  - **Standard Tailwind utilities:** Do not prefix layout, sizing, typography, spacing, borders, standard animations, or fonts (e.g. `flex`, `grid`, `w-full`, `min-h-*`, `p-*`, `m-*`, `gap-*`, `rounded-*`, `border`, `text-sm`, `font-semibold`, `animate-spin`, `focus-visible:outline-none`, `focus-visible:ring-2`).
+  - **Inside `packages/ui/src/**` only:** ALL Tailwind utility classes must use the `ui:` prefix (enforced by `pnpm --filter @cio/ui prefix:check`).
+- **Tailwind `ui:` variant prefix ordering:** When applying variants (`hover:`, `focus:`, `dark:`, `placeholder:`, `md:`) to `ui:` prefixed classes, `ui:` must come before the variant modifier (e.g. `ui:hover:text-primary`, `ui:focus-visible:ring-ring`, `ui:placeholder:text-muted-foreground`, `ui:dark:text-white`).
 
 ### Dialog button hierarchy
 

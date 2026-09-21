@@ -11,34 +11,64 @@ Certificate features require a paid plan. The controls are visible on free plans
 
 ## Configure certificate rules
 
-Open your course in the admin dashboard and go to the **Certificates** tab.
+Certificate options live in two places in your course. Download and the email message sit on the **Certificates**
+tab, under its **Settings** sub-tab. The rules that decide who qualifies sit on the course's own **Settings** tab.
 
-![Certificate rules panel with the download toggle and completion threshold](/help/certificates-rules.webp)
+:::info
+Both places are called Settings. **Certificates > Settings** is a sub-tab inside Certificates. The course **Settings**
+tab is a separate item in the course menu. The table below says which one each option is on.
+:::
 
-### 1. Enable downloadable certificates
+| What you want to set                | Where                       |
+| ----------------------------------- | --------------------------- |
+| Allow students download certificate | **Certificates > Settings** |
+| Email Message                       | **Certificates > Settings** |
+| Minimum completion (%)              | Course **Settings**         |
+| Final exercise (optional)           | Course **Settings**         |
+| Minimum score on final exercise (%) | Course **Settings**         |
+| Course Completion Deadline          | Course **Settings**         |
 
-Turn on **Allow students download certificate**. When this is off, no certificate is generated even if students meet the requirements.
+### On the Certificates tab
 
-### 2. Set a completion threshold
+Open your course in the admin dashboard and go to the **Certificates** tab. It opens on the **Design** sub-tab, so
+click **Settings** next to it.
 
-Enter a percentage in **Minimum completion (%)**. A student must complete this share of the course to qualify. Defaults to 100%.
+![Certificates tab with the Design and Settings sub-tabs, showing the Rules section and the download toggle](/help/certificates-rules.webp)
 
-### 3. Require a final exercise (optional)
+#### 1. Let students download their certificate
 
-Select an exercise from **Final exercise (optional)**. When set, the student must pass that specific exercise (best attempt counts) in addition to meeting the overall completion percentage. Set **Minimum score on final exercise (%)** to the minimum passing score for that exercise.
+Under **Rules**, turn on **Allow students download certificate**. Students who qualify still complete the course and
+earn their certificate record when this is off, but they cannot download the certificate itself.
 
-### 4. Set a deadline (optional)
+#### 2. Add a custom email message (optional)
 
-Enter a date and time in **Certification deadline**. Students who complete the course after this date do not receive a certificate.
+Enter text under **Email Message**. This message is included in the notification email sent to students when they earn their certificate.
 
-### 5. Add a custom email message (optional)
+### On the course Settings tab
 
-Enter text in the email message field. This message is included in the notification email sent to students when they earn their certificate.
+Leave Certificates and open the course's **Settings** tab, then scroll to the **Course type** section. The four
+qualifying rules sit at the bottom of it.
+
+![Course Settings page showing Course Completion Deadline, Minimum completion and Final exercise under Course type](/help/certificates-completion-rule.webp)
+
+#### 1. Set a completion threshold
+
+Enter a percentage in **Minimum completion (%)**. This is combined lesson _and_ exercise progress, and it defaults to 100%.
+
+#### 2. Require a final exercise (optional)
+
+Select an exercise from **Final exercise (optional)**. When set, the student must reach the minimum score on that specific exercise, in addition to meeting the overall completion percentage.
+
+**Minimum score on final exercise (%)** appears once you pick an exercise. The student's best attempt counts, and selecting an exercise here gives students unlimited attempts on it.
+
+#### 3. Set a deadline (optional)
+
+Enter a date and time in **Course Completion Deadline**. Students must meet the completion percentage at or before this datetime, in local time. A student who finishes exactly on the deadline still qualifies. Leave it empty for no deadline.
 
 ## Customize the design and add signatures
 
 Set up how the certificate looks before the course goes live, so the first student to qualify gets the finished
-version. On the **Certificates** tab, click **Customize design** to open the certificate editor.
+version. On the **Certificates** tab, open the **Design** sub-tab and click **Customize design** to open the certificate editor.
 
 ![Certificate design editor showing the template picker and live preview](/help/certificates-design-editor.webp)
 

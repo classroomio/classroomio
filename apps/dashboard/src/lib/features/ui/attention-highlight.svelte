@@ -1,24 +1,59 @@
+<script module lang="ts">
+  import { writable } from 'svelte/store';
+
+  export const activeHighlightTrigger = writable<{ id: string; count: number }>({ id: '', count: 0 });
+
+  let triggerCounter = 0;
+
+  /**
+   * Imperatively triggers an attention pulse and scroll-into-view on the AttentionHighlight
+   * wrapper component matching the provided element ID.
+   *
+   * @param id - Target DOM element / section identifier.
+   */
+  export function triggerAttentionHighlight(id: string) {
+    triggerCounter += 1;
+    activeHighlightTrigger.set({ id, count: triggerCounter });
+  }
+</script>
+
 <script lang="ts">
-  import { afterNavigate, replaceState } from '$app/navigation';
+  import { replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
-  import { onMount, tick, type Snippet } from 'svelte';
+  import AttentionHighlight from '@cio/ui/custom/attention-highlight';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     id: string;
     duration?: number;
     trigger?: number;
+    autoScroll?: boolean;
+    scrollBlock?: ScrollLogicalPosition;
+    class?: string;
     children?: Snippet;
   }
 
-  let { id, duration = 5, trigger = 0, children }: Props = $props();
+  let {
+    id,
+    duration = 3,
+    trigger = 0,
+    autoScroll = true,
+    scrollBlock = 'center',
+    class: className = '',
+    children
+  }: Props = $props();
 
-  let containerRef = $state<HTMLDivElement | null>(null);
-  let pulsing = $state(false);
-  let lastTrigger = trigger;
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  let retryTimeoutIds: ReturnType<typeof setTimeout>[] = [];
+  let localTrigger = $state(0);
+  let hasHandledUrlHighlight = $state(false);
 
+  /**
+   * Extracts the active highlight target element ID from the current page URL,
+   * checking the `?highlight=` query parameter first, followed by the URL hash.
+   *
+   * @param url - Current navigation URL.
+   * @returns Active element ID or `null` if none found.
+   */
   function getActiveHighlightId(url: URL): string | null {
     const query = url.searchParams.get('highlight');
     if (query) return query;
@@ -27,45 +62,32 @@
     return hash || null;
   }
 
-  function clearScrollRetries() {
-    for (const retryTimeoutId of retryTimeoutIds) {
-      clearTimeout(retryTimeoutId);
+  let activeHighlightId = $derived(getActiveHighlightId(page.url));
+  let isTarget = $derived(activeHighlightId === id && !hasHandledUrlHighlight);
+
+  $effect(() => {
+    if (activeHighlightId === id) {
+      hasHandledUrlHighlight = false;
     }
+  });
 
-    retryTimeoutIds = [];
-  }
-
-  function clearTimers() {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
+  $effect(() => {
+    const current = $activeHighlightTrigger;
+    if (current && current.id === id && current.count > 0) {
+      localTrigger = current.count;
     }
+  });
 
-    clearScrollRetries();
-  }
+  const effectiveTrigger = $derived(trigger + localTrigger);
 
-  function scrollToSection() {
-    containerRef?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+  /**
+   * Cleanup callback fired when the attention animation completes.
+   * Removes `?highlight=` query param or hash from the URL history state without reloading.
+   */
+  function handleComplete() {
+    hasHandledUrlHighlight = true;
 
-  function triggerPulse() {
-    pulsing = true;
-    scrollToSection();
-
-    void tick().then(() => {
-      scrollToSection();
-      clearScrollRetries();
-      retryTimeoutIds = [50, 300].map((delayMs) => setTimeout(scrollToSection, delayMs));
-    });
-
-    if (timeoutId) clearTimeout(timeoutId);
-
-    const pulseMs = (Number(duration) || 5) * 1000;
-    timeoutId = setTimeout(() => {
-      pulsing = false;
-      timeoutId = null;
-      clearScrollRetries();
-
+    if (typeof window !== 'undefined') {
       const url = new URL(page.url);
       const highlightActive = url.searchParams.get('highlight') === id;
       const hashActive = url.hash.replace('#', '').trim() === id;
@@ -74,50 +96,23 @@
       if (hashActive) url.hash = '';
 
       if (highlightActive || hashActive) {
-        replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
+        replaceState(resolve(`${url.pathname}${url.search}${url.hash}`, {}), page.state);
       }
-    }, pulseMs);
-  }
-
-  function pulseIfUrlMatches() {
-    if (getActiveHighlightId(page.url) !== id) return;
-
-    if (pulsing) {
-      scrollToSection();
-      return;
     }
-
-    triggerPulse();
   }
-
-  onMount(() => {
-    pulseIfUrlMatches();
-
-    return () => {
-      clearTimers();
-    };
-  });
-
-  afterNavigate(() => {
-    pulseIfUrlMatches();
-  });
-
-  $effect(() => {
-    if (trigger === lastTrigger) return;
-
-    lastTrigger = trigger;
-
-    if (trigger > 0) {
-      triggerPulse();
-    }
-  });
 </script>
 
-<div
-  bind:this={containerRef}
-  class={`scroll-mt-16 rounded-md p-2 ${pulsing ? 'ui:bg-primary/15 ui:ring-primary ui:ring-4 ui:ring-offset-background ui:ring-offset-2' : ''}`}
+<AttentionHighlight
+  {id}
+  highlight={isTarget}
+  trigger={effectiveTrigger}
+  {duration}
+  {autoScroll}
+  {scrollBlock}
+  class={className}
+  onComplete={handleComplete}
 >
   {#if children}
     {@render children()}
   {/if}
-</div>
+</AttentionHighlight>

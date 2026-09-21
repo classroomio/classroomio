@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>01 · Watchword · Build what people want</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../motion.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <link rel="stylesheet" href="../stage.css" />
+    <style>
+      .type { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-54%); }
+      .display .l2 { display: block; margin-top: -10px; }
+      .caret { display: inline-block; width: 12px; height: 140px; margin-left: 22px; vertical-align: -22px; background: var(--accent); animation: blink 1.05s steps(1) infinite; }
+      @keyframes blink { 50% { opacity: 0 } }
+      .stamp { font-family: ui-monospace, Menlo, monospace; font-size: 17px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-muted); }
+      .hair { position: absolute; left: var(--gutter); width: 420px; top: 50%; margin-top: 258px; }
+    </style>
+  </head>
+  <body data-scene="01 · watchword">
+    <div class="stage-fit">
+      <div class="stage">
+        <div class="kicker" data-beat="1">ClassroomIO — Watchword</div>
+
+        <div class="type">
+          <h1 class="display" data-beat="2">
+            Build what
+            <span class="l2">people <em>want</em>.<span class="caret"></span></span>
+          </h1>
+        </div>
+        <div class="rule accent hair" data-beat="3" style="--delay: 0.1s"></div>
+
+        <div class="foot" data-beat="3" style="--delay: 0.16s">
+          <span class="mark"><img src="logo-512.png" alt="" />ClassroomIO</span>
+          <span class="stamp">classroomio.com</span>
+        </div>
+      </div>
+    </div>
+    <script src="../stage.js"></script>
+  </body>
+</html>

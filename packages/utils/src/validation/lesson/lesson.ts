@@ -8,7 +8,7 @@ export const ZLessonCreate = z.object({
   note: z.string().optional(),
   courseId: z.string().min(1),
   sectionId: z.string().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1),
   lessonAt: z.string().optional(),
   teacherId: z.string().optional(),
   isUnlocked: z.boolean().optional(),
@@ -21,7 +21,7 @@ export const ZLessonUpdate = z.object({
   title: z.string().min(1).optional(),
   note: z.string().optional(),
   sectionId: z.string().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1).optional(),
   callUrl: z.string().nullable().optional(),
   lessonAt: z.string().nullable().optional(),
   teacherId: z.string().optional(),
@@ -87,20 +87,6 @@ export const ZLessonHistoryQuery = z.object({
 export type TLessonHistoryQuery = z.infer<typeof ZLessonHistoryQuery>;
 export type TLessonListQuery = z.infer<typeof ZLessonListQuery>;
 
-export const ZLessonReorder = z.object({
-  lessons: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        order: z.number().int().min(0),
-        sectionId: z.string().optional()
-      })
-    )
-    .min(1)
-});
-export type TLessonReorder = z.infer<typeof ZLessonReorder>;
-
-// Lesson Comment Schemas
 export const ZLessonCommentCreate = z.object({
   lessonId: z.string().min(1),
   comment: z.string().min(1)

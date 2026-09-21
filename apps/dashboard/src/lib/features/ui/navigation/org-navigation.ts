@@ -1,5 +1,4 @@
 import {
-  ApiIcon,
   ChartColumnIcon,
   AttachmentIcon,
   CommunityIcon,
@@ -10,10 +9,9 @@ import {
   LandingPageIcon,
   PeopleIcon,
   SettingsIcon,
-  SetupIcon,
-  TagIcon,
-  ZapIcon
+  TagIcon
 } from '@cio/ui/custom/moving-icons';
+import WidgetsIcon from '@cio/ui/custom/moving-icons/widgets.svelte';
 
 import type { AccountOrg } from '$features/app/types';
 import BotIcon from '@lucide/svelte/icons/bot';
@@ -21,6 +19,7 @@ import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
 import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
 import type { PlanLimitResource } from '@cio/utils/plans';
+import type { OrgNavCountKey, OrgNavCounts } from '$features/ui/sidebar/org-sidebar/org-nav-counts.svelte';
 
 export interface NavItem {
   title: string;
@@ -42,6 +41,8 @@ export interface NavItem {
   useHashUrl?: boolean; // Use '#' as URL (for collapsible items like settings)
   nestedRoutes?: NestedRouteConfig[]; // Static nested routes (like community/ask, settings/customize-lms)
   supportsDynamicSegment?: boolean; // Supports dynamic segments (like [slug])
+  /** Unfiltered resource total shown on the far right of the org sidebar. */
+  count?: number;
 }
 
 export interface NavItemConfig {
@@ -61,6 +62,10 @@ export interface NavItemConfig {
   /** Override the default org-nav-* test id derived from `path`. */
   testId?: string;
   group?: string | null; // Group label key for sidebar grouping
+  /** Keep in search/breadcrumbs but do not render in the org sidebar. */
+  hideFromSidebar?: boolean;
+  /** When set, the org sidebar shows the matching total from org nav counts. */
+  countKey?: OrgNavCountKey;
 }
 
 export interface NavGroup {
@@ -90,21 +95,21 @@ function resolveNavTestId(path: string, testId?: string): string {
 // Base navigation configuration structure
 export const baseNavConfig: NavItemConfig[] = [
   {
-    group: 'home',
+    group: null,
     titleKey: 'org_navigation.home',
     path: '',
     icon: HomeIcon,
     matchPattern: '^/org/[^/]+/?$'
   },
   {
-    group: 'home',
+    group: null,
     titleKey: 'org_navigation.dashboard',
     path: '/dash',
     icon: DashboardIcon,
     matchPattern: '^/org/[^/]+/dash(/.*)?$'
   },
   {
-    group: 'home',
+    group: null,
     titleKey: 'org_navigation.stats',
     path: '/stats',
     icon: ChartColumnIcon,
@@ -125,18 +130,11 @@ export const baseNavConfig: NavItemConfig[] = [
     ]
   },
   {
-    group: 'home',
-    titleKey: 'org_navigation.setup',
-    path: '/setup',
-    icon: SetupIcon,
-    requiresAdmin: true,
-    matchPattern: '^/org/[^/]+/setup(/.*)?$'
-  },
-  {
     group: 'content',
     titleKey: 'org_navigation.courses',
     path: '/courses',
     icon: CourseIcon,
+    countKey: 'courses',
     matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
   },
   {
@@ -144,6 +142,7 @@ export const baseNavConfig: NavItemConfig[] = [
     titleKey: 'org_navigation.cohorts',
     path: '/cohorts',
     icon: GoalIcon,
+    countKey: 'cohorts',
     matchPattern: '^/org/[^/]+/cohorts(/.*)?$'
   },
   {
@@ -151,6 +150,7 @@ export const baseNavConfig: NavItemConfig[] = [
     titleKey: 'org_navigation.media',
     path: '/media',
     icon: AttachmentIcon,
+    countKey: 'media',
     matchPattern: '^/org/[^/]+/media(/.*)?$'
   },
   {
@@ -159,14 +159,31 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/tags',
     icon: TagIcon,
     requiresAdmin: true,
+    countKey: 'tags',
     matchPattern: '^/org/[^/]+/tags(/.*)?$'
   },
   {
-    group: 'content',
+    group: 'distribute',
     titleKey: 'org_navigation.widgets',
     path: '/widgets',
-    icon: LandingPageIcon,
+    icon: WidgetsIcon,
     matchPattern: '^(/org/[^/]+/widgets(/.*)?|/widgets/[^/]+(/.*)?)$'
+  },
+  {
+    group: 'distribute',
+    titleKey: 'settings.tabs.landing_page_tab',
+    path: '/landingpage',
+    icon: LandingPageIcon,
+    requiresAdmin: true,
+    matchPattern: '^/org/[^/]+/landingpage(/.*)?$'
+  },
+  {
+    group: 'people',
+    titleKey: 'org_navigation.audience',
+    path: '/audience',
+    icon: PeopleIcon,
+    upgradeResource: 'students',
+    matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
   },
   {
     group: 'people',
@@ -183,99 +200,25 @@ export const baseNavConfig: NavItemConfig[] = [
     ]
   },
   {
-    group: 'people',
-    titleKey: 'org_navigation.audience',
-    path: '/audience',
-    icon: PeopleIcon,
-    upgradeResource: 'students',
-    matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
-  },
-  {
     group: 'automation',
-    titleKey: 'automation.tabs.mcp',
-    path: '/mcp',
+    titleKey: 'org_navigation.automation',
+    path: '/automation/mcp',
     icon: BotIcon,
     requiresAdmin: true,
     disableWhenNotAdmin: true,
-    matchPattern: '^/org/[^/]+/mcp(/.*)?$'
-  },
-  {
-    group: 'automation',
-    titleKey: 'automation.tabs.api',
-    path: '/api',
-    icon: ApiIcon,
-    requiresAdmin: true,
-    disableWhenNotAdmin: true,
-    matchPattern: '^/org/[^/]+/api(/.*)?$'
-  },
-  {
-    group: 'automation',
-    titleKey: 'automation.tabs.zapier',
-    path: '/zapier',
-    icon: ZapIcon,
-    requiresAdmin: true,
-    disableWhenNotAdmin: true,
-    matchPattern: '^/org/[^/]+/zapier(/.*)?$'
+    matchPattern: '^/org/[^/]+/(automation|mcp|api|zapier)(/.*)?$',
+    nestedRoutes: [
+      { path: 'mcp', titleKey: 'automation.tabs.mcp' },
+      { path: 'api', titleKey: 'automation.tabs.api' },
+      { path: 'zapier', titleKey: 'automation.tabs.zapier' }
+    ]
   },
   {
     titleKey: 'org_navigation.settings',
     path: '/settings',
     icon: SettingsIcon,
-    useHashUrl: true, // Use '#' for collapsible parent
+    hideFromSidebar: true,
     matchPattern: '^/org/[^/]+/settings(/.*)?$', // Matches nested routes
-    items: [
-      {
-        titleKey: 'settings.tabs.profile_tab',
-        path: '/settings',
-        matchPattern: '^/org/[^/]+/settings/?$'
-      },
-      {
-        titleKey: 'settings.tabs.notifications_tab',
-        path: '/settings/notifications',
-        matchPattern: '^/org/[^/]+/settings/notifications/?$'
-      },
-      {
-        titleKey: 'settings.tabs.organization_tab',
-        path: '/settings/org',
-        matchPattern: '^/org/[^/]+/settings/(org|customize-lms|domains|teams)(/.*)?$',
-        nestedRoutes: [
-          {
-            path: 'domains',
-            titleKey: 'settings.organization.organization_profile.custom_domain.heading'
-          },
-          {
-            path: 'teams',
-            titleKey: 'settings.organization.organization_profile.team.heading'
-          },
-          {
-            path: 'customize-lms',
-            titleKey: 'settings.tabs.customize_lms_tab'
-          }
-        ]
-      },
-      {
-        titleKey: 'settings.tabs.landing_page_tab',
-        path: '/settings/landingpage'
-      },
-      {
-        titleKey: 'settings.tabs.billing_tab',
-        path: '/settings/billing'
-      },
-      {
-        titleKey: 'settings.tabs.ai_credits_tab',
-        path: '/settings/ai-credits'
-      },
-      {
-        titleKey: 'settings.tabs.ai_tutor_tab',
-        path: '/settings/ai-tutor'
-      },
-      {
-        titleKey: 'settings.tabs.auth_tab',
-        matchPattern: '^/org/[^/]+/settings/auth(/.*)?$',
-        path: '/settings/auth',
-        isPaid: true
-      }
-    ],
     nestedRoutes: [
       {
         path: 'notifications',
@@ -292,10 +235,6 @@ export const baseNavConfig: NavItemConfig[] = [
       {
         path: 'ai-tutor',
         titleKey: 'settings.tabs.ai_tutor_tab'
-      },
-      {
-        path: 'customize-lms',
-        titleKey: 'settings.tabs.customize_lms_tab'
       },
       {
         path: 'domains',
@@ -420,11 +359,11 @@ export function getOrgNavigationItems(
 }
 
 const GROUP_ORDER: Array<{ key: string | null; labelKey: string | null }> = [
-  { key: 'home', labelKey: 'org_navigation.home' },
-  { key: 'content', labelKey: 'org_navigation.content' },
+  { key: null, labelKey: null },
+  { key: 'content', labelKey: 'org_navigation.create' },
+  { key: 'distribute', labelKey: 'org_navigation.distribute' },
   { key: 'people', labelKey: 'org_navigation.people' },
-  { key: 'automation', labelKey: 'org_navigation.automation' },
-  { key: null, labelKey: null }
+  { key: 'automation', labelKey: 'org_navigation.tools' }
 ];
 
 /**
@@ -436,7 +375,8 @@ export function getOrgNavigationGroups(
   isOrgAdmin: boolean | null,
   t: (key: string) => string,
   pagePathname: string,
-  limitsReached: Partial<Record<PlanLimitResource, boolean>> = {}
+  limitsReached: Partial<Record<PlanLimitResource, boolean>> = {},
+  counts: OrgNavCounts | null = null
 ): NavGroup[] {
   const pathnameOnly = pagePathname.split('?')[0];
   const groupedMap = new Map<string | null, NavItem[]>();
@@ -446,6 +386,10 @@ export function getOrgNavigationGroups(
   }
 
   for (const config of resolvedNavConfig) {
+    if (config.hideFromSidebar) {
+      continue;
+    }
+
     if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
       continue;
     }
@@ -475,7 +419,8 @@ export function getOrgNavigationGroups(
       nestedRoutes: config.nestedRoutes,
       supportsDynamicSegment: config.supportsDynamicSegment,
       isPaid: config.isPaid,
-      upgrade: config.upgradeResource ? Boolean(limitsReached[config.upgradeResource]) : undefined
+      upgrade: config.upgradeResource ? Boolean(limitsReached[config.upgradeResource]) : undefined,
+      count: config.countKey && counts ? counts[config.countKey] : undefined
     };
 
     if (visibleSubConfigs.length > 0) {

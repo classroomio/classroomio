@@ -12,6 +12,8 @@ export interface EdraEditorProps {
   autofocus?: boolean;
   onUpdate?: (args: { editor: Editor; transaction: Transaction }) => void;
   class?: string;
+  onImageUpload?: (file: File) => Promise<string>;
+  onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
 }
 
 export interface EditorProps {
@@ -35,6 +37,7 @@ export interface EditorProps {
   onContentChange?: (content: Content) => void;
   onEditorReady?: (editor: Editor) => void;
   onEditorDestroy?: () => void;
+  onImageUpload?: (file: File) => Promise<string>;
 }
 
 export interface EdraToolbarProps {
@@ -52,4 +55,11 @@ export interface ShouldShowProps {
   oldState?: EditorState;
   from: number;
   to: number;
+}
+
+export interface UnsplashPhoto {
+  id: string | number;
+  user: { name: string; username: string };
+  urls: { regular: string };
+  alt_description: string;
 }

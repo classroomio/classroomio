@@ -472,6 +472,8 @@ jobs:
           }
 
           set_var "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.api"
+          # Needed so this service's PORT reference resolves for the dashboard's PRIVATE_SERVER_URL.
+          set_var "PORT=3081"
           set_var "PUBLIC_IS_SELFHOSTED=true"
           set_var "SKIP_DB_SETUP=true"
           set_var "DATABASE_URL=$(ref Postgres.DATABASE_URL)"

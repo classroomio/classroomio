@@ -61,7 +61,7 @@ The API reference is generated from the OpenAPI spec (`upload-openapi-spec.yml` 
 
 Second person, present tense. Headings name what the reader does, not the feature's internal name: "See your food," not "Food viewing feature."
 
-Vale (`docs-validate.yml`) checks prose for passive voice and wordiness on every PR touching `apps/docs/**`, advisory only. It doesn't check the heading rule above yet: that's still a review call, not a lint rule.
+Run `vale sync && vale content/docs` (see `apps/docs/WORKFLOW.md`) to check prose for passive voice and wordiness. It doesn't check the heading rule above yet: that's still a review call, not a lint rule.
 
 **Don't use the `<Steps>`/`<Step>` components for step-by-step instructions.** Use numbered headings instead (`### 1. Do the first thing`, `### 2. Do the next thing`), following the pattern in `cal.com`'s developer docs. `Steps`/`Step` are Blume-framework JSX components with no plain-Markdown equivalent, so the browser-based CMS editor (Sveltia, `apps/help/public/admin`) can't render them while a writer is editing — the raw tags show instead of a formatted step. Numbered headings are ordinary Markdown, so they render correctly everywhere, including in that editor. This was a deliberate content-format decision (not a limitation to work around), made after checking how Cal.com, Linear, and Dub render step-by-step guides in their own docs.
 
