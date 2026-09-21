@@ -296,24 +296,19 @@ export const organizationRouter = new Hono()
    * GET /organization/audience/export
    * Every row matching the scope, for a client-side export. Not paginated —
    * the caller builds the file in the browser, so it needs the whole set.
+   * Requires organization admin access.
    */
-  .get(
-    '/audience/export',
-    authMiddleware,
-    orgTeamMemberMiddleware,
-    zValidator('query', ZAudienceExportQuery),
-    async (c) => {
-      try {
-        const orgId = c.req.header('cio-org-id')!;
-        const query = c.req.valid('query');
-        const rows = await getAudienceExportRows(orgId, query);
+  .get('/audience/export', authMiddleware, orgAdminMiddleware, zValidator('query', ZAudienceExportQuery), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const query = c.req.valid('query');
+      const rows = await getAudienceExportRows(orgId, query);
 
-        return c.json({ success: true, data: rows }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to build audience export');
-      }
+      return c.json({ success: true, data: rows }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to build audience export');
     }
-  )
+  })
   /**
    * GET /organization/audience/bulk-preview
    * Exact count, target hash and sample for a filter-mode bulk action.
@@ -910,7 +905,7 @@ export const organizationRouter = new Hono()
   .post(
     '/audience/import',
     authMiddleware,
-    orgTeamMemberMiddleware,
+    orgAdminMiddleware,
     zValidator('json', ZImportAudienceMembers),
     async (c) => {
       try {
@@ -940,7 +935,7 @@ export const organizationRouter = new Hono()
   .post(
     '/audience/assign-courses',
     authMiddleware,
-    orgTeamMemberMiddleware,
+    orgAdminMiddleware,
     zValidator('json', ZAssignAudienceCourses),
     async (c) => {
       try {
