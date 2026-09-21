@@ -34,7 +34,7 @@
     }
   },
   "scripts": {
-    "build": "tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
     "dev": "tsc --watch",
     "format": "prettier --write ."
   },
