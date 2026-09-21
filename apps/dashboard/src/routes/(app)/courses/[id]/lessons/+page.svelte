@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { LessonsPage } from '$features/course/pages';
   import ContentPageMenu from '$features/course/components/lesson/content-page-menu.svelte';
   import { Button } from '@cio/ui/base/button';
@@ -16,8 +15,6 @@
   let { data } = $props();
 
   let reorder = $state(false);
-
-  const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
 
   function addContent() {
     if (!data.courseId) {
@@ -49,7 +46,7 @@
                     {...props}
                     onclick={addContent}
                     disabled={!!$contentEditingStore}
-                    aria-keyshortcuts="Control+Shift+N Meta+Shift+N"
+                    aria-keyshortcuts="Control+Shift+N"
                   >
                     {$t('course.navItem.lessons.add_content')}
                   </Button>
@@ -59,11 +56,7 @@
                 <span class="flex items-center gap-2">
                   {$t('course.navItem.lessons.add_content')}
                   <Kbd.Group>
-                    {#if isMac}
-                      <Kbd.Root>⌘</Kbd.Root>
-                    {:else}
-                      <Kbd.Root>Ctrl</Kbd.Root>
-                    {/if}
+                    <Kbd.Root>Ctrl</Kbd.Root>
                     <Kbd.Root>⇧</Kbd.Root>
                     <Kbd.Root>N</Kbd.Root>
                   </Kbd.Group>
