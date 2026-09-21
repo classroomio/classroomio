@@ -3,8 +3,8 @@
   import { LessonsPage } from '$features/course/pages';
   import ContentPageMenu from '$features/course/components/lesson/content-page-menu.svelte';
   import { Button } from '@cio/ui/base/button';
-  import { Separator } from '@cio/ui/base/separator';
   import * as Kbd from '@cio/ui/base/kbd';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -41,23 +41,36 @@
           <Button variant="outline" onclick={() => (reorder = !reorder)} disabled={!!$contentEditingStore}>
             {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
           </Button>
-          <Button
-            onclick={addContent}
-            disabled={!!$contentEditingStore}
-            aria-keyshortcuts="Control+Shift+N Meta+Shift+N"
-          >
-            {$t('course.navItem.lessons.add_content')}
-            <Separator orientation="vertical" class="hidden h-4! sm:block" />
-            <span class="ui:text-muted-foreground hidden items-center gap-0.5 font-normal sm:flex">
-              {#if isMac}
-                <Kbd.Root>⌘</Kbd.Root>
-              {:else}
-                <Kbd.Root>Ctrl</Kbd.Root>
-              {/if}
-              <Kbd.Root>⇧</Kbd.Root>
-              <Kbd.Root>N</Kbd.Root>
-            </span>
-          </Button>
+          <Tooltip.Provider>
+            <Tooltip.Root>
+              <Tooltip.Trigger>
+                {#snippet child({ props })}
+                  <Button
+                    {...props}
+                    onclick={addContent}
+                    disabled={!!$contentEditingStore}
+                    aria-keyshortcuts="Control+Shift+N Meta+Shift+N"
+                  >
+                    {$t('course.navItem.lessons.add_content')}
+                  </Button>
+                {/snippet}
+              </Tooltip.Trigger>
+              <Tooltip.Content side="bottom" sideOffset={4}>
+                <span class="flex items-center gap-2">
+                  {$t('course.navItem.lessons.add_content')}
+                  <Kbd.Group>
+                    {#if isMac}
+                      <Kbd.Root>⌘</Kbd.Root>
+                    {:else}
+                      <Kbd.Root>Ctrl</Kbd.Root>
+                    {/if}
+                    <Kbd.Root>⇧</Kbd.Root>
+                    <Kbd.Root>N</Kbd.Root>
+                  </Kbd.Group>
+                </span>
+              </Tooltip.Content>
+            </Tooltip.Root>
+          </Tooltip.Provider>
         </RoleBasedSecurity>
         <ContentPageMenu courseId={data.courseId} disabled={!!$contentEditingStore} />
         <RefreshPageData onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
