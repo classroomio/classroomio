@@ -76,6 +76,7 @@
     {/if}
     <span class="ui:hidden ui:sm:inline">{copyLabel}</span>
   </Button>
+  <ButtonGroup.Separator />
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>
       {#snippet child({ props })}
