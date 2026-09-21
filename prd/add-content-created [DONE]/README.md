@@ -1,11 +1,11 @@
 # Add content created-success PRD
 
 **Feature area:** Course → Content outline → Add content modal
-**Status:** Draft for review
+**Status:** Done (shipped)
 **Date:** 2026-08-16
 **Related prototype:** [`prototypes/add-content-created/index.html`](../../prototypes/add-content-created/index.html)
 
-This PRD specifies the post-create step in `content-create-modal.svelte`. It does not ship the modal change; that is a follow-up implementation PR.
+This PRD specifies the post-create step in `content-create-modal.svelte`.
 
 ## Purpose
 
