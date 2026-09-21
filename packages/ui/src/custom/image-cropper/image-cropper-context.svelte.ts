@@ -22,8 +22,10 @@ export type ImageCropperRootProps = WritableBoxedValues<{
     id: string;
     onCropped: (url: string) => void;
     onUnsupportedFile: (file: File) => void;
+    onFileSelected?: (file: File) => void;
     maxFileSize?: number; // Maximum file size in bytes
     disabled?: boolean;
+    skipCrop?: boolean;
   }>;
 
 class ImageCropperRootState {
@@ -61,6 +63,19 @@ class ImageCropperRootState {
     // Check file type
     if (!VALID_IMAGE_TYPES.includes(file.type)) {
       this.opts.onUnsupportedFile.current(file);
+      return;
+    }
+
+    if (this.opts.skipCrop?.current) {
+      const onFileSelected = this.opts.onFileSelected?.current;
+      if (onFileSelected) {
+        onFileSelected(file);
+        return;
+      }
+
+      this.tempUrl = URL.createObjectURL(file);
+      this.#createdUrls.push(this.tempUrl);
+      this.onUseOriginal();
       return;
     }
 
