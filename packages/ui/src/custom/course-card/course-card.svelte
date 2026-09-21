@@ -146,7 +146,7 @@
   /** Suppresses inner navigation so the whole card opens the explore modal */
   const innerHref = $derived(isExploreClickable ? undefined : href);
 
-  const ctaVariant = $derived(surface === 'lms' && !done ? 'default' : 'outline');
+  const ctaVariant = 'outline';
 
   const showCtaArrow = $derived(surface !== 'lms');
 

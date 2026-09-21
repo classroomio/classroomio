@@ -19,7 +19,6 @@
   import type { LearningPathWithEnrollment, PathDifficulty } from '../utils/types';
   import type { CourseLibraryItem, CourseStatus, LearningPathView } from '../components/types';
   import CurrentlyLearningHero from '../components/currently-learning-hero.svelte';
-  import CurrentlyLearningCourseHero from '../components/currently-learning-course-hero.svelte';
   import LearningPathRow from '../components/learning-path-row.svelte';
   import LibraryToolbar from '../components/library-toolbar.svelte';
   import CourseLibraryRow from '../components/course-library-row.svelte';
@@ -275,8 +274,8 @@
         <h2 class="text-base font-semibold">{$t('learningPath.my_learning.currently_learning')}</h2>
       </div>
       <CurrentlyLearningHero
+        variant="path"
         name={activePath.name}
-        description={activePath.description}
         coverGradient={activePath.coverGradient}
         coverImage={activePath.coverImage}
         courseCount={pathCompletionProgress(activePath).courseCount}
@@ -290,7 +289,8 @@
       <div class="mb-2 flex items-center justify-between">
         <h2 class="text-base font-semibold">{$t('learningPath.my_learning.currently_learning')}</h2>
       </div>
-      <CurrentlyLearningCourseHero
+      <CurrentlyLearningHero
+        variant="course"
         title={activeCourse.title}
         href={activeCourse.href}
         coverGradient={activeCourse.coverGradient}

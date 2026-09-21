@@ -6,6 +6,7 @@
   import { Button } from '@cio/ui/base/button';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
   import { t } from '$lib/utils/functions/translations';
+  import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
   import { learningPathApi } from '../api/learning-path.svelte';
   import { getMockPathById, getCourseProgressList } from '../utils/mock-data';
   import LearningPathHead from '../components/learning-path-head.svelte';
@@ -25,11 +26,29 @@
   const progressPercent = $derived(
     path && path.courses.length > 0 ? Math.round((coursesCompleted / path.courses.length) * 100) : 0
   );
-  const currentCourse = $derived(courses.find((course) => course.state === 'IN_PROGRESS') ?? null);
+  const currentCourse = $derived(
+    courses.find((course) => course.state === 'IN_PROGRESS') ??
+      courses.find((course) => course.state === 'NOT_STARTED') ??
+      courses[0] ??
+      null
+  );
   const certificateEarned = $derived(Boolean(path?.enrollment?.certificateId));
 
+  const headCtaHref = $derived.by(() => {
+    if (coursesCompleted === path?.courses.length && path && path.courses.length > 0) {
+      return '/lms/certificates';
+    }
+    if (currentCourse) {
+      return getStudentCourseContinuePath(currentCourse.courseId);
+    }
+    return `/lms/paths/${authPathId}`;
+  });
+
   function courseHref(order: number) {
-    return `/lms/mylearning`;
+    const course = courses.find((c) => c.order === order);
+    if (!course) return '/lms/mylearning';
+
+    return getStudentCourseContinuePath(course.courseId);
   }
 </script>
 
@@ -60,7 +79,7 @@
     {progressPercent}
     {coursesCompleted}
     nextCourseTitle={currentCourse?.title}
-    enrollHref={`/lms/paths/${path.id}`}
+    enrollHref={headCtaHref}
   />
 
   <div class="mt-8 mb-4 flex items-center justify-between">
