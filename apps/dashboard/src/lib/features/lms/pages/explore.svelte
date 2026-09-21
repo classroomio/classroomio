@@ -10,7 +10,7 @@
   import { learningPathApi } from '$features/learning-path/api/learning-path.svelte';
   import { MOCK_PATHS, MOCK_STANDALONE_COURSES } from '$features/learning-path/utils/mock-data';
   import type { PathDifficulty } from '$features/learning-path/utils/types';
-  import FilterPopover, { type FilterGroup } from '$features/learning-path/components/filter-popover.svelte';
+  import CourseFilterPopover, { type FilterGroup } from '$features/course/components/course-filter-popover.svelte';
   import CoursePreviewModal, { type CoursePreviewCourse } from '$features/lms/components/course-preview-modal.svelte';
 
   type ContentTypeFilter = 'ALL' | 'paths' | 'courses';
@@ -126,6 +126,8 @@
 
   const selected = $derived<Record<string, string>>({ contentType, difficulty });
 
+  const hasActiveFilters = $derived(contentType !== 'ALL' || difficulty !== 'ALL');
+
   const groups = $derived<FilterGroup[]>([
     {
       id: 'contentType',
@@ -193,6 +195,11 @@
     if (groupId === 'difficulty') difficulty = value as PathDifficulty | 'ALL';
   }
 
+  function clearFilters() {
+    contentType = 'ALL';
+    difficulty = 'ALL';
+  }
+
   function openCoursePreview(course: ExploreCourseCard) {
     selectedCourse = {
       id: course.id,
@@ -222,7 +229,14 @@
       placeholder={$t('explore.search_placeholder')}
       bind:value={searchValue}
     />
-    <FilterPopover {groups} {selected} onChange={handleFilterChange} />
+    <CourseFilterPopover
+      sortOptions={[]}
+      {groups}
+      selectedGroups={selected}
+      onGroupChange={handleFilterChange}
+      {hasActiveFilters}
+      onClearFilters={clearFilters}
+    />
   </div>
 
   {#if showPathsSection}
