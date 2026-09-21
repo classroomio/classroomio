@@ -211,8 +211,6 @@
       "section_update_failed": "Kunne ikke opdatere kursusafsnittet",
       "sections_reordered": "Kursusafsnit blev omorganiseret",
       "sections_reorder_failed": "Kunne ikke omarrangere kursusafsnit",
-      "lessons_reordered": "Lektioner blev omorganiseret",
-      "lessons_reorder_failed": "Kunne ikke omarrangere undervisningen",
       "comment_fetch_failed": "Kunne ikke hente lektionskommentarer",
       "load_more_comments_failed": "Kunne ikke indlæse flere kommentarer",
       "comment_add_failed": "Kunne ikke tilføje kommentar",

@@ -33,7 +33,8 @@ export async function seedLessons({
       title: 'Lesson 1: Introduction to MVC Architecture',
       teacherId: adminUserId,
       videos: [{ link: 'https://youtu.be/pXLWqkA87e4?si=rUHaBMnuFgAMjm2T', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 1
     },
     {
       id: 'a99e65b7-1394-4751-ad8d-a5fb670ccb9e',
@@ -42,7 +43,8 @@ export async function seedLessons({
       title: 'Anatomy of MVC Components',
       teacherId: adminUserId,
       videos: [{ link: 'https://youtu.be/4Qfk8MhtZJU?si=VZ7cF-pjvm_RmFMp', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     },
     {
       id: '266b3daa-1eb2-401e-9510-1819952b44b7',
@@ -51,7 +53,8 @@ export async function seedLessons({
       title: 'Building Your First MVC Application',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=EMwu8F0dCXE', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 3
     },
     // React Course lessons
     {
@@ -61,7 +64,8 @@ export async function seedLessons({
       title: 'Introduction to React: Understanding the Basics',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=H-PkPKF2Tfk', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 1
     },
     {
       id: '0a39ab2f-9451-4a90-902c-3030bf965637',
@@ -70,7 +74,8 @@ export async function seedLessons({
       title: 'Components and Props: Building Reusable UI Elements',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=H-PkPKF2Tfk', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 2
     },
     {
       id: '80b79665-733b-41bf-9853-34fd8ab50496',
@@ -79,7 +84,8 @@ export async function seedLessons({
       title: 'State and Lifecycle: Managing Data in React Applications',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=DveeFlWzWzc', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: false
+      isUnlocked: false,
+      order: 3
     },
     // Pandas Course lessons
     {
@@ -89,7 +95,8 @@ export async function seedLessons({
       title: 'Python Essentials: An Introduction to Data Science',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=T5pRlIbr6gg&vl=en', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: true
+      isUnlocked: true,
+      order: 1
     },
     {
       id: '829da386-8ccd-4c81-b2fb-b9891102c83c',
@@ -98,7 +105,8 @@ export async function seedLessons({
       title: 'Delving into Data Analysis with Pandas',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=T5pRlIbr6gg&vl=en', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: true
+      isUnlocked: true,
+      order: 2
     },
     {
       id: '05f03084-3ff1-49e3-aa2a-7a13840cc4b1',
@@ -107,7 +115,8 @@ export async function seedLessons({
       title: 'Data Cleaning and Preprocessing Techniques',
       teacherId: adminUserId,
       videos: [{ link: 'https://www.youtube.com/watch?v=LI7s_lyooO8', type: VIDEO_TYPE, metadata: {} }],
-      isUnlocked: true
+      isUnlocked: true,
+      order: 3
     }
   ].filter((l) => !existingLessonIds.includes(l.id));
 

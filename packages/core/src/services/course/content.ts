@@ -9,6 +9,7 @@ import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/querie
 import { deleteLesson } from '@cio/db/queries/lesson';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
+import { ZCourseContentReorder } from '@cio/utils/validation/course';
 import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
 
 type CourseContentReorderResult = {
@@ -136,6 +137,12 @@ export async function reorderCourseContent(
   payload: TCourseContentReorder
 ): Promise<CourseContentReorderResult> {
   try {
+    const validation = ZCourseContentReorder.safeParse(payload);
+    if (!validation.success) {
+      const message = validation.error.issues[0]?.message ?? 'Invalid course content reorder payload';
+      throw new AppError(message, ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     if (payload.sections?.length) {
       await assertCourseSections(courseId, payload.sections);
     }

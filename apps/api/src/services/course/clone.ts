@@ -78,7 +78,8 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
       description: exercise.description,
       dueBy: new Date().toISOString(),
       lessonId: lessonIdMap.get(exercise.lessonId!)!,
-      sectionDisplayMode: exercise.sectionDisplayMode
+      sectionDisplayMode: exercise.sectionDisplayMode,
+      order: exercise.order
     }))
   );
 

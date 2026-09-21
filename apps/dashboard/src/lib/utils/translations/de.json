@@ -211,8 +211,6 @@
       "section_update_failed": "Der Kursabschnitt konnte nicht aktualisiert werden",
       "sections_reordered": "Kursabschnitte wurden erfolgreich neu angeordnet",
       "sections_reorder_failed": "Kursabschnitte konnten nicht neu angeordnet werden",
-      "lessons_reordered": "Die Lektionen wurden erfolgreich neu angeordnet",
-      "lessons_reorder_failed": "Lektionen konnten nicht neu angeordnet werden",
       "comment_fetch_failed": "Lektionskommentare konnten nicht abgerufen werden",
       "load_more_comments_failed": "Weitere Kommentare konnten nicht geladen werden",
       "comment_add_failed": "Kommentar konnte nicht hinzugefügt werden",

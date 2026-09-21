@@ -211,8 +211,6 @@
       "section_update_failed": "Nie udało się zaktualizować sekcji kursu",
       "sections_reordered": "Pomyślnie zmieniono kolejność sekcji kursu",
       "sections_reorder_failed": "Nie udało się zmienić kolejności sekcji kursu",
-      "lessons_reordered": "Pomyślnie zmieniono kolejność lekcji",
-      "lessons_reorder_failed": "Nie udało się zmienić kolejności zajęć",
       "comment_fetch_failed": "Nie udało się pobrać komentarzy do lekcji",
       "load_more_comments_failed": "Nie udało się załadować więcej komentarzy",
       "comment_add_failed": "Nie udało się dodać komentarza",

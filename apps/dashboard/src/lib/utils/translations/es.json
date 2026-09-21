@@ -211,8 +211,6 @@
       "section_update_failed": "No se pudo actualizar la sección del curso",
       "sections_reordered": "Secciones del curso reordenadas exitosamente",
       "sections_reorder_failed": "No se pudieron reordenar las secciones del curso",
-      "lessons_reordered": "Lecciones reordenadas exitosamente",
-      "lessons_reorder_failed": "No se pudo reordenar las lecciones",
       "comment_fetch_failed": "No se pudieron recuperar los comentarios de la lección",
       "load_more_comments_failed": "No se pudieron cargar más comentarios",
       "comment_add_failed": "No se pudo agregar el comentario",
