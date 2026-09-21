@@ -262,6 +262,7 @@
 
   function goBack() {
     step = 0;
+    void tick().then(focusModalEntry);
   }
 
   // ============================================
@@ -308,6 +309,7 @@
       resetFormState();
       lessonStepper?.actions.reset();
       step = 0;
+      void tick().then(focusModalEntry);
       return;
     }
 
