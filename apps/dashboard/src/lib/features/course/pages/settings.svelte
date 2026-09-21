@@ -1108,6 +1108,23 @@
 
       <SettingsSeparator />
 
+      <Field.Field orientation="horizontal">
+        <Field.Content>
+          <Field.Label for="allow-markdown-export">{$t('course.navItem.settings.allow_markdown_export')}</Field.Label>
+          <Field.Description>{$t('course.navItem.settings.allow_markdown_export_description')}</Field.Description>
+        </Field.Content>
+        <Switch
+          id="allow-markdown-export"
+          checked={$settings.allowMarkdownExport}
+          onCheckedChange={(checked) => {
+            $settings.allowMarkdownExport = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+      </Field.Field>
+
+      <SettingsSeparator />
+
       <Field.Set id="publish">
         <AttentionHighlight id="publish">
           <Field.Field orientation="horizontal">
@@ -1164,23 +1181,6 @@
           />
         </Field.Field>
       {/if}
-
-      <SettingsSeparator />
-
-      <Field.Field orientation="horizontal">
-        <Field.Content>
-          <Field.Label for="allow-markdown-export">{$t('course.navItem.settings.allow_markdown_export')}</Field.Label>
-          <Field.Description>{$t('course.navItem.settings.allow_markdown_export_description')}</Field.Description>
-        </Field.Content>
-        <Switch
-          id="allow-markdown-export"
-          checked={$settings.allowMarkdownExport}
-          onCheckedChange={(checked) => {
-            $settings.allowMarkdownExport = checked;
-            hasUnsavedChanges = true;
-          }}
-        />
-      </Field.Field>
 
       <SettingsSeparator />
 
