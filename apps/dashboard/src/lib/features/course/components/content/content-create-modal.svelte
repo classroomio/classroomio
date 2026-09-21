@@ -308,7 +308,7 @@
       {phase === 'success' && successSentenceKey ? $t(successSentenceKey) : ''}
     </div>
 
-    <div class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-1">
+    <div class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-1">
       {#if phase === 'success' && createdContent}
         <Alert.Root>
           <CheckCircle2Icon />
