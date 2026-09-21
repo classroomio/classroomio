@@ -28,6 +28,17 @@
 
   type SortOption = (typeof COURSE_SORT_OPTIONS)[number];
 
+  export interface FilterOption {
+    value: string;
+    label: string;
+  }
+
+  export interface FilterGroup {
+    id: string;
+    label: string;
+    options: FilterOption[];
+  }
+
   interface Props {
     sortKey?: CourseSortBy;
     selectedOrder?: CourseSortOrder;
@@ -39,10 +50,13 @@
     publishedStatus?: 'all' | 'published' | 'unpublished';
     courseType?: string;
     courseTypeOptions?: { value: string; label: string }[];
+    groups?: FilterGroup[];
+    selectedGroups?: Record<string, string>;
     onToggleTag?: (tagSlug: string, checked: boolean) => void;
     onClearFilters?: () => void | Promise<void>;
     onPublishedStatusChange?: (status: 'all' | 'published' | 'unpublished') => void;
     onCourseTypeChange?: (type: string) => void;
+    onGroupChange?: (groupId: string, value: string) => void;
   }
 
   let {
@@ -56,15 +70,20 @@
     publishedStatus = $bindable('all'),
     courseType = $bindable('all'),
     courseTypeOptions = [],
+    groups = [],
+    selectedGroups = {},
     onToggleTag = () => {},
     onClearFilters = () => {},
     onPublishedStatusChange,
-    onCourseTypeChange
+    onCourseTypeChange,
+    onGroupChange = () => {}
   }: Props = $props();
 
   const translatedSortOptions = $derived(
     sortOptions.map((option) => ({ value: option.value, label: $t(option.label) }))
   );
+
+  const hasGroupFilters = $derived(groups.some((group) => selectedGroups[group.id] !== group.options[0]?.value));
 
   const hasActiveFilters = $derived(
     hasActiveFiltersOverride !== undefined
@@ -73,7 +92,8 @@
           selectedOrder !== DEFAULT_SORT_ORDER ||
           selectedTags.length > 0 ||
           publishedStatus !== 'all' ||
-          courseType !== 'all'
+          courseType !== 'all' ||
+          hasGroupFilters
   );
 
   function isTagSelected(tagSlug: string) {
@@ -103,29 +123,31 @@
 >
   {#snippet additionalContent()}
     <div class="space-y-3">
-      <div class="space-y-2">
-        <p class="ui:text-muted-foreground text-xs font-semibold uppercase">{$t('widgets.filter.status')}</p>
-        <div class="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant={publishedStatus === 'all' ? 'secondary' : 'outline'}
-            onclick={() => setPublishedStatus('all')}>{$t('widgets.filter.all')}</Button
-          >
-          <Button
-            type="button"
-            size="sm"
-            variant={publishedStatus === 'published' ? 'secondary' : 'outline'}
-            onclick={() => setPublishedStatus('published')}>{$t('widgets.status.published')}</Button
-          >
-          <Button
-            type="button"
-            size="sm"
-            variant={publishedStatus === 'unpublished' ? 'secondary' : 'outline'}
-            onclick={() => setPublishedStatus('unpublished')}>{$t('widgets.filter.unpublished')}</Button
-          >
+      {#if onPublishedStatusChange}
+        <div class="space-y-2">
+          <p class="ui:text-muted-foreground text-xs font-semibold uppercase">{$t('widgets.filter.status')}</p>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant={publishedStatus === 'all' ? 'secondary' : 'outline'}
+              onclick={() => setPublishedStatus('all')}>{$t('widgets.filter.all')}</Button
+            >
+            <Button
+              type="button"
+              size="sm"
+              variant={publishedStatus === 'published' ? 'secondary' : 'outline'}
+              onclick={() => setPublishedStatus('published')}>{$t('widgets.status.published')}</Button
+            >
+            <Button
+              type="button"
+              size="sm"
+              variant={publishedStatus === 'unpublished' ? 'secondary' : 'outline'}
+              onclick={() => setPublishedStatus('unpublished')}>{$t('widgets.filter.unpublished')}</Button
+            >
+          </div>
         </div>
-      </div>
+      {/if}
 
       {#if courseTypeOptions.length > 0}
         <div class="space-y-2">
@@ -148,6 +170,22 @@
           </div>
         </div>
       {/if}
+
+      {#each groups as group (group.id)}
+        <div class="space-y-2">
+          <p class="ui:text-muted-foreground text-xs font-semibold uppercase">{group.label}</p>
+          <div class="flex flex-wrap gap-2">
+            {#each group.options as option (option.value)}
+              <Button
+                type="button"
+                size="sm"
+                variant={selectedGroups[group.id] === option.value ? 'secondary' : 'outline'}
+                onclick={() => onGroupChange(group.id, option.value)}>{option.label}</Button
+              >
+            {/each}
+          </div>
+        </div>
+      {/each}
 
       {#if tagGroups.length > 0}
         <div class="space-y-2">
@@ -190,7 +228,7 @@
             {/each}
           </div>
         </div>
-      {:else if tagGroups.length === 0 && courseTypeOptions.length === 0 && publishedStatus === undefined}
+      {:else if tagGroups.length === 0 && courseTypeOptions.length === 0 && groups.length === 0 && publishedStatus === undefined}
         <p class="ui:text-muted-foreground text-sm">{$t('courses.tag_filters.empty_tags')}</p>
       {/if}
     </div>
