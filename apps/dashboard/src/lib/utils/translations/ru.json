@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "Ознакомьтесь с нашими курсами",
-    "empty_heading": "Нет доступных курсов",
-    "empty_description": "На данный момент нет доступных опубликованных курсов"
+    "heading": "Исследуйте",
+    "subtitle": "Откройте для себя обучающий опыт, призванный помочь вам получить больше пользы от платформы.",
+    "search_placeholder": "Поиск путей обучения и курсов…",
+    "content_type": "Тип контента",
+    "content_type_all": "Все",
+    "section_paths": "Пути обучения",
+    "section_courses": "Курсы",
+    "view_learning_path": "Посмотреть путь обучения",
+    "paths_empty_title": "Пути не найдены",
+    "paths_empty_description": "Попробуйте другой поиск или очистите фильтры.",
+    "courses_empty_title": "Нет курсов, соответствующих вашему запросу",
+    "courses_empty_description": "Попробуйте другой поисковый запрос."
   },
   "exercises": {
     "heading": "Упражнения",
@@ -480,7 +489,29 @@
     "submitted": "Отправлено",
     "in_progress": "Выставление оценок в процессе",
     "graded": "Оцененный",
-    "lesson": "Урок"
+    "lesson": "Урок",
+    "total": "Итого",
+    "completed": "Завершено",
+    "overdue": "Просрочено",
+    "empty": "Упражнений пока нет.",
+    "actions": {
+      "view": "Посмотреть",
+      "continue": "Продолжить",
+      "start": "Старт"
+    },
+    "submission_states": {
+      "not_submitted": "Не отправлено",
+      "awaiting_grade": "Ожидание оценки",
+      "submitted": "Отправлено"
+    },
+    "table": {
+      "assignment": "Назначение",
+      "course": "Курс",
+      "status": "Статус",
+      "due_date": "Срок сдачи",
+      "submission": "Представление",
+      "grade": "Оценка"
+    }
   },
   "my_learning": {
     "heading": "Мое обучение",

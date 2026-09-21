@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "Poznaj nasze kursy",
-    "empty_heading": "Brak kursu",
-    "empty_description": "Obecnie nie ma dostępnych żadnych opublikowanych kursów"
+    "heading": "Eksploruj",
+    "subtitle": "Odkryj doświadczenia edukacyjne zaprojektowane, aby pomóc Ci uzyskać więcej korzyści z platformy.",
+    "search_placeholder": "Wyszukaj ścieżki edukacyjne i kursy…",
+    "content_type": "Typ treści",
+    "content_type_all": "Wszystko",
+    "section_paths": "Ścieżki uczenia się",
+    "section_courses": "Kursy",
+    "view_learning_path": "Wyświetl ścieżkę szkoleniową",
+    "paths_empty_title": "Nie znaleziono ścieżek",
+    "paths_empty_description": "Spróbuj innego wyszukiwania lub wyczyść filtry.",
+    "courses_empty_title": "Żaden kurs nie pasuje do Twojego wyszukiwania",
+    "courses_empty_description": "Wypróbuj inne wyszukiwane hasło."
   },
   "exercises": {
     "heading": "Ćwiczenia",
@@ -480,7 +489,29 @@
     "submitted": "Przesłane",
     "in_progress": "Ocena w toku",
     "graded": "Ocenione",
-    "lesson": "Lekcja"
+    "lesson": "Lekcja",
+    "total": "Razem",
+    "completed": "Ukończono",
+    "overdue": "Zaległe",
+    "empty": "Nie ma jeszcze żadnych ćwiczeń.",
+    "actions": {
+      "view": "Zobacz",
+      "continue": "Kontynuuj",
+      "start": "Zacznij"
+    },
+    "submission_states": {
+      "not_submitted": "Nie przesłano",
+      "awaiting_grade": "Oczekiwanie na ocenę",
+      "submitted": "Przesłane"
+    },
+    "table": {
+      "assignment": "Przypisanie",
+      "course": "Kurs",
+      "status": "Stan",
+      "due_date": "Termin",
+      "submission": "Poddanie",
+      "grade": "Ocena"
+    }
   },
   "my_learning": {
     "heading": "Moja nauka",

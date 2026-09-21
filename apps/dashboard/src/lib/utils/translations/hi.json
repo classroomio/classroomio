@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "हमारे पाठ्यक्रमों का अन्वेषण करें",
-    "empty_heading": "कोई पाठ्यक्रम उपलब्ध नहीं है",
-    "empty_description": "वर्तमान में कोई प्रकाशित पाठ्यक्रम उपलब्ध नहीं है"
+    "heading": "अन्वेषण करें",
+    "subtitle": "प्लेटफ़ॉर्म से अधिक मूल्य प्राप्त करने में आपकी सहायता के लिए डिज़ाइन किए गए सीखने के अनुभवों की खोज करें।",
+    "search_placeholder": "सीखने के रास्ते और पाठ्यक्रम खोजें...",
+    "content_type": "सामग्री प्रकार",
+    "content_type_all": "सब",
+    "section_paths": "सीखने के रास्ते",
+    "section_courses": "पाठ्यक्रम",
+    "view_learning_path": "सीखना पथ देखें",
+    "paths_empty_title": "कोई पथ नहीं मिला",
+    "paths_empty_description": "कोई भिन्न खोज आज़माएँ या अपने फ़िल्टर साफ़ करें।",
+    "courses_empty_title": "कोई भी पाठ्यक्रम आपकी खोज से मेल नहीं खाता",
+    "courses_empty_description": "कोई भिन्न खोज शब्द आज़माएँ."
   },
   "exercises": {
     "heading": "व्यायाम",
@@ -480,7 +489,29 @@
     "submitted": "प्रस्तुत किया गया",
     "in_progress": "ग्रेडिंग प्रगति पर है",
     "graded": "श्रेणीबद्ध",
-    "lesson": "पाठ"
+    "lesson": "पाठ",
+    "total": "कुल",
+    "completed": "पूरा हुआ",
+    "overdue": "अतिदेय",
+    "empty": "अभी तक कोई अभ्यास नहीं.",
+    "actions": {
+      "view": "देखें",
+      "continue": "जारी रखें",
+      "start": "प्रारंभ करें"
+    },
+    "submission_states": {
+      "not_submitted": "प्रस्तुत नहीं किया गया",
+      "awaiting_grade": "ग्रेड का इंतजार है",
+      "submitted": "प्रस्तुत किया गया"
+    },
+    "table": {
+      "assignment": "असाइनमेंट",
+      "course": "पाठ्यक्रम",
+      "status": "स्थिति",
+      "due_date": "देय तिथि",
+      "submission": "समर्पण",
+      "grade": "ग्रेड"
+    }
   },
   "my_learning": {
     "heading": "मेरी सीख",

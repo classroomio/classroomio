@@ -470,9 +470,18 @@
     }
   },
   "explore": {
-    "heading": "Explora nuestros cursos",
-    "empty_heading": "No hay curso disponible",
-    "empty_description": "Actualmente no hay ningún curso publicado disponible"
+    "heading": "Explorar",
+    "subtitle": "Descubra experiencias de aprendizaje diseñadas para ayudarle a obtener más valor de la plataforma.",
+    "search_placeholder": "Buscar rutas de aprendizaje y cursos...",
+    "content_type": "tipo de contenido",
+    "content_type_all": "Todos",
+    "section_paths": "Rutas de aprendizaje",
+    "section_courses": "Cursos",
+    "view_learning_path": "Ver ruta de aprendizaje",
+    "paths_empty_title": "No se encontraron caminos",
+    "paths_empty_description": "Pruebe una búsqueda diferente o borre sus filtros.",
+    "courses_empty_title": "Ningún curso coincide con tu búsqueda",
+    "courses_empty_description": "Pruebe con un término de búsqueda diferente."
   },
   "exercises": {
     "heading": "Ejercicios",
@@ -480,7 +489,29 @@
     "submitted": "Enviado",
     "in_progress": "Calificación en progreso",
     "graded": "Calificado",
-    "lesson": "Lección"
+    "lesson": "Lección",
+    "total": "totales",
+    "completed": "Completado",
+    "overdue": "Vencido",
+    "empty": "Aún no hay ejercicios.",
+    "actions": {
+      "view": "Ver",
+      "continue": "Continuar",
+      "start": "Empezar"
+    },
+    "submission_states": {
+      "not_submitted": "No enviado",
+      "awaiting_grade": "esperando grado",
+      "submitted": "Enviado"
+    },
+    "table": {
+      "assignment": "tarea",
+      "course": "Curso",
+      "status": "Estado",
+      "due_date": "Fecha de vencimiento",
+      "submission": "Presentación",
+      "grade": "Grado"
+    }
   },
   "my_learning": {
     "heading": "Mi aprendizaje",

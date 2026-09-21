@@ -4458,16 +4458,46 @@
   },
   "exercises": {
     "heading": "Exercises",
+    "total": "Total",
+    "completed": "Completed",
     "not_submitted": "Not Submitted",
     "submitted": "Submitted",
-    "in_progress": "Grading In Progress",
+    "in_progress": "In Progress",
     "graded": "Graded",
-    "lesson": "Lesson"
+    "overdue": "Overdue",
+    "empty": "No exercises yet.",
+    "table": {
+      "assignment": "Assignment",
+      "course": "Course",
+      "status": "Status",
+      "due_date": "Due Date",
+      "submission": "Submission",
+      "grade": "Grade"
+    },
+    "submission_states": {
+      "not_submitted": "Not submitted",
+      "awaiting_grade": "Awaiting grade",
+      "submitted": "Submitted"
+    },
+    "actions": {
+      "view": "View",
+      "continue": "Continue",
+      "start": "Start"
+    }
   },
   "explore": {
-    "heading": "Explore our courses",
-    "empty_heading": "No course available",
-    "empty_description": "There are currently no published course available"
+    "heading": "Explore",
+    "subtitle": "Discover learning experiences designed to help you get more value from the platform.",
+    "search_placeholder": "Search learning paths and courses\u2026",
+    "content_type": "Content type",
+    "content_type_all": "All",
+    "section_paths": "Learning Paths",
+    "section_courses": "Courses",
+    "view_learning_path": "View Learning Path",
+    "paths_empty_title": "No paths found",
+    "paths_empty_description": "Try a different search or clear your filters.",
+    "courses_empty_title": "No courses match your search",
+    "courses_empty_description": "Try a different search term."
   },
   "snackbar": {
     "success": "Success",
