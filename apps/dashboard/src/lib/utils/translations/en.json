@@ -3280,6 +3280,8 @@
           "placeholder": "What do you think about this lesson?",
           "comment_btn": "Comment",
           "cancel_btn": "Cancel",
+          "edit": "Edit",
+          "delete": "Delete",
           "load_more_btn": "Load more",
           "comment_error": "Failed to post comment. Please try again."
         },
@@ -4638,6 +4640,11 @@
       "workspace_not_found": "Workspace not found.",
       "not_primary_workspace": "Switch to your primary workspace to manage account workspaces."
     },
+    "report": {
+      "success": "Thanks. We’ll review this report.",
+      "error": "Could not submit the report. Please try again.",
+      "already_submitted": "You’ve already reported this."
+    },
     "public_course": {
       "url_copied": "Course URL copied",
       "url_copy_failed": "Could not copy URL"
@@ -5563,6 +5570,28 @@
     },
     "watching_empty_title": "Nothing to watch yet",
     "watching_empty_description": "Updates on items you follow will show up here."
+  },
+  "report": {
+    "menu": "Report",
+    "title": "Report content",
+    "description": "Tell us what’s wrong. Our team will review this report.",
+    "reason_label": "Reason",
+    "reason_placeholder": "Select a reason",
+    "reason_required": "Please choose a reason",
+    "details_label": "Additional details",
+    "details_placeholder": "Add any context that will help us review this (optional)",
+    "submit": "Submit report",
+    "cancel": "Cancel",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment or bullying",
+      "hate_speech": "Hate speech",
+      "sexual_content": "Sexual content",
+      "violence": "Violence or threats",
+      "misinformation": "Misinformation",
+      "privacy": "Privacy violation",
+      "other": "Other"
+    }
   },
   "export": {
     "as_csv": "Export as CSV",

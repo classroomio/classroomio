@@ -470,6 +470,11 @@
         "post_created": "Publicación creada exitosamente",
         "post_updated": "Publicación actualizada exitosamente"
       }
+    },
+    "report": {
+      "success": "Gracias. Revisaremos este informe.",
+      "error": "No se pudo enviar el informe. Inténtalo de nuevo.",
+      "already_submitted": "Ya has denunciado este contenido."
     }
   },
   "explore": {
@@ -1661,7 +1666,9 @@
           "comment_btn": "Comentario",
           "cancel_btn": "Cancelar",
           "load_more_btn": "Cargar más",
-          "comment_error": "No se pudo publicar el comentario. Por favor inténtalo de nuevo."
+          "comment_error": "No se pudo publicar el comentario. Por favor inténtalo de nuevo.",
+          "edit": "Editar",
+          "delete": "Eliminar"
         },
         "exercises": {
           "heading": "Todos los ejercicios",
@@ -5599,5 +5606,27 @@
     "format_json": "JSON",
     "copied": "Copiado al portapapeles",
     "copy_failed": "No se pudo copiar al portapapeles"
+  },
+  "report": {
+    "menu": "Denunciar",
+    "title": "Denunciar contenido",
+    "description": "Cuéntanos qué está mal. Nuestro equipo revisará este informe.",
+    "reason_label": "Motivo",
+    "reason_placeholder": "Selecciona un motivo",
+    "reason_required": "Elige un motivo",
+    "details_label": "Detalles adicionales",
+    "details_placeholder": "Añade contexto que nos ayude a revisar esto (opcional)",
+    "submit": "Enviar denuncia",
+    "cancel": "Cancelar",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Acoso o intimidación",
+      "hate_speech": "Discurso de odio",
+      "sexual_content": "Contenido sexual",
+      "violence": "Violencia o amenazas",
+      "misinformation": "Desinformación",
+      "privacy": "Violación de la privacidad",
+      "other": "Otro"
+    }
   }
 }
