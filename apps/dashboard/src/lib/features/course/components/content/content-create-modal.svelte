@@ -40,6 +40,7 @@
   let selectedType = $state<ContentType>(initialSelectedType);
   let sectionId = $state('');
   let primarySuccessButton: HTMLButtonElement | null = $state(null);
+  let dialogContent: HTMLElement | null = $state(null);
 
   // ============================================
   // STEPPER COMPONENT REFERENCES
@@ -232,8 +233,31 @@
     });
   }
 
+  function focusModalEntry() {
+    if (!dialogContent) return;
+
+    if (phase === 'success') {
+      primarySuccessButton?.focus();
+      return;
+    }
+
+    if (step === 1) {
+      dialogContent.querySelector<HTMLInputElement>('input:not([type="hidden"]):not([disabled])')?.focus();
+      return;
+    }
+
+    const selectedRadio = dialogContent.querySelector<HTMLElement>('[role="radio"][data-state="checked"]');
+    (selectedRadio ?? dialogContent.querySelector<HTMLElement>('[role="radio"]'))?.focus();
+  }
+
+  function handleOpenAutoFocus(event: Event) {
+    event.preventDefault();
+    void tick().then(focusModalEntry);
+  }
+
   function goToDetails() {
     step = 1;
+    void tick().then(focusModalEntry);
   }
 
   function goBack() {
@@ -264,6 +288,7 @@
     resetFormState();
     activeStepper?.actions.reset();
     step = 1;
+    void tick().then(focusModalEntry);
   }
 
   function handleLater() {
@@ -298,7 +323,9 @@
 
 <Dialog.Root bind:open={$contentCreateStore.open} onOpenChange={(isOpen) => !isOpen && closeModal()}>
   <Dialog.Content
+    bind:ref={dialogContent}
     class="flex max-h-[calc(100dvh-3rem)] w-[calc(100%-3rem)] max-w-[calc(100%-3rem)] flex-col overflow-hidden p-6 sm:max-h-170 sm:w-full sm:max-w-xl"
+    onOpenAutoFocus={handleOpenAutoFocus}
   >
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.add_content')}</Dialog.Title>
@@ -330,17 +357,18 @@
         </Dialog.Footer>
       {:else if step === 0}
         <!-- Select a content type - Section | Lesson | Exercise -->
-        <div class="flex flex-col gap-3">
+        <form class="flex flex-col gap-3" onsubmit={preventDefault(goToDetails)}>
           <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
           <RadioOptionCardGroup
             options={contentOptionsForGroup}
             bind:value={selectedType}
             class={contentOptionsForGroup.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}
+            onConfirm={goToDetails}
           />
           <Dialog.Footer class="flex justify-end">
-            <Button size="sm" onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
+            <Button type="submit" size="sm">{$t('course.navItem.lessons.add_content_continue')}</Button>
           </Dialog.Footer>
-        </div>
+        </form>
       {:else}
         <!-- Create content - Section | Lesson | Exercise -->
         <form class="px-1" onsubmit={preventDefault(handleUnifiedNext)}>
