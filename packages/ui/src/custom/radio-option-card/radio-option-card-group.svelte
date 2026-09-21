@@ -46,11 +46,6 @@
       description={option.description}
       value={option.value}
       disabled={option.disabled}
-      onclick={() => {
-        if (option.disabled) return;
-
-        value = option.value;
-      }}
     >
       {#snippet titleSuffix()}
         {@render parentTitleSuffix?.(option)}
