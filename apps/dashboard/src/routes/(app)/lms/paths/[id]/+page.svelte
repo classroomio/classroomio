@@ -1,23 +1,22 @@
 <script lang="ts">
-  import { MyLearningPage } from '$features/learning-path/pages';
+  import { PathDetailPage } from '$features/learning-path/pages';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 </script>
 
 <svelte:head>
-  <title>My Learning</title>
+  <title>Learning Path - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full">
+<Page.Root class="mx-auto w-full max-w-5xl">
   <Page.Header>
     <Page.HeaderContent>
-      <Page.Title>{$t('learningPath.my_learning.heading')}</Page.Title>
-      <Page.Subtitle>{$t('learningPath.my_learning.subtitle')}</Page.Subtitle>
+      <Page.Title>{$t('learningPath.badge.learning_path')}</Page.Title>
     </Page.HeaderContent>
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <MyLearningPage />
+      <PathDetailPage />
     {/snippet}
   </Page.Body>
 </Page.Root>
