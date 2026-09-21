@@ -316,7 +316,7 @@
           <Alert.Description>{createdContent.title}</Alert.Description>
         </Alert.Root>
         <Dialog.Footer class="mt-6 flex flex-row flex-wrap items-center justify-between gap-2.5 sm:justify-between">
-          <Button variant="ghost" size="sm" onclick={handleCreateAnother}>
+          <Button variant="secondary" size="sm" onclick={handleCreateAnother}>
             {$t(repeatLabelKey)}
           </Button>
           <div class="flex items-center gap-2">
@@ -418,7 +418,7 @@
           {/if}
 
           <Dialog.Footer class="mt-6 flex flex-row flex-wrap items-center justify-between gap-2 sm:justify-between">
-            <Button type="button" variant="outline" size="sm" onclick={handleUnifiedBack}>
+            <Button type="button" variant="secondary" size="sm" onclick={handleUnifiedBack}>
               {$t('course.navItem.lessons.add_content_back')}
             </Button>
             <Button type="submit" size="sm" loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>

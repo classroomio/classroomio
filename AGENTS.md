@@ -494,7 +494,7 @@ Use `.server.ts` files for server-side code to isolate API keys.
 
 When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
 
-- **Left / external action** (e.g. "Create another …") — `variant="ghost"`
+- **Left / external action** (e.g. "Create another …") — `variant="secondary"`
 - **Cancel / dismiss** (e.g. "Later", "Cancel") — `variant="outline"`
 - **Main CTA** (e.g. "Open now", "Save", "Create") — default primary (`variant="default"`)
 

@@ -210,7 +210,7 @@ When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every 
 
 | Position | Role | Variant |
 | -------- | ---- | ------- |
-| Left | External / repeat action (e.g. "Create another …") | `ghost` |
+| Left | External / repeat action (e.g. "Create another …") | `secondary` |
 | Right group (first) | Cancel / dismiss (e.g. "Later", "Cancel") | `outline` |
 | Right group (last) | Main CTA (e.g. "Open now", "Save", "Create") | default primary |
 
