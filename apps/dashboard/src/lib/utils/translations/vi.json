@@ -172,11 +172,6 @@
       "generate_fail": "Không tạo được thành công",
       "failed": "Không thành công, vui lòng thử lại sau"
     },
-    "report": {
-      "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
-      "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
-      "already_submitted": "Bạn đã báo cáo nội dung này rồi."
-    },
     "signup": {
       "disposable": "Email bạn cung cấp chỉ dùng một lần"
     },
@@ -475,11 +470,6 @@
         "post_created": "Bài viết được tạo thành công",
         "post_updated": "Đã cập nhật bài đăng thành công"
       }
-    },
-    "report": {
-      "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
-      "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
-      "already_submitted": "Bạn đã báo cáo nội dung này rồi."
     }
   },
   "explore": {
@@ -1103,7 +1093,7 @@
         "save_changes_to_fix_questions": "Lưu các thay đổi chưa được lưu trước khi chuyển sang phần sửa câu hỏi.",
         "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
         "progression_mode_description": "Kiểm soát xem học sinh có thể truy cập tất cả nội dung đã mở khóa hay phải hoàn thành các mục theo thứ tự. Việc xem xong video chỉ theo dõi các video đã tải lên.",
-"allow_markdown_export": "Cho phép học viên sao chép trang bài học dưới dạng Markdown",
+        "allow_markdown_export": "Cho phép học viên sao chép trang bài học dưới dạng Markdown",
         "allow_markdown_export_description": "Khi bật, các trang bài học công khai sẽ hiện nút Sao chép trang để xuất nội dung bài học (không gồm video) dưới dạng Markdown. Thao tác này cũng công khai một URL Markdown cho mỗi bài học đã mở khóa."
       },
       "analytics": {
@@ -2417,7 +2407,87 @@
             "slide": {
               "title": "Slide",
               "slide_link": "Liên kết slide",
-              "helper_message": "Bạn có thể nhúng Google Trang trình bày hoặc Bản trình bày Canva"
+              "helper_message": "Bạn có thể nhúng Google Trang trình bày hoặc Bản trình bày Canva",
+              "button": "Thêm slide",
+              "remove_slide": "Xóa slide",
+              "menu_aria": "Thao tác slide",
+              "empty_title": "Chưa có slide",
+              "empty_description": "Nhúng Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare hoặc Beautiful.ai",
+              "add_slide": {
+                "title": "Thêm slide",
+                "search": "Tìm nền tảng",
+                "empty_prompt": "Chọn nền tảng để xem hướng dẫn từng bước và dán mã nhúng.",
+                "embed_code": "Dán mã nhúng",
+                "embed_placeholder": "Dán toàn bộ mã iframe nhúng vào đây",
+                "how_to_embed": "Cách nhúng",
+                "preview": "Xem trước",
+                "embed_ready": "Mã nhúng sẵn sàng",
+                "invalid_embed": "Dán toàn bộ mã iframe từ nền tảng này.",
+                "unsupported": "Mã nhúng này đến từ nền tảng chúng tôi chưa hỗ trợ."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index}/{total})"
             },
             "note": {
               "title": "Lưu ý",
@@ -5529,27 +5599,5 @@
     "format_json": "JSON",
     "copied": "Đã sao chép vào bảng nhớ tạm",
     "copy_failed": "Không thể sao chép vào bảng nhớ tạm"
-  },
-  "report": {
-    "menu": "Báo cáo",
-    "title": "Báo cáo nội dung",
-    "description": "Hãy cho chúng tôi biết điều gì không ổn. Đội ngũ của chúng tôi sẽ xem xét báo cáo này.",
-    "reason_label": "Lý do",
-    "reason_placeholder": "Chọn một lý do",
-    "reason_required": "Vui lòng chọn một lý do",
-    "details_label": "Chi tiết bổ sung",
-    "details_placeholder": "Thêm ngữ cảnh giúp chúng tôi xem xét (không bắt buộc)",
-    "submit": "Gửi báo cáo",
-    "cancel": "Hủy",
-    "reasons": {
-      "spam": "Thư rác",
-      "harassment": "Quấy rối hoặc bắt nạt",
-      "hate_speech": "Ngôn từ thù địch",
-      "sexual_content": "Nội dung tình dục",
-      "violence": "Bạo lực hoặc đe dọa",
-      "misinformation": "Thông tin sai lệch",
-      "privacy": "Vi phạm quyền riêng tư",
-      "other": "Khác"
-    }
   }
 }

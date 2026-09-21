@@ -94,6 +94,14 @@ export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
+export {
+  SlideEmbedCard,
+  SlideEmbedFrame,
+  SlideEmbedPicker,
+  SlidePlatformIcon,
+  DEFAULT_SLIDE_EMBED_PICKER_LABELS
+} from './custom/slide-embed';
+export type { SlideEmbed, SlideEmbedCardLabels, SlideEmbedPickerLabels, SlidePlatformId } from './custom/slide-embed';
 export { AttentionHighlight, type AttentionHighlightProps } from './custom/attention-highlight';
 export { CircularProgress } from './custom/circular-progress';
 export {

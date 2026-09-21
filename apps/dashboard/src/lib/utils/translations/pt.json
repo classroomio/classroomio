@@ -172,11 +172,6 @@
       "generate_fail": "Falha ao gerar sucesso",
       "failed": "Falha, tente novamente mais tarde"
     },
-    "report": {
-      "success": "Obrigado. Vamos analisar esta denúncia.",
-      "error": "Não foi possível enviar a denúncia. Tente novamente.",
-      "already_submitted": "Já denunciou este conteúdo."
-    },
     "signup": {
       "disposable": "O e-mail que você forneceu é descartável"
     },
@@ -475,11 +470,6 @@
         "post_created": "Postagem criada com sucesso",
         "post_updated": "Postagem atualizada com sucesso"
       }
-    },
-    "report": {
-      "success": "Obrigado. Vamos analisar esta denúncia.",
-      "error": "Não foi possível enviar a denúncia. Tente novamente.",
-      "already_submitted": "Já denunciou este conteúdo."
     }
   },
   "explore": {
@@ -1103,7 +1093,7 @@
         "save_changes_to_fix_questions": "Salve suas alterações não salvas antes de prosseguir para a seção de correção de perguntas.",
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
         "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou se devem completar os itens em ordem. A conclusão da exibição do vídeo rastreia apenas os vídeos enviados.",
-"allow_markdown_export": "Permitir que os alunos copiem as páginas das lições como Markdown",
+        "allow_markdown_export": "Permitir que os alunos copiem as páginas das lições como Markdown",
         "allow_markdown_export_description": "Quando ativado, as páginas públicas das lições mostram um botão Copiar página que exporta o conteúdo da lição (excluindo vídeos) como Markdown. Isso também publica um URL público de Markdown para cada lição desbloqueada."
       },
       "analytics": {
@@ -2417,7 +2407,87 @@
             "slide": {
               "title": "Slide",
               "slide_link": "Link do slide",
-              "helper_message": "Você pode incorporar Apresentações Google ou Apresentação Canva"
+              "helper_message": "Você pode incorporar Apresentações Google ou Apresentação Canva",
+              "button": "Adicionar slide",
+              "remove_slide": "Remover slide",
+              "menu_aria": "Ações do slide",
+              "empty_title": "Ainda não há slides",
+              "empty_description": "Incorpore Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare ou Beautiful.ai",
+              "add_slide": {
+                "title": "Adicionar um slide",
+                "search": "Pesquisar plataformas",
+                "empty_prompt": "Escolha uma plataforma para ver instruções passo a passo e colar o código de incorporação.",
+                "embed_code": "Colar código de incorporação",
+                "embed_placeholder": "Cole aqui o código iframe completo",
+                "how_to_embed": "Como incorporar",
+                "preview": "Pré-visualização",
+                "embed_ready": "Incorporação pronta",
+                "invalid_embed": "Cole o código iframe completo desta plataforma.",
+                "unsupported": "Essa incorporação é de uma plataforma que ainda não suportamos."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} de {total})"
             },
             "note": {
               "title": "Nota",
@@ -5529,27 +5599,5 @@
     "format_json": "JSON",
     "copied": "Copiado para a área de transferência",
     "copy_failed": "Não foi possível copiar para a área de transferência"
-  },
-  "report": {
-    "menu": "Denunciar",
-    "title": "Denunciar conteúdo",
-    "description": "Diga-nos o que está errado. A nossa equipa irá analisar esta denúncia.",
-    "reason_label": "Motivo",
-    "reason_placeholder": "Selecione um motivo",
-    "reason_required": "Escolha um motivo",
-    "details_label": "Detalhes adicionais",
-    "details_placeholder": "Adicione qualquer contexto que nos ajude a analisar isto (opcional)",
-    "submit": "Enviar denúncia",
-    "cancel": "Cancelar",
-    "reasons": {
-      "spam": "Spam",
-      "harassment": "Assédio ou intimidação",
-      "hate_speech": "Discurso de ódio",
-      "sexual_content": "Conteúdo sexual",
-      "violence": "Violência ou ameaças",
-      "misinformation": "Desinformação",
-      "privacy": "Violação de privacidade",
-      "other": "Outro"
-    }
   }
 }

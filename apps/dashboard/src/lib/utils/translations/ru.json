@@ -172,11 +172,6 @@
       "generate_fail": "Не удалось добиться успеха",
       "failed": "Не удалось. Повторите попытку позже."
     },
-    "report": {
-      "success": "Спасибо. Мы рассмотрим эту жалобу.",
-      "error": "Не удалось отправить жалобу. Попробуйте ещё раз.",
-      "already_submitted": "Вы уже пожаловались на этот контент."
-    },
     "signup": {
       "disposable": "Указанный вами адрес электронной почты является одноразовым."
     },
@@ -475,11 +470,6 @@
         "post_created": "Сообщение успешно создано",
         "post_updated": "Сообщение успешно обновлено"
       }
-    },
-    "report": {
-      "success": "Спасибо. Мы рассмотрим эту жалобу.",
-      "error": "Не удалось отправить жалобу. Попробуйте ещё раз.",
-      "already_submitted": "Вы уже пожаловались на этот контент."
     }
   },
   "explore": {
@@ -1103,7 +1093,7 @@
         "save_changes_to_fix_questions": "Сохраните несохраненные изменения, прежде чем переходить к исправлению вопросов.",
         "certificate_deadline_required_description": "Для курсов по соблюдению требований требуется крайний срок получения сертификата, прежде чем студенты смогут быть зачислены. Пожалуйста, установите крайний срок в настройках курса перед публикацией.",
         "progression_mode_description": "Управляйте тем, могут ли учащиеся получить доступ ко всему разблокированному контенту или должны ли они выполнять элементы по порядку. Завершение просмотра видео отслеживает только загруженные видео.",
-"allow_markdown_export": "Разрешить учащимся копировать страницы уроков как Markdown",
+        "allow_markdown_export": "Разрешить учащимся копировать страницы уроков как Markdown",
         "allow_markdown_export_description": "Если включено, на публичных страницах уроков появляется кнопка «Копировать страницу», которая экспортирует содержимое урока (без видео) в Markdown. Также публикуется общедоступный URL Markdown для каждого разблокированного урока."
       },
       "analytics": {
@@ -2417,7 +2407,87 @@
             "slide": {
               "title": "Слайд",
               "slide_link": "Ссылка на слайд",
-              "helper_message": "Вы можете встроить Google Slides или Canva Presentation."
+              "helper_message": "Вы можете встроить Google Slides или Canva Presentation.",
+              "button": "Добавить слайд",
+              "remove_slide": "Удалить слайд",
+              "menu_aria": "Действия со слайдом",
+              "empty_title": "Слайдов пока нет",
+              "empty_description": "Встройте Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare или Beautiful.ai",
+              "add_slide": {
+                "title": "Добавить слайд",
+                "search": "Поиск платформ",
+                "empty_prompt": "Выберите платформу, чтобы увидеть пошаговые инструкции и вставить код встраивания.",
+                "embed_code": "Вставить код встраивания",
+                "embed_placeholder": "Вставьте сюда полный iframe-код",
+                "how_to_embed": "Как встроить",
+                "preview": "Предпросмотр",
+                "embed_ready": "Встраивание готово",
+                "invalid_embed": "Вставьте полный iframe-код с этой платформы.",
+                "unsupported": "Это встраивание с платформы, которую мы пока не поддерживаем."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} из {total})"
             },
             "note": {
               "title": "Примечание",
@@ -5529,27 +5599,5 @@
     "format_json": "JSON",
     "copied": "Скопировано в буфер обмена",
     "copy_failed": "Не удалось скопировать в буфер обмена"
-  },
-  "report": {
-    "menu": "Пожаловаться",
-    "title": "Пожаловаться на контент",
-    "description": "Расскажите, что не так. Наша команда рассмотрит эту жалобу.",
-    "reason_label": "Причина",
-    "reason_placeholder": "Выберите причину",
-    "reason_required": "Пожалуйста, выберите причину",
-    "details_label": "Дополнительные сведения",
-    "details_placeholder": "Добавьте контекст, который поможет нам рассмотреть жалобу (необязательно)",
-    "submit": "Отправить жалобу",
-    "cancel": "Отмена",
-    "reasons": {
-      "spam": "Спам",
-      "harassment": "Преследование или травля",
-      "hate_speech": "Разжигание ненависти",
-      "sexual_content": "Сексуальный контент",
-      "violence": "Насилие или угрозы",
-      "misinformation": "Дезинформация",
-      "privacy": "Нарушение конфиденциальности",
-      "other": "Другое"
-    }
   }
 }

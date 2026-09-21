@@ -172,11 +172,6 @@
       "generate_fail": "N'a pas réussi à générer du succès",
       "failed": "Échec, veuillez réessayer plus tard"
     },
-    "report": {
-      "success": "Merci. Nous examinerons ce signalement.",
-      "error": "Impossible d'envoyer le signalement. Veuillez réessayer.",
-      "already_submitted": "Vous avez déjà signalé ce contenu."
-    },
     "signup": {
       "disposable": "L'e-mail que vous avez fourni est jetable"
     },
@@ -475,11 +470,6 @@
         "post_created": "Message créé avec succès",
         "post_updated": "Message mis à jour avec succès"
       }
-    },
-    "report": {
-      "success": "Merci. Nous examinerons ce signalement.",
-      "error": "Impossible d'envoyer le signalement. Veuillez réessayer.",
-      "already_submitted": "Vous avez déjà signalé ce contenu."
     }
   },
   "explore": {
@@ -1103,7 +1093,7 @@
         "save_changes_to_fix_questions": "Enregistrez vos modifications non enregistrées avant de corriger les questions.",
         "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication.",
         "progression_mode_description": "Contrôlez si les élèves peuvent accéder à tout le contenu déverrouillé ou doivent terminer les éléments dans l'ordre. La fin du visionnage de vidéos ne suit que les vidéos téléversées.",
-"allow_markdown_export": "Autoriser les apprenants à copier les pages de leçon en Markdown",
+        "allow_markdown_export": "Autoriser les apprenants à copier les pages de leçon en Markdown",
         "allow_markdown_export_description": "Lorsque cette option est activée, les pages de leçon publiques affichent un bouton Copier la page qui exporte le contenu de la leçon (hors vidéos) en Markdown. Cela publie également une URL Markdown publique pour chaque leçon déverrouillée."
       },
       "analytics": {
@@ -2417,7 +2407,87 @@
             "slide": {
               "title": "Diapositive",
               "slide_link": "Lien de la diapositive",
-              "helper_message": "Vous pouvez intégrer Google Slides ou Canva Présentation"
+              "helper_message": "Vous pouvez intégrer Google Slides ou Canva Présentation",
+              "button": "Ajouter une diapositive",
+              "remove_slide": "Supprimer la diapositive",
+              "menu_aria": "Actions sur la diapositive",
+              "empty_title": "Aucune diapositive pour le moment",
+              "empty_description": "Intégrez Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare ou Beautiful.ai",
+              "add_slide": {
+                "title": "Ajouter une diapositive",
+                "search": "Rechercher des plateformes",
+                "empty_prompt": "Choisissez une plateforme pour voir les instructions étape par étape et coller votre code d’intégration.",
+                "embed_code": "Coller le code d’intégration",
+                "embed_placeholder": "Collez ici le code iframe complet",
+                "how_to_embed": "Comment intégrer",
+                "preview": "Aperçu",
+                "embed_ready": "Intégration prête",
+                "invalid_embed": "Collez le code iframe complet de cette plateforme.",
+                "unsupported": "Cette intégration provient d’une plateforme que nous ne prenons pas encore en charge."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} sur {total})"
             },
             "note": {
               "title": "Remarque",
@@ -5529,27 +5599,5 @@
     "format_json": "JSON",
     "copied": "Copié dans le presse-papiers",
     "copy_failed": "Impossible de copier dans le presse-papiers"
-  },
-  "report": {
-    "menu": "Signaler",
-    "title": "Signaler du contenu",
-    "description": "Indiquez-nous ce qui ne va pas. Notre équipe examinera ce signalement.",
-    "reason_label": "Motif",
-    "reason_placeholder": "Sélectionnez un motif",
-    "reason_required": "Veuillez choisir un motif",
-    "details_label": "Détails supplémentaires",
-    "details_placeholder": "Ajoutez tout contexte qui nous aidera à examiner ce signalement (facultatif)",
-    "submit": "Envoyer le signalement",
-    "cancel": "Annuler",
-    "reasons": {
-      "spam": "Spam",
-      "harassment": "Harcèlement ou intimidation",
-      "hate_speech": "Discours haineux",
-      "sexual_content": "Contenu sexuel",
-      "violence": "Violence ou menaces",
-      "misinformation": "Désinformation",
-      "privacy": "Atteinte à la vie privée",
-      "other": "Autre"
-    }
   }
 }
