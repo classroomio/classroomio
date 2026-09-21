@@ -254,6 +254,7 @@
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
         allowSelfEnrollment: $settings.allowSelfEnrollment,
+        allowMarkdownExport: $settings.allowMarkdownExport,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
         commentsEnabled: $settings.commentsEnabled,
@@ -344,6 +345,7 @@
         tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
+        allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
         isPublished: !!course.isPublished,
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
@@ -1162,6 +1164,23 @@
           />
         </Field.Field>
       {/if}
+
+      <SettingsSeparator />
+
+      <Field.Field orientation="horizontal">
+        <Field.Content>
+          <Field.Label for="allow-markdown-export">{$t('course.navItem.settings.allow_markdown_export')}</Field.Label>
+          <Field.Description>{$t('course.navItem.settings.allow_markdown_export_description')}</Field.Description>
+        </Field.Content>
+        <Switch
+          id="allow-markdown-export"
+          checked={$settings.allowMarkdownExport}
+          onCheckedChange={(checked) => {
+            $settings.allowMarkdownExport = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+      </Field.Field>
 
       <SettingsSeparator />
 
