@@ -23,6 +23,7 @@
   import type { CreatedContent, LockedSection, StepperRef, StepperState } from './types';
   import { DEFAULT_STEPPER_STATE, CONTENT_OPTIONS, SUCCESS_SENTENCE_KEYS, REPEAT_LABEL_KEYS } from './constants';
   import { t } from '$lib/utils/functions/translations';
+  import { preventDefault } from '$lib/utils/functions/svelte';
   import { tick, untrack, onDestroy } from 'svelte';
   import CheckCircle2Icon from '@lucide/svelte/icons/check-circle-2';
 
@@ -251,6 +252,8 @@
   }
 
   async function handleUnifiedNext() {
+    if (!stepperState.canProceed || stepperState.isSubmitting) return;
+
     await activeStepper?.actions.next();
   }
 
@@ -334,13 +337,13 @@
             bind:value={selectedType}
             class={contentOptionsForGroup.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}
           />
-          <Dialog.Footer>
-            <Button onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
+          <Dialog.Footer class="flex justify-end">
+            <Button size="sm" onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
           </Dialog.Footer>
         </div>
       {:else}
         <!-- Create content - Section | Lesson | Exercise -->
-        <div class="px-1">
+        <form class="px-1" onsubmit={preventDefault(handleUnifiedNext)}>
           {#if requiresSection}
             <div class="mb-4">
               <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>
@@ -415,14 +418,14 @@
           {/if}
 
           <Dialog.Footer class="mt-6 flex flex-row flex-wrap items-center justify-between gap-2 sm:justify-between">
-            <Button variant="outline" onclick={handleUnifiedBack}
-              >{$t('course.navItem.lessons.add_content_back')}</Button
-            >
-            <Button onclick={handleUnifiedNext} loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>
+            <Button type="button" variant="outline" size="sm" onclick={handleUnifiedBack}>
+              {$t('course.navItem.lessons.add_content_back')}
+            </Button>
+            <Button type="submit" size="sm" loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>
               {stepperState.primaryActionLabel}
             </Button>
           </Dialog.Footer>
-        </div>
+        </form>
       {/if}
     </div>
   </Dialog.Content>
