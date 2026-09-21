@@ -145,6 +145,10 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
+### Slide embed (`src/custom/slide-embed/`)
+
+Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
+
 ### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
 
 Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Both halves use `variant="secondary"`. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyChatUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title at every breakpoint, with `ShareButton` to its right. The outline rail still has the matching copy / share / chat actions. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.

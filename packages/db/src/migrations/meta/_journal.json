@@ -141,6 +141,13 @@
       "when": 1789951951825,
       "tag": "0019_content_report",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789960316363,
+      "tag": "0020_lesson_slides",
+      "breakpoints": true
     }
   ]
 }

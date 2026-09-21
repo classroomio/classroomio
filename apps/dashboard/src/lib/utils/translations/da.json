@@ -172,11 +172,6 @@
       "generate_fail": "Det lykkedes ikke at skabe succes",
       "failed": "Mislykkedes. Prøv venligst igen senere"
     },
-    "report": {
-      "success": "Tak. Vi gennemgår denne anmeldelse.",
-      "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
-      "already_submitted": "Du har allerede anmeldt dette."
-    },
     "signup": {
       "disposable": "Den e-mail, du har angivet, er til engangsbrug"
     },
@@ -475,11 +470,6 @@
         "post_created": "Indlægget er oprettet",
         "post_updated": "Opslaget blev opdateret"
       }
-    },
-    "report": {
-      "success": "Tak. Vi gennemgår denne anmeldelse.",
-      "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
-      "already_submitted": "Du har allerede anmeldt dette."
     }
   },
   "explore": {
@@ -1103,7 +1093,7 @@
         "save_changes_to_fix_questions": "Gem dine ikke-gemte ændringer, før du navigerer for at rette spørgsmål.",
         "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
         "progression_mode_description": "Kontroller, om eleverne kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge. Afslutning af videoafspilning sporer kun uploadede videoer.",
-"allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
+        "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
         "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion."
       },
       "analytics": {
@@ -2417,7 +2407,87 @@
             "slide": {
               "title": "Dias",
               "slide_link": "Diaslink",
-              "helper_message": "Du kan integrere Google Slides eller Canva Presentation"
+              "helper_message": "Du kan integrere Google Slides eller Canva Presentation",
+              "button": "Tilføj dias",
+              "remove_slide": "Fjern dias",
+              "menu_aria": "Dias-handlinger",
+              "empty_title": "Ingen dias endnu",
+              "empty_description": "Integrer Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare eller Beautiful.ai",
+              "add_slide": {
+                "title": "Tilføj en dias",
+                "search": "Søg platforme",
+                "empty_prompt": "Vælg en platform for trin-for-trin vejledning og indsæt din embed-kode.",
+                "embed_code": "Indsæt embed-kode",
+                "embed_placeholder": "Indsæt den fulde iframe embed-kode her",
+                "how_to_embed": "Sådan integrerer du",
+                "preview": "Forhåndsvisning",
+                "embed_ready": "Embed klar",
+                "invalid_embed": "Indsæt den fulde iframe embed-kode fra denne platform.",
+                "unsupported": "Den embed kommer fra en platform, vi endnu ikke understøtter."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "Fil → Del → Udgiv på nettet → Integrer",
+                  "step_1": "Åbn din præsentation og vælg Fil → Del → Udgiv på nettet.",
+                  "step_2": "Skift til fanen Integrer og klik Udgiv.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "canva": {
+                  "hint": "Del → Mere → Integrer",
+                  "step_1": "Klik Del → Mere over editoren.",
+                  "step_2": "Vælg Integrer og bekræft (gør designet offentligt).",
+                  "step_3": "Kopiér HTML embed-koden og indsæt den her."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint på nettet → Fil → Del → Integrer",
+                  "step_1": "Gem præsentationen på OneDrive og åbn den i PowerPoint på nettet.",
+                  "step_2": "Vælg Fil → Del → Integrer og vælg dimensioner.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her. Vi tilpasser afspilleren selv."
+                },
+                "keynote": {
+                  "hint": "Samarbejd → Kopiér link, derefter integrer",
+                  "step_1": "Klik Samarbejd og sæt adgang til Alle med linket · Kun visning.",
+                  "step_2": "Kopiér iCloud-linket og hent embed-koden til dit website.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "figma": {
+                  "hint": "Del en Figma Slides-fil og kopiér embed",
+                  "step_1": "Åbn din Figma Slides-fil og aktiver linkdeling.",
+                  "step_2": "Kopiér embed-koden for /slides- eller /deck-filen.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "prezi": {
+                  "hint": "Del → Integrer",
+                  "step_1": "Åbn Del på din præsentation fra dashboardet.",
+                  "step_2": "Klik Integrer og kopiér koden.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "pitch": {
+                  "hint": "Del eksternt → Kopiér embed-kode",
+                  "step_1": "Klik Del → Del eksternt og opret et offentligt link.",
+                  "step_2": "Åbn linkets Indstillinger (⋯) og vælg Kopiér embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "gamma": {
+                  "hint": "Del → aktiver offentlig adgang → kopiér iframe",
+                  "step_1": "Åbn Del og slå Tillad offentlig adgang til.",
+                  "step_2": "Kopiér den genererede iframe embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "slideshare": {
+                  "hint": "Del → Integrer under præsentationen",
+                  "step_1": "Åbn den offentlige præsentation på slideshare.net.",
+                  "step_2": "Klik Del under afspilleren og åbn fanen Integrer.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "beautiful": {
+                  "hint": "Delingsindstillinger → Offentlig → Hent embed-kode",
+                  "step_1": "Åbn Delingsindstillinger og skift præsentationen til Offentlig.",
+                  "step_2": "Klik Hent embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                }
+              },
+              "frame_title": "{platform} ({index} af {total})"
             },
             "note": {
               "title": "Bemærk",
@@ -5529,27 +5599,5 @@
     "format_json": "JSON",
     "copied": "Kopieret til udklipsholder",
     "copy_failed": "Kunne ikke kopiere til udklipsholder"
-  },
-  "report": {
-    "menu": "Anmeld",
-    "title": "Anmeld indhold",
-    "description": "Fortæl os, hvad der er galt. Vores team vil gennemgå denne anmeldelse.",
-    "reason_label": "Årsag",
-    "reason_placeholder": "Vælg en årsag",
-    "reason_required": "Vælg venligst en årsag",
-    "details_label": "Yderligere oplysninger",
-    "details_placeholder": "Tilføj kontekst, der kan hjælpe os med at gennemgå dette (valgfrit)",
-    "submit": "Send anmeldelse",
-    "cancel": "Annuller",
-    "reasons": {
-      "spam": "Spam",
-      "harassment": "Chikane eller mobning",
-      "hate_speech": "Hadefuld tale",
-      "sexual_content": "Seksuelt indhold",
-      "violence": "Vold eller trusler",
-      "misinformation": "Misinformation",
-      "privacy": "Brud på privatlivet",
-      "other": "Andet"
-    }
   }
 }
