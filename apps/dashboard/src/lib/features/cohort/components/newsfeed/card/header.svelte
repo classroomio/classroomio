@@ -7,6 +7,8 @@
   import { t } from '$lib/utils/functions/translations';
   import type { CohortNewsfeedItem } from '$features/cohort/utils/types';
   import { HTMLRender } from '$features/ui';
+  import { profile } from '$lib/utils/store/user';
+  import { ReportMenuItem } from '$features/report';
 
   interface Props {
     feed: CohortNewsfeedItem;
@@ -17,6 +19,8 @@
   }
 
   let { feed, canManageFeed = false, onPin, onEdit, onRequestDelete }: Props = $props();
+
+  const canReport = $derived(Boolean(feed.authorProfileId && feed.authorProfileId !== $profile.id));
 </script>
 
 <div class="px-3 pt-3 pb-0">
@@ -35,7 +39,7 @@
       </span>
     </span>
 
-    {#if canManageFeed}
+    {#if canManageFeed || canReport}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger
           class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
@@ -43,13 +47,18 @@
           <EllipsisVerticalIcon class="h-5 w-5" />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
-          <DropdownMenu.Item onclick={() => onPin(feed.id, feed.isPinned)}>
-            {feed.isPinned ? $t('cohorts.newsfeed.card.unpin') : $t('cohorts.newsfeed.card.pin')}
-          </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={onEdit}>{$t('cohorts.newsfeed.card.edit')}</DropdownMenu.Item>
-          <DropdownMenu.Item class="text-red-600" onclick={onRequestDelete}>
-            {$t('cohorts.newsfeed.card.delete')}
-          </DropdownMenu.Item>
+          {#if canManageFeed}
+            <DropdownMenu.Item onclick={() => onPin(feed.id, feed.isPinned)}>
+              {feed.isPinned ? $t('cohorts.newsfeed.card.unpin') : $t('cohorts.newsfeed.card.pin')}
+            </DropdownMenu.Item>
+            <DropdownMenu.Item onclick={onEdit}>{$t('cohorts.newsfeed.card.edit')}</DropdownMenu.Item>
+            <DropdownMenu.Item class="text-red-600" onclick={onRequestDelete}>
+              {$t('cohorts.newsfeed.card.delete')}
+            </DropdownMenu.Item>
+          {/if}
+          {#if canReport}
+            <ReportMenuItem targetType="cohort_newsfeed_post" targetId={feed.id} />
+          {/if}
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     {/if}

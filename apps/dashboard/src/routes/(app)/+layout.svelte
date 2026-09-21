@@ -4,6 +4,7 @@
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
   import { VerifyEmailModal, WelcomeModal } from '$features/onboarding/components';
   import { CommandPalette, KeyboardShortcutListener } from '$features/search';
+  import { ReportDialog } from '$features/report';
   import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
   import { currentOrg } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -47,6 +48,7 @@
 <WelcomeModal />
 <CommandPalette />
 <KeyboardShortcutListener />
+<ReportDialog />
 
 {#if data.org?.isRestricted || $currentOrg.isRestricted}
   <PageRestricted />

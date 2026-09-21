@@ -172,6 +172,11 @@
       "generate_fail": "Không tạo được thành công",
       "failed": "Không thành công, vui lòng thử lại sau"
     },
+    "report": {
+      "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
+      "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
+      "already_submitted": "Bạn đã báo cáo nội dung này rồi."
+    },
     "signup": {
       "disposable": "Email bạn cung cấp chỉ dùng một lần"
     },
@@ -470,6 +475,11 @@
         "post_created": "Bài viết được tạo thành công",
         "post_updated": "Đã cập nhật bài đăng thành công"
       }
+    },
+    "report": {
+      "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
+      "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
+      "already_submitted": "Bạn đã báo cáo nội dung này rồi."
     }
   },
   "explore": {
@@ -5519,5 +5529,27 @@
     "format_json": "JSON",
     "copied": "Đã sao chép vào bảng nhớ tạm",
     "copy_failed": "Không thể sao chép vào bảng nhớ tạm"
+  },
+  "report": {
+    "menu": "Báo cáo",
+    "title": "Báo cáo nội dung",
+    "description": "Hãy cho chúng tôi biết điều gì không ổn. Đội ngũ của chúng tôi sẽ xem xét báo cáo này.",
+    "reason_label": "Lý do",
+    "reason_placeholder": "Chọn một lý do",
+    "reason_required": "Vui lòng chọn một lý do",
+    "details_label": "Chi tiết bổ sung",
+    "details_placeholder": "Thêm ngữ cảnh giúp chúng tôi xem xét (không bắt buộc)",
+    "submit": "Gửi báo cáo",
+    "cancel": "Hủy",
+    "reasons": {
+      "spam": "Thư rác",
+      "harassment": "Quấy rối hoặc bắt nạt",
+      "hate_speech": "Ngôn từ thù địch",
+      "sexual_content": "Nội dung tình dục",
+      "violence": "Bạo lực hoặc đe dọa",
+      "misinformation": "Thông tin sai lệch",
+      "privacy": "Vi phạm quyền riêng tư",
+      "other": "Khác"
+    }
   }
 }
