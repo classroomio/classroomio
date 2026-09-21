@@ -232,7 +232,7 @@
     <div class="ui:absolute ui:inset-x-0 ui:top-0 ui:flex ui:items-center ui:gap-2 ui:px-[13px] ui:py-[11px]">
       <Badge
         variant="outline"
-        class="ui:border-white/30 ui:bg-white/15 ui:text-white ui:text-[10px] ui:font-semibold ui:tracking-[0.08em] ui:uppercase ui:backdrop-blur ui:rounded-md"
+        class="ui:border-none ui:bg-white/15 ui:text-white ui:text-[10px] ui:font-semibold ui:tracking-[0.08em] ui:uppercase ui:backdrop-blur ui:rounded-sm"
       >
         {labels.courseBadge}
       </Badge>
@@ -241,7 +241,7 @@
         {@const Icon = typeBadge.icon}
         <Badge
           variant="outline"
-          class="ui:bg-white ui:text-zinc-900 ui:border-zinc-200/80 ui:shadow-sm ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:dark:border-border ui:rounded-md"
+          class="ui:border-none ui:bg-white ui:text-zinc-900 ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:rounded-sm"
         >
           <Icon class={typeBadge.iconClass} />
           {typeBadge.label}
