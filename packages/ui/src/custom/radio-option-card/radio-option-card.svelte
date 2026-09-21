@@ -13,6 +13,7 @@
     class?: string;
     /** Reserved for parent content (e.g. when used inside RadioOptionCardGroup) */
     children?: import('svelte').Snippet;
+    onclick?: (event: MouseEvent) => void;
   }
 
   let {
@@ -23,11 +24,12 @@
     disabled = false,
     titleSuffix,
     class: className,
-    children: _children
+    children: _children,
+    onclick
   }: Props = $props();
 </script>
 
-<Field.Label for={id} class={className}>
+<Field.Label for={id} class={className} {onclick}>
   <Field.Field orientation="horizontal">
     <Field.Content class="ui:min-w-0">
       <Field.Title class="ui:flex ui:items-center ui:gap-2">
