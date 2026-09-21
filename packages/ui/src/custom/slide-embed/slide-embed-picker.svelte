@@ -18,7 +18,7 @@
   import SlidePlatformIcon from './slide-platform-icon.svelte';
   import type { SlideEmbedPickerLabels } from './types';
 
-  const DEFAULT_DOCS_BASE_URL = 'https://classroomio.com/help/create-and-deliver/embed-slides';
+  const DEFAULT_DOCS_BASE_URL = 'https://classroomio.com/help/build-courses/add-slides-and-presentations';
 
   interface Props {
     labels?: SlideEmbedPickerLabels;

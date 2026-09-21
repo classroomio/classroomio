@@ -319,8 +319,7 @@ export default defineConfig({
                 root: '/build-courses/publish-a-course-and-allow-self-enrollment'
               }
             ]
-          },
-          '/create-and-deliver/embed-slides'
+          }
         ]
       },
       {
