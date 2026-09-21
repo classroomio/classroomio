@@ -312,6 +312,7 @@ New keys under `landing.learner_menu` in `apps/dashboard/src/lib/utils/translati
 ## Decision Log
 
 - **2026-09-10 / PR #1091 — card is a labelled `dialog`, not a `menu`.** The original FR-2 specified `role="menu"` + `role="menuitem"` rows, but the card also contains a theme `radiogroup` and a CTA button, which `menu` semantics cannot legally contain. The pure-menu alternative (converting the theme control to `menuitemradio`) would collapse the zoned keyboard model into one APG menu list and change SR announcements away from AC-12's "radio group". Accepted: `role="dialog"` + `aria-label`, Zone 1 links as plain anchors grouped by `data-slot="lm-link"`, `radiogroup` unchanged, existing zone-trap keyboard handler untouched (still covered by AC-11). `prototypes/` intentionally still shows the old `menu` markup (out-of-scope design mocks).
+- **2026-09-21 / PR #1091 — custom zone-trap keyboard handler removed; native popover behaviour wins.** Review feedback on the learner-menu popover asked to remove all custom key logic and rely on the bits-ui popover out of the box. This supersedes the FR-2 focus model (zoned roving tabindex, Tab-between-zones, focus trap) and AC-11 as written: native tab order is the accepted behaviour. The 2026-09-10 entry's "zone-trap keyboard handler untouched" line is stale as a result.
 
 ## Risks and Mitigations
 
