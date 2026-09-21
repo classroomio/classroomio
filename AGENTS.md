@@ -490,6 +490,16 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
 - **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
 
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+- **Left / external action** (e.g. "Create another …") — `variant="ghost"`
+- **Cancel / dismiss** (e.g. "Later", "Cancel") — `variant="outline"`
+- **Main CTA** (e.g. "Open now", "Save", "Create") — default primary (`variant="default"`)
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
+
 ### Page layout and settings save bar
 
 Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` § Page layout for the full component list.
