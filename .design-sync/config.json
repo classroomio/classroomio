@@ -1,0 +1,6 @@
+{
+  "projectId": "741ec229-f2ad-4c00-b3b8-91ef27c922c4",
+  "shape": "off-script",
+  "source": "skills/brand-system",
+  "note": "CSS-first marketing system: tokens, classes and static compositions. There is no component bundle because there are no components to compile — .chip is a class, not a <Chip>. The conventions header carries the class vocabulary instead, which is what the design agent composes with."
+}
