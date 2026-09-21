@@ -1,24 +1,14 @@
 <script lang="ts">
-  import { Badge } from '@cio/ui/base/badge';
   import type { Component, Snippet } from 'svelte';
   import { resolve } from '$app/paths';
-  import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
+  import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE, type CourseCardLabels } from '@cio/ui';
   import UserIcon from '@lucide/svelte/icons/user';
   import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
   import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import GlobeIcon from '@lucide/svelte/icons/globe';
-  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
-  import { Button } from '@cio/ui/base/button';
-  import { Progress } from '@cio/ui/base/progress';
-
-  import pluralize from 'pluralize';
-
-  import { Image } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { calcCourseCost } from '$lib/utils/functions/course';
-  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
   import {
     getStudentCourseComplianceDate,
@@ -27,7 +17,6 @@
     shouldShowStudentCourseComplianceStatusBadge
   } from '$features/course/utils/compliance-utils';
   import CardDropdown from './card-dropdown.svelte';
-  import CoursePublishBadge from './course-publish-badge.svelte';
   import CourseTagsOverflow from './course-tags-overflow.svelte';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { OrgPublicCourses } from '$features/org/utils/types';
@@ -55,14 +44,8 @@
     totalLessons = 0,
     totalExercises = 0,
     totalStudents = 0,
-    currency = 'USD',
     progressRate = 45,
-    type,
-    pricingData = {
-      cost: 0,
-      discount: 0,
-      showDiscount: false
-    }
+    type
   } = $derived({
     id: course.id,
     slug: course.slug,
@@ -71,12 +54,6 @@
     type: course.type,
     description: course.description,
     isPublished: !!course.isPublished,
-    pricingData: {
-      cost: course.cost,
-      discount: course.metadata?.discount || 0,
-      showDiscount: course.metadata?.showDiscount || false
-    },
-    currency: course.currency,
     totalLessons: course.lessonCount,
     totalExercises: (() => {
       const c = course as { exerciseCount?: number };
@@ -97,7 +74,6 @@
     totalStudents: 'totalStudents' in course ? course.totalStudents : 0
   });
 
-  let formatter = $derived(getCurrencyFormatter(currency));
   const courseTags = $derived(
     ('tags' in course && Array.isArray(course.tags) ? course.tags : []) as Array<{
       id: string;
@@ -120,28 +96,27 @@
       style: '',
       label: $t('course.navItem.settings.live_class'),
       icon: CircleDotIcon,
-      iconStyle: 'custom text-red-700'
+      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-red-600'
     },
     ['SELF_PACED']: {
       style: '',
       label: $t('course.navItem.settings.self_paced'),
       icon: UserIcon,
-      iconStyle: 'custom ui:text-primary'
+      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-primary'
     },
     ['COMPLIANCE']: {
       style: '',
       label: $t('course.navItem.settings.compliance'),
       icon: ShieldCheckIcon,
-      iconStyle: 'custom text-emerald-700'
+      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-emerald-600'
     },
     SPECIALIZATION: {
       style: '',
       label: $t('specialization.course_tag'),
-      icon: TrendingUpIcon
+      icon: TrendingUpIcon,
+      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-amber-600'
     }
   };
-
-  let cost = $derived(calcCourseCost(course));
 
   const isExploreClickable = $derived(!!(isLMS && isExplore && onExploreClick));
 
@@ -184,7 +159,7 @@
       ? {
           label: $t('courses.course_card.public_badge'),
           icon: GlobeIcon,
-          iconClass: 'custom ui:text-primary size-3.5 shrink-0'
+          iconClass: 'ui:size-3 ui:shrink-0 ui:text-primary'
         }
       : undefined
   );
@@ -211,9 +186,53 @@
       ? getStudentCourseComplianceDate(course as UserEnrolledCourses[number])
       : null
   );
+
   const certificateEarnedAt = $derived(
     isCertificateView && 'certificateEarnedAt' in course ? course.certificateEarnedAt : null
   );
+
+  const status = $derived(
+    certificateEarnedAt
+      ? 'COMPLETED'
+      : progressRate >= 100 && isLMS
+        ? 'COMPLETED'
+        : progressRate > 0 && isLMS
+          ? 'IN_PROGRESS'
+          : 'NOT_STARTED'
+  );
+
+  const compliance = $derived.by(() => {
+    if (isLMS && type === 'COMPLIANCE' && !isExplore) {
+      return {
+        statusLabel: showComplianceStatusBadge && complianceStatusKey ? $t(complianceStatusKey) : undefined,
+        statusVariant: complianceStatusVariant,
+        dateLabel: complianceDate?.labelKey ? $t(complianceDate.labelKey) : undefined,
+        dateValue: complianceDate?.value ? formatDate(complianceDate.value) : undefined
+      };
+    }
+
+    return null;
+  });
+
+  const labels = $derived<CourseCardLabels>({
+    courseBadge: $t('learningPath.badge.course'),
+    lesson: $t('learningPath.card.lesson'),
+    lessons: $t('learningPath.card.lessons'),
+    exercise: $t('learningPath.card.exercise'),
+    exercises: $t('learningPath.card.exercises'),
+    completedLabel: $t('learningPath.course.completed_label'),
+    progressLabel: $t('learningPath.progress.label'),
+    earnedOn: $t('certificates.earned_on'),
+    partOf: $t('learningPath.course.part_of'),
+    learnMore: $t('courses.course_card.learn_more'),
+    continueCourse: $t('courses.course_card.continue_course'),
+    reviewCourse: $t('learningPath.course.review_course'),
+    viewCertificate: $t('certificates.view_certificate'),
+    manage: $t('learningPath.admin.manage'),
+    published: $t('courses.course_card.published'),
+    unpublished: $t('courses.course_card.unpublished'),
+    students: $t('courses.course_card.students')
+  });
 
   function formatDate(value: string | null | undefined) {
     if (!value) {
@@ -233,17 +252,26 @@
 
 <CourseCard
   href={courseUrl ? resolve(courseUrl, {}) : undefined}
-  onclick={isExploreClickable ? onExploreClick : undefined}
   {title}
   {description}
+  coverImage={bannerImage}
   {typeBadge}
   {visibilityBadge}
-  class="group relative"
+  lessonCount={totalLessons}
+  exerciseCount={totalExercises}
+  progressPercent={progressRate}
+  {status}
+  totalStudents={'totalStudents' in course ? course.totalStudents : undefined}
+  {isPublished}
+  {certificateEarnedAt}
+  {compliance}
+  isLMS={!!isLMS}
+  isExplore={!!isExplore}
+  isCertificateView={!!isCertificateView}
+  isOnLandingPage={!!isOnLandingPage}
+  {labels}
+  onExploreClick={isExploreClickable ? onExploreClick : undefined}
 >
-  {#snippet media()}
-    <Image src={bannerImage} alt="Course banner image" className="w-full h-full rounded-sm object-cover" />
-  {/snippet}
-
   {#snippet overlay()}
     {#if actions}
       {@render actions()}
@@ -260,107 +288,5 @@
     {#if !isLMS}
       <CourseTagsOverflow tags={courseTags} variant="card" />
     {/if}
-  {/snippet}
-
-  {#snippet footer()}
-    <div class="flex justify-between {isLMS && 'items-center'} w-full">
-      <div class="w-[60%]">
-        {#if isLMS || isOnLandingPage}
-          <p class="text-xs {!isLMS && 'pl-2'} flex gap-1 dark:text-white">
-            <span>
-              {totalLessons}
-              {$t('courses.course_card.lessons_number')}
-            </span>
-            &
-            <span>
-              {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
-            </span>
-          </p>
-        {/if}
-        <div class="py-2 text-xs">
-          {#if isOnLandingPage}
-            <span class="px-2">
-              {#if !cost}
-                {$t('course.navItem.landing_page.pricing_section.free')}
-              {:else if pricingData.showDiscount}
-                {formatter.format(cost)}
-                <span class="line-through">
-                  {formatter?.format(pricingData?.cost ?? 0)}
-                </span>
-              {:else}
-                {formatter.format(cost)}
-              {/if}
-            </span>
-          {:else if isLMS}
-            {#if isCertificateView}
-              {#if certificateEarnedAt}
-                <p class="ui:text-muted-foreground text-xs">
-                  {$t('certificates.earned_on')}: {formatDate(certificateEarnedAt)}
-                </p>
-              {/if}
-            {:else if !isExplore}
-              <div class="flex w-3/4 items-center gap-2">
-                <Progress value={progressRate} />
-                <p class="ui:text-muted-foreground text-xs">{progressRate}%</p>
-              </div>
-
-              {#if type === 'COMPLIANCE'}
-                <div class="mt-2 flex flex-wrap items-center gap-2">
-                  {#if showComplianceStatusBadge && complianceStatusKey}
-                    <Badge variant={complianceStatusVariant}>
-                      {$t(complianceStatusKey)}
-                    </Badge>
-                  {/if}
-
-                  {#if complianceDate?.value}
-                    <p class="ui:text-muted-foreground text-xs">
-                      {$t(complianceDate.labelKey)}: {formatDate(complianceDate.value)}
-                    </p>
-                  {/if}
-                </div>
-              {/if}
-            {/if}
-          {:else}
-            <CoursePublishBadge {isPublished} />
-          {/if}
-        </div>
-      </div>
-
-      {#if isLMS}
-        <Button
-          variant="outline"
-          onclick={(event) => {
-            if (isExploreClickable) {
-              event.stopPropagation();
-              onExploreClick?.();
-            }
-          }}
-        >
-          {isCertificateView
-            ? $t('certificates.view_certificate')
-            : isExplore
-              ? $t('courses.course_card.learn_more')
-              : $t('courses.course_card.continue_course')}
-
-          <ArrowRightIcon class="custom" />
-        </Button>
-      {:else if !isOnLandingPage}
-        <div class="flex flex-col justify-end gap-1 text-right">
-          <p class="pl-2 text-xs whitespace-nowrap dark:text-white">
-            <span>
-              {totalLessons}
-              {$t('courses.course_card.lessons_number')}
-            </span>
-            &
-            <span>
-              {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
-            </span>
-          </p>
-          <p class="pl-2 text-xs dark:text-white">
-            {pluralize($t('courses.course_card.students'), totalStudents, true)}
-          </p>
-        </div>
-      {/if}
-    </div>
   {/snippet}
 </CourseCard>

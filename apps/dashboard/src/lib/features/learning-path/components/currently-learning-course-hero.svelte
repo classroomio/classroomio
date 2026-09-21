@@ -1,17 +1,14 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import LearningPathBadge from './learning-path-badge.svelte';
-  import LearningPathProgress from './learning-path-progress.svelte';
+  import { LearningPathBadge, LearningPathProgress, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-  import BookIcon from '@lucide/svelte/icons/book-open';
 
   interface Props {
     title: string;
     href: string;
     coverGradient?: string;
     coverImage?: string;
-    weeksLabel: string;
     partOfPathName?: string | null;
     pathHref?: string;
     progressPercent: number;
@@ -23,7 +20,6 @@
     href,
     coverGradient = 'linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))',
     coverImage,
-    weeksLabel,
     partOfPathName = null,
     pathHref = '/lms/mylearning',
     progressPercent,
@@ -34,8 +30,7 @@
 <div class="flex flex-col overflow-hidden rounded-2xl border sm:flex-row">
   <a
     {href}
-    class="group relative flex aspect-[10/8] w-full shrink-0 items-center justify-center overflow-hidden focus-visible:outline-none sm:aspect-auto sm:w-56 md:w-64"
-    style="background: {coverGradient}"
+    class="group ui:bg-card relative flex aspect-[10/8] w-full shrink-0 items-center justify-center overflow-hidden focus-visible:outline-none sm:aspect-auto sm:w-56 md:w-64"
     aria-label={title}
     tabindex="-1"
   >
@@ -47,9 +42,14 @@
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
     {:else}
-      <BookIcon class="size-20 text-white/40 transition-transform duration-300 group-hover:scale-110" />
+      <img
+        src={DEFAULT_COURSE_BANNER_IMAGE}
+        alt={title}
+        loading="lazy"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
     {/if}
-    <LearningPathBadge type="course" onCover class="absolute top-3 left-3" />
+    <LearningPathBadge label={$t('learningPath.badge.course')} onCover class="absolute top-3 left-3" />
   </a>
 
   <div class="flex min-w-0 flex-1 flex-col gap-5 p-5 md:gap-6">
@@ -59,7 +59,6 @@
       </a>
 
       <p class="ui:text-muted-foreground mt-0.5 text-sm">
-        {weeksLabel}
         {#if partOfPathName}
           <span class="inline-flex items-center gap-1">
             · {$t('learningPath.course.part_of')}:

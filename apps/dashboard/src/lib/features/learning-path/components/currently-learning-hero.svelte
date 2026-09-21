@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import LearningPathBadge from './learning-path-badge.svelte';
-  import LearningPathProgress from './learning-path-progress.svelte';
+  import { LearningPathBadge, LearningPathProgress, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -10,14 +9,10 @@
     coverGradient?: string;
     coverImage?: string;
     courseCount: number;
-    totalHours: number;
     progressPercent: number;
     coursesCompleted: number;
     href: string;
   }
-
-  const hours = (totalHours: number) =>
-    globalThis.Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(totalHours);
 
   const ctaLabel = (completed: number, count: number) =>
     completed === count && count > 0
@@ -32,7 +27,6 @@
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
     coverImage,
     courseCount,
-    totalHours,
     progressPercent,
     coursesCompleted,
     href
@@ -43,8 +37,7 @@
   <!-- Cover — flush to the left edge -->
   <a
     {href}
-    class="group relative flex aspect-[10/8] w-full shrink-0 items-center justify-center overflow-hidden focus-visible:outline-none sm:aspect-auto sm:w-56 md:w-64"
-    style="background: {coverGradient}"
+    class="group ui:bg-card relative flex aspect-[10/8] w-full shrink-0 items-center justify-center overflow-hidden focus-visible:outline-none sm:aspect-auto sm:w-56 md:w-64"
     aria-label={name}
     tabindex="-1"
   >
@@ -55,8 +48,15 @@
         loading="lazy"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
+    {:else}
+      <img
+        src={DEFAULT_COURSE_BANNER_IMAGE}
+        alt={name}
+        loading="lazy"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
     {/if}
-    <LearningPathBadge type="path" onCover class="absolute top-3 left-3" />
+    <LearningPathBadge label={$t('learningPath.badge.learning_path')} onCover class="absolute top-3 left-3" />
   </a>
 
   <!-- Content -->
@@ -67,7 +67,7 @@
       </a>
       <p class="ui:text-muted-foreground mt-0.5 text-sm">
         {courseCount}
-        {courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')} · ~{hours(totalHours)}h
+        {courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')}
       </p>
 
       <div class="mt-4 flex items-center justify-between gap-3">

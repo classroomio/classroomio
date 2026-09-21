@@ -5,8 +5,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { LearningPathCard } from '$features/learning-path/components';
-  import { CourseCurrentCard } from '$features/learning-path/components';
+  import { CourseCard, LearningPathCard, type CourseCardLabels, type LearningPathCardLabels } from '@cio/ui';
   import { learningPathApi } from '$features/learning-path/api/learning-path.svelte';
   import {
     getMockPathById,
@@ -127,15 +126,15 @@
 
   const standaloneCourses = $derived(
     MOCK_STANDALONE_COURSES.map((course) => ({
-      href: '/lms/mylearning',
+      href: getStudentCourseContinuePath(course.id),
       title: course.title,
       description: course.description,
+      coverImage: course.coverImage,
       coverGradient: course.coverGradient,
       progressPercent:
         course.lessonCount === 0 ? 0 : Math.round(Math.min(100, (course.lessonsCompleted / course.lessonCount) * 100)),
       lessonCount: course.lessonCount,
-      lessonsCompleted: course.lessonsCompleted,
-      durationHours: course.durationHours
+      exerciseCount: course.exerciseCount
     }))
   );
 
@@ -144,6 +143,46 @@
     const courseSlots = Math.max(0, 3 - paths.length);
 
     return { paths, courses: standaloneCourses.slice(0, courseSlots) };
+  });
+
+  const pathLabels = $derived<LearningPathCardLabels>({
+    badge: $t('learningPath.badge.learning_path'),
+    course: $t('learningPath.card.course'),
+    courses: $t('learningPath.card.courses'),
+    certificateEarned: $t('learningPath.card.certificate_earned'),
+    adminContinueSetup: $t('learningPath.admin.continue_setup'),
+    adminManage: $t('learningPath.admin.manage'),
+    viewCertificate: $t('learningPath.card.view_certificate'),
+    viewPath: $t('learningPath.hero.view_path'),
+    startLearning: $t('learningPath.hero.start_learning'),
+    continueLearning: $t('learningPath.hero.continue_learning'),
+    statusDraft: $t('learningPath.status.draft'),
+    statusActive: $t('learningPath.status.active'),
+    statusArchived: $t('learningPath.status.archived'),
+    progressLabel: $t('learningPath.progress.label'),
+    of: $t('learningPath.card.of'),
+    coursesCompleted: $t('learningPath.hero.courses_completed'),
+    earnedOn: $t('certificates.earned_on')
+  });
+
+  const courseCardLabels = $derived<CourseCardLabels>({
+    courseBadge: $t('learningPath.badge.course'),
+    lesson: $t('learningPath.card.lesson'),
+    lessons: $t('learningPath.card.lessons'),
+    exercise: $t('learningPath.card.exercise'),
+    exercises: $t('learningPath.card.exercises'),
+    completedLabel: $t('learningPath.course.completed_label'),
+    progressLabel: $t('learningPath.progress.label'),
+    earnedOn: $t('certificates.earned_on'),
+    partOf: $t('learningPath.course.part_of'),
+    learnMore: $t('courses.course_card.learn_more'),
+    continueCourse: $t('learningPath.course.continue_course'),
+    reviewCourse: $t('learningPath.course.review_course'),
+    viewCertificate: $t('learningPath.card.view_certificate'),
+    manage: $t('learningPath.admin.manage'),
+    published: $t('courses.course_card.published'),
+    unpublished: $t('courses.course_card.unpublished'),
+    students: $t('courses.course_card.students')
   });
 
   const hours = (value: number) => globalThis.Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(value);
@@ -385,31 +424,34 @@
         <Spinner class="size-6" />
       </div>
     {:else if currentLearningCards.paths.length > 0 || currentLearningCards.courses.length > 0}
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 ps-2 sm:grid-cols-2 lg:grid-cols-3">
         {#each currentLearningCards.paths as path}
-          {@const totalHours = path.courses.reduce((acc, course) => acc + course.durationHours, 0)}
           <LearningPathCard
             href={`/lms/paths/${path.id}`}
             name={path.name}
             description={path.description}
             coverGradient={path.coverGradient}
+            coverImage={path.coverImage}
             courseCount={path.courses.length}
-            {totalHours}
             progressPercent={path.enrollment?.progressPercent ?? 0}
             coursesCompleted={path.enrollment?.coursesCompleted ?? 0}
             certificateEarned={Boolean(path.enrollment?.certificateId)}
+            isLMS={true}
+            labels={pathLabels}
           />
         {/each}
         {#each currentLearningCards.courses as course}
-          <CourseCurrentCard
+          <CourseCard
+            isLMS
             href={course.href}
             title={course.title}
             description={course.description}
+            coverImage={course.coverImage}
             coverGradient={course.coverGradient}
-            progressPercent={course.progressPercent}
             lessonCount={course.lessonCount}
-            lessonsCompleted={course.lessonsCompleted}
-            durationHours={course.durationHours}
+            exerciseCount={course.exerciseCount}
+            progressPercent={course.progressPercent}
+            labels={courseCardLabels}
           />
         {/each}
       </div>

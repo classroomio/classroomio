@@ -2,39 +2,33 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
+  import { CourseCard, LearningPathCard, type CourseCardLabels, type LearningPathCardLabels } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
+  import type { Component } from 'svelte';
+  import UserIcon from '@lucide/svelte/icons/user';
+  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
+  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
+  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+  import GlobeIcon from '@lucide/svelte/icons/globe';
   import { coursesApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { getStudentCourseProgressPercent, isStudentCourseComplete } from '$features/course/utils/compliance-utils';
   import { learningPathApi } from '../api/learning-path.svelte';
   import { getMockPathById } from '../utils/mock-data';
-  import type { LearningPathStatus, PathDifficulty } from '../utils/types';
-  import type {
-    CourseDurationFilter,
-    CourseLibraryItem,
-    CourseStatus,
-    DurationFilter,
-    LearningPathView
-  } from '../components/types';
+  import type { LearningPathWithEnrollment, PathDifficulty } from '../utils/types';
+  import type { CourseLibraryItem, CourseStatus, LearningPathView } from '../components/types';
   import CurrentlyLearningHero from '../components/currently-learning-hero.svelte';
   import CurrentlyLearningCourseHero from '../components/currently-learning-course-hero.svelte';
-  import LearningPathCard from '../components/learning-path-card.svelte';
   import LearningPathRow from '../components/learning-path-row.svelte';
-  import LearningPathToolbar from '../components/learning-path-toolbar.svelte';
-  import CourseLibraryCard from '../components/course-library-card.svelte';
+  import LibraryToolbar from '../components/library-toolbar.svelte';
   import CourseLibraryRow from '../components/course-library-row.svelte';
-  import CourseLibraryToolbar from '../components/course-library-toolbar.svelte';
 
-  let pathStatus = $state<LearningPathStatus | 'ALL'>('ALL');
-  let pathDifficulty = $state<PathDifficulty | 'ALL'>('ALL');
-  let pathDuration = $state<DurationFilter | 'ALL'>('ALL');
-  let pathView = $state<LearningPathView>('grid');
+  type LibraryEntry = { kind: 'path'; path: LearningPathWithEnrollment } | { kind: 'course'; item: CourseLibraryItem };
 
-  let courseStatus = $state<CourseStatus | 'ALL'>('ALL');
-  let courseDifficulty = $state<PathDifficulty | 'ALL'>('ALL');
-  let courseDuration = $state<CourseDurationFilter | 'ALL'>('ALL');
-  let courseView = $state<LearningPathView>('grid');
+  let status = $state<CourseStatus | 'ALL'>('ALL');
+  let difficulty = $state<PathDifficulty | 'ALL'>('ALL');
+  let view = $state<LearningPathView>('grid');
 
   const COURSE_DIFFICULTIES: PathDifficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
 
@@ -54,10 +48,7 @@
 
   const isLoading = $derived(learningPathApi.isLoading && learningPathApi.enrolledPaths.length === 0);
 
-  const totalHours = (path: (typeof learningPathApi.enrolledPaths)[number]) =>
-    path.courses.reduce((acc, course) => acc + course.durationHours, 0);
-
-  const pathCompletionProgress = $derived((path: (typeof learningPathApi.enrolledPaths)[number]) => {
+  const pathCompletionProgress = $derived((path: LearningPathWithEnrollment) => {
     const enrollment = path.enrollment;
     const done = enrollment?.coursesCompleted ?? 0;
     const total = enrollment?.totalCourses ?? 0;
@@ -71,13 +62,8 @@
 
   const filteredPaths = $derived(
     learningPathApi.enrolledPaths.filter((path) => {
-      if (pathStatus !== 'ALL' && path.enrollment?.state !== pathStatus) return false;
-      if (pathDifficulty !== 'ALL' && path.difficulty !== pathDifficulty) return false;
-
-      const hours = totalHours(path);
-      if (pathDuration === 'under-4' && hours >= 4) return false;
-      if (pathDuration === '4-10' && (hours < 4 || hours >= 10)) return false;
-      if (pathDuration === '10-up' && hours < 10) return false;
+      if (status !== 'ALL' && path.enrollment?.state !== status) return false;
+      if (difficulty !== 'ALL' && path.difficulty !== difficulty) return false;
 
       return true;
     })
@@ -93,12 +79,14 @@
         description: mockPath?.courses.find((item) => item.id === course.courseId)?.description ?? '',
         coverGradient: course.coverGradient,
         coverImage: course.coverImage,
-        durationHours: course.durationHours,
         difficulty: path.difficulty,
         status: (course.state === 'LOCKED' ? 'NOT_STARTED' : course.state) as CourseStatus,
         progressPercent: course.progressPercent,
         partOfPath: { id: path.id, name: path.name, href: `/lms/paths/${path.id}` },
-        href: `/lms/paths/${path.id}`
+        href: `/courses/${course.courseId}/lessons?next=true`,
+        lessonCount: course.lessonCount,
+        exerciseCount: course.exerciseCount,
+        courseType: course.courseType
       }));
     })
   );
@@ -118,12 +106,15 @@
           id: course.id,
           title: course.title,
           description: course.description ?? '',
-          durationHours: 8,
+          coverImage: course.logo || undefined,
           difficulty: difficultyForId(course.id),
           status: state,
           progressPercent,
           partOfPath: null,
-          href: `/lms/mylearning`
+          href: `/courses/${course.id}/lessons?next=true`,
+          lessonCount: course.lessonCount ?? undefined,
+          exerciseCount: course.exerciseCount ?? undefined,
+          courseType: course.type ?? undefined
         };
       })
   );
@@ -132,16 +123,19 @@
 
   const filteredCourses = $derived(
     standaloneCourseItems.filter((item) => {
-      if (courseStatus !== 'ALL' && item.status !== courseStatus) return false;
-      if (courseDifficulty !== 'ALL' && item.difficulty !== courseDifficulty) return false;
-
-      if (courseDuration === 'under-1' && item.durationHours > 1) return false;
-      if (courseDuration === '1-4' && (item.durationHours <= 1 || item.durationHours > 4)) return false;
-      if (courseDuration === '4-up' && item.durationHours <= 4) return false;
+      if (status !== 'ALL' && item.status !== status) return false;
+      if (difficulty !== 'ALL' && item.difficulty !== difficulty) return false;
 
       return true;
     })
   );
+
+  const combinedItems = $derived.by<LibraryEntry[]>(() => [
+    ...filteredPaths.map((path) => ({ kind: 'path' as const, path })),
+    ...filteredCourses.map((item) => ({ kind: 'course' as const, item }))
+  ]);
+
+  const hasAnyItem = $derived(learningPathApi.enrolledPaths.length > 0 || standaloneCourseItems.length > 0);
 
   const activePath = $derived(learningPathApi.activePath);
 
@@ -161,9 +155,6 @@
     return null;
   });
 
-  const weeksLabel = (item: CourseLibraryItem) =>
-    `${Math.max(2, Math.round(item.durationHours / 2))} ${$t('learningPath.course.weeks')}`;
-
   const courseLessonsLabel = $derived.by(() => {
     if (!activeCourse) return '';
 
@@ -178,10 +169,99 @@
 
     const done = course.lessonsCompleted;
     const total = course.lessonCount;
-    const leftHours = Math.max(1, Math.round(course.durationHours * (1 - activeCourse.progressPercent / 100)));
 
-    return `${done} ${$t('learningPath.card.of')} ${total} ${$t('learningPath.enrollment.lessons_label')} · ~${leftHours}h ${$t('learningPath.course.time_left')}`;
+    return `${done} ${$t('learningPath.card.of')} ${total} ${$t('learningPath.enrollment.lessons_label')}`;
   });
+
+  const courseCardLabels = $derived<CourseCardLabels>({
+    courseBadge: $t('learningPath.badge.course'),
+    lesson: $t('learningPath.card.lesson'),
+    lessons: $t('learningPath.card.lessons'),
+    exercise: $t('learningPath.card.exercise'),
+    exercises: $t('learningPath.card.exercises'),
+    completedLabel: $t('learningPath.course.completed_label'),
+    progressLabel: $t('learningPath.progress.label'),
+    earnedOn: $t('certificates.earned_on'),
+    partOf: $t('learningPath.course.part_of'),
+    learnMore: $t('courses.course_card.learn_more'),
+    continueCourse: $t('learningPath.course.continue_course'),
+    reviewCourse: $t('learningPath.course.review_course'),
+    viewCertificate: $t('learningPath.card.view_certificate'),
+    manage: $t('learningPath.admin.manage'),
+    published: $t('courses.course_card.published'),
+    unpublished: $t('courses.course_card.unpublished'),
+    students: $t('courses.course_card.students')
+  });
+
+  const learningPathCardLabels = $derived<LearningPathCardLabels>({
+    badge: $t('learningPath.badge.learning_path'),
+    course: $t('learningPath.card.course'),
+    courses: $t('learningPath.card.courses'),
+    certificateEarned: $t('learningPath.card.certificate_earned'),
+    adminContinueSetup: $t('learningPath.admin.continue_setup'),
+    adminManage: $t('learningPath.admin.manage'),
+    viewCertificate: $t('learningPath.card.view_certificate'),
+    viewPath: $t('learningPath.hero.view_path'),
+    startLearning: $t('learningPath.hero.start_learning'),
+    continueLearning: $t('learningPath.hero.continue_learning'),
+    statusDraft: $t('learningPath.status.draft'),
+    statusActive: $t('learningPath.status.active'),
+    statusArchived: $t('learningPath.status.archived'),
+    progressLabel: $t('learningPath.progress.label'),
+    of: $t('learningPath.card.of'),
+    coursesCompleted: $t('learningPath.hero.courses_completed'),
+    earnedOn: $t('certificates.earned_on')
+  });
+
+  const courseTypeBadgeFor = (courseType?: string) => {
+    if (!courseType) return undefined;
+
+    const meta: Record<
+      string,
+      {
+        label: string;
+        icon: Component;
+        iconClass: string;
+      }
+    > = {
+      LIVE_CLASS: {
+        label: $t('learningPath.course.type_live_class'),
+        icon: CircleDotIcon,
+        iconClass: 'size-3 text-red-600 shrink-0'
+      },
+      SELF_PACED: {
+        label: $t('learningPath.course.type_self_paced'),
+        icon: UserIcon,
+        iconClass: 'size-3 text-primary shrink-0'
+      },
+      COMPLIANCE: {
+        label: $t('learningPath.course.type_compliance'),
+        icon: ShieldCheckIcon,
+        iconClass: 'size-3 text-emerald-600 shrink-0'
+      },
+      SPECIALIZATION: {
+        label: $t('specialization.course_tag'),
+        icon: TrendingUpIcon,
+        iconClass: 'size-3 text-amber-600 shrink-0'
+      },
+      PUBLIC: {
+        label: $t('learningPath.course.type_public'),
+        icon: GlobeIcon,
+        iconClass: 'size-3 text-primary shrink-0'
+      }
+    };
+
+    const match = meta[courseType];
+    if (!match) {
+      return undefined;
+    }
+
+    return {
+      label: match.label,
+      icon: match.icon,
+      iconClass: match.iconClass
+    };
+  };
 </script>
 
 {#if isLoading}
@@ -200,7 +280,6 @@
         coverGradient={activePath.coverGradient}
         coverImage={activePath.coverImage}
         courseCount={pathCompletionProgress(activePath).courseCount}
-        totalHours={totalHours(activePath)}
         progressPercent={pathCompletionProgress(activePath).progressPercent}
         coursesCompleted={pathCompletionProgress(activePath).coursesCompleted}
         href={`/lms/paths/${activePath.id}`}
@@ -216,7 +295,6 @@
         href={activeCourse.href}
         coverGradient={activeCourse.coverGradient}
         coverImage={activeCourse.coverImage}
-        weeksLabel={weeksLabel(activeCourse)}
         partOfPathName={activeCourse.partOfPath?.name}
         pathHref={activeCourse.partOfPath?.href}
         progressPercent={activeCourse.progressPercent}
@@ -225,123 +303,90 @@
     </section>
   {/if}
 
-  {#if learningPathApi.enrolledPaths.length > 0}
-    <section class="mb-8">
-      <div class="mb-3 flex items-center justify-between">
-        <h2 class="text-base font-semibold">{$t('learningPath.my_learning.paths_section_title')}</h2>
-      </div>
-
+  {#if hasAnyItem}
+    <section>
       <div class="mb-4">
-        <LearningPathToolbar
-          bind:status={pathStatus}
-          bind:difficulty={pathDifficulty}
-          bind:duration={pathDuration}
-          bind:view={pathView}
-        />
+        <LibraryToolbar bind:status bind:difficulty bind:view />
       </div>
 
-      {#if filteredPaths.length === 0}
+      {#if combinedItems.length === 0}
         <Empty
           icon={PathIcon}
-          title={$t('learningPath.empty.no_results_title')}
-          description={$t('learningPath.empty.no_results_description')}
+          title={$t('learningPath.empty.library_no_results_title')}
+          description={$t('learningPath.empty.library_no_results_description')}
         />
-      {:else if pathView === 'grid'}
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-2">
-          {#each filteredPaths as path}
-            <LearningPathCard
-              href={`/lms/paths/${path.id}`}
-              name={path.name}
-              description={path.description}
-              coverGradient={path.coverGradient}
-              coverImage={path.coverImage}
-              courseCount={pathCompletionProgress(path).courseCount}
-              totalHours={totalHours(path)}
-              progressPercent={pathCompletionProgress(path).progressPercent}
-              coursesCompleted={pathCompletionProgress(path).coursesCompleted}
-              certificateEarned={Boolean(path.enrollment?.certificateId)}
-            />
+      {:else if view === 'grid'}
+        <div class="grid grid-cols-1 gap-4 ps-2 sm:grid-cols-2 xl:grid-cols-3">
+          {#each combinedItems as entry (entry.kind === 'path' ? entry.path.id : entry.item.id)}
+            {#if entry.kind === 'path'}
+              <LearningPathCard
+                isLMS
+                href={`/lms/paths/${entry.path.id}`}
+                name={entry.path.name}
+                description={entry.path.description}
+                coverGradient={entry.path.coverGradient}
+                coverImage={entry.path.coverImage}
+                courseCount={pathCompletionProgress(entry.path).courseCount}
+                progressPercent={pathCompletionProgress(entry.path).progressPercent}
+                coursesCompleted={pathCompletionProgress(entry.path).coursesCompleted}
+                certificateEarned={Boolean(entry.path.enrollment?.certificateId)}
+                labels={learningPathCardLabels}
+              />
+            {:else}
+              <CourseCard
+                isLMS
+                href={entry.item.href}
+                title={entry.item.title}
+                description={entry.item.description}
+                coverImage={entry.item.coverImage}
+                typeBadge={courseTypeBadgeFor(entry.item.courseType)}
+                status={entry.item.status}
+                progressPercent={entry.item.progressPercent}
+                partOfPath={entry.item.partOfPath}
+                lessonCount={entry.item.lessonCount}
+                exerciseCount={entry.item.exerciseCount}
+                labels={courseCardLabels}
+              />
+            {/if}
           {/each}
         </div>
       {:else}
-        <div class="flex flex-col gap-3">
-          {#each filteredPaths as path}
-            <LearningPathRow
-              href={`/lms/paths/${path.id}`}
-              name={path.name}
-              description={path.description}
-              coverGradient={path.coverGradient}
-              coverImage={path.coverImage}
-              courseCount={pathCompletionProgress(path).courseCount}
-              totalHours={totalHours(path)}
-              progressPercent={pathCompletionProgress(path).progressPercent}
-              coursesCompleted={pathCompletionProgress(path).coursesCompleted}
-              certificateEarned={Boolean(path.enrollment?.certificateId)}
-            />
+        <div class="flex flex-col gap-3 divide-y rounded-md border">
+          {#each combinedItems as entry (entry.kind === 'path' ? entry.path.id : entry.item.id)}
+            {#if entry.kind === 'path'}
+              <LearningPathRow
+                href={`/lms/paths/${entry.path.id}`}
+                name={entry.path.name}
+                description={entry.path.description}
+                coverGradient={entry.path.coverGradient}
+                coverImage={entry.path.coverImage}
+                courseCount={pathCompletionProgress(entry.path).courseCount}
+                progressPercent={pathCompletionProgress(entry.path).progressPercent}
+                coursesCompleted={pathCompletionProgress(entry.path).coursesCompleted}
+                certificateEarned={Boolean(entry.path.enrollment?.certificateId)}
+              />
+            {:else}
+              <CourseLibraryRow
+                href={entry.item.href}
+                title={entry.item.title}
+                description={entry.item.description}
+                coverGradient={entry.item.coverGradient}
+                coverImage={entry.item.coverImage}
+                status={entry.item.status}
+                progressPercent={entry.item.progressPercent}
+                partOfPath={entry.item.partOfPath}
+                lessonCount={entry.item.lessonCount}
+                exerciseCount={entry.item.exerciseCount}
+                courseType={entry.item.courseType}
+              />
+            {/if}
           {/each}
         </div>
       {/if}
     </section>
   {/if}
 
-  {#if standaloneCourseItems.length > 0}
-    <section class="mb-5">
-      <div class="mt-8 mb-3 flex items-center justify-between">
-        <h2 class="text-base font-semibold">{$t('learningPath.my_learning.courses_section_title')}</h2>
-      </div>
-
-      <div class="mb-4">
-        <CourseLibraryToolbar
-          bind:status={courseStatus}
-          bind:difficulty={courseDifficulty}
-          bind:duration={courseDuration}
-          bind:view={courseView}
-        />
-      </div>
-
-      {#if filteredCourses.length === 0}
-        <Empty
-          icon={PathIcon}
-          title={$t('learningPath.empty.courses_empty_title')}
-          description={$t('learningPath.empty.courses_empty_description')}
-        />
-      {:else if courseView === 'grid'}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {#each filteredCourses as item}
-            <CourseLibraryCard
-              href={item.href}
-              title={item.title}
-              description={item.description}
-              coverGradient={item.coverGradient}
-              coverImage={item.coverImage}
-              metaLabel={weeksLabel(item)}
-              status={item.status}
-              progressPercent={item.progressPercent}
-              partOfPath={item.partOfPath}
-            />
-          {/each}
-        </div>
-      {:else}
-        <div class="flex flex-col gap-3">
-          {#each filteredCourses as item}
-            <CourseLibraryRow
-              href={item.href}
-              title={item.title}
-              description={item.description}
-              coverGradient={item.coverGradient}
-              coverImage={item.coverImage}
-              metaLabel={weeksLabel(item)}
-              status={item.status}
-              progressPercent={item.progressPercent}
-              partOfPath={item.partOfPath}
-            />
-          {/each}
-        </div>
-      {/if}
-    </section>
-  {/if}
-
-  {#if learningPathApi.enrolledPaths.length === 0 && standaloneCourseItems.length === 0}
+  {#if !hasAnyItem}
     <Empty icon={PathIcon} title={$t('learningPath.empty.title')} description={$t('learningPath.empty.description')} />
   {/if}
 {/if}

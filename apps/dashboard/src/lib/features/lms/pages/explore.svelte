@@ -3,39 +3,44 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
   import { Search } from '@cio/ui/custom/search';
+  import { CourseCard, LearningPathCard, type CourseCardLabels, type LearningPathCardLabels } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { learningPathApi } from '$features/learning-path/api/learning-path.svelte';
   import { MOCK_PATHS, MOCK_STANDALONE_COURSES } from '$features/learning-path/utils/mock-data';
   import type { PathDifficulty } from '$features/learning-path/utils/types';
-  import type { CourseDurationFilter } from '$features/learning-path/components/types';
-  import FilterPopover, { type FilterGroup } from '$features/learning-path/components/filter-popover.svelte';
-  import ExplorePathCard from '$features/learning-path/components/explore-path-card.svelte';
-  import ExploreCourseCard from '$features/learning-path/components/explore-course-card.svelte';
+  import CourseFilterPopover, { type FilterGroup } from '$features/course/components/course-filter-popover.svelte';
+  import CoursePreviewModal, { type CoursePreviewCourse } from '$features/lms/components/course-preview-modal.svelte';
 
   type ContentTypeFilter = 'ALL' | 'paths' | 'courses';
+
+  interface ExploreCourseCard {
+    id: string;
+    title: string;
+    description: string;
+    coverGradient?: string;
+    coverImage?: string;
+    lessonCount: number;
+    exerciseCount: number;
+    difficulty: PathDifficulty;
+    partOfPath: { name: string; href: string } | null;
+    href: string;
+    slug?: string;
+    cost: number;
+  }
 
   const COURSE_DIFFICULTIES: PathDifficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
 
   let searchValue = $state('');
   let contentType = $state<ContentTypeFilter>('ALL');
   let difficulty = $state<PathDifficulty | 'ALL'>('ALL');
-  let duration = $state<CourseDurationFilter | 'ALL'>('ALL');
+  let selectedCourse = $state<CoursePreviewCourse | null>(null);
+  let previewOpen = $state(false);
 
   function difficultyForId(id: string): PathDifficulty {
     const sum = Array.from(id).reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return COURSE_DIFFICULTIES[sum % COURSE_DIFFICULTIES.length];
-  }
-
-  function formatHoursAndMinutes(totalHours: number): string {
-    const totalMinutes = Math.round(totalHours * 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-
-    if (hours === 0) return `${minutes} min`;
-    if (minutes === 0) return `${hours}h`;
-    return `${hours}h ${minutes}m`;
   }
 
   $effect(() => {
@@ -59,12 +64,11 @@
       coverGradient: path.coverGradient,
       coverImage: path.coverImage,
       courseCount: path.courses.length,
-      totalHours: path.courses.reduce((sum, course) => sum + course.durationHours, 0),
       difficulty: path.difficulty
     }))
   );
 
-  const courseItems = $derived([
+  const courseItems = $derived<ExploreCourseCard[]>([
     ...catalogPaths
       .map((path) => {
         const course = path.courses[0];
@@ -73,58 +77,56 @@
         return {
           id: course.id,
           title: course.title,
+          description: course.description,
           coverGradient: course.coverGradient,
           coverImage: course.coverImage,
-          durationHours: course.durationHours,
+          lessonCount: course.lessonCount,
+          exerciseCount: course.exerciseCount,
           difficulty: path.difficulty,
           partOfPath: { name: path.name, href: `/lms/paths/${path.id}` },
-          href: `/lms/paths/${path.id}`
+          href: `/lms/paths/${path.id}`,
+          slug: course.slug,
+          cost: course.cost
         };
       })
       .filter((item): item is NonNullable<typeof item> => item !== null),
     ...MOCK_STANDALONE_COURSES.map((course) => ({
       id: course.id,
       title: course.title,
+      description: course.description,
       coverGradient: course.coverGradient,
       coverImage: course.coverImage,
-      durationHours: course.durationHours,
+      lessonCount: course.lessonCount,
+      exerciseCount: course.exerciseCount,
       difficulty: difficultyForId(course.id),
       partOfPath: null,
-      href: '/lms/mylearning/courses'
+      href: '/lms/mylearning',
+      slug: course.slug,
+      cost: course.cost
     }))
   ]);
-
-  const matchesDuration = (hours: number) => {
-    if (duration === 'under-1') return hours < 1;
-    if (duration === '1-4') return hours >= 1 && hours < 4;
-    if (duration === '4-up') return hours >= 4;
-    return true;
-  };
 
   const matchesSearch = (text: string) => !searchValue || text.toLowerCase().includes(searchValue.toLowerCase());
 
   const filteredPaths = $derived(
     pathItems.filter(
       (path) =>
-        matchesSearch(`${path.name} ${path.description}`) &&
-        (difficulty === 'ALL' || path.difficulty === difficulty) &&
-        matchesDuration(path.totalHours)
+        matchesSearch(`${path.name} ${path.description}`) && (difficulty === 'ALL' || path.difficulty === difficulty)
     )
   );
 
   const filteredCourses = $derived(
     courseItems.filter(
-      (course) =>
-        matchesSearch(course.title) &&
-        (difficulty === 'ALL' || course.difficulty === difficulty) &&
-        matchesDuration(course.durationHours)
+      (course) => matchesSearch(course.title) && (difficulty === 'ALL' || course.difficulty === difficulty)
     )
   );
 
   const showPathsSection = $derived(contentType !== 'courses');
   const showCoursesSection = $derived(contentType !== 'paths');
 
-  const selected = $derived<Record<string, string>>({ contentType, difficulty, duration });
+  const selected = $derived<Record<string, string>>({ contentType, difficulty });
+
+  const hasActiveFilters = $derived(contentType !== 'ALL' || difficulty !== 'ALL');
 
   const groups = $derived<FilterGroup[]>([
     {
@@ -145,23 +147,74 @@
         { value: 'Intermediate', label: $t('learningPath.toolbar.difficulty_intermediate') },
         { value: 'Advanced', label: $t('learningPath.toolbar.difficulty_advanced') }
       ]
-    },
-    {
-      id: 'duration',
-      label: $t('learningPath.toolbar.duration'),
-      options: [
-        { value: 'ALL', label: $t('learningPath.toolbar.duration_any') },
-        { value: 'under-1', label: $t('learningPath.toolbar.duration_under1') },
-        { value: '1-4', label: $t('learningPath.toolbar.duration_1to4') },
-        { value: '4-up', label: $t('learningPath.toolbar.duration_4up') }
-      ]
     }
   ]);
+
+  const pathLabels = $derived<LearningPathCardLabels>({
+    badge: $t('learningPath.badge.learning_path'),
+    course: $t('learningPath.card.course'),
+    courses: $t('learningPath.card.courses'),
+    certificateEarned: $t('learningPath.card.certificate_earned'),
+    adminContinueSetup: $t('learningPath.admin.continue_setup'),
+    adminManage: $t('learningPath.admin.manage'),
+    viewCertificate: $t('learningPath.card.view_certificate'),
+    viewPath: $t('explore.view_learning_path'),
+    startLearning: $t('learningPath.hero.start_learning'),
+    continueLearning: $t('learningPath.hero.continue_learning'),
+    statusDraft: $t('learningPath.status.draft'),
+    statusActive: $t('learningPath.status.active'),
+    statusArchived: $t('learningPath.status.archived'),
+    progressLabel: $t('learningPath.progress.label'),
+    of: $t('learningPath.card.of'),
+    coursesCompleted: $t('learningPath.hero.courses_completed'),
+    earnedOn: $t('certificates.earned_on')
+  });
+
+  const courseLabels = $derived<CourseCardLabels>({
+    courseBadge: $t('learningPath.badge.course'),
+    lesson: $t('learningPath.card.lesson'),
+    lessons: $t('learningPath.card.lessons'),
+    exercise: $t('learningPath.card.exercise'),
+    exercises: $t('learningPath.card.exercises'),
+    completedLabel: $t('learningPath.course.completed_label'),
+    progressLabel: $t('learningPath.progress.label'),
+    earnedOn: $t('certificates.earned_on'),
+    partOf: $t('learningPath.course.part_of'),
+    learnMore: $t('courses.course_card.learn_more'),
+    continueCourse: $t('courses.course_card.continue_course'),
+    reviewCourse: $t('learningPath.course.review_course'),
+    viewCertificate: $t('certificates.view_certificate'),
+    manage: $t('learningPath.admin.manage'),
+    published: $t('courses.course_card.published'),
+    unpublished: $t('courses.course_card.unpublished'),
+    students: $t('courses.course_card.students')
+  });
 
   function handleFilterChange(groupId: string, value: string) {
     if (groupId === 'contentType') contentType = value as ContentTypeFilter;
     if (groupId === 'difficulty') difficulty = value as PathDifficulty | 'ALL';
-    if (groupId === 'duration') duration = value as CourseDurationFilter | 'ALL';
+  }
+
+  function clearFilters() {
+    contentType = 'ALL';
+    difficulty = 'ALL';
+  }
+
+  function openCoursePreview(course: ExploreCourseCard) {
+    selectedCourse = {
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      logo: course.coverImage ?? null,
+      slug: course.slug,
+      lessonCount: course.lessonCount,
+      exerciseCount: course.exerciseCount,
+      cost: course.cost,
+      currency: 'USD',
+      metadata: { allowSelfEnrollment: true },
+      type: 'PUBLIC'
+    };
+    previewOpen = true;
   }
 </script>
 
@@ -170,13 +223,20 @@
     <Spinner />
   </div>
 {:else}
-  <div class="mb-6 flex flex-wrap items-center gap-3">
+  <div class="mb-6 flex flex-wrap items-center justify-end gap-3">
     <Search
-      class="ui:w-full ui:max-w-none min-w-[220px] flex-1"
+      class="max-w-sm flex-1 border md:w-2/3"
       placeholder={$t('explore.search_placeholder')}
       bind:value={searchValue}
     />
-    <FilterPopover {groups} {selected} onChange={handleFilterChange} />
+    <CourseFilterPopover
+      sortOptions={[]}
+      {groups}
+      selectedGroups={selected}
+      onGroupChange={handleFilterChange}
+      {hasActiveFilters}
+      onClearFilters={clearFilters}
+    />
   </div>
 
   {#if showPathsSection}
@@ -197,17 +257,19 @@
           description={$t('explore.paths_empty_description')}
         />
       {:else}
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-3">
           {#each filteredPaths as path}
-            <ExplorePathCard
+            <LearningPathCard
               href={path.href}
               name={path.name}
               description={path.description}
               coverGradient={path.coverGradient}
               coverImage={path.coverImage}
               courseCount={path.courseCount}
-              durationLabel={formatHoursAndMinutes(path.totalHours)}
-              ctaLabel={$t('explore.view_learning_path')}
+              progressPercent={0}
+              coursesCompleted={0}
+              isExplore={true}
+              labels={pathLabels}
             />
           {/each}
         </div>
@@ -235,18 +297,26 @@
       {:else}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {#each filteredCourses as course}
-            <ExploreCourseCard
+            <CourseCard
               href={course.href}
               title={course.title}
+              description={course.description}
               coverGradient={course.coverGradient}
               coverImage={course.coverImage}
-              durationLabel={formatHoursAndMinutes(course.durationHours)}
+              lessonCount={course.lessonCount}
+              exerciseCount={course.exerciseCount}
               partOfPath={course.partOfPath}
-              ctaLabel={$t('learningPath.course.view_course')}
+              isExplore={true}
+              onExploreClick={() => openCoursePreview(course)}
+              labels={courseLabels}
             />
           {/each}
         </div>
       {/if}
     </section>
   {/if}
+{/if}
+
+{#if selectedCourse}
+  <CoursePreviewModal course={selectedCourse} bind:open={previewOpen} />
 {/if}

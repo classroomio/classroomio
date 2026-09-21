@@ -16,6 +16,8 @@
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
+  import { learningPathApi } from '$features/learning-path/api/learning-path.svelte';
+  import { CourseInPathWidget } from '$features/learning-path/components';
   import { getActiveCourseNavKey } from '$features/course/utils/functions';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
@@ -43,6 +45,8 @@
       courseProgress: getCourseProgress(courseApi.course)
     })
   );
+
+  const pathContext = $derived(learningPathApi.getCoursePathContext(courseApi.course?.id, courseApi.course?.title));
 
   let viewAsStudentOpen = $state(false);
   let viewCourseSiteUnpublishedOpen = $state(false);
@@ -94,6 +98,15 @@
 
         {#if showCoursePublishBadge}
           <CoursePublishBadge {isPublished} />
+        {/if}
+
+        {#if $isCourseLearnerView && pathContext}
+          <CourseInPathWidget
+            pathName={pathContext.pathName}
+            pathHref={pathContext.pathHref}
+            nodes={pathContext.nodes}
+            currentPosition={pathContext.currentPosition}
+          />
         {/if}
       </div>
     </div>

@@ -16,6 +16,6 @@
     <Avatar.Image {src} {alt} />
   {/if}
   <Avatar.Fallback>
-    <img src="/images/avatar.svg" alt="User avatar" class="{iconClass}" />
+    <img src="/images/avatar.svg" alt="User avatar" class={iconClass} />
   </Avatar.Fallback>
 </Avatar.Root>

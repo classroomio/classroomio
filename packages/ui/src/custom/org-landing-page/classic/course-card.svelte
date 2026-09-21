@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
   import * as Item from '../../../base/item';
-  import { CourseCard } from '../../course-card';
+  import { CourseCardLegacy } from '../../course-card';
   import { calcCourseDiscount, formatExerciseCountLabel, getCourseTypeLandingMeta } from '../landing-page-utils';
   import { cn } from '../../../tools';
 
@@ -33,7 +33,7 @@
   });
 </script>
 
-<CourseCard
+<CourseCardLegacy
   {href}
   bannerImage={course.logo || ''}
   bannerAlt={course.title}
@@ -94,4 +94,4 @@
       </div>
     </div>
   {/snippet}
-</CourseCard>
+</CourseCardLegacy>
