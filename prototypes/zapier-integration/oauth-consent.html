@@ -104,6 +104,7 @@
     </div>
 
     <script src="proto.js"></script>
+    <script src="brand-logos.js"></script>
     <script src="apps-catalog.js"></script>
     <script>
       var startApp = new URLSearchParams(location.search).get('startApp');
@@ -111,7 +112,7 @@
         var note = document.getElementById('startAppNote');
         note.hidden = false;
         note.innerHTML =
-          '<span class="badge badge-primary-soft">' + ZI.badgeHTML(startApp, 'width:14px;height:14px;font-size:8px;margin-right:4px;display:inline-grid') + 'Connecting to build a Zap with ' + ZI.APPS[startApp].name + '</span>';
+          '<span class="badge badge-primary-soft">' + ZI.badgeHTML(startApp, 'width:14px;height:14px;font-size:8px;margin-right:4px;display:inline-grid') + 'Connecting ' + ZI.APPS[startApp].name + ' to your organization' + '</span>';
       }
 
       var writeToggle = document.getElementById('writeToggle');
@@ -134,7 +135,8 @@
         document.getElementById('consentLoading').classList.add('show');
         setTimeout(function () {
           var scope = writeToggle.classList.contains('on') ? 'readwrite' : 'read';
-          var dest = 'zapier-connected.html?justConnected=1&scope=' + scope;
+          ziState.setAuthorized(true);
+          var dest = 'zapier-handoff.html?scope=' + scope;
           if (startApp) dest += '&startApp=' + startApp;
           window.location.href = dest;
         }, 900);

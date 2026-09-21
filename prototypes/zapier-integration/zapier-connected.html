@@ -75,112 +75,125 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:20px;height:20px;stroke-width:2;color:var(--warning);flex-shrink:0"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
               <div style="flex:1">
                 <div style="font-size:13.5px;font-weight:600">Zapier connections were turned off when this org dropped below Early Adopter</div>
-                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px">All Zapier connections were revoked immediately. Zaps using them now fail with a plan-gated error. Upgrade to reconnect.</div>
+                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px">All Zapier connections were revoked immediately. Zaps that use them on Zapier now fail with a plan-gated error. Upgrade to reconnect.</div>
               </div>
               <span class="btn btn-primary btn-sm" style="pointer-events:none">Upgrade plan</span>
             </div>
 
             <div id="connectedContent">
-            <div class="page-head">
-              <div>
-                <h1 class="page-title">Zapier</h1>
-                <p class="page-sub">Automate ClassroomIO with thousands of apps through Zapier.</p>
-              </div>
-              <a class="btn btn-primary" href="zap-templates.html">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
-                Create a Zap
-              </a>
-            </div>
-
-            <div class="card card-pad" id="startAppBanner" hidden style="display:flex; align-items:center; gap:14px; border-color: color-mix(in oklab, var(--primary) 25%, var(--border)); background: color-mix(in oklab, var(--primary) 5%, transparent); margin-bottom:18px">
-              <div class="app-badge" id="startAppBadge" style="width:36px;height:36px;font-size:13px"></div>
-              <div style="flex:1">
-                <div style="font-size:13.5px;font-weight:600">Continue where you left off</div>
-                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px" id="startAppCopy"></div>
-              </div>
-              <a class="btn btn-primary btn-sm" id="startAppCta" href="#">Continue building</a>
-            </div>
-
-            <div class="card zi-status-banner">
-              <div class="zi-status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
-              <div class="zi-status-text">
-                <div class="t">Connected to Zapier</div>
-                <div class="d">Acme Academy is connected as workspace <strong style="color:var(--foreground)">acme-academy.zapier.com</strong> · granted Aug 22, 2026</div>
-              </div>
-              <span class="badge badge-success-soft">Active</span>
-            </div>
-
-            <div class="zi-usage-grid">
-              <div class="card stat-card">
-                <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Active connections</div>
-                <div class="v tnum">1 / 5</div>
-                <div class="s">Early Adopter plan limit</div>
-              </div>
-              <div class="card stat-card">
-                <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Reads / minute</div>
-                <div class="v tnum">120</div>
-                <div class="s">Per organization</div>
-              </div>
-              <div class="card stat-card">
-                <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Writes / minute</div>
-                <div class="v tnum">40</div>
-                <div class="s">Per organization</div>
-              </div>
-            </div>
-
-            <div class="sec-head" style="margin-top:0">
-              <p class="sec-title">Connections</p>
-            </div>
-            <div class="card">
-              <div class="thead zi-grant-row">
-                <div>Connection</div><div>Access</div><div>Status</div><div>Last used</div><div>Connected</div><div></div>
-              </div>
-              <div class="trow zi-grant-row">
+              <div class="page-head">
                 <div>
-                  <div style="font-weight:500">Zapier workspace: acme-academy</div>
-                  <div style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Authorized by jordan.diallo@acme.com</div>
+                  <h1 class="page-title">Zapier</h1>
+                  <p class="page-sub">Connect ClassroomIO to Zapier here. Create and manage your Zaps on Zapier.</p>
                 </div>
-                <div><span class="badge badge-secondary" id="grantScopeBadge">Read + write</span></div>
-                <div><span class="badge badge-success-soft">Active</span></div>
-                <div class="text-muted">2 minutes ago</div>
-                <div class="text-muted">Aug 22, 2026</div>
-                <div>
-                  <button class="btn btn-outline btn-sm" id="revokeBtn" type="button">Revoke</button>
+                <a class="btn btn-primary" id="createZapTop" href="https://zapier.com/app/editor" target="_blank" rel="noopener">Create a Zap in Zapier <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+              </div>
+
+              <div class="card zi-conn-empty" id="unauthorized" hidden>
+                <div class="zi-conn-logos"><span id="unauthCio"></span><span class="plus">+</span><div class="zap-mark zap-mark-md"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div></div>
+                <div class="t">Connect ClassroomIO to Zapier</div>
+                <div class="d">ClassroomIO is available on Zapier through a private invite. Start on Zapier, then approve access to your organization here.</div>
+                <a class="btn btn-primary" id="connectInviteEmpty" href="https://zapier.com/developer/public-invite/000000/classroomio-private-invite/" target="_blank" rel="noopener">Connect on Zapier <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+                <a class="link-muted" href="app-directory.html">Or browse apps in the directory</a>
+              </div>
+
+              <div id="authedContent" hidden>
+                <div class="card zi-status-banner">
+                  <div class="zi-status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="zi-status-text">
+                    <div class="t">Your ClassroomIO organization is connected to Zapier</div>
+                    <div class="d">Acme Academy is connected as workspace <strong style="color:var(--foreground)">acme-academy.zapier.com</strong> · granted Aug 22, 2026</div>
+                  </div>
+                  <span class="badge badge-success-soft">Active</span>
+                </div>
+
+                <div class="card zi-conn-cta">
+                  <div class="txt">
+                    <div class="t">Connect on Zapier</div>
+                    <div class="d">Zaps are built, tested, and turned on in Zapier. Use the private invite to connect another Zapier workspace to ClassroomIO.</div>
+                  </div>
+                  <div class="actions">
+                    <a class="btn btn-primary" id="createZapCta" href="https://zapier.com/app/editor" target="_blank" rel="noopener">Create a Zap in Zapier <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+                    <a class="btn btn-outline" id="connectInvite" href="https://zapier.com/developer/public-invite/000000/classroomio-private-invite/" target="_blank" rel="noopener">Connect on Zapier</a>
+                    <a class="link" href="https://zapier.com/app/zaps" target="_blank" rel="noopener">Manage your Zaps on Zapier</a>
+                  </div>
+                </div>
+
+                <div class="sec-head">
+                  <p class="sec-title">Connected Zapier accounts</p>
+                </div>
+                <div class="card">
+                  <div class="thead zi-grant-row">
+                    <div>Connection</div><div>Access</div><div>Status</div><div>Last used</div><div>Connected</div><div></div>
+                  </div>
+                  <div class="trow zi-grant-row">
+                    <div>
+                      <div style="font-weight:500">Zapier workspace: acme-academy</div>
+                      <div style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Authorized by jordan.diallo@acme.com</div>
+                    </div>
+                    <div><span class="badge badge-secondary" id="grantScopeBadge">Read + write</span></div>
+                    <div><span class="badge badge-success-soft">Active</span></div>
+                    <div class="text-muted">2 minutes ago</div>
+                    <div class="text-muted">Aug 22, 2026</div>
+                    <div>
+                      <button class="btn btn-outline btn-sm" id="revokeBtn" type="button">Revoke</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sec-head">
+                  <p class="sec-title">Rate limits</p>
+                </div>
+                <div class="zi-usage-grid">
+                  <div class="card stat-card">
+                    <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Active grants</div>
+                    <div class="v tnum">1 / 5</div>
+                    <div class="s">Early Adopter plan limit</div>
+                  </div>
+                  <div class="card stat-card">
+                    <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Reads / minute</div>
+                    <div class="v tnum">120</div>
+                    <div class="s">Per organization</div>
+                  </div>
+                  <div class="card stat-card">
+                    <div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Writes / minute</div>
+                    <div class="v tnum">40</div>
+                    <div class="s">Per organization</div>
+                  </div>
+                </div>
+
+                <div class="sec-head" id="setup">
+                  <p class="sec-title">Setup guide</p>
+                </div>
+                <div class="zi-setup-steps">
+                  <div class="card zi-setup-step">
+                    <div class="n">1</div>
+                    <div class="t">Click Connect</div>
+                    <div class="d">From inside Zapier, search for ClassroomIO and choose Connect a new account.</div>
+                  </div>
+                  <div class="card zi-setup-step">
+                    <div class="n">2</div>
+                    <div class="t">Log in</div>
+                    <div class="d">Sign in to ClassroomIO if you aren't already.</div>
+                  </div>
+                  <div class="card zi-setup-step">
+                    <div class="n">3</div>
+                    <div class="t">Approve access</div>
+                    <div class="d">Review what Zapier can see and do, then authorize.</div>
+                  </div>
+                  <div class="card zi-setup-step">
+                    <div class="n">4</div>
+                    <div class="t">Start building</div>
+                    <div class="d">You're back in Zapier, ready to build your first Zap.</div>
+                  </div>
+                </div>
+
+                <div class="card card-pad" style="display:flex; align-items:center; gap:14px; margin-top:20px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;stroke-width:2;color:var(--muted-foreground);flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4M12 17h.01"/></svg>
+                  <div style="flex:1;font-size:13px">Need help connecting or troubleshooting a Zap? Read the Zapier integration guide.</div>
+                  <span class="btn btn-outline btn-sm" style="pointer-events:none">View docs</span>
                 </div>
               </div>
-            </div>
-
-            <div class="sec-head" id="setup">
-              <p class="sec-title">Setup guide</p>
-            </div>
-            <div class="zi-setup-steps">
-              <div class="card zi-setup-step">
-                <div class="n">1</div>
-                <div class="t">Click Connect</div>
-                <div class="d">From inside Zapier, search for ClassroomIO and choose Connect a new account.</div>
-              </div>
-              <div class="card zi-setup-step">
-                <div class="n">2</div>
-                <div class="t">Log in</div>
-                <div class="d">Sign in to ClassroomIO if you aren't already.</div>
-              </div>
-              <div class="card zi-setup-step">
-                <div class="n">3</div>
-                <div class="t">Approve access</div>
-                <div class="d">Review what Zapier can see and do, then authorize.</div>
-              </div>
-              <div class="card zi-setup-step">
-                <div class="n">4</div>
-                <div class="t">Start building</div>
-                <div class="d">You're back in Zapier, ready to build your first Zap.</div>
-              </div>
-            </div>
-
-            <div class="card card-pad" style="display:flex; align-items:center; gap:14px; margin-top:20px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;stroke-width:2;color:var(--muted-foreground);flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4M12 17h.01"/></svg>
-              <div style="flex:1;font-size:13px">Need help mapping data or troubleshooting a Zap? Read the Zapier integration guide.</div>
-              <span class="btn btn-outline btn-sm" style="pointer-events:none">View docs</span>
-            </div>
             </div>
           </div>
         </main>
@@ -188,63 +201,59 @@
     </div>
 
     <script src="proto.js"></script>
+    <script src="brand-logos.js"></script>
     <script src="apps-catalog.js"></script>
     <script>
       var params = new URLSearchParams(location.search);
-      if (params.get('justConnected')) {
-        setTimeout(function () { ziToast('Zapier connected to Acme Academy'); }, 250);
-      }
       var scope = params.get('scope');
       if (scope === 'read') {
         var scopeBadge = document.getElementById('grantScopeBadge');
         scopeBadge.textContent = 'Read only';
         scopeBadge.className = 'badge badge-muted';
       }
-      var startApp = params.get('startApp');
-      if (startApp && ZI.APPS[startApp]) {
-        var app = ZI.APPS[startApp];
-        document.getElementById('startAppBanner').hidden = false;
-        var badge = document.getElementById('startAppBadge');
-        badge.style.width = '36px';
-        badge.style.height = '36px';
-        badge.style.fontSize = '13px';
-        badge.style.background = app.color;
-        badge.style.color = app.dark ? '#241c15' : '#fff';
-        badge.textContent = app.mono;
-        document.getElementById('startAppCopy').textContent = 'Build the Zap you started with ' + app.name + '.';
-        document.getElementById('startAppCta').href = 'zap-builder.html?startApp=' + startApp;
-      }
+
+      var authorized = ziState.isAuthorized();
+      document.getElementById('unauthorized').hidden = authorized;
+      document.getElementById('authedContent').hidden = !authorized;
+      document.getElementById('createZapTop').hidden = !authorized;
+      document.getElementById('unauthCio').innerHTML = ZI.classroomioLogoHTML('width:52px;height:52px;border-radius:14px');
+
       document.getElementById('revokeBtn').addEventListener('click', function () {
         if (!confirm('Revoke this Zapier connection? Any Zaps using it will stop running until reconnected.')) return;
-        ziToast('Connection revoked');
-        var self = this;
+
+        ziState.setAuthorized(false);
+        ziToast('Access revoked');
         setTimeout(function () {
           window.location.href = 'index.html';
         }, 700);
       });
 
-      // ---------- prototype-only: preview non-admin and plan-downgrade states ----------
       var roleAdmin = document.getElementById('roleAdmin');
       var roleMember = document.getElementById('roleMember');
       var memberGate = document.getElementById('memberGate');
-      var createZapBtn = document.querySelector('.page-head .btn-primary');
-      var revokeBtn = document.getElementById('revokeBtn');
+      var manageControls = [
+        document.getElementById('createZapTop'),
+        document.getElementById('createZapCta'),
+        document.getElementById('connectInvite')
+      ];
 
+      function setMemberView(isMember) {
+        roleAdmin.classList.toggle('on', !isMember);
+        roleMember.classList.toggle('on', isMember);
+        memberGate.hidden = !isMember;
+        manageControls.forEach(function (el) {
+          el.style.pointerEvents = isMember ? 'none' : '';
+          el.style.opacity = isMember ? '0.5' : '';
+        });
+        document.querySelectorAll('#revokeBtn').forEach(function (el) {
+          el.disabled = isMember;
+        });
+      }
       roleAdmin.addEventListener('click', function () {
-        roleAdmin.classList.add('on');
-        roleMember.classList.remove('on');
-        memberGate.hidden = true;
-        createZapBtn.style.pointerEvents = '';
-        createZapBtn.style.opacity = '';
-        revokeBtn.disabled = false;
+        setMemberView(false);
       });
       roleMember.addEventListener('click', function () {
-        roleMember.classList.add('on');
-        roleAdmin.classList.remove('on');
-        memberGate.hidden = false;
-        createZapBtn.style.pointerEvents = 'none';
-        createZapBtn.style.opacity = '0.5';
-        revokeBtn.disabled = true;
+        setMemberView(true);
       });
 
       var planEarly = document.getElementById('planEarly');
@@ -263,7 +272,7 @@
         planEarly.classList.remove('on');
         planGate.hidden = false;
         connectedContent.hidden = true;
-        ziToast('Plan downgraded — all Zapier grants revoked');
+        ziToast('Plan downgraded. All Zapier grants revoked');
       });
     </script>
   </body>

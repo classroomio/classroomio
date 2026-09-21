@@ -58,9 +58,9 @@
             <div class="zi-detail-shell">
               <div class="card zi-detail-hero">
                 <div class="zi-detail-connector">
-                  <div class="zi-org-mark" style="width:52px;height:52px;font-size:18px;border-radius:var(--radius-lg)">A</div>
+                  <div id="detailCioLogo"></div>
                   <div class="dashline"></div>
-                  <div class="app-badge" id="detailBadge"></div>
+                  <div id="detailBadge"></div>
                 </div>
                 <h1 class="zi-detail-title">ClassroomIO + <span id="detailName"></span></h1>
                 <p class="zi-detail-desc" id="detailBlurb"></p>
@@ -78,16 +78,16 @@
                   What this enables
                 </div>
                 <p style="font-size:13px;color:var(--muted-foreground);line-height:1.6;margin:0">
-                  Build Zaps that trigger from ClassroomIO events and take action in <strong id="whatEnablesName" style="color:var(--foreground)"></strong>,
-                  or trigger from <strong id="whatEnablesName2" style="color:var(--foreground)"></strong> and take action in ClassroomIO, like enrolling a student.
-                  You choose what data moves and when, with a test step before anything goes live.
+                  Connecting <strong id="whatEnablesName" style="color:var(--foreground)"></strong> links it to your ClassroomIO organization.
+                  After that, you create and manage Zaps on Zapier, using ClassroomIO events as triggers or ClassroomIO actions like enrolling a student.
+                  Zapier handles the trigger, action, field mapping, testing, and publishing.
                 </p>
               </div>
 
               <div class="card card-pad zi-detail-section">
                 <div class="zi-detail-section-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  Available ClassroomIO triggers
+                  ClassroomIO triggers available in Zapier
                 </div>
                 <div id="triggerList"></div>
               </div>
@@ -95,19 +95,15 @@
               <div class="card card-pad zi-detail-section">
                 <div class="zi-detail-section-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-                  Example action in <span id="actionAppName" style="text-transform:none"></span>
+                  ClassroomIO actions available in Zapier
                 </div>
-                <div class="zi-action-preview-row">
-                  <div class="label">Action</div>
-                  <div id="actionLabel" style="font-weight:500"></div>
-                </div>
-                <div id="actionFieldRows"></div>
+                <div id="actionList"></div>
               </div>
 
               <div class="card card-pad" style="display:flex; align-items:center; gap:16px">
                 <div style="flex:1">
-                  <div style="font-size:13.5px;font-weight:600">Ready to build?</div>
-                  <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px" id="connectFootNote">Connecting takes under a minute and asks exactly what it needs.</div>
+                  <div style="font-size:13.5px;font-weight:600">Ready to connect?</div>
+                  <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px" id="connectFootNote">Connecting takes under a minute. You create your Zaps on Zapier afterward.</div>
                 </div>
                 <a class="btn btn-primary" id="connectCta2" href="#">Connect</a>
               </div>
@@ -118,6 +114,7 @@
     </div>
 
     <script src="proto.js"></script>
+    <script src="brand-logos.js"></script>
     <script src="apps-catalog.js"></script>
     <script>
       var slug = new URLSearchParams(location.search).get('app');
@@ -133,21 +130,17 @@
       } else {
         document.title = 'ClassroomIO + ' + app.name + ' · Zapier · ClassroomIO';
         document.getElementById('crumbHere').textContent = app.name;
-        var detailBadge = document.getElementById('detailBadge');
-        detailBadge.style.background = app.color;
-        detailBadge.style.color = app.dark ? '#241c15' : '#fff';
-        detailBadge.textContent = app.mono;
+        document.getElementById('detailBadge').innerHTML = ZI.badgeHTML(slug, 'width:52px;height:52px;font-size:18px;border-radius:14px');
+        document.getElementById('detailCioLogo').innerHTML = ZI.classroomioLogoHTML('width:52px;height:52px;border-radius:14px');
         document.getElementById('detailName').textContent = app.name;
         document.getElementById('detailBlurb').textContent = app.detailBlurb || ('Connect ClassroomIO with ' + app.name + '. It handles ' + app.description.toLowerCase() + '.');
         document.getElementById('whatEnablesName').textContent = app.name;
-        document.getElementById('whatEnablesName2').textContent = app.name;
-        document.getElementById('actionAppName').textContent = app.name;
-        var action = ZI.getAction(slug);
-        document.getElementById('actionLabel').textContent = action.label;
-        document.getElementById('connectCtaLabel').textContent = 'Connect ClassroomIO + ' + app.name;
-        document.getElementById('connectCta').href = 'oauth-consent.html?startApp=' + slug;
-        document.getElementById('connectCta2').href = 'oauth-consent.html?startApp=' + slug;
-        document.getElementById('connectCta2').textContent = 'Connect ClassroomIO + ' + app.name;
+        var label = 'Connect ' + app.name;
+        var target = 'oauth-consent.html?startApp=' + slug;
+        document.getElementById('connectCtaLabel').textContent = label;
+        document.getElementById('connectCta').href = target;
+        document.getElementById('connectCta2').href = target;
+        document.getElementById('connectCta2').textContent = label;
 
         var triggerWrap = document.getElementById('triggerList');
         Object.keys(ZI.TRIGGERS).forEach(function (key) {
@@ -160,13 +153,15 @@
           triggerWrap.appendChild(row);
         });
 
-        var fieldWrap = document.getElementById('actionFieldRows');
-        action.fields.forEach(function (field) {
-          var value = field.type === 'select' ? field.options[0] : field.default;
+        var actionWrap = document.getElementById('actionList');
+        Object.keys(ZI.CLASSROOMIO_ACTIONS).forEach(function (key) {
+          var item = ZI.CLASSROOMIO_ACTIONS[key];
           var row = document.createElement('div');
-          row.className = 'zi-action-preview-row';
-          row.innerHTML = '<div class="label">' + field.label + '</div><div style="color:var(--muted-foreground)">' + value + '</div>';
-          fieldWrap.appendChild(row);
+          row.className = 'zi-trigger-list-row';
+          row.innerHTML =
+            '<div class="ico">' + item.icon + '</div>' +
+            '<div><div class="t">' + item.label + '</div><div class="d">' + item.desc + '</div></div>';
+          actionWrap.appendChild(row);
         });
       }
     </script>

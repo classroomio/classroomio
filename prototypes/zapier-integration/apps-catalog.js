@@ -344,6 +344,15 @@
         ]
       }
     },
+    customerio: {
+      name: 'Customer.io',
+      category: 'marketing',
+      color: '#5B3DF5',
+      mono: 'C',
+      description: 'Messaging and lifecycle campaigns',
+      detailBlurb:
+        'Send lifecycle messages from Customer.io when learners enroll, finish courses, or earn certificates.'
+    },
     activecampaign: {
       name: 'ActiveCampaign',
       category: 'marketing',
@@ -449,8 +458,18 @@
       category: 'communication',
       color: '#2D8CFF',
       mono: 'Z',
+      popular: true,
       recent: true,
-      description: 'Video meetings and webinars'
+      description: 'Video meetings and webinars',
+      detailBlurb:
+        'Register learners for a live training session, webinar, or cohort kickoff the moment they enroll or complete a course in ClassroomIO.',
+      action: {
+        label: 'Add Webinar Registrant',
+        fields: [
+          { key: 'webinar', label: 'Webinar', type: 'select', options: ['Product Onboarding Live Q&A'] },
+          { key: 'email', label: 'Registrant email', type: 'pill', default: '{{Student Email}}' }
+        ]
+      }
     },
     twilio: {
       name: 'Twilio',
@@ -1037,6 +1056,10 @@
   function badgeHTML(slug, extraStyle) {
     var app = APPS[slug];
     if (!app) return '';
+    var logo = window.ZI_BRAND_LOGOS && window.ZI_BRAND_LOGOS[slug];
+    if (logo) {
+      return '<div class="app-badge app-badge-logo" style="' + (extraStyle || '') + '">' + logo.svg + '</div>';
+    }
     var color = app.dark ? '#241c15' : '#fff';
     return (
       '<div class="app-badge" style="background:' +
@@ -1068,6 +1091,12 @@
       return Object.keys(APPS);
     },
     getAction: getAction,
-    badgeHTML: badgeHTML
+    badgeHTML: badgeHTML,
+    classroomioLogoHTML: function (extraStyle) {
+      var logo = window.ZI_BRAND_LOGOS && window.ZI_BRAND_LOGOS.classroomio;
+      return (
+        '<div class="app-badge app-badge-logo" style="' + (extraStyle || '') + '">' + (logo ? logo.svg : 'A') + '</div>'
+      );
+    }
   };
 })();

@@ -80,6 +80,16 @@
             </div>
           </div>
 
+          <div class="wrap" id="connectedNoteWrap" hidden>
+            <div class="card card-pad" style="display:flex;align-items:center;gap:14px;margin:24px 0 0;border-color:color-mix(in oklab, var(--success) 30%, var(--border));background:var(--success-soft)">
+              <div style="flex:1">
+                <div style="font-size:13.5px;font-weight:600">Your organization is already connected to Zapier</div>
+                <div style="font-size:12.5px;color:var(--muted-foreground);margin-top:2px">See your connected apps, or add another integration below.</div>
+              </div>
+              <a class="btn btn-outline btn-sm" href="zapier-connected.html">View connections</a>
+            </div>
+          </div>
+
           <div id="connectContent">
             <div class="wrap" style="max-width: 1080px">
               <div class="zi-home-hero">
@@ -99,11 +109,15 @@
                   <p class="zi-home-browse">
                     Looking for something specific? <a href="app-directory.html">Browse all <span id="appCount"></span> apps in the App Directory</a>
                   </p>
+                  <div class="zi-home-zap-cta">
+                    <span>Already know what you want to automate?</span>
+                    <a class="btn btn-primary" id="createZapCta" href="https://zapier.com/app/editor" target="_blank" rel="noopener">Create a Zap in Zapier <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+                  </div>
                 </div>
               </div>
 
               <div class="zi-home-add-row">
-                <a class="zi-home-add-btn" href="oauth-consent.html">
+                <a class="zi-home-add-btn" href="app-directory.html">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
                   Add integration
                 </a>
@@ -140,6 +154,7 @@
     </div>
 
     <script src="proto.js"></script>
+    <script src="brand-logos.js"></script>
     <script src="apps-catalog.js"></script>
     <script>
       var roleAdmin = document.getElementById('roleAdmin');
@@ -182,13 +197,19 @@
       };
 
       document.getElementById('appCount').textContent = ZI.appSlugs().length;
+      document.getElementById('connectedNoteWrap').hidden = !ziState.isAuthorized();
 
       if (new URLSearchParams(location.search).get('denied')) {
         setTimeout(function () { ziToast('Connection request denied'); }, 250);
       }
 
       // ---------- popular apps (default state) ----------
-      var POPULAR_SLUGS = ['sheets', 'slack', 'stripe'];
+      // Picked from the integration research (prd/zapier/integration-research.md),
+      // not raw Zapier fame: HubSpot (CRM lifecycle-triggered enrollment), Zoom
+      // (live training/webinar registration), and Slack (CS/CE team visibility)
+      // are the three V1 "must have" apps that most directly demonstrate a
+      // customer education workflow, spanning three distinct categories.
+      var POPULAR_SLUGS = ['hubspot', 'zoom', 'slack'];
 
       function cardBanner(slug) {
         var app = ZI.APPS[slug];

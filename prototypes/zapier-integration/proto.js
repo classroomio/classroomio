@@ -1,6 +1,6 @@
 // proto.js: shared chrome behavior for the Zapier Integration prototype.
-// Page-specific interactions (builder steps, consent flow, test states) live
-// inline in each page's own <script> block.
+// Page-specific interactions (directory search, consent flow, connections)
+// live inline in each page's own <script> block.
 
 (function () {
   var themeBtn = document.getElementById('theme');
@@ -44,3 +44,20 @@ function ziToast(message) {
     el.classList.remove('show');
   }, 2600);
 }
+
+var ziState = (function () {
+  var AUTH_KEY = 'ziOrgAuthorized';
+
+  var query = new URLSearchParams(location.search);
+  if (query.get('fresh')) localStorage.setItem(AUTH_KEY, '0');
+  if (query.get('returning')) localStorage.setItem(AUTH_KEY, '1');
+
+  return {
+    isAuthorized: function () {
+      return localStorage.getItem(AUTH_KEY) === '1';
+    },
+    setAuthorized: function (value) {
+      localStorage.setItem(AUTH_KEY, value ? '1' : '0');
+    }
+  };
+})();
