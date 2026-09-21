@@ -241,7 +241,7 @@
         {@const Icon = typeBadge.icon}
         <Badge
           variant="outline"
-          class="ui:bg-white ui:text-zinc-900 ui:border-zinc-200/80 ui:shadow-sm ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:dark:border-border ui:rounded-md"
+          class="ui:bg-white ui:text-zinc-900 ui:shadow-sm ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:rounded-md"
         >
           <Icon class={typeBadge.iconClass} />
           {typeBadge.label}
