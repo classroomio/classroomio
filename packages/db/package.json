@@ -58,7 +58,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:baseline": "tsx src/scripts/baseline.ts",
-    "db:reset": "tsx src/scripts/db-reset.ts --skip-seed",
+    "db:reset": "tsx src/scripts/db-reset.ts",
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",
     "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
