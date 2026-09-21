@@ -15,7 +15,7 @@
 <Badge
   variant="outline"
   class={cn(
-    'ui:text-[10px] ui:font-semibold ui:tracking-[0.08em] ui:uppercase ui:backdrop-blur ui:rounded-md',
+    'ui:text-[10px] ui:font-semibold ui:tracking-[0.08em] ui:uppercase ui:backdrop-blur',
     onCover
       ? 'ui:border-white/30 ui:bg-white/15 ui:text-white'
       : 'ui:border-primary/30 ui:bg-primary/10 ui:text-primary',
