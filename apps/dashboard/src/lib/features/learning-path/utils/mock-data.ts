@@ -767,6 +767,71 @@ export function getMockPathById(pathId: string): LearningPathWithEnrollment | nu
   return enrollmentPath ?? { ...adminPath, enrollment: null };
 }
 
+export type MockExerciseStatus = 'in-progress' | 'overdue' | 'not-submitted';
+
+export interface MockUpcomingExercise {
+  id: string;
+  title: string;
+  course: string;
+  status: MockExerciseStatus;
+  dueDate: string;
+}
+
+export const MOCK_UPCOMING_EXERCISES: MockUpcomingExercise[] = [
+  {
+    id: 'a-product-adoption-report',
+    title: 'Create a product adoption report',
+    course: 'Advanced Analytics',
+    status: 'in-progress',
+    dueDate: '2026-03-02'
+  },
+  {
+    id: 'a-onboarding-email',
+    title: 'Draft a customer onboarding email',
+    course: 'Customer Success Foundations',
+    status: 'overdue',
+    dueDate: '2026-02-14'
+  },
+  {
+    id: 'a-churn-risk-account',
+    title: 'Map a churn-risk account',
+    course: 'Customer Success Foundations',
+    status: 'not-submitted',
+    dueDate: '2026-03-09'
+  }
+];
+
+export const MOCK_STANDALONE_COURSES = [
+  makeCourse({
+    id: 'c-standalone-sql',
+    title: 'SQL for Data Analysts',
+    description: 'Query, join, and aggregate real-world datasets with confidence.',
+    order: 1,
+    coverGradient: BASE_COVERS.teal,
+    coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 8,
+    exerciseCount: 3,
+    lessonsCompleted: 5,
+    exercisesCompleted: 1,
+    durationHours: 4,
+    cost: 29
+  }),
+  makeCourse({
+    id: 'c-standalone-ui',
+    title: 'UI Design Fundamentals',
+    description: 'Color, type, layout, and component thinking for shippable interfaces.',
+    order: 1,
+    coverGradient: BASE_COVERS.blue,
+    coverImage: 'https://images.unsplash.com/photo-1522542550221-31fd19575a2d?auto=format&fit=crop&w=640&q=80',
+    lessonCount: 7,
+    exerciseCount: 2,
+    lessonsCompleted: 3,
+    exercisesCompleted: 0,
+    durationHours: 3,
+    cost: 19
+  })
+];
+
 export const EXPLORE_PATHS = getMockPathsForUser();
 
 export function getMockEnrollmentState(pathId: string): LearningPathEnrollment | null {

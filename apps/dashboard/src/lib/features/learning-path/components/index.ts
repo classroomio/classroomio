@@ -23,3 +23,4 @@ export { default as CourseInPathRibbon } from './course-in-path-ribbon.svelte';
 export { default as CourseInPathNext } from './course-in-path-next.svelte';
 export { default as LearningPathHead } from './learning-path-head.svelte';
 export { default as PathStepper } from './path-stepper.svelte';
+export { default as CourseCurrentCard } from './course-current-card.svelte';
