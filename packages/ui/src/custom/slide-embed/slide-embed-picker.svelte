@@ -35,7 +35,7 @@
   }: Props = $props();
 
   let query = $state('');
-  let selectedId = $state<SlidePlatformId | null>(null);
+  let selectedId = $state<SlidePlatformId | null>(SLIDE_PLATFORMS[0].id);
   let rawEmbed = $state('');
 
   const filteredPlatforms = $derived(
@@ -87,12 +87,12 @@
 
 <div
   class={cn(
-    'ui:flex ui:h-full ui:min-h-[360px] ui:w-full ui:min-w-0 ui:flex-col ui:overflow-hidden ui:rounded-xl ui:border ui:border-border ui:bg-background ui:md:flex-row',
+    'ui:flex ui:h-full ui:min-h-[360px] ui:w-full ui:min-w-0 ui:flex-col ui:overflow-hidden ui:rounded-xl ui:border ui:border-dashed ui:bg-background ui:md:flex-row',
     className
   )}
 >
   <div
-    class="ui:flex ui:min-h-0 ui:w-full ui:shrink-0 ui:flex-col ui:gap-2 ui:border-b ui:border-border ui:bg-muted/40 ui:p-3 ui:md:w-56 ui:md:border-r ui:md:border-b-0"
+    class="ui:flex ui:min-h-0 ui:w-full ui:shrink-0 ui:flex-col ui:gap-2 ui:border-b ui:border-border ui:p-3 ui:md:w-56 ui:md:border-r ui:md:border-b-0"
   >
     <div class="ui:flex ui:items-center ui:gap-2 ui:rounded-md ui:border ui:border-input ui:bg-background ui:px-2">
       <SearchIcon class="ui:text-muted-foreground ui:size-4 ui:shrink-0" aria-hidden="true" />

@@ -133,7 +133,7 @@
       </Dialog.Header>
       {#if pickerOpen}
         <SlideEmbedPicker
-          class="ui:min-h-0 ui:flex-1 ui:overflow-hidden ui:rounded-none ui:border-0"
+          class="ui:min-h-0 ui:flex-1 ui:overflow-hidden"
           labels={pickerLabels}
           onAdd={handleAdd}
         />
