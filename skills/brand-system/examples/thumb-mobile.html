@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Changelog thumbnail · mobile 9:16</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../motion.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <link rel="stylesheet" href="../stage.css" />
+    <style>
+      :root { --gutter: 76px; }
+      .copy { position: absolute; left: var(--gutter); right: var(--gutter); top: 130px; z-index: 12; }
+      .tag { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; background: var(--accent); color: var(--accent-ink);
+        font-family: ui-monospace, Menlo, monospace; font-size: 21px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+      .hook { margin: 28px 0 0; font-size: 128px; font-weight: 700; letter-spacing: -0.052em; line-height: 0.88; }
+      .hook em { font-style: normal; color: var(--accent-text); }
+      /* On a dark field the real #0233BD cannot carry type, so it carries a block instead —
+         the brand blue stays on screen rather than stepping to a tint. */
+      .field-dark .hook { line-height: 1.06; }
+      .field-dark .hook em { color: #ffffff; background: var(--accent); padding: 0 18px 10px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+      .field-blue .hook em { color: #ffffff; text-decoration: underline; text-decoration-thickness: 9px; text-underline-offset: 14px; }
+      .sub { margin: 30px 0 0; font-size: 36px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.3; color: var(--fg-muted); max-width: 20ch; }
+      .sub b { color: var(--fg); font-weight: 600; }
+
+      .shot { position: absolute; left: 0; right: 0; bottom: 0; height: 1010px; z-index: 6; overflow: hidden;
+        border-top: 1.5px solid var(--line); }
+      .shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 54%; }
+      .shot::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 140px;
+        background: linear-gradient(180deg, var(--field) 0%, transparent 100%); }
+
+      .mark { position: absolute; left: var(--gutter); top: 830px; z-index: 12; display: flex; align-items: center; gap: 16px;
+        font-size: 30px; font-weight: 600; letter-spacing: -0.01em; }
+      .mark img { width: 48px; height: 48px; object-fit: contain; filter: var(--logo-filter); }
+      .mark span { color: var(--fg-muted); font-weight: 500; }
+    </style>
+  </head>
+  <body data-scene="thumbnail · mobile">
+    <div class="stage-fit">
+      <div class="stage" data-w="1080" data-h="1920" style="--stage-w: 1080px; --stage-h: 1920px">
+        <div class="copy">
+          <span class="tag">New · September</span>
+          <h1 class="hook">Bulk<br />student<br /><em>actions</em></h1>
+          <p class="sub">Archive, deactivate or delete <b>20 at once</b> — with undo.</p>
+        </div>
+
+        <div class="shot"><img src="shot-bulk.jpg" alt="Selecting 20 students and running a bulk action in ClassroomIO" /></div>
+
+        <div class="mark"><img src="logo-512.png" alt="" />ClassroomIO <span>&nbsp;changelog</span></div>
+      </div>
+    </div>
+    <script src="../stage.js"></script>
+  </body>
+</html>

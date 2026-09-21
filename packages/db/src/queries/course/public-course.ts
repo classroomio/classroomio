@@ -290,7 +290,7 @@ export interface PublicLessonContent {
   isUnlocked: boolean;
   body: string;
   video: {
-    type: 'youtube' | 'generic' | 'upload' | 'google_drive';
+    type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
     link: string;
     /** S3 object key for uploads; used server-side for presigning (stripped before API response). */
     key?: string;

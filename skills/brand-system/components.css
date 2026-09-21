@@ -1,0 +1,228 @@
+/* Components. Built only from tokens — no literal colours, sizes or timings. */
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--size-mono);
+  font-weight: var(--weight-regular);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.kicker::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  background: var(--accent);
+}
+
+.display {
+  margin: 0;
+  font-size: var(--size-display-xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--track-display);
+  line-height: var(--leading-display);
+}
+.display-s {
+  font-size: var(--size-display);
+}
+/* Blue as type needs a value that survives the field. Blue as a fill is always
+   the real brand blue, so on a dark field prefer .display-mark over .display em. */
+.display em {
+  font-style: normal;
+  color: var(--accent-text);
+}
+.display .display-mark {
+  font-style: normal;
+  color: var(--accent-ink);
+  background: var(--accent);
+  padding: 0 0.12em 0.07em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.headline {
+  margin: 0;
+  font-size: var(--size-headline);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-headline);
+  line-height: var(--leading-headline);
+}
+
+.body {
+  margin: 0;
+  font-size: var(--size-body);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-body);
+  line-height: var(--leading-body);
+  color: var(--fg-muted);
+}
+.body b {
+  color: var(--fg);
+  font-weight: var(--weight-semibold);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-mono);
+  letter-spacing: var(--track-mono);
+  text-transform: uppercase;
+}
+
+/* A stepped list where the spoken item is lit and the rest recede. */
+.stack {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stack li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  font-size: var(--size-headline);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-headline);
+  line-height: 1.2;
+  color: var(--fg-faint);
+}
+.stack li.lit {
+  color: var(--fg);
+}
+.stack li svg {
+  width: 54px;
+  height: 54px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.stack .n {
+  font-family: var(--font-mono);
+  font-size: var(--size-mono-lg);
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+  width: 52px;
+  flex: none;
+}
+
+/* The signature annotation: a blue chip, a hairline, a dot on the thing named. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 13px 20px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--size-mono-lg);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-body);
+  white-space: nowrap;
+  box-shadow: 0 10px 40px var(--shadow);
+}
+.chip.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-mono);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-mono);
+  text-transform: uppercase;
+}
+.chip.plain {
+  background: var(--surface);
+  color: var(--surface-fg);
+}
+.chip .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.chip.plain .dot {
+  background: var(--accent);
+}
+
+.leader {
+  pointer-events: none;
+  overflow: visible;
+}
+.leader path {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 2;
+}
+.leader circle {
+  fill: var(--fg);
+}
+
+/* Product is shown as one composed panel on a field, never a full app window. */
+.panel {
+  background: var(--surface);
+  color: var(--surface-fg);
+  box-shadow: 0 60px 120px -30px var(--shadow), 0 0 0 1px var(--surface-line);
+  overflow: hidden;
+}
+.panel-bar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--surface-line);
+  font-family: var(--font-mono);
+  font-size: var(--size-mono-s);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--surface-fg) 55%, transparent);
+}
+.panel-bar i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--surface-sunk);
+  flex: none;
+}
+
+.rule {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+}
+.rule.accent {
+  height: 5px;
+  background: var(--accent);
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--size-body);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--track-body);
+  color: var(--fg-muted);
+}
+.mark img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: var(--logo-filter);
+}
+
+/* Grain keeps a flat field from reading as flat vector. */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: var(--grain);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}

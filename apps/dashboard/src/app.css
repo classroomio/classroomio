@@ -876,3 +876,11 @@ body[data-theme='violet'] {
     transform: translate(-1px, 1.7px) scale(1.12);
   }
 }
+
+[data-sonner-toaster] [data-close-button] {
+  position: absolute !important;
+  top: 1.2rem !important;
+  right: 0.5rem !important;
+  left: auto !important;
+  margin: 0 !important;
+}

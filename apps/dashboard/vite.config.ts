@@ -1,10 +1,25 @@
 import { defineConfig, loadEnv } from 'vite';
 
-import fs from 'fs';
 import { sveltekit } from '@sveltejs/kit/vite';
+import mkcert from 'vite-plugin-mkcert';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const dashboardDir = path.dirname(fileURLToPath(import.meta.url));
+
+function watchWorkspaceUiSource() {
+  return {
+    name: 'watch-workspace-ui-source',
+    configureServer(server) {
+      server.watcher.add(path.resolve(dashboardDir, '../../packages/ui/src'));
+    }
+  };
+}
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
+  const useHttps = process.env.HTTPS === 'true' || process.env.VITE_USE_HTTPS_ON_LOCALHOST === 'true';
+  const host = process.env.HOST || (useHttps ? '0.0.0.0' : undefined);
 
   return defineConfig({
     css: {
@@ -14,9 +29,9 @@ export default ({ mode }) => {
         }
       }
     },
-    plugins: [sveltekit()],
+    plugins: [watchWorkspaceUiSource(), sveltekit(), ...(useHttps ? [mkcert()] : [])],
     server: {
-      ...getServer(process.env),
+      host,
       fs: {
         // `..` is `apps/` — covers the dashboard's own files. `../../packages`
         // is required so Vite's `@fs` route can serve dynamic imports that
@@ -63,22 +78,6 @@ export default ({ mode }) => {
     }
   });
 };
-
-function getServer(params) {
-  const { VITE_USE_HTTPS_ON_LOCALHOST } = params || {};
-  if (VITE_USE_HTTPS_ON_LOCALHOST === 'true') {
-    return {
-      https: {
-        key: fs.readFileSync(`${__dirname}/cert/key.pem`),
-        cert: fs.readFileSync(`${__dirname}/cert/cert.pem`)
-      }
-    };
-  }
-
-  return {
-    allowedHosts: []
-  };
-}
 
 // function getSentryConfig(params: any) {
 //   const { VITE_SENTRY_AUTH_TOKEN, VITE_SENTRY_ORG_NAME, VITE_SENTRY_PROJECT_NAME } = params || {};

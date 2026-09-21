@@ -2,6 +2,7 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { createCourseModal } from '../utils/store';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
@@ -69,11 +70,16 @@
   }
 
   async function createCourse() {
-    await courseApi.create({
-      title: $createCourseModal.title,
-      description: $createCourseModal.description,
-      type: type
-    });
+    await courseApi.create(
+      {
+        title: $createCourseModal.title,
+        description: $createCourseModal.description,
+        type: type
+      },
+      (courseId) => {
+        goto(resolve(`/courses/${courseId}/lessons`, {}));
+      }
+    );
   }
 
   let open = $derived(new URLSearchParams(page.url.search).get('create') === 'true');
@@ -91,7 +97,7 @@
     if (!isOpen) onClose(page.url.pathname);
   }}
 >
-  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
+  <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>{$t('courses.new_course_modal.heading')}</Dialog.Title>
     </Dialog.Header>

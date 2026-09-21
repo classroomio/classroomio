@@ -2,6 +2,10 @@
 
 This document collects implementation rules and workflow conventions for code changes.
 
+## Writing Code
+
+**Read [`skills/writing-code/SKILL.md`](skills/writing-code/SKILL.md) before writing or editing any code.** The comment policy there is mandatory: default to no comments, use JSDoc only for function contracts, and never add an inline comment to explain a design choice — refactor the code instead. The only allowed inline comments record an external constraint the code cannot express.
+
 ## Research Requirements
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
@@ -52,6 +56,37 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
   ```
 
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
+## Database migrations
+
+**One migration file per PR.** However many schema changes a branch makes, and however many times
+you revise them while the PR is in review, they ship as a single migration. Fold later changes into
+the file the branch already added rather than adding a second one.
+
+**Block the merge if a new migration's `when` is not later than every migration already on `main`.**
+
+`drizzle-orm` keeps no record of which migrations ran. It reads one high-water mark
+(`select ... order by created_at desc limit 1`) and applies a migration only when
+`lastCreatedAt < migration.folderMillis`, where `folderMillis` is the `when` in
+`packages/db/src/migrations/meta/_journal.json`. A migration stamped below that mark never runs,
+never errors, and never appears in `drizzle.__drizzle_migrations`: the objects it creates simply do
+not exist. A future-dated `when` is the same bug mirrored, marking the ledger ahead of reality so
+later migrations are skipped.
+
+Fresh databases apply everything in journal order and are unaffected, so this passes on a rebuilt
+local database and on CI, then silently no-ops everywhere else.
+
+Check before merging any PR that adds a migration:
+
+```bash
+git show origin/main:packages/db/src/migrations/meta/_journal.json |
+  python3 -c "import json,sys; print(max(e['when'] for e in json.load(sys.stdin)['entries']))"
+python3 -c "import json; print(max(e['when'] for e in json.load(open('packages/db/src/migrations/meta/_journal.json'))['entries']))"
+```
+
+The branch value must be greater. If it is not, restamp the new entry to `int(time.time() * 1000)`
+and renumber the file so its index follows main's last migration. Renumber on a plain index
+collision too: two branches both adding `0016_*` is the usual way this arises.
 
 ## Naming Convention
 
@@ -546,6 +581,21 @@ Full behavior, threshold, clearance, and mount points: `prd/scroll-to-top/README
 
 <ScrollToTop label={$t('common.scroll_to_top')} />
 ```
+
+### Landing-page href sanitization
+
+All user-controlled URLs in org landing pages (nav links, hero CTAs, footer links, callout buttons, links-section cards) must pass through `safeHref()` before reaching an `<a href>` attribute. This prevents `javascript:`, `data:`, and `vbscript:` XSS payloads from being rendered.
+
+**Shared source of truth:** `packages/utils/src/validation/shared/safe-href.ts` exports two functions:
+- `isAllowedHref(value)` — allowlist check: `http`, `https`, `mailto`, `tel`, `#`, `/`, `./`, `../`, plain paths (`courses/intro`).
+- `containsDisallowedHrefs(value)` — recursive tree walker for Zod refinements on freeform JSON blobs.
+
+**Three consumers, one rule:**
+- **Render-time:** `packages/ui/src/custom/org-landing-page/safe-href.ts` re-exports `isAllowedHref` as `safeHref(value, fallback)` — wrap every user-controlled href. Wired into all 11 themes via shared components (`LandingButton`, `SecondaryActionButton`) and direct `<a>` bindings.
+- **Dashboard normalization:** `normalizeHref()` in `apps/dashboard/src/lib/features/org/utils/landing-page.ts` imports `isAllowedHref` to strip bad schemes when loading/saving config.
+- **API boundary:** Zod refinement on `ZUpdateOrganization.landingpage` imports `containsDisallowedHrefs` to reject bad schemes at write time.
+
+**When adding new landing-page components or themes:** always route hrefs through `safeHref()`. Never pass a user-controlled string directly to `href`.
 
 ## Emails: system vs org-branded
 

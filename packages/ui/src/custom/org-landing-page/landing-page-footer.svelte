@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { OrgLandingPageFooterConfig, OrgLandingPageTheme } from './types';
   import { getFooterTokens } from './landing-page-footer.tokens';
+  import { safeHref } from './safe-href';
   import FooterSocialIcon from './footer-social-icon.svelte';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import EditableLandingSection from './editable-section.svelte';
@@ -77,7 +78,7 @@
                   {#each footer.brand.socials as social (social.href + social.platform)}
                     <li class="ui:list-none">
                       <a
-                        href={social.href}
+                        href={safeHref(social.href)}
                         class="{tokens.socialIcon} ui:cursor-pointer"
                         target="_blank"
                         rel="noreferrer noopener"
@@ -102,12 +103,12 @@
                 <ul class="ui:list-none ui:m-0 ui:p-0 ui:space-y-1">
                   {#each column.links as link (link.id)}
                     <li>
-                      <a href={link.href} class="{tokens.columnLink} ui:cursor-pointer">{link.label}</a>
+                      <a href={safeHref(link.href)} class="{tokens.columnLink} ui:cursor-pointer">{link.label}</a>
                     </li>
                   {/each}
                 </ul>
                 {#if hasCta(column)}
-                  <a href={column.cta!.href} class="{tokens.columnCta} ui:cursor-pointer">
+                  <a href={safeHref(column.cta!.href)} class="{tokens.columnCta} ui:cursor-pointer">
                     {column.cta!.label}
                     <ArrowRightIcon class="ui:size-4 ui:shrink-0" aria-hidden="true" />
                   </a>
@@ -130,7 +131,7 @@
             {#if bottomLinks.length > 0}
               <div class={tokens.bottomLinksWrap}>
                 {#each bottomLinks as link (link.id)}
-                  <a href={link.href} class="{tokens.bottomLink} ui:cursor-pointer">{link.label}</a>
+                  <a href={safeHref(link.href)} class="{tokens.bottomLink} ui:cursor-pointer">{link.label}</a>
                 {/each}
               </div>
             {/if}
@@ -149,7 +150,7 @@
               class="ui:flex ui:flex-wrap ui:justify-start ui:gap-6 ui:md:justify-center ui:md:gap-8 ui:w-full ui:md:w-auto"
             >
               {#each bottomLinks as link (link.id)}
-                <a href={link.href} class="{tokens.bottomLink} ui:cursor-pointer">{link.label}</a>
+                <a href={safeHref(link.href)} class="{tokens.bottomLink} ui:cursor-pointer">{link.label}</a>
               {/each}
             </div>
           {/if}

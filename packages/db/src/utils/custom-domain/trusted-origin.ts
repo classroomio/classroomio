@@ -1,4 +1,5 @@
 import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import { isLocalOrPrivateHost } from '@cio/utils/functions';
 import { getVerifiedCustomDomainHostnames } from '../../queries/organization/organization';
 
 const FIRST_PARTY_ROOTS: readonly string[] = [BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN];
@@ -82,6 +83,10 @@ export function resolveTrustedBrowserOrigin(
   }
 
   const hostname = parsed.hostname;
+
+  if (process.env.NODE_ENV !== 'production' && isLocalOrPrivateHost(hostname)) {
+    return origin;
+  }
 
   if (isClassroomioHost(hostname)) {
     return origin;

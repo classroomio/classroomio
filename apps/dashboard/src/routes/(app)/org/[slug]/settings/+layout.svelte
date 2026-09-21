@@ -18,9 +18,9 @@
   );
 </script>
 
-<Page.Root class="w-full pb-10 md:max-w-3xl lg:mx-auto">
+<Page.Root class="w-full gap-2 pb-10 md:max-w-3xl lg:mx-auto">
   {#if showOrgSettingsTabs}
-    <Page.Header>
+    <Page.Header class="my-1 py-1">
       <Page.HeaderContent>
         <Page.Title>{$t('settings.organization.organization_profile.heading')}</Page.Title>
         <Page.Subtitle>{$t('settings.organization.page_subtitle')}</Page.Subtitle>

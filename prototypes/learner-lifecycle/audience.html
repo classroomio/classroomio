@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Audience · Learner Lifecycle Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="lifecycle.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <div class="sheet-scrim"></div>
+
+    <div class="app">
+      <aside class="sidebar">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">C</span><span class="brand-name">Acme Academy</span>
+        </a>
+        <div class="nav-label">Organization</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses<span class="nav-tail tnum">28</span></a>
+        <a class="nav-item active" href="audience.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Audience<span class="nav-tail tnum" id="navCount">—</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Analytics</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Compliance</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <nav class="crumbs"><a href="index.html">Prototype</a><span class="sep">/</span><span class="here">Audience</span></nav>
+          <div class="top-actions">
+            <a class="btn btn-ghost btn-sm" href="states.html">Edge states →</a>
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1180px">
+            <div class="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+              <span><b>Live prototype over 2,400 synthetic learners.</b> Filters, paging, counts and select-all-matching are really computed. Try: open the <b>view switcher</b> next to search → pick "Never logged in" → select the page → "Select all N matching" → <b>Actions</b>. The seat count in the subtitle falls when you archive; deactivating leaves it alone. Notes like this are prototype annotations, not app UI.</span>
+            </div>
+
+            <!-- ============ page header ============ -->
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Audience</h1>
+                <p class="page-sub">Everyone with learner access to Acme Academy. <span class="tnum" id="totalBadge"></span></p>
+              </div>
+              <div style="display:flex;gap:8px">
+                <div class="rel">
+                  <button class="btn btn-outline" data-pop="exportPop" id="exportBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>
+                    Export
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="pop menu" id="exportPop" style="right:0;top:calc(100% + 6px);min-width:280px"></div>
+                </div>
+                <a class="btn btn-secondary" href="import.html">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+                  Import
+                </a>
+              </div>
+            </div>
+
+            <!-- ============ queued job bar ============ -->
+            <div class="jobbar" id="jobbar">
+              <span class="lbl" id="jobLabel">Archiving…</span>
+              <div class="progress"><span id="jobFill" style="width:0%"></span></div>
+              <span class="pct" id="jobPct">0%</span>
+              <button class="btn btn-ghost btn-sm" id="jobDismiss" hidden>Dismiss</button>
+            </div>
+
+            <!-- ============ control row ============ -->
+            <div class="controls" id="controls">
+              <input class="input search-input" id="search" placeholder="Search by name or email…" aria-label="Search learners" />
+              <div class="rel">
+                <button class="btn btn-ghost" data-pop="viewPop" id="viewBtn" aria-expanded="false">
+                  <span id="viewLabel">All learners</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="pop menu" id="viewPop" style="left:0;top:calc(100% + 6px);min-width:270px"></div>
+              </div>
+              <div class="rel">
+                <button class="btn btn-outline" data-pop="filterPop" id="filterBtn" aria-expanded="false">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+                  Filter
+                  <span class="badge badge-secondary tnum" id="filterCount" hidden></span>
+                </button>
+                <span class="dot-flag" id="filterDot" hidden></span>
+                <div class="pop filter-pop" id="filterPop" style="right:0;top:calc(100% + 6px)">
+                  <div class="filter-body" id="filterBody"></div>
+                  <div class="filter-foot">
+                    <button class="link-btn" id="filterClear">Clear all</button>
+                    <div style="display:flex;gap:8px">
+                      <button class="btn btn-ghost btn-sm" id="filterCancel">Cancel</button>
+                      <button class="btn btn-primary btn-sm" id="filterApply">Apply</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="rel">
+                <button class="btn btn-outline" data-pop="sortPop">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+                  Sort
+                </button>
+                <div class="pop menu" id="sortPop" style="right:0;top:calc(100% + 6px);min-width:230px"></div>
+              </div>
+            </div>
+
+            <!-- ============ bulk bar (replaces control row) ============ -->
+            <div class="bulkbar" id="bulkbar">
+              <span class="count" id="bulkCount">0 selected</span>
+              <button class="link-btn" id="selectAllMatching" hidden></button>
+              <span class="spacer"></span>
+              <button class="btn btn-outline btn-sm">Assign courses</button>
+              <div class="rel">
+                <button class="btn btn-secondary btn-sm" data-pop="actionsPop">
+                  Actions
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="pop menu" id="actionsPop" style="right:0;top:calc(100% + 6px);min-width:300px"></div>
+              </div>
+              <button class="icon-btn" id="clearSel" aria-label="Clear selection" style="border:none;background:transparent;box-shadow:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <!-- ============ select-all-matching banner ============ -->
+            <div class="allmatch" id="allmatch">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;color:var(--primary)"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <span id="allmatchText"></span>
+              <span class="spacer" style="flex:1"></span>
+              <button class="link-btn" id="allmatchClear">Clear selection</button>
+            </div>
+
+            <!-- ============ chips ============ -->
+            <div class="chips" id="chips" hidden></div>
+
+            <!-- ============ result summary ============ -->
+            <p class="summary" id="summary" aria-live="polite"></p>
+
+            <!-- ============ table ============ -->
+            <div class="dt-wrap" id="dtwrap">
+              <div class="loadbar"></div>
+              <div class="dt-scroll">
+                <table class="dt">
+                  <thead>
+                    <tr>
+                      <th class="c-check sticky-l"><input type="checkbox" class="cb" id="headCb" aria-label="Select all on this page" /></th>
+                      <th class="sortable" data-sort="name">Name<span class="arrow">▼</span></th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th class="sortable" data-sort="joinedAt">Joined<span class="arrow">▼</span></th>
+                      <th class="sortable" data-sort="lastLoginAt">Last login<span class="arrow">▼</span></th>
+                      <th class="sortable" data-sort="lastActiveAt">Last activity<span class="arrow">▼</span></th>
+                      <th>Enrollment</th>
+                      <th class="sortable" data-sort="progress">Progress<span class="arrow">▼</span></th>
+                      <th style="width:44px"><span class="sr">Row actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody"></tbody>
+                </table>
+              </div>
+              <div id="emptyState"></div>
+            </div>
+
+            <!-- ============ pagination ============ -->
+            <div class="pager" id="pager"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ============ confirmation dialog ============ -->
+    <div class="backdrop" id="confirmBack" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="dialog">
+        <div class="dialog-head">
+          <h2 id="confirmTitle"></h2>
+          <p class="lede" id="confirmLede"></p>
+        </div>
+        <div class="dialog-body">
+          <div class="sample" id="confirmSample"></div>
+          <div class="recap" id="confirmRecap" hidden></div>
+          <div class="export-first" id="exportFirst">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>
+            <span style="flex:1" id="exportFirstText">Export this list first, so you can circulate it before acting.</span>
+            <button class="btn btn-outline btn-sm" id="exportFirstBtn">Export CSV</button>
+          </div>
+          <label class="label" for="reason" style="margin-bottom:-8px">Reason <span class="text-muted" style="font-weight:400">(optional, saved to the audit log)</span></label>
+          <textarea class="textarea" id="reason" rows="2" placeholder="e.g. Q3 dormant account review"></textarea>
+          <div id="typeConfirm" hidden>
+            <label class="label" for="typeBox">Type <b id="typeTarget"></b> to confirm</label>
+            <input class="input" id="typeBox" autocomplete="off" />
+          </div>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+          <button class="btn btn-primary" id="confirmGo"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ partial failure dialog ============ -->
+    <div class="backdrop" id="failBack" role="dialog" aria-modal="true" aria-labelledby="failTitle">
+      <div class="dialog">
+        <div class="dialog-head">
+          <h2 id="failTitle">Finished with errors</h2>
+          <p class="lede" id="failLede"></p>
+        </div>
+        <div class="dialog-body">
+          <div class="sample" id="failList" style="max-height:240px;overflow:auto"></div>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline" id="failExport">Download failures as CSV</button>
+          <button class="btn btn-primary" id="failClose">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toasts"></div>
+
+    <script src="proto.js"></script>
+    <script>
+      const P = window.proto;
+      P.initTheme();
+
+      /* ---------------- state ---------------- */
+      const ALL = P.buildLearners(2400);
+      const PAGE_SIZE = 20;
+
+      let filter = { ...P.EMPTY_FILTER };
+      let draft = { ...filter };
+      let sortBy = 'lastLoginAt';
+      let sortOrder = 'asc'; // oldest first — the dormancy question
+      let page = 1;
+      let selected = new Set();
+      let allMatchingMode = false;
+      let busy = false;
+      let rows = [];
+
+      const $ = (id) => document.getElementById(id);
+
+      /* ---------------- derive ---------------- */
+      function compute() {
+        const list = ALL.filter((r) => P.matches(r, filter));
+        const dir = sortOrder === 'asc' ? 1 : -1;
+
+        list.sort((a, b) => {
+          let av = a[sortBy];
+          let bv = b[sortBy];
+          // "Never" sorts as most-dormant, i.e. before every real timestamp when ascending
+          if (av === null) av = -Infinity;
+          if (bv === null) bv = -Infinity;
+          if (typeof av === 'string') return av.localeCompare(bv) * dir;
+          return (av - bv) * dir;
+        });
+
+        return list;
+      }
+
+      function pageRows(list) {
+        return list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+      }
+
+      const selectableOf = (pr) => pr.filter((r) => !r.pending);
+
+      /* ---------------- stale-while-loading ---------------- */
+      function reload(reason) {
+        busy = true;
+        $('dtwrap').classList.add('busy');
+        render({ keepRows: true });
+
+        setTimeout(() => {
+          busy = false;
+          $('dtwrap').classList.remove('busy');
+          render();
+          if (reason) announce(reason);
+        }, 420);
+      }
+
+      function announce(text) {
+        // summary is aria-live; re-render already updates it
+      }
+
+      /* ---------------- presets ---------------- */
+      function activePresetId() {
+        const cur = JSON.stringify({ ...filter, search: '' });
+        const hit = P.PRESETS.find((p) => JSON.stringify({ ...p.filter, search: '' }) === cur);
+        return hit ? hit.id : null;
+      }
+
+      function renderViews(countsReady) {
+        const active = activePresetId();
+        const current = P.PRESETS.find((p) => p.id === active);
+        $('viewLabel').textContent = current ? current.label : 'Custom filter';
+
+        $('viewPop').innerHTML = P.PRESETS.map((p) => {
+          const n = countsReady ? P.num(ALL.filter((r) => P.matches(r, { ...p.filter, search: filter.search })).length) : '';
+          return `<button data-preset="${p.id}">
+            <span class="t">${p.label}</span>
+            <span class="cnt">${countsReady ? n : '·'}</span>
+            ${active === p.id ? '<span class="tick">✓</span>' : '<span class="tick"></span>'}
+          </button>`;
+        }).join('');
+
+        $('viewPop').querySelectorAll('[data-preset]').forEach((b) =>
+          b.addEventListener('click', () => {
+            P.closeAllPops();
+            const preset = P.PRESETS.find((x) => x.id === b.dataset.preset);
+            if (activePresetId() === preset.id) return; // active view is a no-op, not a toggle-off
+
+            // views REPLACE filter state; search is preserved
+            filter = { ...preset.filter, search: filter.search };
+            draft = { ...filter };
+            page = 1;
+            clearSelection();
+            reload();
+          })
+        );
+      }
+
+      /* ---------------- filter popover ---------------- */
+      const RADIO_SETS = [
+        { key: 'lastLogin', legend: 'Last login', opts: [['any','Any'],['never','Never logged in'],['30','Before 30 days'],['90','Before 90 days'],['180','Before 180 days']] },
+        { key: 'lastActive', legend: 'Last activity', opts: [['any','Any'],['never','No activity ever'],['30','Before 30 days'],['90','Before 90 days'],['180','Before 180 days']] },
+        { key: 'enrollment', legend: 'Enrollment', opts: [['any','Any'],['enrolled','Enrolled in a course'],['not_enrolled','Not enrolled']] },
+        { key: 'completion', legend: 'Completion', opts: [['any','Any'],['not_started','Not started'],['in_progress','In progress'],['completed','Completed']] },
+        { key: 'status', legend: 'Member status', opts: [['ACTIVE','Active'],['DEACTIVATED','Deactivated'],['ARCHIVED','Archived'],['any','All statuses']] }
+      ];
+
+      function renderFilterBody() {
+        $('filterBody').innerHTML = RADIO_SETS.map((s) => `
+          <fieldset class="fset" style="border:none;margin:0;padding:0">
+            <legend class="legend">${s.legend}</legend>
+            ${s.opts.map(([v, l]) => `
+              <label class="fopt"><input type="radio" class="radio" name="${s.key}" value="${v}" ${draft[s.key] === v ? 'checked' : ''}/> ${l}</label>
+            `).join('')}
+          </fieldset>
+        `).join('');
+
+        $('filterBody').querySelectorAll('input[type=radio]').forEach((r) =>
+          r.addEventListener('change', () => { draft[r.name] = r.value; })
+        );
+      }
+
+      $('filterBtn').addEventListener('click', () => {
+        draft = { ...filter }; // reopening always starts from committed state
+        renderFilterBody();
+        const pop = $('filterPop');
+        const opening = !pop.classList.contains('on');
+        P.closeAllPops(pop);
+        pop.classList.toggle('on', opening);
+        $('filterBtn').setAttribute('aria-expanded', String(opening));
+        if (window.innerWidth <= 820) document.querySelector('.sheet-scrim').classList.toggle('on', opening);
+      });
+
+      $('filterApply').addEventListener('click', () => {
+        filter = { ...draft, search: filter.search };
+        page = 1;
+        clearSelection();
+        P.closeAllPops();
+        document.querySelector('.sheet-scrim').classList.remove('on');
+        reload();
+      });
+
+      $('filterCancel').addEventListener('click', () => {
+        draft = { ...filter }; // discard
+        P.closeAllPops();
+        document.querySelector('.sheet-scrim').classList.remove('on');
+      });
+
+      $('filterClear').addEventListener('click', () => {
+        draft = { ...P.EMPTY_FILTER };
+        renderFilterBody();
+      });
+
+      /* ---------------- sort ---------------- */
+      const SORTS = [
+        ['lastLoginAt', 'Last login'],
+        ['lastActiveAt', 'Last activity'],
+        ['joinedAt', 'Joined'],
+        ['name', 'Name'],
+        ['progress', 'Progress']
+      ];
+
+      function renderSortPop() {
+        $('sortPop').innerHTML =
+          '<div class="menu-label">Sort by</div>' +
+          SORTS.map(([k, l]) => `<button data-sortk="${k}"><span class="t">${l}</span>${sortBy === k ? '<span style="margin-left:auto;color:var(--primary)">✓</span>' : ''}</button>`).join('') +
+          '<div class="menu-sep"></div><div class="menu-label">Order</div>' +
+          `<button data-order="asc"><span class="t">Oldest first</span>${sortOrder === 'asc' ? '<span style="margin-left:auto;color:var(--primary)">✓</span>' : ''}</button>` +
+          `<button data-order="desc"><span class="t">Newest first</span>${sortOrder === 'desc' ? '<span style="margin-left:auto;color:var(--primary)">✓</span>' : ''}</button>`;
+
+        $('sortPop').querySelectorAll('[data-sortk]').forEach((b) =>
+          b.addEventListener('click', () => { setSort(b.dataset.sortk); P.closeAllPops(); })
+        );
+        $('sortPop').querySelectorAll('[data-order]').forEach((b) =>
+          b.addEventListener('click', () => { sortOrder = b.dataset.order; P.closeAllPops(); reload(); })
+        );
+      }
+
+      function setSort(key) {
+        if (sortBy === key) {
+          sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortBy = key;
+          // dormancy columns default oldest-first; everything else newest-first
+          sortOrder = key === 'lastLoginAt' || key === 'lastActiveAt' || key === 'name' ? 'asc' : 'desc';
+        }
+        page = 1;
+        reload();
+      }
+
+      document.querySelectorAll('th.sortable').forEach((th) =>
+        th.addEventListener('click', () => setSort(th.dataset.sort))
+      );
+
+      /* ---------------- selection ---------------- */
+      function clearSelection() {
+        selected = new Set();
+        allMatchingMode = false;
+      }
+
+      $('clearSel').addEventListener('click', () => { clearSelection(); render(); });
+      $('allmatchClear').addEventListener('click', () => { clearSelection(); render(); });
+
+      $('headCb').addEventListener('change', () => {
+        const sel = selectableOf(pageRows(rows));
+        const allOn = sel.every((r) => selected.has(r.id));
+        sel.forEach((r) => (allOn ? selected.delete(r.id) : selected.add(r.id)));
+        allMatchingMode = false;
+        render();
+      });
+
+      $('selectAllMatching').addEventListener('click', () => {
+        allMatchingMode = true;
+        render();
+      });
+
+      const effectiveCount = () => (allMatchingMode ? rows.filter((r) => !r.pending).length : selected.size);
+
+      /* ---------------- actions ---------------- */
+      const ACTIONS = {
+        archive: {
+          label: 'Archive',
+          hint: 'Frees a seat · reversible',
+          title: (n) => `Archive ${P.num(n)} learner${n === 1 ? '' : 's'}?`,
+          lede: 'They lose access and stop counting toward your plan limit. You can restore them at any time.',
+          cta: 'Archive',
+          variant: 'btn-primary',
+          undo: 'Unarchive'
+        },
+        deactivate: {
+          label: 'Deactivate',
+          hint: 'Blocks access · keeps the seat · reversible',
+          title: (n) => `Deactivate ${P.num(n)} learner${n === 1 ? '' : 's'}?`,
+          lede: 'They can no longer sign in to this organization. They still count toward your plan limit. Reversible.',
+          cta: 'Deactivate',
+          variant: 'btn-primary',
+          undo: 'Reactivate'
+        },
+        delete: {
+          label: 'Delete permanently',
+          hint: 'Irreversible · removes all records',
+          title: (n) => `Permanently delete ${P.num(n)} learner${n === 1 ? '' : 's'}?`,
+          lede: 'This removes their membership, enrollments and progress from this organization. It cannot be undone.',
+          cta: 'Delete permanently',
+          variant: 'btn-destructive',
+          undo: null,
+          type: true
+        }
+      };
+
+      function renderActionsPop() {
+        const targets = currentTargets();
+        const allArchived = targets.length > 0 && targets.every((r) => r.status === 'ARCHIVED');
+        const anyInactive = targets.some((r) => r.status !== 'ACTIVE');
+
+        $('actionsPop').innerHTML = `
+          <button data-act="archive"><div><div class="t">Archive</div><div class="d">${ACTIONS.archive.hint}</div></div></button>
+          <button data-act="deactivate"><div><div class="t">Deactivate</div><div class="d">${ACTIONS.deactivate.hint}</div></div></button>
+          ${anyInactive ? '<button data-act="restore"><div><div class="t">Restore</div><div class="d">Return to active</div></div></button>' : ''}
+          <div class="menu-sep"></div>
+          <button class="danger" data-act="delete" ${allArchived ? '' : 'disabled title="Only archived learners can be permanently deleted. Archive them first."'}>
+            <div><div class="t">Delete permanently</div><div class="d">${allArchived ? ACTIONS.delete.hint : 'Archive them first'}</div></div>
+          </button>`;
+
+        $('actionsPop').querySelectorAll('[data-act]').forEach((b) =>
+          b.addEventListener('click', () => {
+            P.closeAllPops();
+            if (b.dataset.act === 'restore') return runRestore();
+            openConfirm(b.dataset.act);
+          })
+        );
+      }
+
+      function currentTargets() {
+        return allMatchingMode ? rows.filter((r) => !r.pending) : ALL.filter((r) => selected.has(r.id));
+      }
+
+      /* ---------------- confirm dialog ---------------- */
+      let pendingAction = null;
+
+      function openConfirm(actKey) {
+        const act = ACTIONS[actKey];
+        const targets = currentTargets();
+        pendingAction = { actKey, targets };
+
+        $('confirmTitle').textContent = act.title(targets.length);
+        $('confirmLede').textContent = act.lede;
+
+        const sample = targets.slice(0, 5);
+        $('confirmSample').innerHTML =
+          sample.map((r) => `<div class="r"><span>${r.name}</span><span class="text-muted">${r.lastLoginAt === null ? 'Never logged in' : 'Last login ' + P.relTime(r.lastLoginAt)}</span></div>`).join('') +
+          (targets.length > 5 ? `<div class="r more">and ${P.num(targets.length - 5)} more</div>` : '');
+
+        const clauses = P.describe(filter);
+        $('confirmRecap').hidden = !allMatchingMode;
+        if (allMatchingMode) {
+          $('confirmRecap').innerHTML =
+            '<b>Matching these filters:</b><br>' +
+            (clauses.length ? clauses.map((c) => '· ' + c.text).join('<br>') : '· No filters — this is your entire audience') +
+            (filter.search ? `<br>· Search: “${filter.search}”` : '');
+        }
+
+        $('exportFirst').classList.remove('done');
+        $('exportFirstText').textContent = 'Export this list first, so you can circulate it before acting.';
+        $('reason').value = '';
+
+        $('typeConfirm').hidden = !act.type;
+        $('typeTarget').textContent = String(targets.length);
+        $('typeBox').value = '';
+
+        const go = $('confirmGo');
+        go.textContent = act.cta;
+        go.className = 'btn ' + act.variant;
+        go.disabled = !!act.type;
+
+        $('confirmBack').classList.add('on');
+        $('confirmCancel').focus(); // safe option gets focus
+      }
+
+      $('typeBox').addEventListener('input', () => {
+        $('confirmGo').disabled = $('typeBox').value.trim() !== String(pendingAction.targets.length);
+      });
+
+      $('confirmCancel').addEventListener('click', () => $('confirmBack').classList.remove('on'));
+
+      $('exportFirstBtn').addEventListener('click', () => {
+        $('exportFirst').classList.add('done');
+        $('exportFirstText').textContent = `Exported ${P.num(pendingAction.targets.length)} rows to CSV.`;
+        P.toast(`Exported ${P.num(pendingAction.targets.length)} learners to CSV.`);
+      });
+
+      $('confirmGo').addEventListener('click', () => {
+        const { actKey, targets } = pendingAction;
+        $('confirmBack').classList.remove('on');
+
+        // count drift check — someone logged in while the admin was reviewing
+        if (allMatchingMode && Math.random() < 0.18) {
+          const drifted = targets.length - (1 + Math.floor(Math.random() * 6));
+          P.toast(`This list changed while you were reviewing it — ${P.num(drifted)} learners now match. Re-confirm to continue.`, { error: true, action: 'Review again', onAction: () => openConfirm(actKey) });
+          return;
+        }
+
+        if (targets.length > 1000) runQueued(actKey, targets);
+        else runNow(actKey, targets);
+      });
+
+      /* ---------------- executing ---------------- */
+      function applyStatus(targets, status) {
+        targets.forEach((r) => { r.status = status; });
+      }
+
+      function afterAction(actKey, targets, failures) {
+        clearSelection();
+        reload();
+        renderViews(true);
+
+        const act = ACTIONS[actKey];
+        if (failures && failures.length) return openFailures(targets.length, failures);
+
+        const n = P.num(targets.length);
+        if (act.undo) {
+          P.toast(`${n} learner${targets.length === 1 ? '' : 's'} ${actKey}d. They no longer appear in this view.`, {
+            action: 'Undo',
+            timeout: 10000,
+            onAction: () => { applyStatus(targets, 'ACTIVE'); reload(); renderViews(true); P.toast('Restored.'); }
+          });
+        } else {
+          P.toast(`${n} learner${targets.length === 1 ? '' : 's'} permanently deleted.`);
+        }
+      }
+
+      function runNow(actKey, targets) {
+        // seed a partial failure occasionally so the failure UI is reachable
+        const failures = Math.random() < 0.25
+          ? targets.slice(0, Math.min(3, targets.length)).map((r) => ({ name: r.name, email: r.email, reason: 'Still enrolled in a mandatory course' }))
+          : [];
+        const ok = targets.filter((r) => !failures.some((f) => f.email === r.email));
+
+        if (actKey === 'delete') ok.forEach((r) => { const i = ALL.indexOf(r); if (i > -1) ALL.splice(i, 1); });
+        else applyStatus(ok, actKey === 'archive' ? 'ARCHIVED' : 'DEACTIVATED');
+
+        afterAction(actKey, ok, failures);
+      }
+
+      function runQueued(actKey, targets) {
+        const bar = $('jobbar');
+        bar.classList.add('on');
+        $('jobDismiss').hidden = true;
+        $('jobLabel').textContent = `${ACTIONS[actKey].cta}ing ${P.num(targets.length)} learners…`;
+
+        let done = 0;
+        const step = Math.ceil(targets.length / 22);
+        const timer = setInterval(() => {
+          done = Math.min(targets.length, done + step);
+          const pct = Math.round((done / targets.length) * 100);
+          $('jobFill').style.width = pct + '%';
+          $('jobPct').textContent = `${P.num(done)} of ${P.num(targets.length)}`;
+
+          if (done >= targets.length) {
+            clearInterval(timer);
+            if (actKey === 'delete') targets.forEach((r) => { const i = ALL.indexOf(r); if (i > -1) ALL.splice(i, 1); });
+            else applyStatus(targets, actKey === 'archive' ? 'ARCHIVED' : 'DEACTIVATED');
+
+            $('jobLabel').textContent = `Finished — ${P.num(targets.length)} learners ${actKey}d.`;
+            $('jobDismiss').hidden = false;
+            afterAction(actKey, targets, []);
+          }
+        }, 160);
+
+        P.toast('Working in the background. You can leave this page.');
+      }
+
+      $('jobDismiss').addEventListener('click', () => $('jobbar').classList.remove('on'));
+
+      function runRestore() {
+        const targets = currentTargets();
+        applyStatus(targets, 'ACTIVE');
+        clearSelection();
+        reload();
+        renderViews(true);
+        P.toast(`${P.num(targets.length)} learners restored to active.`);
+      }
+
+      function openFailures(total, failures) {
+        $('failLede').textContent = `${P.num(total)} succeeded · ${failures.length} failed`;
+        $('failList').innerHTML = failures.map((f) => `<div class="r"><span>${f.name}<div class="em">${f.email}</div></span><span class="text-muted" style="text-align:right">${f.reason}</span></div>`).join('');
+        $('failBack').classList.add('on');
+      }
+
+      $('failClose').addEventListener('click', () => $('failBack').classList.remove('on'));
+      $('failExport').addEventListener('click', () => P.toast('Downloaded failed-rows.csv'));
+
+      /* ---------------- export menu ---------------- */
+      function renderExportPop() {
+        const filtered = rows.length;
+        const sel = effectiveCount();
+        const pdfOk = (sel || filtered) <= 2000;
+
+        $('exportPop').innerHTML =
+          (sel ? `<button data-x="sel"><div><div class="t">Export ${P.num(sel)} selected</div><div class="d">CSV</div></div></button>` : '') +
+          (P.describe(filter).length || filter.search ? `<button data-x="filtered"><div><div class="t">Export ${P.num(filtered)} filtered</div><div class="d">CSV · matches the current view</div></div></button>` : '') +
+          `<button data-x="all"><div><div class="t">Export all ${P.num(ALL.length)}</div><div class="d">CSV · streams from the server</div></div></button>` +
+          '<div class="menu-sep"></div>' +
+          `<button data-x="pdf" ${pdfOk ? '' : 'disabled title="PDF is available for up to 2,000 rows. Use CSV for larger exports."'}>
+             <div><div class="t">Export as PDF</div><div class="d">${pdfOk ? 'Formatted table' : 'Up to 2,000 rows — use CSV'}</div></div>
+           </button>`;
+
+        $('exportPop').querySelectorAll('[data-x]').forEach((b) =>
+          b.addEventListener('click', () => {
+            P.closeAllPops();
+            const scope = b.dataset.x;
+            const n = scope === 'sel' ? sel : scope === 'all' ? ALL.length : filtered;
+            const slug = activePresetId() && activePresetId() !== 'all' ? '-' + activePresetId() : '';
+            P.toast(`Downloading <b>acme-audience${slug}-2026-09-06.${scope === 'pdf' ? 'pdf' : 'csv'}</b> · ${P.num(n)} rows`);
+          })
+        );
+      }
+
+      /* ---------------- render ---------------- */
+      function render({ keepRows } = {}) {
+        if (!keepRows) rows = compute();
+
+        const pr = pageRows(rows);
+        const sel = selectableOf(pr);
+        const selCount = effectiveCount();
+
+        // Seat count excludes ARCHIVED — this is the payoff of Finding 1 in the plan.
+        // Archive a batch and watch this number fall; deactivate and it does not.
+        const seatsUsed = ALL.filter((r) => r.status !== 'ARCHIVED').length;
+        $('totalBadge').textContent = `· ${P.num(seatsUsed)} of 2,500 seats`;
+        $('navCount').textContent = P.num(seatsUsed);
+
+        /* summary */
+        const sortLabel = (SORTS.find((s) => s[0] === sortBy) || [])[1] || 'Name';
+        const orderLabel = sortOrder === 'asc' ? 'oldest first' : 'newest first';
+        $('summary').innerHTML = busy
+          ? '<span class="sk" style="width:220px"></span>'
+          : `<b>${P.num(rows.length)}</b> learner${rows.length === 1 ? '' : 's'} · sorted by ${sortLabel.toLowerCase()}, ${orderLabel}`;
+
+        /* chips */
+        const clauses = P.describe(filter);
+        $('chips').hidden = clauses.length === 0;
+        if (clauses.length) {
+          $('chips').innerHTML =
+            clauses.map((c) => `<span class="chip">${c.text}<button data-chip="${c.key}" aria-label="Remove ${c.text}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span>`).join('') +
+            '<button class="link-btn" id="chipClear">Clear all</button>';
+
+          $('chips').querySelectorAll('[data-chip]').forEach((b) =>
+            b.addEventListener('click', () => {
+              // single removal is one intent — applies immediately, no Apply step
+              filter[b.dataset.chip] = b.dataset.chip === 'status' ? 'ACTIVE' : 'any';
+              draft = { ...filter };
+              page = 1;
+              clearSelection();
+              reload();
+            })
+          );
+          document.getElementById('chipClear').addEventListener('click', () => {
+            filter = { ...P.EMPTY_FILTER, search: filter.search };
+            draft = { ...filter };
+            page = 1;
+            clearSelection();
+            reload();
+          });
+        }
+
+        /* filter trigger indicators */
+        $('filterDot').hidden = clauses.length === 0;
+        $('filterCount').hidden = clauses.length < 2;
+        $('filterCount').textContent = clauses.length;
+
+        /* bulk bar swaps in for the control row */
+        const hasSel = selCount > 0;
+        $('bulkbar').classList.toggle('on', hasSel);
+        $('controls').style.display = hasSel ? 'none' : '';
+        $('bulkCount').textContent = `${P.num(selCount)} selected`;
+
+        const allPageSelected = sel.length > 0 && sel.every((r) => selected.has(r.id));
+        const showAllMatching = allPageSelected && !allMatchingMode && rows.length > sel.length;
+        $('selectAllMatching').hidden = !showAllMatching;
+        $('selectAllMatching').textContent = `Select all ${P.num(rows.filter((r) => !r.pending).length)} matching`;
+
+        $('allmatch').classList.toggle('on', allMatchingMode);
+        $('allmatchText').innerHTML = `All <b>${P.num(rows.filter((r) => !r.pending).length)}</b> learners matching these filters are selected.`;
+
+        if (hasSel) renderActionsPop();
+
+        /* header checkbox tri-state */
+        $('headCb').checked = allMatchingMode || allPageSelected;
+        $('headCb').indeterminate = !allMatchingMode && !allPageSelected && sel.some((r) => selected.has(r.id));
+
+        /* sort arrows */
+        document.querySelectorAll('th.sortable').forEach((th) => {
+          th.classList.toggle('on', th.dataset.sort === sortBy);
+          th.querySelector('.arrow').textContent = sortOrder === 'asc' ? '▲' : '▼';
+        });
+
+        /* rows */
+        if (!keepRows) {
+          $('tbody').innerHTML = pr.map((r) => {
+            const isSel = allMatchingMode ? !r.pending : selected.has(r.id);
+            const badge = r.status === 'ACTIVE'
+              ? ''
+              : `<span class="badge ${r.status === 'ARCHIVED' ? 'badge-muted' : 'badge-warning'}">${r.status === 'ARCHIVED' ? 'Archived' : 'Deactivated'}</span>`;
+            const inviteBadge = r.pending ? '<span class="badge badge-outline">Invited</span>' : '';
+
+            return `<tr class="${isSel ? 'sel' : ''} ${r.status !== 'ACTIVE' ? 'inactive' : ''}">
+              <td class="c-check sticky-l">
+                <input type="checkbox" class="cb" data-row="${r.id}" ${isSel ? 'checked' : ''} ${r.pending ? 'disabled title="Invited learners who have not signed up yet cannot be selected."' : ''} aria-label="Select ${r.name}" />
+              </td>
+              <td class="sticky-l" style="left:38px">
+                <div class="person"><span class="avatar" style="width:26px;height:26px;font-size:10px">${r.initials}</span><span class="nm"><a href="#">${r.name}</a></span></div>
+              </td>
+              <td class="em">${r.email}</td>
+              <td>${badge || inviteBadge || '<span class="badge badge-success-soft">Active</span>'}</td>
+              <td class="em tnum">${P.absTime(r.joinedAt)}</td>
+              <td class="${r.lastLoginAt === null ? 'never' : ''}" title="${P.absTime(r.lastLoginAt)}">${r.lastLoginAt === null ? 'Never' : P.relTime(r.lastLoginAt)}</td>
+              <td class="${r.lastActiveAt === null ? 'never' : ''}" title="${P.absTime(r.lastActiveAt)}">${r.lastActiveAt === null ? 'Never' : P.relTime(r.lastActiveAt)}</td>
+              <td class="tnum">${r.enrolled === 0 ? '<span class="never">—</span>' : `${r.completed} / ${r.enrolled}`}</td>
+              <td>
+                <div class="prog">
+                  <div class="progress progress-thin" style="width:56px"><span style="width:${r.progress}%"></span></div>
+                  <span class="p">${r.progress}%</span>
+                </div>
+              </td>
+              <td><button class="icon-btn" style="border:none;background:transparent;box-shadow:none" aria-label="Actions for ${r.name}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></td>
+            </tr>`;
+          }).join('');
+
+          $('tbody').querySelectorAll('[data-row]').forEach((cb) =>
+            cb.addEventListener('change', () => {
+              const id = +cb.dataset.row;
+              if (allMatchingMode) {
+                // downgrade from "all matching" to explicit ids
+                allMatchingMode = false;
+                selected = new Set(rows.filter((r) => !r.pending).map((r) => r.id));
+              }
+              selected.has(id) ? selected.delete(id) : selected.add(id);
+              render();
+            })
+          );
+        }
+
+        /* empty states — two distinct ones */
+        const filtering = clauses.length > 0 || filter.search;
+        $('emptyState').innerHTML = rows.length > 0 || busy ? '' : filtering
+          ? `<div class="empty">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></div>
+              <h3>No learners match these filters</h3>
+              <p>Try widening the date range, or clear the filters to see your whole audience.</p>
+              <button class="btn btn-primary btn-sm" id="emptyClear">Clear filters</button>
+            </div>`
+          : `<div class="empty">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <h3>No learners yet</h3>
+              <p>Import a list or share an invite link to bring your first learners into Acme Academy.</p>
+              <a class="btn btn-primary btn-sm" href="import.html">Import learners</a>
+            </div>`;
+
+        const ec = document.getElementById('emptyClear');
+        if (ec) ec.addEventListener('click', () => {
+          filter = { ...P.EMPTY_FILTER };
+          draft = { ...filter };
+          $('search').value = '';
+          page = 1;
+          reload();
+        });
+
+        document.querySelector('.dt').style.display = rows.length === 0 && !busy ? 'none' : '';
+
+        /* pagination */
+        const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+        if (page > totalPages) page = totalPages;
+        const win = [];
+        for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) win.push(i);
+
+        $('pager').innerHTML = rows.length === 0 ? '' : `
+          <span class="text-muted" style="font-size:13px">Showing ${P.num((page - 1) * PAGE_SIZE + 1)}–${P.num(Math.min(page * PAGE_SIZE, rows.length))} of ${P.num(rows.length)}</span>
+          <div class="pages">
+            <button class="pgb" data-pg="${page - 1}" ${page === 1 ? 'disabled' : ''}>Prev</button>
+            ${win.map((i) => `<button class="pgb ${i === page ? 'on' : ''}" data-pg="${i}">${i}</button>`).join('')}
+            <button class="pgb" data-pg="${page + 1}" ${page === totalPages ? 'disabled' : ''}>Next</button>
+          </div>`;
+
+        $('pager').querySelectorAll('[data-pg]').forEach((b) =>
+          b.addEventListener('click', () => { page = +b.dataset.pg; reload(); }) // selection deliberately survives paging
+        );
+
+        renderViews(true);
+        renderSortPop();
+        renderExportPop();
+      }
+
+      /* ---------------- search (300ms debounce, keeps focus) ---------------- */
+      let searchTimer;
+      $('search').addEventListener('input', (e) => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          filter.search = e.target.value.trim();
+          draft.search = filter.search;
+          page = 1;
+          reload();
+        }, 300);
+      });
+
+      /* ---------------- pop triggers ---------------- */
+      document.querySelectorAll('[data-pop]').forEach((btn) => {
+        if (btn.id === 'filterBtn') return; // handled above
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const pop = document.getElementById(btn.dataset.pop);
+          const opening = !pop.classList.contains('on');
+          P.closeAllPops(pop);
+          pop.classList.toggle('on', opening);
+        });
+      });
+
+      document.querySelector('.sheet-scrim').addEventListener('click', () => {
+        P.closeAllPops();
+        document.querySelector('.sheet-scrim').classList.remove('on');
+      });
+
+      /* ---------------- boot: presets load their counts async ---------------- */
+      renderViews(false);
+      rows = compute();
+      render();
+      setTimeout(() => renderViews(true), 600);
+    </script>
+  </body>
+</html>

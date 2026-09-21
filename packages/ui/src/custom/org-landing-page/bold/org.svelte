@@ -8,6 +8,7 @@
   import BoldHero from './hero.svelte';
   import BoldCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
+  import LearningPathCard from '../learning-path-card.svelte';
   import { Button } from '../../../base/button';
   import { DotPattern } from '../../animation/dot-pattern';
   import LandingThemeScope from '../landing-theme-scope.svelte';
@@ -23,6 +24,8 @@
     hasMoreCourses = false,
     coursesLoaded = true,
     disableCourseLinks = false,
+    learningPaths,
+    hasMoreLearningPaths = false,
     embed,
     callout,
     links,
@@ -36,6 +39,36 @@
 
   <main>
     <BoldHero {hero} />
+
+    {#if learningPaths && learningPaths.length > 0}
+      <section class="ui:relative ui:bg-[var(--landing-card-soft)]/30 ui:px-6 ui:overflow-hidden ui:mb-12">
+        <DotPattern class="ui:opacity-[0.15]" />
+        <div class="ui:relative ui:max-w-7xl ui:mx-auto">
+          <div class="ui:flex ui:items-end ui:justify-between ui:mb-12">
+            <h2 class="ui:text-4xl ui:font-black ui:tracking-tight">
+              {labels?.learningPathsHeading ?? 'Learning Paths'}
+            </h2>
+          </div>
+          <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-8">
+            {#each learningPaths as path (path.id)}
+              <LearningPathCard {path} {disableCourseLinks} {labels} />
+            {/each}
+          </div>
+          {#if hasMoreLearningPaths}
+            <div class="ui:mt-12 ui:flex ui:justify-center">
+              <Button
+                href={disableCourseLinks ? undefined : '/learning-paths'}
+                size="lg"
+                class="ui:rounded-xl ui:px-8"
+                disabled={disableCourseLinks}
+              >
+                {labels?.browseLearningPathsLabel ?? 'View more learning paths'}
+              </Button>
+            </div>
+          {/if}
+        </div>
+      </section>
+    {/if}
 
     <EditableLandingSection sectionKey="courses">
       <section class="ui:relative ui:bg-[var(--landing-card-soft)]/30 ui:px-6 ui:overflow-hidden ui:mb-12">
