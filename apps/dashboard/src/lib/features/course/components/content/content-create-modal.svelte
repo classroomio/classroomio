@@ -6,6 +6,7 @@
   import * as Field from '@cio/ui/base/field';
   import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
   import { contentCreateStore, contentCreateStoreUtils } from './store';
+  import { openAddContentModal } from './open-content-create';
   import { ContentType } from '@cio/utils/constants/content';
   import {
     calculateNextSectionOrder,
@@ -24,6 +25,8 @@
   import { DEFAULT_STEPPER_STATE, CONTENT_OPTIONS, SUCCESS_SENTENCE_KEYS, REPEAT_LABEL_KEYS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { preventDefault } from '$lib/utils/functions/svelte';
+  import { shouldIgnoreGlobalShortcut } from '$lib/utils/functions/keyboard';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
   import { tick, untrack, onDestroy } from 'svelte';
   import CheckCircle2Icon from '@lucide/svelte/icons/check-circle-2';
 
@@ -321,7 +324,27 @@
       console.error('Failed to navigate to created content:', error);
     });
   }
+
+  function handleAddContentShortcut(event: KeyboardEvent) {
+    if (!(event.metaKey || event.ctrlKey) || !event.shiftKey || event.key.toLowerCase() !== 'n') {
+      return;
+    }
+
+    if ($isCourseLearnerView || !courseId) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if ($contentCreateStore.open || shouldIgnoreGlobalShortcut()) {
+      return;
+    }
+
+    openAddContentModal(courseId);
+  }
 </script>
+
+<svelte:window onkeydown={handleAddContentShortcut} />
 
 <Dialog.Root bind:open={$contentCreateStore.open} onOpenChange={(isOpen) => !isOpen && closeModal()}>
   <Dialog.Content

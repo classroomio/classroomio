@@ -1,11 +1,15 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { LessonsPage } from '$features/course/pages';
   import ContentPageMenu from '$features/course/components/lesson/content-page-menu.svelte';
   import { Button } from '@cio/ui/base/button';
+  import { Separator } from '@cio/ui/base/separator';
+  import * as Kbd from '@cio/ui/base/kbd';
   import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
-  import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
+  import { contentEditingStore } from '$features/course/components/content/store';
+  import { openAddContentModal } from '$features/course/components/content/open-content-create';
   import { courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
 
@@ -13,13 +17,14 @@
 
   let reorder = $state(false);
 
+  const isMac = $derived(browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform));
+
   function addContent() {
-    const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
-    if (contentGroupingEnabled) {
-      contentCreateStoreUtils.openSection();
-    } else {
-      contentCreateStoreUtils.openDefault();
+    if (!data.courseId) {
+      return;
     }
+
+    openAddContentModal(data.courseId);
   }
 </script>
 
@@ -36,9 +41,23 @@
           <Button variant="outline" onclick={() => (reorder = !reorder)} disabled={!!$contentEditingStore}>
             {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
           </Button>
-          <Button onclick={addContent} disabled={!!$contentEditingStore}
-            >{$t('course.navItem.lessons.add_content')}</Button
+          <Button
+            onclick={addContent}
+            disabled={!!$contentEditingStore}
+            aria-keyshortcuts="Control+Shift+N Meta+Shift+N"
           >
+            {$t('course.navItem.lessons.add_content')}
+            <Separator orientation="vertical" class="hidden h-4! sm:block" />
+            <span class="ui:text-muted-foreground hidden items-center gap-0.5 font-normal sm:flex">
+              {#if isMac}
+                <Kbd.Root>⌘</Kbd.Root>
+              {:else}
+                <Kbd.Root>Ctrl</Kbd.Root>
+              {/if}
+              <Kbd.Root>⇧</Kbd.Root>
+              <Kbd.Root>N</Kbd.Root>
+            </span>
+          </Button>
         </RoleBasedSecurity>
         <ContentPageMenu courseId={data.courseId} disabled={!!$contentEditingStore} />
         <RefreshPageData onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
