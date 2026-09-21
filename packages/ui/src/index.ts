@@ -76,7 +76,7 @@ export {
 export * as ResourceListRow from './custom/resource-list-row';
 export { DocumentCard } from './custom/document-card';
 export * as ExerciseQuestion from './custom/exercise-question';
-export { QuestionTypePicker } from './custom/question-type-picker';
+export { QuestionTypePicker, QuestionTypeIcon } from './custom/question-type-picker';
 export { MediaPlayer } from './custom/media-player';
 export { MultiSelectList, type MultiSelectListItem } from './custom/multi-select-list';
 export { MentionPopover, type MentionItem } from './custom/mention-popover';
@@ -94,3 +94,5 @@ export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
+export { AttentionHighlight, type AttentionHighlightProps } from './custom/attention-highlight';
+export { CircularProgress } from './custom/circular-progress';

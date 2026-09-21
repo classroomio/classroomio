@@ -35,7 +35,6 @@
       goto(resolve('/lms', {}));
     }
   });
-
 </script>
 
 {#if PUBLIC_IS_SELFHOSTED !== 'true'}

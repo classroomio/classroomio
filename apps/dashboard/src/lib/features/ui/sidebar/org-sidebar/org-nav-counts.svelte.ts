@@ -33,7 +33,7 @@ class OrgNavCountsApi extends BaseApi {
 
     this.inFlightOrgId = orgId;
 
-    await this.execute<typeof classroomio.organization['nav-counts']['$get']>({
+    await this.execute<(typeof classroomio.organization)['nav-counts']['$get']>({
       requestFn: () => classroomio.organization['nav-counts'].$get(),
       logContext: 'fetching organization nav counts',
       onSuccess: (response) => {

@@ -1375,6 +1375,9 @@ importers:
       '@cio/email':
         specifier: workspace:*
         version: link:../email
+      '@cio/question-types':
+        specifier: workspace:*
+        version: link:../question-types
       '@cio/ui':
         specifier: workspace:*
         version: link:../ui
@@ -1382,8 +1385,8 @@ importers:
         specifier: workspace:*
         version: link:../utils
       '@lucide/svelte':
-        specifier: ^0.562.0
-        version: 0.562.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))
+        specifier: ^1.40.0
+        version: 1.47.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))
       svelte-inview:
         specifier: ^4.0.4
         version: 4.0.4(svelte@5.56.9(@typescript-eslint/types@8.50.1))
@@ -5122,6 +5125,11 @@ packages:
 
   '@lucide/svelte@0.562.0':
     resolution: {integrity: sha512-wDMULwtTFN2Sc/TFBm6gfuVCNb4Y5P9LDrwxNnUbV52+IEU7NXZmvxwXoz+vrrpad6Xupq+Hw5eUlqIHEGhouw==}
+    peerDependencies:
+      svelte: ^5
+
+  '@lucide/svelte@1.47.0':
+    resolution: {integrity: sha512-tpuE7JIK9FzYDWsJx6PxHj9ROyCpnDxZfvHu5q5yHGKS2CFNjzSyf1o9/Ypu2A27GLvkPGqZcIMrF6idM+eQZQ==}
     peerDependencies:
       svelte: ^5
 
@@ -19968,6 +19976,10 @@ snapshots:
       svelte: 5.56.9(@typescript-eslint/types@8.50.1)
 
   '@lucide/svelte@0.562.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))':
+    dependencies:
+      svelte: 5.56.9(@typescript-eslint/types@8.50.1)
+
+  '@lucide/svelte@1.47.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))':
     dependencies:
       svelte: 5.56.9(@typescript-eslint/types@8.50.1)
 
