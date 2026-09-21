@@ -188,7 +188,11 @@
           class="ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-cover"
         />
       {/if}
-      <LearningPathBadge label={labels.badge} onCover class="ui:absolute ui:top-3 ui:left-3" />
+      <LearningPathBadge
+        label={labels.badge}
+        onCover
+        class="ui:rounded-sm ui:border-none ui:absolute ui:top-3 ui:left-3"
+      />
     </div>
 
     <!-- Body -->
