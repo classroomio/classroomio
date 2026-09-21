@@ -36,8 +36,13 @@ Open a lesson, go to its **Settings** tab, and choose a **Completion rule**:
 ![Lesson Completion rule options with Manual, Video watch, and None](/help/progression-completion-rule.webp)
 
 :::warning
-**Video watch** only enforces uploaded videos. While the rule is active the player blocks skipping ahead and pauses when
-the student switches tabs, so the watch percentage reflects real viewing. The lesson completes once the threshold is reached.
+**Video watch** only enforces uploaded videos. YouTube, Vimeo, and other external embeds can't be tracked, so the system
+can't tell when a student has finished watching them — a lesson with only embedded videos will never complete on its own,
+and students can't mark it complete manually either. If your lessons use embedded videos, upload the video to ClassroomIO
+or set the completion rule to **Manual** so students watch, then mark the lesson complete themselves.
+
+While **Video watch** is active the player blocks skipping ahead and pauses when the student switches tabs, so the watch
+percentage reflects real viewing. The lesson completes once the threshold is reached.
 :::
 
 ## Set how an exercise completes

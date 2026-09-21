@@ -433,9 +433,12 @@ export async function lockCohortStatusForAccept(
   }
 }
 
-export async function removeCohortMember(memberId: string): Promise<TCohortMember | null> {
+export async function removeCohortMember(cohortId: string, memberId: string): Promise<TCohortMember | null> {
   try {
-    const [deleted] = await db.delete(schema.cohortMember).where(eq(schema.cohortMember.id, memberId)).returning();
+    const [deleted] = await db
+      .delete(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
+      .returning();
     return deleted || null;
   } catch (error) {
     console.error('removeCohortMember error:', error);
@@ -446,6 +449,7 @@ export async function removeCohortMember(memberId: string): Promise<TCohortMembe
 }
 
 export async function updateCohortMember(
+  cohortId: string,
   memberId: string,
   data: Partial<TNewCohortMember>
 ): Promise<TCohortMember | null> {
@@ -453,7 +457,7 @@ export async function updateCohortMember(
     const [updated] = await db
       .update(schema.cohortMember)
       .set(data)
-      .where(eq(schema.cohortMember.id, memberId))
+      .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
       .returning();
     return updated || null;
   } catch (error) {
@@ -741,9 +745,13 @@ export async function getCohortNewsfeed(
   }
 }
 
-export async function getCohortNewsfeedById(feedId: string): Promise<TCohortNewsfeed | null> {
+export async function getCohortNewsfeedById(cohortId: string, feedId: string): Promise<TCohortNewsfeed | null> {
   try {
-    const [feed] = await db.select().from(schema.cohortNewsfeed).where(eq(schema.cohortNewsfeed.id, feedId)).limit(1);
+    const [feed] = await db
+      .select()
+      .from(schema.cohortNewsfeed)
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
+      .limit(1);
     return feed || null;
   } catch (error) {
     console.error('getCohortNewsfeedById error:', error);
@@ -765,6 +773,7 @@ export async function createCohortNewsfeed(data: TNewCohortNewsfeed): Promise<TC
 }
 
 export async function updateCohortNewsfeed(
+  cohortId: string,
   feedId: string,
   data: Partial<TNewCohortNewsfeed>
 ): Promise<TCohortNewsfeed | null> {
@@ -772,7 +781,7 @@ export async function updateCohortNewsfeed(
     const [updated] = await db
       .update(schema.cohortNewsfeed)
       .set(data)
-      .where(eq(schema.cohortNewsfeed.id, feedId))
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
       .returning();
     return updated || null;
   } catch (error) {
@@ -784,6 +793,7 @@ export async function updateCohortNewsfeed(
 }
 
 export async function updateCohortNewsfeedReaction(
+  cohortId: string,
   feedId: string,
   reaction: { clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }
 ): Promise<TCohortNewsfeed | null> {
@@ -791,7 +801,7 @@ export async function updateCohortNewsfeedReaction(
     const [updated] = await db
       .update(schema.cohortNewsfeed)
       .set({ reaction })
-      .where(eq(schema.cohortNewsfeed.id, feedId))
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
       .returning();
     return updated || null;
   } catch (error) {
@@ -802,9 +812,12 @@ export async function updateCohortNewsfeedReaction(
   }
 }
 
-export async function deleteCohortNewsfeed(feedId: string): Promise<TCohortNewsfeed | null> {
+export async function deleteCohortNewsfeed(cohortId: string, feedId: string): Promise<TCohortNewsfeed | null> {
   try {
-    const [deleted] = await db.delete(schema.cohortNewsfeed).where(eq(schema.cohortNewsfeed.id, feedId)).returning();
+    const [deleted] = await db
+      .delete(schema.cohortNewsfeed)
+      .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
+      .returning();
     return deleted || null;
   } catch (error) {
     console.error('deleteCohortNewsfeed error:', error);
@@ -816,7 +829,10 @@ export async function deleteCohortNewsfeed(feedId: string): Promise<TCohortNewsf
 
 // ─── Program Newsfeed Comments ────────────────────────────────────────────────
 
-export async function getCohortNewsfeedComments(feedId: string): Promise<
+export async function getCohortNewsfeedComments(
+  cohortId: string,
+  feedId: string
+): Promise<
   Array<
     TCohortNewsfeedComment & {
       authorProfileId: string | null;
@@ -833,9 +849,12 @@ export async function getCohortNewsfeedComments(feedId: string): Promise<
         profile: schema.profile
       })
       .from(schema.cohortNewsfeedComment)
+      .innerJoin(schema.cohortNewsfeed, eq(schema.cohortNewsfeed.id, schema.cohortNewsfeedComment.cohortNewsfeedId))
       .leftJoin(schema.cohortMember, eq(schema.cohortNewsfeedComment.authorId, schema.cohortMember.id))
       .leftJoin(schema.profile, eq(schema.cohortMember.profileId, schema.profile.id))
-      .where(eq(schema.cohortNewsfeedComment.cohortNewsfeedId, feedId))
+      .where(
+        and(eq(schema.cohortNewsfeedComment.cohortNewsfeedId, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId))
+      )
       .orderBy(asc(schema.cohortNewsfeedComment.createdAt));
 
     return result.map((row) => ({
@@ -866,11 +885,16 @@ export async function createCohortNewsfeedComment(data: TNewCohortNewsfeedCommen
   }
 }
 
-export async function deleteCohortNewsfeedComment(commentId: number): Promise<TCohortNewsfeedComment | null> {
+export async function deleteCohortNewsfeedComment(
+  feedId: string,
+  commentId: number
+): Promise<TCohortNewsfeedComment | null> {
   try {
     const [deleted] = await db
       .delete(schema.cohortNewsfeedComment)
-      .where(eq(schema.cohortNewsfeedComment.id, commentId))
+      .where(
+        and(eq(schema.cohortNewsfeedComment.id, commentId), eq(schema.cohortNewsfeedComment.cohortNewsfeedId, feedId))
+      )
       .returning();
     return deleted || null;
   } catch (error) {

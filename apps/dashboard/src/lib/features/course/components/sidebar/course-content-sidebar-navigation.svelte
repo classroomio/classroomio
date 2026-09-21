@@ -7,7 +7,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Button } from '@cio/ui/base/button';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
-  import { courseApi } from '$features/course/api';
+  import { openAddContentModal } from '$features/course/components/content/open-content-create';
   import { getLessonsRoute } from '$features/course/utils/functions';
   import { t } from '$lib/utils/functions/translations';
   import { getCourseSidebarBackRoute } from './sidebar-history';
@@ -22,22 +22,6 @@
   let { path, id, isStudent = false }: Props = $props();
 
   const backRoute = $derived(getCourseSidebarBackRoute(id));
-
-  function openContentModal(courseId: string, sectionId = '') {
-    goto(resolve(`/courses/${courseId}/lessons`, {}));
-    contentEditingStore.set(undefined);
-    contentCreateStoreUtils.close();
-
-    const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
-
-    if (sectionId) {
-      contentCreateStoreUtils.openContentUnit(sectionId);
-    } else if (contentGroupingEnabled) {
-      contentCreateStoreUtils.openSection();
-    } else {
-      contentCreateStoreUtils.openDefault();
-    }
-  }
 
   function openSectionEditor(courseId: string, sectionId: string) {
     goto(resolve(`/courses/${courseId}/lessons`, {}));
@@ -71,7 +55,7 @@
                   onclick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    openContentModal(id);
+                    openAddContentModal(id);
                   }}
                 />
               {/if}
@@ -87,7 +71,7 @@
     {id}
     {isStudent}
     className="mt-1"
-    onOpenContentModal={isStudent ? undefined : (sectionId) => openContentModal(id, sectionId)}
+    onOpenContentModal={isStudent ? undefined : (sectionId) => openAddContentModal(id, sectionId)}
     onEditSection={isStudent ? undefined : (sectionId) => openSectionEditor(id, sectionId)}
   />
 </Sidebar.Group>

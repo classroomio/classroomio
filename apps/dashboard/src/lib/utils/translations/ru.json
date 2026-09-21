@@ -211,8 +211,6 @@
       "section_update_failed": "Не удалось обновить раздел курса.",
       "sections_reordered": "Разделы курса успешно изменены",
       "sections_reorder_failed": "Не удалось изменить порядок разделов курса.",
-      "lessons_reordered": "Уроки успешно изменены",
-      "lessons_reorder_failed": "Не удалось изменить порядок уроков.",
       "comment_fetch_failed": "Не удалось получить комментарии к уроку.",
       "load_more_comments_failed": "Не удалось загрузить больше комментариев.",
       "comment_add_failed": "Не удалось добавить комментарий",
@@ -306,7 +304,11 @@
         "all_content_already_unlocked": "Весь контент уже разблокирован",
         "content_grouping_enabled": "Группировка контента включена",
         "content_grouping_disabled": "Группировка контента отключена",
-        "link_generated": "Ссылка на курс успешно обновлена"
+        "link_generated": "Ссылка на курс успешно обновлена",
+        "converted_to_public": "Курс успешно преобразован в общедоступный курс"
+      },
+      "info": {
+        "conversion_blocked": "Исправьте вопросы ниже, чтобы завершить преобразование в публичный доступ."
       }
     },
     "people": {
@@ -384,7 +386,8 @@
       "delete_success": "Видео удалено",
       "delete_in_use": "Это видео все еще прикреплено к уроку. Сначала уберите его оттуда.",
       "delete_failed": "Не удалось удалить видео.",
-      "added_to_lesson": "Видео добавлено в урок"
+      "added_to_lesson": "Видео добавлено в урок",
+      "transcript_unavailable": "Транскрипция недоступна"
     },
     "tags": {
       "group_created": "Группа тегов создана.",
@@ -467,6 +470,11 @@
         "post_created": "Сообщение успешно создано",
         "post_updated": "Сообщение успешно обновлено"
       }
+    },
+    "report": {
+      "success": "Спасибо. Мы рассмотрим эту жалобу.",
+      "error": "Не удалось отправить жалобу. Попробуйте ещё раз.",
+      "already_submitted": "Вы уже пожаловались на этот контент."
     }
   },
   "explore": {
@@ -943,6 +951,7 @@
         "cover_image": "Обложка",
         "optional_image": "Это дополнительное изображение появится на вашей странице приветствия. Если вы включаете один, его размер должен быть не менее 280 x 200.",
         "replace": "Заменить",
+        "remove": "Удалить",
         "del": "Удалить",
         "course_details": "Детали курса",
         "course_title": "Название курса",
@@ -950,6 +959,7 @@
         "placeholder": "Напишите здесь описание вашего курса",
         "course_title_placeholder": "Напишите здесь название курса",
         "setup_landing_for_link": "Настройте целевую страницу, чтобы получить ссылку на курс",
+        "setup_landing_page": "Настроить целевую страницу",
         "coming_soon": "Скоро",
         "link": "Ссылка на курс",
         "grading": "Оценка",
@@ -961,7 +971,6 @@
         "content_grouping_title": "Группировка контента",
         "content_grouping_description": "Группируйте уроки и упражнения по разделам в списке контента.",
         "progression_mode_title": "Прогресс студента",
-        "progression_mode_description": "Управляйте доступом студентов ко всему разблокированному контенту или требуйте прохождения по порядку.",
         "progression_mode_free": "Свободный — разблокированный контент доступен",
         "progression_mode_sequential": "Последовательный — завершите предыдущие элементы, чтобы открыть следующий",
         "comments": {
@@ -1003,7 +1012,6 @@
         },
         "compliance": "Соответствие требованиям",
         "public": "Общественный",
-        "convert_to_public_blocked": "В этом курсе есть вопросы, которые нельзя оценить автоматически, поэтому его пока нельзя опубликовать.",
         "fix_blocking_questions": "Исправить блокирующие вопросы",
         "slug": {
           "label": "URL-адрес",
@@ -1036,6 +1044,9 @@
           "description": "Настройте электронное письмо, которое студенты получат после регистрации. Добавьте личную заметку, инструкции или ссылку на сеанс в реальном времени.",
           "placeholder": "Напишите приветственное сообщение, которое студенты получат при зачислении…"
         },
+        "general_card_title": "Общие",
+        "content_card_title": "Содержание",
+        "access_card_title": "Доступ",
         "locked_content": {
           "title": "Элементы курса ({count}) заблокированы",
           "description": "Зачисленные учащиеся не смогут проходить заблокированные уроки или упражнения, пока вы их не разблокируете.",
@@ -1050,7 +1061,45 @@
         "generate_link": "Создать новую ссылку",
         "open_link": "Открыть ссылку в новой вкладке",
         "copy_link": "Скопировать ссылку",
-        "certificate_deadline_required_description": "Для курсов по соблюдению требований требуется крайний срок получения сертификата, прежде чем студенты смогут быть зачислены. Пожалуйста, установите крайний срок в настройках курса перед публикацией."
+        "question_in_exercise": "В «{exercise}»",
+        "fix_question": "Редактировать",
+        "convert_to_public_blocked": "Открытые курсы требуют только вопросов, оцениваемых автоматически.",
+        "convert_to_public_blocked_desc": "Упражнения в общедоступном курсе оцениваются автоматически в браузере, поэтому мы поддерживаем только вопросы с автоматической оценкой. Прежде чем сделать этот курс общедоступным, удалите или замените следующие вопросы:",
+        "fix_in_exercise": "Исправить в упражнении",
+        "cancel_conversion": "Отменить преобразование",
+        "public_conversion": {
+          "banner_title": "Преобразование курса в общедоступный",
+          "exercise_fixed": "Это упражнение готово",
+          "back_to_settings": "Вернуться к настройкам",
+          "complete_conversion": "Завершить преобразование в общедоступный",
+          "jump_to": "Перейти к",
+          "blocks_public_conversion": "Без автопроверки",
+          "blocks_public_conversion_desc": "Открытые курсы поддерживают только вопросы, оцениваемые автоматически. Измените тип этого вопроса или удалите его, чтобы продолжить преобразование.",
+          "blocks_public_conversion_title": "В открытых курсах ручная проверка работ не поддерживается.",
+          "aria_label": "Прогресс преобразования публичного курса",
+          "all_exercises_fixed": "{total, plural, one {Исправлено # упражнение} few {Все # упражнения исправлены} many {Все # упражнений исправлены} other {Все # упражнений исправлены}}",
+          "ready_to_convert": "Готово к преобразованию!",
+          "questions_left_other_singular": "· {count} вопрос остался в других упражнениях",
+          "questions_left_other_plural": "{count, plural, one {· # вопрос остался в других упражнениях} few {· # вопроса осталось в других упражнениях} many {· # вопросов осталось в других упражнениях} other {· # вопроса осталось в других упражнениях}}",
+          "progress_summary_singular": "{resolved}/{total} исправлено · остался {remaining} вопрос",
+          "progress_summary_plural": "{resolved}/{total} исправлено · {remaining, plural, one {остался # вопрос} few {осталось # вопроса} many {осталось # вопросов} other {осталось # вопроса}}",
+          "next_exercise": "Далее: {exercise}",
+          "next": "Далее",
+          "question_fallback": "Вопрос {number}",
+          "question_count_singular": "{count} вопрос",
+          "question_count_plural": "{count, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}}",
+          "exercise_count_singular": "{count} упражнение",
+          "exercise_count_plural": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнения}}",
+          "exercises_fixed": "{resolved}/{total} исправлено",
+          "questions_left_singular": "исправлено · остался {count} вопрос",
+          "questions_left_plural": "{count, plural, one {исправлено · остался # вопрос} few {исправлено · осталось # вопроса} many {исправлено · осталось # вопросов} other {исправлено · осталось # вопроса}}"
+        },
+        "fix": "Исправить",
+        "save_changes_to_fix_questions": "Сохраните несохраненные изменения, прежде чем переходить к исправлению вопросов.",
+        "certificate_deadline_required_description": "Для курсов по соблюдению требований требуется крайний срок получения сертификата, прежде чем студенты смогут быть зачислены. Пожалуйста, установите крайний срок в настройках курса перед публикацией.",
+        "progression_mode_description": "Управляйте тем, могут ли учащиеся получить доступ ко всему разблокированному контенту или должны ли они выполнять элементы по порядку. Завершение просмотра видео отслеживает только загруженные видео.",
+        "allow_markdown_export": "Разрешить учащимся копировать страницы уроков как Markdown",
+        "allow_markdown_export_description": "Если включено, на публичных страницах уроков появляется кнопка «Копировать страницу», которая экспортирует содержимое урока (без видео) в Markdown. Также публикуется общедоступный URL Markdown для каждого разблокированного урока."
       },
       "analytics": {
         "title": "Аналитика"
@@ -1617,7 +1666,9 @@
           "comment_btn": "Комментарий",
           "cancel_btn": "Отмена",
           "load_more_btn": "Загрузить больше",
-          "comment_error": "Не удалось опубликовать комментарий. Пожалуйста, попробуйте еще раз."
+          "comment_error": "Не удалось опубликовать комментарий. Пожалуйста, попробуйте еще раз.",
+          "edit": "Редактировать",
+          "delete": "Удалить"
         },
         "exercises": {
           "heading": "Все упражнения",
@@ -2321,6 +2372,7 @@
               "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки.",
               "google_drive": "Google Drive",
               "generate_transcript": "Сгенерировать транскрипцию",
+              "transcript_in_progress": "Получение транскрипции…",
               "generate_transcript_in_progress": "Транскрибирование…",
               "transcript": {
                 "title": "Транскрипция",
@@ -2362,7 +2414,87 @@
             "slide": {
               "title": "Слайд",
               "slide_link": "Ссылка на слайд",
-              "helper_message": "Вы можете встроить Google Slides или Canva Presentation."
+              "helper_message": "Вы можете встроить Google Slides или Canva Presentation.",
+              "button": "Добавить слайд",
+              "remove_slide": "Удалить слайд",
+              "menu_aria": "Действия со слайдом",
+              "empty_title": "Слайдов пока нет",
+              "empty_description": "Встройте Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare или Beautiful.ai",
+              "add_slide": {
+                "title": "Добавить слайд",
+                "search": "Поиск платформ",
+                "empty_prompt": "Выберите платформу, чтобы увидеть пошаговые инструкции и вставить код встраивания.",
+                "embed_code": "Вставить код встраивания",
+                "embed_placeholder": "Вставьте сюда полный iframe-код",
+                "how_to_embed": "Как встроить",
+                "preview": "Предпросмотр",
+                "embed_ready": "Встраивание готово",
+                "invalid_embed": "Вставьте полный iframe-код с этой платформы.",
+                "unsupported": "Это встраивание с платформы, которую мы пока не поддерживаем."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} из {total})"
             },
             "note": {
               "title": "Примечание",
@@ -2425,10 +2557,10 @@
           "manual_label": "Вручную",
           "manual_description": "Студенты сами отмечают урок как завершённый.",
           "video_watch_label": "Просмотр видео",
-          "video_watch_description": "Урок завершается автоматически после просмотра выбранных видео.",
           "none_label": "Нет",
           "none_description": "Этот урок не блокирует прохождение курса.",
-          "watch_threshold": "Порог просмотра (%)"
+          "watch_threshold": "Порог просмотра (%)",
+          "video_watch_description": "Урок завершится автоматически после того, как учащиеся посмотрят выбранные загруженные видео. YouTube и внешние вставки не могут быть отслежены."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2577,11 @@
             "option_guide_heading": "Что означает каждый вариант",
             "watch_videos_heading": "Видео для контроля",
             "watch_videos_helper": "Контроль возможен только для загруженных видео. YouTube и внешние встраивания отслеживать нельзя.",
-            "watch_videos_empty": "Добавьте загруженное видео на вкладке Видео для контроля просмотра.",
             "watch_videos_required": "Выберите хотя бы одно видео для контроля просмотра.",
-            "students_only_note": "Эти правила действуют только для студентов. Преподаватель может свободно просматривать и переходить между уроками."
+            "students_only_note": "Эти правила действуют только для студентов. Преподаватель может свободно просматривать и переходить между уроками.",
+            "watch_videos_empty": "Просмотр видео отслеживает только загруженные видео. YouTube и внешние вставки не могут быть отслежены, поэтому этот урок не может быть завершен автоматически, а учащиеся не могут отметить его как завершенный. Загрузите видео на вкладке «Видео» или установите правило завершения «Вручную».",
+            "watch_videos_no_uploads_title": "В этом уроке нет загруженных видео.",
+            "watch_videos_learn_more": "Узнать больше"
           }
         },
         "watch_progress": {
@@ -2500,7 +2634,16 @@
           "link_copied": "Ссылка скопирована"
         },
         "student_share_your_knowledge": "В этот курс пока не добавлены уроки. Пожалуйста, зайдите позже.",
-        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже."
+        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже.",
+        "add_content_created_section": "Раздел успешно создан!",
+        "add_content_created_lesson": "Урок успешно создан!",
+        "add_content_created_exercise": "Упражнение успешно создано!",
+        "add_content_create_another_section": "Создать ещё один раздел",
+        "add_content_create_another_lesson": "Создать ещё один урок",
+        "add_content_create_another_exercise": "Создать ещё одно упражнение",
+        "add_content_open_now": "Открыть сейчас",
+        "add_content_later": "Позже",
+        "add_content_add_to_section": "Добавить в раздел"
       },
       "news_feed": {
         "heading": "Лента новостей",
@@ -4518,7 +4661,7 @@
     "tool": {
       "pending": {
         "working": "Выполняется",
-        "unknown_tool": "Выполняется {toolName}",
+        "unknown_tool": "Работа над {toolName}",
         "get_course_structure": "Чтение структуры курса",
         "get_lesson_content": "Чтение содержимого урока",
         "get_exercise_details": "Чтение упражнения",
@@ -4542,6 +4685,7 @@
         "fetch_documentation_url": "Чтение страницы документации",
         "fetch_documentation_url_with_url": "Чтение {url}",
         "list_youtube_playlist_videos": "Вывод списка видео из плейлиста",
+        "get_lesson_transcript": "Чтение транскрипции видео",
         "add_youtube_video_to_lesson": "Встраивание видео с YouTube"
       },
       "meta": {
@@ -4577,6 +4721,11 @@
         "fetch_documentation_url": "Прочитать {url}",
         "list_youtube_playlist_videos": "Найдено {count} видео в плейлисте",
         "list_youtube_playlist_videos_unavailable": "Не удалось вывести список видео из плейлиста",
+        "get_lesson_transcript": "Транскрипция для {title} прочитана",
+        "get_lesson_transcript_fetching": "Получение транскрипции для {title}",
+        "get_lesson_transcript_plan_gated": "Транскрипции доступны на платном тарифе",
+        "get_lesson_transcript_no_credits": "Закончились ИИ-кредиты для получения транскрипций",
+        "get_lesson_transcript_unavailable": "Транскрипция для {title} недоступна",
         "add_youtube_video_to_lesson": "Встроенное видео: {title}"
       }
     },
@@ -4618,14 +4767,14 @@
     "retry": "Повторить попытку",
     "run_monitor_aria": "Выполняется создание курса",
     "run_summary": {
-      "completed": "Запуск завершен.",
-      "completed_with_counts": "Запуск завершен — создано {counts}.",
-      "failed": "Запуск не удался.",
-      "failed_with_reason": "Не удалось выполнить запуск — {reason}.",
-      "canceled": "Забег отменен.",
-      "canceled_with_counts": "Запуск отменен — перед остановкой создано {counts}.",
-      "paused": "Бег остановился. Возобновите, чтобы продолжить.",
-      "paused_with_counts": "Выполнение приостановлено — на данный момент создано {counts}. Возобновите, чтобы продолжить."
+      "completed": "Создание курса завершено.",
+      "completed_with_counts": "Создание курса завершено — создано {counts}.",
+      "failed": "Не удалось создать курс.",
+      "failed_with_reason": "Не удалось создать курс — {reason}.",
+      "canceled": "Создание курса отменено.",
+      "canceled_with_counts": "Создание курса отменено — создано {counts} до остановки.",
+      "paused": "Создание курса приостановлено. Возобновите, чтобы продолжить.",
+      "paused_with_counts": "Создание курса приостановлено — пока создано {counts}. Возобновите, чтобы продолжить."
     },
     "changes_card": {
       "summary_count": "Изменено элементов: {count}",
@@ -4652,16 +4801,16 @@
       "collapse": "Свернуть план"
     },
     "run_monitor": {
-      "cancel": "Отменить запуск",
+      "cancel": "Отменить создание",
       "dismiss": "Отклонить",
       "now_doing": "Сейчас",
       "input_disabled_hint": "Чат приостановлен, пока агент завершает создание курса. Отмените или дождитесь завершения.",
       "dismiss_confirm": "Уйти",
-      "dismiss_cancel": "Продолжайте бежать",
-      "dismiss_confirm_body": "Уйти с отмененного забега? Кнопка «Возобновить» исчезнет — любой дальнейший чат начнется заново и не будет продолжать выполнение плана.",
+      "dismiss_cancel": "Остаться здесь",
+      "dismiss_confirm_body": "Уйти от этого отменённого создания? Кнопка «Возобновить» исчезнет — любой дальнейший чат начнётся заново и не продолжит план.",
       "stuck_queued": {
         "title": "Работник не отвечает",
-        "body": "Этот запуск ожидает более 30 секунд, а работник не подъезжает. Фоновый рабочий процесс может быть отключен или перезапущен."
+        "body": "Создание курса ожидает больше 30 секунд, и ни один фоновый процесс его не подхватил. Фоновый процесс может быть недоступен или перезапускается."
       }
     },
     "ask_ai": "Спросите ИИ",
@@ -4987,6 +5136,30 @@
     "header": {
       "explore_courses": "Изучите курсы",
       "sign_in": "Войти"
+    },
+    "copy_page": {
+      "copy": "Копировать страницу",
+      "copied": "Скопировано",
+      "view_as_markdown": "Открыть как Markdown",
+      "open_in_chatgpt": "Открыть в ChatGPT",
+      "open_in_claude": "Открыть в Claude",
+      "more_actions": "Дополнительные действия копирования страницы",
+      "copy_failed": "Не удалось скопировать этот урок как Markdown"
+    },
+    "outline": {
+      "label": "На этой странице"
+    },
+    "rail": {
+      "copy_as_markdown": "Копировать как Markdown",
+      "open_in_chat": "Открыть в чате"
+    },
+    "share": {
+      "label": "Поделиться в соцсетях",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Ссылка скопирована. Вставьте её в Instagram."
     }
   },
   "account": {
@@ -5433,5 +5606,27 @@
     "format_json": "JSON",
     "copied": "Скопировано в буфер обмена",
     "copy_failed": "Не удалось скопировать в буфер обмена"
+  },
+  "report": {
+    "menu": "Пожаловаться",
+    "title": "Пожаловаться на контент",
+    "description": "Расскажите, что не так. Наша команда рассмотрит эту жалобу.",
+    "reason_label": "Причина",
+    "reason_placeholder": "Выберите причину",
+    "reason_required": "Пожалуйста, выберите причину",
+    "details_label": "Дополнительные сведения",
+    "details_placeholder": "Добавьте контекст, который поможет нам рассмотреть жалобу (необязательно)",
+    "submit": "Отправить жалобу",
+    "cancel": "Отмена",
+    "reasons": {
+      "spam": "Спам",
+      "harassment": "Преследование или травля",
+      "hate_speech": "Разжигание ненависти",
+      "sexual_content": "Сексуальный контент",
+      "violence": "Насилие или угрозы",
+      "misinformation": "Дезинформация",
+      "privacy": "Нарушение конфиденциальности",
+      "other": "Другое"
+    }
   }
 }

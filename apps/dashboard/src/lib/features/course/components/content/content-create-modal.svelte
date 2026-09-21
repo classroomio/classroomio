@@ -6,21 +6,44 @@
   import * as Field from '@cio/ui/base/field';
   import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
   import { contentCreateStore, contentCreateStoreUtils } from './store';
+  import { openAddContentModal } from './open-content-create';
   import { ContentType } from '@cio/utils/constants/content';
+  import {
+    calculateNextSectionOrder,
+    calculateNextContentOrder,
+    UNGROUPED_SECTION_KEY
+  } from '@cio/utils/functions/course-content';
   import { courseApi } from '$features/course/api';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import ExerciseCreateStepper from './exercise-create-stepper.svelte';
   import SectionCreateStepper from './section-create-stepper.svelte';
   import LessonCreateStepper from './lesson-create-stepper.svelte';
-  import type { StepperRef, StepperState } from './types';
-  import { DEFAULT_STEPPER_STATE, CONTENT_OPTIONS } from './constants';
+  import * as Alert from '@cio/ui/base/alert';
+  import { getContentRoute } from '$features/course/utils/content';
+  import type { CreatedContent, LockedSection, StepperRef, StepperState } from './types';
+  import { DEFAULT_STEPPER_STATE, CONTENT_OPTIONS, SUCCESS_SENTENCE_KEYS, REPEAT_LABEL_KEYS } from './constants';
   import { t } from '$lib/utils/functions/translations';
-  import { untrack } from 'svelte';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { shouldIgnoreGlobalShortcut } from '$lib/utils/functions/keyboard';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
+  import { tick, untrack, onDestroy } from 'svelte';
+  import CheckCircle2Icon from '@lucide/svelte/icons/check-circle-2';
+
+  type ModalPhase = 'form' | 'success';
 
   let step = $state(0);
-  let selectedType = $state<ContentType>(ContentType.Lesson);
+  let phase = $state<ModalPhase>('form');
+  let createdContent = $state<CreatedContent | null>(null);
+  /** Modal-local section context for the section -> Add content handoff. */
+  let lockedSection = $state<LockedSection | null>(null);
+  /** Guards stale async creates when the modal closes or reopens mid-flight. */
+  let modalSession = $state(0);
+  let initialSelectedType = ContentType.Lesson;
+  let selectedType = $state<ContentType>(initialSelectedType);
   let sectionId = $state('');
+  let primarySuccessButton: HTMLButtonElement | null = $state(null);
+  let dialogContent: HTMLElement | null = $state(null);
 
   // ============================================
   // STEPPER COMPONENT REFERENCES
@@ -58,14 +81,17 @@
 
   const contentGroupingEnabled = $derived(courseApi.course?.metadata?.isContentGroupingEnabled ?? true);
   const sections = $derived(
-    (courseApi.course?.content?.sections || []).filter((section) => section.id !== 'ungrouped')
+    (courseApi.course?.content?.sections || []).filter((section) => section.id !== UNGROUPED_SECTION_KEY)
   );
+  /**
+   * True when section is locked by context: either opened from a specific section
+   * in the sidebar (store sectionId), or continuing into a freshly created section (lockedSection).
+   */
+  const sectionFromContext = $derived(!!$contentCreateStore.sectionId || !!lockedSection);
   const visibleContentOptions = $derived(
-    $contentCreateStore.sectionId
+    sectionFromContext || !contentGroupingEnabled
       ? CONTENT_OPTIONS.filter((option) => option.type !== ContentType.Section)
-      : contentGroupingEnabled
-        ? CONTENT_OPTIONS
-        : CONTENT_OPTIONS.filter((option) => option.type !== ContentType.Section)
+      : CONTENT_OPTIONS
   );
   const contentOptionsForGroup = $derived(
     visibleContentOptions.map((o) => ({
@@ -76,66 +102,170 @@
     }))
   );
   const requiresSection = $derived(contentGroupingEnabled && selectedType !== ContentType.Section);
-  const hasSections = $derived(sections.length > 0);
-  /** True when modal was opened from a section (e.g. plus icon in sidebar), so we use store sectionId */
-  const sectionFromContext = $derived(!!$contentCreateStore.sectionId);
+  const hasSections = $derived(sections.length > 0 || !!lockedSection);
   const canCreateLessonOrExercise = $derived(!requiresSection || (requiresSection && !!sectionId));
+  const successSentenceKey = $derived(createdContent ? SUCCESS_SENTENCE_KEYS[createdContent.type] : '');
+  const repeatLabelKey = $derived(createdContent ? REPEAT_LABEL_KEYS[createdContent.type] : '');
+  const isSectionSuccess = $derived(createdContent?.type === ContentType.Section);
+  const primarySuccessLabel = $derived(
+    isSectionSuccess
+      ? $t('course.navItem.lessons.add_content_add_to_section')
+      : $t('course.navItem.lessons.add_content_open_now')
+  );
+
+  const courseId = $derived(courseApi.course?.id || '');
+  const effectiveSectionId = $derived(requiresSection ? sectionId : undefined);
+  /** Local reserved orders for sections created in this modal session while refreshCourse is pending */
+  let reservedSectionOrders = $state<number[]>([]);
+  /** Local reserved orders for lessons/exercises created in this modal session (keyed by sectionId or UNGROUPED_SECTION_KEY) */
+  let reservedContentOrders = $state<Record<string, number[]>>({});
+
+  const nextContentOrder = $derived(getNextContentOrder(effectiveSectionId));
 
   function getNextSectionOrder() {
-    const orders = sections.map((section, index) => section.order ?? index + 1);
-    const maxOrder = orders.length ? Math.max(...orders) : 0;
-    return maxOrder + 1;
+    return calculateNextSectionOrder(sections, reservedSectionOrders);
+  }
+
+  function getContentReservationKey(targetSectionId?: string) {
+    return targetSectionId ?? UNGROUPED_SECTION_KEY;
   }
 
   function getNextContentOrder(targetSectionId?: string) {
-    const content = courseApi.course?.content;
-    if (!content) return 1;
-
-    let items = content.items;
-
-    if (content.grouped) {
-      const section = targetSectionId
-        ? content.sections.find((entry) => entry.id === targetSectionId)
-        : content.sections.find((entry) => entry.id === 'ungrouped');
-      items = section?.items ?? [];
-    }
-
-    const orders = items.map((item, index) => item.order ?? index + 1);
-    const maxOrder = orders.length ? Math.max(...orders) : 0;
-
-    return maxOrder + 1;
+    const key = getContentReservationKey(targetSectionId);
+    return calculateNextContentOrder(courseApi.course?.content, targetSectionId, reservedContentOrders[key]);
   }
+
+  function resetModalState() {
+    phase = 'form';
+    createdContent = null;
+    lockedSection = null;
+    reservedSectionOrders = [];
+    reservedContentOrders = {};
+  }
+
+  function resetStepperStates() {
+    sectionStepperState = { ...DEFAULT_STEPPER_STATE };
+    lessonStepperState = { ...DEFAULT_STEPPER_STATE };
+    exerciseStepperState = { ...DEFAULT_STEPPER_STATE };
+  }
+
+  function resetAllSteppers() {
+    sectionStepper?.actions.reset();
+    lessonStepper?.actions.reset();
+    exerciseStepper?.actions.reset();
+    resetStepperStates();
+  }
+
+  let closeResetTimeout: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => {
     if ($contentCreateStore.open) {
+      if (closeResetTimeout) {
+        clearTimeout(closeResetTimeout);
+        closeResetTimeout = null;
+      }
       untrack(() => {
+        modalSession += 1;
+        resetModalState();
         step = $contentCreateStore.skipTypeSelection ? 1 : 0;
         const initialType = $contentCreateStore.initialType ?? ContentType.Lesson;
         selectedType = contentGroupingEnabled || initialType !== ContentType.Section ? initialType : ContentType.Lesson;
-        sectionId = contentGroupingEnabled
-          ? $contentCreateStore.sectionId || sections[0]?.id || ''
-          : $contentCreateStore.sectionId || '';
+        const storeSectionId = $contentCreateStore.sectionId;
+        sectionId = storeSectionId || (contentGroupingEnabled ? sections[0]?.id || '' : '');
 
-        sectionStepper?.actions.reset();
-        lessonStepper?.actions.reset();
-        exerciseStepper?.actions.reset();
-        sectionStepperState = { ...DEFAULT_STEPPER_STATE };
-        lessonStepperState = { ...DEFAULT_STEPPER_STATE };
-        exerciseStepperState = { ...DEFAULT_STEPPER_STATE };
+        resetAllSteppers();
       });
     }
   });
 
+  function resetFormState() {
+    phase = 'form';
+    createdContent = null;
+    step = 1;
+    resetStepperStates();
+  }
+
   function closeModal() {
+    // Invalidate any in-flight create so a late success is discarded.
+    modalSession += 1;
     contentCreateStoreUtils.close();
+
+    // Defer resetting content/phase until after the dialog's exit animation
+    // completes to avoid flickering the underlying form/stepper while fading out.
+    if (closeResetTimeout) clearTimeout(closeResetTimeout);
+    closeResetTimeout = setTimeout(() => {
+      if (!$contentCreateStore.open) {
+        resetModalState();
+      }
+    }, 250);
+  }
+
+  onDestroy(() => {
+    if (closeResetTimeout) {
+      clearTimeout(closeResetTimeout);
+      closeResetTimeout = null;
+    }
+  });
+
+  function handleCreated(content: CreatedContent, startedSession?: number) {
+    if (!$contentCreateStore.open) return;
+    if (startedSession !== undefined && startedSession !== modalSession) return;
+
+    const currentSession = modalSession;
+    const nextCreatedContent = { ...content };
+    createdContent = nextCreatedContent;
+    phase = 'success';
+
+    // Reserve the created order so consecutive "Create another" actions generate distinct orders
+    if (content.type === ContentType.Section) {
+      const allocatedOrder = content.order ?? getNextSectionOrder();
+      reservedSectionOrders = [...reservedSectionOrders, allocatedOrder];
+    } else {
+      const key = getContentReservationKey(effectiveSectionId);
+      const allocatedOrder = content.order ?? nextContentOrder;
+      reservedContentOrders = {
+        ...reservedContentOrders,
+        [key]: [...(reservedContentOrders[key] ?? []), allocatedOrder]
+      };
+    }
+
+    return tick().then(() => {
+      if (!$contentCreateStore.open || currentSession !== modalSession) return;
+
+      primarySuccessButton?.focus();
+    });
+  }
+
+  function focusModalEntry() {
+    if (!dialogContent) return;
+
+    if (phase === 'success') {
+      primarySuccessButton?.focus();
+      return;
+    }
+
+    if (step === 1) {
+      dialogContent.querySelector<HTMLInputElement>('input:not([type="hidden"]):not([disabled])')?.focus();
+      return;
+    }
+
+    const selectedRadio = dialogContent.querySelector<HTMLElement>('[role="radio"][data-state="checked"]');
+    (selectedRadio ?? dialogContent.querySelector<HTMLElement>('[role="radio"]'))?.focus();
+  }
+
+  function handleOpenAutoFocus(event: Event) {
+    event.preventDefault();
+    void tick().then(focusModalEntry);
   }
 
   function goToDetails() {
     step = 1;
+    void tick().then(focusModalEntry);
   }
 
   function goBack() {
     step = 0;
+    void tick().then(focusModalEntry);
   }
 
   // ============================================
@@ -150,41 +280,132 @@
   }
 
   async function handleUnifiedNext() {
+    if (!stepperState.canProceed || stepperState.isSubmitting) return;
+
     await activeStepper?.actions.next();
+  }
+
+  function handleCreateAnother() {
+    if (!createdContent) return;
+
+    selectedType = createdContent.type;
+    resetFormState();
+    activeStepper?.actions.reset();
+    step = 1;
+    void tick().then(focusModalEntry);
+  }
+
+  function handleLater() {
+    closeModal();
+  }
+
+  function handlePrimarySuccess() {
+    if (!createdContent) return;
+
+    const successContent = { ...createdContent };
+
+    if (successContent.type === ContentType.Section) {
+      const nextLockedSection = { id: successContent.id, title: successContent.title };
+      lockedSection = nextLockedSection;
+      selectedType = initialSelectedType;
+      sectionId = nextLockedSection.id;
+      resetFormState();
+      lessonStepper?.actions.reset();
+      step = 0;
+      void tick().then(focusModalEntry);
+      return;
+    }
+
+    const route = courseId ? getContentRoute(courseId, successContent) : '';
+    if (!route) return;
+
+    closeModal();
+    goto(resolve(route, {})).catch((error) => {
+      console.error('Failed to navigate to created content:', error);
+    });
+  }
+
+  function handleAddContentShortcut(event: KeyboardEvent) {
+    if (!(event.metaKey || event.ctrlKey) || !event.shiftKey || event.key.toLowerCase() !== 'n') {
+      return;
+    }
+
+    if ($isCourseLearnerView || !courseId) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if ($contentCreateStore.open || shouldIgnoreGlobalShortcut()) {
+      return;
+    }
+
+    openAddContentModal(courseId);
   }
 </script>
 
+<svelte:window onkeydown={handleAddContentShortcut} />
+
 <Dialog.Root bind:open={$contentCreateStore.open} onOpenChange={(isOpen) => !isOpen && closeModal()}>
-  <Dialog.Content class="flex max-h-[680px] w-full! max-w-xl! min-w-[400px] flex-col overflow-hidden">
+  <Dialog.Content
+    bind:ref={dialogContent}
+    class="flex max-h-[calc(100dvh-3rem)] w-[calc(100%-3rem)] max-w-[calc(100%-3rem)] flex-col overflow-hidden p-6 sm:max-h-170 sm:w-full sm:max-w-xl"
+    onOpenAutoFocus={handleOpenAutoFocus}
+  >
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.add_content')}</Dialog.Title>
     </Dialog.Header>
 
-    <div class="min-h-0 flex-1 overflow-y-auto pr-1">
-      {#if step === 0}
+    <div role="status" aria-live="polite" class="ui:sr-only">
+      {phase === 'success' && successSentenceKey ? $t(successSentenceKey) : ''}
+    </div>
+
+    <div class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-1">
+      {#if phase === 'success' && createdContent}
+        <Alert.Root>
+          <CheckCircle2Icon />
+          <Alert.Title>{$t(successSentenceKey)}</Alert.Title>
+          <Alert.Description>{createdContent.title}</Alert.Description>
+        </Alert.Root>
+        <Dialog.Footer class="mt-6 flex flex-row flex-wrap items-center justify-between gap-2.5 sm:justify-between">
+          <Button variant="secondary" size="sm" onclick={handleCreateAnother}>
+            {$t(repeatLabelKey)}
+          </Button>
+          <div class="flex items-center gap-2">
+            <Button variant="outline" size="sm" onclick={handleLater}>
+              {$t('course.navItem.lessons.add_content_later')}
+            </Button>
+            <Button bind:ref={primarySuccessButton} size="sm" onclick={handlePrimarySuccess}>
+              {primarySuccessLabel}
+            </Button>
+          </div>
+        </Dialog.Footer>
+      {:else if step === 0}
         <!-- Select a content type - Section | Lesson | Exercise -->
-        <div class="flex flex-col gap-3">
+        <form class="flex flex-col gap-3" onsubmit={preventDefault(goToDetails)}>
           <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
           <RadioOptionCardGroup
             options={contentOptionsForGroup}
             bind:value={selectedType}
             class={contentOptionsForGroup.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}
+            onConfirm={goToDetails}
           />
-          <Dialog.Footer>
-            <Button onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
+          <Dialog.Footer class="flex justify-end">
+            <Button type="submit" size="sm">{$t('course.navItem.lessons.add_content_continue')}</Button>
           </Dialog.Footer>
-        </div>
+        </form>
       {:else}
         <!-- Create content - Section | Lesson | Exercise -->
-        <div class="px-1">
+        <form class="px-1" onsubmit={preventDefault(handleUnifiedNext)}>
           {#if requiresSection}
             <div class="mb-4">
               <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>
               {#if sectionFromContext}
-                <p class="ui:text-muted-foreground text-sm">
+                <p class="ui:text-muted-foreground text-sm wrap-break-word">
                   {$t('course.navItem.lessons.add_content_adding_to')}
                   <strong>
-                    {sections.find((s) => s.id === sectionId)?.title ??
+                    {lockedSection?.title ??
+                      sections.find((s) => s.id === sectionId)?.title ??
                       $t('course.navItem.lessons.add_content_section_fallback')}
                   </strong>
                 </p>
@@ -196,7 +417,7 @@
                     if (value) sectionId = value;
                   }}
                 >
-                  <Select.Trigger class="h-10 w-full">
+                  <Select.Trigger class="h-10 w-full max-w-full">
                     {sections.find((s) => s.id === sectionId)?.title ||
                       $t('course.navItem.lessons.add_content_select_section')}
                   </Select.Trigger>
@@ -218,49 +439,46 @@
             <SectionCreateStepper
               bind:this={sectionStepper}
               bind:stepperState={sectionStepperState}
-              courseId={courseApi.course?.id || ''}
+              {courseId}
               order={getNextSectionOrder()}
               canCreate={true}
               sections={sections.map((s) => ({ id: s.id, order: s.order ?? undefined }))}
-              onCreated={() => closeModal()}
+              session={modalSession}
+              onCreated={handleCreated}
             />
           {:else if selectedType === ContentType.Lesson}
             <LessonCreateStepper
               bind:this={lessonStepper}
               bind:stepperState={lessonStepperState}
-              courseId={courseApi.course?.id || ''}
-              sectionId={requiresSection ? sectionId : undefined}
-              order={getNextContentOrder(requiresSection ? sectionId : undefined)}
+              {courseId}
+              sectionId={effectiveSectionId}
+              order={nextContentOrder}
               canCreate={canCreateLessonOrExercise}
-              onCreated={(lessonId) => {
-                closeModal();
-                goto(resolve(`/courses/${courseApi.course?.id}/lessons/${lessonId}`, {}));
-              }}
+              session={modalSession}
+              onCreated={handleCreated}
             />
           {:else if selectedType === ContentType.Exercise}
             <ExerciseCreateStepper
               bind:this={exerciseStepper}
               bind:stepperState={exerciseStepperState}
-              courseId={courseApi.course?.id || ''}
-              sectionId={requiresSection ? sectionId : undefined}
-              order={getNextContentOrder(requiresSection ? sectionId : undefined)}
+              {courseId}
+              sectionId={effectiveSectionId}
+              order={nextContentOrder}
               canCreate={canCreateLessonOrExercise}
-              onCreated={(exerciseId) => {
-                closeModal();
-                goto(resolve(`/courses/${courseApi.course?.id}/exercises/${exerciseId}`, {}));
-              }}
+              session={modalSession}
+              onCreated={handleCreated}
             />
           {/if}
 
-          <Dialog.Footer class="mt-6 flex items-center justify-between">
-            <Button variant="outline" onclick={handleUnifiedBack}
-              >{$t('course.navItem.lessons.add_content_back')}</Button
-            >
-            <Button onclick={handleUnifiedNext} loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>
+          <Dialog.Footer class="mt-6 flex flex-row flex-wrap items-center justify-between gap-2 sm:justify-between">
+            <Button type="button" variant="secondary" size="sm" onclick={handleUnifiedBack}>
+              {$t('course.navItem.lessons.add_content_back')}
+            </Button>
+            <Button type="submit" size="sm" loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>
               {stepperState.primaryActionLabel}
             </Button>
           </Dialog.Footer>
-        </div>
+        </form>
       {/if}
     </div>
   </Dialog.Content>

@@ -87,8 +87,8 @@ export async function listGoals(
   }));
 }
 
-export async function getGoal(goalId: string): Promise<TCohortGoal> {
-  const goal = await getCohortGoalById(goalId);
+export async function getGoal(cohortId: string, goalId: string): Promise<TCohortGoal> {
+  const goal = await getCohortGoalById(goalId, cohortId);
   if (!goal) {
     throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
   }
@@ -96,14 +96,14 @@ export async function getGoal(goalId: string): Promise<TCohortGoal> {
   return goal;
 }
 
-export async function updateGoal(goalId: string, data: TUpdateCohortGoal): Promise<TCohortGoal> {
-  const existing = await getCohortGoalById(goalId);
+export async function updateGoal(cohortId: string, goalId: string, data: TUpdateCohortGoal): Promise<TCohortGoal> {
+  const existing = await getCohortGoalById(goalId, cohortId);
   if (!existing) {
     throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
   }
 
   try {
-    const updated = await updateCohortGoalQuery(goalId, {
+    const updated = await updateCohortGoalQuery(cohortId, goalId, {
       title: data.title,
       description: data.description ?? undefined,
       type: data.type,
@@ -137,12 +137,12 @@ export async function updateGoal(goalId: string, data: TUpdateCohortGoal): Promi
   }
 }
 
-export async function archiveGoal(goalId: string): Promise<TCohortGoal> {
-  return updateGoal(goalId, { status: 'archived' });
+export async function archiveGoal(cohortId: string, goalId: string): Promise<TCohortGoal> {
+  return updateGoal(cohortId, goalId, { status: 'archived' });
 }
 
-export async function removeGoal(goalId: string): Promise<TCohortGoal> {
-  const deleted = await deleteCohortGoal(goalId);
+export async function removeGoal(cohortId: string, goalId: string): Promise<TCohortGoal> {
+  const deleted = await deleteCohortGoal(cohortId, goalId);
   if (!deleted) {
     throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
   }

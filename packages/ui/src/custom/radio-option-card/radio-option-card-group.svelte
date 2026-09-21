@@ -19,12 +19,26 @@
     /** Overridable CSS class for the grid container (e.g. grid-cols-2, md:grid-cols-3) */
     class?: string;
     titleSuffix?: TitleSuffixSnippet;
+    onConfirm?: () => void;
   }
 
-  let { options, value = $bindable(''), class: className, titleSuffix: parentTitleSuffix }: Props = $props();
+  let { options, value = $bindable(''), class: className, titleSuffix: parentTitleSuffix, onConfirm }: Props = $props();
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter' || event.repeat || event.isComposing) return;
+
+    event.preventDefault();
+
+    if (onConfirm) {
+      onConfirm();
+      return;
+    }
+
+    (event.currentTarget as HTMLElement).closest('form')?.requestSubmit();
+  }
 </script>
 
-<RadioGroup.Root bind:value class={cn('ui:grid ui:gap-3 ui:md:grid-cols-2', className)}>
+<RadioGroup.Root bind:value class={cn('ui:grid ui:gap-3 ui:md:grid-cols-2', className)} onkeydown={handleKeydown}>
   {#each options as option (option.id)}
     <RadioOptionCard
       id={option.id}

@@ -131,8 +131,29 @@
     {
       "idx": 18,
       "version": "7",
-      "when": 1789881469035,
-      "tag": "0018_asset_hls_status",
+      "when": 1789476095020,
+      "tag": "0018_enforce_content_order",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789951951825,
+      "tag": "0019_content_report",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789960316363,
+      "tag": "0020_lesson_slides",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1789990000000,
+      "tag": "0021_asset_hls_status",
       "breakpoints": true
     }
   ]

@@ -50,7 +50,7 @@
     "dist"
   ],
   "scripts": {
-    "prebuild": "pnpm --filter @cio/question-types run build && pnpm --filter @cio/utils run build && pnpm --filter @cio/email run build",
+    "prebuild": "pnpm --filter @cio/question-types run build && pnpm --filter @cio/utils run build && pnpm --filter @cio/jobs run build && pnpm --filter @cio/email run build",
     "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",
     "db": "drizzle-kit",
@@ -58,7 +58,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:baseline": "tsx src/scripts/baseline.ts",
-    "db:reset": "tsx src/scripts/db-reset.ts --skip-seed",
+    "db:reset": "tsx src/scripts/db-reset.ts",
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",
     "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
@@ -77,6 +77,7 @@
     "db:update-user-email": "tsx src/scripts/update-user-email.ts",
     "db:ban-user": "tsx src/scripts/ban-user.ts",
     "db:delete-org": "tsx src/scripts/delete-org-by-email.ts",
+    "db:delete-org-by-sitename": "tsx src/scripts/delete-org-by-sitename.ts",
     "db:notify-students-over-limit": "tsx src/scripts/notify-students-over-limit.ts",
     "db:downgrade-expired-subscriptions": "tsx src/scripts/downgrade-expired-subscriptions.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
@@ -92,6 +93,7 @@
     "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts",
     "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
     "db:migrate-course-logo-to-banner-image": "tsx src/scripts/migrate-course-logo-to-banner-image.ts",
+    "db:remove-landing-contact": "tsx src/scripts/remove-landing-page-contact-nav.ts",
     "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
   },
   "dependencies": {

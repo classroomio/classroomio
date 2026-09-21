@@ -13,6 +13,7 @@
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import type { CohortNewsfeedItem } from '$features/cohort/utils/types';
   import type { CohortNewsfeedCommentsByFeedId } from '$features/cohort/api';
+  import { ReportMenuItem } from '$features/report';
 
   interface Props {
     cohortId?: string;
@@ -157,20 +158,23 @@
               </span>
             </span>
 
-            {#if commentItem.authorProfileId === $profile.id || $isOrgAdmin}
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger
-                  class="hidden h-8 w-8 items-center justify-center rounded-md group-hover:flex hover:bg-gray-100 dark:hover:bg-neutral-700"
-                >
-                  <EllipsisVerticalIcon class="h-5 w-5" />
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end">
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger
+                class="hidden h-8 w-8 items-center justify-center rounded-md group-hover:flex hover:bg-gray-100 dark:hover:bg-neutral-700"
+              >
+                <EllipsisVerticalIcon class="h-5 w-5" />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                {#if commentItem.authorProfileId === $profile.id || $isOrgAdmin}
                   <DropdownMenu.Item class="text-red-600" onclick={() => onDeleteComment(commentItem.id)}>
                     {$t('cohorts.newsfeed.comments.delete')}
                   </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            {/if}
+                {/if}
+                {#if commentItem.authorProfileId !== $profile.id}
+                  <ReportMenuItem targetType="cohort_newsfeed_comment" targetId={commentItem.id} />
+                {/if}
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
           </div>
         {/if}
       {/each}

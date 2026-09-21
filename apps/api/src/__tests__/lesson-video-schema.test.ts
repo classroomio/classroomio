@@ -14,7 +14,7 @@ describe('lesson video field (FIX-02)', () => {
       externalId: 'lesson-1',
       sectionExternalId: 'section-1',
       title: 'Intro',
-      order: 0,
+      order: 1,
       videos: [sampleVideo]
     });
 
@@ -27,7 +27,7 @@ describe('lesson video field (FIX-02)', () => {
       externalId: 'lesson-1',
       sectionExternalId: 'section-1',
       title: 'Intro',
-      order: 0
+      order: 1
     });
 
     expect(result.success).toBe(true);
@@ -37,6 +37,7 @@ describe('lesson video field (FIX-02)', () => {
     const result = ZLessonCreate.safeParse({
       title: 'Intro',
       courseId: '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+      order: 1,
       videos: [sampleVideo]
     });
 
@@ -58,7 +59,7 @@ describe('lesson video field (FIX-02)', () => {
       externalId: 'lesson-1',
       sectionExternalId: 'section-1',
       title: 'Intro',
-      order: 0,
+      order: 1,
       videos: [{ type: 'not-a-real-type', link: 'https://example.com/video' }]
     });
 

@@ -211,8 +211,6 @@
       "section_update_failed": "Der Kursabschnitt konnte nicht aktualisiert werden",
       "sections_reordered": "Kursabschnitte wurden erfolgreich neu angeordnet",
       "sections_reorder_failed": "Kursabschnitte konnten nicht neu angeordnet werden",
-      "lessons_reordered": "Die Lektionen wurden erfolgreich neu angeordnet",
-      "lessons_reorder_failed": "Lektionen konnten nicht neu angeordnet werden",
       "comment_fetch_failed": "Lektionskommentare konnten nicht abgerufen werden",
       "load_more_comments_failed": "Weitere Kommentare konnten nicht geladen werden",
       "comment_add_failed": "Kommentar konnte nicht hinzugefügt werden",
@@ -306,7 +304,11 @@
         "all_content_already_unlocked": "Alle Inhalte sind bereits freigeschaltet",
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
         "content_grouping_disabled": "Inhaltsgruppierung deaktiviert",
-        "link_generated": "Der Kurslink wurde erfolgreich aktualisiert"
+        "link_generated": "Der Kurslink wurde erfolgreich aktualisiert",
+        "converted_to_public": "Der Kurs wurde erfolgreich in den öffentlichen Kurs konvertiert"
+      },
+      "info": {
+        "conversion_blocked": "Beantworten Sie die folgenden Fragen, um die Umstellung auf öffentlich abzuschließen."
       }
     },
     "people": {
@@ -384,7 +386,8 @@
       "delete_success": "Video gelöscht",
       "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
       "delete_failed": "Video konnte nicht gelöscht werden",
-      "added_to_lesson": "Video zur Lektion hinzugefügt"
+      "added_to_lesson": "Video zur Lektion hinzugefügt",
+      "transcript_unavailable": "Transkript nicht verfügbar"
     },
     "tags": {
       "group_created": "Tag-Gruppe erstellt",
@@ -467,6 +470,11 @@
         "post_created": "Beitrag erfolgreich erstellt",
         "post_updated": "Beitrag erfolgreich aktualisiert"
       }
+    },
+    "report": {
+      "success": "Danke. Wir prüfen diese Meldung.",
+      "error": "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "already_submitted": "Sie haben diesen Inhalt bereits gemeldet."
     }
   },
   "explore": {
@@ -943,6 +951,7 @@
         "cover_image": "Titelbild",
         "optional_image": "Dieses optionale Bild wird auf Ihrer Willkommensseite angezeigt. Wenn Sie eines hinzufügen, sollte es mindestens 280 x 200 groß sein",
         "replace": "Ersetzen",
+        "remove": "Entfernen",
         "del": "Löschen",
         "course_details": "Kursdetails",
         "course_title": "Kurstitel",
@@ -950,6 +959,7 @@
         "placeholder": "Schreiben Sie hier Ihre Kursbeschreibung",
         "course_title_placeholder": "Schreiben Sie hier den Kurstitel",
         "setup_landing_for_link": "Richten Sie die Zielseite ein, um den Kurslink zu erhalten",
+        "setup_landing_page": "Zielseite einrichten",
         "coming_soon": "Kommt bald",
         "link": "Kurslink",
         "grading": "Benotung",
@@ -961,7 +971,6 @@
         "content_grouping_title": "Inhaltsgruppierung",
         "content_grouping_description": "Gruppieren Sie Lektionen und Übungen nach Abschnitten in der Inhaltsliste.",
         "progression_mode_title": "Schülerfortschritt",
-        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen.",
         "progression_mode_free": "Frei — freigeschaltete Inhalte sind zugänglich",
         "progression_mode_sequential": "Sequenziell — vorherige Elemente abschließen, um das nächste freizuschalten",
         "comments": {
@@ -1003,7 +1012,6 @@
         },
         "compliance": "Compliance",
         "public": "Öffentlich",
-        "convert_to_public_blocked": "Dieser Kurs enthält Fragen, die nicht automatisch bewertet werden können, daher kann er noch nicht veröffentlicht werden.",
         "fix_blocking_questions": "Blockierende Fragen beheben",
         "slug": {
           "label": "URL-Slug",
@@ -1036,6 +1044,9 @@
           "description": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
           "placeholder": "Schreiben Sie die Willkommensnachricht, die Studierende bei der Einschreibung erhalten …"
         },
+        "general_card_title": "Allgemein",
+        "content_card_title": "Inhalt",
+        "access_card_title": "Zugriff",
         "locked_content": {
           "title": "{count} Kurselemente sind gesperrt",
           "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
@@ -1050,7 +1061,45 @@
         "generate_link": "Neuen Link generieren",
         "open_link": "Link in neuem Tab öffnen",
         "copy_link": "Link kopieren",
-        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest."
+        "question_in_exercise": "In „{exercise}“",
+        "fix_question": "Bearbeiten",
+        "convert_to_public_blocked": "Für öffentliche Kurse sind nur automatisch bewertbare Fragen erforderlich.",
+        "convert_to_public_blocked_desc": "Übungen in einem öffentlichen Kurs werden automatisch im Browser benotet, weshalb wir nur automatisch bewertbare Fragen unterstützen. Entfernen oder ersetzen Sie die folgenden Fragen, bevor Sie diesen Kurs in einen öffentlichen Kurs umwandeln:",
+        "fix_in_exercise": "In der Übung korrigieren",
+        "cancel_conversion": "Konvertierung abbrechen",
+        "public_conversion": {
+          "banner_title": "Konvertieren des Kurses in einen öffentlichen Kurs",
+          "exercise_fixed": "Diese Übung ist fertig",
+          "back_to_settings": "Zurück zu den Einstellungen",
+          "complete_conversion": "Öffentliche Konvertierung abschließen",
+          "jump_to": "Springe zu",
+          "blocks_public_conversion": "Nicht automatisch bewertbar",
+          "blocks_public_conversion_desc": "Öffentliche Kurse unterstützen nur automatisch bewertbare Fragen. Ändern Sie den Typ dieser Frage oder löschen Sie sie, um mit der Konvertierung fortzufahren.",
+          "blocks_public_conversion_title": "Manuelle Benotung wird in öffentlichen Kursen nicht unterstützt.",
+          "aria_label": "Fortschritt bei der Umwandlung des öffentlichen Kurses",
+          "all_exercises_fixed": "Alle {total} Übungen gelöst",
+          "ready_to_convert": "Bereit zur Umwandlung!",
+          "questions_left_other_singular": "· {count} Frage in anderen Übungen verbleibend",
+          "questions_left_other_plural": "· {count} Fragen in anderen Übungen verbleibend",
+          "progress_summary_singular": "{resolved}/{total} gelöst · {remaining} Frage verbleibend",
+          "progress_summary_plural": "{resolved}/{total} gelöst · {remaining} Fragen verbleibend",
+          "next_exercise": "Nächste: {exercise}",
+          "next": "Nächste",
+          "question_fallback": "Frage {number}",
+          "question_count_singular": "{count} Frage",
+          "question_count_plural": "{count} Fragen",
+          "exercise_count_singular": "{count} Übung",
+          "exercise_count_plural": "{count} Übungen",
+          "exercises_fixed": "{resolved}/{total} gelöst",
+          "questions_left_singular": "gelöst · {count} Frage übrig",
+          "questions_left_plural": "gelöst · {count} Fragen übrig"
+        },
+        "fix": "Beheben",
+        "save_changes_to_fix_questions": "Speichern Sie Ihre ungespeicherten Änderungen, bevor Sie die Fragen bearbeiten.",
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen. Beim Abschluss der Videowiedergabe werden nur hochgeladene Videos erfasst.",
+        "allow_markdown_export": "Lernenden erlauben, Lektionsseiten als Markdown zu kopieren",
+        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede entsperrte Lektion veröffentlicht."
       },
       "analytics": {
         "title": "Analysen"
@@ -1617,7 +1666,9 @@
           "comment_btn": "Kommentar",
           "cancel_btn": "Abbrechen",
           "load_more_btn": "Mehr laden",
-          "comment_error": "Kommentar konnte nicht gepostet werden. Bitte versuchen Sie es erneut."
+          "comment_error": "Kommentar konnte nicht gepostet werden. Bitte versuchen Sie es erneut.",
+          "edit": "Bearbeiten",
+          "delete": "Löschen"
         },
         "exercises": {
           "heading": "Alle Übungen",
@@ -2321,6 +2372,7 @@
               "empty_description": "Fügen Sie Videos von YouTube hinzu, laden Sie sie hoch oder laden Sie sie aus Ihrer Medienbibliothek herunter",
               "google_drive": "Google Drive",
               "generate_transcript": "Transkript generieren",
+              "transcript_in_progress": "Transkript wird abgerufen…",
               "generate_transcript_in_progress": "Transkription läuft…",
               "transcript": {
                 "title": "Transkript",
@@ -2362,7 +2414,87 @@
             "slide": {
               "title": "Folie",
               "slide_link": "Folien-Link",
-              "helper_message": "Sie können Google Slides oder Canva-Präsentationen einbetten"
+              "helper_message": "Sie können Google Slides oder Canva-Präsentationen einbetten",
+              "button": "Folie hinzufügen",
+              "remove_slide": "Folie entfernen",
+              "menu_aria": "Folienaktionen",
+              "empty_title": "Noch keine Folien",
+              "empty_description": "Betten Sie Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare oder Beautiful.ai ein",
+              "add_slide": {
+                "title": "Folie hinzufügen",
+                "search": "Plattformen suchen",
+                "empty_prompt": "Wählen Sie eine Plattform für Schritt-für-Schritt-Anleitungen und fügen Sie Ihren Embed-Code ein.",
+                "embed_code": "Embed-Code einfügen",
+                "embed_placeholder": "Fügen Sie hier den vollständigen iframe-Embed-Code ein",
+                "how_to_embed": "So betten Sie ein",
+                "preview": "Vorschau",
+                "embed_ready": "Embed bereit",
+                "invalid_embed": "Fügen Sie den vollständigen iframe-Embed-Code dieser Plattform ein.",
+                "unsupported": "Dieser Embed stammt von einer Plattform, die wir noch nicht unterstützen."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} von {total})"
             },
             "note": {
               "title": "Hinweis",
@@ -2425,10 +2557,10 @@
           "manual_label": "Manuell",
           "manual_description": "Schüler markieren die Lektion selbst als abgeschlossen.",
           "video_watch_label": "Video ansehen",
-          "video_watch_description": "Die Lektion wird automatisch abgeschlossen, nachdem Schüler die ausgewählten Videos angesehen haben.",
           "none_label": "Keine",
           "none_description": "Diese Lektion blockiert den Kursfortschritt nicht.",
-          "watch_threshold": "Wiedergabeschwelle (%)"
+          "watch_threshold": "Wiedergabeschwelle (%)",
+          "video_watch_description": "Die Lektion wird automatisch abgeschlossen, nachdem die Schüler die ausgewählten hochgeladenen Videos angesehen haben. YouTube- und externe Einbettungen können nicht verfolgt werden."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2577,11 @@
             "option_guide_heading": "Was jede Option bedeutet",
             "watch_videos_heading": "Zu überwachende Videos",
             "watch_videos_helper": "Nur hochgeladene Videos können erzwungen werden. YouTube und externe Einbettungen können nicht verfolgt werden.",
-            "watch_videos_empty": "Fügen Sie im Video-Tab ein hochgeladenes Video hinzu, um die Wiedergabeüberwachung zu nutzen.",
             "watch_videos_required": "Wählen Sie mindestens ein Video für die Video-Wiedergabeüberwachung.",
-            "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren."
+            "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren.",
+            "watch_videos_empty": "Bei der Videowiedergabe werden nur hochgeladene Videos verfolgt. YouTube- und externe Einbettungen können nicht nachverfolgt werden, daher kann diese Lektion nicht automatisch abgeschlossen werden und die Schüler können sie nicht als abgeschlossen markieren. Laden Sie das Video auf der Registerkarte „Video“ hoch oder stellen Sie die Abschlussregel auf „Manuell“ ein.",
+            "watch_videos_no_uploads_title": "In dieser Lektion wurden keine Videos hochgeladen",
+            "watch_videos_learn_more": "Erfahren Sie mehr"
           }
         },
         "watch_progress": {
@@ -2500,7 +2634,16 @@
           "link_copied": "Link kopiert"
         },
         "student_share_your_knowledge": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
-        "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei."
+        "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
+        "add_content_created_section": "Abschnitt erfolgreich erstellt!",
+        "add_content_created_lesson": "Lektion erfolgreich erstellt!",
+        "add_content_created_exercise": "Übung erfolgreich erstellt!",
+        "add_content_create_another_section": "Weiteren Abschnitt erstellen",
+        "add_content_create_another_lesson": "Weitere Lektion erstellen",
+        "add_content_create_another_exercise": "Weitere Übung erstellen",
+        "add_content_open_now": "Jetzt öffnen",
+        "add_content_later": "Später",
+        "add_content_add_to_section": "Inhalte hinzufügen"
       },
       "news_feed": {
         "heading": "Newsfeed",
@@ -4518,7 +4661,7 @@
     "tool": {
       "pending": {
         "working": "In Arbeit",
-        "unknown_tool": "{toolName} wird ausgeführt",
+        "unknown_tool": "Arbeite an {toolName}",
         "get_course_structure": "Kursstruktur wird gelesen",
         "get_lesson_content": "Lektionsinhalt wird gelesen",
         "get_exercise_details": "Übung wird gelesen",
@@ -4542,6 +4685,7 @@
         "fetch_documentation_url": "Seite „Dokumente lesen“.",
         "fetch_documentation_url_with_url": "{url} wird gelesen",
         "list_youtube_playlist_videos": "Playlist-Videos werden aufgelistet",
+        "get_lesson_transcript": "Videotranskript lesen",
         "add_youtube_video_to_lesson": "YouTube-Video wird eingebettet"
       },
       "meta": {
@@ -4577,6 +4721,11 @@
         "fetch_documentation_url": "{url} lesen",
         "list_youtube_playlist_videos": "{count} Videos in der Playlist gefunden",
         "list_youtube_playlist_videos_unavailable": "Playlist-Videos konnten nicht aufgelistet werden",
+        "get_lesson_transcript": "Transkript für {title} gelesen",
+        "get_lesson_transcript_fetching": "Transkript für {title} wird abgerufen",
+        "get_lesson_transcript_plan_gated": "Transkripte erfordern einen kostenpflichtigen Tarif",
+        "get_lesson_transcript_no_credits": "Keine KI-Credits mehr für Transkripte",
+        "get_lesson_transcript_unavailable": "Kein Transkript für {title} verfügbar",
         "add_youtube_video_to_lesson": "Eingebettetes Video: {title}"
       }
     },
@@ -4618,14 +4767,14 @@
     "retry": "Versuchen Sie es noch einmal",
     "run_monitor_aria": "Kursgenerierung läuft",
     "run_summary": {
-      "completed": "Lauf abgeschlossen.",
-      "completed_with_counts": "Lauf abgeschlossen – {counts} erstellt.",
-      "failed": "Ausführung fehlgeschlagen.",
-      "failed_with_reason": "Ausführung fehlgeschlagen – {reason}.",
-      "canceled": "Lauf abgebrochen.",
-      "canceled_with_counts": "Lauf abgebrochen – {counts} vor dem Stoppen erstellt.",
-      "paused": "Lauf pausiert. Fortfahren, um fortzufahren.",
-      "paused_with_counts": "Ausführung pausiert – bisher {counts} erstellt. Fortfahren, um fortzufahren."
+      "completed": "Kursgenerierung abgeschlossen.",
+      "completed_with_counts": "Kursgenerierung abgeschlossen — {counts} erstellt.",
+      "failed": "Kursgenerierung fehlgeschlagen.",
+      "failed_with_reason": "Kursgenerierung fehlgeschlagen — {reason}.",
+      "canceled": "Kursgenerierung abgebrochen.",
+      "canceled_with_counts": "Kursgenerierung abgebrochen — {counts} vor dem Stoppen erstellt.",
+      "paused": "Kursgenerierung pausiert. Fortsetzen, um weiterzumachen.",
+      "paused_with_counts": "Kursgenerierung pausiert — bisher {counts} erstellt. Fortsetzen, um weiterzumachen."
     },
     "changes_card": {
       "summary_count": "{count} Elemente geändert",
@@ -4652,16 +4801,16 @@
       "collapse": "Plan zusammenbrechen"
     },
     "run_monitor": {
-      "cancel": "Lauf abbrechen",
+      "cancel": "Generierung abbrechen",
       "dismiss": "Entlassen",
       "now_doing": "Jetzt",
       "input_disabled_hint": "Der Chat wird angehalten, während der Agent mit der Erstellung des Kurses fertig ist. Brechen Sie den Vorgang ab oder warten Sie, bis der Vorgang abgeschlossen ist.",
       "dismiss_confirm": "Geh weg",
-      "dismiss_cancel": "Lauf weiter",
-      "dismiss_confirm_body": "Von diesem abgesagten Lauf weggehen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
+      "dismiss_cancel": "Hier bleiben",
+      "dismiss_confirm_body": "Diese abgebrochene Generierung verlassen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
       "stuck_queued": {
         "title": "Arbeiter reagiert nicht",
-        "body": "Dieser Lauf hat mehr als 30 Sekunden gewartet, ohne dass ein Arbeiter abgeholt wurde. Der Hintergrund-Worker ist möglicherweise nicht verfügbar oder wird neu gestartet."
+        "body": "Die Kursgenerierung wartet seit mehr als 30 Sekunden, ohne dass ein Hintergrundprozess sie übernommen hat. Der Hintergrundprozess ist möglicherweise ausgefallen oder wird neu gestartet."
       }
     },
     "ask_ai": "Fragen Sie die KI",
@@ -4987,6 +5136,30 @@
     "header": {
       "explore_courses": "Entdecken Sie Kurse",
       "sign_in": "Melden Sie sich an"
+    },
+    "copy_page": {
+      "copy": "Seite kopieren",
+      "copied": "Kopiert",
+      "view_as_markdown": "Als Markdown anzeigen",
+      "open_in_chatgpt": "In ChatGPT öffnen",
+      "open_in_claude": "In Claude öffnen",
+      "more_actions": "Weitere Aktionen zum Kopieren der Seite",
+      "copy_failed": "Diese Lektion konnte nicht als Markdown kopiert werden"
+    },
+    "outline": {
+      "label": "Auf dieser Seite"
+    },
+    "rail": {
+      "copy_as_markdown": "Als Markdown kopieren",
+      "open_in_chat": "In Chat öffnen"
+    },
+    "share": {
+      "label": "In sozialen Medien teilen",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link kopiert. Füge ihn in Instagram ein."
     }
   },
   "account": {
@@ -5433,5 +5606,27 @@
     "format_json": "JSON",
     "copied": "In die Zwischenablage kopiert",
     "copy_failed": "Konnte nicht in die Zwischenablage kopieren"
+  },
+  "report": {
+    "menu": "Melden",
+    "title": "Inhalt melden",
+    "description": "Teilen Sie uns mit, was nicht stimmt. Unser Team prüft diese Meldung.",
+    "reason_label": "Grund",
+    "reason_placeholder": "Grund auswählen",
+    "reason_required": "Bitte wählen Sie einen Grund",
+    "details_label": "Zusätzliche Angaben",
+    "details_placeholder": "Fügen Sie Kontext hinzu, der uns bei der Prüfung hilft (optional)",
+    "submit": "Meldung senden",
+    "cancel": "Abbrechen",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Belästigung oder Mobbing",
+      "hate_speech": "Hassrede",
+      "sexual_content": "Sexuelle Inhalte",
+      "violence": "Gewalt oder Drohungen",
+      "misinformation": "Falschinformationen",
+      "privacy": "Verletzung der Privatsphäre",
+      "other": "Sonstiges"
+    }
   }
 }

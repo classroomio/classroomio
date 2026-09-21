@@ -150,7 +150,7 @@ export const ZCourseContentUpdateItem = z.object({
   id: z.string().min(1),
   type: z.enum(['LESSON', 'EXERCISE']),
   isUnlocked: z.boolean().optional(),
-  order: z.number().int().min(0).optional(),
+  order: z.number().int().min(1).optional(),
   sectionId: z.string().nullable().optional()
 });
 export type TCourseContentUpdateItem = z.infer<typeof ZCourseContentUpdateItem>;
@@ -162,7 +162,7 @@ export type TCourseContentUpdate = z.infer<typeof ZCourseContentUpdate>;
 
 export const ZCourseContentReorderSection = z.object({
   id: z.string().min(1),
-  order: z.number().int().min(0)
+  order: z.number().int().min(1)
 });
 export type TCourseContentReorderSection = z.infer<typeof ZCourseContentReorderSection>;
 
@@ -199,7 +199,17 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
     sectionIds.add(section.id);
   });
 
+  const sectionOrders = data.sections?.map((section) => section.order).sort((a, b) => a - b);
+  if (sectionOrders && sectionOrders.some((order, index) => order !== index + 1)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['sections'],
+      message: 'Section orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
+    });
+  }
+
   const itemKeys = new Set<string>();
+  const itemsBySection = new Map<string, { orders: number[]; total: number; withOrder: number }>();
   data.items?.forEach((item, index) => {
     if (item.order === undefined && item.sectionId === undefined) {
       ctx.addIssue({
@@ -208,6 +218,15 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
         message: 'Each item must provide order or sectionId'
       });
     }
+
+    const sectionId = item.sectionId ?? '__unsectioned__';
+    const entry = itemsBySection.get(sectionId) ?? { orders: [], total: 0, withOrder: 0 };
+    entry.total += 1;
+    if (item.order !== undefined) {
+      entry.orders.push(item.order);
+      entry.withOrder += 1;
+    }
+    itemsBySection.set(sectionId, entry);
 
     const itemKey = `${item.type}:${item.id}`;
     if (itemKeys.has(itemKey)) {
@@ -220,6 +239,19 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
 
     itemKeys.add(itemKey);
   });
+
+  for (const [, entry] of itemsBySection) {
+    if (entry.withOrder > 0 && entry.withOrder === entry.total) {
+      const sorted = [...entry.orders].sort((a, b) => a - b);
+      if (sorted.some((order, index) => order !== index + 1)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['items'],
+          message: 'Item orders within each section must be a contiguous 1-based sequence (1, 2, 3, ...)'
+        });
+      }
+    }
+  }
 });
 export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;
 
@@ -380,6 +412,7 @@ const ZCourseMetadataFields = z.object({
   allowSelfEnrollment: z.boolean().optional(),
   /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. */
   allowNewStudent: z.boolean().optional(),
+  allowMarkdownExport: z.boolean().optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),

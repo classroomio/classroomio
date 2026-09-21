@@ -10,7 +10,6 @@ import {
   ZLessonHistoryParam,
   ZLessonHistoryQuery,
   ZLessonListQuery,
-  ZLessonReorder,
   ZLessonUpdate,
   ZUpdateLessonWatchProgress
 } from '@cio/utils/validation/lesson';
@@ -25,7 +24,6 @@ import {
   getLessonHistoryService,
   getLessonWatchProgressService,
   listLessons,
-  reorderLessons,
   updateLessonCommentService,
   updateLessonService,
   updateLessonWatchProgressService,
@@ -61,17 +59,6 @@ export const lessonRouter = new Hono()
       return c.json({ success: true, data: lessons }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list lessons');
-    }
-  })
-  .post('/reorder', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonReorder), async (c) => {
-    try {
-      const { lessons } = c.req.valid('json');
-
-      const updated = await reorderLessons(lessons);
-
-      return c.json({ success: true, data: updated }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to reorder lessons');
     }
   })
   .get('/:lessonId', authMiddleware, courseMemberMiddleware, zValidator('param', ZLessonGetParam), async (c) => {

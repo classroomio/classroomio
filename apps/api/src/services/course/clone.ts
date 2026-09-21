@@ -78,7 +78,8 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
       description: exercise.description,
       dueBy: new Date().toISOString(),
       lessonId: lessonIdMap.get(exercise.lessonId!)!,
-      sectionDisplayMode: exercise.sectionDisplayMode
+      sectionDisplayMode: exercise.sectionDisplayMode,
+      order: exercise.order
     }))
   );
 
@@ -276,6 +277,7 @@ export async function cloneCourse(
       note: lesson.note,
       videoUrl: lesson.videoUrl,
       slideUrl: lesson.slideUrl,
+      slides: lesson.slides,
       courseId: newCourse.id,
       title: lesson.title,
       public: lesson.public,

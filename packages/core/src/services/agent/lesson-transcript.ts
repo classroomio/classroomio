@@ -1,14 +1,28 @@
-import { listMediaTranscriptsByAssetIds } from '@cio/db/queries/media-transcript';
+import { AppError, ErrorCodes } from '@cio/utils/errors';
 
-import { startYoutubeCaptionsJob } from '../jobs/media-jobs';
+import { listMediaTranscriptsByAssetIds } from '@cio/db/queries/media-transcript';
+import { getActiveNegativeYoutubeCaption } from '@cio/db/queries/youtube-caption';
+
+import { startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import { getLesson } from '../lesson/lesson';
+import { VIDEO_LEVEL_LANGUAGE_KEY, resolveRequestLanguage } from '../youtube-captions/language';
 import { CAPTION_FETCH_COST_UNITS, canOrgFetchYoutubeCaptions, isSelfHostedInstance } from '../youtube-captions/policy';
 import { getTokenBalance } from './usage';
+
+/** `fetching` is the only value worth retrying; the rest are terminal for this run. */
+export type LessonTranscriptStatus =
+  | 'ready'
+  | 'fetching'
+  | 'unavailable'
+  | 'plan_gated'
+  | 'token_limit_reached'
+  | 'no_videos';
 
 export interface LessonVideoTranscriptResult {
   lessonId: string;
   title: string;
   hasTranscript: boolean;
+  status: LessonTranscriptStatus;
   transcript: string | null;
   message?: string;
 }
@@ -21,7 +35,7 @@ export interface GetLessonVideoTranscriptOptions {
 }
 
 /** Why a lesson's YouTube captions are not available yet. */
-type PendingCaptionReason = 'plan_gated' | 'token_limit_reached' | 'fetching';
+type PendingCaptionReason = 'plan_gated' | 'token_limit_reached' | 'fetching' | 'unavailable';
 
 interface LessonYoutubeVideo {
   assetId: string;
@@ -115,6 +129,7 @@ export async function getLessonVideoTranscript(
       lessonId: lessonWithVideos.id,
       title: lessonWithVideos.title,
       hasTranscript: false,
+      status: 'no_videos',
       transcript: null,
       message:
         'This lesson has no videos with transcripts. Upload a video or embed a YouTube video with captions to enable transcript-based Q&A.'
@@ -133,8 +148,15 @@ export async function getLessonVideoTranscript(
   }
 
   const missingYoutubeVideos = youtubeVideos.filter((video) => !textByAssetId.has(video.assetId));
+  const missingUploadAssetIds = uploadAssetIds.filter((assetId) => !textByAssetId.has(assetId));
   const pendingReason =
     missingYoutubeVideos.length > 0 ? await warmMissingCaptions(orgId, missingYoutubeVideos, options) : null;
+
+  // An upload still being transcribed leaves the lesson just as ungrounded as a
+  // missing caption track, so it also blocks `ready`.
+  const uploadReason =
+    missingUploadAssetIds.length > 0 ? await warmMissingUploads(orgId, missingUploadAssetIds, options) : null;
+  const partialReason: PendingCaptionReason | null = pendingReason ?? uploadReason;
 
   const transcript = allAssetIds
     .map((assetId) => textByAssetId.get(assetId))
@@ -146,6 +168,7 @@ export async function getLessonVideoTranscript(
       lessonId: lessonWithVideos.id,
       title: lessonWithVideos.title,
       hasTranscript: false,
+      status: partialReason ?? 'unavailable',
       transcript: null,
       message: buildEmptyTranscriptMessage({
         hasUploadVideos: uploadAssetIds.length > 0,
@@ -155,12 +178,49 @@ export async function getLessonVideoTranscript(
     };
   }
 
+  // One video's transcript does not stand in for another's.
+  if (partialReason) {
+    return {
+      lessonId: lessonWithVideos.id,
+      title: lessonWithVideos.title,
+      hasTranscript: false,
+      status: partialReason,
+      transcript,
+      message: pendingReason ? buildPartialTranscriptMessage(pendingReason) : buildPartialUploadMessage(partialReason)
+    };
+  }
+
   return {
     lessonId: lessonWithVideos.id,
     title: lessonWithVideos.title,
     hasTranscript: true,
+    status: 'ready',
     transcript
   };
+}
+
+function buildPartialUploadMessage(reason: PendingCaptionReason): string {
+  if (reason === 'unavailable') {
+    return 'Only part of this lesson has a transcript — an uploaded video cannot be transcribed. Do not fill the gap from the video title.';
+  }
+
+  return 'Only part of this lesson has a transcript — an uploaded video is still being transcribed. Ask again shortly.';
+}
+
+function buildPartialTranscriptMessage(pendingReason: PendingCaptionReason): string {
+  if (pendingReason === 'plan_gated') {
+    return 'Only part of this lesson has a transcript. YouTube transcripts require a paid plan, so the embedded video is not covered.';
+  }
+
+  if (pendingReason === 'token_limit_reached') {
+    return 'Only part of this lesson has a transcript. AI credits are exhausted, so the embedded YouTube video could not be fetched.';
+  }
+
+  if (pendingReason === 'unavailable') {
+    return 'Only part of this lesson has a transcript — the embedded YouTube video has no captions available. Do not fill the gap from the video title.';
+  }
+
+  return 'Only part of this lesson has a transcript. Captions for the embedded YouTube video are still being fetched — ask again shortly.';
 }
 
 /** Enqueues the fetches when allowed; returns why the captions are not ready. */
@@ -169,6 +229,12 @@ async function warmMissingCaptions(
   missingVideos: LessonYoutubeVideo[],
   options: GetLessonVideoTranscriptOptions
 ): Promise<PendingCaptionReason> {
+  // Filter first: no plan or balance can fetch captions for a video that has none.
+  const fetchable = await filterOutKnownUnavailable(missingVideos);
+  if (fetchable.length === 0) {
+    return 'unavailable';
+  }
+
   const allowed = await canOrgFetchYoutubeCaptions(orgId);
   if (!allowed) {
     return 'plan_gated';
@@ -186,9 +252,68 @@ async function warmMissingCaptions(
     return 'fetching';
   }
 
-  await enqueueCaptionFetches(orgId, missingVideos, options.userId, options.courseId ?? null);
+  await enqueueCaptionFetches(orgId, fetchable, options.userId, options.courseId ?? null);
 
   return 'fetching';
+}
+
+/** Without this, a caller retrying on a miss re-enqueues the same video forever. */
+async function filterOutKnownUnavailable(videos: LessonYoutubeVideo[]): Promise<LessonYoutubeVideo[]> {
+  const language = resolveRequestLanguage();
+  const checks = await Promise.all(
+    videos.map(async (video) => {
+      const [languageNegative, videoNegative] = await Promise.all([
+        getActiveNegativeYoutubeCaption(video.youtubeVideoId, language),
+        getActiveNegativeYoutubeCaption(video.youtubeVideoId, VIDEO_LEVEL_LANGUAGE_KEY)
+      ]);
+
+      return languageNegative || videoNegative ? null : video;
+    })
+  );
+
+  return checks.filter((video): video is LessonYoutubeVideo => video !== null);
+}
+
+/**
+ * Upload post-processing is fire-and-forget at asset creation, so an upload can
+ * reach here with no transcript and no job. Reporting `fetching` without
+ * queueing one would leave the agent retrying something nothing is working on.
+ */
+async function warmMissingUploads(
+  orgId: string,
+  assetIds: string[],
+  options: GetLessonVideoTranscriptOptions
+): Promise<PendingCaptionReason> {
+  const outcomes = await Promise.all(
+    assetIds.map(async (assetId) => {
+      try {
+        await startTranscriptionOnlyMediaJob({
+          organizationId: orgId,
+          assetId,
+          triggeredByProfileId: options.userId ?? null
+        });
+
+        return 'fetching' as const;
+      } catch (error) {
+        // A job already running is exactly the state `fetching` describes.
+        const code = error instanceof AppError ? error.code : null;
+
+        if (code === ErrorCodes.CONFLICT) {
+          return 'fetching' as const;
+        }
+
+        if (code === ErrorCodes.OPENAI_KEY_MISSING || code === ErrorCodes.ASSET_NOT_TRANSCRIBABLE) {
+          return 'unavailable' as const;
+        }
+
+        console.error('warmMissingUploads failed:', error);
+
+        return 'unavailable' as const;
+      }
+    })
+  );
+
+  return outcomes.includes('fetching') ? 'fetching' : 'unavailable';
 }
 
 async function enqueueCaptionFetches(
@@ -232,7 +357,11 @@ function buildEmptyTranscriptMessage(input: {
       return 'This lesson has YouTube video(s), but the AI credit balance is exhausted so captions could not be fetched. Top up AI credits to enable transcript-based Q&A.';
     }
 
-    return 'This lesson has YouTube video(s) but no transcript is available yet. Captions are being fetched — try again shortly, or the video may not have captions enabled.';
+    if (pendingReason === 'unavailable') {
+      return 'No captions are available for these YouTube video(s) right now, so there is no transcript to work from. Do not rely on the video title instead.';
+    }
+
+    return 'This lesson has YouTube video(s) but no transcript is available yet. Captions are being fetched — ask again shortly.';
   }
 
   if (hasUploadVideos) {

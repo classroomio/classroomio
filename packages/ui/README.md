@@ -56,7 +56,7 @@ All components in the `base` directory are primarily from [shadcn-svelte](https:
 **Examples:**
 
 - `base/button/` - Button component from shadcn-svelte
-- `base/dialog/` - Dialog component from shadcn-svelte
+- `base/dialog/` - Dialog component from shadcn-svelte (see [Dialog button hierarchy](#dialog-button-hierarchy) below)
 - `base/tooltip/` - Tooltip component from shadcn-svelte
 
 ### Custom Components (`src/custom/`)
@@ -81,6 +81,51 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/checkbox-field/` - Field component built on top of base Checkbox
 - `custom/newsfeed-reactions/` - Newsfeed reaction picker and summary used by course and program feeds
 - `custom/course-creator/` - ChatGPT-style course creation input with level and type selects
+- `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
+- `custom/question-type-picker/` - Question type picker modal and QuestionTypeIcon glyph/icon component
+
+### Question type icon (`src/custom/question-type-picker/question-type-icon.svelte`)
+
+Renders a question type glyph tile or Lucide icon based on `key` (QuestionTypeKey) or `typeId` (number), matching the design system from the question type picker.
+
+| Prop        | Type                        | Default | Description                                          |
+| ----------- | --------------------------- | ------- | ---------------------------------------------------- |
+| `key`       | `QuestionTypeKey \| string` | `null`  | Question type key (e.g. `'RADIO'`, `'SHORT_ANSWER'`) |
+| `typeId`    | `number`                    | `null`  | Numeric question type ID                             |
+| `class`     | `string`                    | `''`    | Additional classes for the container tile            |
+| `iconClass` | `string`                    | `''`    | Additional classes for the inner Lucide icon         |
+
+```svelte
+<QuestionTypeIcon typeId={offender.typeId} />
+<QuestionTypeIcon key="SHORT_ANSWER" class="ui:size-8" />
+```
+
+### Attention highlight (`src/custom/attention-highlight/`)
+
+Wrapper component that highlights its content with an animated focus pulse ring and smooth scrolls into view when triggered.
+
+| Prop          | Type                    | Default     | Description                                                                     |
+| ------------- | ----------------------- | ----------- | ------------------------------------------------------------------------------- |
+| `highlight`   | `boolean`               | `false`     | When true, triggers the pulse animation and auto-scroll                         |
+| `trigger`     | `number`                | `0`         | Incremental counter to imperatively trigger the pulse animation and auto-scroll |
+| `duration`    | `number`                | `3`         | Duration of the pulse animation in seconds                                      |
+| `autoScroll`  | `boolean`               | `true`      | Whether to smoothly scroll the element into view on trigger                     |
+| `scrollBlock` | `ScrollLogicalPosition` | `'center'`  | Scroll alignment (`'center'`, `'start'`, `'nearest'`, `'end'`)                  |
+| `id`          | `string`                | `undefined` | Optional DOM element id                                                         |
+| `class`       | `string`                | `''`        | Additional CSS classes                                                          |
+| `onComplete`  | `() => void`            | `undefined` | Callback fired when the duration timer completes                                |
+
+```svelte
+<!-- Declarative (e.g. from URL / state) -->
+<AttentionHighlight highlight={isHighlighted} duration={3}>
+  <div class="rounded border p-4">Content to highlight</div>
+</AttentionHighlight>
+
+<!-- Imperative (e.g. from button click) -->
+<AttentionHighlight trigger={triggerCount} duration={3}>
+  <div class="rounded border p-4">Content to highlight</div>
+</AttentionHighlight>
+```
 
 ### Exercise question (`src/custom/exercise-question/`)
 
@@ -99,6 +144,34 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 ### Attachment list (`src/custom/attachment-list/`)
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
+
+### Slide embed (`src/custom/slide-embed/`)
+
+Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
+
+### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
+
+Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Both halves use `variant="secondary"`. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyChatUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title at every breakpoint, with `ShareButton` to its right. The outline rail still has the matching copy / share / chat actions. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+
+### Public course Share button (`src/custom/public-course/share-button.svelte`)
+
+Icon-only secondary share control for the public lesson/exercise title row. Opens the same Facebook / LinkedIn / X / Instagram menu as `OutlineRailActions`. Copy is passed via `labels: ShareActionLabels`. Instagram copies the page URL and the host shows a snackbar via `onInstagramCopied`. The outline rail keeps its own share row on `lg+`.
+
+### Public course outline rail actions (`src/custom/public-course/outline-rail-actions.svelte`)
+
+Muted icon+label links rendered **under** `PageOutline`, separated by a top border. Matches the docs-site pattern (copy, share, open in chat):
+
+- **Copy as Markdown** — same fetch as Copy Page; only when `markdownUrl` is set.
+- **Share on social media** — dropdown for Facebook, LinkedIn, and X (intent URLs). Instagram copies the page URL (there is no web share intent) and the host shows a snackbar via `onInstagramCopied`.
+- **Open in chat** — dropdown for ChatGPT and Claude when those URLs are passed.
+
+Pass copy via `labels: OutlineRailActionLabels`. Render through `PublicLessonView` / `PublicExerciseView`'s `outlineActions` snippet. Share-only is valid for exercises. See `Molecules/PublicCourse` → **Lesson · outline rail actions**.
+
+### Page outline (`src/custom/page-outline/`)
+
+Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with left-border indent (`h1` / `h2` / `h3`).
+
+**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html)` rewrites `h1`–`h3` with unique ids and returns outline entries; `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
 
 ### Comment tree (`src/custom/comment-tree/`)
 
@@ -230,6 +303,18 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 
 Utility functions and helpers are located in `src/tools/`. The main utility is the `cn` function for class name merging.
 
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+| Position | Role | Variant |
+| -------- | ---- | ------- |
+| Left | External / repeat action (e.g. "Create another …") | `secondary` |
+| Right group (first) | Cancel / dismiss (e.g. "Later", "Cancel") | `outline` |
+| Right group (last) | Main CTA (e.g. "Open now", "Save", "Create") | default primary |
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
+
 ### Page layout (`src/base/page/`)
 
 Composable page shell used across dashboard list and settings screens. Import as `import * as Page from '@cio/ui/base/page'`.
@@ -246,7 +331,7 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.FloatingBar`             | Shell for the bar that rises from the bottom of a page       |
 | `Page.SettingsActions`         | Compact save/discard card for dirty settings forms           |
 
-**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing *is* the notification), an optional `badge` snippet before the status, and the buttons as children.
+**`Page.FloatingBar`** owns the dark pill itself: sticky at the bottom, centered, `z-50`, with a `pointer-events: none` wrapper so it does not block clicks beside it. `Page.SettingsActions` is built on it, and so is the audience selection bar, which is why the two look identical without either re-implementing the pill. Pass `show`, a `status` string (also announced to screen readers, since the bar appearing _is_ the notification), an optional `badge` snippet before the status, and the buttons as children.
 
 Set `fixed` to pin it to the viewport instead of sticking it to the end of the page content. **Anything rendered through `Page.Body`'s `child` snippet must use `fixed`**, because `Page.Body` sets `overflow-x-hidden` and a sticky bar inside a scroll container has no travel. It is a boolean rather than a `'sticky' | 'fixed'` union deliberately: the `ui:` prefix script rewrites class-like string literals, and turns `position === 'fixed'` into `position === 'ui:fixed'`, which never matches.
 

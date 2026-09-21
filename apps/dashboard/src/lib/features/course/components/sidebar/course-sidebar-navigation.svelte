@@ -26,6 +26,7 @@
   } from '@cio/ui/custom/moving-icons';
   import { ContentType } from '@cio/utils/constants/content';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
+  import { openAddContentModal } from '$features/course/components/content/open-content-create';
   import { getCourseContent } from '$features/course/utils/content';
   import CourseContentTree from './course-content-tree.svelte';
   import ContentCountBadges from '../content-count-badges.svelte';
@@ -212,22 +213,6 @@
     void complianceApi.ensureLearnerHistory(courseApi.course.id, $profile.id);
   });
 
-  function openContentModal(courseId: string, sectionId = '') {
-    goto(resolve(`/courses/${courseId}/lessons`, {}));
-    contentEditingStore.set(undefined);
-    contentCreateStoreUtils.close();
-
-    const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
-
-    if (sectionId) {
-      contentCreateStoreUtils.openContentUnit(sectionId);
-    } else if (contentGroupingEnabled) {
-      contentCreateStoreUtils.openSection();
-    } else {
-      contentCreateStoreUtils.openDefault();
-    }
-  }
-
   function openSectionEditor(courseId: string, sectionId: string) {
     goto(resolve(`/courses/${courseId}/lessons`, {}));
     contentCreateStoreUtils.close();
@@ -360,10 +345,14 @@
                           variant="ghost-outline"
                           size="icon-xs"
                           class="transition-opacity duration-150 {isHovered ? 'opacity-100' : 'opacity-0'}"
+                          aria-label={$t('course.navItem.lessons.add_content')}
+                          aria-keyshortcuts="Control+Shift+N"
+                          tooltip={$t('course.navItem.lessons.add_content')}
+                          shortcut={['Ctrl', '⇧', 'N']}
                           onclick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
-                            openContentModal(id);
+                            openAddContentModal(id);
                           }}
                         >
                           <Plus size={8} />
@@ -391,7 +380,7 @@
               {id}
               {isStudent}
               className="mt-1 ml-2"
-              onOpenContentModal={isStudent ? undefined : (sectionId) => openContentModal(id, sectionId)}
+              onOpenContentModal={isStudent ? undefined : (sectionId) => openAddContentModal(id, sectionId)}
               onEditSection={isStudent ? undefined : (sectionId) => openSectionEditor(id, sectionId)}
             />
           {/if}

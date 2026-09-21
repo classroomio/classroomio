@@ -11,10 +11,12 @@ import { mintHlsToken } from '@cio/core/services/assets/assets';
 import {
   getCourseRowBySlug,
   getPublicCourseItem as getPublicCourseItemQuery,
+  getPublicLessonMarkdownSource,
   getPublicCourseTreeBySlug,
   type PublicCourseItemContent,
   type PublicCourseTree
 } from '@cio/db/queries/course';
+import { formatLessonMarkdownDocument } from '@api/utils/html-to-markdown';
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise/exercise-section';
 
@@ -268,4 +270,32 @@ export async function getPublicCourseItemService(
  */
 export async function resolvePublicCourseBySlug(courseSlug: string) {
   return getCourseRowBySlug(courseSlug);
+}
+
+/**
+ * Anonymous-safe: convert a public lesson to Markdown when the teacher has
+ * opted the course in. Returns `null` when the lesson is missing, locked,
+ * not a lesson, or `metadata.allowMarkdownExport` is not true — callers 404.
+ */
+export async function getPublicLessonMarkdownService(courseSlug: string, itemSlug: string): Promise<string | null> {
+  try {
+    const source = await getPublicLessonMarkdownSource(courseSlug, itemSlug);
+
+    if (!source) return null;
+    if (!source.allowMarkdownExport) return null;
+    if (!source.isUnlocked) return null;
+
+    const courseTitle = source.courseTitle;
+    const lessonTitle = source.lessonTitle;
+    const bodyHtml = source.body;
+
+    return formatLessonMarkdownDocument({
+      courseTitle,
+      lessonTitle,
+      bodyHtml
+    });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError('Failed to export lesson markdown', ErrorCodes.COURSE_FETCH_FAILED, 500);
+  }
 }

@@ -19,6 +19,8 @@
   // Type-only imports are erased at build time — no static TipTap dependency.
   import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
   import { cn } from '@cio/ui/tools';
+  import { uploadImage } from '$lib/utils/services/upload';
+  import { queryUnsplash } from './upload-widget/utils';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
@@ -60,7 +62,7 @@
     {#if showToolBar}
       <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed" />
     {/if}
-    <div class={cn('ui:bg-muted/50 relative h-128 w-full animate-pulse overflow-auto p-4', editorClass)} />
+    <div class={cn('ui:bg-muted/50 relative h-full w-full animate-pulse overflow-auto p-4', editorClass)} />
   </div>
 {:then { Editor }}
   <Editor
@@ -76,5 +78,7 @@
     onContentChange={onChange}
     onEditorReady={onReady}
     {onEditorDestroy}
+    onImageUpload={uploadImage}
+    onSearchUnsplash={queryUnsplash}
   />
 {/await}
