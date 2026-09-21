@@ -150,6 +150,8 @@ are stepped **by hand**, so a frame lands on the spoken word rather than on a ti
   exist; redefining them silently breaks layout. Namespace asset-local classes.
 - Don't anchor an element to a fixed bottom offset if it must clear grid cards — cards
   stretch to their tallest sibling and grow into the gap.
+- A `<p>` given a display-size class keeps its UA `margin: 1em`, which at that size is over
+  100px of unexplained space. Reset `margin: 0` on any custom type class.
 
 ## Producing a PNG
 
@@ -180,7 +182,8 @@ outranks the reveal system and the element never hides).
   wins when a product screenshot has to read as a separate object.
 - **Academy materials** — Bone page, Paper cards, Bone 300 between sections. Blue only on
   the action a learner should take.
-- **Carousels** — alternate Bone and Bone 300 slide to slide. Cover on dark, one blue
-  element per slide.
+- **Carousels** — see `examples/carousel-agent-first.html`, a 7-slide 1080×1350 deck rendered one
+  slide at a time via `?slide=n`. Cover on dark, body slides alternating Bone and Bone 300, CTA
+  the one blue field. Every slide carries one accent word so the blue never has to be hunted for.
 - **Site** — fields become page sections. The gutter becomes the page gutter. `.panel` is
   the product-shot treatment, `.chip` + `.leader` the feature annotation. Grain stays.

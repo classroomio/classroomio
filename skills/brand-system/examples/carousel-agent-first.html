@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Carousel · Agent-first customer education</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../motion.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <link rel="stylesheet" href="../stage.css" />
+    <style>
+      .slide { padding: 130px var(--gutter) 250px; display: flex; flex-direction: column; justify-content: center; }
+      .slide .kicker { position: static; margin-bottom: 54px; }
+      .slide .display { padding-left: 0; white-space: normal; font-size: var(--size-display-s); }
+      .slide .headline { padding-left: 0; font-size: var(--size-headline); }
+      .slide .body { margin-top: 38px; font-size: var(--size-body-lg); max-width: 24ch; }
+      .slide .stack { padding-left: 0; }
+      .slide .stack li { font-size: var(--size-headline-s); gap: var(--space-4); }
+      .slide .stack li svg { width: 46px; height: 46px; }
+      .slide .stack .n { color: var(--accent-text); opacity: 1; }
+
+      .foot-bar { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 92px;
+        display: flex; align-items: center; justify-content: space-between; }
+      .foot-bar .mark { font-size: var(--size-body); }
+      .foot-bar .n { font-family: var(--font-mono); font-size: var(--size-mono); letter-spacing: .14em; color: var(--fg-faint); }
+
+      .cta { margin: 0; font-size: var(--size-display-s); font-weight: 700; letter-spacing: var(--track-display); line-height: .96; }
+    </style>
+  </head>
+  <body data-scene="carousel · agent-first">
+
+    <template id="slides">
+      <section class="stage slide" data-tone="dark" data-w="1080" data-h="1350">
+        <div class="kicker">ClassroomIO</div>
+        <h1 class="display"><em class="display-mark">Agent-first</em><br />customer<br />education.</h1>
+        <p class="body">The academy your agents can actually run.</p>
+      </section>
+
+      <section class="stage slide" data-w="1080" data-h="1350">
+        <div class="kicker">The problem</div>
+        <h2 class="headline">Customer education is still built <em style="font-style:normal;color:var(--accent-text)">by hand</em>.</h2>
+        <p class="body">Every course, every update, every enrolment — someone in a dashboard, clicking.</p>
+      </section>
+
+      <section class="stage slide" data-w="1080" data-h="1350" style="--field: var(--bone-300)">
+        <div class="kicker">The shift</div>
+        <h2 class="headline">So we built the dashboard for <em style="font-style:normal;color:var(--accent-text)">agents</em> too.</h2>
+        <p class="body">Anything you can do in ClassroomIO, your agent can do.</p>
+      </section>
+
+      <section class="stage slide" data-w="1080" data-h="1350">
+        <div class="kicker">What that means</div>
+        <ul class="stack">
+          <li class="lit"><span class="n">01</span>Build a course</li>
+          <li class="lit"><span class="n">02</span>Enrol a cohort</li>
+          <li class="lit"><span class="n">03</span>Rewrite a lesson</li>
+          <li class="lit"><span class="n">04</span>Report who is stuck</li>
+        </ul>
+      </section>
+
+      <section class="stage slide" data-w="1080" data-h="1350" style="--field: var(--bone-300)">
+        <div class="kicker">How it works</div>
+        <h2 class="headline">Your agent has an <em style="font-style:normal;color:var(--accent-text)">account</em>.</h2>
+        <p class="body">A real member of your workspace — with a role, scoped permissions, and everything it does on the record.</p>
+      </section>
+
+      <section class="stage slide" data-w="1080" data-h="1350">
+        <div class="kicker">Who we are</div>
+        <h2 class="headline">Fast-moving, customer-first, <em style="font-style:normal;color:var(--accent-text)">AI-native</em>.</h2>
+        <p class="body">A startup building customer education for SaaS. We ship weekly, and we build what people want.</p>
+      </section>
+
+      <section class="stage slide" data-tone="blue" data-w="1080" data-h="1350">
+        <div class="kicker">Start</div>
+        <p class="cta">Build an academy<br />your agents<br />can run.</p>
+        <span class="chip mono" style="position: static; align-self: flex-start; margin-top: 52px">classroomio.com</span>
+      </section>
+    </template>
+
+    <div class="stage-fit" id="mount"></div>
+
+    <script>
+      const index = Math.max(1, Math.min(7, +new URLSearchParams(location.search).get('slide') || 1));
+      const slides = document.getElementById('slides').content.querySelectorAll('section');
+      const slide = slides[index - 1].cloneNode(true);
+
+      const foot = document.createElement('div');
+      foot.className = 'foot-bar';
+      foot.innerHTML =
+        '<span class="mark"><img src="logo-512.png" alt="" />ClassroomIO</span>' +
+        '<span class="n">' + String(index).padStart(2, '0') + ' / ' + slides.length + '</span>';
+      slide.appendChild(foot);
+
+      document.getElementById('mount').appendChild(slide);
+    </script>
+    <script src="../stage.js"></script>
+  </body>
+</html>
