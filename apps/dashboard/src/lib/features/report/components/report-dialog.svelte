@@ -94,7 +94,7 @@
       <Button variant="outline" onclick={() => handleOpenChange(false)} disabled={reportApi.isLoading}>
         {$t('report.cancel')}
       </Button>
-      <Button onclick={handleSubmit} loading={reportApi.isLoading} disabled={!reason}>
+      <Button variant="secondary" onclick={handleSubmit} loading={reportApi.isLoading} disabled={!reason}>
         {$t('report.submit')}
       </Button>
     </Dialog.Footer>
