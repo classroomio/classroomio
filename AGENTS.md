@@ -531,6 +531,16 @@ Use `.server.ts` files for server-side code to isolate API keys.
   - **Inside `packages/ui/src/**` only:** ALL Tailwind utility classes must use the `ui:` prefix (enforced by `pnpm --filter @cio/ui prefix:check`).
 - **Tailwind `ui:` variant prefix ordering:** When applying variants (`hover:`, `focus:`, `dark:`, `placeholder:`, `md:`) to `ui:` prefixed classes, `ui:` must come before the variant modifier (e.g. `ui:hover:text-primary`, `ui:focus-visible:ring-ring`, `ui:placeholder:text-muted-foreground`, `ui:dark:text-white`).
 
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+- **Left / external action** (e.g. "Create another …") — `variant="secondary"`
+- **Cancel / dismiss** (e.g. "Later", "Cancel") — `variant="outline"`
+- **Main CTA** (e.g. "Open now", "Save", "Create") — default primary (`variant="default"`)
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
+
 ### Page layout and settings save bar
 
 Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` § Page layout for the full component list.

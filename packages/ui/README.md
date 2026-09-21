@@ -56,7 +56,7 @@ All components in the `base` directory are primarily from [shadcn-svelte](https:
 **Examples:**
 
 - `base/button/` - Button component from shadcn-svelte
-- `base/dialog/` - Dialog component from shadcn-svelte
+- `base/dialog/` - Dialog component from shadcn-svelte (see [Dialog button hierarchy](#dialog-button-hierarchy) below)
 - `base/tooltip/` - Tooltip component from shadcn-svelte
 
 ### Custom Components (`src/custom/`)
@@ -298,6 +298,18 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 ### Tools (`src/tools/`)
 
 Utility functions and helpers are located in `src/tools/`. The main utility is the `cn` function for class name merging.
+
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+| Position | Role | Variant |
+| -------- | ---- | ------- |
+| Left | External / repeat action (e.g. "Create another …") | `secondary` |
+| Right group (first) | Cancel / dismiss (e.g. "Later", "Cancel") | `outline` |
+| Right group (last) | Main CTA (e.g. "Open now", "Save", "Create") | default primary |
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
 
 ### Page layout (`src/base/page/`)
 

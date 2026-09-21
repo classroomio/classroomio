@@ -207,6 +207,7 @@ export type CreateExerciseFromTemplateOptions = {
   lessonId?: string;
   sectionId?: string;
   order: number;
+  silent?: boolean;
 };
 export type CreateExerciseFromTemplateResponse = InferResponseType<CreateExerciseFromTemplateRequest>;
 export type CreateExerciseFromTemplateSuccess = Extract<CreateExerciseFromTemplateResponse, { success: true }>;

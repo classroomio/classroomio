@@ -8,6 +8,7 @@
   import { Separator } from '@cio/ui/base/separator';
   import * as Kbd from '@cio/ui/base/kbd';
   import { t } from '$lib/utils/functions/translations';
+  import { shouldIgnoreGlobalShortcut } from '$lib/utils/functions/keyboard';
   import { sendPromptToAssistant } from '$features/ai-assistant/utils/store';
 
   interface Props {
@@ -37,26 +38,6 @@
   const expandOut = { y: 12, duration: 200, easing: cubicOut };
   const collapseIn = { duration: 200, easing: cubicOut };
   const collapseOut = { duration: 150, easing: cubicOut };
-
-  function shouldIgnoreGlobalShortcut() {
-    const active = document.activeElement;
-
-    if (!active) {
-      return false;
-    }
-
-    const tag = active.tagName;
-
-    if (tag === 'INPUT' || tag === 'TEXTAREA') {
-      return true;
-    }
-
-    if (active instanceof HTMLElement && active.isContentEditable) {
-      return true;
-    }
-
-    return false;
-  }
 
   async function expand() {
     expanded = true;
