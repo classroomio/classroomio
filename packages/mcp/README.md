@@ -58,6 +58,32 @@ Current tools:
 - `tag_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
+- `list_org_cohorts`
+- `create_cohort`
+- `get_cohort`
+- `update_cohort`
+- `delete_cohort`
+- `list_cohort_members`
+- `add_cohort_members`
+- `update_cohort_member`
+- `delete_cohort_member`
+- `list_cohort_courses`
+- `add_cohort_course`
+- `remove_cohort_course`
+- `list_cohort_newsfeed`
+- `create_cohort_newsfeed_post`
+- `update_cohort_newsfeed_post`
+- `update_cohort_newsfeed_reaction`
+- `delete_cohort_newsfeed_post`
+- `list_cohort_newsfeed_comments`
+- `create_cohort_newsfeed_comment`
+- `delete_cohort_newsfeed_comment`
+- `list_cohort_goals`
+- `create_cohort_goal`
+- `get_cohort_goal`
+- `update_cohort_goal`
+- `archive_cohort_goal`
+- `delete_cohort_goal`
 
 ## Auth Model
 
@@ -73,6 +99,8 @@ ClassroomIO API:
 4. executes the requested action
 
 The MCP package never decides permissions.
+
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and require the key's `public_api:*` scope; the course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 ## Required Environment Variables
 

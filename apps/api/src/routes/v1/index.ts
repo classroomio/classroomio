@@ -10,6 +10,7 @@ import { createAuthenticationFailureRateLimiter, createRateLimiter } from '@api/
 import { publicApiCors } from '@api/middlewares/cors';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
 import { v1AudienceRouter } from './audience';
+import { v1CohortsRouter } from './cohorts';
 import { v1CoursesRouter } from './courses';
 
 export const v1Router = new Hono()
@@ -33,4 +34,5 @@ export const v1Router = new Hono()
     })
   )
   .route('/audience', v1AudienceRouter)
-  .route('/courses', v1CoursesRouter);
+  .route('/courses', v1CoursesRouter)
+  .route('/cohorts', v1CohortsRouter);

@@ -1,0 +1,192 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('@api/services/v1/cohort-newsfeed', () => ({
+  listPublicApiCohortNewsfeedService: vi.fn(),
+  createPublicApiCohortNewsfeedService: vi.fn(),
+  updatePublicApiCohortNewsfeedService: vi.fn(),
+  updatePublicApiCohortNewsfeedReactionService: vi.fn(),
+  deletePublicApiCohortNewsfeedService: vi.fn(),
+  listPublicApiCohortNewsfeedCommentsService: vi.fn(),
+  createPublicApiCohortNewsfeedCommentService: vi.fn(),
+  deletePublicApiCohortNewsfeedCommentService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/cohort', () => ({
+  listCohortsService: vi.fn(),
+  createPublicApiCohortService: vi.fn(),
+  getPublicApiCohortService: vi.fn(),
+  updatePublicApiCohortService: vi.fn(),
+  deletePublicApiCohortService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/cohort-member', () => ({
+  listPublicApiCohortMembersService: vi.fn(),
+  addPublicApiCohortMembersService: vi.fn(),
+  updatePublicApiCohortMemberService: vi.fn(),
+  removePublicApiCohortMemberService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/cohort-course', () => ({
+  listPublicApiCohortCoursesService: vi.fn(),
+  addPublicApiCohortCourseService: vi.fn(),
+  removePublicApiCohortCourseService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/cohort-goal', () => ({
+  listPublicApiCohortGoalsService: vi.fn(),
+  createPublicApiCohortGoalService: vi.fn(),
+  getPublicApiCohortGoalService: vi.fn(),
+  updatePublicApiCohortGoalService: vi.fn(),
+  archivePublicApiCohortGoalService: vi.fn(),
+  deletePublicApiCohortGoalService: vi.fn()
+}));
+
+import { Hono } from '@api/utils/hono';
+import {
+  createPublicApiCohortNewsfeedCommentService,
+  createPublicApiCohortNewsfeedService,
+  deletePublicApiCohortNewsfeedCommentService,
+  deletePublicApiCohortNewsfeedService,
+  listPublicApiCohortNewsfeedCommentsService,
+  listPublicApiCohortNewsfeedService,
+  updatePublicApiCohortNewsfeedReactionService,
+  updatePublicApiCohortNewsfeedService
+} from '@api/services/v1/cohort-newsfeed';
+import { v1CohortsRouter } from '@api/routes/v1/cohorts';
+
+const COHORT_ID = '11111111-1111-4111-8111-111111111111';
+const FEED_ID = '22222222-2222-4222-8222-222222222222';
+const COMMENT_ID = 42;
+
+const app = new Hono()
+  .use('*', async (c, next) => {
+    c.set('orgId', 'org-1');
+    c.set('actorId', 'actor-1');
+    await next();
+  })
+  .route('/', v1CohortsRouter);
+
+const jsonRequest = (method: string, body: unknown) => ({
+  method,
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify(body)
+});
+
+describe('v1CohortsRouter newsfeed routes', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('lists the newsfeed with pagination params', async () => {
+    vi.mocked(listPublicApiCohortNewsfeedService).mockResolvedValue({
+      items: [],
+      totalCount: 0,
+      hasMore: false,
+      nextCursor: null
+    });
+
+    const response = await app.request(`/${COHORT_ID}/newsfeed?limit=5`);
+
+    expect(response.status).toBe(200);
+    expect(listPublicApiCohortNewsfeedService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID }, { limit: 5 });
+  });
+
+  it('creates a post using the automation actor', async () => {
+    vi.mocked(createPublicApiCohortNewsfeedService).mockResolvedValue({ id: FEED_ID } as Awaited<
+      ReturnType<typeof createPublicApiCohortNewsfeedService>
+    >);
+
+    const response = await app.request(`/${COHORT_ID}/newsfeed`, jsonRequest('POST', { content: 'Hello cohort' }));
+
+    expect(response.status).toBe(201);
+    expect(createPublicApiCohortNewsfeedService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID },
+      { content: 'Hello cohort' }
+    );
+  });
+
+  it('updates a post and its reaction', async () => {
+    vi.mocked(updatePublicApiCohortNewsfeedService).mockResolvedValue({ id: FEED_ID } as Awaited<
+      ReturnType<typeof updatePublicApiCohortNewsfeedService>
+    >);
+    vi.mocked(updatePublicApiCohortNewsfeedReactionService).mockResolvedValue({ id: FEED_ID } as Awaited<
+      ReturnType<typeof updatePublicApiCohortNewsfeedReactionService>
+    >);
+
+    const updated = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}`, jsonRequest('PUT', { content: 'Edited' }));
+    const reaction = { clap: ['member-1'], smile: [], thumbsup: [], thumbsdown: [] };
+    const reacted = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}/react`, jsonRequest('PUT', { reaction }));
+
+    expect(updated.status).toBe(200);
+    expect(updatePublicApiCohortNewsfeedService).toHaveBeenCalledWith(
+      'org-1',
+      { cohortId: COHORT_ID, feedId: FEED_ID },
+      { content: 'Edited' }
+    );
+    expect(reacted.status).toBe(200);
+    expect(updatePublicApiCohortNewsfeedReactionService).toHaveBeenCalledWith(
+      'org-1',
+      { cohortId: COHORT_ID, feedId: FEED_ID },
+      { reaction }
+    );
+  });
+
+  it('deletes a post', async () => {
+    vi.mocked(deletePublicApiCohortNewsfeedService).mockResolvedValue({ id: FEED_ID } as Awaited<
+      ReturnType<typeof deletePublicApiCohortNewsfeedService>
+    >);
+
+    const response = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}`, { method: 'DELETE' });
+
+    expect(response.status).toBe(200);
+    expect(deletePublicApiCohortNewsfeedService).toHaveBeenCalledWith('org-1', {
+      cohortId: COHORT_ID,
+      feedId: FEED_ID
+    });
+  });
+
+  it('lists and creates comments using the automation actor', async () => {
+    vi.mocked(listPublicApiCohortNewsfeedCommentsService).mockResolvedValue([]);
+    vi.mocked(createPublicApiCohortNewsfeedCommentService).mockResolvedValue({ id: COMMENT_ID } as Awaited<
+      ReturnType<typeof createPublicApiCohortNewsfeedCommentService>
+    >);
+
+    const list = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}/comments`);
+    const created = await app.request(
+      `/${COHORT_ID}/newsfeed/${FEED_ID}/comment`,
+      jsonRequest('POST', { content: 'Nice!' })
+    );
+
+    expect(list.status).toBe(200);
+    expect(listPublicApiCohortNewsfeedCommentsService).toHaveBeenCalledWith('org-1', {
+      cohortId: COHORT_ID,
+      feedId: FEED_ID
+    });
+    expect(created.status).toBe(201);
+    expect(createPublicApiCohortNewsfeedCommentService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID, feedId: FEED_ID },
+      { content: 'Nice!' }
+    );
+  });
+
+  it('deletes a comment by numeric commentId', async () => {
+    vi.mocked(deletePublicApiCohortNewsfeedCommentService).mockResolvedValue({ id: COMMENT_ID } as Awaited<
+      ReturnType<typeof deletePublicApiCohortNewsfeedCommentService>
+    >);
+
+    const response = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}/comment/${COMMENT_ID}`, {
+      method: 'DELETE'
+    });
+
+    expect(response.status).toBe(200);
+    expect(deletePublicApiCohortNewsfeedCommentService).toHaveBeenCalledWith('org-1', {
+      cohortId: COHORT_ID,
+      feedId: FEED_ID,
+      commentId: COMMENT_ID
+    });
+  });
+});

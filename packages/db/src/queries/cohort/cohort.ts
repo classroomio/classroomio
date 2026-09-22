@@ -66,6 +66,21 @@ export async function getCohortById(cohortId: string): Promise<TCohort | null> {
   }
 }
 
+export async function getCohortOrganizationId(cohortId: string): Promise<string | null> {
+  try {
+    const [row] = await db
+      .select({ organizationId: schema.cohort.organizationId })
+      .from(schema.cohort)
+      .where(eq(schema.cohort.id, cohortId))
+      .limit(1);
+
+    return row?.organizationId ?? null;
+  } catch (error) {
+    console.error('getCohortOrganizationId error:', error);
+    throw new Error('Failed to get cohort organization id');
+  }
+}
+
 export async function getCohortsByOrg(
   organizationId: string,
   cohortIds?: string[]

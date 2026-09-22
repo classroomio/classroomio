@@ -22,6 +22,20 @@ import type {
 
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type {
+  TPublicApiAddCohortMembers,
+  TPublicApiAddCourseToCohort,
+  TPublicApiCohortNewsfeedQuery,
+  TPublicApiCreateCohort,
+  TPublicApiCreateCohortGoal,
+  TPublicApiCreateCohortNewsfeed,
+  TPublicApiCreateCohortNewsfeedComment,
+  TPublicApiUpdateCohort,
+  TPublicApiUpdateCohortGoal,
+  TPublicApiUpdateCohortMember,
+  TPublicApiUpdateCohortNewsfeed,
+  TPublicApiUpdateCohortReaction
+} from '@cio/utils/validation/public-api';
 
 type ApiSuccess<T> = {
   success: true;
@@ -179,10 +193,156 @@ export class ClassroomIoApiClient {
     });
   }
 
+  // ─── Cohorts (public API) ────────────────────────────────────────────────
+
+  async listCohorts() {
+    return this.request('/public-api/v1/cohorts', { method: 'GET' });
+  }
+
+  async createCohort(payload: TPublicApiCreateCohort) {
+    return this.request('/public-api/v1/cohorts', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async getCohort(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}`, { method: 'GET' });
+  }
+
+  async updateCohort(cohortId: string, payload: TPublicApiUpdateCohort) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteCohort(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}`, { method: 'DELETE' });
+  }
+
+  async listCohortMembers(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/members`, { method: 'GET' });
+  }
+
+  async addCohortMembers(cohortId: string, payload: TPublicApiAddCohortMembers) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/members`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateCohortMember(cohortId: string, memberId: string, payload: TPublicApiUpdateCohortMember) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/members/${memberId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteCohortMember(cohortId: string, memberId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/members/${memberId}`, { method: 'DELETE' });
+  }
+
+  async listCohortCourses(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/courses`, { method: 'GET' });
+  }
+
+  async addCohortCourse(cohortId: string, payload: TPublicApiAddCourseToCohort) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/courses`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async removeCohortCourse(cohortId: string, courseId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/courses/${courseId}`, { method: 'DELETE' });
+  }
+
+  async listCohortNewsfeed(cohortId: string, query: Partial<TPublicApiCohortNewsfeedQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.cursor) searchParams.set('cursor', query.cursor);
+    if (query.limit) searchParams.set('limit', String(query.limit));
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed${querySuffix}`, { method: 'GET' });
+  }
+
+  async createCohortNewsfeedPost(cohortId: string, payload: TPublicApiCreateCohortNewsfeed) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateCohortNewsfeedPost(cohortId: string, feedId: string, payload: TPublicApiUpdateCohortNewsfeed) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async updateCohortNewsfeedReaction(cohortId: string, feedId: string, payload: TPublicApiUpdateCohortReaction) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}/react`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteCohortNewsfeedPost(cohortId: string, feedId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}`, { method: 'DELETE' });
+  }
+
+  async listCohortNewsfeedComments(cohortId: string, feedId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}/comments`, { method: 'GET' });
+  }
+
+  async createCohortNewsfeedComment(cohortId: string, feedId: string, payload: TPublicApiCreateCohortNewsfeedComment) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}/comment`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async deleteCohortNewsfeedComment(cohortId: string, feedId: string, commentId: number) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}/comment/${commentId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async listCohortGoals(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals`, { method: 'GET' });
+  }
+
+  async createCohortGoal(cohortId: string, payload: TPublicApiCreateCohortGoal) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async getCohortGoal(cohortId: string, goalId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/${goalId}`, { method: 'GET' });
+  }
+
+  async updateCohortGoal(cohortId: string, goalId: string, payload: TPublicApiUpdateCohortGoal) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/${goalId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async archiveCohortGoal(cohortId: string, goalId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/${goalId}/archive`, { method: 'POST' });
+  }
+
+  async deleteCohortGoal(cohortId: string, goalId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/${goalId}`, { method: 'DELETE' });
+  }
+
   private async request<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT';
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
       body?: unknown;
     }
   ): Promise<TResponse> {

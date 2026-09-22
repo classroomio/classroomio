@@ -4,7 +4,7 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members and courses with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts with organization-scoped API keys.
 
 # Authentication
 
@@ -154,7 +154,34 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
-  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure'
+  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/cohorts': 'List cohorts',
+  'POST /public-api/v1/cohorts': 'Create a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}': 'Get a cohort',
+  'PUT /public-api/v1/cohorts/{cohortId}': 'Update a cohort',
+  'DELETE /public-api/v1/cohorts/{cohortId}': 'Delete a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/members': 'List cohort members',
+  'POST /public-api/v1/cohorts/{cohortId}/members': 'Add cohort members',
+  'PUT /public-api/v1/cohorts/{cohortId}/members/{memberId}': 'Update a cohort member',
+  'DELETE /public-api/v1/cohorts/{cohortId}/members/{memberId}': 'Remove a cohort member',
+  'GET /public-api/v1/cohorts/{cohortId}/courses': 'List cohort courses',
+  'POST /public-api/v1/cohorts/{cohortId}/courses': 'Add a course to a cohort',
+  'DELETE /public-api/v1/cohorts/{cohortId}/courses/{courseId}': 'Remove a course from a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/newsfeed': 'List cohort newsfeed',
+  'POST /public-api/v1/cohorts/{cohortId}/newsfeed': 'Create a cohort newsfeed post',
+  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Update a cohort newsfeed post',
+  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/react': 'Update reaction on a cohort newsfeed post',
+  'DELETE /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Delete a cohort newsfeed post',
+  'GET /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comments': 'List comments on a cohort newsfeed post',
+  'POST /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comment': 'Add a comment to a cohort newsfeed post',
+  'DELETE /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comment/{commentId}':
+    'Delete a comment from a cohort newsfeed post',
+  'GET /public-api/v1/cohorts/{cohortId}/goals': 'List cohort goals',
+  'POST /public-api/v1/cohorts/{cohortId}/goals': 'Create a cohort goal',
+  'GET /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Get a cohort goal',
+  'PUT /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Update a cohort goal',
+  'DELETE /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Delete a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/archive': 'Archive a cohort goal'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -168,6 +195,26 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Cohorts',
+    description: 'Create and manage cohorts.'
+  },
+  {
+    name: 'Public API Cohort Members',
+    description: "Manage a cohort's members."
+  },
+  {
+    name: 'Public API Cohort Courses',
+    description: 'Link and unlink courses on a cohort.'
+  },
+  {
+    name: 'Public API Cohort Newsfeed',
+    description: "Post, comment, and react on a cohort's newsfeed."
+  },
+  {
+    name: 'Public API Cohort Goals',
+    description: 'Create and manage cohort progress goals.'
   }
 ];
 
