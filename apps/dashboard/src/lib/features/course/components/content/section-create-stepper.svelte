@@ -84,7 +84,12 @@
         );
 
         if (createdSection) {
-          // Refresh course content so sidebar updates; success does not depend on it.
+          courseApi.addContentSection({
+            id: createdSection.id,
+            title: createdSection.title ?? trimmedTitle,
+            order: finalOrder
+          });
+
           const profileId = $profile?.id;
           if (profileId) {
             void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {

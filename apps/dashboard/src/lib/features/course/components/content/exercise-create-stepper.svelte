@@ -113,6 +113,14 @@
         silent: true
       });
       if (createdExercise) {
+        courseApi.addContentItem({
+          id: createdExercise.id,
+          title: createdExercise.title ?? template.title ?? '',
+          type: ContentType.Exercise,
+          order: createdExercise.order ?? order ?? 1,
+          sectionId: sectionId ?? null
+        });
+
         const profileId = $profile?.id;
         if (profileId) {
           void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
@@ -162,6 +170,14 @@
       );
 
       if (createdExercise) {
+        courseApi.addContentItem({
+          id: createdExercise.id,
+          title: createdExercise.title ?? trimmedTitle,
+          type: ContentType.Exercise,
+          order: createdExercise.order ?? order,
+          sectionId: sectionId ?? null
+        });
+
         const profileId = $profile?.id;
         if (profileId) {
           void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {

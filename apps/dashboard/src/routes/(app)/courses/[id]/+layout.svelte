@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Empty } from '@cio/ui/custom/empty';
@@ -62,16 +62,25 @@
   let hasLoadedSidebarWidth = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
 
-  // Initialize course store on the client (fetch once, then reuse store data).
   $effect(() => {
-    if (!data.courseId || !$profile.id) return;
+    const courseId = data.courseId;
+    const profileId = $profile.id;
+    const serverCourse = data.course;
 
-    if (data.course) {
-      courseApi.setCourse(data.course, $profile.id);
-      return;
-    }
+    if (!courseId || !profileId) return;
 
-    courseApi.ensureCourse(data.courseId, $profile.id);
+    untrack(() => {
+      if (courseApi.course?.id === courseId) {
+        return;
+      }
+
+      if (serverCourse) {
+        courseApi.setCourse(serverCourse, profileId);
+        return;
+      }
+
+      void courseApi.ensureCourse(courseId, profileId);
+    });
   });
 
   const isCourseReady = $derived.by(() => {

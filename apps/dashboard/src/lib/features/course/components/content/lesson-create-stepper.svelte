@@ -79,7 +79,18 @@
         );
 
         if (createdLesson) {
-          // Refresh course content in the background; success does not depend on it.
+          courseApi.addContentItem({
+            id: createdLesson.id,
+            title: createdLesson.title ?? trimmedTitle,
+            type: ContentType.Lesson,
+            order: createdLesson.order ?? order,
+            sectionId: sectionId ?? null,
+            isUnlocked: createdLesson.isUnlocked ?? true,
+            createdAt: createdLesson.createdAt ?? null,
+            lessonAt: createdLesson.lessonAt ?? null,
+            callUrl: createdLesson.callUrl ?? null
+          });
+
           const profileId = $profile?.id;
           if (profileId) {
             void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {

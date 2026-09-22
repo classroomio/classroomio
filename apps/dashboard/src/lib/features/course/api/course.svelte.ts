@@ -35,6 +35,13 @@ import { ROLE, ErrorCodes } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import type { CourseMembers } from '../utils/types';
 import type { NonAutoGradableQuestionOffender } from '@cio/utils/validation/course';
+import {
+  addItemToCourseContent,
+  addSectionToCourseContent,
+  toCourseContentItem,
+  type NewCourseContentItem,
+  type NewCourseContentSection
+} from '../utils/content-store';
 
 type GroupStore = {
   id?: string;
@@ -79,6 +86,7 @@ export class CourseApi extends BaseApiWithErrors {
   private isCourseDirty = $state(false);
   private inFlightCourseRequest: Promise<Course | null> | null = null;
   private inFlightCourseId = $state<string | null>(null);
+  private courseFetchGeneration = 0;
 
   /**
    * Updates a single lesson/exercise item in the local course content store.
@@ -219,6 +227,8 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns The course data or null on error
    */
   async get(courseId: string) {
+    let fetchedCourse: Course | null = null;
+
     await this.execute<GetCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$get({
@@ -227,9 +237,8 @@ export class CourseApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching course',
       onSuccess: (response) => {
-        console.log('response', response.data);
         if (response.data) {
-          this.course = response.data;
+          fetchedCourse = response.data;
           this.success = true;
           this.errors = {};
         }
@@ -240,7 +249,8 @@ export class CourseApi extends BaseApiWithErrors {
         }
       }
     });
-    return this.course;
+
+    return fetchedCourse;
   }
 
   /**
@@ -252,18 +262,21 @@ export class CourseApi extends BaseApiWithErrors {
   async ensureCourse(courseId: string, profileId: string) {
     if (!courseId || !profileId) return null;
 
-    // Already loaded and not marked stale
     if (!this.isCourseDirty && this.loadedCourseId === courseId && this.course?.id === courseId) {
       return this.course;
     }
 
-    // De-duplicate concurrent requests for the same courseId
-    if (this.inFlightCourseRequest && this.inFlightCourseId === courseId) {
+    if (this.inFlightCourseRequest && this.inFlightCourseId === courseId && !this.isCourseDirty) {
       return this.inFlightCourseRequest;
     }
 
+    const generation = ++this.courseFetchGeneration;
+
     const request = (async () => {
       const course = await this.get(courseId);
+      if (generation !== this.courseFetchGeneration) {
+        return this.course;
+      }
       if (course) {
         this.setCourse(course, profileId);
         this.loadedCourseId = courseId;
@@ -291,7 +304,10 @@ export class CourseApi extends BaseApiWithErrors {
   invalidateCourse(courseId?: string) {
     if (!courseId) {
       this.isCourseDirty = true;
-    } else if (this.loadedCourseId === courseId) {
+      return;
+    }
+
+    if (this.loadedCourseId === courseId || this.course?.id === courseId) {
       this.isCourseDirty = true;
     }
   }
@@ -672,13 +688,35 @@ export class CourseApi extends BaseApiWithErrors {
     });
   }
 
+  addContentSection(section: NewCourseContentSection) {
+    if (!this.course?.content) return false;
+
+    this.course = {
+      ...this.course,
+      content: addSectionToCourseContent(this.course.content, section)
+    };
+
+    return true;
+  }
+
+  addContentItem(item: NewCourseContentItem) {
+    if (!this.course?.content) return false;
+
+    this.course = {
+      ...this.course,
+      content: addItemToCourseContent(this.course.content, toCourseContentItem(item))
+    };
+
+    return true;
+  }
+
   /**
-   * Sets course data and processes related data (group data)
-   * @param data Course data
-   * @param profileId Profile ID
+   * Hydrates the course store from API or layout data without mutating the input.
    */
   setCourse(data: Course, profileId: string) {
     if (!data || !(Object.values(data) && Object.values(data).length)) return;
+
+    data = JSON.parse(JSON.stringify(data)) as Course;
 
     // Process group data
     if (data.group) {
@@ -793,8 +831,8 @@ export class CourseApi extends BaseApiWithErrors {
       data.certificate.theme = 'professional';
     }
 
-    // Set the course data
     this.course = data;
+    this.loadedCourseId = data.id ?? this.loadedCourseId;
   }
 
   /**
