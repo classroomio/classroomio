@@ -56,6 +56,11 @@ interface UpdateCourseOptions {
 export class CourseApi extends BaseApiWithErrors {
   course = $state<Course | null>(null);
   courseAnalytics = $state<CourseAnalytics | null>(null);
+
+  /**
+   * Monotonic course-store version, incremented on every write.
+   */
+  private courseDataVersion = 0;
   get publicConversionOffenders(): NonAutoGradableQuestionOffender[] {
     return publicConversionFlow.offenders;
   }
@@ -216,9 +221,13 @@ export class CourseApi extends BaseApiWithErrors {
   /**
    * Gets a course by ID
    * @param courseId Course ID
+   * @param options When `applyToStore` is false, returns the fetched course without writing it to the store.
    * @returns The course data or null on error
    */
-  async get(courseId: string) {
+  async get(courseId: string, options?: { applyToStore?: boolean }) {
+    const applyToStore = options?.applyToStore ?? true;
+    let fetchedCourse: Course | null = null;
+
     await this.execute<GetCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$get({
@@ -227,11 +236,14 @@ export class CourseApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching course',
       onSuccess: (response) => {
-        console.log('response', response.data);
         if (response.data) {
-          this.course = response.data;
-          this.success = true;
-          this.errors = {};
+          fetchedCourse = response.data;
+          if (applyToStore) {
+            const profileId = get(profile)?.id ?? '';
+            this.setCourse(response.data, profileId);
+            this.success = true;
+            this.errors = {};
+          }
         }
       },
       onError: (result) => {
@@ -240,7 +252,7 @@ export class CourseApi extends BaseApiWithErrors {
         }
       }
     });
-    return this.course;
+    return fetchedCourse ?? this.course;
   }
 
   /**
@@ -257,14 +269,11 @@ export class CourseApi extends BaseApiWithErrors {
       return this.course;
     }
 
-    // De-duplicate concurrent requests for the same courseId
-    if (this.inFlightCourseRequest && this.inFlightCourseId === courseId) {
-      return this.inFlightCourseRequest;
-    }
+    const versionAtStart = ++this.courseDataVersion;
 
     const request = (async () => {
-      const course = await this.get(courseId);
-      if (course) {
+      const course = await this.get(courseId, { applyToStore: false });
+      if (course && this.courseDataVersion === versionAtStart) {
         this.setCourse(course, profileId);
         this.loadedCourseId = courseId;
         this.isCourseDirty = false;
@@ -680,6 +689,8 @@ export class CourseApi extends BaseApiWithErrors {
   setCourse(data: Course, profileId: string) {
     if (!data || !(Object.values(data) && Object.values(data).length)) return;
 
+    this.courseDataVersion += 1;
+
     // Process group data
     if (data.group) {
       const copiedGroup = JSON.parse(JSON.stringify(data.group));
@@ -795,6 +806,14 @@ export class CourseApi extends BaseApiWithErrors {
 
     // Set the course data
     this.course = data;
+  }
+
+  /**
+   * Stores a locally-mutated course, marking it newer than any in-flight fetch.
+   */
+  applyCourseMutation(updatedCourse: Course) {
+    this.courseDataVersion += 1;
+    this.course = updatedCourse;
   }
 
   /**

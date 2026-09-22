@@ -1,4 +1,5 @@
 import { ContentType } from '@cio/utils/constants/content';
+import { get } from 'svelte/store';
 import { courseApi, lessonApi } from '$features/course/api';
 import {
   closeCourseCompletionModal,
@@ -6,6 +7,7 @@ import {
   updateCourseCompletionModal
 } from '$features/course/store/course-completion-modal';
 import { snackbar } from '$features/ui/snackbar/store';
+import { profile } from '$lib/utils/store/user';
 import { getOrderedNavigableContent } from './content';
 import { updateLessonCompletionInCourseContent } from './content-completion';
 
@@ -27,7 +29,14 @@ export async function toggleLessonCompletion(courseId: string, lessonId: string)
   );
 
   if (courseApi.course?.content) {
-    courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, lessonId, isComplete);
+    courseApi.applyCourseMutation(updateLessonCompletionInCourseContent(courseApi.course, lessonId, isComplete));
+  }
+
+  const profileId = get(profile)?.id;
+  if (profileId) {
+    void courseApi.refreshCourse(courseId, profileId).catch((refreshError) => {
+      console.error('Failed to refresh course after lesson completion toggle:', refreshError);
+    });
   }
 
   const updatedItems = getOrderedNavigableContent(courseApi.course);

@@ -659,7 +659,7 @@ export class LessonApi extends BaseApiWithErrors {
         }
 
         if (courseApi.course?.content && data.didJustComplete) {
-          courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, lessonId, true);
+          courseApi.applyCourseMutation(updateLessonCompletionInCourseContent(courseApi.course, lessonId, true));
         }
 
         this.lesson = {
