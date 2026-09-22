@@ -34,6 +34,12 @@ import type {
 type ApiSuccess<T> = {
   success: true;
   data: T;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 
 type ApiFailure = {
@@ -42,6 +48,16 @@ type ApiFailure = {
   message?: string;
   code?: string;
   field?: string;
+};
+
+type PaginatedResponse<T> = {
+  data: T;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 
 export class ClassroomIoApiError extends Error {
@@ -197,7 +213,7 @@ export class ClassroomIoApiClient {
     if (query.roleId) searchParams.set('roleId', String(query.roleId));
 
     const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/public-api/v1/courses/${courseId}/members${querySuffix}`, { method: 'GET' });
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/members${querySuffix}`, { method: 'GET' });
   }
 
   async addCourseMember(courseId: string, payload: TPublicApiAddCourseMember) {
@@ -252,7 +268,7 @@ export class ClassroomIoApiClient {
     if (query.limit) searchParams.set('limit', String(query.limit));
 
     const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/public-api/v1/courses/${courseId}/invites${querySuffix}`, { method: 'GET' });
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/invites${querySuffix}`, { method: 'GET' });
   }
 
   async createCourseInvite(courseId: string, payload: TPublicApiCreateCourseInvite) {
@@ -266,13 +282,13 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/invites/${inviteId}/revoke`, { method: 'POST' });
   }
 
-  private async request<TResponse>(
+  private async requestRaw<TResponse>(
     path: string,
     options: {
       method: 'GET' | 'POST' | 'PUT' | 'DELETE';
       body?: unknown;
     }
-  ): Promise<TResponse> {
+  ): Promise<ApiSuccess<TResponse>> {
     const response = await fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
@@ -299,6 +315,32 @@ export class ClassroomIoApiClient {
       throw new ClassroomIoApiError('ClassroomIO returned an invalid response payload', response.status);
     }
 
+    return json;
+  }
+
+  private async request<TResponse>(
+    path: string,
+    options: {
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      body?: unknown;
+    }
+  ): Promise<TResponse> {
+    const json = await this.requestRaw<TResponse>(path, options);
     return json.data;
+  }
+
+  private async requestPaginated<TResponse>(
+    path: string,
+    options: {
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      body?: unknown;
+    }
+  ): Promise<PaginatedResponse<TResponse>> {
+    const json = await this.requestRaw<TResponse>(path, options);
+    if (!json.pagination) {
+      throw new ClassroomIoApiError('ClassroomIO returned a response without pagination metadata', 502);
+    }
+
+    return { data: json.data, pagination: json.pagination };
   }
 }
