@@ -306,7 +306,11 @@
         "all_content_already_unlocked": "Весь контент уже разблокирован",
         "content_grouping_enabled": "Группировка контента включена",
         "content_grouping_disabled": "Группировка контента отключена",
-        "link_generated": "Ссылка на курс успешно обновлена"
+        "link_generated": "Ссылка на курс успешно обновлена",
+        "converted_to_public": "Курс успешно преобразован в общедоступный курс"
+      },
+      "info": {
+        "conversion_blocked": "Исправьте вопросы ниже, чтобы завершить преобразование в публичный доступ."
       }
     },
     "people": {
@@ -468,6 +472,11 @@
         "post_created": "Сообщение успешно создано",
         "post_updated": "Сообщение успешно обновлено"
       }
+    },
+    "report": {
+      "success": "Спасибо. Мы рассмотрим эту жалобу.",
+      "error": "Не удалось отправить жалобу. Попробуйте ещё раз.",
+      "already_submitted": "Вы уже пожаловались на этот контент."
     }
   },
   "explore": {
@@ -1051,7 +1060,48 @@
         "generate_link": "Создать новую ссылку",
         "open_link": "Открыть ссылку в новой вкладке",
         "copy_link": "Скопировать ссылку",
-        "certificate_deadline_required_description": "Для курсов по соблюдению требований требуется крайний срок получения сертификата, прежде чем студенты смогут быть зачислены. Пожалуйста, установите крайний срок в настройках курса перед публикацией."
+        "certificate_deadline_required_description": "Для курсов по соблюдению требований требуется крайний срок получения сертификата, прежде чем студенты смогут быть зачислены. Пожалуйста, установите крайний срок в настройках курса перед публикацией.",
+        "remove": "Удалить",
+        "setup_landing_page": "Настроить целевую страницу",
+        "general_card_title": "Общие",
+        "content_card_title": "Содержание",
+        "access_card_title": "Доступ",
+        "question_in_exercise": "В «{exercise}»",
+        "fix_question": "Редактировать",
+        "convert_to_public_blocked_desc": "Упражнения в общедоступном курсе оцениваются автоматически в браузере, поэтому мы поддерживаем только вопросы с автоматической оценкой. Прежде чем сделать этот курс общедоступным, удалите или замените следующие вопросы:",
+        "fix_in_exercise": "Исправить в упражнении",
+        "cancel_conversion": "Отменить преобразование",
+        "public_conversion": {
+          "banner_title": "Преобразование курса в общедоступный",
+          "exercise_fixed": "Это упражнение готово",
+          "back_to_settings": "Вернуться к настройкам",
+          "complete_conversion": "Завершить преобразование в общедоступный",
+          "jump_to": "Перейти к",
+          "blocks_public_conversion": "Без автопроверки",
+          "blocks_public_conversion_desc": "Открытые курсы поддерживают только вопросы, оцениваемые автоматически. Измените тип этого вопроса или удалите его, чтобы продолжить преобразование.",
+          "blocks_public_conversion_title": "В открытых курсах ручная проверка работ не поддерживается.",
+          "aria_label": "Прогресс преобразования публичного курса",
+          "all_exercises_fixed": "{total, plural, one {Исправлено # упражнение} few {Все # упражнения исправлены} many {Все # упражнений исправлены} other {Все # упражнений исправлены}}",
+          "ready_to_convert": "Готово к преобразованию!",
+          "questions_left_other_singular": "· {count} вопрос остался в других упражнениях",
+          "questions_left_other_plural": "{count, plural, one {· # вопрос остался в других упражнениях} few {· # вопроса осталось в других упражнениях} many {· # вопросов осталось в других упражнениях} other {· # вопроса осталось в других упражнениях}}",
+          "progress_summary_singular": "{resolved}/{total} исправлено · остался {remaining} вопрос",
+          "progress_summary_plural": "{resolved}/{total} исправлено · {remaining, plural, one {остался # вопрос} few {осталось # вопроса} many {осталось # вопросов} other {осталось # вопроса}}",
+          "next_exercise": "Далее: {exercise}",
+          "next": "Далее",
+          "question_fallback": "Вопрос {number}",
+          "question_count_singular": "{count} вопрос",
+          "question_count_plural": "{count, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}}",
+          "exercise_count_singular": "{count} упражнение",
+          "exercise_count_plural": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнения}}",
+          "exercises_fixed": "{resolved}/{total} исправлено",
+          "questions_left_singular": "исправлено · остался {count} вопрос",
+          "questions_left_plural": "{count, plural, one {исправлено · остался # вопрос} few {исправлено · осталось # вопроса} many {исправлено · осталось # вопросов} other {исправлено · осталось # вопроса}}"
+        },
+        "fix": "Исправить",
+        "save_changes_to_fix_questions": "Сохраните несохраненные изменения, прежде чем переходить к исправлению вопросов.",
+        "allow_markdown_export": "Разрешить учащимся копировать страницы уроков как Markdown",
+        "allow_markdown_export_description": "Если включено, на публичных страницах уроков появляется кнопка «Копировать страницу», которая экспортирует содержимое урока (без видео) в Markdown. Также публикуется общедоступный URL Markdown для каждого разблокированного урока."
       },
       "analytics": {
         "title": "Аналитика"
@@ -1618,7 +1668,9 @@
           "comment_btn": "Комментарий",
           "cancel_btn": "Отмена",
           "load_more_btn": "Загрузить больше",
-          "comment_error": "Не удалось опубликовать комментарий. Пожалуйста, попробуйте еще раз."
+          "comment_error": "Не удалось опубликовать комментарий. Пожалуйста, попробуйте еще раз.",
+          "edit": "Редактировать",
+          "delete": "Удалить"
         },
         "exercises": {
           "heading": "Все упражнения",
@@ -2364,7 +2416,87 @@
             "slide": {
               "title": "Слайд",
               "slide_link": "Ссылка на слайд",
-              "helper_message": "Вы можете встроить Google Slides или Canva Presentation."
+              "helper_message": "Вы можете встроить Google Slides или Canva Presentation.",
+              "button": "Добавить слайд",
+              "remove_slide": "Удалить слайд",
+              "menu_aria": "Действия со слайдом",
+              "empty_title": "Слайдов пока нет",
+              "empty_description": "Встройте Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare или Beautiful.ai",
+              "add_slide": {
+                "title": "Добавить слайд",
+                "search": "Поиск платформ",
+                "empty_prompt": "Выберите платформу, чтобы увидеть пошаговые инструкции и вставить код встраивания.",
+                "embed_code": "Вставить код встраивания",
+                "embed_placeholder": "Вставьте сюда полный iframe-код",
+                "how_to_embed": "Как встроить",
+                "preview": "Предпросмотр",
+                "embed_ready": "Встраивание готово",
+                "invalid_embed": "Вставьте полный iframe-код с этой платформы.",
+                "unsupported": "Это встраивание с платформы, которую мы пока не поддерживаем."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} из {total})"
             },
             "note": {
               "title": "Примечание",
@@ -2449,7 +2581,9 @@
             "watch_videos_helper": "Контроль возможен только для загруженных видео. YouTube и внешние встраивания отслеживать нельзя.",
             "watch_videos_empty": "Добавьте загруженное видео на вкладке Видео для контроля просмотра.",
             "watch_videos_required": "Выберите хотя бы одно видео для контроля просмотра.",
-            "students_only_note": "Эти правила действуют только для студентов. Преподаватель может свободно просматривать и переходить между уроками."
+            "students_only_note": "Эти правила действуют только для студентов. Преподаватель может свободно просматривать и переходить между уроками.",
+            "watch_videos_no_uploads_title": "В этом уроке нет загруженных видео.",
+            "watch_videos_learn_more": "Узнать больше"
           }
         },
         "watch_progress": {
@@ -2502,7 +2636,16 @@
           "link_copied": "Ссылка скопирована"
         },
         "student_share_your_knowledge": "В этот курс пока не добавлены уроки. Пожалуйста, зайдите позже.",
-        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже."
+        "student_body_content": "В этот курс пока не добавлены уроки. Зайдите позже.",
+        "add_content_created_section": "Раздел успешно создан!",
+        "add_content_created_lesson": "Урок успешно создан!",
+        "add_content_created_exercise": "Упражнение успешно создано!",
+        "add_content_create_another_section": "Создать ещё один раздел",
+        "add_content_create_another_lesson": "Создать ещё один урок",
+        "add_content_create_another_exercise": "Создать ещё одно упражнение",
+        "add_content_open_now": "Открыть сейчас",
+        "add_content_later": "Позже",
+        "add_content_add_to_section": "Добавить в раздел"
       },
       "news_feed": {
         "heading": "Лента новостей",
@@ -4995,6 +5138,30 @@
     "header": {
       "explore_courses": "Изучите курсы",
       "sign_in": "Войти"
+    },
+    "copy_page": {
+      "copy": "Копировать страницу",
+      "copied": "Скопировано",
+      "view_as_markdown": "Открыть как Markdown",
+      "open_in_chatgpt": "Открыть в ChatGPT",
+      "open_in_claude": "Открыть в Claude",
+      "more_actions": "Дополнительные действия копирования страницы",
+      "copy_failed": "Не удалось скопировать этот урок как Markdown"
+    },
+    "outline": {
+      "label": "На этой странице"
+    },
+    "rail": {
+      "copy_as_markdown": "Копировать как Markdown",
+      "open_in_chat": "Открыть в чате"
+    },
+    "share": {
+      "label": "Поделиться в соцсетях",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Ссылка скопирована. Вставьте её в Instagram."
     }
   },
   "account": {
@@ -5441,5 +5608,42 @@
     "format_json": "JSON",
     "copied": "Скопировано в буфер обмена",
     "copy_failed": "Не удалось скопировать в буфер обмена"
+  },
+  "report": {
+    "menu": "Пожаловаться",
+    "title": "Пожаловаться на контент",
+    "description": "Расскажите, что не так. Наша команда рассмотрит эту жалобу.",
+    "reason_label": "Причина",
+    "reason_placeholder": "Выберите причину",
+    "reason_required": "Пожалуйста, выберите причину",
+    "details_label": "Дополнительные сведения",
+    "details_placeholder": "Добавьте контекст, который поможет нам рассмотреть жалобу (необязательно)",
+    "submit": "Отправить жалобу",
+    "cancel": "Отмена",
+    "reasons": {
+      "spam": "Спам",
+      "harassment": "Преследование или травля",
+      "hate_speech": "Разжигание ненависти",
+      "sexual_content": "Сексуальный контент",
+      "violence": "Насилие или угрозы",
+      "misinformation": "Дезинформация",
+      "privacy": "Нарушение конфиденциальности",
+      "other": "Другое"
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Пути обучения",
+    "search_placeholder": "Поиск путей обучения...",
+    "clear_search": "Очистить поиск",
+    "label": "Путь обучения",
+    "certificate_label": "Сертификат",
+    "free_label": "Бесплатно",
+    "course_count_label": "{count} курсов",
+    "empty": {
+      "title": "Пути обучения не найдены",
+      "description": "Попробуйте очистить поиск или зайдите позже."
+    },
+    "enrolled_label": "{count} зачислено",
+    "subtitle": "Курсы из нескольких курсов с гидом, с одной регистрацией, заказанными курсами и сертификатом в конце."
   }
 }

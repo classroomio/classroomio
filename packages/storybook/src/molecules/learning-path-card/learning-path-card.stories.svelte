@@ -37,6 +37,14 @@
   {/snippet}
 </Story>
 
+<Story name="No enrolled count">
+  {#snippet template()}
+    <div class="w-96">
+      <LearningPathCard path={{ ...PAID_PATH, totalStudents: undefined }} />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Links disabled">
   {#snippet template()}
     <div class="w-96">

@@ -1361,6 +1361,21 @@
       "description": "Check back soon for new courses."
     }
   },
+  "public_learning_paths": {
+    "heading": "Learning Paths",
+    "subtitle": "Guided multi-course tracks with one enrollment, ordered courses, and a certificate at the end.",
+    "search_placeholder": "Search learning paths...",
+    "clear_search": "Clear search",
+    "label": "Learning Path",
+    "certificate_label": "Certificate",
+    "free_label": "Free",
+    "course_count_label": "{count} courses",
+    "enrolled_label": "{count} enrolled",
+    "empty": {
+      "title": "No learning paths found",
+      "description": "Try clearing your search or check back later."
+    }
+  },
   "org_navigation": {
     "platform": "Platform",
     "home": "Home",

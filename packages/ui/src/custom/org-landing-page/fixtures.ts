@@ -13,6 +13,7 @@ export const mockLearningPaths: LearningPathItem[] = [
     courseCount: 3,
     totalHours: 16,
     hasCertificate: true,
+    totalStudents: 942,
     metadata: { showDiscount: true, discount: 20 }
   },
   {
@@ -26,7 +27,150 @@ export const mockLearningPaths: LearningPathItem[] = [
     currency: 'USD',
     courseCount: 3,
     totalHours: 7,
-    hasCertificate: true
+    hasCertificate: true,
+    totalStudents: 2104
+  },
+  {
+    id: 'lp-3',
+    slug: 'full-stack-engineering-bootcamp',
+    title: 'Full-Stack Engineering Bootcamp',
+    description:
+      'Go from HTML to a deployed production app — six hands-on courses covering JavaScript, APIs, databases, and cloud deploys.',
+    logo: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 199.0,
+    currency: 'USD',
+    courseCount: 6,
+    totalHours: 96,
+    hasCertificate: true,
+    totalStudents: 1687,
+    metadata: { showDiscount: true, discount: 15 }
+  },
+  {
+    id: 'lp-4',
+    slug: 'data-science-mastery',
+    title: 'Data Science Mastery',
+    description:
+      'A five-course path from Python and statistics to machine learning and a portfolio capstone that hiring teams actually read.',
+    logo: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 129.0,
+    currency: 'USD',
+    courseCount: 5,
+    totalHours: 64,
+    hasCertificate: true,
+    totalStudents: 1203
+  },
+  {
+    id: 'lp-5',
+    slug: 'product-management-essentials',
+    title: 'Product Management Essentials',
+    description:
+      'Discovery, roadmapping, and delivery — four practical courses on turning vague problems into shipped products.',
+    logo: 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 89.0,
+    currency: 'USD',
+    courseCount: 4,
+    totalHours: 32,
+    hasCertificate: true,
+    totalStudents: 946
+  },
+  {
+    id: 'lp-6',
+    slug: 'ui-ux-design-foundations',
+    title: 'UI/UX Design Foundations',
+    description:
+      'Research, wireframes, and polished interfaces — a four-course path that ends with a full mobile product case study.',
+    logo: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 79.0,
+    currency: 'USD',
+    courseCount: 4,
+    totalHours: 28,
+    hasCertificate: true,
+    totalStudents: 758
+  },
+  {
+    id: 'lp-7',
+    slug: 'digital-marketing-playbook',
+    title: 'Digital Marketing Playbook',
+    description:
+      'SEO, paid channels, and analytics in three compact courses — the essential marketing toolkit for small teams.',
+    logo: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 0,
+    currency: 'USD',
+    courseCount: 3,
+    totalHours: 18,
+    hasCertificate: false,
+    totalStudents: 315
+  },
+  {
+    id: 'lp-8',
+    slug: 'cloud-engineering-track',
+    title: 'Cloud Engineering Track',
+    description:
+      'Architecture, infrastructure as code, and cost control — five courses preparing you for real-world production systems.',
+    logo: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 179.0,
+    currency: 'USD',
+    courseCount: 5,
+    totalHours: 72,
+    hasCertificate: true,
+    totalStudents: 881,
+    metadata: { showDiscount: true, discount: 10 }
+  },
+  {
+    id: 'lp-9',
+    slug: 'applied-ai-and-machine-learning',
+    title: 'Applied AI & Machine Learning',
+    description:
+      'From model basics to a deployed assistant — four courses on building and shipping machine learning in the real world.',
+    logo: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 149.0,
+    currency: 'USD',
+    courseCount: 4,
+    totalHours: 52,
+    hasCertificate: true,
+    totalStudents: 1342
+  },
+  {
+    id: 'lp-10',
+    slug: 'leadership-and-team-management',
+    title: 'Leadership & Team Management',
+    description:
+      'Feedback, delegation, and one-on-ones — three free courses that make first-time managers confident in their first quarter.',
+    logo: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 0,
+    currency: 'USD',
+    courseCount: 3,
+    totalHours: 22,
+    hasCertificate: true,
+    totalStudents: 2924
+  },
+  {
+    id: 'lp-11',
+    slug: 'cybersecurity-defense-fundamentals',
+    title: 'Cybersecurity Defense Fundamentals',
+    description:
+      'Risk, defense-in-depth, and incident response — the four-course foundation every security-minded engineer should own.',
+    logo: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 119.0,
+    currency: 'USD',
+    courseCount: 4,
+    totalHours: 40,
+    hasCertificate: true,
+    totalStudents: 1094
+  },
+  {
+    id: 'lp-12',
+    slug: 'technical-writing-pro',
+    title: 'Technical Writing Pro',
+    description:
+      'Documentation, API guides, and release notes — three short courses for developers who want their docs to do real work.',
+    logo: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    cost: 59.0,
+    currency: 'USD',
+    courseCount: 3,
+    totalHours: 14,
+    hasCertificate: false,
+    totalStudents: 436
   }
 ];
 
