@@ -5643,6 +5643,24 @@
       "title": "Keine Lernpfade gefunden",
       "description": "Versuchen Sie, Ihre Suche zu löschen, oder schauen Sie später noch einmal vorbei."
     },
+
+    "detail": {
+      "series_heading": "Kursreihe",
+      "hours_label": "{hours} Std. insgesamt",
+      "rating_label": "Bewertet {rating} von 5",
+      "certificate_heading": "Zertifikat",
+      "certificate_issuer": "Ausgestellt von",
+      "certificate_validity": "Gültigkeit",
+      "instructors_heading": "Referenten",
+      "reviews_heading": "Bewertungen",
+      "faq_heading": "Häufig gestellte Fragen",
+      "no_faq": "Noch keine Fragen.",
+      "locked_label": "Gesperrt",
+      "unlocked_label": "Entsperrt",
+      "enroll_free": "Kostenlos einschreiben",
+      "enroll_label": "Einschreiben für {currency} {cost}",
+      "view_all": "Alle Lernpfade anzeigen"
+    },
     "enrolled_label": "{count} eingeschrieben",
     "subtitle": "Geführte Mehrkurs-Kurse mit einer Einschreibung, bestellten Kursen und einem Zertifikat am Ende."
   }

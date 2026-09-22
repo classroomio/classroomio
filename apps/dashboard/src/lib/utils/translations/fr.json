@@ -5643,6 +5643,24 @@
       "title": "Aucun parcours d'apprentissage trouvé",
       "description": "Essayez d'effacer votre recherche ou revenez plus tard."
     },
+
+    "detail": {
+      "series_heading": "Série de cours",
+      "hours_label": "{hours} h au total",
+      "rating_label": "Noté {rating} sur 5",
+      "certificate_heading": "Certificat",
+      "certificate_issuer": "Délivré par",
+      "certificate_validity": "Validité",
+      "instructors_heading": "Formateurs",
+      "reviews_heading": "Avis",
+      "faq_heading": "Questions fréquentes",
+      "no_faq": "Aucune question pour l'instant.",
+      "locked_label": "Verrouillé",
+      "unlocked_label": "Déverrouillé",
+      "enroll_free": "Inscrire gratuitement",
+      "enroll_label": "S'inscrire pour {currency} {cost}",
+      "view_all": "Voir tous les parcours d'apprentissage"
+    },
     "enrolled_label": "{count} inscrits",
     "subtitle": "Parcours guidés à plusieurs cours avec une seule inscription, des cours commandés et un certificat à la fin."
   }

@@ -5643,6 +5643,24 @@
       "title": "Nie znaleziono ścieżek edukacyjnych",
       "description": "Spróbuj wyczyścić wyszukiwanie lub sprawdź później."
     },
+
+    "detail": {
+      "series_heading": "Seria kursów",
+      "hours_label": "{hours} godz. łącznie",
+      "rating_label": "Ocena {rating} na 5",
+      "certificate_heading": "Certyfikat",
+      "certificate_issuer": "Wydawca",
+      "certificate_validity": "Ważność",
+      "instructors_heading": "Instruktorzy",
+      "reviews_heading": "Opinie",
+      "faq_heading": "Często zadawane pytania",
+      "no_faq": "Brak pytań na razie.",
+      "locked_label": "Zablokowane",
+      "unlocked_label": "Odblokowane",
+      "enroll_free": "Zapisz się za darmo",
+      "enroll_label": "Zapisz się za {currency} {cost}",
+      "view_all": "Zobacz wszystkie ścieżki nauki"
+    },
     "enrolled_label": "{count} zarejestrowanych",
     "subtitle": "Wielokursowe ścieżki z przewodnikiem z jedną rejestracją, zamówionymi kursami i certyfikatem na końcu."
   }

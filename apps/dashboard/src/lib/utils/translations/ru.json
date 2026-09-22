@@ -5643,6 +5643,24 @@
       "title": "Пути обучения не найдены",
       "description": "Попробуйте очистить поиск или зайдите позже."
     },
+
+    "detail": {
+      "series_heading": "Серия курсов",
+      "hours_label": "{hours} ч всего",
+      "rating_label": "Рейтинг {rating} из 5",
+      "certificate_heading": "Сертификат",
+      "certificate_issuer": "Выдан",
+      "certificate_validity": "Срок действия",
+      "instructors_heading": "Инструкторы",
+      "reviews_heading": "Отзывы",
+      "faq_heading": "Часто задаваемые вопросы",
+      "no_faq": "Вопросов пока нет.",
+      "locked_label": "Заблокировано",
+      "unlocked_label": "Разблокировано",
+      "enroll_free": "Записаться бесплатно",
+      "enroll_label": "Записаться за {currency} {cost}",
+      "view_all": "Посмотреть все учебные пути"
+    },
     "enrolled_label": "{count} зачислено",
     "subtitle": "Курсы из нескольких курсов с гидом, с одной регистрацией, заказанными курсами и сертификатом в конце."
   }

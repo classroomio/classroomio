@@ -106,3 +106,6 @@ export * from './theme-style';
 export * from './types';
 export { mockOrgLandingPageProps, mockCourseLandingPageProps, mockLearningPaths } from './fixtures';
 export { safeHref } from './safe-href';
+export * from './learning-path-detail.types';
+export { mockLearningPathDetails } from './learning-path-detail.fixtures';
+export { toLearningPathDetail } from './learning-path-detail.helpers';

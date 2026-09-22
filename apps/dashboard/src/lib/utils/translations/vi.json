@@ -5643,6 +5643,24 @@
       "title": "Không tìm thấy lộ trình học tập",
       "description": "Hãy thử xóa tìm kiếm của bạn hoặc kiểm tra lại sau."
     },
+
+    "detail": {
+      "series_heading": "Chuỗi khóa học",
+      "hours_label": "Tổng {hours} giờ",
+      "rating_label": "Đánh giá {rating} trên 5",
+      "certificate_heading": "Chứng chỉ",
+      "certificate_issuer": "Cấp bởi",
+      "certificate_validity": "Hiệu lực",
+      "instructors_heading": "Giảng viên",
+      "reviews_heading": "Đánh giá",
+      "faq_heading": "Các câu hỏi thường gặp",
+      "no_faq": "Chưa có câu hỏi nào.",
+      "locked_label": "Đã khóa",
+      "unlocked_label": "Đã mở khóa",
+      "enroll_free": "Đăng ký miễn phí",
+      "enroll_label": "Đăng ký với giá {currency} {cost}",
+      "view_all": "Xem tất cả lộ trình học tập"
+    },
     "enrolled_label": "{count} đã đăng ký",
     "subtitle": "Các khóa học có nhiều khóa học có hướng dẫn chỉ với một lần đăng ký, các khóa học được đặt hàng và chứng chỉ ở cuối."
   }

@@ -5643,6 +5643,24 @@
       "title": "सीखने का कोई मार्ग नहीं मिला",
       "description": "अपनी खोज साफ़ करने का प्रयास करें या बाद में दोबारा जाँचें।"
     },
+
+    "detail": {
+      "series_heading": "कोर्स श्रृंखला",
+      "hours_label": "कुल {hours} घंटे",
+      "rating_label": "{rating} में से {rating} रेटेड",
+      "certificate_heading": "प्रमाणपत्र",
+      "certificate_issuer": "जारीकर्ता",
+      "certificate_validity": "वैधता",
+      "instructors_heading": "प्रशिक्षक",
+      "reviews_heading": "समीक्षाएँ",
+      "faq_heading": "अक्सर पूछे जाने वाले प्रश्न",
+      "no_faq": "अभी तक कोई प्रश्न नहीं।",
+      "locked_label": "लॉक है",
+      "unlocked_label": "अनलॉक है",
+      "enroll_free": "मुफ्त में नामांकन करें",
+      "enroll_label": "{currency} {cost} में नामांकन करें",
+      "view_all": "सभी लर्निंग पथ देखें"
+    },
     "enrolled_label": "{count} नामांकित",
     "subtitle": "एक नामांकन, ऑर्डर किए गए पाठ्यक्रम और अंत में एक प्रमाणपत्र के साथ निर्देशित बहु-पाठ्यक्रम ट्रैक।"
   }

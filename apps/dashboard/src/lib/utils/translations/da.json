@@ -5643,6 +5643,24 @@
       "title": "Ingen læringsveje fundet",
       "description": "Prøv at rydde din søgning, eller kom tilbage senere."
     },
+
+    "detail": {
+      "series_heading": "Kursusserie",
+      "hours_label": "{hours} timer i alt",
+      "rating_label": "Bedømt {rating} ud af 5",
+      "certificate_heading": "Certifikat",
+      "certificate_issuer": "Udstedt af",
+      "certificate_validity": "Gyldighed",
+      "instructors_heading": "Undervisere",
+      "reviews_heading": "Anmeldelser",
+      "faq_heading": "Ofte stillede spørgsmål",
+      "no_faq": "Ingen spørgsmål endnu.",
+      "locked_label": "Låst",
+      "unlocked_label": "Åbent",
+      "enroll_free": "Tilmeld dig gratis",
+      "enroll_label": "Tilmeld dig for {currency} {cost}",
+      "view_all": "Vis alle læringsforløb"
+    },
     "enrolled_label": "{count} tilmeldt",
     "subtitle": "Guidede multi-kursus spor med én tilmelding, bestilte kurser og et certifikat til sidst."
   }

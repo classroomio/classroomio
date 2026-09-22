@@ -5643,6 +5643,24 @@
       "title": "No se encontraron rutas de aprendizaje",
       "description": "Intente borrar su búsqueda o vuelva a consultar más tarde."
     },
+
+    "detail": {
+      "series_heading": "Serie de cursos",
+      "hours_label": "{hours} h en total",
+      "rating_label": "Calificado {rating} de 5",
+      "certificate_heading": "Certificado",
+      "certificate_issuer": "Emitido por",
+      "certificate_validity": "Validez",
+      "instructors_heading": "Instructores",
+      "reviews_heading": "Reseñas",
+      "faq_heading": "Preguntas frecuentes",
+      "no_faq": "Aún no hay preguntas.",
+      "locked_label": "Bloqueado",
+      "unlocked_label": "Desbloqueado",
+      "enroll_free": "Inscríbete gratis",
+      "enroll_label": "Inscríbete por {currency} {cost}",
+      "view_all": "Ver todas las rutas de aprendizaje"
+    },
     "enrolled_label": "{count} inscritos",
     "subtitle": "Pistas guiadas de varios cursos con una sola inscripción, cursos ordenados y un certificado al finalizar."
   }

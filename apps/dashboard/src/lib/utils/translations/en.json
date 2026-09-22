@@ -1374,6 +1374,23 @@
     "empty": {
       "title": "No learning paths found",
       "description": "Try clearing your search or check back later."
+    },
+    "detail": {
+      "series_heading": "Course series",
+      "hours_label": "{hours}h total",
+      "rating_label": "Rated {rating} out of 5",
+      "certificate_heading": "Certificate",
+      "certificate_issuer": "Issued by",
+      "certificate_validity": "Validity",
+      "instructors_heading": "Instructors",
+      "reviews_heading": "Reviews",
+      "faq_heading": "Frequently asked questions",
+      "no_faq": "No questions yet.",
+      "locked_label": "Locked",
+      "unlocked_label": "Unlocked",
+      "enroll_free": "Enroll free",
+      "enroll_label": "Enroll for {currency} {cost}",
+      "view_all": "View all learning paths"
     }
   },
   "org_navigation": {
