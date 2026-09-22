@@ -58,6 +58,16 @@ Current tools:
 - `tag_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
+- `list_course_members`
+- `add_course_member`
+- `get_course_member`
+- `update_course_member`
+- `delete_course_member`
+- `reset_course_member_progress`
+- `get_course_member_analytics`
+- `list_course_invites`
+- `create_course_invite`
+- `revoke_course_invite`
 
 ## Auth Model
 
@@ -73,6 +83,8 @@ ClassroomIO API:
 4. executes the requested action
 
 The MCP package never decides permissions.
+
+Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/courses/:id/invites`) and require the key's `public_api:*` scope; the course draft/exercise tools above call other, internal-only endpoints and use their own granular scopes (`course_import:draft:*`, `course:read`/`write`, etc.).
 
 ## Required Environment Variables
 
