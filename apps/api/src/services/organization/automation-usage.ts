@@ -14,6 +14,7 @@ import {
   getMcpAutomationCategory,
   canUsePublicApi,
   getMcpAutomationLimits,
+  MCP_TOOL_CREDIT_COST,
   type TAutomationUsageCategory,
   type TMcpToolName
 } from '@cio/utils/plans';
@@ -182,6 +183,7 @@ export async function recordMcpAutomationUsageForAction(
   automationKey: TOrganizationApiKey,
   action: string,
   category: TAutomationUsageCategory,
+  creditsConsumed: number,
   metadata: Record<string, unknown> = {}
 ): Promise<void> {
   await createOrganizationAutomationUsage({
@@ -190,7 +192,7 @@ export async function recordMcpAutomationUsageForAction(
     type: automationKey.type,
     action,
     category,
-    creditsConsumed: 0,
+    creditsConsumed,
     metadata
   });
 }
@@ -200,5 +202,11 @@ export async function recordMcpAutomationUsage(
   toolName: TMcpToolName,
   metadata: Record<string, unknown> = {}
 ): Promise<void> {
-  return recordMcpAutomationUsageForAction(automationKey, toolName, getMcpAutomationCategory(toolName), metadata);
+  return recordMcpAutomationUsageForAction(
+    automationKey,
+    toolName,
+    getMcpAutomationCategory(toolName),
+    MCP_TOOL_CREDIT_COST[toolName],
+    metadata
+  );
 }
