@@ -1,4 +1,9 @@
-import type { CourseLandingPageProps, LearningPathItem, OrgLandingPageProps } from './types';
+import type {
+  CourseLandingPageProps,
+  LearningPathItem,
+  LearningPathLandingPageProps,
+  OrgLandingPageProps
+} from './types';
 
 export const mockLearningPaths: LearningPathItem[] = [
   {
@@ -608,4 +613,155 @@ export const mockCourseLandingPageProps: CourseLandingPageProps = {
     }
   },
   footer: mockOrgLandingPageProps.footer
+};
+
+export const mockLearningPathLandingPageProps: LearningPathLandingPageProps = {
+  theme: 'minimal',
+  orgName: mockOrgLandingPageProps.orgName,
+  logoUrl: mockOrgLandingPageProps.logoUrl,
+  navItems: mockOrgLandingPageProps.navItems,
+  authAction: mockOrgLandingPageProps.authAction,
+  hero: {
+    heading: 'SOC 2 Compliance Track',
+    subheading:
+      'A guided, three-course sequence from security fundamentals to a completed control matrix — finish with a certificate auditors recognize.',
+    primaryAction: { label: 'Enroll now', href: '#pricing' },
+    secondaryAction: { label: 'View series', href: '#series' },
+    image: mockLearningPaths[0].logo!,
+    stats: [
+      { label: 'Courses', value: '3' },
+      { label: 'Hours', value: '16' },
+      { label: 'Certificate', value: 'Included' },
+      { label: 'Enrolled', value: '942' }
+    ],
+    eyebrow: 'guided track'
+  },
+  series: [
+    {
+      id: 'lp-s-1',
+      slug: 'soc2-foundations',
+      title: 'Foundations',
+      description: 'Core concepts, frameworks, and the first shipped exercise.',
+      siteName: 'classroomio',
+      lessonOutlines: [
+        { id: 'lp-l-1', title: 'Orientation', durationMinutes: 14, gated: true },
+        { id: 'lp-l-2', title: 'Core framework', durationMinutes: 22, gated: true },
+        { id: 'lp-l-3', title: 'First exercise', durationMinutes: 18 }
+      ],
+      courseCount: 1,
+      totalHours: 44
+    },
+    {
+      id: 'lp-s-2',
+      slug: 'soc2-playbooks',
+      title: 'Playbooks',
+      description: 'Applied patterns and the labs that make them stick.',
+      siteName: 'classroomio',
+      lessonOutlines: [
+        { id: 'lp-l-4', title: 'Pattern library', durationMinutes: 26, gated: true },
+        { id: 'lp-l-5', title: 'Applied lab', durationMinutes: 31, gated: true },
+        { id: 'lp-l-6', title: 'Peer review', durationMinutes: 20 }
+      ],
+      courseCount: 2,
+      totalHours: 72
+    },
+    {
+      id: 'lp-s-3',
+      slug: 'soc2-capstone',
+      title: 'Capstone',
+      description: 'A guided capstone plus readiness for the certificate exam.',
+      siteName: 'classroomio',
+      lessonOutlines: [
+        { id: 'lp-l-7', title: 'Capstone brief', durationMinutes: 24, gated: true },
+        { id: 'lp-l-8', title: 'Exam readiness', durationMinutes: 28, gated: true },
+        { id: 'lp-l-9', title: 'Certification', durationMinutes: 16 }
+      ],
+      courseCount: 3,
+      totalHours: 96
+    }
+  ],
+  certificate: {
+    issuer: 'ClassroomIO',
+    validity: 'Lifetime',
+    description: 'Verified certificate earned on completing every series lesson.'
+  },
+  hasCertificate: true,
+  instructors: [
+    {
+      id: 'lp-i-1',
+      name: 'Ada Lovelace',
+      role: 'Head of Strategy',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      bio: 'Two decades leading growth-stage strategy and pricing.',
+      coursesCount: 12
+    },
+    {
+      id: 'lp-i-2',
+      name: 'Grace Hopper',
+      role: 'Analytics Lead',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      bio: 'Turns board decks into decision engines.',
+      coursesCount: 8
+    },
+    {
+      id: 'lp-i-3',
+      name: 'Katherine Johnson',
+      role: 'Growth Coach',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      bio: 'Helps founding teams run experiments that compound.',
+      coursesCount: 6
+    }
+  ],
+  reviews: [
+    {
+      id: 'lp-r-1',
+      name: 'Samira K.',
+      rating: 5,
+      description: 'The gated outlines kept my cohort accountable end to end.',
+      createdAt: '2025-06-12'
+    },
+    {
+      id: 'lp-r-2',
+      name: 'Diego M.',
+      rating: 5,
+      description: 'Series structure made a broad topic feel finishable.',
+      createdAt: '2025-04-30'
+    }
+  ],
+  faq: [
+    {
+      id: 'lp-f-1',
+      question: 'Is this a single course or a series?',
+      answer: 'It is a series of courses that build on one another.'
+    },
+    {
+      id: 'lp-f-2',
+      question: 'How long do I have access?',
+      answer: 'Lifetime access, including every future series update.'
+    },
+    {
+      id: 'lp-f-3',
+      question: 'Do I earn a certificate?',
+      answer: 'Yes — a verified certificate on completing all series lessons.'
+    }
+  ],
+  footer: mockOrgLandingPageProps.footer,
+  labels: {
+    seriesHeading: 'Course series',
+    certificateHeading: 'Certificate',
+    certificateIssuerHeading: 'Issued by',
+    certificateValidityHeading: 'Validity',
+    instructorsHeading: 'Instructors',
+    reviewsHeading: 'Reviews',
+    faqHeading: 'Frequently asked questions',
+    noFaqLabel: 'No questions yet.',
+    lockedLabel: 'Locked',
+    unlockedLabel: 'Unlocked',
+    enrollFreeLabel: 'Enroll free',
+    enrollLabel: (cost: number, currency: string) => `Enroll for ${currency} ${cost}`,
+    viewAllLabel: 'View all learning paths'
+  }
 };

@@ -1,48 +1,29 @@
 <script lang="ts">
-  import { t } from '$lib/utils/functions/translations';
-  import { user } from '$lib/utils/store/user';
+  import { page } from '$app/state';
 
   import { PoweredBy, LearningPathDetail } from '$features/ui';
-  import { appInitApi } from '$features/app/init.svelte';
-  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
-  import { normalizeLandingPageSettings, themeRendersNavInsideHero } from '$features/org/utils/landing-page';
-  import {
-    LandingThemeScope,
-    OrgLandingPageFooter,
-    type LearningPathDetail as LearningPathDetailType
-  } from '@cio/ui/custom/org-landing-page';
+  import type { LearningPathDetail as LearningPathDetailType } from '@cio/ui/custom/org-landing-page';
 
   let { data } = $props();
 
-  const landingSettings = $derived(normalizeLandingPageSettings(data.org.landingpage));
+  const orgName = $derived(data.org?.name ?? 'ClassroomIO');
 
-  const authAction = $derived(
-    getOrgLandingAuthAction({
-      isLoggedIn: $user.isLoggedIn,
-      isInitialized: appInitApi.isInitializedAndReady,
-      org: data.org,
-      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
-      hasPendingInvite: !!appInitApi.pendingOrgInvite
-    })
-  );
+  const learningPathJsonLd = $derived.by(() => {
+    if (!data.detail) return null;
 
-  const navInsideHero = $derived(themeRendersNavInsideHero(landingSettings.theme));
+    const detail: LearningPathDetailType = data.detail;
 
-  const NavComponent = $derived(data.theme.Nav);
-  const HeroComponent = $derived(data.theme.Hero);
-
-  const detail: LearningPathDetailType = $derived(data.detail);
-
-  const jsonLd = $derived(
-    JSON.stringify({
+    const schema = {
       '@context': 'https://schema.org',
       '@type': 'Course',
       name: detail.title,
-      description: detail.description,
+      description: detail.description || '',
       provider: {
         '@type': 'Organization',
-        name: data.org.name
+        name: orgName
       },
+      url: page.url.href,
+      ...(detail.logo ? { image: detail.logo } : {}),
       hasCourseInstance: {
         '@type': 'CourseInstance',
         courseMode: 'online',
@@ -60,44 +41,19 @@
         description: course.description,
         isAccessibleForFree: course.cost === 0
       }))
-    })
-  );
+    };
+
+    return JSON.stringify(schema).replace(/</g, '\\u003c');
+  });
 </script>
 
-{@html `<script type="application/ld+json">${jsonLd}</script>`}
+<svelte:head>
+  {#if learningPathJsonLd}
+    {@html `<script type="application/ld+json">${learningPathJsonLd}</script>`}
+  {/if}
+</svelte:head>
 
-<PoweredBy />
-
-<LandingThemeScope theme={landingSettings.theme} class="font-sans">
-  <main>
-    {#if navInsideHero}
-      <HeroComponent hero={landingSettings.hero} orgName={data.org.name} showActions={false} compact={true}>
-        {#snippet navigation()}
-          <NavComponent
-            orgName={data.org.name}
-            logoUrl={data.org.avatarUrl ?? undefined}
-            navItems={landingSettings.navItems}
-            {authAction}
-          />
-        {/snippet}
-      </HeroComponent>
-    {:else}
-      <NavComponent
-        orgName={data.org.name}
-        logoUrl={data.org.avatarUrl ?? undefined}
-        navItems={landingSettings.navItems}
-        {authAction}
-      />
-      <HeroComponent hero={landingSettings.hero} orgName={data.org.name} showActions={false} compact={true} />
-    {/if}
-
-    <LearningPathDetail {detail} orgName={data.org.name} />
-
-    <OrgLandingPageFooter
-      orgName={data.org.name}
-      logoUrl={data.org.avatarUrl ?? undefined}
-      footer={landingSettings.footer}
-      variant={landingSettings.theme}
-    />
-  </main>
-</LandingThemeScope>
+{#if data.detail}
+  <PoweredBy />
+  <LearningPathDetail detail={data.detail} org={data.org} themeComponent={data.themeComponent} />
+{/if}

@@ -1,4 +1,11 @@
 import type { Component } from 'svelte';
+import type {
+  LearningPathCertificateInfo,
+  LearningPathFaqItem,
+  LearningPathInstructorItem,
+  LearningPathReviewItem,
+  LearningPathSeriesCourse
+} from './learning-path-detail.types';
 
 export type NavItem = { label: string; href: string };
 
@@ -11,6 +18,7 @@ export type LandingPageThemeBundle = {
   courseCard: AnyComponent;
   org: AnyComponent;
   course: AnyComponent;
+  learningPath: AnyComponent;
   coursesGridClass: string;
 };
 
@@ -388,6 +396,54 @@ export interface CourseLandingPageProps {
   pricing: CoursePricing;
   footer: OrgLandingPageFooterConfig;
   labels?: CourseLandingPageLabels;
+}
+
+export interface LearningPathLandingPageLabels {
+  seriesEyebrow?: string;
+  seriesHeading?: string;
+  certificateEyebrow?: string;
+  certificateHeading?: string;
+  certificateIssuerHeading?: string;
+  certificateValidityHeading?: string;
+  instructorsEyebrow?: string;
+  instructorsHeading?: string;
+  reviewsEyebrow?: string;
+  reviewsHeading?: string;
+  faqEyebrow?: string;
+  faqHeading?: string;
+  noFaqLabel?: string;
+  lockedLabel?: string;
+  unlockedLabel?: string;
+  ratingLabel?: (rating: number) => string;
+  courseCountLabel?: (count: number) => string;
+  hoursLabel?: (hours: number) => string;
+  enrolledLabel?: (count: number) => string;
+  lessonDurationLabel?: (minutes: number) => string;
+  enrollFreeLabel?: string;
+  enrollLabel?: (cost: number, currency: string) => string;
+  viewAllLabel?: string;
+}
+
+export interface LearningPathLandingPageProps {
+  theme: OrgLandingPageTheme;
+  orgName: string;
+  logoUrl?: string;
+  navItems: NavItem[];
+  authAction?: {
+    label: string;
+    href: string;
+    loading?: boolean;
+    disabled?: boolean;
+  };
+  hero: LandingPageHero;
+  series: LearningPathSeriesCourse[];
+  certificate?: LearningPathCertificateInfo | null;
+  hasCertificate: boolean;
+  instructors: LearningPathInstructorItem[];
+  reviews: LearningPathReviewItem[];
+  faq: LearningPathFaqItem[];
+  footer: OrgLandingPageFooterConfig;
+  labels?: LearningPathLandingPageLabels;
 }
 
 export interface OrgLandingPageProps {
