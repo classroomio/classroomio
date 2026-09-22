@@ -233,6 +233,30 @@
       "attempts_select_aria": "Your attempts",
       "privacy_hint": "Graded instantly in your browser — nothing is submitted.",
       "summary_template": "You got [[correct]] / [[total]] correct."
+    },
+    "copy_page": {
+      "copy": "Copy Page",
+      "copied": "Copied",
+      "view_as_markdown": "View as Markdown",
+      "open_in_chatgpt": "Open in ChatGPT",
+      "open_in_claude": "Open in Claude",
+      "more_actions": "More copy page actions",
+      "copy_failed": "Could not copy this lesson as Markdown"
+    },
+    "rail": {
+      "copy_as_markdown": "Copy as Markdown",
+      "open_in_chat": "Open in chat"
+    },
+    "share": {
+      "label": "Share on social media",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link copied. Paste it in Instagram."
+    },
+    "outline": {
+      "label": "On this page"
     }
   },
   "onboarding": {
@@ -988,7 +1012,7 @@
       "about": {
         "heading": "About",
         "title": "Title",
-    "create": "Create",
+        "create": "Create",
         "upload_an_image": "Upload an image",
         "select_image": "Select Image"
       },
@@ -2256,7 +2280,7 @@
           "manual_label": "Manual",
           "manual_description": "Students mark the lesson complete themselves.",
           "video_watch_label": "Video watch",
-          "video_watch_description": "The lesson completes automatically after students watch the selected videos.",
+          "video_watch_description": "The lesson completes automatically after students watch the selected uploaded videos. YouTube and external embeds can't be tracked.",
           "none_label": "None",
           "none_description": "This lesson does not block course progression.",
           "watch_threshold": "Watch threshold (%)"
@@ -2276,7 +2300,9 @@
             "option_guide_heading": "What each option means",
             "watch_videos_heading": "Videos to enforce",
             "watch_videos_helper": "Only uploaded videos can be enforced. YouTube and external embeds cannot be tracked.",
-            "watch_videos_empty": "Add an uploaded video in the Video tab to use watch enforcement.",
+            "watch_videos_empty": "Video watch only tracks uploaded videos. YouTube and external embeds can't be tracked, so this lesson can't complete automatically and students can't mark it complete. Upload the video in the Video tab, or set the completion rule to Manual.",
+            "watch_videos_learn_more": "Learn more",
+            "watch_videos_no_uploads_title": "No uploaded videos in this lesson",
             "watch_videos_required": "Select at least one video when using video watch.",
             "students_only_note": "These rules apply to students only. You can preview and navigate freely while teaching."
           }
@@ -2364,6 +2390,15 @@
         "add_content_create": "Create",
         "add_content_create_section": "Create section",
         "add_content_create_lesson": "Create lesson",
+        "add_content_created_section": "Section has been created successfully!",
+        "add_content_created_lesson": "Lesson has been created successfully!",
+        "add_content_created_exercise": "Exercise has been created successfully!",
+        "add_content_create_another_section": "Create another section",
+        "add_content_create_another_lesson": "Create another lesson",
+        "add_content_create_another_exercise": "Create another exercise",
+        "add_content_open_now": "Open now",
+        "add_content_later": "Later",
+        "add_content_add_to_section": "Add content",
         "add_content_options": {
           "section_title": "Section",
           "section_description": "Group lessons and exercises together.",
@@ -2430,8 +2465,86 @@
             },
             "slide": {
               "title": "Slide",
-              "slide_link": "Slide Link",
-              "helper_message": "You can embed Google Slides or Canva Presentation"
+              "button": "Add slide",
+              "remove_slide": "Remove slide",
+              "menu_aria": "Slide actions",
+              "empty_title": "No slides yet",
+              "empty_description": "Embed Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, or Beautiful.ai",
+              "frame_title": "{platform} ({index} of {total})",
+              "add_slide": {
+                "title": "Add a slide",
+                "search": "Search platforms",
+                "empty_prompt": "Pick a platform to see step-by-step instructions and paste your embed code.",
+                "embed_code": "Paste embed code",
+                "embed_placeholder": "Paste the full iframe embed code here",
+                "how_to_embed": "How to embed",
+                "preview": "Preview",
+                "embed_ready": "Embed ready",
+                "invalid_embed": "Paste the full iframe embed code from this platform.",
+                "unsupported": "That embed is from a platform we do not support yet."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              }
             },
             "settings": {
               "title": "Settings"
@@ -2511,6 +2624,7 @@
                 }
               },
               "generate_transcript": "Generate transcription",
+              "transcript_in_progress": "Fetching transcript…",
               "generate_transcript_in_progress": "Transcribing…",
               "view_transcript": "View transcription",
               "generate_1080": "Generate 1080p",
@@ -3166,6 +3280,8 @@
           "placeholder": "What do you think about this lesson?",
           "comment_btn": "Comment",
           "cancel_btn": "Cancel",
+          "edit": "Edit",
+          "delete": "Delete",
           "load_more_btn": "Load more",
           "comment_error": "Failed to post comment. Please try again."
         },
@@ -3768,6 +3884,7 @@
         "cover_image": "Cover Image",
         "optional_image": "This optional image will show up on your welcome page. If you include one, it should be at least 280 x 200",
         "replace": "Replace",
+        "remove": "Remove",
         "del": "Delete",
         "course_details": "Course Details",
         "course_title": "Course title",
@@ -3775,6 +3892,7 @@
         "placeholder": "Write your course description here",
         "course_title_placeholder": "Write the course title here",
         "setup_landing_for_link": "Setup landing page to get course link",
+        "setup_landing_page": "Set up landing page",
         "coming_soon": "Coming soon",
         "link": "Course Link",
         "generate_link": "Generate new link",
@@ -3791,10 +3909,13 @@
           "description": "Customize the email students receive after they enroll. Add a personal note, instructions, or a live session link.",
           "placeholder": "Write the welcome message students get when they enroll…"
         },
+        "general_card_title": "General",
+        "content_card_title": "Content",
+        "access_card_title": "Access",
         "content_grouping_title": "Content grouping",
         "content_grouping_description": "Group lessons and exercises by section in the content list.",
         "progression_mode_title": "Student progression",
-        "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order.",
+        "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order. Video watch completion only tracks uploaded videos.",
         "progression_mode_free": "Free — unlocked content is accessible",
         "progression_mode_sequential": "Sequential — complete prior items to unlock next",
         "comments": {
@@ -3805,6 +3926,8 @@
         },
         "lesson_download": "Lesson download",
         "available": "Let registered students download lessons as PDF.",
+        "allow_markdown_export": "Allow learners to copy lesson pages as Markdown",
+        "allow_markdown_export_description": "When enabled, public lesson pages show a Copy Page button that exports the lesson content (excluding videos) as Markdown. This also publishes a public Markdown URL for each unlocked lesson.",
         "course_download": "Course download",
         "course_avail": "Download a copy of this course.",
         "download": "Download",
@@ -3833,8 +3956,42 @@
         "self_paced": "Self paced",
         "compliance": "Compliance",
         "public": "Public",
-        "convert_to_public_blocked": "This course has questions that can’t be auto-graded, so it can’t be made Public yet.",
+        "convert_to_public_blocked": "Public courses require only auto-gradable questions.",
+        "convert_to_public_blocked_desc": "Exercises in a public course are graded automatically in the browser which is why we only support auto-gradable questions. Remove or replace the following questions before converting this course to Public:",
+        "question_in_exercise": "In \"{exercise}\"",
+        "fix_question": "Edit",
+        "fix": "Fix",
+        "fix_in_exercise": "Fix in exercise",
+        "cancel_conversion": "Cancel conversion",
         "fix_blocking_questions": "Fix blocking questions",
+        "save_changes_to_fix_questions": "Save your unsaved changes before navigating to fix questions.",
+        "public_conversion": {
+          "aria_label": "Public course conversion progress",
+          "banner_title": "Converting course to Public",
+          "all_exercises_fixed": "All {total} exercises fixed",
+          "ready_to_convert": "Ready to convert!",
+          "exercise_fixed": "This exercise is ready",
+          "questions_left_other_singular": "· {count} question left in other exercises",
+          "questions_left_other_plural": "· {count} questions left in other exercises",
+          "exercises_fixed": "{resolved}/{total} fixed",
+          "questions_left_singular": "fixed · {count} question left",
+          "questions_left_plural": "fixed · {count} questions left",
+          "progress_summary_singular": "{resolved}/{total} fixed · {remaining} question left",
+          "progress_summary_plural": "{resolved}/{total} fixed · {remaining} questions left",
+          "next_exercise": "Next: {exercise}",
+          "next": "Next",
+          "back_to_settings": "Back to Settings",
+          "complete_conversion": "Complete Public Conversion",
+          "jump_to": "Jump to",
+          "question_fallback": "Question {number}",
+          "question_count_singular": "{count} question",
+          "question_count_plural": "{count} questions",
+          "exercise_count_singular": "{count} exercise",
+          "exercise_count_plural": "{count} exercises",
+          "blocks_public_conversion": "Non-autogradable",
+          "blocks_public_conversion_title": "Manual grading isn't supported in Public courses",
+          "blocks_public_conversion_desc": "Public courses only support auto-gradable questions. Change this question's type or delete it to proceed with conversion."
+        },
         "callout": {
           "legend": "Public course callout",
           "description": "Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.",
@@ -4483,6 +4640,11 @@
       "workspace_not_found": "Workspace not found.",
       "not_primary_workspace": "Switch to your primary workspace to manage account workspaces."
     },
+    "report": {
+      "success": "Thanks. We’ll review this report.",
+      "error": "Could not submit the report. Please try again.",
+      "already_submitted": "You’ve already reported this."
+    },
     "public_course": {
       "url_copied": "Course URL copied",
       "url_copy_failed": "Could not copy URL"
@@ -4522,7 +4684,8 @@
       "transcription_completed": "Transcription finished",
       "transcript_fetch_failed": "Could not load transcript",
       "transcript_saved": "Transcript updated",
-      "transcript_save_failed": "Could not save transcript"
+      "transcript_save_failed": "Could not save transcript",
+      "transcript_unavailable": "Transcript unavailable"
     },
     "lesson_video": {
       "generate_1080_completed": "1080p rendition added",
@@ -4584,7 +4747,8 @@
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
         "update_successful": "Update successful",
-        "link_generated": "Course link updated successfully"
+        "link_generated": "Course link updated successfully",
+        "converted_to_public": "Course successfully converted to Public"
       },
       "error": {
         "not_right": "Something's not right - Please try later",
@@ -4593,6 +4757,9 @@
         "description": "description cannot be empty",
         "failed_integration": "Integration Failed, please try again later",
         "failed_deletion": "Deletion Failed, please try again later"
+      },
+      "info": {
+        "conversion_blocked": "Fix the questions below to complete conversion to Public."
       }
     },
     "course": {
@@ -4675,8 +4842,6 @@
       "section_update_failed": "Failed to update course section",
       "sections_reordered": "Course sections reordered successfully",
       "sections_reorder_failed": "Failed to reorder course sections",
-      "lessons_reordered": "Lessons reordered successfully",
-      "lessons_reorder_failed": "Failed to reorder lessons",
       "comment_fetch_failed": "Failed to fetch lesson comments",
       "load_more_comments_failed": "Failed to load more comments",
       "comment_add_failed": "Failed to add comment",
@@ -4999,16 +5164,16 @@
     "retry": "Retry",
     "run_monitor_aria": "Course generation in progress",
     "run_monitor": {
-      "cancel": "Cancel run",
+      "cancel": "Cancel generation",
       "dismiss": "Dismiss",
       "dismiss_confirm": "Walk away",
-      "dismiss_cancel": "Keep run",
-      "dismiss_confirm_body": "Walk away from this canceled run? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
+      "dismiss_cancel": "Stay here",
+      "dismiss_confirm_body": "Walk away from this canceled generation? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
       "now_doing": "Now",
       "input_disabled_hint": "Chat is paused while the agent finishes building the course. Cancel or wait for it to complete.",
       "stuck_queued": {
         "title": "Worker not responding",
-        "body": "This run has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
+        "body": "Course generation has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
       }
     },
     "plan_view": {
@@ -5036,21 +5201,21 @@
       }
     },
     "run_summary": {
-      "completed": "Run completed.",
-      "completed_with_counts": "Run completed — created {counts}.",
-      "failed": "Run failed.",
-      "failed_with_reason": "Run failed — {reason}.",
-      "canceled": "Run canceled.",
-      "canceled_with_counts": "Run canceled — created {counts} before stopping.",
-      "paused": "Run paused. Resume to continue.",
-      "paused_with_counts": "Run paused — created {counts} so far. Resume to continue."
+      "completed": "Course generation completed.",
+      "completed_with_counts": "Course generation completed — created {counts}.",
+      "failed": "Course generation failed.",
+      "failed_with_reason": "Course generation failed — {reason}.",
+      "canceled": "Course generation canceled.",
+      "canceled_with_counts": "Course generation canceled — created {counts} before stopping.",
+      "paused": "Course generation paused. Resume to continue.",
+      "paused_with_counts": "Course generation paused — created {counts} so far. Resume to continue."
     },
     "stopped_content_kept": "Stopped. Created content has been kept.",
     "run_failed_after": "{action} did not finish successfully.",
     "tool": {
       "pending": {
         "working": "Working",
-        "unknown_tool": "Running {toolName}",
+        "unknown_tool": "Working on {toolName}",
         "get_course_structure": "Reading course structure",
         "get_lesson_content": "Reading lesson content",
         "get_exercise_details": "Reading exercise",
@@ -5074,6 +5239,7 @@
         "fetch_documentation_url": "Reading docs page",
         "fetch_documentation_url_with_url": "Reading {url}",
         "list_youtube_playlist_videos": "Listing playlist videos",
+        "get_lesson_transcript": "Reading video transcript",
         "add_youtube_video_to_lesson": "Embedding YouTube video"
       },
       "meta": {
@@ -5109,6 +5275,11 @@
         "fetch_documentation_url": "Read {url}",
         "list_youtube_playlist_videos": "Found {count} videos in the playlist",
         "list_youtube_playlist_videos_unavailable": "Could not list the playlist videos",
+        "get_lesson_transcript": "Read the transcript for {title}",
+        "get_lesson_transcript_fetching": "Fetching the transcript for {title}",
+        "get_lesson_transcript_plan_gated": "Transcripts require a paid plan",
+        "get_lesson_transcript_no_credits": "Out of AI credits to fetch transcripts",
+        "get_lesson_transcript_unavailable": "No transcript available for {title}",
         "add_youtube_video_to_lesson": "Embedded video: {title}"
       }
     },
@@ -5399,6 +5570,28 @@
     },
     "watching_empty_title": "Nothing to watch yet",
     "watching_empty_description": "Updates on items you follow will show up here."
+  },
+  "report": {
+    "menu": "Report",
+    "title": "Report content",
+    "description": "Tell us what’s wrong. Our team will review this report.",
+    "reason_label": "Reason",
+    "reason_placeholder": "Select a reason",
+    "reason_required": "Please choose a reason",
+    "details_label": "Additional details",
+    "details_placeholder": "Add any context that will help us review this (optional)",
+    "submit": "Submit report",
+    "cancel": "Cancel",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment or bullying",
+      "hate_speech": "Hate speech",
+      "sexual_content": "Sexual content",
+      "violence": "Violence or threats",
+      "misinformation": "Misinformation",
+      "privacy": "Privacy violation",
+      "other": "Other"
+    }
   },
   "export": {
     "as_csv": "Export as CSV",

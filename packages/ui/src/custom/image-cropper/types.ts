@@ -9,7 +9,10 @@ export type ImageCropperRootPropsWithoutHTML = WithChildren<{
   src?: string;
   onCropped?: (url: string) => void;
   onUnsupportedFile?: (file: File) => void;
+  onFileSelected?: (file: File) => void;
   maxFileSize?: number; // Maximum file size in bytes
+  /** Skip the crop dialog and use the original file immediately. */
+  skipCrop?: boolean;
 }>;
 
 export type ImageCropperRootProps = ImageCropperRootPropsWithoutHTML & HTMLInputAttributes;

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>08b · Learning Paths · sequential unlock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../motion.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <link rel="stylesheet" href="../stage.css" />
+    <style>
+      .head { position: absolute; left: 0; top: 168px; z-index: 5; }
+      .head .headline { font-size: 64px; line-height: 1.04; }
+
+      .spine { position: absolute; left: 258px; right: 258px; top: 486px; height: 1.5px; background: var(--line); z-index: 4; }
+      .spine i { position: absolute; top: 0; left: 0; height: 100%; width: 0; background: var(--accent); transition: width 0.8s var(--beat-ease); }
+
+      .track { position: absolute; left: var(--gutter); right: var(--gutter); top: 452px; z-index: 6;
+        display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 42px; }
+
+      .step { display: flex; flex-direction: column; align-items: stretch; }
+      .node { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 34px; flex: none;
+        background: var(--field); border: 2px solid var(--fg-faint); position: relative;
+        transition: background 0.5s var(--beat-ease), border-color 0.5s var(--beat-ease); }
+
+      .card { border-radius: 14px; overflow: hidden; background: color-mix(in oklab, var(--fg) 5%, transparent);
+        border: 1.5px solid var(--line); display: flex; flex-direction: column; flex: 1; min-height: 348px;
+        transition: background 0.5s var(--beat-ease), border-color 0.5s var(--beat-ease), opacity 0.5s var(--beat-ease); }
+
+      .shot { height: 128px; background-size: cover; background-position: center; background-color: color-mix(in oklab, var(--fg) 7%, transparent);
+        position: relative; display: grid; place-items: center; }
+      .shot .lock { width: 30px; height: 30px; stroke: var(--fg-faint); fill: none; stroke-width: 1.7; }
+
+      .body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
+      .no { font-family: ui-monospace, Menlo, monospace; font-size: 15px; letter-spacing: 0.16em; color: var(--fg-faint); }
+      .ttl { margin-top: 12px; font-size: 25px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.18; color: var(--fg-faint);
+        transition: color 0.5s var(--beat-ease); }
+      .state { margin-top: auto; padding-top: 20px; display: flex; align-items: center; gap: 10px;
+        font-family: ui-monospace, Menlo, monospace; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-faint); }
+      .state svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+      .step.is-done .card { background: color-mix(in oklab, var(--fg) 8%, transparent); border-color: color-mix(in oklab, var(--fg) 22%, transparent); }
+      .step.is-done .ttl { color: var(--fg); }
+      .step.is-done .node { background: var(--fg); border-color: var(--fg); }
+      .step.is-done .state { color: var(--fg-muted); }
+
+      .step.is-current .card { background: var(--surface); border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent); }
+      .step.is-current .node { background: var(--accent); border-color: var(--accent); }
+      .step.is-current .no { color: var(--accent); }
+      .step.is-current .ttl { color: var(--surface-fg); }
+      .step.is-current .state { color: var(--accent); }
+      .step.is-current .shot .lock,
+      .step.is-done .shot .lock { display: none; }
+
+      .step.is-locked .shot { background-image: none !important; }
+
+      .bar { margin-top: 14px; height: 5px; border-radius: 99px; background: var(--surface-sunk); overflow: hidden; }
+      .bar i { display: block; height: 100%; width: 45%; background: var(--accent); }
+      .step:not(.is-current) .bar { visibility: hidden; }
+
+      .c-rule { left: 1816px; top: 372px; }
+      .close { margin: 0; font-size: 29px; font-weight: 500; letter-spacing: -0.02em; color: var(--fg-muted); text-align: right; }
+      .close b { font-weight: 600; color: var(--fg); }
+    </style>
+  </head>
+  <body data-scene="08b · learning paths">
+    <div class="stage-fit">
+      <div class="stage">
+        <div class="kicker">Building next — 02</div>
+
+        <div class="head">
+          <p class="headline" data-beat="0">A clear path through<br />what they actually<br />need to learn.</p>
+        </div>
+
+        <div class="spine" data-beat="1"><i id="fill"></i></div>
+
+        <div class="track">
+          <div class="step" data-beat="1">
+            <span class="node"></span>
+            <div class="card">
+              <div class="shot" style="background-image: url('https://images.unsplash.com/photo-1583339793403-3d9b001b6008?auto=format&fit=crop&w=600&q=70')">
+                <svg class="lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="body">
+                <span class="no">01</span>
+                <h3 class="ttl">HTML &amp; CSS Foundations</h3>
+                <div class="bar"><i></i></div>
+                <div class="state"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" data-beat="1" style="--delay: 0.08s">
+            <span class="node"></span>
+            <div class="card">
+              <div class="shot" style="background-image: url('https://images.unsplash.com/photo-1593720213428-28a5b9e94613?auto=format&fit=crop&w=600&q=70')">
+                <svg class="lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="body">
+                <span class="no">02</span>
+                <h3 class="ttl">JavaScript Essentials</h3>
+                <div class="bar"><i></i></div>
+                <div class="state"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" data-beat="1" style="--delay: 0.16s">
+            <span class="node"></span>
+            <div class="card">
+              <div class="shot" style="background-image: url('react-course.jpg')">
+                <svg class="lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="body">
+                <span class="no">03</span>
+                <h3 class="ttl">Modern Web Development with React</h3>
+                <div class="bar"><i></i></div>
+                <div class="state"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" data-beat="1" style="--delay: 0.24s">
+            <span class="node"></span>
+            <div class="card">
+              <div class="shot">
+                <svg class="lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="body">
+                <span class="no">04</span>
+                <h3 class="ttl">State Management &amp; Data Fetching</h3>
+                <div class="bar"><i></i></div>
+                <div class="state"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" data-beat="1" style="--delay: 0.32s">
+            <span class="node"></span>
+            <div class="card">
+              <div class="shot">
+                <svg class="lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="body">
+                <span class="no">05</span>
+                <h3 class="ttl">Building &amp; Shipping a Capstone</h3>
+                <div class="bar"><i></i></div>
+                <div class="state"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <svg class="leader" data-beat="2" style="left: 1560px; top: 396px; width: 250px; height: 70px">
+          <path d="M250 0 V26 Q250 46 226 46 H92" />
+          <circle cx="92" cy="46" r="5" />
+        </svg>
+        <div class="chip mono c-rule" data-beat="2" style="transform: translateX(-100%)">
+          <span class="dot"></span>Unlock in order
+        </div>
+
+        <div class="foot">
+          <span class="mark"><img src="logo-512.png" alt="" />ClassroomIO</span>
+          <p class="close" data-beat="5">Finish one to open the next — <b>then the certificate.</b></p>
+        </div>
+      </div>
+    </div>
+    <script src="../stage.js"></script>
+    <script>
+      const steps = [...document.querySelectorAll('.step')];
+      const fill = document.getElementById('fill');
+
+      const LABELS = {
+        done: '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Completed',
+        current: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>In progress',
+        locked: '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Locked'
+      };
+
+      function progressFor(beat) {
+        if (beat >= 4) return 3;
+        if (beat >= 3) return 2;
+        if (beat >= 1) return 1;
+
+        return 0;
+      }
+
+      addEventListener('beat', (event) => {
+        const reached = progressFor(event.detail);
+
+        steps.forEach((step, i) => {
+          const position = i + 1;
+          const state = position < reached ? 'done' : position === reached ? 'current' : 'locked';
+
+          step.classList.toggle('is-done', state === 'done');
+          step.classList.toggle('is-current', state === 'current');
+          step.classList.toggle('is-locked', state === 'locked');
+          step.querySelector('.state').innerHTML = reached ? LABELS[state] : '';
+        });
+
+        fill.style.width = reached ? ((reached - 1) / (steps.length - 1)) * 100 + '%' : '0%';
+      });
+    </script>
+  </body>
+</html>

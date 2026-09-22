@@ -1667,7 +1667,10 @@ a.trow:hover {
   font-weight: 500;
   color: var(--foreground);
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
 }
 .filter-pill:hover {
   background: var(--accent);
@@ -1728,7 +1731,10 @@ a.trow:hover {
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   border-color: color-mix(in oklab, var(--primary) 18%, var(--border));
-  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
 }
 .cl-hero:hover {
   box-shadow: var(--shadow-md);
@@ -1850,7 +1856,9 @@ a.trow:hover {
   gap: 16px;
   align-items: center;
   padding: 14px 16px;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
 }
 .lp-row:hover {
   border-color: var(--ring);
@@ -1948,7 +1956,9 @@ a.trow:hover {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
   box-shadow: var(--shadow-sm);
 }
 .xpath-card:hover {
@@ -2021,7 +2031,9 @@ a.trow:hover {
 
 .xcourse-card {
   overflow: hidden;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
 }
 .xcourse-card:hover {
   border-color: var(--ring);

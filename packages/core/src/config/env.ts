@@ -14,6 +14,8 @@ const envSchema = z.object({
   APPROXIMATED_DNS_TARGET_IP: z.string().optional(),
   /** Optional CNAME target customers can point to instead of A record. */
   APPROXIMATED_DNS_TARGET_CNAME: z.string().optional(),
+  /** Comma-separated brand-zone hosts served as org sites, e.g. academy.classroomio.com. */
+  FIRST_PARTY_ORG_SITE_HOSTS: z.string().optional(),
   // S3-compatible storage (MinIO, AWS S3, or other S3-compatible backends)
   OBJECT_STORAGE_ENDPOINT: z.string().optional(),
   OBJECT_STORAGE_REGION: z.string().optional(),
@@ -89,6 +91,8 @@ const envSchema = z.object({
 
       return Number.isFinite(parsed) && parsed >= 1 ? Math.trunc(parsed) : 500;
     }),
+  /** Inbox for user-submitted content reports. Defaults to help@classroomio.com. */
+  MODERATION_EMAIL: z.union([z.string().email(), z.literal('')]).optional(),
   /** Max course lesson document upload size in megabytes (default 5). */
   UPLOAD_MAX_DOCUMENT_MB: z.string().optional(),
   /** Max image upload size in megabytes — avatars, media, editor images (default 5). */

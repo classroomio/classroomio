@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Changelog thumbnail · YouTube 16:9</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../motion.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <link rel="stylesheet" href="../stage.css" />
+    <style>
+      .copy { position: absolute; left: var(--gutter); top: 210px; width: 880px; z-index: 12; }
+      .tag { display: inline-flex; align-items: center; gap: 12px; padding: 13px 22px; background: var(--accent); color: var(--accent-ink);
+        font-family: ui-monospace, Menlo, monospace; font-size: 20px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+      .hook { margin: 30px 0 0; font-size: 152px; font-weight: 700; letter-spacing: -0.052em; line-height: 0.9; }
+      .hook em { font-style: normal; color: var(--accent-text); }
+      /* On a dark field the real #0233BD cannot carry type, so it carries a block instead —
+         the brand blue stays on screen rather than stepping to a tint. */
+      .field-dark .hook { line-height: 1.08; }
+      .field-dark .hook em { color: #ffffff; background: var(--accent); padding: 0 22px 14px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+      .field-blue .hook em { color: #ffffff; text-decoration: underline; text-decoration-thickness: 10px; text-underline-offset: 16px; }
+      .sub { margin: 34px 0 0; font-size: 36px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.28; color: var(--fg-muted); max-width: 21ch; }
+      .sub b { color: var(--fg); font-weight: 600; }
+
+      .shot { position: absolute; right: -170px; top: 132px; width: 1210px; z-index: 6;
+        border-radius: 20px; overflow: hidden; transform: rotate(-2.2deg);
+        box-shadow: 0 70px 130px -30px var(--shadow), 0 0 0 1.5px var(--line); }
+      .shot img { display: block; width: 100%; }
+
+      .mark { position: absolute; left: var(--gutter); bottom: 74px; z-index: 12; display: flex; align-items: center; gap: 16px;
+        font-size: 27px; font-weight: 600; letter-spacing: -0.01em; }
+      .mark img { width: 44px; height: 44px; object-fit: contain; filter: var(--logo-filter); }
+      .mark span { color: var(--fg-muted); font-weight: 500; }
+    </style>
+  </head>
+  <body data-scene="thumbnail · youtube">
+    <div class="stage-fit">
+      <div class="stage" data-w="1920" data-h="1080">
+        <div class="shot"><img src="shot-changelog.jpg" alt="ClassroomIO lesson with a YouTube video and the AI assistant" /></div>
+
+        <div class="copy">
+          <span class="tag">New · September</span>
+          <h1 class="hook">YouTube<br />+ <em>AI Chat</em></h1>
+          <p class="sub">Paste a link. The assistant <b>already knows what the video says.</b></p>
+        </div>
+
+        <div class="mark"><img src="logo-512.png" alt="" />ClassroomIO <span>&nbsp;changelog</span></div>
+      </div>
+    </div>
+    <script src="../stage.js"></script>
+  </body>
+</html>

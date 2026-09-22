@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { HTMLContent, Content, Editor } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
+  import type { UnsplashPhoto } from './types';
   import { EdraEditor, EdraToolBar, EdraBubbleMenu, EdraDragHandleExtended } from './ui';
   import { slide } from 'svelte/transition';
   import { cn } from '$src/tools';
@@ -28,6 +29,8 @@
     onContentChange?: (content: HTMLContent) => void;
     onEditorReady?: (editor: Editor) => void;
     onEditorDestroy?: () => void;
+    onImageUpload?: (file: File) => Promise<string>;
+    onSearchUnsplash?: (query: string) => Promise<UnsplashPhoto[]>;
   }
 
   let {
@@ -41,7 +44,9 @@
     editorClass = '',
     placeholder,
     onContentChange,
-    onEditorReady
+    onEditorReady,
+    onImageUpload,
+    onSearchUnsplash
   }: Props = $props();
 
   let editor = $state<Editor>();
@@ -145,12 +150,14 @@
       {/if}
     {/if}
     <EdraEditor
-      class={cn('ui:relative ui:h-128 ui:overflow-auto ui:p-4', editorClass)}
+      class={cn('ui:relative ui:h-full ui:overflow-auto ui:p-4', editorClass)}
       bind:editor
       {editable}
       {content}
       {onUpdate}
       {placeholder}
+      {onImageUpload}
+      {onSearchUnsplash}
     />
   </div>
 {/if}

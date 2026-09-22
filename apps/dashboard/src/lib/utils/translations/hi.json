@@ -211,8 +211,6 @@
       "section_update_failed": "पाठ्यक्रम अनुभाग अद्यतन करने में विफल",
       "sections_reordered": "पाठ्यक्रम अनुभागों को सफलतापूर्वक पुनः व्यवस्थित किया गया",
       "sections_reorder_failed": "पाठ्यक्रम अनुभागों को पुन: व्यवस्थित करने में विफल",
-      "lessons_reordered": "पाठों को सफलतापूर्वक पुनः व्यवस्थित किया गया",
-      "lessons_reorder_failed": "पाठों को पुन: व्यवस्थित करने में विफल",
       "comment_fetch_failed": "पाठ टिप्पणियाँ लाने में विफल",
       "load_more_comments_failed": "अधिक टिप्पणियाँ लोड करने में विफल",
       "comment_add_failed": "टिप्पणी जोड़ने में विफल",
@@ -306,7 +304,11 @@
         "all_content_already_unlocked": "सभी सामग्री पहले से अनलॉक है",
         "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
         "content_grouping_disabled": "सामग्री समूहीकरण अक्षम",
-        "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया"
+        "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया",
+        "converted_to_public": "पाठ्यक्रम सफलतापूर्वक सार्वजनिक में परिवर्तित हो गया"
+      },
+      "info": {
+        "conversion_blocked": "सार्वजनिक करने की प्रक्रिया पूरी करने के लिए नीचे दिए गए प्रश्नों के उत्तर दें।"
       }
     },
     "people": {
@@ -384,7 +386,8 @@
       "delete_success": "वीडियो हटा दिया गया",
       "delete_in_use": "यह वीडियो अभी भी एक पाठ से जुड़ा हुआ है। पहले इसे वहां से हटाएं.",
       "delete_failed": "वीडियो हटाने में विफल",
-      "added_to_lesson": "पाठ में वीडियो जोड़ा गया"
+      "added_to_lesson": "पाठ में वीडियो जोड़ा गया",
+      "transcript_unavailable": "ट्रांसक्रिप्ट उपलब्ध नहीं"
     },
     "tags": {
       "group_created": "टैग समूह बनाया गया",
@@ -467,6 +470,11 @@
         "post_created": "पोस्ट सफलतापूर्वक बनाई गई",
         "post_updated": "पोस्ट सफलतापूर्वक अपडेट की गई"
       }
+    },
+    "report": {
+      "success": "धन्यवाद। हम इस रिपोर्ट की समीक्षा करेंगे।",
+      "error": "रिपोर्ट जमा नहीं हो सकी। कृपया फिर से प्रयास करें।",
+      "already_submitted": "आप पहले ही इसकी रिपोर्ट कर चुके हैं।"
     }
   },
   "explore": {
@@ -943,6 +951,7 @@
         "cover_image": "कवर छवि",
         "optional_image": "यह वैकल्पिक छवि आपके स्वागत पृष्ठ पर दिखाई देगी। यदि आप एक को शामिल करते हैं, तो यह कम से कम 280 x 200 होना चाहिए",
         "replace": "बदलें",
+        "remove": "हटाओ",
         "del": "हटाएँ",
         "course_details": "पाठ्यक्रम विवरण",
         "course_title": "पाठ्यक्रम का शीर्षक",
@@ -950,6 +959,7 @@
         "placeholder": "अपना पाठ्यक्रम विवरण यहां लिखें",
         "course_title_placeholder": "पाठ्यक्रम का शीर्षक यहां लिखें",
         "setup_landing_for_link": "पाठ्यक्रम लिंक प्राप्त करने के लिए लैंडिंग पृष्ठ सेटअप करें",
+        "setup_landing_page": "लैंडिंग पृष्ठ सेटअप करें",
         "coming_soon": "जल्द आ रहा है",
         "link": "कोर्स लिंक",
         "grading": "ग्रेडिंग",
@@ -961,7 +971,6 @@
         "content_grouping_title": "सामग्री समूहन",
         "content_grouping_description": "सामग्री सूची में अनुभाग के अनुसार समूह पाठ और अभ्यास।",
         "progression_mode_title": "छात्र प्रगति",
-        "progression_mode_description": "नियंत्रित करें कि छात्र सभी अनलॉक सामग्री तक पहुँच सकें या क्रम में आइटम पूरे करें।",
         "progression_mode_free": "मुक्त — अनलॉक सामग्री सुलभ है",
         "progression_mode_sequential": "क्रमिक — अगला अनलॉक करने के लिए पिछले आइटम पूरे करें",
         "comments": {
@@ -1003,7 +1012,6 @@
         },
         "compliance": "अनुपालन",
         "public": "सार्वजनिक",
-        "convert_to_public_blocked": "इस पाठ्यक्रम में ऐसे प्रश्न हैं जिन्हें स्वचालित रूप से वर्गीकृत नहीं किया जा सकता है, इसलिए इसे अभी तक सार्वजनिक नहीं किया जा सकता है।",
         "fix_blocking_questions": "अवरुद्ध करने वाले प्रश्नों को ठीक करें",
         "slug": {
           "label": "यूआरएल स्लग",
@@ -1036,6 +1044,9 @@
           "description": "नामांकन के बाद छात्रों को प्राप्त होने वाले ईमेल को अनुकूलित करें। एक व्यक्तिगत नोट, निर्देश, या एक लाइव सत्र लिंक जोड़ें।",
           "placeholder": "नामांकन के समय विद्यार्थियों को मिलने वाला स्वागत संदेश लिखें..."
         },
+        "general_card_title": "सामान्य",
+        "content_card_title": "सामग्री",
+        "access_card_title": "पहुँच",
         "locked_content": {
           "title": "{count} पाठ्यक्रम आइटम लॉक हैं",
           "description": "नामांकित छात्र तब तक लॉक किए गए पाठ या अभ्यास नहीं ले पाएंगे जब तक आप उन्हें अनलॉक नहीं करते।",
@@ -1050,7 +1061,45 @@
         "generate_link": "नया लिंक जनरेट करें",
         "open_link": "नए टैब में लिंक खोलें",
         "copy_link": "लिंक कॉपी करें",
-        "certificate_deadline_required_description": "अनुपालन पाठ्यक्रमों के लिए छात्रों के नामांकन से पहले प्रमाणपत्र जमा करने की अंतिम तिथि आवश्यक है। कृपया प्रकाशित करने से पहले पाठ्यक्रम सेटिंग में अंतिम तिथि निर्धारित करें।"
+        "question_in_exercise": "\"{exercise}\" में",
+        "fix_question": "संपादित करें",
+        "convert_to_public_blocked": "सार्वजनिक पाठ्यक्रमों के लिए केवल ऑटो-ग्रेडेबल प्रश्नों की आवश्यकता होती है।",
+        "convert_to_public_blocked_desc": "सार्वजनिक पाठ्यक्रम में अभ्यासों को ब्राउज़र में स्वचालित रूप से ग्रेड किया जाता है, यही कारण है कि हम केवल ऑटो-ग्रेडेबल प्रश्नों का समर्थन करते हैं। इस पाठ्यक्रम को सार्वजनिक में परिवर्तित करने से पहले निम्नलिखित प्रश्नों को हटा दें या बदल दें:",
+        "fix_in_exercise": "व्यायाम में सुधार करें",
+        "cancel_conversion": "रूपांतरण रद्द करें",
+        "public_conversion": {
+          "banner_title": "पाठ्यक्रम को सार्वजनिक में परिवर्तित करना",
+          "exercise_fixed": "यह एक्सरसाइज तैयार है",
+          "back_to_settings": "सेटिंग्स पर वापस जाएँ",
+          "complete_conversion": "पूर्ण सार्वजनिक रूपांतरण",
+          "jump_to": "पर जाएँ",
+          "blocks_public_conversion": "नॉन-ऑटोग्रेडेबल",
+          "blocks_public_conversion_desc": "सार्वजनिक पाठ्यक्रम केवल ऑटो-ग्रेडेबल प्रश्नों का समर्थन करते हैं। रूपांतरण के साथ आगे बढ़ने के लिए इस प्रश्न का प्रकार बदलें या इसे हटा दें।",
+          "blocks_public_conversion_title": "सार्वजनिक पाठ्यक्रमों में मैन्युअल ग्रेडिंग समर्थित नहीं है।",
+          "aria_label": "सार्वजनिक पाठ्यक्रम रूपांतरण प्रगति",
+          "all_exercises_fixed": "सभी {total} अभ्यास हल हो गए",
+          "ready_to_convert": "रूपांतरण के लिए तैयार!",
+          "questions_left_other_singular": "· अन्य अभ्यासों में {count} प्रश्न शेष हैं",
+          "questions_left_other_plural": "· अन्य अभ्यासों में {count} प्रश्न शेष हैं",
+          "progress_summary_singular": "{resolved}/{total} हल हो गए · {remaining} प्रश्न शेष हैं",
+          "progress_summary_plural": "{resolved}/{total} हल हो गए · {remaining} प्रश्न शेष हैं",
+          "next_exercise": "अगला: {exercise}",
+          "next": "अगला",
+          "question_fallback": "प्रश्न {number}",
+          "question_count_singular": "{count} प्रश्न",
+          "question_count_plural": "{count} प्रश्न",
+          "exercise_count_singular": "{count} अभ्यास",
+          "exercise_count_plural": "{count} अभ्यास",
+          "exercises_fixed": "{resolved}/{total} हल हो गए",
+          "questions_left_singular": "हल हो गए · {count} प्रश्न शेष",
+          "questions_left_plural": "हल हो गए · {count} प्रश्न शेष"
+        },
+        "fix": "हल करना",
+        "save_changes_to_fix_questions": "प्रश्नों के उत्तर देने से पहले अपने असंरक्षित परिवर्तनों को सहेज लें।",
+        "certificate_deadline_required_description": "अनुपालन पाठ्यक्रमों के लिए छात्रों के नामांकन से पहले प्रमाणपत्र जमा करने की अंतिम तिथि आवश्यक है। कृपया प्रकाशित करने से पहले पाठ्यक्रम सेटिंग में अंतिम तिथि निर्धारित करें।",
+        "progression_mode_description": "नियंत्रित करें कि क्या छात्र सभी अनलॉक की गई सामग्री तक पहुंच सकते हैं या उन्हें क्रम में आइटम पूरे करने होंगे। वीडियो देखने की पूर्णता केवल अपलोड किए गए वीडियो को ट्रैक करती है।",
+        "allow_markdown_export": "शिक्षार्थियों को पाठ पृष्ठ Markdown के रूप में कॉपी करने दें",
+        "allow_markdown_export_description": "सक्षम होने पर, सार्वजनिक पाठ पृष्ठ एक पेज कॉपी करें बटन दिखाते हैं जो पाठ सामग्री (वीडियो छोड़कर) को Markdown के रूप में निर्यात करता है। यह प्रत्येक अनलॉक पाठ के लिए एक सार्वजनिक Markdown URL भी प्रकाशित करता है।"
       },
       "analytics": {
         "title": "विश्लेषिकी"
@@ -1617,7 +1666,9 @@
           "comment_btn": "टिप्पणी करें",
           "cancel_btn": "रद्द करें",
           "load_more_btn": "और अधिक लोड करें",
-          "comment_error": "टिप्पणी पोस्ट करने में विफल. कृपया पुन: प्रयास करें।"
+          "comment_error": "टिप्पणी पोस्ट करने में विफल. कृपया पुन: प्रयास करें।",
+          "edit": "संपादित करें",
+          "delete": "हटाएँ"
         },
         "exercises": {
           "heading": "सभी व्यायाम",
@@ -2321,6 +2372,7 @@
               "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से",
               "google_drive": "गूगल ड्राइव",
               "generate_transcript": "ट्रांसक्रिप्शन बनाएं",
+              "transcript_in_progress": "ट्रांसक्रिप्ट प्राप्त किया जा रहा है…",
               "generate_transcript_in_progress": "ट्रांसक्राइब किया जा रहा है…",
               "transcript": {
                 "title": "ट्रांसक्रिप्ट",
@@ -2362,7 +2414,87 @@
             "slide": {
               "title": "फिसल पट्टी",
               "slide_link": "स्लाइड लिंक",
-              "helper_message": "आप Google स्लाइड या Canva प्रेजेंटेशन को एम्बेड कर सकते हैं"
+              "helper_message": "आप Google स्लाइड या Canva प्रेजेंटेशन को एम्बेड कर सकते हैं",
+              "button": "स्लाइड जोड़ें",
+              "remove_slide": "स्लाइड हटाएँ",
+              "menu_aria": "स्लाइड क्रियाएँ",
+              "empty_title": "अभी कोई स्लाइड नहीं",
+              "empty_description": "Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare या Beautiful.ai एम्बेड करें",
+              "add_slide": {
+                "title": "स्लाइड जोड़ें",
+                "search": "प्लेटफ़ॉर्म खोजें",
+                "empty_prompt": "चरण-दर-चरण निर्देश देखने और एम्बेड कोड पेस्ट करने के लिए प्लेटफ़ॉर्म चुनें।",
+                "embed_code": "एम्बेड कोड पेस्ट करें",
+                "embed_placeholder": "यहाँ पूरा iframe एम्बेड कोड पेस्ट करें",
+                "how_to_embed": "कैसे एम्बेड करें",
+                "preview": "पूर्वावलोकन",
+                "embed_ready": "एम्बेड तैयार",
+                "invalid_embed": "इस प्लेटफ़ॉर्म का पूरा iframe एम्बेड कोड पेस्ट करें।",
+                "unsupported": "यह एम्बेड किसी ऐसे प्लेटफ़ॉर्म से है जिसे हम अभी समर्थित नहीं करते।"
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} में से {total})"
             },
             "note": {
               "title": "नोट",
@@ -2425,10 +2557,10 @@
           "manual_label": "मैन्युअल",
           "manual_description": "छात्र स्वयं पाठ को पूर्ण चिह्नित करते हैं।",
           "video_watch_label": "वीडियो देखें",
-          "video_watch_description": "चयनित वीडियो देखने के बाद पाठ स्वतः पूर्ण हो जाता है।",
           "none_label": "कोई नहीं",
           "none_description": "यह पाठ कोर्स प्रगति को रोकता नहीं है।",
-          "watch_threshold": "देखने की सीमा (%)"
+          "watch_threshold": "देखने की सीमा (%)",
+          "video_watch_description": "छात्रों द्वारा चयनित अपलोड किए गए वीडियो देखने के बाद पाठ स्वचालित रूप से पूरा हो जाता है। YouTube और बाहरी एम्बेड को ट्रैक नहीं किया जा सकता."
         },
         "settings": {
           "comments": {
@@ -2445,9 +2577,11 @@
             "option_guide_heading": "प्रत्येक विकल्प का अर्थ",
             "watch_videos_heading": "लागू करने के लिए वीडियो",
             "watch_videos_helper": "केवल अपलोड किए गए वीडियो लागू किए जा सकते हैं। YouTube और बाहरी एम्बेड ट्रैक नहीं हो सकते।",
-            "watch_videos_empty": "देखने की निगरानी के लिए वीडियो टैब में अपलोड किया वीडियो जोड़ें।",
             "watch_videos_required": "वीडियो देखने के नियम के लिए कम से कम एक वीडियो चुनें।",
-            "students_only_note": "ये नियम केवल छात्रों पर लागू होते हैं। शिक्षक स्वतंत्र रूप से पूर्वावलोकन और नेविगेट कर सकते हैं।"
+            "students_only_note": "ये नियम केवल छात्रों पर लागू होते हैं। शिक्षक स्वतंत्र रूप से पूर्वावलोकन और नेविगेट कर सकते हैं।",
+            "watch_videos_empty": "वीडियो देखने की पूर्णता केवल अपलोड किए गए वीडियो को ट्रैक करती है। YouTube और बाहरी एम्बेड को ट्रैक नहीं किया जा सकता, इसलिए यह पाठ स्वचालित रूप से पूरा नहीं हो सकता और छात्र इसे पूर्ण के रूप में चिह्नित नहीं कर सकते। वीडियो टैब में वीडियो अपलोड करें, या पूर्णता नियम को मैन्युअल पर सेट करें।",
+            "watch_videos_no_uploads_title": "इस पाठ में कोई वीडियो अपलोड नहीं किया गया",
+            "watch_videos_learn_more": "और अधिक जानें"
           }
         },
         "watch_progress": {
@@ -2500,7 +2634,16 @@
           "link_copied": "लिंक कॉपी किया गया"
         },
         "student_share_your_knowledge": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
-        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।"
+        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
+        "add_content_created_section": "सेक्शन सफलतापूर्वक बन गया है!",
+        "add_content_created_lesson": "पाठ सफलतापूर्वक बन गया है!",
+        "add_content_created_exercise": "अभ्यास सफलतापूर्वक बन गया है!",
+        "add_content_create_another_section": "एक और सेक्शन बनाएँ",
+        "add_content_create_another_lesson": "एक और पाठ बनाएँ",
+        "add_content_create_another_exercise": "एक और अभ्यास बनाएँ",
+        "add_content_open_now": "अभी खोलें",
+        "add_content_later": "बाद में",
+        "add_content_add_to_section": "सामग्री जोड़ें"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -4518,7 +4661,7 @@
     "tool": {
       "pending": {
         "working": "काम जारी है",
-        "unknown_tool": "{toolName} चलाया जा रहा है",
+        "unknown_tool": "{toolName} पर काम हो रहा है",
         "get_course_structure": "पाठ्यक्रम संरचना पढ़ी जा रही है",
         "get_lesson_content": "पाठ सामग्री पढ़ी जा रही है",
         "get_exercise_details": "अभ्यास पढ़ा जा रहा है",
@@ -4542,6 +4685,7 @@
         "fetch_documentation_url": "दस्तावेज़ पृष्ठ पढ़ना",
         "fetch_documentation_url_with_url": "पढ़ना {url}",
         "list_youtube_playlist_videos": "प्लेलिस्ट के वीडियो दिखाए जा रहे हैं",
+        "get_lesson_transcript": "वीडियो ट्रांसक्रिप्ट पढ़ा जा रहा है",
         "add_youtube_video_to_lesson": "YouTube वीडियो एम्बेड किया जा रहा है"
       },
       "meta": {
@@ -4577,6 +4721,11 @@
         "fetch_documentation_url": "पढ़ें {url}",
         "list_youtube_playlist_videos": "प्लेलिस्ट में {count} वीडियो मिले",
         "list_youtube_playlist_videos_unavailable": "प्लेलिस्ट के वीडियो नहीं दिखाए जा सके",
+        "get_lesson_transcript": "{title} का ट्रांसक्रिप्ट पढ़ा गया",
+        "get_lesson_transcript_fetching": "{title} का ट्रांसक्रिप्ट प्राप्त किया जा रहा है",
+        "get_lesson_transcript_plan_gated": "ट्रांसक्रिप्ट के लिए सशुल्क प्लान आवश्यक है",
+        "get_lesson_transcript_no_credits": "ट्रांसक्रिप्ट प्राप्त करने के लिए AI क्रेडिट शेष नहीं हैं",
+        "get_lesson_transcript_unavailable": "{title} के लिए कोई ट्रांसक्रिप्ट उपलब्ध नहीं है",
         "add_youtube_video_to_lesson": "एम्बेड किया गया वीडियो: {title}"
       }
     },
@@ -4618,14 +4767,14 @@
     "retry": "पुनः प्रयास करें",
     "run_monitor_aria": "पाठ्यक्रम सृजन प्रगति पर है",
     "run_summary": {
-      "completed": "रन पूरा हुआ.",
-      "completed_with_counts": "रन पूरा हुआ - {counts} बनाई गई।",
-      "failed": "रन विफल.",
-      "failed_with_reason": "रन विफल - {reason}।",
-      "canceled": "चलाना रद्द कर दिया गया.",
-      "canceled_with_counts": "दौड़ रद्द कर दी गई - रुकने से पहले {counts} बनाई गई।",
-      "paused": "रन रुका हुआ. जारी रखने के लिए फिर से शुरू करें.",
-      "paused_with_counts": "रन रोका गया - अब तक {counts} बनाई गई। जारी रखने के लिए फिर से शुरू करें."
+      "completed": "कोर्स जनरेशन पूरी हुई।",
+      "completed_with_counts": "कोर्स जनरेशन पूरी हुई — {counts} बनाए गए।",
+      "failed": "कोर्स जनरेशन विफल रही।",
+      "failed_with_reason": "कोर्स जनरेशन विफल रही — {reason}।",
+      "canceled": "कोर्स जनरेशन रद्द कर दी गई।",
+      "canceled_with_counts": "कोर्स जनरेशन रद्द कर दी गई — रुकने से पहले {counts} बनाए गए।",
+      "paused": "कोर्स जनरेशन रोकी गई। जारी रखने के लिए फिर से शुरू करें।",
+      "paused_with_counts": "कोर्स जनरेशन रोकी गई — अब तक {counts} बनाए गए। जारी रखने के लिए फिर से शुरू करें।"
     },
     "changes_card": {
       "summary_count": "{count} आइटम बदल गए",
@@ -4652,16 +4801,16 @@
       "collapse": "संक्षिप्त योजना"
     },
     "run_monitor": {
-      "cancel": "चलाएँ रद्द करें",
+      "cancel": "जनरेशन रद्द करें",
       "dismiss": "ख़ारिज करें",
       "now_doing": "अभी",
       "input_disabled_hint": "जब एजेंट पाठ्यक्रम का निर्माण पूरा कर लेता है तो चैट रोक दी जाती है। रद्द करें या इसके पूरा होने तक प्रतीक्षा करें।",
       "dismiss_confirm": "चले जाओ",
-      "dismiss_cancel": "भागते रहो",
-      "dismiss_confirm_body": "इस रद्द किए गए रन से दूर चले जाएं? बायोडाटा बटन गायब हो जाएगा - आगे की कोई भी बातचीत नए सिरे से शुरू होगी और योजना जारी नहीं रहेगी।",
+      "dismiss_cancel": "यहीं रहें",
+      "dismiss_confirm_body": "इस रद्द की गई जनरेशन से बाहर निकलें? फिर से शुरू करें बटन गायब हो जाएगा — कोई भी आगे की बातचीत नए सिरे से शुरू होगी और योजना जारी नहीं रहेगी।",
       "stuck_queued": {
         "title": "कर्मी जवाब नहीं दे रहा है",
-        "body": "इस रन के लिए 30 सेकंड से अधिक समय से प्रतीक्षा की जा रही है और कोई कर्मचारी पिकअप नहीं कर रहा है। बैकग्राउंड वर्कर डाउन या रीस्टार्ट हो सकता है।"
+        "body": "कोर्स जनरेशन 30 सेकंड से अधिक समय से प्रतीक्षा कर रही है और कोई बैकग्राउंड प्रक्रिया इसे नहीं उठा रही है। बैकग्राउंड प्रक्रिया बंद हो सकती है या रीस्टार्ट हो रही हो।"
       }
     },
     "ask_ai": "एआई से पूछें",
@@ -4987,6 +5136,30 @@
     "header": {
       "explore_courses": "पाठ्यक्रमों का अन्वेषण करें",
       "sign_in": "साइन इन करें"
+    },
+    "copy_page": {
+      "copy": "पृष्ठ कॉपी करें",
+      "copied": "कॉपी हो गया",
+      "view_as_markdown": "Markdown के रूप में देखें",
+      "open_in_chatgpt": "ChatGPT में खोलें",
+      "open_in_claude": "Claude में खोलें",
+      "more_actions": "पृष्ठ कॉपी करने की और क्रियाएँ",
+      "copy_failed": "इस पाठ को Markdown के रूप में कॉपी नहीं किया जा सका"
+    },
+    "outline": {
+      "label": "इस पृष्ठ पर"
+    },
+    "rail": {
+      "copy_as_markdown": "Markdown के रूप में कॉपी करें",
+      "open_in_chat": "चैट में खोलें"
+    },
+    "share": {
+      "label": "सोशल मीडिया पर शेयर करें",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "लिंक कॉपी हो गया। इसे Instagram में पेस्ट करें।"
     }
   },
   "account": {
@@ -5433,5 +5606,27 @@
     "format_json": "JSON",
     "copied": "क्लिपबोर्ड पर कॉपी किया गया",
     "copy_failed": "क्लिपबोर्ड पर कॉपी नहीं किया जा सका"
+  },
+  "report": {
+    "menu": "रिपोर्ट करें",
+    "title": "सामग्री की रिपोर्ट करें",
+    "description": "बताएँ कि क्या गलत है। हमारी टीम इस रिपोर्ट की समीक्षा करेगी।",
+    "reason_label": "कारण",
+    "reason_placeholder": "एक कारण चुनें",
+    "reason_required": "कृपया एक कारण चुनें",
+    "details_label": "अतिरिक्त विवरण",
+    "details_placeholder": "कोई भी संदर्भ जोड़ें जो समीक्षा में मदद करे (वैकल्पिक)",
+    "submit": "रिपोर्ट जमा करें",
+    "cancel": "रद्द करें",
+    "reasons": {
+      "spam": "स्पैम",
+      "harassment": "उत्पीड़न या धमकाना",
+      "hate_speech": "घृणा भाषण",
+      "sexual_content": "यौन सामग्री",
+      "violence": "हिंसा या धमकियाँ",
+      "misinformation": "गलत जानकारी",
+      "privacy": "गोपनीयता उल्लंघन",
+      "other": "अन्य"
+    }
   }
 }

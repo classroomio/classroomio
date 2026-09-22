@@ -366,18 +366,20 @@ export const courseRouter = new Hono()
               data: {
                 ...result.course,
                 tags: result.tags
-              }
+              },
+              conversionBlocked: result.conversionOffenders ?? undefined
             },
             200
           );
         }
 
-        const result = await updateCourse(courseId, courseData);
+        const { course: result, conversionOffenders } = await updateCourse(courseId, courseData);
 
         return c.json(
           {
             success: true,
-            data: result
+            data: result,
+            conversionBlocked: conversionOffenders ?? undefined
           },
           200
         );

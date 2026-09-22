@@ -272,9 +272,14 @@ export function computeExerciseDiff(
 
   // Process incoming questions
   for (const incoming of normalizedIncomingQuestions) {
-    if (incoming.deletedAt && incoming.id) {
-      deletedQuestionIds.push(incoming.id);
-    } else if (incoming.id) {
+    if (incoming.deletedAt) {
+      if (incoming.id) {
+        deletedQuestionIds.push(incoming.id);
+      }
+      continue;
+    }
+
+    if (incoming.id) {
       const current = questionMap.get(incoming.id);
       if (current) {
         const changes = diffQuestion(current, incoming);
@@ -306,11 +311,15 @@ export function computeExerciseDiff(
     const processedIncomingOptionIds = new Set<number>();
 
     for (const incomingOpt of incomingOptions) {
-      if (incomingOpt.deletedAt && incomingOpt.id) {
-        optionDeletes.push(incomingOpt.id);
+      if (incomingOpt.deletedAt) {
+        if (incomingOpt.id) {
+          optionDeletes.push(incomingOpt.id);
+          processedIncomingOptionIds.add(incomingOpt.id);
+        }
+        continue;
+      }
 
-        processedIncomingOptionIds.add(incomingOpt.id);
-      } else if (incomingOpt.id) {
+      if (incomingOpt.id) {
         processedIncomingOptionIds.add(incomingOpt.id);
 
         const currentOpt = currentOptionMap.get(incomingOpt.id);

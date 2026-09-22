@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>08a · Self-Updating Content Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../motion.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <link rel="stylesheet" href="../stage.css" />
+    <style>
+      .head { position: absolute; left: 0; top: 232px; width: 800px; }
+      .head .headline { font-size: 68px; line-height: 1.02; }
+      .head .sub { padding-left: var(--gutter); margin: 34px 0 0; font-size: 27px; line-height: 1.42; color: var(--fg-muted); max-width: 600px; }
+
+      .card { left: 968px; top: 208px; width: 850px; }
+      .card .body { padding: 34px 38px 38px; }
+      .lesson { font-family: ui-monospace, Menlo, monospace; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in oklab, var(--surface-fg) 48%, transparent); }
+      .lesson b { display: block; margin-top: 12px; font-family: 'Geist', sans-serif; font-size: 38px; font-weight: 600; letter-spacing: -0.025em; text-transform: none; color: var(--surface-fg); }
+
+      .diff { margin-top: 32px; font-family: ui-monospace, Menlo, monospace; font-size: 24px; line-height: 1.5; }
+      .diff div { display: flex; gap: 18px; padding: 16px 20px; }
+      .diff .del { background: #fdecec; color: #a12b2b; }
+      .diff .add { background: #e7f4ec; color: #1d6b40; margin-top: 6px; }
+      .diff .m { opacity: 0.6; flex: none; }
+
+      .shot { margin-top: 26px; display: flex; align-items: center; gap: 18px; font-size: 21px; color: color-mix(in oklab, var(--surface-fg) 58%, transparent); }
+      .shot .th { width: 96px; height: 58px; flex: none; background: repeating-linear-gradient(45deg, var(--surface-sunk) 0 9px, transparent 9px 18px); }
+
+      .state { margin-top: 0; max-height: 0; padding: 0 24px; display: flex; align-items: center; gap: 14px; background: var(--surface-fg); color: var(--surface); font-size: 23px; font-weight: 550; overflow: hidden; transition: max-height 0.55s var(--beat-ease), padding 0.55s var(--beat-ease), margin-top 0.55s var(--beat-ease), opacity 0.55s var(--beat-ease); }
+      .state.on { margin-top: 32px; max-height: 120px; padding: 20px 24px; }
+      .state .tick { width: 13px; height: 13px; border-radius: 50%; background: #4ade80; flex: none; }
+
+      .c-detect { left: 968px; top: 104px; }
+      .metrics { position: absolute; left: var(--gutter); bottom: 150px; display: flex; gap: 72px; }
+      .metrics .v { font-size: 74px; font-weight: 600; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; }
+      .metrics .k { margin-top: 14px; font-family: ui-monospace, Menlo, monospace; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); }
+    </style>
+  </head>
+  <body data-scene="08a · content intelligence">
+    <div class="stage-fit">
+      <div class="stage" data-tone="dark">
+        <div class="kicker">Building next — 01</div>
+
+        <div class="head">
+          <p class="headline" data-beat="0">
+            Training that<br />notices when the<br />product changes.
+          </p>
+          <p class="sub" data-beat="2">ClassroomIO watches the product your courses are about, and tells you the moment a lesson stops being true.</p>
+        </div>
+
+        <div class="panel card" data-beat="1">
+          <div class="panel-bar"><i></i>Content Intelligence — suggested update</div>
+          <div class="body">
+            <div class="lesson">Admin Onboarding › Lesson 3<b>Setting up your billing account</b></div>
+
+            <div class="diff" data-beat="3">
+              <div class="del"><span class="m">−</span><span>Open Settings › Billing and choose your plan.</span></div>
+              <div class="add"><span class="m">+</span><span>Open Workspace › Plans and choose your plan.</span></div>
+            </div>
+
+            <div class="shot" data-beat="3" style="--delay: 0.12s">
+              <span class="th"></span>
+              <span>settings-billing.png still shows the 4.1 sidebar — re-capture suggested.</span>
+            </div>
+
+            <div class="state" data-beat="5">
+              <span class="tick"></span>Applied to 12 lessons — nothing left drifting.
+            </div>
+          </div>
+        </div>
+
+        <svg class="leader" data-beat="2" style="left: 968px; top: 152px; width: 260px; height: 60px">
+          <path d="M28 0 V30 Q28 54 52 54 H240" />
+          <circle cx="240" cy="54" r="5" />
+        </svg>
+        <div class="chip mono c-detect" data-beat="2">
+          <span class="dot"></span>changelog v4.2 · 6 min ago
+        </div>
+
+        <div class="metrics">
+          <div data-beat="4"><div class="v">12</div><div class="k">lessons affected</div></div>
+          <div data-beat="4" style="--delay: 0.08s"><div class="v">4</div><div class="k">screenshots stale</div></div>
+          <div data-beat="4" style="--delay: 0.16s"><div class="v">1,304</div><div class="k">learners exposed</div></div>
+        </div>
+
+        <div class="foot">
+          <span class="mark"><img src="logo-512.png" alt="" />ClassroomIO</span>
+        </div>
+      </div>
+    </div>
+    <script src="../stage.js"></script>
+  </body>
+</html>
