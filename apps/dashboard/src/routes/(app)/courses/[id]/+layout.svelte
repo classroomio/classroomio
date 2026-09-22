@@ -57,26 +57,27 @@
   }
 
   let { children, data }: Props = $props();
+  const courseId = $derived(data.courseId);
+  const loadedCourseId = $derived(courseApi.course?.id);
   const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
   let hasLoadedSidebarWidth = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
 
-  // Initialize course store on the client (fetch once, then reuse store data).
   $effect(() => {
-    if (!data.courseId || !$profile.id) return;
+    const profileId = $profile.id;
+    if (!courseId || !profileId) return;
+    if (loadedCourseId === courseId) return;
 
     if (data.course) {
-      courseApi.setCourse(data.course, $profile.id);
+      courseApi.setCourse(data.course, profileId);
       return;
     }
 
-    courseApi.ensureCourse(data.courseId, $profile.id);
+    void courseApi.ensureCourse(courseId, profileId);
   });
 
-  const isCourseReady = $derived.by(() => {
-    return courseApi.course?.id === data.courseId && !!courseApi.group.id;
-  });
+  const isCourseReady = $derived(loadedCourseId === courseId && !!courseApi.group.id);
 
   const user: CourseMember | undefined = $derived(
     courseApi.group.people.find((person) => person.profileId === $profile.id)
@@ -215,7 +216,7 @@
 >
   <CourseSidebar
     path={currentPath}
-    id={data.courseId}
+    id={courseId}
     {isCourseReady}
     {sidebarWidth}
     onSidebarWidthPreview={handleSidebarWidthPreview}
@@ -253,7 +254,7 @@
       {/if}
 
       {#if showMobileBottomNav}
-        <CourseMobileBottomNav courseId={data.courseId} path={currentPath} />
+        <CourseMobileBottomNav {courseId} path={currentPath} />
       {/if}
     {/if}
   </Sidebar.Inset>
