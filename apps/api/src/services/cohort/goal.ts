@@ -7,6 +7,7 @@ import {
   createCohortGoal,
   deleteCohortGoal,
   getAssignmentsForProfile,
+  getCoursesByCohort,
   getLatestCompletionRecordsForProfilesAndCourses,
   getMaxScoresForProfilesAndCourses,
   getNonComplianceCourseCompletions,
@@ -18,6 +19,7 @@ import {
   getCohortMembers,
   listAllActiveCohortGoals,
   listAssignmentsForReminderScan,
+  type TNewCohortGoal,
   type TNewCohortGoalAssignment,
   type TCohortGoal,
   type TCohortGoalAssignment,
@@ -25,12 +27,31 @@ import {
   upsertCohortGoalAssignments
 } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
-import type { TCreateCohortGoal, TUpdateCohortGoal } from '@cio/utils/validation/cohort';
+import { ZCreateCohortGoal, type TCreateCohortGoal, type TUpdateCohortGoal } from '@cio/utils/validation/cohort';
 
 const AT_RISK_DAYS = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 type GoalType = TCohortGoal['type'];
+
+/**
+ * Every courseId a goal is scoped to must already be linked to the cohort
+ * (via cohort_course) — otherwise the evaluator would score learners against
+ * courses outside the cohort, including courses from another organization.
+ */
+async function assertCourseIdsBelongToCohort(cohortId: string, courseIds: string[]): Promise<void> {
+  const cohortCourses = await getCoursesByCohort(cohortId);
+  const cohortCourseIds = new Set(cohortCourses.map((row) => row.courseId));
+
+  const invalidCourseId = courseIds.find((courseId) => !cohortCourseIds.has(courseId));
+  if (invalidCourseId) {
+    throw new AppError(
+      `Course "${invalidCourseId}" is not linked to this cohort`,
+      ErrorCodes.VALIDATION_ERROR,
+      400
+    );
+  }
+}
 
 // ─── CRUD ────────────────────────────────────────────────────────────────────
 
@@ -39,6 +60,8 @@ export async function createGoal(cohortId: string, profileId: string, data: TCre
   if (!cohort) {
     throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
   }
+
+  await assertCourseIdsBelongToCohort(cohortId, data.courseIds);
 
   try {
     const goal = await createCohortGoal({
@@ -102,22 +125,57 @@ export async function updateGoal(cohortId: string, goalId: string, data: TUpdate
     throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
   }
 
+  if (data.courseIds) {
+    await assertCourseIdsBelongToCohort(cohortId, data.courseIds);
+  }
+
+  // Only include fields the caller actually sent — `data.field ?? null` would
+  // wipe every omitted field, since a partial update legitimately leaves most
+  // keys absent rather than explicitly null.
+  const patch: Partial<TNewCohortGoal> = {};
+  if ('title' in data) patch.title = data.title;
+  if ('description' in data) patch.description = data.description ?? null;
+  if ('type' in data) patch.type = data.type;
+  if ('courseIds' in data) patch.courseIds = data.courseIds;
+  if ('requiredCount' in data) patch.requiredCount = data.requiredCount ?? null;
+  if ('scoreThreshold' in data) patch.scoreThreshold = data.scoreThreshold ?? null;
+  if ('teamPassRateThreshold' in data) patch.teamPassRateThreshold = data.teamPassRateThreshold ?? null;
+  if ('reminderDaysBefore' in data) patch.reminderDaysBefore = data.reminderDaysBefore;
+  if ('deadlineKind' in data) patch.deadlineKind = data.deadlineKind;
+  if ('deadlineDate' in data) patch.deadlineDate = data.deadlineDate ?? null;
+  if ('relativeDays' in data) patch.relativeDays = data.relativeDays ?? null;
+  if ('recurringMonths' in data) patch.recurringMonths = data.recurringMonths ?? null;
+  if ('status' in data) patch.status = data.status;
+
+  // Re-run the same per-type/per-deadline invariants create-time uses, against
+  // the state the goal would end up in — a patch that's valid in isolation
+  // (e.g. `{ type: 'n_of_m' }`) can still leave the merged goal inconsistent
+  // (no requiredCount) if we don't check the full picture.
+  const merged = { ...existing, ...patch };
+  const revalidation = ZCreateCohortGoal.safeParse({
+    type: merged.type,
+    title: merged.title,
+    description: merged.description,
+    courseIds: merged.courseIds,
+    requiredCount: merged.requiredCount,
+    scoreThreshold: merged.scoreThreshold,
+    teamPassRateThreshold: merged.teamPassRateThreshold,
+    reminderDaysBefore: merged.reminderDaysBefore,
+    deadlineKind: merged.deadlineKind,
+    deadlineDate: merged.deadlineDate,
+    relativeDays: merged.relativeDays,
+    recurringMonths: merged.recurringMonths
+  });
+  if (!revalidation.success) {
+    throw new AppError(
+      revalidation.error.issues[0]?.message ?? 'Goal update would leave the goal in an invalid state',
+      ErrorCodes.VALIDATION_ERROR,
+      400
+    );
+  }
+
   try {
-    const updated = await updateCohortGoalQuery(cohortId, goalId, {
-      title: data.title,
-      description: data.description ?? undefined,
-      type: data.type,
-      courseIds: data.courseIds,
-      requiredCount: data.requiredCount ?? null,
-      scoreThreshold: data.scoreThreshold ?? null,
-      teamPassRateThreshold: data.teamPassRateThreshold ?? null,
-      reminderDaysBefore: data.reminderDaysBefore,
-      deadlineKind: data.deadlineKind,
-      deadlineDate: data.deadlineDate ?? null,
-      relativeDays: data.relativeDays ?? null,
-      recurringMonths: data.recurringMonths ?? null,
-      status: data.status
-    });
+    const updated = await updateCohortGoalQuery(cohortId, goalId, patch);
     if (!updated) {
       throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
     }

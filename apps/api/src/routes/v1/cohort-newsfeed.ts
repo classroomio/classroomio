@@ -87,13 +87,13 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/',
     describeRoute({
       description:
-        'Create a cohort newsfeed post. The automation actor must already be a member of the cohort, or this fails with 403',
+        'Create a cohort newsfeed post. The automation actor must be a cohort tutor/admin or an org admin, and must already be a member of the cohort, or this fails with 403',
       tags: ['Public API Cohort Newsfeed'],
       responses: {
         201: jsonResponse('Newsfeed post created successfully', NewsfeedResponse),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden, or the automation actor is not a member of this cohort' },
+        403: { description: 'Forbidden, or the automation actor is not a cohort team member' },
         404: { description: 'Cohort not found' }
       }
     }),
@@ -131,9 +131,10 @@ export const v1CohortNewsfeedRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const feed = await updatePublicApiCohortNewsfeedService(orgId, params, payload);
+        const feed = await updatePublicApiCohortNewsfeedService(orgId, actorId, params, payload);
 
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
@@ -186,8 +187,9 @@ export const v1CohortNewsfeedRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const feed = await deletePublicApiCohortNewsfeedService(orgId, params);
+        const feed = await deletePublicApiCohortNewsfeedService(orgId, actorId, params);
 
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
@@ -254,12 +256,12 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/:feedId/comment/:commentId',
     describeRoute({
       description:
-        'Delete a comment from a cohort newsfeed post. Any automation key scoped to this organization may delete any comment; there is no per-author restriction for automation',
+        'Delete a comment from a cohort newsfeed post. The automation actor must be the comment author, a cohort tutor/admin, or an org admin',
       tags: ['Public API Cohort Newsfeed'],
       responses: {
         200: jsonResponse('Comment deleted successfully', NewsfeedResponse),
         401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        403: { description: 'Forbidden, or the automation actor is not the author or a cohort team member' },
         404: { description: 'Cohort, newsfeed post, or comment not found' }
       }
     }),
@@ -267,8 +269,9 @@ export const v1CohortNewsfeedRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const comment = await deletePublicApiCohortNewsfeedCommentService(orgId, params);
+        const comment = await deletePublicApiCohortNewsfeedCommentService(orgId, actorId, params);
 
         return c.json({ success: true, data: comment }, 200);
       } catch (error) {

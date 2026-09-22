@@ -19,7 +19,12 @@ import {
   updateCohortNewsfeedReactionService,
   updateCohortNewsfeedService
 } from '@api/services/cohort/cohort';
-import { assertCohortBelongsToOrganization } from '@api/services/v1/shared';
+import { getCohortNewsfeedCommentById } from '@cio/db/queries/cohort';
+import {
+  assertCohortBelongsToOrganization,
+  assertCohortNewsfeedCommentAuthorOrTeam,
+  assertCohortTeamMemberOrOrgAdmin
+} from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export async function listPublicApiCohortNewsfeedService(
@@ -43,16 +48,19 @@ export async function createPublicApiCohortNewsfeedService(
   }
 
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
   return createCohortNewsfeedService(params.cohortId, actorId, payload);
 }
 
 export async function updatePublicApiCohortNewsfeedService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCohortNewsfeedParam,
   payload: TPublicApiUpdateCohortNewsfeed
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
   return updateCohortNewsfeedService(params.cohortId, params.feedId, payload);
 }
@@ -67,8 +75,13 @@ export async function updatePublicApiCohortNewsfeedReactionService(
   return updateCohortNewsfeedReactionService(params.cohortId, params.feedId, payload);
 }
 
-export async function deletePublicApiCohortNewsfeedService(orgId: string, params: TPublicApiCohortNewsfeedParam) {
+export async function deletePublicApiCohortNewsfeedService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortNewsfeedParam
+) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
   return deleteCohortNewsfeedService(params.cohortId, params.feedId);
 }
@@ -99,9 +112,17 @@ export async function createPublicApiCohortNewsfeedCommentService(
 
 export async function deletePublicApiCohortNewsfeedCommentService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCohortNewsfeedCommentParam
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+
+  const comment = await getCohortNewsfeedCommentById(params.commentId);
+  if (!comment || comment.cohortNewsfeedId !== params.feedId) {
+    throw new AppError('Comment not found', ErrorCodes.COHORT_NEWSFEED_COMMENT_NOT_FOUND, 404);
+  }
+
+  await assertCohortNewsfeedCommentAuthorOrTeam(params.cohortId, actorId, comment.authorId);
 
   return deleteCohortNewsfeedCommentService(params.cohortId, params.feedId, params.commentId);
 }

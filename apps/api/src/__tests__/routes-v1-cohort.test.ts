@@ -103,9 +103,14 @@ describe('v1CohortsRouter', () => {
     expect(got.status).toBe(200);
     expect(getPublicApiCohortService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID });
     expect(updated.status).toBe(200);
-    expect(updatePublicApiCohortService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID }, { name: 'Renamed' });
+    expect(updatePublicApiCohortService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID },
+      { name: 'Renamed' }
+    );
     expect(deleted.status).toBe(200);
-    expect(deletePublicApiCohortService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID });
+    expect(deletePublicApiCohortService).toHaveBeenCalledWith('org-1', 'actor-1', { cohortId: COHORT_ID });
   });
 
   it('routes nested /members to the member router, not the /:cohortId handlers', async () => {
@@ -137,17 +142,19 @@ describe('v1CohortsRouter', () => {
     expect(added.status).toBe(201);
     expect(addPublicApiCohortMembersService).toHaveBeenCalledWith(
       'org-1',
+      'actor-1',
       { cohortId: COHORT_ID },
       { members: [{ email: 'student@example.com', roleId: 3 }] }
     );
     expect(updated.status).toBe(200);
     expect(updatePublicApiCohortMemberService).toHaveBeenCalledWith(
       'org-1',
+      'actor-1',
       { cohortId: COHORT_ID, memberId: MEMBER_ID },
       { roleId: 2 }
     );
     expect(removed.status).toBe(200);
-    expect(removePublicApiCohortMemberService).toHaveBeenCalledWith('org-1', {
+    expect(removePublicApiCohortMemberService).toHaveBeenCalledWith('org-1', 'actor-1', {
       cohortId: COHORT_ID,
       memberId: MEMBER_ID
     });
@@ -177,11 +184,12 @@ describe('v1CohortsRouter', () => {
     expect(added.status).toBe(201);
     expect(addPublicApiCohortCourseService).toHaveBeenCalledWith(
       'org-1',
+      'actor-1',
       { cohortId: COHORT_ID },
       { courseId: COURSE_ID }
     );
     expect(removed.status).toBe(200);
-    expect(removePublicApiCohortCourseService).toHaveBeenCalledWith('org-1', {
+    expect(removePublicApiCohortCourseService).toHaveBeenCalledWith('org-1', 'actor-1', {
       cohortId: COHORT_ID,
       courseId: COURSE_ID
     });

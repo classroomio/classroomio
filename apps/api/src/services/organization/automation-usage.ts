@@ -14,6 +14,7 @@ import {
   getMcpAutomationCategory,
   canUsePublicApi,
   getMcpAutomationLimits,
+  type TAutomationUsageCategory,
   type TMcpToolName
 } from '@cio/utils/plans';
 
@@ -131,13 +132,18 @@ export async function getOrganizationAutomationUsageSummaryService(
   };
 }
 
-export async function assertMcpAutomationUsageAllowed(
+/**
+ * Category-level rate limiting, shared by the tool-name entry point below and
+ * by /v1 (which has no per-tool identity to key off of — one automation key
+ * can be hit by a plain API call or by any MCP tool, so /v1 derives a
+ * category straight from the HTTP method instead).
+ */
+export async function assertMcpAutomationUsageAllowedForCategory(
   automationKey: TOrganizationApiKey,
-  toolName: TMcpToolName
+  category: TAutomationUsageCategory
 ): Promise<void> {
   const planName = await getOrganizationPlanName(automationKey.organizationId);
   const limits = getMcpAutomationLimits(planName);
-  const category = getMcpAutomationCategory(toolName);
   const now = new Date();
   const minuteWindowStart = getMinuteWindowStart(now).toISOString();
 
@@ -165,18 +171,34 @@ export async function assertMcpAutomationUsageAllowed(
   }
 }
 
-export async function recordMcpAutomationUsage(
+export async function assertMcpAutomationUsageAllowed(
   automationKey: TOrganizationApiKey,
-  toolName: TMcpToolName,
+  toolName: TMcpToolName
+): Promise<void> {
+  return assertMcpAutomationUsageAllowedForCategory(automationKey, getMcpAutomationCategory(toolName));
+}
+
+export async function recordMcpAutomationUsageForAction(
+  automationKey: TOrganizationApiKey,
+  action: string,
+  category: TAutomationUsageCategory,
   metadata: Record<string, unknown> = {}
 ): Promise<void> {
   await createOrganizationAutomationUsage({
     organizationId: automationKey.organizationId,
     organizationApiKeyId: automationKey.id,
     type: automationKey.type,
-    action: toolName,
-    category: getMcpAutomationCategory(toolName),
+    action,
+    category,
     creditsConsumed: 0,
     metadata
   });
+}
+
+export async function recordMcpAutomationUsage(
+  automationKey: TOrganizationApiKey,
+  toolName: TMcpToolName,
+  metadata: Record<string, unknown> = {}
+): Promise<void> {
+  return recordMcpAutomationUsageForAction(automationKey, toolName, getMcpAutomationCategory(toolName), metadata);
 }

@@ -139,9 +139,10 @@ export const v1CohortGoalsRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const goal = await updatePublicApiCohortGoalService(orgId, params, payload);
+        const goal = await updatePublicApiCohortGoalService(orgId, actorId, params, payload);
 
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
@@ -165,8 +166,9 @@ export const v1CohortGoalsRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const goal = await deletePublicApiCohortGoalService(orgId, params);
+        const goal = await deletePublicApiCohortGoalService(orgId, actorId, params);
 
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
@@ -190,8 +192,9 @@ export const v1CohortGoalsRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const goal = await archivePublicApiCohortGoalService(orgId, params);
+        const goal = await archivePublicApiCohortGoalService(orgId, actorId, params);
 
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {

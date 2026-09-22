@@ -81,9 +81,10 @@ export const v1CohortCoursesRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const result = await addPublicApiCohortCourseService(orgId, params, payload);
+        const result = await addPublicApiCohortCourseService(orgId, actorId, params, payload);
 
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
@@ -107,8 +108,9 @@ export const v1CohortCoursesRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const result = await removePublicApiCohortCourseService(orgId, params);
+        const result = await removePublicApiCohortCourseService(orgId, actorId, params);
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {

@@ -82,9 +82,10 @@ export const v1CohortMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const result = await addPublicApiCohortMembersService(orgId, params, payload);
+        const result = await addPublicApiCohortMembersService(orgId, actorId, params, payload);
 
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
@@ -110,9 +111,10 @@ export const v1CohortMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const member = await updatePublicApiCohortMemberService(orgId, params, payload);
+        const member = await updatePublicApiCohortMemberService(orgId, actorId, params, payload);
 
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
@@ -136,8 +138,9 @@ export const v1CohortMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const member = await removePublicApiCohortMemberService(orgId, params);
+        const member = await removePublicApiCohortMemberService(orgId, actorId, params);
 
         return c.json({ success: true, data: member }, 200);
       } catch (error) {

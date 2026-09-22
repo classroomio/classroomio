@@ -134,9 +134,10 @@ export const v1CohortsRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const cohort = await updatePublicApiCohortService(orgId, params, payload);
+        const cohort = await updatePublicApiCohortService(orgId, actorId, params, payload);
 
         return c.json({ success: true, data: cohort }, 200);
       } catch (error) {
@@ -160,8 +161,9 @@ export const v1CohortsRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const cohort = await deletePublicApiCohortService(orgId, params);
+        const cohort = await deletePublicApiCohortService(orgId, actorId, params);
 
         return c.json({ success: true, data: cohort }, 200);
       } catch (error) {

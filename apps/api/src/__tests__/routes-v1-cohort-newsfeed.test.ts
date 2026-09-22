@@ -122,6 +122,7 @@ describe('v1CohortsRouter newsfeed routes', () => {
     expect(updated.status).toBe(200);
     expect(updatePublicApiCohortNewsfeedService).toHaveBeenCalledWith(
       'org-1',
+      'actor-1',
       { cohortId: COHORT_ID, feedId: FEED_ID },
       { content: 'Edited' }
     );
@@ -141,7 +142,7 @@ describe('v1CohortsRouter newsfeed routes', () => {
     const response = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}`, { method: 'DELETE' });
 
     expect(response.status).toBe(200);
-    expect(deletePublicApiCohortNewsfeedService).toHaveBeenCalledWith('org-1', {
+    expect(deletePublicApiCohortNewsfeedService).toHaveBeenCalledWith('org-1', 'actor-1', {
       cohortId: COHORT_ID,
       feedId: FEED_ID
     });
@@ -183,7 +184,7 @@ describe('v1CohortsRouter newsfeed routes', () => {
     });
 
     expect(response.status).toBe(200);
-    expect(deletePublicApiCohortNewsfeedCommentService).toHaveBeenCalledWith('org-1', {
+    expect(deletePublicApiCohortNewsfeedCommentService).toHaveBeenCalledWith('org-1', 'actor-1', {
       cohortId: COHORT_ID,
       feedId: FEED_ID,
       commentId: COMMENT_ID

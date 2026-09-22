@@ -130,13 +130,20 @@ describe('v1CohortsRouter goal routes', () => {
     expect(updated.status).toBe(200);
     expect(updatePublicApiCohortGoalService).toHaveBeenCalledWith(
       'org-1',
+      'actor-1',
       { cohortId: COHORT_ID, goalId: GOAL_ID },
       { title: 'Renamed' }
     );
     expect(archived.status).toBe(200);
-    expect(archivePublicApiCohortGoalService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID, goalId: GOAL_ID });
+    expect(archivePublicApiCohortGoalService).toHaveBeenCalledWith('org-1', 'actor-1', {
+      cohortId: COHORT_ID,
+      goalId: GOAL_ID
+    });
     expect(deleted.status).toBe(200);
-    expect(deletePublicApiCohortGoalService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID, goalId: GOAL_ID });
+    expect(deletePublicApiCohortGoalService).toHaveBeenCalledWith('org-1', 'actor-1', {
+      cohortId: COHORT_ID,
+      goalId: GOAL_ID
+    });
   });
 
   it('rejects a goal body that fails the type-specific refine rules', async () => {
