@@ -19,12 +19,16 @@ import {
   lessonCompletion,
   organizationmember,
   profile,
+  sql,
   submission,
   user
 } from '@db/drizzle';
 import { getCourseCompletionStatsForProfile } from '@db/queries/learning-path/progress';
 import { formatCertificateId } from '@db/queries/learning-path/certificate';
 import { seedReactCoursePeopleProgress } from '@db/utils/seed/reactCoursePeopleProgress';
+import { HIPAA_COURSE_ID, HIPAA_GROUP_ID, SOC2_COURSE_ID, SOC2_GROUP_ID } from '@db/utils/seed/compliance';
+
+import { randomUUID } from 'node:crypto';
 
 import { ROLE } from '@cio/utils/constants';
 
@@ -37,6 +41,14 @@ interface SeedLearningPathsArgs {
   reactCourseId: string;
   pandasCourseId: string;
   existingStudentUserId: string;
+  enterpriseOrgId: string;
+  enterpriseAdminUserId: string;
+  enterpriseStudentUserId: string;
+  earlyAdopterOrgId: string;
+  earlyAdopterAdminUserId: string;
+  earlyAdopterStudentUserId: string;
+  earlyAdopterGroupId: string;
+  earlyAdopterCourseId: string;
   selectedOrganizationId?: string;
 }
 
@@ -1410,9 +1422,25 @@ function buildPathInsertValues(pathSeed: PathSeed, testOrgId: string, now: Date)
 /** True when the demo course content (lessons/exercises) required by the path cache is present. */
 async function demoCourseContentExists(courseIds: string[]): Promise<boolean> {
   const lessonRows = await db.select({ id: lesson.id }).from(lesson).where(inArray(lesson.courseId, courseIds));
-  const exerciseRows = await db.select({ id: exercise.id }).from(exercise).where(inArray(exercise.courseId, courseIds));
 
-  return lessonRows.length > 0 && exerciseRows.length > 0;
+  if (lessonRows.length === 0) {
+    return false;
+  }
+
+  // Resolve exercises through their lessons: seeded exercise rows predate the
+  // denormalized exercise.courseId column, so filtering on it directly would
+  // report no content even when lessons and quizzes exist.
+  const exerciseRows = await db
+    .select({ id: exercise.id })
+    .from(exercise)
+    .where(
+      inArray(
+        exercise.lessonId,
+        lessonRows.map((lessonRow) => lessonRow.id)
+      )
+    );
+
+  return exerciseRows.length > 0;
 }
 
 function isoDaysAgo(now: Date, days: number): string {
@@ -1833,8 +1861,18 @@ async function ensureGroupMember(
     return existingGroupMember.id;
   }
 
+  // The fixed fallback id can already belong to a different (group, profile)
+  // pair seeded earlier in this run — use a random id instead of violating the
+  // primary key.
+  const idTakenRows = await db
+    .select({ id: groupmember.id })
+    .from(groupmember)
+    .where(eq(groupmember.id, groupMemberId))
+    .limit(1);
+  const idToUse = idTakenRows.length > 0 ? randomUUID() : groupMemberId;
+
   const newGroupMember: TNewGroupmember = {
-    id: groupMemberId,
+    id: idToUse,
     groupId,
     roleId: ROLE.STUDENT,
     profileId,
@@ -1843,14 +1881,17 @@ async function ensureGroupMember(
 
   await db.insert(groupmember).values(newGroupMember);
 
-  return groupMemberId;
+  return idToUse;
 }
 
 /**
- * Seeds learning-path demo data for the udemy-test organization:
- * two published paths (sequential + non-sequential), a draft path, members with
- * truth-backed progress caches, LEARNING_PATH enrollment grants, and a path
- * certificate for the member who finished the sequential path.
+ * Seeds learning-path demo data:
+ * - udemy-test: the full tableau (sequential + non-sequential published paths, a
+ *   draft path, members with truth-backed progress caches, LEARNING_PATH
+ *   enrollment grants, and a path certificate for the member who finished the
+ *   sequential path).
+ * - every other demo org with courses: one small published path so no seeded
+ *   org ends up with courses but no paths.
  */
 export async function seedLearningPaths({
   testOrgId,
@@ -1859,22 +1900,97 @@ export async function seedLearningPaths({
   reactCourseId,
   pandasCourseId,
   existingStudentUserId,
+  enterpriseOrgId,
+  enterpriseAdminUserId,
+  enterpriseStudentUserId,
+  earlyAdopterOrgId,
+  earlyAdopterAdminUserId,
+  earlyAdopterStudentUserId,
+  earlyAdopterGroupId,
+  earlyAdopterCourseId,
   selectedOrganizationId
 }: SeedLearningPathsArgs) {
-  if (selectedOrganizationId && selectedOrganizationId !== testOrgId) {
-    console.log('⏭️  Skipping learning paths: demo paths live in the udemy-test organization.');
+  const now = new Date();
 
+  // The other demo orgs are independent of the udemy prerequisites below, so
+  // seed them first: every org that received courses gets a path.
+  if (!selectedOrganizationId || selectedOrganizationId === enterpriseOrgId) {
+    await seedMinimalPath(
+      {
+        pathId: '7e000001-0000-4000-8000-000000000001',
+        publicId: 'Cp3Xy7qZ',
+        slug: 'compliance-foundations',
+        name: 'Compliance Foundations',
+        description: 'A short sequential path pairing the mandatory HIPAA refresher with SOC 2 security basics.',
+        sequentialUnlock: true,
+        organizationId: enterpriseOrgId,
+        adminUserId: enterpriseAdminUserId,
+        studentUserId: enterpriseStudentUserId,
+        tutorMemberId: '7e000001-0000-4000-8000-000000000021',
+        studentMemberId: '7e000001-0000-4000-8000-000000000022',
+        courses: [
+          {
+            pathCourseId: '7e000001-0000-4000-8000-000000000011',
+            courseId: HIPAA_COURSE_ID,
+            groupId: HIPAA_GROUP_ID,
+            groupMemberFallbackId: '7e000001-0000-4000-8000-000000000031',
+            order: 1,
+            outcomes: ['Handle PHI according to HIPAA rules']
+          },
+          {
+            pathCourseId: '7e000001-0000-4000-8000-000000000012',
+            courseId: SOC2_COURSE_ID,
+            groupId: SOC2_GROUP_ID,
+            groupMemberFallbackId: '7e000001-0000-4000-8000-000000000032',
+            order: 2,
+            outcomes: ['Apply SOC 2 security fundamentals']
+          }
+        ]
+      },
+      now
+    );
+  }
+
+  if (!selectedOrganizationId || selectedOrganizationId === earlyAdopterOrgId) {
+    await seedMinimalPath(
+      {
+        pathId: '8a000001-0000-4000-8000-000000000001',
+        publicId: 'Sk5Pm9wQ',
+        slug: 'product-management-essentials',
+        name: 'Product Management Essentials',
+        description: 'A starter path built around Product Management Fundamentals.',
+        sequentialUnlock: false,
+        organizationId: earlyAdopterOrgId,
+        adminUserId: earlyAdopterAdminUserId,
+        studentUserId: earlyAdopterStudentUserId,
+        tutorMemberId: '8a000001-0000-4000-8000-000000000021',
+        studentMemberId: '8a000001-0000-4000-8000-000000000022',
+        courses: [
+          {
+            pathCourseId: '8a000001-0000-4000-8000-000000000011',
+            courseId: earlyAdopterCourseId,
+            groupId: earlyAdopterGroupId,
+            groupMemberFallbackId: '8a000001-0000-4000-8000-000000000031',
+            order: 1,
+            outcomes: ['Ship products with core PM practices']
+          }
+        ]
+      },
+      now
+    );
+  }
+
+  if (selectedOrganizationId && selectedOrganizationId !== testOrgId) {
     return;
   }
 
-  const now = new Date();
   const courseRows = await db
     .select()
     .from(course)
     .where(inArray(course.id, [mvcCourseId, reactCourseId, pandasCourseId]));
 
   if (courseRows.length < 3) {
-    console.log('⏭️  Skipping learning paths: seed the udemy-test courses first (pnpm seed --courses).');
+    console.log('⏭️  Skipping udemy learning paths: seed the udemy-test courses first (pnpm seed --courses).');
 
     return;
   }
@@ -1894,7 +2010,7 @@ export async function seedLearningPaths({
   );
 
   if (missingGroups.length > 0) {
-    console.log(`⏭️  Skipping learning paths: courses are missing groups (${missingGroups.join(', ')}).`);
+    console.log(`⏭️  Skipping udemy learning paths: courses are missing groups (${missingGroups.join(', ')}).`);
 
     return;
   }
@@ -2011,8 +2127,14 @@ export async function seedLearningPaths({
     testing: EXTRA_PATH_COURSES[2]!.groupId
   };
 
+  // Seeded exercise rows predate the denormalized exercise.courseId column, but
+  // the app's per-course progress stats resolve exercises through it.
+  await backfillExerciseCourseIds([mvcCourseId, reactCourseId, pandasCourseId]);
+
   if (!(await demoCourseContentExists([mvcCourseId, reactCourseId, pandasCourseId]))) {
-    console.log('⏭️  Skipping learning paths: seed lessons and exercises first (pnpm seed --lessons --exercises).');
+    console.log(
+      '⏭️  Skipping udemy learning paths: seed lessons and exercises first (pnpm seed --lessons --exercises).'
+    );
 
     return;
   }
@@ -2380,7 +2502,13 @@ export async function seedLearningPaths({
 
   const memberedPathPlans = [
     { pathSeed: bootcampSeed, members: bootcampMembers, courses: bootcampCourses },
-    { pathSeed: dataSkillsSeed, members: dataSkillsMembers, courses: dataSkillsCourses }
+    { pathSeed: dataSkillsSeed, members: dataSkillsMembers, courses: dataSkillsCourses },
+    {
+      pathSeed: showcaseSeed,
+      members: showcaseMembers,
+      courses: pathCoursesByPathId.get(showcaseSeed.id) ?? []
+    },
+    { pathSeed: proSeed, members: proMembers, courses: pathCoursesByPathId.get(proSeed.id) ?? [] }
   ];
 
   let grantCount = 0;
@@ -2429,9 +2557,270 @@ export async function seedLearningPaths({
     .where(
       and(
         eq(courseEnrollmentGrant.source, 'LEARNING_PATH'),
-        inArray(courseEnrollmentGrant.learningPathId, [bootcampSeed.id, dataSkillsSeed.id])
+        inArray(courseEnrollmentGrant.learningPathId, [bootcampSeed.id, dataSkillsSeed.id, showcaseSeed.id, proSeed.id])
       )
     );
 
   console.log(`   ✓ Recorded ${grantCount} new LEARNING_PATH enrollment grant(s) (${totalPathGrants.length} total)`);
+}
+
+// ─── Minimal paths for the other demo orgs ───────────────────────────────
+// One small published path per course-bearing demo org (tutor + student
+// members, NOT_STARTED caches, LEARNING_PATH grants). Fixed ids follow the
+// same convention as the udemy tableau above.
+
+interface MinimalPathCoursePlan {
+  pathCourseId: string;
+  courseId: string;
+  groupId: string;
+  groupMemberFallbackId: string;
+  order: number;
+  outcomes: string[];
+}
+
+interface MinimalPathPlan {
+  pathId: string;
+  publicId: string;
+  slug: string;
+  name: string;
+  description: string;
+  sequentialUnlock: boolean;
+  organizationId: string;
+  adminUserId: string;
+  studentUserId: string;
+  tutorMemberId: string;
+  studentMemberId: string;
+  courses: MinimalPathCoursePlan[];
+}
+
+/** Backfills the denormalized exercise.courseId from the parent lesson. */
+async function backfillExerciseCourseIds(courseIds: string[]) {
+  await db.execute(sql`
+    UPDATE exercise AS e
+    SET course_id = l.course_id
+    FROM lesson AS l
+    WHERE e.lesson_id = l.id
+      AND l.course_id IN (${sql.join(courseIds, sql`, `)})
+      AND e.course_id IS NULL
+  `);
+}
+
+async function seedMinimalPath(plan: MinimalPathPlan, now: Date) {
+  const courseIds = plan.courses.map((plannedCourse) => plannedCourse.courseId);
+  const courseRows = await db.select({ id: course.id }).from(course).where(inArray(course.id, courseIds));
+
+  if (courseRows.length < courseIds.length) {
+    console.log(`⏭️  Skipping ${plan.slug}: seed this organization's courses first.`);
+
+    return;
+  }
+
+  const profileRows = await db
+    .select({ id: profile.id })
+    .from(profile)
+    .where(inArray(profile.id, [plan.adminUserId, plan.studentUserId]));
+
+  if (profileRows.length < 2) {
+    console.log(`⏭️  Skipping ${plan.slug}: seed users and profiles first.`);
+
+    return;
+  }
+
+  await backfillExerciseCourseIds(courseIds);
+
+  await db
+    .insert(learningPath)
+    .values({
+      id: plan.pathId,
+      publicId: plan.publicId,
+      organizationId: plan.organizationId,
+      name: plan.name,
+      slug: plan.slug,
+      description: plan.description,
+      coverImage: null,
+      isPublished: true,
+      difficulty: 'BEGINNER' as const,
+      estimatedDurationMinutes: 120,
+      cost: 0,
+      currency: 'USD',
+      showSavings: false,
+      sequentialUnlock: plan.sequentialUnlock,
+      selfEnrollment: true,
+      autoEnroll: true,
+      certificateEnabled: false,
+      certificateTitle: null,
+      certificateIssuer: null,
+      certificateDesign: {},
+      landingPage: {
+        headline: plan.name,
+        subheadline: plan.description,
+        visitorAccess: 'preview' as const
+      },
+      courseOrderSetAt: isoDaysAgo(now, 10),
+      createdByProfileId: null,
+      createdAt: isoDaysAgo(now, 10),
+      updatedAt: isoDaysAgo(now, 2)
+    })
+    .onConflictDoNothing();
+
+  for (const plannedCourse of plan.courses) {
+    await db
+      .insert(learningPathCourse)
+      .values({
+        id: plannedCourse.pathCourseId,
+        learningPathId: plan.pathId,
+        courseId: plannedCourse.courseId,
+        order: plannedCourse.order,
+        outcomes: plannedCourse.outcomes
+      })
+      .onConflictDoNothing();
+  }
+
+  const persistedCourses = await db
+    .select({
+      id: learningPathCourse.id,
+      courseId: learningPathCourse.courseId,
+      order: learningPathCourse.order
+    })
+    .from(learningPathCourse)
+    .where(and(eq(learningPathCourse.learningPathId, plan.pathId), isNull(learningPathCourse.removedAt)))
+    .orderBy(learningPathCourse.order);
+
+  const lessonRows = await db
+    .select({ id: lesson.id, courseId: lesson.courseId })
+    .from(lesson)
+    .where(inArray(lesson.courseId, courseIds));
+  const lessonIdsByCourseId = new Map<string, string[]>();
+
+  for (const lessonRow of lessonRows) {
+    const lessonIds = lessonIdsByCourseId.get(lessonRow.courseId) ?? [];
+    lessonIds.push(lessonRow.id);
+    lessonIdsByCourseId.set(lessonRow.courseId, lessonIds);
+  }
+
+  const exerciseCountByLessonId = new Map<string, number>();
+  const allLessonIds = lessonRows.map((lessonRow) => lessonRow.id);
+
+  if (allLessonIds.length > 0) {
+    const exerciseRows = await db
+      .select({ lessonId: exercise.lessonId })
+      .from(exercise)
+      .where(inArray(exercise.lessonId, allLessonIds));
+
+    for (const exerciseRow of exerciseRows) {
+      if (!exerciseRow.lessonId) {
+        continue;
+      }
+
+      exerciseCountByLessonId.set(exerciseRow.lessonId, (exerciseCountByLessonId.get(exerciseRow.lessonId) ?? 0) + 1);
+    }
+  }
+
+  const firstCourseId = persistedCourses[0]?.courseId ?? null;
+  const memberPlans = [
+    { id: plan.tutorMemberId, profileId: plan.adminUserId, roleId: ROLE.TUTOR, enrolledDaysAgo: 30 },
+    { id: plan.studentMemberId, profileId: plan.studentUserId, roleId: ROLE.STUDENT, enrolledDaysAgo: 20 }
+  ];
+
+  for (const memberPlan of memberPlans) {
+    await db
+      .insert(learningPathMember)
+      .values({
+        id: memberPlan.id,
+        learningPathId: plan.pathId,
+        profileId: memberPlan.profileId,
+        email: null,
+        roleId: memberPlan.roleId,
+        enrolledAt: isoDaysAgo(now, memberPlan.enrolledDaysAgo),
+        status: 'NOT_STARTED',
+        progressPercent: 0,
+        completedCourseCount: 0,
+        currentCourseId: firstCourseId
+      })
+      .onConflictDoNothing();
+  }
+
+  const persistedMembers = await db
+    .select({ id: learningPathMember.id, profileId: learningPathMember.profileId })
+    .from(learningPathMember)
+    .where(eq(learningPathMember.learningPathId, plan.pathId));
+  const memberIdByProfileId = new Map(
+    persistedMembers
+      .filter((persistedMember) => persistedMember.profileId)
+      .map((persistedMember) => [persistedMember.profileId as string, persistedMember.id])
+  );
+
+  for (const memberPlan of memberPlans) {
+    // Reuse the row that is already there (fixed ids differ only on a hand-created membership).
+    const memberId = memberIdByProfileId.get(memberPlan.profileId);
+
+    if (!memberId) {
+      continue;
+    }
+
+    for (const persistedCourse of persistedCourses) {
+      const isFirstCourse = persistedCourse.courseId === firstCourseId;
+      const status = isFirstCourse || !plan.sequentialUnlock ? 'NOT_STARTED' : 'LOCKED';
+      const courseLessonIds = lessonIdsByCourseId.get(persistedCourse.courseId) ?? [];
+      const lessonsTotal = courseLessonIds.length;
+      const exercisesTotal = courseLessonIds.reduce(
+        (total, lessonId) => total + (exerciseCountByLessonId.get(lessonId) ?? 0),
+        0
+      );
+
+      await db
+        .insert(learningPathMemberCourse)
+        .values({
+          learningPathMemberId: memberId,
+          learningPathCourseId: persistedCourse.id,
+          status,
+          progressPercent: 0,
+          lessonsCompleted: 0,
+          lessonsTotal,
+          exercisesCompleted: 0,
+          exercisesTotal,
+          unlockedAt: status === 'LOCKED' ? null : isoDaysAgo(now, memberPlan.enrolledDaysAgo - 1),
+          startedAt: null,
+          completedAt: null
+        })
+        .onConflictDoUpdate({
+          target: [learningPathMemberCourse.learningPathMemberId, learningPathMemberCourse.learningPathCourseId],
+          set: {
+            status,
+            progressPercent: 0,
+            lessonsTotal,
+            exercisesTotal,
+            updatedAt: now.toISOString()
+          }
+        });
+    }
+  }
+
+  let grantCount = 0;
+
+  for (const plannedCourse of plan.courses) {
+    const groupMemberId = await ensureGroupMember(
+      plannedCourse.groupId,
+      plan.studentUserId,
+      plannedCourse.groupMemberFallbackId,
+      now
+    );
+    const insertedGrants = await db
+      .insert(courseEnrollmentGrant)
+      .values({
+        groupmemberId: groupMemberId,
+        courseId: plannedCourse.courseId,
+        profileId: plan.studentUserId,
+        source: 'LEARNING_PATH' as const,
+        learningPathId: plan.pathId,
+        grantedByProfileId: plan.adminUserId
+      })
+      .onConflictDoNothing()
+      .returning({ id: courseEnrollmentGrant.id });
+
+    grantCount += insertedGrants.length;
+  }
+
+  console.log(`   ✓ Seeded learning path ${plan.slug} with ${persistedCourses.length} course(s)`);
+  console.log(`   ✓ Recorded ${grantCount} new LEARNING_PATH enrollment grant(s) for ${plan.slug}`);
 }

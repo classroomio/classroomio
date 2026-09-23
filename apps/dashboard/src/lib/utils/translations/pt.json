@@ -5626,20 +5626,24 @@
       "members_added": "Alunos adicionados ao caminho",
       "member_removed": "Aluno removido do caminho",
       "tutors_added": "Tutores adicionados ao caminho",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Tutor adicionado à trilha",
+      "tutor_removed": "Tutor removido da trilha"
     },
     "analytics": {
       "title": "Análise",
       "subtitle": "Como os alunos estão avançando no caminho.",
       "empty": "Ainda não há dados. Inscreva os alunos e eles começarão a aparecer aqui.",
+      "empty_desc": "Inscreva alunos nesta trilha e o progresso deles aparecerá aqui.",
       "stuck": {
         "title": "Onde os alunos ficam presos",
         "subtitle": "Lições e exercícios que estão bloqueando a maioria dos alunos no momento.",
         "badge": "{count} travado",
         "lesson_desc": "{count} {count, plural, =1 {aluno} other {alunos}} parou nesta lição.",
         "exercise_desc": "{count} {count, plural, =1 {aluno} other {alunos}} estão com este exercício em andamento há mais de 2 semanas.",
-        "empty": "Nenhum aluno está preso no momento. Grande progresso!"
+        "empty": "Nenhum aluno está preso no momento. Grande progresso!",
+        "empty_desc": "Quando os alunos travarem, aparecerão aqui.",
+        "lesson_prefix": "Lição:",
+        "exercise_prefix": "Exercício:"
       },
       "funnel": {
         "title": "Funil do curso",
@@ -5656,11 +5660,17 @@
         "active_desc": "trabalhou nos últimos 14 dias",
         "completion_rate": "Taxa de conclusão",
         "completion_desc": "{completed} de {total} concluído",
-        "avg_time": "Média hora de terminar",
-        "avg_time_desc": "entre conclusões"
+        "avg_time": "Tempo médio para concluir",
+        "avg_time_desc": "entre conclusões",
+        "enrolled_desc": "+{count} este mês",
+        "team_desc": "{count, plural, one {# tutor na equipe da trilha} other {# tutores na equipe da trilha}}",
+        "avg_time_weeks": "{value} sem.",
+        "avg_time_days": "{value} dias"
       },
       "students": {
-        "subtitle": "Progresso do caminho por aluno, curso atual e data de inscrição."
+        "subtitle": "Progresso do caminho por aluno, curso atual e data de inscrição.",
+        "title": "Visão geral do progresso do aluno",
+        "courses_completed": "Cursos concluídos"
       },
       "member": {
         "courses_title": "Cursos neste caminho",
@@ -5673,6 +5683,9 @@
         },
         "export": "Exportar CSV",
         "progress_label": "Progresso do caminho"
+      },
+      "export": {
+        "status": "Status"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Remover aluno",
-        "title_non_student": "Remove member",
+        "title_non_student": "Remover membro",
         "confirm": "Tem certeza de que deseja remover {name} deste roteiro de aprendizagem? Eles manterão o acesso e o progresso do curso.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "Tem certeza que deseja remover {name} desta trilha? Essa pessoa perderá o acesso para gerenciar esta trilha.",
         "cancel": "Cancelar",
         "yes": "Remover"
       },
@@ -5714,11 +5727,6 @@
         "completed": "Concluído"
       },
       "info_title": "Sobre inscrição de caminho"
-    },
-    "roles": {
-      "admin": "Administrador",
-      "tutor": "Tutor",
-      "learner": "Aluno"
     }
   }
 }

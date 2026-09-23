@@ -215,6 +215,38 @@ export async function getMemberById(
 }
 
 /**
+ * Returns every active (non-removed) member of a path with the fields the
+ * course-add backfill needs: row id for progress backfill, profileId/roleId
+ * to auto-enroll student profiles into the new course group.
+ * Unpaginated by design — the paginated member list would silently drop
+ * members on larger paths. Order is unspecified; callers only need the set.
+ */
+export async function listActivePathMemberIds(
+  learningPathId: string,
+  dbClient: DbOrTxClient = db
+): Promise<Array<{ id: string; profileId: string | null; roleId: number }>> {
+  try {
+    const rows = await dbClient
+      .select({
+        id: schema.learningPathMember.id,
+        profileId: schema.learningPathMember.profileId,
+        roleId: schema.learningPathMember.roleId
+      })
+      .from(schema.learningPathMember)
+      .where(
+        and(eq(schema.learningPathMember.learningPathId, learningPathId), isNull(schema.learningPathMember.removedAt))
+      );
+
+    return rows;
+  } catch (error) {
+    console.error('listActivePathMemberIds error:', error);
+    throw new Error(
+      `Failed to list active members for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Lists active members in a learning path with profile details.
  * Returns paginated result with total count.
  */
@@ -274,7 +306,8 @@ export async function listLearningPathMembers(
           schema.learningPathCourse,
           and(
             eq(schema.learningPathMember.currentCourseId, schema.learningPathCourse.courseId),
-            eq(schema.learningPathCourse.learningPathId, learningPathId)
+            eq(schema.learningPathCourse.learningPathId, learningPathId),
+            isNull(schema.learningPathCourse.removedAt)
           )
         )
         .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
@@ -344,7 +377,8 @@ export async function getPathMemberDetail(
         schema.learningPathCourse,
         and(
           eq(schema.learningPathMember.currentCourseId, schema.learningPathCourse.courseId),
-          eq(schema.learningPathCourse.learningPathId, learningPathId)
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          isNull(schema.learningPathCourse.removedAt)
         )
       )
       .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))

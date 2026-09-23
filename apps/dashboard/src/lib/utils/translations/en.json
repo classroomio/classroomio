@@ -5686,6 +5686,7 @@
         "lesson_desc": "{count} {count, plural, =1 {learner} other {learners}} stopped at this lesson.",
         "exercise_desc": "{count} {count, plural, =1 {learner} other {learners}} have had this exercise in progress for over 2 weeks.",
         "empty": "No learners are currently stuck. Great progress!",
+        "empty_desc": "When learners get stuck, they'll show up here.",
         "lesson_prefix": "Lesson:",
         "exercise_prefix": "Exercise:",
         "showing": "Showing {start} to {end} of {total} items",

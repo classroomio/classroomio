@@ -3336,9 +3336,9 @@ export const inviteLink = pgTable(
     check(
       'invite_link_resource_target_check',
       sql`(
-        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL AND ${table.learningPathId} IS NULL)
-        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.learningPathId} IS NULL)
-        OR (${table.resourceType} = 'LEARNING_PATH' AND ${table.learningPathId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.cohortId} IS NULL)
+        (${table.resourceType}::text = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL AND ${table.learningPathId} IS NULL)
+        OR (${table.resourceType}::text = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.learningPathId} IS NULL)
+        OR (${table.resourceType}::text = 'LEARNING_PATH' AND ${table.learningPathId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.cohortId} IS NULL)
       )`
     ),
     index('idx_invite_link_organization_id').on(table.organizationId)

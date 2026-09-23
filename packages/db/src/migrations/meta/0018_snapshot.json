@@ -6612,7 +6612,7 @@
       "checkConstraints": {
         "invite_link_resource_target_check": {
           "name": "invite_link_resource_target_check",
-          "value": "(\n        (\"invite_link\".\"resource_type\" = 'COURSE' AND \"invite_link\".\"course_id\" IS NOT NULL AND \"invite_link\".\"cohort_id\" IS NULL AND \"invite_link\".\"learning_path_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\" = 'COHORT' AND \"invite_link\".\"cohort_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL AND \"invite_link\".\"learning_path_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\" = 'LEARNING_PATH' AND \"invite_link\".\"learning_path_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL AND \"invite_link\".\"cohort_id\" IS NULL)\n      )"
+          "value": "(\n        (\"invite_link\".\"resource_type\"::text = 'COURSE' AND \"invite_link\".\"course_id\" IS NOT NULL AND \"invite_link\".\"cohort_id\" IS NULL AND \"invite_link\".\"learning_path_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\"::text = 'COHORT' AND \"invite_link\".\"cohort_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL AND \"invite_link\".\"learning_path_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\"::text = 'LEARNING_PATH' AND \"invite_link\".\"learning_path_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL AND \"invite_link\".\"cohort_id\" IS NULL)\n      )"
         }
       },
       "isRLSEnabled": false

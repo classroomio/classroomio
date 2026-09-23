@@ -23,6 +23,15 @@ class PathMembersApi extends BaseApiWithErrors {
   memberDetail = $state<PathMemberDetail | null>(null);
   isLoadingMemberDetail = $state(false);
   loadErrorMemberDetail = $state(false);
+  private memberDetailRequestSeq = 0;
+
+  /**
+   * The viewer's own path role, resolved independently of the paginated,
+   * filtered member table (which may not contain the viewer's row).
+   * `undefined` = not yet resolved, `null` = no active membership.
+   */
+  viewerRole = $state<number | null | undefined>(undefined);
+  private viewerRoleRequestSeq = 0;
 
   async listMembers(pathId: string, options: PathMembersListOptions) {
     const seq = ++this.membersRequestSeq;
@@ -88,6 +97,7 @@ class PathMembersApi extends BaseApiWithErrors {
   }
 
   async getMemberDetail(pathId: string, personId: string) {
+    const seq = ++this.memberDetailRequestSeq;
     // Clear first so member-to-member navigation shows the loader instead of
     // the previous member's ring briefly updating to the new values.
     this.memberDetail = null;
@@ -101,14 +111,45 @@ class PathMembersApi extends BaseApiWithErrors {
         }),
       logContext: 'getting path member detail',
       onSuccess: (result) => {
+        if (seq !== this.memberDetailRequestSeq) return;
         this.memberDetail = result.data;
       },
       onError: () => {
+        if (seq !== this.memberDetailRequestSeq) return;
         this.memberDetail = null;
         this.loadErrorMemberDetail = true;
       }
     });
-    this.isLoadingMemberDetail = false;
+    if (seq === this.memberDetailRequestSeq) {
+      this.isLoadingMemberDetail = false;
+    }
+  }
+
+  /**
+   * Resolves the viewer's own active path role without depending on the
+   * currently displayed member page (pagination/search/role filters can
+   * exclude the viewer's row). Uses the member-detail endpoint, which is
+   * already authorized by `assertCanManageLearningPath`.
+   */
+  async fetchViewerRole(pathId: string, profileId: string) {
+    const seq = ++this.viewerRoleRequestSeq;
+    this.viewerRole = undefined;
+
+    await this.execute<GetPathMemberDetailRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['members'][':personId'].$get({
+          param: { pathId, personId: profileId }
+        }),
+      logContext: 'getting path viewer role',
+      onSuccess: (result) => {
+        if (seq !== this.viewerRoleRequestSeq) return;
+        this.viewerRole = Number(result.data.member.roleId);
+      },
+      onError: () => {
+        if (seq !== this.viewerRoleRequestSeq) return;
+        this.viewerRole = null;
+      }
+    });
   }
 }
 

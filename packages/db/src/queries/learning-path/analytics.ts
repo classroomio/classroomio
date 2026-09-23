@@ -106,7 +106,7 @@ export async function getPathAnalyticsSummary(
       return {
         enrolled: 0,
         newThisMonth: 0,
-        tutorsCount: 0,
+        tutorsCount: Number(tutorsRows[0]?.count ?? 0),
         activeLearners: 0,
         completionRate: 0,
         completedCount: 0,
@@ -349,7 +349,8 @@ export async function getPathAnalyticsStudents(
         schema.learningPathCourse,
         and(
           eq(schema.learningPathMember.currentCourseId, schema.learningPathCourse.courseId),
-          eq(schema.learningPathCourse.learningPathId, learningPathId)
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          isNull(schema.learningPathCourse.removedAt)
         )
       )
       .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
@@ -465,16 +466,14 @@ export async function getStuckItems(
           'exercise' AS item_type,
           ex.id AS item_id,
           ex.title AS item_title,
-          COALESCE(ex.course_id, l_parent.course_id) AS course_id,
-          COALESCE(cs.order, cs_parent.order, 999999) AS section_order,
-          COALESCE(ex.order, l_parent.order, 0) AS item_order,
+          ex.course_id,
+          COALESCE(cs.order, 999999) AS section_order,
+          COALESCE(ex.order, 0) AS item_order,
           CASE WHEN ex.lesson_id IS NOT NULL THEN 1 ELSE 0 END AS sub_order,
-          COALESCE(l_parent.created_at, ex.created_at) AS item_created_at
+          ex.created_at AS item_created_at
         FROM exercise ex
-        LEFT JOIN lesson l_parent ON l_parent.id = ex.lesson_id
         LEFT JOIN course_section cs ON cs.id = ex.section_id
-        LEFT JOIN course_section cs_parent ON cs_parent.id = l_parent.section_id
-        WHERE COALESCE(ex.course_id, l_parent.course_id) IN (SELECT course_id FROM stalled_learners)
+        WHERE ex.course_id IN (SELECT course_id FROM stalled_learners)
       ),
       uncompleted_items AS (
         -- Match stalled learners to uncompleted items and find the earliest blocker per learner

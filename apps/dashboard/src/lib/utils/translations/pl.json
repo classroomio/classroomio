@@ -5626,20 +5626,24 @@
       "members_added": "Uczestnicy dodani do ścieżki",
       "member_removed": "Uczestnik został usunięty ze ścieżki",
       "tutors_added": "Tutorzy dodani do ścieżki",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Dodano tutora do ścieżki",
+      "tutor_removed": "Usunięto tutora ze ścieżki"
     },
     "analytics": {
       "title": "Analityka",
       "subtitle": "Jak uczniowie poruszają się po ścieżce.",
       "empty": "Brak danych. Zarejestruj uczniów, a oni zaczną się tutaj pojawiać.",
+      "empty_desc": "Zapisz uczniów na tę ścieżkę, a ich postępy pojawią się tutaj.",
       "stuck": {
         "title": "Gdzie uczniowie utknęli",
         "subtitle": "Lekcje i ćwiczenia blokujące obecnie najwięcej uczniów.",
         "badge": "{count} utknęło",
         "lesson_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} zatrzymali się na tej lekcji.",
         "exercise_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} wykonują to ćwiczenie od ponad 2 tygodni.",
-        "empty": "Obecnie żaden z uczniów nie utknął w miejscu. Wielki postęp!"
+        "empty": "Obecnie żaden z uczniów nie utknął w miejscu. Wielki postęp!",
+        "empty_desc": "Gdy uczniowie utkną, pojawią się tutaj.",
+        "lesson_prefix": "Lekcja:",
+        "exercise_prefix": "Ćwiczenie:"
       },
       "funnel": {
         "title": "Lejek kursu",
@@ -5656,11 +5660,17 @@
         "active_desc": "pracował w ciągu ostatnich 14 dni",
         "completion_rate": "Stopień ukończenia",
         "completion_desc": "Ukończono {completed} z {total}",
-        "avg_time": "Śr. czas kończyć",
-        "avg_time_desc": "poprzez uzupełnienia"
+        "avg_time": "Średni czas ukończenia",
+        "avg_time_desc": "poprzez uzupełnienia",
+        "enrolled_desc": "+{count} w tym miesiącu",
+        "team_desc": "{count, plural, one {# tutor w zespole ścieżki} other {# tutorów w zespole ścieżki}}",
+        "avg_time_weeks": "{value} tyg.",
+        "avg_time_days": "{value} dni"
       },
       "students": {
-        "subtitle": "Postęp ścieżki na ucznia, bieżący kurs i data rejestracji."
+        "subtitle": "Postęp ścieżki na ucznia, bieżący kurs i data rejestracji.",
+        "title": "Przegląd postępów uczniów",
+        "courses_completed": "Ukończone kursy"
       },
       "member": {
         "courses_title": "Kursy na tej ścieżce",
@@ -5673,6 +5683,9 @@
         },
         "export": "Eksportuj plik CSV",
         "progress_label": "Postęp ścieżki"
+      },
+      "export": {
+        "status": "Status"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Usuń ucznia",
-        "title_non_student": "Remove member",
+        "title_non_student": "Usuń członka",
         "confirm": "Czy na pewno chcesz usunąć {name} z tej ścieżki szkoleniowej? Zachowają dostęp do kursu i postępy.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "Czy na pewno chcesz usunąć {name} z tej ścieżki? Ta osoba straci dostęp do zarządzania tą ścieżką.",
         "cancel": "Anuluj",
         "yes": "Usuń"
       },
@@ -5714,11 +5727,6 @@
         "completed": "Ukończono"
       },
       "info_title": "Informacje o rejestracji ścieżki"
-    },
-    "roles": {
-      "admin": "Administrator",
-      "tutor": "Korepetytor",
-      "learner": "Uczeń"
     }
   }
 }

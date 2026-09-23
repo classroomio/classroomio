@@ -5626,27 +5626,31 @@
       "members_added": "Estudiantes agregados a la ruta",
       "member_removed": "Alumno eliminado del camino",
       "tutors_added": "Tutores agregados a la ruta",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Tutor añadido a la ruta",
+      "tutor_removed": "Tutor eliminado de la ruta"
     },
     "analytics": {
       "title": "Analítica",
       "subtitle": "Cómo avanzan los alumnos por el camino.",
       "empty": "Aún no hay datos. Inscriba a los estudiantes y comenzarán a aparecer aquí.",
+      "empty_desc": "Inscriba alumnos en esta ruta y su progreso aparecerá aquí.",
       "stuck": {
         "title": "Donde los estudiantes están estancados",
         "subtitle": "Lecciones y ejercicios que bloquean a la mayoría de los estudiantes en este momento.",
         "badge": "{count} atascado",
         "lesson_desc": "{count} {count, plural, =1 {alumno} other {alumnos}} se detuvieron en esta lección.",
         "exercise_desc": "{count} {count, plural, =1 {alumno} other {alumnos}} han realizado este ejercicio durante más de 2 semanas.",
-        "empty": "Ningún alumno está estancado actualmente. ¡Gran progreso!"
+        "empty": "Ningún alumno está estancado actualmente. ¡Gran progreso!",
+        "empty_desc": "Cuando los estudiantes se atasquen, aparecerán aquí.",
+        "lesson_prefix": "Lección:",
+        "exercise_prefix": "Ejercicio:"
       },
       "funnel": {
         "title": "Embudo del curso",
         "subtitle": "Cuántos alumnos han alcanzado y completado cada curso, en orden.",
         "completed": "completado",
         "in_progress": "en progreso",
-        "drop": "{count} {count, plural, =1 {alumno} other {alumnos}} eliminados después del curso {n}",
+        "drop": "{count} {count, plural, =1 {alumno} other {alumnos}} abandonaron después del curso {n}",
         "biggest_drop": "mayor caída",
         "certificates": "{count} {count, plural, =1 {certificado} other {certificados}} otorgados"
       },
@@ -5656,11 +5660,17 @@
         "active_desc": "trabajado en los últimos 14 días",
         "completion_rate": "Tasa de finalización",
         "completion_desc": "{completed} de {total} terminado",
-        "avg_time": "Promedio hora de terminar",
-        "avg_time_desc": "entre terminaciones"
+        "avg_time": "Tiempo promedio para terminar",
+        "avg_time_desc": "entre terminaciones",
+        "enrolled_desc": "+{count} este mes",
+        "team_desc": "{count, plural, one {# tutor en el equipo de la ruta} other {# tutores en el equipo de la ruta}}",
+        "avg_time_weeks": "{value} sem.",
+        "avg_time_days": "{value} días"
       },
       "students": {
-        "subtitle": "Progreso de la ruta por alumno, curso actual y fecha de inscripción."
+        "subtitle": "Progreso de la ruta por alumno, curso actual y fecha de inscripción.",
+        "title": "Resumen del progreso del alumno",
+        "courses_completed": "Cursos completados"
       },
       "member": {
         "courses_title": "Cursos en este camino",
@@ -5673,6 +5683,9 @@
         },
         "export": "Exportar CSV",
         "progress_label": "Progreso del camino"
+      },
+      "export": {
+        "status": "Estado"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Eliminar alumno",
-        "title_non_student": "Remove member",
+        "title_non_student": "Eliminar miembro",
         "confirm": "¿Está seguro de que desea eliminar a {name} de esta ruta de aprendizaje? Mantendrán su acceso y progreso al curso.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "¿Seguro que quieres eliminar a {name} de esta ruta? Perderá el acceso para gestionar esta ruta.",
         "cancel": "Cancelar",
         "yes": "Quitar"
       },
@@ -5714,11 +5727,6 @@
         "completed": "Completado"
       },
       "info_title": "Acerca de la inscripción de ruta"
-    },
-    "roles": {
-      "admin": "administrador",
-      "tutor": "Tutor",
-      "learner": "aprendiz"
     }
   }
 }

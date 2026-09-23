@@ -52,6 +52,8 @@
   const courseCount = $derived(activePath?.courses.length ?? 0);
 
   const currentUserRole = $derived.by(() => {
+    if (pathMembersApi.viewerRole !== undefined) return pathMembersApi.viewerRole;
+
     const currentMember = pathMembersApi.members.find((member) => member.profileId === $profile.id);
     return currentMember ? Number(currentMember.roleId) : null;
   });
@@ -192,7 +194,12 @@
     if (!id || id === loadedPathId) return;
 
     loadedPathId = id;
-    untrack(() => reloadFirstPage());
+    untrack(() => {
+      reloadFirstPage();
+      if ($profile.id) {
+        void pathMembersApi.fetchViewerRole(id, $profile.id);
+      }
+    });
   });
 
   onDestroy(() => {
