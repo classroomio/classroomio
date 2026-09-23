@@ -17,7 +17,7 @@
 {#if items.length === 0}
   <EmptyState
     title={$t('learningPath.analytics.stuck.empty')}
-    description={$t('learningPath.analytics.stuck.subtitle')}
+    description={$t('learningPath.analytics.stuck.empty_desc')}
   />
 {:else}
   <div class="flex flex-col gap-2">

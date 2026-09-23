@@ -5626,27 +5626,31 @@
       "members_added": "Учащиеся добавлены в путь",
       "member_removed": "Учащийся удален из пути",
       "tutors_added": "Репетиторы добавлены в путь",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Тьютор добавлен в траекторию",
+      "tutor_removed": "Тьютор удалён из траектории"
     },
     "analytics": {
       "title": "Аналитика",
       "subtitle": "Как учащиеся продвигаются по пути.",
       "empty": "Данных пока нет. Зарегистрируйте учащихся, и они начнут появляться здесь.",
+      "empty_desc": "Запишите учащихся на эту траекторию, и их прогресс появится здесь.",
       "stuck": {
         "title": "Где учащиеся застряли",
         "subtitle": "Уроки и упражнения сейчас блокируют большинство учащихся.",
         "badge": "{count} застряло",
         "lesson_desc": "{count} {count, plural, one {учащийся} few {учащихся} many {учащихся} other {учащихся}} остановились на этом уроке.",
         "exercise_desc": "{count} {count, plural, one {учащийся} few {учащихся} many {учащихся} other {учащихся}} выполняют это упражнение уже более 2 недель.",
-        "empty": "В настоящее время ни один учащийся не застрял. Отличный прогресс!"
+        "empty": "В настоящее время ни один учащийся не застрял. Отличный прогресс!",
+        "empty_desc": "Когда учащиеся застрянут, они появятся здесь.",
+        "lesson_prefix": "Урок:",
+        "exercise_prefix": "Задание:"
       },
       "funnel": {
         "title": "Воронка курса",
         "subtitle": "Сколько учащихся достигли и завершили каждый курс (по порядку).",
         "completed": "завершено",
         "in_progress": "в процессе",
-        "drop": "{count} {count, plural, one {учащийся} few {учащихся} many {учащихся} other {учащихся}} исключены после курса {n}",
+        "drop": "{count} {count, plural, one {учащийся} few {учащихся} many {учащихся} other {учащихся}} бросили после курса {n}",
         "biggest_drop": "самый большой провал",
         "certificates": "{count} {count, plural, one {сертификат выдан} few {сертификата выдано} many {сертификатов выдано} other {сертификатов выдано}}"
       },
@@ -5656,11 +5660,17 @@
         "active_desc": "работал за последние 14 дней",
         "completion_rate": "Скорость завершения",
         "completion_desc": "{completed} из {total} завершено",
-        "avg_time": "Среднее пора заканчивать",
-        "avg_time_desc": "по завершениям"
+        "avg_time": "Среднее время до завершения",
+        "avg_time_desc": "по завершениям",
+        "enrolled_desc": "+{count} в этом месяце",
+        "team_desc": "{count, plural, one {# тьютор в команде траектории} other {# тьюторов в команде траектории}}",
+        "avg_time_weeks": "{value} нед.",
+        "avg_time_days": "{value} дн."
       },
       "students": {
-        "subtitle": "Прогресс каждого учащегося, текущий курс и дата зачисления."
+        "subtitle": "Прогресс каждого учащегося, текущий курс и дата зачисления.",
+        "title": "Обзор прогресса учащихся",
+        "courses_completed": "Завершённые курсы"
       },
       "member": {
         "courses_title": "Курсы по этому пути",
@@ -5673,6 +5683,9 @@
         },
         "export": "Экспортировать CSV",
         "progress_label": "Прогресс пути"
+      },
+      "export": {
+        "status": "Статус"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Удалить учащегося",
-        "title_non_student": "Remove member",
+        "title_non_student": "Удалить участника",
         "confirm": "Вы уверены, что хотите удалить пользователя {name} из этого пути обучения? Они сохранят доступ к курсу и прогресс.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "Вы уверены, что хотите удалить {name} из этой траектории? Этот человек потеряет доступ к управлению траекторией.",
         "cancel": "Отмена",
         "yes": "Удалить"
       },
@@ -5714,11 +5727,6 @@
         "completed": "Завершено"
       },
       "info_title": "О регистрации пути"
-    },
-    "roles": {
-      "admin": "Админ",
-      "tutor": "Репетитор",
-      "learner": "Учащийся"
     }
   }
 }

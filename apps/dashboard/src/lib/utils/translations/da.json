@@ -5626,20 +5626,24 @@
       "members_added": "Elever føjet til stien",
       "member_removed": "Elev fjernet fra stien",
       "tutors_added": "Undervisere tilføjet til stien",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Underviser tilføjet til forløbet",
+      "tutor_removed": "Underviser fjernet fra forløbet"
     },
     "analytics": {
       "title": "Analytics",
       "subtitle": "Hvordan eleverne bevæger sig gennem stien.",
       "empty": "Ingen data endnu. Tilmeld elever, og de vil begynde at dukke op her.",
+      "empty_desc": "Tilmeld elever til dette forløb, så vises deres fremskridt her.",
       "stuck": {
         "title": "Hvor eleverne sidder fast",
         "subtitle": "Lektioner og øvelser blokerer for flest elever lige nu.",
         "badge": "{count} sidder fast",
         "lesson_desc": "{count} {count, plural, =1 {elev} other {elever}} stoppede ved denne lektion.",
         "exercise_desc": "{count} {count, plural, =1 {elev} other {elever}} har haft denne øvelse i gang i over 2 uger.",
-        "empty": "Ingen elever sidder fast i øjeblikket. Store fremskridt!"
+        "empty": "Ingen elever sidder fast i øjeblikket. Store fremskridt!",
+        "empty_desc": "Når elever sidder fast, vises de her.",
+        "lesson_prefix": "Lektion:",
+        "exercise_prefix": "Øvelse:"
       },
       "funnel": {
         "title": "Kursustragt",
@@ -5657,10 +5661,16 @@
         "completion_rate": "Gennemførelsesgrad",
         "completion_desc": "{completed} af {total} færdig",
         "avg_time": "Gns. tid til at blive færdig",
-        "avg_time_desc": "på tværs af færdiggørelser"
+        "avg_time_desc": "på tværs af færdiggørelser",
+        "enrolled_desc": "+{count} denne måned",
+        "team_desc": "{count, plural, one {# underviser på path-teamet} other {# undervisere på path-teamet}}",
+        "avg_time_weeks": "{value} uger",
+        "avg_time_days": "{value} dage"
       },
       "students": {
-        "subtitle": "Kursusforløb pr. elev, nuværende kursus og tilmeldingsdato."
+        "subtitle": "Kursusforløb pr. elev, nuværende kursus og tilmeldingsdato.",
+        "title": "Overblik over elevers fremskridt",
+        "courses_completed": "Gennemførte kurser"
       },
       "member": {
         "courses_title": "Kurser på denne vej",
@@ -5673,6 +5683,9 @@
         },
         "export": "Eksporter CSV",
         "progress_label": "Sti fremskridt"
+      },
+      "export": {
+        "status": "Status"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Fjern eleven",
-        "title_non_student": "Remove member",
+        "title_non_student": "Fjern medlem",
         "confirm": "Er du sikker på, at du vil fjerne {name} fra denne læringssti? De vil beholde deres kursusadgang og fremskridt.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "Er du sikker på, at du vil fjerne {name} fra dette forløb? Vedkommende mister adgangen til at administrere forløbet.",
         "cancel": "Annuller",
         "yes": "Fjern"
       },
@@ -5701,7 +5714,7 @@
         "not_started": "Ikke startet"
       },
       "table": {
-        "learner": "Lærer",
+        "learner": "Elev",
         "progress": "Sti fremskridt",
         "current_course": "Nuværende kursus",
         "enrolled": "Tilmeldt",
@@ -5714,11 +5727,6 @@
         "completed": "Afsluttet"
       },
       "info_title": "Om stitilmelding"
-    },
-    "roles": {
-      "admin": "Admin",
-      "tutor": "Underviser",
-      "learner": "Lærer"
     }
   }
 }

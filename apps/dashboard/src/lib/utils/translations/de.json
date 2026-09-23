@@ -5626,27 +5626,31 @@
       "members_added": "Lernende zum Pfad hinzugefügt",
       "member_removed": "Lernender wurde aus dem Pfad entfernt",
       "tutors_added": "Tutoren zum Pfad hinzugefügt",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Tutor zum Pfad hinzugefügt",
+      "tutor_removed": "Tutor aus dem Pfad entfernt"
     },
     "analytics": {
       "title": "Analytik",
       "subtitle": "Wie sich Lernende auf dem Weg bewegen.",
       "empty": "Noch keine Daten. Melden Sie Lernende an und sie werden hier angezeigt.",
+      "empty_desc": "Melden Sie Lernende für diesen Pfad an, damit deren Fortschritt hier angezeigt wird.",
       "stuck": {
         "title": "Wo Lernende stecken bleiben",
         "subtitle": "Lektionen und Übungen blockieren derzeit die meisten Lernenden.",
         "badge": "{count} steckt fest",
         "lesson_desc": "{count} {count, plural, =1 {Lernender} other {Lernende}} hat bei dieser Lektion angehalten.",
         "exercise_desc": "{count} {count, plural, =1 {Lernender} other {Lernende}} haben diese Übung seit über 2 Wochen im Gange.",
-        "empty": "Derzeit stecken keine Lernenden fest. Toller Fortschritt!"
+        "empty": "Derzeit stecken keine Lernenden fest. Toller Fortschritt!",
+        "empty_desc": "Wenn Lernende nicht weiterkommen, werden sie hier angezeigt.",
+        "lesson_prefix": "Lektion:",
+        "exercise_prefix": "Übung:"
       },
       "funnel": {
         "title": "Kurstrichter",
         "subtitle": "Wie viele Lernende haben jeden Kurs in der Reihenfolge erreicht und abgeschlossen?",
         "completed": "abgeschlossen",
         "in_progress": "in Bearbeitung",
-        "drop": "{count} {count, plural, =1 {Lernender} other {Lernende}} nach Kurs {n} gelöscht",
+        "drop": "{count} {count, plural, =1 {Lernender} other {Lernende}} nach Kurs {n} abgesprungen",
         "biggest_drop": "größter Rückgang",
         "certificates": "{count} {count, plural, =1 {Zertifikat} other {Zertifikate}} verliehen"
       },
@@ -5656,11 +5660,17 @@
         "active_desc": "in den letzten 14 Tagen gearbeitet",
         "completion_rate": "Abschlussrate",
         "completion_desc": "{completed} von {total} abgeschlossen",
-        "avg_time": "Durchschn. Zeit, fertig zu werden",
-        "avg_time_desc": "über Fertigstellungen hinweg"
+        "avg_time": "Ø Zeit bis zum Abschluss",
+        "avg_time_desc": "über Fertigstellungen hinweg",
+        "enrolled_desc": "+{count} diesen Monat",
+        "team_desc": "{count, plural, one {# Tutor im Pfad-Team} other {# Tutoren im Pfad-Team}}",
+        "avg_time_weeks": "{value} Wo.",
+        "avg_time_days": "{value} Tage"
       },
       "students": {
-        "subtitle": "Pfadfortschritt pro Teilnehmer, aktueller Kurs und Anmeldedatum."
+        "subtitle": "Pfadfortschritt pro Teilnehmer, aktueller Kurs und Anmeldedatum.",
+        "title": "Lernfortschritt im Überblick",
+        "courses_completed": "Abgeschlossene Kurse"
       },
       "member": {
         "courses_title": "Kurse in diesem Weg",
@@ -5673,6 +5683,9 @@
         },
         "export": "CSV exportieren",
         "progress_label": "Pfadfortschritt"
+      },
+      "export": {
+        "status": "Status"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Lernenden entfernen",
-        "title_non_student": "Remove member",
+        "title_non_student": "Mitglied entfernen",
         "confirm": "Sind Sie sicher, dass Sie {name} aus diesem Lernpfad entfernen möchten? Sie behalten ihren Kurszugang und ihre Fortschritte.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "Möchten Sie {name} wirklich aus diesem Pfad entfernen? Die Person verliert den Zugriff auf die Verwaltung dieses Pfads.",
         "cancel": "Abbrechen",
         "yes": "Entfernen"
       },
@@ -5714,11 +5727,6 @@
         "completed": "Abgeschlossen"
       },
       "info_title": "Informationen zur Pfadregistrierung"
-    },
-    "roles": {
-      "admin": "Admin",
-      "tutor": "Nachhilfelehrer",
-      "learner": "Lernender"
     }
   }
 }

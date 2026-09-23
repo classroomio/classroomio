@@ -5626,20 +5626,24 @@
       "members_added": "Apprenants ajoutés au parcours",
       "member_removed": "Apprenant retiré du chemin",
       "tutors_added": "Tuteurs ajoutés au parcours",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Tuteur ajouté au parcours",
+      "tutor_removed": "Tuteur retiré du parcours"
     },
     "analytics": {
       "title": "Analyse",
       "subtitle": "Comment les apprenants progressent tout au long du parcours.",
       "empty": "Aucune donnée pour l'instant. Inscrivez des apprenants et ils commenceront à apparaître ici.",
+      "empty_desc": "Inscrivez des apprenants à ce parcours et leur progression s'affichera ici.",
       "stuck": {
         "title": "Où les apprenants sont bloqués",
         "subtitle": "Les cours et exercices bloquent actuellement le plus grand nombre d’apprenants.",
         "badge": "{count} bloqué",
         "lesson_desc": "{count} {count, plural, =1 {apprenant} other {apprenants}} se sont arrêtés à cette leçon.",
         "exercise_desc": "{count} {count, plural, =1 {apprenant} other {apprenants}} suivent cet exercice depuis plus de deux semaines.",
-        "empty": "Aucun apprenant n'est actuellement bloqué. Belle avancée !"
+        "empty": "Aucun apprenant n'est actuellement bloqué. Belle avancée !",
+        "empty_desc": "Quand des apprenants sont bloqués, ils apparaîtront ici.",
+        "lesson_prefix": "Leçon :",
+        "exercise_prefix": "Exercice :"
       },
       "funnel": {
         "title": "Entonnoir de cours",
@@ -5656,11 +5660,17 @@
         "active_desc": "travaillé au cours des 14 derniers jours",
         "completion_rate": "Taux d'achèvement",
         "completion_desc": "{completed} sur {total} terminé",
-        "avg_time": "Moy. il est temps de finir",
-        "avg_time_desc": "à travers les achèvements"
+        "avg_time": "Temps moyen pour terminer",
+        "avg_time_desc": "à travers les achèvements",
+        "enrolled_desc": "+{count} ce mois-ci",
+        "team_desc": "{count, plural, one {# tuteur dans l'équipe du parcours} other {# tuteurs dans l'équipe du parcours}}",
+        "avg_time_weeks": "{value} sem.",
+        "avg_time_days": "{value} jours"
       },
       "students": {
-        "subtitle": "Progression du parcours par apprenant, cours en cours et date d'inscription."
+        "subtitle": "Progression du parcours par apprenant, cours en cours et date d'inscription.",
+        "title": "Aperçu de la progression des apprenants",
+        "courses_completed": "Cours terminés"
       },
       "member": {
         "courses_title": "Cours dans ce parcours",
@@ -5673,6 +5683,9 @@
         },
         "export": "Exporter au format CSV",
         "progress_label": "Progression du chemin"
+      },
+      "export": {
+        "status": "Statut"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Supprimer l'apprenant",
-        "title_non_student": "Remove member",
+        "title_non_student": "Retirer le membre",
         "confirm": "Êtes-vous sûr de vouloir supprimer {name} de ce parcours de formation ? Ils conserveront leur accès aux cours et leur progression.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "Voulez-vous vraiment retirer {name} de ce parcours ? Cette personne perdra l'accès à la gestion de ce parcours.",
         "cancel": "Annuler",
         "yes": "Supprimer"
       },
@@ -5714,11 +5727,6 @@
         "completed": "Terminé"
       },
       "info_title": "À propos de l'inscription au parcours"
-    },
-    "roles": {
-      "admin": "Administrateur",
-      "tutor": "Tuteur",
-      "learner": "Apprenant"
     }
   }
 }

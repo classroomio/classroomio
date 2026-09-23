@@ -5626,20 +5626,24 @@
       "members_added": "Người học được thêm vào đường dẫn",
       "member_removed": "Người học đã bị xóa khỏi đường dẫn",
       "tutors_added": "Đã thêm gia sư vào đường dẫn",
-      "tutor_added": "Tutor added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_added": "Đã thêm gia sư vào lộ trình",
+      "tutor_removed": "Đã xóa gia sư khỏi lộ trình"
     },
     "analytics": {
       "title": "Phân tích",
       "subtitle": "Người học đang di chuyển như thế nào trên con đường này.",
       "empty": "Chưa có dữ liệu. Đăng ký người học và họ sẽ bắt đầu hiển thị ở đây.",
+      "empty_desc": "Đăng ký người học vào lộ trình này và tiến trình của họ sẽ hiển thị tại đây.",
       "stuck": {
         "title": "Nơi người học bị mắc kẹt",
         "subtitle": "Những bài học, bài tập gây cản trở cho người học nhất hiện nay.",
         "badge": "{count} bị kẹt",
         "lesson_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã dừng lại ở bài học này.",
         "exercise_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã thực hiện bài tập này trong hơn 2 tuần.",
-        "empty": "Hiện tại không có người học nào bị mắc kẹt. Tiến bộ lớn!"
+        "empty": "Hiện tại không có người học nào bị mắc kẹt. Tiến bộ lớn!",
+        "empty_desc": "Khi người học bị mắc kẹt, họ sẽ hiển thị ở đây.",
+        "lesson_prefix": "Bài học:",
+        "exercise_prefix": "Bài tập:"
       },
       "funnel": {
         "title": "Kênh khóa học",
@@ -5657,10 +5661,16 @@
         "completion_rate": "Tỷ lệ hoàn thành",
         "completion_desc": "{completed} trong tổng số {total} đã hoàn thành",
         "avg_time": "Trung bình thời gian để kết thúc",
-        "avg_time_desc": "qua các lần hoàn thành"
+        "avg_time_desc": "qua các lần hoàn thành",
+        "enrolled_desc": "+{count} trong tháng này",
+        "team_desc": "{count, plural, one {# gia sư trong nhóm lộ trình} other {# gia sư trong nhóm lộ trình}}",
+        "avg_time_weeks": "{value} tuần",
+        "avg_time_days": "{value} ngày"
       },
       "students": {
-        "subtitle": "Tiến trình lộ trình cho mỗi người học, khóa học hiện tại và ngày đăng ký."
+        "subtitle": "Tiến trình lộ trình cho mỗi người học, khóa học hiện tại và ngày đăng ký.",
+        "title": "Tổng quan tiến trình người học",
+        "courses_completed": "Khóa học đã hoàn thành"
       },
       "member": {
         "courses_title": "Các khóa học trong lộ trình này",
@@ -5673,6 +5683,9 @@
         },
         "export": "Xuất CSV",
         "progress_label": "Tiến trình đường dẫn"
+      },
+      "export": {
+        "status": "Trạng thái"
       }
     },
     "people": {
@@ -5690,9 +5703,9 @@
       },
       "remove": {
         "title": "Xóa người học",
-        "title_non_student": "Remove member",
+        "title_non_student": "Xóa thành viên",
         "confirm": "Bạn có chắc chắn muốn xóa {name} khỏi lộ trình học tập này không? Họ sẽ giữ quyền truy cập và tiến bộ khóa học của họ.",
-        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "confirm_non_student": "Bạn có chắc muốn xóa {name} khỏi lộ trình này? Người này sẽ mất quyền quản lý lộ trình.",
         "cancel": "Hủy bỏ",
         "yes": "Xóa"
       },
@@ -5714,11 +5727,6 @@
         "completed": "Đã hoàn thành"
       },
       "info_title": "Giới thiệu về đăng ký lộ trình"
-    },
-    "roles": {
-      "admin": "Quản trị viên",
-      "tutor": "gia sư",
-      "learner": "Người học"
     }
   }
 }
