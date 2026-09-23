@@ -240,7 +240,14 @@ function pendingPathInviteCondition(learningPathId: string) {
     eq(schema.organizationInvite.isRevoked, false),
     isNull(schema.organizationInvite.acceptedAt),
     gt(schema.organizationInvite.expiresAt, sql`NOW()`),
-    sql`${schema.organizationInvite.metadata} @> ${JSON.stringify({ pathIds: [learningPathId] })}::jsonb`
+    sql`${schema.organizationInvite.metadata} @> ${JSON.stringify({ pathIds: [learningPathId] })}::jsonb`,
+    sql`NOT EXISTS (
+      SELECT 1 FROM ${schema.learningPathMember} lpm
+      JOIN ${schema.profile} p ON p.id = lpm.profile_id
+      WHERE lpm.learning_path_id = ${learningPathId}
+        AND lpm.removed_at IS NULL
+        AND lower(p.email) = lower(${schema.organizationInvite.email})
+    )`
   );
 }
 
