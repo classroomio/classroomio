@@ -41,7 +41,8 @@ export class LearningPathApi extends BaseApiWithErrors {
   private isPathDirty = $state(false);
   private inFlightPathRequests = new Map<string, Promise<LearningPathDetail | null>>();
   private pathRequestSeq = 0;
-  private activePathRequestSeq = 0;
+  private listedOrgId: string | null = null;
+  private listPathsRequestSeq = 0;
   isNotFound = $state(false);
   loadError = $state<string | null>(null);
 
@@ -57,7 +58,6 @@ export class LearningPathApi extends BaseApiWithErrors {
     }
 
     const navSeq = ++this.pathRequestSeq;
-    this.activePathRequestSeq = navSeq;
     this.isNotFound = false;
     this.loadError = null;
 
@@ -72,7 +72,7 @@ export class LearningPathApi extends BaseApiWithErrors {
 
       // Only the latest navigation may write shared state; earlier
       // requests resolve for their caller but leave currentPath alone.
-      if (this.activePathRequestSeq !== navSeq) {
+      if (this.pathRequestSeq !== navSeq) {
         return detail;
       }
 
@@ -90,7 +90,7 @@ export class LearningPathApi extends BaseApiWithErrors {
 
       return detail;
     } catch (error) {
-      if (this.activePathRequestSeq !== navSeq) {
+      if (this.pathRequestSeq !== navSeq) {
         return null;
       }
 
@@ -127,11 +127,16 @@ export class LearningPathApi extends BaseApiWithErrors {
     const orgId = organizationId || get(currentOrg).id;
     if (!orgId) return;
 
+    this.listedOrgId = orgId;
+    const seq = ++this.listPathsRequestSeq;
+
     await this.execute<ListLearningPathsRequest>({
       requestFn: () => classroomio['learning-path'].$get({ query: { organizationId: orgId } }),
       logContext: 'listing learning paths',
       onSuccess: (result) => {
-        this.paths = result.data;
+        if (this.listedOrgId === orgId && seq === this.listPathsRequestSeq) {
+          this.paths = result.data;
+        }
       }
     });
   }
