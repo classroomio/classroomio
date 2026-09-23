@@ -306,7 +306,11 @@
         "all_content_already_unlocked": "Alt indhold er allerede låst op",
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
         "content_grouping_disabled": "Indholdsgruppering deaktiveret",
-        "link_generated": "Kursuslinket blev opdateret"
+        "link_generated": "Kursuslinket blev opdateret",
+        "converted_to_public": "Kurset blev konverteret til offentligt"
+      },
+      "info": {
+        "conversion_blocked": "Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
       }
     },
     "people": {
@@ -468,6 +472,11 @@
         "post_created": "Indlægget er oprettet",
         "post_updated": "Opslaget blev opdateret"
       }
+    },
+    "report": {
+      "success": "Tak. Vi gennemgår denne anmeldelse.",
+      "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
+      "already_submitted": "Du har allerede anmeldt dette."
     }
   },
   "explore": {
@@ -1051,7 +1060,48 @@
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
         "copy_link": "Kopiér link",
-        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer."
+        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
+        "remove": "Fjern",
+        "setup_landing_page": "Opsæt landingsside",
+        "general_card_title": "Generelt",
+        "content_card_title": "Indhold",
+        "access_card_title": "Adgang",
+        "question_in_exercise": "I \"{exercise}\"",
+        "fix_question": "Rediger",
+        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter spørgsmål med automatisk bedømmelse. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:",
+        "fix_in_exercise": "Ret i øvelse",
+        "cancel_conversion": "Annuller konvertering",
+        "public_conversion": {
+          "banner_title": "Konvertering af kursus til offentlig",
+          "exercise_fixed": "Denne øvelse er klar",
+          "back_to_settings": "Tilbage til Indstillinger",
+          "complete_conversion": "Gennemfør offentlig konvertering",
+          "jump_to": "Hop til",
+          "blocks_public_conversion": "Ikke automatisk bedømmelig",
+          "blocks_public_conversion_desc": "Offentlige kurser understøtter kun spørgsmål med automatisk bedømmelse. Skift dette spørgsmåls type eller slet det for at fortsætte med konverteringen.",
+          "blocks_public_conversion_title": "Manuel karaktergivning understøttes ikke i offentlige kurser",
+          "aria_label": "Status for konvertering af offentlige kurser",
+          "all_exercises_fixed": "Alle {total} øvelser rettet",
+          "ready_to_convert": "Klar til at konvertere!",
+          "questions_left_other_singular": "· {count} spørgsmål tilbage i andre øvelser",
+          "questions_left_other_plural": "· {count} spørgsmål tilbage i andre øvelser",
+          "progress_summary_singular": "{resolved}/{total} rettet · {remaining} spørgsmål tilbage",
+          "progress_summary_plural": "{resolved}/{total} rettet · {remaining} spørgsmål tilbage",
+          "next_exercise": "Næste: {exercise}",
+          "next": "Næste",
+          "question_fallback": "Spørgsmål {number}",
+          "question_count_singular": "{count} spørgsmål",
+          "question_count_plural": "{count} spørgsmål",
+          "exercise_count_singular": "{count} øvelse",
+          "exercise_count_plural": "{count} øvelser",
+          "exercises_fixed": "{resolved}/{total} rettet",
+          "questions_left_singular": "rettet · {count} spørgsmål tilbage",
+          "questions_left_plural": "rettet · {count} spørgsmål tilbage"
+        },
+        "fix": "Ret",
+        "save_changes_to_fix_questions": "Gem dine ikke-gemte ændringer, før du navigerer for at rette spørgsmål.",
+        "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
+        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion."
       },
       "analytics": {
         "title": "Analyse"
@@ -1618,7 +1668,9 @@
           "comment_btn": "Kommentar",
           "cancel_btn": "Annuller",
           "load_more_btn": "Indlæs mere",
-          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen."
+          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen.",
+          "edit": "Rediger",
+          "delete": "Slet"
         },
         "exercises": {
           "heading": "Alle øvelser",
@@ -2364,7 +2416,87 @@
             "slide": {
               "title": "Dias",
               "slide_link": "Diaslink",
-              "helper_message": "Du kan integrere Google Slides eller Canva Presentation"
+              "helper_message": "Du kan integrere Google Slides eller Canva Presentation",
+              "button": "Tilføj dias",
+              "remove_slide": "Fjern dias",
+              "menu_aria": "Dias-handlinger",
+              "empty_title": "Ingen dias endnu",
+              "empty_description": "Integrer Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare eller Beautiful.ai",
+              "add_slide": {
+                "title": "Tilføj en dias",
+                "search": "Søg platforme",
+                "empty_prompt": "Vælg en platform for trin-for-trin vejledning og indsæt din embed-kode.",
+                "embed_code": "Indsæt embed-kode",
+                "embed_placeholder": "Indsæt den fulde iframe embed-kode her",
+                "how_to_embed": "Sådan integrerer du",
+                "preview": "Forhåndsvisning",
+                "embed_ready": "Embed klar",
+                "invalid_embed": "Indsæt den fulde iframe embed-kode fra denne platform.",
+                "unsupported": "Den embed kommer fra en platform, vi endnu ikke understøtter."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "Fil → Del → Udgiv på nettet → Integrer",
+                  "step_1": "Åbn din præsentation og vælg Fil → Del → Udgiv på nettet.",
+                  "step_2": "Skift til fanen Integrer og klik Udgiv.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "canva": {
+                  "hint": "Del → Mere → Integrer",
+                  "step_1": "Klik Del → Mere over editoren.",
+                  "step_2": "Vælg Integrer og bekræft (gør designet offentligt).",
+                  "step_3": "Kopiér HTML embed-koden og indsæt den her."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint på nettet → Fil → Del → Integrer",
+                  "step_1": "Gem præsentationen på OneDrive og åbn den i PowerPoint på nettet.",
+                  "step_2": "Vælg Fil → Del → Integrer og vælg dimensioner.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her. Vi tilpasser afspilleren selv."
+                },
+                "keynote": {
+                  "hint": "Samarbejd → Kopiér link, derefter integrer",
+                  "step_1": "Klik Samarbejd og sæt adgang til Alle med linket · Kun visning.",
+                  "step_2": "Kopiér iCloud-linket og hent embed-koden til dit website.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "figma": {
+                  "hint": "Del en Figma Slides-fil og kopiér embed",
+                  "step_1": "Åbn din Figma Slides-fil og aktiver linkdeling.",
+                  "step_2": "Kopiér embed-koden for /slides- eller /deck-filen.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "prezi": {
+                  "hint": "Del → Integrer",
+                  "step_1": "Åbn Del på din præsentation fra dashboardet.",
+                  "step_2": "Klik Integrer og kopiér koden.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "pitch": {
+                  "hint": "Del eksternt → Kopiér embed-kode",
+                  "step_1": "Klik Del → Del eksternt og opret et offentligt link.",
+                  "step_2": "Åbn linkets Indstillinger (⋯) og vælg Kopiér embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "gamma": {
+                  "hint": "Del → aktiver offentlig adgang → kopiér iframe",
+                  "step_1": "Åbn Del og slå Tillad offentlig adgang til.",
+                  "step_2": "Kopiér den genererede iframe embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                },
+                "slideshare": {
+                  "hint": "Del → Integrer under præsentationen",
+                  "step_1": "Åbn den offentlige præsentation på slideshare.net.",
+                  "step_2": "Klik Del under afspilleren og åbn fanen Integrer.",
+                  "step_3": "Kopiér iframe embed-koden og indsæt den her."
+                },
+                "beautiful": {
+                  "hint": "Delingsindstillinger → Offentlig → Hent embed-kode",
+                  "step_1": "Åbn Delingsindstillinger og skift præsentationen til Offentlig.",
+                  "step_2": "Klik Hent embed-kode.",
+                  "step_3": "Indsæt iframe embed-koden her."
+                }
+              },
+              "frame_title": "{platform} ({index} af {total})"
             },
             "note": {
               "title": "Bemærk",
@@ -2449,7 +2581,9 @@
             "watch_videos_helper": "Kun uploadede videoer kan håndhæves. YouTube og eksterne indlejringer kan ikke spores.",
             "watch_videos_empty": "Tilføj en uploadet video i fanen Video for at bruge visningskontrol.",
             "watch_videos_required": "Vælg mindst én video ved videoafspilning.",
-            "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser."
+            "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser.",
+            "watch_videos_no_uploads_title": "Ingen uploadede videoer i denne lektion",
+            "watch_videos_learn_more": "Få flere oplysninger"
           }
         },
         "watch_progress": {
@@ -2502,7 +2636,16 @@
           "link_copied": "Linket er kopieret"
         },
         "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
-        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere."
+        "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
+        "add_content_created_section": "Sektion er oprettet!",
+        "add_content_created_lesson": "Lektion er oprettet!",
+        "add_content_created_exercise": "Øvelse er oprettet!",
+        "add_content_create_another_section": "Opret en anden sektion",
+        "add_content_create_another_lesson": "Opret en anden lektion",
+        "add_content_create_another_exercise": "Opret en anden øvelse",
+        "add_content_open_now": "Åbn nu",
+        "add_content_later": "Senere",
+        "add_content_add_to_section": "Tilføj indhold"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -3758,7 +3901,8 @@
       "preview_tabs": {
         "label": "Forhåndsvisningsside",
         "home": "Hjem",
-        "course": "Kursus"
+        "course": "Kursus",
+        "learning_path": "Læringsvej"
       }
     },
     "organization": {
@@ -4995,6 +5139,30 @@
     "header": {
       "explore_courses": "Udforsk kurser",
       "sign_in": "Log ind"
+    },
+    "copy_page": {
+      "copy": "Kopiér side",
+      "copied": "Kopieret",
+      "view_as_markdown": "Vis som Markdown",
+      "open_in_chatgpt": "Åbn i ChatGPT",
+      "open_in_claude": "Åbn i Claude",
+      "more_actions": "Flere handlinger til kopi af siden",
+      "copy_failed": "Kunne ikke kopiere denne lektion som Markdown"
+    },
+    "outline": {
+      "label": "På denne side"
+    },
+    "rail": {
+      "copy_as_markdown": "Kopiér som Markdown",
+      "open_in_chat": "Åbn i chat"
+    },
+    "share": {
+      "label": "Del på sociale medier",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Link kopieret. Indsæt det i Instagram."
     }
   },
   "account": {
@@ -5441,5 +5609,58 @@
     "format_json": "JSON",
     "copied": "Kopieret til udklipsholder",
     "copy_failed": "Kunne ikke kopiere til udklipsholder"
+  },
+  "report": {
+    "menu": "Anmeld",
+    "title": "Anmeld indhold",
+    "description": "Fortæl os, hvad der er galt. Vores team vil gennemgå denne anmeldelse.",
+    "reason_label": "Årsag",
+    "reason_placeholder": "Vælg en årsag",
+    "reason_required": "Vælg venligst en årsag",
+    "details_label": "Yderligere oplysninger",
+    "details_placeholder": "Tilføj kontekst, der kan hjælpe os med at gennemgå dette (valgfrit)",
+    "submit": "Send anmeldelse",
+    "cancel": "Annuller",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Chikane eller mobning",
+      "hate_speech": "Hadefuld tale",
+      "sexual_content": "Seksuelt indhold",
+      "violence": "Vold eller trusler",
+      "misinformation": "Misinformation",
+      "privacy": "Brud på privatlivet",
+      "other": "Andet"
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Læringsveje",
+    "search_placeholder": "Søg læringsveje...",
+    "clear_search": "Ryd søgning",
+    "label": "Læringsvej",
+    "certificate_label": "Certifikat",
+    "free_label": "Gratis",
+    "course_count_label": "{count} kurser",
+    "empty": {
+      "title": "Ingen læringsveje fundet",
+      "description": "Prøv at rydde din søgning, eller kom tilbage senere."
+    },
+    "detail": {
+      "series_heading": "Kursusserie",
+      "rating_label": "Bedømt {rating} ud af 5",
+      "certificate_heading": "Certifikat",
+      "certificate_issuer": "Udstedt af",
+      "certificate_validity": "Gyldighed",
+      "instructors_heading": "Undervisere",
+      "reviews_heading": "Anmeldelser",
+      "faq_heading": "Ofte stillede spørgsmål",
+      "no_faq": "Ingen spørgsmål endnu.",
+      "locked_label": "Låst",
+      "unlocked_label": "Åbent",
+      "enroll_free": "Tilmeld dig gratis",
+      "enroll_label": "Tilmeld dig for {currency} {cost}",
+      "view_all": "Vis alle læringsforløb"
+    },
+    "enrolled_label": "{count} tilmeldt",
+    "subtitle": "Guidede multi-kursus spor med én tilmelding, bestilte kurser og et certifikat til sidst."
   }
 }

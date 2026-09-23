@@ -55,7 +55,7 @@
 </script>
 
 {#if items.length > 1}
-  <nav class={t.sectionNavShell}>
+  <nav class={[t.sectionNavShell, 'ui:pt-5']}>
     <div class={t.sectionNavInner}>
       <UnderlineTabs.Root bind:value={activeId} class="ui:w-full">
         <UnderlineTabs.List class={t.sectionNavList}>

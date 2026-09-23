@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { LearningPathItem, OrgLandingPageLabels } from './types';
   import LayersIcon from '@lucide/svelte/icons/layers';
-  import ClockIcon from '@lucide/svelte/icons/clock';
+  import UsersIcon from '@lucide/svelte/icons/users';
   import AwardIcon from '@lucide/svelte/icons/award';
-  import { defaultLearningPathCourseCountLabel } from './landing-page-utils';
+  import { defaultEnrolledLabel, defaultLearningPathCourseCountLabel } from './landing-page-utils';
   import { safeHref } from './safe-href';
 
   interface Props {
@@ -21,6 +21,8 @@
   const courseCountLabel = $derived(
     (labels?.learningPathCourseCountLabel ?? defaultLearningPathCourseCountLabel)(path.courseCount ?? 0)
   );
+
+  const resolvedEnrolledLabel = $derived(labels?.enrolledLabel ?? defaultEnrolledLabel);
 
   function formatCurrency(cost?: number, currency = 'USD') {
     if (!cost) return labels?.freeLabel ?? 'Free';
@@ -80,10 +82,10 @@
           <LayersIcon class="ui:size-4" />
           {courseCountLabel}
         </span>
-        {#if path.totalHours}
+        {#if path.totalStudents}
           <span class="ui:flex ui:items-center ui:gap-1.5">
-            <ClockIcon class="ui:size-4" />
-            {(labels?.learningPathHoursLabel ?? ((hours) => `${hours}h`))(path.totalHours)}
+            <UsersIcon class="ui:size-4" />
+            {resolvedEnrolledLabel(path.totalStudents)}
           </span>
         {/if}
         {#if path.hasCertificate}

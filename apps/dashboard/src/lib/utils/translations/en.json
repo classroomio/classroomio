@@ -783,7 +783,8 @@
       "preview_tabs": {
         "label": "Preview page",
         "home": "Home",
-        "course": "Course"
+        "course": "Course",
+        "learning_path": "Learning Path"
       },
       "editor": {
         "save": "Save",
@@ -1359,6 +1360,47 @@
     "catalog_empty": {
       "title": "No courses published yet",
       "description": "Check back soon for new courses."
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Learning Paths",
+    "subtitle": "Guided multi-course tracks with one enrollment, ordered courses, and a certificate at the end.",
+    "search_placeholder": "Search learning paths...",
+    "clear_search": "Clear search",
+    "label": "Learning Path",
+    "certificate_label": "Certificate",
+    "free_label": "Free",
+    "course_count_label": "{count} courses",
+    "enrolled_label": "{count} enrolled",
+    "empty": {
+      "title": "No learning paths found",
+      "description": "Try clearing your search or check back later."
+    },
+    "detail": {
+      "about_heading": "What you'll learn",
+      "about_lead": "Practical, project-first skills — every course ends with something you built.",
+      "skills_heading": "Skills you'll gain",
+      "series_heading": "Course series",
+      "series_eyebrow": "Series · take in order",
+      "series_lead": "Each course unlocks the next once you finish its lessons and exercises.",
+      "rating_label": "Rated {rating} out of 5",
+      "certificate_heading": "Certificate",
+      "certificate_issuer": "Issued by",
+      "certificate_validity": "Validity",
+      "instructors_heading": "Instructors",
+      "instructors_lead": "The tutors behind the courses in this path.",
+      "reviews_heading": "Reviews",
+      "reviews_lead": "From people who finished the path.",
+      "faq_heading": "Frequently asked questions",
+      "no_faq": "No questions yet.",
+      "pricing_heading": "Enrollment",
+      "pricing_eyebrow": "Enrollment",
+      "enroll_path": "Enroll in this path",
+      "locked_label": "Locked",
+      "unlocked_label": "Unlocked",
+      "enroll_free": "Enroll free",
+      "enroll_label": "Enroll for {currency} {cost}",
+      "view_all": "View all learning paths"
     }
   },
   "org_navigation": {

@@ -306,7 +306,11 @@
         "all_content_already_unlocked": "Todo el contenido ya está desbloqueado",
         "content_grouping_enabled": "Agrupación de contenidos activada",
         "content_grouping_disabled": "Agrupación de contenidos desactivada",
-        "link_generated": "Enlace del curso actualizado exitosamente"
+        "link_generated": "Enlace del curso actualizado exitosamente",
+        "converted_to_public": "Curso convertido exitosamente a Público"
+      },
+      "info": {
+        "conversion_blocked": "Corrige las preguntas a continuación para completar la conversión a público."
       }
     },
     "people": {
@@ -468,6 +472,11 @@
         "post_created": "Publicación creada exitosamente",
         "post_updated": "Publicación actualizada exitosamente"
       }
+    },
+    "report": {
+      "success": "Gracias. Revisaremos este informe.",
+      "error": "No se pudo enviar el informe. Inténtalo de nuevo.",
+      "already_submitted": "Ya has denunciado este contenido."
     }
   },
   "explore": {
@@ -1051,7 +1060,48 @@
         "generate_link": "Generar nuevo enlace",
         "open_link": "Abrir enlace en nueva pestaña",
         "copy_link": "Copiar enlace",
-        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo."
+        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
+        "remove": "Quitar",
+        "setup_landing_page": "Configurar la página de inicio",
+        "general_card_title": "General",
+        "content_card_title": "Contenido",
+        "access_card_title": "Acceso",
+        "question_in_exercise": "En \"{exercise}\"",
+        "fix_question": "Editar",
+        "convert_to_public_blocked_desc": "Los ejercicios de un curso público se califican automáticamente en el navegador, por lo que solo admitimos preguntas con calificación automática. Elimine o reemplace las siguientes preguntas antes de convertir este curso a Público:",
+        "fix_in_exercise": "Corregir en el ejercicio",
+        "cancel_conversion": "Cancelar conversión",
+        "public_conversion": {
+          "banner_title": "Convertir el curso en público",
+          "exercise_fixed": "Este ejercicio está listo.",
+          "back_to_settings": "Volver a configuración",
+          "complete_conversion": "Completar la conversión a curso público",
+          "jump_to": "Saltar a",
+          "blocks_public_conversion": "No calificable automáticamente",
+          "blocks_public_conversion_desc": "Los cursos públicos solo admiten preguntas calificables automáticamente. Cambie el tipo de esta pregunta o elimínela para continuar con la conversión.",
+          "blocks_public_conversion_title": "La calificación manual no está disponible en los cursos públicos.",
+          "aria_label": "Progreso de la conversión del curso público",
+          "all_exercises_fixed": "Todos los {total} ejercicios corregidos",
+          "ready_to_convert": "¡Listo para convertir!",
+          "questions_left_other_singular": "· {count} pregunta restante en otros ejercicios",
+          "questions_left_other_plural": "· {count} preguntas restantes en otros ejercicios",
+          "progress_summary_singular": "{resolved}/{total} corregidas · {remaining} pregunta restante",
+          "progress_summary_plural": "{resolved}/{total} corregidas · {remaining} preguntas restantes",
+          "next_exercise": "Siguiente: {exercise}",
+          "next": "Siguiente",
+          "question_fallback": "Pregunta {number}",
+          "question_count_singular": "{count} pregunta",
+          "question_count_plural": "{count} preguntas",
+          "exercise_count_singular": "{count} ejercicio",
+          "exercise_count_plural": "{count} ejercicios",
+          "exercises_fixed": "{resolved}/{total} corregidos",
+          "questions_left_singular": "Corregido · {count} pregunta restante",
+          "questions_left_plural": "Corregidos · {count} preguntas restantes"
+        },
+        "fix": "Corregir",
+        "save_changes_to_fix_questions": "Guarda los cambios antes de corregir las preguntas.",
+        "allow_markdown_export": "Permitir a los alumnos copiar las páginas de las lecciones como Markdown",
+        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada."
       },
       "analytics": {
         "title": "Analíticas"
@@ -1618,7 +1668,9 @@
           "comment_btn": "Comentario",
           "cancel_btn": "Cancelar",
           "load_more_btn": "Cargar más",
-          "comment_error": "No se pudo publicar el comentario. Por favor inténtalo de nuevo."
+          "comment_error": "No se pudo publicar el comentario. Por favor inténtalo de nuevo.",
+          "edit": "Editar",
+          "delete": "Eliminar"
         },
         "exercises": {
           "heading": "Todos los ejercicios",
@@ -2364,7 +2416,87 @@
             "slide": {
               "title": "Diapositiva",
               "slide_link": "Enlace de diapositiva",
-              "helper_message": "Puede incrustar presentaciones de Google Slides o Canva"
+              "helper_message": "Puede incrustar presentaciones de Google Slides o Canva",
+              "button": "Añadir diapositiva",
+              "remove_slide": "Eliminar diapositiva",
+              "menu_aria": "Acciones de diapositiva",
+              "empty_title": "Aún no hay diapositivas",
+              "empty_description": "Incorpora Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare o Beautiful.ai",
+              "add_slide": {
+                "title": "Añadir una diapositiva",
+                "search": "Buscar plataformas",
+                "empty_prompt": "Elige una plataforma para ver instrucciones paso a paso y pegar tu código de inserción.",
+                "embed_code": "Pegar código de inserción",
+                "embed_placeholder": "Pega aquí el código iframe completo",
+                "how_to_embed": "Cómo insertar",
+                "preview": "Vista previa",
+                "embed_ready": "Inserción lista",
+                "invalid_embed": "Pega el código iframe completo de esta plataforma.",
+                "unsupported": "Esa inserción proviene de una plataforma que aún no admitimos."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} de {total})"
             },
             "note": {
               "title": "Nota",
@@ -2449,7 +2581,9 @@
             "watch_videos_helper": "Solo los videos subidos pueden aplicarse. YouTube y las incrustaciones externas no se pueden rastrear.",
             "watch_videos_empty": "Añade un video subido en la pestaña Video para usar el seguimiento de visualización.",
             "watch_videos_required": "Selecciona al menos un video para el seguimiento de visualización.",
-            "students_only_note": "Estas reglas aplican solo a estudiantes. Puedes previsualizar y navegar libremente al enseñar."
+            "students_only_note": "Estas reglas aplican solo a estudiantes. Puedes previsualizar y navegar libremente al enseñar.",
+            "watch_videos_no_uploads_title": "No hay videos subidos en esta lección.",
+            "watch_videos_learn_more": "Más información"
           }
         },
         "watch_progress": {
@@ -2502,7 +2636,16 @@
           "link_copied": "Enlace copiado"
         },
         "student_share_your_knowledge": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde.",
-        "student_body_content": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde."
+        "student_body_content": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde.",
+        "add_content_created_section": "¡Sección creada con éxito!",
+        "add_content_created_lesson": "Lección creada con éxito.",
+        "add_content_created_exercise": "Ejercicio creado con éxito.",
+        "add_content_create_another_section": "Crear otra sección",
+        "add_content_create_another_lesson": "Crear otra lección",
+        "add_content_create_another_exercise": "Crear otro ejercicio",
+        "add_content_open_now": "Abrir ahora",
+        "add_content_later": "Más tarde",
+        "add_content_add_to_section": "Añadir contenido"
       },
       "news_feed": {
         "heading": "Noticias",
@@ -3758,7 +3901,8 @@
       "preview_tabs": {
         "label": "Página de vista previa",
         "home": "Inicio",
-        "course": "Curso"
+        "course": "Curso",
+        "learning_path": "Ruta de aprendizaje"
       }
     },
     "organization": {
@@ -4995,6 +5139,30 @@
     "header": {
       "explore_courses": "Explorar cursos",
       "sign_in": "Iniciar sesión"
+    },
+    "copy_page": {
+      "copy": "Copiar página",
+      "copied": "Copiado",
+      "view_as_markdown": "Ver como Markdown",
+      "open_in_chatgpt": "Abrir en ChatGPT",
+      "open_in_claude": "Abrir en Claude",
+      "more_actions": "Más acciones para copiar la página",
+      "copy_failed": "No se pudo copiar esta lección como Markdown"
+    },
+    "outline": {
+      "label": "En esta página"
+    },
+    "rail": {
+      "copy_as_markdown": "Copiar como Markdown",
+      "open_in_chat": "Abrir en el chat"
+    },
+    "share": {
+      "label": "Compartir en redes sociales",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Enlace copiado. Pégalo en Instagram."
     }
   },
   "account": {
@@ -5441,5 +5609,58 @@
     "format_json": "JSON",
     "copied": "Copiado al portapapeles",
     "copy_failed": "No se pudo copiar al portapapeles"
+  },
+  "report": {
+    "menu": "Denunciar",
+    "title": "Denunciar contenido",
+    "description": "Cuéntanos qué está mal. Nuestro equipo revisará este informe.",
+    "reason_label": "Motivo",
+    "reason_placeholder": "Selecciona un motivo",
+    "reason_required": "Elige un motivo",
+    "details_label": "Detalles adicionales",
+    "details_placeholder": "Añade contexto que nos ayude a revisar esto (opcional)",
+    "submit": "Enviar denuncia",
+    "cancel": "Cancelar",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Acoso o intimidación",
+      "hate_speech": "Discurso de odio",
+      "sexual_content": "Contenido sexual",
+      "violence": "Violencia o amenazas",
+      "misinformation": "Desinformación",
+      "privacy": "Violación de la privacidad",
+      "other": "Otro"
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Rutas de aprendizaje",
+    "search_placeholder": "Buscar rutas de aprendizaje...",
+    "clear_search": "Borrar búsqueda",
+    "label": "Ruta de aprendizaje",
+    "certificate_label": "Certificado",
+    "free_label": "Gratis",
+    "course_count_label": "{count} cursos",
+    "empty": {
+      "title": "No se encontraron rutas de aprendizaje",
+      "description": "Intente borrar su búsqueda o vuelva a consultar más tarde."
+    },
+    "detail": {
+      "series_heading": "Serie de cursos",
+      "rating_label": "Calificado {rating} de 5",
+      "certificate_heading": "Certificado",
+      "certificate_issuer": "Emitido por",
+      "certificate_validity": "Validez",
+      "instructors_heading": "Instructores",
+      "reviews_heading": "Reseñas",
+      "faq_heading": "Preguntas frecuentes",
+      "no_faq": "Aún no hay preguntas.",
+      "locked_label": "Bloqueado",
+      "unlocked_label": "Desbloqueado",
+      "enroll_free": "Inscríbete gratis",
+      "enroll_label": "Inscríbete por {currency} {cost}",
+      "view_all": "Ver todas las rutas de aprendizaje"
+    },
+    "enrolled_label": "{count} inscritos",
+    "subtitle": "Pistas guiadas de varios cursos con una sola inscripción, cursos ordenados y un certificado al finalizar."
   }
 }

@@ -804,6 +804,11 @@ export async function importCourseLandingPageTheme(theme: LandingPageThemeKey) {
   return { default: mod.course };
 }
 
+export async function importLearningPathLandingPageTheme(theme: LandingPageThemeKey) {
+  const mod = await importThemeBundle(theme);
+  return { default: mod.learningPath };
+}
+
 const NAV_SNIPPET_THEMES: ReadonlySet<LandingPageThemeKey> = new Set([
   'minimal',
   'saas',
