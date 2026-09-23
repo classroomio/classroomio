@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importer des utilisateurs",
-      "description": "Ajoutez des étudiants à votre organisation en saisissant leurs adresses e-mail. Vous pouvez éventuellement les attribuer à des cours et envoyer des e-mails d'invitation.",
+      "description": "Ajoutez des étudiants à votre organisation en saisissant leurs adresses e-mail. Vous pouvez éventuellement les attribuer à des cours, des cohortes ou des parcours d'apprentissage et envoyer des e-mails d'invitation.",
       "emails_label": "Adresses e-mail",
       "emails_placeholder": "Saisissez les e-mails séparés par des virgules, des nouvelles lignes ou des points-virgules\npar ex. alice@exemple.com, bob@exemple.com",
       "course_access": "Accès aux cours",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} nouvelles invitations, {assigned} étudiants existants avec accès au cours, {pendingInvitesRenewed} invitations en attente renouvelées ({emailsSent} e-mails envoyés)",
       "snackbar_no_emails": "Veuillez saisir au moins une adresse e-mail",
       "snackbar_failed": "Échec de l'importation des utilisateurs",
-      "page_subtitle": "Ajoutez plusieurs personnes à la fois par e-mail, puis attribuez-leur des cours ou des cohortes si vous le souhaitez.",
+      "page_subtitle": "Ajoutez plusieurs personnes à la fois par e-mail, puis attribuez-leur des cours, des cohortes ou des parcours d'apprentissage si vous le souhaitez.",
       "cohort_access": "Accès aux cohortes",
       "no_cohorts": "Aucune attribution de cohorte",
       "all_cohorts": "Toutes les cohortes",
       "select_cohorts": "Sélectionnez des cohortes spécifiques",
       "select_cohorts_placeholder": "Choisissez des cohortes...",
+      "select_paths_placeholder": "Choisissez des parcours d'apprentissage...",
+      "path_access": "Accès aux parcours d'apprentissage",
+      "no_paths": "Aucune attribution de parcours d'apprentissage",
+      "all_paths": "Tous les parcours d'apprentissage",
+      "select_paths": "Sélectionnez des parcours d'apprentissage spécifiques",
       "drop_csv": "Déposez un fichier CSV ici, ou cliquez pour en choisir un.",
       "csv_hint": "Fichier CSV UTF-8 avec une colonne d'adresse e-mail. Jusqu'à {rows} lignes, 5 Mo.",
       "download_template": "Téléchargez le modèle",
@@ -5643,7 +5648,12 @@
         "empty": "Aucun apprenant n'est actuellement bloqué. Belle avancée !",
         "empty_desc": "Quand des apprenants sont bloqués, ils apparaîtront ici.",
         "lesson_prefix": "Leçon :",
-        "exercise_prefix": "Exercice :"
+        "exercise_prefix": "Exercice :",
+        "showing": "Affichage de {start} à {end} sur {total} éléments",
+        "table": {
+          "item": "Élément",
+          "course": "Cours"
+        }
       },
       "funnel": {
         "title": "Entonnoir de cours",
@@ -5655,7 +5665,7 @@
         "certificates": "{count} {count, plural, =1 {certificat} other {certificats}} décernés"
       },
       "stat": {
-        "enrolled": "Inscrit",
+        "learners": "Apprenants",
         "active": "Apprenants actifs",
         "active_desc": "travaillé au cours des 14 derniers jours",
         "completion_rate": "Taux d'achèvement",
@@ -5663,6 +5673,7 @@
         "avg_time": "Temps moyen pour terminer",
         "avg_time_desc": "à travers les achèvements",
         "enrolled_desc": "+{count} ce mois-ci",
+        "pending_line": "{count} {count, plural, =1 {invitation en attente} other {invitations en attente}}",
         "team_desc": "{count, plural, one {# tuteur dans l'équipe du parcours} other {# tuteurs dans l'équipe du parcours}}",
         "avg_time_weeks": "{value} sem.",
         "avg_time_days": "{value} jours"

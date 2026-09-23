@@ -6,6 +6,7 @@ import { startOfCurrentMonthUtc } from '@cio/utils/functions';
 
 import * as schema from '../../schema';
 import type { TLearningPathMemberWithProfile } from './learning-path-member';
+import { countPendingPathLearners } from './learning-path-member';
 import { submissionMeetsCompletionPolicySql } from '../course/progression';
 
 /** Lookback window for "active learner" and "stuck" activity checks. */
@@ -17,12 +18,15 @@ export const SECONDS_PER_DAY = 24 * 60 * 60;
 
 /**
  * Summary statistics for a learning path.
- * Member counts are learners-only (student role, including pending email
- * invites), matching the People subtitle and overview — like the course
- * Students card. Staff are reported separately via tutorsCount.
+ * Member rows always carry a profile, so student-role counts are enrolled
+ * learners by construction. Invited-but-not-joined learners live outside the
+ * member table (active org invites targeting the path) and are reported
+ * separately via pendingInvites so rates measure learning, not recruitment.
+ * Staff are reported separately via tutorsCount — like the course Students card.
  */
 export interface TPathAnalyticsSummary {
   enrolled: number;
+  pendingInvites: number;
   newThisMonth: number;
   tutorsCount: number;
   activeLearners: number;
@@ -59,6 +63,8 @@ export interface TStuckItem {
 
 /**
  * Returns summary statistics for a learning path.
+ * Enrolled = student members. Pending invites live outside the member table
+ * and are counted separately, excluded from every rate denominator.
  * Active learners = student members with lesson_completion or submission activity in the last 14 days.
  * Completion rate = completed members / enrolled * 100.
  * Avg time to finish = average days between enrolledAt and completedAt for completed members.
@@ -74,12 +80,12 @@ export async function getPathAnalyticsSummary(
       isNull(schema.learningPathMember.removedAt)
     );
     const enrolledStudent = and(enrolledMember, eq(schema.learningPathMember.roleId, ROLE.STUDENT));
-
-    const [enrolledRows, newRows, tutorsRows, completedRows, pathCourses] = await Promise.all([
+    const [enrolledRows, pendingCount, newRows, tutorsRows, completedRows, pathCourses] = await Promise.all([
       dbClient
         .select({ count: count(schema.learningPathMember.id) })
         .from(schema.learningPathMember)
         .where(enrolledStudent),
+      countPendingPathLearners(learningPathId, dbClient),
       dbClient
         .select({ count: count(schema.learningPathMember.id) })
         .from(schema.learningPathMember)
@@ -101,10 +107,12 @@ export async function getPathAnalyticsSummary(
     ]);
 
     const enrolled = Number(enrolledRows[0]?.count ?? 0);
+    const pendingInvites = pendingCount;
 
     if (enrolled === 0) {
       return {
         enrolled: 0,
+        pendingInvites,
         newThisMonth: 0,
         tutorsCount: Number(tutorsRows[0]?.count ?? 0),
         activeLearners: 0,
@@ -124,6 +132,7 @@ export async function getPathAnalyticsSummary(
     if (courseIds.length === 0) {
       return {
         enrolled,
+        pendingInvites,
         newThisMonth: Number(newRows[0]?.count ?? 0),
         tutorsCount: Number(tutorsRows[0]?.count ?? 0),
         activeLearners: 0,
@@ -147,7 +156,6 @@ export async function getPathAnalyticsSummary(
       FROM learning_path_member lpm
       WHERE lpm.learning_path_id = ${learningPathId}
         AND lpm.removed_at IS NULL
-        AND lpm.profile_id IS NOT NULL
         AND lpm.role_id = ${ROLE.STUDENT}
         AND (
           EXISTS (
@@ -187,6 +195,7 @@ export async function getPathAnalyticsSummary(
 
     return {
       enrolled,
+      pendingInvites,
       newThisMonth: Number(newRows[0]?.count ?? 0),
       tutorsCount: Number(tutorsRows[0]?.count ?? 0),
       activeLearners,
@@ -262,7 +271,9 @@ export async function getPathCourseFunnelWithDropoff(
       completionRate: 0 // Computed below once total enrolled is known
     }));
 
-    // Get total enrolled (learners only, matching the summary) for completion rate
+    // Get total enrolled (student members) for completion rate. Pending
+    // invites live outside the member table, so they stay out of every rate
+    // denominator by construction.
     const [enrolledRows, certRows] = await Promise.all([
       dbClient
         .select({ count: count(schema.learningPathMember.id) })
@@ -423,7 +434,6 @@ export async function getStuckItems(
         JOIN course c ON c.id = lpc.course_id
         WHERE lpm.learning_path_id = ${learningPathId}
           AND lpm.removed_at IS NULL
-          AND lpm.profile_id IS NOT NULL
           AND lpm.role_id = ${ROLE.STUDENT}
           AND NOT EXISTS (
             -- Any lesson completion in this course within the last 14 days

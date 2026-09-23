@@ -44,9 +44,15 @@
     name: string;
   }
 
+  interface Path {
+    id: string;
+    name: string;
+  }
+
   interface Props {
     courses: Course[];
     cohorts: Cohort[];
+    paths: Path[];
     /**
      * Reported upward so the route can put the step's actions in the page
      * header, where every other page keeps them. The route owns `Page.Header`,
@@ -56,7 +62,7 @@
     controls?: ImportControls | null;
   }
 
-  let { courses, cohorts, controls = $bindable(null) }: Props = $props();
+  let { courses, cohorts, paths, controls = $bindable(null) }: Props = $props();
 
   type Step = 'upload' | 'preview' | 'result';
 
@@ -71,8 +77,10 @@
 
   let courseAccessMode = $state('none');
   let cohortAccessMode = $state('none');
+  let pathAccessMode = $state('none');
   let selectedCourseIds = new SvelteSet<string>();
   let selectedCohortIds = new SvelteSet<string>();
+  let selectedPathIds = new SvelteSet<string>();
   let sendEmail = $state(true);
   let isSubmitting = $state(false);
 
@@ -87,6 +95,11 @@
   function toggleCohort(cohortId: string) {
     if (selectedCohortIds.has(cohortId)) selectedCohortIds.delete(cohortId);
     else selectedCohortIds.add(cohortId);
+  }
+
+  function togglePath(pathId: string) {
+    if (selectedPathIds.has(pathId)) selectedPathIds.delete(pathId);
+    else selectedPathIds.add(pathId);
   }
 
   function parseInto(text: string, name: string | null) {
@@ -139,8 +152,10 @@
         recipients,
         allCourses: courseAccessMode === 'all',
         allCohorts: cohortAccessMode === 'all',
+        allPaths: pathAccessMode === 'all',
         courseIds: courseAccessMode === 'select' ? [...selectedCourseIds] : undefined,
         cohortIds: cohortAccessMode === 'select' ? [...selectedCohortIds] : undefined,
+        pathIds: pathAccessMode === 'select' ? [...selectedPathIds] : undefined,
         sendEmail
       });
 
@@ -336,6 +351,37 @@
           isSelected={(id) => selectedCohortIds.has(id)}
           onToggle={toggleCohort}
           namePrefix="import-cohort"
+        />
+      {/if}
+    </div>
+
+    <div class="space-y-3">
+      <Label class="text-sm font-medium">{$t('audience.import.path_access')}</Label>
+      <RadioGroup.Root bind:value={pathAccessMode} class="space-y-2">
+        <div class="flex items-center gap-2">
+          <RadioGroup.Item value="none" id="path-none" />
+          <Label for="path-none" class="font-normal">{$t('audience.import.no_paths')}</Label>
+        </div>
+        <div class="flex items-center gap-2">
+          <RadioGroup.Item value="all" id="path-all" />
+          <Label for="path-all" class="font-normal">{$t('audience.import.all_paths')}</Label>
+        </div>
+        <div class="flex items-center gap-2">
+          <RadioGroup.Item value="select" id="path-select" />
+          <Label for="path-select" class="font-normal">{$t('audience.import.select_paths')}</Label>
+        </div>
+      </RadioGroup.Root>
+
+      {#if pathAccessMode === 'select'}
+        <MultiSelectList
+          class="ml-6"
+          listClass="max-h-40"
+          heading={$t('audience.import.select_paths')}
+          emptyMessage={$t('audience.import.select_paths_placeholder')}
+          items={paths.map((p) => ({ id: p.id, label: p.name || p.id }))}
+          isSelected={(id) => selectedPathIds.has(id)}
+          onToggle={togglePath}
+          namePrefix="import-path"
         />
       {/if}
     </div>

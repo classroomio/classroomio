@@ -29,9 +29,11 @@
   let currentPage = $state(1);
   const pageSize = 15;
 
-  // Learners only (including pending email invites), no staff rows.
-  // Matches the People subtitle count, which is also students-only.
-  const learnerStudents = $derived(students.filter((student) => Number(student.roleId) === ROLE.STUDENT));
+  // Enrolled learners only (profile-backed), no staff rows and no pending
+  // invites
+  const learnerStudents = $derived(
+    students.filter((student) => Number(student.roleId) === ROLE.STUDENT && student.profileId)
+  );
   const totalPages = $derived(Math.ceil(learnerStudents.length / pageSize));
   const startIndex = $derived((currentPage - 1) * pageSize);
   const paginatedStudents = $derived(learnerStudents.slice(startIndex, startIndex + pageSize));
@@ -43,7 +45,7 @@
   });
 
   function gotoStudent(student: PathAnalyticsStudent) {
-    if (!detailBasePath || !student.profileId) return;
+    if (!detailBasePath) return;
 
     const back = backPath ? `?back=${encodeURIComponent(backPath)}` : '';
     goto(`${detailBasePath}/${student.profileId}${back}`);
@@ -95,8 +97,8 @@
           {@const displayName = student.fullName ?? getPathMemberDisplayEmail(student)}
           {@const ratio = formatCompletionRatio(student.completedCourseCount, totalCourses)}
           <Table.Row
-            class={`group h-25 ${detailBasePath && student.profileId ? navigableRowClass : ''}`}
-            tabindex={detailBasePath && student.profileId ? 0 : undefined}
+            class={`group h-25 ${detailBasePath ? navigableRowClass : ''}`}
+            tabindex={detailBasePath ? 0 : undefined}
             onclick={(event) => handleRowClick(student, event)}
             onkeydown={(event) => handleRowKeydown(student, event)}
           >
@@ -143,18 +145,16 @@
             </Table.Cell>
             {#if detailBasePath}
               <Table.Cell class="min-w-[120px] px-4 py-3">
-                {#if student.profileId}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onclick={(event) => {
-                      event.stopPropagation();
-                      gotoStudent(student);
-                    }}
-                  >
-                    {$t('analytics.view_details')}
-                  </Button>
-                {/if}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onclick={(event) => {
+                    event.stopPropagation();
+                    gotoStudent(student);
+                  }}
+                >
+                  {$t('analytics.view_details')}
+                </Button>
               </Table.Cell>
             {/if}
           </Table.Row>

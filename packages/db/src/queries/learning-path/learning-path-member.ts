@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, inArray, isNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, ilike, inArray, isNull, or, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { ROLE } from '@cio/utils/constants';
@@ -30,8 +30,8 @@ export interface TListMembersResult {
     total: number;
     totalPages: number;
   };
-  /** Active student members in the path, unfiltered by table search/filters. */
-  studentsTotal: number;
+  /** Enrolled student members, unfiltered by table search/filters. */
+  enrolledTotal: number;
 }
 
 export interface TEnrolledLearningPath {
@@ -61,43 +61,23 @@ export interface TPathMemberDetail {
 }
 
 /**
- * Enrolls a member into a learning path.
+ * Enrolls a member into a learning path. Requires a profile
  * If the member was previously soft-removed, re-enrolling clears removedAt.
  */
 export async function enrollMember(
   data: TNewLearningPathMember,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathMember> {
-  if (!data.profileId && !data.email) {
-    throw new Error('Cannot enroll member without a profileId or email');
+  if (!data.profileId) {
+    throw new Error('Cannot enroll member without a profileId');
   }
 
   try {
-    if (data.profileId) {
-      const [member] = await dbClient
-        .insert(schema.learningPathMember)
-        .values(data)
-        .onConflictDoUpdate({
-          target: [schema.learningPathMember.learningPathId, schema.learningPathMember.profileId],
-          set: {
-            removedAt: null,
-            roleId: data.roleId ?? sql`${schema.learningPathMember.roleId}`
-          }
-        })
-        .returning();
-
-      if (!member) {
-        throw new Error('Failed to enroll member');
-      }
-
-      return member;
-    }
-
     const [member] = await dbClient
       .insert(schema.learningPathMember)
       .values(data)
       .onConflictDoUpdate({
-        target: [schema.learningPathMember.learningPathId, schema.learningPathMember.email],
+        target: [schema.learningPathMember.learningPathId, schema.learningPathMember.profileId],
         set: {
           removedAt: null,
           roleId: data.roleId ?? sql`${schema.learningPathMember.roleId}`
@@ -247,6 +227,47 @@ export async function listActivePathMemberIds(
 }
 
 /**
+ * Active org-invite filter for a learning path. The app never creates
+ * profile-less path-member rows (email invites enroll on acceptance), so
+ * invited-but-not-joined learners live as org invites whose metadata targets
+ * the path. Active = not revoked, not accepted, not expired — mirroring
+ * `getActivePendingOrgInvitesForEmail`.
+ */
+function pendingPathInviteCondition(learningPathId: string) {
+  return and(
+    eq(schema.organizationInvite.type, 'EMAIL'),
+    eq(schema.organizationInvite.roleId, ROLE.STUDENT),
+    eq(schema.organizationInvite.isRevoked, false),
+    isNull(schema.organizationInvite.acceptedAt),
+    gt(schema.organizationInvite.expiresAt, sql`NOW()`),
+    sql`${schema.organizationInvite.metadata} @> ${JSON.stringify({ pathIds: [learningPathId] })}::jsonb`
+  );
+}
+
+/**
+ * Counts learners invited to a path that have not joined yet: active org
+ * invites targeting the path. Email-only member rows are never created
+ * (enrollMember requires a profile), so org invites are the only source.
+ */
+export async function countPendingPathLearners(learningPathId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  try {
+    const [inviteRows] = await Promise.all([
+      dbClient
+        .select({ count: count(schema.organizationInvite.id) })
+        .from(schema.organizationInvite)
+        .where(pendingPathInviteCondition(learningPathId))
+    ]);
+
+    return Number(inviteRows[0]?.count ?? 0);
+  } catch (error) {
+    console.error('countPendingPathLearners error:', error);
+    throw new Error(
+      `Failed to count pending learners for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Lists active members in a learning path with profile details.
  * Returns paginated result with total count.
  */
@@ -273,9 +294,9 @@ export async function listLearningPathMembers(
         : undefined
     ];
 
-    // Run the filtered count (for pagination), total learners count (for the subtitle),
-    // and the paged data fetch in parallel.
-    const [totalRows, studentsRows, rows] = await Promise.all([
+    // Run the filtered count (for pagination), enrolled count (for the
+    // subtitle), and the paged data fetch in parallel.
+    const [totalRows, enrolledRows, rows] = await Promise.all([
       dbClient
         .select({ count: count(schema.learningPathMember.id) })
         .from(schema.learningPathMember)
@@ -323,6 +344,7 @@ export async function listLearningPathMembers(
 
     const total = Number(totalRows[0]?.count ?? 0);
     const totalPages = Math.ceil(total / limit);
+    const enrolledTotal = Number(enrolledRows[0]?.count ?? 0);
 
     return {
       data: rows.map((row) => ({
@@ -339,7 +361,7 @@ export async function listLearningPathMembers(
         total,
         totalPages
       },
-      studentsTotal: Number(studentsRows[0]?.count ?? 0)
+      enrolledTotal
     };
   } catch (error) {
     console.error('listLearningPathMembers error:', error);

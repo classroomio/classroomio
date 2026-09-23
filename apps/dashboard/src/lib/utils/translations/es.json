@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importar usuarios",
-      "description": "Agregue estudiantes a su organización ingresando sus direcciones de correo electrónico. Opcionalmente, asígnalos a cursos y envía correos electrónicos de invitación.",
+      "description": "Agregue estudiantes a su organización ingresando sus direcciones de correo electrónico. Opcionalmente, asígnalos a cursos, cohortes o rutas de aprendizaje y envía correos electrónicos de invitación.",
       "emails_label": "Direcciones de correo electrónico",
       "emails_placeholder": "Ingrese correos electrónicos separados por comas, nuevas líneas o punto y coma\npor ej. alicia@ejemplo.com, bob@ejemplo.com",
       "course_access": "Acceso al curso",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} invitaciones nuevas, {assigned} estudiantes existentes con acceso al curso, {pendingInvitesRenewed} invitaciones pendientes renovadas ({emailsSent} correos enviados)",
       "snackbar_no_emails": "Por favor ingrese al menos una dirección de correo electrónico",
       "snackbar_failed": "No se pudieron importar usuarios",
-      "page_subtitle": "Agrega muchas personas a la vez por correo electrónico y asígnales cursos o cohortes si quieres.",
+      "page_subtitle": "Agrega muchas personas a la vez por correo electrónico y asígnales cursos, cohortes o rutas de aprendizaje si quieres.",
       "cohort_access": "Acceso a cohortes",
       "no_cohorts": "Sin asignación de cohorte",
       "all_cohorts": "Todas las cohortes",
       "select_cohorts": "Seleccionar cohortes específicas",
       "select_cohorts_placeholder": "Elige cohortes...",
+      "select_paths_placeholder": "Elige rutas de aprendizaje...",
+      "path_access": "Acceso a rutas de aprendizaje",
+      "no_paths": "Sin asignación de ruta de aprendizaje",
+      "all_paths": "Todas las rutas de aprendizaje",
+      "select_paths": "Seleccionar rutas de aprendizaje específicas",
       "drop_csv": "Arrastra un archivo CSV aquí o haz clic para elegir uno",
       "csv_hint": "CSV UTF-8 con una columna de correo electrónico. Hasta {rows} filas, 5 MB.",
       "download_template": "Descargar la plantilla",
@@ -5643,7 +5648,12 @@
         "empty": "Ningún alumno está estancado actualmente. ¡Gran progreso!",
         "empty_desc": "Cuando los estudiantes se atasquen, aparecerán aquí.",
         "lesson_prefix": "Lección:",
-        "exercise_prefix": "Ejercicio:"
+        "exercise_prefix": "Ejercicio:",
+        "showing": "Mostrando {start} a {end} de {total} elementos",
+        "table": {
+          "item": "Elemento",
+          "course": "Curso"
+        }
       },
       "funnel": {
         "title": "Embudo del curso",
@@ -5655,7 +5665,7 @@
         "certificates": "{count} {count, plural, =1 {certificado} other {certificados}} otorgados"
       },
       "stat": {
-        "enrolled": "Inscrito",
+        "learners": "Estudiantes",
         "active": "Estudiantes activos",
         "active_desc": "trabajado en los últimos 14 días",
         "completion_rate": "Tasa de finalización",
@@ -5663,6 +5673,7 @@
         "avg_time": "Tiempo promedio para terminar",
         "avg_time_desc": "entre terminaciones",
         "enrolled_desc": "+{count} este mes",
+        "pending_line": "{count} {count, plural, =1 {invitación pendiente} other {invitaciones pendientes}}",
         "team_desc": "{count, plural, one {# tutor en el equipo de la ruta} other {# tutores en el equipo de la ruta}}",
         "avg_time_weeks": "{value} sem.",
         "avg_time_days": "{value} días"

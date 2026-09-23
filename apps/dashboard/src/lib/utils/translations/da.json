@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importer brugere",
-      "description": "Tilføj elever til din organisation ved at indtaste deres e-mailadresser. Tildel dem eventuelt til kurser og send invitationsmails.",
+      "description": "Tilføj elever til din organisation ved at indtaste deres e-mailadresser. Tildel dem eventuelt kurser, kohorter eller læringsstier, og send invitationsmails.",
       "emails_label": "E-mail-adresser",
       "emails_placeholder": "Indtast e-mails adskilt af kommaer, nye linjer eller semikolon\nf.eks. alice@example.com, bob@example.com",
       "course_access": "Kursusadgang",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} nye invitationer, {assigned} eksisterende studerende med kursusadgang, {pendingInvitesRenewed} afventende invitationer fornyet ({emailsSent} e-mails sendt)",
       "snackbar_no_emails": "Indtast venligst mindst én e-mailadresse",
       "snackbar_failed": "Kunne ikke importere brugere",
-      "page_subtitle": "Tilføj mange personer på én gang via e-mail, og tildel dem kurser eller kohorter, hvis du vil.",
+      "page_subtitle": "Tilføj mange personer på én gang via e-mail, og tildel dem kurser, kohorter eller læringsstier, hvis du vil.",
       "cohort_access": "Kohorteadgang",
       "no_cohorts": "Ingen kohortetildeling",
       "all_cohorts": "Alle kohorter",
       "select_cohorts": "Vælg specifikke kohorter",
       "select_cohorts_placeholder": "Vælg kohorter...",
+      "select_paths_placeholder": "Vælg læringsstier...",
+      "path_access": "Læringsstiadgang",
+      "no_paths": "Ingen læringsstitildeling",
+      "all_paths": "Alle læringsstier",
+      "select_paths": "Vælg specifikke læringsstier",
       "drop_csv": "Slip en CSV-fil her, eller klik for at vælge en",
       "csv_hint": "UTF-8 CSV med en e-mail-kolonne. Op til {rows} rækker, 5 MB.",
       "download_template": "Download skabelonen",
@@ -5643,7 +5648,12 @@
         "empty": "Ingen elever sidder fast i øjeblikket. Store fremskridt!",
         "empty_desc": "Når elever sidder fast, vises de her.",
         "lesson_prefix": "Lektion:",
-        "exercise_prefix": "Øvelse:"
+        "exercise_prefix": "Øvelse:",
+        "showing": "Viser {start} til {end} af {total} elementer",
+        "table": {
+          "item": "Element",
+          "course": "Kursus"
+        }
       },
       "funnel": {
         "title": "Kursustragt",
@@ -5655,7 +5665,7 @@
         "certificates": "{count} {count, plural, =1 {certifikat} other {certifikater}} tildelt"
       },
       "stat": {
-        "enrolled": "Tilmeldt",
+        "learners": "Elever",
         "active": "Aktive elever",
         "active_desc": "arbejdet inden for de sidste 14 dage",
         "completion_rate": "Gennemførelsesgrad",
@@ -5663,6 +5673,7 @@
         "avg_time": "Gns. tid til at blive færdig",
         "avg_time_desc": "på tværs af færdiggørelser",
         "enrolled_desc": "+{count} denne måned",
+        "pending_line": "{count} {count, plural, =1 {afventende invitation} other {afventende invitationer}}",
         "team_desc": "{count, plural, one {# underviser på path-teamet} other {# undervisere på path-teamet}}",
         "avg_time_weeks": "{value} uger",
         "avg_time_days": "{value} dage"

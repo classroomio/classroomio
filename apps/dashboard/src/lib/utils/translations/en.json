@@ -3991,9 +3991,9 @@
       "exercise_load_failed": "Could not load exercises for this course."
     },
     "import": {
-      "page_subtitle": "Add many people at once by email, then assign courses or cohorts if you like.",
+      "page_subtitle": "Add many people at once by email, then assign courses, cohorts, or learning paths if you like.",
       "title": "Import Users",
-      "description": "Add students to your organization by entering their email addresses. Optionally assign them to courses or cohorts and send invitation emails.",
+      "description": "Add students to your organization by entering their email addresses. Optionally assign them to courses, cohorts, or learning paths and send invitation emails.",
       "emails_label": "Email Addresses",
       "emails_placeholder": "Enter emails separated by commas, newlines, or semicolons\ne.g. alice@example.com, bob@example.com",
       "course_access": "Course Access",
@@ -4002,6 +4002,7 @@
       "select_courses": "Select specific courses",
       "select_courses_placeholder": "Choose courses...",
       "select_cohorts_placeholder": "Choose cohorts...",
+      "select_paths_placeholder": "Choose learning paths...",
       "send_email": "Send invitation email to imported users",
       "back": "Back",
       "start_over": "Choose a different file",
@@ -4012,6 +4013,10 @@
       "no_cohorts": "No cohort assignment",
       "all_cohorts": "All cohorts",
       "select_cohorts": "Select specific cohorts",
+      "path_access": "Learning Path Access",
+      "no_paths": "No learning path assignment",
+      "all_paths": "All learning paths",
+      "select_paths": "Select specific learning paths",
       "drop_csv": "Drop a CSV here, or click to choose one",
       "csv_hint": "UTF-8 CSV with an email column. Up to {rows} rows, 5 MB.",
       "download_template": "Download the template",
@@ -5658,7 +5663,7 @@
       "title": "Analytics",
       "subtitle": "How learners are moving through the path.",
       "stat": {
-        "enrolled": "Enrolled",
+        "learners": "Learners",
         "active": "Active learners",
         "active_desc": "worked in the last 14 days",
         "completion_rate": "Completion rate",
@@ -5666,6 +5671,7 @@
         "avg_time": "Avg. time to finish",
         "avg_time_desc": "across completions",
         "enrolled_desc": "+{count} this month",
+        "pending_line": "{count} {count, plural, =1 {pending invite} other {pending invites}}",
         "team_desc": "{count, plural, one {# tutor on the path team} other {# tutors on the path team}}",
         "avg_time_weeks": "{value} wks",
         "avg_time_days": "{value} days"

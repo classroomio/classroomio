@@ -46,7 +46,7 @@
   const activePath = $derived(learningPathApi.currentPath);
   const pathId = $derived(activePath?.id);
   const totalMembers = $derived(pathMembersApi.membersPagination?.total ?? 0);
-  const totalLearners = $derived(pathMembersApi.membersStudentsTotal);
+  const totalLearners = $derived(pathMembersApi.membersEnrolledTotal);
   const totalPages = $derived(pathMembersApi.membersPagination?.totalPages ?? 0);
   const pageSize = $derived(pathMembersApi.membersPagination?.limit ?? DEFAULT_PATH_PEOPLE_PAGE_SIZE);
   const courseCount = $derived(activePath?.courses.length ?? 0);
@@ -157,8 +157,6 @@
   }
 
   function gotoMember(member: LearningPathMemberItem) {
-    if (!member.profileId) return;
-
     goto(`${page.url.pathname}/${member.profileId}`);
   }
 
@@ -316,7 +314,7 @@
                       showActions
                       canManage={canManageMembers}
                       canView={canManageMembers}
-                      navigable={member.profileId != null}
+                      navigable
                       onView={gotoMember}
                       onRemove={openRemoveDialog}
                       onRowClick={handleRowClick}
