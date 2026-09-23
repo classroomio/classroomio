@@ -51,6 +51,7 @@ Use ClassroomIO terminology consistently:
 - Say **academy**, not org site.
 - Say **student**, not learner.
 - Say **course**, **cohort**, **tutor**, and **admin** when those are the accurate product terms.
+- Say **Assistant** for the teacher and admin AI. Say **AI tutor** only for the student-facing AI.
 
 ## 3. Write the voice
 
@@ -62,7 +63,7 @@ Write like a product team explaining useful changes to customers:
 - Prefer concrete explanations over promotional claims.
 - Use active voice and present tense for the current product behavior.
 - Explain technical work only when it affects the customer.
-- Keep headings in sentence case.
+- Keep headings in sentence case, except the required `ClassroomIO Changelog #NNNN` suffix on the article title.
 - Avoid filler openings such as "It's weekly update time," "Let's dive in," or "We're excited to announce."
 - Avoid vague claims such as "a better experience" unless the copy explains what is better.
 - Do not use emojis, em dashes, or en dashes.
@@ -109,8 +110,10 @@ The article follows the useful pattern of a short introduction, a walkthrough ne
 
 Use this template:
 
+Number each article. The title always ends with ` - ClassroomIO Changelog #NNNN`, where `NNNN` is a four-digit issue number. Look at the latest file in `company/changelogs/` for the highest existing number and increment it by one. Never reuse a number.
+
 ```markdown
-# [Specific title for the week's biggest change] and more
+# [Specific title for the week's biggest change] and more - ClassroomIO Changelog #NNNN
 
 [One short paragraph summarizing the week's most useful changes in customer terms.]
 
@@ -167,6 +170,7 @@ Before returning the two deliverables, check:
 - [ ] The terms organization, academy, and student are used consistently.
 - [ ] The copy sounds natural when read aloud and contains no em or en dashes.
 - [ ] The article title and email subject describe the actual week's work.
+- [ ] The article title ends with ` - ClassroomIO Changelog #NNNN`, using the next unused number.
 - [ ] Any missing video, image, link, or verification detail is clearly marked for the person publishing it.
 
 Return the email first, then the article. If a required input is missing, list it briefly after the drafts under `Publishing notes`.

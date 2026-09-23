@@ -49,7 +49,7 @@ Use the exact visible UI label, capitalization, and singular/plural form from `e
 
 Preferred ClassroomIO terms:
 
-- organization, not workspace, when describing the academy-owning admin entity;
+- organization, not workspace, when describing the academy-owning admin entity or multiple organizations under one account;
 - academy for the public organization site;
 - LMS for the signed-in student learning area;
 - student, not learner, unless “learner” is an exact label being quoted;
@@ -57,6 +57,8 @@ Preferred ClassroomIO terms:
 - course landing page for the public page of one course.
 
 The Settings sidebar currently groups **Profile** and **Notifications** under Personal; **Branding**, **Domains**, **Teams**, **Customize LMS**, and **Billing** under Workspace; and AI and authentication items under Extensions. Verify this before writing because navigation can change.
+
+Use **Workspace** only when reproducing that exact ClassroomIO interface label. Do not use it as the general name for an organization, a plan allowance, or an account relationship. Preserve third-party product names such as **Google Workspace**.
 
 ## Titles and descriptions
 

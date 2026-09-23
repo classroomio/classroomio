@@ -118,7 +118,7 @@ export default defineConfig({
             ]
           },
           {
-            label: 'Plans, billing, and workspaces',
+            label: 'Plans, billing, and organizations',
             display: 'group',
             collapsed: true,
             items: [
@@ -135,8 +135,8 @@ export default defineConfig({
                 root: '/get-started/understand-usage-and-plan-limits'
               },
               {
-                label: 'Create and manage workspaces',
-                root: '/get-started/create-and-manage-workspaces'
+                label: 'Create and manage organizations',
+                root: '/get-started/create-and-manage-organizations'
               }
             ]
           }
@@ -868,25 +868,25 @@ export default defineConfig({
             ]
           },
           {
-            label: 'Manage workspaces',
+            label: 'Manage organizations',
             display: 'group',
             collapsed: true,
             items: [
               {
-                label: 'Understand primary and secondary workspaces',
-                root: '/account-team-security/understand-primary-and-secondary-workspaces'
+                label: 'Understand primary and additional organizations',
+                root: '/account-team-security/understand-primary-and-additional-organizations'
               },
               {
-                label: 'Create another workspace',
-                root: '/account-team-security/create-another-workspace'
+                label: 'Create another organization',
+                root: '/account-team-security/create-another-organization'
               },
               {
-                label: 'Switch between workspaces',
-                root: '/account-team-security/switch-between-workspaces'
+                label: 'Switch between organizations',
+                root: '/account-team-security/switch-between-organizations'
               },
               {
-                label: 'Delete a workspace',
-                root: '/account-team-security/delete-a-workspace'
+                label: 'Delete an organization',
+                root: '/account-team-security/delete-an-organization'
               }
             ]
           },
@@ -900,8 +900,8 @@ export default defineConfig({
                 root: '/account-team-security/view-and-change-your-plan'
               },
               {
-                label: 'Understand student and workspace limits',
-                root: '/account-team-security/understand-student-and-workspace-limits'
+                label: 'Understand student and organization limits',
+                root: '/account-team-security/understand-student-and-organization-limits'
               },
               {
                 label: 'View and manage AI credits',
@@ -1156,8 +1156,8 @@ export default defineConfig({
                 root: '/reference/organization'
               },
               {
-                label: 'Workspace',
-                root: '/troubleshooting-and-reference/workspace'
+                label: 'Organization structure',
+                root: '/troubleshooting-and-reference/organization'
               },
               {
                 label: 'Course',
