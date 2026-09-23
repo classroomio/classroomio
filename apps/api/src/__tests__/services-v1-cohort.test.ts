@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/cohort', () => ({
   getCohortOrganizationId: vi.fn(),
-  getCohortsByOrg: vi.fn(),
-  getCoursesByCohort: vi.fn(),
   getCohortMemberRole: vi.fn(),
+  isCohortMember: vi.fn(),
   isOrgAdminByCohortId: vi.fn(),
   getCohortMemberByProfileId: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/organization', () => ({
+  getOrganizationMemberIdByOrgAndProfile: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/tag', () => ({
@@ -18,7 +21,9 @@ vi.mock('@api/services/cohort/cohort', () => ({
   getCohort: vi.fn(),
   updateCohort: vi.fn(),
   deleteCohort: vi.fn(),
-  listCohortMembers: vi.fn(),
+  listOrgCohortsPage: vi.fn(),
+  listCohortMembersPage: vi.fn(),
+  listCohortCoursesPage: vi.fn(),
   addCohortMembers: vi.fn(),
   updateCohortMemberService: vi.fn(),
   removeCohortMemberService: vi.fn(),
@@ -29,10 +34,10 @@ vi.mock('@api/services/cohort/cohort', () => ({
 import {
   getCohortMemberRole,
   getCohortOrganizationId,
-  getCohortsByOrg,
-  getCoursesByCohort,
+  isCohortMember,
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
+import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import {
   addCohortMembers,
@@ -40,13 +45,15 @@ import {
   createCohort,
   deleteCohort,
   getCohort,
-  listCohortMembers,
+  listCohortCoursesPage,
+  listCohortMembersPage,
+  listOrgCohortsPage,
   removeCohortMemberService,
   removeCourseFromCohortService,
   updateCohort,
   updateCohortMemberService
 } from '@api/services/cohort/cohort';
-import { assertCohortBelongsToOrganization } from '@api/services/v1/shared';
+import { assertCohortBelongsToOrganization, toPublicApiPagination } from '@api/services/v1/shared';
 import { ROLE } from '@cio/utils/constants';
 import {
   createPublicApiCohortService,
@@ -74,12 +81,20 @@ const COHORT_ID = 'cohort-1';
 const MEMBER_ID = 'member-1';
 const COURSE_ID = 'course-1';
 const ACTOR_ID = 'actor-1';
+const PROFILE_ID = 'profile-1';
 
 const cohortParams = { cohortId: COHORT_ID };
+const firstPage = { page: 1, limit: 20 };
 
-/** Default happy path: actor is a cohort tutor, so the team-or-admin gate passes. */
-function mockActorAsCohortTeamMember() {
+function mockActorAsCohortTutor() {
   vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.TUTOR);
+  vi.mocked(isCohortMember).mockResolvedValue(true);
+  vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+}
+
+function mockActorAsOutsider() {
+  vi.mocked(getCohortMemberRole).mockResolvedValue(null);
+  vi.mocked(isCohortMember).mockResolvedValue(false);
   vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
 }
 
@@ -109,19 +124,32 @@ describe('assertCohortBelongsToOrganization', () => {
   });
 });
 
+describe('toPublicApiPagination', () => {
+  it('rounds totalPages up and reports 0 pages for an empty list', () => {
+    expect(toPublicApiPagination(2, 20, 41)).toEqual({ page: 2, limit: 20, total: 41, totalPages: 3 });
+    expect(toPublicApiPagination(1, 20, 0)).toEqual({ page: 1, limit: 20, total: 0, totalPages: 0 });
+  });
+});
+
 describe('v1 cohort service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCohortOrganizationId).mockResolvedValue(ORG_ID);
-    mockActorAsCohortTeamMember();
+    mockActorAsCohortTutor();
   });
 
-  it('lists cohorts for the organization without a per-profile filter', async () => {
-    vi.mocked(getCohortsByOrg).mockResolvedValue([]);
+  it('lists only the cohorts the actor can see, like the dashboard', async () => {
+    vi.mocked(listOrgCohortsPage).mockResolvedValue({ items: [], total: 0 });
 
-    await listCohortsService(ORG_ID);
+    const result = await listCohortsService(ORG_ID, ACTOR_ID, firstPage);
 
-    expect(getCohortsByOrg).toHaveBeenCalledWith(ORG_ID);
+    expect(listOrgCohortsPage).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, firstPage);
+    expect(result.pagination).toEqual({ page: 1, limit: 20, total: 0, totalPages: 0 });
+  });
+
+  it('rejects listing cohorts with no automation actor', async () => {
+    await expect(listCohortsService(ORG_ID, null, firstPage)).rejects.toMatchObject({ statusCode: 401 });
+    expect(listOrgCohortsPage).not.toHaveBeenCalled();
   });
 
   it('creates a cohort using the automation actor as the creator', async () => {
@@ -139,12 +167,35 @@ describe('v1 cohort service', () => {
     expect(createCohort).not.toHaveBeenCalled();
   });
 
-  it('gets a cohort with no team-membership requirement (read-only)', async () => {
+  it('gets a cohort when the actor is a cohort member', async () => {
     vi.mocked(getCohort).mockResolvedValue({ id: COHORT_ID } as Awaited<ReturnType<typeof getCohort>>);
 
-    await getPublicApiCohortService(ORG_ID, cohortParams);
+    await getPublicApiCohortService(ORG_ID, ACTOR_ID, cohortParams);
 
     expect(getCohort).toHaveBeenCalledWith(COHORT_ID);
+  });
+
+  it('refuses to get a cohort when the actor is neither a member nor an org admin', async () => {
+    mockActorAsOutsider();
+
+    await expect(getPublicApiCohortService(ORG_ID, ACTOR_ID, cohortParams)).rejects.toMatchObject({
+      statusCode: 403
+    });
+    expect(getCohort).not.toHaveBeenCalled();
+  });
+
+  it('lets an org admin read a cohort they are not a member of', async () => {
+    mockActorAsOutsider();
+    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(true);
+    vi.mocked(getCohort).mockResolvedValue({ id: COHORT_ID } as Awaited<ReturnType<typeof getCohort>>);
+
+    await getPublicApiCohortService(ORG_ID, ACTOR_ID, cohortParams);
+
+    expect(getCohort).toHaveBeenCalledWith(COHORT_ID);
+  });
+
+  it('rejects reading a cohort with no automation actor', async () => {
+    await expect(getPublicApiCohortService(ORG_ID, null, cohortParams)).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('updates and deletes a cohort once the actor is confirmed a cohort team member', async () => {
@@ -158,9 +209,8 @@ describe('v1 cohort service', () => {
     expect(deleteCohort).toHaveBeenCalledWith(COHORT_ID);
   });
 
-  it('refuses to update/delete a cohort when the actor is not a team member or org admin', async () => {
+  it('refuses to update a cohort when the actor is a student in it', async () => {
     vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
 
     await expect(
       updatePublicApiCohortService(ORG_ID, ACTOR_ID, cohortParams, { name: 'Renamed' })
@@ -168,8 +218,8 @@ describe('v1 cohort service', () => {
     expect(updateCohort).not.toHaveBeenCalled();
   });
 
-  it('allows update/delete when the actor is an org admin, even without a cohort role', async () => {
-    vi.mocked(getCohortMemberRole).mockResolvedValue(null);
+  it('allows delete when the actor is an org admin, even without a cohort role', async () => {
+    mockActorAsOutsider();
     vi.mocked(isOrgAdminByCohortId).mockResolvedValue(true);
     vi.mocked(deleteCohort).mockResolvedValue({ id: COHORT_ID } as Awaited<ReturnType<typeof deleteCohort>>);
 
@@ -179,16 +229,18 @@ describe('v1 cohort service', () => {
   });
 
   it('rejects update with no automation actor', async () => {
-    await expect(
-      updatePublicApiCohortService(ORG_ID, null, cohortParams, { name: 'Renamed' })
-    ).rejects.toMatchObject({ statusCode: 401 });
+    await expect(updatePublicApiCohortService(ORG_ID, null, cohortParams, { name: 'Renamed' })).rejects.toMatchObject({
+      statusCode: 401
+    });
     expect(updateCohort).not.toHaveBeenCalled();
   });
 
   it('refuses to touch a cohort from another organization', async () => {
     vi.mocked(getCohortOrganizationId).mockResolvedValue(OTHER_ORG_ID);
 
-    await expect(getPublicApiCohortService(ORG_ID, cohortParams)).rejects.toMatchObject({ statusCode: 404 });
+    await expect(getPublicApiCohortService(ORG_ID, ACTOR_ID, cohortParams)).rejects.toMatchObject({
+      statusCode: 404
+    });
     expect(getCohort).not.toHaveBeenCalled();
   });
 });
@@ -197,32 +249,64 @@ describe('v1 cohort member service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCohortOrganizationId).mockResolvedValue(ORG_ID);
-    mockActorAsCohortTeamMember();
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(1);
+    mockActorAsCohortTutor();
   });
 
-  it('lists members with no team-membership requirement (read-only)', async () => {
-    vi.mocked(listCohortMembers).mockResolvedValue([]);
+  it('lists members a page at a time when the actor is a cohort member', async () => {
+    vi.mocked(listCohortMembersPage).mockResolvedValue({ items: [], total: 45 });
 
-    await listPublicApiCohortMembersService(ORG_ID, cohortParams);
+    const result = await listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, { page: 2, limit: 20 });
 
-    expect(listCohortMembers).toHaveBeenCalledWith(COHORT_ID);
+    expect(listCohortMembersPage).toHaveBeenCalledWith(COHORT_ID, { page: 2, limit: 20 });
+    expect(result.pagination).toEqual({ page: 2, limit: 20, total: 45, totalPages: 3 });
   });
 
-  it('adds members once the actor is confirmed a cohort team member', async () => {
+  it('refuses to list members when the actor is neither a member nor an org admin', async () => {
+    mockActorAsOutsider();
+
+    await expect(listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, firstPage)).rejects.toMatchObject({
+      statusCode: 403
+    });
+    expect(listCohortMembersPage).not.toHaveBeenCalled();
+  });
+
+  it('adds members by email without an organization check, like the dashboard', async () => {
     vi.mocked(addCohortMembers).mockResolvedValue({ added: [], errors: [] });
+    const payload = { members: [{ email: 'student@example.com', roleId: 3 as const }] };
 
-    await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, {
-      members: [{ email: 'student@example.com', roleId: 3 }]
-    });
+    await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
-    expect(addCohortMembers).toHaveBeenCalledWith(COHORT_ID, {
-      members: [{ email: 'student@example.com', roleId: 3 }]
-    });
+    expect(getOrganizationMemberIdByOrgAndProfile).not.toHaveBeenCalled();
+    expect(addCohortMembers).toHaveBeenCalledWith(COHORT_ID, payload);
   });
 
-  it('refuses to add members when the actor is not a team member or org admin', async () => {
+  it('adds members by profileId when the profile belongs to the organization', async () => {
+    vi.mocked(addCohortMembers).mockResolvedValue({ added: [], errors: [] });
+    const payload = { members: [{ profileId: PROFILE_ID, roleId: 3 as const }] };
+
+    await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
+
+    expect(getOrganizationMemberIdByOrgAndProfile).toHaveBeenCalledWith(ORG_ID, PROFILE_ID);
+    expect(addCohortMembers).toHaveBeenCalledWith(COHORT_ID, payload);
+  });
+
+  it('refuses to add a profileId from another organization', async () => {
+    vi.mocked(getOrganizationMemberIdByOrgAndProfile).mockResolvedValue(null);
+
+    await expect(
+      addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, {
+        members: [
+          { email: 'student@example.com', roleId: 3 },
+          { profileId: PROFILE_ID, roleId: 3 }
+        ]
+      })
+    ).rejects.toMatchObject({ statusCode: 404 });
+    expect(addCohortMembers).not.toHaveBeenCalled();
+  });
+
+  it('refuses to add members when the actor is a student in the cohort', async () => {
     vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
 
     await expect(
       addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, {
@@ -255,8 +339,10 @@ describe('v1 cohort member service', () => {
   it('refuses to touch members of a cohort from another organization', async () => {
     vi.mocked(getCohortOrganizationId).mockResolvedValue(OTHER_ORG_ID);
 
-    await expect(listPublicApiCohortMembersService(ORG_ID, cohortParams)).rejects.toMatchObject({ statusCode: 404 });
-    expect(listCohortMembers).not.toHaveBeenCalled();
+    await expect(listPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, firstPage)).rejects.toMatchObject({
+      statusCode: 404
+    });
+    expect(listCohortMembersPage).not.toHaveBeenCalled();
   });
 });
 
@@ -264,15 +350,24 @@ describe('v1 cohort course service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCohortOrganizationId).mockResolvedValue(ORG_ID);
-    mockActorAsCohortTeamMember();
+    mockActorAsCohortTutor();
   });
 
-  it('lists all cohort courses, including unpublished ones, with no team-membership requirement', async () => {
-    vi.mocked(getCoursesByCohort).mockResolvedValue([]);
+  it('lists cohort courses through the dashboard visibility rule for the actor', async () => {
+    vi.mocked(listCohortCoursesPage).mockResolvedValue({ items: [], total: 0 });
 
-    await listPublicApiCohortCoursesService(ORG_ID, cohortParams);
+    await listPublicApiCohortCoursesService(ORG_ID, ACTOR_ID, cohortParams, firstPage);
 
-    expect(getCoursesByCohort).toHaveBeenCalledWith(COHORT_ID, false);
+    expect(listCohortCoursesPage).toHaveBeenCalledWith(COHORT_ID, ACTOR_ID, firstPage);
+  });
+
+  it('refuses to list cohort courses when the actor is neither a member nor an org admin', async () => {
+    mockActorAsOutsider();
+
+    await expect(listPublicApiCohortCoursesService(ORG_ID, ACTOR_ID, cohortParams, firstPage)).rejects.toMatchObject({
+      statusCode: 403
+    });
+    expect(listCohortCoursesPage).not.toHaveBeenCalled();
   });
 
   it('adds a course that belongs to the same organization once the actor is a team member', async () => {
@@ -286,9 +381,8 @@ describe('v1 cohort course service', () => {
     expect(addCourseToCohortService).toHaveBeenCalledWith(COHORT_ID, { courseId: COURSE_ID });
   });
 
-  it('refuses to add a course when the actor is not a team member or org admin', async () => {
+  it('refuses to add a course when the actor is a student in the cohort', async () => {
     vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
 
     await expect(
       addPublicApiCohortCourseService(ORG_ID, ACTOR_ID, cohortParams, { courseId: COURSE_ID })
@@ -303,6 +397,17 @@ describe('v1 cohort course service', () => {
       addPublicApiCohortCourseService(ORG_ID, ACTOR_ID, cohortParams, { courseId: COURSE_ID })
     ).rejects.toMatchObject({ statusCode: 404 });
     expect(addCourseToCohortService).not.toHaveBeenCalled();
+  });
+
+  it('passes a 409 through when the course is already linked to the cohort', async () => {
+    vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
+    vi.mocked(addCourseToCohortService).mockRejectedValue(
+      new AppError('Course already in cohort', 'COURSE_ALREADY_IN_COHORT', 409)
+    );
+
+    await expect(
+      addPublicApiCohortCourseService(ORG_ID, ACTOR_ID, cohortParams, { courseId: COURSE_ID })
+    ).rejects.toMatchObject({ statusCode: 409 });
   });
 
   it('refuses to link a course that does not exist', async () => {

@@ -2,6 +2,7 @@ import {
   ZPublicApiCohortGoalParam,
   ZPublicApiCohortParam,
   ZPublicApiCreateCohortGoal,
+  ZPublicApiPaginationQuery,
   ZPublicApiUpdateCohortGoal
 } from '@cio/utils/validation/public-api';
 import {
@@ -16,51 +17,34 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-
-const GoalResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
-
-const GoalListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } }
-  },
-  required: ['success', 'data']
-};
-
-const jsonResponse = (description: string, schema: object) => ({
-  description,
-  content: { 'application/json': { schema } }
-});
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
+import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
 
 export const v1CohortGoalsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List the goals in a cohort, with per-status learner counts',
+      description: `List the active goals in a cohort, with per-status learner counts. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Goals'],
       responses: {
-        200: jsonResponse('Goals returned successfully', GoalListResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Goals returned successfully', PaginatedListResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.member,
         404: { description: 'Cohort not found' }
       }
     }),
     validator('param', ZPublicApiCohortParam),
+    validator('query', ZPublicApiPaginationQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const goals = await listPublicApiCohortGoalsService(orgId, params);
+        const query = c.req.valid('query');
+        const result = await listPublicApiCohortGoalsService(orgId, actorId, params, query);
 
-        return c.json({ success: true, data: goals }, 200);
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to list cohort goals');
       }
@@ -69,14 +53,13 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description:
-        'Create a cohort goal. Required fields depend on type (complete_all, n_of_m, score, pass_rate, readiness) and deadlineKind (absolute, relative_to_join, recurring, none) — see the schema for per-combination requirements',
+      description: `Create a cohort goal. Required fields depend on type (complete_all, n_of_m, score, pass_rate, readiness) and deadlineKind (absolute, relative_to_join, recurring, none); see the schema for per-combination requirements. Every courseId must already be linked to the cohort. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Goals'],
       responses: {
-        201: jsonResponse('Goal created successfully', GoalResponse),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        201: jsonResponse('Goal created successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort not found' }
       }
     }),
@@ -99,12 +82,13 @@ export const v1CohortGoalsRouter = new Hono()
   .get(
     '/:goalId',
     describeRoute({
-      description: 'Get a cohort goal',
+      description: `Get a cohort goal. ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Goals'],
       responses: {
-        200: jsonResponse('Goal returned successfully', GoalResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Goal returned successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.member,
         404: { description: 'Cohort or goal not found' }
       }
     }),
@@ -112,8 +96,9 @@ export const v1CohortGoalsRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const goal = await getPublicApiCohortGoalService(orgId, params);
+        const goal = await getPublicApiCohortGoalService(orgId, actorId, params);
 
         return c.json({ success: true, data: goal }, 200);
       } catch (error) {
@@ -124,13 +109,13 @@ export const v1CohortGoalsRouter = new Hono()
   .put(
     '/:goalId',
     describeRoute({
-      description: 'Update a cohort goal',
+      description: `Update a cohort goal. Send only the fields to change; omitted fields keep their current values, and the resulting goal must still satisfy the create rules. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Goals'],
       responses: {
-        200: jsonResponse('Goal updated successfully', GoalResponse),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Goal updated successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or goal not found' }
       }
     }),
@@ -153,12 +138,13 @@ export const v1CohortGoalsRouter = new Hono()
   .delete(
     '/:goalId',
     describeRoute({
-      description: 'Delete a cohort goal. This is a hard delete; use the archive action to keep history',
+      description: `Permanently delete a cohort goal and its learner progress. Use the archive action to keep history. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Goals'],
       responses: {
-        200: jsonResponse('Goal deleted successfully', GoalResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Goal deleted successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or goal not found' }
       }
     }),
@@ -179,12 +165,13 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/:goalId/archive',
     describeRoute({
-      description: 'Archive a cohort goal (soft delete, keeps history)',
+      description: `Archive a cohort goal. It stops being evaluated and drops out of the goal list, but its history is kept. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Goals'],
       responses: {
-        200: jsonResponse('Goal archived successfully', GoalResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Goal archived successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or goal not found' }
       }
     }),

@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import {
+  ZCohortNewsfeedListQuery,
   ZCreateCohortNewsfeed,
   ZCreateCohortNewsfeedComment,
   ZUpdateCohortNewsfeed,
@@ -18,10 +19,7 @@ export const ZPublicApiCohortNewsfeedCommentParam = ZPublicApiCohortNewsfeedPara
 });
 export type TPublicApiCohortNewsfeedCommentParam = z.infer<typeof ZPublicApiCohortNewsfeedCommentParam>;
 
-export const ZPublicApiCohortNewsfeedQuery = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(10)
-});
+export const ZPublicApiCohortNewsfeedQuery = ZCohortNewsfeedListQuery;
 export type TPublicApiCohortNewsfeedQuery = z.infer<typeof ZPublicApiCohortNewsfeedQuery>;
 
 export const ZPublicApiCreateCohortNewsfeed = ZCreateCohortNewsfeed;

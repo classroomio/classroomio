@@ -3,20 +3,30 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@cio/db/queries/cohort', () => ({
   getCohortOrganizationId: vi.fn(),
   getCohortMemberRole: vi.fn(),
+  isCohortMember: vi.fn(),
   isOrgAdminByCohortId: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/organization', () => ({
+  getOrganizationMemberIdByOrgAndProfile: vi.fn()
 }));
 
 vi.mock('@api/services/cohort/goal', () => ({
   createGoal: vi.fn(),
-  listGoals: vi.fn(),
+  listGoalsPage: vi.fn(),
   getGoal: vi.fn(),
   updateGoal: vi.fn(),
   archiveGoal: vi.fn(),
   removeGoal: vi.fn()
 }));
 
-import { getCohortMemberRole, getCohortOrganizationId, isOrgAdminByCohortId } from '@cio/db/queries/cohort';
-import { archiveGoal, createGoal, getGoal, listGoals, removeGoal, updateGoal } from '@api/services/cohort/goal';
+import {
+  getCohortMemberRole,
+  getCohortOrganizationId,
+  isCohortMember,
+  isOrgAdminByCohortId
+} from '@cio/db/queries/cohort';
+import { archiveGoal, createGoal, getGoal, listGoalsPage, removeGoal, updateGoal } from '@api/services/cohort/goal';
 import { ROLE } from '@cio/utils/constants';
 import {
   archivePublicApiCohortGoalService,
@@ -44,9 +54,15 @@ const CREATE_GOAL_PAYLOAD = {
   reminderDaysBefore: [7, 1]
 };
 
-/** Default happy path: actor is a cohort tutor, so the team-or-admin gate passes. */
 function mockActorAsCohortTeamMember() {
   vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.TUTOR);
+  vi.mocked(isCohortMember).mockResolvedValue(true);
+  vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+}
+
+function mockActorAsOutsider() {
+  vi.mocked(getCohortMemberRole).mockResolvedValue(null);
+  vi.mocked(isCohortMember).mockResolvedValue(false);
   vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
 }
 
@@ -57,12 +73,26 @@ describe('v1 cohort goal service', () => {
     mockActorAsCohortTeamMember();
   });
 
-  it('lists goals after the org guard passes, with no team-membership requirement', async () => {
-    vi.mocked(listGoals).mockResolvedValue([]);
+  it('lists goals a page at a time when the actor is a cohort member', async () => {
+    vi.mocked(listGoalsPage).mockResolvedValue({ items: [], total: 0 });
 
-    await listPublicApiCohortGoalsService(ORG_ID, cohortParams);
+    const result = await listPublicApiCohortGoalsService(ORG_ID, ACTOR_ID, cohortParams, { page: 1, limit: 20 });
 
-    expect(listGoals).toHaveBeenCalledWith(COHORT_ID);
+    expect(listGoalsPage).toHaveBeenCalledWith(COHORT_ID, { page: 1, limit: 20 });
+    expect(result.pagination.totalPages).toBe(0);
+  });
+
+  it('refuses to list or get goals when the actor is neither a member nor an org admin', async () => {
+    mockActorAsOutsider();
+
+    await expect(
+      listPublicApiCohortGoalsService(ORG_ID, ACTOR_ID, cohortParams, { page: 1, limit: 20 })
+    ).rejects.toMatchObject({ statusCode: 403 });
+    await expect(getPublicApiCohortGoalService(ORG_ID, ACTOR_ID, goalParams)).rejects.toMatchObject({
+      statusCode: 403
+    });
+    expect(listGoalsPage).not.toHaveBeenCalled();
+    expect(getGoal).not.toHaveBeenCalled();
   });
 
   it('creates a goal using the automation actor once they are a cohort team member', async () => {
@@ -90,10 +120,10 @@ describe('v1 cohort goal service', () => {
     expect(createGoal).not.toHaveBeenCalled();
   });
 
-  it('gets a goal with no team-membership requirement (read-only)', async () => {
+  it('gets a goal when the actor is a cohort member', async () => {
     vi.mocked(getGoal).mockResolvedValue({ id: GOAL_ID } as Awaited<ReturnType<typeof getGoal>>);
 
-    await getPublicApiCohortGoalService(ORG_ID, goalParams);
+    await getPublicApiCohortGoalService(ORG_ID, ACTOR_ID, goalParams);
 
     expect(getGoal).toHaveBeenCalledWith(COHORT_ID, GOAL_ID);
   });
@@ -125,7 +155,9 @@ describe('v1 cohort goal service', () => {
   it('refuses to touch a goal in a cohort from another organization', async () => {
     vi.mocked(getCohortOrganizationId).mockResolvedValue(OTHER_ORG_ID);
 
-    await expect(getPublicApiCohortGoalService(ORG_ID, goalParams)).rejects.toMatchObject({ statusCode: 404 });
+    await expect(getPublicApiCohortGoalService(ORG_ID, ACTOR_ID, goalParams)).rejects.toMatchObject({
+      statusCode: 404
+    });
     expect(getGoal).not.toHaveBeenCalled();
   });
 });

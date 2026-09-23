@@ -1,16 +1,25 @@
 import type {
   TPublicApiCohortParam,
   TPublicApiCreateCohort,
+  TPublicApiPaginationQuery,
   TPublicApiUpdateCohort
 } from '@cio/utils/validation/public-api';
 
-import { createCohort, deleteCohort, getCohort, updateCohort } from '@api/services/cohort/cohort';
-import { getCohortsByOrg } from '@cio/db/queries/cohort';
-import { assertCohortBelongsToOrganization, assertCohortTeamMemberOrOrgAdmin } from '@api/services/v1/shared';
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import { createCohort, deleteCohort, getCohort, listOrgCohortsPage, updateCohort } from '@api/services/cohort/cohort';
+import {
+  assertAutomationActor,
+  assertCohortBelongsToOrganization,
+  assertCohortMemberOrOrgAdmin,
+  assertCohortTeamMemberOrOrgAdmin,
+  toPublicApiPagination
+} from '@api/services/v1/shared';
 
-export async function listCohortsService(orgId: string) {
-  return getCohortsByOrg(orgId);
+export async function listCohortsService(orgId: string, actorId: string | null, query: TPublicApiPaginationQuery) {
+  assertAutomationActor(actorId);
+
+  const { items, total } = await listOrgCohortsPage(orgId, actorId, query);
+
+  return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
 }
 
 export async function createPublicApiCohortService(
@@ -18,15 +27,14 @@ export async function createPublicApiCohortService(
   actorId: string | null,
   payload: TPublicApiCreateCohort
 ) {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
+  assertAutomationActor(actorId);
 
   return createCohort(orgId, actorId, payload);
 }
 
-export async function getPublicApiCohortService(orgId: string, params: TPublicApiCohortParam) {
+export async function getPublicApiCohortService(orgId: string, actorId: string | null, params: TPublicApiCohortParam) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
   return getCohort(params.cohortId);
 }
@@ -43,7 +51,11 @@ export async function updatePublicApiCohortService(
   return updateCohort(params.cohortId, payload);
 }
 
-export async function deletePublicApiCohortService(orgId: string, actorId: string | null, params: TPublicApiCohortParam) {
+export async function deletePublicApiCohortService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortParam
+) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 

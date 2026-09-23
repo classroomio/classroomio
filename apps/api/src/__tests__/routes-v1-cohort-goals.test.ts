@@ -82,12 +82,25 @@ describe('v1CohortsRouter goal routes', () => {
   });
 
   it('lists goals for a cohort', async () => {
-    vi.mocked(listPublicApiCohortGoalsService).mockResolvedValue([]);
+    vi.mocked(listPublicApiCohortGoalsService).mockResolvedValue({
+      items: [],
+      pagination: { page: 1, limit: 20, total: 0, totalPages: 0 }
+    } as Awaited<ReturnType<typeof listPublicApiCohortGoalsService>>);
 
     const response = await app.request(`/${COHORT_ID}/goals`);
 
     expect(response.status).toBe(200);
-    expect(listPublicApiCohortGoalsService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID });
+    expect(listPublicApiCohortGoalsService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID },
+      { page: 1, limit: 20 }
+    );
+    expect(await response.json()).toEqual({
+      success: true,
+      data: [],
+      pagination: { page: 1, limit: 20, total: 0, totalPages: 0 }
+    });
   });
 
   it('creates a goal using the automation actor', async () => {
@@ -126,7 +139,10 @@ describe('v1CohortsRouter goal routes', () => {
     const deleted = await app.request(`/${COHORT_ID}/goals/${GOAL_ID}`, { method: 'DELETE' });
 
     expect(got.status).toBe(200);
-    expect(getPublicApiCohortGoalService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID, goalId: GOAL_ID });
+    expect(getPublicApiCohortGoalService).toHaveBeenCalledWith('org-1', 'actor-1', {
+      cohortId: COHORT_ID,
+      goalId: GOAL_ID
+    });
     expect(updated.status).toBe(200);
     expect(updatePublicApiCohortGoalService).toHaveBeenCalledWith(
       'org-1',

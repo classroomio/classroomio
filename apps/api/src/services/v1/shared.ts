@@ -2,10 +2,26 @@ import {
   getCohortMemberByProfileId,
   getCohortMemberRole,
   getCohortOrganizationId,
+  isCohortMember,
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
+import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+
+export type TPublicApiPagination = { page: number; limit: number; total: number; totalPages: number };
+
+export function toPublicApiPagination(page: number, limit: number, total: number): TPublicApiPagination {
+  const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
+
+  return { page, limit, total, totalPages };
+}
+
+export function assertAutomationActor(actorId: string | null): asserts actorId is string {
+  if (!actorId) {
+    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
+  }
+}
 
 export async function assertCohortBelongsToOrganization(orgId: string, cohortId: string): Promise<void> {
   const cohortOrganizationId = await getCohortOrganizationId(cohortId);
@@ -14,17 +30,42 @@ export async function assertCohortBelongsToOrganization(orgId: string, cohortId:
   }
 }
 
+export async function assertProfileBelongsToOrganization(orgId: string, profileId: string): Promise<void> {
+  const memberId = await getOrganizationMemberIdByOrgAndProfile(orgId, profileId);
+  if (!memberId) {
+    throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+  }
+}
+
 /**
- * Mirrors `cohortTeamMemberMiddleware`'s rule for the session route: the
- * acting profile must be a cohort tutor/admin, or an org admin. Automation
- * keys are org-scoped, not personally tied to a cohort role, so this checks
- * the key's creator (actorId) the same way a session checks the logged-in
- * user.
+ * Mirrors `cohortMemberMiddleware` for the key's creator: the actor must be a member of the cohort or an org admin.
+ * Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertCohortMemberOrOrgAdmin(cohortId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const [isMember, isOrgAdmin] = await Promise.all([
+    isCohortMember(cohortId, actorId),
+    isOrgAdminByCohortId(cohortId, actorId)
+  ]);
+
+  if (isMember || isOrgAdmin) {
+    return;
+  }
+
+  throw new AppError(
+    'Automation actor must be a cohort member or an organization admin',
+    ErrorCodes.COHORT_FORBIDDEN,
+    403
+  );
+}
+
+/**
+ * Mirrors `cohortTeamMemberMiddleware` for the key's creator: the actor must be a cohort tutor/admin or an org admin.
+ * Throws 401 without an actor and 403 otherwise.
  */
 export async function assertCohortTeamMemberOrOrgAdmin(cohortId: string, actorId: string | null): Promise<void> {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
+  assertAutomationActor(actorId);
 
   const [roleId, isOrgAdmin] = await Promise.all([
     getCohortMemberRole(cohortId, actorId),
@@ -43,17 +84,15 @@ export async function assertCohortTeamMemberOrOrgAdmin(cohortId: string, actorId
 }
 
 /**
- * Mirrors `cohortNewsfeedCommentAuthorOrTeamMiddleware`: the acting profile
- * must be the comment's own author, a cohort tutor/admin, or an org admin.
+ * Mirrors `cohortNewsfeedCommentAuthorOrTeamMiddleware` for the key's creator: the actor must be the comment's
+ * author, a cohort tutor/admin, or an org admin. Throws 401 without an actor and 403 otherwise.
  */
 export async function assertCohortNewsfeedCommentAuthorOrTeam(
   cohortId: string,
   actorId: string | null,
   commentAuthorMemberId: string | null
 ): Promise<void> {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
+  assertAutomationActor(actorId);
 
   const [actorMember, roleId, isOrgAdmin] = await Promise.all([
     getCohortMemberByProfileId(cohortId, actorId),

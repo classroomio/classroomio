@@ -102,6 +102,15 @@ The MCP package never decides permissions.
 
 Cohort tools call the public API (`/public-api/v1/cohorts/...`) and require the key's `public_api:*` scope; the course/draft tools above call other, internal-only endpoints and use their own scopes.
 
+Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
+
+- Reads and reactions need the key creator to be a cohort member or an org admin.
+- Other writes need the key creator to be a cohort tutor/admin or an org admin.
+- Posts and comments are authored as the key creator, so they also need the key creator to be a member of the cohort.
+- A comment can also be deleted by its author.
+
+List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `list_cohort_goals`, `list_cohort_newsfeed_comments`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`. `list_cohort_newsfeed` is cursor-based: pass the returned `nextCursor` back as `cursor`.
+
 ## Required Environment Variables
 
 - `CLASSROOMIO_API_URL`

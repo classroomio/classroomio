@@ -1,4 +1,9 @@
-import { ZPublicApiCohortParam, ZPublicApiCreateCohort, ZPublicApiUpdateCohort } from '@cio/utils/validation/public-api';
+import {
+  ZPublicApiCohortParam,
+  ZPublicApiCreateCohort,
+  ZPublicApiPaginationQuery,
+  ZPublicApiUpdateCohort
+} from '@cio/utils/validation/public-api';
 import {
   createPublicApiCohortService,
   deletePublicApiCohortService,
@@ -14,48 +19,31 @@ import { v1CohortCoursesRouter } from './cohort-courses';
 import { v1CohortGoalsRouter } from './cohort-goals';
 import { v1CohortMembersRouter } from './cohort-members';
 import { v1CohortNewsfeedRouter } from './cohort-newsfeed';
-
-const CohortResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
-
-const CohortListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } }
-  },
-  required: ['success', 'data']
-};
-
-const jsonResponse = (description: string, schema: object) => ({
-  description,
-  content: { 'application/json': { schema } }
-});
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
+import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
 
 export const v1CohortsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List the cohorts in your organization',
+      description: `List the cohorts the automation actor can see: every cohort for an org admin, otherwise only cohorts the actor belongs to. ${PAGINATION_NOTE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohorts returned successfully', CohortListResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' }
+        200: jsonResponse('Cohorts returned successfully', PaginatedListResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: errorResponses.forbidden
       }
     }),
+    validator('query', ZPublicApiPaginationQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
-        const cohorts = await listCohortsService(orgId);
+        const actorId = c.get('actorId');
+        const query = c.req.valid('query');
+        const result = await listCohortsService(orgId, actorId, query);
 
-        return c.json({ success: true, data: cohorts }, 200);
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to list cohorts');
       }
@@ -64,13 +52,13 @@ export const v1CohortsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: 'Create a cohort',
+      description: 'Create a cohort. The automation actor (the key creator) is added as its tutor.',
       tags: ['Public API Cohorts'],
       responses: {
-        201: jsonResponse('Cohort created successfully', CohortResponse),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' }
+        201: jsonResponse('Cohort created successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: errorResponses.forbidden
       }
     }),
     validator('json', ZPublicApiCreateCohort),
@@ -94,12 +82,13 @@ export const v1CohortsRouter = new Hono()
   .get(
     '/:cohortId',
     describeRoute({
-      description: 'Get a cohort',
+      description: `Get a cohort. ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohort returned successfully', CohortResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Cohort returned successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.member,
         404: { description: 'Cohort not found' }
       }
     }),
@@ -107,8 +96,9 @@ export const v1CohortsRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const cohort = await getPublicApiCohortService(orgId, params);
+        const cohort = await getPublicApiCohortService(orgId, actorId, params);
 
         return c.json({ success: true, data: cohort }, 200);
       } catch (error) {
@@ -119,13 +109,13 @@ export const v1CohortsRouter = new Hono()
   .put(
     '/:cohortId',
     describeRoute({
-      description: 'Update a cohort',
+      description: `Update a cohort. Send only the fields to change. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohort updated successfully', CohortResponse),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Cohort updated successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort not found' }
       }
     }),
@@ -148,12 +138,13 @@ export const v1CohortsRouter = new Hono()
   .delete(
     '/:cohortId',
     describeRoute({
-      description: 'Delete a cohort',
+      description: `Permanently delete a cohort and its memberships, newsfeed, and goals. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohort deleted successfully', CohortResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Cohort deleted successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort not found' }
       }
     }),

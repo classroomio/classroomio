@@ -2,21 +2,36 @@ import type {
   TPublicApiAddCohortMembers,
   TPublicApiCohortMemberParam,
   TPublicApiCohortParam,
+  TPublicApiPaginationQuery,
   TPublicApiUpdateCohortMember
 } from '@cio/utils/validation/public-api';
 
 import {
   addCohortMembers,
-  listCohortMembers,
+  listCohortMembersPage,
   removeCohortMemberService,
   updateCohortMemberService
 } from '@api/services/cohort/cohort';
-import { assertCohortBelongsToOrganization, assertCohortTeamMemberOrOrgAdmin } from '@api/services/v1/shared';
+import {
+  assertCohortBelongsToOrganization,
+  assertCohortMemberOrOrgAdmin,
+  assertCohortTeamMemberOrOrgAdmin,
+  assertProfileBelongsToOrganization,
+  toPublicApiPagination
+} from '@api/services/v1/shared';
 
-export async function listPublicApiCohortMembersService(orgId: string, params: TPublicApiCohortParam) {
+export async function listPublicApiCohortMembersService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortParam,
+  query: TPublicApiPaginationQuery
+) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return listCohortMembers(params.cohortId);
+  const { items, total } = await listCohortMembersPage(params.cohortId, query);
+
+  return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
 }
 
 export async function addPublicApiCohortMembersService(
@@ -27,6 +42,9 @@ export async function addPublicApiCohortMembersService(
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
+
+  const profileIds = payload.members.flatMap((member) => (member.profileId ? [member.profileId] : []));
+  await Promise.all(profileIds.map((profileId) => assertProfileBelongsToOrganization(orgId, profileId)));
 
   return addCohortMembers(params.cohortId, payload);
 }

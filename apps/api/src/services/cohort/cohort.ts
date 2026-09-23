@@ -13,6 +13,10 @@ import {
 import {
   addCourseToCohort,
   addCohortMember,
+  countCohortMembers,
+  countCohortNewsfeedComments,
+  countCohortsByOrgForProfile,
+  countCoursesByCohort,
   createCohortWithCreatorMembership,
   createCohortNewsfeed as createCohortNewsfeedQuery,
   createCohortNewsfeedComment as createCohortNewsfeedCommentQuery,
@@ -38,7 +42,8 @@ import {
   updateCohort as updateCohortQuery,
   updateCohortMember as updateCohortMemberQuery,
   updateCohortNewsfeed as updateCohortNewsfeedQuery,
-  updateCohortNewsfeedReaction
+  updateCohortNewsfeedReaction,
+  type TCohortListPage
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
@@ -172,6 +177,15 @@ export async function listOrgCohorts(organizationId: string, profileId: string) 
   }
 }
 
+export async function listOrgCohortsPage(organizationId: string, profileId: string, page: TCohortListPage) {
+  const [items, total] = await Promise.all([
+    getCohortsByOrgForProfile(organizationId, profileId, page),
+    countCohortsByOrgForProfile(organizationId, profileId)
+  ]);
+
+  return { items, total };
+}
+
 export async function updateCohort(cohortId: string, data: TUpdateCohort) {
   try {
     const updated = await updateCohortQuery(cohortId, data);
@@ -219,6 +233,12 @@ export async function listCohortMembers(cohortId: string) {
       500
     );
   }
+}
+
+export async function listCohortMembersPage(cohortId: string, page: TCohortListPage) {
+  const [items, total] = await Promise.all([getCohortMembers(cohortId, page), countCohortMembers(cohortId)]);
+
+  return { items, total };
 }
 
 export async function addCohortMembers(cohortId: string, data: TAddCohortMembers) {
@@ -384,10 +404,25 @@ export async function getEnrolledCohorts(profileId: string) {
 
 // ─── Cohort Courses ──────────────────────────────────────────────────────────
 
+async function seesOnlyPublishedCohortCourses(cohortId: string, profileId: string) {
+  const roleId = await getCohortMemberRole(cohortId, profileId);
+
+  return roleId === ROLE.STUDENT;
+}
+
+export async function listCohortCoursesPage(cohortId: string, profileId: string, page: TCohortListPage) {
+  const onlyPublished = await seesOnlyPublishedCohortCourses(cohortId, profileId);
+  const [items, total] = await Promise.all([
+    getCoursesByCohort(cohortId, onlyPublished, page),
+    countCoursesByCohort(cohortId, onlyPublished)
+  ]);
+
+  return { items, total };
+}
+
 export async function listCohortCourses(cohortId: string, profileId: string) {
   try {
-    const roleId = await getCohortMemberRole(cohortId, profileId);
-    const onlyPublished = roleId === ROLE.STUDENT;
+    const onlyPublished = await seesOnlyPublishedCohortCourses(cohortId, profileId);
 
     return getCoursesByCohort(cohortId, onlyPublished);
   } catch (error) {
@@ -552,12 +587,28 @@ export async function deleteCohortNewsfeedService(cohortId: string, feedId: stri
 
 // ─── Cohort Newsfeed Comments ────────────────────────────────────────────────
 
+async function assertCohortNewsfeedExists(cohortId: string, feedId: string) {
+  const feed = await getCohortNewsfeedById(cohortId, feedId);
+  if (!feed) {
+    throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
+  }
+}
+
+export async function listCohortNewsfeedCommentsPage(cohortId: string, feedId: string, page: TCohortListPage) {
+  await assertCohortNewsfeedExists(cohortId, feedId);
+
+  const [items, total] = await Promise.all([
+    getCohortNewsfeedComments(cohortId, feedId, page),
+    countCohortNewsfeedComments(cohortId, feedId)
+  ]);
+
+  return { items, total };
+}
+
 export async function listCohortNewsfeedComments(cohortId: string, feedId: string) {
   try {
-    const feed = await getCohortNewsfeedById(cohortId, feedId);
-    if (!feed) {
-      throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
-    }
+    await assertCohortNewsfeedExists(cohortId, feedId);
+
     return getCohortNewsfeedComments(cohortId, feedId);
   } catch (error) {
     if (error instanceof AppError) throw error;

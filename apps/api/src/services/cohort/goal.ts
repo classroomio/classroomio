@@ -4,6 +4,7 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { buildEmailBranding } from '@cio/email';
 import {
   countAssignmentsByStatus,
+  countCohortGoals,
   createCohortGoal,
   deleteCohortGoal,
   getAssignmentsForProfile,
@@ -23,6 +24,7 @@ import {
   type TNewCohortGoalAssignment,
   type TCohortGoal,
   type TCohortGoalAssignment,
+  type TCohortListPage,
   updateCohortGoal as updateCohortGoalQuery,
   upsertCohortGoalAssignments
 } from '@cio/db/queries/cohort';
@@ -34,22 +36,14 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 type GoalType = TCohortGoal['type'];
 
-/**
- * Every courseId a goal is scoped to must already be linked to the cohort
- * (via cohort_course) — otherwise the evaluator would score learners against
- * courses outside the cohort, including courses from another organization.
- */
+/** Throws 400 unless every courseId is linked to the cohort. */
 async function assertCourseIdsBelongToCohort(cohortId: string, courseIds: string[]): Promise<void> {
   const cohortCourses = await getCoursesByCohort(cohortId);
   const cohortCourseIds = new Set(cohortCourses.map((row) => row.courseId));
 
   const invalidCourseId = courseIds.find((courseId) => !cohortCourseIds.has(courseId));
   if (invalidCourseId) {
-    throw new AppError(
-      `Course "${invalidCourseId}" is not linked to this cohort`,
-      ErrorCodes.VALIDATION_ERROR,
-      400
-    );
+    throw new AppError(`Course "${invalidCourseId}" is not linked to this cohort`, ErrorCodes.VALIDATION_ERROR, 400);
   }
 }
 
@@ -96,10 +90,9 @@ export async function createGoal(cohortId: string, profileId: string, data: TCre
   }
 }
 
-export async function listGoals(
-  cohortId: string
+async function withStatusCounts(
+  goals: TCohortGoal[]
 ): Promise<Array<TCohortGoal & { statusCounts: Record<string, number> }>> {
-  const goals = await getCohortGoals(cohortId);
   if (goals.length === 0) return [];
 
   const counts = await countAssignmentsByStatus(goals.map((goal) => goal.id));
@@ -108,6 +101,21 @@ export async function listGoals(
     ...goal,
     statusCounts: counts.get(goal.id) ?? {}
   }));
+}
+
+export async function listGoals(
+  cohortId: string
+): Promise<Array<TCohortGoal & { statusCounts: Record<string, number> }>> {
+  const goals = await getCohortGoals(cohortId);
+
+  return withStatusCounts(goals);
+}
+
+export async function listGoalsPage(cohortId: string, page: TCohortListPage) {
+  const [goals, total] = await Promise.all([getCohortGoals(cohortId, { page }), countCohortGoals(cohortId)]);
+  const items = await withStatusCounts(goals);
+
+  return { items, total };
 }
 
 export async function getGoal(cohortId: string, goalId: string): Promise<TCohortGoal> {
@@ -119,19 +127,45 @@ export async function getGoal(cohortId: string, goalId: string): Promise<TCohort
   return goal;
 }
 
+/** Throws 400 when the goal would break the create-time rules for its type and deadline. */
+function assertGoalDefinitionIsValid(goal: TCohortGoal) {
+  const deadlineDate = goal.deadlineDate ? new Date(goal.deadlineDate).toISOString() : goal.deadlineDate;
+  const revalidation = ZCreateCohortGoal.safeParse({
+    type: goal.type,
+    title: goal.title,
+    description: goal.description,
+    courseIds: goal.courseIds,
+    requiredCount: goal.requiredCount,
+    scoreThreshold: goal.scoreThreshold,
+    teamPassRateThreshold: goal.teamPassRateThreshold,
+    reminderDaysBefore: goal.reminderDaysBefore,
+    deadlineKind: goal.deadlineKind,
+    deadlineDate,
+    relativeDays: goal.relativeDays,
+    recurringMonths: goal.recurringMonths
+  });
+
+  if (!revalidation.success) {
+    throw new AppError(
+      revalidation.error.issues[0]?.message ?? 'Goal update would leave the goal in an invalid state',
+      ErrorCodes.VALIDATION_ERROR,
+      400
+    );
+  }
+}
+
 export async function updateGoal(cohortId: string, goalId: string, data: TUpdateCohortGoal): Promise<TCohortGoal> {
   const existing = await getCohortGoalById(goalId, cohortId);
   if (!existing) {
     throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
   }
 
-  if (data.courseIds) {
-    await assertCourseIdsBelongToCohort(cohortId, data.courseIds);
+  const existingCourseIds = new Set(existing.courseIds);
+  const addedCourseIds = (data.courseIds ?? []).filter((courseId) => !existingCourseIds.has(courseId));
+  if (addedCourseIds.length > 0) {
+    await assertCourseIdsBelongToCohort(cohortId, addedCourseIds);
   }
 
-  // Only include fields the caller actually sent — `data.field ?? null` would
-  // wipe every omitted field, since a partial update legitimately leaves most
-  // keys absent rather than explicitly null.
   const patch: Partial<TNewCohortGoal> = {};
   if ('title' in data) patch.title = data.title;
   if ('description' in data) patch.description = data.description ?? null;
@@ -147,31 +181,9 @@ export async function updateGoal(cohortId: string, goalId: string, data: TUpdate
   if ('recurringMonths' in data) patch.recurringMonths = data.recurringMonths ?? null;
   if ('status' in data) patch.status = data.status;
 
-  // Re-run the same per-type/per-deadline invariants create-time uses, against
-  // the state the goal would end up in — a patch that's valid in isolation
-  // (e.g. `{ type: 'n_of_m' }`) can still leave the merged goal inconsistent
-  // (no requiredCount) if we don't check the full picture.
-  const merged = { ...existing, ...patch };
-  const revalidation = ZCreateCohortGoal.safeParse({
-    type: merged.type,
-    title: merged.title,
-    description: merged.description,
-    courseIds: merged.courseIds,
-    requiredCount: merged.requiredCount,
-    scoreThreshold: merged.scoreThreshold,
-    teamPassRateThreshold: merged.teamPassRateThreshold,
-    reminderDaysBefore: merged.reminderDaysBefore,
-    deadlineKind: merged.deadlineKind,
-    deadlineDate: merged.deadlineDate,
-    relativeDays: merged.relativeDays,
-    recurringMonths: merged.recurringMonths
-  });
-  if (!revalidation.success) {
-    throw new AppError(
-      revalidation.error.issues[0]?.message ?? 'Goal update would leave the goal in an invalid state',
-      ErrorCodes.VALIDATION_ERROR,
-      400
-    );
+  const changesDefinition = Object.keys(patch).some((field) => field !== 'status');
+  if (changesDefinition) {
+    assertGoalDefinitionIsValid({ ...existing, ...patch });
   }
 
   try {

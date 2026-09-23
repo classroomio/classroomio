@@ -150,6 +150,44 @@ Current tools:
 - `create_course_exercise_from_template`
 - `update_course_exercise`
 
+Cohort tools:
+
+- `list_org_cohorts`
+- `create_cohort`
+- `get_cohort`
+- `update_cohort`
+- `delete_cohort`
+- `list_cohort_members`
+- `add_cohort_members`
+- `update_cohort_member`
+- `delete_cohort_member`
+- `list_cohort_courses`
+- `add_cohort_course`
+- `remove_cohort_course`
+- `list_cohort_newsfeed`
+- `create_cohort_newsfeed_post`
+- `update_cohort_newsfeed_post`
+- `update_cohort_newsfeed_reaction`
+- `delete_cohort_newsfeed_post`
+- `list_cohort_newsfeed_comments`
+- `create_cohort_newsfeed_comment`
+- `delete_cohort_newsfeed_comment`
+- `list_cohort_goals`
+- `create_cohort_goal`
+- `get_cohort_goal`
+- `update_cohort_goal`
+- `archive_cohort_goal`
+- `delete_cohort_goal`
+
+Cohort tools call the public API and need the key's `public_api:*` scope. They act as the person who created the key, with the same permissions that person has in the dashboard:
+
+- Reading a cohort and reacting need them to be a member of the cohort or an org admin.
+- Changing a cohort, its members, courses, posts, or goals needs them to be a cohort tutor/admin or an org admin.
+- Posting and commenting are done as them, so they also need to be a member of the cohort.
+- A comment can also be deleted by its author.
+
+List tools take `page` and `limit` (default 20, max 100). The newsfeed is cursor-based instead: pass the returned `nextCursor` back as `cursor`.
+
 ## Draft Model
 
 A draft is a saved, structured course proposal. It is not the live course.

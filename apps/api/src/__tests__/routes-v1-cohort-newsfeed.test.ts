@@ -88,7 +88,38 @@ describe('v1CohortsRouter newsfeed routes', () => {
     const response = await app.request(`/${COHORT_ID}/newsfeed?limit=5`);
 
     expect(response.status).toBe(200);
-    expect(listPublicApiCohortNewsfeedService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID }, { limit: 5 });
+    expect(listPublicApiCohortNewsfeedService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID },
+      { limit: 5 }
+    );
+    expect(await response.json()).toEqual({
+      success: true,
+      data: { items: [], totalCount: 0, hasMore: false, nextCursor: null }
+    });
+  });
+
+  it('passes a compound cursor through and rejects a malformed one with a 400', async () => {
+    vi.mocked(listPublicApiCohortNewsfeedService).mockResolvedValue({
+      items: [],
+      totalCount: 0,
+      hasMore: false,
+      nextCursor: null
+    });
+    const cursor = `2026-09-23 10:00:00.123456+00|${FEED_ID}`;
+
+    const valid = await app.request(`/${COHORT_ID}/newsfeed?cursor=${encodeURIComponent(cursor)}`);
+    const invalid = await app.request(`/${COHORT_ID}/newsfeed?cursor=not-a-date`);
+
+    expect(valid.status).toBe(200);
+    expect(listPublicApiCohortNewsfeedService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID },
+      { cursor, limit: 10 }
+    );
+    expect(invalid.status).toBe(400);
   });
 
   it('creates a post using the automation actor', async () => {
@@ -129,6 +160,7 @@ describe('v1CohortsRouter newsfeed routes', () => {
     expect(reacted.status).toBe(200);
     expect(updatePublicApiCohortNewsfeedReactionService).toHaveBeenCalledWith(
       'org-1',
+      'actor-1',
       { cohortId: COHORT_ID, feedId: FEED_ID },
       { reaction }
     );
@@ -149,7 +181,10 @@ describe('v1CohortsRouter newsfeed routes', () => {
   });
 
   it('lists and creates comments using the automation actor', async () => {
-    vi.mocked(listPublicApiCohortNewsfeedCommentsService).mockResolvedValue([]);
+    vi.mocked(listPublicApiCohortNewsfeedCommentsService).mockResolvedValue({
+      items: [],
+      pagination: { page: 1, limit: 20, total: 0, totalPages: 0 }
+    } as Awaited<ReturnType<typeof listPublicApiCohortNewsfeedCommentsService>>);
     vi.mocked(createPublicApiCohortNewsfeedCommentService).mockResolvedValue({ id: COMMENT_ID } as Awaited<
       ReturnType<typeof createPublicApiCohortNewsfeedCommentService>
     >);
@@ -161,10 +196,12 @@ describe('v1CohortsRouter newsfeed routes', () => {
     );
 
     expect(list.status).toBe(200);
-    expect(listPublicApiCohortNewsfeedCommentsService).toHaveBeenCalledWith('org-1', {
-      cohortId: COHORT_ID,
-      feedId: FEED_ID
-    });
+    expect(listPublicApiCohortNewsfeedCommentsService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID, feedId: FEED_ID },
+      { page: 1, limit: 20 }
+    );
     expect(created.status).toBe(201);
     expect(createPublicApiCohortNewsfeedCommentService).toHaveBeenCalledWith(
       'org-1',

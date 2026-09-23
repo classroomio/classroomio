@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@cio/db/queries/cohort', () => ({
+  countCohortGoals: vi.fn(),
   createCohortGoal: vi.fn(),
   deleteCohortGoal: vi.fn(),
   getAssignmentsForProfile: vi.fn(),
@@ -28,7 +29,7 @@ import {
   getCoursesByCohort,
   updateCohortGoal as updateCohortGoalQuery
 } from '@cio/db/queries/cohort';
-import { createGoal, updateGoal } from '@api/services/cohort/goal';
+import { archiveGoal, createGoal, updateGoal } from '@api/services/cohort/goal';
 
 const COHORT_ID = 'cohort-1';
 const GOAL_ID = 'goal-1';
@@ -162,5 +163,44 @@ describe('updateGoal partial-update field preservation', () => {
     await updateGoal(COHORT_ID, GOAL_ID, { description: null });
 
     expect(updateCohortGoalQuery).toHaveBeenCalledWith(COHORT_ID, GOAL_ID, { description: null });
+  });
+
+  it('archives a goal that is already stored in an invalid state', async () => {
+    vi.mocked(getCohortGoalById).mockResolvedValue({ ...EXISTING_GOAL, type: 'score', scoreThreshold: null });
+    vi.mocked(updateCohortGoalQuery).mockResolvedValue({ ...EXISTING_GOAL, status: 'archived' });
+
+    await archiveGoal(COHORT_ID, GOAL_ID);
+
+    expect(updateCohortGoalQuery).toHaveBeenCalledWith(COHORT_ID, GOAL_ID, { status: 'archived' });
+  });
+
+  it('allows resending a course that was later unlinked, but rejects adding a new unlinked course', async () => {
+    const unlinkedCourseId = '55555555-5555-4555-8555-555555555555';
+    vi.mocked(getCohortGoalById).mockResolvedValue({ ...EXISTING_GOAL, courseIds: [unlinkedCourseId] });
+    vi.mocked(getCoursesByCohort).mockResolvedValue([]);
+    vi.mocked(updateCohortGoalQuery).mockResolvedValue({ ...EXISTING_GOAL, title: 'Renamed' });
+
+    await updateGoal(COHORT_ID, GOAL_ID, { title: 'Renamed', courseIds: [unlinkedCourseId] });
+    await expect(
+      updateGoal(COHORT_ID, GOAL_ID, { courseIds: [unlinkedCourseId, ANOTHER_COHORT_COURSE_ID] })
+    ).rejects.toMatchObject({ statusCode: 400 });
+
+    expect(updateCohortGoalQuery).toHaveBeenCalledTimes(1);
+  });
+
+  it('accepts a stored deadline in the format Postgres returns when updating or archiving', async () => {
+    const goalWithStoredDeadline = {
+      ...EXISTING_GOAL,
+      deadlineKind: 'absolute' as const,
+      deadlineDate: '2026-09-23 10:00:00.123456+00'
+    };
+    vi.mocked(getCohortGoalById).mockResolvedValue(goalWithStoredDeadline);
+    vi.mocked(updateCohortGoalQuery).mockResolvedValue(goalWithStoredDeadline);
+
+    await updateGoal(COHORT_ID, GOAL_ID, { title: 'Renamed' });
+    await archiveGoal(COHORT_ID, GOAL_ID);
+
+    expect(updateCohortGoalQuery).toHaveBeenNthCalledWith(1, COHORT_ID, GOAL_ID, { title: 'Renamed' });
+    expect(updateCohortGoalQuery).toHaveBeenNthCalledWith(2, COHORT_ID, GOAL_ID, { status: 'archived' });
   });
 });

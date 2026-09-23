@@ -5,6 +5,7 @@ import type {
   TPublicApiCohortParam,
   TPublicApiCreateCohortNewsfeed,
   TPublicApiCreateCohortNewsfeedComment,
+  TPublicApiPaginationQuery,
   TPublicApiUpdateCohortNewsfeed,
   TPublicApiUpdateCohortReaction
 } from '@cio/utils/validation/public-api';
@@ -15,24 +16,29 @@ import {
   deleteCohortNewsfeedCommentService,
   deleteCohortNewsfeedService,
   listCohortNewsfeed,
-  listCohortNewsfeedComments,
+  listCohortNewsfeedCommentsPage,
   updateCohortNewsfeedReactionService,
   updateCohortNewsfeedService
 } from '@api/services/cohort/cohort';
-import { getCohortNewsfeedCommentById } from '@cio/db/queries/cohort';
+import { getCohortNewsfeedById, getCohortNewsfeedCommentById } from '@cio/db/queries/cohort';
 import {
+  assertAutomationActor,
   assertCohortBelongsToOrganization,
+  assertCohortMemberOrOrgAdmin,
   assertCohortNewsfeedCommentAuthorOrTeam,
-  assertCohortTeamMemberOrOrgAdmin
+  assertCohortTeamMemberOrOrgAdmin,
+  toPublicApiPagination
 } from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export async function listPublicApiCohortNewsfeedService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCohortParam,
   query: TPublicApiCohortNewsfeedQuery
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
   return listCohortNewsfeed(params.cohortId, query);
 }
@@ -43,10 +49,7 @@ export async function createPublicApiCohortNewsfeedService(
   params: TPublicApiCohortParam,
   payload: TPublicApiCreateCohortNewsfeed
 ) {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
-
+  assertAutomationActor(actorId);
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
@@ -67,10 +70,12 @@ export async function updatePublicApiCohortNewsfeedService(
 
 export async function updatePublicApiCohortNewsfeedReactionService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCohortNewsfeedParam,
   payload: TPublicApiUpdateCohortReaction
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
   return updateCohortNewsfeedReactionService(params.cohortId, params.feedId, payload);
 }
@@ -88,11 +93,16 @@ export async function deletePublicApiCohortNewsfeedService(
 
 export async function listPublicApiCohortNewsfeedCommentsService(
   orgId: string,
-  params: TPublicApiCohortNewsfeedParam
+  actorId: string | null,
+  params: TPublicApiCohortNewsfeedParam,
+  query: TPublicApiPaginationQuery
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return listCohortNewsfeedComments(params.cohortId, params.feedId);
+  const { items, total } = await listCohortNewsfeedCommentsPage(params.cohortId, params.feedId, query);
+
+  return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
 }
 
 export async function createPublicApiCohortNewsfeedCommentService(
@@ -101,11 +111,9 @@ export async function createPublicApiCohortNewsfeedCommentService(
   params: TPublicApiCohortNewsfeedParam,
   payload: TPublicApiCreateCohortNewsfeedComment
 ) {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
-
+  assertAutomationActor(actorId);
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
   return createCohortNewsfeedCommentService(params.cohortId, params.feedId, actorId, payload);
 }
@@ -116,6 +124,11 @@ export async function deletePublicApiCohortNewsfeedCommentService(
   params: TPublicApiCohortNewsfeedCommentParam
 ) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+
+  const feed = await getCohortNewsfeedById(params.cohortId, params.feedId);
+  if (!feed) {
+    throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
+  }
 
   const comment = await getCohortNewsfeedCommentById(params.commentId);
   if (!comment || comment.cohortNewsfeedId !== params.feedId) {

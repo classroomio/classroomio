@@ -54,6 +54,9 @@ const app = new Hono()
   })
   .route('/', v1CohortsRouter);
 
+const firstPage = { page: 1, limit: 20 };
+const emptyPage = { items: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+
 const jsonRequest = (method: string, body: unknown) => ({
   method,
   headers: { 'content-type': 'application/json' },
@@ -65,13 +68,42 @@ describe('v1CohortsRouter', () => {
     vi.clearAllMocks();
   });
 
-  it('lists cohorts for the org', async () => {
-    vi.mocked(listCohortsService).mockResolvedValue([]);
+  it('lists cohorts for the actor with default pagination and returns the paginated envelope', async () => {
+    vi.mocked(listCohortsService).mockResolvedValue({
+      items: [{ id: COHORT_ID }],
+      pagination: { page: 1, limit: 20, total: 1, totalPages: 1 }
+    } as unknown as Awaited<ReturnType<typeof listCohortsService>>);
 
     const response = await app.request('/');
 
     expect(response.status).toBe(200);
-    expect(listCohortsService).toHaveBeenCalledWith('org-1');
+    expect(listCohortsService).toHaveBeenCalledWith('org-1', 'actor-1', firstPage);
+    expect(await response.json()).toEqual({
+      success: true,
+      data: [{ id: COHORT_ID }],
+      pagination: { page: 1, limit: 20, total: 1, totalPages: 1 }
+    });
+  });
+
+  it('rejects a limit above 100 with a 400', async () => {
+    const response = await app.request('/?limit=101');
+
+    expect(response.status).toBe(400);
+    expect(listCohortsService).not.toHaveBeenCalled();
+  });
+
+  it('rejects a non-uuid cohortId with a 400', async () => {
+    const response = await app.request('/not-a-uuid');
+
+    expect(response.status).toBe(400);
+    expect(getPublicApiCohortService).not.toHaveBeenCalled();
+  });
+
+  it('rejects an empty update body with a 400', async () => {
+    const response = await app.request(`/${COHORT_ID}`, jsonRequest('PUT', {}));
+
+    expect(response.status).toBe(400);
+    expect(updatePublicApiCohortService).not.toHaveBeenCalled();
   });
 
   it('creates a cohort using the automation actor', async () => {
@@ -83,6 +115,7 @@ describe('v1CohortsRouter', () => {
 
     expect(response.status).toBe(201);
     expect(createPublicApiCohortService).toHaveBeenCalledWith('org-1', 'actor-1', { name: 'Cohort A' });
+    expect(await response.json()).toEqual({ success: true, data: { id: COHORT_ID } });
   });
 
   it('gets, updates, and deletes a cohort by id', async () => {
@@ -101,7 +134,7 @@ describe('v1CohortsRouter', () => {
     const deleted = await app.request(`/${COHORT_ID}`, { method: 'DELETE' });
 
     expect(got.status).toBe(200);
-    expect(getPublicApiCohortService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID });
+    expect(getPublicApiCohortService).toHaveBeenCalledWith('org-1', 'actor-1', { cohortId: COHORT_ID });
     expect(updated.status).toBe(200);
     expect(updatePublicApiCohortService).toHaveBeenCalledWith(
       'org-1',
@@ -114,12 +147,19 @@ describe('v1CohortsRouter', () => {
   });
 
   it('routes nested /members to the member router, not the /:cohortId handlers', async () => {
-    vi.mocked(listPublicApiCohortMembersService).mockResolvedValue([]);
+    vi.mocked(listPublicApiCohortMembersService).mockResolvedValue(
+      emptyPage as Awaited<ReturnType<typeof listPublicApiCohortMembersService>>
+    );
 
-    const response = await app.request(`/${COHORT_ID}/members`);
+    const response = await app.request(`/${COHORT_ID}/members?page=2&limit=5`);
 
     expect(response.status).toBe(200);
-    expect(listPublicApiCohortMembersService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID });
+    expect(listPublicApiCohortMembersService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID },
+      { page: 2, limit: 5 }
+    );
     expect(getPublicApiCohortService).not.toHaveBeenCalled();
   });
 
@@ -161,12 +201,20 @@ describe('v1CohortsRouter', () => {
   });
 
   it('routes nested /courses to the course router, not the /:cohortId handlers', async () => {
-    vi.mocked(listPublicApiCohortCoursesService).mockResolvedValue([]);
+    vi.mocked(listPublicApiCohortCoursesService).mockResolvedValue(
+      emptyPage as Awaited<ReturnType<typeof listPublicApiCohortCoursesService>>
+    );
 
     const response = await app.request(`/${COHORT_ID}/courses`);
 
     expect(response.status).toBe(200);
-    expect(listPublicApiCohortCoursesService).toHaveBeenCalledWith('org-1', { cohortId: COHORT_ID });
+    expect(listPublicApiCohortCoursesService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID },
+      firstPage
+    );
+    expect(await response.json()).toMatchObject({ success: true, data: [], pagination: { totalPages: 0 } });
     expect(getPublicApiCohortService).not.toHaveBeenCalled();
   });
 

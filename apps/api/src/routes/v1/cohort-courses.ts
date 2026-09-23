@@ -1,7 +1,8 @@
 import {
   ZPublicApiAddCourseToCohort,
   ZPublicApiCohortCourseParam,
-  ZPublicApiCohortParam
+  ZPublicApiCohortParam,
+  ZPublicApiPaginationQuery
 } from '@cio/utils/validation/public-api';
 import {
   addPublicApiCohortCourseService,
@@ -12,51 +13,34 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-
-const CourseResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
-
-const CourseListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } }
-  },
-  required: ['success', 'data']
-};
-
-const jsonResponse = (description: string, schema: object) => ({
-  description,
-  content: { 'application/json': { schema } }
-});
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
+import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
 
 export const v1CohortCoursesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List the courses linked to a cohort',
+      description: `List the courses linked to a cohort. If the automation actor is a student in the cohort, only published courses are returned. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Courses'],
       responses: {
-        200: jsonResponse('Cohort courses returned successfully', CourseListResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Cohort courses returned successfully', PaginatedListResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.member,
         404: { description: 'Cohort not found' }
       }
     }),
     validator('param', ZPublicApiCohortParam),
+    validator('query', ZPublicApiPaginationQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const courses = await listPublicApiCohortCoursesService(orgId, params);
+        const query = c.req.valid('query');
+        const result = await listPublicApiCohortCoursesService(orgId, actorId, params, query);
 
-        return c.json({ success: true, data: courses }, 200);
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to list cohort courses');
       }
@@ -65,13 +49,13 @@ export const v1CohortCoursesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: 'Link a course to a cohort',
+      description: `Link a course from your organization to a cohort. Existing cohort students are enrolled in the course. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Courses'],
       responses: {
-        201: jsonResponse('Course added to cohort', CourseResponse),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        201: jsonResponse('Course added to cohort', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or course not found' },
         409: { description: 'Course is already in this cohort' }
       }
@@ -95,12 +79,13 @@ export const v1CohortCoursesRouter = new Hono()
   .delete(
     '/:courseId',
     describeRoute({
-      description: 'Unlink a course from a cohort',
+      description: `Unlink a course from a cohort. The course itself is not deleted. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Courses'],
       responses: {
-        200: jsonResponse('Course removed from cohort', CourseResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Course removed from cohort', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or course not found' }
       }
     }),

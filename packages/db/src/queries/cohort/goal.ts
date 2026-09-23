@@ -1,8 +1,9 @@
 import * as schema from '@db/schema';
 
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, count, eq, inArray, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
+import type { TCohortListPage } from './cohort';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -45,24 +46,44 @@ export async function getCohortGoalById(goalId: string, cohortId?: string): Prom
   }
 }
 
+type TCohortGoalListOptions = { includeArchived?: boolean };
+
+const cohortGoalCondition = (cohortId: string, options: TCohortGoalListOptions) =>
+  options.includeArchived
+    ? eq(schema.cohortGoal.cohortId, cohortId)
+    : and(eq(schema.cohortGoal.cohortId, cohortId), eq(schema.cohortGoal.status, 'active'));
+
 export async function getCohortGoals(
   cohortId: string,
-  options: { includeArchived?: boolean } = {}
+  options: TCohortGoalListOptions & { page?: TCohortListPage } = {}
 ): Promise<TCohortGoal[]> {
   try {
-    const conditions = [eq(schema.cohortGoal.cohortId, cohortId)];
-    if (!options.includeArchived) {
-      conditions.push(eq(schema.cohortGoal.status, 'active'));
-    }
-
-    return await db
+    const { page } = options;
+    const query = db
       .select()
       .from(schema.cohortGoal)
-      .where(and(...conditions))
-      .orderBy(asc(schema.cohortGoal.createdAt));
+      .where(cohortGoalCondition(cohortId, options))
+      .orderBy(asc(schema.cohortGoal.createdAt), asc(schema.cohortGoal.id))
+      .$dynamic();
+
+    return await (page ? query.limit(page.limit).offset((page.page - 1) * page.limit) : query);
   } catch (error) {
     console.error('getCohortGoals error:', error);
     throw new Error(`Failed to list cohort goals: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function countCohortGoals(cohortId: string, options: TCohortGoalListOptions = {}): Promise<number> {
+  try {
+    const [row] = await db
+      .select({ count: count(schema.cohortGoal.id) })
+      .from(schema.cohortGoal)
+      .where(cohortGoalCondition(cohortId, options));
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countCohortGoals error:', error);
+    throw new Error(`Failed to count cohort goals: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

@@ -2,6 +2,7 @@ import {
   ZPublicApiAddCohortMembers,
   ZPublicApiCohortMemberParam,
   ZPublicApiCohortParam,
+  ZPublicApiPaginationQuery,
   ZPublicApiUpdateCohortMember
 } from '@cio/utils/validation/public-api';
 import {
@@ -14,51 +15,34 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-
-const MemberResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
-
-const MemberListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } }
-  },
-  required: ['success', 'data']
-};
-
-const jsonResponse = (description: string, schema: object) => ({
-  description,
-  content: { 'application/json': { schema } }
-});
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
+import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
 
 export const v1CohortMembersRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List the members of a cohort',
+      description: `List the members of a cohort. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        200: jsonResponse('Cohort members returned successfully', MemberListResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Cohort members returned successfully', PaginatedListResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.member,
         404: { description: 'Cohort not found' }
       }
     }),
     validator('param', ZPublicApiCohortParam),
+    validator('query', ZPublicApiPaginationQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const members = await listPublicApiCohortMembersService(orgId, params);
+        const query = c.req.valid('query');
+        const result = await listPublicApiCohortMembersService(orgId, actorId, params, query);
 
-        return c.json({ success: true, data: members }, 200);
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to list cohort members');
       }
@@ -67,14 +51,14 @@ export const v1CohortMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: 'Add one or more members to a cohort, by profileId or email',
+      description: `Add one or more members to a cohort. A profileId must belong to someone already in your organization. An email can be anyone; students added by email join your organization. Each member is added independently: data.added lists the new memberships and data.errors has one message per member that failed (for example, already a member). ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        201: jsonResponse('Cohort members added', MemberResponse),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
-        404: { description: 'Cohort not found' }
+        201: jsonResponse('Members processed; see the per-member results', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
+        404: { description: 'Cohort not found, or a profileId is not in your organization' }
       }
     }),
     validator('param', ZPublicApiCohortParam),
@@ -96,13 +80,13 @@ export const v1CohortMembersRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: "Update a cohort member's role",
+      description: `Change a cohort member's role (tutor or student). ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        200: jsonResponse('Cohort member updated successfully', MemberResponse),
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Cohort member updated successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or member not found' }
       }
     }),
@@ -125,12 +109,13 @@ export const v1CohortMembersRouter = new Hono()
   .delete(
     '/:memberId',
     describeRoute({
-      description: 'Remove a member from a cohort',
+      description: `Remove a member from a cohort. This is a hard delete of the cohort membership only; the person keeps their account, organization membership, and course enrolments. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        200: jsonResponse('Cohort member removed successfully', MemberResponse),
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        200: jsonResponse('Cohort member removed successfully', ItemResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.team,
         404: { description: 'Cohort or member not found' }
       }
     }),

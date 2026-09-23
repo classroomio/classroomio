@@ -30,6 +30,7 @@ import type {
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
   TPublicApiCreateCohortNewsfeedComment,
+  TPublicApiPaginationQuery,
   TPublicApiUpdateCohort,
   TPublicApiUpdateCohortGoal,
   TPublicApiUpdateCohortMember,
@@ -40,6 +41,12 @@ import type {
 type ApiSuccess<T> = {
   success: true;
   data: T;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 
 type ApiFailure = {
@@ -48,6 +55,24 @@ type ApiFailure = {
   message?: string;
   code?: string;
   field?: string;
+};
+
+type PaginatedResponse<T> = {
+  data: T;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+const toPageQuerySuffix = (query: Partial<TPublicApiPaginationQuery>) => {
+  const searchParams = new URLSearchParams();
+  if (query.page) searchParams.set('page', String(query.page));
+  if (query.limit) searchParams.set('limit', String(query.limit));
+
+  return searchParams.toString() ? `?${searchParams.toString()}` : '';
 };
 
 export class ClassroomIoApiError extends Error {
@@ -195,8 +220,8 @@ export class ClassroomIoApiClient {
 
   // ─── Cohorts (public API) ────────────────────────────────────────────────
 
-  async listCohorts() {
-    return this.request('/public-api/v1/cohorts', { method: 'GET' });
+  async listCohorts(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts${toPageQuerySuffix(query)}`, { method: 'GET' });
   }
 
   async createCohort(payload: TPublicApiCreateCohort) {
@@ -221,8 +246,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}`, { method: 'DELETE' });
   }
 
-  async listCohortMembers(cohortId: string) {
-    return this.request(`/public-api/v1/cohorts/${cohortId}/members`, { method: 'GET' });
+  async listCohortMembers(cohortId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/members${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
   }
 
   async addCohortMembers(cohortId: string, payload: TPublicApiAddCohortMembers) {
@@ -243,8 +270,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}/members/${memberId}`, { method: 'DELETE' });
   }
 
-  async listCohortCourses(cohortId: string) {
-    return this.request(`/public-api/v1/cohorts/${cohortId}/courses`, { method: 'GET' });
+  async listCohortCourses(cohortId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/courses${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
   }
 
   async addCohortCourse(cohortId: string, payload: TPublicApiAddCourseToCohort) {
@@ -292,8 +321,11 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}`, { method: 'DELETE' });
   }
 
-  async listCohortNewsfeedComments(cohortId: string, feedId: string) {
-    return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}/comments`, { method: 'GET' });
+  async listCohortNewsfeedComments(cohortId: string, feedId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(
+      `/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}/comments${toPageQuerySuffix(query)}`,
+      { method: 'GET' }
+    );
   }
 
   async createCohortNewsfeedComment(cohortId: string, feedId: string, payload: TPublicApiCreateCohortNewsfeedComment) {
@@ -309,8 +341,10 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async listCohortGoals(cohortId: string) {
-    return this.request(`/public-api/v1/cohorts/${cohortId}/goals`, { method: 'GET' });
+  async listCohortGoals(cohortId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/${cohortId}/goals${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
   }
 
   async createCohortGoal(cohortId: string, payload: TPublicApiCreateCohortGoal) {
@@ -339,13 +373,13 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}/goals/${goalId}`, { method: 'DELETE' });
   }
 
-  private async request<TResponse>(
+  private async requestRaw<TResponse>(
     path: string,
     options: {
       method: 'GET' | 'POST' | 'PUT' | 'DELETE';
       body?: unknown;
     }
-  ): Promise<TResponse> {
+  ): Promise<ApiSuccess<TResponse>> {
     const response = await fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
@@ -372,6 +406,32 @@ export class ClassroomIoApiClient {
       throw new ClassroomIoApiError('ClassroomIO returned an invalid response payload', response.status);
     }
 
+    return json;
+  }
+
+  private async request<TResponse>(
+    path: string,
+    options: {
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      body?: unknown;
+    }
+  ): Promise<TResponse> {
+    const json = await this.requestRaw<TResponse>(path, options);
     return json.data;
+  }
+
+  private async requestPaginated<TResponse>(
+    path: string,
+    options: {
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      body?: unknown;
+    }
+  ): Promise<PaginatedResponse<TResponse>> {
+    const json = await this.requestRaw<TResponse>(path, options);
+    if (!json.pagination) {
+      throw new ClassroomIoApiError('ClassroomIO returned a response without pagination metadata', 502);
+    }
+
+    return { data: json.data, pagination: json.pagination };
   }
 }

@@ -1,19 +1,38 @@
 import type {
   TPublicApiAddCourseToCohort,
   TPublicApiCohortCourseParam,
-  TPublicApiCohortParam
+  TPublicApiCohortParam,
+  TPublicApiPaginationQuery
 } from '@cio/utils/validation/public-api';
 
-import { addCourseToCohortService, removeCourseFromCohortService } from '@api/services/cohort/cohort';
-import { getCoursesByCohort } from '@cio/db/queries/cohort';
+import {
+  addCourseToCohortService,
+  listCohortCoursesPage,
+  removeCourseFromCohortService
+} from '@api/services/cohort/cohort';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
-import { assertCohortBelongsToOrganization, assertCohortTeamMemberOrOrgAdmin } from '@api/services/v1/shared';
+import {
+  assertAutomationActor,
+  assertCohortBelongsToOrganization,
+  assertCohortMemberOrOrgAdmin,
+  assertCohortTeamMemberOrOrgAdmin,
+  toPublicApiPagination
+} from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
-export async function listPublicApiCohortCoursesService(orgId: string, params: TPublicApiCohortParam) {
+export async function listPublicApiCohortCoursesService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortParam,
+  query: TPublicApiPaginationQuery
+) {
+  assertAutomationActor(actorId);
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return getCoursesByCohort(params.cohortId, false);
+  const { items, total } = await listCohortCoursesPage(params.cohortId, actorId, query);
+
+  return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
 }
 
 export async function addPublicApiCohortCourseService(

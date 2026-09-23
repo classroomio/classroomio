@@ -3,9 +3,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@cio/db/queries/cohort', () => ({
   getCohortOrganizationId: vi.fn(),
   getCohortMemberRole: vi.fn(),
+  isCohortMember: vi.fn(),
   isOrgAdminByCohortId: vi.fn(),
   getCohortMemberByProfileId: vi.fn(),
+  getCohortNewsfeedById: vi.fn(),
   getCohortNewsfeedCommentById: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/organization', () => ({
+  getOrganizationMemberIdByOrgAndProfile: vi.fn()
 }));
 
 vi.mock('@api/services/cohort/cohort', () => ({
@@ -14,7 +20,7 @@ vi.mock('@api/services/cohort/cohort', () => ({
   updateCohortNewsfeedService: vi.fn(),
   updateCohortNewsfeedReactionService: vi.fn(),
   deleteCohortNewsfeedService: vi.fn(),
-  listCohortNewsfeedComments: vi.fn(),
+  listCohortNewsfeedCommentsPage: vi.fn(),
   createCohortNewsfeedCommentService: vi.fn(),
   deleteCohortNewsfeedCommentService: vi.fn()
 }));
@@ -22,8 +28,10 @@ vi.mock('@api/services/cohort/cohort', () => ({
 import {
   getCohortMemberByProfileId,
   getCohortMemberRole,
+  getCohortNewsfeedById,
   getCohortNewsfeedCommentById,
   getCohortOrganizationId,
+  isCohortMember,
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
 import {
@@ -32,7 +40,7 @@ import {
   deleteCohortNewsfeedCommentService,
   deleteCohortNewsfeedService,
   listCohortNewsfeed,
-  listCohortNewsfeedComments,
+  listCohortNewsfeedCommentsPage,
   updateCohortNewsfeedReactionService,
   updateCohortNewsfeedService
 } from '@api/services/cohort/cohort';
@@ -59,10 +67,23 @@ const ACTOR_MEMBER_ID = 'actor-member-1';
 const cohortParams = { cohortId: COHORT_ID };
 const feedParams = { cohortId: COHORT_ID, feedId: FEED_ID };
 const commentParams = { cohortId: COHORT_ID, feedId: FEED_ID, commentId: COMMENT_ID };
+const reaction = { clap: ['member-1'], smile: [], thumbsup: [], thumbsdown: [] };
 
-/** Default happy path: actor is a cohort tutor, so the team-or-admin gate passes. */
-function mockActorAsCohortTeamMember() {
+function mockActorAsCohortTutor() {
   vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.TUTOR);
+  vi.mocked(isCohortMember).mockResolvedValue(true);
+  vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+}
+
+function mockActorAsCohortStudent() {
+  vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
+  vi.mocked(isCohortMember).mockResolvedValue(true);
+  vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+}
+
+function mockActorAsOutsider() {
+  vi.mocked(getCohortMemberRole).mockResolvedValue(null);
+  vi.mocked(isCohortMember).mockResolvedValue(false);
   vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
 }
 
@@ -70,15 +91,28 @@ describe('v1 cohort newsfeed service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCohortOrganizationId).mockResolvedValue(ORG_ID);
-    mockActorAsCohortTeamMember();
+    vi.mocked(getCohortNewsfeedById).mockResolvedValue({ id: FEED_ID, cohortId: COHORT_ID } as Awaited<
+      ReturnType<typeof getCohortNewsfeedById>
+    >);
+    mockActorAsCohortTutor();
   });
 
-  it('lists the newsfeed after the org guard passes, with no team-membership requirement', async () => {
+  it('lists the newsfeed when the actor is a cohort member', async () => {
+    mockActorAsCohortStudent();
     vi.mocked(listCohortNewsfeed).mockResolvedValue({ items: [], totalCount: 0, hasMore: false, nextCursor: null });
 
-    await listPublicApiCohortNewsfeedService(ORG_ID, cohortParams, { limit: 10 });
+    await listPublicApiCohortNewsfeedService(ORG_ID, ACTOR_ID, cohortParams, { limit: 10 });
 
     expect(listCohortNewsfeed).toHaveBeenCalledWith(COHORT_ID, { limit: 10 });
+  });
+
+  it('refuses to list the newsfeed when the actor is neither a member nor an org admin', async () => {
+    mockActorAsOutsider();
+
+    await expect(
+      listPublicApiCohortNewsfeedService(ORG_ID, ACTOR_ID, cohortParams, { limit: 10 })
+    ).rejects.toMatchObject({ statusCode: 403 });
+    expect(listCohortNewsfeed).not.toHaveBeenCalled();
   });
 
   it('creates a post using the automation actor as the author, once they are a team member', async () => {
@@ -91,9 +125,8 @@ describe('v1 cohort newsfeed service', () => {
     expect(createCohortNewsfeedService).toHaveBeenCalledWith(COHORT_ID, ACTOR_ID, { content: 'Hello' });
   });
 
-  it('refuses to create a post when the actor is not a cohort team member', async () => {
-    vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+  it('refuses to create a post when the actor is a student in the cohort', async () => {
+    mockActorAsCohortStudent();
 
     await expect(
       createPublicApiCohortNewsfeedService(ORG_ID, ACTOR_ID, cohortParams, { content: 'Hello' })
@@ -108,30 +141,50 @@ describe('v1 cohort newsfeed service', () => {
     expect(createCohortNewsfeedService).not.toHaveBeenCalled();
   });
 
-  it('updates a post once the actor is a team member, and passes the full reaction object through unchanged', async () => {
+  it('updates a post once the actor is a team member', async () => {
     vi.mocked(updateCohortNewsfeedService).mockResolvedValue({ id: FEED_ID } as Awaited<
       ReturnType<typeof updateCohortNewsfeedService>
     >);
-    const reaction = { clap: ['member-1'], smile: [], thumbsup: [], thumbsdown: [] };
-    vi.mocked(updateCohortNewsfeedReactionService).mockResolvedValue({ id: FEED_ID } as Awaited<
-      ReturnType<typeof updateCohortNewsfeedReactionService>
-    >);
 
     await updatePublicApiCohortNewsfeedService(ORG_ID, ACTOR_ID, feedParams, { content: 'Edited' });
-    await updatePublicApiCohortNewsfeedReactionService(ORG_ID, feedParams, { reaction });
 
     expect(updateCohortNewsfeedService).toHaveBeenCalledWith(COHORT_ID, FEED_ID, { content: 'Edited' });
-    expect(updateCohortNewsfeedReactionService).toHaveBeenCalledWith(COHORT_ID, FEED_ID, { reaction });
   });
 
-  it('refuses to update a post when the actor is not a cohort team member', async () => {
-    vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+  it('refuses to update a post when the actor is a student in the cohort', async () => {
+    mockActorAsCohortStudent();
 
     await expect(
       updatePublicApiCohortNewsfeedService(ORG_ID, ACTOR_ID, feedParams, { content: 'Edited' })
     ).rejects.toMatchObject({ statusCode: 403 });
     expect(updateCohortNewsfeedService).not.toHaveBeenCalled();
+  });
+
+  it('replaces reactions when the actor is a cohort member, passing the full object through', async () => {
+    mockActorAsCohortStudent();
+    vi.mocked(updateCohortNewsfeedReactionService).mockResolvedValue({ id: FEED_ID } as Awaited<
+      ReturnType<typeof updateCohortNewsfeedReactionService>
+    >);
+
+    await updatePublicApiCohortNewsfeedReactionService(ORG_ID, ACTOR_ID, feedParams, { reaction });
+
+    expect(updateCohortNewsfeedReactionService).toHaveBeenCalledWith(COHORT_ID, FEED_ID, { reaction });
+  });
+
+  it('refuses to replace reactions when the actor is neither a member nor an org admin', async () => {
+    mockActorAsOutsider();
+
+    await expect(
+      updatePublicApiCohortNewsfeedReactionService(ORG_ID, ACTOR_ID, feedParams, { reaction })
+    ).rejects.toMatchObject({ statusCode: 403 });
+    expect(updateCohortNewsfeedReactionService).not.toHaveBeenCalled();
+  });
+
+  it('rejects replacing reactions with no automation actor', async () => {
+    await expect(
+      updatePublicApiCohortNewsfeedReactionService(ORG_ID, null, feedParams, { reaction })
+    ).rejects.toMatchObject({ statusCode: 401 });
+    expect(updateCohortNewsfeedReactionService).not.toHaveBeenCalled();
   });
 
   it('deletes a post once the actor is a team member', async () => {
@@ -144,19 +197,39 @@ describe('v1 cohort newsfeed service', () => {
     expect(deleteCohortNewsfeedService).toHaveBeenCalledWith(COHORT_ID, FEED_ID);
   });
 
-  it('lists comments with no team-membership requirement, and creates comments using the automation actor', async () => {
-    vi.mocked(listCohortNewsfeedComments).mockResolvedValue([]);
+  it('lists comments a page at a time for a cohort member', async () => {
+    mockActorAsCohortStudent();
+    vi.mocked(listCohortNewsfeedCommentsPage).mockResolvedValue({ items: [], total: 3 });
+
+    const result = await listPublicApiCohortNewsfeedCommentsService(ORG_ID, ACTOR_ID, feedParams, {
+      page: 1,
+      limit: 20
+    });
+
+    expect(listCohortNewsfeedCommentsPage).toHaveBeenCalledWith(COHORT_ID, FEED_ID, { page: 1, limit: 20 });
+    expect(result.pagination).toEqual({ page: 1, limit: 20, total: 3, totalPages: 1 });
+  });
+
+  it('creates a comment as the automation actor when they are a cohort member', async () => {
+    mockActorAsCohortStudent();
     vi.mocked(createCohortNewsfeedCommentService).mockResolvedValue({ id: COMMENT_ID } as Awaited<
       ReturnType<typeof createCohortNewsfeedCommentService>
     >);
 
-    await listPublicApiCohortNewsfeedCommentsService(ORG_ID, feedParams);
     await createPublicApiCohortNewsfeedCommentService(ORG_ID, ACTOR_ID, feedParams, { content: 'Nice!' });
 
-    expect(listCohortNewsfeedComments).toHaveBeenCalledWith(COHORT_ID, FEED_ID);
     expect(createCohortNewsfeedCommentService).toHaveBeenCalledWith(COHORT_ID, FEED_ID, ACTOR_ID, {
       content: 'Nice!'
     });
+  });
+
+  it('refuses to create a comment when the actor is neither a member nor an org admin', async () => {
+    mockActorAsOutsider();
+
+    await expect(
+      createPublicApiCohortNewsfeedCommentService(ORG_ID, ACTOR_ID, feedParams, { content: 'Nice!' })
+    ).rejects.toMatchObject({ statusCode: 403 });
+    expect(createCohortNewsfeedCommentService).not.toHaveBeenCalled();
   });
 
   it('rejects creating a comment with no automation actor', async () => {
@@ -175,8 +248,7 @@ describe('v1 cohort newsfeed service', () => {
     vi.mocked(getCohortMemberByProfileId).mockResolvedValue({ id: ACTOR_MEMBER_ID } as Awaited<
       ReturnType<typeof getCohortMemberByProfileId>
     >);
-    vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+    mockActorAsCohortStudent();
     vi.mocked(deleteCohortNewsfeedCommentService).mockResolvedValue({ id: COMMENT_ID } as Awaited<
       ReturnType<typeof deleteCohortNewsfeedCommentService>
     >);
@@ -204,7 +276,7 @@ describe('v1 cohort newsfeed service', () => {
     expect(deleteCohortNewsfeedCommentService).toHaveBeenCalledWith(COHORT_ID, FEED_ID, COMMENT_ID);
   });
 
-  it('refuses to delete another member\'s comment when the actor is neither the author nor a team member', async () => {
+  it("refuses to delete another member's comment when the actor is neither the author nor a team member", async () => {
     vi.mocked(getCohortNewsfeedCommentById).mockResolvedValue({
       id: COMMENT_ID,
       cohortNewsfeedId: FEED_ID,
@@ -213,12 +285,22 @@ describe('v1 cohort newsfeed service', () => {
     vi.mocked(getCohortMemberByProfileId).mockResolvedValue({ id: ACTOR_MEMBER_ID } as Awaited<
       ReturnType<typeof getCohortMemberByProfileId>
     >);
-    vi.mocked(getCohortMemberRole).mockResolvedValue(ROLE.STUDENT);
-    vi.mocked(isOrgAdminByCohortId).mockResolvedValue(false);
+    mockActorAsCohortStudent();
 
     await expect(deletePublicApiCohortNewsfeedCommentService(ORG_ID, ACTOR_ID, commentParams)).rejects.toMatchObject({
       statusCode: 403
     });
+    expect(deleteCohortNewsfeedCommentService).not.toHaveBeenCalled();
+  });
+
+  it('404s deleting a comment when the post is not in this cohort, before checking permissions', async () => {
+    vi.mocked(getCohortNewsfeedById).mockResolvedValue(null);
+    mockActorAsOutsider();
+
+    await expect(deletePublicApiCohortNewsfeedCommentService(ORG_ID, ACTOR_ID, commentParams)).rejects.toMatchObject({
+      statusCode: 404
+    });
+    expect(getCohortNewsfeedCommentById).not.toHaveBeenCalled();
     expect(deleteCohortNewsfeedCommentService).not.toHaveBeenCalled();
   });
 
@@ -238,9 +320,9 @@ describe('v1 cohort newsfeed service', () => {
   it('refuses to touch the newsfeed of a cohort from another organization', async () => {
     vi.mocked(getCohortOrganizationId).mockResolvedValue(OTHER_ORG_ID);
 
-    await expect(listPublicApiCohortNewsfeedService(ORG_ID, cohortParams, { limit: 10 })).rejects.toMatchObject({
-      statusCode: 404
-    });
+    await expect(
+      listPublicApiCohortNewsfeedService(ORG_ID, ACTOR_ID, cohortParams, { limit: 10 })
+    ).rejects.toMatchObject({ statusCode: 404 });
     expect(listCohortNewsfeed).not.toHaveBeenCalled();
   });
 });

@@ -2,17 +2,31 @@ import type {
   TPublicApiCohortGoalParam,
   TPublicApiCohortParam,
   TPublicApiCreateCohortGoal,
+  TPublicApiPaginationQuery,
   TPublicApiUpdateCohortGoal
 } from '@cio/utils/validation/public-api';
 
-import { archiveGoal, createGoal, getGoal, listGoals, removeGoal, updateGoal } from '@api/services/cohort/goal';
-import { assertCohortBelongsToOrganization, assertCohortTeamMemberOrOrgAdmin } from '@api/services/v1/shared';
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import { archiveGoal, createGoal, getGoal, listGoalsPage, removeGoal, updateGoal } from '@api/services/cohort/goal';
+import {
+  assertAutomationActor,
+  assertCohortBelongsToOrganization,
+  assertCohortMemberOrOrgAdmin,
+  assertCohortTeamMemberOrOrgAdmin,
+  toPublicApiPagination
+} from '@api/services/v1/shared';
 
-export async function listPublicApiCohortGoalsService(orgId: string, params: TPublicApiCohortParam) {
+export async function listPublicApiCohortGoalsService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortParam,
+  query: TPublicApiPaginationQuery
+) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return listGoals(params.cohortId);
+  const { items, total } = await listGoalsPage(params.cohortId, query);
+
+  return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
 }
 
 export async function createPublicApiCohortGoalService(
@@ -21,18 +35,20 @@ export async function createPublicApiCohortGoalService(
   params: TPublicApiCohortParam,
   payload: TPublicApiCreateCohortGoal
 ) {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
-
+  assertAutomationActor(actorId);
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
   return createGoal(params.cohortId, actorId, payload);
 }
 
-export async function getPublicApiCohortGoalService(orgId: string, params: TPublicApiCohortGoalParam) {
+export async function getPublicApiCohortGoalService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortGoalParam
+) {
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
   return getGoal(params.cohortId, params.goalId);
 }

@@ -5,3 +5,4 @@ export * from './cohort-goal';
 export * from './cohort-member';
 export * from './cohort-newsfeed';
 export * from './course';
+export * from './pagination';
