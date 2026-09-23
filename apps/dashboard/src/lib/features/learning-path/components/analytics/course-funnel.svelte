@@ -35,14 +35,16 @@
         </div>
 
         <div class="ui:bg-primary/10 relative h-[22px] overflow-hidden rounded-sm">
-          <span
-            class="{(course.certificatesAwarded ?? 0) > 0
-              ? 'bg-green-600'
-              : 'ui:bg-primary'} ui:text-primary-foreground absolute inset-y-0 left-0 flex items-center justify-end rounded-sm pr-2 text-[11.5px] font-semibold"
-            style="width: {enrolled > 0 ? Math.round((course.completedCount / enrolled) * 100) : 0}%"
-          >
-            {course.completedCount}
-          </span>
+          {#if course.completedCount > 0}
+            <span
+              class="{(course.certificatesAwarded ?? 0) > 0
+                ? 'bg-green-600'
+                : 'ui:bg-primary'} ui:text-primary-foreground absolute inset-y-0 left-0 flex items-center justify-end rounded-sm pr-2 text-[11.5px] font-semibold"
+              style="width: {enrolled > 0 ? Math.round((course.completedCount / enrolled) * 100) : 0}%"
+            >
+              {course.completedCount}
+            </span>
+          {/if}
         </div>
 
         {#if course.droppedAfterPrevious > 0}

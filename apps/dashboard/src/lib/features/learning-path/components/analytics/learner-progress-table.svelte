@@ -141,18 +141,20 @@
                 {student.lastActivityAt ? calDateDiff(student.lastActivityAt) : $t('analytics.a_while_ago')}
               </span>
             </Table.Cell>
-            {#if detailBasePath && student.profileId}
+            {#if detailBasePath}
               <Table.Cell class="min-w-[120px] px-4 py-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onclick={(event) => {
-                    event.stopPropagation();
-                    gotoStudent(student);
-                  }}
-                >
-                  {$t('analytics.view_details')}
-                </Button>
+                {#if student.profileId}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onclick={(event) => {
+                      event.stopPropagation();
+                      gotoStudent(student);
+                    }}
+                  >
+                    {$t('analytics.view_details')}
+                  </Button>
+                {/if}
               </Table.Cell>
             {/if}
           </Table.Row>
