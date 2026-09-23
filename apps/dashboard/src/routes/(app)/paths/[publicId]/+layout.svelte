@@ -117,38 +117,7 @@
   <Sidebar.Inset class="min-w-0 flex-1">
     <PathHeader path={activePath} onDelete={() => (deleteModalOpen = true)} />
 
-    {#if learningPathApi.isLoading || (!isPathReady && !learningPathApi.isNotFound && !learningPathApi.loadError)}
-      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
-        <Empty
-          title={$t('learningPath.workspace.loading_title')}
-          description={$t('learningPath.workspace.loading_description')}
-          icon={Spinner}
-          iconClass="h-8 w-8"
-          variant="page"
-        />
-      </div>
-    {:else if learningPathApi.loadError && !learningPathApi.isNotFound}
-      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
-        <Empty
-          title={$t('learningPath.workspace.load_failed_title')}
-          description={$t('learningPath.workspace.load_failed_description')}
-          variant="page"
-        >
-          <div class="mt-4 flex justify-center gap-2">
-            <Button
-              variant="outline"
-              onclick={() => learningPathApi.refreshPath(data.publicId)}
-              disabled={learningPathApi.isLoading}
-            >
-              {$t('common.refresh')}
-            </Button>
-            <Button href={`${$currentOrgPath}/paths`} variant="outline">
-              {$t('learningPath.workspace.back_to_paths')}
-            </Button>
-          </div>
-        </Empty>
-      </div>
-    {:else if !isPathReady || learningPathApi.isNotFound}
+    {#if learningPathApi.isNotFound}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
         <Empty
           title={$t('learningPath.workspace.not_found_title')}
@@ -161,6 +130,33 @@
             </Button>
           </div>
         </Empty>
+      </div>
+    {:else if learningPathApi.loadError}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty
+          title={$t('learningPath.workspace.load_failed_title')}
+          description={$t('learningPath.workspace.load_failed_description')}
+          variant="page"
+        >
+          <div class="mt-4 flex justify-center gap-2">
+            <Button variant="outline" onclick={() => learningPathApi.refreshPath(data.publicId)}>
+              {$t('common.refresh')}
+            </Button>
+            <Button href={`${$currentOrgPath}/paths`} variant="outline">
+              {$t('learningPath.workspace.back_to_paths')}
+            </Button>
+          </div>
+        </Empty>
+      </div>
+    {:else if !isPathReady}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty
+          title={$t('learningPath.workspace.loading_title')}
+          description={$t('learningPath.workspace.loading_description')}
+          icon={Spinner}
+          iconClass="h-8 w-8"
+          variant="page"
+        />
       </div>
     {:else}
       {@render children?.()}

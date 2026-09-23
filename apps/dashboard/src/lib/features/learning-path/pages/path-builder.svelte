@@ -5,7 +5,8 @@
   import { Empty } from '@cio/ui/custom/empty';
   import BookIcon from '@lucide/svelte/icons/book';
   import { dndzone } from 'svelte-dnd-action';
-  import { learningPathApi } from '../api';
+  import { untrack } from 'svelte';
+  import { learningPathApi, pathCoursesApi } from '../api';
   import { AddCourseToPathModal, CourseRow, UnlockToggle } from '../components';
   import type { LearningPathCourseItem, LearningPathDetail } from '../utils/types';
 
@@ -22,7 +23,9 @@
   let showDeleteModal = $state(false);
   let isRemoving = $state(false);
   let isUpdatingUnlock = $state(false);
-  let sequentialUnlock = $state(path.sequentialUnlock);
+  // Seeded from the loaded path; the effect below keeps it in sync with later loads
+  // while `handleUnlockToggle` updates it optimistically.
+  let sequentialUnlock = $state(untrack(() => path.sequentialUnlock));
 
   $effect(() => {
     sequentialUnlock = path.sequentialUnlock;
@@ -87,7 +90,7 @@
 
     isRemoving = true;
     try {
-      await learningPathApi.removeCourse(path.id, courseToRemove.courseId);
+      await pathCoursesApi.removeCourse(path.id, courseToRemove.courseId);
     } catch (err) {
       console.error('Failed to remove course from learning path:', err);
       snackbar.error();

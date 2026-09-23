@@ -17,7 +17,7 @@
   import { Progress } from '@cio/ui/base/progress';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { ComingSoon, RoleBasedSecurity, TablePagination, UpgradeBanner } from '$features/ui';
-  import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
+  import { TruncatedWithTooltip } from '$features/ui';
   import InvitationModal from '$features/course/components/people/invitation-modal.svelte';
   import GrantAccessModal from '$features/course/components/people/grant-access-modal.svelte';
   import DeleteConfirmation from '$features/course/components/people/delete-confirmation.svelte';
@@ -46,7 +46,10 @@
     obscureMemberEmail
   } from '$features/course/utils/people-utils';
 
-  let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
+  /** Fields the delete dialog reads from the row it targets. */
+  type MemberDeleteTarget = Partial<Pick<CourseMember, 'id' | 'email' | 'profile'>>;
+
+  let member = $state<MemberDeleteTarget>({});
   let filterBy: string = $state(`${ROLES[0].value}`);
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
@@ -439,7 +442,7 @@
 
                 <Table.Cell class="min-w-[110px]">
                   <span class="ui:text-muted-foreground text-sm">
-                    {formatPeopleShortDate(person.enrolledAt ?? person.createdAt)}
+                    {formatPeopleShortDate(isStudentMember(person) ? person.enrolledAt : person.createdAt)}
                   </span>
                 </Table.Cell>
 
