@@ -7285,7 +7285,7 @@
           "name": "profile_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "email": {
           "name": "email",
