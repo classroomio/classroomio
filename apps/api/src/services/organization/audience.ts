@@ -36,9 +36,12 @@ import {
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds, getOrgCourseGroups, getOrgCourses } from '@cio/db/queries/course';
+import { getExistingPathMembers, getOrgLearningPathsByIds, listLearningPaths } from '@cio/db/queries/learning-path';
+import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
 import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 
 import { ROLE } from '@cio/utils/constants';
+import { membershipKey } from '@cio/utils/functions';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { assertStudentCapacityOrThrow, getRemainingStudentSeats } from './student-limit';
@@ -124,6 +127,23 @@ async function resolveCohortIdsAndNamesForImport(orgId: string, data: TImportAud
   return { cohortIds, cohortNames };
 }
 
+async function resolvePathIdsAndNamesForImport(orgId: string, data: TImportAudienceMembers) {
+  let pathIds: string[] = [];
+  let pathNames: string[] = [];
+
+  if (data.allPaths) {
+    const paths = await listLearningPaths(orgId);
+    pathIds = paths.map((path) => path.id);
+    pathNames = paths.map((path) => path.name).filter(Boolean);
+  } else if (data.pathIds && data.pathIds.length > 0) {
+    const paths = await getOrgLearningPathsByIds(orgId, data.pathIds);
+    pathIds = paths.map((path) => path.id);
+    pathNames = paths.map((path) => path.name).filter(Boolean);
+  }
+
+  return { pathIds, pathNames };
+}
+
 async function enrollAudienceStudentProfilesInCourses(
   orgId: string,
   organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
@@ -156,7 +176,7 @@ async function enrollAudienceStudentProfilesInCourses(
 
   const existingSet = await getExistingGroupMembers(pairs);
 
-  const toInsert = pairs.filter((p) => !existingSet.has(`${p.groupId}:${p.profileId}`));
+  const toInsert = pairs.filter((p) => !existingSet.has(membershipKey(p.groupId, p.profileId)));
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
@@ -249,7 +269,7 @@ async function enrollAudienceStudentProfilesInCohorts(
   const validProfiles = uniqueProfileIds.filter((profileId) => validProfileIds.has(profileId));
   const pairs = validProfiles.flatMap((profileId) => validCohortIds.map((cohortId) => ({ cohortId, profileId })));
   const existingSet = await getExistingCohortMembers(pairs);
-  const toInsert = pairs.filter((pair) => !existingSet.has(`${pair.cohortId}:${pair.profileId}`));
+  const toInsert = pairs.filter((pair) => !existingSet.has(membershipKey(pair.cohortId, pair.profileId)));
   const alreadyEnrolled = pairs.length - toInsert.length;
 
   if (toInsert.length > 0) {
@@ -322,18 +342,116 @@ async function enrollAudienceStudentProfilesInCohorts(
   };
 }
 
+async function enrollAudienceStudentProfilesInPaths(
+  orgId: string,
+  organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
+  profileIds: string[],
+  pathIds: string[],
+  shouldSendEmail: boolean
+): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
+  if (pathIds.length === 0 || profileIds.length === 0) {
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  }
+
+  const uniqueProfileIds = [...new Set(profileIds)];
+  const orgMembers = await getOrgMembersByProfileIds(orgId, uniqueProfileIds);
+  const studentMembers = orgMembers.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
+  const validProfileIds = new Set(studentMembers.map((member) => member.profileId!));
+  const profileEmailMap = new Map(
+    studentMembers.filter((member) => member.profileId).map((member) => [member.profileId!, member.email ?? ''])
+  );
+
+  const paths = await getOrgLearningPathsByIds(orgId, pathIds);
+  if (paths.length === 0) {
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  }
+
+  const pathById = new Map(paths.map((path) => [path.id, path]));
+  const pathNameById = new Map(paths.map((path) => [path.id, path.name || 'Learning path']));
+  const validProfiles = uniqueProfileIds.filter((profileId) => validProfileIds.has(profileId));
+
+  const pairs = validProfiles.flatMap((profileId) => paths.map((path) => ({ learningPathId: path.id, profileId })));
+
+  const existingSet = await getExistingPathMembers(pairs);
+  const toInsert = pairs.filter((pair) => !existingSet.has(membershipKey(pair.learningPathId, pair.profileId)));
+  const alreadyEnrolled = pairs.length - toInsert.length;
+
+  for (const pair of toInsert) {
+    const path = pathById.get(pair.learningPathId)!;
+
+    await enrollProfileInLearningPath(path, {
+      profileId: pair.profileId,
+      email: profileEmailMap.get(pair.profileId) || undefined,
+      roleId: ROLE.STUDENT
+    });
+  }
+
+  if (toInsert.length > 0) {
+    await invalidateOrgStats(orgId);
+  }
+
+  let emailsSent = 0;
+  const loginUrl = getDashboardBaseUrl(organization);
+  const branding = buildEmailBranding(organization);
+  const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
+
+  if (shouldSendEmail && toInsert.length > 0) {
+    await Promise.all(
+      toInsert
+        .filter((pair) => profileEmailMap.get(pair.profileId))
+        .map(async (pair) => {
+          const email = profileEmailMap.get(pair.profileId)!;
+
+          try {
+            await enqueueTransactionalEmail('studentLearningPathWelcome', {
+              to: email,
+              fields: {
+                orgName: organization.name,
+                learningPathName: pathNameById.get(pair.learningPathId) || 'Learning path',
+                loginUrl,
+                branding
+              },
+              from,
+              idempotencyKey: `audience-path-welcome:${pair.learningPathId}:${pair.profileId}`,
+              preference: { organizationId: orgId, recipientProfileId: pair.profileId }
+            });
+            emailsSent++;
+          } catch (emailError) {
+            console.error(`enrollAudienceStudentProfilesInPaths enqueue error for ${email}:`, emailError);
+          }
+        })
+    );
+  }
+
+  return {
+    assigned: toInsert.length,
+    alreadyEnrolled,
+    emailsSent
+  };
+}
+
 async function createStudentOrgInvitesAndSendEmails(input: {
   orgId: string;
   organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>;
   emails: string[];
   courseIds: string[];
   cohortIds: string[];
+  pathIds: string[];
   accessNamesLabel: string | undefined;
   invitedByProfileId: string;
   shouldSendEmail: boolean;
 }): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
-  const { orgId, organization, emails, courseIds, cohortIds, accessNamesLabel, invitedByProfileId, shouldSendEmail } =
-    input;
+  const {
+    orgId,
+    organization,
+    emails,
+    courseIds,
+    cohortIds,
+    pathIds,
+    accessNamesLabel,
+    invitedByProfileId,
+    shouldSendEmail
+  } = input;
 
   if (emails.length === 0) {
     return { created: 0, emailsSent: 0, emailsFailed: 0 };
@@ -359,7 +477,8 @@ async function createStudentOrgInvitesAndSendEmails(input: {
         metadata: {
           source: 'AUDIENCE_IMPORT',
           courseIds: courseIds.length > 0 ? courseIds : undefined,
-          cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+          cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+          pathIds: pathIds.length > 0 ? pathIds : undefined
         }
       }
     };
@@ -385,7 +504,8 @@ async function createStudentOrgInvitesAndSendEmails(input: {
           roleName: 'Student',
           expiresAt,
           courseIds,
-          cohortIds
+          cohortIds,
+          pathIds
         }
       };
     })
@@ -538,7 +658,8 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
 
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
   const { cohortIds, cohortNames } = await resolveCohortIdsAndNamesForImport(orgId, data);
-  const accessNames = [...courseNames, ...cohortNames];
+  const { pathIds, pathNames } = await resolvePathIdsAndNamesForImport(orgId, data);
+  const accessNames = [...courseNames, ...cohortNames, ...pathNames];
   const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
 
   const assignedToCourses = await enrollAudienceStudentProfilesInCourses(
@@ -553,6 +674,13 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     orgId,
     existingStudentProfileIds,
     cohortIds,
+    data.sendEmail
+  );
+  const assignedToPaths = await enrollAudienceStudentProfilesInPaths(
+    orgId,
+    organization,
+    existingStudentProfileIds,
+    pathIds,
     data.sendEmail
   );
 
@@ -605,12 +733,26 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       }
     }
 
+    if (pathIds.length > 0) {
+      const profiles = await getProfilesByEmails(newEmails);
+      if (profiles.length > 0) {
+        await enrollAudienceStudentProfilesInPaths(
+          orgId,
+          organization,
+          profiles.map((profile) => profile.id),
+          pathIds,
+          false
+        );
+      }
+    }
+
     const inviteOutcome = await createStudentOrgInvitesAndSendEmails({
       orgId,
       organization,
       emails: newEmails,
       courseIds,
       cohortIds,
+      pathIds,
       accessNamesLabel,
       invitedByProfileId,
       shouldSendEmail: data.sendEmail
@@ -629,6 +771,7 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       emails: pendingStudentEmails,
       courseIds,
       cohortIds,
+      pathIds,
       accessNamesLabel,
       invitedByProfileId,
       shouldSendEmail: data.sendEmail
@@ -640,14 +783,20 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   return {
     ...buildImportResult(rows, {
       imported,
-      enrolled: assignedToCourses.assigned + assignedToCohorts.assigned,
-      emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent + importEmailsSent + pendingEmailsSent,
+      enrolled: assignedToCourses.assigned + assignedToCohorts.assigned + assignedToPaths.assigned,
+      emailsSent:
+        assignedToCourses.emailsSent +
+        assignedToCohorts.emailsSent +
+        assignedToPaths.emailsSent +
+        importEmailsSent +
+        pendingEmailsSent,
       emailsFailed: importEmailsFailed + pendingEmailsFailed
     }),
     // Kept for the existing snackbar, which reads these directly.
-    assigned: assignedToCourses.assigned + assignedToCohorts.assigned,
+    assigned: assignedToCourses.assigned + assignedToCohorts.assigned + assignedToPaths.assigned,
     alreadyEnrolledInCourses: assignedToCourses.alreadyEnrolled,
     alreadyEnrolledInCohorts: assignedToCohorts.alreadyEnrolled,
+    alreadyEnrolledInPaths: assignedToPaths.alreadyEnrolled,
     pendingInvitesRenewed: pendingStudentEmails.length,
     truncated: parsed.truncated
   };
@@ -685,9 +834,11 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
   const emailToUse = member.email.toLowerCase().trim();
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, emailToUse);
-  const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const meta =
+    (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[]; pathIds?: string[] } | undefined) ?? {};
   const courseIdsFromMetadata = meta.courseIds?.filter(Boolean) ?? [];
   const cohortIdsFromMetadata = meta.cohortIds?.filter(Boolean) ?? [];
+  const pathIdsFromMetadata = meta.pathIds?.filter(Boolean) ?? [];
 
   let courseIds: string[] = [];
   let courseNames: string[] = [];
@@ -705,11 +856,19 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     cohortNames = cohorts.map((cohort) => cohort.name).filter(Boolean);
   }
 
+  let pathIds: string[] = [];
+  let pathNames: string[] = [];
+  if (pathIdsFromMetadata.length > 0) {
+    const paths = await getOrgLearningPathsByIds(orgId, pathIdsFromMetadata);
+    pathIds = paths.map((path) => path.id);
+    pathNames = paths.map((path) => path.name).filter(Boolean);
+  }
+
   await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId);
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
   const token = generateToken();
-  const accessNames = [...courseNames, ...cohortNames];
+  const accessNames = [...courseNames, ...cohortNames, ...pathNames];
   const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
 
   const invite = await createOrganizationInvite({
@@ -723,7 +882,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     metadata: {
       source: 'AUDIENCE_RESEND',
       courseIds: courseIds.length > 0 ? courseIds : undefined,
-      cohortIds: cohortIds.length > 0 ? cohortIds : undefined
+      cohortIds: cohortIds.length > 0 ? cohortIds : undefined,
+      pathIds: pathIds.length > 0 ? pathIds : undefined
     }
   });
 
@@ -741,7 +901,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
         roleName: 'Student',
         expiresAt,
         courseIds,
-        cohortIds
+        cohortIds,
+        pathIds
       }
     }
   ]);
@@ -939,7 +1100,8 @@ export async function updatePendingAudienceMemberEmail(
   }
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
-  const meta = (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[] } | undefined) ?? {};
+  const meta =
+    (latestInvite?.metadata as { courseIds?: string[]; cohortIds?: string[]; pathIds?: string[] } | undefined) ?? {};
 
   await createStudentOrgInvitesAndSendEmails({
     orgId,
@@ -947,6 +1109,7 @@ export async function updatePendingAudienceMemberEmail(
     emails: [normalizedEmail],
     courseIds: meta.courseIds?.filter(Boolean) ?? [],
     cohortIds: meta.cohortIds?.filter(Boolean) ?? [],
+    pathIds: meta.pathIds?.filter(Boolean) ?? [],
     accessNamesLabel: undefined,
     invitedByProfileId,
     shouldSendEmail: data.sendEmail

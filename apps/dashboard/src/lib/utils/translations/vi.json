@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Nhập người dùng",
-      "description": "Thêm sinh viên vào tổ chức của bạn bằng cách nhập địa chỉ email của họ. Tùy chọn chỉ định chúng cho các khóa học và gửi email mời.",
+      "description": "Thêm học viên vào tổ chức của bạn bằng cách nhập địa chỉ email của họ. Tùy chọn gán họ vào các khóa học, nhóm học tập hoặc lộ trình học tập và gửi email mời.",
       "emails_label": "Địa chỉ email",
       "emails_placeholder": "Nhập các email được phân tách bằng dấu phẩy, dòng mới hoặc dấu chấm phẩy\nví dụ: alice@example.com, bob@example.com",
       "course_access": "Truy cập khóa học",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} lời mời mới, {assigned} học viên hiện có được quyền truy cập khóa học, {pendingInvitesRenewed} lời mời đang chờ được gia hạn ({emailsSent} email đã gửi)",
       "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
       "snackbar_failed": "Không thể nhập người dùng",
-      "page_subtitle": "Thêm nhiều người cùng lúc bằng email, rồi gán khóa học hoặc nhóm học tập nếu bạn muốn.",
+      "page_subtitle": "Thêm nhiều người cùng lúc bằng email, rồi gán khóa học, nhóm học tập hoặc lộ trình học tập nếu bạn muốn.",
       "cohort_access": "Quyền truy cập nhóm học tập",
       "no_cohorts": "Không gán nhóm học tập",
       "all_cohorts": "Tất cả nhóm học tập",
       "select_cohorts": "Chọn nhóm học tập cụ thể",
       "select_cohorts_placeholder": "Chọn nhóm học tập...",
+      "select_paths_placeholder": "Chọn lộ trình học tập...",
+      "path_access": "Quyền truy cập lộ trình học tập",
+      "no_paths": "Không gán lộ trình học tập",
+      "all_paths": "Tất cả lộ trình học tập",
+      "select_paths": "Chọn lộ trình học tập cụ thể",
       "drop_csv": "Nhập tệp CSV tại đây, hoặc nhấp để chọn một tệp",
       "csv_hint": "CSV UTF-8 với cột email. Tối đa {rows} hàng, 5 MB.",
       "download_template": "Tải xuống mẫu",
@@ -5402,11 +5407,13 @@
       "disabled": "Liên kết mời này đã bị vô hiệu hóa.",
       "closed": "Hiện không còn nhận thêm thành viên mới.",
       "succeeded": "Bạn đã tham gia",
-      "failed": "Không thể tham gia. Vui lòng thử lại."
+      "failed": "Không thể tham gia. Vui lòng thử lại.",
+      "learning_path_button": "Tham gia lộ trình học tập"
     },
     "load_failed": "Không thể tải liên kết mời",
     "generate_failed": "Không thể tạo liên kết mời",
-    "toggle_failed": "Không thể cập nhật liên kết mời"
+    "toggle_failed": "Không thể cập nhật liên kết mời",
+    "learning_path_description": "Bất kỳ ai có liên kết này đều có thể tham gia lộ trình học tập này và mọi khóa học trong đó. Chia sẻ nó thay vì nhập từng email một."
   },
   "lms": {
     "view_landing_page": "Trang chủ"
@@ -5620,7 +5627,117 @@
       "reordered": "Đã cập nhật thứ tự khóa học",
       "course_added": "Đã thêm khóa học",
       "courses_added": "Đã thêm khóa học",
-      "course_removed": "Đã xóa khóa học"
+      "course_removed": "Đã xóa khóa học",
+      "members_added": "Người học được thêm vào đường dẫn",
+      "member_removed": "Người học đã bị xóa khỏi đường dẫn",
+      "tutors_added": "Đã thêm gia sư vào đường dẫn",
+      "tutor_added": "Đã thêm gia sư vào lộ trình",
+      "tutor_removed": "Đã xóa gia sư khỏi lộ trình"
+    },
+    "analytics": {
+      "title": "Phân tích",
+      "subtitle": "Người học đang di chuyển như thế nào trên con đường này.",
+      "empty": "Chưa có dữ liệu. Đăng ký người học và họ sẽ bắt đầu hiển thị ở đây.",
+      "empty_desc": "Đăng ký người học vào lộ trình này và tiến trình của họ sẽ hiển thị tại đây.",
+      "stuck": {
+        "title": "Nơi người học bị mắc kẹt",
+        "subtitle": "Những bài học, bài tập gây cản trở cho người học nhất hiện nay.",
+        "badge": "{count} bị kẹt",
+        "lesson_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã dừng lại ở bài học này.",
+        "exercise_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã thực hiện bài tập này trong hơn 2 tuần.",
+        "empty": "Hiện tại không có người học nào bị mắc kẹt. Tiến bộ lớn!",
+        "empty_desc": "Khi người học bị mắc kẹt, họ sẽ hiển thị ở đây.",
+        "lesson_prefix": "Bài học:",
+        "exercise_prefix": "Bài tập:",
+        "showing": "Đang hiển thị {start} đến {end} trong tổng số {total} mục",
+        "table": {
+          "item": "Mục",
+          "course": "Khóa học"
+        }
+      },
+      "funnel": {
+        "title": "Kênh khóa học",
+        "subtitle": "Có bao nhiêu người học đã đạt và hoàn thành mỗi khóa học theo thứ tự.",
+        "completed": "hoàn thành",
+        "in_progress": "đang tiến hành",
+        "drop": "{count} {count, plural, =1 {người học} other {người học}} khác đã bỏ học sau Khóa học {n}",
+        "biggest_drop": "sự sụt giảm lớn nhất",
+        "certificates": "{count} {count, plural, =1 {chứng chỉ} other {chứng chỉ}} khác được trao"
+      },
+      "stat": {
+        "learners": "Học viên",
+        "active": "Người học tích cực",
+        "active_desc": "đã làm việc trong 14 ngày qua",
+        "completion_rate": "Tỷ lệ hoàn thành",
+        "completion_desc": "{completed} trong tổng số {total} đã hoàn thành",
+        "avg_time": "Trung bình thời gian để kết thúc",
+        "avg_time_desc": "qua các lần hoàn thành",
+        "enrolled_desc": "+{count} trong tháng này",
+        "pending_line": "{count} {count, plural, other {lời mời đang chờ}}",
+        "team_desc": "{count, plural, one {# gia sư trong nhóm lộ trình} other {# gia sư trong nhóm lộ trình}}",
+        "avg_time_weeks": "{value} tuần",
+        "avg_time_days": "{value} ngày"
+      },
+      "students": {
+        "subtitle": "Tiến trình lộ trình cho mỗi người học, khóa học hiện tại và ngày đăng ký.",
+        "title": "Tổng quan tiến trình người học",
+        "courses_completed": "Khóa học đã hoàn thành"
+      },
+      "member": {
+        "courses_title": "Các khóa học trong lộ trình này",
+        "remove": "Xóa khỏi đường dẫn",
+        "status": {
+          "not_started": "Chưa bắt đầu",
+          "in_progress": "Đang tiến hành",
+          "completed": "Đã hoàn thành",
+          "locked": "Đã khóa"
+        },
+        "export": "Xuất CSV",
+        "progress_label": "Tiến trình đường dẫn"
+      },
+      "export": {
+        "status": "Trạng thái"
+      }
+    },
+    "people": {
+      "title": "mọi người",
+      "subtitle": "{count} {count, plural, =1 {người học} other {người học}} khác đã đăng ký vào con đường này",
+      "info_banner": "Việc thêm người học vào đường dẫn này sẽ tự động đăng ký họ vào tất cả {count} {count, plural, =1 {khóa học} other {khóa học}} khác. Việc loại bỏ chúng sẽ bảo toàn quyền truy cập và tiến độ khóa học của họ.",
+      "search_placeholder": "Tìm kiếm theo tên hoặc email…",
+      "empty": "Chưa có học viên nào đăng ký Thêm người học để bắt đầu.",
+      "no_results": "Không có người học phù hợp với tìm kiếm của bạn.",
+      "invite": {
+        "title": "Thêm người học vào đường dẫn",
+        "bulk_title": "Mời qua email",
+        "bulk_description": "Nhập các địa chỉ email được phân tách bằng dấu phẩy hoặc dòng mới.",
+        "bulk_submit": "Thêm người học"
+      },
+      "remove": {
+        "title": "Xóa người học",
+        "title_non_student": "Xóa thành viên",
+        "confirm": "Bạn có chắc chắn muốn xóa {name} khỏi lộ trình học tập này không? Họ sẽ giữ quyền truy cập và tiến bộ khóa học của họ.",
+        "confirm_non_student": "Bạn có chắc muốn xóa {name} khỏi lộ trình này? Người này sẽ mất quyền quản lý lộ trình.",
+        "cancel": "Hủy bỏ",
+        "yes": "Xóa"
+      },
+      "badge": {
+        "certificate_earned": "Chứng chỉ đạt được",
+        "not_started": "Chưa bắt đầu"
+      },
+      "table": {
+        "learner": "Người học",
+        "progress": "Tiến trình đường dẫn",
+        "current_course": "Khóa học hiện tại",
+        "enrolled": "Đã đăng ký",
+        "actions": "hành động"
+      },
+      "filter": {
+        "all": "Tất cả tiến độ",
+        "not_started": "Chưa bắt đầu",
+        "in_progress": "Đang tiến hành",
+        "completed": "Đã hoàn thành"
+      },
+      "info_title": "Giới thiệu về đăng ký lộ trình"
     }
   }
 }

@@ -55,11 +55,18 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getCourseIdsByCohortIds: vi.fn(),
   getExistingCohortMembers: vi.fn()
 }));
+vi.mock('@cio/db/queries/learning-path', () => ({
+  getOrgLearningPathsByIds: vi.fn()
+}));
+vi.mock('@api/services/learning-path/member-management', () => ({
+  enrollProfileInLearningPath: vi.fn()
+}));
 vi.mock('@cio/core/config/dashboard-url', () => ({ getAppBaseUrl: vi.fn(() => 'https://app.test') }));
 vi.mock('@api/services/organization/student-limit', () => ({ assertStudentCapacityOrThrow: vi.fn() }));
 vi.mock('@api/utils/org', () => ({
   parseCourseIdsFromInviteMetadata: vi.fn(() => []),
-  parseCohortIdsFromInviteMetadata: vi.fn(() => [])
+  parseCohortIdsFromInviteMetadata: vi.fn(() => []),
+  parsePathIdsFromInviteMetadata: vi.fn(() => [])
 }));
 // Mocked to sidestep Vite's nested-subpath resolution quirk on `@cio/*` exports.
 vi.mock('@cio/db/queries/auth/profile', () => ({

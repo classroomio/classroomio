@@ -7,6 +7,14 @@ import {
   insertCohortMemberIfAbsent,
   lockCohortStatusForAccept
 } from '@cio/db/queries/cohort';
+import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
+import {
+  getCourseIdsByLearningPathId,
+  getLearningPathById,
+  getLearningPathOrgId,
+  getMemberByPathAndProfile,
+  lockLearningPathStatusForAccept
+} from '@cio/db/queries/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
@@ -68,6 +76,14 @@ function requireCohort(context: TInviteLinkWithContext) {
   }
 
   return context.cohort;
+}
+
+function requireLearningPath(context: TInviteLinkWithContext) {
+  if (!context.learningPath) {
+    throw new AppError('This invite link is no longer valid', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  return context.learningPath;
 }
 
 /** Failures are swallowed: the learner is already enrolled, so a bad email must not fail the join. */
@@ -243,13 +259,111 @@ const cohortHandler: InviteLinkHandler = {
   }
 };
 
+const learningPathHandler: InviteLinkHandler = {
+  async resolveOrganizationId(learningPathId) {
+    const orgId = await getLearningPathOrgId(learningPathId);
+
+    if (!orgId) {
+      throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
+    }
+
+    return orgId;
+  },
+
+  preview(context) {
+    const learningPath = requireLearningPath(context);
+
+    return {
+      resourceType: 'LEARNING_PATH',
+      resourceName: learningPath.name,
+      description: learningPath.description,
+      coverImage: learningPath.coverImage,
+      isResourceOpen: learningPath.isPublished
+    };
+  },
+
+  async enrollMembership(tx, context, profileId, email) {
+    const learningPath = requireLearningPath(context);
+    const locked = await lockLearningPathStatusForAccept(learningPath.id, tx);
+
+    if (!locked || !locked.isPublished) {
+      throw new AppError('This invite is no longer accepting new members', ErrorCodes.VALIDATION_ERROR, 403);
+    }
+
+    const path = await getLearningPathById(learningPath.id, tx);
+
+    if (!path) {
+      throw new AppError('This invite link is no longer valid', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    const existing = await getMemberByPathAndProfile(learningPath.id, profileId, tx);
+    const isFreshJoin = !existing;
+
+    await enrollProfileInLearningPath(
+      path,
+      {
+        profileId,
+        email,
+        roleId: existing?.roleId ?? context.invite.roleId,
+        grantedByProfileId: profileId
+      },
+      tx
+    );
+
+    return { isFreshJoin };
+  },
+
+  async afterCommit(context, profileId, email, { isFreshJoin }) {
+    const learningPath = requireLearningPath(context);
+    const pathCourseIds = await getCourseIdsByLearningPathId(learningPath.id);
+
+    if (pathCourseIds.length > 0) {
+      await ensureComplianceEnrollmentRecordsForProfiles(pathCourseIds, [profileId]);
+    }
+
+    await invalidateOrgStats(context.organization.id);
+
+    if (isFreshJoin && email) {
+      const loginUrl = getDashboardBaseUrl(context.organization);
+      const branding = buildEmailBranding(context.organization);
+      const from = buildEmailFromName(`${context.organization.name} (via ClassroomIO.com)`);
+
+      try {
+        await enqueueTransactionalEmail('studentLearningPathWelcome', {
+          to: email,
+          fields: {
+            orgName: context.organization.name,
+            learningPathName: learningPath.name,
+            loginUrl,
+            branding
+          },
+          from,
+          idempotencyKey: `invite-link-learning-path-welcome:${learningPath.id}:${profileId}`,
+          preference: { organizationId: context.organization.id, recipientProfileId: profileId }
+        });
+      } catch (error) {
+        console.error(
+          'sendLearningPathWelcomeEmail enqueue error',
+          { learningPathId: learningPath.id, profileId },
+          error
+        );
+      }
+    }
+  },
+
+  redirectTo() {
+    return '/lms';
+  }
+};
+
 /**
  * A new resource type needs: one entry here, one `INVITE_LINK_RESOURCE_TYPE` value,
  * one nullable FK column, and create/toggle routes on that resource's router.
  */
 export const INVITE_LINK_HANDLERS: Record<TInviteLinkResourceType, InviteLinkHandler> = {
   COURSE: courseHandler,
-  COHORT: cohortHandler
+  COHORT: cohortHandler,
+  LEARNING_PATH: learningPathHandler
 };
 
 export function getInviteLinkHandler(resourceType: string): InviteLinkHandler {

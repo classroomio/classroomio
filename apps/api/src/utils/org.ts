@@ -34,3 +34,8 @@ export function parseCourseIdsFromInviteMetadata(metadata: unknown): string[] {
 export function parseCohortIdsFromInviteMetadata(metadata: unknown): string[] {
   return parseInviteIds(metadata, ['cohortIds', 'cohort_ids', 'programIds', 'program_ids']);
 }
+
+/** Normalize JSONB organization-invite metadata for learning path ids. */
+export function parsePathIdsFromInviteMetadata(metadata: unknown): string[] {
+  return parseInviteIds(metadata, ['pathIds', 'path_ids', 'learningPathIds', 'learning_path_ids']);
+}

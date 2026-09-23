@@ -32,12 +32,9 @@ export const ZAddCohortMembers = z.object({
       })
     )
     .min(1)
-    .refine(
-      (members) => members.every((member) => Number(Boolean(member.profileId)) + Number(Boolean(member.email)) === 1),
-      {
-        message: 'Each member must provide exactly one of profileId or email'
-      }
-    )
+    .refine((members) => members.every((member) => Boolean(member.profileId) || Boolean(member.email)), {
+      message: 'Each member must provide a profileId or email'
+    })
 });
 export type TAddCohortMembers = z.infer<typeof ZAddCohortMembers>;
 

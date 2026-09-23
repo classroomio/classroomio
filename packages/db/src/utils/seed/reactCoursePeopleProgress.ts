@@ -8,7 +8,9 @@ import {
   inArray,
   lessonCompletion,
   organizationmember,
+  or,
   profile,
+  sql,
   submission,
   user
 } from '@db/drizzle';
@@ -382,14 +384,21 @@ export async function seedReactCoursePeopleProgress({
     lessonId: string;
     profileId: string;
     isComplete: boolean;
+    createdAt: string;
   }> = [];
 
   for (const plan of progressPlans) {
+    // Backdate to the learner's activity date: recency queries (course
+    // activity, path stuck-learners) read created_at, which would otherwise
+    // default to seed time and make every learner look freshly active.
+    const activityIso = isoDaysFromNow(now, -(plan.progress.lastLoginDaysAgo ?? plan.progress.enrolledDaysAgo));
+
     for (const lessonId of lessonIdsForCount(plan.progress.lessonsCompleted)) {
       lessonCompletionsToInsert.push({
         lessonId,
         profileId: plan.profileId,
-        isComplete: true
+        isComplete: true,
+        createdAt: activityIso
       });
     }
   }
@@ -429,11 +438,17 @@ export async function seedReactCoursePeopleProgress({
     courseId: string;
     gradingState: string;
     overallStatus: string;
+    createdAt: string;
+    updatedAt: string;
   }> = [];
 
   for (const plan of progressPlans) {
     const groupMemberId = memberLookup.get(plan.profileId);
     if (!groupMemberId) continue;
+
+    // Submission recency is read off updated_at — backdate both so stale
+    // learners don't look freshly active (see lesson completions above).
+    const activityIso = isoDaysFromNow(now, -(plan.progress.lastLoginDaysAgo ?? plan.progress.enrolledDaysAgo));
 
     for (const exerciseId of exerciseIdsForCount(plan.progress.exercisesCompleted)) {
       submissionsToInsert.push({
@@ -441,7 +456,9 @@ export async function seedReactCoursePeopleProgress({
         submittedBy: groupMemberId,
         courseId: reactCourseId,
         gradingState: 'completed',
-        overallStatus: 'completed'
+        overallStatus: 'completed',
+        createdAt: activityIso,
+        updatedAt: activityIso
       });
     }
   }
@@ -465,6 +482,45 @@ export async function seedReactCoursePeopleProgress({
       console.log(`   ✓ Inserted ${newSubmissions.length} exercise submission(s)`);
     } else {
       console.log('   ✓ Exercise submissions already exist, skipping');
+    }
+  }
+
+  // Repair rows seeded before timestamps were backdated: align existing
+  // completions/submissions with each learner's activity date.
+  for (const plan of progressPlans) {
+    const activityIso = isoDaysFromNow(now, -(plan.progress.lastLoginDaysAgo ?? plan.progress.enrolledDaysAgo));
+    const planLessonIds = lessonIdsForCount(plan.progress.lessonsCompleted);
+
+    if (planLessonIds.length > 0) {
+      await db
+        .update(lessonCompletion)
+        .set({ createdAt: activityIso })
+        .where(
+          and(
+            eq(lessonCompletion.profileId, plan.profileId),
+            inArray(lessonCompletion.lessonId, planLessonIds),
+            sql`${lessonCompletion.createdAt} IS DISTINCT FROM ${activityIso}::timestamptz`
+          )
+        );
+    }
+
+    const planGroupMemberId = memberLookup.get(plan.profileId);
+    const planExerciseIds = exerciseIdsForCount(plan.progress.exercisesCompleted);
+
+    if (planGroupMemberId && planExerciseIds.length > 0) {
+      await db
+        .update(submission)
+        .set({ createdAt: activityIso, updatedAt: activityIso })
+        .where(
+          and(
+            eq(submission.submittedBy, planGroupMemberId),
+            inArray(submission.exerciseId, planExerciseIds),
+            or(
+              sql`${submission.createdAt} IS DISTINCT FROM ${activityIso}::timestamptz`,
+              sql`${submission.updatedAt} IS DISTINCT FROM ${activityIso}::timestamptz`
+            )
+          )
+        );
     }
   }
 

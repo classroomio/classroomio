@@ -11,7 +11,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
 
-  import EmptyState from './empty-state.svelte';
+  import { EmptyState } from '$features/ui';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import type { CourseAnalytics } from '$features/course/utils/types';
 

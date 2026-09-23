@@ -9,6 +9,7 @@ export { default as CourseLandingPage } from './course-landing-page/course-landi
 export { default as ComingSoon } from './coming-soon.svelte';
 export { default as Confetti } from './confetti/confetti.svelte';
 export { default as DeleteModal } from './delete-modal.svelte';
+export { default as EmptyState } from './empty-state.svelte';
 export { default as HeroProfileCard } from './analytics/hero-profile-card.svelte';
 export { default as HTMLRender } from './html-render.svelte';
 export { default as Image } from './image.svelte';
@@ -25,6 +26,7 @@ export { default as Search } from './search.svelte';
 export { default as SenjaEmbed } from './senja-embed.svelte';
 export { default as Snackbar } from './snackbar/snackbar.svelte';
 export { default as TablePagination } from './table-pagination.svelte';
+export { default as TruncatedWithTooltip } from './truncated-with-tooltip.svelte';
 export { default as TextEditor } from './text-editor.svelte';
 export { preloadTextEditor } from './text-editor.svelte';
 export { default as UnsavedChanges } from './unsaved-changes.svelte';

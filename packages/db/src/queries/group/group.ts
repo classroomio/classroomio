@@ -5,6 +5,7 @@ import { and, asc, eq, inArray, isNotNull, isNull, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
+import { membershipKey } from '@cio/utils';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createGroup(values: TNewGroup, dbClient: DbOrTxClient = db) {
@@ -60,7 +61,11 @@ export async function getExistingGroupMembers(
       .from(schema.groupmember)
       .where(and(inArray(schema.groupmember.groupId, groupIds), inArray(schema.groupmember.profileId, profileIds)));
 
-    return new Set(rows.map((r) => `${r.groupId}:${r.profileId}`));
+    return new Set(
+      rows
+        .filter((row): row is { groupId: string; profileId: string } => Boolean(row.groupId && row.profileId))
+        .map((r) => membershipKey(r.groupId, r.profileId))
+    );
   } catch (error) {
     console.error('getExistingGroupMembers error:', error);
     throw new Error(
@@ -86,7 +91,7 @@ export async function enrollUsersInCourseGroups(
   const emailByProfile = new Map(users.map((u) => [u.profileId, u.email]));
 
   const toInsert = pairs
-    .filter((p) => !existingSet.has(`${p.groupId}:${p.profileId}`))
+    .filter((p) => !existingSet.has(membershipKey(p.groupId, p.profileId)))
     .map((p) => ({
       groupId: p.groupId,
       roleId,

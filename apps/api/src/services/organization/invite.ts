@@ -27,13 +27,20 @@ import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
+import { membershipKey } from '@cio/utils/functions';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from './student-limit';
 import type { StudentMilestoneNotification } from './student-limit';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
-import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
+import {
+  parseCourseIdsFromInviteMetadata,
+  parseCohortIdsFromInviteMetadata,
+  parsePathIdsFromInviteMetadata
+} from '@api/utils/org';
+import { getOrgLearningPathsByIds } from '@cio/db/queries/learning-path';
+import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
@@ -191,6 +198,8 @@ async function enrollOrganizationInviteUser(
   params: {
     courseIds: string[];
     cohortIds: string[];
+    pathIds: string[];
+    organizationId: string;
     profileId: string;
     email: string;
     roleId: number;
@@ -217,7 +226,7 @@ async function enrollOrganizationInviteUser(
       tx
     );
     const cohortIdsToInsert = params.cohortIds.filter(
-      (cohortId) => !existingCohortMemberships.has(`${cohortId}:${params.profileId}`)
+      (cohortId) => !existingCohortMemberships.has(membershipKey(cohortId, params.profileId))
     );
 
     for (const cohortId of cohortIdsToInsert) {
@@ -246,6 +255,24 @@ async function enrollOrganizationInviteUser(
         tx
       );
       await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [params.profileId], tx);
+    }
+  }
+
+  if (params.pathIds.length > 0) {
+    const paths = await getOrgLearningPathsByIds(params.organizationId, params.pathIds, tx);
+
+    for (const path of paths) {
+      await enrollProfileInLearningPath(
+        path,
+        {
+          profileId: params.profileId,
+          email: params.email,
+          roleId: ROLE.STUDENT,
+          grantedByProfileId: params.profileId
+        },
+        tx
+      );
+      enrolledCount += 1;
     }
   }
 
@@ -456,6 +483,8 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     const enrolledCount = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
+      pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
+      organizationId: row.invite.organizationId,
       profileId: user.id,
       email: normalizedEmail,
       roleId: row.invite.roleId
@@ -740,6 +769,8 @@ export async function acceptOrganizationInviteById(
     const enrolledCount = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
+      pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
+      organizationId: row.invite.organizationId,
       profileId: user.id,
       email: normalizedEmail,
       roleId: row.invite.roleId

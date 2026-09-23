@@ -28,12 +28,9 @@ export const ZAddCourseMembers = z
       name: z.string().optional() // For email sending
     })
   )
-  .refine(
-    (members) => members.every((member) => Number(Boolean(member.profileId)) + Number(Boolean(member.email)) === 1),
-    {
-      message: 'Each member must provide exactly one of profileId or email'
-    }
-  );
+  .refine((members) => members.every((member) => Boolean(member.profileId) || Boolean(member.email)), {
+    message: 'Each member must provide a profileId or email'
+  });
 export type TAddCourseMembers = z.infer<typeof ZAddCourseMembers>;
 
 export const ZUpdateCourseMember = z.object({

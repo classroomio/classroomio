@@ -8,7 +8,7 @@ import {
   backfillMemberCourseProgressForAddedCourse,
   getCourseIdsInPath,
   grantCourseAccess,
-  listLearningPathMembers,
+  listActivePathMemberIds,
   removeCourseFromPath,
   reorderLearningPathCourses,
   updateLearningPath,
@@ -40,7 +40,7 @@ export async function addCoursesToPathService(
 
     return await db.transaction(async (tx) => {
       const addedCourses: TLearningPathCourse[] = [];
-      const members = await listLearningPathMembers(path.id, undefined, tx);
+      const members = await listActivePathMemberIds(path.id, tx);
       const activeMemberIds = members.map((member) => member.id);
 
       for (const courseId of courseIds) {

@@ -4,7 +4,7 @@
   import { Button } from '@cio/ui/base/button';
   import { MultiSelectList } from '@cio/ui/custom/multi-select-list';
   import { t } from '$lib/utils/functions/translations';
-  import { learningPathApi } from '../api';
+  import { pathCoursesApi } from '../api';
   import { coursesApi } from '$features/course/api';
   import { onDestroy, untrack } from 'svelte';
 
@@ -92,7 +92,7 @@
       return;
     }
 
-    const didAddCourses = await learningPathApi.addCourses(pathId, courseIds);
+    const didAddCourses = await pathCoursesApi.addCourses(pathId, courseIds);
     if (!didAddCourses) {
       return;
     }
@@ -187,17 +187,17 @@
     </div>
 
     <Dialog.Footer class="shrink-0 pt-3">
-      <Button variant="outline" onclick={closeModal} disabled={learningPathApi.isLoading}>
+      <Button variant="outline" onclick={closeModal} disabled={pathCoursesApi.isLoading}>
         {$t('learningPath.modals.add_courses.cancel')}
       </Button>
       <Button
         type="button"
         variant="default"
-        disabled={selectedCount === 0 || learningPathApi.isLoading}
-        loading={learningPathApi.isLoading}
+        disabled={selectedCount === 0 || pathCoursesApi.isLoading}
+        loading={pathCoursesApi.isLoading}
         onclick={handleAdd}
       >
-        {#if learningPathApi.isLoading}
+        {#if pathCoursesApi.isLoading}
           {$t('learningPath.modals.add_courses.submitting')}
         {:else if selectedCount > 0}
           {$t('learningPath.modals.add_courses.submit', { count: selectedCount })}

@@ -32,12 +32,12 @@
 
   let { onMembersChanged }: Props = $props();
 
-  let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
   let courseId = $derived(courseApi.course?.id ?? '');
   const addPeopleParm = $derived(new URLSearchParams(page.url.search).get('add'));
   const isOpen = $derived(addPeopleParm === 'true');
 
+  const tutors = $derived.by(() => getTutors(orgApi.teamMembers, courseApi.group.people));
   const selectedTutors = $derived(tutors.filter((t) => selectedIds.includes(t.id.toString())));
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
 
@@ -46,11 +46,29 @@
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, courseApi.group.people));
   const inviteLink = $derived(buildResourceInviteLink(peopleApi.inviteLink?.token, $currentOrg));
 
-  function getTutors(team: OrgTeamMember[]) {
-    const existingTutors = courseApi?.group?.tutors || [];
+  function getTutors(team: OrgTeamMember[], courseMembers: typeof courseApi.group.people): Tutor[] {
+    const existingProfileIds = new Set(
+      courseMembers.map((member) => member.profileId).filter((profileId): profileId is string => Boolean(profileId))
+    );
+    const existingEmails = new Set(
+      courseMembers
+        .map((member) => (member.profile?.email ?? member.email)?.toLowerCase())
+        .filter((email): email is string => Boolean(email))
+    );
+
     return team
       .filter((teamMember) => teamMember.verified)
-      .filter((teamMember) => !existingTutors.some((t) => t.id === teamMember.profileId))
+      .filter((teamMember) => {
+        if (teamMember.profileId && existingProfileIds.has(teamMember.profileId)) {
+          return false;
+        }
+
+        if (teamMember.email && existingEmails.has(teamMember.email.toLowerCase())) {
+          return false;
+        }
+
+        return true;
+      })
       .map((teamMember) => ({
         id: teamMember.id,
         text: teamMember.fullname,
@@ -75,15 +93,13 @@
     });
   }
 
-  function setTutors(orgId: string | undefined) {
+  function loadTeam(orgId: string | undefined) {
     if (!orgId) return;
     untrack(async () => {
       await orgApi.getOrgTeam();
       if (orgApi.error) {
         console.error('Error fetching teams', orgApi.error);
-        return;
       }
-      tutors = getTutors(orgApi.teamMembers);
     });
   }
 
@@ -173,26 +189,40 @@
     }));
     await peopleApi.add(courseId, members);
     if (peopleApi.success) {
+      selectedIds = [];
+      await courseApi.refreshCourse(courseId, $profile.id);
       onMembersChanged?.();
       goto(resolve(page.url.pathname, {}));
     }
   }
 
   function closeModal() {
+    selectedIds = [];
     goto(resolve(page.url.pathname, {}));
   }
 
   $effect(() => {
-    setTutors($currentOrg.id);
+    loadTeam($currentOrg.id);
   });
 
   $effect(() => {
     if (!isOpen || !courseId) return;
     untrack(() => {
       activeTab = 'students';
+      selectedIds = [];
+      void loadTeam($currentOrg.id);
       void loadStudents($currentOrg.id);
       void peopleApi.getInviteLink(courseId);
     });
+  });
+
+  // Drop selections that are no longer offered so a stale id can never be resubmitted.
+  $effect(() => {
+    const availableIds = new Set(tutors.map((tutor) => tutor.id.toString()));
+
+    if (selectedIds.some((id) => !availableIds.has(id))) {
+      selectedIds = selectedIds.filter((id) => availableIds.has(id));
+    }
   });
 </script>
 

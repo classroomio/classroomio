@@ -3,6 +3,7 @@ import * as schema from '@db/schema';
 import { and, count, eq, gte, inArray, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import { startOfCurrentMonthUtc as startOfCurrentMonth } from '@cio/utils/functions';
 import { db } from '@cio/db/drizzle';
 import { listAccountOrgIds } from '@cio/db/queries/account';
 
@@ -16,13 +17,6 @@ export type AccountUsage = {
     tokensUsedThisMonth: number;
   }>;
 };
-
-function startOfCurrentMonth(): Date {
-  const date = new Date();
-  date.setDate(1);
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
 
 export async function getAccountUsage(primaryOrgId: string): Promise<AccountUsage> {
   const orgIds = await listAccountOrgIds(primaryOrgId);
