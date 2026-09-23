@@ -18,6 +18,7 @@ import {
   lesson,
   lessonCompletion,
   organizationmember,
+  or,
   profile,
   sql,
   submission,
@@ -129,7 +130,6 @@ const PATH_MEMBER_IDS = {
   bootcampDaniel: '9a000002-0000-4000-8000-000000000003',
   bootcampLucia: '9a000002-0000-4000-8000-000000000004',
   bootcampStudent: '9a000002-0000-4000-8000-000000000005',
-  bootcampPendingInvite: '9a000002-0000-4000-8000-000000000006',
   dataSkillsStudent: '9a000002-0000-4000-8000-000000000011',
   bootcampPriyaNair: '9a000002-0000-4000-8000-000000000021',
   bootcampTomasSilva: '9a000002-0000-4000-8000-000000000022',
@@ -188,8 +188,6 @@ const REACT_LEARNER_PROFILE_IDS = [
 const REACT_LEARNER_ENROLLED_DAYS_AGO = [3, 14, 21, 30, 45, 60, 75, 90, 100];
 
 const REACT_LEARNER_MEMBER_ID_START = 12; // path member ids 9a000002-...0012..0020
-
-const PENDING_INVITE_EMAIL = 'kai.adeyemi@udemy-test.demo';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -1651,7 +1649,10 @@ async function seedPersonaProgress(persona: PersonaSeed, now: Date) {
     gradingState: string;
     overallStatus: string;
     createdAt: string;
+    updatedAt: string;
   }> = [];
+
+  const activityIso = isoDaysAgo(now, Math.max(persona.activityDaysAgo ?? persona.enrolledDaysAgo, 1));
 
   for (const courseKey of ALL_PATH_COURSE_KEYS) {
     const plan = persona.progress[courseKey] ?? { lessonsCompleted: 0, exercisesCompleted: 0 };
@@ -1665,7 +1666,7 @@ async function seedPersonaProgress(persona: PersonaSeed, now: Date) {
         lessonId,
         profileId: persona.profileId,
         isComplete: true,
-        createdAt: isoDaysAgo(now, Math.max(persona.activityDaysAgo ?? persona.enrolledDaysAgo, 1))
+        createdAt: activityIso
       });
     }
 
@@ -1676,20 +1677,37 @@ async function seedPersonaProgress(persona: PersonaSeed, now: Date) {
         courseId: courseIdsByKey[courseKey],
         gradingState: 'completed',
         overallStatus: 'completed',
-        createdAt: isoDaysAgo(now, Math.max(persona.activityDaysAgo ?? persona.enrolledDaysAgo, 1))
+        createdAt: activityIso,
+        updatedAt: activityIso
       });
     }
   }
 
   if (lessonCompletionsToInsert.length > 0) {
     await db.insert(lessonCompletion).values(lessonCompletionsToInsert).onConflictDoNothing();
+
+    const lessonIds = lessonCompletionsToInsert.map((item) => item.lessonId);
+    await db
+      .update(lessonCompletion)
+      .set({ createdAt: activityIso })
+      .where(
+        and(
+          eq(lessonCompletion.profileId, persona.profileId),
+          inArray(lessonCompletion.lessonId, lessonIds),
+          sql`${lessonCompletion.createdAt} IS DISTINCT FROM ${activityIso}::timestamptz`
+        )
+      );
   }
 
-  if (submissionsToInsert.length > 0) {
+  const personaGroupMemberIds = ALL_PATH_COURSE_KEYS.map((key) => persona.groupMemberIds[key]).filter(
+    (id): id is string => Boolean(id)
+  );
+
+  if (submissionsToInsert.length > 0 && personaGroupMemberIds.length > 0) {
     const existingSubmissions = await db
       .select({ exerciseId: submission.exerciseId, submittedBy: submission.submittedBy })
       .from(submission)
-      .where(eq(submission.courseId, submissionsToInsert[0].courseId));
+      .where(inArray(submission.submittedBy, personaGroupMemberIds));
 
     const existingSubmissionKeys = new Set(existingSubmissions.map((row) => `${row.submittedBy}-${row.exerciseId}`));
     const newSubmissions = submissionsToInsert.filter(
@@ -1700,6 +1718,25 @@ async function seedPersonaProgress(persona: PersonaSeed, now: Date) {
       await db.insert(submission).values(newSubmissions);
     }
   }
+
+  // Repair rows seeded before updatedAt was backdated: the stuck-learners
+  // query reads submission recency off updated_at, which defaulted to insert
+  // time, so every seeded submission looked freshly updated. Align existing
+  // persona rows with their activity date.
+  if (personaGroupMemberIds.length > 0) {
+    await db
+      .update(submission)
+      .set({ createdAt: activityIso, updatedAt: activityIso })
+      .where(
+        and(
+          inArray(submission.submittedBy, personaGroupMemberIds),
+          or(
+            sql`${submission.updatedAt} IS DISTINCT FROM ${activityIso}::timestamptz`,
+            sql`${submission.createdAt} IS DISTINCT FROM ${activityIso}::timestamptz`
+          )
+        )
+      );
+  }
 }
 
 // Populated at the start of seedLearningPaths from the seeded udemy-test courses.
@@ -1708,7 +1745,7 @@ let courseGroupIdsByKey: Record<CourseKey, string>;
 
 interface PathMemberSeed {
   id: string;
-  profileId: string | null;
+  profileId: string;
   email: string | null;
   roleId: number;
   enrolledDaysAgo: number;
@@ -2283,15 +2320,6 @@ export async function seedLearningPaths({
       roleId: ROLE.STUDENT,
       enrolledDaysAgo: 50,
       activityDaysAgo: 4,
-      completedDaysAgo: null
-    },
-    {
-      id: PATH_MEMBER_IDS.bootcampPendingInvite,
-      profileId: null,
-      email: PENDING_INVITE_EMAIL,
-      roleId: ROLE.STUDENT,
-      enrolledDaysAgo: 3,
-      activityDaysAgo: null,
       completedDaysAgo: null
     }
   ];

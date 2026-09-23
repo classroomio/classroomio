@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importuj użytkowników",
-      "description": "Dodaj uczniów do swojej organizacji, wprowadzając ich adresy e-mail. Opcjonalnie przypisz je do kursów i wyślij e-maile z zaproszeniami.",
+      "description": "Dodaj uczniów do swojej organizacji, wprowadzając ich adresy e-mail. Opcjonalnie przypisz ich do kursów, kohort lub ścieżek edukacyjnych i wyślij e-maile z zaproszeniem.",
       "emails_label": "Adresy e-mail",
       "emails_placeholder": "Wpisz adresy e-mail oddzielone przecinkami, znakami nowej linii lub średnikami\nnp. alice@example.com, bob@example.com",
       "course_access": "Dostęp do kursu",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} nowych zaproszeń, {assigned} istniejących studentów z dostępem do kursu, {pendingInvitesRenewed} odnowionych oczekujących zaproszeń (wysłano e-maile: {emailsSent})",
       "snackbar_no_emails": "Proszę podać przynajmniej jeden adres e-mail",
       "snackbar_failed": "Nie udało się zaimportować użytkowników",
-      "page_subtitle": "Dodaj wiele osób naraz przez e-mail, a potem przypisz im kursy lub kohorty, jeśli chcesz.",
+      "page_subtitle": "Dodaj wiele osób naraz przez e-mail, a potem przypisz im kursy, kohorty lub ścieżki edukacyjne, jeśli chcesz.",
       "cohort_access": "Dostęp do kohort",
       "no_cohorts": "Bez przypisania do kohorty",
       "all_cohorts": "Wszystkie kohorty",
       "select_cohorts": "Wybierz konkretne kohorty",
       "select_cohorts_placeholder": "Wybierz kohorty...",
+      "select_paths_placeholder": "Wybierz ścieżki edukacyjne...",
+      "path_access": "Dostęp do ścieżek edukacyjnych",
+      "no_paths": "Bez przypisania do ścieżki edukacyjnej",
+      "all_paths": "Wszystkie ścieżki edukacyjne",
+      "select_paths": "Wybierz konkretne ścieżki edukacyjne",
       "drop_csv": "Upuść plik CSV tutaj lub kliknij, aby wybrać jeden",
       "csv_hint": "Plik CSV w formacie UTF-8 z kolumną adresu e-mail. Maks. liczba wierszy: {rows}, 5 MB.",
       "download_template": "Pobierz szablon",
@@ -5643,7 +5648,12 @@
         "empty": "Obecnie żaden z uczniów nie utknął w miejscu. Wielki postęp!",
         "empty_desc": "Gdy uczniowie utkną, pojawią się tutaj.",
         "lesson_prefix": "Lekcja:",
-        "exercise_prefix": "Ćwiczenie:"
+        "exercise_prefix": "Ćwiczenie:",
+        "showing": "Wyświetlanie od {start} do {end} z {total} elementów",
+        "table": {
+          "item": "Element",
+          "course": "Kurs"
+        }
       },
       "funnel": {
         "title": "Lejek kursu",
@@ -5655,7 +5665,7 @@
         "certificates": "Przyznano {count} {count, plural, one {certyfikat} few {certyfikaty} many {certyfikatów} other {certyfikatów}}"
       },
       "stat": {
-        "enrolled": "Zapisany",
+        "learners": "Uczniowie",
         "active": "Aktywni uczniowie",
         "active_desc": "pracował w ciągu ostatnich 14 dni",
         "completion_rate": "Stopień ukończenia",
@@ -5663,7 +5673,8 @@
         "avg_time": "Średni czas ukończenia",
         "avg_time_desc": "poprzez uzupełnienia",
         "enrolled_desc": "+{count} w tym miesiącu",
-        "team_desc": "{count, plural, one {# tutor w zespole ścieżki} other {# tutorów w zespole ścieżki}}",
+        "pending_line": "{count} {count, plural, one {oczekujące zaproszenie} few {oczekujące zaproszenia} many {oczekujących zaproszeń} other {oczekujących zaproszeń}}",
+        "team_desc": "{count, plural, one {# tutor w zespole ścieżki} few {# tutorzy w zespole ścieżki} many {# tutorów w zespole ścieżki} other {# tutorów w zespole ścieżki}}",
         "avg_time_weeks": "{value} tyg.",
         "avg_time_days": "{value} dni"
       },

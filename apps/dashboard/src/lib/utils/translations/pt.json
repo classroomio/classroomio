@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importar usuários",
-      "description": "Adicione alunos à sua organização inserindo seus endereços de e-mail. Opcionalmente, atribua-os a cursos e envie e-mails de convite.",
+      "description": "Adicione alunos à sua organização inserindo seus endereços de e-mail. Opcionalmente, atribua-os a cursos, coortes ou trilhas de aprendizagem e envie e-mails de convite.",
       "emails_label": "Endereços de e-mail",
       "emails_placeholder": "Insira e-mails separados por vírgulas, novas linhas ou ponto e vírgula\npor exemplo alice@exemplo.com, bob@exemplo.com",
       "course_access": "Acesso ao curso",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} novos convites, {assigned} estudantes existentes com acesso ao curso, {pendingInvitesRenewed} convites pendentes renovados ({emailsSent} e-mails enviados)",
       "snackbar_no_emails": "Insira pelo menos um endereço de e-mail",
       "snackbar_failed": "Falha ao importar usuários",
-      "page_subtitle": "Adicione muitas pessoas de uma vez por e-mail e atribua cursos ou coortes se quiser.",
+      "page_subtitle": "Adicione muitas pessoas de uma vez por e-mail e atribua cursos, coortes ou trilhas de aprendizagem se quiser.",
       "cohort_access": "Acesso a coortes",
       "no_cohorts": "Sem atribuição de coorte",
       "all_cohorts": "Todas as coortes",
       "select_cohorts": "Selecione coortes específicas",
       "select_cohorts_placeholder": "Escolha coortes...",
+      "select_paths_placeholder": "Escolha trilhas de aprendizagem...",
+      "path_access": "Acesso a trilhas de aprendizagem",
+      "no_paths": "Sem atribuição de trilha de aprendizagem",
+      "all_paths": "Todas as trilhas de aprendizagem",
+      "select_paths": "Selecione trilhas de aprendizagem específicas",
       "drop_csv": "Arraste e solte um arquivo CSV aqui ou clique para escolher um",
       "csv_hint": "CSV em UTF-8 com uma coluna de e-mail. Até {rows} linhas, 5 MB.",
       "download_template": "Baixe o modelo",
@@ -5643,7 +5648,12 @@
         "empty": "Nenhum aluno está preso no momento. Grande progresso!",
         "empty_desc": "Quando os alunos travarem, aparecerão aqui.",
         "lesson_prefix": "Lição:",
-        "exercise_prefix": "Exercício:"
+        "exercise_prefix": "Exercício:",
+        "showing": "Exibindo {start} a {end} de {total} itens",
+        "table": {
+          "item": "Item",
+          "course": "Curso"
+        }
       },
       "funnel": {
         "title": "Funil do curso",
@@ -5655,7 +5665,7 @@
         "certificates": "{count} {count, plural, =1 {certificado} other {certificados}} concedidos"
       },
       "stat": {
-        "enrolled": "Inscrito",
+        "learners": "Alunos",
         "active": "Alunos ativos",
         "active_desc": "trabalhou nos últimos 14 dias",
         "completion_rate": "Taxa de conclusão",
@@ -5663,6 +5673,7 @@
         "avg_time": "Tempo médio para concluir",
         "avg_time_desc": "entre conclusões",
         "enrolled_desc": "+{count} este mês",
+        "pending_line": "{count} {count, plural, =1 {convite pendente} other {convites pendentes}}",
         "team_desc": "{count, plural, one {# tutor na equipe da trilha} other {# tutores na equipe da trilha}}",
         "avg_time_weeks": "{value} sem.",
         "avg_time_days": "{value} dias"

@@ -16,7 +16,7 @@ import { toPathMembersRequestQuery } from '../utils/path-people-utils';
 class PathMembersApi extends BaseApiWithErrors {
   members = $state<LearningPathMemberItem[]>([]);
   membersPagination = $state<PathMembersPagination | null>(null);
-  membersStudentsTotal = $state<number | null>(null);
+  membersEnrolledTotal = $state<number | null>(null);
   isLoadingMembers = $state(false);
   private membersRequestSeq = 0;
 
@@ -50,7 +50,7 @@ class PathMembersApi extends BaseApiWithErrors {
         if (seq !== this.membersRequestSeq) return;
         this.members = result.data.data;
         this.membersPagination = result.data.pagination;
-        this.membersStudentsTotal = result.data.studentsTotal;
+        this.membersEnrolledTotal = result.data.enrolledTotal;
       }
     });
     if (seq === this.membersRequestSeq) {

@@ -3633,7 +3633,7 @@ export const learningPathMember = pgTable(
       .primaryKey()
       .notNull(),
     learningPathId: uuid('learning_path_id').notNull(),
-    profileId: uuid('profile_id'),
+    profileId: uuid('profile_id').notNull(),
     email: text(),
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),

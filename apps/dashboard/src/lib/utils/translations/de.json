@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Benutzer importieren",
-      "description": "Fügen Sie Ihrer Organisation Studenten hinzu, indem Sie deren E-Mail-Adressen eingeben. Ordnen Sie sie optional Kursen zu und versenden Sie Einladungs-E-Mails.",
+      "description": "Fügen Sie Ihrer Organisation Lernende hinzu, indem Sie deren E-Mail-Adressen eingeben. Weisen Sie ihnen optional Kurse, Kohorten oder Lernpfade zu und versenden Sie Einladungs-E-Mails.",
       "emails_label": "E-Mail-Adressen",
       "emails_placeholder": "Geben Sie E-Mails durch Kommas, Zeilenumbrüche oder Semikolons getrennt ein\nz.B. alice@example.com, bob@example.com",
       "course_access": "Kurszugang",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} neue Einladungen, {assigned} bestehende Studierende mit Kurszugang, {pendingInvitesRenewed} ausstehende Einladungen erneuert ({emailsSent} E-Mails gesendet)",
       "snackbar_no_emails": "Bitte geben Sie mindestens eine E-Mail-Adresse ein",
       "snackbar_failed": "Benutzer konnten nicht importiert werden",
-      "page_subtitle": "Fügen Sie viele Personen auf einmal per E-Mail hinzu und weisen Sie ihnen bei Bedarf Kurse oder Kohorten zu.",
+      "page_subtitle": "Fügen Sie viele Personen auf einmal per E-Mail hinzu und weisen Sie ihnen bei Bedarf Kurse, Kohorten oder Lernpfade zu.",
       "cohort_access": "Kohortenzugriff",
       "no_cohorts": "Keine Kohortenzuweisung",
       "all_cohorts": "Alle Kohorten",
       "select_cohorts": "Bestimmte Kohorten auswählen",
       "select_cohorts_placeholder": "Kohorten auswählen...",
+      "select_paths_placeholder": "Lernpfade auswählen...",
+      "path_access": "Lernpfad-Zugriff",
+      "no_paths": "Keine Lernpfadzuweisung",
+      "all_paths": "Alle Lernpfade",
+      "select_paths": "Bestimmte Lernpfade auswählen",
       "drop_csv": "Hier eine CSV-Datei einfügen oder klicken, um eine auszuwählen.",
       "csv_hint": "UTF-8-CSV-Datei mit einer E-Mail-Spalte. Bis zu {rows} Zeilen, 5 MB.",
       "download_template": "Laden Sie die Vorlage herunter",
@@ -5643,7 +5648,12 @@
         "empty": "Derzeit stecken keine Lernenden fest. Toller Fortschritt!",
         "empty_desc": "Wenn Lernende nicht weiterkommen, werden sie hier angezeigt.",
         "lesson_prefix": "Lektion:",
-        "exercise_prefix": "Übung:"
+        "exercise_prefix": "Übung:",
+        "showing": "{start} bis {end} von {total} Einträgen werden angezeigt",
+        "table": {
+          "item": "Element",
+          "course": "Kurs"
+        }
       },
       "funnel": {
         "title": "Kurstrichter",
@@ -5655,7 +5665,7 @@
         "certificates": "{count} {count, plural, =1 {Zertifikat} other {Zertifikate}} verliehen"
       },
       "stat": {
-        "enrolled": "Eingeschrieben",
+        "learners": "Lernende",
         "active": "Aktive Lernende",
         "active_desc": "in den letzten 14 Tagen gearbeitet",
         "completion_rate": "Abschlussrate",
@@ -5663,6 +5673,7 @@
         "avg_time": "Ø Zeit bis zum Abschluss",
         "avg_time_desc": "über Fertigstellungen hinweg",
         "enrolled_desc": "+{count} diesen Monat",
+        "pending_line": "{count} {count, plural, =1 {ausstehende Einladung} other {ausstehende Einladungen}}",
         "team_desc": "{count, plural, one {# Tutor im Pfad-Team} other {# Tutoren im Pfad-Team}}",
         "avg_time_weeks": "{value} Wo.",
         "avg_time_days": "{value} Tage"

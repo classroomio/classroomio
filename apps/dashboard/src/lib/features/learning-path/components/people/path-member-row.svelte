@@ -5,7 +5,6 @@
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Table from '@cio/ui/base/table';
   import { Progress } from '@cio/ui/base/progress';
-  import { Chip } from '@cio/ui/custom/chip';
   import AwardIcon from '@lucide/svelte/icons/award';
   import CheckIcon from '@lucide/svelte/icons/check';
   import CopyIcon from '@lucide/svelte/icons/copy';
@@ -14,7 +13,6 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
   import UserIcon from '@lucide/svelte/icons/user';
   import { t } from '$lib/utils/functions/translations';
-  import { shortenName } from '$lib/utils/functions/string';
   import { ComingSoon } from '$features/ui';
   import { TruncatedWithTooltip } from '$features/ui';
   import type { LearningPathMemberItem } from '../../utils/types';
@@ -83,56 +81,25 @@
   onkeydown={navigable && onRowKeydown ? (event) => onRowKeydown?.(member, event) : undefined}
 >
   <Table.Cell class="min-w-[220px]">
-    {#if member.profileId}
-      <div class="flex items-start lg:items-center">
-        <Avatar.Root class="mr-3">
-          {#if member.avatarUrl}
-            <Avatar.Image src={member.avatarUrl} alt={displayName ? displayName : 'User'} />
-          {/if}
-          <Avatar.Fallback>
-            <UserIcon class="ui:size-4 ui:text-muted-foreground custom" />
-          </Avatar.Fallback>
-        </Avatar.Root>
-        <div class="flex flex-col items-start lg:flex-row lg:items-center">
-          <div class="mr-2">
-            <p class="text-base font-normal dark:text-white">
-              {displayName}
-            </p>
-            <p class="ui:text-primary line-clamp-1 text-xs">
-              {obscurePathMemberEmail(displayEmail)}
-            </p>
-          </div>
-          <div class="flex items-center">
-            {#if canManage}
-              <Button
-                variant="secondary"
-                size="icon"
-                class="h-8 w-8 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
-                onclick={(event) => {
-                  event.stopPropagation();
-                  void copyToClipboard(displayEmail);
-                }}
-              >
-                {#if copiedEmail === displayEmail}
-                  <CheckIcon size={16} class="custom text-green-600" />
-                {:else}
-                  <CopyIcon size={16} class="custom" />
-                {/if}
-              </Button>
-            {/if}
-            {#if isSelf}
-              <ComingSoon label={$t('course.navItem.people.you')} />
-            {/if}
-          </div>
+    <div class="flex items-start lg:items-center">
+      <Avatar.Root class="mr-3">
+        {#if member.avatarUrl}
+          <Avatar.Image src={member.avatarUrl} alt={displayName ? displayName : 'User'} />
+        {/if}
+        <Avatar.Fallback>
+          <UserIcon class="ui:size-4 ui:text-muted-foreground custom" />
+        </Avatar.Fallback>
+      </Avatar.Root>
+      <div class="flex flex-col items-start lg:flex-row lg:items-center">
+        <div class="mr-2">
+          <p class="text-base font-normal dark:text-white">
+            {displayName}
+          </p>
+          <p class="ui:text-primary line-clamp-1 text-xs">
+            {obscurePathMemberEmail(displayEmail)}
+          </p>
         </div>
-      </div>
-    {:else}
-      <div class="flex w-2/4 items-start lg:items-center">
-        <Chip value={shortenName(displayEmail)} className="mr-3" />
-        <a href={`mailto:${displayEmail}`} class="text-md ui:text-primary mr-2 dark:text-white">
-          {displayEmail}
-        </a>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center">
           {#if canManage}
             <Button
               variant="secondary"
@@ -150,11 +117,12 @@
               {/if}
             </Button>
           {/if}
-
-          <Chip value={$t('course.navItem.people.pending')} className="bg-yellow-200 text-yellow-700" />
+          {#if isSelf}
+            <ComingSoon label={$t('course.navItem.people.you')} />
+          {/if}
         </div>
       </div>
-    {/if}
+    </div>
   </Table.Cell>
 
   <Table.Cell class="min-w-[140px]">
@@ -249,7 +217,7 @@
             <EllipsisVerticalIcon size={16} class="custom" />
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end">
-            {#if member.profileId && canView && onView}
+            {#if canView && onView}
               <DropdownMenu.Item
                 onclick={(event) => {
                   event.stopPropagation();

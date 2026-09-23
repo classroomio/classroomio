@@ -76,7 +76,7 @@ CREATE TABLE "learning_path_course" (
 CREATE TABLE "learning_path_member" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"learning_path_id" uuid NOT NULL,
-	"profile_id" uuid,
+	"profile_id" uuid NOT NULL,
 	"email" text,
 	"role_id" bigint NOT NULL,
 	"enrolled_at" timestamp with time zone DEFAULT now() NOT NULL,
