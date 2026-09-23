@@ -15,3 +15,6 @@ export { default as AddCourseToPathModal } from './add-course-to-path-modal.svel
 export { default as TabComingSoon } from './tab-coming-soon.svelte';
 export { default as ViewPathSiteUnpublishedModal } from './view-path-site-unpublished-modal.svelte';
 export { default as ViewPathAsStudentModal } from './view-path-as-student-modal.svelte';
+export { default as InvitePathMembersModal } from './invite-path-members-modal.svelte';
+export * from './people';
+export * from './analytics';

@@ -4,7 +4,7 @@ import { and, eq, isNull, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TInviteLink, TNewInviteLink } from '@db/types';
 
-export type TInviteLinkResourceType = 'COURSE' | 'COHORT';
+export type TInviteLinkResourceType = 'COURSE' | 'COHORT' | 'LEARNING_PATH';
 
 export type TInviteLinkTarget = {
   resourceType: TInviteLinkResourceType;
@@ -15,16 +15,27 @@ function targetCondition(target: TInviteLinkTarget) {
   if (target.resourceType === 'COURSE') {
     return and(eq(schema.inviteLink.resourceType, 'COURSE'), eq(schema.inviteLink.courseId, target.resourceId));
   }
-
-  return and(eq(schema.inviteLink.resourceType, 'COHORT'), eq(schema.inviteLink.cohortId, target.resourceId));
+  if (target.resourceType === 'COHORT') {
+    return and(eq(schema.inviteLink.resourceType, 'COHORT'), eq(schema.inviteLink.cohortId, target.resourceId));
+  }
+  return and(
+    eq(schema.inviteLink.resourceType, 'LEARNING_PATH'),
+    eq(schema.inviteLink.learningPathId, target.resourceId)
+  );
 }
 
-export function toInviteLinkColumns(target: TInviteLinkTarget): { courseId: string | null; cohortId: string | null } {
+export function toInviteLinkColumns(target: TInviteLinkTarget): {
+  courseId: string | null;
+  cohortId: string | null;
+  learningPathId: string | null;
+} {
   if (target.resourceType === 'COURSE') {
-    return { courseId: target.resourceId, cohortId: null };
+    return { courseId: target.resourceId, cohortId: null, learningPathId: null };
   }
-
-  return { courseId: null, cohortId: target.resourceId };
+  if (target.resourceType === 'COHORT') {
+    return { courseId: null, cohortId: target.resourceId, learningPathId: null };
+  }
+  return { courseId: null, cohortId: null, learningPathId: target.resourceId };
 }
 
 /** Returns the link regardless of revoked state, so a disabled link can be re-enabled. */
@@ -48,7 +59,9 @@ export async function createInviteLink(values: TNewInviteLink): Promise<TInviteL
     const conflictTarget =
       values.resourceType === 'COURSE'
         ? [schema.inviteLink.courseId, schema.inviteLink.roleId]
-        : [schema.inviteLink.cohortId, schema.inviteLink.roleId];
+        : values.resourceType === 'COHORT'
+          ? [schema.inviteLink.cohortId, schema.inviteLink.roleId]
+          : [schema.inviteLink.learningPathId, schema.inviteLink.roleId];
 
     const [created] = await db
       .insert(schema.inviteLink)
@@ -62,7 +75,12 @@ export async function createInviteLink(values: TNewInviteLink): Promise<TInviteL
       return created;
     }
 
-    const resourceId = values.resourceType === 'COURSE' ? values.courseId : values.cohortId;
+    const resourceId =
+      values.resourceType === 'COURSE'
+        ? values.courseId
+        : values.resourceType === 'COHORT'
+          ? values.cohortId
+          : values.learningPathId;
     if (!resourceId) {
       throw new Error('Invite link is missing its resource id');
     }
@@ -128,6 +146,14 @@ export type TInviteLinkWithContext = {
     isPublished: boolean;
   } | null;
   cohort: { id: string; name: string; description: string | null; coverImage: string | null; status: string } | null;
+  learningPath: {
+    id: string;
+    name: string;
+    description: string | null;
+    coverImage: string | null;
+    slug: string | null;
+    isPublished: boolean;
+  } | null;
 };
 
 /** Loads a link by token hash with its org and target resource. */
@@ -158,12 +184,19 @@ export async function getInviteLinkByTokenHash(
         cohortName: schema.cohort.name,
         cohortDescription: schema.cohort.description,
         cohortCoverImage: schema.cohort.coverImage,
-        cohortStatus: schema.cohort.status
+        cohortStatus: schema.cohort.status,
+        learningPathId: schema.learningPath.id,
+        learningPathName: schema.learningPath.name,
+        learningPathDescription: schema.learningPath.description,
+        learningPathCoverImage: schema.learningPath.coverImage,
+        learningPathSlug: schema.learningPath.slug,
+        learningPathIsPublished: schema.learningPath.isPublished
       })
       .from(schema.inviteLink)
       .innerJoin(schema.organization, eq(schema.inviteLink.organizationId, schema.organization.id))
       .leftJoin(schema.course, eq(schema.inviteLink.courseId, schema.course.id))
       .leftJoin(schema.cohort, eq(schema.inviteLink.cohortId, schema.cohort.id))
+      .leftJoin(schema.learningPath, eq(schema.inviteLink.learningPathId, schema.learningPath.id))
       .where(eq(schema.inviteLink.tokenHash, tokenHash))
       .limit(1);
 
@@ -189,6 +222,16 @@ export async function getInviteLinkByTokenHash(
             description: row.cohortDescription ?? null,
             coverImage: row.cohortCoverImage ?? null,
             status: row.cohortStatus ?? ''
+          }
+        : null,
+      learningPath: row.learningPathId
+        ? {
+            id: row.learningPathId,
+            name: row.learningPathName ?? '',
+            description: row.learningPathDescription ?? null,
+            coverImage: row.learningPathCoverImage ?? null,
+            slug: row.learningPathSlug ?? null,
+            isPublished: !!row.learningPathIsPublished
           }
         : null
     };

@@ -5402,11 +5402,13 @@
       "disabled": "Liên kết mời này đã bị vô hiệu hóa.",
       "closed": "Hiện không còn nhận thêm thành viên mới.",
       "succeeded": "Bạn đã tham gia",
-      "failed": "Không thể tham gia. Vui lòng thử lại."
+      "failed": "Không thể tham gia. Vui lòng thử lại.",
+      "learning_path_button": "Tham gia lộ trình học tập"
     },
     "load_failed": "Không thể tải liên kết mời",
     "generate_failed": "Không thể tạo liên kết mời",
-    "toggle_failed": "Không thể cập nhật liên kết mời"
+    "toggle_failed": "Không thể cập nhật liên kết mời",
+    "learning_path_description": "Bất kỳ ai có liên kết này đều có thể tham gia lộ trình học tập này và mọi khóa học trong đó. Chia sẻ nó thay vì nhập từng email một."
   },
   "lms": {
     "view_landing_page": "Trang chủ"
@@ -5620,7 +5622,103 @@
       "reordered": "Đã cập nhật thứ tự khóa học",
       "course_added": "Đã thêm khóa học",
       "courses_added": "Đã thêm khóa học",
-      "course_removed": "Đã xóa khóa học"
+      "course_removed": "Đã xóa khóa học",
+      "members_added": "Người học được thêm vào đường dẫn",
+      "member_removed": "Người học đã bị xóa khỏi đường dẫn",
+      "tutors_added": "Đã thêm gia sư vào đường dẫn",
+      "tutor_added": "Tutor added to path",
+      "tutor_removed": "Tutor removed from path"
+    },
+    "analytics": {
+      "title": "Phân tích",
+      "subtitle": "Người học đang di chuyển như thế nào trên con đường này.",
+      "empty": "Chưa có dữ liệu. Đăng ký người học và họ sẽ bắt đầu hiển thị ở đây.",
+      "stuck": {
+        "title": "Nơi người học bị mắc kẹt",
+        "subtitle": "Những bài học, bài tập gây cản trở cho người học nhất hiện nay.",
+        "badge": "{count} bị kẹt",
+        "lesson_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã dừng lại ở bài học này.",
+        "exercise_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã thực hiện bài tập này trong hơn 2 tuần.",
+        "empty": "Hiện tại không có người học nào bị mắc kẹt. Tiến bộ lớn!"
+      },
+      "funnel": {
+        "title": "Kênh khóa học",
+        "subtitle": "Có bao nhiêu người học đã đạt và hoàn thành mỗi khóa học theo thứ tự.",
+        "completed": "hoàn thành",
+        "in_progress": "đang tiến hành",
+        "drop": "{count} {count, plural, =1 {người học} other {người học}} khác đã bỏ học sau Khóa học {n}",
+        "biggest_drop": "sự sụt giảm lớn nhất",
+        "certificates": "{count} {count, plural, =1 {chứng chỉ} other {chứng chỉ}} khác được trao"
+      },
+      "stat": {
+        "enrolled": "Đã đăng ký",
+        "active": "Người học tích cực",
+        "active_desc": "đã làm việc trong 14 ngày qua",
+        "completion_rate": "Tỷ lệ hoàn thành",
+        "completion_desc": "{completed} trong tổng số {total} đã hoàn thành",
+        "avg_time": "Trung bình thời gian để kết thúc",
+        "avg_time_desc": "qua các lần hoàn thành"
+      },
+      "students": {
+        "subtitle": "Tiến trình lộ trình cho mỗi người học, khóa học hiện tại và ngày đăng ký."
+      },
+      "member": {
+        "courses_title": "Các khóa học trong lộ trình này",
+        "remove": "Xóa khỏi đường dẫn",
+        "status": {
+          "not_started": "Chưa bắt đầu",
+          "in_progress": "Đang tiến hành",
+          "completed": "Đã hoàn thành",
+          "locked": "Đã khóa"
+        },
+        "export": "Xuất CSV",
+        "progress_label": "Tiến trình đường dẫn"
+      }
+    },
+    "people": {
+      "title": "mọi người",
+      "subtitle": "{count} {count, plural, =1 {người học} other {người học}} khác đã đăng ký vào con đường này",
+      "info_banner": "Việc thêm người học vào đường dẫn này sẽ tự động đăng ký họ vào tất cả {count} {count, plural, =1 {khóa học} other {khóa học}} khác. Việc loại bỏ chúng sẽ bảo toàn quyền truy cập và tiến độ khóa học của họ.",
+      "search_placeholder": "Tìm kiếm theo tên hoặc email…",
+      "empty": "Chưa có học viên nào đăng ký Thêm người học để bắt đầu.",
+      "no_results": "Không có người học phù hợp với tìm kiếm của bạn.",
+      "invite": {
+        "title": "Thêm người học vào đường dẫn",
+        "bulk_title": "Mời qua email",
+        "bulk_description": "Nhập các địa chỉ email được phân tách bằng dấu phẩy hoặc dòng mới.",
+        "bulk_submit": "Thêm người học"
+      },
+      "remove": {
+        "title": "Xóa người học",
+        "title_non_student": "Remove member",
+        "confirm": "Bạn có chắc chắn muốn xóa {name} khỏi lộ trình học tập này không? Họ sẽ giữ quyền truy cập và tiến bộ khóa học của họ.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Hủy bỏ",
+        "yes": "Xóa"
+      },
+      "badge": {
+        "certificate_earned": "Chứng chỉ đạt được",
+        "not_started": "Chưa bắt đầu"
+      },
+      "table": {
+        "learner": "Người học",
+        "progress": "Tiến trình đường dẫn",
+        "current_course": "Khóa học hiện tại",
+        "enrolled": "Đã đăng ký",
+        "actions": "hành động"
+      },
+      "filter": {
+        "all": "Tất cả tiến độ",
+        "not_started": "Chưa bắt đầu",
+        "in_progress": "Đang tiến hành",
+        "completed": "Đã hoàn thành"
+      },
+      "info_title": "Giới thiệu về đăng ký lộ trình"
+    },
+    "roles": {
+      "admin": "Quản trị viên",
+      "tutor": "gia sư",
+      "learner": "Người học"
     }
   }
 }
