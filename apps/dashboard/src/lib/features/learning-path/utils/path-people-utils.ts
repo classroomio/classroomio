@@ -30,7 +30,7 @@ export function formatPathShortDate(value: string | null | undefined): string {
 }
 
 export function isPathStudentMember(member: LearningPathMemberItem): boolean {
-  return member.roleId === ROLE.STUDENT && !!member.profileId;
+  return member.roleId === ROLE.STUDENT;
 }
 
 export function getPathMemberProgressPercent(member: LearningPathMemberItem): number | null {

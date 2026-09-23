@@ -17,10 +17,15 @@
 
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
   <KpiCard
-    title={$t('learningPath.analytics.stat.enrolled')}
+    title={$t('learningPath.analytics.stat.learners')}
     value={summary.enrolled.toLocaleString()}
-    description={$t('learningPath.analytics.stat.enrolled_desc', { count: summary.newThisMonth })}
-    descriptionSecondary={$t('learningPath.analytics.stat.team_desc', { count: summary.tutorsCount })}
+    description={summary.newThisMonth > 0
+      ? $t('learningPath.analytics.stat.enrolled_desc', { count: summary.newThisMonth })
+      : undefined}
+    descriptionSecondary={summary.pendingInvites > 0
+      ? $t('learningPath.analytics.stat.pending_line', { count: summary.pendingInvites })
+      : undefined}
+    descriptionTertiary={$t('learningPath.analytics.stat.team_desc', { count: summary.tutorsCount })}
     icon={UsersIcon}
     accent="primary"
   />
