@@ -40,6 +40,18 @@ vi.mock('@cio/db/queries/group', () => ({
   getExistingGroupMembers: vi.fn().mockResolvedValue([])
 }));
 
+vi.mock('@cio/db/queries/learning-path', () => ({
+  enrollMember: vi.fn(),
+  getCourseIdsByLearningPathId: vi.fn().mockResolvedValue([]),
+  getExistingPathMembers: vi.fn().mockResolvedValue(new Set()),
+  getOrgLearningPathsByIds: vi.fn().mockResolvedValue([]),
+  listLearningPaths: vi.fn().mockResolvedValue([])
+}));
+
+vi.mock('@api/services/learning-path/member-management', () => ({
+  enrollProfileInLearningPath: vi.fn().mockResolvedValue({ id: 'path-member-1' })
+}));
+
 vi.mock('@cio/db/queries/auth', () => ({
   getProfilesByEmails: vi.fn().mockResolvedValue([])
 }));
@@ -58,10 +70,18 @@ vi.mock('@api/services/organization/student-limit', () => ({
   notifyStudentMilestone: vi.fn()
 }));
 
-import { getOrganizationById, getOrganizationMembersByNormalizedEmails } from '@cio/db/queries/organization';
+import {
+  createOrganizationInvites,
+  getOrganizationById,
+  getOrganizationMembersByNormalizedEmails,
+  getOrgMembersByProfileIds
+} from '@cio/db/queries/organization';
+import { getExistingPathMembers, getOrgLearningPathsByIds, listLearningPaths } from '@cio/db/queries/learning-path';
+import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
 import { getRemainingStudentSeats } from '@api/services/organization/student-limit';
 import { importAudienceMembers } from '@api/services/organization/audience';
 import { ROLE } from '@cio/utils/constants';
+import { membershipKey } from '@cio/utils/functions';
 
 const ORG = 'org-1';
 const ACTOR = 'actor-1';
@@ -74,7 +94,7 @@ beforeEach(() => {
 });
 
 function csv(...lines: string[]) {
-  return { recipientCsv: lines.join('\n'), allCourses: false, allCohorts: false, sendEmail: false } as never;
+  return { recipientCsv: lines.join('\n'), sendEmail: false } as never;
 }
 
 describe('importAudienceMembers — one bad row does not fail the batch', () => {
@@ -184,5 +204,181 @@ describe('importAudienceMembers — structured recipients', () => {
     );
 
     expect(result.rows.map((row) => row.status)).toEqual(['ready', 'duplicate_in_file']);
+  });
+});
+
+describe('importAudienceMembers — learning paths', () => {
+  const pathImport = (emails: string[], pathIds: string[]) =>
+    ({
+      recipientCsv: ['email', ...emails].join('\n'),
+      pathIds,
+      sendEmail: false
+    }) as never;
+
+  beforeEach(() => {
+    vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
+      { id: 'path-1', name: 'Path One', autoEnroll: false, sequentialUnlock: false }
+    ] as never);
+    vi.mocked(getExistingPathMembers).mockResolvedValue(new Set());
+  });
+
+  it('enrolls existing student profiles into paths as STUDENT without creating pending rows', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, pathImport(['ada@test.dev'], ['path-1']), ACTOR);
+
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'path-1' }),
+      expect.objectContaining({ profileId: 'p-1', roleId: ROLE.STUDENT })
+    );
+    expect(result.enrolled).toBe(1);
+  });
+
+  it('skips enrolling an existing student who is already a member of the path', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+    vi.mocked(getExistingPathMembers).mockResolvedValue(new Set([membershipKey('path-1', 'p-1')]));
+
+    const result = await importAudienceMembers(ORG, pathImport(['ada@test.dev'], ['path-1']), ACTOR);
+
+    expect(vi.mocked(getExistingPathMembers)).toHaveBeenCalledWith([{ learningPathId: 'path-1', profileId: 'p-1' }]);
+    expect(vi.mocked(enrollProfileInLearningPath)).not.toHaveBeenCalled();
+    expect(result.enrolled).toBe(0);
+  });
+
+  it('handles a mixed batch where some students are already enrolled and others are not', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT },
+      { normalizedEmail: 'grace@test.dev', profileId: 'p-2', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' },
+      { profileId: 'p-2', roleId: ROLE.STUDENT, email: 'grace@test.dev' }
+    ] as never);
+    // ada (p-1) is already enrolled, grace (p-2) is not
+    vi.mocked(getExistingPathMembers).mockResolvedValue(new Set([membershipKey('path-1', 'p-1')]));
+
+    const result = await importAudienceMembers(ORG, pathImport(['ada@test.dev', 'grace@test.dev'], ['path-1']), ACTOR);
+
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'path-1' }),
+      expect.objectContaining({ profileId: 'p-2', roleId: ROLE.STUDENT })
+    );
+    expect(result.enrolled).toBe(1);
+  });
+
+  it('does not enroll organization staff (ADMIN or TUTOR) as students into learning paths', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'admin@test.dev', profileId: 'p-admin', roleId: ROLE.ADMIN },
+      { normalizedEmail: 'tutor@test.dev', profileId: 'p-tutor', roleId: ROLE.TUTOR }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-admin', roleId: ROLE.ADMIN, email: 'admin@test.dev' },
+      { profileId: 'p-tutor', roleId: ROLE.TUTOR, email: 'tutor@test.dev' }
+    ] as never);
+
+    const result = await importAudienceMembers(
+      ORG,
+      pathImport(['admin@test.dev', 'tutor@test.dev'], ['path-1']),
+      ACTOR
+    );
+
+    expect(vi.mocked(enrollProfileInLearningPath)).not.toHaveBeenCalled();
+    expect(result.enrolled).toBe(0);
+  });
+
+  it('enrolls an existing student into multiple learning paths at once', async () => {
+    vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
+      { id: 'path-1', name: 'Path One', autoEnroll: false, sequentialUnlock: false },
+      { id: 'path-2', name: 'Path Two', autoEnroll: false, sequentialUnlock: false }
+    ] as never);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, pathImport(['ada@test.dev'], ['path-1', 'path-2']), ACTOR);
+
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'path-1' }),
+      expect.objectContaining({ profileId: 'p-1', roleId: ROLE.STUDENT })
+    );
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'path-2' }),
+      expect.objectContaining({ profileId: 'p-1', roleId: ROLE.STUDENT })
+    );
+    expect(result.enrolled).toBe(2);
+  });
+
+  it('stores pathIds on the org invite for new emails so they enroll on acceptance', async () => {
+    const result = await importAudienceMembers(ORG, pathImport(['new@test.dev'], ['path-1']), ACTOR);
+
+    expect(result.imported).toBe(1);
+    expect(vi.mocked(enrollProfileInLearningPath)).not.toHaveBeenCalled();
+    expect(vi.mocked(createOrganizationInvites)).toHaveBeenCalledWith([
+      expect.objectContaining({ metadata: expect.objectContaining({ pathIds: ['path-1'] }) })
+    ]);
+  });
+
+  it('drops pathIds that do not belong to the organization', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, pathImport(['ada@test.dev'], ['path-1', 'bogus']), ACTOR);
+
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'path-1' }),
+      expect.anything()
+    );
+    expect(result.enrolled).toBe(1);
+  });
+
+  it('resolves all organization paths when allPaths is true', async () => {
+    vi.mocked(listLearningPaths).mockResolvedValue([
+      { id: 'path-1', name: 'Path 1' },
+      { id: 'path-2', name: 'Path 2' }
+    ] as never);
+    vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
+      { id: 'path-1', name: 'Path 1', autoEnroll: false, sequentialUnlock: false },
+      { id: 'path-2', name: 'Path 2', autoEnroll: false, sequentialUnlock: false }
+    ] as never);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+
+    const result = await importAudienceMembers(
+      ORG,
+      {
+        recipientCsv: ['email', 'ada@test.dev'].join('\n'),
+        allPaths: true,
+        sendEmail: false
+      } as never,
+      ACTOR
+    );
+
+    expect(vi.mocked(listLearningPaths)).toHaveBeenCalledWith(ORG);
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledTimes(2);
+    expect(result.enrolled).toBe(2);
   });
 });

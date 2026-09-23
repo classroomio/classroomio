@@ -4,3 +4,4 @@ export * from './learning-path-member';
 export * from './enrollment-grant';
 export * from './certificate';
 export * from './progress';
+export * from './analytics';
