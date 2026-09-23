@@ -5371,6 +5371,7 @@
     "description": "Anyone with this link can join. Share it instead of entering emails one by one.",
     "course_description": "Anyone with this link can join this course as a student. Share it instead of entering emails one by one.",
     "cohort_description": "Anyone with this link can join this cohort and every course in it. Share it instead of entering emails one by one.",
+    "learning_path_description": "Anyone with this link can join this learning path and every course in it. Share it instead of entering emails one by one.",
     "generate": "Create invite link",
     "copy": "Copy invite link",
     "copied": "Invite link copied",
@@ -5389,7 +5390,8 @@
       "disabled": "This invite link has been disabled.",
       "closed": "This is no longer accepting new members.",
       "succeeded": "You have joined",
-      "failed": "Could not join. Please try again."
+      "failed": "Could not join. Please try again.",
+      "learning_path_button": "Join learning path"
     },
     "snackbar": {
       "enabled": "Invite link enabled",
@@ -5605,7 +5607,115 @@
       "reordered": "Course order updated",
       "course_added": "Course added",
       "courses_added": "Courses added",
-      "course_removed": "Course removed"
+      "course_removed": "Course removed",
+      "members_added": "Learners added to path",
+      "member_removed": "Learner removed from path",
+      "tutor_added": "Tutor added to path",
+      "tutors_added": "Tutors added to path",
+      "tutor_removed": "Tutor removed from path"
+    },
+    "people": {
+      "title": "People",
+      "subtitle": "{count} {count, plural, =1 {learner} other {learners}} enrolled in this path",
+      "info_title": "About path enrollment",
+      "info_banner": "Adding a learner to this path automatically enrolls them in all {count} {count, plural, =1 {course} other {courses}}. Removing them preserves their course access and progress.",
+      "search_placeholder": "Search by name or email…",
+      "filter": {
+        "all": "All progress",
+        "not_started": "Not started",
+        "in_progress": "In progress",
+        "completed": "Completed"
+      },
+      "table": {
+        "learner": "Learner",
+        "progress": "Path progress",
+        "current_course": "Current course",
+        "enrolled": "Enrolled",
+        "actions": "Actions"
+      },
+      "badge": {
+        "certificate_earned": "Certificate earned",
+        "not_started": "Not started"
+      },
+      "remove": {
+        "title": "Remove learner",
+        "title_non_student": "Remove member",
+        "confirm": "Are you sure you want to remove {name} from this learning path? They will keep their course access and progress.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Cancel",
+        "yes": "Remove"
+      },
+      "empty": "No learners enrolled yet. Add learners to get started.",
+      "no_results": "No learners match your search.",
+      "invite": {
+        "title": "Add learners to path",
+        "bulk_title": "Invite by email",
+        "bulk_description": "Enter email addresses separated by commas or new lines.",
+        "bulk_submit": "Add learners"
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "How learners are moving through the path.",
+      "stat": {
+        "enrolled": "Enrolled",
+        "active": "Active learners",
+        "active_desc": "worked in the last 14 days",
+        "completion_rate": "Completion rate",
+        "completion_desc": "{completed} of {total} finished",
+        "avg_time": "Avg. time to finish",
+        "avg_time_desc": "across completions",
+        "enrolled_desc": "+{count} this month",
+        "team_desc": "{count, plural, one {# tutor on the path team} other {# tutors on the path team}}",
+        "avg_time_weeks": "{value} wks",
+        "avg_time_days": "{value} days"
+      },
+      "funnel": {
+        "title": "Course funnel",
+        "subtitle": "How many learners have reached and completed each course, in order.",
+        "completed": "completed",
+        "in_progress": "in progress",
+        "drop": "{count} {count, plural, =1 {learner} other {learners}} dropped after Course {n}",
+        "biggest_drop": "biggest drop-off",
+        "certificates": "{count} {count, plural, =1 {certificate} other {certificates}} awarded"
+      },
+      "stuck": {
+        "title": "Where learners are stuck",
+        "subtitle": "Lessons and exercises blocking the most learners right now.",
+        "badge": "{count} stuck",
+        "lesson_desc": "{count} {count, plural, =1 {learner} other {learners}} stopped at this lesson.",
+        "exercise_desc": "{count} {count, plural, =1 {learner} other {learners}} have had this exercise in progress for over 2 weeks.",
+        "empty": "No learners are currently stuck. Great progress!",
+        "lesson_prefix": "Lesson:",
+        "exercise_prefix": "Exercise:",
+        "showing": "Showing {start} to {end} of {total} items",
+        "table": {
+          "item": "Item",
+          "course": "Course"
+        }
+      },
+      "students": {
+        "subtitle": "Per-learner path progress, current course, and enrollment date.",
+        "courses_completed": "Courses Completed",
+        "title": "Learner Progress Overview"
+      },
+      "member": {
+        "courses_title": "Courses",
+        "remove": "Remove from path",
+        "status": {
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "locked": "Locked"
+        },
+        "export": "Export CSV",
+        "progress_label": "Path progress"
+      },
+      "empty": "No data yet. Enroll learners and they'll start showing up here.",
+      "empty_desc": "Enroll learners in this path and their progress will show up here.",
+      "export": {
+        "status": "Status"
+      }
     }
   }
 }

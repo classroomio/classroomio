@@ -5402,11 +5402,13 @@
       "disabled": "Este link de convite foi desativado.",
       "closed": "Não estamos mais aceitando novos membros.",
       "succeeded": "Você se inscreveu",
-      "failed": "Não foi possível se inscrever. Tente novamente."
+      "failed": "Não foi possível se inscrever. Tente novamente.",
+      "learning_path_button": "Junte-se ao caminho de aprendizagem"
     },
     "load_failed": "Não foi possível carregar o link de convite",
     "generate_failed": "Não foi possível criar o link de convite",
-    "toggle_failed": "Não foi possível atualizar o link de convite"
+    "toggle_failed": "Não foi possível atualizar o link de convite",
+    "learning_path_description": "Qualquer pessoa com este link pode ingressar neste caminho de aprendizagem e em todos os cursos dele. Compartilhe-o em vez de inserir e-mails um por um."
   },
   "lms": {
     "view_landing_page": "Início"
@@ -5620,7 +5622,103 @@
       "reordered": "Ordem do curso atualizada",
       "course_added": "Curso adicionado",
       "courses_added": "Cursos adicionados",
-      "course_removed": "Curso removido"
+      "course_removed": "Curso removido",
+      "members_added": "Alunos adicionados ao caminho",
+      "member_removed": "Aluno removido do caminho",
+      "tutors_added": "Tutores adicionados ao caminho",
+      "tutor_added": "Tutor added to path",
+      "tutor_removed": "Tutor removed from path"
+    },
+    "analytics": {
+      "title": "Análise",
+      "subtitle": "Como os alunos estão avançando no caminho.",
+      "empty": "Ainda não há dados. Inscreva os alunos e eles começarão a aparecer aqui.",
+      "stuck": {
+        "title": "Onde os alunos ficam presos",
+        "subtitle": "Lições e exercícios que estão bloqueando a maioria dos alunos no momento.",
+        "badge": "{count} travado",
+        "lesson_desc": "{count} {count, plural, =1 {aluno} other {alunos}} parou nesta lição.",
+        "exercise_desc": "{count} {count, plural, =1 {aluno} other {alunos}} estão com este exercício em andamento há mais de 2 semanas.",
+        "empty": "Nenhum aluno está preso no momento. Grande progresso!"
+      },
+      "funnel": {
+        "title": "Funil do curso",
+        "subtitle": "Quantos alunos alcançaram e concluíram cada curso, em ordem.",
+        "completed": "concluído",
+        "in_progress": "em andamento",
+        "drop": "{count} {count, plural, =1 {aluno} other {alunos}} abandonados após o curso {n}",
+        "biggest_drop": "maior queda",
+        "certificates": "{count} {count, plural, =1 {certificado} other {certificados}} concedidos"
+      },
+      "stat": {
+        "enrolled": "Inscrito",
+        "active": "Alunos ativos",
+        "active_desc": "trabalhou nos últimos 14 dias",
+        "completion_rate": "Taxa de conclusão",
+        "completion_desc": "{completed} de {total} concluído",
+        "avg_time": "Média hora de terminar",
+        "avg_time_desc": "entre conclusões"
+      },
+      "students": {
+        "subtitle": "Progresso do caminho por aluno, curso atual e data de inscrição."
+      },
+      "member": {
+        "courses_title": "Cursos neste caminho",
+        "remove": "Remover do caminho",
+        "status": {
+          "not_started": "Não iniciado",
+          "in_progress": "Em andamento",
+          "completed": "Concluído",
+          "locked": "Bloqueado"
+        },
+        "export": "Exportar CSV",
+        "progress_label": "Progresso do caminho"
+      }
+    },
+    "people": {
+      "title": "Pessoas",
+      "subtitle": "{count} {count, plural, =1 {aluno} other {alunos}} inscritos neste caminho",
+      "info_banner": "Adicionar um aluno a este caminho o inscreve automaticamente em todos os {count} {count, plural, =1 {curso} other {cursos}}. Removê-los preserva o acesso e o progresso do curso.",
+      "search_placeholder": "Pesquise por nome ou e-mail…",
+      "empty": "Nenhum aluno inscrito ainda. Adicione alunos para começar.",
+      "no_results": "Nenhum aluno corresponde à sua pesquisa.",
+      "invite": {
+        "title": "Adicionar alunos ao caminho",
+        "bulk_title": "Convidar por e-mail",
+        "bulk_description": "Insira os endereços de e-mail separados por vírgulas ou novas linhas.",
+        "bulk_submit": "Adicionar alunos"
+      },
+      "remove": {
+        "title": "Remover aluno",
+        "title_non_student": "Remove member",
+        "confirm": "Tem certeza de que deseja remover {name} deste roteiro de aprendizagem? Eles manterão o acesso e o progresso do curso.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Cancelar",
+        "yes": "Remover"
+      },
+      "badge": {
+        "certificate_earned": "Certificado obtido",
+        "not_started": "Não iniciado"
+      },
+      "table": {
+        "learner": "Aluno",
+        "progress": "Progresso do caminho",
+        "current_course": "Curso atual",
+        "enrolled": "Inscrito",
+        "actions": "Ações"
+      },
+      "filter": {
+        "all": "Todo o progresso",
+        "not_started": "Não iniciado",
+        "in_progress": "Em andamento",
+        "completed": "Concluído"
+      },
+      "info_title": "Sobre inscrição de caminho"
+    },
+    "roles": {
+      "admin": "Administrador",
+      "tutor": "Tutor",
+      "learner": "Aluno"
     }
   }
 }

@@ -5402,11 +5402,13 @@
       "disabled": "Dieser Einladungslink wurde deaktiviert.",
       "closed": "Es werden keine neuen Mitglieder mehr aufgenommen.",
       "succeeded": "Sie sind beigetreten.",
-      "failed": "Beitritt fehlgeschlagen. Bitte versuchen Sie es erneut."
+      "failed": "Beitritt fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "learning_path_button": "Treten Sie dem Lernpfad bei"
     },
     "load_failed": "Der Einladungslink konnte nicht geladen werden.",
     "generate_failed": "Der Einladungslink konnte nicht erstellt werden.",
-    "toggle_failed": "Der Einladungslink konnte nicht aktualisiert werden."
+    "toggle_failed": "Der Einladungslink konnte nicht aktualisiert werden.",
+    "learning_path_description": "Jeder, der über diesen Link verfügt, kann diesem Lernpfad und jedem darin enthaltenen Kurs beitreten. Teilen Sie es, anstatt E-Mails einzeln einzugeben."
   },
   "lms": {
     "view_landing_page": "Startseite"
@@ -5620,7 +5622,103 @@
       "reordered": "Kursreihenfolge aktualisiert",
       "course_added": "Kurs hinzugefügt",
       "courses_added": "Kurse hinzugefügt",
-      "course_removed": "Kurs entfernt"
+      "course_removed": "Kurs entfernt",
+      "members_added": "Lernende zum Pfad hinzugefügt",
+      "member_removed": "Lernender wurde aus dem Pfad entfernt",
+      "tutors_added": "Tutoren zum Pfad hinzugefügt",
+      "tutor_added": "Tutor added to path",
+      "tutor_removed": "Tutor removed from path"
+    },
+    "analytics": {
+      "title": "Analytik",
+      "subtitle": "Wie sich Lernende auf dem Weg bewegen.",
+      "empty": "Noch keine Daten. Melden Sie Lernende an und sie werden hier angezeigt.",
+      "stuck": {
+        "title": "Wo Lernende stecken bleiben",
+        "subtitle": "Lektionen und Übungen blockieren derzeit die meisten Lernenden.",
+        "badge": "{count} steckt fest",
+        "lesson_desc": "{count} {count, plural, =1 {Lernender} other {Lernende}} hat bei dieser Lektion angehalten.",
+        "exercise_desc": "{count} {count, plural, =1 {Lernender} other {Lernende}} haben diese Übung seit über 2 Wochen im Gange.",
+        "empty": "Derzeit stecken keine Lernenden fest. Toller Fortschritt!"
+      },
+      "funnel": {
+        "title": "Kurstrichter",
+        "subtitle": "Wie viele Lernende haben jeden Kurs in der Reihenfolge erreicht und abgeschlossen?",
+        "completed": "abgeschlossen",
+        "in_progress": "in Bearbeitung",
+        "drop": "{count} {count, plural, =1 {Lernender} other {Lernende}} nach Kurs {n} gelöscht",
+        "biggest_drop": "größter Rückgang",
+        "certificates": "{count} {count, plural, =1 {Zertifikat} other {Zertifikate}} verliehen"
+      },
+      "stat": {
+        "enrolled": "Eingeschrieben",
+        "active": "Aktive Lernende",
+        "active_desc": "in den letzten 14 Tagen gearbeitet",
+        "completion_rate": "Abschlussrate",
+        "completion_desc": "{completed} von {total} abgeschlossen",
+        "avg_time": "Durchschn. Zeit, fertig zu werden",
+        "avg_time_desc": "über Fertigstellungen hinweg"
+      },
+      "students": {
+        "subtitle": "Pfadfortschritt pro Teilnehmer, aktueller Kurs und Anmeldedatum."
+      },
+      "member": {
+        "courses_title": "Kurse in diesem Weg",
+        "remove": "Aus Pfad entfernen",
+        "status": {
+          "not_started": "Nicht gestartet",
+          "in_progress": "In Bearbeitung",
+          "completed": "Abgeschlossen",
+          "locked": "Gesperrt"
+        },
+        "export": "CSV exportieren",
+        "progress_label": "Pfadfortschritt"
+      }
+    },
+    "people": {
+      "title": "Menschen",
+      "subtitle": "{count} {count, plural, =1 {Lernender} other {Lernende}} haben sich für diesen Pfad angemeldet",
+      "info_banner": "Durch das Hinzufügen eines Lernenden zu diesem Pfad wird er automatisch für alle {count} {count, plural, =1 {Kurs} other {Kurse}} angemeldet. Durch das Entfernen bleiben der Kurszugriff und der Kursfortschritt erhalten.",
+      "search_placeholder": "Nach Name oder E-Mail suchen…",
+      "empty": "Es sind noch keine Lernenden angemeldet. Fügen Sie Lernende hinzu, um loszulegen.",
+      "no_results": "Zu Ihrer Suche passen keine Lernenden.",
+      "invite": {
+        "title": "Lernende zum Pfad hinzufügen",
+        "bulk_title": "Per E-Mail einladen",
+        "bulk_description": "Geben Sie E-Mail-Adressen durch Kommas oder Zeilenumbrüche getrennt ein.",
+        "bulk_submit": "Lernende hinzufügen"
+      },
+      "remove": {
+        "title": "Lernenden entfernen",
+        "title_non_student": "Remove member",
+        "confirm": "Sind Sie sicher, dass Sie {name} aus diesem Lernpfad entfernen möchten? Sie behalten ihren Kurszugang und ihre Fortschritte.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Abbrechen",
+        "yes": "Entfernen"
+      },
+      "badge": {
+        "certificate_earned": "Zertifikat erworben",
+        "not_started": "Nicht gestartet"
+      },
+      "table": {
+        "learner": "Lernender",
+        "progress": "Pfadfortschritt",
+        "current_course": "Aktueller Kurs",
+        "enrolled": "Eingeschrieben",
+        "actions": "Aktionen"
+      },
+      "filter": {
+        "all": "Alle Fortschritte",
+        "not_started": "Nicht gestartet",
+        "in_progress": "In Bearbeitung",
+        "completed": "Abgeschlossen"
+      },
+      "info_title": "Informationen zur Pfadregistrierung"
+    },
+    "roles": {
+      "admin": "Admin",
+      "tutor": "Nachhilfelehrer",
+      "learner": "Lernender"
     }
   }
 }

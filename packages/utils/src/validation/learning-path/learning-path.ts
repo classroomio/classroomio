@@ -26,7 +26,7 @@ export const ZUpdateLearningPath = z.object({
   difficulty: z.enum(LEARNING_PATH_DIFFICULTY).nullable().optional(),
   estimatedDurationMinutes: z.number().int().min(0).nullable().optional(),
   cost: z.number().int().min(0).optional(),
-  currency: z.string().max(3).optional(),
+  currency: z.enum(['NGN', 'USD']).optional(),
   showSavings: z.boolean().optional(),
   sequentialUnlock: z.boolean().optional(),
   selfEnrollment: z.boolean().optional(),
@@ -70,7 +70,9 @@ export type TEnrollInLearningPath = z.infer<typeof ZEnrollInLearningPath>;
 export const ZPathMembersQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  status: z.enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED']).optional()
+  status: z.enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED']).optional(),
+  roleId: z.coerce.number().int().optional(),
+  search: z.string().optional()
 });
 export type TPathMembersQuery = z.infer<typeof ZPathMembersQuery>;
 
@@ -86,12 +88,9 @@ export const ZAddLearningPathMembers = z.object({
       })
     )
     .min(1)
-    .refine(
-      (members) => members.every((member) => Number(Boolean(member.profileId)) + Number(Boolean(member.email)) === 1),
-      {
-        message: 'Each member must provide exactly one of profileId or email'
-      }
-    )
+    .refine((members) => members.every((member) => Boolean(member.profileId) || Boolean(member.email)), {
+      message: 'Each member must provide a profileId or email'
+    })
 });
 export type TAddLearningPathMembers = z.infer<typeof ZAddLearningPathMembers>;
 

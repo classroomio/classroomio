@@ -5402,11 +5402,13 @@
       "disabled": "Dette invitationslink er blevet deaktiveret.",
       "closed": "Dette accepterer ikke længere nye medlemmer.",
       "succeeded": "Du er tilmeldt",
-      "failed": "Kunne ikke deltage. Prøv igen."
+      "failed": "Kunne ikke deltage. Prøv igen.",
+      "learning_path_button": "Deltag i læringsstien"
     },
     "load_failed": "Kunne ikke indlæse invitationslinket",
     "generate_failed": "Kunne ikke oprette invitationslinket",
-    "toggle_failed": "Kunne ikke opdatere invitationslinket"
+    "toggle_failed": "Kunne ikke opdatere invitationslinket",
+    "learning_path_description": "Alle med dette link kan deltage i denne læringssti og hvert kursus i den. Del det i stedet for at indtaste e-mails én efter én."
   },
   "lms": {
     "view_landing_page": "Hjem"
@@ -5620,7 +5622,103 @@
       "reordered": "Kursusrækkefølgen er opdateret",
       "course_added": "Kursus tilføjet",
       "courses_added": "Kurser tilføjet",
-      "course_removed": "Kursus fjernet"
+      "course_removed": "Kursus fjernet",
+      "members_added": "Elever føjet til stien",
+      "member_removed": "Elev fjernet fra stien",
+      "tutors_added": "Undervisere tilføjet til stien",
+      "tutor_added": "Tutor added to path",
+      "tutor_removed": "Tutor removed from path"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Hvordan eleverne bevæger sig gennem stien.",
+      "empty": "Ingen data endnu. Tilmeld elever, og de vil begynde at dukke op her.",
+      "stuck": {
+        "title": "Hvor eleverne sidder fast",
+        "subtitle": "Lektioner og øvelser blokerer for flest elever lige nu.",
+        "badge": "{count} sidder fast",
+        "lesson_desc": "{count} {count, plural, =1 {elev} other {elever}} stoppede ved denne lektion.",
+        "exercise_desc": "{count} {count, plural, =1 {elev} other {elever}} har haft denne øvelse i gang i over 2 uger.",
+        "empty": "Ingen elever sidder fast i øjeblikket. Store fremskridt!"
+      },
+      "funnel": {
+        "title": "Kursustragt",
+        "subtitle": "Hvor mange elever har nået og gennemført hvert kursus i rækkefølge.",
+        "completed": "afsluttet",
+        "in_progress": "i gang",
+        "drop": "{count} {count, plural, =1 {elev} other {elever}} faldt efter kursus {n}",
+        "biggest_drop": "største frafald",
+        "certificates": "{count} {count, plural, =1 {certifikat} other {certifikater}} tildelt"
+      },
+      "stat": {
+        "enrolled": "Tilmeldt",
+        "active": "Aktive elever",
+        "active_desc": "arbejdet inden for de sidste 14 dage",
+        "completion_rate": "Gennemførelsesgrad",
+        "completion_desc": "{completed} af {total} færdig",
+        "avg_time": "Gns. tid til at blive færdig",
+        "avg_time_desc": "på tværs af færdiggørelser"
+      },
+      "students": {
+        "subtitle": "Kursusforløb pr. elev, nuværende kursus og tilmeldingsdato."
+      },
+      "member": {
+        "courses_title": "Kurser på denne vej",
+        "remove": "Fjern fra stien",
+        "status": {
+          "not_started": "Ikke startet",
+          "in_progress": "I gang",
+          "completed": "Afsluttet",
+          "locked": "Låst"
+        },
+        "export": "Eksporter CSV",
+        "progress_label": "Sti fremskridt"
+      }
+    },
+    "people": {
+      "title": "Mennesker",
+      "subtitle": "{count} {count, plural, =1 {elev} other {elever}} tilmeldt denne sti",
+      "info_banner": "Hvis du tilføjer en elev til denne sti, tilmeldes vedkommende automatisk i alle {count} {count, plural, =1 {kursus} other {kurser}}. Fjernelse af dem bevarer deres kursusadgang og fremskridt.",
+      "search_placeholder": "Søg på navn eller e-mail...",
+      "empty": "Ingen elever er tilmeldt endnu. Tilføj elever for at komme i gang.",
+      "no_results": "Ingen elever matcher din søgning.",
+      "invite": {
+        "title": "Tilføj elever til stien",
+        "bulk_title": "Inviter via e-mail",
+        "bulk_description": "Indtast e-mailadresser adskilt af kommaer eller nye linjer.",
+        "bulk_submit": "Tilføj elever"
+      },
+      "remove": {
+        "title": "Fjern eleven",
+        "title_non_student": "Remove member",
+        "confirm": "Er du sikker på, at du vil fjerne {name} fra denne læringssti? De vil beholde deres kursusadgang og fremskridt.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Annuller",
+        "yes": "Fjern"
+      },
+      "badge": {
+        "certificate_earned": "Certifikat optjent",
+        "not_started": "Ikke startet"
+      },
+      "table": {
+        "learner": "Lærer",
+        "progress": "Sti fremskridt",
+        "current_course": "Nuværende kursus",
+        "enrolled": "Tilmeldt",
+        "actions": "Handlinger"
+      },
+      "filter": {
+        "all": "Alle fremskridt",
+        "not_started": "Ikke startet",
+        "in_progress": "I gang",
+        "completed": "Afsluttet"
+      },
+      "info_title": "Om stitilmelding"
+    },
+    "roles": {
+      "admin": "Admin",
+      "tutor": "Underviser",
+      "learner": "Lærer"
     }
   }
 }

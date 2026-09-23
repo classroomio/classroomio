@@ -5402,11 +5402,13 @@
       "disabled": "Ten link z zaproszeniem został wyłączony.",
       "closed": "Nowi członkowie nie są już przyjmowani.",
       "succeeded": "Dołączyłeś",
-      "failed": "Nie udało się dołączyć. Spróbuj ponownie."
+      "failed": "Nie udało się dołączyć. Spróbuj ponownie.",
+      "learning_path_button": "Dołącz do ścieżki"
     },
     "load_failed": "Nie można załadować linku z zaproszeniem",
     "generate_failed": "Nie można utworzyć linku z zaproszeniem",
-    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem"
+    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem",
+    "learning_path_description": "Każda osoba posiadająca ten link może dołączyć do tej ścieżki edukacyjnej i wszystkich zawartych na niej kursów. Udostępnij zamiast wpisywać maile jeden po drugim."
   },
   "lms": {
     "view_landing_page": "Strona główna"
@@ -5620,7 +5622,103 @@
       "reordered": "Zaktualizowano kolejność kursów",
       "course_added": "Kurs dodany",
       "courses_added": "Dodano kursy",
-      "course_removed": "Kurs usunięty"
+      "course_removed": "Kurs usunięty",
+      "members_added": "Uczestnicy dodani do ścieżki",
+      "member_removed": "Uczestnik został usunięty ze ścieżki",
+      "tutors_added": "Tutorzy dodani do ścieżki",
+      "tutor_added": "Tutor added to path",
+      "tutor_removed": "Tutor removed from path"
+    },
+    "analytics": {
+      "title": "Analityka",
+      "subtitle": "Jak uczniowie poruszają się po ścieżce.",
+      "empty": "Brak danych. Zarejestruj uczniów, a oni zaczną się tutaj pojawiać.",
+      "stuck": {
+        "title": "Gdzie uczniowie utknęli",
+        "subtitle": "Lekcje i ćwiczenia blokujące obecnie najwięcej uczniów.",
+        "badge": "{count} utknęło",
+        "lesson_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} zatrzymali się na tej lekcji.",
+        "exercise_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} wykonują to ćwiczenie od ponad 2 tygodni.",
+        "empty": "Obecnie żaden z uczniów nie utknął w miejscu. Wielki postęp!"
+      },
+      "funnel": {
+        "title": "Lejek kursu",
+        "subtitle": "Ilu uczniów dotarło i ukończyło każdy kurs, w kolejności.",
+        "completed": "ukończone",
+        "in_progress": "w toku",
+        "drop": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} odpadli po kursie {n}",
+        "biggest_drop": "największy spadek",
+        "certificates": "Przyznano {count} {count, plural, one {certyfikat} few {certyfikaty} many {certyfikatów} other {certyfikatów}}"
+      },
+      "stat": {
+        "enrolled": "Zapisany",
+        "active": "Aktywni uczniowie",
+        "active_desc": "pracował w ciągu ostatnich 14 dni",
+        "completion_rate": "Stopień ukończenia",
+        "completion_desc": "Ukończono {completed} z {total}",
+        "avg_time": "Śr. czas kończyć",
+        "avg_time_desc": "poprzez uzupełnienia"
+      },
+      "students": {
+        "subtitle": "Postęp ścieżki na ucznia, bieżący kurs i data rejestracji."
+      },
+      "member": {
+        "courses_title": "Kursy na tej ścieżce",
+        "remove": "Usuń ze ścieżki",
+        "status": {
+          "not_started": "Nie rozpoczęte",
+          "in_progress": "W toku",
+          "completed": "Ukończono",
+          "locked": "Zablokowane"
+        },
+        "export": "Eksportuj plik CSV",
+        "progress_label": "Postęp ścieżki"
+      }
+    },
+    "people": {
+      "title": "Ludzie",
+      "subtitle": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} zarejestrowani na tej ścieżce",
+      "info_banner": "Dodanie ucznia do tej ścieżki automatycznie rejestruje go na wszystkich {count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}. Usunięcie ich powoduje zachowanie dostępu do kursu i postępów.",
+      "search_placeholder": "Szukaj według nazwy lub adresu e-mail…",
+      "empty": "Nie zapisano jeszcze żadnych uczniów. Aby rozpocząć, dodaj uczniów.",
+      "no_results": "Żaden uczeń nie pasuje do Twojego wyszukiwania.",
+      "invite": {
+        "title": "Dodaj uczniów do ścieżki",
+        "bulk_title": "Zaproś e-mailem",
+        "bulk_description": "Wpisz adresy e-mail oddzielone przecinkami lub nowymi wierszami.",
+        "bulk_submit": "Dodaj uczniów"
+      },
+      "remove": {
+        "title": "Usuń ucznia",
+        "title_non_student": "Remove member",
+        "confirm": "Czy na pewno chcesz usunąć {name} z tej ścieżki szkoleniowej? Zachowają dostęp do kursu i postępy.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Anuluj",
+        "yes": "Usuń"
+      },
+      "badge": {
+        "certificate_earned": "Certyfikat zdobyty",
+        "not_started": "Nie rozpoczęte"
+      },
+      "table": {
+        "learner": "Uczeń",
+        "progress": "Postęp ścieżki",
+        "current_course": "Aktualny kurs",
+        "enrolled": "Zapisany",
+        "actions": "Działania"
+      },
+      "filter": {
+        "all": "Cały postęp",
+        "not_started": "Nie rozpoczęte",
+        "in_progress": "W toku",
+        "completed": "Ukończono"
+      },
+      "info_title": "Informacje o rejestracji ścieżki"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "tutor": "Korepetytor",
+      "learner": "Uczeń"
     }
   }
 }

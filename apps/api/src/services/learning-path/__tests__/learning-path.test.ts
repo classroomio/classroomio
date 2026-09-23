@@ -71,7 +71,7 @@ import {
 } from '../learning-path';
 import { assertCourseNotLockedForStudent, unlockedCourses } from '../unlock';
 import { reorderPathCoursesService } from '../course-management';
-import { addPathMembersService } from '../member-management';
+import { addPathMembersService, enrollProfileInLearningPath } from '../member-management';
 
 describe('learning-path services', () => {
   beforeEach(() => {
@@ -206,13 +206,26 @@ describe('learning-path services', () => {
         { 'org-1': ROLE.ADMIN }
       );
 
-      expect(mocks.createLearningPath).toHaveBeenCalledWith({
-        organizationId: 'org-1',
-        createdByProfileId: 'admin-1',
-        name: 'Trimmed Path',
-        description: 'Trimmed Desc',
-        isPublished: false
-      });
+      expect(mocks.createLearningPath).toHaveBeenCalledWith(
+        {
+          organizationId: 'org-1',
+          createdByProfileId: 'admin-1',
+          name: 'Trimmed Path',
+          description: 'Trimmed Desc',
+          isPublished: false
+        },
+        transactionClient
+      );
+      expect(mocks.enrollMember).toHaveBeenCalledWith(
+        {
+          learningPathId: 'new-path-id',
+          profileId: 'admin-1',
+          email: null,
+          roleId: ROLE.TUTOR,
+          status: 'NOT_STARTED'
+        },
+        transactionClient
+      );
       expect(result).toEqual(createdPath);
     });
   });
@@ -362,6 +375,95 @@ describe('learning-path services', () => {
         transactionClient
       );
       expect(result).toHaveLength(1);
+    });
+
+    it('rejects email-only members: pending invites enroll on acceptance, not as path rows', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+
+      await expect(
+        addPathMembersService(
+          validPath.id,
+          { members: [{ email: 'pending@test.dev', roleId: ROLE.STUDENT }] },
+          'admin-1',
+          { 'org-1': ROLE.ADMIN }
+        )
+      ).rejects.toThrowError(
+        new AppError(
+          'Learning path members must have a profile. Invite new learners by email so they join the path when they accept the invite.',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        )
+      );
+
+      expect(mocks.enrollMember).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('enrollProfileInLearningPath', () => {
+    const autoEnrollPath = {
+      id: '11111111-1111-1111-1111-111111111111',
+      autoEnroll: true,
+      sequentialUnlock: true
+    };
+
+    it('enrolls the profile, initializes progress and auto-enrolls courses as STUDENT', async () => {
+      mocks.listLearningPathCourses.mockResolvedValue([{ id: 'pc-1', courseId: 'c-1', order: 0 }]);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-9', roleId: ROLE.STUDENT });
+      mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
+      mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-9');
+
+      const member = await enrollProfileInLearningPath(
+        autoEnrollPath,
+        { profileId: 'profile-9', email: 'nine@test.dev', roleId: ROLE.STUDENT, grantedByProfileId: 'admin-1' },
+        transactionClient as never
+      );
+
+      expect(member).toEqual({ id: 'm-9', roleId: ROLE.STUDENT });
+      expect(mocks.enrollMember).toHaveBeenCalledWith(
+        expect.objectContaining({
+          learningPathId: autoEnrollPath.id,
+          profileId: 'profile-9',
+          email: 'nine@test.dev',
+          roleId: ROLE.STUDENT
+        }),
+        transactionClient
+      );
+      expect(mocks.initializeMemberCourseProgress).toHaveBeenCalledWith(
+        'm-9',
+        [{ id: 'pc-1', order: 0 }],
+        true,
+        transactionClient
+      );
+      expect(mocks.insertGroupMembersOnConflictDoNothing).toHaveBeenCalledWith(
+        [{ groupId: 'g-1', profileId: 'profile-9', roleId: ROLE.STUDENT }],
+        transactionClient
+      );
+      expect(mocks.grantCourseAccess).toHaveBeenCalledWith(
+        expect.objectContaining({
+          groupmemberId: 'gm-9',
+          courseId: 'c-1',
+          profileId: 'profile-9',
+          source: 'LEARNING_PATH',
+          learningPathId: autoEnrollPath.id
+        }),
+        transactionClient
+      );
+    });
+
+    it('skips course enrollment when autoEnroll is disabled but still initializes progress', async () => {
+      mocks.listLearningPathCourses.mockResolvedValue([{ id: 'pc-1', courseId: 'c-1', order: 0 }]);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-10', roleId: ROLE.STUDENT });
+
+      await enrollProfileInLearningPath(
+        { ...autoEnrollPath, autoEnroll: false },
+        { profileId: 'profile-10', roleId: ROLE.STUDENT },
+        transactionClient as never
+      );
+
+      expect(mocks.initializeMemberCourseProgress).toHaveBeenCalled();
+      expect(mocks.getCourseGroupIds).not.toHaveBeenCalled();
+      expect(mocks.insertGroupMembersOnConflictDoNothing).not.toHaveBeenCalled();
+      expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
     });
   });
 });

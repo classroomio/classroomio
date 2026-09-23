@@ -8,6 +8,8 @@
     title: string;
     value: number | string;
     description?: string;
+    /** Optional second description line rendered directly beneath description. */
+    descriptionSecondary?: string;
     icon?: Component;
     accent?: 'primary' | 'success' | 'warning' | 'danger';
     sparkline?: number[];
@@ -19,6 +21,7 @@
     title,
     value,
     description,
+    descriptionSecondary,
     icon: Icon,
     accent = 'primary',
     sparkline,
@@ -73,6 +76,9 @@
     {/if}
     {#if description}
       <p class="ui:text-muted-foreground mt-1 text-xs">{description}</p>
+    {/if}
+    {#if descriptionSecondary}
+      <p class="ui:text-muted-foreground text-xs">{descriptionSecondary}</p>
     {/if}
     {#if sparklinePath && !loading}
       <svg viewBox="0 0 100 30" class="mt-3 h-8 w-full" preserveAspectRatio="none" aria-hidden="true">

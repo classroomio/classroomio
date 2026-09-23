@@ -5402,11 +5402,13 @@
       "disabled": "Este enlace de invitación se ha deshabilitado.",
       "closed": "Ya no se aceptan nuevos miembros.",
       "succeeded": "Te has unido",
-      "failed": "No se pudo unir. Inténtalo de nuevo."
+      "failed": "No se pudo unir. Inténtalo de nuevo.",
+      "learning_path_button": "Únase al camino de aprendizaje"
     },
     "load_failed": "No se pudo cargar el enlace de invitación",
     "generate_failed": "No se pudo crear el enlace de invitación",
-    "toggle_failed": "No se pudo actualizar el enlace de invitación"
+    "toggle_failed": "No se pudo actualizar el enlace de invitación",
+    "learning_path_description": "Cualquiera que tenga este enlace puede unirse a esta ruta de aprendizaje y a todos los cursos que la componen. Compártelo en lugar de ingresar correos electrónicos uno por uno."
   },
   "lms": {
     "view_landing_page": "Inicio"
@@ -5620,7 +5622,103 @@
       "reordered": "Orden del curso actualizado",
       "course_added": "Curso agregado",
       "courses_added": "Cursos agregados",
-      "course_removed": "Curso eliminado"
+      "course_removed": "Curso eliminado",
+      "members_added": "Estudiantes agregados a la ruta",
+      "member_removed": "Alumno eliminado del camino",
+      "tutors_added": "Tutores agregados a la ruta",
+      "tutor_added": "Tutor added to path",
+      "tutor_removed": "Tutor removed from path"
+    },
+    "analytics": {
+      "title": "Analítica",
+      "subtitle": "Cómo avanzan los alumnos por el camino.",
+      "empty": "Aún no hay datos. Inscriba a los estudiantes y comenzarán a aparecer aquí.",
+      "stuck": {
+        "title": "Donde los estudiantes están estancados",
+        "subtitle": "Lecciones y ejercicios que bloquean a la mayoría de los estudiantes en este momento.",
+        "badge": "{count} atascado",
+        "lesson_desc": "{count} {count, plural, =1 {alumno} other {alumnos}} se detuvieron en esta lección.",
+        "exercise_desc": "{count} {count, plural, =1 {alumno} other {alumnos}} han realizado este ejercicio durante más de 2 semanas.",
+        "empty": "Ningún alumno está estancado actualmente. ¡Gran progreso!"
+      },
+      "funnel": {
+        "title": "Embudo del curso",
+        "subtitle": "Cuántos alumnos han alcanzado y completado cada curso, en orden.",
+        "completed": "completado",
+        "in_progress": "en progreso",
+        "drop": "{count} {count, plural, =1 {alumno} other {alumnos}} eliminados después del curso {n}",
+        "biggest_drop": "mayor caída",
+        "certificates": "{count} {count, plural, =1 {certificado} other {certificados}} otorgados"
+      },
+      "stat": {
+        "enrolled": "Inscrito",
+        "active": "Estudiantes activos",
+        "active_desc": "trabajado en los últimos 14 días",
+        "completion_rate": "Tasa de finalización",
+        "completion_desc": "{completed} de {total} terminado",
+        "avg_time": "Promedio hora de terminar",
+        "avg_time_desc": "entre terminaciones"
+      },
+      "students": {
+        "subtitle": "Progreso de la ruta por alumno, curso actual y fecha de inscripción."
+      },
+      "member": {
+        "courses_title": "Cursos en este camino",
+        "remove": "Quitar del camino",
+        "status": {
+          "not_started": "No iniciado",
+          "in_progress": "En progreso",
+          "completed": "Completado",
+          "locked": "bloqueado"
+        },
+        "export": "Exportar CSV",
+        "progress_label": "Progreso del camino"
+      }
+    },
+    "people": {
+      "title": "gente",
+      "subtitle": "{count} {count, plural, =1 {alumno} other {alumnos}} inscritos en esta ruta",
+      "info_banner": "Agregar un alumno a esta ruta lo inscribe automáticamente en todos los {count} {count, plural, =1 {curso} other {cursos}}. Eliminarlos conserva el acceso y el progreso del curso.",
+      "search_placeholder": "Buscar por nombre o correo electrónico…",
+      "empty": "Aún no hay estudiantes inscritos. Agregue estudiantes para comenzar.",
+      "no_results": "Ningún alumno coincide con tu búsqueda.",
+      "invite": {
+        "title": "Agregar alumnos a la ruta",
+        "bulk_title": "Invitar por correo electrónico",
+        "bulk_description": "Introduzca direcciones de correo electrónico separadas por comas o líneas nuevas.",
+        "bulk_submit": "Agregar alumnos"
+      },
+      "remove": {
+        "title": "Eliminar alumno",
+        "title_non_student": "Remove member",
+        "confirm": "¿Está seguro de que desea eliminar a {name} de esta ruta de aprendizaje? Mantendrán su acceso y progreso al curso.",
+        "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
+        "cancel": "Cancelar",
+        "yes": "Quitar"
+      },
+      "badge": {
+        "certificate_earned": "Certificado obtenido",
+        "not_started": "No iniciado"
+      },
+      "table": {
+        "learner": "aprendiz",
+        "progress": "Progreso del camino",
+        "current_course": "Curso actual",
+        "enrolled": "Inscrito",
+        "actions": "Acciones"
+      },
+      "filter": {
+        "all": "Todo el progreso",
+        "not_started": "No iniciado",
+        "in_progress": "En progreso",
+        "completed": "Completado"
+      },
+      "info_title": "Acerca de la inscripción de ruta"
+    },
+    "roles": {
+      "admin": "administrador",
+      "tutor": "Tutor",
+      "learner": "aprendiz"
     }
   }
 }

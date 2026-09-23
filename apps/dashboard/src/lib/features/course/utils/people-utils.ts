@@ -2,7 +2,14 @@ import dayjs from 'dayjs';
 import type { CourseMember, ListPeopleQuery, ListPeopleRequestQuery } from '$features/course/utils/types';
 import { ROLE } from '@cio/utils/constants';
 
-export type CourseMemberStage = NonNullable<CourseMember['stage']>;
+/**
+ * Student rows are the only ones the API decorates with a progress summary
+ * (progress percent, stage, last login and enrollment date). Tutors keep the
+ * plain member shape, so consumers must narrow before reading those fields.
+ */
+type CourseMemberWithProgress = Extract<CourseMember, { progressPercent: number }>;
+
+export type CourseMemberStage = NonNullable<CourseMemberWithProgress['stage']>;
 
 export const DEFAULT_PEOPLE_PAGE_SIZE = 20;
 
@@ -28,7 +35,8 @@ export function formatPeopleShortDate(value: string | null | undefined): string 
   return date.format('MMM D, YYYY');
 }
 
-export function isStudentMember(member: CourseMember): boolean {
+/** Narrows to the student shape, which is the only one carrying progress fields. */
+export function isStudentMember(member: CourseMember): member is CourseMemberWithProgress {
   return member.roleId === ROLE.STUDENT && !!member.profileId;
 }
 

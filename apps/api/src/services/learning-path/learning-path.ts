@@ -1,9 +1,11 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import { db } from '@cio/db/drizzle';
 import type { TCreateLearningPath, TUpdateLearningPath } from '@cio/utils/validation/learning-path';
 import {
   createLearningPath,
   deleteLearningPath,
+  enrollMember,
   getLearningPathById,
   getLearningPathByPublicId,
   getLearningPathBySlug,
@@ -123,12 +125,32 @@ export async function createLearningPathService(
     const trimmedName = data.name.trim();
     const trimmedDescription = data.description.trim();
 
-    return await createLearningPath({
-      organizationId,
-      createdByProfileId: userId,
-      name: trimmedName,
-      description: trimmedDescription,
-      isPublished: false
+    return await db.transaction(async (tx) => {
+      const created = await createLearningPath(
+        {
+          organizationId,
+          createdByProfileId: userId,
+          name: trimmedName,
+          description: trimmedDescription,
+          isPublished: false
+        },
+        tx
+      );
+
+      // Mirror course creation: the creator joins as a tutor so they appear in
+      // People and analytics like course creators do in course rosters.
+      await enrollMember(
+        {
+          learningPathId: created.id,
+          profileId: userId,
+          email: null,
+          roleId: ROLE.TUTOR,
+          status: 'NOT_STARTED'
+        },
+        tx
+      );
+
+      return created;
     });
   } catch (error) {
     if (error instanceof AppError) throw error;

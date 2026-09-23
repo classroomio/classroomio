@@ -7,7 +7,7 @@
   import { Button } from '@cio/ui/base/button';
   import { RefreshPageData } from '$features/ui';
   import { PathBuilder } from '$features/learning-path';
-  import { learningPathApi } from '$features/learning-path/api';
+  import { learningPathApi, pathCoursesApi } from '$features/learning-path/api';
   import { t } from '$lib/utils/functions/translations';
 
   let { data } = $props();
@@ -33,7 +33,7 @@
 
   async function handleToggleReorder() {
     if (reorder && activePath && activePath.courses && activePath.courses.length > 0) {
-      await learningPathApi.reorderCourses(
+      await pathCoursesApi.reorderCourses(
         activePath.id,
         activePath.courses.map((c) => c.courseId)
       );

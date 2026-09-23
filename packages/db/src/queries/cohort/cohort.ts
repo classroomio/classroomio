@@ -3,6 +3,7 @@ import * as schema from '@db/schema';
 import { and, asc, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import { membershipKey } from '@cio/utils';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -284,7 +285,7 @@ export async function getExistingCohortMembers(
     return new Set(
       rows
         .filter((row): row is { cohortId: string; profileId: string } => Boolean(row.cohortId && row.profileId))
-        .map((row) => `${row.cohortId}:${row.profileId}`)
+        .map((row) => membershipKey(row.cohortId, row.profileId))
     );
   } catch (error) {
     console.error('getExistingCohortMembers error:', error);

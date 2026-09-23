@@ -7,7 +7,7 @@
   import AnalyticsGraph from '$features/course/components/analytics/analytics-graph.svelte';
   import AnalyticsSkeleton from '$features/course/components/analytics/analytics-skeleton.svelte';
   import CourseAnalyticsKpis from '$features/course/components/analytics/course-analytics-kpis.svelte';
-  import EmptyState from '$features/course/components/analytics/empty-state.svelte';
+  import { EmptyState } from '$features/ui';
   import StudentTable from '$features/course/components/analytics/student-table.svelte';
   import { courseApi } from '../api/course.svelte';
 
