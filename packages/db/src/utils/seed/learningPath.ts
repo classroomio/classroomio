@@ -1548,7 +1548,11 @@ const COURSE_EXERCISE_IDS: Record<CourseKey, string[]> = {
 };
 
 /** Creates user/profile/account/org-member/group-member rows for the path personas. */
-async function seedPersonaAccounts(persona: PersonaSeed, testOrgId: string, now: Date) {
+async function seedPersonaAccounts(
+  persona: PersonaSeed,
+  testOrgId: string,
+  now: Date
+): Promise<Partial<Record<CourseKey, string>>> {
   const existingUsers = await db.select({ id: user.id }).from(user).where(eq(user.id, persona.profileId));
 
   if (existingUsers.length === 0) {
@@ -1608,30 +1612,24 @@ async function seedPersonaAccounts(persona: PersonaSeed, testOrgId: string, now:
     });
   }
 
-  const groupMemberIds = persona.groupMemberIds;
+  const resolvedGroupMemberIds: Partial<Record<CourseKey, string>> = {};
 
   for (const courseKey of ALL_PATH_COURSE_KEYS) {
-    const groupMemberId = groupMemberIds[courseKey];
+    const groupMemberId = persona.groupMemberIds[courseKey];
     if (!groupMemberId) {
       continue;
     }
-    const existingGroupMembers = await db
-      .select({ id: groupmember.id })
-      .from(groupmember)
-      .where(eq(groupmember.id, groupMemberId));
 
-    if (existingGroupMembers.length === 0) {
-      const newGroupMember: TNewGroupmember = {
-        id: groupMemberId,
-        groupId: courseGroupIdsByKey[courseKey],
-        roleId: ROLE.STUDENT,
-        profileId: persona.profileId,
-        createdAt: isoDaysAgo(now, persona.enrolledDaysAgo)
-      };
-
-      await db.insert(groupmember).values(newGroupMember);
-    }
+    resolvedGroupMemberIds[courseKey] = await ensureGroupMember(
+      courseGroupIdsByKey[courseKey],
+      persona.profileId,
+      groupMemberId,
+      now,
+      isoDaysAgo(now, persona.enrolledDaysAgo)
+    );
   }
+
+  return resolvedGroupMemberIds;
 }
 
 /** Backfills lesson completions and exercise submissions for a persona's progress plan. */
@@ -1884,7 +1882,8 @@ async function ensureGroupMember(
   groupId: string,
   profileId: string,
   groupMemberId: string,
-  now: Date
+  now: Date,
+  createdAtIso?: string
 ): Promise<string> {
   const existingMembers = await db
     .select({ id: groupmember.id })
@@ -1913,7 +1912,7 @@ async function ensureGroupMember(
     groupId,
     roleId: ROLE.STUDENT,
     profileId,
-    createdAt: isoDaysAgo(now, 1)
+    createdAt: createdAtIso ?? isoDaysAgo(now, 1)
   };
 
   await db.insert(groupmember).values(newGroupMember);
@@ -2221,8 +2220,8 @@ export async function seedLearningPaths({
 
   // 3. Persona accounts and their progress truth data
   for (const persona of PERSONAS) {
-    await seedPersonaAccounts(persona, testOrgId, now);
-    await seedPersonaProgress(persona, now);
+    const groupMemberIds = await seedPersonaAccounts(persona, testOrgId, now);
+    await seedPersonaProgress({ ...persona, groupMemberIds }, now);
   }
 
   console.log(`   ✓ Seeded ${PERSONAS.length} path learner persona(s) with progress`);
