@@ -42,8 +42,7 @@ export async function listPathMembersService(
  * Enrolls one profile into a learning path, initializes progress cache,
  * and auto-enrolls into the path's courses when autoEnroll is enabled.
  * Shared by manual adds, audience bulk imports and invite acceptance so every
- * front creates exactly the same rows. Callers must only pass profiles that
- * already exist: pending (profile-less) invites enroll on acceptance instead.
+ * front creates exactly the same rows.
  */
 export async function enrollProfileInLearningPath(
   path: { id: string; autoEnroll: boolean; sequentialUnlock: boolean },

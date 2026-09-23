@@ -326,6 +326,7 @@ const learningPathHandler: InviteLinkHandler = {
     if (isFreshJoin && email) {
       const loginUrl = getDashboardBaseUrl(context.organization);
       const branding = buildEmailBranding(context.organization);
+      const from = buildEmailFromName(`${context.organization.name} (via ClassroomIO.com)`);
 
       try {
         await enqueueTransactionalEmail('studentLearningPathWelcome', {
@@ -336,7 +337,7 @@ const learningPathHandler: InviteLinkHandler = {
             loginUrl,
             branding
           },
-          from: buildEmailFromName(`${context.organization.name} (via ClassroomIO.com)`),
+          from,
           idempotencyKey: `invite-link-learning-path-welcome:${learningPath.id}:${profileId}`,
           preference: { organizationId: context.organization.id, recipientProfileId: profileId }
         });

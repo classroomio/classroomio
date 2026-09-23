@@ -392,6 +392,8 @@ async function enrollAudienceStudentProfilesInPaths(
 
   let emailsSent = 0;
   const loginUrl = getDashboardBaseUrl(organization);
+  const branding = buildEmailBranding(organization);
+  const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
 
   if (shouldSendEmail && toInsert.length > 0) {
     await Promise.all(
@@ -407,9 +409,9 @@ async function enrollAudienceStudentProfilesInPaths(
                 orgName: organization.name,
                 learningPathName: pathNameById.get(pair.learningPathId) || 'Learning path',
                 loginUrl,
-                branding: buildEmailBranding(organization)
+                branding
               },
-              from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+              from,
               idempotencyKey: `audience-path-welcome:${pair.learningPathId}:${pair.profileId}`,
               preference: { organizationId: orgId, recipientProfileId: pair.profileId }
             });
