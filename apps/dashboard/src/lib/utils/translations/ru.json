@@ -5643,10 +5643,8 @@
       "title": "Пути обучения не найдены",
       "description": "Попробуйте очистить поиск или зайдите позже."
     },
-
     "detail": {
       "series_heading": "Серия курсов",
-      "hours_label": "{hours} ч всего",
       "rating_label": "Рейтинг {rating} из 5",
       "certificate_heading": "Сертификат",
       "certificate_issuer": "Выдан",

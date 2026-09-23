@@ -622,66 +622,115 @@ export const mockLearningPathLandingPageProps: LearningPathLandingPageProps = {
   navItems: mockOrgLandingPageProps.navItems,
   authAction: mockOrgLandingPageProps.authAction,
   hero: {
-    heading: 'SOC 2 Compliance Track',
+    chip: 'Learning Path · Certificate',
+    heading: 'Frontend Engineering Bootcamp',
     subheading:
-      'A guided, three-course sequence from security fundamentals to a completed control matrix — finish with a certificate auditors recognize.',
-    primaryAction: { label: 'Enroll now', href: '#pricing' },
-    secondaryAction: { label: 'View series', href: '#series' },
-    image: mockLearningPaths[0].logo!,
-    stats: [
-      { label: 'Courses', value: '3' },
-      { label: 'Hours', value: '16' },
-      { label: 'Certificate', value: 'Included' },
-      { label: 'Enrolled', value: '942' }
+      'Five courses, one path — from your first HTML tag to a deployed React capstone. Learn in order, build real projects, earn a certificate.',
+    primaryAction: { label: 'Enroll · $199', href: '#pricing' },
+    cost: 199,
+    currency: 'USD',
+    originalCost: 280,
+    courseCount: 5,
+    totalStudents: 942,
+    rating: 4.7,
+    reviewsCount: 213,
+    hasCertificate: true,
+    instructors: [
+      {
+        id: 'lp-i-1',
+        name: 'Jordan Diallo',
+        role: 'Lead Instructor · Frontend',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+        bio: '10 years building web apps; previously staff engineer at a fintech scale-up.'
+      },
+      {
+        id: 'lp-i-2',
+        name: 'Efe Obi',
+        role: 'Instructor · JavaScript',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+        bio: 'Teaches JS to thousands of learners; maintainer of two OSS tooling projects.'
+      }
+    ]
+  },
+  about: {
+    outcomes: [
+      'Build responsive, accessible websites with semantic HTML and modern CSS',
+      'Write production JavaScript: async, APIs, and the DOM',
+      'Build and ship interactive React apps with state, hooks, and data fetching',
+      'Complete a portfolio-ready capstone project, deployed to production'
     ],
-    eyebrow: 'guided track'
+    skills: ['HTML & CSS', 'Flexbox & Grid', 'JavaScript', 'REST APIs', 'React', 'State management', 'Deployment']
   },
   series: [
     {
       id: 'lp-s-1',
-      slug: 'soc2-foundations',
-      title: 'Foundations',
-      description: 'Core concepts, frameworks, and the first shipped exercise.',
+      slug: 'html-css-foundations',
+      title: 'HTML & CSS Foundations',
+      description: 'Semantic markup, layout mechanics, and accessibility.',
       siteName: 'classroomio',
-      lessonOutlines: [
-        { id: 'lp-l-1', title: 'Orientation', durationMinutes: 14, gated: true },
-        { id: 'lp-l-2', title: 'Core framework', durationMinutes: 22, gated: true },
-        { id: 'lp-l-3', title: 'First exercise', durationMinutes: 18 }
-      ],
       courseCount: 1,
-      totalHours: 44
+      lessonCount: 12,
+      exerciseCount: 4,
+      outcomes: [
+        'Semantic markup and document structure',
+        'The box model, flexbox, and grid',
+        'Responsive layout from mobile up',
+        'Accessibility fundamentals'
+      ],
+      lessonOutlines: [
+        { id: 'lp-l-1', title: 'Anatomy of a web page', preview: true },
+        { id: 'lp-l-2', title: 'Semantic HTML in practice', preview: true },
+        { id: 'lp-l-3', title: 'The box model', gated: true },
+        { id: 'lp-l-4', title: 'Flexbox and Grid layout', gated: true }
+      ]
     },
     {
       id: 'lp-s-2',
-      slug: 'soc2-playbooks',
-      title: 'Playbooks',
-      description: 'Applied patterns and the labs that make them stick.',
+      slug: 'javascript-essentials',
+      title: 'JavaScript Essentials',
+      description: 'Types, functions, DOM manipulation, async/await, and APIs.',
       siteName: 'classroomio',
-      lessonOutlines: [
-        { id: 'lp-l-4', title: 'Pattern library', durationMinutes: 26, gated: true },
-        { id: 'lp-l-5', title: 'Applied lab', durationMinutes: 31, gated: true },
-        { id: 'lp-l-6', title: 'Peer review', durationMinutes: 20 }
-      ],
       courseCount: 2,
-      totalHours: 72
+      lessonCount: 10,
+      exerciseCount: 3,
+      outcomes: [
+        'Types, functions, and control flow',
+        'Working with the DOM',
+        'async/await and promises',
+        'Fetching data from APIs'
+      ],
+      lessonOutlines: [
+        { id: 'lp-l-5', title: 'Values, types, and variables', preview: true },
+        { id: 'lp-l-6', title: 'Functions and scope', preview: true },
+        { id: 'lp-l-7', title: 'DOM and event handling', gated: true }
+      ]
     },
     {
       id: 'lp-s-3',
-      slug: 'soc2-capstone',
-      title: 'Capstone',
-      description: 'A guided capstone plus readiness for the certificate exam.',
+      slug: 'react-development',
+      title: 'Modern Web Development with React',
+      description: 'Components, props, state, hooks, and data fetching.',
       siteName: 'classroomio',
-      lessonOutlines: [
-        { id: 'lp-l-7', title: 'Capstone brief', durationMinutes: 24, gated: true },
-        { id: 'lp-l-8', title: 'Exam readiness', durationMinutes: 28, gated: true },
-        { id: 'lp-l-9', title: 'Certification', durationMinutes: 16 }
-      ],
       courseCount: 3,
-      totalHours: 96
+      lessonCount: 12,
+      exerciseCount: 3,
+      outcomes: [
+        'Components, props, and JSX',
+        'State and event handling',
+        'Hooks and side effects',
+        'Building interactive UIs'
+      ],
+      lessonOutlines: [
+        { id: 'lp-l-8', title: 'What is React?', preview: true },
+        { id: 'lp-l-9', title: 'JSX & rendering', preview: true },
+        { id: 'lp-l-10', title: 'State and effects', gated: true }
+      ]
     }
   ],
   certificate: {
-    issuer: 'ClassroomIO',
+    issuer: 'Acme Academy',
     validity: 'Lifetime',
     description: 'Verified certificate earned on completing every series lesson.'
   },
@@ -689,73 +738,108 @@ export const mockLearningPathLandingPageProps: LearningPathLandingPageProps = {
   instructors: [
     {
       id: 'lp-i-1',
-      name: 'Ada Lovelace',
-      role: 'Head of Strategy',
+      name: 'Jordan Diallo',
+      role: 'Lead Instructor · Frontend',
       avatarUrl:
         'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      bio: 'Two decades leading growth-stage strategy and pricing.',
+      bio: '10 years building web apps; previously staff engineer at a fintech scale-up.',
       coursesCount: 12
     },
     {
       id: 'lp-i-2',
-      name: 'Grace Hopper',
-      role: 'Analytics Lead',
+      name: 'Efe Obi',
+      role: 'Instructor · JavaScript',
       avatarUrl:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      bio: 'Turns board decks into decision engines.',
+      bio: 'Teaches JS to thousands of learners; maintainer of two OSS tooling projects.',
       coursesCount: 8
     },
     {
       id: 'lp-i-3',
-      name: 'Katherine Johnson',
-      role: 'Growth Coach',
+      name: 'Rita Mensah',
+      role: 'Instructor · React',
       avatarUrl:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      bio: 'Helps founding teams run experiments that compound.',
+      bio: 'Product engineer and design-systems specialist; capstone project mentor.',
       coursesCount: 6
     }
   ],
   reviews: [
     {
       id: 'lp-r-1',
-      name: 'Samira K.',
+      name: 'Tunde Bello',
       rating: 5,
-      description: 'The gated outlines kept my cohort accountable end to end.',
+      location: 'Lagos, Nigeria',
+      description:
+        'I went from zero to deploying my own React app in ten weeks. The order of the courses just makes sense — nothing assumed I knew things I did not.',
       createdAt: '2025-06-12'
     },
     {
       id: 'lp-r-2',
-      name: 'Diego M.',
+      name: 'Mariam Kone',
       rating: 5,
-      description: 'Series structure made a broad topic feel finishable.',
+      location: "Abidjan, Côte d'Ivoire",
+      description:
+        'The locked courses kept me honest — no skipping ahead, and everything built on what came before. The certificate helped me land interviews.',
       createdAt: '2025-04-30'
     }
   ],
   faq: [
     {
       id: 'lp-f-1',
-      question: 'Is this a single course or a series?',
-      answer: 'It is a series of courses that build on one another.'
+      question: 'Do I need any prior experience?',
+      answer:
+        'No — the path starts from absolute fundamentals and each course unlocks the next, so you are never dropped into material you are not ready for.'
     },
     {
       id: 'lp-f-2',
-      question: 'How long do I have access?',
-      answer: 'Lifetime access, including every future series update.'
+      question: 'Can I buy a single course instead of the whole path?',
+      answer:
+        'Yes, every course is also sold individually — the path bundle saves you 29% and adds the path certificate.'
     },
     {
       id: 'lp-f-3',
-      question: 'Do I earn a certificate?',
-      answer: 'Yes — a verified certificate on completing all series lessons.'
+      question: 'Do I have to take the courses in order?',
+      answer:
+        'Yes — this path is sequential. Each course unlocks after you complete the previous one lessons and exercises. That is what makes the curriculum build properly.'
+    },
+    {
+      id: 'lp-f-4',
+      question: 'How long do I have access?',
+      answer: 'Lifetime access. Learn at your own pace — complete courses as your schedule allows.'
+    },
+    {
+      id: 'lp-f-5',
+      question: 'What do I need to earn the certificate?',
+      answer:
+        'Complete every lesson and submit every exercise across all courses, including the capstone project. The certificate is issued automatically.'
     }
   ],
+  pricing: {
+    cost: 199,
+    currency: 'USD',
+    originalCost: 280,
+    discount: 29,
+    showDiscount: true,
+    features: [
+      'All 5 courses, unlocked in order',
+      '52 lessons, 13 exercises, 1 capstone project',
+      'Path certificate on completion',
+      'Lifetime access'
+    ],
+    ctaLabel: 'Enroll in this path',
+    ctaHref: '#pricing'
+  },
   footer: mockOrgLandingPageProps.footer,
   labels: {
-    seriesHeading: 'Course series',
-    certificateHeading: 'Certificate',
+    aboutHeading: "What you'll learn",
+    skillsHeading: "Skills you'll gain",
+    seriesHeading: 'Courses in this path',
+    certificateHeading: 'Earn a shareable certificate',
     certificateIssuerHeading: 'Issued by',
     certificateValidityHeading: 'Validity',
-    instructorsHeading: 'Instructors',
-    reviewsHeading: 'Reviews',
+    instructorsHeading: 'Your instructors',
+    reviewsHeading: 'What learners say',
     faqHeading: 'Frequently asked questions',
     noFaqLabel: 'No questions yet.',
     lockedLabel: 'Locked',

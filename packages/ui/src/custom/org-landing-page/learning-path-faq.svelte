@@ -14,22 +14,15 @@
 
   const t = $derived(courseLandingTokens(variant));
 
-  let expanded = $state<Record<string, boolean>>({});
-  $effect(() => {
-    const initial: Record<string, boolean> = {};
-    faq.forEach((item, idx) => {
-      if (!(item.id in expanded)) initial[item.id] = idx === 0;
-    });
-    if (Object.keys(initial).length > 0) expanded = { ...expanded, ...initial };
-  });
+  let openIds = $state<Record<string, boolean>>({});
 
   function toggle(id: string) {
-    expanded = { ...expanded, [id]: !expanded[id] };
+    openIds[id] = !openIds[id];
   }
 </script>
 
 <section id="faq" class={t.sectionShell}>
-  <div class={t.sectionInner}>
+  <div class="ui:max-w-[800px] ui:mx-auto">
     <div class={t.sectionHeader}>
       {#if labels?.faqEyebrow}
         <span class={t.eyebrow}>{labels.faqEyebrow}</span>
@@ -40,35 +33,37 @@
 
     {#if faq.length > 0}
       <div
-        class="ui:flex ui:flex-col ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:[border-radius:var(--landing-radius-card)] ui:[box-shadow:var(--landing-shadow-card)] ui:divide-y ui:divide-[var(--landing-border)]"
+        class="ui:flex ui:flex-col ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:[border-radius:var(--landing-radius-card)] ui:[box-shadow:var(--landing-shadow-card)] ui:divide-y ui:divide-[var(--landing-border)] ui:mt-6"
       >
-        {#each faq as item (item.id)}
+        {#each faq as item, index (item.id)}
           <div>
             <button
               type="button"
-              class="ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-4 ui:px-6 ui:py-4 ui:text-left"
+              class="ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-4 ui:px-6 ui:py-4 ui:text-left ui:cursor-pointer"
               onclick={() => toggle(item.id)}
-              aria-expanded={expanded[item.id] ?? false}
+              aria-expanded={openIds[item.id] ?? index === 0}
             >
-              <span class="ui:text-[var(--landing-fg)] ui:[font-weight:var(--landing-heading-weight)]">
+              <span class="ui:text-[var(--landing-fg)] ui:font-medium ui:text-sm ui:sm:text-base">
                 {item.question}
               </span>
-              {#if expanded[item.id]}
+              {#if openIds[item.id] ?? index === 0}
                 <ChevronUpIcon class="ui:size-4 ui:shrink-0 ui:text-[var(--landing-fg-muted)]" />
               {:else}
                 <ChevronDownIcon class="ui:size-4 ui:shrink-0 ui:text-[var(--landing-fg-muted)]" />
               {/if}
             </button>
-            {#if expanded[item.id]}
-              <p class="ui:px-6 ui:pb-4 ui:text-sm ui:leading-relaxed ui:text-[var(--landing-fg-muted)]">
+            {#if openIds[item.id] ?? index === 0}
+              <div
+                class="ui:px-6 ui:pb-4 ui:text-xs ui:sm:text-sm ui:leading-relaxed ui:text-[var(--landing-fg-muted)]"
+              >
                 {item.answer}
-              </p>
+              </div>
             {/if}
           </div>
         {/each}
       </div>
     {:else}
-      <p class="ui:text-sm ui:text-[var(--landing-fg-muted)]">{labels?.noFaqLabel ?? 'No questions yet.'}</p>
+      <p class="ui:text-sm ui:text-[var(--landing-fg-muted)] ui:mt-4">{labels?.noFaqLabel ?? 'No questions yet.'}</p>
     {/if}
   </div>
 </section>

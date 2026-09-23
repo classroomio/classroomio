@@ -398,30 +398,69 @@ export interface CourseLandingPageProps {
   labels?: CourseLandingPageLabels;
 }
 
+export type LearningPathHero = {
+  chip?: string;
+  heading: string;
+  subheading: string;
+  primaryAction: LandingPrimaryAction;
+  cost?: number;
+  currency?: string;
+  originalCost?: number;
+  courseCount?: number;
+  totalStudents?: number;
+  rating?: number;
+  reviewsCount?: number;
+  hasCertificate?: boolean;
+  features?: string[];
+  instructors?: LearningPathInstructorItem[];
+};
+
 export interface LearningPathLandingPageLabels {
+  aboutEyebrow?: string;
+  aboutHeading?: string;
+  aboutLead?: string;
+  skillsHeading?: string;
   seriesEyebrow?: string;
   seriesHeading?: string;
+  seriesLead?: string;
   certificateEyebrow?: string;
   certificateHeading?: string;
   certificateIssuerHeading?: string;
   certificateValidityHeading?: string;
   instructorsEyebrow?: string;
   instructorsHeading?: string;
+  instructorsLead?: string;
   reviewsEyebrow?: string;
   reviewsHeading?: string;
+  reviewsLead?: string;
   faqEyebrow?: string;
   faqHeading?: string;
   noFaqLabel?: string;
+  pricingEyebrow?: string;
+  pricingHeading?: string;
+  enrollPathLabel?: string;
   lockedLabel?: string;
   unlockedLabel?: string;
   ratingLabel?: (rating: number) => string;
   courseCountLabel?: (count: number) => string;
-  hoursLabel?: (hours: number) => string;
   enrolledLabel?: (count: number) => string;
-  lessonDurationLabel?: (minutes: number) => string;
   enrollFreeLabel?: string;
   enrollLabel?: (cost: number, currency: string) => string;
   viewAllLabel?: string;
+  /** Section-nav tab label for the about section. Default: "About". */
+  navAboutLabel?: string;
+  /** Section-nav tab label for the course series section. Default: "Courses". */
+  navSeriesLabel?: string;
+  /** Section-nav tab label for the certificate section. Default: "Certificate". */
+  navCertificateLabel?: string;
+  /** Section-nav tab label for the instructors section. Default: "Instructors". */
+  navInstructorsLabel?: string;
+  /** Section-nav tab label for the reviews section. Default: "Reviews". */
+  navReviewsLabel?: string;
+  /** Section-nav tab label for the FAQ section. Default: "FAQ". */
+  navFaqLabel?: string;
+  /** Section-nav tab label for the pricing section. Default: "Pricing". */
+  navPricingLabel?: string;
 }
 
 export interface LearningPathLandingPageProps {
@@ -435,13 +474,18 @@ export interface LearningPathLandingPageProps {
     loading?: boolean;
     disabled?: boolean;
   };
-  hero: LandingPageHero;
+  hero: LearningPathHero;
+  about?: {
+    outcomes?: string[];
+    skills?: string[];
+  };
   series: LearningPathSeriesCourse[];
   certificate?: LearningPathCertificateInfo | null;
   hasCertificate: boolean;
   instructors: LearningPathInstructorItem[];
   reviews: LearningPathReviewItem[];
   faq: LearningPathFaqItem[];
+  pricing?: LearningPathPricingInfo;
   footer: OrgLandingPageFooterConfig;
   labels?: LearningPathLandingPageLabels;
 }

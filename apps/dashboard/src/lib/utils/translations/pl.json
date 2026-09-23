@@ -5643,10 +5643,8 @@
       "title": "Nie znaleziono ścieżek edukacyjnych",
       "description": "Spróbuj wyczyścić wyszukiwanie lub sprawdź później."
     },
-
     "detail": {
       "series_heading": "Seria kursów",
-      "hours_label": "{hours} godz. łącznie",
       "rating_label": "Ocena {rating} na 5",
       "certificate_heading": "Certyfikat",
       "certificate_issuer": "Wydawca",

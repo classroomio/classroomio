@@ -5643,10 +5643,8 @@
       "title": "Aucun parcours d'apprentissage trouvé",
       "description": "Essayez d'effacer votre recherche ou revenez plus tard."
     },
-
     "detail": {
       "series_heading": "Série de cours",
-      "hours_label": "{hours} h au total",
       "rating_label": "Noté {rating} sur 5",
       "certificate_heading": "Certificat",
       "certificate_issuer": "Délivré par",

@@ -7,10 +7,6 @@ import type {
   LearningPathLandingPageProps
 } from '@cio/ui/custom/org-landing-page';
 
-function hoursLabel(hours: number): string {
-  return t.get('public_learning_paths.detail.hours_label', { hours });
-}
-
 function courseCountLabel(count: number): string {
   return t.get('public_learning_paths.course_count_label', { count });
 }
@@ -23,41 +19,35 @@ function ratingLabel(rating: number): string {
   return t.get('public_learning_paths.detail.rating_label', { rating });
 }
 
-function lessonDurationLabel(minutes: number): string {
-  return `${minutes}m`;
-}
-
 function buildLabels(detail: LearningPathDetail): LearningPathLandingPageLabels {
   return {
+    aboutHeading: t.get('public_learning_paths.detail.about_heading') || "What you'll learn",
+    aboutLead: t.get('public_learning_paths.detail.about_lead'),
+    skillsHeading: t.get('public_learning_paths.detail.skills_heading') || "Skills you'll gain",
+    seriesEyebrow: t.get('public_learning_paths.detail.series_eyebrow'),
     seriesHeading: t.get('public_learning_paths.detail.series_heading'),
+    seriesLead: t.get('public_learning_paths.detail.series_lead'),
     certificateHeading: t.get('public_learning_paths.detail.certificate_heading'),
     certificateIssuerHeading: t.get('public_learning_paths.detail.certificate_issuer'),
     certificateValidityHeading: t.get('public_learning_paths.detail.certificate_validity'),
     instructorsHeading: t.get('public_learning_paths.detail.instructors_heading'),
+    instructorsLead: t.get('public_learning_paths.detail.instructors_lead'),
     reviewsHeading: t.get('public_learning_paths.detail.reviews_heading'),
+    reviewsLead: t.get('public_learning_paths.detail.reviews_lead'),
     faqHeading: t.get('public_learning_paths.detail.faq_heading'),
     noFaqLabel: t.get('public_learning_paths.detail.no_faq'),
+    pricingEyebrow: t.get('public_learning_paths.detail.pricing_eyebrow'),
+    enrollPathLabel: t.get('public_learning_paths.detail.enroll_path'),
     lockedLabel: t.get('public_learning_paths.detail.locked_label'),
     unlockedLabel: t.get('public_learning_paths.detail.unlocked_label'),
     ratingLabel,
     courseCountLabel,
-    hoursLabel,
     enrolledLabel,
-    lessonDurationLabel,
     enrollFreeLabel: t.get('public_learning_paths.detail.enroll_free'),
     enrollLabel: (cost: number, currency: string) =>
       t.get('public_learning_paths.detail.enroll_label', { cost, currency }),
     viewAllLabel: t.get('public_learning_paths.detail.view_all')
   };
-}
-
-function buildStats(detail: LearningPathDetail): Array<{ label: string; value: string }> {
-  return [
-    { label: 'Courses', value: detail.courseCount.toString() },
-    { label: 'Hours', value: detail.totalHours.toString() },
-    detail.hasCertificate ? { label: 'Certificate', value: 'Included' } : null,
-    { label: 'Enrolled', value: detail.totalStudents.toString() }
-  ].filter(Boolean) as Array<{ label: string; value: string }>;
 }
 
 export function buildLearningPathLandingPageProps(
@@ -77,6 +67,10 @@ export function buildLearningPathLandingPageProps(
 
   const showDiscount = Boolean(detail.metadata?.discount && detail.metadata?.showDiscount);
 
+  const originalCost =
+    detail.pricing?.originalCost ??
+    (detail.metadata?.discount ? Math.round(detail.cost / (1 - detail.metadata.discount / 100)) : undefined);
+
   return {
     theme: landing.theme,
     orgName: org.name ?? '',
@@ -84,15 +78,24 @@ export function buildLearningPathLandingPageProps(
     navItems: landing.navItems,
     authAction: options.authAction,
     hero: {
+      chip: detail.chip,
       heading: detail.title,
       subheading: detail.description,
       primaryAction: { label: primaryActionLabel, href: options.enrollHref },
-      secondaryAction: showDiscount
-        ? { label: t.get('public_learning_paths.detail.view_all'), href: '/learning-paths' }
-        : undefined,
-      image: detail.logo || undefined,
-      stats: buildStats(detail),
-      eyebrow: org.name ?? undefined
+      cost: detail.cost,
+      currency: detail.currency,
+      originalCost,
+      courseCount: detail.courseCount,
+      totalStudents: detail.totalStudents,
+      rating: detail.rating,
+      reviewsCount: detail.reviewsCount,
+      hasCertificate: detail.hasCertificate,
+      features: detail.pricing?.features,
+      instructors: detail.instructors
+    },
+    about: {
+      outcomes: detail.outcomes,
+      skills: detail.skills
     },
     series: detail.series,
     certificate: detail.certificate ?? null,
@@ -100,6 +103,16 @@ export function buildLearningPathLandingPageProps(
     instructors: detail.instructors,
     reviews: detail.reviews,
     faq: detail.faq,
+    pricing: {
+      cost: detail.cost,
+      currency: detail.currency,
+      originalCost,
+      discount: detail.metadata?.discount,
+      showDiscount,
+      features: detail.pricing?.features,
+      ctaLabel: primaryActionLabel,
+      ctaHref: options.enrollHref
+    },
     footer: landing.footer,
     labels: buildLabels(detail)
   };

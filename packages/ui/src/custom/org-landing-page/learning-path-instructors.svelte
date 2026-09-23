@@ -15,16 +15,19 @@
 
 {#if instructors.length > 0}
   <section id="instructors" class={t.sectionShell}>
-    <div class={t.sectionInner}>
+    <div class="ui:max-w-[800px] ui:mx-auto">
       <div class={t.sectionHeader}>
         {#if labels?.instructorsEyebrow}
           <span class={t.eyebrow}>{labels.instructorsEyebrow}</span>
         {/if}
-        <h2 class={t.heading}>{labels?.instructorsHeading ?? 'Meet your instructors'}</h2>
+        <h2 class={t.heading}>{labels?.instructorsHeading ?? 'Your instructors'}</h2>
+        <p class={t.body}>
+          {labels?.instructorsLead ?? 'The tutors behind the courses in this path.'}
+        </p>
         <span class={t.headingRule} aria-hidden="true"></span>
       </div>
 
-      <div class="ui:grid ui:grid-cols-1 ui:gap-6 ui:sm:grid-cols-2 ui:lg:grid-cols-3">
+      <div class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-3 ui:gap-5 ui:mt-8">
         {#each instructors as instructor (instructor.id)}
           <article
             class="ui:flex ui:flex-col ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:[border-radius:var(--landing-radius-card)] ui:[box-shadow:var(--landing-shadow-card)] ui:p-6"
@@ -34,17 +37,32 @@
                 src={instructor.avatarUrl}
                 alt={instructor.name}
                 loading="lazy"
-                class="ui:mb-4 ui:size-16 ui:rounded-full ui:object-cover ui:border ui:border-[var(--landing-border)]"
+                class="ui:mb-4 ui:size-14 ui:rounded-full ui:object-cover ui:border ui:border-[var(--landing-border)]"
               />
+            {:else}
+              <div
+                class="ui:mb-4 ui:size-14 ui:rounded-full ui:bg-[var(--landing-accent)]/15 ui:text-[var(--landing-accent)] ui:flex ui:items-center ui:justify-center ui:font-bold ui:text-base ui:border ui:border-[var(--landing-border)]"
+              >
+                {instructor.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .slice(0, 2)}
+              </div>
             {/if}
-            <h3 class="ui:text-[var(--landing-fg)] ui:text-base ui:[font-weight:var(--landing-heading-weight)]">
+
+            <h3 class="ui:text-base ui:font-semibold ui:text-[var(--landing-fg)]">
               {instructor.name}
             </h3>
+
             {#if instructor.role}
-              <p class="ui:text-sm ui:text-[var(--landing-fg-muted)]">{instructor.role}</p>
+              <p class="ui:text-xs ui:text-[var(--landing-accent)] ui:font-medium ui:mt-0.5">{instructor.role}</p>
             {/if}
+
             {#if instructor.bio}
-              <p class="ui:mt-3 ui:text-sm ui:leading-relaxed ui:text-[var(--landing-fg-muted)]">{instructor.bio}</p>
+              <p class="ui:mt-3 ui:text-xs ui:sm:text-sm ui:leading-relaxed ui:text-[var(--landing-fg-muted)]">
+                {instructor.bio}
+              </p>
             {/if}
           </article>
         {/each}

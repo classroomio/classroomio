@@ -5643,10 +5643,8 @@
       "title": "Nenhum caminho de aprendizagem encontrado",
       "description": "Tente limpar sua pesquisa ou volte mais tarde."
     },
-
     "detail": {
       "series_heading": "Série de cursos",
-      "hours_label": "{hours} h no total",
       "rating_label": "Avaliado {rating} de 5",
       "certificate_heading": "Certificado",
       "certificate_issuer": "Emitido por",

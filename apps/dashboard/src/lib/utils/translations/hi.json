@@ -5643,10 +5643,8 @@
       "title": "सीखने का कोई मार्ग नहीं मिला",
       "description": "अपनी खोज साफ़ करने का प्रयास करें या बाद में दोबारा जाँचें।"
     },
-
     "detail": {
       "series_heading": "कोर्स श्रृंखला",
-      "hours_label": "कुल {hours} घंटे",
       "rating_label": "{rating} में से {rating} रेटेड",
       "certificate_heading": "प्रमाणपत्र",
       "certificate_issuer": "जारीकर्ता",

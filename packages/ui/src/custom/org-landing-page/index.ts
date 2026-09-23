@@ -105,11 +105,14 @@ export { default as CourseLandingChips } from './course-chips.svelte';
 export { default as CourseLandingInstructor } from './course-instructor.svelte';
 export { default as CourseLandingReviews } from './course-reviews.svelte';
 export { default as CourseLandingPricing } from './course-pricing.svelte';
+export { default as LearningPathHero } from './learning-path-hero.svelte';
+export { default as LearningPathAbout } from './learning-path-about.svelte';
 export { default as LearningPathSeries } from './learning-path-series.svelte';
 export { default as LearningPathCertificate } from './learning-path-certificate.svelte';
 export { default as LearningPathInstructors } from './learning-path-instructors.svelte';
 export { default as LearningPathReviews } from './learning-path-reviews.svelte';
 export { default as LearningPathFaq } from './learning-path-faq.svelte';
+export { default as LearningPathPricing } from './learning-path-pricing.svelte';
 export {
   setLandingPageEditContext,
   getLandingPageEditContext,
@@ -129,4 +132,4 @@ export {
 export { safeHref } from './safe-href';
 export * from './learning-path-detail.types';
 export { mockLearningPathDetails } from './learning-path-detail.fixtures';
-export { toLearningPathDetail } from './learning-path-detail.helpers';
+export { toLearningPathDetail, buildLearningPathSectionNavItems } from './learning-path-detail.helpers';

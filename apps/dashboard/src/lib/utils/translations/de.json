@@ -5643,10 +5643,8 @@
       "title": "Keine Lernpfade gefunden",
       "description": "Versuchen Sie, Ihre Suche zu löschen, oder schauen Sie später noch einmal vorbei."
     },
-
     "detail": {
       "series_heading": "Kursreihe",
-      "hours_label": "{hours} Std. insgesamt",
       "rating_label": "Bewertet {rating} von 5",
       "certificate_heading": "Zertifikat",
       "certificate_issuer": "Ausgestellt von",

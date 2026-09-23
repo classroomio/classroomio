@@ -5643,10 +5643,8 @@
       "title": "Ingen læringsveje fundet",
       "description": "Prøv at rydde din søgning, eller kom tilbage senere."
     },
-
     "detail": {
       "series_heading": "Kursusserie",
-      "hours_label": "{hours} timer i alt",
       "rating_label": "Bedømt {rating} ud af 5",
       "certificate_heading": "Certifikat",
       "certificate_issuer": "Udstedt af",

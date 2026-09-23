@@ -24,11 +24,6 @@
       },
       url: page.url.href,
       ...(detail.logo ? { image: detail.logo } : {}),
-      hasCourseInstance: {
-        '@type': 'CourseInstance',
-        courseMode: 'online',
-        courseWorkload: detail.totalHours
-      },
       numberOfCredits: detail.courseCount,
       offers: {
         '@type': 'Offer',

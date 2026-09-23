@@ -5643,10 +5643,8 @@
       "title": "No se encontraron rutas de aprendizaje",
       "description": "Intente borrar su búsqueda o vuelva a consultar más tarde."
     },
-
     "detail": {
       "series_heading": "Serie de cursos",
-      "hours_label": "{hours} h en total",
       "rating_label": "Calificado {rating} de 5",
       "certificate_heading": "Certificado",
       "certificate_issuer": "Emitido por",

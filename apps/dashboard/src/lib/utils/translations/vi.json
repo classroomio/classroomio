@@ -5643,10 +5643,8 @@
       "title": "Không tìm thấy lộ trình học tập",
       "description": "Hãy thử xóa tìm kiếm của bạn hoặc kiểm tra lại sau."
     },
-
     "detail": {
       "series_heading": "Chuỗi khóa học",
-      "hours_label": "Tổng {hours} giờ",
       "rating_label": "Đánh giá {rating} trên 5",
       "certificate_heading": "Chứng chỉ",
       "certificate_issuer": "Cấp bởi",
