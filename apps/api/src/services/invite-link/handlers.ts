@@ -7,11 +7,12 @@ import {
   insertCohortMemberIfAbsent,
   lockCohortStatusForAccept
 } from '@cio/db/queries/cohort';
+import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
 import {
-  getLearningPathById,
   getCourseIdsByLearningPathId,
+  getLearningPathById,
   getLearningPathOrgId,
-  insertLearningPathMemberIfAbsent,
+  getMemberByPathAndProfile,
   lockLearningPathStatusForAccept
 } from '@cio/db/queries/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
@@ -289,21 +290,25 @@ const learningPathHandler: InviteLinkHandler = {
       throw new AppError('This invite is no longer accepting new members', ErrorCodes.VALIDATION_ERROR, 403);
     }
 
-    const createdMember = await insertLearningPathMemberIfAbsent(
-      { learningPathId: learningPath.id, roleId: context.invite.roleId, profileId, email },
+    const path = await getLearningPathById(learningPath.id, tx);
+
+    if (!path) {
+      throw new AppError('This invite link is no longer valid', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    const existing = await getMemberByPathAndProfile(learningPath.id, profileId, tx);
+    const isFreshJoin = !existing;
+
+    await enrollProfileInLearningPath(
+      path,
+      {
+        profileId,
+        email,
+        roleId: existing?.roleId ?? context.invite.roleId,
+        grantedByProfileId: profileId
+      },
       tx
     );
-    const isFreshJoin = createdMember !== null;
-
-    // Auto-enroll in all courses in the path
-    const pathCourseIds = await getCourseIdsByLearningPathId(learningPath.id, tx);
-
-    if (pathCourseIds.length > 0) {
-      const courseGroups = await getCourseGroupIds(pathCourseIds, tx);
-      const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
-
-      await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], context.invite.roleId, tx);
-    }
 
     return { isFreshJoin };
   },
