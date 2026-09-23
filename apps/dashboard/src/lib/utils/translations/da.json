@@ -3901,7 +3901,8 @@
       "preview_tabs": {
         "label": "Forhåndsvisningsside",
         "home": "Hjem",
-        "course": "Kursus"
+        "course": "Kursus",
+        "learning_path": "Læringsvej"
       }
     },
     "organization": {

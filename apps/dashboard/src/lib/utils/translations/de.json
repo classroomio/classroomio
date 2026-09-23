@@ -3901,7 +3901,8 @@
       "preview_tabs": {
         "label": "Vorschauseite",
         "home": "Startseite",
-        "course": "Kurs"
+        "course": "Kurs",
+        "learning_path": "Lernpfad"
       }
     },
     "organization": {

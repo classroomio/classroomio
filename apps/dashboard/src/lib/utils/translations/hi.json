@@ -3901,7 +3901,8 @@
       "preview_tabs": {
         "label": "पूर्वावलोकन पृष्ठ",
         "home": "घर",
-        "course": "पाठ्यक्रम"
+        "course": "पाठ्यक्रम",
+        "learning_path": "सीखने का पथ"
       }
     },
     "organization": {

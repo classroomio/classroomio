@@ -3901,7 +3901,8 @@
       "preview_tabs": {
         "label": "Strona podglądu",
         "home": "Dom",
-        "course": "Kurs"
+        "course": "Kurs",
+        "learning_path": "Ścieżka edukacyjna"
       }
     },
     "organization": {

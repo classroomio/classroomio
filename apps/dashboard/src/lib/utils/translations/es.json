@@ -3901,7 +3901,8 @@
       "preview_tabs": {
         "label": "Página de vista previa",
         "home": "Inicio",
-        "course": "Curso"
+        "course": "Curso",
+        "learning_path": "Ruta de aprendizaje"
       }
     },
     "organization": {

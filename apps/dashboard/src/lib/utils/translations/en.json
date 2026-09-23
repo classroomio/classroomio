@@ -783,7 +783,8 @@
       "preview_tabs": {
         "label": "Preview page",
         "home": "Home",
-        "course": "Course"
+        "course": "Course",
+        "learning_path": "Learning Path"
       },
       "editor": {
         "save": "Save",

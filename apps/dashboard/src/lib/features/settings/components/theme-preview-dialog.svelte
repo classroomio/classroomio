@@ -5,16 +5,21 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Tabs from '@cio/ui/base/tabs';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { mockOrgLandingPageProps, mockCourseLandingPageProps } from '@cio/ui/custom/org-landing-page';
+  import {
+    mockOrgLandingPageProps,
+    mockCourseLandingPageProps,
+    mockLearningPathLandingPageProps
+  } from '@cio/ui/custom/org-landing-page';
   import {
     landingPageThemeComponents,
-    courseLandingPageThemeComponents
+    courseLandingPageThemeComponents,
+    learningPathLandingPageThemeComponents
   } from '$features/org/utils/landing-page-components';
   import { landingPageThemes } from '$features/org/utils/landing-page';
   import { t } from '$lib/utils/functions/translations';
 
   type LandingPageTheme = (typeof landingPageThemes)[number];
-  type PreviewView = 'home' | 'course';
+  type PreviewView = 'home' | 'course' | 'learning-path';
 
   const validThemes = new Set<LandingPageTheme>(landingPageThemes);
 
@@ -42,6 +47,12 @@
     previewTheme ? (courseLandingPageThemeComponents[previewTheme] ?? courseLandingPageThemeComponents.minimal) : null
   );
 
+  const LearningPathComponent = $derived(
+    previewTheme
+      ? (learningPathLandingPageThemeComponents[previewTheme] ?? learningPathLandingPageThemeComponents.minimal)
+      : null
+  );
+
   const orgPreviewProps = $derived({
     ...mockOrgLandingPageProps,
     embed: undefined
@@ -50,6 +61,11 @@
   const coursePreviewProps = $derived({
     ...mockCourseLandingPageProps,
     theme: previewTheme ?? mockCourseLandingPageProps.theme
+  });
+
+  const learningPathPreviewProps = $derived({
+    ...mockLearningPathLandingPageProps,
+    theme: previewTheme ?? mockLearningPathLandingPageProps.theme
   });
 
   function closePreview() {
@@ -89,6 +105,8 @@
         <ThemeComponent {...orgPreviewProps} disableCourseLinks={true} />
       {:else if previewView === 'course' && CourseComponent}
         <CourseComponent {...coursePreviewProps} />
+      {:else if previewView === 'learning-path' && LearningPathComponent}
+        <LearningPathComponent {...learningPathPreviewProps} />
       {/if}
     </div>
 
@@ -105,6 +123,9 @@
         </Tabs.Trigger>
         <Tabs.Trigger value="course" class="rounded-full px-4">
           {$t('settings.landing_page.preview_tabs.course')}
+        </Tabs.Trigger>
+        <Tabs.Trigger value="learning-path" class="rounded-full px-4">
+          {$t('settings.landing_page.preview_tabs.learning_path')}
         </Tabs.Trigger>
       </Tabs.List>
     </Tabs.Root>
