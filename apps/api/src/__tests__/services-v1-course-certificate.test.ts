@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const { fakeTx } = vi.hoisted(() => ({ fakeTx: { tx: true } }));
+
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn(async (callback: (tx: unknown) => unknown) => callback(fakeTx)) }
+}));
+
 vi.mock('@cio/db/queries/tag', () => ({
   getCourseOrganizationId: vi.fn()
 }));
@@ -10,25 +16,26 @@ vi.mock('@cio/db/queries/group', () => ({
 }));
 
 vi.mock('@cio/db/queries/course/course', () => ({
-  getCourseById: vi.fn()
+  getCourseById: vi.fn(),
+  getCourseByIdForUpdate: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/course/people', () => ({
+  getPaginatedCourseMembers: vi.fn()
 }));
 
 vi.mock('@cio/core/services/course/course', () => ({
   ensureProgramCourseAccess: vi.fn(),
-  getCourse: vi.fn(),
   updateCourse: vi.fn()
 }));
 
-vi.mock('@api/services/course/people', () => ({
-  listPaginatedCourseMembers: vi.fn()
-}));
-
 import { ROLE } from '@cio/utils/constants';
+import { db } from '@cio/db/drizzle';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
-import { getCourseById } from '@cio/db/queries/course/course';
-import { ensureProgramCourseAccess, getCourse, updateCourse } from '@cio/core/services/course/course';
-import { listPaginatedCourseMembers } from '@api/services/course/people';
+import { getCourseById, getCourseByIdForUpdate } from '@cio/db/queries/course/course';
+import { getPaginatedCourseMembers } from '@cio/db/queries/course/people';
+import { ensureProgramCourseAccess, updateCourse } from '@cio/core/services/course/course';
 import {
   getPublicApiCourseCertificateService,
   listPublicApiCourseCertificatesService,
@@ -57,10 +64,11 @@ const storedCertificate = {
   emailMessage: 'Well done'
 };
 
-type TGetCourseResult = Awaited<ReturnType<typeof getCourse>>;
+const storedCourse = [{ id: COURSE_ID, status: 'ACTIVE', certificate: storedCertificate }];
+
 type TGetCourseByIdResult = Awaited<ReturnType<typeof getCourseById>>;
 type TUpdateCourseResult = Awaited<ReturnType<typeof updateCourse>>;
-type TListResult = Awaited<ReturnType<typeof listPaginatedCourseMembers>>;
+type TListResult = Awaited<ReturnType<typeof getPaginatedCourseMembers>>;
 
 describe('services/v1/course-certificate', () => {
   beforeEach(() => {
@@ -69,10 +77,8 @@ describe('services/v1/course-certificate', () => {
     vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(isUserCourseMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(ensureProgramCourseAccess).mockResolvedValue(false);
-    vi.mocked(getCourse).mockResolvedValue({ certificate: storedCertificate } as unknown as TGetCourseResult);
-    vi.mocked(getCourseById).mockResolvedValue([
-      { id: COURSE_ID, certificate: storedCertificate }
-    ] as unknown as TGetCourseByIdResult);
+    vi.mocked(getCourseById).mockResolvedValue(storedCourse as unknown as TGetCourseByIdResult);
+    vi.mocked(getCourseByIdForUpdate).mockResolvedValue(storedCourse as unknown as TGetCourseByIdResult);
     vi.mocked(updateCourse).mockImplementation(
       async (_courseId, data) => ({ course: { certificate: data.certificate } }) as unknown as TUpdateCourseResult
     );
@@ -87,9 +93,9 @@ describe('services/v1/course-certificate', () => {
       vi.mocked(getCourseOrganizationId).mockResolvedValue('other-org');
 
       await expect(call()).rejects.toMatchObject({ statusCode: 404 });
-      expect(getCourse).not.toHaveBeenCalled();
+      expect(getCourseById).not.toHaveBeenCalled();
       expect(updateCourse).not.toHaveBeenCalled();
-      expect(listPaginatedCourseMembers).not.toHaveBeenCalled();
+      expect(getPaginatedCourseMembers).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -106,7 +112,7 @@ describe('services/v1/course-certificate', () => {
       vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(false);
 
       await expect(getPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params)).resolves.toEqual(storedCertificate);
-      expect(getCourse).toHaveBeenCalledWith(COURSE_ID, undefined, ACTOR_ID);
+      expect(getCourseById).toHaveBeenCalledWith(COURSE_ID);
     });
 
     it('lets program access read the settings, like courseMemberMiddleware', async () => {
@@ -122,7 +128,7 @@ describe('services/v1/course-certificate', () => {
       await expect(getPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params)).rejects.toMatchObject({
         statusCode: 403
       });
-      expect(getCourse).not.toHaveBeenCalled();
+      expect(getCourseById).not.toHaveBeenCalled();
     });
 
     it('rejects updates and the issued list from a non-team actor with 403, like courseTeamMemberMiddleware', async () => {
@@ -135,17 +141,33 @@ describe('services/v1/course-certificate', () => {
         statusCode: 403
       });
       expect(updateCourse).not.toHaveBeenCalled();
-      expect(listPaginatedCourseMembers).not.toHaveBeenCalled();
+      expect(getPaginatedCourseMembers).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('get', () => {
+    it('returns 404 for a course that is no longer active', async () => {
+      vi.mocked(getCourseById).mockResolvedValue([
+        { ...storedCourse[0], status: 'DELETED' }
+      ] as unknown as TGetCourseByIdResult);
+
+      await expect(getPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params)).rejects.toMatchObject({
+        statusCode: 404
+      });
     });
   });
 
   describe('update', () => {
-    it('keeps omitted fields and saves through the dashboard updateCourse', async () => {
+    it('locks the course row and saves through the dashboard updateCourse in the same transaction', async () => {
       const result = await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, { isDownloadable: false });
 
-      expect(updateCourse).toHaveBeenCalledWith(COURSE_ID, {
-        certificate: { ...storedCertificate, isDownloadable: false }
-      });
+      expect(db.transaction).toHaveBeenCalledTimes(1);
+      expect(getCourseByIdForUpdate).toHaveBeenCalledWith(COURSE_ID, fakeTx);
+      expect(updateCourse).toHaveBeenCalledWith(
+        COURSE_ID,
+        { certificate: { ...storedCertificate, isDownloadable: false } },
+        fakeTx
+      );
       expect(result).toEqual({ ...storedCertificate, isDownloadable: false });
     });
 
@@ -154,9 +176,11 @@ describe('services/v1/course-certificate', () => {
 
       await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, { design });
 
-      expect(updateCourse).toHaveBeenCalledWith(COURSE_ID, {
-        certificate: { ...storedCertificate, design, theme: 'noir' }
-      });
+      expect(updateCourse).toHaveBeenCalledWith(
+        COURSE_ID,
+        { certificate: { ...storedCertificate, design, theme: 'noir' } },
+        fakeTx
+      );
     });
 
     it('keeps an explicit theme when one is sent', async () => {
@@ -164,13 +188,15 @@ describe('services/v1/course-certificate', () => {
 
       await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, { design, theme: 'professional' });
 
-      expect(updateCourse).toHaveBeenCalledWith(COURSE_ID, {
-        certificate: { ...storedCertificate, design, theme: 'professional' }
-      });
+      expect(updateCourse).toHaveBeenCalledWith(
+        COURSE_ID,
+        { certificate: { ...storedCertificate, design, theme: 'professional' } },
+        fakeTx
+      );
     });
 
     it('returns 404 when the course row is gone', async () => {
-      vi.mocked(getCourseById).mockResolvedValue([] as unknown as TGetCourseByIdResult);
+      vi.mocked(getCourseByIdForUpdate).mockResolvedValue([] as unknown as TGetCourseByIdResult);
 
       await expect(
         updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, { isDownloadable: false })
@@ -180,8 +206,8 @@ describe('services/v1/course-certificate', () => {
   });
 
   describe('list', () => {
-    it('asks the dashboard members service for students with an earned certificate and maps the page', async () => {
-      vi.mocked(listPaginatedCourseMembers).mockResolvedValue({
+    it('queries the members page for students with an earned certificate and maps it', async () => {
+      vi.mocked(getPaginatedCourseMembers).mockResolvedValue({
         items: [
           {
             id: 'member-1',
@@ -204,7 +230,7 @@ describe('services/v1/course-certificate', () => {
         search: 'ada'
       });
 
-      expect(listPaginatedCourseMembers).toHaveBeenCalledWith(COURSE_ID, {
+      expect(getPaginatedCourseMembers).toHaveBeenCalledWith(COURSE_ID, {
         page: 2,
         limit: 10,
         search: 'ada',

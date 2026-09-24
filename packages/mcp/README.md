@@ -65,7 +65,7 @@ Course certificate tools:
 - `update_course_certificate`
 - `list_course_certificates`
 
-Certificate tools call the public API and need the key's `public_api:*` scope. MCP keys created before this scope was added to the defaults need to be recreated. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Certificate tools call the public API and need a key with the `public_api:*` scope. Default MCP keys do not include it yet, so these tools return 403 until the key has it. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
 - Reading the certificate settings and design needs them to be a member of the course (including access through a program) or an org admin.
 - Changing the settings or design, and listing who earned the certificate, needs them to be a course tutor/admin or an org admin.

@@ -5,9 +5,10 @@ import type {
 } from '@cio/utils/validation/public-api';
 
 import { ROLE } from '@cio/utils/constants';
-import { getCourse, updateCourse } from '@cio/core/services/course/course';
-import { getCourseById } from '@cio/db/queries/course/course';
-import { listPaginatedCourseMembers } from '@api/services/course/people';
+import { db } from '@cio/db/drizzle';
+import { updateCourse } from '@cio/core/services/course/course';
+import { getCourseById, getCourseByIdForUpdate } from '@cio/db/queries/course/course';
+import { getPaginatedCourseMembers } from '@cio/db/queries/course/people';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   assertCourseBelongsToOrganization,
@@ -23,14 +24,18 @@ export async function getPublicApiCourseCertificateService(
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCourseMemberOrOrgAdmin(params.courseId, actorId);
 
-  const course = await getCourse(params.courseId, undefined, actorId ?? undefined);
+  const [course] = await getCourseById(params.courseId);
+  if (!course || course.status !== 'ACTIVE') {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
 
   return course.certificate ?? {};
 }
 
 /**
  * Merges the payload into the stored certificate settings (omitted fields are kept, `design` is replaced whole)
- * and saves through the dashboard's `updateCourse`. Returns the saved certificate settings.
+ * and saves through the dashboard's `updateCourse`, holding a row lock so concurrent updates cannot drop fields.
+ * Returns the saved certificate settings.
  */
 export async function updatePublicApiCourseCertificateService(
   orgId: string,
@@ -41,21 +46,23 @@ export async function updatePublicApiCourseCertificateService(
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
 
-  const [existingCourse] = await getCourseById(params.courseId);
-  if (!existingCourse) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-  }
+  return db.transaction(async (tx) => {
+    const [existingCourse] = await getCourseByIdForUpdate(params.courseId, tx);
+    if (!existingCourse) {
+      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
 
-  const theme = payload.theme ?? payload.design?.templateId;
-  const certificate = {
-    ...existingCourse.certificate,
-    ...payload,
-    ...(theme !== undefined && { theme })
-  };
+    const theme = payload.theme ?? payload.design?.templateId;
+    const certificate = {
+      ...existingCourse.certificate,
+      ...payload,
+      ...(theme !== undefined && { theme })
+    };
 
-  const { course } = await updateCourse(params.courseId, { certificate });
+    const { course } = await updateCourse(params.courseId, { certificate }, tx);
 
-  return course.certificate ?? {};
+    return course.certificate ?? {};
+  });
 }
 
 export async function listPublicApiCourseCertificatesService(
@@ -67,7 +74,7 @@ export async function listPublicApiCourseCertificatesService(
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
 
-  const result = await listPaginatedCourseMembers(params.courseId, {
+  const result = await getPaginatedCourseMembers(params.courseId, {
     ...query,
     roleId: ROLE.STUDENT,
     certificateEarned: true

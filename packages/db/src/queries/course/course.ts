@@ -371,6 +371,20 @@ export async function getCourseById(courseId: string, dbClient: DbOrTxClient = d
 }
 
 /**
+ * Reads a course row and locks it until the surrounding transaction ends. Must be called with a transaction client.
+ */
+export async function getCourseByIdForUpdate(courseId: string, dbClient: DbOrTxClient) {
+  try {
+    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1).for('update');
+  } catch (error) {
+    console.error('getCourseByIdForUpdate error:', error);
+    throw new Error(
+      `Failed to lock course by ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Gets a course by ID or slug with related data (group, attendance, content items).
  * @param courseId Course ID (optional if slug provided)
  * @param slug Course slug (optional if courseId provided)
