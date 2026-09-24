@@ -127,7 +127,7 @@ export const baseCourseTokens: CourseLandingTokens = {
     'ui:text-2xl ui:text-[var(--landing-fg)]' +
     ' ui:[font-weight:var(--landing-heading-weight)]' +
     ' ui:[letter-spacing:var(--landing-heading-tracking)]',
-  infoBlockBody: 'ui:text-base ui:text-[var(--landing-fg-muted)] ui:leading-relaxed' + ` ${richTextChildren}`,
+  infoBlockBody: 'ui:text-base ui:text-[var(--landing-fg-muted)] ui:leading-relaxed',
   infoCertificateFrame:
     'ui:overflow-hidden ui:border ui:border-[var(--landing-border)]' + ' ui:[border-radius:var(--landing-radius-card)]',
   certificateShell:
@@ -236,5 +236,7 @@ export const baseCourseTokens: CourseLandingTokens = {
 };
 
 export function tokenize(overrides: Partial<CourseLandingTokens>): CourseLandingTokens {
-  return { ...baseCourseTokens, ...overrides };
+  const infoBlockBody = `${overrides.infoBlockBody ?? baseCourseTokens.infoBlockBody} ${richTextChildren}`;
+
+  return { ...baseCourseTokens, ...overrides, infoBlockBody };
 }
