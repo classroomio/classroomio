@@ -23,9 +23,10 @@
     HeaderIcon,
     SettingsIcon
   } from '@cio/ui/custom/moving-icons';
-  import { basePath } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { user } from '$lib/utils/store/user';
+  import { user, profile } from '$lib/utils/store/user';
+  import { getPreviewOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { getPreviewOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
 
   const sectionIcons: Record<LandingSectionKey, Component> = {
     navigation: ContentIcon,
@@ -80,21 +81,13 @@
     theme: previewTheme
   });
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-        }
-      : {
-          label: t.get('navigation.login'),
-          href: '/login'
-        }
-  );
+  const authAction = $derived(getPreviewOrgLandingAuthAction($user.isLoggedIn));
 
   const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
 
   const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
+
+  const learnerAccount = $derived(getPreviewOrgLandingLearnerAccount($profile, $currentOrg));
 
   const previewProps = $derived.by(() =>
     buildOrgLandingPageProps(
@@ -103,7 +96,7 @@
       orgApi.publicCourses,
       orgApi.hasMorePublicCourses,
       authAction,
-      { coursesLoaded }
+      { coursesLoaded, learnerAccount }
     )
   );
 
