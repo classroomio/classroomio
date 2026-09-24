@@ -236,7 +236,5 @@ export const baseCourseTokens: CourseLandingTokens = {
 };
 
 export function tokenize(overrides: Partial<CourseLandingTokens>): CourseLandingTokens {
-  const infoBlockBody = `${overrides.infoBlockBody ?? baseCourseTokens.infoBlockBody} ${richTextChildren}`;
-
-  return { ...baseCourseTokens, ...overrides, infoBlockBody };
+  return { ...baseCourseTokens, ...overrides };
 }

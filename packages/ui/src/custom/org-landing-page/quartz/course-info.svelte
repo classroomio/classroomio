@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CourseInfoBlocks, CourseLandingPageLabels } from '../types';
+  import { richTextChildren } from '../course-tokens-base';
   import SafeHtmlContent from '../../safe-html-content/safe-html-content.svelte';
   import QuartzCourseSection from './course-section.svelte';
 
@@ -47,7 +48,7 @@
 {#each blocks as block (block.id)}
   <QuartzCourseSection id={block.id} sectionKey={block.key} eyebrow={block.eyebrow} heading={block.heading}>
     <div
-      class="ui:max-w-[64ch] ui:text-base ui:leading-relaxed ui:text-[var(--landing-fg-muted)] ui:[&_p]:m-0 ui:[&_p+p]:mt-3.5 ui:[&_ul]:m-0 ui:[&_ul]:mt-1 ui:[&_ul]:pl-5 ui:[&_ul]:list-disc ui:[&_li]:mt-1.5 ui:[&_ol]:m-0 ui:[&_ol]:mt-1 ui:[&_ol]:pl-5 ui:[&_ol]:list-decimal"
+      class={`ui:max-w-[64ch] ui:text-base ui:leading-relaxed ui:text-[var(--landing-fg-muted)] ui:[&_p]:m-0 ui:[&_p+p]:mt-3.5 ui:[&_ul]:m-0 ui:[&_ul]:mt-1 ui:[&_ul]:pl-5 ui:[&_ul]:list-disc ui:[&_li]:mt-1.5 ui:[&_ol]:m-0 ui:[&_ol]:mt-1 ui:[&_ol]:pl-5 ui:[&_ol]:list-decimal ${richTextChildren}`}
     >
       <SafeHtmlContent content={block.html} />
     </div>
