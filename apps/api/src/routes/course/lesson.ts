@@ -1,5 +1,6 @@
 import {
   ZAttachLessonVideo,
+  ZAttachLessonVideoParam,
   ZLessonCommentCreate,
   ZLessonCommentGetParam,
   ZLessonCommentUpdate,
@@ -45,7 +46,8 @@ import { generateLessonPdf } from '@api/utils/lesson';
 import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
 import { attachUploadedVideoToLesson } from '@cio/core/services/agent/lesson-upload-video';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
-import { handleError } from '@api/utils/errors';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
+import { describeRoute } from 'hono-openapi';
 import { lessonLanguageRouter } from '@api/routes/course/lesson-language';
 import { zValidator } from '@hono/zod-validator';
 
@@ -119,21 +121,39 @@ export const lessonRouter = new Hono()
     '/:lessonId/video',
     authOrAutomationKeyMiddleware,
     courseMemberOrAutomationKeyMiddleware(['course:write']),
-    zValidator('param', ZLessonGetParam),
+    describeRoute({
+      description:
+        "Attach a video uploaded through the video upload presign to a lesson. The lesson must be in this course and the file must belong to your organization. Attaching the same file again returns the existing entry. Automation keys need the course:write scope and the course must be in the key's organization; signed-in users must be members of the course.",
+      tags: ['Lessons'],
+      responses: {
+        200: { description: 'Video attached (or already attached)' },
+        400: { description: 'Invalid path or body' },
+        401: { description: 'Not signed in, invalid API key, or the key has no actor' },
+        403: {
+          description: 'Missing course:write scope, not a course member, or the file is not owned by your organization'
+        },
+        404: { description: 'Lesson not found in this course' }
+      }
+    }),
+    zValidator('param', ZAttachLessonVideoParam),
     zValidator('json', ZAttachLessonVideo),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
-        const actorId = c.get('actorId')!;
-        const { lessonId } = c.req.valid('param');
+        const actorId = c.get('actorId');
+        const { courseId, lessonId } = c.req.valid('param');
         const payload = c.req.valid('json');
         const automationKey = c.get('automationKey');
+
+        if (!actorId) {
+          throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
+        }
 
         if (automationKey?.type === 'mcp') {
           await assertMcpAutomationUsageAllowed(automationKey, 'attach_lesson_video');
         }
 
-        const result = await attachUploadedVideoToLesson({ orgId, actorId, lessonId, ...payload });
+        const result = await attachUploadedVideoToLesson({ orgId, actorId, courseId, lessonId, ...payload });
 
         if (automationKey?.type === 'mcp') {
           await recordMcpAutomationUsage(automationKey, 'attach_lesson_video', { lessonId });

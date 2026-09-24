@@ -58,6 +58,11 @@ Current tools:
 - `tag_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
+- `upload_image`
+- `upload_video`
+- `attach_lesson_video`
+
+The media tools need the key's `course:write` scope. `attach_lesson_video` also requires the lesson to be in the given course, the course to be in the key's organization, and the video to have been uploaded with `upload_video` by the same organization.
 
 ## Auth Model
 

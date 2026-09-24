@@ -1,5 +1,9 @@
-import { attachAssetService, createAssetFromUploadService } from '../assets/assets';
-import { getLesson, updateLessonService } from '../lesson/lesson';
+import { AppError, ErrorCodes } from '@cio/utils/errors';
+import { getAssetsByStorageKeys } from '@cio/db/queries/assets';
+import { getLessonById } from '@cio/db/queries/lesson';
+
+import { attachAssetService } from '../assets/assets';
+import { updateLessonService } from '../lesson/lesson';
 
 interface LessonVideoEntry {
   type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
@@ -14,6 +18,7 @@ interface LessonVideoEntry {
 export interface AttachUploadedVideoToLessonInput {
   orgId: string;
   actorId: string;
+  courseId: string;
   lessonId: string;
   fileKey: string;
   downloadUrl: string;
@@ -30,32 +35,32 @@ export interface AttachUploadedVideoToLessonResult {
   position: number;
 }
 
-/**
- * Attach an uploaded (already-in-storage) video to a lesson. `updateLessonService`
- * fully replaces the `videos` column on write — there's no merge at that layer —
- * so this reads the lesson's current videos and writes the whole array back with
- * the new entry appended, same as the YouTube attach path.
- */
 export async function attachUploadedVideoToLesson(
   input: AttachUploadedVideoToLessonInput
 ): Promise<AttachUploadedVideoToLessonResult> {
-  const { orgId, actorId, lessonId, fileKey, downloadUrl, fileName, fileType, fileSize } = input;
+  const { orgId, actorId, courseId, lessonId, fileKey, downloadUrl, fileName } = input;
 
-  const lesson = await getLesson(lessonId);
-  const lessonWithVideos = lesson as { id: string; title: string; videos?: LessonVideoEntry[] | null };
-  const existingVideos = lessonWithVideos.videos ?? [];
+  const lesson = await getLessonById(lessonId);
+  if (!lesson || lesson.courseId !== courseId) {
+    throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+  }
 
-  const asset = await createAssetFromUploadService(orgId, actorId, {
-    kind: 'video',
-    provider: 'upload',
-    storageProvider: 's3',
-    storageKey: fileKey,
-    sourceUrl: downloadUrl,
-    mimeType: fileType,
-    byteSize: fileSize,
-    title: fileName,
-    isExternal: false
-  });
+  const existingVideos = (lesson.videos ?? []) as LessonVideoEntry[];
+  const existingPosition = existingVideos.findIndex((video) => video.key === fileKey);
+  if (existingPosition !== -1) {
+    return {
+      lessonId,
+      lessonTitle: lesson.title,
+      assetId: existingVideos[existingPosition]!.assetId ?? '',
+      fileKey,
+      position: existingPosition
+    };
+  }
+
+  const [asset] = await getAssetsByStorageKeys(orgId, [fileKey]);
+  if (!asset) {
+    throw new AppError('This file does not belong to your organization', ErrorCodes.FORBIDDEN, 403);
+  }
 
   const position = existingVideos.length;
 
@@ -64,6 +69,9 @@ export async function attachUploadedVideoToLesson(
     targetId: lessonId,
     slotType: 'lesson_video',
     position
+  }).catch((error) => {
+    const alreadyAttached = error instanceof AppError && error.code === ErrorCodes.ASSET_ALREADY_ATTACHED;
+    if (!alreadyAttached) throw error;
   });
 
   const newVideo: LessonVideoEntry = {
@@ -82,7 +90,7 @@ export async function attachUploadedVideoToLesson(
 
   return {
     lessonId,
-    lessonTitle: lessonWithVideos.title,
+    lessonTitle: lesson.title,
     assetId: asset.id,
     fileKey,
     position

@@ -149,6 +149,11 @@ Current tools:
 - `create_course_exercise`
 - `create_course_exercise_from_template`
 - `update_course_exercise`
+- `upload_image`
+- `upload_video`
+- `attach_lesson_video`
+
+The media tools need the key's `course:write` scope. `attach_lesson_video` also requires the lesson to be in the given course, the course to be in the key's organization, and the video to have been uploaded with `upload_video` by the same organization.
 
 ## Draft Model
 

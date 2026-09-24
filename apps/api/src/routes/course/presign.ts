@@ -13,24 +13,29 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
-import { orgTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-team-member-or-automation-key';
+import { memberOrAutomationKeyMiddleware } from '@api/middlewares/member-or-automation-key';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { generateFileKey } from '@cio/core/utils/upload';
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
 import { createOrGetAssetByStorageKey, getAssetsByStorageKeys } from '@cio/db/queries/assets';
 import type { Context } from 'hono';
 
-const requireCourseWrite = orgTeamMemberOrAutomationKeyMiddleware(['course:write']);
+const requireCourseWrite = memberOrAutomationKeyMiddleware(['course:write']);
 
 const CourseWriteForbiddenResponse = {
   description:
-    "Automation key is missing the required scope, caller is not an organization admin or tutor, or (download routes only) one or more requested keys do not belong to the caller's organization"
+    "Automation key is missing the course:write scope, or (download routes, automation keys only) one or more requested keys do not belong to the key's organization"
 };
 
 export async function assertCallerOwnsDownloadKeys(c: Context, keys: string[]): Promise<Response | void> {
+  if (!c.get('automationKey')) {
+    return;
+  }
+
   const organizationId = c.get('orgId');
   if (!organizationId) {
-    return;
+    return c.json({ success: false, error: 'Automation key has no organization', code: ErrorCodes.FORBIDDEN }, 403);
   }
 
   const owned = await getAssetsByStorageKeys(organizationId, keys);
@@ -77,7 +82,7 @@ export async function registerUploadedAsset(
       storageKey: params.fileKey,
       mimeType: params.fileType,
       byteSize: params.fileSize ?? null,
-      createdByProfileId: c.get('user')?.id ?? null
+      createdByProfileId: c.get('actorId') ?? null
     });
   } catch (error) {
     console.error('Failed to register uploaded asset for ownership checks:', error);
@@ -137,24 +142,34 @@ export const presignRouter = new Hono()
     }),
     validator('json', ZCoursePresignUrlUpload),
     async (c) => {
-      const body = c.req.valid('json');
+      try {
+        const { fileName, fileType, fileSize } = c.req.valid('json');
+        const automationKey = c.get('automationKey');
 
-      const { fileName, fileType, fileSize } = body;
+        assertPresignFileSizeWithinLimit(fileSize, MAX_FILE_SIZE);
 
-      assertPresignFileSizeWithinLimit(fileSize, MAX_FILE_SIZE);
+        if (automationKey?.type === 'mcp') {
+          await assertMcpAutomationUsageAllowed(automationKey, 'upload_video');
+        }
 
-      const fileKey = generateFileKey(fileName);
+        const fileKey = generateFileKey(fileName);
+        const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
 
-      const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
+        await registerUploadedAsset(c, { fileKey, fileType, fileSize, kind: 'video' });
 
-      await registerUploadedAsset(c, { fileKey, fileType, fileSize, kind: 'video' });
+        if (automationKey?.type === 'mcp') {
+          await recordMcpAutomationUsage(automationKey, 'upload_video', { fileKey });
+        }
 
-      return c.json({
-        success: true,
-        url: presignedUrl,
-        fileKey,
-        message: 'Pre-signed URL generated successfully'
-      });
+        return c.json({
+          success: true,
+          url: presignedUrl,
+          fileKey,
+          message: 'Pre-signed URL generated successfully'
+        });
+      } catch (error) {
+        return handleError(c, error, 'Failed to generate video upload URL');
+      }
     }
   )
   .post(

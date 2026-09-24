@@ -114,6 +114,12 @@ export const ZAttachLessonVideo = z.object({
 });
 export type TAttachLessonVideo = z.infer<typeof ZAttachLessonVideo>;
 
+export const ZAttachLessonVideoParam = z.object({
+  courseId: z.string().uuid(),
+  lessonId: z.string().uuid()
+});
+export type TAttachLessonVideoParam = z.infer<typeof ZAttachLessonVideoParam>;
+
 export const ZLessonListQuery = z.object({
   sectionId: z.string().optional(),
   courseId: z.string().min(1)
