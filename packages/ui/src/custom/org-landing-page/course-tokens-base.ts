@@ -88,8 +88,8 @@ export const richTextChildren =
   ' ui:[&_h3]:mt-6 ui:[&_h3]:mb-2 ui:[&_h3]:text-xl ui:[&_h3]:font-semibold ui:[&_h3]:leading-snug' +
   ' ui:[&_h4]:mt-5 ui:[&_h4]:mb-2 ui:[&_h4]:text-lg ui:[&_h4]:font-semibold ui:[&_h4]:leading-snug' +
   ' ui:[&_ul]:my-4 ui:[&_ul]:list-disc ui:[&_ul]:pl-6' +
-  ' ui:[&_ol]:my-4 ui:[&_ol]:list-decimal ui:[&_ol]:pl-6' +
-  ' ui:[&_li]:my-1.5 ui:[&_li>p]:mb-1' +
+  ' ui:[&_ol]:my-4 ui:[&_ol]:list-decimal ui:[&_ol]:list-outside ui:[&_ol]:pl-6' +
+  ' ui:[&_ol>li]:list-item ui:[&_ul>li]:list-item ui:[&_li]:my-1.5 ui:[&_li>p]:mb-1' +
   ' ui:[&_blockquote]:my-4 ui:[&_blockquote]:border-l-4 ui:[&_blockquote]:border-[var(--landing-border)] ui:[&_blockquote]:pl-4 ui:[&_blockquote]:italic' +
   ' ui:[&_a]:text-[var(--landing-accent)] ui:[&_a]:underline ui:[&_a]:underline-offset-4' +
   ' ui:[&_strong]:font-bold ui:[&_hr]:my-6 ui:[&_hr]:border-[var(--landing-border)]';
