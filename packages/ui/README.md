@@ -170,7 +170,7 @@ Pass copy via `labels: OutlineRailActionLabels`. Render through `PublicLessonVie
 
 ### Page outline (`src/custom/page-outline/`)
 
-Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with left-border indent (`h1` / `h2` / `h3`).
+Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with indent (`h1` / `h2` / `h3`) along a dotted left rail; the active item uses the primary color.
 
 **Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Pin the rail to the **page** edge (a full-width flex sibling of the article column), not next to a centered content max-width. Put copy / share / chat links under the outline via `OutlineRailActions` (see **Public course outline rail actions**). Helpers: `injectHeadingIds(html)` rewrites `h1`–`h3` with unique ids and returns outline entries; `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
 

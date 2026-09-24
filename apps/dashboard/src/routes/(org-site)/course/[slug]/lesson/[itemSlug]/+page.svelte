@@ -56,6 +56,8 @@
   );
   const markdownUrl = $derived(`/course/${data.tree.course.slug}/lesson/${itemSlug}/markdown`);
   const publicItemUrl = $derived(`${page.url.origin}${page.url.pathname}`);
+  const publicCourseUrl = $derived(`${page.url.origin}/course/${data.tree.course.slug}`);
+  const courseShareTitle = $derived(data.tree.course.title);
   const pageTitle = $derived('title' in data.item ? data.item.title : data.tree.course.title);
   const studyChatInput = $derived({
     lessonTitle: pageTitle,
@@ -143,8 +145,8 @@
             />
           {/if}
           <PublicCourse.ShareButton
-            pageUrl={publicItemUrl}
-            {pageTitle}
+            pageUrl={publicCourseUrl}
+            pageTitle={courseShareTitle}
             labels={{
               share: $t('public_course.share.label'),
               facebook: $t('public_course.share.facebook'),
@@ -158,8 +160,8 @@
       {/snippet}
       {#snippet outlineActions()}
         <PublicCourse.OutlineRailActions
-          pageUrl={publicItemUrl}
-          {pageTitle}
+          pageUrl={publicCourseUrl}
+          pageTitle={courseShareTitle}
           markdownUrl={showCopyPage ? markdownUrl : null}
           chatgptUrl={showCopyPage ? chatgptUrl : null}
           claudeUrl={showCopyPage ? claudeUrl : null}
@@ -184,13 +186,12 @@
       tryAgainLabel={$t('public_course.exercise.try_again')}
       privacyHint={$t('public_course.exercise.privacy_hint')}
       summaryTemplate={$t('public_course.exercise.summary_template')}
-      outlineLabel={$t('public_course.outline.label')}
     >
       {#snippet titleActions()}
         <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
           <PublicCourse.ShareButton
-            pageUrl={publicItemUrl}
-            {pageTitle}
+            pageUrl={publicCourseUrl}
+            pageTitle={courseShareTitle}
             labels={{
               share: $t('public_course.share.label'),
               facebook: $t('public_course.share.facebook'),
@@ -204,8 +205,8 @@
       {/snippet}
       {#snippet outlineActions()}
         <PublicCourse.OutlineRailActions
-          pageUrl={publicItemUrl}
-          {pageTitle}
+          pageUrl={publicCourseUrl}
+          pageTitle={courseShareTitle}
           labels={railLabels}
           onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
         />
