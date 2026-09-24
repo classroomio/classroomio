@@ -186,7 +186,6 @@
       tryAgainLabel={$t('public_course.exercise.try_again')}
       privacyHint={$t('public_course.exercise.privacy_hint')}
       summaryTemplate={$t('public_course.exercise.summary_template')}
-      outlineLabel={$t('public_course.outline.label')}
     >
       {#snippet titleActions()}
         <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
