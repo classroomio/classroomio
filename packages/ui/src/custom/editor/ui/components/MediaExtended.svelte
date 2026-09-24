@@ -224,9 +224,9 @@
         <!-- Toolbar controls -->
         <div
           class={cn(
-            'ui:bg-background/80 ui:absolute ui:-top-10 ui:left-1/2 ui:z-30 ui:flex ui:-translate-x-1/2 ui:items-center ui:gap-1 ui:rounded-md ui:border ui:p-1 ui:shadow-md ui:backdrop-blur-sm ui:opacity-0 ui:transition-opacity',
+            'ui:bg-background/80 ui:absolute ui:top-2 ui:left-1/2 ui:z-menu-elevated ui:flex ui:-translate-x-1/2 ui:items-center ui:gap-1 ui:rounded-md ui:border ui:p-1 ui:shadow-md ui:backdrop-blur-sm ui:opacity-0 ui:transition-opacity',
             !resizing && 'ui:group-hover:opacity-100',
-            openedMore && 'ui:opacity-100'
+            (openedMore || selected) && 'ui:opacity-100'
           )}
         >
           <Button
