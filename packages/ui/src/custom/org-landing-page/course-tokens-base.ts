@@ -80,8 +80,19 @@ export type CourseLandingTokens = {
   pricingSavingsBadge: string;
 };
 
-/** Child selectors that make author-written rich text (paragraphs, lists) readable inside a body block. */
-export const richTextChildren = 'ui:[&_p]:mb-2 ui:[&_ul]:list-disc ui:[&_ul]:pl-5 ui:[&_li]:mb-1';
+export const richTextChildren =
+  'ui:[&>*:first-child]:mt-0 ui:[&>*:last-child]:mb-0' +
+  ' ui:[&_p]:mb-3' +
+  ' ui:[&_h1]:mt-8 ui:[&_h1]:mb-4 ui:[&_h1]:text-3xl ui:[&_h1]:font-extrabold ui:[&_h1]:leading-tight' +
+  ' ui:[&_h2]:mt-7 ui:[&_h2]:mb-3 ui:[&_h2]:text-2xl ui:[&_h2]:font-bold ui:[&_h2]:leading-tight' +
+  ' ui:[&_h3]:mt-6 ui:[&_h3]:mb-2 ui:[&_h3]:text-xl ui:[&_h3]:font-semibold ui:[&_h3]:leading-snug' +
+  ' ui:[&_h4]:mt-5 ui:[&_h4]:mb-2 ui:[&_h4]:text-lg ui:[&_h4]:font-semibold ui:[&_h4]:leading-snug' +
+  ' ui:[&_ul]:my-4 ui:[&_ul]:list-disc ui:[&_ul]:pl-6' +
+  ' ui:[&_ol]:my-4 ui:[&_ol]:list-decimal ui:[&_ol]:pl-6' +
+  ' ui:[&_li]:my-1.5 ui:[&_li>p]:mb-1' +
+  ' ui:[&_blockquote]:my-4 ui:[&_blockquote]:border-l-4 ui:[&_blockquote]:border-[var(--landing-border)] ui:[&_blockquote]:pl-4 ui:[&_blockquote]:italic' +
+  ' ui:[&_a]:text-[var(--landing-accent)] ui:[&_a]:underline ui:[&_a]:underline-offset-4' +
+  ' ui:[&_strong]:font-bold ui:[&_hr]:my-6 ui:[&_hr]:border-[var(--landing-border)]';
 
 export const baseCourseTokens: CourseLandingTokens = {
   sectionShell: 'ui:py-12 ui:md:py-14 ui:px-4',
