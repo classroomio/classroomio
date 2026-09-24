@@ -154,7 +154,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
-  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure'
+  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/courses/{courseId}/certificate': 'Get course certificate settings',
+  'PUT /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
+  'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -168,6 +171,10 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Course Certificates',
+    description: "Read and update a course's certificate design and settings, and list the students who earned it."
   }
 ];
 

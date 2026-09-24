@@ -13,7 +13,7 @@ import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progres
 
 import type { TAddCourseMembers, TCourseMembersQuery } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import type { CourseMemberWithProfile } from '@cio/db/queries/course/people';
+import type { CourseMemberWithProfile, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
@@ -82,10 +82,13 @@ export async function listCourseMembers(courseId: string) {
 /**
  * Gets one filtered page of course members for a course.
  * @param courseId Course ID
- * @param query Page, page size, search term and role filter
+ * @param query Page, page size, search term, role filter and optional earned-certificate filter
  * @returns One page of course members with profile and progress data, plus pagination totals
  */
-export async function listPaginatedCourseMembers(courseId: string, query: TCourseMembersQuery) {
+export async function listPaginatedCourseMembers(
+  courseId: string,
+  query: TCourseMembersQuery & Pick<PaginatedCourseMembersOptions, 'certificateEarned'>
+) {
   try {
     const result = await getPaginatedCourseMembers(courseId, query);
     const items = await addProgressSummaries(courseId, result.items);

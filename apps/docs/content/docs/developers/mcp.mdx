@@ -150,6 +150,19 @@ Current tools:
 - `create_course_exercise_from_template`
 - `update_course_exercise`
 
+Course certificate tools:
+
+- `get_course_certificate`
+- `update_course_certificate`
+- `list_course_certificates`
+
+Certificate tools call the public API and need the key's `public_api:*` scope. MCP keys created before this scope was added to the defaults need to be recreated. They act as the person who created the key, with the same permissions that person has in the dashboard:
+
+- Reading the certificate settings and design needs them to be a member of the course (including access through a program) or an org admin.
+- Changing the settings or design, and listing who earned the certificate, needs them to be a course tutor/admin or an org admin.
+
+`update_course_certificate` keeps any field you leave out. `design` is replaced as a whole object, so read it first and send the full design. `list_course_certificates` takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email.
+
 ## Draft Model
 
 A draft is a saved, structured course proposal. It is not the live course.

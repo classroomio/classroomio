@@ -3,6 +3,7 @@ import { ClassroomIoApiClient, ClassroomIoApiError } from './api-client';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { getConfig } from './config';
+import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseDraftTools } from './tools/course-drafts';
 
 async function main() {
@@ -14,6 +15,7 @@ async function main() {
   });
 
   registerCourseDraftTools(server, apiClient);
+  registerCourseCertificateTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

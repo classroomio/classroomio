@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import { TGroupmember, TNewGroupmember } from '@db/types';
-import { and, asc, count, eq, ilike, isNull, or } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, isNotNull, isNull, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
@@ -21,6 +21,7 @@ export interface PaginatedCourseMembersOptions {
   limit: number;
   search?: string;
   roleId?: number;
+  certificateEarned?: boolean;
 }
 
 export interface PaginatedCourseMembersResult {
@@ -79,13 +80,17 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
  */
 export async function getPaginatedCourseMembers(
   courseId: string,
-  { page, limit, search, roleId }: PaginatedCourseMembersOptions
+  { page, limit, search, roleId, certificateEarned }: PaginatedCourseMembersOptions
 ): Promise<PaginatedCourseMembersResult> {
   try {
     const conditions = [eq(schema.course.id, courseId)];
 
     if (roleId) {
       conditions.push(eq(schema.groupmember.roleId, roleId));
+    }
+
+    if (certificateEarned) {
+      conditions.push(isNotNull(schema.groupmember.certificateEarnedAt));
     }
 
     if (search) {
