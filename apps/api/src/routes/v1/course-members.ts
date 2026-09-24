@@ -20,6 +20,15 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
+const COURSE_TEAM_RULE =
+  'The automation actor (the key creator) must be a course tutor/admin or an org admin, or this fails with 403.';
+
+const badRequestResponse = { description: 'Invalid path, query, or body' };
+const unauthorizedResponse = { description: 'Missing or invalid API key, or the key has no actor' };
+const forbiddenResponse = {
+  description: 'The key lacks the public_api:* scope, or the automation actor is not a course tutor/admin or org admin'
+};
+
 const PaginationSchema = {
   type: 'object' as const,
   properties: {
@@ -54,8 +63,7 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description:
-        "List everyone with access to a course (students and tutors), with role and progress. This is a superset of GET /courses/{courseId}/students, which returns only students.",
+      description: `List everyone with access to a course (students and tutors), with role and progress. This is a superset of GET /courses/{courseId}/students, which returns only students. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
         200: {
@@ -66,8 +74,9 @@ export const v1CourseMembersRouter = new Hono()
             }
           }
         },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        400: badRequestResponse,
+        401: unauthorizedResponse,
+        403: forbiddenResponse,
         404: { description: 'Course not found' }
       }
     }),
@@ -76,9 +85,10 @@ export const v1CourseMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const query = c.req.valid('query');
-        const result = await listCourseMembersService(orgId, params, query);
+        const result = await listCourseMembersService(orgId, actorId, params, query);
 
         return c.json(
           {
@@ -101,8 +111,7 @@ export const v1CourseMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description:
-        "Grant an existing organization member access to this course. The person must already be an organization member/audience member — this does not create one. Use the invites endpoints to onboard someone new. Adding a student sends a welcome email and notifies the course's tutors; there is no opt-out for this on member add.",
+      description: `Give someone access to this course, the same as adding a member in the dashboard. A profileId must belong to someone already in your organization; to onboard someone new with an invite email, use the invites endpoints. Added tutors/admins with an email and name get a welcome email. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
         201: {
@@ -113,10 +122,11 @@ export const v1CourseMembersRouter = new Hono()
             }
           }
         },
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
-        404: { description: 'Course not found' }
+        400: badRequestResponse,
+        401: unauthorizedResponse,
+        403: forbiddenResponse,
+        404: { description: 'Course not found, or the profileId is not in your organization' },
+        409: { description: 'Already a member of this course' }
       }
     }),
     validator('param', ZPublicApiCourseParam),
@@ -124,9 +134,10 @@ export const v1CourseMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const member = await addCourseMemberService(orgId, params, payload);
+        const member = await addCourseMemberService(orgId, actorId, params, payload);
 
         return c.json(
           {
@@ -143,7 +154,7 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/:memberId',
     describeRoute({
-      description: "Get a single course member's detail",
+      description: `Get a single course member's detail. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
         200: {
@@ -154,8 +165,9 @@ export const v1CourseMembersRouter = new Hono()
             }
           }
         },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        400: badRequestResponse,
+        401: unauthorizedResponse,
+        403: forbiddenResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -163,8 +175,9 @@ export const v1CourseMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const member = await getCourseMemberService(orgId, params);
+        const member = await getCourseMemberService(orgId, actorId, params);
 
         return c.json(
           {
@@ -181,7 +194,7 @@ export const v1CourseMembersRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: "Change a course member's role",
+      description: `Change a course member's role or email. Send only the fields to change. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
         200: {
@@ -192,9 +205,9 @@ export const v1CourseMembersRouter = new Hono()
             }
           }
         },
-        400: { description: 'Invalid request body' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        400: badRequestResponse,
+        401: unauthorizedResponse,
+        403: forbiddenResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -203,9 +216,10 @@ export const v1CourseMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const member = await updateCourseMemberService(orgId, params, payload);
+        const member = await updateCourseMemberService(orgId, actorId, params, payload);
 
         return c.json(
           {
@@ -222,7 +236,7 @@ export const v1CourseMembersRouter = new Hono()
   .delete(
     '/:memberId',
     describeRoute({
-      description: "Remove someone's access to the course",
+      description: `Remove someone's access to the course. This permanently deletes the course membership; the person keeps their account and organization membership. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
         200: {
@@ -233,8 +247,9 @@ export const v1CourseMembersRouter = new Hono()
             }
           }
         },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        400: badRequestResponse,
+        401: unauthorizedResponse,
+        403: forbiddenResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -242,8 +257,9 @@ export const v1CourseMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
-        const member = await deleteCourseMemberService(orgId, params);
+        const member = await deleteCourseMemberService(orgId, actorId, params);
 
         return c.json(
           {
@@ -260,7 +276,7 @@ export const v1CourseMembersRouter = new Hono()
   .post(
     '/:memberId/reset-progress',
     describeRoute({
-      description: "Clear a student's completion progress while keeping them enrolled. Only student members can have their progress reset.",
+      description: `Clear a student's completion progress while keeping them enrolled. This cannot be undone. Only student members can have their progress reset. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
         200: {
@@ -271,9 +287,9 @@ export const v1CourseMembersRouter = new Hono()
             }
           }
         },
-        400: { description: 'Member is not a student' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        400: { description: 'Invalid path or query, or the member is not a student' },
+        401: unauthorizedResponse,
+        403: forbiddenResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -300,7 +316,7 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/:memberId/analytics',
     describeRoute({
-      description: "Fetch a student's progress and grade analytics for the course. Only student members have analytics.",
+      description: `Fetch a student's progress and grade analytics for the course. Only student members have analytics. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
         200: {
@@ -311,9 +327,9 @@ export const v1CourseMembersRouter = new Hono()
             }
           }
         },
-        400: { description: 'Member is not a student' },
-        401: { description: 'Unauthorized' },
-        403: { description: 'Forbidden' },
+        400: { description: 'Invalid path or query, or the member is not a student' },
+        401: unauthorizedResponse,
+        403: forbiddenResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -322,9 +338,10 @@ export const v1CourseMembersRouter = new Hono()
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const query = c.req.valid('query');
-        const analytics = await getCourseMemberAnalyticsService(orgId, params, query);
+        const analytics = await getCourseMemberAnalyticsService(orgId, actorId, params, query);
 
         return c.json(
           {

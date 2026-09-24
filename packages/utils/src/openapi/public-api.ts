@@ -158,7 +158,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/members': 'List course members',
   'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
   'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
-  'PUT /public-api/v1/courses/{courseId}/members/{memberId}': "Update a member's role",
+  'PUT /public-api/v1/courses/{courseId}/members/{memberId}': 'Update a course member',
   'DELETE /public-api/v1/courses/{courseId}/members/{memberId}': 'Remove a course member',
   'POST /public-api/v1/courses/{courseId}/members/{memberId}/reset-progress': 'Reset member progress',
   'GET /public-api/v1/courses/{courseId}/members/{memberId}/analytics': 'Get member analytics',

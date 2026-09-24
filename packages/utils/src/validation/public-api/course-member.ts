@@ -1,10 +1,10 @@
 import * as z from 'zod';
 
-import { ZCourseMembersQuery, ZCourseRoleId, ZUpdateCourseMember } from '../course/people';
+import { ZAddCourseMembers, ZCourseMembersQuery, ZUpdateCourseMember } from '../course/people';
 import { ZCourseUserAnalyticsQuery } from '../course/course';
+import { ZPublicApiCourseParam } from './course';
 
-export const ZPublicApiCourseMemberParam = z.object({
-  courseId: z.string().uuid(),
+export const ZPublicApiCourseMemberParam = ZPublicApiCourseParam.extend({
   memberId: z.string().uuid()
 });
 export type TPublicApiCourseMemberParam = z.infer<typeof ZPublicApiCourseMemberParam>;
@@ -12,17 +12,13 @@ export type TPublicApiCourseMemberParam = z.infer<typeof ZPublicApiCourseMemberP
 export const ZPublicApiCourseMembersQuery = ZCourseMembersQuery;
 export type TPublicApiCourseMembersQuery = z.infer<typeof ZPublicApiCourseMembersQuery>;
 
-export const ZPublicApiAddCourseMember = z
-  .object({
-    profileId: z.uuid().optional(),
-    roleId: ZCourseRoleId,
-    email: z.email().optional(),
-    name: z.string().optional()
-  })
-  .refine((data) => Boolean(data.profileId) || Boolean(data.email), {
+export const ZPublicApiAddCourseMember = ZAddCourseMembers.element.refine(
+  (data) => Boolean(data.profileId) || Boolean(data.email),
+  {
     message: 'Either profileId or email must be provided',
     path: ['profileId']
-  });
+  }
+);
 export type TPublicApiAddCourseMember = z.infer<typeof ZPublicApiAddCourseMember>;
 
 export const ZPublicApiUpdateCourseMember = ZUpdateCourseMember;

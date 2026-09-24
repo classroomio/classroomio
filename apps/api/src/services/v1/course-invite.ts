@@ -6,15 +6,20 @@ import type {
 } from '@cio/utils/validation/public-api';
 
 import { createStudentInvite, listPaginatedStudentInvites, revokeStudentInvite } from '@api/services/course/invite';
-import { assertCourseBelongsToOrganization } from '@api/services/v1/shared';
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import {
+  assertAutomationActor,
+  assertCourseBelongsToOrganization,
+  assertCourseTeamMemberOrOrgAdmin
+} from '@api/services/v1/shared';
 
 export async function listCourseInvitesService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCourseInviteParam,
   query: TPublicApiCourseInvitesQuery
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
 
   return listPaginatedStudentInvites(params.courseId, query);
 }
@@ -25,11 +30,9 @@ export async function createCourseInviteService(
   params: TPublicApiCourseInviteParam,
   payload: TPublicApiCreateCourseInvite
 ) {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
-
+  assertAutomationActor(actorId);
   await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
 
   return createStudentInvite(params.courseId, actorId, payload);
 }
@@ -39,11 +42,9 @@ export async function revokeCourseInviteService(
   actorId: string | null,
   params: TPublicApiCourseInviteRevokeParam
 ) {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
-
+  assertAutomationActor(actorId);
   await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
 
   return revokeStudentInvite(params.courseId, params.inviteId, actorId);
 }

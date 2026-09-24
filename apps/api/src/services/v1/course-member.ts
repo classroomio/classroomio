@@ -9,7 +9,7 @@ import type { TPublicApiCourseParam } from '@cio/utils/validation/public-api';
 
 import { ROLE } from '@cio/utils/constants';
 import {
-  addMember,
+  addMembers,
   deleteMember,
   listPaginatedCourseMembers,
   resetMemberCourseProgress,
@@ -17,35 +17,53 @@ import {
 } from '@api/services/course/people';
 import { getCourseMember } from '@cio/db/queries/course/people';
 import { getUserCourseAnalytics } from '@cio/core/services/course/course';
-import { assertCourseBelongsToOrganization, assertProfileBelongsToOrganization } from '@api/services/v1/shared';
+import {
+  assertAutomationActor,
+  assertCourseBelongsToOrganization,
+  assertCourseTeamMemberOrOrgAdmin,
+  assertProfileBelongsToOrganization
+} from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+
+async function assertCanManageCourseMembers(orgId: string, courseId: string, actorId: string | null) {
+  await assertCourseBelongsToOrganization(orgId, courseId);
+  await assertCourseTeamMemberOrOrgAdmin(courseId, actorId);
+}
 
 export async function listCourseMembersService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCourseParam,
   query: TPublicApiCourseMembersQuery
 ) {
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
   return listPaginatedCourseMembers(params.courseId, query);
 }
 
 export async function addCourseMemberService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCourseParam,
   payload: TPublicApiAddCourseMember
 ) {
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
   if (payload.profileId) {
     await assertProfileBelongsToOrganization(orgId, payload.profileId);
   }
 
-  return addMember(params.courseId, payload);
+  const [addedMember] = await addMembers(params.courseId, [payload]);
+
+  return addedMember;
 }
 
-export async function getCourseMemberService(orgId: string, params: TPublicApiCourseMemberParam) {
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+export async function getCourseMemberService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseMemberParam
+) {
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
   const member = await getCourseMember(params.courseId, params.memberId);
   if (!member) {
@@ -57,16 +75,21 @@ export async function getCourseMemberService(orgId: string, params: TPublicApiCo
 
 export async function updateCourseMemberService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCourseMemberParam,
   payload: TPublicApiUpdateCourseMember
 ) {
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
   return updateMember(params.courseId, params.memberId, payload);
 }
 
-export async function deleteCourseMemberService(orgId: string, params: TPublicApiCourseMemberParam) {
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+export async function deleteCourseMemberService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseMemberParam
+) {
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
   return deleteMember(params.courseId, params.memberId);
 }
@@ -76,21 +99,19 @@ export async function resetCourseMemberProgressService(
   actorId: string | null,
   params: TPublicApiCourseMemberParam
 ) {
-  if (!actorId) {
-    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
-  }
-
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+  assertAutomationActor(actorId);
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
   return resetMemberCourseProgress(params.courseId, params.memberId, actorId);
 }
 
 export async function getCourseMemberAnalyticsService(
   orgId: string,
+  actorId: string | null,
   params: TPublicApiCourseMemberParam,
   query: TPublicApiCourseMemberAnalyticsQuery
 ) {
-  await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
   const member = await getCourseMember(params.courseId, params.memberId);
   if (!member || !member.profileId) {

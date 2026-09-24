@@ -86,6 +86,8 @@ The MCP package never decides permissions.
 
 Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and require the key's `public_api:*` scope; the course draft/exercise tools above call other, internal-only endpoints and use their own granular scopes (`course_import:draft:*`, `course:read`/`write`, etc.).
 
+Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` requires that person to already be in the organization; adding someone already in the course fails with 409.
+
 ## Required Environment Variables
 
 - `CLASSROOMIO_API_URL`

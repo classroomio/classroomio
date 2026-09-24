@@ -1,14 +1,12 @@
 import * as z from 'zod';
 
 import { ZCreateCourseInvite } from '../course/invite';
+import { ZPublicApiCourseParam } from './course';
 
-export const ZPublicApiCourseInviteParam = z.object({
-  courseId: z.string().uuid()
-});
+export const ZPublicApiCourseInviteParam = ZPublicApiCourseParam;
 export type TPublicApiCourseInviteParam = z.infer<typeof ZPublicApiCourseInviteParam>;
 
-export const ZPublicApiCourseInviteRevokeParam = z.object({
-  courseId: z.string().uuid(),
+export const ZPublicApiCourseInviteRevokeParam = ZPublicApiCourseParam.extend({
   inviteId: z.string().uuid()
 });
 export type TPublicApiCourseInviteRevokeParam = z.infer<typeof ZPublicApiCourseInviteRevokeParam>;

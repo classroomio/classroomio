@@ -34,10 +34,12 @@ export const ZAddCourseMembers = z.array(
 );
 export type TAddCourseMembers = z.infer<typeof ZAddCourseMembers>;
 
-export const ZUpdateCourseMember = z.object({
-  roleId: ZCourseRoleId.optional(),
-  email: z.email().optional()
-});
+export const ZUpdateCourseMember = z
+  .object({
+    roleId: ZCourseRoleId.optional(),
+    email: z.email().optional()
+  })
+  .refine((data) => Object.keys(data).length > 0, { message: 'No fields to update' });
 export type TUpdateCourseMember = z.infer<typeof ZUpdateCourseMember>;
 
 export const ZResetCourseMemberProgressParam = z.object({
