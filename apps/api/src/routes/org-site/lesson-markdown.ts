@@ -8,11 +8,11 @@ import { zValidator } from '@hono/zod-validator';
 /**
  * Anonymous-safe Markdown export for public lessons.
  * Mounted on the org-site public course router so the bookmarkable
- * `/course/:slug/lesson/:itemSlug/markdown` dashboard proxy can fetch it
+ * `/course/:slug/lesson/:itemSlug.md` dashboard proxy can fetch it
  * without a session.
  */
 export const lessonMarkdownRouter = new Hono().get(
-  '/:courseSlug/item/:itemSlug/markdown',
+  '/:courseSlug/item/:itemSlug.md',
   zValidator('param', ZPublicCourseItemParam),
   async (c) => {
     try {
