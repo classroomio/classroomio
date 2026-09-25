@@ -25,7 +25,7 @@ export interface CourseLibraryItem {
   courseType?: string;
 }
 
-export type CourseInPathState = 'COMPLETED' | 'IN_PROGRESS' | 'LOCKED';
+export type CourseInPathState = 'COMPLETED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'LOCKED';
 
 export interface CourseInPathNode {
   title: string;
