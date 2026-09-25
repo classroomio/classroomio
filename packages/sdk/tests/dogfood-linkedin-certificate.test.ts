@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defineConfig, resolveConfig } from '@cio/sdk';
-import { linkedinCertificate } from '../../../plugins';
+import { linkedinCertificate } from '@cio/plugins';
 import { buildLinkedInCertificationUrl } from '../../../plugins/integration/linkedin-certificate/utils/linkedin-url';
 
 describe('Dogfood: LinkedIn Certificate Integration Plugin', () => {

@@ -6,7 +6,7 @@ import {
   CERTIFICATE_TEMPLATES,
   registerCertificateTemplates
 } from '@cio/certificates';
-import { modernGoldCertificate } from '../../../plugins';
+import { modernGoldCertificate } from '@cio/plugins';
 
 function resolveAndRegisterModernGold() {
   const config = defineConfig({

@@ -65,69 +65,6 @@ function aggregateSlots(plugins: PluginDefinition[]): Partial<Record<SlotName, P
   return slots;
 }
 
-/** Merges plugin route maps, last-write-wins on key collisions. */
-function aggregateRoutes(plugins: PluginDefinition[]): Record<string, any> {
-  const routes: Record<string, any> = {};
-
-  for (const plugin of plugins) {
-    if (plugin.routes) {
-      Object.assign(routes, plugin.routes);
-    }
-  }
-
-  return routes;
-}
-
-/** Merges plugin entities into a dictionary, rejecting name collisions. */
-function aggregateEntities(
-  plugins: PluginDefinition[],
-  topLevelEntities: ClassroomIOConfig['entities'] = []
-): Record<string, any> {
-  const entities: Record<string, any> = {};
-
-  for (const entity of topLevelEntities ?? []) {
-    entities[entity.name] = entity;
-  }
-
-  for (const plugin of plugins) {
-    if (!plugin.entities) continue;
-
-    for (const entity of plugin.entities) {
-      if (entities[entity.name]) {
-        throw new Error(`Entity name collision: entity "${entity.name}" is declared multiple times across plugins.`);
-      }
-      entities[entity.name] = entity;
-    }
-  }
-
-  return entities;
-}
-
-/** Merges plugin activities into a dictionary, rejecting key collisions. */
-function aggregateActivities(
-  plugins: PluginDefinition[],
-  topLevelActivities: ClassroomIOConfig['activities'] = []
-): Record<string, any> {
-  const activities: Record<string, any> = {};
-
-  for (const act of topLevelActivities ?? []) {
-    activities[act.key] = act;
-  }
-
-  for (const plugin of plugins) {
-    if (!plugin.activities) continue;
-
-    for (const act of plugin.activities) {
-      if (activities[act.key]) {
-        throw new Error(`Activity key collision: activity "${act.key}" is declared multiple times across plugins.`);
-      }
-      activities[act.key] = act;
-    }
-  }
-
-  return activities;
-}
-
 /** Merges declarative certificate templates, rejecting plugin collisions. */
 function aggregateCertificateTemplates(plugins: PluginDefinition[]): Record<string, CertificateTemplateDefinition> {
   const templates: Record<string, CertificateTemplateDefinition> = {};
@@ -153,9 +90,7 @@ function aggregateCertificateTemplates(plugins: PluginDefinition[]): Record<stri
 
 /**
  * Resolves a ClassroomIO configuration object by merging with system defaults
- * and aggregating plugin registrations (nav, routes, slots, entities, activities).
- *
- * Also enforces structural constraints (C-10: privacy required for data-storing plugins).
+ * and aggregating plugin registrations (navigation, slots, and certificate templates).
  */
 export function resolveConfig(config: ClassroomIOConfig = {}): ResolvedConfig {
   const plugins = config.plugins ?? [];
@@ -173,16 +108,6 @@ export function resolveConfig(config: ClassroomIOConfig = {}): ResolvedConfig {
     pluginIds.add(plugin.id);
   }
 
-  // C-10: any plugin that declares entities must also declare a privacy manifest.
-  for (const plugin of plugins) {
-    if (plugin.entities && plugin.entities.length > 0 && !plugin.privacy) {
-      throw new Error(
-        `[ClassroomIO SDK] Plugin "${plugin.id}" declares entities but has no privacy manifest. ` +
-          `Add a privacy block with onDeleteUser and onExportUser to comply with C-10 (GDPR requirement).`
-      );
-    }
-  }
-
   const pluginNav = aggregateNav(plugins);
 
   return {
@@ -195,10 +120,7 @@ export function resolveConfig(config: ClassroomIOConfig = {}): ResolvedConfig {
     },
     terminology: { ...(config.terminology ?? {}) },
     plugins,
-    routes: aggregateRoutes(plugins),
     slots: aggregateSlots(plugins),
-    entities: aggregateEntities(plugins, config.entities),
-    activities: aggregateActivities(plugins, config.activities),
     certificateTemplates: aggregateCertificateTemplates(plugins)
   };
 }

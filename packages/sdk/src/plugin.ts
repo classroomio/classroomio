@@ -1,15 +1,6 @@
 import { z } from 'zod';
-import { isDefinedActivityType } from './activity';
 import { isDefinedCertificateTemplate } from './certificate';
-import { isDefinedEntity } from './entity';
-import {
-  HOOK_NAMES,
-  PERMISSION_SCOPES,
-  PLUGIN_CATEGORIES,
-  SLOT_NAMES,
-  type PluginComponentLoader,
-  type PluginDefinition
-} from './types';
+import { PLUGIN_CATEGORIES, SLOT_NAMES, type PluginComponentLoader, type PluginDefinition } from './types';
 
 const pluginIdPattern = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)+$/;
 const semverPattern =
@@ -21,6 +12,18 @@ const componentLoaderSchema = z.custom<PluginComponentLoader>((value: unknown) =
   message: 'Plugin UI registrations must be dynamic import loader functions.'
 });
 
+const pluginActivationSchema = z.union([
+  z.object({
+    kind: z.literal('always')
+  }),
+  z.object({
+    kind: z.literal('org-capability'),
+    capabilityId: z.string().trim().min(1),
+    nameKey: z.string().trim().min(1),
+    descriptionKey: z.string().trim().min(1)
+  })
+]);
+
 const pluginSchema = z
   .object({
     id: z.string().min(1),
@@ -28,48 +31,46 @@ const pluginSchema = z
     version: z.string().regex(semverPattern, 'Plugin version must be valid semver.'),
     category: z.enum(PLUGIN_CATEGORIES),
     description: z.string().trim().min(1),
-    permissions: z.array(z.enum(PERMISSION_SCOPES)).optional(),
-    nav: z
+    activation: pluginActivationSchema.optional(),
+    pluginNav: z
       .object({
-        add: z.array(z.custom<NonNullable<NonNullable<PluginDefinition['nav']>['add']>[number]>()).optional()
+        titleKey: z.string().trim().min(1, 'pluginNav.titleKey must be a non-empty string.'),
+        path: z
+          .string()
+          .trim()
+          .min(1, 'pluginNav.path must be a non-empty string.')
+          .regex(/^[a-z0-9-]+$/, 'pluginNav.path must be lowercase alphanumeric with hyphens only.'),
+        icon: z.string().trim().min(1, 'pluginNav.icon must be a non-empty icon name string.'),
+        manageLabelKey: z.string().trim().min(1).optional(),
+        group: z.enum(['main', 'tools', 'bottom']).optional(),
+        adminOnly: z.boolean().optional()
       })
       .optional(),
-    routes: z.record(z.string(), z.unknown()).optional(),
+    nav: z
+      .object({
+        remove: z.array(z.string()).optional(),
+        rename: z.record(z.string(), z.string()).optional(),
+        add: z
+          .array(
+            z.object({
+              key: z.string().trim().min(1),
+              title: z.string().trim().min(1),
+              path: z.string().trim().min(1),
+              group: z.string().nullable().optional(),
+              icon: z.any().optional()
+            })
+          )
+          .optional()
+      })
+      .optional(),
+    routes: z.record(z.string(), componentLoaderSchema).optional(),
     slots: z.record(z.string(), z.union([componentLoaderSchema, z.array(componentLoaderSchema).min(1)])).optional(),
-    on: z
-      .record(
-        z.string(),
-        z.custom((value: unknown) => typeof value === 'function')
-      )
-      .optional(),
-    entities: z
-      .array(
-        z.custom(isDefinedEntity, {
-          message: 'Plugin entities must be created with defineEntity().'
-        })
-      )
-      .optional(),
-    activities: z
-      .array(
-        z.custom(isDefinedActivityType, {
-          message: 'Plugin activities must be created with defineActivityType().'
-        })
-      )
-      .optional(),
     certificateTemplates: z
       .array(
         z.custom(isDefinedCertificateTemplate, {
           message: 'Plugin certificate templates must be created with defineCertificateTemplate().'
         })
       )
-      .optional(),
-    privacy: z
-      .object({
-        description: z.string().trim().min(1),
-        storesPersonalData: z.boolean(),
-        onDeleteUser: z.custom((value: unknown) => typeof value === 'function'),
-        onExportUser: z.custom((value: unknown) => typeof value === 'function')
-      })
       .optional()
   })
   .strict();
@@ -110,12 +111,6 @@ export function definePlugin(definition: PluginDefinition): PluginDefinition {
   for (const slotName of Object.keys(result.data.slots ?? {})) {
     if (!SLOT_NAMES.includes(slotName as (typeof SLOT_NAMES)[number])) {
       throw new Error(`[ClassroomIO SDK] Unknown plugin slot "${slotName}" in plugin "${result.data.id}".`);
-    }
-  }
-
-  for (const hookName of Object.keys(result.data.on ?? {})) {
-    if (!HOOK_NAMES.includes(hookName as (typeof HOOK_NAMES)[number])) {
-      throw new Error(`[ClassroomIO SDK] Unknown plugin hook "${hookName}" in plugin "${result.data.id}".`);
     }
   }
 

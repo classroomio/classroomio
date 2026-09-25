@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { defineConfig, defineEntity, definePlugin, resolveConfig, type PluginDefinition } from '@cio/sdk';
+import { defineConfig, definePlugin, resolveConfig, type PluginDefinition } from '@cio/sdk';
 
-const MockPageComponent = vi.fn();
 const MockWidgetComponent = vi.fn();
 const loadWidget = vi.fn(async () => ({ default: MockWidgetComponent as any }));
 
@@ -65,43 +64,47 @@ describe('definePlugin manifest validation', () => {
     expect(() => definePlugin(definition as unknown as PluginDefinition)).toThrow(/manifest/i);
   });
 
-  it('rejects undeclared hooks, slots, and permissions at runtime', () => {
-    expect(() =>
-      definePlugin({
-        ...validPlugin(),
-        on: { 'lesson.finished': vi.fn() }
-      } as unknown as PluginDefinition)
-    ).toThrow(/hook/i);
-
+  it('rejects undeclared slots at runtime', () => {
     expect(() =>
       definePlugin({
         ...validPlugin(),
         slots: { 'lesson.unknown': loadWidget }
       } as unknown as PluginDefinition)
     ).toThrow(/slot/i);
-
-    expect(() =>
-      definePlugin({
-        ...validPlugin(),
-        permissions: ['database:admin']
-      } as unknown as PluginDefinition)
-    ).toThrow(/permissions/i);
   });
 
-  it('requires activities and entities to use their definition helpers', () => {
+  it('rejects unsupported manifest fields', () => {
     expect(() =>
       definePlugin({
-        ...validPlugin({ id: 'activity_test', category: 'activity' }),
-        activities: [{ key: 'raw', label: 'Raw', renderers: {} }]
+        ...validPlugin(),
+        permissions: ['data:own']
       } as unknown as PluginDefinition)
-    ).toThrow(/defineActivityType/i);
+    ).toThrow(/unrecognized key/i);
+  });
+
+  it('validates pluginNav options correctly', () => {
+    const valid = definePlugin({
+      ...validPlugin(),
+      pluginNav: {
+        titleKey: 'nav.title',
+        path: 'valid-path-123',
+        icon: 'award',
+        group: 'tools',
+        adminOnly: true
+      }
+    });
+    expect(valid.pluginNav?.path).toBe('valid-path-123');
 
     expect(() =>
       definePlugin({
         ...validPlugin(),
-        entities: [{ name: 'raw', schema: { scope: ['org'], fields: {} } }]
-      } as unknown as PluginDefinition)
-    ).toThrow(/defineEntity/i);
+        pluginNav: {
+          titleKey: 'nav.title',
+          path: 'Invalid Path with Spaces',
+          icon: 'award'
+        }
+      })
+    ).toThrow(/lowercase alphanumeric with hyphens/i);
   });
 });
 
@@ -117,30 +120,18 @@ describe('resolveConfig plugin integration', () => {
     expect(() => resolveConfig(defineConfig({ plugins: [first, second] }))).toThrow(/more than once/i);
   });
 
-  it('aggregates nav, routes, and lazy slot loaders', () => {
+  it('keeps plugin-owned routes scoped to the plugin and aggregates lazy slot loaders', () => {
+    const loadPage = vi.fn(async () => ({ default: vi.fn() as any }));
     const plugin = definePlugin({
       ...validPlugin(),
       nav: { add: [{ key: 'page-a', title: 'Page A', path: '/page-a' }] },
-      routes: { '/page-a': MockPageComponent },
+      routes: { '/page-a': loadPage },
       slots: { 'lesson.sidebar': loadWidget }
     });
     const resolved = resolveConfig(defineConfig({ plugins: [plugin] }));
 
     expect(resolved.nav.add.map((item) => item.key)).toContain('page-a');
-    expect(resolved.routes['/page-a']).toBe(MockPageComponent);
+    expect(resolved.plugins[0].routes?.['/page-a']).toBe(loadPage);
     expect(resolved.slots['lesson.sidebar']).toContain(loadWidget);
-  });
-
-  it('requires a privacy manifest when a plugin declares entities', () => {
-    const points = defineEntity('xp_points', {
-      scope: ['org', 'user'],
-      fields: { points: { type: 'int', default: 0 } }
-    });
-    const plugin = definePlugin({
-      ...validPlugin({ id: 'integration_xp', category: 'integration' }),
-      entities: [points]
-    });
-
-    expect(() => resolveConfig(defineConfig({ plugins: [plugin] }))).toThrow(/privacy/i);
   });
 });

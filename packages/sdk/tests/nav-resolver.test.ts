@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { applyNavConfig } from '@cio/sdk';
-import type { NavGroup } from '@cio/sdk';
+import { applyNavConfig, resolveDynamicPluginNav } from '@cio/sdk';
+import type { NavGroup, PluginDefinition } from '@cio/sdk';
 
 const BASE_NAV: NavGroup[] = [
   {
@@ -126,5 +126,82 @@ describe('applyNavConfig — composition', () => {
     const original = JSON.parse(JSON.stringify(BASE_NAV));
     applyNavConfig(BASE_NAV, { remove: ['community'], rename: { courses: 'Modules' }, add: [] });
     expect(BASE_NAV).toStrictEqual(original);
+  });
+});
+
+describe('resolveDynamicPluginNav', () => {
+  const plugins: PluginDefinition[] = [
+    {
+      id: 'certificate_studio',
+      name: 'Certificate Studio',
+      version: '1.0.0',
+      category: 'certificate',
+      description: 'Studio',
+      activation: {
+        kind: 'org-capability',
+        capabilityId: 'certificate_studio',
+        nameKey: 'plugins.certificate_studio.name',
+        descriptionKey: 'plugins.certificate_studio.description'
+      },
+      pluginNav: {
+        titleKey: 'certificate_studio.title',
+        path: 'certificate-studio',
+        icon: 'award',
+        group: 'tools',
+        adminOnly: true
+      }
+    },
+    {
+      id: 'integration_always',
+      name: 'Always Plugin',
+      version: '1.0.0',
+      category: 'integration',
+      description: 'Always on',
+      activation: { kind: 'always' },
+      pluginNav: {
+        titleKey: 'always.title',
+        path: 'always-active',
+        icon: 'puzzle',
+        group: 'main'
+      }
+    },
+    {
+      id: 'integration_no_nav',
+      name: 'No Nav Plugin',
+      version: '1.0.0',
+      category: 'integration',
+      description: 'No nav',
+      activation: { kind: 'always' }
+    }
+  ];
+
+  it('includes always-active plugins regardless of enabledCapabilityIds', () => {
+    const result = resolveDynamicPluginNav(plugins, 'acme-org', new Set());
+    expect(result).toHaveLength(1);
+    expect(result[0].pluginId).toBe('integration_always');
+    expect(result[0].href).toBe('/org/acme-org/plugins/always-active');
+    expect(result[0].group).toBe('main');
+    expect(result[0].adminOnly).toBe(false);
+  });
+
+  it('includes capability-gated plugin when capability is enabled', () => {
+    const result = resolveDynamicPluginNav(plugins, 'acme-org', new Set(['certificate_studio']));
+    expect(result).toHaveLength(2);
+    const studioItem = result.find((item) => item.pluginId === 'certificate_studio');
+    expect(studioItem).toBeDefined();
+    expect(studioItem?.href).toBe('/org/acme-org/plugins/certificate-studio');
+    expect(studioItem?.group).toBe('tools');
+    expect(studioItem?.adminOnly).toBe(true);
+    expect(studioItem?.icon).toBe('award');
+  });
+
+  it('excludes capability-gated plugin when capability is disabled', () => {
+    const result = resolveDynamicPluginNav(plugins, 'acme-org', new Set(['other_capability']));
+    expect(result.some((item) => item.pluginId === 'certificate_studio')).toBe(false);
+  });
+
+  it('ignores plugins that do not define pluginNav', () => {
+    const result = resolveDynamicPluginNav(plugins, 'acme-org', new Set(['certificate_studio']));
+    expect(result.some((item) => item.pluginId === 'integration_no_nav')).toBe(false);
   });
 });
