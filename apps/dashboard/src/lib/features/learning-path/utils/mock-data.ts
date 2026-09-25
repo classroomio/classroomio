@@ -1103,14 +1103,25 @@ export function findCourseInEnrolledMockPath(
     return null;
   }
 
+  const paths = getMockPathsForUser();
   const normalizedTitle = courseTitle?.trim().toLowerCase() ?? '';
 
-  for (const path of getMockPathsForUser()) {
-    const courseIndex = path.courses.findIndex(
-      (course) =>
-        (Boolean(courseId) && course.id === courseId) ||
-        (normalizedTitle.length > 0 && course.title.trim().toLowerCase() === normalizedTitle)
-    );
+  if (courseId) {
+    for (const path of paths) {
+      const courseIndex = path.courses.findIndex((course) => course.id === courseId);
+
+      if (courseIndex >= 0) {
+        return { path, courseIndex };
+      }
+    }
+  }
+
+  if (!normalizedTitle) {
+    return null;
+  }
+
+  for (const path of paths) {
+    const courseIndex = path.courses.findIndex((course) => course.title.trim().toLowerCase() === normalizedTitle);
 
     if (courseIndex >= 0) {
       return { path, courseIndex };
