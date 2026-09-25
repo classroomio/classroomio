@@ -1,4 +1,4 @@
-# Course Editor Redesign PRD
+# Lesson Editor Redesign PRD
 
 ## Purpose
 
@@ -700,7 +700,7 @@ The implemented editor may differ from the intended layout, interactions, spacin
 **Mitigation:**
 A prototype will be provided alongside this PRD in:
 
-`prototypes/course-editor-redesign/`
+`prototypes/lesson-editor-redesign/`
 
 The prototype should cover:
 
@@ -762,7 +762,7 @@ Test all content components together and verify that existing add/edit modals an
 
 # Status
 
-This PRD defines the scope, information architecture, interaction model, existing behavior to preserve, and implementation direction for the course editor redesign.
+This PRD defines the scope, information architecture, interaction model, existing behavior to preserve, and implementation direction for the lesson editor redesign.
 
 **Core decision:** The lesson becomes one editable canvas instead of four separate content tabs. Settings becomes a right-side slider, and Preview becomes an in-page toggle using the existing learner rendering path.
 
