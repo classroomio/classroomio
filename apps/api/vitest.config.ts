@@ -12,6 +12,8 @@ export default defineConfig({
       { find: /^@cio\/core\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/src') + '/$1' },
       { find: /^@cio\/core$/, replacement: path.resolve(__dirname, '../../packages/core/src/index.ts') },
       { find: /^@cio\/db\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/db/src') + '/$1' },
+      { find: /^@cio\/sdk$/, replacement: path.resolve(__dirname, '../../packages/sdk/src/index.ts') },
+      { find: /^@cio\/plugins$/, replacement: path.resolve(__dirname, '../../plugins/index.ts') },
       // `@cio/db` sources refer to themselves through this alias.
       { find: /^@db\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/db/src') + '/$1' }
     ]

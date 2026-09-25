@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { definePlugin } from '@cio/sdk';
+import { definePlugin, defineCertificateTemplate } from '@cio/sdk';
 import { initializePluginRuntime } from '@api/services/plugin/runtime';
-import { getCertificateTemplate } from '@cio/certificates';
+import { CERTIFICATE_TEMPLATES } from '@cio/certificates';
 
 describe('API plugin runtime bootstrap', () => {
   it('registers configured certificate templates from plugins', () => {
@@ -12,16 +12,18 @@ describe('API plugin runtime bootstrap', () => {
       category: 'certificate',
       description: 'Verifies API plugin bootstrap.',
       certificateTemplates: [
-        {
+        defineCertificateTemplate({
           id: 'runtime_test_template',
           label: 'Runtime Test Template',
-          renderHtml: () => '<div>Test</div>'
-        }
+          description: 'A test template for runtime registration',
+          body: '<div>Test</div>',
+          styles: '.test { color: red; }'
+        })
       ]
     });
 
     initializePluginRuntime([plugin]);
-    const template = getCertificateTemplate('runtime_test_template');
+    const template = CERTIFICATE_TEMPLATES.find((t) => t.id === 'runtime_test_template');
 
     expect(template).toBeDefined();
     expect(template?.label).toBe('Runtime Test Template');

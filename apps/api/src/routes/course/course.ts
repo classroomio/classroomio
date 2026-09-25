@@ -18,6 +18,7 @@ import {
   ZCourseUpdateParam
 } from '@cio/utils/validation/course';
 import { ZCourseTagAssignment, ZCourseTagParam } from '@cio/utils/validation/tag';
+import { ZApplyCertificatePreset } from '@cio/utils/validation/plugins';
 import {
   createCourse,
   deleteCourse,
@@ -27,6 +28,7 @@ import {
   updateCourse
 } from '@cio/core/services/course/course';
 import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@api/services/course/completion';
+import { applyCertificatePresetToCourseService } from '@api/services/course/certificate-preset';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
 import { Hono } from '@api/utils/hono';
@@ -562,6 +564,37 @@ export const courseRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to download certificate image');
+      }
+    }
+  )
+  /**
+   * POST /course/:courseId/certificate/apply-preset
+   * Applies an organization certificate preset to the course as a design snapshot.
+   */
+  .post(
+    '/:courseId/certificate/apply-preset',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZCourseUpdateParam),
+    zValidator('json', ZApplyCertificatePreset),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const { presetId } = c.req.valid('json');
+        const orgId = c.get('orgId') || c.req.header('cio-org-id')!;
+
+        const result = await applyCertificatePresetToCourseService(orgId, courseId, presetId);
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to apply certificate preset');
       }
     }
   )
