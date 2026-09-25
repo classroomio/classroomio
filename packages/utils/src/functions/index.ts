@@ -1,4 +1,5 @@
 export * from './array';
+export * from './certificate-id';
 export * from './membership';
 export * from './compliance-deadline';
 export * from './course-enrollment';

@@ -36,11 +36,11 @@
       badge: path.courses ? path.courses.length : 0
     },
     {
-      id: 'people',
-      label: $t('learningPath.workspace.tabs.people'),
-      href: `${basePath}/people`,
-      isActive: currentPath.startsWith(`${basePath}/people`),
-      icon: PeopleIcon
+      id: 'certificate',
+      label: $t('learningPath.workspace.tabs.certificate'),
+      href: `${basePath}/certificates`,
+      isActive: currentPath.startsWith(`${basePath}/certificates`),
+      icon: CertificateIcon
     },
     {
       id: 'analytics',
@@ -57,11 +57,11 @@
       icon: LandingPageIcon
     },
     {
-      id: 'certificate',
-      label: $t('learningPath.workspace.tabs.certificate'),
-      href: `${basePath}/certificates`,
-      isActive: currentPath.startsWith(`${basePath}/certificates`),
-      icon: CertificateIcon
+      id: 'people',
+      label: $t('learningPath.workspace.tabs.people'),
+      href: `${basePath}/people`,
+      isActive: currentPath.startsWith(`${basePath}/people`),
+      icon: PeopleIcon
     },
     {
       id: 'settings',

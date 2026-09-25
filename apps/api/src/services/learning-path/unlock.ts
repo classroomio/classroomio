@@ -14,6 +14,7 @@ import {
   upsertMemberCourseProgress
 } from '@cio/db/queries/learning-path';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { getOrganizationById } from '@cio/db/queries/organization';
 import type { TLearningPath } from '@cio/db/types';
 
 import { resolveLearningPath } from './learning-path';
@@ -134,14 +135,15 @@ export async function evaluatePathCompletion(
     }
 
     let certificateId: string | null = null;
-    if (path.certificateEnabled) {
+    if (path.certificate?.isDownloadable) {
       const existingCert = await getLearningPathCertificate(member.id, dbClient);
       if (existingCert) {
         certificateId = existingCert.certificateId;
       } else {
-        const certificateTitle = path.certificateTitle || path.name;
-        const certificateIssuer = path.certificateIssuer;
-        const idFormat = path.certificateDesign?.idFormat;
+        const organization = await getOrganizationById(path.organizationId, dbClient);
+        const certificateTitle = path.name;
+        const certificateIssuer = organization?.name ?? '';
+        const idFormat = path.certificate?.design?.idFormat;
 
         const cert = await issueLearningPathCertificate(
           {
@@ -221,7 +223,7 @@ export async function assertCourseNotLockedForStudent(
 
   // 3. Standalone grant bypass: if student has a non-learning-path grant, allow access
   const activeGrants = await getActiveGrantsForCourseAndProfile(courseId, profileId, dbClient);
-  const hasStandaloneGrant = activeGrants.some((g) => g.source !== 'LEARNING_PATH');
+  const hasStandaloneGrant = activeGrants.some((grant) => grant.source !== 'LEARNING_PATH');
   if (hasStandaloneGrant) {
     return;
   }

@@ -12,7 +12,30 @@
     },
     "discard": "Отменить",
     "save_changes": "Сохранить изменения",
-    "scroll_to_top": "Прокрутить вверх"
+    "scroll_to_top": "Прокрутить вверх",
+    "add": "Добавить",
+    "remove": "Удалить",
+    "back": "Назад",
+    "close": "Close",
+    "edit": "Edit",
+    "coming_soon": "Coming soon",
+    "pricing": {
+      "enable_paid": "Включить платную",
+      "yes": "Да",
+      "no": "Нет",
+      "currency": "Валюта",
+      "cost": "Стоимость",
+      "payment_link": "Payment Link",
+      "payment_required": "Payment link is required",
+      "payment_invalid_url": "Please enter a valid URL",
+      "discount": "Скидка",
+      "show_discount": "Show discount",
+      "discount_percentage": "Discount percentage",
+      "reward": "Reward / Gift",
+      "reward_help": "Offer learners an incentive upon completion",
+      "reward_description": "Reward description",
+      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+    }
   },
   "validations": {
     "generic": {
@@ -1301,7 +1324,12 @@
           "signature_upload_hint": "Загрузите изображение подписи (необязательно)",
           "signature_dont_crop": "Не обрезать",
           "signature_upload_in_progress": "Прежде чем сохранять, дождитесь завершения загрузки подписи.",
-          "save_failed": "Не удалось сохранить дизайн сертификата. Проверьте форму и повторите попытку."
+          "save_failed": "Не удалось сохранить дизайн сертификата. Проверьте форму и повторите попытку.",
+          "signatory_one": "Подписант 1",
+          "signatory_two": "Подписант 2",
+          "signatory_name": "Имя подписанта",
+          "signatory_role": "Роль подписанта",
+          "signature_image": "Изображение подписи"
         }
       },
       "people": {
@@ -5496,7 +5524,7 @@
         "people": "Люди",
         "analytics": "Аналитика",
         "landing": "Целевая страница",
-        "certificate": "Сертификат",
+        "certificate": "Сертификаты",
         "settings": "Настройки",
         "setup": "Настраивать"
       },
@@ -5557,7 +5585,9 @@
       "remove_course": "Удалить из пути",
       "add_course_button": "Добавить курс в путь",
       "empty_title": "На этом пути обучения пока нет курсов",
-      "empty_description": "Добавьте курсы, чтобы помочь учащимся пройти структурированную последовательность. Начните с нажатия кнопки «Добавить»."
+      "empty_description": "Добавьте курсы, чтобы помочь учащимся пройти структурированную последовательность. Начните с нажатия кнопки «Добавить».",
+      "start_reorder": "Изменить порядок",
+      "end_reorder": "Завершить изменение порядка"
     },
     "listing": {
       "title": "Учебные пути",
@@ -5611,7 +5641,8 @@
       "open": "Открыть",
       "share": "Поделиться",
       "invite": "Пригласить",
-      "delete": "Удалить"
+      "delete": "Удалить",
+      "view_as_student": "View as student"
     },
     "card": {
       "actions_menu_aria": "Действия пути",
@@ -5632,7 +5663,11 @@
       "member_removed": "Учащийся удален из пути",
       "tutors_added": "Репетиторы добавлены в путь",
       "tutor_added": "Тьютор добавлен в траекторию",
-      "tutor_removed": "Тьютор удалён из траектории"
+      "tutor_removed": "Тьютор удалён из траектории",
+      "certificate_saved": "Настройки сертификата сохранены",
+      "landing_saved": "Целевая страница обновлена",
+      "link_generated": "Invite link generated and copied to clipboard",
+      "settings_saved": "Learning path settings updated"
     },
     "analytics": {
       "title": "Аналитика",
@@ -5737,7 +5772,302 @@
         "in_progress": "В процессе",
         "completed": "Завершено"
       },
-      "info_title": "О регистрации пути"
+      "info_title": "О регистрации пути",
+      "add": "Add",
+      "last_login_at": "Last login at",
+      "you": "You",
+      "view": "View",
+      "delete_profile": "Remove",
+      "invite_modal": {
+        "loading": "Adding…",
+        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "invite": "Пригласить репетиторов",
+        "invite_students": "Пригласить студентов",
+        "finish": "Готово"
+      }
+    },
+    "certificate": {
+      "title": "Сертификаты",
+      "awarded_count": "{count, plural, =0 {Сертификаты пока не выданы} =1 {На данный момент выдан 1 сертификат} other {На данный момент выдано # сертификатов}}",
+      "allow": "Разрешить студентам скачать сертификат",
+      "email_message_label": "Сообщение электронной почты",
+      "email_message_placeholder": "например, Поздравляем с завершением пути обучения!",
+      "editor": {
+        "title": "Дизайн сертификата"
+      }
+    },
+    "landing": {
+      "page_builder": "Конструктор страниц",
+      "display_section": "Отображать раздел",
+      "hero": {
+        "title": "Главный баннер",
+        "headline": "Заголовок",
+        "headline_placeholder": "например, Станьте ведущим fullstack-разработчиком",
+        "subheadline": "Подзаголовок",
+        "subheadline_placeholder": "например, Освойте современный frontend, backend и deployment на реальных проектах."
+      },
+      "access": {
+        "title": "Доступ для посетителей",
+        "description": "Определяет объем контента, доступного незарегистрированным посетителям.",
+        "teaser_title": "Тизер",
+        "teaser_desc": "Показывать только названия курсов и ключевые результаты.",
+        "syllabus_title": "Учебная программа (рекомендуется)",
+        "syllabus_desc": "Показывать полную программу с названиями уроков и значками блокировки.",
+        "preview_title": "Предпросмотр",
+        "preview_desc": "Разрешить посетителям просматривать первый урок каждого курса без регистрации."
+      },
+      "skills": {
+        "title": "Навыки",
+        "placeholder": "например, TypeScript, Docker, PostgreSQL",
+        "help": "Press Enter to add. These appear as chips on your landing page."
+      },
+      "instructors": {
+        "title": "Преподаватели",
+        "auto_populated_note": "Преподаватели автоматически собираются из курсов этого пути.",
+        "courses_note": "{count, plural, =0 {Курсы пока не добавлены} =1 {Взято из 1 курса этого пути} other {Взято из всех # курсов этого пути}}",
+        "role_placeholder": "e.g. Lead Instructor · Frontend",
+        "default_role": "Course Instructor",
+        "untitled": "Untitled instructor",
+        "add": "Add instructor",
+        "no_tutors_found": "No instructors found",
+        "min_one_required": "At least one instructor is required",
+        "remove": "Remove instructor",
+        "upload": "Instructor Logo",
+        "name": "Instructor name",
+        "name_placeholder": "Your company name",
+        "role": "Instructor Role",
+        "about": "About Instructor",
+        "about_placeholder": "A short background about the instructor",
+        "total": "No of courses"
+      },
+      "testimonials": {
+        "title": "Отзывы",
+        "untitled": "Отзыв без названия",
+        "name": "Имя",
+        "role": "Роль / Должность",
+        "quote": "Цитата",
+        "add": "Добавить отзыв"
+      },
+      "faqs": {
+        "title": "Часто задаваемые вопросы",
+        "untitled": "Вопрос без названия",
+        "question": "Вопрос",
+        "answer": "Ответ",
+        "add": "Добавить вопрос",
+        "question_placeholder": "What is required to complete this path?",
+        "answer_placeholder": "You must complete all lessons and exercises in every course."
+      },
+      "header": {
+        "title_placeholder": "e.g. Fullstack Web Development",
+        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
+        "title": "Header",
+        "title_label": "Title",
+        "description_label": "Description"
+      },
+      "reviews": {
+        "title": "Reviews",
+        "untitled": "Untitled review",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "Avatar image URL",
+        "rating_placeholder": "Optional (1-5)",
+        "clear_rating": "Clear rating",
+        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
+        "add_reviews": "Add Reviews",
+        "fullname": "Full Name",
+        "description": "Description",
+        "rating": "Rating"
+      },
+      "preview": "Preview",
+      "save": "Save",
+      "requirement": {
+        "title": "Requirement"
+      },
+      "description": {
+        "title": "Description"
+      },
+      "goals": {
+        "title": "Goals"
+      },
+      "certificate": {
+        "title": "Certificate",
+        "upload_template": "Certificate template"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "payment_required": "Payment link is required",
+        "payment_invalid_url": "Please enter a valid URL",
+        "enable_paid": "Включить платную",
+        "currency": "Валюта",
+        "cost": "Стоимость",
+        "payment": "Платежная ссылка",
+        "payment_helper": "Stripe, Lemon Squeezy или любая ссылка для оплаты.",
+        "discount": "Скидка",
+        "no": "Нет",
+        "yes": "Да",
+        "percent": "Процент скидки",
+        "percentage_helper": "В процентах %",
+        "gift_on_completion": "Подарок по завершении",
+        "gift": "О подарке"
+      }
+    },
+    "settings": {
+      "title": "Настройки",
+      "general": {
+        "legend": "Общая информация",
+        "desc": "Основные сведения об этом пути обучения.",
+        "name_label": "Название пути",
+        "name_placeholder": "например, Fullstack веб-разработка",
+        "name_required": "Название пути обязательно",
+        "description_label": "Описание",
+        "description_placeholder": "Краткое описание того, чего достигнут учащиеся...",
+        "description_required": "Описание обязательно",
+        "cover_image_legend": "Обложка",
+        "cover_image_desc": "Загрузите обложку для этого пути. Рекомендуемый размер: 1200x630px.",
+        "replace_image": "Заменить изображение",
+        "reset_image": "Сбросить",
+        "link": "Public link",
+        "generate_link": "Generate invite link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
+        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+      },
+      "enrollment": {
+        "legend": "Зачисление и продвижение",
+        "desc": "Настройте правила зачисления и прохождения курсов.",
+        "self_enrollment_label": "Разрешить самостоятельную запись",
+        "self_enrollment_desc": "Учащиеся могут самостоятельно записаться на этот путь.",
+        "sequential_unlock_label": "Последовательное открытие курсов",
+        "sequential_unlock_desc": "Учащиеся должны проходить курсы строго по порядку.",
+        "auto_enroll_label": "Автоматическое зачисление на курсы пути",
+        "auto_enroll_desc": "Автоматически зачислять учащихся на все курсы при вступлении на этот путь."
+      },
+      "publishing": {
+        "legend": "Публикация",
+        "desc": "Сделайте этот путь обучения видимым для учащихся.",
+        "publish_label": "Опубликовать путь обучения",
+        "publish_desc": "Сделать этот путь видимым и открыть запись.",
+        "published": "Published",
+        "unpublished": "Unpublished"
+      },
+      "danger": {
+        "legend": "Опасная зона",
+        "desc": "Безвозвратно удалить этот путь обучения и все связанные с ним данные.",
+        "delete_button": "Удалить путь обучения",
+        "delete_title": "Delete Learning Path",
+        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+      },
+      "cover_image": {
+        "legend": "Cover Image",
+        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
+        "replace": "Replace image",
+        "reset": "Reset",
+        "alt": "Покрытие пути"
+      },
+      "welcome_email": {
+        "legend": "Welcome Email",
+        "desc": "Send an automated welcome message when learners are enrolled.",
+        "placeholder": "Write a welcome message for your learners..."
+      },
+      "progression": {
+        "legend": "Course Progression",
+        "desc": "Choose how learners can navigate courses in this path.",
+        "free": "Free navigation (any order)",
+        "sequential": "Sequential (must complete in order)"
+      },
+      "self_enrollment": {
+        "legend": "Self-Enrollment",
+        "access": "Manage access in {people}",
+        "access_people": "People",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "auto_enroll": {
+        "legend": "Auto-Enrollment",
+        "desc": "Automatically enroll new organization members into this learning path.",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      }
+    },
+    "courses": {
+      "lessons": "Lessons",
+      "exercises": "Exercises"
+    },
+    "view_as_student": {
+      "title": "This will redirect you to the Student LMS.",
+      "description": "You are about to see what a student will see when they enroll in this learning path",
+      "copy_link": "Copy link",
+      "go_to_lms": "Go to LMS"
+    }
+  },
+  "certificate": {
+    "tab_design": "Дизайн",
+    "tab_settings": "Настройки",
+    "allow": "Разрешить студентам скачать сертификат",
+    "email_message_label": "Сообщение электронной почты",
+    "email_message_placeholder": "например Мы гордимся вашим прогрессом — продолжайте учиться!",
+    "rules": "Правила",
+    "editor": {
+      "title": "Дизайн сертификата",
+      "back": "Вернуться к сертификатам",
+      "unsaved": "несохраненный",
+      "free_plan": "Бесплатный план",
+      "discard": "Отбросить",
+      "save": "Сохранить изменения",
+      "saved": "Дизайн сертификата сохранен.",
+      "save_failed": "Не удалось сохранить дизайн сертификата. Проверьте форму и повторите попытку.",
+      "signature_upload_in_progress": "Прежде чем сохранять, дождитесь завершения загрузки подписи.",
+      "sections": "Разделы редактора",
+      "preview": "Предпросмотр в реальном времени",
+      "panel_templates": "Шаблоны",
+      "panel_templates_subtitle": "Выберите шаблон, чтобы закрепить визуальный стиль.",
+      "panel_content": "Содержание",
+      "panel_content_subtitle": "Настройте слова, которые появляются в сертификате.",
+      "panel_colors": "Акцентный цвет",
+      "panel_colors_subtitle": "Используется для линии получателя, акцентов и штампа.",
+      "panel_export": "Экспорт",
+      "panel_export_subtitle": "Предварительный просмотр текущего дизайна по мере его реализации.",
+      "section_header": "Копия заголовка",
+      "section_signatories": "Подписавшиеся",
+      "section_reference": "Справка",
+      "subtitle": "Субтитры",
+      "subtitle_placeholder": "Награжден высшим отличием",
+      "description_override": "Переопределение описания",
+      "description_override_placeholder": "По умолчанию соответствует описанию курса.",
+      "description_override_hint": "Оставьте пустым, чтобы вернуться к описанию курса при сохранении.",
+      "signatory_one_name": "Имя подписанта 1",
+      "signatory_one_role": "Подписавшееся лицо 1 роль",
+      "signatory_two_name": "Имя подписавшего 2",
+      "signatory_two_role": "Подписант 2 роль",
+      "signatory_one_toggle": "Показать подписанта 1",
+      "signatory_two_toggle": "Показать подписанта 2",
+      "signature_upload": "Изображение подписи",
+      "signature_upload_hint": "Загрузите изображение подписи (необязательно)",
+      "signature_dont_crop": "Не обрезать",
+      "id_format": "Формат идентификатора сертификата",
+      "id_format_hint": "Используйте '{'seq'}' для последних четырех цифр, '{'year'}' для года выпуска, '{'month'}' для месяца.",
+      "accent_hint": "Цвет акцента отображается в правиле получателя, штампах и выделении заголовка шаблона.",
+      "templates_hint": "Шаблоны обрабатываются с помощью того же средства визуализации, которое используется для загруженных PDF и PNG.",
+      "download_pdf": "Скачать PDF",
+      "download_png": "Скачать PNG",
+      "print": "Распечатать",
+      "export_hint": "При экспорте в качестве получателя используется ваше имя, чтобы вы могли просмотреть окончательный макет.",
+      "preview_failed": "Не удалось создать предварительный просмотр сертификата",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Сертификат качества",
+      "sample_description": "В знак признания выдающихся достижений и образцовой преданности делу.",
+      "sample_org": "Королевская академия художеств",
+      "summary_title": "Активный дизайн",
+      "summary_subtitle": "Снимок того, как будет выглядеть сертификат после выдачи.",
+      "field_template": "Шаблон",
+      "field_accent": "Акцент",
+      "field_signatories": "Подписавшиеся",
+      "customize_design": "Настроить дизайн",
+      "signatory_one": "Подписант 1",
+      "signatory_two": "Подписант 2",
+      "signatory_name": "Имя подписанта",
+      "signatory_role": "Роль подписанта",
+      "signature_image": "Изображение подписи"
     }
   }
 }

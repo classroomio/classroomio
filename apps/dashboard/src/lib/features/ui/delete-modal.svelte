@@ -7,9 +7,17 @@
     open?: boolean;
     onDelete?: () => void;
     isLoading?: boolean;
+    title?: string | null;
+    description?: string | null;
   }
 
-  let { open = $bindable(false), onDelete = () => {}, isLoading = false }: Props = $props();
+  let {
+    open = $bindable(false),
+    onDelete = () => {},
+    isLoading = false,
+    title = null,
+    description = null
+  }: Props = $props();
 </script>
 
 <Dialog.Root
@@ -20,11 +28,11 @@
 >
   <Dialog.Content class="w-96 p-6">
     <Dialog.Header class="p-2">
-      <Dialog.Title>{$t('delete_modal.label')}</Dialog.Title>
+      <Dialog.Title>{title ?? $t('delete_modal.label')}</Dialog.Title>
     </Dialog.Header>
     <div>
       <p class="text-center text-xl dark:text-white">
-        {$t('delete_modal.content')}
+        {description ?? $t('delete_modal.content')}
       </p>
 
       <div class="mt-8 flex items-center justify-between">

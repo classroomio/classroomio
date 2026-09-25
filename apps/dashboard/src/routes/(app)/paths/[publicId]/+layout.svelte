@@ -1,20 +1,24 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
   import { PathSidebar, PathHeader } from '$features/learning-path';
-  import { learningPathApi } from '$features/learning-path/api';
+  import { learningPathApi, pathMembersApi } from '$features/learning-path/api';
   import type { LearningPathDetail } from '$features/learning-path/utils/types';
   import { DeleteModal } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { ROLE } from '@cio/utils/constants';
 
   interface Props {
-    children?: import('svelte').Snippet;
+    children?: Snippet;
     data: {
       publicId: string;
       path?: LearningPathDetail;
@@ -29,6 +33,7 @@
 
   let deleteModalOpen = $state(false);
   let isDeleting = $state(false);
+  let viewerFetchKey: string | null = $state(null);
 
   $effect(() => {
     if (!data.publicId) return;
@@ -45,6 +50,40 @@
   const isPathReady = $derived.by(() => {
     if (!activePath) return false;
     return activePath.publicId === data.publicId;
+  });
+
+  $effect(() => {
+    const pathId = activePath?.id;
+    const profileId = $profile.id;
+    if (!isPathReady || !pathId || !profileId) return;
+
+    const key = `${pathId}:${profileId}`;
+    if (viewerFetchKey === key) return;
+
+    viewerFetchKey = key;
+    void pathMembersApi.fetchViewerRole(pathId, profileId);
+  });
+
+  const currentUserRole = $derived.by(() => {
+    if (pathMembersApi.viewerRole !== undefined) return pathMembersApi.viewerRole;
+
+    const member = pathMembersApi.members.find((item) => item.profileId === $profile.id);
+    return member ? Number(member.roleId) : null;
+  });
+
+  const canCheck = $derived(!!$profile.id && isPathReady);
+
+  const isPermitted = $derived.by(() => {
+    if (!isPathReady) return false;
+    if (!canCheck) return true;
+
+    if ($isOrgAdmin === null) return true;
+
+    if ($isOrgAdmin) return true;
+
+    if (pathMembersApi.viewerRole === undefined) return true;
+
+    return currentUserRole === ROLE.ADMIN || currentUserRole === ROLE.TUTOR;
   });
 
   function handleSidebarWidthPreview(width: number) {
@@ -98,6 +137,31 @@
 <svelte:head>
   <title>{activePath?.name || $t('org_navigation.learning_paths')} - ClassroomIO</title>
 </svelte:head>
+
+{#if isPathReady}
+  <Dialog.Root open={!isPermitted}>
+    <Dialog.Content class="w-96">
+      <Dialog.Header>
+        <Dialog.Title>{$t('course.not_permitted.header')}</Dialog.Title>
+      </Dialog.Header>
+      <div>
+        <p class="text-md text-center dark:text-white">
+          {$t('course.not_permitted.body')}
+        </p>
+
+        <div class="mt-5 flex justify-center">
+          <Button
+            onclick={() => {
+              goto(`${$currentOrgPath}/paths`);
+            }}
+          >
+            {$t('course.not_permitted.button')}
+          </Button>
+        </div>
+      </div>
+    </Dialog.Content>
+  </Dialog.Root>
+{/if}
 
 <DeleteModal bind:open={deleteModalOpen} onDelete={handleDeletePath} isLoading={isDeleting} />
 

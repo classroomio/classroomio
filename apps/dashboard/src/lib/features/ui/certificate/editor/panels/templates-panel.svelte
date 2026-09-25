@@ -42,5 +42,5 @@
 </div>
 
 <p class="ui:text-muted-foreground mt-4 text-xs">
-  {$t('course.navItem.certificates.editor.templates_hint')}
+  {$t('certificate.editor.templates_hint')}
 </p>

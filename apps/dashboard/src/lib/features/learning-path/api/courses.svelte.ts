@@ -3,8 +3,7 @@ import type {
   AddPathCoursesRequest,
   LearningPathCourseItem,
   RemovePathCourseRequest,
-  ReorderPathCoursesRequest,
-  UpdatePathCourseRequest
+  ReorderPathCoursesRequest
 } from '../utils/types';
 import { snackbar } from '$features/ui/snackbar/store';
 import { learningPathApi } from './learning-path.svelte';
@@ -79,26 +78,6 @@ class PathCoursesApi extends BaseApiWithErrors {
           currentPath.courses = reordered;
         }
         snackbar.success('learningPath.snackbar.reordered');
-      }
-    });
-  }
-
-  async updateCourseOutcomes(pathId: string, courseId: string, outcomes: string[]): Promise<void> {
-    await this.execute<UpdatePathCourseRequest>({
-      requestFn: () =>
-        classroomio['learning-path'][':pathId']['courses'][':courseId'].$put({
-          param: { pathId, courseId },
-          json: { outcomes }
-        }),
-      logContext: 'updating course outcomes in learning path',
-      onSuccess: (result) => {
-        const currentPath = learningPathApi.currentPath;
-        if (result.data && currentPath && (currentPath.id === pathId || currentPath.publicId === pathId)) {
-          const index = currentPath.courses.findIndex((c) => c.courseId === courseId);
-          if (index !== -1) {
-            currentPath.courses[index].outcomes = result.data.outcomes;
-          }
-        }
       }
     });
   }

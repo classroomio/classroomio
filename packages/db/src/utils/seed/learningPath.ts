@@ -25,7 +25,7 @@ import {
   user
 } from '@db/drizzle';
 import { getCourseCompletionStatsForProfile } from '@db/queries/learning-path/progress';
-import { formatCertificateId } from '@db/queries/learning-path/certificate';
+import { formatCertificateId } from '@cio/utils/functions';
 import { seedReactCoursePeopleProgress } from '@db/utils/seed/reactCoursePeopleProgress';
 import { HIPAA_COURSE_ID, HIPAA_GROUP_ID, SOC2_COURSE_ID, SOC2_GROUP_ID } from '@db/utils/seed/compliance';
 
@@ -1092,39 +1092,46 @@ interface PathSeed {
   courseOrderSetDaysAgo: number | null;
   certificateTitle: string | null;
   certificateIssuer: string | null;
-  /** Placeholder format for issued certificate ids; mirrors `certificateDesign.idFormat`. */
-  certificateIdFormat: string | null;
   landingPage: PathLandingPage;
 }
 
 type PathLandingPage = NonNullable<typeof learningPath.$inferInsert.landingPage>;
 
 const BOOTCAMP_LANDING_PAGE: PathLandingPage = {
-  headline: 'Become a Full-Stack Web Developer',
-  subheadline: 'Go from MVC fundamentals to React apps and data-driven Python in one guided path.',
+  title: 'Become a Full-Stack Web Developer',
+  description: 'Go from MVC fundamentals to React apps and data-driven Python in one guided path.',
   visitorAccess: 'syllabus',
-  outcomes: [
-    'Architect maintainable apps with the MVC pattern',
-    'Build interactive UIs with modern React',
-    'Analyze and visualize data with Python and Pandas'
-  ],
+  goals:
+    '<p>Architect maintainable apps with the MVC pattern</p><p>Build interactive UIs with modern React</p><p>Analyze and visualize data with Python and Pandas</p>',
   skills: ['MVC', 'React', 'State Management', 'Python', 'Pandas', 'Data Visualization'],
-  showInstructors: true,
-  showTestimonials: true,
-  testimonials: [
+  instructors: [
     {
-      id: 'testimonial-1',
+      id: 'inst_seed_1',
+      name: 'Admin Test',
+      role: 'Lead Instructor',
+      imgUrl: '',
+      description: 'Lead instructor for the bootcamp path.',
+      coursesNo: 3
+    }
+  ],
+  reviews: [
+    {
+      id: 1,
+      hide: false,
       name: 'Chidi O.',
-      role: 'Junior Developer',
-      avatarUrl: 'https://api.dicebear.com/9.x/notionists/svg?seed=chidi.o',
-      quote: 'The path took me from zero MVC knowledge to shipping a React dashboard in three months.'
+      avatar_url: 'https://api.dicebear.com/9.x/notionists/svg?seed=chidi.o',
+      rating: 5,
+      created_at: 1716000000000,
+      description: 'The path took me from zero MVC knowledge to shipping a React dashboard in three months.'
     },
     {
-      id: 'testimonial-2',
+      id: 2,
+      hide: false,
       name: 'Sanne V.',
-      role: 'Data Analyst',
-      avatarUrl: 'https://api.dicebear.com/9.x/notionists/svg?seed=sanne.v',
-      quote: 'Loved the sequential structure — every course prepared me for the next one.'
+      avatar_url: 'https://api.dicebear.com/9.x/notionists/svg?seed=sanne.v',
+      rating: 5,
+      created_at: 1716100000000,
+      description: 'Loved the sequential structure — every course prepared me for the next one.'
     }
   ],
   showFaqs: true,
@@ -1145,13 +1152,21 @@ const BOOTCAMP_LANDING_PAGE: PathLandingPage = {
 };
 
 const DATA_SKILLS_LANDING_PAGE: PathLandingPage = {
-  headline: 'Frontend & Data Science Skills',
-  subheadline: 'Pair modern React development with practical Python data analysis.',
+  title: 'Frontend & Data Science Skills',
+  description: 'Pair modern React development with practical Python data analysis.',
   visitorAccess: 'preview',
-  outcomes: ['Ship React interfaces users love', 'Wrangle datasets with Pandas'],
+  goals: '<p>Ship React interfaces users love</p><p>Wrangle datasets with Pandas</p>',
   skills: ['React', 'Python', 'Pandas'],
-  showInstructors: true,
-  showTestimonials: false,
+  instructors: [
+    {
+      id: 'inst_seed_2',
+      name: 'Admin Test',
+      role: 'Lead Instructor',
+      imgUrl: '',
+      description: 'Lead instructor for the data skills path.',
+      coursesNo: 2
+    }
+  ],
   showFaqs: true,
   faqs: [
     {
@@ -1165,31 +1180,42 @@ const DATA_SKILLS_LANDING_PAGE: PathLandingPage = {
 };
 
 const PRO_LANDING_PAGE: PathLandingPage = {
-  headline: 'Full-Stack Professional',
-  subheadline: 'Six courses from MVC to tested TypeScript — watch the funnel drop, stall, and certify.',
+  title: 'Full-Stack Professional',
+  description: 'Six courses from MVC to tested TypeScript — watch the funnel drop, stall, and certify.',
   visitorAccess: 'preview',
-  outcomes: [
-    'Structure apps with MVC',
-    'Build React UIs',
-    'Analyze data with Pandas',
-    'Master JavaScript and TypeScript',
-    'Ship tested code'
-  ],
+  goals:
+    '<p>Structure apps with MVC</p><p>Build React UIs</p><p>Analyze data with Pandas</p><p>Master JavaScript and TypeScript</p><p>Ship tested code</p>',
   skills: ['MVC', 'React', 'Python', 'JavaScript', 'TypeScript', 'Testing'],
-  showInstructors: false,
-  showTestimonials: false,
+  instructors: [
+    {
+      id: 'inst_seed_3',
+      name: 'Admin Test',
+      role: 'Lead Instructor',
+      imgUrl: '',
+      description: 'Lead instructor for the professional path.',
+      coursesNo: 6
+    }
+  ],
   showFaqs: false,
   showRating: false
 };
 
 const SHOWCASE_LANDING_PAGE: PathLandingPage = {
-  headline: 'React to Pandas in Two Courses',
-  subheadline: 'A short, fully completable path pairing React interfaces with Pandas analysis.',
+  title: 'React to Pandas in Two Courses',
+  description: 'A short, fully completable path pairing React interfaces with Pandas analysis.',
   visitorAccess: 'preview',
-  outcomes: ['Ship React interfaces users love', 'Wrangle datasets with Pandas'],
+  goals: '<p>Ship React interfaces users love</p><p>Wrangle datasets with Pandas</p>',
   skills: ['React', 'Python', 'Pandas'],
-  showInstructors: false,
-  showTestimonials: false,
+  instructors: [
+    {
+      id: 'inst_seed_4',
+      name: 'Admin Test',
+      role: 'Lead Instructor',
+      imgUrl: '',
+      description: 'Lead instructor for the showcase path.',
+      coursesNo: 2
+    }
+  ],
   showFaqs: false,
   showRating: false
 };
@@ -1211,7 +1237,6 @@ const PATH_SEEDS: PathSeed[] = [
     courseOrderSetDaysAgo: 130,
     certificateTitle: 'Full-Stack Developer Bootcamp Certificate',
     certificateIssuer: 'Udemy Test Academy',
-    certificateIdFormat: 'LP-{year}-{seq}',
     landingPage: BOOTCAMP_LANDING_PAGE
   },
   {
@@ -1230,7 +1255,6 @@ const PATH_SEEDS: PathSeed[] = [
     courseOrderSetDaysAgo: 40,
     certificateTitle: 'Frontend & Data Science Skills Certificate',
     certificateIssuer: 'Udemy Test Academy',
-    certificateIdFormat: 'LP-{year}-{seq}',
     landingPage: DATA_SKILLS_LANDING_PAGE
   },
   {
@@ -1248,7 +1272,6 @@ const PATH_SEEDS: PathSeed[] = [
     courseOrderSetDaysAgo: null,
     certificateTitle: null,
     certificateIssuer: null,
-    certificateIdFormat: null,
     landingPage: {}
   },
   {
@@ -1266,7 +1289,6 @@ const PATH_SEEDS: PathSeed[] = [
     courseOrderSetDaysAgo: 15,
     certificateTitle: 'React to Pandas Sprint Certificate',
     certificateIssuer: 'Udemy Test Academy',
-    certificateIdFormat: 'LP-{year}-{seq}',
     landingPage: SHOWCASE_LANDING_PAGE
   },
   {
@@ -1284,7 +1306,6 @@ const PATH_SEEDS: PathSeed[] = [
     courseOrderSetDaysAgo: 10,
     certificateTitle: 'Full-Stack Professional Certificate',
     certificateIssuer: 'Udemy Test Academy',
-    certificateIdFormat: 'LP-{year}-{seq}',
     landingPage: PRO_LANDING_PAGE
   }
 ];
@@ -1294,43 +1315,42 @@ interface PathSeedCourse {
   learningPathId: string;
   courseId: string;
   order: number;
-  outcomes: string[];
 }
 
 type CourseKey = 'mvc' | 'react' | 'pandas' | 'js' | 'ts' | 'testing';
 
 function pathCourseRowsFor(pathSeed: PathSeed, courseIdsByKey: Record<CourseKey, string>): PathSeedCourse[] {
-  const plans: Array<{ id: string; courseKey: CourseKey; outcomes: string[] }> = [];
+  const plans: Array<{ id: string; courseKey: CourseKey }> = [];
 
   if (pathSeed.id === PATH_BOOTCAMP_ID) {
     plans.push(
-      { id: PATH_COURSE_IDS.bootcampMvc, courseKey: 'mvc', outcomes: ['Structure apps with Model-View-Controller'] },
-      { id: PATH_COURSE_IDS.bootcampReact, courseKey: 'react', outcomes: ['Build interactive React UIs'] },
-      { id: PATH_COURSE_IDS.bootcampPandas, courseKey: 'pandas', outcomes: ['Analyze data with Python and Pandas'] }
+      { id: PATH_COURSE_IDS.bootcampMvc, courseKey: 'mvc' },
+      { id: PATH_COURSE_IDS.bootcampReact, courseKey: 'react' },
+      { id: PATH_COURSE_IDS.bootcampPandas, courseKey: 'pandas' }
     );
   } else if (pathSeed.id === PATH_DATA_SKILLS_ID) {
     plans.push(
-      { id: PATH_COURSE_IDS.dataSkillsReact, courseKey: 'react', outcomes: ['Ship modern React interfaces'] },
-      { id: PATH_COURSE_IDS.dataSkillsPandas, courseKey: 'pandas', outcomes: ['Explore datasets with Pandas'] }
+      { id: PATH_COURSE_IDS.dataSkillsReact, courseKey: 'react' },
+      { id: PATH_COURSE_IDS.dataSkillsPandas, courseKey: 'pandas' }
     );
   } else if (pathSeed.id === PATH_SHOWCASE_ID) {
     plans.push(
-      { id: PATH_COURSE_IDS.showcaseReact, courseKey: 'react', outcomes: ['Ship modern React interfaces'] },
-      { id: PATH_COURSE_IDS.showcasePandas, courseKey: 'pandas', outcomes: ['Explore datasets with Pandas'] }
+      { id: PATH_COURSE_IDS.showcaseReact, courseKey: 'react' },
+      { id: PATH_COURSE_IDS.showcasePandas, courseKey: 'pandas' }
     );
   } else if (pathSeed.id === PATH_PRO_ID) {
     plans.push(
-      { id: PATH_COURSE_IDS.proMvc, courseKey: 'mvc', outcomes: ['Structure apps with MVC'] },
-      { id: PATH_COURSE_IDS.proReact, courseKey: 'react', outcomes: ['Build interactive React UIs'] },
-      { id: PATH_COURSE_IDS.proPandas, courseKey: 'pandas', outcomes: ['Analyze data with Pandas'] },
-      { id: PATH_COURSE_IDS.proJs, courseKey: 'js', outcomes: ['Master modern JavaScript'] },
-      { id: PATH_COURSE_IDS.proTs, courseKey: 'ts', outcomes: ['Type safely with TypeScript'] },
-      { id: PATH_COURSE_IDS.proTesting, courseKey: 'testing', outcomes: ['Ship tested code'] }
+      { id: PATH_COURSE_IDS.proMvc, courseKey: 'mvc' },
+      { id: PATH_COURSE_IDS.proReact, courseKey: 'react' },
+      { id: PATH_COURSE_IDS.proPandas, courseKey: 'pandas' },
+      { id: PATH_COURSE_IDS.proJs, courseKey: 'js' },
+      { id: PATH_COURSE_IDS.proTs, courseKey: 'ts' },
+      { id: PATH_COURSE_IDS.proTesting, courseKey: 'testing' }
     );
   } else {
     plans.push(
-      { id: PATH_COURSE_IDS.draftMvc, courseKey: 'mvc', outcomes: ['Understand MVC basics'] },
-      { id: PATH_COURSE_IDS.draftReact, courseKey: 'react', outcomes: ['Build your first React components'] }
+      { id: PATH_COURSE_IDS.draftMvc, courseKey: 'mvc' },
+      { id: PATH_COURSE_IDS.draftReact, courseKey: 'react' }
     );
   }
 
@@ -1338,8 +1358,7 @@ function pathCourseRowsFor(pathSeed: PathSeed, courseIdsByKey: Record<CourseKey,
     id: plan.id,
     learningPathId: pathSeed.id,
     courseId: courseIdsByKey[plan.courseKey],
-    order: index + 1,
-    outcomes: plan.outcomes
+    order: index + 1
   }));
 }
 
@@ -1352,8 +1371,6 @@ async function readBackPathCourses(
   pathSeed: PathSeed,
   courseIdsByKey: Record<CourseKey, string>
 ): Promise<PathSeedCourse[]> {
-  const plannedCourses = pathCourseRowsFor(pathSeed, courseIdsByKey);
-  const plannedOutcomesByCourseId = new Map(plannedCourses.map((planned) => [planned.courseId, planned.outcomes]));
   const persistedCourses = await db
     .select({
       id: learningPathCourse.id,
@@ -1365,14 +1382,11 @@ async function readBackPathCourses(
     .orderBy(learningPathCourse.order);
 
   return persistedCourses.map((persistedCourse) => {
-    const outcomes = plannedOutcomesByCourseId.get(persistedCourse.courseId) ?? [];
-
     return {
       id: persistedCourse.id,
       learningPathId: pathSeed.id,
       courseId: persistedCourse.courseId,
-      order: persistedCourse.order,
-      outcomes
+      order: persistedCourse.order
     };
   });
 }
@@ -1391,22 +1405,21 @@ function buildPathInsertValues(pathSeed: PathSeed, testOrgId: string, now: Date)
     estimatedDurationMinutes: pathSeed.estimatedDurationMinutes,
     cost: 0,
     currency: 'USD',
-    showSavings: false,
     sequentialUnlock: pathSeed.sequentialUnlock,
     selfEnrollment: true,
     autoEnroll: true,
-    certificateEnabled: pathSeed.certificateTitle !== null,
-    certificateTitle: pathSeed.certificateTitle,
-    certificateIssuer: pathSeed.certificateIssuer,
-    certificateDesign: pathSeed.certificateTitle
-      ? {
-          templateId: 'classique' as const,
-          accentColor: '#6366f1',
-          subtitle: pathSeed.name,
-          signatories: [{ name: 'Admin Test', role: 'Lead Instructor', enabled: true }],
-          idFormat: pathSeed.certificateIdFormat ?? undefined
-        }
-      : {},
+    certificate: {
+      isDownloadable: pathSeed.certificateTitle !== null,
+      theme: pathSeed.certificateTitle ? 'classique' : undefined,
+      design: pathSeed.certificateTitle
+        ? {
+            templateId: 'classique' as const,
+            subtitle: pathSeed.name,
+            signatories: [{ name: 'Admin Test', role: 'Lead Instructor', enabled: true }]
+          }
+        : {},
+      emailMessage: null
+    },
     landingPage: pathSeed.landingPage,
     courseOrderSetAt: pathSeed.courseOrderSetDaysAgo === null ? null : isoDaysAgo(now, pathSeed.courseOrderSetDaysAgo),
     createdByProfileId: null,
@@ -1970,16 +1983,14 @@ export async function seedLearningPaths({
             courseId: HIPAA_COURSE_ID,
             groupId: HIPAA_GROUP_ID,
             groupMemberFallbackId: '7e000001-0000-4000-8000-000000000031',
-            order: 1,
-            outcomes: ['Handle PHI according to HIPAA rules']
+            order: 1
           },
           {
             pathCourseId: '7e000001-0000-4000-8000-000000000012',
             courseId: SOC2_COURSE_ID,
             groupId: SOC2_GROUP_ID,
             groupMemberFallbackId: '7e000001-0000-4000-8000-000000000032',
-            order: 2,
-            outcomes: ['Apply SOC 2 security fundamentals']
+            order: 2
           }
         ]
       },
@@ -2007,8 +2018,7 @@ export async function seedLearningPaths({
             courseId: earlyAdopterCourseId,
             groupId: earlyAdopterGroupId,
             groupMemberFallbackId: '8a000001-0000-4000-8000-000000000031',
-            order: 1,
-            outcomes: ['Ship products with core PM practices']
+            order: 1
           }
         ]
       },
@@ -2465,7 +2475,7 @@ export async function seedLearningPaths({
       if (rollup.status === 'COMPLETED' && pathSeed.certificateTitle) {
         // Same generator the API uses on completion, so ids match what the app would issue.
         const issuedAtDate = new Date(isoDaysAgo(now, member.completedDaysAgo ?? 0));
-        const certificateId = formatCertificateId(pathSeed.certificateIdFormat ?? undefined, member.id, issuedAtDate);
+        const certificateId = formatCertificateId(undefined, member.id, issuedAtDate);
 
         await db
           .insert(learningPathCertificateIssue)
@@ -2602,7 +2612,6 @@ interface MinimalPathCoursePlan {
   groupId: string;
   groupMemberFallbackId: string;
   order: number;
-  outcomes: string[];
 }
 
 interface MinimalPathPlan {
@@ -2670,17 +2679,16 @@ async function seedMinimalPath(plan: MinimalPathPlan, now: Date) {
       estimatedDurationMinutes: 120,
       cost: 0,
       currency: 'USD',
-      showSavings: false,
       sequentialUnlock: plan.sequentialUnlock,
       selfEnrollment: true,
       autoEnroll: true,
-      certificateEnabled: false,
-      certificateTitle: null,
-      certificateIssuer: null,
-      certificateDesign: {},
+      certificate: {
+        isDownloadable: false,
+        design: {}
+      },
       landingPage: {
-        headline: plan.name,
-        subheadline: plan.description,
+        title: plan.name,
+        description: plan.description,
         visitorAccess: 'preview' as const
       },
       courseOrderSetAt: isoDaysAgo(now, 10),
@@ -2697,8 +2705,7 @@ async function seedMinimalPath(plan: MinimalPathPlan, now: Date) {
         id: plannedCourse.pathCourseId,
         learningPathId: plan.pathId,
         courseId: plannedCourse.courseId,
-        order: plannedCourse.order,
-        outcomes: plannedCourse.outcomes
+        order: plannedCourse.order
       })
       .onConflictDoNothing();
   }

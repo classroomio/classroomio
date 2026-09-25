@@ -12,7 +12,30 @@
     },
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
-    "scroll_to_top": "Cuộn lên đầu trang"
+    "scroll_to_top": "Cuộn lên đầu trang",
+    "add": "Thêm",
+    "remove": "Xóa",
+    "back": "Quay lại",
+    "close": "Close",
+    "edit": "Edit",
+    "coming_soon": "Coming soon",
+    "pricing": {
+      "enable_paid": "Bật trả phí",
+      "yes": "Có",
+      "no": "Không",
+      "currency": "Tiền tệ",
+      "cost": "Chi phí",
+      "payment_link": "Payment Link",
+      "payment_required": "Payment link is required",
+      "payment_invalid_url": "Please enter a valid URL",
+      "discount": "Giảm giá",
+      "show_discount": "Show discount",
+      "discount_percentage": "Discount percentage",
+      "reward": "Reward / Gift",
+      "reward_help": "Offer learners an incentive upon completion",
+      "reward_description": "Reward description",
+      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+    }
   },
   "validations": {
     "generic": {
@@ -1301,7 +1324,12 @@
           "signature_upload_hint": "Tải lên hình ảnh chữ ký (tùy chọn)",
           "signature_dont_crop": "Đừng cắt xén",
           "signature_upload_in_progress": "Đợi quá trình tải lên chữ ký hoàn tất trước khi lưu.",
-          "save_failed": "Không thể lưu thiết kế chứng chỉ. Hãy kiểm tra biểu mẫu và thử lại."
+          "save_failed": "Không thể lưu thiết kế chứng chỉ. Hãy kiểm tra biểu mẫu và thử lại.",
+          "signatory_one": "Người ký 1",
+          "signatory_two": "Người ký 2",
+          "signatory_name": "Tên người ký",
+          "signatory_role": "Vai trò của người ký",
+          "signature_image": "Hình ảnh chữ ký"
         }
       },
       "people": {
@@ -5557,7 +5585,9 @@
       "remove_course": "Xóa khỏi lộ trình",
       "add_course_button": "Thêm khóa học vào lộ trình",
       "empty_title": "Chưa có khóa học nào trong lộ trình học tập này",
-      "empty_description": "Thêm các khóa học để hướng dẫn người học theo một trình tự có cấu trúc. Bắt đầu bằng cách nhấp vào nút Thêm."
+      "empty_description": "Thêm các khóa học để hướng dẫn người học theo một trình tự có cấu trúc. Bắt đầu bằng cách nhấp vào nút Thêm.",
+      "start_reorder": "Sắp xếp lại",
+      "end_reorder": "Kết thúc sắp xếp lại"
     },
     "listing": {
       "title": "Lộ trình học tập",
@@ -5611,7 +5641,8 @@
       "open": "Mở",
       "share": "Chia sẻ",
       "invite": "Mời",
-      "delete": "Xóa"
+      "delete": "Xóa",
+      "view_as_student": "View as student"
     },
     "card": {
       "actions_menu_aria": "Hành động đường dẫn",
@@ -5632,7 +5663,11 @@
       "member_removed": "Người học đã bị xóa khỏi đường dẫn",
       "tutors_added": "Đã thêm gia sư vào đường dẫn",
       "tutor_added": "Đã thêm gia sư vào lộ trình",
-      "tutor_removed": "Đã xóa gia sư khỏi lộ trình"
+      "tutor_removed": "Đã xóa gia sư khỏi lộ trình",
+      "certificate_saved": "Đã lưu cài đặt chứng chỉ",
+      "landing_saved": "Đã cập nhật trang đích",
+      "link_generated": "Invite link generated and copied to clipboard",
+      "settings_saved": "Learning path settings updated"
     },
     "analytics": {
       "title": "Phân tích",
@@ -5737,7 +5772,302 @@
         "in_progress": "Đang tiến hành",
         "completed": "Đã hoàn thành"
       },
-      "info_title": "Giới thiệu về đăng ký lộ trình"
+      "info_title": "Giới thiệu về đăng ký lộ trình",
+      "add": "Add",
+      "last_login_at": "Last login at",
+      "you": "You",
+      "view": "View",
+      "delete_profile": "Remove",
+      "invite_modal": {
+        "loading": "Adding…",
+        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "invite": "Mời gia sư",
+        "invite_students": "Mời sinh viên",
+        "finish": "Kết thúc"
+      }
+    },
+    "certificate": {
+      "title": "Chứng chỉ",
+      "awarded_count": "{count, plural, =0 {Chưa có chứng chỉ nào được cấp} =1 {1 chứng chỉ đã được cấp cho đến nay} other {# chứng chỉ đã được cấp cho đến nay}}",
+      "allow": "Cho phép sinh viên tải xuống chứng chỉ",
+      "email_message_label": "Tin nhắn email",
+      "email_message_placeholder": "ví dụ: Chúc mừng bạn đã hoàn thành lộ trình học tập!",
+      "editor": {
+        "title": "Thiết kế chứng chỉ"
+      }
+    },
+    "landing": {
+      "page_builder": "Trình tạo trang",
+      "display_section": "Hiển thị phần này",
+      "hero": {
+        "title": "Phần mở đầu",
+        "headline": "Tiêu đề chính",
+        "headline_placeholder": "ví dụ: Trở thành Kỹ sư Fullstack Cao cấp",
+        "subheadline": "Tiêu đề phụ",
+        "subheadline_placeholder": "ví dụ: Làm chủ frontend, backend và triển khai hiện đại thông qua các dự án thực tế."
+      },
+      "access": {
+        "title": "Quyền truy cập của khách",
+        "description": "Kiểm soát lượng nội dung khách chưa đăng ký có thể khám phá trên trang lộ trình công khai.",
+        "teaser_title": "Giới thiệu ngắn",
+        "teaser_desc": "Chỉ hiển thị tiêu đề khóa học và các kết quả cốt lõi.",
+        "syllabus_title": "Giáo trình (khuyến nghị)",
+        "syllabus_desc": "Hiển thị toàn bộ giáo trình với tiêu đề bài học và biểu tượng khóa.",
+        "preview_title": "Xem trước",
+        "preview_desc": "Cho phép khách xem trước bài học đầu tiên của mỗi khóa học mà không cần đăng ký."
+      },
+      "skills": {
+        "title": "Kỹ năng",
+        "placeholder": "ví dụ: TypeScript, Docker, PostgreSQL",
+        "help": "Press Enter to add. These appear as chips on your landing page."
+      },
+      "instructors": {
+        "title": "Giảng viên",
+        "auto_populated_note": "Giảng viên được tự động tổng hợp từ các khóa học trong lộ trình này.",
+        "courses_note": "{count, plural, =0 {Chưa có khóa học nào được thêm} =1 {Được lấy từ 1 khóa học trong lộ trình này} other {Được lấy từ tất cả # khóa học trong lộ trình này}}",
+        "role_placeholder": "e.g. Lead Instructor · Frontend",
+        "default_role": "Course Instructor",
+        "untitled": "Untitled instructor",
+        "add": "Add instructor",
+        "no_tutors_found": "No instructors found",
+        "min_one_required": "At least one instructor is required",
+        "remove": "Remove instructor",
+        "upload": "Instructor Logo",
+        "name": "Instructor name",
+        "name_placeholder": "Your company name",
+        "role": "Instructor Role",
+        "about": "About Instructor",
+        "about_placeholder": "A short background about the instructor",
+        "total": "No of courses"
+      },
+      "testimonials": {
+        "title": "Cảm nhận của học viên",
+        "untitled": "Cảm nhận chưa có tiêu đề",
+        "name": "Họ và tên",
+        "role": "Vai trò / Vị trí",
+        "quote": "Trích dẫn",
+        "add": "Thêm cảm nhận"
+      },
+      "faqs": {
+        "title": "Câu hỏi thường gặp",
+        "untitled": "Câu hỏi chưa có tiêu đề",
+        "question": "Câu hỏi",
+        "answer": "Câu trả lời",
+        "add": "Thêm câu hỏi",
+        "question_placeholder": "What is required to complete this path?",
+        "answer_placeholder": "You must complete all lessons and exercises in every course."
+      },
+      "header": {
+        "title_placeholder": "e.g. Fullstack Web Development",
+        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
+        "title": "Header",
+        "title_label": "Title",
+        "description_label": "Description"
+      },
+      "reviews": {
+        "title": "Reviews",
+        "untitled": "Untitled review",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "Avatar image URL",
+        "rating_placeholder": "Optional (1-5)",
+        "clear_rating": "Clear rating",
+        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
+        "add_reviews": "Add Reviews",
+        "fullname": "Full Name",
+        "description": "Description",
+        "rating": "Rating"
+      },
+      "preview": "Preview",
+      "save": "Save",
+      "requirement": {
+        "title": "Requirement"
+      },
+      "description": {
+        "title": "Description"
+      },
+      "goals": {
+        "title": "Goals"
+      },
+      "certificate": {
+        "title": "Certificate",
+        "upload_template": "Certificate template"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "payment_required": "Payment link is required",
+        "payment_invalid_url": "Please enter a valid URL",
+        "enable_paid": "Bật trả phí",
+        "currency": "Tiền tệ",
+        "cost": "Chi phí",
+        "payment": "Liên kết thanh toán",
+        "payment_helper": "Stripe, Lemon Squeezy hoặc bất kỳ liên kết thanh toán nào",
+        "discount": "Giảm giá",
+        "no": "Không",
+        "yes": "Có",
+        "percent": "Phần trăm chiết khấu",
+        "percentage_helper": "Trong phần trăm %",
+        "gift_on_completion": "Quà tặng khi hoàn thành",
+        "gift": "Về quà tặng"
+      }
+    },
+    "settings": {
+      "title": "Cài đặt",
+      "general": {
+        "legend": "Thông tin chung",
+        "desc": "Các thông tin cơ bản về lộ trình học tập này.",
+        "name_label": "Tên lộ trình",
+        "name_placeholder": "ví dụ: Lập trình Web Fullstack",
+        "name_required": "Tên lộ trình là bắt buộc",
+        "description_label": "Mô tả",
+        "description_placeholder": "Tóm tắt ngắn gọn những gì học viên sẽ đạt được...",
+        "description_required": "Mô tả là bắt buộc",
+        "cover_image_legend": "Ảnh bìa",
+        "cover_image_desc": "Tải lên ảnh bìa cho lộ trình học tập này. Kích thước khuyến nghị: 1200x630px.",
+        "replace_image": "Thay ảnh",
+        "reset_image": "Đặt lại",
+        "link": "Public link",
+        "generate_link": "Generate invite link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
+        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+      },
+      "enrollment": {
+        "legend": "Đăng ký & Tiến trình",
+        "desc": "Thiết lập cách học viên đăng ký và vượt qua các khóa học.",
+        "self_enrollment_label": "Cho phép tự đăng ký",
+        "self_enrollment_desc": "Học viên có thể tự ghi danh vào lộ trình này.",
+        "sequential_unlock_label": "Mở khóa khóa học tuần tự",
+        "sequential_unlock_desc": "Học viên phải hoàn thành các khóa học theo đúng thứ tự.",
+        "auto_enroll_label": "Tự động đăng ký vào các khóa học",
+        "auto_enroll_desc": "Tự động đăng ký học viên vào tất cả các khóa học khi họ tham gia lộ trình này."
+      },
+      "publishing": {
+        "legend": "Xuất bản",
+        "desc": "Hiển thị lộ trình học tập này cho học viên.",
+        "publish_label": "Xuất bản lộ trình học tập",
+        "publish_desc": "Hiển thị lộ trình này và mở cổng đăng ký.",
+        "published": "Published",
+        "unpublished": "Unpublished"
+      },
+      "danger": {
+        "legend": "Khu vực nguy hiểm",
+        "desc": "Xóa vĩnh viễn lộ trình học tập này và toàn bộ dữ liệu liên quan.",
+        "delete_button": "Xóa lộ trình học tập",
+        "delete_title": "Delete Learning Path",
+        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+      },
+      "cover_image": {
+        "legend": "Cover Image",
+        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
+        "replace": "Replace image",
+        "reset": "Reset",
+        "alt": "Bìa đường dẫn"
+      },
+      "welcome_email": {
+        "legend": "Welcome Email",
+        "desc": "Send an automated welcome message when learners are enrolled.",
+        "placeholder": "Write a welcome message for your learners..."
+      },
+      "progression": {
+        "legend": "Course Progression",
+        "desc": "Choose how learners can navigate courses in this path.",
+        "free": "Free navigation (any order)",
+        "sequential": "Sequential (must complete in order)"
+      },
+      "self_enrollment": {
+        "legend": "Self-Enrollment",
+        "access": "Manage access in {people}",
+        "access_people": "People",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "auto_enroll": {
+        "legend": "Auto-Enrollment",
+        "desc": "Automatically enroll new organization members into this learning path.",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      }
+    },
+    "courses": {
+      "lessons": "Lessons",
+      "exercises": "Exercises"
+    },
+    "view_as_student": {
+      "title": "This will redirect you to the Student LMS.",
+      "description": "You are about to see what a student will see when they enroll in this learning path",
+      "copy_link": "Copy link",
+      "go_to_lms": "Go to LMS"
+    }
+  },
+  "certificate": {
+    "tab_design": "Thiết kế",
+    "tab_settings": "Cài đặt",
+    "allow": "Cho phép sinh viên tải xuống chứng chỉ",
+    "email_message_label": "Tin nhắn email",
+    "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
+    "rules": "Quy tắc",
+    "editor": {
+      "title": "Thiết kế chứng chỉ",
+      "back": "Quay lại chứng chỉ",
+      "unsaved": "Chưa lưu",
+      "free_plan": "Gói miễn phí",
+      "discard": "Loại bỏ",
+      "save": "Lưu thay đổi",
+      "saved": "Đã lưu thiết kế chứng chỉ",
+      "save_failed": "Không thể lưu thiết kế chứng chỉ. Hãy kiểm tra biểu mẫu và thử lại.",
+      "signature_upload_in_progress": "Đợi quá trình tải lên chữ ký hoàn tất trước khi lưu.",
+      "sections": "Phần biên tập",
+      "preview": "Xem trước trực tiếp",
+      "panel_templates": "Mẫu",
+      "panel_templates_subtitle": "Chọn một mẫu để neo phong cách trực quan.",
+      "panel_content": "Nội dung",
+      "panel_content_subtitle": "Tinh chỉnh các từ xuất hiện trên chứng chỉ.",
+      "panel_colors": "Màu nhấn",
+      "panel_colors_subtitle": "Dùng cho dòng người nhận, dấu và dấu.",
+      "panel_export": "Xuất khẩu",
+      "panel_export_subtitle": "Xem trước thiết kế hiện tại vì nó sẽ được chuyển giao.",
+      "section_header": "Bản sao tiêu đề",
+      "section_signatories": "Người ký",
+      "section_reference": "Tham chiếu",
+      "subtitle": "phụ đề",
+      "subtitle_placeholder": "Được trao giải cao nhất",
+      "description_override": "Ghi đè mô tả",
+      "description_override_placeholder": "Mặc định cho mô tả khóa học.",
+      "description_override_hint": "Để trống để quay lại mô tả khóa học khi lưu.",
+      "signatory_one_name": "Người ký tên 1",
+      "signatory_one_role": "Người ký 1 vai trò",
+      "signatory_two_name": "Tên người ký 2",
+      "signatory_two_role": "Người ký 2 vai trò",
+      "signatory_one_toggle": "Hiển thị người ký 1",
+      "signatory_two_toggle": "Hiển thị người ký 2",
+      "signature_upload": "Hình ảnh chữ ký",
+      "signature_upload_hint": "Tải lên hình ảnh chữ ký (tùy chọn)",
+      "signature_dont_crop": "Đừng cắt xén",
+      "id_format": "Định dạng ID chứng chỉ",
+      "id_format_hint": "Sử dụng '{'seq'}' cho bốn chữ số cuối, '{'year'}' cho năm phát hành, '{'month'}' cho tháng.",
+      "accent_hint": "Màu nhấn xuất hiện trên quy tắc người nhận, tem và phần đánh dấu tiêu đề của mẫu.",
+      "templates_hint": "Các mẫu hiển thị với cùng một trình kết xuất được sử dụng cho tệp PDF và PNG đã tải xuống.",
+      "download_pdf": "Tải PDF",
+      "download_png": "Tải PNG",
+      "print": "In",
+      "export_hint": "Quá trình xuất sử dụng tên của bạn làm người nhận để bạn có thể xem trước bố cục cuối cùng.",
+      "preview_failed": "Không thể tạo bản xem trước chứng chỉ",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Giấy chứng nhận xuất sắc",
+      "sample_description": "Để ghi nhận thành tích xuất sắc và sự cống hiến gương mẫu cho nghề.",
+      "sample_org": "Học viện nghệ thuật hoàng gia",
+      "summary_title": "Thiết kế năng động",
+      "summary_subtitle": "Ảnh chụp nhanh về hình thức của chứng chỉ khi được cấp.",
+      "field_template": "mẫu",
+      "field_accent": "Màu nhấn",
+      "field_signatories": "Người ký",
+      "customize_design": "Tùy chỉnh thiết kế",
+      "signatory_one": "Người ký 1",
+      "signatory_two": "Người ký 2",
+      "signatory_name": "Tên người ký",
+      "signatory_role": "Vai trò của người ký",
+      "signature_image": "Hình ảnh chữ ký"
     }
   }
 }

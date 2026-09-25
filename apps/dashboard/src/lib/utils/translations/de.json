@@ -12,7 +12,30 @@
     },
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern",
-    "scroll_to_top": "Zum Seitenanfang scrollen"
+    "scroll_to_top": "Zum Seitenanfang scrollen",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "back": "Zurück",
+    "close": "Close",
+    "edit": "Edit",
+    "coming_soon": "Coming soon",
+    "pricing": {
+      "enable_paid": "Bezahlt aktivieren",
+      "yes": "Ja",
+      "no": "Nein",
+      "currency": "Währung",
+      "cost": "Kosten",
+      "payment_link": "Payment Link",
+      "payment_required": "Payment link is required",
+      "payment_invalid_url": "Please enter a valid URL",
+      "discount": "Rabatt",
+      "show_discount": "Show discount",
+      "discount_percentage": "Discount percentage",
+      "reward": "Reward / Gift",
+      "reward_help": "Offer learners an incentive upon completion",
+      "reward_description": "Reward description",
+      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+    }
   },
   "validations": {
     "generic": {
@@ -1301,7 +1324,12 @@
           "signature_upload_hint": "Laden Sie ein Signaturbild hoch (optional)",
           "signature_dont_crop": "Nicht beschneiden",
           "signature_upload_in_progress": "Warten Sie, bis der Signatur-Upload abgeschlossen ist, bevor Sie speichern.",
-          "save_failed": "Das Zertifikatdesign konnte nicht gespeichert werden. Überprüfen Sie das Formular und versuchen Sie es erneut."
+          "save_failed": "Das Zertifikatdesign konnte nicht gespeichert werden. Überprüfen Sie das Formular und versuchen Sie es erneut.",
+          "signatory_one": "Unterzeichner 1",
+          "signatory_two": "Unterzeichner 2",
+          "signatory_name": "Name des Unterzeichners",
+          "signatory_role": "Rolle des Unterzeichners",
+          "signature_image": "Signaturbild"
         }
       },
       "people": {
@@ -5496,7 +5524,7 @@
         "people": "Teilnehmer",
         "analytics": "Analysen",
         "landing": "Landingpage",
-        "certificate": "Zertifikat",
+        "certificate": "Zertifikate",
         "settings": "Einstellungen",
         "setup": "Aufstellen"
       },
@@ -5557,7 +5585,9 @@
       "remove_course": "Aus Pfad entfernen",
       "add_course_button": "Füge dem Pfad einen Kurs hinzu",
       "empty_title": "Noch keine Kurse in diesem Lernpfad",
-      "empty_description": "Fügen Sie Kurse hinzu, um die Lernenden durch eine strukturierte Abfolge zu führen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
+      "empty_description": "Fügen Sie Kurse hinzu, um die Lernenden durch eine strukturierte Abfolge zu führen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“.",
+      "start_reorder": "Neu anordnen",
+      "end_reorder": "Nachbestellung beenden"
     },
     "listing": {
       "title": "Lernpfade",
@@ -5611,7 +5641,8 @@
       "open": "Offen",
       "share": "Teilen",
       "invite": "Einladen",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "view_as_student": "View as student"
     },
     "card": {
       "actions_menu_aria": "Pfadaktionen",
@@ -5632,7 +5663,11 @@
       "member_removed": "Lernender wurde aus dem Pfad entfernt",
       "tutors_added": "Tutoren zum Pfad hinzugefügt",
       "tutor_added": "Tutor zum Pfad hinzugefügt",
-      "tutor_removed": "Tutor aus dem Pfad entfernt"
+      "tutor_removed": "Tutor aus dem Pfad entfernt",
+      "certificate_saved": "Zertifikatseinstellungen gespeichert",
+      "landing_saved": "Landingpage aktualisiert",
+      "link_generated": "Invite link generated and copied to clipboard",
+      "settings_saved": "Learning path settings updated"
     },
     "analytics": {
       "title": "Analytik",
@@ -5737,7 +5772,302 @@
         "in_progress": "In Bearbeitung",
         "completed": "Abgeschlossen"
       },
-      "info_title": "Informationen zur Pfadregistrierung"
+      "info_title": "Informationen zur Pfadregistrierung",
+      "add": "Add",
+      "last_login_at": "Last login at",
+      "you": "You",
+      "view": "View",
+      "delete_profile": "Remove",
+      "invite_modal": {
+        "loading": "Adding…",
+        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "invite": "Laden Sie Tutoren ein",
+        "invite_students": "Laden Sie Studierende ein",
+        "finish": "Fertig"
+      }
+    },
+    "certificate": {
+      "title": "Zertifikate",
+      "awarded_count": "{count, plural, =0 {Noch keine Zertifikate vergeben} =1 {Bisher 1 Zertifikat vergeben} other {Bisher # Zertifikate vergeben}}",
+      "allow": "Erlauben Sie Schülern, das Zertifikat herunterzuladen",
+      "email_message_label": "E-Mail-Nachricht",
+      "email_message_placeholder": "z.B. Herzlichen Glückwunsch zum Abschluss des Lernpfads!",
+      "editor": {
+        "title": "Zertifikatsdesign"
+      }
+    },
+    "landing": {
+      "page_builder": "Page-Builder",
+      "display_section": "Abschnitt anzeigen",
+      "hero": {
+        "title": "Hero",
+        "headline": "Überschrift",
+        "headline_placeholder": "z.B. Werden Sie Senior Fullstack-Entwickler",
+        "subheadline": "Unterüberschrift",
+        "subheadline_placeholder": "z.B. Meistern Sie modernes Frontend, Backend und Deployment durch praxisnahe Projekte."
+      },
+      "access": {
+        "title": "Besucherzugriff",
+        "description": "Steuert, wie viel Inhalt nicht eingeschriebene Besucher auf der öffentlichen Seite erkunden können.",
+        "teaser_title": "Teaser",
+        "teaser_desc": "Nur Kurstitel und übergeordnete Lernergebnisse anzeigen.",
+        "syllabus_title": "Lehrplan (empfohlen)",
+        "syllabus_desc": "Vollständigen Lehrplan mit Lektionstiteln und Sperrkennzeichnungen anzeigen.",
+        "preview_title": "Vorschau",
+        "preview_desc": "Besuchern erlauben, die erste Lektion jedes Kurses ohne Einschreibung anzusehen."
+      },
+      "skills": {
+        "title": "Fertigkeiten",
+        "placeholder": "z.B. TypeScript, Docker, PostgreSQL",
+        "help": "Press Enter to add. These appear as chips on your landing page."
+      },
+      "instructors": {
+        "title": "Kursleiter",
+        "auto_populated_note": "Kursleiter werden automatisch aus den Kursen dieses Lernpfads übernommen.",
+        "courses_note": "{count, plural, =0 {Noch keine Kurse hinzugefügt} =1 {Aus 1 Kurs in diesem Lernpfad übernommen} other {Aus allen # Kursen in diesem Lernpfad übernommen}}",
+        "role_placeholder": "e.g. Lead Instructor · Frontend",
+        "default_role": "Course Instructor",
+        "untitled": "Untitled instructor",
+        "add": "Add instructor",
+        "no_tutors_found": "No instructors found",
+        "min_one_required": "At least one instructor is required",
+        "remove": "Remove instructor",
+        "upload": "Instructor Logo",
+        "name": "Instructor name",
+        "name_placeholder": "Your company name",
+        "role": "Instructor Role",
+        "about": "About Instructor",
+        "about_placeholder": "A short background about the instructor",
+        "total": "No of courses"
+      },
+      "testimonials": {
+        "title": "Erfahrungsberichte",
+        "untitled": "Unbenannter Erfahrungsbericht",
+        "name": "Name",
+        "role": "Rolle / Position",
+        "quote": "Zitat",
+        "add": "Erfahrungsbericht hinzufügen"
+      },
+      "faqs": {
+        "title": "FAQs",
+        "untitled": "Unbenannte FAQ",
+        "question": "Frage",
+        "answer": "Antwort",
+        "add": "FAQ hinzufügen",
+        "question_placeholder": "What is required to complete this path?",
+        "answer_placeholder": "You must complete all lessons and exercises in every course."
+      },
+      "header": {
+        "title_placeholder": "e.g. Fullstack Web Development",
+        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
+        "title": "Header",
+        "title_label": "Title",
+        "description_label": "Description"
+      },
+      "reviews": {
+        "title": "Reviews",
+        "untitled": "Untitled review",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "Avatar image URL",
+        "rating_placeholder": "Optional (1-5)",
+        "clear_rating": "Clear rating",
+        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
+        "add_reviews": "Add Reviews",
+        "fullname": "Full Name",
+        "description": "Description",
+        "rating": "Rating"
+      },
+      "preview": "Preview",
+      "save": "Save",
+      "requirement": {
+        "title": "Requirement"
+      },
+      "description": {
+        "title": "Description"
+      },
+      "goals": {
+        "title": "Goals"
+      },
+      "certificate": {
+        "title": "Certificate",
+        "upload_template": "Certificate template"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "payment_required": "Payment link is required",
+        "payment_invalid_url": "Please enter a valid URL",
+        "enable_paid": "Bezahlt aktivieren",
+        "currency": "Währung",
+        "cost": "Kosten",
+        "payment": "Zahlungslink",
+        "payment_helper": "Stripe, Lemon Squeezy oder ein beliebiger Zahlungslink",
+        "discount": "Rabatt",
+        "no": "Nein",
+        "yes": "Ja",
+        "percent": "Rabattprozentsatz",
+        "percentage_helper": "In Prozent %",
+        "gift_on_completion": "Geschenk bei Fertigstellung",
+        "gift": "Über Geschenk"
+      }
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "general": {
+        "legend": "Allgemeine Informationen",
+        "desc": "Grundlegende Details zu diesem Lernpfad.",
+        "name_label": "Pfadname",
+        "name_placeholder": "z.B. Fullstack-Webentwicklung",
+        "name_required": "Pfadname ist erforderlich",
+        "description_label": "Beschreibung",
+        "description_placeholder": "Eine kurze Zusammenfassung der Ziele für die Lernenden...",
+        "description_required": "Beschreibung ist erforderlich",
+        "cover_image_legend": "Titelbild",
+        "cover_image_desc": "Laden Sie ein Titelbild für diesen Lernpfad hoch. Empfohlene Größe: 1200x630px.",
+        "replace_image": "Bild ersetzen",
+        "reset_image": "Zurücksetzen",
+        "link": "Public link",
+        "generate_link": "Generate invite link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
+        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+      },
+      "enrollment": {
+        "legend": "Einschreibung & Ablauf",
+        "desc": "Legen Sie fest, wie sich Lernende einschreiben und Kurse absolvieren.",
+        "self_enrollment_label": "Selbsteinschreibung erlauben",
+        "self_enrollment_desc": "Lernende können sich selbst für diesen Pfad einschreiben.",
+        "sequential_unlock_label": "Sequenzielle Kursfreischaltung",
+        "sequential_unlock_desc": "Lernende müssen Kurse in festgelegter Reihenfolge absolvieren.",
+        "auto_enroll_label": "Automatisch in Pfadkurse einschreiben",
+        "auto_enroll_desc": "Lernende automatisch in alle Kurse einschreiben, sobald sie dem Pfad beitreten."
+      },
+      "publishing": {
+        "legend": "Veröffentlichung",
+        "desc": "Diesen Lernpfad für Lernende sichtbar machen.",
+        "publish_label": "Lernpfad veröffentlichen",
+        "publish_desc": "Diesen Lernpfad sichtbar machen und für Einschreibungen öffnen.",
+        "published": "Published",
+        "unpublished": "Unpublished"
+      },
+      "danger": {
+        "legend": "Gefahrenbereich",
+        "desc": "Diesen Lernpfad und alle zugehörigen Daten dauerhaft löschen.",
+        "delete_button": "Lernpfad löschen",
+        "delete_title": "Delete Learning Path",
+        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+      },
+      "cover_image": {
+        "legend": "Cover Image",
+        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
+        "replace": "Replace image",
+        "reset": "Reset",
+        "alt": "Wegabdeckung"
+      },
+      "welcome_email": {
+        "legend": "Welcome Email",
+        "desc": "Send an automated welcome message when learners are enrolled.",
+        "placeholder": "Write a welcome message for your learners..."
+      },
+      "progression": {
+        "legend": "Course Progression",
+        "desc": "Choose how learners can navigate courses in this path.",
+        "free": "Free navigation (any order)",
+        "sequential": "Sequential (must complete in order)"
+      },
+      "self_enrollment": {
+        "legend": "Self-Enrollment",
+        "access": "Manage access in {people}",
+        "access_people": "People",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "auto_enroll": {
+        "legend": "Auto-Enrollment",
+        "desc": "Automatically enroll new organization members into this learning path.",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      }
+    },
+    "courses": {
+      "lessons": "Lessons",
+      "exercises": "Exercises"
+    },
+    "view_as_student": {
+      "title": "This will redirect you to the Student LMS.",
+      "description": "You are about to see what a student will see when they enroll in this learning path",
+      "copy_link": "Copy link",
+      "go_to_lms": "Go to LMS"
+    }
+  },
+  "certificate": {
+    "tab_design": "Design",
+    "tab_settings": "Einstellungen",
+    "allow": "Erlauben Sie Schülern, das Zertifikat herunterzuladen",
+    "email_message_label": "E-Mail-Nachricht",
+    "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
+    "rules": "Regeln",
+    "editor": {
+      "title": "Zertifikatsdesign",
+      "back": "Zurück zu den Zertifikaten",
+      "unsaved": "Nicht gespeichert",
+      "free_plan": "Kostenloser Plan",
+      "discard": "Verwerfen",
+      "save": "Änderungen speichern",
+      "saved": "Zertifikatsdesign gespeichert",
+      "save_failed": "Das Zertifikatdesign konnte nicht gespeichert werden. Überprüfen Sie das Formular und versuchen Sie es erneut.",
+      "signature_upload_in_progress": "Warten Sie, bis der Signatur-Upload abgeschlossen ist, bevor Sie speichern.",
+      "sections": "Editor-Abschnitte",
+      "preview": "Live-Vorschau",
+      "panel_templates": "Vorlagen",
+      "panel_templates_subtitle": "Wählen Sie eine Vorlage aus, um den visuellen Stil zu verankern.",
+      "panel_content": "Inhalt",
+      "panel_content_subtitle": "Optimieren Sie die Wörter, die auf dem Zertifikat erscheinen.",
+      "panel_colors": "Akzentfarbe",
+      "panel_colors_subtitle": "Wird für die Empfängerzeile, Akzente und den Stempel verwendet.",
+      "panel_export": "Exportieren",
+      "panel_export_subtitle": "Sehen Sie sich das aktuelle Design in der Vorschau an, sobald es geliefert wird.",
+      "section_header": "Header-Kopie",
+      "section_signatories": "Unterzeichner",
+      "section_reference": "Referenz",
+      "subtitle": "Untertitel",
+      "subtitle_placeholder": "Mit höchster Auszeichnung ausgezeichnet",
+      "description_override": "Beschreibungsüberschreibung",
+      "description_override_placeholder": "Standardmäßig wird die Kursbeschreibung verwendet.",
+      "description_override_hint": "Lassen Sie das Feld leer, um beim Speichern zur Kursbeschreibung zurückzukehren.",
+      "signatory_one_name": "Name des Unterzeichners 1",
+      "signatory_one_role": "Unterzeichner 1 Rolle",
+      "signatory_two_name": "Name des Unterzeichners 2",
+      "signatory_two_role": "Rolle des Unterzeichners 2",
+      "signatory_one_toggle": "Unterzeichner 1 anzeigen",
+      "signatory_two_toggle": "Unterzeichner 2 anzeigen",
+      "signature_upload": "Signaturbild",
+      "signature_upload_hint": "Laden Sie ein Signaturbild hoch (optional)",
+      "signature_dont_crop": "Nicht beschneiden",
+      "id_format": "Zertifikat-ID-Format",
+      "id_format_hint": "Verwenden Sie „{'seq'}‘ für die letzten vier Ziffern, „{'year'}‘ für das Ausgabejahr und „{'month'}‘ für den Monat.",
+      "accent_hint": "Die Akzentfarbe wird auf der Empfängerregel, den Stempeln und der Überschriftenhervorhebung der Vorlage angezeigt.",
+      "templates_hint": "Vorlagen werden mit demselben Renderer gerendert, der für die heruntergeladenen PDF- und PNG-Dateien verwendet wird.",
+      "download_pdf": "PDF herunterladen",
+      "download_png": "PNG herunterladen",
+      "print": "Drucken",
+      "export_hint": "Bei Exporten wird Ihr Name als Empfänger verwendet, sodass Sie eine Vorschau des endgültigen Layouts anzeigen können.",
+      "preview_failed": "Die Zertifikatvorschau konnte nicht generiert werden",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Zertifikat für Exzellenz",
+      "sample_description": "In Anerkennung herausragender Leistungen und vorbildlichen Engagements für das Handwerk.",
+      "sample_org": "Die Königliche Akademie der Künste",
+      "summary_title": "Aktives Design",
+      "summary_subtitle": "Schnappschuss davon, wie das Zertifikat bei Ausstellung aussehen wird.",
+      "field_template": "Vorlage",
+      "field_accent": "Akzent",
+      "field_signatories": "Unterzeichner",
+      "customize_design": "Design anpassen",
+      "signatory_one": "Unterzeichner 1",
+      "signatory_two": "Unterzeichner 2",
+      "signatory_name": "Name des Unterzeichners",
+      "signatory_role": "Rolle des Unterzeichners",
+      "signature_image": "Signaturbild"
     }
   }
 }
