@@ -9,6 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { slugifyForFilename } from '@cio/utils/functions';
   import { classroomio } from '$lib/utils/services/api';
   import type { CertificationEvaluationData } from '$features/course/utils/types';
   import { normalizeCertificateIssuedAt, formatBlockerMessage } from '$features/course/utils/certificate-utils';
@@ -52,7 +53,7 @@
       const blobResponse = await response.blob();
       await triggerSave(
         new Blob([blobResponse], { type: 'application/pdf' }),
-        `certificate-${courseApi.course?.title ?? 'course'}.pdf`
+        `certificate-${slugifyForFilename(courseApi.course?.title ?? 'course')}.pdf`
       );
     } catch (error) {
       console.error('Error downloading', error);
@@ -74,7 +75,7 @@
       const blobResponse = await response.blob();
       await triggerSave(
         new Blob([blobResponse], { type: 'image/png' }),
-        `certificate-${courseApi.course?.title ?? 'course'}.png`
+        `certificate-${slugifyForFilename(courseApi.course?.title ?? 'course')}.png`
       );
     } catch (error) {
       console.error('Error downloading image', error);

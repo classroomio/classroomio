@@ -38,6 +38,7 @@ import {
 import { getCourseGroupIds, getOrgCourseGroups, getOrgCourses } from '@cio/db/queries/course';
 import { getExistingPathMembers, getOrgLearningPathsByIds, listLearningPaths } from '@cio/db/queries/learning-path';
 import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
+import { sendLearningPathWelcomeEmail } from '@api/services/learning-path/email';
 import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 
 import { ROLE } from '@cio/utils/constants';
@@ -403,19 +404,21 @@ async function enrollAudienceStudentProfilesInPaths(
           const email = profileEmailMap.get(pair.profileId)!;
 
           try {
-            await enqueueTransactionalEmail('studentLearningPathWelcome', {
-              to: email,
-              fields: {
-                orgName: organization.name,
-                learningPathName: pathNameById.get(pair.learningPathId) || 'Learning path',
-                loginUrl,
-                branding
+            const sent = await sendLearningPathWelcomeEmail({
+              organization,
+              learningPath: {
+                id: pair.learningPathId,
+                name: pathNameById.get(pair.learningPathId) || 'Learning path',
+                welcomeEmailMessage: pathById.get(pair.learningPathId)?.welcomeEmailMessage
               },
-              from,
-              idempotencyKey: `audience-path-welcome:${pair.learningPathId}:${pair.profileId}`,
-              preference: { organizationId: orgId, recipientProfileId: pair.profileId }
+              profileId: pair.profileId,
+              email,
+              idempotencyKey: `audience-path-welcome:${pair.learningPathId}:${pair.profileId}`
             });
-            emailsSent++;
+
+            if (sent) {
+              emailsSent++;
+            }
           } catch (emailError) {
             console.error(`enrollAudienceStudentProfilesInPaths enqueue error for ${email}:`, emailError);
           }

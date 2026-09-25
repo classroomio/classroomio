@@ -34,6 +34,6 @@
   </div>
 
   <p class="ui:text-muted-foreground text-xs">
-    {$t('course.navItem.certificates.editor.accent_hint')}
+    {$t('certificate.editor.accent_hint')}
   </p>
 </div>

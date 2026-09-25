@@ -52,7 +52,7 @@
     <Page.Action>
       <div class="flex w-full justify-end gap-2">
         <Button variant="outline" onclick={handleToggleReorder}>
-          {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
+          {$t(`learningPath.builder.${reorder ? 'end_reorder' : 'start_reorder'}`)}
         </Button>
         <Button onclick={() => (showAddDialog = true)}>
           {$t('learningPath.builder.add_course_button')}

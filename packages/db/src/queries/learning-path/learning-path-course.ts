@@ -1,6 +1,7 @@
-import { and, asc, eq, isNull, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { ROLE } from '@cio/utils/constants';
 
 import * as schema from '../../schema';
 import type { TLearningPath, TLearningPathCourse } from '../../types';
@@ -10,7 +11,6 @@ export interface TLearningPathCourseDetail {
   learningPathId: string;
   courseId: string;
   order: number;
-  outcomes: string[];
   addedAt: string;
   title: string;
   description: string;
@@ -19,7 +19,17 @@ export interface TLearningPathCourseDetail {
   coverImage: string | null;
   lessonsCount: number;
   exercisesCount: number;
+  instructor?: {
+    name?: string;
+    role?: string;
+    imgUrl?: string;
+  } | null;
 }
+
+const INSTRUCTOR_ROLE_LABEL = {
+  TUTOR: 'Tutor',
+  INSTRUCTOR: 'Instructor'
+} as const;
 
 /**
  * Lists active courses in a learning path in order, joined with course details and item counts.
@@ -54,13 +64,14 @@ export async function listLearningPathCourses(
         learningPathId: schema.learningPathCourse.learningPathId,
         courseId: schema.learningPathCourse.courseId,
         order: schema.learningPathCourse.order,
-        outcomes: schema.learningPathCourse.outcomes,
         addedAt: schema.learningPathCourse.addedAt,
         title: schema.course.title,
         description: schema.course.description,
         cost: schema.course.cost,
         currency: schema.course.currency,
         coverImage: schema.course.bannerImage,
+        metadata: schema.course.metadata,
+        groupId: schema.course.groupId,
         lessonsCount: lessonsCountSql,
         exercisesCount: exercisesCountSql
       })
@@ -71,14 +82,73 @@ export async function listLearningPathCourses(
       )
       .orderBy(asc(schema.learningPathCourse.order));
 
-    return rows.map((row) => ({
-      ...row,
-      cost: Number(row.cost || 0),
-      coverImage: row.coverImage ?? null,
-      outcomes: (row.outcomes as string[]) || [],
-      lessonsCount: Number(row.lessonsCount || 0),
-      exercisesCount: Number(row.exercisesCount || 0)
-    }));
+    const missingGroupIds = [
+      ...new Set(
+        rows
+          .filter((row) => {
+            const instructor = (row.metadata as Record<string, unknown>)?.instructor as { name?: string } | undefined;
+            return !instructor?.name && row.groupId;
+          })
+          .map((row) => row.groupId as string)
+      )
+    ];
+
+    const teacherMap = new Map<string, { name: string; role: string; imgUrl: string }>();
+
+    if (missingGroupIds.length > 0) {
+      const teachers = await dbClient
+        .select({
+          groupId: schema.groupmember.groupId,
+          roleId: schema.groupmember.roleId,
+          fullname: schema.profile.fullname,
+          avatarUrl: schema.profile.avatarUrl
+        })
+        .from(schema.groupmember)
+        .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+        .where(
+          and(
+            inArray(schema.groupmember.groupId, missingGroupIds),
+            inArray(schema.groupmember.roleId, [ROLE.TUTOR, ROLE.ADMIN])
+          )
+        )
+        .orderBy(
+          sql`CASE WHEN ${schema.groupmember.roleId} = ${ROLE.TUTOR} THEN 0 ELSE 1 END`,
+          asc(schema.groupmember.createdAt)
+        );
+
+      for (const teacher of teachers) {
+        if (!teacher.groupId || !teacher.fullname) continue;
+
+        const current = teacherMap.get(teacher.groupId);
+        if (!current || (current.role === INSTRUCTOR_ROLE_LABEL.INSTRUCTOR && teacher.roleId === ROLE.TUTOR)) {
+          teacherMap.set(teacher.groupId, {
+            name: teacher.fullname,
+            role: teacher.roleId === ROLE.TUTOR ? INSTRUCTOR_ROLE_LABEL.TUTOR : INSTRUCTOR_ROLE_LABEL.INSTRUCTOR,
+            imgUrl: teacher.avatarUrl ?? ''
+          });
+        }
+      }
+    }
+
+    return rows.map((row) => {
+      const explicit = (row.metadata as Record<string, unknown>)?.instructor as {
+        name?: string;
+        role?: string;
+        imgUrl?: string;
+      } | null;
+
+      const fallback = row.groupId ? (teacherMap.get(row.groupId) ?? null) : null;
+      const instructor = (explicit?.name ? explicit : fallback) ?? null;
+
+      return {
+        ...row,
+        cost: Number(row.cost || 0),
+        coverImage: row.coverImage ?? null,
+        lessonsCount: Number(row.lessonsCount || 0),
+        exercisesCount: Number(row.exercisesCount || 0),
+        instructor
+      };
+    });
   } catch (error) {
     console.error('listLearningPathCourses error:', error);
     throw new Error(
@@ -96,82 +166,84 @@ export async function addCourseToPath(
   courseId: string,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathCourse> {
-  try {
-    return await dbClient.transaction(async (tx) => {
-      // 1. Check if the record already exists
-      const [existingRow] = await tx
-        .select()
-        .from(schema.learningPathCourse)
-        .where(
-          and(
-            eq(schema.learningPathCourse.learningPathId, learningPathId),
-            eq(schema.learningPathCourse.courseId, courseId)
-          )
+  const run = async (tx: DbOrTxClient): Promise<TLearningPathCourse> => {
+    // 1. Check if the record already exists
+    const [existingRow] = await tx
+      .select()
+      .from(schema.learningPathCourse)
+      .where(
+        and(
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          eq(schema.learningPathCourse.courseId, courseId)
         )
-        .limit(1);
+      )
+      .limit(1);
 
-      // If it already exists and is active, return it immediately
-      if (existingRow && !existingRow.removedAt) {
-        return existingRow;
-      }
+    // If it already exists and is active, return it immediately
+    if (existingRow && !existingRow.removedAt) {
+      return existingRow;
+    }
 
-      // 2. Lock the learning path row to serialize concurrent order allocation
-      await tx
-        .select({ id: schema.learningPath.id })
-        .from(schema.learningPath)
-        .where(eq(schema.learningPath.id, learningPathId))
-        .for('update');
+    // 2. Lock the learning path row to serialize concurrent order allocation
+    await tx
+      .select({ id: schema.learningPath.id })
+      .from(schema.learningPath)
+      .where(eq(schema.learningPath.id, learningPathId))
+      .for('update');
 
-      // 3. Calculate the next order atomically within the transaction
-      const [maxRow] = await tx
-        .select({
-          maxOrder: sql<number>`COALESCE(MAX(${schema.learningPathCourse.order}), 0)::int`
-        })
-        .from(schema.learningPathCourse)
-        .where(
-          and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-        );
+    // 3. Calculate the next order atomically within the transaction
+    const [maxRow] = await tx
+      .select({
+        maxOrder: sql<number>`COALESCE(MAX(${schema.learningPathCourse.order}), 0)::int`
+      })
+      .from(schema.learningPathCourse)
+      .where(
+        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
+      );
 
-      const nextOrder = (maxRow?.maxOrder ?? 0) + 1;
+    const nextOrder = (maxRow?.maxOrder ?? 0) + 1;
 
-      // 4. If it exists and was soft-deleted, update it directly by ID
-      if (existingRow) {
-        const [restored] = await tx
-          .update(schema.learningPathCourse)
-          .set({ order: nextOrder, removedAt: null })
-          .where(eq(schema.learningPathCourse.id, existingRow.id))
-          .returning();
-
-        if (!restored) {
-          throw new Error('Failed to re-add course to learning path');
-        }
-        return restored;
-      }
-
-      // 5. Otherwise, insert a new record.
-      // onConflictDoUpdate acts as a bulletproof safety net against concurrent race conditions.
-      const [created] = await tx
-        .insert(schema.learningPathCourse)
-        .values({
-          learningPathId,
-          courseId,
-          order: nextOrder
-        })
-        .onConflictDoUpdate({
-          target: [schema.learningPathCourse.learningPathId, schema.learningPathCourse.courseId],
-          set: {
-            order: nextOrder,
-            removedAt: null
-          }
-        })
+    // 4. If it exists and was soft-deleted, update it directly by ID
+    if (existingRow) {
+      const [restored] = await tx
+        .update(schema.learningPathCourse)
+        .set({ order: nextOrder, removedAt: null })
+        .where(eq(schema.learningPathCourse.id, existingRow.id))
         .returning();
 
-      if (!created) {
-        throw new Error('Failed to add course to learning path');
+      if (!restored) {
+        throw new Error('Failed to re-add course to learning path');
       }
+      return restored;
+    }
 
-      return created;
-    });
+    // 5. Otherwise, insert a new record.
+    // onConflictDoUpdate acts as a bulletproof safety net against concurrent race conditions.
+    const [created] = await tx
+      .insert(schema.learningPathCourse)
+      .values({
+        learningPathId,
+        courseId,
+        order: nextOrder
+      })
+      .onConflictDoUpdate({
+        target: [schema.learningPathCourse.learningPathId, schema.learningPathCourse.courseId],
+        set: {
+          order: nextOrder,
+          removedAt: null
+        }
+      })
+      .returning();
+
+    if (!created) {
+      throw new Error('Failed to add course to learning path');
+    }
+
+    return created;
+  };
+
+  try {
+    return await (dbClient === db ? db.transaction(run) : run(dbClient));
   } catch (error) {
     console.error('addCourseToPath error:', error);
     throw new Error(
@@ -188,15 +260,19 @@ export async function addCoursesToPath(
   courseIds: string[],
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathCourse[]> {
-  try {
+  const runAll = async (tx: DbOrTxClient): Promise<TLearningPathCourse[]> => {
     const addedCourses: TLearningPathCourse[] = [];
 
     for (const courseId of courseIds) {
-      const row = await addCourseToPath(learningPathId, courseId, dbClient);
+      const row = await addCourseToPath(learningPathId, courseId, tx);
       addedCourses.push(row);
     }
 
     return addedCourses;
+  };
+
+  try {
+    return await (dbClient === db ? db.transaction(runAll) : runAll(dbClient));
   } catch (error) {
     console.error('addCoursesToPath error:', error);
     throw new Error(
@@ -215,8 +291,8 @@ export async function removeCourseFromPath(
   courseId: string,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathCourse | null> {
-  try {
-    const [removed] = await dbClient
+  const run = async (tx: DbOrTxClient): Promise<TLearningPathCourse | null> => {
+    const [removed] = await tx
       .update(schema.learningPathCourse)
       .set({ removedAt: new Date().toISOString() })
       .where(
@@ -232,7 +308,7 @@ export async function removeCourseFromPath(
       return null;
     }
 
-    const remaining = await dbClient
+    const remaining = await tx
       .select({ id: schema.learningPathCourse.id })
       .from(schema.learningPathCourse)
       .where(
@@ -240,14 +316,31 @@ export async function removeCourseFromPath(
       )
       .orderBy(asc(schema.learningPathCourse.order));
 
-    for (let index = 0; index < remaining.length; index++) {
-      await dbClient
+    if (remaining.length > 0) {
+      const orderCase = sql<number>`CASE ${schema.learningPathCourse.id} ${sql.join(
+        remaining.map((row, index) => sql`WHEN ${row.id} THEN ${index + 1}`),
+        sql` `
+      )} END`;
+
+      await tx
         .update(schema.learningPathCourse)
-        .set({ order: index + 1 })
-        .where(eq(schema.learningPathCourse.id, remaining[index].id));
+        .set({ order: orderCase })
+        .where(
+          and(
+            eq(schema.learningPathCourse.learningPathId, learningPathId),
+            inArray(
+              schema.learningPathCourse.id,
+              remaining.map((row) => row.id)
+            )
+          )
+        );
     }
 
     return removed;
+  };
+
+  try {
+    return await (dbClient === db ? db.transaction(run) : run(dbClient));
   } catch (error) {
     console.error('removeCourseFromPath error:', error);
     throw new Error(
@@ -289,37 +382,24 @@ export async function reorderLearningPathCourses(
       );
     }
 
-    for (let index = 0; index < courseIds.length; index++) {
-      const courseId = courseIds[index];
-      const newOrder = index + 1;
+    const orderCase = sql<number>`CASE ${schema.learningPathCourse.courseId} ${sql.join(
+      courseIds.map((courseId, index) => sql`WHEN ${courseId} THEN ${index + 1}`),
+      sql` `
+    )} END`;
 
-      await client
-        .update(schema.learningPathCourse)
-        .set({ order: newOrder })
-        .where(
-          and(
-            eq(schema.learningPathCourse.learningPathId, learningPathId),
-            eq(schema.learningPathCourse.courseId, courseId)
-          )
-        );
-    }
+    await client
+      .update(schema.learningPathCourse)
+      .set({ order: orderCase })
+      .where(
+        and(
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          inArray(schema.learningPathCourse.courseId, courseIds)
+        )
+      );
   };
 
-  if (dbClient !== db) {
-    try {
-      await applyReorder(dbClient);
-    } catch (error) {
-      console.error('reorderLearningPathCourses error:', error);
-      throw new Error(
-        `Failed to reorder learning path courses: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
-    }
-
-    return;
-  }
-
   try {
-    await db.transaction(applyReorder);
+    return await (dbClient === db ? db.transaction(applyReorder) : applyReorder(dbClient));
   } catch (error) {
     console.error('reorderLearningPathCourses error:', error);
     throw new Error(
@@ -401,7 +481,8 @@ export async function getPathsContainingCourseForMember(
           eq(schema.learningPathCourse.courseId, courseId),
           isNull(schema.learningPathCourse.removedAt),
           eq(schema.learningPathMember.profileId, profileId),
-          isNull(schema.learningPathMember.removedAt)
+          isNull(schema.learningPathMember.removedAt),
+          eq(schema.learningPath.status, 'ACTIVE')
         )
       );
 
@@ -410,37 +491,6 @@ export async function getPathsContainingCourseForMember(
     console.error('getPathsContainingCourseForMember error:', error);
     throw new Error(
       `Failed to get paths containing course for member: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
- * Updates course details within a learning path (such as learning outcomes).
- */
-export async function updateLearningPathCourse(
-  learningPathId: string,
-  courseId: string,
-  data: Partial<Pick<TLearningPathCourse, 'outcomes'>>,
-  dbClient: DbOrTxClient = db
-): Promise<TLearningPathCourse | null> {
-  try {
-    const [updated] = await dbClient
-      .update(schema.learningPathCourse)
-      .set(data)
-      .where(
-        and(
-          eq(schema.learningPathCourse.learningPathId, learningPathId),
-          eq(schema.learningPathCourse.courseId, courseId),
-          isNull(schema.learningPathCourse.removedAt)
-        )
-      )
-      .returning();
-
-    return updated ?? null;
-  } catch (error) {
-    console.error('updateLearningPathCourse error:', error);
-    throw new Error(
-      `Failed to update course in learning path: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

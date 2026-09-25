@@ -53,8 +53,8 @@
 >
   <Dialog.Content class="w-[calc(100%-2rem)] max-w-xl! p-4">
     <Dialog.Header>
-      <Dialog.Title>{$t('course.view_as_student.title')}</Dialog.Title>
-      <Dialog.Description>{$t('course.view_as_student.description')}</Dialog.Description>
+      <Dialog.Title>{$t('learningPath.view_as_student.title')}</Dialog.Title>
+      <Dialog.Description>{$t('learningPath.view_as_student.description')}</Dialog.Description>
     </Dialog.Header>
 
     <img
@@ -69,10 +69,10 @@
 
     <Dialog.Footer>
       <Button variant="secondary" onclick={handleCopyLink} disabled={!pathSlug || isNavigating}>
-        {$t('course.view_as_student.copy_link')}
+        {$t('learningPath.view_as_student.copy_link')}
       </Button>
       <Button variant="default" onclick={handleGoToLms} disabled={!pathId} loading={isNavigating}>
-        {$t('course.view_as_student.go_to_lms')}
+        {$t('learningPath.view_as_student.go_to_lms')}
       </Button>
     </Dialog.Footer>
   </Dialog.Content>

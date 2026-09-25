@@ -1,3 +1,4 @@
+import type { TCertificateDownloadRequest } from '@cio/utils/validation/course';
 import {
   ZCertificateDownloadRequest,
   ZCourseClone,
@@ -45,9 +46,12 @@ import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { enrollInCourse } from '@api/services/course/invite';
 import { exerciseRouter } from '@api/routes/course/exercise';
 import { extractClientIp } from '@api/utils/redis/key-generators';
-import { generateCertificatePdf, generateCertificatePng } from '@api/utils/certificate';
-import { assembleCertificateRender, assembleOwnerPreviewRender } from '@api/services/course/certificate';
-import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { generateCertificatePdf, generateCertificatePng, sendCertificateFile } from '@api/utils/certificate';
+import {
+  assembleCertificateRender,
+  assembleOwnerPreviewRender,
+  assertCertificatePreviewAllowed
+} from '@api/services/course/certificate';
 import { generateCoursePdf } from '@api/utils/course';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { invitesRouter } from '@api/routes/course/invite';
@@ -67,27 +71,9 @@ import { updateCourseLandingPageService } from '@cio/core/services/course/landin
 import { zValidator } from '@hono/zod-validator';
 import { updateCourseWithTags } from '@api/services/course/update-course';
 
-function slugifyForFilename(value: string): string {
-  return (
-    value
-      .normalize('NFKD')
-      .replace(/[^a-zA-Z0-9 ]/g, '')
-      .trim()
-      .replace(/\s+/g, '-')
-      .slice(0, 60) || 'certificate'
-  );
-}
-
-async function loadCertificateInput(
-  courseId: string,
-  userId: string,
-  body: import('@cio/utils/validation/course').TCertificateDownloadRequest
-) {
+async function loadCertificateInput(courseId: string, userId: string, body: TCertificateDownloadRequest) {
   if (body.previewMode) {
-    const isTeam = await isCourseTeamMemberOrOrgAdmin(courseId, userId);
-    if (!isTeam) {
-      throw new AppError('Only course team members can preview certificate designs', ErrorCodes.UNAUTHORIZED, 403);
-    }
+    await assertCertificatePreviewAllowed(courseId, userId);
 
     return assembleOwnerPreviewRender(courseId, userId, body);
   }
@@ -329,17 +315,20 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
-        const { tagIds, ...courseData } = validatedData;
-
-        if (courseData.metadata?.welcomeEmailMessage) {
-          courseData.metadata = {
-            ...courseData.metadata,
-            welcomeEmailMessage: sanitizeHtml(courseData.metadata.welcomeEmailMessage)
-          };
-        }
+        const { tagIds, ...rest } = validatedData;
+        const courseData = rest.metadata?.welcomeEmailMessage
+          ? {
+              ...rest,
+              metadata: {
+                ...rest.metadata,
+                welcomeEmailMessage: sanitizeHtml(rest.metadata.welcomeEmailMessage)
+              }
+            }
+          : rest;
 
         if (tagIds !== undefined) {
           const orgId = c.req.header('cio-org-id');
+
           if (!orgId) {
             return c.json(
               {
@@ -512,20 +501,7 @@ export const courseRouter = new Hono()
         const input = await loadCertificateInput(courseId, user.id, body);
         const buffer = await generateCertificatePdf(input);
 
-        c.header('Content-Type', 'application/pdf');
-        c.header(
-          'Content-Disposition',
-          `attachment; filename="certificate-${slugifyForFilename(input.data.courseName)}.pdf"`
-        );
-
-        return c.body(
-          new ReadableStream({
-            start(controller) {
-              controller.enqueue(buffer);
-              controller.close();
-            }
-          })
-        );
+        return sendCertificateFile(c, buffer, input.data.courseName, 'pdf');
       } catch (error) {
         return handleError(c, error, 'Failed to download certificate');
       }
@@ -546,20 +522,7 @@ export const courseRouter = new Hono()
         const input = await loadCertificateInput(courseId, user.id, body);
         const buffer = await generateCertificatePng(input);
 
-        c.header('Content-Type', 'image/png');
-        c.header(
-          'Content-Disposition',
-          `attachment; filename="certificate-${slugifyForFilename(input.data.courseName)}.png"`
-        );
-
-        return c.body(
-          new ReadableStream({
-            start(controller) {
-              controller.enqueue(buffer);
-              controller.close();
-            }
-          })
-        );
+        return sendCertificateFile(c, buffer, input.data.courseName, 'png');
       } catch (error) {
         return handleError(c, error, 'Failed to download certificate image');
       }
@@ -572,20 +535,24 @@ export const courseRouter = new Hono()
     zValidator('param', ZCourseDownloadParam),
     zValidator('json', ZCourseDownloadContent),
     async (c) => {
-      const validatedData = c.req.valid('json');
+      try {
+        c.req.valid('param');
+        const validatedData = c.req.valid('json');
+        const pdfBuffer = await generateCoursePdf(validatedData);
 
-      const pdfBuffer = await generateCoursePdf(validatedData);
+        c.header('Content-Type', 'application/pdf');
 
-      c.header('Content-Type', 'application/pdf');
-
-      return c.body(
-        new ReadableStream({
-          start(controller) {
-            controller.enqueue(pdfBuffer);
-            controller.close();
-          }
-        })
-      );
+        return c.body(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(pdfBuffer);
+              controller.close();
+            }
+          })
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to download course content');
+      }
     }
   )
   .post(
