@@ -10,11 +10,11 @@ const ZPublicLessonMarkdownParam = z.preprocess((value) => {
   if (typeof value !== 'object' || value === null) return value;
 
   const params = value as Record<string, unknown>;
-  const itemSlug = params['itemSlug.md'];
+  const rawItemSlug = params.itemSlug ?? params['itemSlug.md'];
 
   return {
     ...params,
-    itemSlug: typeof itemSlug === 'string' ? itemSlug.replace(/\.md$/, '') : itemSlug
+    itemSlug: typeof rawItemSlug === 'string' ? rawItemSlug.replace(/\.md$/, '') : rawItemSlug
   };
 }, ZPublicCourseItemParam);
 
@@ -25,7 +25,7 @@ const ZPublicLessonMarkdownParam = z.preprocess((value) => {
  * without a session.
  */
 export const lessonMarkdownRouter = new Hono().get(
-  '/:courseSlug/item/:itemSlug.md',
+  '/:courseSlug/item/:itemSlug{[a-z0-9-]+\\.md}',
   zValidator('param', ZPublicLessonMarkdownParam),
   async (c) => {
     try {

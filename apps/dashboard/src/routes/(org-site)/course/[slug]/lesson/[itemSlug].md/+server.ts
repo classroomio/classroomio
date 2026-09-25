@@ -11,8 +11,8 @@ export const GET: RequestHandler = async ({ params }) => {
       Accept: 'text/markdown'
     };
 
-    const response = await classroomio['org-site'].course[':courseSlug'].item[':itemSlug.md'].$get(
-      { param: { courseSlug: params.slug, 'itemSlug.md': `${params.itemSlug}.md` } },
+    const response = await classroomio['org-site'].course[':courseSlug'].item[':itemSlug{[a-z0-9-]+\\.md}'].$get(
+      { param: { courseSlug: params.slug, itemSlug: `${params.itemSlug}.md` } },
       { headers: acceptHeaders }
     );
 
