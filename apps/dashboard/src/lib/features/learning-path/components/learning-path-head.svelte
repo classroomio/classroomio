@@ -2,7 +2,7 @@
   import { Button } from '@cio/ui/base/button';
   import LearningPathBadge from './learning-path-badge.svelte';
   import LearningPathProgress from './learning-path-progress.svelte';
-  import { t } from '$lib/utils/functions/translations';
+  import { locale, t } from '$lib/utils/functions/translations';
   import BookIcon from '@lucide/svelte/icons/book-open';
   import ClockIcon from '@lucide/svelte/icons/clock';
   import LockKeyholeIcon from '@lucide/svelte/icons/lock';
@@ -25,8 +25,8 @@
     enrollHref?: string;
   }
 
-  const hours = (totalHours: number) =>
-    globalThis.Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(totalHours);
+  const formatHours = (totalHours: number, locale: string) =>
+    globalThis.Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(totalHours);
   const isComplete = (completed: number, count: number) => count > 0 && completed === count;
 
   let {
@@ -81,7 +81,7 @@
       </span>
       <span class="inline-flex items-center gap-1">
         <ClockIcon class="size-3.5" />
-        ~{hours(totalHours)} hours
+        {$t('learningPath.detail.hours', { count: formatHours(totalHours, $locale) })}
       </span>
       {#if sequentialUnlock}
         <span class="inline-flex items-center gap-1">

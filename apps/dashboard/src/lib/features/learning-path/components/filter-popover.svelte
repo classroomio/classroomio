@@ -3,17 +3,7 @@
   import { cn } from '@cio/ui/tools';
   import { t } from '$lib/utils/functions/translations';
   import SlidersIcon from '@lucide/svelte/icons/sliders-horizontal';
-
-  export interface FilterOption {
-    value: string;
-    label: string;
-  }
-
-  export interface FilterGroup {
-    id: string;
-    label: string;
-    options: FilterOption[];
-  }
+  import type { FilterGroup, FilterOption } from '../utils/types';
 
   interface Props {
     groups: FilterGroup[];

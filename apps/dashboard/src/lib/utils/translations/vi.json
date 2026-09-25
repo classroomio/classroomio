@@ -5620,6 +5620,7 @@
       "exercises": "bài tập",
       "review": "Ôn tập",
       "enroll": "Tham gia",
+      "hours": "~{count} giờ",
       "certificate_on_completion": "Bạn sẽ nhận được chứng chỉ sau khi hoàn thành mỗi khóa học.",
       "certificate_hint": "Hoàn thành tất cả {count} khóa học để mở khóa và tải xuống chứng chỉ của bạn.",
       "certificate_earned": "Chứng chỉ đã đạt được",
@@ -5713,7 +5714,7 @@
     "ribbon": {
       "part_of": "là một phần của",
       "view_path": "Xem lộ trình",
-      "path_label": "Learning Path",
+      "path_label": "Lộ trình học",
       "course_n_of_total": "Khóa học {position} trong tổng số {total}",
       "next_in_path": "TIẾP THEO TRONG ĐƯỜNG CỦA BẠN",
       "next_course_position": "Khóa học {position}",

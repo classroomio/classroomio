@@ -1,8 +1,8 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
-  import type { PathDifficulty } from '../utils/types';
+  import type { PathDifficulty, FilterGroup } from '../utils/types';
   import type { CourseDurationFilter, CourseStatus, LearningPathView } from './types';
-  import FilterPopover, { type FilterGroup } from './filter-popover.svelte';
+  import FilterPopover from './filter-popover.svelte';
   import ViewToggle from './view-toggle.svelte';
 
   interface Props {

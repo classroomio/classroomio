@@ -5620,6 +5620,7 @@
       "exercises": "øvelser",
       "review": "Gennemgang",
       "enroll": "Tilmelding",
+      "hours": "~{count} timer",
       "certificate_on_completion": "Optjen et certifikat, når du gennemfører hvert kursus.",
       "certificate_hint": "Fuldfør alle {count} kurser for at låse op og downloade dit certifikat.",
       "certificate_earned": "Optjent certifikat",

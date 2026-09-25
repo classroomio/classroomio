@@ -5548,6 +5548,7 @@
       "exercises": "exercises",
       "review": "Review",
       "enroll": "Enroll",
+      "hours": "~{count} hours",
       "certificate_on_completion": "Earn a certificate when you complete every course.",
       "certificate_hint": "Complete all {count} courses to unlock and download your certificate.",
       "certificate_earned": "Certificate earned",

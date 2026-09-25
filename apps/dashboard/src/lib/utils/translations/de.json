@@ -5497,7 +5497,7 @@
       "access_syllabus_description": "Besucher sehen jeden Kurs und dessen Lektionsübersicht, aber keine Inhalte.",
       "access_preview": "Lehrplan + Vorschau-Lektionen",
       "access_preview_description": "Die vollständige Gliederung sowie als Vorschau gekennzeichnete Lektionen können kostenlos geöffnet werden.",
-      "show_instructors": "Show-Instruktoren",
+      "show_instructors": "Instruktoren anzeigen",
       "show_testimonials": "Kundenstimmen anzeigen",
       "show_faqs": "Häufig gestellte Fragen anzeigen",
       "preview_public_page": "Vorschau der öffentlichen Seite"
@@ -5620,6 +5620,7 @@
       "exercises": "Übungen",
       "review": "Überprüfung",
       "enroll": "Anmelden",
+      "hours": "~{count} Stunden",
       "certificate_on_completion": "Erhalten Sie ein Zertifikat, wenn Sie alle Kurse abgeschlossen haben.",
       "certificate_hint": "Schließe alle {count} Kurse ab, um dein Zertifikat freizuschalten und herunterzuladen.",
       "certificate_earned": "Zertifikat erhalten",
@@ -5713,10 +5714,10 @@
     "ribbon": {
       "part_of": "ist Teil von",
       "view_path": "Pfad anzeigen",
-      "path_label": "Learning Path",
+      "path_label": "Lernpfad",
       "course_n_of_total": "Kurs {position} von {total}",
-      "next_in_path": "NEXT IN YOUR PATH",
-      "next_course_position": "Course {position}",
+      "next_in_path": "ALS NÄCHSTES IN DEINEM LERNPFAD",
+      "next_course_position": "Kurs {position}",
       "unlocks_after_finish": "Wird freigeschaltet, wenn Sie diesen Kurs abgeschlossen haben – {lessons} Lektionen und {exercises} Übungen zum Mitnehmen.",
       "locked": "Gesperrt",
       "path_complete": "Pfad abgeschlossen – alle Kurse abgeschlossen. Tolle Arbeit!"

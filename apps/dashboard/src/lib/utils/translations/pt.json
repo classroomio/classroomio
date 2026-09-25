@@ -5620,6 +5620,7 @@
       "exercises": "exercícios",
       "review": "Revisar",
       "enroll": "Inscrever-se",
+      "hours": "~{count} horas",
       "certificate_on_completion": "Obtenha um certificado ao concluir cada curso.",
       "certificate_hint": "Complete todos os {count} cursos para desbloquear e baixar seu certificado.",
       "certificate_earned": "Certificado obtido",
