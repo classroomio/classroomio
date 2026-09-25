@@ -1,14 +1,14 @@
 ---
 name: api-contract-review
 description: >-
-  Design and review ClassroomIO APIs for security, authorization, API contract
+  Design and review ClassroomIO public APIs for security, authorization, API contract
   quality, MCP/API-key behavior, and dashboard feature parity. Use when adding
   or reviewing API routes, public APIs, automation endpoints, or MCP tools.
 ---
 
 # API Contract Review
 
-Apply this skill when designing, implementing, or reviewing an API route, public API, automation endpoint, or MCP tool.
+Apply this skill when designing, implementing, or reviewing a public API, automation endpoint, or MCP tool. Do not use it as a replacement for the repository's internal route, service, query, and separation-of-concerns guidance.
 
 ## Start with the product contract
 
@@ -35,7 +35,7 @@ Apply this skill when designing, implementing, or reviewing an API route, public
 - Make sensitive list fields intentional and return only the personal data consumers need.
 - Document idempotency, concurrency behavior, pagination limits, filtering, sorting, and error responses in OpenAPI and client docs.
 
-## Validate at the public boundary
+## Validate at the public API boundary
 
 - Define public request and response schemas independently from internal dashboard schemas. Reuse only deliberately shared primitives.
 - Validate the format promised by the contract: dates, URLs, UUIDs, emails, enums, numeric ranges, and cross-resource relationships.
