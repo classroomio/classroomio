@@ -1759,9 +1759,18 @@ importers:
 
   plugins:
     dependencies:
+      '@cio/certificates':
+        specifier: workspace:*
+        version: link:../packages/certificates
       '@cio/sdk':
         specifier: workspace:*
         version: link:../packages/sdk
+      '@cio/ui':
+        specifier: workspace:*
+        version: link:../packages/ui
+      '@lucide/svelte':
+        specifier: ^0.562.0
+        version: 0.562.0(svelte@5.56.9(@typescript-eslint/types@8.50.1))
     devDependencies:
       '@cio/tsconfig':
         specifier: workspace:*
@@ -4548,7 +4557,6 @@ packages:
 
   '@evilmartians/lefthook@1.13.6':
     resolution: {integrity: sha512-79vplrUBWL4Fkt59YkEBdSpqBVhNrY8t5+jEp+wX5QbsmbQLcSULqwS7FmbNRyECa2LWMrUWpe6ENIfNwB4jiw==}
-    cpu: [x64, arm64, ia32]
     os: [darwin, linux, win32]
     hasBin: true
 

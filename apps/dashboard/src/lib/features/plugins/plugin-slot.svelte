@@ -1,7 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { appConfig } from '$lib/utils/config';
-  import type { SlotName } from '@cio/sdk';
+  import { orgCapabilitiesApi } from './store/org-capabilities.svelte';
+  import { resolveActiveSlotLoaders, type SlotName } from '@cio/sdk';
 
   interface Props {
     name: SlotName;
@@ -11,7 +12,13 @@
 
   let { name, context = {}, class: className = '' }: Props = $props();
 
-  const components = $derived(appConfig.slots?.[name] ?? []);
+  const components = $derived(
+    resolveActiveSlotLoaders({
+      slotName: name,
+      plugins: appConfig.plugins,
+      enabledCapabilities: orgCapabilitiesApi.enabledCapabilityIds
+    })
+  );
 </script>
 
 {#if browser && components.length > 0}

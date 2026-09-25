@@ -34,7 +34,11 @@ const config = {
       '@cio/api/*': path.resolve('./node_modules/@cio/api/dist/*'),
       '@cio/utils': path.resolve('./node_modules/@cio/utils/dist'),
       '@cio/utils/*': path.resolve('./node_modules/@cio/utils/dist/*'),
-      '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts')
+      '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts'),
+      '@plugins': path.resolve('./../../plugins/index.ts'),
+      '@plugins/*': path.resolve('./../../plugins/*'),
+      '@cio/plugins': path.resolve('./../../plugins/index.ts'),
+      '@cio/plugins/*': path.resolve('./../../plugins/*')
     },
     csp: {
       mode: 'auto',

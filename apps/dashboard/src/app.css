@@ -5,6 +5,7 @@
 @import '@cio/ui/output.css';
 
 @source '../../packages/ui/src/custom/animation/**/*.svelte';
+@source '../../../plugins/**/*.svelte';
 
 @custom-variant dark (&:where(.dark, .dark *));
 

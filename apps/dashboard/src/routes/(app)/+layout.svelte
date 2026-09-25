@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { untrack } from 'svelte';
 
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
   import { VerifyEmailModal, WelcomeModal } from '$features/onboarding/components';
@@ -7,6 +8,7 @@
   import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
   import { currentOrg } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { orgCapabilitiesApi } from '$features/plugins';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -39,6 +41,17 @@
     if (!$session.data && !path.startsWith('/login')) {
       window.location.href = '/login';
     }
+  });
+
+  $effect(() => {
+    const orgId = $currentOrg.id;
+    orgCapabilitiesApi.setActiveOrgId(orgId ?? null);
+
+    if (!orgId) return;
+
+    untrack(() => {
+      void orgCapabilitiesApi.ensureCapabilities(orgId);
+    });
   });
 </script>
 

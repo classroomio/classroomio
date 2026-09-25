@@ -11,7 +11,7 @@
   import { courseApi } from '$features/course/api';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { CERTIFICATE_TEMPLATES, type CertificateDesign, resolveCertificateDesign } from '@cio/certificates';
-
+  import { orgCertificatePresetsApi } from '$features/plugins';
   type Props = {
     errors?: Record<string, string>;
   };
@@ -31,7 +31,9 @@
   });
 
   const templateLabel = $derived(
-    CERTIFICATE_TEMPLATES.find((template) => template.id === design.templateId)?.label ?? design.templateId
+    orgCertificatePresetsApi.presets.find((preset) => preset.id === design.templateId)?.name ??
+      CERTIFICATE_TEMPLATES.find((template) => template.id === design.templateId)?.label ??
+      design.templateId
   );
 
   const courseId = $derived(courseApi.course?.id ?? '');

@@ -12,6 +12,12 @@
   import { appConfig } from '$lib/utils/config';
   import { applyNavConfig } from '@cio/sdk';
 
+  interface Props {
+    toolsItems?: import('svelte').Snippet;
+  }
+
+  let { toolsItems }: Props = $props();
+
   const rawGroups = $derived(
     getOrgNavigationGroups(
       $currentOrgPath,
@@ -140,6 +146,9 @@
           {/snippet}
         </Collapsible.Root>
       {/each}
+      {#if group.labelKey === 'org_navigation.tools' && toolsItems}
+        {@render toolsItems()}
+      {/if}
     </Sidebar.Menu>
   </Sidebar.Group>
 {/each}

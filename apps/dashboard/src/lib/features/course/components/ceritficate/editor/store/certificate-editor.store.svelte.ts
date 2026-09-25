@@ -18,6 +18,7 @@ export type CertificateEditorPanel = 'templates' | 'content' | 'colors' | 'expor
  */
 export interface CertificateEditorDraft {
   templateId: CertificateTemplateId;
+  sourcePresetId?: string;
   accentColor: string;
   subtitle: string;
   descriptionOverride: string;
@@ -26,6 +27,11 @@ export interface CertificateEditorDraft {
     { name: string; role: string; enabled: boolean; signatureUrl: string },
     { name: string; role: string; enabled: boolean; signatureUrl: string }
   ];
+  border?: CertificateDesign['border'];
+  typography?: CertificateDesign['typography'];
+  background?: CertificateDesign['background'];
+  badge?: CertificateDesign['badge'];
+  qrCode?: CertificateDesign['qrCode'];
 }
 
 function toDraftSignatory(
@@ -61,6 +67,7 @@ function fromDraftSignatory(signatory: CertificateEditorDraft['signatories'][num
 function toDraft(design: CertificateDesign): CertificateEditorDraft {
   return {
     templateId: design.templateId,
+    sourcePresetId: (design as any).sourcePresetId,
     accentColor: design.accentColor,
     subtitle: design.subtitle ?? '',
     descriptionOverride: design.descriptionOverride ?? '',
@@ -68,19 +75,36 @@ function toDraft(design: CertificateDesign): CertificateEditorDraft {
     signatories: [
       toDraftSignatory(design.signatories[0], DEFAULT_CERTIFICATE_DESIGN.signatories[0]),
       toDraftSignatory(design.signatories[1], DEFAULT_CERTIFICATE_DESIGN.signatories[1])
-    ]
+    ],
+    border: design.border,
+    typography: design.typography,
+    background: design.background,
+    badge: design.badge,
+    qrCode: design.qrCode
   };
 }
 
 function fromDraft(draft: CertificateEditorDraft): CertificateDesign {
-  return {
+  const result: CertificateDesign & { sourcePresetId?: string } = {
     templateId: draft.templateId,
+    rendererTemplateId: draft.border != null ? 'modular' : draft.templateId,
     accentColor: draft.accentColor,
     subtitle: draft.subtitle.trim() || undefined,
     descriptionOverride: draft.descriptionOverride.trim() || undefined,
     idFormat: draft.idFormat.trim() || undefined,
-    signatories: [fromDraftSignatory(draft.signatories[0]), fromDraftSignatory(draft.signatories[1])]
+    signatories: [fromDraftSignatory(draft.signatories[0]), fromDraftSignatory(draft.signatories[1])],
+    border: draft.border,
+    typography: draft.typography,
+    background: draft.background,
+    badge: draft.badge,
+    qrCode: draft.qrCode
   };
+
+  if (draft.sourcePresetId) {
+    result.sourcePresetId = draft.sourcePresetId;
+  }
+
+  return result;
 }
 
 function readStoredDesign(): CertificateDesign {
@@ -112,6 +136,31 @@ class CertificateEditorStore {
 
   setTemplate(templateId: CertificateTemplateId) {
     this.draft.templateId = templateId;
+    this.draft.sourcePresetId = undefined;
+    this.draft.border = undefined;
+    this.draft.badge = undefined;
+  }
+
+  applyPreset(preset: { id: string; design: Record<string, any> }) {
+    const design = preset.design ?? {};
+    const rendererId = (design.rendererTemplateId || design.templateId || 'classique') as CertificateTemplateId;
+    this.draft.templateId = rendererId;
+    this.draft.sourcePresetId = preset.id;
+    if (design.accentColor) this.draft.accentColor = design.accentColor;
+    if (design.subtitle !== undefined) this.draft.subtitle = design.subtitle ?? '';
+    if (design.descriptionOverride !== undefined) this.draft.descriptionOverride = design.descriptionOverride ?? '';
+    if (design.idFormat !== undefined) this.draft.idFormat = design.idFormat ?? '';
+    if (Array.isArray(design.signatories)) {
+      this.draft.signatories = [
+        toDraftSignatory(design.signatories[0], DEFAULT_CERTIFICATE_DESIGN.signatories[0]),
+        toDraftSignatory(design.signatories[1], DEFAULT_CERTIFICATE_DESIGN.signatories[1])
+      ];
+    }
+    if (design.border) this.draft.border = design.border;
+    if (design.typography) this.draft.typography = design.typography;
+    if (design.background) this.draft.background = design.background;
+    if (design.badge) this.draft.badge = design.badge;
+    if (design.qrCode) this.draft.qrCode = design.qrCode;
   }
 
   setAccent(color: string) {
