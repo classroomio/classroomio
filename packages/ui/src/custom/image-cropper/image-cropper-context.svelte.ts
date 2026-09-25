@@ -158,8 +158,12 @@ class ImageCropperCropState {
     this.onclick = this.onclick.bind(this);
   }
 
-  onclick() {
-    this.rootState.onCrop();
+  async onclick() {
+    try {
+      await this.rootState.onCrop();
+    } catch (error) {
+      console.error('Image crop failed:', error);
+    }
   }
 }
 

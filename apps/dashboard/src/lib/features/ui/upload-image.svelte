@@ -52,6 +52,14 @@
     // Convert the cropped data URL to a File object
     const response = await fetch(croppedUrl);
     const blob = await response.blob();
+    const maxFileSizeInBytes = maxFileSizeInMb * 1024 * 1024;
+    if (blob.size > maxFileSizeInBytes) {
+      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} File size exceeds ${maxFileSizeInMb}MB limit`;
+      src = '';
+
+      return;
+    }
+
     const fileExtension = blob.type === 'image/jpeg' ? 'jpg' : blob.type.split('/')[1] || 'bin';
     const fileName = `${isSignaturePreview ? 'signature' : 'cropped-image'}.${fileExtension}`;
     const file = new File([blob], fileName, { type: blob.type });
