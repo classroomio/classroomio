@@ -1,7 +1,7 @@
 import type { CropArea, DispatchEvents } from 'svelte-easy-crop';
-import type { ReadableBoxedValues, WritableBoxedValues } from 'svelte-toolbelt';
 
 import { Context } from 'runed';
+import type { ImageCropperRootStateProps } from './types';
 import { getCroppedImg } from './utils';
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#supported_image_formats
@@ -15,27 +15,14 @@ export const VALID_IMAGE_TYPES = [
   'image/webp'
 ];
 
-export type ImageCropperRootProps = WritableBoxedValues<{
-  src: string;
-}> &
-  ReadableBoxedValues<{
-    id: string;
-    onCropped: (url: string) => void;
-    onUnsupportedFile: (file: File) => void;
-    onFileSelected?: (file: File) => void;
-    maxFileSize?: number; // Maximum file size in bytes
-    disabled?: boolean;
-    skipCrop?: boolean;
-    outputFormat?: 'image/png' | 'image/webp';
-  }>;
-
 class ImageCropperRootState {
   #createdUrls = $state<string[]>([]);
   open = $state(false);
   tempUrl = $state<string>();
   pixelCrop = $state<CropArea>();
+  error = $state<string>();
 
-  constructor(readonly opts: ImageCropperRootProps) {
+  constructor(readonly opts: ImageCropperRootStateProps) {
     this.onUpload = this.onUpload.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onCrop = this.onCrop.bind(this);
@@ -51,6 +38,8 @@ class ImageCropperRootState {
     if (this.disabled) {
       return;
     }
+
+    this.error = undefined;
 
     // Check file size first if maxFileSize is specified
     if (this.opts.maxFileSize?.current !== undefined) {
@@ -89,6 +78,7 @@ class ImageCropperRootState {
     this.tempUrl = undefined;
     this.open = false;
     this.pixelCrop = undefined;
+    this.error = undefined;
   }
 
   onUseOriginal() {
@@ -96,7 +86,13 @@ class ImageCropperRootState {
 
     this.opts.src.current = this.tempUrl;
     this.open = false;
-    this.opts.onCropped.current(this.tempUrl);
+    this.error = undefined;
+
+    const onCroppedResult = this.opts.onCropped.current(this.tempUrl);
+    void Promise.resolve(onCroppedResult).catch((error) => {
+      console.error('Image crop callback failed:', error);
+    });
+
     this.tempUrl = undefined;
     this.pixelCrop = undefined;
   }
@@ -104,12 +100,14 @@ class ImageCropperRootState {
   async onCrop() {
     if (!this.pixelCrop || !this.tempUrl) return;
 
+    this.error = undefined;
+
     const outputFormat = this.opts.outputFormat?.current;
     this.opts.src.current = await getCroppedImg(this.tempUrl, this.pixelCrop, 0, outputFormat);
 
     this.open = false;
 
-    this.opts.onCropped.current(this.opts.src.current);
+    await this.opts.onCropped.current(this.opts.src.current);
   }
 
   get src() {
@@ -126,10 +124,6 @@ class ImageCropperRootState {
     }
   }
 }
-
-export type ImageCropperTriggerProps = ReadableBoxedValues<{
-  id?: string;
-}>;
 
 class ImageCropperTriggerState {
   constructor(readonly rootState: ImageCropperRootState) {}
@@ -163,6 +157,7 @@ class ImageCropperCropState {
       await this.rootState.onCrop();
     } catch (error) {
       console.error('Image crop failed:', error);
+      this.rootState.error = 'Failed to crop image. Please try again.';
     }
   }
 }
@@ -189,7 +184,7 @@ class ImageCropperUseOriginalState {
 
 const ImageCropperRootContext = new Context<ImageCropperRootState>('ImageCropper.Root');
 
-export const useImageCropperRoot = (props: ImageCropperRootProps) => {
+export const useImageCropperRoot = (props: ImageCropperRootStateProps) => {
   return ImageCropperRootContext.set(new ImageCropperRootState(props));
 };
 

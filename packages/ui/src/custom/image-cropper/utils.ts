@@ -87,10 +87,15 @@ export const getCroppedImg = async (
     Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
   );
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     canvas.toBlob(
       (file) => {
-        resolve(URL.createObjectURL(file!));
+        if (!file) {
+          reject(new Error('Failed to create cropped image'));
+          return;
+        }
+
+        resolve(URL.createObjectURL(file));
       },
       outputFormat,
       outputFormat === 'image/webp' ? 0.85 : undefined

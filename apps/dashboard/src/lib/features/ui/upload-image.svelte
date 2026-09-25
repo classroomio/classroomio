@@ -56,6 +56,7 @@
     if (blob.size > maxFileSizeInBytes) {
       errorMessage = `${$t('settings.profile.profile_picture.validation_error')} File size exceeds ${maxFileSizeInMb}MB limit`;
       src = '';
+      avatar = undefined;
 
       return;
     }
@@ -70,6 +71,7 @@
       errorMessage = $t('snackbar.landing_page_settings.error.try_again');
 
       src = '';
+      avatar = undefined;
 
       return;
     }
