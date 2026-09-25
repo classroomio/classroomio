@@ -27,7 +27,7 @@
   ) => {
     onclick?.(e);
 
-    useOriginalState.onclick();
+    void useOriginalState.onclick();
   }}
 >
   <ImageIcon />

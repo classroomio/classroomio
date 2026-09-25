@@ -21,6 +21,7 @@ class ImageCropperRootState {
   tempUrl = $state<string>();
   pixelCrop = $state<CropArea>();
   error = $state<string>();
+  processing = $state(false);
 
   constructor(readonly opts: ImageCropperRootStateProps) {
     this.onUpload = this.onUpload.bind(this);
@@ -65,7 +66,7 @@ class ImageCropperRootState {
 
       this.tempUrl = URL.createObjectURL(file);
       this.#createdUrls.push(this.tempUrl);
-      this.onUseOriginal();
+      void this.onUseOriginal();
       return;
     }
 
@@ -81,33 +82,45 @@ class ImageCropperRootState {
     this.error = undefined;
   }
 
-  onUseOriginal() {
-    if (!this.tempUrl) return;
+  async onUseOriginal() {
+    if (!this.tempUrl || this.processing) return;
 
-    this.opts.src.current = this.tempUrl;
-    this.open = false;
     this.error = undefined;
+    this.processing = true;
 
-    const onCroppedResult = this.opts.onCropped.current(this.tempUrl);
-    void Promise.resolve(onCroppedResult).catch((error) => {
+    try {
+      const originalUrl = this.tempUrl;
+      this.opts.src.current = originalUrl;
+
+      await this.opts.onCropped.current(originalUrl);
+      this.onCancel();
+    } catch (error) {
       console.error('Image crop callback failed:', error);
-    });
-
-    this.tempUrl = undefined;
-    this.pixelCrop = undefined;
+      this.error = error instanceof Error ? error.message : 'Failed to use this image. Please try again.';
+      this.open = true;
+    } finally {
+      this.processing = false;
+    }
   }
 
   async onCrop() {
-    if (!this.pixelCrop || !this.tempUrl) return;
+    if (!this.pixelCrop || !this.tempUrl || this.processing) return;
 
     this.error = undefined;
+    this.processing = true;
 
-    const outputFormat = this.opts.outputFormat?.current;
-    this.opts.src.current = await getCroppedImg(this.tempUrl, this.pixelCrop, 0, outputFormat);
+    try {
+      const outputFormat = this.opts.outputFormat?.current;
+      const croppedUrl = await getCroppedImg(this.tempUrl, this.pixelCrop, 0, outputFormat);
+      this.opts.src.current = croppedUrl;
 
-    this.open = false;
-
-    await this.opts.onCropped.current(this.opts.src.current);
+      await this.opts.onCropped.current(croppedUrl);
+      this.onCancel();
+    } catch (error) {
+      this.error = error instanceof Error ? error.message : 'Failed to crop this image. Please try again.';
+    } finally {
+      this.processing = false;
+    }
   }
 
   get src() {
@@ -153,12 +166,7 @@ class ImageCropperCropState {
   }
 
   async onclick() {
-    try {
-      await this.rootState.onCrop();
-    } catch (error) {
-      console.error('Image crop failed:', error);
-      this.rootState.error = 'Failed to crop image. Please try again.';
-    }
+    await this.rootState.onCrop();
   }
 }
 
@@ -177,8 +185,8 @@ class ImageCropperUseOriginalState {
     this.onclick = this.onclick.bind(this);
   }
 
-  onclick() {
-    this.rootState.onUseOriginal();
+  async onclick() {
+    await this.rootState.onUseOriginal();
   }
 }
 
