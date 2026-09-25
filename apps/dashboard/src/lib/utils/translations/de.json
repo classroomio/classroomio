@@ -5154,7 +5154,7 @@
       "open_in_chat": "In Chat öffnen"
     },
     "share": {
-      "label": "In sozialen Medien teilen",
+      "label": "Diesen Kurs teilen",
       "facebook": "Facebook",
       "linkedin": "LinkedIn",
       "x": "X",
@@ -5627,6 +5627,21 @@
       "misinformation": "Falschinformationen",
       "privacy": "Verletzung der Privatsphäre",
       "other": "Sonstiges"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Kontomenü, angemeldet als {email}",
+      "trigger_label_anonymous": "Kontomenü",
+      "my_courses": "Meine Kurse",
+      "my_certificates": "Meine Zertifikate",
+      "account_settings": "Kontoeinstellungen",
+      "theme": "Design",
+      "continue_learning": "Weiterlernen",
+      "not_enrolled_note": "Noch nicht in dieser Akademie angemeldet – verfügbare Bereiche werden nach der Anmeldung angezeigt.",
+      "theme_light": "Hell",
+      "theme_dark": "Dunkel",
+      "theme_system": "System"
     }
   }
 }

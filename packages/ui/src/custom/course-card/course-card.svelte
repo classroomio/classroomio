@@ -63,7 +63,7 @@
   {onclick}
 >
   {#snippet child({ props })}
-    <div class="ui:relative ui:block">
+    <div class="ui:relative ui:mx-auto ui:block ui:w-full ui:max-w-full ui:sm:mx-0 ui:sm:max-w-[320px]">
       {@render overlay?.()}
 
       {#if href}

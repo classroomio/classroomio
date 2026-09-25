@@ -5154,7 +5154,7 @@
       "open_in_chat": "Abrir no chat"
     },
     "share": {
-      "label": "Partilhar nas redes sociais",
+      "label": "Partilhar este curso",
       "facebook": "Facebook",
       "linkedin": "LinkedIn",
       "x": "X",
@@ -5627,6 +5627,21 @@
       "misinformation": "Desinformação",
       "privacy": "Violação de privacidade",
       "other": "Outro"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menu da conta, conectado como {email}",
+      "trigger_label_anonymous": "Menu da conta",
+      "my_courses": "Meus cursos",
+      "my_certificates": "Meus certificados",
+      "account_settings": "Configurações da conta",
+      "theme": "Tema",
+      "continue_learning": "Continuar aprendendo",
+      "not_enrolled_note": "Ainda não está matriculado nesta academia? Os destinos de aprendizagem aparecem após a inscrição.",
+      "theme_light": "Luz",
+      "theme_dark": "Escuro",
+      "theme_system": "Sistema"
     }
   }
 }

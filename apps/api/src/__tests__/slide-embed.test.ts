@@ -28,6 +28,20 @@ describe('slide embed parsing', () => {
     expect(parsed.src).not.toContain('/pub');
   });
 
+  it('keeps Google Slides publish-to-web pubembed paths intact', () => {
+    const parsed = parseSlideEmbed(
+      '<iframe src="https://docs.google.com/presentation/d/e/2PACX-abc/pubembed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true"></iframe>'
+    );
+
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+
+    expect(parsed.platform).toBe('google-slides');
+    expect(parsed.src).toBe(
+      'https://docs.google.com/presentation/d/e/2PACX-abc/pubembed?start=false&loop=false&delayms=3000'
+    );
+  });
+
   it('appends Canva embed query and drops pasted dimensions from storage', () => {
     const created = createSlideEmbed(
       '<iframe src="https://www.canva.com/design/DAFDemo/view" width="1200" height="800"></iframe>',

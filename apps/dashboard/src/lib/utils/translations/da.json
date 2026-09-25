@@ -5154,7 +5154,7 @@
       "open_in_chat": "Åbn i chat"
     },
     "share": {
-      "label": "Del på sociale medier",
+      "label": "Del dette kursus",
       "facebook": "Facebook",
       "linkedin": "LinkedIn",
       "x": "X",
@@ -5627,6 +5627,21 @@
       "misinformation": "Misinformation",
       "privacy": "Brud på privatlivet",
       "other": "Andet"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Kontomenu, logget ind som {email}",
+      "trigger_label_anonymous": "Kontomenu",
+      "my_courses": "Mine kurser",
+      "my_certificates": "Mine certifikater",
+      "account_settings": "Kontoindstillinger",
+      "theme": "Tema",
+      "continue_learning": "Fortsæt læring",
+      "not_enrolled_note": "Ikke tilmeldt dette akademi endnu — læringsdestinationer vises efter tilmelding.",
+      "theme_light": "Lys",
+      "theme_dark": "Mørk",
+      "theme_system": "System"
     }
   }
 }

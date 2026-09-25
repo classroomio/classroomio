@@ -5154,7 +5154,7 @@
       "open_in_chat": "Mở trong chat"
     },
     "share": {
-      "label": "Chia sẻ trên mạng xã hội",
+      "label": "Chia sẻ khóa học này",
       "facebook": "Facebook",
       "linkedin": "LinkedIn",
       "x": "X",
@@ -5627,6 +5627,21 @@
       "misinformation": "Thông tin sai lệch",
       "privacy": "Vi phạm quyền riêng tư",
       "other": "Khác"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menu tài khoản, đăng nhập bằng {email}",
+      "trigger_label_anonymous": "Menu tài khoản",
+      "my_courses": "Các khóa học của tôi",
+      "my_certificates": "Chứng chỉ của tôi",
+      "account_settings": "Cài đặt tài khoản",
+      "theme": "Chủ đề",
+      "continue_learning": "Tiếp tục học tập",
+      "not_enrolled_note": "Chưa đăng ký học tại học viện này — các điểm đến của người học sẽ hiển thị sau khi đăng ký.",
+      "theme_light": "Sáng",
+      "theme_dark": "Tối",
+      "theme_system": "Hệ thống"
     }
   }
 }

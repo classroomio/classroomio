@@ -19,6 +19,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     courses,
     hasMoreCourses = false,
@@ -35,7 +36,7 @@
 </script>
 
 <LandingThemeScope theme="bold" class="ui:font-sans">
-  <BoldNav {orgName} {logoUrl} {navItems} {authAction} />
+  <BoldNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
 
   <main>
     <BoldHero {hero} />
