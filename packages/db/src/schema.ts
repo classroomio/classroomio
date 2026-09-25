@@ -760,19 +760,20 @@ export const course = pgTable(
     certificate: jsonb().default({}).$type<{
       isDownloadable?: boolean;
       /** @deprecated Use `design.templateId`. Legacy 6-theme id; mapped on read via LEGACY_THEME_MAP. */
-      theme?: string;
+      theme?: string | null;
       /** Atelier-era certificate design. Source of truth for new courses. */
       design?: {
-        templateId: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
-        accentColor: string;
+        templateId?: string;
+        rendererTemplateId?: string;
+        sourcePresetId?: string;
+        accentColor?: string;
+        primaryColor?: string;
+        secondaryColor?: string;
         subtitle?: string;
         descriptionOverride?: string;
-        signatories: [
-          { name: string; role: string; enabled?: boolean; signatureUrl?: string },
-          { name: string; role: string; enabled?: boolean; signatureUrl?: string }
-        ];
+        signatories?: { name?: string; role?: string; enabled?: boolean; signatureUrl?: string }[];
         idFormat?: string;
-      };
+      } | null;
       deadline?: string | null;
       threshold?: number;
       requiredExerciseId?: string | null;
@@ -4084,30 +4085,48 @@ export const deadLetterJob = pgTable(
   ]
 );
 
-export const pluginEntityRecord = pgTable(
-  'plugin_entity_records',
+export const orgCapability = pgTable(
+  'org_capability',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
-    pluginName: varchar('plugin_name', { length: 128 }).notNull(),
-    entityName: varchar('entity_name', { length: 128 }).notNull(),
     orgId: uuid('org_id')
       .notNull()
       .references(() => organization.id, { onDelete: 'cascade' }),
-    courseId: uuid('course_id').references(() => course.id, { onDelete: 'cascade' }),
-    lessonId: uuid('lesson_id').references(() => lesson.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id').references(() => user.id, { onDelete: 'cascade' }),
-    data: jsonb('data').default({}).notNull(),
+    capabilityId: varchar('capability_id', { length: 128 }).notNull(),
+    isEnabled: boolean('is_enabled').default(false).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
   (table) => [
-    index('plugin_entity_records_plugin_entity_org_idx').on(table.pluginName, table.entityName, table.orgId),
-    index('plugin_entity_records_org_id_idx').on(table.orgId),
-    index('plugin_entity_records_user_id_idx').on(table.userId),
-    index('plugin_entity_records_course_id_idx').on(table.courseId),
-    index('plugin_entity_records_lesson_id_idx').on(table.lessonId)
+    unique('org_capability_org_capability_uniq').on(table.orgId, table.capabilityId),
+    index('org_capability_org_id_idx').on(table.orgId),
+    index('org_capability_capability_id_idx').on(table.capabilityId)
+  ]
+);
+
+export const orgCertificatePreset = pgTable(
+  'org_certificate_preset',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    orgId: uuid('org_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 128 }).notNull(),
+    description: text('description'),
+    design: jsonb('design').default({}).notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    createdBy: uuid('created_by').references(() => user.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('org_certificate_preset_org_active_idx').on(table.orgId, table.isActive),
+    index('org_certificate_preset_org_created_idx').on(table.orgId, table.createdAt)
   ]
 );

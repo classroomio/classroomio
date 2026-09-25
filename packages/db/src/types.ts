@@ -255,5 +255,8 @@ export type TNewYoutubeCaption = typeof schema.youtubeCaption.$inferInsert;
 export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
 export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;
 
-export type TPluginEntityRecord = typeof schema.pluginEntityRecord.$inferSelect;
-export type TNewPluginEntityRecord = typeof schema.pluginEntityRecord.$inferInsert;
+export type TOrgCapability = typeof schema.orgCapability.$inferSelect;
+export type TNewOrgCapability = typeof schema.orgCapability.$inferInsert;
+
+export type TOrgCertificatePreset = typeof schema.orgCertificatePreset.$inferSelect;
+export type TNewOrgCertificatePreset = typeof schema.orgCertificatePreset.$inferInsert;

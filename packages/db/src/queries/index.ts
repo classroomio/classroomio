@@ -21,4 +21,5 @@ export * from './jobs';
 export * from './media-transcript';
 export * from './invite-link';
 export * from './youtube-caption';
-export * from './plugins';
+export * from './plugins/org-certificate-preset';
+export * from './plugins/org-capability';

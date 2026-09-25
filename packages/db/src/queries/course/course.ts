@@ -714,7 +714,7 @@ export type TCourseCertificationRow = {
   } | null;
   certificate: {
     isDownloadable?: boolean;
-    theme?: string;
+    theme?: string | null;
     deadline?: string | null;
     threshold?: number;
     requiredExerciseId?: string | null;
@@ -826,9 +826,7 @@ export async function countOrgCourses({
     return Number(countRow?.count ?? 0);
   } catch (error) {
     console.error('countOrgCourses error:', error);
-    throw new Error(
-      `Failed to count org courses: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
+    throw new Error(`Failed to count org courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
