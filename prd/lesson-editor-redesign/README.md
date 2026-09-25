@@ -1,5 +1,20 @@
 # Lesson Editor Redesign PRD
 
+## Prototype — visual and interaction reference
+
+A high-fidelity, clickable prototype lives in [`prototypes/lesson-editor-redesign/`](../../prototypes/lesson-editor-redesign/), built on ClassroomIO's real design tokens and component recipes (`app-theme.css` mirrors `packages/ui/src/index.css`; layout/markup mirrors the actual `lesson.svelte`, `lesson-settings-tab.svelte`, `Sheet`/`Drawer`, `Field`, video/slide/document card, and `Empty` components). When this document and the prototype disagree on a UI detail, the prototype wins.
+
+Start here: `prototypes/lesson-editor-redesign/index.html`
+
+| State | File |
+| --- | --- |
+| Editor — Video + Note + Slide, Document missing (Add content) | `editor.html` |
+| Editor — Video + Note only | `editor.html?content=video-note` |
+| Settings slider closed / open | `editor.html` / `editor.html?panel=settings` |
+| Edit state / Preview state | `editor.html` / `editor.html?mode=preview` |
+| Empty lesson + Add content interaction | `empty-lesson.html` |
+| Mobile editor / mobile settings slider | `mobile.html` / `mobile.html?panel=settings` |
+
 ## Purpose
 
 Replace the current tab-based lesson editor with a unified authoring canvas.

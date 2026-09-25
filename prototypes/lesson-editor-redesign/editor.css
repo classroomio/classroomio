@@ -1,0 +1,933 @@
+/*
+ * editor.css — lesson-editor-redesign prototype extensions on top of app-theme.css.
+ *
+ * Mirrors real @cio/ui structure (see prd/lesson-editor-redesign/README.md):
+ *  - course-level shell (CourseSidebar + CourseHeader) is UNCHANGED — reuses
+ *    the generic .sidebar/.nav-item/.topbar recipes from app-theme.css.
+ *  - the lesson content area below the course header is what's redesigned:
+ *    a stacked canvas of content sections, a right-side settings slider
+ *    (mirrors @cio/ui Sheet/Drawer "right" variant: w-3/4, sm:max-w-sm),
+ *    and a header-level Edit/Preview toggle (the existing .seg-toggle recipe).
+ */
+
+/* ============ course shell (unchanged — reused as-is) ============ */
+.shell {
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  min-height: 100vh;
+}
+.course-sidebar {
+  background: var(--sidebar);
+  border-right: 1px solid var(--sidebar-border);
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.course-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* course header (CourseHeader — 48px, single truncated label, view-site action) */
+.course-topbar {
+  height: 48px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--background) 92%, transparent);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+}
+.course-topbar .divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+}
+.course-topbar .label {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.course-topbar .spacer {
+  flex: 1;
+}
+
+/* content tree (course-content-tree.svelte) */
+.tree-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-top: 6px;
+}
+.tree-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 22px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  color: var(--sidebar-foreground);
+}
+.tree-item svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: #0284c7;
+  flex-shrink: 0;
+}
+.tree-item:hover {
+  background: var(--sidebar-accent);
+}
+.tree-item.active {
+  background: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  font-weight: 500;
+}
+.tree-item .done {
+  margin-left: auto;
+  color: var(--success);
+  flex-shrink: 0;
+}
+.tree-item .done svg {
+  color: var(--success);
+}
+
+/* ============ lesson page header (Page.Header) ============ */
+.lesson-header {
+  padding: 20px 28px 0;
+}
+.lesson-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.lesson-title-col {
+  min-width: 0;
+  flex: 1;
+}
+.lesson-title-input {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 4px 8px;
+  margin: -4px 0 0 -8px;
+  width: 100%;
+  max-width: 640px;
+  background: transparent;
+  color: var(--foreground);
+  font-family: inherit;
+}
+.lesson-title-input:hover {
+  border-color: var(--border);
+}
+.lesson-title-input:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+  background: var(--background);
+}
+.lesson-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding-left: 8px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.lesson-meta-row .slug {
+  font-family: ui-monospace, monospace;
+}
+.lesson-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.save-status {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  min-width: 44px;
+  text-align: right;
+}
+.save-status.is-saving {
+  color: var(--foreground);
+}
+
+/* ============ canvas ============ */
+.canvas-wrap {
+  padding: 22px 28px 90px;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+}
+.canvas {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.content-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px 22px;
+}
+.section-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-bottom: 14px;
+}
+.section-eyebrow svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.2;
+}
+
+/* preview banner (Preview state — "in-app learner experience" notice) */
+.preview-banner {
+  display: none;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--primary) 8%, var(--background));
+  border: 1px solid color-mix(in oklab, var(--primary) 25%, transparent);
+  font-size: 12.8px;
+  line-height: 1.5;
+  color: var(--foreground);
+  margin-bottom: 20px;
+}
+.preview-banner svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.preview-banner b {
+  font-weight: 600;
+}
+body.mode-preview .preview-banner {
+  display: flex;
+}
+body.mode-preview .edit-only {
+  display: none !important;
+}
+body.mode-preview .content-section {
+  background: transparent;
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+body.mode-preview .lesson-title-input {
+  pointer-events: none;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  font-size: 26px;
+}
+body:not(.mode-preview) .preview-only {
+  display: none !important;
+}
+
+/* ============ media cards (video + slide share identical visual language) ============ */
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+.media-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.media-thumb {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+}
+.media-thumb svg.big {
+  width: 40px;
+  height: 40px;
+  stroke-width: 1.5;
+  color: var(--muted-foreground);
+}
+.media-thumb .cap {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+.media-thumb .dur {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgb(0 0 0 / 0.8);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.media-body {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+}
+.media-info {
+  min-width: 0;
+  flex: 1;
+}
+.media-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.media-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  flex: 1;
+  min-width: 0;
+}
+.media-sub {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.add-media-tile {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
+  aspect-ratio: 16/9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted-foreground);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+}
+.add-media-tile:hover {
+  border-color: var(--ring);
+  color: var(--foreground);
+  background: var(--accent);
+}
+.add-media-tile svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* ============ note editor ============ */
+.note-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.note-toolbar .tb-btn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.note-toolbar .tb-btn:hover {
+  background: var(--accent);
+  color: var(--foreground);
+}
+.note-toolbar .tb-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.2;
+}
+.note-toolbar .tb-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 5px;
+}
+.note-content {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--foreground);
+}
+.note-content h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+.note-content p {
+  margin: 0 0 12px;
+}
+.note-content ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+.note-content li {
+  margin-bottom: 4px;
+}
+.note-content code {
+  background: var(--muted);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 13px;
+  font-family: ui-monospace, monospace;
+}
+.note-content strong {
+  font-weight: 600;
+}
+
+/* ============ document / file rows (AttachmentList) ============ */
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.file-row:last-child {
+  border-bottom: none;
+}
+.file-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--destructive) 12%, transparent);
+  color: var(--destructive);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.file-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+.file-info {
+  min-width: 0;
+  flex: 1;
+}
+.file-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-size {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 1px;
+}
+.file-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ============ add content ============ */
+.add-content-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.add-tile {
+  flex: 1 1 150px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  background: transparent;
+  font: inherit;
+}
+.add-tile:hover {
+  border-color: var(--ring);
+  background: var(--accent);
+  color: var(--foreground);
+}
+.add-tile .ic {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+}
+.add-tile .ic svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+.add-tile .nm {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* empty lesson state (Empty, variant="page") */
+.empty-page {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xl);
+  max-width: 620px;
+  margin: 40px auto 0;
+  padding: 56px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.empty-page .ic {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+}
+.empty-page .ic svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.7;
+}
+.empty-page h2 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.empty-page p {
+  font-size: 13.5px;
+  color: var(--muted-foreground);
+  max-width: 380px;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ============ settings slider (Sheet/Drawer, side="right": w-3/4 sm:max-w-sm) ============ */
+.slider-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.5);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.slider-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 75%;
+  max-width: 384px;
+  background: var(--background);
+  border-left: 1px solid var(--border);
+  box-shadow: -8px 0 24px -8px rgb(0 0 0 / 0.25);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.settings-open .slider-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.settings-open .slider-panel {
+  transform: translateX(0);
+}
+.slider-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.slider-head h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 3px;
+  letter-spacing: -0.01em;
+}
+.slider-head p {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+.slider-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* field group (@cio/ui/base/field) */
+.field-set + .field-set {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.field-legend {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+.field-desc {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+.field-desc + .field-desc {
+  margin-top: -12px;
+}
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.field-row-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.field-row-h .label {
+  margin-bottom: 0;
+  font-weight: 400;
+}
+.field-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--muted);
+  border-radius: var(--radius-md);
+}
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--input);
+  accent-color: var(--primary);
+  flex-shrink: 0;
+}
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ============ dialog (add-content flows) ============ */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: oklch(0 0 0 / 0.55);
+  z-index: 210;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+}
+body.dialog-open .scrim {
+  display: flex;
+}
+.dialog {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.35);
+  width: 100%;
+  max-width: 460px;
+}
+.dialog-head {
+  padding: 18px 20px 0;
+}
+.dialog-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.dialog-desc {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  margin: 0;
+  line-height: 1.5;
+}
+.dialog-body {
+  padding: 16px 20px;
+}
+.dialog-foot {
+  padding: 14px 20px 18px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+/* underline tabs (used inside the Add video dialog — 6 real sources) */
+.utabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  margin: -2px -2px 14px;
+  padding: 0 2px;
+}
+.utab {
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.utab:hover {
+  color: var(--foreground);
+}
+.utab.active {
+  color: var(--foreground);
+  border-bottom-color: var(--primary);
+}
+
+/* dropzone (document upload) */
+.drop {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 26px 18px;
+  text-align: center;
+  background: var(--muted);
+}
+.drop svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.7;
+  color: var(--muted-foreground);
+  margin-bottom: 8px;
+}
+.drop .t {
+  font-size: 13.5px;
+  font-weight: 500;
+  margin: 0 0 3px;
+}
+.drop .h {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+/* slide-platform grid (10 real platforms) */
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.platform-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--background);
+  cursor: pointer;
+  font: inherit;
+}
+.platform-btn:hover {
+  border-color: var(--ring);
+  background: var(--accent);
+}
+.platform-btn.on {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+.platform-btn .sw {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+.platform-btn .nm {
+  font-size: 10.5px;
+  color: var(--muted-foreground);
+  line-height: 1.2;
+}
+
+/* ============ phone frame (mobile mockup pages) ============ */
+.phone-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 60px;
+  background: var(--muted);
+  min-height: 100vh;
+}
+.phone-frame {
+  width: 390px;
+  max-width: 100%;
+  background: var(--background);
+  border-radius: 34px;
+  border: 8px solid #111;
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.4);
+  overflow: hidden;
+  height: 800px;
+  display: flex;
+  flex-direction: column;
+}
+.dark .phone-frame {
+  border-color: #000;
+}
+.phone-screen {
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* forced-mobile layout rules (used unconditionally inside .phone-screen) */
+.force-mobile .course-topbar {
+  padding: 0 12px;
+}
+.force-mobile .lesson-header {
+  padding: 14px 16px 0;
+}
+.force-mobile .lesson-header-row {
+  flex-direction: column;
+  align-items: stretch;
+}
+.force-mobile .lesson-actions-row {
+  justify-content: space-between;
+}
+.force-mobile .canvas-wrap {
+  padding: 16px 16px 60px;
+}
+.force-mobile .media-grid {
+  grid-template-columns: 1fr;
+}
+.force-mobile .add-content-row {
+  flex-direction: column;
+}
+.force-mobile .slider-panel {
+  width: 100%;
+  max-width: none;
+}
+.force-mobile .platform-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ============ responsive (real breakpoint — resize the browser on editor.html) ============ */
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .course-sidebar {
+    display: none;
+  }
+  .lesson-header {
+    padding: 16px 18px 0;
+  }
+  .lesson-header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .canvas-wrap {
+    padding: 18px 18px 70px;
+  }
+  .slider-panel {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* ============ prototype chrome (not part of the design — index/nav helpers) ============ */
+.proto-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  border-bottom: 1px dashed var(--border);
+  font-size: 12px;
+  color: var(--muted-foreground);
+  flex-wrap: wrap;
+}
+.proto-bar b {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.proto-bar a {
+  color: var(--primary);
+  font-weight: 500;
+}
+.proto-bar .sp {
+  flex: 1;
+}
