@@ -701,7 +701,7 @@ export function getMockPathsForUser(): LearningPathWithEnrollment[] {
         state:
           completed === path.courses.length && path.courses.length > 0
             ? 'COMPLETED'
-            : courseProgress.some((c) => c.state === 'IN_PROGRESS')
+            : courseProgress.some((c) => c.state === 'IN_PROGRESS') || completed > 0
               ? 'IN_PROGRESS'
               : 'NOT_STARTED'
       }
