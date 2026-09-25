@@ -254,8 +254,7 @@
           variant="outline"
           class="ui:bg-white ui:text-zinc-900 ui:border-zinc-200/80 ui:shadow-sm ui:text-[10px] ui:font-semibold ui:tracking-wide ui:uppercase ui:dark:bg-white ui:dark:border-border"
         >
-          <VIcon class={VIcon.iconClass} />
-          {visibilityBadge.label}
+          <VIcon class={visibilityBadge.iconClass} />{visibilityBadge.label}
         </Badge>
       {/if}
     </div>

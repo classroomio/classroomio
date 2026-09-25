@@ -42,7 +42,7 @@
 </script>
 
 <div class="group ui:hover:bg-muted/50 relative flex items-center gap-4 px-4 py-5 transition-colors">
-  <a {href} aria-label={name} class="absolute inset-0 z-[1]"></a>
+  <a {href} aria-hidden="true" tabindex="-1" class="absolute inset-0 z-[1]"></a>
 
   <a
     {href}
