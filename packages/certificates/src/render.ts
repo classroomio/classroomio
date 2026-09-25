@@ -19,6 +19,7 @@ import { renderClassique } from './templates/classique';
 import { renderMinimal } from './templates/minimal';
 import { renderNoir } from './templates/noir';
 import { renderPoster } from './templates/poster';
+import { renderModular } from './templates/modular-builder';
 import { BASE_STYLES, escapeHtml, FONTS_LINK_HREF, type TemplateRenderer } from './templates/shared';
 
 const RENDERERS: Record<string, TemplateRenderer> = {
@@ -26,7 +27,8 @@ const RENDERERS: Record<string, TemplateRenderer> = {
   brutalist: renderBrutalist,
   noir: renderNoir,
   poster: renderPoster,
-  minimal: renderMinimal
+  minimal: renderMinimal,
+  modular: renderModular
 };
 
 const BUILT_IN_TEMPLATE_IDS = new Set<string>(CERTIFICATE_TEMPLATE_IDS);
@@ -132,7 +134,8 @@ export function resolveTemplateId(value: string | undefined | null): Certificate
 export function resolveCertificateDesign(stored?: StoredCertificateRecord | null): CertificateDesign {
   const design = stored?.design;
   const legacyTheme = stored?.theme ?? undefined;
-  const templateId = resolveTemplateId(design?.templateId ?? legacyTheme);
+  const rawRendererId = design?.rendererTemplateId ?? design?.templateId ?? legacyTheme;
+  const templateId = resolveTemplateId(rawRendererId);
 
   const accentColor =
     design?.accentColor && /^#[0-9a-fA-F]{6}$/.test(design.accentColor)
@@ -157,18 +160,26 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
   ];
 
   return {
+    rendererTemplateId: templateId,
     templateId,
+    sourcePresetId: design?.sourcePresetId,
     accentColor,
     subtitle: design?.subtitle ?? DEFAULT_CERTIFICATE_DESIGN.subtitle,
     descriptionOverride: design?.descriptionOverride,
     signatories,
-    idFormat: design?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat
+    idFormat: design?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat,
+    border: design?.border,
+    typography: design?.typography,
+    background: design?.background,
+    badge: design?.badge,
+    qrCode: design?.qrCode
   };
 }
 
 export function renderCertificate(design: CertificateDesign, data: CertificateRenderData): CertificateRenderResult {
-  const templateId = resolveTemplateId(design.templateId);
-  const renderer = RENDERERS[templateId];
+  const isModular = design.rendererTemplateId === 'modular' || design.border != null;
+  const templateId = isModular ? 'modular' : resolveTemplateId(design.rendererTemplateId ?? design.templateId);
+  const renderer = RENDERERS[templateId] ?? renderClassique;
   const { body, styles } = renderer({ design: { ...design, templateId }, data });
 
   const html = `<!DOCTYPE html>

@@ -9,13 +9,53 @@ export interface CertificateSignatory {
   signatureUrl?: string;
 }
 
+export interface CertificateBorderConfig {
+  style?: 'victorian' | 'double_gold' | 'geometric' | 'minimal' | 'custom_svg' | string;
+  width?: number;
+  primaryColor?: string;
+  accentColor?: string;
+  customSvg?: string;
+}
+
+export interface CertificateTypographyConfig {
+  titleFont?: string;
+  recipientFont?: string;
+  bodyFont?: string;
+  primaryColor?: string;
+  letterSpacing?: number;
+}
+
+export interface CertificateBackgroundConfig {
+  style?: 'parchment' | 'guilloche' | 'solid' | 'gradient' | string;
+  primaryColor?: string;
+  secondaryColor?: string;
+}
+
+export interface CertificateBadgeConfig {
+  style?: 'gold_seal' | 'ribbon' | 'wax_stamp' | 'crest' | 'none' | string;
+  label?: string;
+  foilColor?: string;
+}
+
+export interface CertificateQrCodeConfig {
+  enabled?: boolean;
+  position?: 'bottom_right' | 'bottom_left' | 'center' | string;
+}
+
 export interface CertificateDesign {
-  templateId: CertificateTemplateId;
+  rendererTemplateId: CertificateTemplateId;
+  templateId: CertificateTemplateId; // for backwards compatibility
+  sourcePresetId?: string;
   accentColor: string;
   subtitle?: string;
   descriptionOverride?: string;
   signatories: [CertificateSignatory, CertificateSignatory];
   idFormat?: string;
+  border?: CertificateBorderConfig;
+  typography?: CertificateTypographyConfig;
+  background?: CertificateBackgroundConfig;
+  badge?: CertificateBadgeConfig;
+  qrCode?: CertificateQrCodeConfig;
 }
 
 export interface StoredCertificateSignatory {
@@ -26,15 +66,19 @@ export interface StoredCertificateSignatory {
 }
 
 export interface StoredCertificateDesign {
+  rendererTemplateId?: CertificateTemplateId | string;
+  sourcePresetId?: string;
   templateId?: CertificateTemplateId | string;
   accentColor?: string;
   subtitle?: string;
   descriptionOverride?: string;
-  signatories?:
-    | [StoredCertificateSignatory?, StoredCertificateSignatory?]
-    | StoredCertificateSignatory[]
-    | readonly StoredCertificateSignatory[];
+  signatories?: StoredCertificateSignatory[];
   idFormat?: string;
+  border?: CertificateBorderConfig;
+  typography?: CertificateTypographyConfig;
+  background?: CertificateBackgroundConfig;
+  badge?: CertificateBadgeConfig;
+  qrCode?: CertificateQrCodeConfig;
 }
 
 /**

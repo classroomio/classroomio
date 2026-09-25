@@ -65,6 +65,7 @@ export const LEGACY_THEME_MAP: Record<string, CertificateTemplateId> = {
 };
 
 export const DEFAULT_CERTIFICATE_DESIGN: CertificateDesign = {
+  rendererTemplateId: 'classique',
   templateId: 'classique',
   accentColor: DEFAULT_ACCENT_COLOR,
   subtitle: 'Awarded with Highest Distinction',
