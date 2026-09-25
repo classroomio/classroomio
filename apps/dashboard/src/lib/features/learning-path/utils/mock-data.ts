@@ -263,7 +263,7 @@ export function getCourseState(
   const ownProgress = computeCourseState(course);
 
   if (!sequentialUnlock) {
-    return ownProgress === 'NOT_STARTED' ? 'IN_PROGRESS' : ownProgress;
+    return ownProgress;
   }
 
   if (!previousComplete) {
@@ -283,8 +283,7 @@ export function computePathProgress(
   }
 
   const states = courses.map((course, index) => {
-    const previousComplete =
-      index === 0 || courses[index - 1] ? isCourseComplete(getUnlockedCourse(courses, index).course) : true;
+    const previousComplete = index === 0 || isCourseComplete(courses[index - 1]);
 
     return getCourseState(course, previousComplete, sequentialUnlock);
   });
@@ -301,10 +300,6 @@ export function computePathProgress(
 
 function isCourseComplete(course: LearningPathCourse): boolean {
   return course.lessonsCompleted >= course.lessonCount && course.exercisesCompleted >= course.exerciseCount;
-}
-
-function getUnlockedCourse(courses: LearningPathCourse[], index: number): { course: LearningPathCourse } {
-  return { course: courses[index] };
 }
 
 export const IDS = {
@@ -706,9 +701,9 @@ export function getMockPathsForUser(): LearningPathWithEnrollment[] {
         state:
           completed === path.courses.length && path.courses.length > 0
             ? 'COMPLETED'
-            : completed === 0
-              ? 'NOT_STARTED'
-              : 'IN_PROGRESS'
+            : courseProgress.some((c) => c.state === 'IN_PROGRESS')
+              ? 'IN_PROGRESS'
+              : 'NOT_STARTED'
       }
     };
   });

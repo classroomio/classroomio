@@ -36,8 +36,7 @@
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
     {#each items as course (course.id ?? course.title)}
-      <a
-        href="/lms/explore"
+      <div
         class="group ui:hover:border-primary/40 flex flex-col overflow-hidden rounded-xl border shadow-sm transition-[box-shadow,border-color] hover:shadow-md"
       >
         <div
@@ -71,7 +70,7 @@
             </Button>
           </div>
         </div>
-      </a>
+      </div>
     {/each}
   </div>
 </section>
