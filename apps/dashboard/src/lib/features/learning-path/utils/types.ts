@@ -1,6 +1,6 @@
 export type LearningPathStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
 
-export type LearningPathCourseState = 'LOCKED' | 'IN_PROGRESS' | 'COMPLETED';
+export type LearningPathCourseState = 'LOCKED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
 export type VisitorAccess = 'teaser' | 'syllabus' | 'preview';
 
@@ -148,4 +148,15 @@ export type LearningPathEnrollment = {
 
 export interface LearningPathWithEnrollment extends LearningPath {
   enrollment?: LearningPathEnrollment | null;
+}
+
+export interface FilterOption {
+  value: string;
+  label: string;
+}
+
+export interface FilterGroup {
+  id: string;
+  label: string;
+  options: FilterOption[];
 }
