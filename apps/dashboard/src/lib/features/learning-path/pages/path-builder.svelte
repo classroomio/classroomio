@@ -118,14 +118,14 @@
       <div class="ui:border-border flex flex-col gap-1 rounded-lg border px-4 py-3">
         <div class="ui:text-muted-foreground flex items-center gap-2 text-xs font-medium">
           <LearningEntityIcon type="lesson" size={14} />
-          <span>{$t('course.navItem.lessons.stats.lessons')}</span>
+          <span>{$t('learningPath.courses.lessons')}</span>
         </div>
         <p class="text-2xl font-semibold tabular-nums">{totalLessons}</p>
       </div>
       <div class="ui:border-border flex flex-col gap-1 rounded-lg border px-4 py-3">
         <div class="ui:text-muted-foreground flex items-center gap-2 text-xs font-medium">
           <LearningEntityIcon type="exercise" size={14} />
-          <span>{$t('course.navItem.lessons.stats.exercises')}</span>
+          <span>{$t('learningPath.courses.exercises')}</span>
         </div>
         <p class="text-2xl font-semibold tabular-nums">{totalExercises}</p>
       </div>

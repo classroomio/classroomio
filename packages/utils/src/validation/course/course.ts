@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { CERTIFICATE_TEMPLATE_IDS } from '@cio/certificates';
+
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
@@ -56,7 +58,7 @@ export type TCourseDownloadParam = z.infer<typeof ZCourseDownloadParam>;
 
 /**
  * Per-course certificate design. Stored on `course.certificate.design`.
- * The 5 supported template ids match `@cio/certificates`.
+ * Template ids are owned by `@cio/certificates`.
  */
 export const ZCertificateSignatory = z.object({
   name: z.string().max(80).default(''),
@@ -66,7 +68,7 @@ export const ZCertificateSignatory = z.object({
 });
 export type TCertificateSignatory = z.infer<typeof ZCertificateSignatory>;
 
-export const ZCertificateTemplateId = z.enum(['classique', 'brutalist', 'noir', 'poster', 'minimal']);
+export const ZCertificateTemplateId = z.enum(CERTIFICATE_TEMPLATE_IDS);
 export type TCertificateTemplateId = z.infer<typeof ZCertificateTemplateId>;
 
 export const ZCertificateDesign = z.object({

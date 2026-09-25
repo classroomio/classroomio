@@ -127,13 +127,6 @@
       "when": 1789190269035,
       "tag": "0017_learner_lifecycle",
       "breakpoints": true
-    },
-    {
-      "idx": 18,
-      "version": "7",
-      "when": 1789659371098,
-      "tag": "0018_learning_paths",
-      "breakpoints": true
     }
   ]
 }

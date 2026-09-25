@@ -219,7 +219,7 @@
       <div class="flex items-center gap-2">
         {#if canManageMembers}
           <Button onclick={openInviteModal} testId="path-people-add-learners">
-            {$t('course.navItem.people.add')}
+            {$t('learningPath.people.add')}
           </Button>
         {/if}
         <RefreshPageData onRefresh={handleRefresh} />
@@ -230,7 +230,7 @@
   <Page.Body>
     {#snippet child()}
       {#if $isStudentLimitReached}
-        <UpgradeBanner className="mb-2">{$t('course.navItem.people.invite_modal.student_limit_reached')}</UpgradeBanner>
+        <UpgradeBanner className="mb-2">{$t('learningPath.people.invite_modal.student_limit_reached')}</UpgradeBanner>
       {/if}
 
       <section class="space-y-2">
@@ -286,7 +286,7 @@
                   <Table.Head>{$t('learningPath.people.table.learner')}</Table.Head>
                   <Table.Head>{$t('learningPath.people.table.progress')}</Table.Head>
                   <Table.Head class="max-w-[220px]">{$t('learningPath.people.table.current_course')}</Table.Head>
-                  <Table.Head>{$t('course.navItem.people.last_login_at')}</Table.Head>
+                  <Table.Head>{$t('learningPath.people.last_login_at')}</Table.Head>
                   <Table.Head>{$t('learningPath.people.table.enrolled')}</Table.Head>
                   <Table.Head class={stickyActionsHeadClass}></Table.Head>
                 </Table.Row>
@@ -295,7 +295,7 @@
                 {#if pathMembersApi.isLoadingMembers && pathMembersApi.members.length === 0}
                   <Table.Row>
                     <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
-                      {$t('course.navItem.people.invite_modal.loading')}
+                      {$t('learningPath.people.invite_modal.loading')}
                     </Table.Cell>
                   </Table.Row>
                 {:else if pathMembersApi.members.length === 0}

@@ -144,6 +144,7 @@ export type TInviteLinkWithContext = {
     slug: string | null;
     status: string;
     isPublished: boolean;
+    welcomeEmailMessage: string | null;
   } | null;
   cohort: { id: string; name: string; description: string | null; coverImage: string | null; status: string } | null;
   learningPath: {
@@ -152,7 +153,9 @@ export type TInviteLinkWithContext = {
     description: string | null;
     coverImage: string | null;
     slug: string | null;
+    status: string;
     isPublished: boolean;
+    welcomeEmailMessage: string | null;
   } | null;
 };
 
@@ -180,6 +183,7 @@ export async function getInviteLinkByTokenHash(
         courseSlug: schema.course.slug,
         courseStatus: schema.course.status,
         courseIsPublished: schema.course.isPublished,
+        courseMetadata: schema.course.metadata,
         cohortId: schema.cohort.id,
         cohortName: schema.cohort.name,
         cohortDescription: schema.cohort.description,
@@ -190,7 +194,9 @@ export async function getInviteLinkByTokenHash(
         learningPathDescription: schema.learningPath.description,
         learningPathCoverImage: schema.learningPath.coverImage,
         learningPathSlug: schema.learningPath.slug,
-        learningPathIsPublished: schema.learningPath.isPublished
+        learningPathStatus: schema.learningPath.status,
+        learningPathIsPublished: schema.learningPath.isPublished,
+        learningPathWelcomeEmailMessage: schema.learningPath.welcomeEmailMessage
       })
       .from(schema.inviteLink)
       .innerJoin(schema.organization, eq(schema.inviteLink.organizationId, schema.organization.id))
@@ -212,7 +218,9 @@ export async function getInviteLinkByTokenHash(
             description: row.courseDescription ?? null,
             slug: row.courseSlug ?? null,
             status: row.courseStatus ?? '',
-            isPublished: !!row.courseIsPublished
+            isPublished: !!row.courseIsPublished,
+            welcomeEmailMessage:
+              (row.courseMetadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
           }
         : null,
       cohort: row.cohortId
@@ -231,7 +239,9 @@ export async function getInviteLinkByTokenHash(
             description: row.learningPathDescription ?? null,
             coverImage: row.learningPathCoverImage ?? null,
             slug: row.learningPathSlug ?? null,
-            isPublished: !!row.learningPathIsPublished
+            status: row.learningPathStatus ?? '',
+            isPublished: !!row.learningPathIsPublished,
+            welcomeEmailMessage: row.learningPathWelcomeEmailMessage ?? null
           }
         : null
     };

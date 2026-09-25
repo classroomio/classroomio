@@ -7,6 +7,7 @@ import {
   getCourseCompletionStatsForProfile,
   getEnrolledPaths,
   getLearningPathCertificate,
+  getMemberByPathAndProfile,
   getMemberCourseProgress,
   grantCourseAccess,
   initializeMemberCourseProgress,
@@ -20,17 +21,19 @@ import {
   getOrganizationById,
   getOrganizationMemberIdByOrgAndProfile
 } from '@cio/db/queries/organization';
+import { getProfileById } from '@cio/db/queries/auth';
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
 
 import { resolveLearningPath } from './learning-path';
 import { syncPathProgressForMember } from './unlock';
+import { sendLearningPathWelcomeEmail } from './email';
 
 export interface TEnrolledCourseProgress extends TLearningPathCourseDetail {
   isUnlocked: boolean;
   isComplete: boolean;
 }
 
-export interface TEnrolledLearningPathWithProgress extends TLearningPath {
+export interface TEnrolledLearningPathWithProgress extends Omit<TLearningPath, 'certificate'> {
   member: {
     id: string;
     status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -54,7 +57,7 @@ export interface TEnrolledLearningPathWithProgress extends TLearningPath {
  * Idempotent on repeated calls.
  */
 export async function enrollInLearningPath(pathId: string, profileId: string): Promise<TLearningPathMember> {
-  return await db.transaction(async (transactionClient) => {
+  const { member, path, organization, isFreshJoin, email } = await db.transaction(async (transactionClient) => {
     const path = await resolveLearningPath(pathId, transactionClient);
 
     if (!path.isPublished) {
@@ -95,6 +98,9 @@ export async function enrollInLearningPath(pathId: string, profileId: string): P
         transactionClient
       );
     }
+
+    const existingMember = await getMemberByPathAndProfile(path.id, profileId, transactionClient);
+    const isFreshJoin = !existingMember;
 
     // 1. Enroll member in learning path
     const member = await enrollMember(
@@ -154,8 +160,23 @@ export async function enrollInLearningPath(pathId: string, profileId: string): P
       }
     }
 
-    return member;
+    const studentProfile = await getProfileById(profileId);
+    const studentEmail = studentProfile?.email ?? null;
+
+    return { member, path, organization, isFreshJoin, email: studentEmail };
   });
+
+  if (isFreshJoin && email) {
+    await sendLearningPathWelcomeEmail({
+      organization,
+      learningPath: path,
+      profileId,
+      email,
+      idempotencyKey: `self-enroll-learning-path-welcome:${path.id}:${profileId}`
+    });
+  }
+
+  return member;
 }
 
 /**
