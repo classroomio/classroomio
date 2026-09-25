@@ -1,6 +1,6 @@
 export type LearningPathStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
 
-export type LearningPathCourseState = 'LOCKED' | 'IN_PROGRESS' | 'COMPLETED';
+export type LearningPathCourseState = 'LOCKED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
 export type VisitorAccess = 'teaser' | 'syllabus' | 'preview';
 
