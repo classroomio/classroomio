@@ -12,7 +12,30 @@
     },
     "discard": "Descartar",
     "save_changes": "Salvar alterações",
-    "scroll_to_top": "Voltar ao topo"
+    "scroll_to_top": "Voltar ao topo",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "back": "Voltar",
+    "close": "Fechar",
+    "edit": "Editar",
+    "coming_soon": "Em breve",
+    "pricing": {
+      "enable_paid": "Ativar pago",
+      "yes": "Sim",
+      "no": "Não",
+      "currency": "Moeda",
+      "cost": "Custo",
+      "payment_link": "Link de pagamento",
+      "payment_required": "Payment link is required",
+      "payment_invalid_url": "Insira um URL válido",
+      "discount": "Desconto",
+      "show_discount": "Mostrar desconto",
+      "discount_percentage": "Percentual de desconto",
+      "reward": "Recompensa / Presente",
+      "reward_help": "Ofereça um incentivo aos alunos após a conclusão",
+      "reward_description": "Descrição da recompensa",
+      "placeholder_reward": "ex. Sessão de mentoria individual, brindes ou acesso exclusivo à comunidade"
+    }
   },
   "validations": {
     "generic": {
@@ -1301,7 +1324,12 @@
           "signature_upload_hint": "Faça upload de uma imagem de assinatura (opcional)",
           "signature_dont_crop": "Não corte",
           "signature_upload_in_progress": "Aguarde o término do upload da assinatura antes de salvar.",
-          "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente."
+          "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente.",
+          "signatory_one": "Signatário 1",
+          "signatory_two": "Signatário 2",
+          "signatory_name": "Nome do signatário",
+          "signatory_role": "Função do signatário",
+          "signature_image": "Imagem de assinatura"
         }
       },
       "people": {
@@ -5495,8 +5523,8 @@
         "courses": "Cursos",
         "people": "Pessoas",
         "analytics": "Análises",
-        "landing": "Página de destino",
-        "certificate": "Certificado",
+        "landing": "Página inicial",
+        "certificate": "Certificados",
         "settings": "Configurações",
         "setup": "Configurar"
       },
@@ -5557,7 +5585,9 @@
       "remove_course": "Remover do caminho",
       "add_course_button": "Adicionar curso ao caminho",
       "empty_title": "Ainda não há cursos neste caminho de aprendizagem",
-      "empty_description": "Adicione cursos para orientar os alunos através de uma sequência estruturada. Comece clicando no botão Adicionar."
+      "empty_description": "Adicione cursos para orientar os alunos através de uma sequência estruturada. Comece clicando no botão Adicionar.",
+      "start_reorder": "Reordenar",
+      "end_reorder": "Finalizar novo pedido"
     },
     "listing": {
       "title": "Caminhos de Aprendizagem",
@@ -5611,7 +5641,8 @@
       "open": "Abrir",
       "share": "Compartilhar",
       "invite": "Convidar",
-      "delete": "Excluir"
+      "delete": "Excluir",
+      "view_as_student": "Ver como aluno"
     },
     "card": {
       "actions_menu_aria": "Ações de caminho",
@@ -5632,7 +5663,11 @@
       "member_removed": "Aluno removido do caminho",
       "tutors_added": "Tutores adicionados ao caminho",
       "tutor_added": "Tutor adicionado à trilha",
-      "tutor_removed": "Tutor removido da trilha"
+      "tutor_removed": "Tutor removido da trilha",
+      "certificate_saved": "Configurações do certificado salvas",
+      "landing_saved": "Página de destino atualizada",
+      "link_generated": "Link de convite gerado e copiado para a área de transferência",
+      "settings_saved": "Configurações do caminho de aprendizagem atualizadas"
     },
     "analytics": {
       "title": "Análise",
@@ -5737,7 +5772,302 @@
         "in_progress": "Em andamento",
         "completed": "Concluído"
       },
-      "info_title": "Sobre inscrição de caminho"
+      "info_title": "Sobre inscrição de caminho",
+      "add": "Adicionar",
+      "last_login_at": "Último login em",
+      "you": "Você",
+      "view": "Ver",
+      "delete_profile": "Remover",
+      "invite_modal": {
+        "loading": "Adicionando…",
+        "student_limit_reached": "Você atingiu seu limite de alunos. Faça upgrade para adicionar mais alunos.",
+        "invite": "Convidar tutores",
+        "invite_students": "Convidar alunos",
+        "finish": "Concluir"
+      }
+    },
+    "certificate": {
+      "title": "Certificados",
+      "awarded_count": "{count, plural, =0 {Nenhum certificado emitido ainda} =1 {1 certificado emitido até agora} other {# certificados emitidos até agora}}",
+      "allow": "Permitir que os alunos baixem o certificado",
+      "email_message_label": "Mensagem de e-mail",
+      "email_message_placeholder": "ex.: Parabéns pela conclusão da trilha de aprendizagem!",
+      "editor": {
+        "title": "Design do certificado"
+      }
+    },
+    "landing": {
+      "page_builder": "Criador de páginas",
+      "display_section": "Exibir seção",
+      "hero": {
+        "title": "Destaque",
+        "headline": "Título principal",
+        "headline_placeholder": "ex.: Torne-se um Engenheiro Fullstack Sênior",
+        "subheadline": "Subtítulo",
+        "subheadline_placeholder": "ex.: Domine frontend, backend e deploy moderno através de projetos práticos."
+      },
+      "access": {
+        "title": "Acesso de visitantes",
+        "description": "Controla quanto conteúdo visitantes não matriculados podem explorar na página pública.",
+        "teaser_title": "Amostra",
+        "teaser_desc": "Exibir apenas títulos dos cursos e objetivos principais.",
+        "syllabus_title": "Ementa (recomendado)",
+        "syllabus_desc": "Exibir ementa completa com títulos das aulas e indicadores de bloqueio.",
+        "preview_title": "Prévia",
+        "preview_desc": "Permitir que visitantes visualizem a primeira aula de cada curso sem se matricular."
+      },
+      "skills": {
+        "title": "Habilidades",
+        "placeholder": "ex.: TypeScript, Docker, PostgreSQL",
+        "help": "Pressione Enter para adicionar. Elas aparecem como marcadores na sua página."
+      },
+      "instructors": {
+        "title": "Instrutores",
+        "auto_populated_note": "Instrutores são obtidos automaticamente dos cursos incluídos nesta trilha.",
+        "courses_note": "{count, plural, =0 {Nenhum curso adicionado ainda} =1 {Extraído de 1 curso nesta trilha} other {Extraído de todos os # cursos nesta trilha}}",
+        "role_placeholder": "ex. Instrutor principal · Frontend",
+        "default_role": "Instrutor do curso",
+        "untitled": "Instrutor sem título",
+        "add": "Adicionar instrutor",
+        "no_tutors_found": "Nenhum instrutor encontrado",
+        "min_one_required": "Pelo menos um instrutor é obrigatório",
+        "remove": "Remover instrutor",
+        "upload": "Logotipo do instrutor",
+        "name": "Nome do instrutor",
+        "name_placeholder": "Nome da sua empresa",
+        "role": "Função do instrutor",
+        "about": "Sobre o instrutor",
+        "about_placeholder": "Uma breve apresentação sobre o instrutor",
+        "total": "Nº de cursos"
+      },
+      "testimonials": {
+        "title": "Depoimentos",
+        "untitled": "Depoimento sem título",
+        "name": "Nome",
+        "role": "Função / Cargo",
+        "quote": "Depoimento",
+        "add": "Adicionar depoimento"
+      },
+      "faqs": {
+        "title": "Perguntas frequentes",
+        "untitled": "Pergunta sem título",
+        "question": "Pergunta",
+        "answer": "Resposta",
+        "add": "Adicionar pergunta",
+        "question_placeholder": "O que é necessário para concluir este caminho?",
+        "answer_placeholder": "Você deve concluir todas as aulas e exercícios de cada curso."
+      },
+      "header": {
+        "title_placeholder": "ex. Desenvolvimento Web Fullstack",
+        "description_placeholder": "Uma visão geral do que os alunos vão alcançar...",
+        "title": "Cabeçalho",
+        "title_label": "Título",
+        "description_label": "Descrição"
+      },
+      "reviews": {
+        "title": "Avaliações",
+        "untitled": "Avaliação sem título",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "URL da imagem do avatar",
+        "rating_placeholder": "Opcional (1-5)",
+        "clear_rating": "Limpar avaliação",
+        "description_placeholder": "Este caminho de aprendizagem me deu as habilidades e a confiança exatas de que eu precisava.",
+        "add_reviews": "Adicionar avaliações",
+        "fullname": "Nome completo",
+        "description": "Descrição",
+        "rating": "Avaliação"
+      },
+      "preview": "Pré-visualização",
+      "save": "Salvar alterações",
+      "requirement": {
+        "title": "Requisito"
+      },
+      "description": {
+        "title": "Descrição"
+      },
+      "goals": {
+        "title": "Objetivos"
+      },
+      "certificate": {
+        "title": "Certificado",
+        "upload_template": "Modelo de certificado"
+      },
+      "pricing": {
+        "title": "Preço",
+        "payment_required": "O link de pagamento é obrigatório",
+        "payment_invalid_url": "Insira um URL válido",
+        "enable_paid": "Ativar pago",
+        "currency": "Moeda",
+        "cost": "Custo",
+        "payment": "Link de pagamento",
+        "payment_helper": "Stripe, Lemon Squeezy ou qualquer link de pagamento",
+        "discount": "Desconto",
+        "no": "Não",
+        "yes": "Sim",
+        "percent": "Porcentagem de desconto",
+        "percentage_helper": "Em porcentagem%",
+        "gift_on_completion": "Presente na conclusão",
+        "gift": "Sobre presente"
+      }
+    },
+    "settings": {
+      "title": "Configurações",
+      "general": {
+        "legend": "Informações gerais",
+        "desc": "Detalhes básicos sobre esta trilha de aprendizagem.",
+        "name_label": "Nome da trilha",
+        "name_placeholder": "ex.: Desenvolvimento Web Fullstack",
+        "name_required": "O nome da trilha é obrigatório",
+        "description_label": "Descrição",
+        "description_placeholder": "Um breve resumo do que os alunos irão conquistar...",
+        "description_required": "A descrição é obrigatória",
+        "cover_image_legend": "Imagem de capa",
+        "cover_image_desc": "Envie uma imagem de capa para esta trilha. Tamanho recomendado: 1200x630px.",
+        "replace_image": "Substituir imagem",
+        "reset_image": "Redefinir",
+        "link": "Public link",
+        "generate_link": "Generate invite link",
+        "open_link": "Abrir link em nova guia",
+        "copy_link": "Copiar link",
+        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+      },
+      "enrollment": {
+        "legend": "Matrícula e progressão",
+        "desc": "Configure como os alunos se matriculam e avançam pelos cursos.",
+        "self_enrollment_label": "Permitir auto-matrícula",
+        "self_enrollment_desc": "Os alunos podem se matricular sozinhos nesta trilha.",
+        "sequential_unlock_label": "Desbloqueio sequencial de cursos",
+        "sequential_unlock_desc": "Os alunos devem concluir os cursos na ordem estabelecida.",
+        "auto_enroll_label": "Matrícula automática nos cursos da trilha",
+        "auto_enroll_desc": "Matricular automaticamente os alunos em todos os cursos ao entrarem nesta trilha."
+      },
+      "publishing": {
+        "legend": "Publicação",
+        "desc": "Torne esta trilha de aprendizagem visível para os alunos.",
+        "publish_label": "Publicar trilha de aprendizagem",
+        "publish_desc": "Tornar esta trilha visível e abrir as matrículas.",
+        "published": "Publicado",
+        "unpublished": "Não publicado"
+      },
+      "danger": {
+        "legend": "Zona de perigo",
+        "desc": "Excluir permanentemente esta trilha de aprendizagem e todos os seus dados associados.",
+        "delete_button": "Excluir trilha de aprendizagem",
+        "delete_title": "Excluir caminho de aprendizagem",
+        "delete_description": "Tem certeza de que deseja excluir \"{name}\"? Esta ação não pode ser desfeita."
+      },
+      "cover_image": {
+        "legend": "Imagem de capa",
+        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
+        "replace": "Replace image",
+        "reset": "Redefinir",
+        "alt": "Cobertura do caminho"
+      },
+      "welcome_email": {
+        "legend": "Welcome Email",
+        "desc": "Send an automated welcome message when learners are enrolled.",
+        "placeholder": "Write a welcome message for your learners..."
+      },
+      "progression": {
+        "legend": "Course Progression",
+        "desc": "Choose how learners can navigate courses in this path.",
+        "free": "Free navigation (any order)",
+        "sequential": "Sequential (must complete in order)"
+      },
+      "self_enrollment": {
+        "legend": "Self-Enrollment",
+        "access": "Manage access in {people}",
+        "access_people": "Pessoas",
+        "enabled": "Ativado",
+        "disabled": "Desativado"
+      },
+      "auto_enroll": {
+        "legend": "Auto-Enrollment",
+        "desc": "Automatically enroll new organization members into this learning path.",
+        "enabled": "Ativado",
+        "disabled": "Desativado"
+      }
+    },
+    "courses": {
+      "lessons": "Aulas",
+      "exercises": "Exercícios"
+    },
+    "view_as_student": {
+      "title": "Isso vai redirecionar você para o LMS do Aluno.",
+      "description": "Você está prestes a ver o que um aluno verá ao se inscrever neste caminho de aprendizagem",
+      "copy_link": "Copiar link",
+      "go_to_lms": "Ir para o LMS"
+    }
+  },
+  "certificate": {
+    "tab_design": "Design",
+    "tab_settings": "Configurações",
+    "allow": "Permitir que os alunos baixem o certificado",
+    "email_message_label": "Mensagem de e-mail",
+    "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
+    "rules": "Regras",
+    "editor": {
+      "title": "Projeto de certificado",
+      "back": "Voltar para certificados",
+      "unsaved": "Não salvo",
+      "free_plan": "Plano grátis",
+      "discard": "Descartar",
+      "save": "Salvar alterações",
+      "saved": "Design de certificado salvo",
+      "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente.",
+      "signature_upload_in_progress": "Aguarde o término do upload da assinatura antes de salvar.",
+      "sections": "Seções do editor",
+      "preview": "Visualização ao vivo",
+      "panel_templates": "Modelos",
+      "panel_templates_subtitle": "Escolha um modelo para ancorar o estilo visual.",
+      "panel_content": "Conteúdo",
+      "panel_content_subtitle": "Ajuste as palavras que aparecem no certificado.",
+      "panel_colors": "Cor de destaque",
+      "panel_colors_subtitle": "Usado para a linha do destinatário, acentos e carimbo.",
+      "panel_export": "Exportar",
+      "panel_export_subtitle": "Visualize o design atual conforme ele será entregue.",
+      "section_header": "Cópia do cabeçalho",
+      "section_signatories": "Signatários",
+      "section_reference": "Referência",
+      "subtitle": "Legenda",
+      "subtitle_placeholder": "Premiado com a mais alta distinção",
+      "description_override": "Substituição de descrição",
+      "description_override_placeholder": "O padrão é a descrição do curso.",
+      "description_override_hint": "Deixe em branco para retornar à descrição do curso ao salvar.",
+      "signatory_one_name": "Nome do signatário 1",
+      "signatory_one_role": "Função do Signatário 1",
+      "signatory_two_name": "Nome do Signatário 2",
+      "signatory_two_role": "Papel do Signatário 2",
+      "signatory_one_toggle": "Mostrar signatário 1",
+      "signatory_two_toggle": "Mostrar signatário 2",
+      "signature_upload": "Imagem de assinatura",
+      "signature_upload_hint": "Faça upload de uma imagem de assinatura (opcional)",
+      "signature_dont_crop": "Não corte",
+      "id_format": "Formato de ID do certificado",
+      "id_format_hint": "Use '{'seq'}' para os últimos quatro dígitos, '{'year'}' para o ano de emissão, '{'month'}' para o mês.",
+      "accent_hint": "A cor de destaque aparece na regra do destinatário, nos carimbos e no destaque do título do modelo.",
+      "templates_hint": "Os modelos são renderizados com o mesmo renderizador usado para PDF e PNG baixados.",
+      "download_pdf": "Baixar PDF",
+      "download_png": "Baixar PNG",
+      "print": "Imprimir",
+      "export_hint": "As exportações usam seu nome como destinatário para que você possa visualizar o layout final.",
+      "preview_failed": "Não foi possível gerar a visualização do certificado",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Certificado de Excelência",
+      "sample_description": "Em reconhecimento às conquistas notáveis e à dedicação exemplar ao ofício.",
+      "sample_org": "A Academia Real de Artes",
+      "summary_title": "Design ativo",
+      "summary_subtitle": "Instantâneo de como ficará o certificado quando emitido.",
+      "field_template": "Modelo",
+      "field_accent": "Destaque",
+      "field_signatories": "Signatários",
+      "customize_design": "Personalizar design",
+      "signatory_one": "Signatário 1",
+      "signatory_two": "Signatário 2",
+      "signatory_name": "Nome do signatário",
+      "signatory_role": "Função do signatário",
+      "signature_image": "Imagem de assinatura"
     }
   }
 }

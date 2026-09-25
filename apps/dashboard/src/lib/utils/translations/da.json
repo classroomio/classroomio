@@ -12,7 +12,30 @@
     },
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
-    "scroll_to_top": "Rul til toppen"
+    "scroll_to_top": "Rul til toppen",
+    "add": "Tilføj",
+    "remove": "Fjern",
+    "back": "Tilbage",
+    "close": "Close",
+    "edit": "Edit",
+    "coming_soon": "Coming soon",
+    "pricing": {
+      "enable_paid": "Aktiver betalt",
+      "yes": "Ja",
+      "no": "Nej",
+      "currency": "Valuta",
+      "cost": "Omkostninger",
+      "payment_link": "Payment Link",
+      "payment_required": "Payment link is required",
+      "payment_invalid_url": "Please enter a valid URL",
+      "discount": "Rabat",
+      "show_discount": "Show discount",
+      "discount_percentage": "Discount percentage",
+      "reward": "Reward / Gift",
+      "reward_help": "Offer learners an incentive upon completion",
+      "reward_description": "Reward description",
+      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+    }
   },
   "validations": {
     "generic": {
@@ -1301,7 +1324,12 @@
           "signature_upload_hint": "Upload et signaturbillede (valgfrit)",
           "signature_dont_crop": "Beskær ikke",
           "signature_upload_in_progress": "Vent på, at signaturoverførslen er færdig, før du gemmer.",
-          "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen."
+          "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen.",
+          "signatory_one": "Underskriver 1",
+          "signatory_two": "Underskriver 2",
+          "signatory_name": "Underskrivers navn",
+          "signatory_role": "Underskrivers rolle",
+          "signature_image": "Signaturbillede"
         }
       },
       "people": {
@@ -5496,7 +5524,7 @@
         "people": "Personer",
         "analytics": "Analyse",
         "landing": "Landingsside",
-        "certificate": "Certifikat",
+        "certificate": "Certifikater",
         "settings": "Indstillinger",
         "setup": "Opsætning"
       },
@@ -5557,7 +5585,9 @@
       "remove_course": "Fjern fra sti",
       "add_course_button": "Tilføj kursus til sti",
       "empty_title": "Ingen kurser i denne læringsvej endnu",
-      "empty_description": "Tilføj kurser for at guide eleverne gennem en struktureret sekvens. Start med at klikke på knappen Tilføj."
+      "empty_description": "Tilføj kurser for at guide eleverne gennem en struktureret sekvens. Start med at klikke på knappen Tilføj.",
+      "start_reorder": "Genbestil",
+      "end_reorder": "Afslut genbestilling"
     },
     "listing": {
       "title": "Læringsstier",
@@ -5611,7 +5641,8 @@
       "open": "Åbn",
       "share": "Del",
       "invite": "Inviter",
-      "delete": "Slet"
+      "delete": "Slet",
+      "view_as_student": "View as student"
     },
     "card": {
       "actions_menu_aria": "Stihandlinger",
@@ -5632,7 +5663,11 @@
       "member_removed": "Elev fjernet fra stien",
       "tutors_added": "Undervisere tilføjet til stien",
       "tutor_added": "Underviser tilføjet til forløbet",
-      "tutor_removed": "Underviser fjernet fra forløbet"
+      "tutor_removed": "Underviser fjernet fra forløbet",
+      "certificate_saved": "Certifikatindstillinger gemt",
+      "landing_saved": "Destinationsside opdateret",
+      "link_generated": "Invite link generated and copied to clipboard",
+      "settings_saved": "Learning path settings updated"
     },
     "analytics": {
       "title": "Analytics",
@@ -5737,7 +5772,302 @@
         "in_progress": "I gang",
         "completed": "Afsluttet"
       },
-      "info_title": "Om stitilmelding"
+      "info_title": "Om stitilmelding",
+      "add": "Add",
+      "last_login_at": "Last login at",
+      "you": "You",
+      "view": "View",
+      "delete_profile": "Remove",
+      "invite_modal": {
+        "loading": "Adding…",
+        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "invite": "Inviter undervisere",
+        "invite_students": "Inviter studerende",
+        "finish": "Afslut"
+      }
+    },
+    "certificate": {
+      "title": "Certifikater",
+      "awarded_count": "{count, plural, =0 {Ingen certifikater tildelt endnu} =1 {1 certifikat tildelt indtil videre} other {# certifikater tildelt indtil videre}}",
+      "allow": "Tillad elever at downloade certifikat",
+      "email_message_label": "E-mail besked",
+      "email_message_placeholder": "f.eks. Tillykke med fuldførelsen af læringsstien!",
+      "editor": {
+        "title": "Certifikatdesign"
+      }
+    },
+    "landing": {
+      "page_builder": "Sidebygger",
+      "display_section": "Vis sektion",
+      "hero": {
+        "title": "Hero",
+        "headline": "Overskrift",
+        "headline_placeholder": "f.eks. Bliv en Senior Fullstack Ingeniør",
+        "subheadline": "Underoverskrift",
+        "subheadline_placeholder": "f.eks. Behersk moderne frontend, backend og udrulning gennem projektbaseret læring."
+      },
+      "access": {
+        "title": "Besøgsadgang",
+        "description": "Styrer, hvor meget indhold ikke-tilmeldte besøgende kan udforske på den offentlige stiside.",
+        "teaser_title": "Teaser",
+        "teaser_desc": "Vis kun kurstitler og overordnede mål.",
+        "syllabus_title": "Pensum (anbefalet)",
+        "syllabus_desc": "Vis det fulde pensum med lektionstitler og låste indikatorer.",
+        "preview_title": "Forhåndsvisning",
+        "preview_desc": "Giv besøgende mulighed for at forhåndsvise den første lektion af hvert kursus uden at tilmelde sig."
+      },
+      "skills": {
+        "title": "Færdigheder",
+        "placeholder": "f.eks. TypeScript, Docker, PostgreSQL",
+        "help": "Press Enter to add. These appear as chips on your landing page."
+      },
+      "instructors": {
+        "title": "Instruktører",
+        "auto_populated_note": "Instruktører samles automatisk fra kurserne i denne sti.",
+        "courses_note": "{count, plural, =0 {Ingen kurser tilføjet endnu} =1 {Hentet fra 1 kursus i denne sti} other {Hentet fra alle # kurser i denne sti}}",
+        "role_placeholder": "e.g. Lead Instructor · Frontend",
+        "default_role": "Course Instructor",
+        "untitled": "Untitled instructor",
+        "add": "Add instructor",
+        "no_tutors_found": "No instructors found",
+        "min_one_required": "At least one instructor is required",
+        "remove": "Remove instructor",
+        "upload": "Instructor Logo",
+        "name": "Instructor name",
+        "name_placeholder": "Your company name",
+        "role": "Instructor Role",
+        "about": "About Instructor",
+        "about_placeholder": "A short background about the instructor",
+        "total": "No of courses"
+      },
+      "testimonials": {
+        "title": "Udtalelser",
+        "untitled": "Ikke-navngivet udtalelse",
+        "name": "Navn",
+        "role": "Rolle / Titel",
+        "quote": "Citat",
+        "add": "Tilføj udtalelse"
+      },
+      "faqs": {
+        "title": "Ofte stillede spørgsmål",
+        "untitled": "Ikke-navngivet spørgsmål",
+        "question": "Spørgsmål",
+        "answer": "Svar",
+        "add": "Tilføj ofte stillet spørgsmål",
+        "question_placeholder": "What is required to complete this path?",
+        "answer_placeholder": "You must complete all lessons and exercises in every course."
+      },
+      "header": {
+        "title_placeholder": "e.g. Fullstack Web Development",
+        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
+        "title": "Header",
+        "title_label": "Title",
+        "description_label": "Description"
+      },
+      "reviews": {
+        "title": "Reviews",
+        "untitled": "Untitled review",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "Avatar image URL",
+        "rating_placeholder": "Optional (1-5)",
+        "clear_rating": "Clear rating",
+        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
+        "add_reviews": "Add Reviews",
+        "fullname": "Full Name",
+        "description": "Description",
+        "rating": "Rating"
+      },
+      "preview": "Preview",
+      "save": "Save",
+      "requirement": {
+        "title": "Requirement"
+      },
+      "description": {
+        "title": "Description"
+      },
+      "goals": {
+        "title": "Goals"
+      },
+      "certificate": {
+        "title": "Certificate",
+        "upload_template": "Certificate template"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "payment_required": "Payment link is required",
+        "payment_invalid_url": "Please enter a valid URL",
+        "enable_paid": "Aktiver betalt",
+        "currency": "Valuta",
+        "cost": "Omkostninger",
+        "payment": "Betalingslink",
+        "payment_helper": "Stripe, Lemon Squeezy eller et hvilket som helst betalingslink",
+        "discount": "Rabat",
+        "no": "Nej",
+        "yes": "Ja",
+        "percent": "Rabatprocent",
+        "percentage_helper": "I procent %",
+        "gift_on_completion": "Gave ved færdiggørelse",
+        "gift": "Om gave"
+      }
+    },
+    "settings": {
+      "title": "Indstillinger",
+      "general": {
+        "legend": "Generelle oplysninger",
+        "desc": "Grundlæggende oplysninger om denne læringssti.",
+        "name_label": "Stinavn",
+        "name_placeholder": "f.eks. Fullstack Webudvikling",
+        "name_required": "Stinavn er påkrævet",
+        "description_label": "Beskrivelse",
+        "description_placeholder": "En kort oversigt over, hvad eleverne vil opnå...",
+        "description_required": "Beskrivelse er påkrævet",
+        "cover_image_legend": "Forsidebillede",
+        "cover_image_desc": "Upload et forsidebillede til denne læringssti. Anbefalet størrelse: 1200x630px.",
+        "replace_image": "Erstat billede",
+        "reset_image": "Nulstil",
+        "link": "Public link",
+        "generate_link": "Generate invite link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
+        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+      },
+      "enrollment": {
+        "legend": "Tilmelding og progression",
+        "desc": "Konfigurer, hvordan elever tilmelder sig og bevæger sig gennem kurser.",
+        "self_enrollment_label": "Tillad selvtilmelding",
+        "self_enrollment_desc": "Elever kan selv tilmelde sig denne sti.",
+        "sequential_unlock_label": "Sekventiel oplåsning af kurser",
+        "sequential_unlock_desc": "Elever skal gennemføre kurser i rækkefølge.",
+        "auto_enroll_label": "Automatisk tilmelding til stiens kurser",
+        "auto_enroll_desc": "Tilmeld automatisk elever til alle kurser, når de tilmelder sig denne sti."
+      },
+      "publishing": {
+        "legend": "Udgivelse",
+        "desc": "Gør denne læringssti synlig for elever.",
+        "publish_label": "Udgiv læringssti",
+        "publish_desc": "Gør denne læringssti synlig og åben for tilmelding.",
+        "published": "Published",
+        "unpublished": "Unpublished"
+      },
+      "danger": {
+        "legend": "Farezone",
+        "desc": "Slet denne læringssti og alle dens tilknyttede data permanent.",
+        "delete_button": "Slet læringssti",
+        "delete_title": "Delete Learning Path",
+        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+      },
+      "cover_image": {
+        "legend": "Cover Image",
+        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
+        "replace": "Replace image",
+        "reset": "Reset",
+        "alt": "Stidækning"
+      },
+      "welcome_email": {
+        "legend": "Welcome Email",
+        "desc": "Send an automated welcome message when learners are enrolled.",
+        "placeholder": "Write a welcome message for your learners..."
+      },
+      "progression": {
+        "legend": "Course Progression",
+        "desc": "Choose how learners can navigate courses in this path.",
+        "free": "Free navigation (any order)",
+        "sequential": "Sequential (must complete in order)"
+      },
+      "self_enrollment": {
+        "legend": "Self-Enrollment",
+        "access": "Manage access in {people}",
+        "access_people": "People",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "auto_enroll": {
+        "legend": "Auto-Enrollment",
+        "desc": "Automatically enroll new organization members into this learning path.",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      }
+    },
+    "courses": {
+      "lessons": "Lessons",
+      "exercises": "Exercises"
+    },
+    "view_as_student": {
+      "title": "This will redirect you to the Student LMS.",
+      "description": "You are about to see what a student will see when they enroll in this learning path",
+      "copy_link": "Copy link",
+      "go_to_lms": "Go to LMS"
+    }
+  },
+  "certificate": {
+    "tab_design": "Design",
+    "tab_settings": "Indstillinger",
+    "allow": "Tillad elever at downloade certifikat",
+    "email_message_label": "E-mail besked",
+    "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
+    "rules": "Regler",
+    "editor": {
+      "title": "Certifikat design",
+      "back": "Tilbage til certifikater",
+      "unsaved": "Ikke gemt",
+      "free_plan": "Gratis plan",
+      "discard": "Kassér",
+      "save": "Gem ændringer",
+      "saved": "Certifikatdesign gemt",
+      "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen.",
+      "signature_upload_in_progress": "Vent på, at signaturoverførslen er færdig, før du gemmer.",
+      "sections": "Redaktørsektioner",
+      "preview": "Live forhåndsvisning",
+      "panel_templates": "Skabeloner",
+      "panel_templates_subtitle": "Vælg en skabelon til at forankre den visuelle stil.",
+      "panel_content": "Indhold",
+      "panel_content_subtitle": "Finjuster de ord, der står på certifikatet.",
+      "panel_colors": "Accent farve",
+      "panel_colors_subtitle": "Bruges til modtagerlinjen, accenter og stempel.",
+      "panel_export": "Eksporter",
+      "panel_export_subtitle": "Se forhåndsvisning af det aktuelle design, efterhånden som det vil blive leveret.",
+      "section_header": "Header kopi",
+      "section_signatories": "Underskrivere",
+      "section_reference": "Reference",
+      "subtitle": "Undertekst",
+      "subtitle_placeholder": "Tildelt med højeste udmærkelse",
+      "description_override": "Beskrivelse tilsidesættelse",
+      "description_override_placeholder": "Standard til kursusbeskrivelsen.",
+      "description_override_hint": "Lad stå tomt for at vende tilbage til kursusbeskrivelsen ved gem.",
+      "signatory_one_name": "Underskriver 1 navn",
+      "signatory_one_role": "Underskriver 1 rolle",
+      "signatory_two_name": "Underskriver 2 navn",
+      "signatory_two_role": "Underskriver 2 rolle",
+      "signatory_one_toggle": "Vis underskriver 1",
+      "signatory_two_toggle": "Vis underskriver 2",
+      "signature_upload": "Signaturbillede",
+      "signature_upload_hint": "Upload et signaturbillede (valgfrit)",
+      "signature_dont_crop": "Beskær ikke",
+      "id_format": "Certifikat-id-format",
+      "id_format_hint": "Brug '{'seq'}' for de sidste fire cifre, '{'year'}' for udstedelsesåret, '{'month'}' for måneden.",
+      "accent_hint": "Accentfarve vises på modtagerreglen, stemplerne og skabelonens overskriftsfremhævning.",
+      "templates_hint": "Skabeloner gengives med den samme renderer, der bruges til den downloadede PDF og PNG.",
+      "download_pdf": "Download PDF",
+      "download_png": "Download PNG",
+      "print": "Udskriv",
+      "export_hint": "Eksporter bruger dit navn som modtager, så du kan få vist det endelige layout.",
+      "preview_failed": "Kunne ikke generere certifikateksempel",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Udmærkelsescertifikat",
+      "sample_description": "Som en anerkendelse af enestående præstation og eksemplarisk dedikation til håndværket.",
+      "sample_org": "Det Kongelige Kunstakademi",
+      "summary_title": "Aktivt design",
+      "summary_subtitle": "Snapshot af, hvordan certifikatet vil se ud, når det udstedes.",
+      "field_template": "Skabelon",
+      "field_accent": "Accent",
+      "field_signatories": "Underskrivere",
+      "customize_design": "Tilpas design",
+      "signatory_one": "Underskriver 1",
+      "signatory_two": "Underskriver 2",
+      "signatory_name": "Underskrivers navn",
+      "signatory_role": "Underskrivers rolle",
+      "signature_image": "Signaturbillede"
     }
   }
 }

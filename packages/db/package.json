@@ -95,6 +95,7 @@
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",
+    "@cio/certificates": "workspace:*",
     "@cio/email": "workspace:*",
     "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",

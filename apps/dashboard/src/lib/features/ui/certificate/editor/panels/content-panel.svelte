@@ -7,13 +7,15 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
-  import { certificateEditorStore } from '../store/certificate-editor.store.svelte';
+  import { DEFAULT_CERTIFICATE_ID_FORMAT } from '@cio/utils/functions';
+  import type { ParameterizedCertificateEditorStore } from '../store/certificate-editor-store.svelte';
 
   interface Props {
+    store: ParameterizedCertificateEditorStore;
     disabled?: boolean;
   }
 
-  let { disabled = false }: Props = $props();
+  let { store, disabled = false }: Props = $props();
 
   let signatoryOneAvatar: File | undefined = $state();
   let signatoryTwoAvatar: File | undefined = $state();
@@ -23,19 +25,15 @@
   let isSignatoryTwoUploading = $state(false);
 
   $effect(() => {
-    certificateEditorStore.isSignatureUploading = isSignatoryOneUploading || isSignatoryTwoUploading;
-  });
-
-  $effect(() => {
     if (isSignatoryOneUploading) return;
 
-    signatoryOnePreview = certificateEditorStore.draft.signatories[0].signatureUrl;
+    signatoryOnePreview = store.draft.signatories?.[0]?.signatureUrl ?? '';
   });
 
   $effect(() => {
     if (isSignatoryTwoUploading) return;
 
-    signatoryTwoPreview = certificateEditorStore.draft.signatories[1].signatureUrl;
+    signatoryTwoPreview = store.draft.signatories?.[1]?.signatureUrl ?? '';
   });
 
   async function uploadSignatorySignature(index: 0 | 1, avatar: File) {
@@ -45,9 +43,11 @@
       isSignatoryTwoUploading = true;
     }
 
+    store.beginSignatureUpload();
+
     try {
       const signatureUrl = await uploadImage(avatar);
-      certificateEditorStore.setSignatorySignatureUrl(index, signatureUrl);
+      store.setSignatorySignatureUrl(index, signatureUrl);
 
       if (index === 0) {
         signatoryOnePreview = signatureUrl;
@@ -65,6 +65,8 @@
       } else {
         isSignatoryTwoUploading = false;
       }
+
+      store.endSignatureUpload();
     }
   }
 
@@ -85,26 +87,26 @@
 
 <Field.Group>
   <Field.Set>
-    <Field.Legend>{$t('course.navItem.certificates.editor.section_header')}</Field.Legend>
+    <Field.Legend>{$t('certificate.editor.section_header')}</Field.Legend>
     <Field.Group>
       <Field.Field>
         <InputField
-          label={$t('course.navItem.certificates.editor.subtitle')}
-          bind:value={certificateEditorStore.draft.subtitle}
-          placeholder={$t('course.navItem.certificates.editor.subtitle_placeholder')}
+          label={$t('certificate.editor.subtitle')}
+          bind:value={store.draft.subtitle}
+          placeholder={$t('certificate.editor.subtitle_placeholder')}
           isDisabled={disabled}
         />
       </Field.Field>
       <Field.Field>
         <TextareaField
-          label={$t('course.navItem.certificates.editor.description_override')}
+          label={$t('certificate.editor.description_override')}
           rows={4}
-          bind:value={certificateEditorStore.draft.descriptionOverride}
-          placeholder={$t('course.navItem.certificates.editor.description_override_placeholder')}
+          bind:value={store.draft.descriptionOverride}
+          placeholder={$t('certificate.editor.description_override_placeholder')}
           {disabled}
         />
         <Field.Description>
-          {$t('course.navItem.certificates.editor.description_override_hint')}
+          {$t('certificate.editor.description_override_hint')}
         </Field.Description>
       </Field.Field>
     </Field.Group>
@@ -113,32 +115,32 @@
   <Field.Separator />
 
   <Field.Set>
-    <Field.Legend>{$t('course.navItem.certificates.editor.section_signatories')}</Field.Legend>
+    <Field.Legend>{$t('certificate.editor.section_signatories')}</Field.Legend>
     <Field.Group>
       <Field.Set>
         <Field.Field orientation="horizontal">
-          <Switch bind:checked={certificateEditorStore.draft.signatories[0].enabled} {disabled} />
-          <Field.Label>{$t('course.navItem.certificates.editor.signatory_one_toggle')}</Field.Label>
+          <Switch bind:checked={store.draft.signatories[0].enabled} {disabled} />
+          <Field.Label>{$t('certificate.editor.signatory_one_toggle')}</Field.Label>
         </Field.Field>
 
-        {#if certificateEditorStore.draft.signatories[0].enabled}
+        {#if store.draft.signatories[0].enabled}
           <Field.Group>
             <Field.Field>
               <InputField
-                label={$t('course.navItem.certificates.editor.signatory_one_name')}
-                bind:value={certificateEditorStore.draft.signatories[0].name}
+                label={$t('certificate.editor.signatory_one_name')}
+                bind:value={store.draft.signatories[0].name}
                 isDisabled={disabled}
               />
             </Field.Field>
             <Field.Field>
               <InputField
-                label={$t('course.navItem.certificates.editor.signatory_one_role')}
-                bind:value={certificateEditorStore.draft.signatories[0].role}
+                label={$t('certificate.editor.signatory_one_role')}
+                bind:value={store.draft.signatories[0].role}
                 isDisabled={disabled}
               />
             </Field.Field>
             <Field.Field>
-              <Field.Label>{$t('course.navItem.certificates.editor.signature_upload')}</Field.Label>
+              <Field.Label>{$t('certificate.editor.signature_upload')}</Field.Label>
               <UploadImage
                 bind:avatar={signatoryOneAvatar}
                 bind:src={signatoryOnePreview}
@@ -149,7 +151,7 @@
                 bind:isUploading={isSignatoryOneUploading}
               />
               <Field.Description>
-                {$t('course.navItem.certificates.editor.signature_upload_hint')}
+                {$t('certificate.editor.signature_upload_hint')}
               </Field.Description>
             </Field.Field>
           </Field.Group>
@@ -160,28 +162,28 @@
 
       <Field.Set>
         <Field.Field orientation="horizontal">
-          <Switch bind:checked={certificateEditorStore.draft.signatories[1].enabled} {disabled} />
-          <Field.Label>{$t('course.navItem.certificates.editor.signatory_two_toggle')}</Field.Label>
+          <Switch bind:checked={store.draft.signatories[1].enabled} {disabled} />
+          <Field.Label>{$t('certificate.editor.signatory_two_toggle')}</Field.Label>
         </Field.Field>
 
-        {#if certificateEditorStore.draft.signatories[1].enabled}
+        {#if store.draft.signatories[1].enabled}
           <Field.Group>
             <Field.Field>
               <InputField
-                label={$t('course.navItem.certificates.editor.signatory_two_name')}
-                bind:value={certificateEditorStore.draft.signatories[1].name}
+                label={$t('certificate.editor.signatory_two_name')}
+                bind:value={store.draft.signatories[1].name}
                 isDisabled={disabled}
               />
             </Field.Field>
             <Field.Field>
               <InputField
-                label={$t('course.navItem.certificates.editor.signatory_two_role')}
-                bind:value={certificateEditorStore.draft.signatories[1].role}
+                label={$t('certificate.editor.signatory_two_role')}
+                bind:value={store.draft.signatories[1].role}
                 isDisabled={disabled}
               />
             </Field.Field>
             <Field.Field>
-              <Field.Label>{$t('course.navItem.certificates.editor.signature_upload')}</Field.Label>
+              <Field.Label>{$t('certificate.editor.signature_upload')}</Field.Label>
               <UploadImage
                 bind:avatar={signatoryTwoAvatar}
                 bind:src={signatoryTwoPreview}
@@ -192,7 +194,7 @@
                 bind:isUploading={isSignatoryTwoUploading}
               />
               <Field.Description>
-                {$t('course.navItem.certificates.editor.signature_upload_hint')}
+                {$t('certificate.editor.signature_upload_hint')}
               </Field.Description>
             </Field.Field>
           </Field.Group>
@@ -204,16 +206,16 @@
   <Field.Separator />
 
   <Field.Set>
-    <Field.Legend>{$t('course.navItem.certificates.editor.section_reference')}</Field.Legend>
+    <Field.Legend>{$t('certificate.editor.section_reference')}</Field.Legend>
     <Field.Field>
       <InputField
-        label={$t('course.navItem.certificates.editor.id_format')}
-        bind:value={certificateEditorStore.draft.idFormat}
-        placeholder={'N° {seq}'}
+        label={$t('certificate.editor.id_format')}
+        bind:value={store.draft.idFormat}
+        placeholder={DEFAULT_CERTIFICATE_ID_FORMAT}
         isDisabled={disabled}
       />
       <Field.Description>
-        {$t('course.navItem.certificates.editor.id_format_hint')}
+        {$t('certificate.editor.id_format_hint')}
       </Field.Description>
     </Field.Field>
   </Field.Set>

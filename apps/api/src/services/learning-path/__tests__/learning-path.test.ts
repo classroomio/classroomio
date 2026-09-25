@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
   getLearningPathById: vi.fn(),
   getLearningPathByPublicId: vi.fn(),
+  getLearningPathBySlug: vi.fn(),
   getMemberByPathAndProfile: vi.fn(),
   createLearningPath: vi.fn(),
   listLearningPaths: vi.fn(),
@@ -21,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   enrollMember: vi.fn(),
   initializeMemberCourseProgress: vi.fn(),
   grantCourseAccess: vi.fn(),
+  countIssuedCertificates: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getGroupMemberIdByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn()
@@ -35,8 +37,10 @@ vi.mock('@cio/db/drizzle', () => ({
 }));
 
 vi.mock('@cio/db/queries/learning-path', () => ({
+  countIssuedCertificates: mocks.countIssuedCertificates,
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,
+  getLearningPathBySlug: mocks.getLearningPathBySlug,
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile,
   createLearningPath: mocks.createLearningPath,
   listLearningPaths: mocks.listLearningPaths,
@@ -67,7 +71,11 @@ import {
   resolveLearningPath,
   assertCanManageLearningPath,
   createLearningPathService,
-  listOrgLearningPaths
+  listOrgLearningPaths,
+  getLearningPathDetail,
+  updateLearningPathService,
+  deleteLearningPathService,
+  getPublicLearningPathBySlug
 } from '../learning-path';
 import { assertCourseNotLockedForStudent, unlockedCourses } from '../unlock';
 import { reorderPathCoursesService } from '../course-management';
@@ -109,9 +117,94 @@ describe('learning-path services', () => {
     it('throws 404 AppError when path does not exist', async () => {
       mocks.getLearningPathByPublicId.mockResolvedValue(null);
 
-      await expect(resolveLearningPath('nonexist')).rejects.toThrowError(
-        new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404)
-      );
+      await expect(resolveLearningPath('nonexist')).rejects.toMatchObject({
+        code: ErrorCodes.LEARNING_PATH_NOT_FOUND,
+        statusCode: 404
+      });
+    });
+
+    it.each(['path8chr', 'abcd1234', 'PATH8CHR'])(
+      'resolves publicId %s via getLearningPathByPublicId',
+      async (publicId) => {
+        const mockPath = { id: 'uuid-1', publicId, name: 'Path 1' };
+        mocks.getLearningPathByPublicId.mockResolvedValue(mockPath);
+
+        const result = await resolveLearningPath(publicId);
+
+        expect(mocks.getLearningPathByPublicId).toHaveBeenCalledWith(publicId, undefined);
+        expect(result).toEqual(mockPath);
+      }
+    );
+  });
+
+  describe('transaction rollback', () => {
+    it('surfaces INTERNAL_ERROR when transaction fails mid-way without partial persist', async () => {
+      mocks.getLearningPathById.mockResolvedValue({
+        id: '12345678-1234-1234-1234-123456789abc',
+        organizationId: 'org-1',
+        isPublished: true
+      });
+      mocks.transaction.mockRejectedValueOnce(new Error('db connection lost'));
+
+      await expect(
+        deleteLearningPathService('12345678-1234-1234-1234-123456789abc', { 'org-1': ROLE.ADMIN })
+      ).rejects.toMatchObject({ code: ErrorCodes.INTERNAL_ERROR, statusCode: 500 });
+    });
+  });
+
+  describe('getPublicLearningPathBySlug', () => {
+    it('resolves unpublished paths like the course slug endpoint', async () => {
+      const mockPath = {
+        id: 'path-1',
+        organizationId: 'org-1',
+        name: 'Draft Path',
+        description: 'Desc',
+        slug: 'draft-path',
+        isPublished: false
+      };
+      mocks.getLearningPathBySlug.mockResolvedValue(mockPath);
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.countIssuedCertificates.mockResolvedValue(0);
+
+      const result = await getPublicLearningPathBySlug('org-1', 'draft-path');
+
+      expect(mocks.getLearningPathBySlug).toHaveBeenCalledWith('org-1', 'draft-path', transactionClient);
+      expect(result).toMatchObject({ id: 'path-1', courses: [], certificatesIssued: 0 });
+    });
+
+    it('throws 404 when the slug does not exist', async () => {
+      mocks.getLearningPathBySlug.mockResolvedValue(null);
+
+      await expect(getPublicLearningPathBySlug('org-1', 'missing')).rejects.toMatchObject({
+        code: ErrorCodes.LEARNING_PATH_NOT_FOUND,
+        statusCode: 404
+      });
+    });
+  });
+
+  describe('deleteLearningPathService', () => {
+    const mockUuid = '12345678-1234-1234-1234-123456789abc';
+
+    it('soft-deletes via the query layer and returns the row', async () => {
+      const mockPath = { id: mockUuid, organizationId: 'org-1', status: 'ACTIVE' };
+      const deletedRow = { ...mockPath, status: 'DELETED' };
+      mocks.getLearningPathById.mockResolvedValue(mockPath);
+      mocks.deleteLearningPath.mockResolvedValue(deletedRow);
+
+      const result = await deleteLearningPathService(mockUuid, { 'org-1': ROLE.ADMIN });
+
+      expect(mocks.deleteLearningPath).toHaveBeenCalledWith(mockUuid, transactionClient);
+      expect(result).toEqual(deletedRow);
+    });
+
+    it('rejects non-admins', async () => {
+      mocks.getLearningPathById.mockResolvedValue({ id: mockUuid, organizationId: 'org-1' });
+
+      await expect(deleteLearningPathService(mockUuid, { 'org-1': ROLE.TUTOR })).rejects.toMatchObject({
+        code: ErrorCodes.UNAUTHORIZED,
+        statusCode: 403
+      });
+      expect(mocks.deleteLearningPath).not.toHaveBeenCalled();
     });
   });
 
@@ -120,7 +213,7 @@ describe('learning-path services', () => {
       id: 'path-uuid-1',
       organizationId: 'org-1',
       createdByProfileId: 'author-1'
-    } as any;
+    } as import('@cio/db/types').TLearningPath;
 
     it('allows org admin directly without querying memberships', async () => {
       await expect(
@@ -158,18 +251,12 @@ describe('learning-path services', () => {
       expect(mocks.getMemberByPathAndProfile).toHaveBeenCalledWith('path-uuid-1', 'assigned-tutor', undefined);
     });
 
-    it('rejects tutor who is not assigned as tutor', async () => {
+    it('rejects unassigned tutor without membership lookup bypass', async () => {
       mocks.getMemberByPathAndProfile.mockResolvedValue(null);
 
       await expect(
         assertCanManageLearningPath(samplePath, 'random-tutor', { 'org-1': ROLE.TUTOR })
-      ).rejects.toThrowError(
-        new AppError(
-          'Only assigned tutors or organization admins can manage this learning path',
-          ErrorCodes.UNAUTHORIZED,
-          403
-        )
-      );
+      ).rejects.toMatchObject({ code: ErrorCodes.UNAUTHORIZED, statusCode: 403 });
     });
 
     it('rejects non-team members', async () => {
@@ -187,7 +274,7 @@ describe('learning-path services', () => {
         createLearningPathService(
           'org-1',
           'tutor-1',
-          { name: 'New Path', description: 'Desc', organizationId: 'org-1' },
+          { name: 'New Path', description: 'Desc' },
           { 'org-1': ROLE.TUTOR }
         )
       ).rejects.toThrowError(
@@ -202,7 +289,7 @@ describe('learning-path services', () => {
       const result = await createLearningPathService(
         'org-1',
         'admin-1',
-        { name: '   Trimmed Path   ', description: '   Trimmed Desc   ', organizationId: 'org-1' },
+        { name: '   Trimmed Path   ', description: '   Trimmed Desc   ' },
         { 'org-1': ROLE.ADMIN }
       );
 
@@ -464,6 +551,76 @@ describe('learning-path services', () => {
       expect(mocks.getCourseGroupIds).not.toHaveBeenCalled();
       expect(mocks.insertGroupMembersOnConflictDoNothing).not.toHaveBeenCalled();
       expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getLearningPathDetail and updateLearningPathService', () => {
+    const testPath = {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      publicId: 'LP123456',
+      organizationId: 'org-1',
+      name: 'Test Path',
+      isPublished: true
+    };
+
+    it('returns path detail with courses and certificatesIssued count', async () => {
+      mocks.getLearningPathById.mockResolvedValue(testPath);
+      mocks.listLearningPathCourses.mockResolvedValue([{ id: 'c-1', title: 'Course 1' }]);
+      mocks.countIssuedCertificates.mockResolvedValue(5);
+
+      const result = await getLearningPathDetail(testPath.id, 'user-1', { 'org-1': ROLE.ADMIN });
+
+      expect(result.certificatesIssued).toBe(5);
+      expect(result.courses).toHaveLength(1);
+      expect(mocks.countIssuedCertificates).toHaveBeenCalledWith(testPath.id, transactionClient);
+    });
+
+    it('rejects landingPage update containing disallowed javascript: href', async () => {
+      mocks.getLearningPathById.mockResolvedValue(testPath);
+
+      await expect(
+        updateLearningPathService(
+          testPath.id,
+          'user-1',
+          {
+            landingPage: {
+              title: 'XSS attempt',
+              reviews: [
+                {
+                  id: 1,
+                  hide: false,
+                  name: 'Attacker',
+                  rating: 5,
+                  description: 'Click here',
+                  avatar_url: 'javascript:alert(1)',
+                  created_at: 1000
+                }
+              ]
+            }
+          },
+          { 'org-1': ROLE.ADMIN }
+        )
+      ).rejects.toMatchObject({ code: ErrorCodes.VALIDATION_ERROR, statusCode: 400 });
+    });
+
+    it('allows valid landingPage update and calls updateLearningPath', async () => {
+      mocks.getLearningPathById.mockResolvedValue(testPath);
+      mocks.updateLearningPath.mockResolvedValue({ ...testPath, name: 'Updated' });
+
+      const updated = await updateLearningPathService(
+        testPath.id,
+        'user-1',
+        {
+          landingPage: {
+            title: 'Valid title',
+            goals: '<p>Learn React</p>'
+          }
+        },
+        { 'org-1': ROLE.ADMIN }
+      );
+
+      expect(updated.name).toBe('Updated');
+      expect(mocks.updateLearningPath).toHaveBeenCalled();
     });
   });
 });

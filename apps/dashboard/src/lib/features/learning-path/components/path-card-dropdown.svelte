@@ -7,14 +7,14 @@
   interface Props {
     id: string;
     publicId: string;
-    slug?: string;
+    slug?: string | null;
     name: string;
     description?: string;
     isPublished?: boolean;
     onDelete?: (id: string, name: string) => void;
   }
 
-  let { id, publicId, slug = '', name, description = '', isPublished = false, onDelete }: Props = $props();
+  let { id, publicId, slug = null, name, description = '', isPublished = false, onDelete }: Props = $props();
 </script>
 
 <DropdownMenu.Root>

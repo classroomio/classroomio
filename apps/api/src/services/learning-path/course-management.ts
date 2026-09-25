@@ -1,6 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
-import type { TAddLearningPathCourse, TUpdateLearningPathCourse } from '@cio/utils/validation/learning-path';
+import type { TAddLearningPathCourse } from '@cio/utils/validation/learning-path';
 import { db } from '@cio/db/drizzle';
 import { getCourseOrgInfo } from '@cio/db/queries/course/course';
 import {
@@ -11,8 +11,7 @@ import {
   listActivePathMemberIds,
   removeCourseFromPath,
   reorderLearningPathCourses,
-  updateLearningPath,
-  updateLearningPathCourse
+  updateLearningPath
 } from '@cio/db/queries/learning-path';
 import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import type { TLearningPathCourse } from '@cio/db/types';
@@ -58,13 +57,15 @@ export async function addCoursesToPathService(
 
         // Auto-enroll existing students if enabled
         if (path.autoEnroll && courseRow.groupId) {
-          const studentMembers = members.filter((m) => Boolean(m.profileId) && m.roleId === ROLE.STUDENT);
+          const studentMembers = members.filter(
+            (member) => Boolean(member.profileId) && member.roleId === ROLE.STUDENT
+          );
 
           if (studentMembers.length > 0) {
-            const groupMemberValues = studentMembers.map((m) => ({
+            const groupMemberValues = studentMembers.map((member) => ({
               groupId: courseRow.groupId!,
               roleId: ROLE.STUDENT,
-              profileId: m.profileId!
+              profileId: member.profileId!
             }));
 
             await insertGroupMembersOnConflictDoNothing(groupMemberValues, tx);
@@ -142,22 +143,22 @@ export async function reorderPathCoursesService(
   orgRoles?: Record<string, number>
 ): Promise<{ reordered: true }> {
   try {
-    const path = await resolveLearningPath(pathId);
-    await assertCanManageLearningPath(path, userId, orgRoles);
-
-    const existingCourseIds = await getCourseIdsInPath(path.id);
-    const existingSet = new Set(existingCourseIds);
-    const submittedSet = new Set(courseIds);
-
-    if (
-      courseIds.length !== existingCourseIds.length ||
-      submittedSet.size !== courseIds.length ||
-      !courseIds.every((id) => existingSet.has(id))
-    ) {
-      throw new AppError('Invalid course in path', ErrorCodes.INVALID_COURSE_IN_PATH, 400);
-    }
-
     await db.transaction(async (tx) => {
+      const path = await resolveLearningPath(pathId, tx);
+      await assertCanManageLearningPath(path, userId, orgRoles, tx);
+
+      const existingCourseIds = await getCourseIdsInPath(path.id, tx);
+      const existingSet = new Set(existingCourseIds);
+      const submittedSet = new Set(courseIds);
+
+      if (
+        courseIds.length !== existingCourseIds.length ||
+        submittedSet.size !== courseIds.length ||
+        !courseIds.every((id) => existingSet.has(id))
+      ) {
+        throw new AppError('Invalid course in path', ErrorCodes.INVALID_COURSE_IN_PATH, 400);
+      }
+
       await reorderLearningPathCourses(path.id, courseIds, tx);
 
       const nowIso = new Date().toISOString();
@@ -169,36 +170,6 @@ export async function reorderPathCoursesService(
     if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to reorder learning path courses',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Updates course details within a learning path (such as learning outcomes).
- */
-export async function updateLearningPathCourseService(
-  pathId: string,
-  courseId: string,
-  data: TUpdateLearningPathCourse,
-  userId: string,
-  orgRoles?: Record<string, number>
-): Promise<TLearningPathCourse> {
-  try {
-    const path = await resolveLearningPath(pathId);
-    await assertCanManageLearningPath(path, userId, orgRoles);
-
-    const updated = await updateLearningPathCourse(path.id, courseId, data);
-    if (!updated) {
-      throw new AppError('Course not found in learning path', ErrorCodes.LEARNING_PATH_COURSE_NOT_FOUND, 404);
-    }
-
-    return updated;
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to update course in learning path',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

@@ -1,29 +1,17 @@
 import { randomBytes } from 'node:crypto';
-import { eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getPostgresError } from '@cio/utils/errors';
 
 import * as schema from '../../schema';
 import type { TLearningPathCertificateIssue, TNewLearningPathCertificateIssue } from '../../types';
-
-const seqPlaceholder = '{seq}';
-
-function ensureFormat(format?: string) {
-  return format ?? `N° ${seqPlaceholder}`;
-}
-
-/**
- * Generates a certificate ID by replacing {seq}, {year}, and {month} placeholders.
- * Note: Formats missing {seq} require a suffix to prevent duplicate ID collisions.
- */
-export function formatCertificateId(format: string | undefined, seq: string, issuedAt: Date): string {
-  const year = issuedAt.getFullYear();
-  const month = String(issuedAt.getMonth() + 1).padStart(2, '0');
-  const tail = seq.replace(/-/g, '').slice(-4).toUpperCase() || '0001';
-
-  return ensureFormat(format).replace(seqPlaceholder, tail).replace('{year}', String(year)).replace('{month}', month);
-}
+import {
+  CERTIFICATE_SEQ_PLACEHOLDER,
+  CERTIFICATE_SEQ_TAIL_LENGTH,
+  ensureCertificateIdFormat,
+  formatCertificateId
+} from '@cio/utils/functions';
 
 /**
  * Issues a learning path completion certificate idempotently.
@@ -44,7 +32,7 @@ export async function issueLearningPathCertificate(
   try {
     const issuedAtDate = new Date();
     const nowIso = issuedAtDate.toISOString();
-    const hasSeqPlaceholder = ensureFormat(data.idFormat).includes(seqPlaceholder);
+    const hasSeqPlaceholder = ensureCertificateIdFormat(data.idFormat).includes(CERTIFICATE_SEQ_PLACEHOLDER);
     const MAX_CERTIFICATE_ID_ATTEMPTS = 5;
     let certificateId = formatCertificateId(data.idFormat, data.learningPathMemberId, issuedAtDate);
 
@@ -55,7 +43,9 @@ export async function issueLearningPathCertificate(
 
         // Formats without {seq} render the same value for every sequence,
         // so append a suffix to guarantee the retry differs.
-        certificateId = hasSeqPlaceholder ? rendered : `${rendered}-${fallbackSeq.slice(0, 4)}`;
+        certificateId = hasSeqPlaceholder
+          ? rendered
+          : `${rendered}-${fallbackSeq.slice(0, CERTIFICATE_SEQ_TAIL_LENGTH)}`;
       }
 
       const payload: TNewLearningPathCertificateIssue = {
@@ -138,20 +128,26 @@ export async function getLearningPathCertificate(
 }
 
 /**
- * Retrieves a certificate issue by public certificate ID (e.g. 'LP-XXXX').
+ * Retrieves a certificate issue by public certificate ID.
  */
 export async function getLearningPathCertificateByCertificateId(
   certificateId: string,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathCertificateIssue | null> {
   try {
-    const [cert] = await dbClient
-      .select()
+    const [row] = await dbClient
+      .select({ cert: schema.learningPathCertificateIssue })
       .from(schema.learningPathCertificateIssue)
-      .where(eq(schema.learningPathCertificateIssue.certificateId, certificateId))
+      .innerJoin(schema.learningPath, eq(schema.learningPathCertificateIssue.learningPathId, schema.learningPath.id))
+      .where(
+        and(
+          eq(schema.learningPathCertificateIssue.certificateId, certificateId),
+          eq(schema.learningPath.status, 'ACTIVE')
+        )
+      )
       .limit(1);
 
-    return cert || null;
+    return row?.cert || null;
   } catch (error) {
     console.error('getLearningPathCertificateByCertificateId error:', error);
     throw new Error(
@@ -193,7 +189,12 @@ export async function getLearningPathCertificateVerification(
       .from(schema.learningPathCertificateIssue)
       .innerJoin(schema.profile, eq(schema.learningPathCertificateIssue.profileId, schema.profile.id))
       .innerJoin(schema.learningPath, eq(schema.learningPathCertificateIssue.learningPathId, schema.learningPath.id))
-      .where(eq(schema.learningPathCertificateIssue.certificateId, certificateId))
+      .where(
+        and(
+          eq(schema.learningPathCertificateIssue.certificateId, certificateId),
+          eq(schema.learningPath.status, 'ACTIVE')
+        )
+      )
       .limit(1);
 
     if (!row) {
@@ -214,6 +215,30 @@ export async function getLearningPathCertificateVerification(
     console.error('getLearningPathCertificateVerification error:', error);
     throw new Error(
       `Failed to verify certificate "${certificateId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Counts the total valid certificates issued for a given learning path.
+ */
+export async function countIssuedCertificates(learningPathId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  try {
+    const [result] = await dbClient
+      .select({ total: count() })
+      .from(schema.learningPathCertificateIssue)
+      .where(
+        and(
+          eq(schema.learningPathCertificateIssue.learningPathId, learningPathId),
+          eq(schema.learningPathCertificateIssue.status, 'valid')
+        )
+      );
+
+    return result?.total ?? 0;
+  } catch (error) {
+    console.error('countIssuedCertificates error:', error);
+    throw new Error(
+      `Failed to count issued certificates for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
