@@ -5,12 +5,14 @@ export const COHORT_TEAM_RULE =
 export const PAGINATION_NOTE = 'Paginated with page (default 1) and limit (default 20, max 100).';
 
 export const cohortForbiddenResponses = {
+  scope: { description: 'The key lacks the public_api:* or cohort:read/write scope' },
   member: {
-    description: 'The key lacks the public_api:* scope, or the automation actor is not a cohort member or org admin'
+    description:
+      'The key lacks the public_api:* or cohort:read/write scope, or the automation actor is not a cohort member or org admin'
   },
   team: {
     description:
-      'The key lacks the public_api:* scope, or the automation actor is not a cohort tutor/admin or org admin'
+      'The key lacks the public_api:* or cohort:read/write scope, or the automation actor is not a cohort tutor/admin or org admin'
   }
 };
 

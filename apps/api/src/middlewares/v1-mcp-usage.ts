@@ -2,20 +2,16 @@ import { Context, Next } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
 import {
-  assertMcpAutomationUsageAllowedForCategory,
-  recordMcpAutomationUsageForAction
+  completeMcpAutomationUsage,
+  releaseMcpAutomationUsage,
+  reserveMcpAutomationUsage
 } from '@api/services/organization/automation-usage';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import {
-  getMcpAutomationCategory,
-  MCP_TOOL_CREDIT_COST,
-  type TAutomationUsageCategory,
-  type TMcpToolName
-} from '@cio/utils/plans';
+import { MCP_TOOL_CREDIT_COST, type TAutomationUsageCategory, type TMcpToolName } from '@cio/utils/plans';
 
 type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
+export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
   '/public-api/v1/cohorts': { GET: 'list_org_cohorts', POST: 'create_cohort' },
   '/public-api/v1/cohorts/enrolled': { GET: 'list_my_enrolled_cohorts' },
   '/public-api/v1/cohorts/my/goals': { GET: 'list_my_cohort_goals' },
@@ -63,10 +59,12 @@ export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
     return next();
   }
 
-  const precheckCategory: TAutomationUsageCategory = c.req.method === 'GET' ? 'read' : 'write';
+  // Every v1 tool is GET→read or write→write, so the category is known before routing.
+  const category: TAutomationUsageCategory = c.req.method === 'GET' ? 'read' : 'write';
 
+  let reservationId: string;
   try {
-    await assertMcpAutomationUsageAllowedForCategory(automationKey, precheckCategory);
+    reservationId = await reserveMcpAutomationUsage(automationKey, category, `pending ${c.req.method}`);
   } catch (error) {
     if (error instanceof AppError) {
       return c.json(
@@ -74,19 +72,31 @@ export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
         error.statusCode as ContentfulStatusCode
       );
     }
-    return c.json({ success: false, error: 'Failed to verify automation usage', code: ErrorCodes.INTERNAL_ERROR }, 500);
+    return c.json(
+      { success: false, error: 'Failed to verify automation usage', code: ErrorCodes.AUTOMATION_USAGE_UNAVAILABLE },
+      503
+    );
   }
 
-  await next();
+  let succeeded = false;
+  try {
+    await next();
+    succeeded = c.res.status >= 200 && c.res.status < 300;
+  } finally {
+    if (succeeded) {
+      const toolName = resolveMcpToolName(c.req.method, c.req.routePath);
+      const action = toolName ?? `${c.req.method} ${c.req.routePath}`;
+      const creditsConsumed = toolName ? MCP_TOOL_CREDIT_COST[toolName] : 0;
 
-  if (c.res.status >= 200 && c.res.status < 300) {
-    const toolName = resolveMcpToolName(c.req.method, c.req.routePath);
-    const action = toolName ?? `${c.req.method} ${c.req.routePath}`;
-    const category = toolName ? getMcpAutomationCategory(toolName) : precheckCategory;
-    const creditsConsumed = toolName ? MCP_TOOL_CREDIT_COST[toolName] : 0;
-
-    await recordMcpAutomationUsageForAction(automationKey, action, category, creditsConsumed).catch((error) => {
-      console.error('v1McpUsageMiddleware: failed to record automation usage', error);
-    });
+      // The slot is already counted, so a failure here only under-reports credits; the limit still holds.
+      await completeMcpAutomationUsage(reservationId, action, creditsConsumed).catch((error) => {
+        console.error('v1McpUsageMiddleware: failed to complete automation usage', error);
+      });
+    } else {
+      // Failed requests don't count. If the release fails the slot stays counted, which errs on the safe side.
+      await releaseMcpAutomationUsage(reservationId).catch((error) => {
+        console.error('v1McpUsageMiddleware: failed to release automation usage', error);
+      });
+    }
   }
 };

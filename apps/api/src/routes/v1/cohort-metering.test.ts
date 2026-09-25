@@ -4,7 +4,7 @@ import { Hono } from '@api/utils/hono';
 
 const mocks = vi.hoisted(() => ({
   authenticate: vi.fn(),
-  recordUsage: vi.fn(),
+  complete: vi.fn(),
   ok: () => vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
 
@@ -25,8 +25,9 @@ vi.mock('@api/services/organization/automation-key', () => ({
 }));
 
 vi.mock('@api/services/organization/automation-usage', () => ({
-  assertMcpAutomationUsageAllowedForCategory: vi.fn(),
-  recordMcpAutomationUsageForAction: mocks.recordUsage
+  reserveMcpAutomationUsage: vi.fn().mockResolvedValue('reservation-id'),
+  completeMcpAutomationUsage: mocks.complete,
+  releaseMcpAutomationUsage: vi.fn()
 }));
 
 vi.mock('@api/services/v1/cohort', () => ({
@@ -128,15 +129,16 @@ const CASES: [string, string, unknown, string][] = [
 
 const app = new Hono().route('/public-api/v1', v1Router);
 
-describe('MCP metering through the real v1 cohort routers', () => {
+describe('default MCP key through the real v1 cohort routers (scopes and metering)', () => {
   beforeEach(() => {
-    mocks.recordUsage.mockReset().mockResolvedValue(undefined);
+    mocks.complete.mockReset().mockResolvedValue(undefined);
     mocks.authenticate.mockResolvedValue({
       id: 'key-id',
       organizationId: 'org-id',
       createdByProfileId: 'actor-id',
       type: 'mcp',
-      scopes: ['public_api:*']
+      // The MCP default: cohort scopes only, no public_api:*.
+      scopes: ['cohort:read', 'cohort:write']
     });
   });
 
@@ -148,11 +150,21 @@ describe('MCP metering through the real v1 cohort routers', () => {
     });
 
     expect(response.status).toBeLessThan(300);
-    expect(mocks.recordUsage).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'key-id' }),
-      toolName,
-      expect.any(String),
-      expect.any(Number)
-    );
+    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, expect.any(Number));
+  });
+
+  it.each([
+    ['PUT', `/courses/${C}`],
+    ['DELETE', `/courses/${C}`],
+    ['GET', '/audience']
+  ])('keeps a default MCP key out of %s %s (403 before any handler runs)', async (method, path) => {
+    const response = await app.request(`/public-api/v1${path}`, {
+      method,
+      headers: { Authorization: 'Bearer cio_mcp_test', 'content-type': 'application/json' },
+      body: method === 'PUT' ? JSON.stringify({ title: 'Renamed' }) : undefined
+    });
+
+    expect(response.status).toBe(403);
+    expect(mocks.complete).not.toHaveBeenCalled();
   });
 });

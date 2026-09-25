@@ -48,7 +48,7 @@ export const v1CohortsRouter = new Hono()
         200: jsonResponse('Cohorts returned successfully', paginatedResponse(ZPublicApiCohortListItemResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: errorResponses.forbidden
+        403: cohortForbiddenResponses.scope
       }
     }),
     validator('query', ZPublicApiPaginationQuery),
@@ -74,7 +74,7 @@ export const v1CohortsRouter = new Hono()
         201: jsonResponse('Cohort created successfully', CohortResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: errorResponses.forbidden
+        403: cohortForbiddenResponses.scope
       }
     }),
     validator('json', ZPublicApiCreateCohort),
@@ -103,7 +103,7 @@ export const v1CohortsRouter = new Hono()
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: errorResponses.forbidden
+        403: cohortForbiddenResponses.scope
       }
     }),
     validator('query', ZPublicApiPaginationQuery),
@@ -129,7 +129,7 @@ export const v1CohortsRouter = new Hono()
         200: jsonResponse('Goal assignments returned successfully', paginatedResponse(ZPublicApiMyCohortGoalResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: errorResponses.forbidden
+        403: cohortForbiddenResponses.scope
       }
     }),
     validator('query', ZPublicApiPaginationQuery),
@@ -158,7 +158,10 @@ export const v1CohortsRouter = new Hono()
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: { description: 'The key lacks the public_api:* scope, or the actor is not an org admin or tutor' }
+        403: {
+          description:
+            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not an org admin or tutor'
+        }
       }
     }),
     validator('query', ZPublicApiPaginationQuery),

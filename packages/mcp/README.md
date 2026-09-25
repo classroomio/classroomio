@@ -110,7 +110,7 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and require the key's `public_api:*` scope; the course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so they can't reach the rest of the public API. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
