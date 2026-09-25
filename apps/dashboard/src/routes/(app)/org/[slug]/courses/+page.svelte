@@ -65,7 +65,10 @@
     publishedStatus = filters.publishedStatus;
   }
 
-  async function navigateCourseFilters(nextFilters: CourseListFilters, options: { invalidateAll?: boolean } = {}) {
+  async function navigateCourseFilters(
+    nextFilters: CourseListFilters,
+    options: { invalidateAll?: boolean; replaceState?: boolean } = {}
+  ) {
     const nextParams = mergeCourseListSearchParams(page.url.searchParams, nextFilters);
     const nextSearch = nextParams.toString();
     const currentSearch = page.url.searchParams.toString();
@@ -80,14 +83,17 @@
     }
 
     isFiltering = options.invalidateAll ?? false;
+    const targetUrl = `${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}${page.url.hash}`;
 
     try {
-      await goto(`${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}`, {
-        replaceState: true,
+      await goto(targetUrl, {
+        replaceState: options.replaceState ?? false,
         keepFocus: true,
         noScroll: true,
         invalidateAll: options.invalidateAll ?? false
       });
+    } catch (error) {
+      console.error('navigateCourseFilters error:', error);
     } finally {
       isFiltering = false;
     }
@@ -153,10 +159,13 @@
     }
 
     const timeoutId = setTimeout(() => {
-      void navigateCourseFilters({
-        ...filtersFromUrl,
-        search: normalizedSearch
-      });
+      void navigateCourseFilters(
+        {
+          ...filtersFromUrl,
+          search: normalizedSearch
+        },
+        { replaceState: true }
+      );
     }, 300);
 
     return () => clearTimeout(timeoutId);

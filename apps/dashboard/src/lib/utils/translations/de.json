@@ -264,7 +264,7 @@
       "compliance": {
         "overview_failed": "Die Compliance-Übersicht konnte nicht geladen werden",
         "history_failed": "Der Compliance-Verlauf konnte nicht geladen werden",
-        "reset_success": "Compliance-Zyklus zurückgesetzt",
+        "reset_success": "Compliance-Zyklus zurückgesetzt.",
         "reset_failed": "Der Compliance-Zyklus konnte nicht zurückgesetzt werden",
         "extend_success": "Compliance-Frist verlängert",
         "extend_failed": "Die Compliance-Frist konnte nicht verlängert werden",
