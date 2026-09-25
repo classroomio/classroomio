@@ -68,43 +68,45 @@
     }))
   );
 
-  const courseItems = $derived<ExploreCourseCard[]>([
-    ...catalogPaths
-      .map((path) => {
-        const course = path.courses[0];
-        if (!course) return null;
+  const courseItems = $derived.by((): ExploreCourseCard[] => {
+    const pathCourses = catalogPaths.flatMap((path) =>
+      path.courses.map((course) => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        coverGradient: course.coverGradient,
+        coverImage: course.coverImage,
+        lessonCount: course.lessonCount,
+        exerciseCount: course.exerciseCount,
+        difficulty: path.difficulty,
+        partOfPath: { name: path.name, href: `/lms/paths/${path.id}` },
+        href: `/lms/paths/${path.id}`,
+        slug: course.slug,
+        cost: course.cost
+      }))
+    );
 
-        return {
-          id: course.id,
-          title: course.title,
-          description: course.description,
-          coverGradient: course.coverGradient,
-          coverImage: course.coverImage,
-          lessonCount: course.lessonCount,
-          exerciseCount: course.exerciseCount,
-          difficulty: path.difficulty,
-          partOfPath: { name: path.name, href: `/lms/paths/${path.id}` },
-          href: `/lms/paths/${path.id}`,
-          slug: course.slug,
-          cost: course.cost
-        };
+    const standaloneCourses = MOCK_STANDALONE_COURSES.map(
+      (course): ExploreCourseCard => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        coverGradient: course.coverGradient,
+        coverImage: course.coverImage,
+        lessonCount: course.lessonCount,
+        exerciseCount: course.exerciseCount,
+        difficulty: difficultyForId(course.id),
+        partOfPath: null,
+        href: '/lms/mylearning',
+        slug: course.slug,
+        cost: course.cost
       })
-      .filter((item): item is NonNullable<typeof item> => item !== null),
-    ...MOCK_STANDALONE_COURSES.map((course) => ({
-      id: course.id,
-      title: course.title,
-      description: course.description,
-      coverGradient: course.coverGradient,
-      coverImage: course.coverImage,
-      lessonCount: course.lessonCount,
-      exerciseCount: course.exerciseCount,
-      difficulty: difficultyForId(course.id),
-      partOfPath: null,
-      href: '/lms/mylearning',
-      slug: course.slug,
-      cost: course.cost
-    }))
-  ]);
+    );
+
+    return [...pathCourses, ...standaloneCourses].filter(
+      (course, index, all) => all.findIndex((item) => item.id === course.id) === index
+    );
+  });
 
   const matchesSearch = (text: string) => !searchValue || text.toLowerCase().includes(searchValue.toLowerCase());
 
@@ -218,7 +220,7 @@
   }
 </script>
 
-{#if !learningPathApi.hasLoaded}
+{#if learningPathApi.isLoading}
   <div class="flex min-h-64 items-center justify-center">
     <Spinner />
   </div>
