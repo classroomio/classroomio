@@ -2980,6 +2980,7 @@
     "view_more": "Xem thêm",
     "upcoming_sessions_heading": "Phiên trực tiếp",
     "completed": "Đã hoàn thành",
+    "completed_of": "{completed} trong số {total}",
     "continue_course": "Tiếp tục khóa học",
     "course_position": "Khóa học {course} trong tổng số {total}",
     "enrolled": "Đã đăng ký",

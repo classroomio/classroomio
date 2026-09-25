@@ -2980,6 +2980,7 @@
     "view_more": "और देखें",
     "upcoming_sessions_heading": "लाइव सत्र",
     "completed": "पूर्ण",
+    "completed_of": "{completed} का {total}",
     "continue_course": "पाठ्यक्रम जारी रखें",
     "course_position": "{total} में से {course} पाठ्यक्रम",
     "enrolled": "नामांकित",

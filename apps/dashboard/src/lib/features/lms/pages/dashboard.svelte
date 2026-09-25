@@ -13,7 +13,7 @@
     MOCK_STANDALONE_COURSES,
     MOCK_UPCOMING_EXERCISES
   } from '$features/learning-path/utils/mock-data';
-  import { t } from '$lib/utils/functions/translations';
+  import { locale, t } from '$lib/utils/functions/translations';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
@@ -49,7 +49,9 @@
 
   let inProgressCourses = $derived(coursesApi.enrolledCourses.filter((course) => !isStudentCourseComplete(course)));
   let completedCourses = $derived(coursesApi.enrolledCourses.filter((course) => isStudentCourseComplete(course)));
-  let currentCourse = $derived.by(() => getHighlightedCourses(inProgressCourses)[0] ?? null);
+  let currentCourse = $derived.by(
+    () => getHighlightedCourses(inProgressCourses)[0] ?? coursesApi.enrolledCourses[0] ?? null
+  );
   let shouldShowCertificateHero = $derived.by(() => {
     if (!currentCourse || coursesApi.enrolledCourses.length !== 1) {
       return false;
@@ -63,9 +65,11 @@
 
     for (const path of learningPathApi.enrolledPaths) {
       const courses = learningPathApi.getPathCourses(path);
-      const courseIndex = courses.findIndex(
-        (course) => course.title.toLowerCase() === currentCourse.title.toLowerCase()
-      );
+      let courseIndex = courses.findIndex((course) => course.courseId === currentCourse.id);
+
+      if (courseIndex < 0) {
+        courseIndex = courses.findIndex((course) => course.title.toLowerCase() === currentCourse.title.toLowerCase());
+      }
 
       if (courseIndex >= 0) {
         return {
@@ -93,7 +97,7 @@
   });
 
   const gridPaths = $derived.by(() => [
-    ...learningPathApi.inProgressPaths.sort(
+    ...[...learningPathApi.inProgressPaths].sort(
       (a, b) => (b.enrollment?.progressPercent ?? 0) - (a.enrollment?.progressPercent ?? 0)
     ),
     ...learningPathApi.notStartedPaths
@@ -102,10 +106,15 @@
   interface UpcomingExerciseCard {
     id: string;
     title: string;
-    subtitle: string;
+    course: string;
+    statusKey: string;
     dueLabel: string;
     isOverdue: boolean;
   }
+
+  const dueDateFormatter = $derived(
+    new Intl.DateTimeFormat($locale, { month: 'short', day: 'numeric', year: 'numeric' })
+  );
 
   const upcomingExercises = $derived.by((): UpcomingExerciseCard[] => {
     const statusKeyByStatus: Record<string, string> = {
@@ -114,13 +123,12 @@
       'not-submitted': 'dashboard.exercise_status_not_submitted'
     };
 
-    const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
     return MOCK_UPCOMING_EXERCISES.map((exercise) => ({
       id: exercise.id,
       title: exercise.title,
-      subtitle: `${exercise.course} · ${t.get(statusKeyByStatus[exercise.status])}`,
-      dueLabel: formatter.format(new Date(`${exercise.dueDate}T00:00:00`)),
+      course: exercise.course,
+      statusKey: statusKeyByStatus[exercise.status] ?? 'dashboard.exercise_status_not_submitted',
+      dueLabel: dueDateFormatter.format(new Date(`${exercise.dueDate}T00:00:00`)),
       isOverdue: exercise.status === 'overdue'
     }));
   });
@@ -362,8 +370,10 @@
         <p class="ui:text-muted-foreground text-xs font-medium">{$t('dashboard.completed')}</p>
         <p class="tnum text-2xl font-semibold">{completedCourses.length}</p>
         <p class="ui:text-muted-foreground truncate text-xs">
-          {completedCourses.length}
-          {$t('dashboard.completed')}
+          {$t('dashboard.completed_of', {
+            completed: completedCourses.length,
+            total: coursesApi.enrolledCourses.length
+          })}
         </p>
       </div>
     </div>
@@ -449,7 +459,9 @@
               </div>
               <div class="min-w-0 flex-1">
                 <p class="truncate text-[13.5px] font-medium">{exercise.title}</p>
-                <p class="ui:text-muted-foreground mt-px truncate text-xs">{exercise.subtitle}</p>
+                <p class="ui:text-muted-foreground mt-px truncate text-xs">
+                  {exercise.course} · {$t(exercise.statusKey)}
+                </p>
               </div>
               <span
                 class="shrink-0 text-xs whitespace-nowrap {exercise.isOverdue

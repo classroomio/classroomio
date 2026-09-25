@@ -2980,6 +2980,7 @@
     "view_more": "Mehr anzeigen",
     "upcoming_sessions_heading": "Live-Sitzungen",
     "completed": "Abgeschlossen",
+    "completed_of": "{completed} von {total}",
     "continue_course": "Kurs fortsetzen",
     "course_position": "Kurs {course} von {total}",
     "enrolled": "Angemeldet",

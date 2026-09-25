@@ -2980,6 +2980,7 @@
     "view_more": "Se mere",
     "upcoming_sessions_heading": "Live sessioner",
     "completed": "Afsluttet",
+    "completed_of": "{completed} af {total}",
     "continue_course": "Fortsæt kursus",
     "course_position": "Kursus {course} af {total}",
     "enrolled": "Tilmeldt",

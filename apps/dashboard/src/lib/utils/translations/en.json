@@ -1903,6 +1903,7 @@
     "login_activity_no_data": "No login activity yet",
     "login_activity_logins": "logins",
     "completed": "Completed",
+    "completed_of": "{completed} of {total}",
     "continue_course": "Continue Course",
     "course_position": "Course {course} of {total}",
     "enrolled": "Enrolled",

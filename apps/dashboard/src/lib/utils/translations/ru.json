@@ -2980,6 +2980,7 @@
     "view_more": "Посмотреть больше",
     "upcoming_sessions_heading": "Живые сессии",
     "completed": "Завершены",
+    "completed_of": "{completed} из {total}",
     "continue_course": "Продолжить курс",
     "course_position": "Курс {course} из {total}",
     "enrolled": "Зачислены",
