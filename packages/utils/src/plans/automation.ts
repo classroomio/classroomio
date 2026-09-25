@@ -32,6 +32,7 @@ export const MCP_TOOL_CREDIT_COST = {
   publish_course_draft_to_existing_course: 5,
   get_course_certificate: 0,
   list_course_certificates: 0,
+  download_course_certificate: 0,
   update_course_certificate: 1
 } as const;
 
@@ -110,7 +111,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_course_exercises' ||
     toolName === 'get_course_exercise' ||
     toolName === 'get_course_certificate' ||
-    toolName === 'list_course_certificates'
+    toolName === 'list_course_certificates' ||
+    toolName === 'download_course_certificate'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

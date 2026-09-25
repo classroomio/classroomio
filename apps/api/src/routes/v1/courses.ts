@@ -19,7 +19,6 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from './course-certificates';
 
 const PaginationSchema = {
   type: 'object' as const,
@@ -89,8 +88,6 @@ const CourseDetailResponse = {
 };
 
 export const v1CoursesRouter = new Hono()
-  .route('/:courseId/certificate', v1CourseCertificateRouter)
-  .route('/:courseId/certificates', v1CourseCertificatesRouter)
   .get(
     '/',
     describeRoute({

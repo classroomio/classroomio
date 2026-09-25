@@ -21,6 +21,7 @@ import type {
 } from '@cio/utils/validation/exercise';
 
 import type {
+  TPublicApiCertificateFileFormat,
   TPublicApiListCourseCertificatesQuery,
   TPublicApiUpdateCourseCertificate
 } from '@cio/utils/validation/public-api';
@@ -55,6 +56,11 @@ type PaginatedResponse<T> = {
     total: number;
     totalPages: number;
   };
+};
+
+type RequestOptions = {
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  body?: unknown;
 };
 
 export class ClassroomIoApiError extends Error {
@@ -206,7 +212,7 @@ export class ClassroomIoApiClient {
 
   async updateCourseCertificate(courseId: string, payload: TPublicApiUpdateCourseCertificate) {
     return this.request(`/public-api/v1/courses/${courseId}/certificate`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: payload
     });
   }
@@ -223,14 +229,25 @@ export class ClassroomIoApiClient {
     });
   }
 
-  private async requestRaw<TResponse>(
-    path: string,
-    options: {
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      body?: unknown;
+  async downloadCourseCertificate(courseId: string, memberId: string, format: TPublicApiCertificateFileFormat) {
+    const response = await this.send(
+      `/public-api/v1/courses/${courseId}/certificates/${memberId}/download?format=${format}`,
+      { method: 'GET' }
+    );
+
+    if (!response.ok) {
+      const errorPayload = (await response.json().catch(() => null)) as ApiFailure | null;
+      throw toApiError(response.status, errorPayload);
     }
-  ): Promise<ApiSuccess<TResponse>> {
-    const response = await fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
+
+    const bytes = Buffer.from(await response.arrayBuffer());
+    const mimeType = response.headers.get('content-type') ?? 'application/octet-stream';
+
+    return { base64: bytes.toString('base64'), mimeType };
+  }
+
+  private send(path: string, options: RequestOptions) {
+    return fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
         Authorization: `Bearer ${this.config.CLASSROOMIO_API_KEY}`,
@@ -239,17 +256,14 @@ export class ClassroomIoApiClient {
       },
       body: options.body ? JSON.stringify(options.body) : undefined
     });
+  }
 
+  private async requestRaw<TResponse>(path: string, options: RequestOptions): Promise<ApiSuccess<TResponse>> {
+    const response = await this.send(path, options);
     const json = (await response.json().catch(() => null)) as ApiSuccess<TResponse> | ApiFailure | null;
 
     if (!response.ok) {
-      const errorPayload = json as ApiFailure | null;
-      throw new ClassroomIoApiError(
-        errorPayload?.error ?? errorPayload?.message ?? `ClassroomIO request failed with status ${response.status}`,
-        response.status,
-        errorPayload?.code,
-        errorPayload?.field
-      );
+      throw toApiError(response.status, json as ApiFailure | null);
     }
 
     if (!json || typeof json !== 'object' || !('success' in json) || !json.success) {
@@ -259,23 +273,14 @@ export class ClassroomIoApiClient {
     return json;
   }
 
-  private async request<TResponse>(
-    path: string,
-    options: {
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      body?: unknown;
-    }
-  ): Promise<TResponse> {
+  private async request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
     const json = await this.requestRaw<TResponse>(path, options);
     return json.data;
   }
 
   private async requestPaginated<TResponse>(
     path: string,
-    options: {
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      body?: unknown;
-    }
+    options: RequestOptions
   ): Promise<PaginatedResponse<TResponse>> {
     const json = await this.requestRaw<TResponse>(path, options);
     if (!json.pagination) {
@@ -284,4 +289,13 @@ export class ClassroomIoApiClient {
 
     return { data: json.data, pagination: json.pagination };
   }
+}
+
+function toApiError(status: number, errorPayload: ApiFailure | null) {
+  return new ClassroomIoApiError(
+    errorPayload?.error ?? errorPayload?.message ?? `ClassroomIO request failed with status ${status}`,
+    status,
+    errorPayload?.code,
+    errorPayload?.field
+  );
 }

@@ -1,0 +1,222 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public certificate contract > keeps the ZPublicApiCourseCertificateMemberParam request contract stable 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "memberId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "memberId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public certificate contract > keeps the ZPublicApiDownloadCourseCertificateQuery request contract stable 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "format": {
+      "default": "pdf",
+      "enum": [
+        "pdf",
+        "png",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public certificate contract > keeps the ZPublicApiListCourseCertificatesQuery request contract stable 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "search": {
+      "maxLength": 200,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertificate request contract stable 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "deadline": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "design": {
+      "properties": {
+        "accentColor": {
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "type": "string",
+        },
+        "descriptionOverride": {
+          "maxLength": 500,
+          "type": "string",
+        },
+        "idFormat": {
+          "maxLength": 40,
+          "type": "string",
+        },
+        "signatories": {
+          "prefixItems": [
+            {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "type": "boolean",
+                },
+                "name": {
+                  "default": "",
+                  "maxLength": 80,
+                  "type": "string",
+                },
+                "role": {
+                  "default": "",
+                  "maxLength": 80,
+                  "type": "string",
+                },
+                "signatureUrl": {
+                  "format": "uri",
+                  "type": "string",
+                },
+              },
+              "type": "object",
+            },
+            {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "type": "boolean",
+                },
+                "name": {
+                  "default": "",
+                  "maxLength": 80,
+                  "type": "string",
+                },
+                "role": {
+                  "default": "",
+                  "maxLength": 80,
+                  "type": "string",
+                },
+                "signatureUrl": {
+                  "format": "uri",
+                  "type": "string",
+                },
+              },
+              "type": "object",
+            },
+          ],
+          "type": "array",
+        },
+        "subtitle": {
+          "maxLength": 120,
+          "type": "string",
+        },
+        "templateId": {
+          "enum": [
+            "classique",
+            "brutalist",
+            "noir",
+            "poster",
+            "minimal",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "templateId",
+        "accentColor",
+        "signatories",
+      ],
+      "type": "object",
+    },
+    "emailMessage": {
+      "anyOf": [
+        {
+          "maxLength": 5000,
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "exerciseMinScorePercent": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "isDownloadable": {
+      "type": "boolean",
+    },
+    "requiredExerciseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "theme": {
+      "maxLength": 40,
+      "minLength": 1,
+      "type": "string",
+    },
+    "threshold": {
+      "maximum": 100,
+      "minimum": 0,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;

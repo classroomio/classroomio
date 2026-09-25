@@ -2,11 +2,12 @@ import type { Context, Next } from 'hono';
 import type { TMcpToolName } from '@cio/utils/plans';
 import type { AuthSession } from '@api/types/auth';
 
-import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import { releaseMcpAutomationUsage, reserveMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { handlePublicApiError } from '@api/utils/errors';
 
 /**
- * For MCP keys: enforces the tool's automation rate limit before the handler and records usage after a 2xx.
+ * For MCP keys: atomically checks the tool's rate limit and reserves one usage row before the handler runs, and
+ * releases it when the handler does not return 2xx. If the reservation cannot be made the handler never runs.
  * Other keys pass through untouched.
  */
 export const mcpToolUsageMiddleware = (toolName: TMcpToolName) => async (c: Context<AuthSession>, next: Next) => {
@@ -15,21 +16,22 @@ export const mcpToolUsageMiddleware = (toolName: TMcpToolName) => async (c: Cont
     return next();
   }
 
+  let usageId: string;
   try {
-    await assertMcpAutomationUsageAllowed(automationKey, toolName);
+    usageId = await reserveMcpAutomationUsage(automationKey, toolName, { courseId: c.req.param('courseId') });
   } catch (error) {
     return handlePublicApiError(c, error, 'Automation usage check failed');
   }
 
   await next();
 
-  if (c.res.status < 200 || c.res.status >= 300) {
+  if (c.res.status >= 200 && c.res.status < 300) {
     return;
   }
 
   try {
-    await recordMcpAutomationUsage(automationKey, toolName, { courseId: c.req.param('courseId') });
+    await releaseMcpAutomationUsage(usageId);
   } catch (error) {
-    console.error('mcpToolUsageMiddleware record error:', error);
+    console.error('mcpToolUsageMiddleware release error:', error);
   }
 };

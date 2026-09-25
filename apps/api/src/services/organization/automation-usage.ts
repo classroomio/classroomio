@@ -1,12 +1,15 @@
 import { env } from '@cio/core/config/env';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveOrganizationApiKeys,
   countOrganizationAutomationUsageSince,
   countOrganizationAutomationUsageSinceByKey,
   createOrganizationAutomationUsage,
+  deleteOrganizationAutomationUsage,
   getActiveOrganizationPlan,
-  listRecentOrganizationAutomationUsage
+  listRecentOrganizationAutomationUsage,
+  lockOrganizationAutomationUsage
 } from '@cio/db/queries/organization';
 import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/types';
 import {
@@ -131,9 +134,10 @@ export async function getOrganizationAutomationUsageSummaryService(
   };
 }
 
-export async function assertMcpAutomationUsageAllowed(
+async function assertWithinMcpRateLimits(
   automationKey: TOrganizationApiKey,
-  toolName: TMcpToolName
+  toolName: TMcpToolName,
+  dbClient: DbOrTxClient = db
 ): Promise<void> {
   const planName = await getOrganizationPlanName(automationKey.organizationId);
   const limits = getMcpAutomationLimits(planName);
@@ -142,8 +146,14 @@ export async function assertMcpAutomationUsageAllowed(
   const minuteWindowStart = getMinuteWindowStart(now).toISOString();
 
   const [keyRequestsInWindow, orgRequestsInWindow] = await Promise.all([
-    countOrganizationAutomationUsageSinceByKey(automationKey.id, category, minuteWindowStart),
-    countOrganizationAutomationUsageSince(automationKey.organizationId, automationKey.type, category, minuteWindowStart)
+    countOrganizationAutomationUsageSinceByKey(automationKey.id, category, minuteWindowStart, dbClient),
+    countOrganizationAutomationUsageSince(
+      automationKey.organizationId,
+      automationKey.type,
+      category,
+      minuteWindowStart,
+      dbClient
+    )
   ]);
 
   const keyLimit =
@@ -165,12 +175,12 @@ export async function assertMcpAutomationUsageAllowed(
   }
 }
 
-export async function recordMcpAutomationUsage(
+function buildMcpUsageRow(
   automationKey: TOrganizationApiKey,
   toolName: TMcpToolName,
-  metadata: Record<string, unknown> = {}
-): Promise<void> {
-  await createOrganizationAutomationUsage({
+  metadata: Record<string, unknown>
+) {
+  return {
     organizationId: automationKey.organizationId,
     organizationApiKeyId: automationKey.id,
     type: automationKey.type,
@@ -178,5 +188,46 @@ export async function recordMcpAutomationUsage(
     category: getMcpAutomationCategory(toolName),
     creditsConsumed: 0,
     metadata
+  };
+}
+
+export async function assertMcpAutomationUsageAllowed(
+  automationKey: TOrganizationApiKey,
+  toolName: TMcpToolName
+): Promise<void> {
+  await assertWithinMcpRateLimits(automationKey, toolName);
+}
+
+export async function recordMcpAutomationUsage(
+  automationKey: TOrganizationApiKey,
+  toolName: TMcpToolName,
+  metadata: Record<string, unknown> = {}
+): Promise<void> {
+  await createOrganizationAutomationUsage(buildMcpUsageRow(automationKey, toolName, metadata));
+}
+
+/**
+ * Checks the tool's rate limit and records one usage row under a per-organization lock. Throws 429 at the limit;
+ * returns the usage id.
+ */
+export async function reserveMcpAutomationUsage(
+  automationKey: TOrganizationApiKey,
+  toolName: TMcpToolName,
+  metadata: Record<string, unknown> = {}
+): Promise<string> {
+  return db.transaction(async (tx) => {
+    await lockOrganizationAutomationUsage(automationKey.organizationId, automationKey.type, tx);
+    await assertWithinMcpRateLimits(automationKey, toolName, tx);
+
+    const usage = await createOrganizationAutomationUsage(buildMcpUsageRow(automationKey, toolName, metadata), tx);
+
+    return usage.id;
   });
+}
+
+/**
+ * Removes a reservation made by {@link reserveMcpAutomationUsage} for a call that did not succeed.
+ */
+export async function releaseMcpAutomationUsage(usageId: string): Promise<void> {
+  await deleteOrganizationAutomationUsage(usageId);
 }

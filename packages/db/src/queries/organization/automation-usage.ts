@@ -2,12 +2,34 @@ import * as schema from '@db/schema';
 
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TAutomationUsageCategory, TNewOrganizationAutomationUsage, TOrganizationApiKeyType } from '@db/types';
 
-export const createOrganizationAutomationUsage = async (data: TNewOrganizationAutomationUsage) => {
+/**
+ * Transaction-scoped lock serializing usage checks and inserts for one organization and key type.
+ * Released automatically when the transaction ends.
+ */
+export const lockOrganizationAutomationUsage = async (
+  organizationId: string,
+  type: TOrganizationApiKeyType,
+  dbClient: DbOrTxClient
+) => {
   try {
-    const [row] = await db.insert(schema.organizationAutomationUsage).values(data).returning();
+    await dbClient.execute(
+      sql`select pg_advisory_xact_lock(hashtext(${`automation_usage:${organizationId}:${type}`}))`
+    );
+  } catch (error) {
+    console.error('lockOrganizationAutomationUsage error:', error);
+    throw new Error('Failed to lock organization automation usage');
+  }
+};
+
+export const createOrganizationAutomationUsage = async (
+  data: TNewOrganizationAutomationUsage,
+  dbClient: DbOrTxClient = db
+) => {
+  try {
+    const [row] = await dbClient.insert(schema.organizationAutomationUsage).values(data).returning();
 
     if (!row) {
       throw new Error('Failed to create organization automation usage');
@@ -23,10 +45,11 @@ export const createOrganizationAutomationUsage = async (data: TNewOrganizationAu
 export const countOrganizationAutomationUsageSinceByKey = async (
   organizationApiKeyId: string,
   category: TAutomationUsageCategory,
-  since: string
+  since: string,
+  dbClient: DbOrTxClient = db
 ): Promise<number> => {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ total: count() })
       .from(schema.organizationAutomationUsage)
       .where(
@@ -48,10 +71,11 @@ export const countOrganizationAutomationUsageSince = async (
   organizationId: string,
   type: TOrganizationApiKeyType,
   category: TAutomationUsageCategory,
-  since: string
+  since: string,
+  dbClient: DbOrTxClient = db
 ): Promise<number> => {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ total: count() })
       .from(schema.organizationAutomationUsage)
       .where(
@@ -67,6 +91,15 @@ export const countOrganizationAutomationUsageSince = async (
   } catch (error) {
     console.error('countOrganizationAutomationUsageSince error:', error);
     throw new Error('Failed to count organization automation usage');
+  }
+};
+
+export const deleteOrganizationAutomationUsage = async (usageId: string) => {
+  try {
+    await db.delete(schema.organizationAutomationUsage).where(eq(schema.organizationAutomationUsage.id, usageId));
+  } catch (error) {
+    console.error('deleteOrganizationAutomationUsage error:', error);
+    throw new Error('Failed to delete organization automation usage');
   }
 };
 

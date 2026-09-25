@@ -64,13 +64,26 @@ Course certificate tools:
 - `get_course_certificate`
 - `update_course_certificate`
 - `list_course_certificates`
+- `download_course_certificate`
 
-Certificate tools call the public API and need a key with the `public_api:*` scope. Default MCP keys do not include it yet, so these tools return 403 until the key has it. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Certificate tools call the public API certificate endpoints. MCP keys get the `course:certificate:read` and `course:certificate:write` scopes by default, and existing MCP keys were given them too. These scopes open only the certificate endpoints. Every other public API endpoint still needs `public_api:*`, which MCP keys do not have.
+
+The tools act as the person who created the key, with the same permissions that person has in the dashboard. That role is checked on every call, so if the creator loses access, the key loses it too:
 
 - Reading the certificate settings and design needs them to be a member of the course (including access through a program) or an org admin.
-- Changing the settings or design, and listing who earned the certificate, needs them to be a course tutor/admin or an org admin.
+- Changing the settings or design, listing who earned the certificate, and downloading a certificate need them to be a course tutor/admin or an org admin.
 
-`update_course_certificate` keeps any field you leave out. `design` is replaced as a whole object, so read it first and send the full design. `list_course_certificates` takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email.
+`get_course_certificate` and `update_course_certificate` return effective settings: stored values with the dashboard's defaults filled in where nothing is stored (`isDownloadable` false, `threshold` 100, the default design, and so on).
+
+`update_course_certificate` is a partial update: fields you leave out keep their values, and `null` clears `deadline`, `requiredExerciseId`, `exerciseMinScorePercent`, or `emailMessage`. `design` is replaced as a whole object, so read it first and send the full design. `deadline` must be an ISO 8601 datetime with a timezone, for example `2026-12-31T23:59:59Z`.
+
+`list_course_certificates` is the issuance history. It takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email. `download_course_certificate` takes a `memberId` from that list and a `format` of `pdf` (default) or `png`.
+
+What the tools cover compared with the dashboard:
+
+- Covered: certificate settings and design, issuance history, and downloading an issued certificate.
+- Not covered, on purpose: previewing a design, which is a UI concern.
+- Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
 
 ## Auth Model
 
