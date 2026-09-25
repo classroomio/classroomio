@@ -90,12 +90,12 @@
   });
 
   const coursePathContext = $derived.by(() => {
-    const courseTitle = courseApi.course?.title;
-    if (!courseTitle) return null;
+    const courseId = courseApi.course?.id;
+    if (!courseId) return null;
 
     for (const path of learnerPathStore.enrolledPaths) {
       const courses = learnerPathStore.getPathCourses(path);
-      const courseIndex = courses.findIndex((course) => course.title.toLowerCase() === courseTitle.toLowerCase());
+      const courseIndex = courses.findIndex((course) => course.courseId === courseId);
 
       if (courseIndex < 0) continue;
 
