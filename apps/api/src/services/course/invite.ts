@@ -760,10 +760,9 @@ type InviteActivity = {
   lastEmailSentAt: string | null;
 };
 
-function buildInviteActivityMap(stats: Awaited<ReturnType<typeof listCourseInviteAuditStats>>): Map<
-  string,
-  InviteActivity
-> {
+function buildInviteActivityMap(
+  stats: Awaited<ReturnType<typeof listCourseInviteAuditStats>>
+): Map<string, InviteActivity> {
   const statsByInvite = new Map<string, InviteActivity>();
 
   for (const row of stats) {

@@ -1,6 +1,5 @@
 import * as z from 'zod';
 
-import { ZCreateCourseInvite } from '../course/invite';
 import { ZPublicApiCourseParam } from './course';
 
 export const ZPublicApiCourseInviteParam = ZPublicApiCourseParam;
@@ -11,7 +10,26 @@ export const ZPublicApiCourseInviteRevokeParam = ZPublicApiCourseParam.extend({
 });
 export type TPublicApiCourseInviteRevokeParam = z.infer<typeof ZPublicApiCourseInviteRevokeParam>;
 
-export const ZPublicApiCreateCourseInvite = ZCreateCourseInvite;
+export const ZPublicApiCreateCourseInvite = z
+  .object({
+    preset: z.enum(['ONE_TIME_24H', 'MULTI_USE_7D', 'MULTI_USE_30D', 'CUSTOM']).default('MULTI_USE_30D'),
+    expiresAt: z.string().min(1).optional(),
+    maxUses: z.number().int().min(1).max(1000).optional(),
+    allowedEmails: z.array(z.string().email()).max(100).optional(),
+    allowedDomains: z.array(z.string().min(1)).max(100).optional(),
+    recipientEmails: z.array(z.string().email()).max(500).optional(),
+    recipientCsv: z.string().max(25000).optional(),
+    sendEmail: z.boolean().default(false),
+    metadata: z.record(z.string(), z.unknown()).optional()
+  })
+  .refine(
+    (data) => {
+      const hasEmails = (data.recipientEmails?.length ?? 0) > 0;
+      const hasCsv = typeof data.recipientCsv === 'string' && data.recipientCsv.trim().length > 0;
+      return hasEmails || hasCsv;
+    },
+    { message: 'recipientEmails or recipientCsv is required', path: ['recipientEmails'] }
+  );
 export type TPublicApiCreateCourseInvite = z.infer<typeof ZPublicApiCreateCourseInvite>;
 
 export const ZPublicApiCourseInvitesQuery = z.object({

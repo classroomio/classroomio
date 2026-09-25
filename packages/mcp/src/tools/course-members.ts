@@ -82,7 +82,7 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'add_course_member',
-    `Give someone access to a course, by profileId (must already be in the organization) or email. Fails with 409 if they are already a member. To onboard someone new with an invite email, use create_course_invite. ${COURSE_TEAM_RULE}`,
+    `Give someone access to a course, by profileId or email. Either must belong to someone already in the organization, otherwise 404. Fails with 409 if they are already a member. To onboard someone new with an invite email, use create_course_invite. ${COURSE_TEAM_RULE}`,
     addCourseMemberShape,
     WRITE,
     async (args) => {

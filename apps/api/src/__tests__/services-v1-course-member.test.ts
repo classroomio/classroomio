@@ -13,7 +13,8 @@ vi.mock('@cio/db/queries/course/people', () => ({
 }));
 
 vi.mock('@cio/db/queries/organization', () => ({
-  getOrganizationMemberIdByOrgAndProfile: vi.fn()
+  getOrganizationMemberIdByOrgAndProfile: vi.fn(),
+  getOrganizationMembersByNormalizedEmails: vi.fn()
 }));
 
 vi.mock('@api/services/course/people', () => ({
@@ -33,7 +34,10 @@ import { ROLE } from '@cio/utils/constants';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseMember } from '@cio/db/queries/course/people';
-import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
+import {
+  getOrganizationMemberIdByOrgAndProfile,
+  getOrganizationMembersByNormalizedEmails
+} from '@cio/db/queries/organization';
 import {
   addMembers,
   deleteMember,
@@ -66,6 +70,9 @@ describe('services/v1/course-member', () => {
     vi.clearAllMocks();
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
     vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'a@example.com', profileId: 'profile-1', roleId: ROLE.STUDENT }
+    ]);
   });
 
   it('throws 404 when the course does not belong to the organization', async () => {
@@ -117,15 +124,36 @@ describe('services/v1/course-member', () => {
     expect(listPaginatedCourseMembers).toHaveBeenCalledWith(COURSE_ID, firstPage);
   });
 
-  it('addCourseMemberService adds by email through the dashboard addMembers and returns the single member', async () => {
-    const payload = { roleId: ROLE.STUDENT, email: 'student@example.com' };
+  it('addCourseMemberService adds an org member by email, linked to their profile, and returns the single member', async () => {
+    const payload = { roleId: ROLE.STUDENT, email: 'a@example.com' };
     vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
 
     const result = await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
 
-    expect(getOrganizationMemberIdByOrgAndProfile).not.toHaveBeenCalled();
-    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [payload]);
+    expect(getOrganizationMembersByNormalizedEmails).toHaveBeenCalledWith(ORG_ID, ['a@example.com']);
+    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [{ ...payload, profileId: 'profile-1' }]);
     expect(result).toEqual({ id: MEMBER_ID });
+  });
+
+  it('addCourseMemberService keeps a pending org member (no profile yet) as an email-only member', async () => {
+    const payload = { roleId: ROLE.STUDENT, email: 'pending@example.com' };
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'pending@example.com', profileId: null, roleId: ROLE.STUDENT }
+    ]);
+    vi.mocked(addMembers).mockResolvedValue([{ id: MEMBER_ID }] as Awaited<ReturnType<typeof addMembers>>);
+
+    await addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, payload);
+
+    expect(addMembers).toHaveBeenCalledWith(COURSE_ID, [payload]);
+  });
+
+  it('addCourseMemberService returns 404 when the email does not belong to this organization', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([]);
+
+    await expect(
+      addCourseMemberService(ORG_ID, ACTOR_ID, courseParams, { roleId: ROLE.STUDENT, email: 'outsider@example.com' })
+    ).rejects.toMatchObject({ statusCode: 404 });
+    expect(addMembers).not.toHaveBeenCalled();
   });
 
   it('addCourseMemberService returns 404 when the profileId does not belong to this organization', async () => {
@@ -177,6 +205,21 @@ describe('services/v1/course-member', () => {
 
     await deleteCourseMemberService(ORG_ID, ACTOR_ID, memberParams);
 
+    expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
+  });
+
+  it('update and delete pass a 404 through for a member from another course', async () => {
+    const notFound = new AppError('Course member not found', 'NOT_FOUND', 404);
+    vi.mocked(updateMember).mockRejectedValue(notFound);
+    vi.mocked(deleteMember).mockRejectedValue(notFound);
+
+    await expect(
+      updateCourseMemberService(ORG_ID, ACTOR_ID, memberParams, { roleId: ROLE.TUTOR })
+    ).rejects.toMatchObject({ statusCode: 404 });
+    await expect(deleteCourseMemberService(ORG_ID, ACTOR_ID, memberParams)).rejects.toMatchObject({
+      statusCode: 404
+    });
+    expect(updateMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID, { roleId: ROLE.TUTOR });
     expect(deleteMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
   });
 

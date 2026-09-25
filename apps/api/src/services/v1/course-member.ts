@@ -6,6 +6,7 @@ import type {
   TPublicApiUpdateCourseMember
 } from '@cio/utils/validation/public-api';
 import type { TPublicApiCourseParam } from '@cio/utils/validation/public-api';
+import type { TUpdateCourseMember } from '@cio/utils/validation/course/people';
 
 import { ROLE } from '@cio/utils/constants';
 import {
@@ -21,6 +22,7 @@ import {
   assertAutomationActor,
   assertCourseBelongsToOrganization,
   assertCourseTeamMemberOrOrgAdmin,
+  assertEmailBelongsToOrganization,
   assertProfileBelongsToOrganization
 } from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -49,11 +51,17 @@ export async function addCourseMemberService(
 ) {
   await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
+  let member = payload;
   if (payload.profileId) {
     await assertProfileBelongsToOrganization(orgId, payload.profileId);
+  } else if (payload.email) {
+    const profileId = await assertEmailBelongsToOrganization(orgId, payload.email);
+    if (profileId) {
+      member = { ...payload, profileId };
+    }
   }
 
-  const [addedMember] = await addMembers(params.courseId, [payload]);
+  const [addedMember] = await addMembers(params.courseId, [member]);
 
   return addedMember;
 }
@@ -81,7 +89,7 @@ export async function updateCourseMemberService(
 ) {
   await assertCanManageCourseMembers(orgId, params.courseId, actorId);
 
-  return updateMember(params.courseId, params.memberId, payload);
+  return updateMember(params.courseId, params.memberId, payload satisfies TUpdateCourseMember);
 }
 
 export async function deleteCourseMemberService(

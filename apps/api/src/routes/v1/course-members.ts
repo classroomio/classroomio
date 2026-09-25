@@ -1,7 +1,12 @@
 import {
   ZPublicApiAddCourseMember,
   ZPublicApiCourseMemberAnalyticsQuery,
+  ZPublicApiCourseMemberAnalyticsResponse,
+  ZPublicApiCourseMemberDetailResponse,
+  ZPublicApiCourseMemberListItemResponse,
   ZPublicApiCourseMemberParam,
+  ZPublicApiCourseMemberProgressResetResponse,
+  ZPublicApiCourseMemberResponse,
   ZPublicApiCourseMembersQuery,
   ZPublicApiCourseParam,
   ZPublicApiUpdateCourseMember
@@ -19,45 +24,18 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const COURSE_TEAM_RULE =
   'The automation actor (the key creator) must be a course tutor/admin or an org admin, or this fails with 403.';
 
-const badRequestResponse = { description: 'Invalid path, query, or body' };
-const unauthorizedResponse = { description: 'Missing or invalid API key, or the key has no actor' };
+const mcpRateLimitResponse = { description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit' };
 const forbiddenResponse = {
-  description: 'The key lacks the public_api:* scope, or the automation actor is not a course tutor/admin or org admin'
+  description:
+    'The key lacks the public_api:* or course:member:read/write scope, or the automation actor is not a course tutor/admin or org admin'
 };
 
-const PaginationSchema = {
-  type: 'object' as const,
-  properties: {
-    page: { type: 'number' as const },
-    limit: { type: 'number' as const },
-    total: { type: 'number' as const },
-    totalPages: { type: 'number' as const }
-  },
-  required: ['page', 'limit', 'total', 'totalPages']
-};
-
-const CourseMembersListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } },
-    pagination: PaginationSchema
-  },
-  required: ['success', 'data', 'pagination']
-};
-
-const CourseMemberDetailResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
+const MemberResponse = itemResponse(ZPublicApiCourseMemberResponse);
 
 export const v1CourseMembersRouter = new Hono()
   .get(
@@ -66,17 +44,14 @@ export const v1CourseMembersRouter = new Hono()
       description: `List everyone with access to a course (students and tutors), with role and progress. This is a superset of GET /courses/{courseId}/students, which returns only students. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course members returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseMembersListResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        200: jsonResponse(
+          'Course members returned successfully',
+          paginatedResponse(ZPublicApiCourseMemberListItemResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
+        429: mcpRateLimitResponse,
         404: { description: 'Course not found' }
       }
     }),
@@ -111,21 +86,15 @@ export const v1CourseMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Give someone access to this course, the same as adding a member in the dashboard. A profileId must belong to someone already in your organization; to onboard someone new with an invite email, use the invites endpoints. Added tutors/admins with an email and name get a welcome email. ${COURSE_TEAM_RULE}`,
+      description: `Give someone access to this course, the same as adding a member in the dashboard. The profileId or email must belong to someone already in your organization; an email is linked to that person's profile. To onboard someone new, use the invites endpoints. Added tutors/admins with an email and name get a welcome email. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        201: {
-          description: 'Course member added successfully',
-          content: {
-            'application/json': {
-              schema: CourseMemberDetailResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        201: jsonResponse('Course member added successfully', MemberResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
-        404: { description: 'Course not found, or the profileId is not in your organization' },
+        429: mcpRateLimitResponse,
+        404: { description: 'Course not found, or the profileId or email is not in your organization' },
         409: { description: 'Already a member of this course' }
       }
     }),
@@ -157,17 +126,11 @@ export const v1CourseMembersRouter = new Hono()
       description: `Get a single course member's detail. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course member returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseMemberDetailResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        200: jsonResponse('Course member returned successfully', itemResponse(ZPublicApiCourseMemberDetailResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
+        429: mcpRateLimitResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -197,18 +160,13 @@ export const v1CourseMembersRouter = new Hono()
       description: `Change a course member's role or email. Send only the fields to change. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course member updated successfully',
-          content: {
-            'application/json': {
-              schema: CourseMemberDetailResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        200: jsonResponse('Course member updated successfully', MemberResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
-        404: { description: 'Course or member not found' }
+        429: mcpRateLimitResponse,
+        404: { description: 'Course or member not found' },
+        409: { description: 'The new email is already used by another member of this course' }
       }
     }),
     validator('param', ZPublicApiCourseMemberParam),
@@ -239,17 +197,11 @@ export const v1CourseMembersRouter = new Hono()
       description: `Remove someone's access to the course. This permanently deletes the course membership; the person keeps their account and organization membership. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course member removed successfully',
-          content: {
-            'application/json': {
-              schema: CourseMemberDetailResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        200: jsonResponse('Course member removed successfully', MemberResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
+        429: mcpRateLimitResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -279,17 +231,14 @@ export const v1CourseMembersRouter = new Hono()
       description: `Clear a student's completion progress while keeping them enrolled. This cannot be undone. Only student members can have their progress reset. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course member progress reset successfully',
-          content: {
-            'application/json': {
-              schema: CourseMemberDetailResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Course member progress reset successfully',
+          itemResponse(ZPublicApiCourseMemberProgressResetResponse)
+        ),
         400: { description: 'Invalid path or query, or the member is not a student' },
-        401: unauthorizedResponse,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
+        429: mcpRateLimitResponse,
         404: { description: 'Course or member not found' }
       }
     }),
@@ -319,17 +268,14 @@ export const v1CourseMembersRouter = new Hono()
       description: `Fetch a student's progress and grade analytics for the course. Only student members have analytics. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course member analytics returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseMemberDetailResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Course member analytics returned successfully',
+          itemResponse(ZPublicApiCourseMemberAnalyticsResponse)
+        ),
         400: { description: 'Invalid path or query, or the member is not a student' },
-        401: unauthorizedResponse,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
+        429: mcpRateLimitResponse,
         404: { description: 'Course or member not found' }
       }
     }),

@@ -289,10 +289,7 @@ export async function listCourseInviteAuditStatsForInvites(
       })
       .from(schema.courseInviteAudit)
       .where(
-        and(
-          eq(schema.courseInviteAudit.courseId, courseId),
-          inArray(schema.courseInviteAudit.inviteId, inviteIds)
-        )
+        and(eq(schema.courseInviteAudit.courseId, courseId), inArray(schema.courseInviteAudit.inviteId, inviteIds))
       )
       .groupBy(schema.courseInviteAudit.inviteId, schema.courseInviteAudit.eventType);
 

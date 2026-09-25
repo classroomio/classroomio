@@ -1,8 +1,11 @@
 import {
   ZPublicApiCourseInviteParam,
   ZPublicApiCourseInviteRevokeParam,
+  ZPublicApiCourseInviteListItemResponse,
   ZPublicApiCourseInvitesQuery,
-  ZPublicApiCreateCourseInvite
+  ZPublicApiCreateCourseInvite,
+  ZPublicApiCreateCourseInviteResponse,
+  ZPublicApiRevokeCourseInviteResponse
 } from '@cio/utils/validation/public-api';
 import {
   createCourseInviteService,
@@ -14,16 +17,17 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin } from '@api/services/v1/shared';
 import type { Context, Next } from 'hono';
 
 const COURSE_TEAM_RULE =
   'The automation actor (the key creator) must be a course tutor/admin or an org admin, or this fails with 403.';
 
-const badRequestResponse = { description: 'Invalid path, query, or body' };
-const unauthorizedResponse = { description: 'Missing or invalid API key, or the key has no actor' };
+const mcpRateLimitResponse = { description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit' };
 const forbiddenResponse = {
-  description: 'The key lacks the public_api:* scope, or the automation actor is not a course tutor/admin or org admin'
+  description:
+    'The key lacks the public_api:* or course:member:read/write scope, or the automation actor is not a course tutor/admin or org admin'
 };
 
 const requireCourseTeamActor = async (c: Context, next: Next) => {
@@ -45,36 +49,6 @@ const createInviteRateLimit = createRateLimiter({
   keyGenerator: (c) => `course_invite_create:user:${c.get('actorId')}:${c.req.param('courseId')}`
 });
 
-const PaginationSchema = {
-  type: 'object' as const,
-  properties: {
-    page: { type: 'number' as const },
-    limit: { type: 'number' as const },
-    total: { type: 'number' as const },
-    totalPages: { type: 'number' as const }
-  },
-  required: ['page', 'limit', 'total', 'totalPages']
-};
-
-const CourseInvitesListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } },
-    pagination: PaginationSchema
-  },
-  required: ['success', 'data', 'pagination']
-};
-
-const CourseInviteDetailResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
-
 export const v1CourseInvitesRouter = new Hono()
   .get(
     '/',
@@ -82,17 +56,14 @@ export const v1CourseInvitesRouter = new Hono()
       description: `List invites for a course, of any status (active, revoked, expired, or used up). ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course invites returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseInvitesListResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        200: jsonResponse(
+          'Course invites returned successfully',
+          paginatedResponse(ZPublicApiCourseInviteListItemResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
+        429: mcpRateLimitResponse,
         404: { description: 'Course not found' }
       }
     }),
@@ -130,19 +101,12 @@ export const v1CourseInvitesRouter = new Hono()
       description: `Invite one or more people to a course by email or CSV. Unlike POST /members, this can onboard someone who is not yet an organization member. Set sendEmail to false to mint invite tokens without emailing recipients. Limited to 60 invite requests per hour per key creator per course, shared with the dashboard. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        201: {
-          description: 'Course invite created successfully',
-          content: {
-            'application/json': {
-              schema: CourseInviteDetailResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        201: jsonResponse('Course invite created successfully', itemResponse(ZPublicApiCreateCourseInviteResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
         404: { description: 'Course not found' },
-        429: { description: 'Too many invite creation attempts' }
+        429: { description: 'Too many invite creation attempts, or (MCP keys) the MCP rate limit was hit' }
       }
     }),
     validator('param', ZPublicApiCourseInviteParam),
@@ -175,17 +139,11 @@ export const v1CourseInvitesRouter = new Hono()
       description: `Revoke a pending course invite. The invite link stops working and this cannot be undone. ${COURSE_TEAM_RULE}`,
       tags: ['Public API Course Members'],
       responses: {
-        200: {
-          description: 'Course invite revoked successfully',
-          content: {
-            'application/json': {
-              schema: CourseInviteDetailResponse
-            }
-          }
-        },
-        400: badRequestResponse,
-        401: unauthorizedResponse,
+        200: jsonResponse('Course invite revoked successfully', itemResponse(ZPublicApiRevokeCourseInviteResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
         403: forbiddenResponse,
+        429: mcpRateLimitResponse,
         404: { description: 'Course or invite not found' }
       }
     }),
