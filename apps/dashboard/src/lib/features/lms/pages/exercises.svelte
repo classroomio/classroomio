@@ -90,22 +90,13 @@
     return 'exercises.submission_states.not_submitted';
   }
 
-  /**
-   * TODO: Replace with the real `exercise.dueBy` once the LMS exercises API returns it.
-   * `exercise.due_by` exists in the schema but is not selected by `getLMSExercises`
-   * (packages/db/src/queries/exercise/lms.ts). For now a deterministic future offset is used.
-   */
-  function dummyDueDate(index: number): dayjs.Dayjs {
-    return dayjs().add(((index + 1) * 3) % 30, 'day');
-  }
-
   const rows = $derived<ExerciseRow[]>(
-    lmsExercisesApi.exercises.map((exercise, index) => {
+    lmsExercisesApi.exercises.map((exercise) => {
       const submissionItem = exercise.submission[0] || { status_id: 0, total: 0 };
 
       const statusId = submissionItem.status_id;
-      const dueDate = dummyDueDate(index);
-      const isOverdue = statusId === STATUS.NOT_SUBMITTED && dueDate.isBefore(dayjs());
+      const dueDate = exercise.due_by ? dayjs(exercise.due_by) : null;
+      const isOverdue = statusId === STATUS.NOT_SUBMITTED && !!dueDate && dueDate.isBefore(dayjs());
 
       const totalPoints = exercise.questions.reduce((sum, question) => sum + (question.points || 0), 0);
       const gradePct =
@@ -124,7 +115,7 @@
         url: exerciseURL,
         statusId,
         isOverdue,
-        dueDate: dueDate.format('MMM D, YYYY'),
+        dueDate: dueDate ? dueDate.format('MMM D, YYYY') : '—',
         submissionKey: submissionKey(statusId),
         grade: gradePct || '—',
         gradeDim: !gradePct,
