@@ -12,7 +12,7 @@ export const GET: RequestHandler = async ({ params }) => {
     };
 
     const response = await classroomio['org-site'].course[':courseSlug'].item[':itemSlug.md'].$get(
-      { param: { courseSlug: params.slug, itemSlug: params.itemSlug } },
+      { param: { courseSlug: params.slug, 'itemSlug.md': `${params.itemSlug}.md` } },
       { headers: acceptHeaders }
     );
 

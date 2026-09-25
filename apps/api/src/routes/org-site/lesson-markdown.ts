@@ -4,6 +4,19 @@ import { getPublicLessonMarkdownService } from '@api/services/course/public-cour
 import { Hono } from '@api/utils/hono';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
+import * as z from 'zod';
+
+const ZPublicLessonMarkdownParam = z.preprocess((value) => {
+  if (typeof value !== 'object' || value === null) return value;
+
+  const params = value as Record<string, unknown>;
+  const itemSlug = params['itemSlug.md'];
+
+  return {
+    ...params,
+    itemSlug: typeof itemSlug === 'string' ? itemSlug.replace(/\.md$/, '') : itemSlug
+  };
+}, ZPublicCourseItemParam);
 
 /**
  * Anonymous-safe Markdown export for public lessons.
@@ -13,7 +26,7 @@ import { zValidator } from '@hono/zod-validator';
  */
 export const lessonMarkdownRouter = new Hono().get(
   '/:courseSlug/item/:itemSlug.md',
-  zValidator('param', ZPublicCourseItemParam),
+  zValidator('param', ZPublicLessonMarkdownParam),
   async (c) => {
     try {
       const { courseSlug, itemSlug } = c.req.valid('param');
