@@ -32,7 +32,8 @@
       "loading": "Loading AI tutor settings…"
     },
     "snackbar": {
-      "saved": "AI tutor settings saved"
+      "saved": "AI tutor settings saved",
+      "fetchError": "Failed to load AI tutor settings"
     },
     "section": {
       "availability": "Availability",
@@ -300,6 +301,8 @@
   "app": {
     "cancel": "Cancel",
     "save": "Save",
+    "next": "Next",
+    "previous": "Previous",
     "search": {
       "placeholder": "Search",
       "command_palette": {
@@ -341,7 +344,8 @@
     "discard": "Discard",
     "save_changes": "Save changes",
     "refresh": "Refresh",
-    "scroll_to_top": "Scroll to top"
+    "scroll_to_top": "Scroll to top",
+    "delete": "Delete"
   },
   "compliance": {
     "title": "Compliance",
@@ -501,6 +505,10 @@
       "heading": "Profile",
       "update_profile": "Update Profile",
       "logout": "Log out"
+    },
+    "account": {
+      "language": "Language",
+      "select_language": "Select a language"
     },
     "notifications": {
       "heading": "Notifications",
@@ -1957,6 +1965,7 @@
     "page_subtitle": "Where lessons turn into courses and courses turn into enrollments.",
     "heading_button": "Create Course",
     "search_placeholder": "Find Course",
+    "load_more": "Load more",
     "tag_filters": {
       "filter": "Filter",
       "active": "Active filters",
@@ -2042,6 +2051,9 @@
       "course_description_label": "Course description",
       "course_description_placeholder": "Enter a description for your course",
       "create_button": "Create",
+      "success": {
+        "course_cloned": "Course cloned successfully"
+      },
       "error": {
         "failed_to_clone": "Failed to clone course"
       }
@@ -4796,6 +4808,16 @@
       "people": {
         "progress_reset": "Progress reset",
         "progress_reset_failed": "Failed to reset progress"
+      },
+      "compliance": {
+        "overview_failed": "Failed to load compliance overview",
+        "history_failed": "Failed to load compliance history",
+        "reset_success": "Compliance cycle reset",
+        "reset_failed": "Failed to reset compliance cycle",
+        "extend_success": "Compliance deadline extended",
+        "extend_failed": "Failed to extend compliance deadline",
+        "waive_success": "Compliance requirement waived",
+        "waive_failed": "Failed to waive compliance requirement"
       }
     },
     "lms": {
@@ -4853,6 +4875,7 @@
       "lesson_update_failed": "Failed to update lesson",
       "section_created": "Course section created successfully",
       "section_create_failed": "Failed to create course section",
+      "section_updated": "Course section updated successfully",
       "section_deleted": "Course section deleted successfully",
       "section_update_failed": "Failed to update course section",
       "sections_reordered": "Course sections reordered successfully",
@@ -4891,7 +4914,11 @@
       "error": {
         "try_again": "Error - Please try again later",
         "deleting_comments": "Error deleting comments",
-        "deleting_question": "Error deleting question"
+        "deleting_question": "Error deleting question",
+        "comment_failed": "Failed to submit comment",
+        "delete_failed": "Failed to delete",
+        "missing_context": "Missing context - please reload the page",
+        "update_failed": "Failed to update question"
       },
       "success": {
         "question_updated": "Question Updated!",

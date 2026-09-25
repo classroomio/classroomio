@@ -12,7 +12,8 @@
     },
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern",
-    "scroll_to_top": "Zum Seitenanfang scrollen"
+    "scroll_to_top": "Zum Seitenanfang scrollen",
+    "delete": "Löschen"
   },
   "validations": {
     "generic": {
@@ -185,7 +186,11 @@
       "error": {
         "try_again": "Fehler – Bitte versuchen Sie es später noch einmal",
         "deleting_comments": "Fehler beim Löschen der Kommentare",
-        "deleting_question": "Fehler beim Löschen der Frage"
+        "deleting_question": "Fehler beim Löschen der Frage",
+        "comment_failed": "Kommentar konnte nicht übermittelt werden",
+        "delete_failed": "Fehler beim Löschen",
+        "missing_context": "Fehlender Kontext – bitte laden Sie die Seite neu",
+        "update_failed": "Frage konnte nicht aktualisiert werden"
       }
     },
     "invite": {
@@ -255,6 +260,16 @@
       "people": {
         "progress_reset": "Fortschritt zurückgesetzt",
         "progress_reset_failed": "Fortschritt konnte nicht zurückgesetzt werden"
+      },
+      "compliance": {
+        "overview_failed": "Die Compliance-Übersicht konnte nicht geladen werden",
+        "history_failed": "Der Compliance-Verlauf konnte nicht geladen werden",
+        "reset_success": "Compliance-Zyklus zurückgesetzt.",
+        "reset_failed": "Der Compliance-Zyklus konnte nicht zurückgesetzt werden",
+        "extend_success": "Compliance-Frist verlängert",
+        "extend_failed": "Die Compliance-Frist konnte nicht verlängert werden",
+        "waive_success": "Auf die Compliance-Anforderung wurde verzichtet",
+        "waive_failed": "Auf die Compliance-Anforderung konnte nicht verzichtet werden"
       }
     },
     "landing_page_settings": {
@@ -2965,6 +2980,9 @@
       "create_button": "Erstellen",
       "error": {
         "failed_to_clone": "Der Kurs konnte nicht geklont werden"
+      },
+      "success": {
+        "course_cloned": "Kurs erfolgreich geklont"
       }
     },
     "new_course_modal": {
@@ -3045,7 +3063,8 @@
       "tags": "Tags",
       "empty_tags": "Keine Tags verfügbar"
     },
-    "page_subtitle": "Wo Lektionen zu Kursen und Kurse zu Einschreibungen werden."
+    "page_subtitle": "Wo Lektionen zu Kursen und Kurse zu Einschreibungen werden.",
+    "load_more": "Mehr laden"
   },
   "ai": {
     "help_me": "Hilf mir zu schreiben",
@@ -4218,6 +4237,10 @@
         }
       },
       "personal_page_subtitle": "Wählen Sie, welche E-Mail-Benachrichtigungen Sie von ClassroomIO erhalten."
+    },
+    "account": {
+      "language": "Sprache",
+      "select_language": "Wählen Sie eine Sprache aus"
     }
   },
   "profileMenu": {
@@ -4302,7 +4325,9 @@
       }
     },
     "cancel": "Abbrechen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "next": "Als nächstes",
+    "previous": "Zurück"
   },
   "welcome_modal": {
     "we_at": "Wir bei",
@@ -5284,7 +5309,8 @@
       "inheritance_description": "Übernehmen Sie die Standardeinstellungen des Arbeitsbereichs oder legen Sie Überschreibungen pro Kurs fest."
     },
     "snackbar": {
-      "saved": "KI-Lehrereinstellungen gespeichert"
+      "saved": "KI-Lehrereinstellungen gespeichert",
+      "fetchError": "Die Einstellungen für den KI-Lehrer konnten nicht geladen werden"
     },
     "state": {
       "loading": "AI-Lehrereinstellungen werden geladen…"
