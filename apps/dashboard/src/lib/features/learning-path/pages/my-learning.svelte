@@ -93,7 +93,7 @@
 
   const standaloneCourseItems = $derived.by<CourseLibraryItem[]>(() =>
     coursesApi.enrolledCourses
-      .filter((course) => !pathCourseItems.some((item) => item.title.toLowerCase() === course.title.toLowerCase()))
+      .filter((course) => !pathCourseItems.some((item) => item.id === course.id))
       .map((course) => {
         const progressPercent = isStudentCourseComplete(course) ? 100 : getStudentCourseProgressPercent(course);
         const state: CourseStatus = isStudentCourseComplete(course)

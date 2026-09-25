@@ -1,4 +1,4 @@
-<script module>
+<script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { LearningPathCard, type LearningPathCardLabels } from '@cio/ui';
   import { FIELDS } from './fields';
