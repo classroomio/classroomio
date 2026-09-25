@@ -1,6 +1,6 @@
 import type { CropArea } from 'svelte-easy-crop';
 
-export const getFileFromUrl = async (url: string, fileName = 'cropped.png'): Promise<File> => {
+export const getFileFromUrl = async (url: string, fileName = 'cropped.webp'): Promise<File> => {
   // Fetch the file data from the URL
   const response = await fetch(url);
 
@@ -74,8 +74,12 @@ export const getCroppedImg = async (imageSrc: string, pixelCrop: CropArea, rotat
   );
 
   return new Promise((resolve) => {
-    canvas.toBlob((file) => {
-      resolve(URL.createObjectURL(file!));
-    }, 'image/png');
+    canvas.toBlob(
+      (file) => {
+        resolve(URL.createObjectURL(file!));
+      },
+      'image/webp',
+      0.85
+    );
   });
 };

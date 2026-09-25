@@ -52,8 +52,7 @@
     // Convert the cropped data URL to a File object
     const response = await fetch(croppedUrl);
     const blob = await response.blob();
-    // getCroppedImg outputs PNG format, so use blob.type (which will be 'image/png') and matching filename
-    const fileName = isSignaturePreview ? 'signature.png' : 'cropped-image.png';
+    const fileName = isSignaturePreview ? 'signature.webp' : 'cropped-image.webp';
     const file = new File([blob], fileName, { type: blob.type });
 
     const validation = validateImageUpload(file);

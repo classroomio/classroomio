@@ -30,6 +30,15 @@
   }
 
   async function handleUpload(file: File): Promise<string> {
+    console.info('[landing-image-upload]', {
+      name: file.name,
+      type: file.type,
+      sizeBytes: file.size,
+      sizeKilobytes: Number((file.size / 1024).toFixed(2)),
+      maxSizeBytes: maxLandingImageSize,
+      maxSizeKilobytes: Number((maxLandingImageSize / 1024).toFixed(2))
+    });
+
     if (file.size > maxLandingImageSize) {
       snackbar.error('snackbar.landing_page_settings.error.file_size');
       throw new Error('File too large');
