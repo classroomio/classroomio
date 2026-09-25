@@ -48,7 +48,7 @@ Apply this skill when designing, implementing, or reviewing an API route, public
 - Prevent IDOR/BOLA by checking organization and actor access for every resource operation.
 - Do not trust organization IDs, roles, member IDs, or permissions supplied by the caller.
 - Rate-limit expensive and mutating operations.
-- Make quota/usage enforcement atomic or fail closed. Never silently continue when recording usage, audit events, or another security control fails.
+- Make rate-limit enforcement reliable and fail closed when the limiter cannot make a decision. Never silently bypass rate limits, audit events, or another security control.
 - Use transactions or row locking for read-modify-write updates that can lose fields under concurrency.
 - Protect exports/downloads with authorization and expiring access where appropriate.
 - Add audit events for administrative mutations and manual issuance.
@@ -58,7 +58,7 @@ Apply this skill when designing, implementing, or reviewing an API route, public
 - Mark read tools read-only and mutations as write/destructive tools.
 - Ensure the default key flow grants the scopes required by new tools, or clearly document the required setup and dependency.
 - Enforce permissions in the API, not only in tool metadata.
-- Ensure tool usage limits are enforced for every invocation and remain safe when usage storage is unavailable.
+- Ensure tool rate limits are enforced for every invocation and remain safe when the limiter or its backing store is unavailable.
 - Keep MCP tool names, API paths, scopes, and documentation consistent.
 - Do not ship a tool that returns 403 for normally-created keys unless that is an intentional, documented rollout dependency.
 
@@ -69,7 +69,7 @@ Apply this skill when designing, implementing, or reviewing an API route, public
 - API-key scope and creator-permission-change tests.
 - Invalid format, omitted field, `null`, empty payload, and cross-resource validation tests.
 - Idempotency and concurrent update tests.
-- Rate-limit, quota, usage-recording failure, and audit failure tests.
+- Rate-limit, limiter-failure, and audit-failure tests.
 - OpenAPI/public contract tests and MCP tool tests where applicable.
 
 ## PR checklist
