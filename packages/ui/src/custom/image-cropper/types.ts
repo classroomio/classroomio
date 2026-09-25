@@ -13,6 +13,7 @@ export type ImageCropperRootPropsWithoutHTML = WithChildren<{
   maxFileSize?: number; // Maximum file size in bytes
   /** Skip the crop dialog and use the original file immediately. */
   skipCrop?: boolean;
+  outputFormat?: 'image/png' | 'image/webp';
 }>;
 
 export type ImageCropperRootProps = ImageCropperRootPropsWithoutHTML & HTMLInputAttributes;

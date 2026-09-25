@@ -26,6 +26,7 @@ export type ImageCropperRootProps = WritableBoxedValues<{
     maxFileSize?: number; // Maximum file size in bytes
     disabled?: boolean;
     skipCrop?: boolean;
+    outputFormat?: 'image/png' | 'image/webp';
   }>;
 
 class ImageCropperRootState {
@@ -103,7 +104,8 @@ class ImageCropperRootState {
   async onCrop() {
     if (!this.pixelCrop || !this.tempUrl) return;
 
-    this.opts.src.current = await getCroppedImg(this.tempUrl, this.pixelCrop);
+    const outputFormat = this.opts.outputFormat?.current;
+    this.opts.src.current = await getCroppedImg(this.tempUrl, this.pixelCrop, 0, outputFormat);
 
     this.open = false;
 

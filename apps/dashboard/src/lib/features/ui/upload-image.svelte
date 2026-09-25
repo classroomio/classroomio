@@ -52,7 +52,8 @@
     // Convert the cropped data URL to a File object
     const response = await fetch(croppedUrl);
     const blob = await response.blob();
-    const fileName = isSignaturePreview ? 'signature.webp' : 'cropped-image.webp';
+    const fileExtension = blob.type === 'image/jpeg' ? 'jpg' : blob.type.split('/')[1] || 'bin';
+    const fileName = `${isSignaturePreview ? 'signature' : 'cropped-image'}.${fileExtension}`;
     const file = new File([blob], fileName, { type: blob.type });
 
     const validation = validateImageUpload(file);
@@ -109,6 +110,7 @@
     {onUnsupportedFile}
     maxFileSize={maxFileSizeInMb * 1024 * 1024}
     accept=".jpg, .jpeg, .png, .webp"
+    outputFormat={isSignaturePreview ? 'image/png' : 'image/webp'}
     disabled={isDisabled || isUploading}
   >
     <ImageCropper.UploadTrigger aria-disabled={isDisabled || isUploading}>
