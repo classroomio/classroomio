@@ -16,6 +16,7 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - List the domain operations external clients need. Check the full resource lifecycle, state-changing actions, bulk operations, exports/files, search/filtering, reporting/history, notifications/webhooks, and administrative/audit operations as applicable.
 - Treat each dashboard capability as one of these categories and decide whether it belongs in the API, is intentionally UI-only, or is out of scope.
 - Treat previewing and rendering as UI concerns unless the API must produce an artifact. Expose the data or export operation clients need instead.
+- Follow established repository conventions when extending an existing API. Do not flag a method only because it differs from a generic REST preference.
 - Document included capabilities and intentional parity gaps in the PR and API docs.
 
 ## Establish the actor and authorization model
@@ -28,8 +29,8 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 
 ## Design the endpoint contract
 
-- Use `GET` for reads, `POST` for creation/actions, `PATCH` for partial updates, and `PUT` for replacement semantics.
-- If omitted fields are retained, use `PATCH` or explicitly document the idempotent merge behavior, including how `null`, empty objects, and empty strings clear values.
+- Use `GET` for reads and `POST` for creation/actions. Prefer `PATCH` for new partial-update APIs and `PUT` for replacement semantics, but preserve an established repository convention when extending an existing API.
+- If `PUT` retains omitted fields, explicitly document that it is an idempotent merge update, including how `null`, empty objects, and empty strings clear values. Keep the behavior consistent with existing clients.
 - Keep one predictable response shape per endpoint and use the repository's standard success, error, and pagination structures.
 - Decide whether responses contain stored values or effective/defaulted values. Prefer normalized effective values when clients must reproduce dashboard behavior.
 - Make sensitive list fields intentional and return only the personal data consumers need.
@@ -54,6 +55,8 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - Add audit events for administrative mutations and manual issuance.
 
 ## MCP and automation checks
+
+Apply this section when the public API is exposed through MCP or automation keys.
 
 - Mark read tools read-only and mutations as write/destructive tools.
 - Ensure the default key flow grants the scopes required by new tools, or clearly document the required setup and dependency.
@@ -80,5 +83,5 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - [ ] Public schemas are stable and validate the documented formats.
 - [ ] Defaults and partial-update semantics are documented.
 - [ ] Security and failure-mode tests are included.
-- [ ] Resource lifecycle, actions, bulk operations, exports/files, reporting/history, notifications/webhooks, and audit operations are either supported or explicitly scoped out as applicable.
+- [ ] Applicable resource lifecycle, actions, bulk operations, exports/files, reporting/history, notifications/webhooks, and audit operations are either supported or explicitly scoped out.
 - [ ] OpenAPI, examples, and MCP documentation match the implementation.
