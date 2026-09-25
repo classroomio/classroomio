@@ -3063,7 +3063,8 @@
       "tags": "Tagi",
       "empty_tags": "Brak dostępnych tagów"
     },
-    "page_subtitle": "Gdzie lekcje stają się kursami, a kursy — zapisami."
+    "page_subtitle": "Gdzie lekcje stają się kursami, a kursy — zapisami.",
+    "load_more": "Załaduj więcej"
   },
   "ai": {
     "help_me": "Pomóż mi pisać",

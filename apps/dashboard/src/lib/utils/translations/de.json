@@ -3063,7 +3063,8 @@
       "tags": "Tags",
       "empty_tags": "Keine Tags verfügbar"
     },
-    "page_subtitle": "Wo Lektionen zu Kursen und Kurse zu Einschreibungen werden."
+    "page_subtitle": "Wo Lektionen zu Kursen und Kurse zu Einschreibungen werden.",
+    "load_more": "Mehr laden"
   },
   "ai": {
     "help_me": "Hilf mir zu schreiben",

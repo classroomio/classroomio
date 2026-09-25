@@ -3063,7 +3063,8 @@
       "tags": "Thẻ",
       "empty_tags": "Không có thẻ nào"
     },
-    "page_subtitle": "Nơi các bài học trở thành khóa học và khóa học trở thành đăng ký."
+    "page_subtitle": "Nơi các bài học trở thành khóa học và khóa học trở thành đăng ký.",
+    "load_more": "Tải thêm"
   },
   "ai": {
     "help_me": "Giúp tôi viết",

@@ -3063,7 +3063,8 @@
       "tags": "Étiquettes",
       "empty_tags": "Aucune balise disponible"
     },
-    "page_subtitle": "Là où les leçons deviennent des cours et les cours deviennent des inscriptions."
+    "page_subtitle": "Là où les leçons deviennent des cours et les cours deviennent des inscriptions.",
+    "load_more": "Charger plus"
   },
   "ai": {
     "help_me": "Aide-moi à écrire",

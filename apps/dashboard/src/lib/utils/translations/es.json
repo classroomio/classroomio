@@ -3063,7 +3063,8 @@
       "tags": "Etiquetas",
       "empty_tags": "No hay etiquetas disponibles"
     },
-    "page_subtitle": "Donde las lecciones se convierten en cursos y los cursos en inscripciones."
+    "page_subtitle": "Donde las lecciones se convierten en cursos y los cursos en inscripciones.",
+    "load_more": "Cargar más"
   },
   "ai": {
     "help_me": "Ayúdame a escribir",

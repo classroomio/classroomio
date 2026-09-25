@@ -3063,7 +3063,8 @@
       "tags": "Tags",
       "empty_tags": "Ingen tags tilgængelige"
     },
-    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger."
+    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger.",
+    "load_more": "Indlæs mere"
   },
   "ai": {
     "help_me": "Hjælp mig med at skrive",

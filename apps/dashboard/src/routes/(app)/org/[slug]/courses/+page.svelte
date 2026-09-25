@@ -13,7 +13,7 @@
   } from '$features/course/utils/constants';
   import {
     DEFAULT_COURSE_LIST_FILTERS,
-    filterAndSortOrgCourses,
+    DEFAULT_COURSE_LIST_NEXT,
     mergeCourseListSearchParams,
     parseCourseListFilters,
     type CourseListFilters,
@@ -33,7 +33,7 @@
   let searchValue = $state('');
   let sortKey: CourseSortBy = $state(DEFAULT_COURSE_SORT);
   let selectedOrder = $state<CourseSortOrder>(DEFAULT_SORT_ORDER);
-  let selectedTags = $state<string[]>(data.activeTags ?? []);
+  let selectedTags = $state<string[]>([]);
   let courseType = $state<string>('all');
   let publishedStatus = $state<PublishedStatusFilter>('all');
 
@@ -46,9 +46,11 @@
 
   let hasInitializedFilters = $state(false);
   let isFiltering = $state(false);
+  let isLoadingMore = $state(false);
   let appliedUrlSearch = $state('');
 
   const filtersFromUrl = $derived(parseCourseListFilters(page.url.searchParams));
+  const hasMoreCourses = $derived(data.pagination?.hasMore ?? false);
 
   $effect(() => {
     if (data.courses) {
@@ -67,9 +69,10 @@
 
   async function navigateCourseFilters(
     nextFilters: CourseListFilters,
-    options: { invalidateAll?: boolean; replaceState?: boolean } = {}
+    options: { replaceState?: boolean; next?: number } = {}
   ) {
-    const nextParams = mergeCourseListSearchParams(page.url.searchParams, nextFilters);
+    const pagesLoaded = options.next ?? DEFAULT_COURSE_LIST_NEXT;
+    const nextParams = mergeCourseListSearchParams(page.url.searchParams, nextFilters, pagesLoaded);
     const nextSearch = nextParams.toString();
     const currentSearch = page.url.searchParams.toString();
 
@@ -82,7 +85,9 @@
       localStorage.setItem('classroomio_filter_course_order_key', nextFilters.order);
     }
 
-    isFiltering = options.invalidateAll ?? false;
+    const isLoadMore = pagesLoaded > DEFAULT_COURSE_LIST_NEXT;
+    isFiltering = !isLoadMore;
+    isLoadingMore = isLoadMore;
     const targetUrl = `${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}${page.url.hash}`;
 
     try {
@@ -90,12 +95,13 @@
         replaceState: options.replaceState ?? false,
         keepFocus: true,
         noScroll: true,
-        invalidateAll: options.invalidateAll ?? false
+        invalidateAll: true
       });
     } catch (error) {
       console.error('navigateCourseFilters error:', error);
     } finally {
       isFiltering = false;
+      isLoadingMore = false;
     }
   }
 
@@ -133,17 +139,14 @@
 
     const nextSearch = pendingSearch !== urlFilters.search ? pendingSearch : urlFilters.search;
 
-    void navigateCourseFilters(
-      {
-        search: nextSearch,
-        tags: selectedTags,
-        sortKey,
-        order: selectedOrder,
-        courseType,
-        publishedStatus
-      },
-      { invalidateAll: tagsChanged }
-    );
+    void navigateCourseFilters({
+      search: nextSearch,
+      tags: selectedTags,
+      sortKey,
+      order: selectedOrder,
+      courseType,
+      publishedStatus
+    });
   });
 
   $effect(() => {
@@ -184,12 +187,14 @@
   }
 
   async function clearFilters() {
-    await navigateCourseFilters(DEFAULT_COURSE_LIST_FILTERS, {
-      invalidateAll: selectedTags.length > 0
-    });
+    await navigateCourseFilters(DEFAULT_COURSE_LIST_FILTERS);
   }
 
-  const filteredCourses = $derived(filterAndSortOrgCourses(coursesApi.orgCourses ?? [], filtersFromUrl));
+  async function loadMoreCourses() {
+    await navigateCourseFilters(filtersFromUrl, {
+      next: (data.pagination?.next ?? DEFAULT_COURSE_LIST_NEXT) + 1
+    });
+  }
 
   onMount(() => {
     const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
@@ -229,7 +234,15 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CoursesPage courses={filteredCourses} bind:searchValue bind:sortKey showSortSelect={false}>
+      <CoursesPage
+        courses={data.courses}
+        bind:searchValue
+        bind:sortKey
+        showSortSelect={false}
+        hasMore={hasMoreCourses}
+        {isLoadingMore}
+        onLoadMore={loadMoreCourses}
+      >
         {#snippet filterControls()}
           <CourseFilterPopover
             bind:sortKey

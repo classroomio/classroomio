@@ -14,6 +14,7 @@ import {
 import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import type { TCourseType } from '@cio/utils/constants/course-type';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 import { isExerciseCompletedSql } from './progression';
@@ -762,6 +763,10 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   }
 }
 
+type OrgCoursePublishedStatus = 'published' | 'unpublished';
+type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons';
+type OrgCourseSortOrder = 'asc' | 'desc';
+
 interface GetOrgCoursesOptions {
   /** Organization ID (required) */
   orgId: string;
@@ -771,6 +776,10 @@ interface GetOrgCoursesOptions {
   courseIds?: string[];
   /** Optional search query against the course title */
   search?: string;
+  type?: TCourseType;
+  publishedStatus?: OrgCoursePublishedStatus;
+  sortKey?: OrgCourseSortKey;
+  order?: OrgCourseSortOrder;
   /** Page number (1-indexed) */
   page?: number;
   /** Page size */
@@ -785,26 +794,73 @@ export interface GetOrgCoursesResult {
   totalPages: number;
 }
 
+function orgCourseListConditions({
+  orgId,
+  courseIds,
+  search,
+  type,
+  publishedStatus
+}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'>) {
+  const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
+
+  if (courseIds && courseIds.length > 0) {
+    conditions.push(inArray(schema.course.id, courseIds));
+  }
+
+  if (search?.trim()) {
+    conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
+  }
+
+  if (type) {
+    conditions.push(eq(schema.course.type, type));
+  }
+
+  if (publishedStatus === 'published') {
+    conditions.push(eq(schema.course.isPublished, true));
+  }
+
+  if (publishedStatus === 'unpublished') {
+    conditions.push(eq(schema.course.isPublished, false));
+  }
+
+  return conditions;
+}
+
+function orgCourseListOrderBy(sortKey?: OrgCourseSortKey, order?: OrgCourseSortOrder) {
+  const direction = order === 'asc' ? asc : desc;
+
+  if (sortKey === 'last_updated_at') {
+    return direction(sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`);
+  }
+
+  if (sortKey === 'published') {
+    return direction(schema.course.isPublished);
+  }
+
+  if (sortKey === 'lessons') {
+    return direction(sql`COUNT(DISTINCT ${schema.lesson.id})`);
+  }
+
+  return direction(schema.course.createdAt);
+}
+
 export async function countOrgCourses({
   orgId,
   profileId,
   courseIds,
-  search
-}: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search'>): Promise<number> {
+  search,
+  type,
+  publishedStatus
+}: Pick<
+  GetOrgCoursesOptions,
+  'orgId' | 'profileId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'
+>): Promise<number> {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
     }
 
-    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
-
-    if (courseIds && courseIds.length > 0) {
-      conditions.push(inArray(schema.course.id, courseIds));
-    }
-
-    if (search?.trim()) {
-      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
-    }
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
 
     const totalQuery = profileId
       ? db
@@ -842,6 +898,10 @@ export const getOrgCourses = async ({
   profileId,
   courseIds,
   search,
+  type,
+  publishedStatus,
+  sortKey,
+  order,
   page = 1,
   limit = 20
 }: GetOrgCoursesOptions): Promise<GetOrgCoursesResult> => {
@@ -856,17 +916,8 @@ export const getOrgCourses = async ({
       };
     }
 
-    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
-
-    if (courseIds && courseIds.length > 0) {
-      conditions.push(inArray(schema.course.id, courseIds));
-    }
-
-    if (search?.trim()) {
-      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
-    }
-
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search });
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
+    const total = await countOrgCourses({ orgId, profileId, courseIds, search, type, publishedStatus });
 
     const baseQuery = db
       .select({
@@ -899,7 +950,7 @@ export const getOrgCourses = async ({
 
     const result = await itemsQuery
       .groupBy(schema.course.id)
-      .orderBy(desc(schema.course.createdAt))
+      .orderBy(orgCourseListOrderBy(sortKey, order))
       .limit(limit)
       .offset((page - 1) * limit);
 

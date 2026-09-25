@@ -3063,7 +3063,8 @@
       "tags": "Etiquetas",
       "empty_tags": "Nenhuma tag disponível"
     },
-    "page_subtitle": "Onde lições viram cursos e cursos viram matrículas."
+    "page_subtitle": "Onde lições viram cursos e cursos viram matrículas.",
+    "load_more": "Carregar mais"
   },
   "ai": {
     "help_me": "Ajude-me a escrever",

@@ -1965,6 +1965,7 @@
     "page_subtitle": "Where lessons turn into courses and courses turn into enrollments.",
     "heading_button": "Create Course",
     "search_placeholder": "Find Course",
+    "load_more": "Load more",
     "tag_filters": {
       "filter": "Filter",
       "active": "Active filters",
