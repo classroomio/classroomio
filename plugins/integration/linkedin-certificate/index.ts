@@ -14,6 +14,12 @@ export function linkedinCertificate(options: LinkedInCertificateOptions = {}): P
     name: 'LinkedIn Certificate Integration',
     version: '1.0.0',
     category: 'integration',
+    activation: {
+      kind: 'org-capability',
+      capabilityId: 'linkedin_certificate_sharing',
+      nameKey: 'plugins.linkedin_certificate_sharing.name',
+      descriptionKey: 'plugins.linkedin_certificate_sharing.description'
+    },
     description:
       options.description ??
       'Allows students to attach their earned ClassroomIO certificates directly to their LinkedIn profile.',

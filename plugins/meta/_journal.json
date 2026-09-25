@@ -1,0 +1,61 @@
+{
+  "version": "1",
+  "dialect": "classroomio-plugins",
+  "entries": [
+    {
+      "idx": 0,
+      "id": "integration_linkedin_certificate",
+      "name": "LinkedIn Certificate Integration",
+      "version": "1.0.0",
+      "category": "integration",
+      "description": "Allows students to attach their earned ClassroomIO certificates directly to their LinkedIn profile.",
+      "path": "plugins/integration/linkedin-certificate",
+      "activation": {
+        "kind": "org-capability",
+        "capabilityId": "linkedin_certificate_sharing",
+        "nameKey": "plugins.linkedin_certificate_sharing.name",
+        "descriptionKey": "plugins.linkedin_certificate_sharing.description"
+      },
+      "slots": ["certificate.actions"],
+      "when": 1789200000000
+    },
+    {
+      "idx": 1,
+      "id": "certificate_modern_gold",
+      "name": "Modern Gold Certificate",
+      "version": "1.0.0",
+      "category": "certificate",
+      "description": "A prestigious dark slate and gold certificate template with custom typography and official seal.",
+      "path": "plugins/certificate/certificate-modern-gold",
+      "activation": {
+        "kind": "always"
+      },
+      "renderers": ["modern_gold"],
+      "when": 1789200000000
+    },
+    {
+      "idx": 2,
+      "id": "certificate_studio",
+      "name": "Certificate Studio",
+      "version": "1.0.0",
+      "category": "certificate",
+      "description": "Interactive visual certificate designer and template hub for organizations.",
+      "path": "plugins/certificate/certificate-studio",
+      "activation": {
+        "kind": "org-capability",
+        "capabilityId": "certificate_studio",
+        "nameKey": "plugins.certificate_studio.name",
+        "descriptionKey": "plugins.certificate_studio.description"
+      },
+      "routes": ["/", "/editor"],
+      "pluginNav": {
+        "path": "certificate-studio",
+        "titleKey": "certificate_studio.sidebar_title",
+        "icon": "award",
+        "group": "tools",
+        "adminOnly": true
+      },
+      "when": 1789200000000
+    }
+  ]
+}

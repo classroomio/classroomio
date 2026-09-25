@@ -1,120 +1,125 @@
-# ClassroomIO Plugins
+# ClassroomIO plugins
 
-Welcome to the ClassroomIO plugin ecosystem. This directory contains official and modular extensions for ClassroomIO.
+This directory contains trusted, in-tree extensions that are compiled and deployed with ClassroomIO.
 
-> **CRITICAL ARCHITECTURAL REQUIREMENT**:  
-> All plugins in this directory must strictly comply with **[ADR 001: Plugin Architecture & Implementation Conventions](../../prd/plugin-system/adr-001-plugin-conventions.md)**.  
-> Any plugin that violates these conventions will fail build and CI test suites.
+## Architecture
 
----
+The plugin system separates three concepts:
 
-## Directory Structure
+- A **code plugin** is a TypeScript module registered at build time.
+- An **organization capability** is an optional per-organization switch declared by a code plugin.
+- Plugin-owned records, such as Certificate Studio presets, are ordinary domain data. They are not plugins.
 
-Plugins are organized strictly by category:
+`configuredPlugins` in [`plugins/index.ts`](./index.ts) is the single connection point for code plugins. Both
+`classroomio.config.ts` and the API consume this array. A plugin that is removed from the array is no longer shown
+to cloud users, cannot be activated, and cannot be authorized by a stale capability row.
 
-```text
-plugins/
-├── activity/                  # Custom learning activity modules (flashcards, roleplay, etc.)
-├── block/                     # Dashboard & sidebar widgets
-├── certificate/               # Custom certificate designs & credential templates
-│   └── certificate-modern-gold/
-├── enrollment/                # Custom admission & registration flows
-├── integration/               # Third-party integrations & event responders
-│   └── linkedin-certificate/
-└── landing/                   # Custom landing page themes & marketing sections
-```
+## Supported plugin contributions
 
-## Enabled Plugins: One List for Dashboard and API
+The current production contract supports:
 
-`configuredPlugins` in `plugins/index.ts` is the single list of plugins enabled by this repository. Both
-`classroomio.config.ts` and the API runtime consume it because the dashboard and API run in separate processes.
+- organization capability metadata and activation;
+- lazy Svelte components in named UI slots;
+- lazy dashboard pages under `/org/[slug]/plugins/[plugin-path]`;
+- sidebar navigation for plugin pages;
+- declarative certificate renderer definitions;
+- API route contributions registered in `apps/api/src/routes/plugins/api-route-registry.ts`.
 
-Add or remove a plugin in this one registry. Do not add a second list or plugin-specific wiring to the dashboard,
-API, or root configuration. This prevents the dashboard from showing a plugin that the API has not loaded for server
-hooks or certificate rendering.
+Lifecycle hooks, event buses, plugin-owned entity repositories, activity types, permission scopes, privacy
+manifests, and completion/grade write-back are future design work. Do not advertise or implement against those
+surfaces until a production runtime exists for them.
 
-```typescript
-export const configuredPlugins: PluginDefinition[] = [linkedinCertificate(), modernGoldCertificate()];
-```
+## Adding a plugin
 
----
+Create a category folder and return a manifest from `definePlugin()`:
 
-## The 10 Enforced Plugin Conventions
-
-Before submitting a plugin, ensure it meets the following criteria:
-
-1. **Category Folder**: Must reside in one of the six categories (`activity`, `block`, `integration`, `certificate`, `landing`, `enrollment`).
-2. **Factory Function Entrypoint**: Every plugin must export a named factory function returning `definePlugin({...})` and be re-exported in `plugins/index.ts`.
-3. **Valid ID**: Must match `/^[a-z][a-z0-9]*(?:_[a-z0-9]+)+$/` and start with `{category}_` (e.g. `certificate_modern_gold`).
-4. **Valid SemVer**: `version` must be valid semantic versioning (e.g. `'1.0.0'`).
-5. **Dynamic UI Loaders**: All slots must use lazy dynamic loaders: `() => import('./components/my-widget.svelte')`. Never use static imports for slot components.
-6. **Registered Slots & Hooks**: Only use slot names from `SLOT_NAMES` and hook names from `HOOK_NAMES`.
-7. **Storage via `defineEntity`**: Never write raw DB SQL. Declare custom models using `defineEntity()`.
-8. **Mandatory Privacy Manifest**: If your plugin defines `entities`, you **must** supply a `privacy` block with `onDeleteUser` and `onExportUser` handlers.
-9. **Scoped Permissions**: Declare only permitted scopes from `PERMISSION_SCOPES`.
-10. **Automated Tests**: Every plugin must include unit tests verifying its manifest and functionality.
-
----
-
-## Quick Example: Creating an Integration Plugin
-
-`plugins/integration/my-integration/index.ts`:
-
-```typescript
+```ts
 import { definePlugin, type PluginDefinition } from '@cio/sdk';
 
-export interface MyServiceOptions {
-  webhookUrl?: string;
-}
-
-export function myService(options: MyServiceOptions = {}): PluginDefinition {
+export function myIntegration(): PluginDefinition {
   return definePlugin({
     id: 'integration_my_service',
-    name: 'My External Service',
+    name: 'My service',
     version: '1.0.0',
     category: 'integration',
-    description: 'Connects course completion events to an external webhook.',
-    slots: {
-      'certificate.actions': () => import('./components/action-button.svelte')
+    description: 'Adds an action to issued certificates.',
+    activation: {
+      kind: 'org-capability',
+      capabilityId: 'my_service',
+      nameKey: 'plugins.my_service.name',
+      descriptionKey: 'plugins.my_service.description'
     },
-    on: {
-      'lesson.completed': async (payload, ctx) => {
-        // Handle completion event safely
-      }
+    slots: {
+      'certificate.actions': () => import('./components/my-action.svelte')
     }
   });
 }
-
-export default myService;
 ```
 
-Export it in `plugins/index.ts`:
+Then export the factory and add its result to `configuredPlugins`:
 
-```typescript
-export { myService, type MyServiceOptions } from './integration/my-integration';
-
-export const configuredPlugins: PluginDefinition[] = [myService()];
+```ts
+export const configuredPlugins: PluginDefinition[] = [myIntegration()];
 ```
 
-Consume it in `classroomio.config.ts`:
+Plugins without an `activation` block are always active. Capability-gated plugins must supply translated name and
+description keys in their activation metadata.
 
-```typescript
-import { configuredPlugins } from './plugins';
+## Plugin registry and metadata ledger
 
-export default defineConfig({
-  plugins: configuredPlugins
-});
+Similar to the database migration journal in `packages/db/src/migrations/meta/_journal.json`, all configured plugins in the repository are recorded in [`plugins/meta/_journal.json`](./meta/_journal.json).
+
+Each journal entry records:
+- `idx` & `when`: deterministic entry index and timestamp
+- `id`: unique plugin identifier (e.g. `certificate_studio`)
+- `name` & `version`: SemVer metadata
+- `category`: plugin category (`certificate`, `integration`, etc.)
+- `path`: source directory relative to the repository
+- `activation`: capability rule (`always` vs `org-capability`)
+- `contributions`: registered routes, UI slots, navigation items, or renderer templates
+
+## UI routes
+
+Plugin page loaders are scoped to the plugin manifest, so identical subpaths do not collide:
+
+```ts
+pluginNav: {
+  titleKey: 'my_plugin.sidebar_title',
+  path: 'my-plugin',
+  icon: 'puzzle',
+  group: 'tools',
+  adminOnly: true
+},
+routes: {
+  '/': () => import('./components/plugin-home.svelte'),
+  '/settings': () => import('./components/plugin-settings.svelte')
+}
 ```
 
----
+The dashboard host resolves these at `/org/[slug]/plugins/my-plugin` and
+`/org/[slug]/plugins/my-plugin/settings`. Keep page-specific sizing and overflow behavior in the plugin page
+component, not in shared dashboard shells.
 
-## Testing Plugins
+## API routes
 
-Run SDK and dogfood tests:
+API routers remain statically composed so Hono can preserve exact RPC client types. Register a router in
+`apps/api/src/routes/plugins/api-route-registry.ts` and mount the registry entry in the aggregate plugin router.
+The registry guard derives availability from `configuredPlugins`, so removing the plugin from the single
+connection point also makes its API endpoints unavailable.
+
+## Validation and tests
+
+- IDs use `{category}_{slug}` with lowercase letters, numbers, and single underscores.
+- Versions use semantic versioning.
+- UI registrations use dynamic import loaders.
+- Slots must be declared in `SLOT_NAMES`.
+- Each plugin should test its manifest and domain behavior.
+
+Run the SDK and plugin dogfood tests with:
 
 ```bash
 pnpm --filter @cio/sdk test
 ```
 
-For more details on plugin lifecycle, entities, and slot contracts, refer to the full specification:  
-👉 **[Read ADR 001: Plugin Conventions](../../prd/plugin-system/adr-001-plugin-conventions.md)**
+The current implementation boundaries and deferred work are documented in
+[`prd/plugin-system/implementation-remediation-plan.md`](../prd/plugin-system/implementation-remediation-plan.md).

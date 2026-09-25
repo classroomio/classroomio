@@ -8,6 +8,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "svelte": "./index.ts",
       "default": "./dist/index.js"
     },
     "./components/linkedin-certificate-button": {
@@ -21,7 +22,10 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@cio/sdk": "workspace:*"
+    "@cio/certificates": "workspace:*",
+    "@cio/sdk": "workspace:*",
+    "@cio/ui": "workspace:*",
+    "@lucide/svelte": "^0.562.0"
   },
   "devDependencies": {
     "@cio/tsconfig": "workspace:*",
