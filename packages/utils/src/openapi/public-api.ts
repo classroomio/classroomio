@@ -170,7 +170,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/cohorts/{cohortId}/newsfeed': 'List cohort newsfeed',
   'POST /public-api/v1/cohorts/{cohortId}/newsfeed': 'Create a cohort newsfeed post',
   'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Update a cohort newsfeed post',
-  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/react': 'Update reaction on a cohort newsfeed post',
+  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/react': 'Set your reaction on a cohort newsfeed post',
   'DELETE /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Delete a cohort newsfeed post',
   'GET /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comments': 'List comments on a cohort newsfeed post',
   'POST /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comment': 'Add a comment to a cohort newsfeed post',
@@ -181,7 +181,17 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Get a cohort goal',
   'PUT /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Update a cohort goal',
   'DELETE /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Delete a cohort goal',
-  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/archive': 'Archive a cohort goal'
+  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/archive': 'Archive a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/evaluate': 'Re-evaluate a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/evaluate-all': 'Re-evaluate all cohort goals',
+  'GET /public-api/v1/cohorts/goals/overview': 'Get the organization goals overview',
+  'GET /public-api/v1/cohorts/my/goals': 'List your cohort goal assignments',
+  'GET /public-api/v1/cohorts/enrolled': 'List cohorts you are enrolled in',
+  'POST /public-api/v1/cohorts/{cohortId}/invite': 'Invite students to a cohort by email',
+  'POST /public-api/v1/cohorts/{cohortId}/invite/assign': 'Assign existing students to a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
+  'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
+  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -215,6 +225,10 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Cohort Goals',
     description: 'Create and manage cohort progress goals.'
+  },
+  {
+    name: 'Public API Cohort Invites',
+    description: 'Invite students to a cohort and manage its join link.'
   }
 ];
 

@@ -25,6 +25,7 @@ import {
   deleteCohortNewsfeedComment as deleteCohortNewsfeedCommentQuery,
   getEnrolledCohortsByProfile,
   getCohortById,
+  getCohortMemberByEmail,
   getCohortMemberByProfileId,
   getCohortMembers,
   getCohortNewsfeed,
@@ -242,6 +243,20 @@ export async function listCohortMembersPage(cohortId: string, page: TCohortListP
 }
 
 export async function addCohortMembers(cohortId: string, data: TAddCohortMembers) {
+  const results = await addCohortMembersSettled(cohortId, data);
+
+  const added = results
+    .filter((r) => r.status === 'fulfilled')
+    .map((r) => (r as PromiseFulfilledResult<unknown>).value);
+  const errors = results
+    .filter((r) => r.status === 'rejected')
+    .map((r) => (r as PromiseRejectedResult).reason?.message || 'Unknown error');
+
+  return { added, errors };
+}
+
+/** One settled result per `data.members` entry, in request order. */
+export async function addCohortMembersSettled(cohortId: string, data: TAddCohortMembers) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -253,16 +268,22 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
       (courseGroup) => courseGroup.groupId
     );
 
-    const results = await Promise.allSettled(
+    return await Promise.allSettled(
       data.members.map(async ({ profileId: providedProfileId, email, roleId }) => {
         const profile = !providedProfileId && email ? await getProfileByEmail(email) : null;
         const profileId = providedProfileId ?? profile?.id ?? null;
         const normalizedEmail = email?.toLowerCase().trim() ?? profile?.email ?? null;
 
-        if (profileId) {
-          const existing = await getCohortMemberByProfileId(cohortId, profileId);
+        if (profileId || normalizedEmail) {
+          const existing = profileId
+            ? await getCohortMemberByProfileId(cohortId, profileId)
+            : await getCohortMemberByEmail(cohortId, normalizedEmail!);
           if (existing) {
-            throw new AppError(`${email} is already a member of this cohort`, ErrorCodes.MEMBER_ALREADY_IN_COHORT, 409);
+            throw new AppError(
+              `${email ?? profileId} is already a member of this cohort`,
+              ErrorCodes.MEMBER_ALREADY_IN_COHORT,
+              409
+            );
           }
         }
 
@@ -336,15 +357,6 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
         return transactionResult.member;
       })
     );
-
-    const added = results
-      .filter((r) => r.status === 'fulfilled')
-      .map((r) => (r as PromiseFulfilledResult<unknown>).value);
-    const errors = results
-      .filter((r) => r.status === 'rejected')
-      .map((r) => (r as PromiseRejectedResult).reason?.message || 'Unknown error');
-
-    return { added, errors };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

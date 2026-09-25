@@ -36,12 +36,19 @@ export const ZArchiveCohortGoalToolInput = ZPublicApiCohortGoalParam;
 
 export const ZDeleteCohortGoalToolInput = ZPublicApiCohortGoalParam;
 
+export const ZEvaluateCohortGoalToolInput = ZPublicApiCohortGoalParam;
+
+export const ZEvaluateAllCohortGoalsToolInput = ZPublicApiCohortParam;
+
 const listCohortGoalsShape = ZListCohortGoalsToolInput.shape as unknown as ZodRawShapeCompat;
 const createCohortGoalShape = ZCreateCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
 const getCohortGoalShape = ZGetCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
 const updateCohortGoalShape = ZUpdateCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
 const archiveCohortGoalShape = ZArchiveCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
 const deleteCohortGoalShape = ZDeleteCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
+const evaluateCohortGoalShape = ZEvaluateCohortGoalToolInput.shape as unknown as ZodRawShapeCompat;
+const evaluateAllCohortGoalsShape = ZEvaluateAllCohortGoalsToolInput.shape as unknown as ZodRawShapeCompat;
+const paginationShape = ZPublicApiPaginationQuery.shape as unknown as ZodRawShapeCompat;
 
 const CREATE_COHORT_GOAL_DESCRIPTION = `Create a progress goal for a cohort. ${COHORT_TEAM_RULE}
 
@@ -123,6 +130,52 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
     async (args) => {
       const { cohortId, goalId } = ZDeleteCohortGoalToolInput.parse(args);
       const result = await apiClient.deleteCohortGoal(cohortId, goalId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'evaluate_cohort_goal',
+    `Re-evaluate one goal's learner statuses now instead of waiting for the scheduled run. Returns the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+    evaluateCohortGoalShape,
+    WRITE,
+    async (args) => {
+      const { cohortId, goalId } = ZEvaluateCohortGoalToolInput.parse(args);
+      const result = await apiClient.evaluateCohortGoal(cohortId, goalId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'evaluate_all_cohort_goals',
+    `Re-evaluate every active goal in a cohort now. Returns the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+    evaluateAllCohortGoalsShape,
+    WRITE,
+    async (args) => {
+      const { cohortId } = ZEvaluateAllCohortGoalsToolInput.parse(args);
+      const result = await apiClient.evaluateAllCohortGoals(cohortId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'get_org_goals_overview',
+    `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status and on-track percentage. ${PAGINATED} The API key creator must be an org admin or tutor, otherwise 403.`,
+    paginationShape,
+    READ_ONLY,
+    async (args) => {
+      const result = await apiClient.getOrgGoalsOverview(ZPublicApiPaginationQuery.parse(args));
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'list_my_cohort_goals',
+    `List the API key creator's own goal assignments across their cohorts in this organization, with status and progress. ${PAGINATED}`,
+    paginationShape,
+    READ_ONLY,
+    async (args) => {
+      const result = await apiClient.listMyCohortGoals(ZPublicApiPaginationQuery.parse(args));
       return jsonContent(result);
     }
   );

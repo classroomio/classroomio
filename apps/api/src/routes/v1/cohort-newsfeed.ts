@@ -5,9 +5,13 @@ import {
   ZPublicApiCohortParam,
   ZPublicApiCreateCohortNewsfeed,
   ZPublicApiCreateCohortNewsfeedComment,
+  ZPublicApiCohortNewsfeedCommentListItemResponse,
+  ZPublicApiCohortNewsfeedCommentResponse,
+  ZPublicApiCohortNewsfeedPageResponse,
+  ZPublicApiCohortNewsfeedResponse,
   ZPublicApiPaginationQuery,
-  ZPublicApiUpdateCohortNewsfeed,
-  ZPublicApiUpdateCohortReaction
+  ZPublicApiSetCohortReaction,
+  ZPublicApiUpdateCohortNewsfeed
 } from '@cio/utils/validation/public-api';
 import {
   createPublicApiCohortNewsfeedCommentService,
@@ -16,21 +20,18 @@ import {
   deletePublicApiCohortNewsfeedService,
   listPublicApiCohortNewsfeedCommentsService,
   listPublicApiCohortNewsfeedService,
-  updatePublicApiCohortNewsfeedReactionService,
+  setPublicApiCohortNewsfeedReactionService,
   updatePublicApiCohortNewsfeedService
 } from '@api/services/v1/cohort-newsfeed';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import {
-  COHORT_MEMBER_RULE,
-  COHORT_TEAM_RULE,
-  NewsfeedPageResponse,
-  PAGINATION_NOTE,
-  cohortForbiddenResponses
-} from './cohort-route-docs';
-import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+
+const FeedResponse = itemResponse(ZPublicApiCohortNewsfeedResponse);
+const CommentResponse = itemResponse(ZPublicApiCohortNewsfeedCommentResponse);
 
 export const v1CohortNewsfeedRouter = new Hono()
   .get(
@@ -39,7 +40,7 @@ export const v1CohortNewsfeedRouter = new Hono()
       description: `List a cohort newsfeed, newest first. Cursor-paginated: pass data.nextCursor back as cursor to get the next page; limit defaults to 10, max 50. ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        200: jsonResponse('Newsfeed returned successfully', NewsfeedPageResponse),
+        200: jsonResponse('Newsfeed returned successfully', itemResponse(ZPublicApiCohortNewsfeedPageResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.member,
@@ -68,7 +69,7 @@ export const v1CohortNewsfeedRouter = new Hono()
       description: `Create a cohort newsfeed post, authored by the automation actor. ${COHORT_TEAM_RULE} The actor must also be a member of the cohort to author a post; an org admin who is not a member gets 403.`,
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        201: jsonResponse('Newsfeed post created successfully', ItemResponse),
+        201: jsonResponse('Newsfeed post created successfully', FeedResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: {
@@ -100,7 +101,7 @@ export const v1CohortNewsfeedRouter = new Hono()
       description: `Update a cohort newsfeed post's content or pinned state. Send only the fields to change. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        200: jsonResponse('Newsfeed post updated successfully', ItemResponse),
+        200: jsonResponse('Newsfeed post updated successfully', FeedResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -126,25 +127,26 @@ export const v1CohortNewsfeedRouter = new Hono()
   .put(
     '/:feedId/react',
     describeRoute({
-      description: `Replace the reaction state on a cohort newsfeed post. The payload is the full desired reaction object (arrays of cohort member ids per emoji), not a toggle. ${COHORT_MEMBER_RULE}`,
+      description:
+        "Set the automation actor's own reaction on a cohort newsfeed post: one of clap, smile, thumbsup, thumbsdown, or null to remove it. Only the actor's reaction changes; other members' reactions are untouched. Setting the same value again is a no-op, so retries are safe. The automation actor (the key creator) must be a member of the cohort, or this fails with 403; being an org admin is not enough.",
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        200: jsonResponse('Reaction updated successfully', ItemResponse),
+        200: jsonResponse('Reaction set successfully', FeedResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: cohortForbiddenResponses.member,
+        403: { description: 'The key lacks the public_api:* scope, or the actor is not a member of the cohort' },
         404: { description: 'Cohort or newsfeed post not found' }
       }
     }),
     validator('param', ZPublicApiCohortNewsfeedParam),
-    validator('json', ZPublicApiUpdateCohortReaction),
+    validator('json', ZPublicApiSetCohortReaction),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
         const params = c.req.valid('param');
         const payload = c.req.valid('json');
-        const feed = await updatePublicApiCohortNewsfeedReactionService(orgId, actorId, params, payload);
+        const feed = await setPublicApiCohortNewsfeedReactionService(orgId, actorId, params, payload);
 
         return c.json({ success: true, data: feed }, 200);
       } catch (error) {
@@ -158,7 +160,7 @@ export const v1CohortNewsfeedRouter = new Hono()
       description: `Permanently delete a cohort newsfeed post and its comments. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        200: jsonResponse('Newsfeed post deleted successfully', ItemResponse),
+        200: jsonResponse('Newsfeed post deleted successfully', FeedResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -185,7 +187,10 @@ export const v1CohortNewsfeedRouter = new Hono()
       description: `List the comments on a cohort newsfeed post, oldest first. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        200: jsonResponse('Comments returned successfully', PaginatedListResponse),
+        200: jsonResponse(
+          'Comments returned successfully',
+          paginatedResponse(ZPublicApiCohortNewsfeedCommentListItemResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.member,
@@ -214,7 +219,7 @@ export const v1CohortNewsfeedRouter = new Hono()
       description: `Add a comment to a cohort newsfeed post, authored by the automation actor. The automation actor (the key creator) must be a member of the cohort, or this fails with 403; being an org admin is not enough.`,
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        201: jsonResponse('Comment created successfully', ItemResponse),
+        201: jsonResponse('Comment created successfully', CommentResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.member,
@@ -244,7 +249,7 @@ export const v1CohortNewsfeedRouter = new Hono()
         'Permanently delete a comment from a cohort newsfeed post. The automation actor (the key creator) must be the comment author, a cohort tutor/admin, or an org admin, or this fails with 403.',
       tags: ['Public API Cohort Newsfeed'],
       responses: {
-        200: jsonResponse('Comment deleted successfully', ItemResponse),
+        200: jsonResponse('Comment deleted successfully', CommentResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: {

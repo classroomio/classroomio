@@ -1,11 +1,14 @@
 import {
   ZPublicApiAddCohortMembers,
   ZPublicApiAddCourseToCohort,
+  ZPublicApiAssignStudentsToCohort,
   ZPublicApiCohortCourseParam,
   ZPublicApiCohortMemberParam,
   ZPublicApiCohortParam,
   ZPublicApiCreateCohort,
+  ZPublicApiInviteStudentsToCohort,
   ZPublicApiPaginationQuery,
+  ZPublicApiSetCohortInviteLinkRevoked,
   ZPublicApiUpdateCohort,
   ZPublicApiUpdateCohortMember
 } from '@cio/utils/validation/public-api';
@@ -56,6 +59,20 @@ export const ZAddCohortCourseToolInput = ZPublicApiAddCourseToCohort.extend({
 
 export const ZRemoveCohortCourseToolInput = ZPublicApiCohortCourseParam;
 
+export const ZInviteStudentsToCohortToolInput = ZPublicApiInviteStudentsToCohort.extend({
+  cohortId: ZPublicApiCohortParam.shape.cohortId
+});
+
+export const ZAssignStudentsToCohortToolInput = ZPublicApiAssignStudentsToCohort.extend({
+  cohortId: ZPublicApiCohortParam.shape.cohortId
+});
+
+export const ZCohortInviteLinkToolInput = ZPublicApiCohortParam;
+
+export const ZSetCohortInviteLinkRevokedToolInput = ZPublicApiSetCohortInviteLinkRevoked.extend({
+  cohortId: ZPublicApiCohortParam.shape.cohortId
+});
+
 const listOrgCohortsShape = ZListOrgCohortsToolInput.shape as unknown as ZodRawShapeCompat;
 const createCohortShape = ZCreateCohortToolInput.shape as unknown as ZodRawShapeCompat;
 const getCohortShape = ZGetCohortToolInput.shape as unknown as ZodRawShapeCompat;
@@ -68,6 +85,10 @@ const deleteCohortMemberShape = ZDeleteCohortMemberToolInput.shape as unknown as
 const listCohortCoursesShape = ZListCohortCoursesToolInput.shape as unknown as ZodRawShapeCompat;
 const addCohortCourseShape = ZAddCohortCourseToolInput.shape as unknown as ZodRawShapeCompat;
 const removeCohortCourseShape = ZRemoveCohortCourseToolInput.shape as unknown as ZodRawShapeCompat;
+const inviteStudentsToCohortShape = ZInviteStudentsToCohortToolInput.shape as unknown as ZodRawShapeCompat;
+const assignStudentsToCohortShape = ZAssignStudentsToCohortToolInput.shape as unknown as ZodRawShapeCompat;
+const cohortInviteLinkShape = ZCohortInviteLinkToolInput.shape as unknown as ZodRawShapeCompat;
+const setCohortInviteLinkRevokedShape = ZSetCohortInviteLinkRevokedToolInput.shape as unknown as ZodRawShapeCompat;
 
 export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
@@ -138,7 +159,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'add_cohort_members',
-    `Add one or more members to a cohort, each with a role. A profileId must belong to someone already in the organization; an email can be anyone, and students added by email join the organization. Returns { added, errors } with one error message per member that failed. ${COHORT_TEAM_RULE}`,
+    `Create cohort memberships directly, each with a role. This sends no invitation email; use invite_students_to_cohort for the dashboard invite flow. A profileId must belong to someone already in the organization; an email is linked to its existing profile if there is one. Returns { added, errors }, where each error has the entry's index, email, profileId, code, and message. Retrying is safe: existing members fail with code MEMBER_ALREADY_IN_COHORT. ${COHORT_TEAM_RULE}`,
     addCohortMembersShape,
     WRITE,
     async (args) => {
@@ -204,6 +225,77 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
     async (args) => {
       const { cohortId, courseId } = ZRemoveCohortCourseToolInput.parse(args);
       const result = await apiClient.removeCohortCourse(cohortId, courseId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'list_my_enrolled_cohorts',
+    `List the cohorts the API key creator is enrolled in within this organization, with their role in each. ${PAGINATED}`,
+    listOrgCohortsShape,
+    READ_ONLY,
+    async (args) => {
+      const result = await apiClient.listMyEnrolledCohorts(ZPublicApiPaginationQuery.parse(args));
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'invite_students_to_cohort',
+    `Invite students to a cohort by email, like the dashboard invite modal. recipientCsv is a CSV of emails (optionally with names). New emails get a 7-day organization invite that joins the cohort on acceptance; existing students are enrolled directly; staff are skipped. With sendEmail true (default), invite and welcome emails are queued. Returns per-row statuses. ${COHORT_TEAM_RULE}`,
+    inviteStudentsToCohortShape,
+    WRITE,
+    async (args) => {
+      const { cohortId, ...payload } = ZInviteStudentsToCohortToolInput.parse(args);
+      const result = await apiClient.inviteStudentsToCohort(cohortId, payload);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'assign_students_to_cohort',
+    `Add existing students from the organization's audience to a cohort. Profiles that are not students in this organization are skipped. With sendEmail true (default), a welcome email is queued for each newly assigned student. ${COHORT_TEAM_RULE}`,
+    assignStudentsToCohortShape,
+    WRITE,
+    async (args) => {
+      const { cohortId, ...payload } = ZAssignStudentsToCohortToolInput.parse(args);
+      const result = await apiClient.assignStudentsToCohort(cohortId, payload);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'get_cohort_invite_link',
+    `Get the cohort's shareable student join link, or null if none has been created. ${COHORT_TEAM_RULE}`,
+    cohortInviteLinkShape,
+    READ_ONLY,
+    async (args) => {
+      const { cohortId } = ZCohortInviteLinkToolInput.parse(args);
+      const result = await apiClient.getCohortInviteLink(cohortId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'create_cohort_invite_link',
+    `Get the cohort's shareable student join link, creating it on the first call. ${COHORT_TEAM_RULE}`,
+    cohortInviteLinkShape,
+    { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
+    async (args) => {
+      const { cohortId } = ZCohortInviteLinkToolInput.parse(args);
+      const result = await apiClient.createCohortInviteLink(cohortId);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'set_cohort_invite_link_revoked',
+    `Disable (isRevoked true) or re-enable (isRevoked false) the cohort's join link. ${COHORT_TEAM_RULE}`,
+    setCohortInviteLinkRevokedShape,
+    { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
+    async (args) => {
+      const { cohortId, ...payload } = ZSetCohortInviteLinkRevokedToolInput.parse(args);
+      const result = await apiClient.setCohortInviteLinkRevoked(cohortId, payload);
       return jsonContent(result);
     }
   );

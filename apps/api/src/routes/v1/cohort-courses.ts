@@ -1,6 +1,8 @@
 import {
   ZPublicApiAddCourseToCohort,
+  ZPublicApiCohortCourseListItemResponse,
   ZPublicApiCohortCourseParam,
+  ZPublicApiCohortCourseResponse,
   ZPublicApiCohortParam,
   ZPublicApiPaginationQuery
 } from '@cio/utils/validation/public-api';
@@ -14,7 +16,9 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
-import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+
+const CohortCourseResponse = itemResponse(ZPublicApiCohortCourseResponse);
 
 export const v1CohortCoursesRouter = new Hono()
   .get(
@@ -23,7 +27,10 @@ export const v1CohortCoursesRouter = new Hono()
       description: `List the courses linked to a cohort. If the automation actor is a student in the cohort, only published courses are returned. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Courses'],
       responses: {
-        200: jsonResponse('Cohort courses returned successfully', PaginatedListResponse),
+        200: jsonResponse(
+          'Cohort courses returned successfully',
+          paginatedResponse(ZPublicApiCohortCourseListItemResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.member,
@@ -52,7 +59,7 @@ export const v1CohortCoursesRouter = new Hono()
       description: `Link a course from your organization to a cohort. Existing cohort students are enrolled in the course. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Courses'],
       responses: {
-        201: jsonResponse('Course added to cohort', ItemResponse),
+        201: jsonResponse('Course added to cohort', CohortCourseResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -82,7 +89,7 @@ export const v1CohortCoursesRouter = new Hono()
       description: `Unlink a course from a cohort. The course itself is not deleted. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Courses'],
       responses: {
-        200: jsonResponse('Course removed from cohort', ItemResponse),
+        200: jsonResponse('Course removed from cohort', CohortCourseResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,

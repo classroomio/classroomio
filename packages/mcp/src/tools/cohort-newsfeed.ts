@@ -6,8 +6,8 @@ import {
   ZPublicApiCreateCohortNewsfeed,
   ZPublicApiCreateCohortNewsfeedComment,
   ZPublicApiPaginationQuery,
-  ZPublicApiUpdateCohortNewsfeed,
-  ZPublicApiUpdateCohortReaction
+  ZPublicApiSetCohortReaction,
+  ZPublicApiUpdateCohortNewsfeed
 } from '@cio/utils/validation/public-api';
 
 import type { ClassroomIoApiClient } from '../api-client';
@@ -36,7 +36,7 @@ export const ZUpdateCohortNewsfeedPostToolInput = ZPublicApiUpdateCohortNewsfeed
   feedId: ZPublicApiCohortNewsfeedParam.shape.feedId
 });
 
-export const ZUpdateCohortNewsfeedReactionToolInput = ZPublicApiUpdateCohortReaction.extend({
+export const ZUpdateCohortNewsfeedReactionToolInput = ZPublicApiSetCohortReaction.extend({
   cohortId: ZPublicApiCohortNewsfeedParam.shape.cohortId,
   feedId: ZPublicApiCohortNewsfeedParam.shape.feedId
 });
@@ -106,12 +106,12 @@ export function registerCohortNewsfeedTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'update_cohort_newsfeed_reaction',
-    `Replace the reaction state on a cohort newsfeed post. The reaction field is the full desired state (arrays of cohort member ids per emoji), not a toggle of one reaction. ${COHORT_MEMBER_RULE}`,
+    "Set the API key creator's own reaction on a cohort newsfeed post: clap, smile, thumbsup, thumbsdown, or null to remove it. Other members' reactions are untouched, and repeating the same value is a no-op. The key creator must be a member of the cohort (being an org admin is not enough), otherwise 403.",
     updateCohortNewsfeedReactionShape,
     { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     async (args) => {
       const { cohortId, feedId, ...payload } = ZUpdateCohortNewsfeedReactionToolInput.parse(args);
-      const result = await apiClient.updateCohortNewsfeedReaction(cohortId, feedId, payload);
+      const result = await apiClient.setCohortNewsfeedReaction(cohortId, feedId, payload);
       return jsonContent(result);
     }
   );

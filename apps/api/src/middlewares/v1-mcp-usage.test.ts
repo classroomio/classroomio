@@ -70,6 +70,33 @@ describe('v1McpUsageMiddleware', () => {
     );
   });
 
+  it('maps the invite routes mounted at /:cohortId, including PATCH, and the root-level goal routes', async () => {
+    const invitesRouter = new Hono()
+      .post('/invite', (c) => c.json({ success: true }, 201))
+      .patch('/invite-link', (c) => c.json({ success: true }, 200));
+    const cohortsRouter = new Hono()
+      .get('/goals/overview', (c) => c.json({ success: true }, 200))
+      .route('/:cohortId', invitesRouter);
+    const v1Router = new Hono()
+      .use('*', async (c: Context, next: Next) => {
+        c.set('automationKey', { id: 'key-id', organizationId: 'org-id', type: 'mcp' } as never);
+        await next();
+      })
+      .use('*', v1McpUsageMiddleware)
+      .route('/cohorts', cohortsRouter);
+    const app = new Hono().route('/public-api/v1', v1Router);
+
+    await app.request('/public-api/v1/cohorts/cohort-id/invite', { method: 'POST' });
+    await app.request('/public-api/v1/cohorts/cohort-id/invite-link', { method: 'PATCH' });
+    await app.request('/public-api/v1/cohorts/goals/overview', { method: 'GET' });
+
+    expect(mocks.recordUsage.mock.calls.map(([, toolName, category, cost]) => [toolName, category, cost])).toEqual([
+      ['invite_students_to_cohort', 'write', 1],
+      ['set_cohort_invite_link_revoked', 'write', 1],
+      ['get_org_goals_overview', 'read', 0]
+    ]);
+  });
+
   it('falls back to the method+route action with zero credits for an unmapped route', async () => {
     const app = buildApp();
 

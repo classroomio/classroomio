@@ -5,7 +5,7 @@ import {
   isCohortMember,
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
-import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
+import { getOrganizationMemberIdByOrgAndProfile, getOrganizationMemberRoleId } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
@@ -15,6 +15,16 @@ export function toPublicApiPagination(page: number, limit: number, total: number
   const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
 
   return { page, limit, total, totalPages };
+}
+
+/** Pages an already-loaded list, for services whose dashboard query has no paging of its own. */
+export function paginateInMemory<T>(items: T[], query: { page: number; limit: number }) {
+  const start = (query.page - 1) * query.limit;
+
+  return {
+    items: items.slice(start, start + query.limit),
+    pagination: toPublicApiPagination(query.page, query.limit, items.length)
+  };
 }
 
 export function assertAutomationActor(actorId: string | null): asserts actorId is string {
@@ -35,6 +45,25 @@ export async function assertProfileBelongsToOrganization(orgId: string, profileI
   if (!memberId) {
     throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
   }
+}
+
+/**
+ * Mirrors `orgTeamMemberMiddleware` for the key's creator: the actor must be an org admin or tutor.
+ * Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertOrgTeamMember(orgId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const roleId = await getOrganizationMemberRoleId(orgId, actorId);
+  if (roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) {
+    return;
+  }
+
+  throw new AppError(
+    'Automation actor must be an organization admin or tutor',
+    ErrorCodes.ORG_TEAM_NOT_AUTHORIZED,
+    403
+  );
 }
 
 /**

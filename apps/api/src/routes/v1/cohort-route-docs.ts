@@ -14,20 +14,5 @@ export const cohortForbiddenResponses = {
   }
 };
 
-export const NewsfeedPageResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: {
-      type: 'object' as const,
-      properties: {
-        items: { type: 'array' as const, items: { type: 'object' as const } },
-        totalCount: { type: 'number' as const },
-        hasMore: { type: 'boolean' as const },
-        nextCursor: { type: 'string' as const, nullable: true }
-      },
-      required: ['items', 'totalCount', 'hasMore', 'nextCursor']
-    }
-  },
-  required: ['success', 'data']
-};
+export const ACTOR_OWN_DATA_NOTE =
+  "Returns data for the automation actor (the key creator) only, limited to cohorts in the key's organization.";

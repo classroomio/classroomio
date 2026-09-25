@@ -1,6 +1,9 @@
 import {
   ZPublicApiAddCohortMembers,
+  ZPublicApiAddCohortMembersResponse,
+  ZPublicApiCohortMemberListItemResponse,
   ZPublicApiCohortMemberParam,
+  ZPublicApiCohortMemberResponse,
   ZPublicApiCohortParam,
   ZPublicApiPaginationQuery,
   ZPublicApiUpdateCohortMember
@@ -16,7 +19,9 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
-import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+
+const MemberResponse = itemResponse(ZPublicApiCohortMemberResponse);
 
 export const v1CohortMembersRouter = new Hono()
   .get(
@@ -25,7 +30,10 @@ export const v1CohortMembersRouter = new Hono()
       description: `List the members of a cohort. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        200: jsonResponse('Cohort members returned successfully', PaginatedListResponse),
+        200: jsonResponse(
+          'Cohort members returned successfully',
+          paginatedResponse(ZPublicApiCohortMemberListItemResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.member,
@@ -51,10 +59,13 @@ export const v1CohortMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add one or more members to a cohort. A profileId must belong to someone already in your organization. An email can be anyone; students added by email join your organization. Each member is added independently: data.added lists the new memberships and data.errors has one message per member that failed (for example, already a member). ${COHORT_TEAM_RULE}`,
+      description: `Create cohort memberships directly. This does not send an invitation email or create an organization invite; use POST /cohorts/{cohortId}/invite for the dashboard's invite flow. A profileId must belong to someone already in your organization. An email is linked to its existing profile if there is one; otherwise the membership is stored against the email alone. Students with a profile are also added to your organization and to the cohort's courses. Each entry is processed independently: data.added lists the new memberships, and data.errors lists each failed entry with its index in the request, email, profileId, error code, and message. Retrying the same request is safe: entries that already exist fail with code MEMBER_ALREADY_IN_COHORT and nothing is duplicated. A profileId or email may appear only once per request. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        201: jsonResponse('Members processed; see the per-member results', ItemResponse),
+        201: jsonResponse(
+          'Members processed; see the per-entry results',
+          itemResponse(ZPublicApiAddCohortMembersResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -83,7 +94,7 @@ export const v1CohortMembersRouter = new Hono()
       description: `Change a cohort member's role (tutor or student). ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        200: jsonResponse('Cohort member updated successfully', ItemResponse),
+        200: jsonResponse('Cohort member updated successfully', MemberResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -112,7 +123,7 @@ export const v1CohortMembersRouter = new Hono()
       description: `Remove a member from a cohort. This is a hard delete of the cohort membership only; the person keeps their account, organization membership, and course enrolments. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Members'],
       responses: {
-        200: jsonResponse('Cohort member removed successfully', ItemResponse),
+        200: jsonResponse('Cohort member removed successfully', MemberResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,

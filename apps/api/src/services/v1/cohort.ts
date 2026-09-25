@@ -5,12 +5,20 @@ import type {
   TPublicApiUpdateCohort
 } from '@cio/utils/validation/public-api';
 
-import { createCohort, deleteCohort, getCohort, listOrgCohortsPage, updateCohort } from '@api/services/cohort/cohort';
+import {
+  createCohort,
+  deleteCohort,
+  getCohort,
+  getEnrolledCohorts,
+  listOrgCohortsPage,
+  updateCohort
+} from '@api/services/cohort/cohort';
 import {
   assertAutomationActor,
   assertCohortBelongsToOrganization,
   assertCohortMemberOrOrgAdmin,
   assertCohortTeamMemberOrOrgAdmin,
+  paginateInMemory,
   toPublicApiPagination
 } from '@api/services/v1/shared';
 
@@ -20,6 +28,21 @@ export async function listCohortsService(orgId: string, actorId: string | null, 
   const { items, total } = await listOrgCohortsPage(orgId, actorId, query);
 
   return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
+}
+
+export async function listPublicApiEnrolledCohortsService(
+  orgId: string,
+  actorId: string | null,
+  query: TPublicApiPaginationQuery
+) {
+  assertAutomationActor(actorId);
+
+  const cohorts = await getEnrolledCohorts(actorId);
+
+  return paginateInMemory(
+    cohorts.filter((cohort) => cohort.organizationId === orgId),
+    query
+  );
 }
 
 export async function createPublicApiCohortService(

@@ -1,6 +1,5 @@
 import * as z from 'zod';
 
-import { ZAddCourseToCohort } from '../cohort/cohort';
 import { ZPublicApiCohortParam } from './cohort';
 
 export const ZPublicApiCohortCourseParam = ZPublicApiCohortParam.extend({
@@ -8,5 +7,7 @@ export const ZPublicApiCohortCourseParam = ZPublicApiCohortParam.extend({
 });
 export type TPublicApiCohortCourseParam = z.infer<typeof ZPublicApiCohortCourseParam>;
 
-export const ZPublicApiAddCourseToCohort = ZAddCourseToCohort;
+export const ZPublicApiAddCourseToCohort = z.object({
+  courseId: z.string().uuid()
+});
 export type TPublicApiAddCourseToCohort = z.infer<typeof ZPublicApiAddCourseToCohort>;

@@ -1,14 +1,17 @@
-import type {
-  TPublicApiCohortNewsfeedCommentParam,
-  TPublicApiCohortNewsfeedParam,
-  TPublicApiCohortNewsfeedQuery,
-  TPublicApiCohortParam,
-  TPublicApiCreateCohortNewsfeed,
-  TPublicApiCreateCohortNewsfeedComment,
-  TPublicApiPaginationQuery,
-  TPublicApiUpdateCohortNewsfeed,
-  TPublicApiUpdateCohortReaction
+import {
+  PUBLIC_API_COHORT_REACTION_TYPES,
+  type TPublicApiCohortNewsfeedCommentParam,
+  type TPublicApiCohortNewsfeedParam,
+  type TPublicApiCohortNewsfeedQuery,
+  type TPublicApiCohortParam,
+  type TPublicApiCohortReactionType,
+  type TPublicApiCreateCohortNewsfeed,
+  type TPublicApiCreateCohortNewsfeedComment,
+  type TPublicApiPaginationQuery,
+  type TPublicApiSetCohortReaction,
+  type TPublicApiUpdateCohortNewsfeed
 } from '@cio/utils/validation/public-api';
+import type { TUpdateCohortReaction } from '@cio/utils/validation/cohort';
 
 import {
   createCohortNewsfeedCommentService,
@@ -17,10 +20,14 @@ import {
   deleteCohortNewsfeedService,
   listCohortNewsfeed,
   listCohortNewsfeedCommentsPage,
-  updateCohortNewsfeedReactionService,
   updateCohortNewsfeedService
 } from '@api/services/cohort/cohort';
-import { getCohortNewsfeedById, getCohortNewsfeedCommentById } from '@cio/db/queries/cohort';
+import {
+  getCohortMemberByProfileId,
+  getCohortNewsfeedById,
+  getCohortNewsfeedCommentById,
+  updateCohortNewsfeedReactionLocked
+} from '@cio/db/queries/cohort';
 import {
   assertAutomationActor,
   assertCohortBelongsToOrganization,
@@ -30,6 +37,8 @@ import {
   toPublicApiPagination
 } from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+
+type TCohortReactionRecord = TUpdateCohortReaction['reaction'];
 
 export async function listPublicApiCohortNewsfeedService(
   orgId: string,
@@ -68,16 +77,43 @@ export async function updatePublicApiCohortNewsfeedService(
   return updateCohortNewsfeedService(params.cohortId, params.feedId, payload);
 }
 
-export async function updatePublicApiCohortNewsfeedReactionService(
+export function setMemberReaction(
+  reaction: Partial<TCohortReactionRecord> | null | undefined,
+  memberId: string,
+  reactionType: TPublicApiCohortReactionType | null
+): TCohortReactionRecord {
+  const next = {} as TCohortReactionRecord;
+  for (const type of PUBLIC_API_COHORT_REACTION_TYPES) {
+    next[type] = (reaction?.[type] ?? []).filter((id) => id !== memberId);
+  }
+  if (reactionType) {
+    next[reactionType].push(memberId);
+  }
+  return next;
+}
+
+export async function setPublicApiCohortNewsfeedReactionService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCohortNewsfeedParam,
-  payload: TPublicApiUpdateCohortReaction
+  payload: TPublicApiSetCohortReaction
 ) {
+  assertAutomationActor(actorId);
   await assertCohortBelongsToOrganization(orgId, params.cohortId);
-  await assertCohortMemberOrOrgAdmin(params.cohortId, actorId);
 
-  return updateCohortNewsfeedReactionService(params.cohortId, params.feedId, payload);
+  const member = await getCohortMemberByProfileId(params.cohortId, actorId);
+  if (!member) {
+    throw new AppError('Only cohort members can react to posts', ErrorCodes.COHORT_FORBIDDEN, 403);
+  }
+
+  const feed = await updateCohortNewsfeedReactionLocked(params.cohortId, params.feedId, (current) =>
+    setMemberReaction(current, member.id, payload.reaction)
+  );
+  if (!feed) {
+    throw new AppError('Cohort newsfeed item not found', ErrorCodes.COHORT_NEWSFEED_NOT_FOUND, 404);
+  }
+
+  return feed;
 }
 
 export async function deletePublicApiCohortNewsfeedService(

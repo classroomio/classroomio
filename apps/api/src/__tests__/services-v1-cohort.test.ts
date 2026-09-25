@@ -24,7 +24,8 @@ vi.mock('@api/services/cohort/cohort', () => ({
   listOrgCohortsPage: vi.fn(),
   listCohortMembersPage: vi.fn(),
   listCohortCoursesPage: vi.fn(),
-  addCohortMembers: vi.fn(),
+  addCohortMembersSettled: vi.fn(),
+  getEnrolledCohorts: vi.fn(),
   updateCohortMemberService: vi.fn(),
   removeCohortMemberService: vi.fn(),
   addCourseToCohortService: vi.fn(),
@@ -40,11 +41,12 @@ import {
 import { getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import {
-  addCohortMembers,
+  addCohortMembersSettled,
   addCourseToCohortService,
   createCohort,
   deleteCohort,
   getCohort,
+  getEnrolledCohorts,
   listCohortCoursesPage,
   listCohortMembersPage,
   listOrgCohortsPage,
@@ -60,6 +62,7 @@ import {
   deletePublicApiCohortService,
   getPublicApiCohortService,
   listCohortsService,
+  listPublicApiEnrolledCohortsService,
   updatePublicApiCohortService
 } from '@api/services/v1/cohort';
 import {
@@ -245,6 +248,32 @@ describe('v1 cohort service', () => {
   });
 });
 
+describe('v1 enrolled cohorts service', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns only the actor's cohorts in the key's organization", async () => {
+    vi.mocked(getEnrolledCohorts).mockResolvedValue([
+      { id: 'cohort-a', organizationId: ORG_ID },
+      { id: 'cohort-b', organizationId: OTHER_ORG_ID }
+    ] as Awaited<ReturnType<typeof getEnrolledCohorts>>);
+
+    const result = await listPublicApiEnrolledCohortsService(ORG_ID, ACTOR_ID, firstPage);
+
+    expect(getEnrolledCohorts).toHaveBeenCalledWith(ACTOR_ID);
+    expect(result.items.map((cohort) => cohort.id)).toEqual(['cohort-a']);
+    expect(result.pagination).toEqual({ page: 1, limit: 20, total: 1, totalPages: 1 });
+  });
+
+  it('rejects listing enrolled cohorts with no automation actor', async () => {
+    await expect(listPublicApiEnrolledCohortsService(ORG_ID, null, firstPage)).rejects.toMatchObject({
+      statusCode: 401
+    });
+    expect(getEnrolledCohorts).not.toHaveBeenCalled();
+  });
+});
+
 describe('v1 cohort member service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -272,23 +301,23 @@ describe('v1 cohort member service', () => {
   });
 
   it('adds members by email without an organization check, like the dashboard', async () => {
-    vi.mocked(addCohortMembers).mockResolvedValue({ added: [], errors: [] });
+    vi.mocked(addCohortMembersSettled).mockResolvedValue([]);
     const payload = { members: [{ email: 'student@example.com', roleId: 3 as const }] };
 
     await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
     expect(getOrganizationMemberIdByOrgAndProfile).not.toHaveBeenCalled();
-    expect(addCohortMembers).toHaveBeenCalledWith(COHORT_ID, payload);
+    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload);
   });
 
   it('adds members by profileId when the profile belongs to the organization', async () => {
-    vi.mocked(addCohortMembers).mockResolvedValue({ added: [], errors: [] });
+    vi.mocked(addCohortMembersSettled).mockResolvedValue([]);
     const payload = { members: [{ profileId: PROFILE_ID, roleId: 3 as const }] };
 
     await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
 
     expect(getOrganizationMemberIdByOrgAndProfile).toHaveBeenCalledWith(ORG_ID, PROFILE_ID);
-    expect(addCohortMembers).toHaveBeenCalledWith(COHORT_ID, payload);
+    expect(addCohortMembersSettled).toHaveBeenCalledWith(COHORT_ID, payload);
   });
 
   it('refuses to add a profileId from another organization', async () => {
@@ -302,7 +331,52 @@ describe('v1 cohort member service', () => {
         ]
       })
     ).rejects.toMatchObject({ statusCode: 404 });
-    expect(addCohortMembers).not.toHaveBeenCalled();
+    expect(addCohortMembersSettled).not.toHaveBeenCalled();
+  });
+
+  it('reports each failed entry with its index, identifiers, and error code, in request order', async () => {
+    const added = { id: MEMBER_ID };
+    vi.mocked(addCohortMembersSettled).mockResolvedValue([
+      { status: 'rejected', reason: new AppError('already a member', 'MEMBER_ALREADY_IN_COHORT', 409) },
+      { status: 'fulfilled', value: added as never },
+      { status: 'rejected', reason: new Error('db exploded') }
+    ]);
+    const payload = {
+      members: [
+        { email: 'existing@example.com', roleId: 3 as const },
+        { email: 'new@example.com', roleId: 3 as const },
+        { profileId: PROFILE_ID, roleId: 2 as const }
+      ]
+    };
+
+    const result = await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, payload);
+
+    expect(result).toEqual({
+      added: [added],
+      errors: [
+        {
+          index: 0,
+          email: 'existing@example.com',
+          profileId: null,
+          code: 'MEMBER_ALREADY_IN_COHORT',
+          message: 'already a member'
+        },
+        { index: 2, email: null, profileId: PROFILE_ID, code: 'INTERNAL_ERROR', message: 'db exploded' }
+      ]
+    });
+  });
+
+  it('retrying the same request reports every entry as already a member instead of duplicating', async () => {
+    vi.mocked(addCohortMembersSettled).mockResolvedValue([
+      { status: 'rejected', reason: new AppError('already a member', 'MEMBER_ALREADY_IN_COHORT', 409) }
+    ]);
+
+    const result = await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, {
+      members: [{ email: 'student@example.com', roleId: 3 }]
+    });
+
+    expect(result.added).toEqual([]);
+    expect(result.errors).toEqual([expect.objectContaining({ index: 0, code: 'MEMBER_ALREADY_IN_COHORT' })]);
   });
 
   it('refuses to add members when the actor is a student in the cohort', async () => {
@@ -313,7 +387,7 @@ describe('v1 cohort member service', () => {
         members: [{ email: 'student@example.com', roleId: 3 }]
       })
     ).rejects.toMatchObject({ statusCode: 403 });
-    expect(addCohortMembers).not.toHaveBeenCalled();
+    expect(addCohortMembersSettled).not.toHaveBeenCalled();
   });
 
   it('updates and removes a member by cohortId + memberId once the actor is a team member', async () => {

@@ -34,7 +34,7 @@ vi.mock('@api/services/v1/cohort-newsfeed', () => ({
   listPublicApiCohortNewsfeedService: vi.fn(),
   createPublicApiCohortNewsfeedService: vi.fn(),
   updatePublicApiCohortNewsfeedService: vi.fn(),
-  updatePublicApiCohortNewsfeedReactionService: vi.fn(),
+  setPublicApiCohortNewsfeedReactionService: vi.fn(),
   deletePublicApiCohortNewsfeedService: vi.fn(),
   listPublicApiCohortNewsfeedCommentsService: vi.fn(),
   createPublicApiCohortNewsfeedCommentService: vi.fn(),

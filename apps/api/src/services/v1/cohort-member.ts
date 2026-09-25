@@ -7,7 +7,7 @@ import type {
 } from '@cio/utils/validation/public-api';
 
 import {
-  addCohortMembers,
+  addCohortMembersSettled,
   listCohortMembersPage,
   removeCohortMemberService,
   updateCohortMemberService
@@ -19,6 +19,7 @@ import {
   assertProfileBelongsToOrganization,
   toPublicApiPagination
 } from '@api/services/v1/shared';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export async function listPublicApiCohortMembersService(
   orgId: string,
@@ -46,7 +47,27 @@ export async function addPublicApiCohortMembersService(
   const profileIds = payload.members.flatMap((member) => (member.profileId ? [member.profileId] : []));
   await Promise.all(profileIds.map((profileId) => assertProfileBelongsToOrganization(orgId, profileId)));
 
-  return addCohortMembers(params.cohortId, payload);
+  const results = await addCohortMembersSettled(params.cohortId, payload);
+
+  const added: unknown[] = [];
+  const errors: { index: number; email: string | null; profileId: string | null; code: string; message: string }[] = [];
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      added.push(result.value);
+      return;
+    }
+    const member = payload.members[index]!;
+    const reason = result.reason;
+    errors.push({
+      index,
+      email: member.email ?? null,
+      profileId: member.profileId ?? null,
+      code: reason instanceof AppError ? reason.code : ErrorCodes.INTERNAL_ERROR,
+      message: reason instanceof Error ? reason.message : 'Unknown error'
+    });
+  });
+
+  return { added, errors };
 }
 
 export async function updatePublicApiCohortMemberService(

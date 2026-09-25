@@ -1,6 +1,11 @@
 import {
+  ZPublicApiCohortGoalOverviewItemResponse,
+  ZPublicApiCohortListItemResponse,
   ZPublicApiCohortParam,
+  ZPublicApiCohortResponse,
   ZPublicApiCreateCohort,
+  ZPublicApiEnrolledCohortResponse,
+  ZPublicApiMyCohortGoalResponse,
   ZPublicApiPaginationQuery,
   ZPublicApiUpdateCohort
 } from '@cio/utils/validation/public-api';
@@ -9,18 +14,29 @@ import {
   deletePublicApiCohortService,
   getPublicApiCohortService,
   listCohortsService,
+  listPublicApiEnrolledCohortsService,
   updatePublicApiCohortService
 } from '@api/services/v1/cohort';
+import { getPublicApiOrgGoalsOverviewService, listPublicApiMyCohortGoalsService } from '@api/services/v1/cohort-goal';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { v1CohortCoursesRouter } from './cohort-courses';
 import { v1CohortGoalsRouter } from './cohort-goals';
+import { v1CohortInvitesRouter } from './cohort-invites';
 import { v1CohortMembersRouter } from './cohort-members';
 import { v1CohortNewsfeedRouter } from './cohort-newsfeed';
-import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
-import { ItemResponse, PaginatedListResponse, errorResponses, jsonResponse } from '@api/utils/openapi/responses';
+import {
+  ACTOR_OWN_DATA_NOTE,
+  COHORT_MEMBER_RULE,
+  COHORT_TEAM_RULE,
+  PAGINATION_NOTE,
+  cohortForbiddenResponses
+} from './cohort-route-docs';
+import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+
+const CohortResponse = itemResponse(ZPublicApiCohortResponse);
 
 export const v1CohortsRouter = new Hono()
   .get(
@@ -29,7 +45,7 @@ export const v1CohortsRouter = new Hono()
       description: `List the cohorts the automation actor can see: every cohort for an org admin, otherwise only cohorts the actor belongs to. ${PAGINATION_NOTE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohorts returned successfully', PaginatedListResponse),
+        200: jsonResponse('Cohorts returned successfully', paginatedResponse(ZPublicApiCohortListItemResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: errorResponses.forbidden
@@ -55,7 +71,7 @@ export const v1CohortsRouter = new Hono()
       description: 'Create a cohort. The automation actor (the key creator) is added as its tutor.',
       tags: ['Public API Cohorts'],
       responses: {
-        201: jsonResponse('Cohort created successfully', ItemResponse),
+        201: jsonResponse('Cohort created successfully', CohortResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: errorResponses.forbidden
@@ -75,6 +91,91 @@ export const v1CohortsRouter = new Hono()
       }
     }
   )
+  .get(
+    '/enrolled',
+    describeRoute({
+      description: `List the cohorts the automation actor is enrolled in, with the actor's role in each. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
+      tags: ['Public API Cohorts'],
+      responses: {
+        200: jsonResponse(
+          'Enrolled cohorts returned successfully',
+          paginatedResponse(ZPublicApiEnrolledCohortResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: errorResponses.forbidden
+      }
+    }),
+    validator('query', ZPublicApiPaginationQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const query = c.req.valid('query');
+        const result = await listPublicApiEnrolledCohortsService(orgId, actorId, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to list enrolled cohorts');
+      }
+    }
+  )
+  .get(
+    '/my/goals',
+    describeRoute({
+      description: `List the automation actor's own goal assignments across their cohorts (active goals only), with status and progress. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
+      tags: ['Public API Cohort Goals'],
+      responses: {
+        200: jsonResponse('Goal assignments returned successfully', paginatedResponse(ZPublicApiMyCohortGoalResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: errorResponses.forbidden
+      }
+    }),
+    validator('query', ZPublicApiPaginationQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const query = c.req.valid('query');
+        const result = await listPublicApiMyCohortGoalsService(orgId, actorId, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to list goal assignments');
+      }
+    }
+  )
+  .get(
+    '/goals/overview',
+    describeRoute({
+      description: `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status. ${PAGINATION_NOTE} The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.`,
+      tags: ['Public API Cohort Goals'],
+      responses: {
+        200: jsonResponse(
+          'Goals overview returned successfully',
+          paginatedResponse(ZPublicApiCohortGoalOverviewItemResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: { description: 'The key lacks the public_api:* scope, or the actor is not an org admin or tutor' }
+      }
+    }),
+    validator('query', ZPublicApiPaginationQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const query = c.req.valid('query');
+        const result = await getPublicApiOrgGoalsOverviewService(orgId, actorId, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to load goals overview');
+      }
+    }
+  )
+  .route('/:cohortId', v1CohortInvitesRouter)
   .route('/:cohortId/members', v1CohortMembersRouter)
   .route('/:cohortId/courses', v1CohortCoursesRouter)
   .route('/:cohortId/newsfeed', v1CohortNewsfeedRouter)
@@ -85,7 +186,7 @@ export const v1CohortsRouter = new Hono()
       description: `Get a cohort. ${COHORT_MEMBER_RULE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohort returned successfully', ItemResponse),
+        200: jsonResponse('Cohort returned successfully', CohortResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.member,
@@ -112,7 +213,7 @@ export const v1CohortsRouter = new Hono()
       description: `Update a cohort. Send only the fields to change. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohort updated successfully', ItemResponse),
+        200: jsonResponse('Cohort updated successfully', CohortResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
@@ -141,7 +242,7 @@ export const v1CohortsRouter = new Hono()
       description: `Permanently delete a cohort and its memberships, newsfeed, and goals. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohorts'],
       responses: {
-        200: jsonResponse('Cohort deleted successfully', ItemResponse),
+        200: jsonResponse('Cohort deleted successfully', CohortResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,

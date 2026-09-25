@@ -6,12 +6,26 @@ import type {
   TPublicApiUpdateCohortGoal
 } from '@cio/utils/validation/public-api';
 
-import { archiveGoal, createGoal, getGoal, listGoalsPage, removeGoal, updateGoal } from '@api/services/cohort/goal';
+import {
+  archiveGoal,
+  createGoal,
+  evaluateCohortGoals,
+  evaluateGoal,
+  getGoal,
+  getMyGoals,
+  getOrgGoalsOverview,
+  listGoalsPage,
+  removeGoal,
+  updateGoal
+} from '@api/services/cohort/goal';
+import { getEnrolledCohorts } from '@api/services/cohort/cohort';
 import {
   assertAutomationActor,
   assertCohortBelongsToOrganization,
   assertCohortMemberOrOrgAdmin,
   assertCohortTeamMemberOrOrgAdmin,
+  assertOrgTeamMember,
+  paginateInMemory,
   toPublicApiPagination
 } from '@api/services/v1/shared';
 
@@ -74,6 +88,58 @@ export async function archivePublicApiCohortGoalService(
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
   return archiveGoal(params.cohortId, params.goalId);
+}
+
+export async function evaluatePublicApiCohortGoalService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortGoalParam
+) {
+  await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
+
+  const goal = await getGoal(params.cohortId, params.goalId);
+
+  return evaluateGoal(goal.id);
+}
+
+export async function evaluateAllPublicApiCohortGoalsService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCohortParam
+) {
+  await assertCohortBelongsToOrganization(orgId, params.cohortId);
+  await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
+
+  return evaluateCohortGoals(params.cohortId);
+}
+
+export async function getPublicApiOrgGoalsOverviewService(
+  orgId: string,
+  actorId: string | null,
+  query: TPublicApiPaginationQuery
+) {
+  await assertOrgTeamMember(orgId, actorId);
+
+  const { goals } = await getOrgGoalsOverview(orgId);
+
+  return paginateInMemory(goals, query);
+}
+
+export async function listPublicApiMyCohortGoalsService(
+  orgId: string,
+  actorId: string | null,
+  query: TPublicApiPaginationQuery
+) {
+  assertAutomationActor(actorId);
+
+  const [cohorts, goals] = await Promise.all([getEnrolledCohorts(actorId), getMyGoals(actorId)]);
+  const orgCohortIds = new Set(cohorts.filter((cohort) => cohort.organizationId === orgId).map((cohort) => cohort.id));
+
+  return paginateInMemory(
+    goals.filter((goal) => orgCohortIds.has(goal.cohortId)),
+    query
+  );
 }
 
 export async function deletePublicApiCohortGoalService(

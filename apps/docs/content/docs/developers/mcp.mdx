@@ -178,13 +178,27 @@ Cohort tools:
 - `update_cohort_goal`
 - `archive_cohort_goal`
 - `delete_cohort_goal`
+- `evaluate_cohort_goal`
+- `evaluate_all_cohort_goals`
+- `get_org_goals_overview`
+- `list_my_cohort_goals`
+- `list_my_enrolled_cohorts`
+- `invite_students_to_cohort`
+- `assign_students_to_cohort`
+- `get_cohort_invite_link`
+- `create_cohort_invite_link`
+- `set_cohort_invite_link_revoked`
 
 Cohort tools call the public API and need the key's `public_api:*` scope. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
-- Reading a cohort and reacting need them to be a member of the cohort or an org admin.
-- Changing a cohort, its members, courses, posts, or goals needs them to be a cohort tutor/admin or an org admin.
-- Posting and commenting are done as them, so they also need to be a member of the cohort.
+- Reading a cohort needs them to be a member of the cohort or an org admin.
+- Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.
+- Posting, commenting, and reacting are done as them, so they also need to be a member of the cohort. Reacting only changes their own reaction.
 - A comment can also be deleted by its author.
+- The organization goals overview needs them to be an org admin or tutor.
+- "My" enrolled cohorts and goals are their own, limited to the key's organization.
+
+`add_cohort_members` adds people to a cohort directly without sending any email. To invite people the way the dashboard does, with an invitation email, use `invite_students_to_cohort`.
 
 List tools take `page` and `limit` (default 20, max 100). The newsfeed is cursor-based instead: pass the returned `nextCursor` back as `cursor`.
 

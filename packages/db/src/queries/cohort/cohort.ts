@@ -360,6 +360,25 @@ export async function getCohortMemberByProfileId(cohortId: string, profileId: st
   }
 }
 
+export async function getCohortMemberByEmail(cohortId: string, email: string): Promise<TCohortMember | null> {
+  try {
+    const [member] = await db
+      .select()
+      .from(schema.cohortMember)
+      .where(
+        and(
+          eq(schema.cohortMember.cohortId, cohortId),
+          sql`lower(${schema.cohortMember.email}) = ${email.toLowerCase().trim()}`
+        )
+      )
+      .limit(1);
+    return member || null;
+  } catch (error) {
+    console.error('getCohortMemberByEmail error:', error);
+    throw new Error(`Failed to get cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function isCohortMember(cohortId: string, profileId: string): Promise<boolean> {
   try {
     const member = await getCohortMemberByProfileId(cohortId, profileId);
@@ -876,6 +895,41 @@ export async function updateCohortNewsfeedReaction(
     return updated || null;
   } catch (error) {
     console.error('updateCohortNewsfeedReaction error:', error);
+    throw new Error(
+      `Failed to update cohort newsfeed reaction "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+type TCohortNewsfeedReaction = NonNullable<TCohortNewsfeed['reaction']>;
+
+/**
+ * Read-modify-write of a post's reactions under a row lock, so concurrent reactions from
+ * different members don't overwrite each other. Returns null when the post is not in the cohort.
+ */
+export async function updateCohortNewsfeedReactionLocked(
+  cohortId: string,
+  feedId: string,
+  update: (current: TCohortNewsfeed['reaction']) => TCohortNewsfeedReaction
+): Promise<TCohortNewsfeed | null> {
+  try {
+    return await db.transaction(async (tx) => {
+      const [feed] = await tx
+        .select({ reaction: schema.cohortNewsfeed.reaction })
+        .from(schema.cohortNewsfeed)
+        .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
+        .for('update');
+      if (!feed) return null;
+
+      const [updated] = await tx
+        .update(schema.cohortNewsfeed)
+        .set({ reaction: update(feed.reaction) })
+        .where(and(eq(schema.cohortNewsfeed.id, feedId), eq(schema.cohortNewsfeed.cohortId, cohortId)))
+        .returning();
+      return updated || null;
+    });
+  } catch (error) {
+    console.error('updateCohortNewsfeedReactionLocked error:', error);
     throw new Error(
       `Failed to update cohort newsfeed reaction "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );

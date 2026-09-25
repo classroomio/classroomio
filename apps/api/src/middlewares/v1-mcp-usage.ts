@@ -13,10 +13,22 @@ import {
   type TMcpToolName
 } from '@cio/utils/plans';
 
-type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
   '/public-api/v1/cohorts': { GET: 'list_org_cohorts', POST: 'create_cohort' },
+  '/public-api/v1/cohorts/enrolled': { GET: 'list_my_enrolled_cohorts' },
+  '/public-api/v1/cohorts/my/goals': { GET: 'list_my_cohort_goals' },
+  '/public-api/v1/cohorts/goals/overview': { GET: 'get_org_goals_overview' },
+  '/public-api/v1/cohorts/:cohortId/invite': { POST: 'invite_students_to_cohort' },
+  '/public-api/v1/cohorts/:cohortId/invite/assign': { POST: 'assign_students_to_cohort' },
+  '/public-api/v1/cohorts/:cohortId/invite-link': {
+    GET: 'get_cohort_invite_link',
+    POST: 'create_cohort_invite_link',
+    PATCH: 'set_cohort_invite_link_revoked'
+  },
+  '/public-api/v1/cohorts/:cohortId/goals/evaluate-all': { POST: 'evaluate_all_cohort_goals' },
+  '/public-api/v1/cohorts/:cohortId/goals/:goalId/evaluate': { POST: 'evaluate_cohort_goal' },
   '/public-api/v1/cohorts/:cohortId': { GET: 'get_cohort', PUT: 'update_cohort', DELETE: 'delete_cohort' },
   '/public-api/v1/cohorts/:cohortId/members': { GET: 'list_cohort_members', POST: 'add_cohort_members' },
   '/public-api/v1/cohorts/:cohortId/members/:memberId': { PUT: 'update_cohort_member', DELETE: 'delete_cohort_member' },

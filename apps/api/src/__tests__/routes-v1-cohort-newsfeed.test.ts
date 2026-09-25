@@ -4,7 +4,7 @@ vi.mock('@api/services/v1/cohort-newsfeed', () => ({
   listPublicApiCohortNewsfeedService: vi.fn(),
   createPublicApiCohortNewsfeedService: vi.fn(),
   updatePublicApiCohortNewsfeedService: vi.fn(),
-  updatePublicApiCohortNewsfeedReactionService: vi.fn(),
+  setPublicApiCohortNewsfeedReactionService: vi.fn(),
   deletePublicApiCohortNewsfeedService: vi.fn(),
   listPublicApiCohortNewsfeedCommentsService: vi.fn(),
   createPublicApiCohortNewsfeedCommentService: vi.fn(),
@@ -49,7 +49,7 @@ import {
   deletePublicApiCohortNewsfeedService,
   listPublicApiCohortNewsfeedCommentsService,
   listPublicApiCohortNewsfeedService,
-  updatePublicApiCohortNewsfeedReactionService,
+  setPublicApiCohortNewsfeedReactionService,
   updatePublicApiCohortNewsfeedService
 } from '@api/services/v1/cohort-newsfeed';
 import { v1CohortsRouter } from '@api/routes/v1/cohorts';
@@ -142,13 +142,19 @@ describe('v1CohortsRouter newsfeed routes', () => {
     vi.mocked(updatePublicApiCohortNewsfeedService).mockResolvedValue({ id: FEED_ID } as Awaited<
       ReturnType<typeof updatePublicApiCohortNewsfeedService>
     >);
-    vi.mocked(updatePublicApiCohortNewsfeedReactionService).mockResolvedValue({ id: FEED_ID } as Awaited<
-      ReturnType<typeof updatePublicApiCohortNewsfeedReactionService>
+    vi.mocked(setPublicApiCohortNewsfeedReactionService).mockResolvedValue({ id: FEED_ID } as Awaited<
+      ReturnType<typeof setPublicApiCohortNewsfeedReactionService>
     >);
 
     const updated = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}`, jsonRequest('PUT', { content: 'Edited' }));
-    const reaction = { clap: ['member-1'], smile: [], thumbsup: [], thumbsdown: [] };
-    const reacted = await app.request(`/${COHORT_ID}/newsfeed/${FEED_ID}/react`, jsonRequest('PUT', { reaction }));
+    const reacted = await app.request(
+      `/${COHORT_ID}/newsfeed/${FEED_ID}/react`,
+      jsonRequest('PUT', { reaction: 'clap' })
+    );
+    const cleared = await app.request(
+      `/${COHORT_ID}/newsfeed/${FEED_ID}/react`,
+      jsonRequest('PUT', { reaction: null })
+    );
 
     expect(updated.status).toBe(200);
     expect(updatePublicApiCohortNewsfeedService).toHaveBeenCalledWith(
@@ -158,12 +164,34 @@ describe('v1CohortsRouter newsfeed routes', () => {
       { content: 'Edited' }
     );
     expect(reacted.status).toBe(200);
-    expect(updatePublicApiCohortNewsfeedReactionService).toHaveBeenCalledWith(
+    expect(setPublicApiCohortNewsfeedReactionService).toHaveBeenCalledWith(
       'org-1',
       'actor-1',
       { cohortId: COHORT_ID, feedId: FEED_ID },
-      { reaction }
+      { reaction: 'clap' }
     );
+    expect(cleared.status).toBe(200);
+    expect(setPublicApiCohortNewsfeedReactionService).toHaveBeenLastCalledWith(
+      'org-1',
+      'actor-1',
+      { cohortId: COHORT_ID, feedId: FEED_ID },
+      { reaction: null }
+    );
+  });
+
+  it('rejects the old full-state reaction body and unknown reaction types with a 400', async () => {
+    const fullState = await app.request(
+      `/${COHORT_ID}/newsfeed/${FEED_ID}/react`,
+      jsonRequest('PUT', { reaction: { clap: ['someone-else'], smile: [], thumbsup: [], thumbsdown: [] } })
+    );
+    const unknown = await app.request(
+      `/${COHORT_ID}/newsfeed/${FEED_ID}/react`,
+      jsonRequest('PUT', { reaction: 'heart' })
+    );
+
+    expect(fullState.status).toBe(400);
+    expect(unknown.status).toBe(400);
+    expect(setPublicApiCohortNewsfeedReactionService).not.toHaveBeenCalled();
   });
 
   it('deletes a post', async () => {

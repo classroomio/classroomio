@@ -190,6 +190,26 @@ export async function getOrganizationMemberIdByOrgAndProfile(
   }
 }
 
+export async function getOrganizationMemberRoleId(organizationId: string, profileId: string): Promise<number | null> {
+  try {
+    const [row] = await db
+      .select({ roleId: schema.organizationmember.roleId })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId)
+        )
+      )
+      .limit(1);
+
+    return row?.roleId ?? null;
+  } catch (error) {
+    console.error('getOrganizationMemberRoleId error:', error);
+    throw new Error(`Failed to resolve organization role: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 /**
  * Creates multiple organization members in a single query
  * @param data Array of organization member creation data

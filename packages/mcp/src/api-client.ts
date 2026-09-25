@@ -25,17 +25,20 @@ import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organiz
 import type {
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseToCohort,
+  TPublicApiAssignStudentsToCohort,
   TPublicApiCohortNewsfeedQuery,
   TPublicApiCreateCohort,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
   TPublicApiCreateCohortNewsfeedComment,
+  TPublicApiInviteStudentsToCohort,
   TPublicApiPaginationQuery,
+  TPublicApiSetCohortInviteLinkRevoked,
+  TPublicApiSetCohortReaction,
   TPublicApiUpdateCohort,
   TPublicApiUpdateCohortGoal,
   TPublicApiUpdateCohortMember,
-  TPublicApiUpdateCohortNewsfeed,
-  TPublicApiUpdateCohortReaction
+  TPublicApiUpdateCohortNewsfeed
 } from '@cio/utils/validation/public-api';
 
 type ApiSuccess<T> = {
@@ -310,7 +313,7 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async updateCohortNewsfeedReaction(cohortId: string, feedId: string, payload: TPublicApiUpdateCohortReaction) {
+  async setCohortNewsfeedReaction(cohortId: string, feedId: string, payload: TPublicApiSetCohortReaction) {
     return this.request(`/public-api/v1/cohorts/${cohortId}/newsfeed/${feedId}/react`, {
       method: 'PUT',
       body: payload
@@ -373,10 +376,52 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/cohorts/${cohortId}/goals/${goalId}`, { method: 'DELETE' });
   }
 
+  async evaluateCohortGoal(cohortId: string, goalId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/${goalId}/evaluate`, { method: 'POST' });
+  }
+
+  async evaluateAllCohortGoals(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/goals/evaluate-all`, { method: 'POST' });
+  }
+
+  async getOrgGoalsOverview(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/goals/overview${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async listMyEnrolledCohorts(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/enrolled${toPageQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async listMyCohortGoals(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/cohorts/my/goals${toPageQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async inviteStudentsToCohort(cohortId: string, payload: TPublicApiInviteStudentsToCohort) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/invite`, { method: 'POST', body: payload });
+  }
+
+  async assignStudentsToCohort(cohortId: string, payload: TPublicApiAssignStudentsToCohort) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/invite/assign`, { method: 'POST', body: payload });
+  }
+
+  async getCohortInviteLink(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/invite-link`, { method: 'GET' });
+  }
+
+  async createCohortInviteLink(cohortId: string) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/invite-link`, { method: 'POST' });
+  }
+
+  async setCohortInviteLinkRevoked(cohortId: string, payload: TPublicApiSetCohortInviteLinkRevoked) {
+    return this.request(`/public-api/v1/cohorts/${cohortId}/invite-link`, { method: 'PATCH', body: payload });
+  }
+
   private async requestRaw<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
       body?: unknown;
     }
   ): Promise<ApiSuccess<TResponse>> {
@@ -412,7 +457,7 @@ export class ClassroomIoApiClient {
   private async request<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
       body?: unknown;
     }
   ): Promise<TResponse> {
@@ -423,7 +468,7 @@ export class ClassroomIoApiClient {
   private async requestPaginated<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
       body?: unknown;
     }
   ): Promise<PaginatedResponse<TResponse>> {
