@@ -28,6 +28,7 @@ import {
   paginateInMemory,
   toPublicApiPagination
 } from '@api/services/v1/shared';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 
 export async function listPublicApiCohortGoalsService(
   orgId: string,
@@ -99,6 +100,9 @@ export async function evaluatePublicApiCohortGoalService(
   await assertCohortTeamMemberOrOrgAdmin(params.cohortId, actorId);
 
   const goal = await getGoal(params.cohortId, params.goalId);
+  if (goal.status === 'archived') {
+    throw new AppError('Archived goals are not evaluated', ErrorCodes.CONFLICT, 409);
+  }
 
   return evaluateGoal(goal.id);
 }

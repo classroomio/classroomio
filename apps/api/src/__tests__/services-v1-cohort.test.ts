@@ -361,9 +361,31 @@ describe('v1 cohort member service', () => {
           code: 'MEMBER_ALREADY_IN_COHORT',
           message: 'already a member'
         },
-        { index: 2, email: null, profileId: PROFILE_ID, code: 'INTERNAL_ERROR', message: 'db exploded' }
+        { index: 2, email: null, profileId: PROFILE_ID, code: 'INTERNAL_ERROR', message: 'Failed to add this member' }
       ]
     });
+  });
+
+  it('does not expose internal error details, including server-side AppErrors, in per-entry errors', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(addCohortMembersSettled).mockResolvedValue([
+      { status: 'rejected', reason: new Error('duplicate key value violates unique constraint "cohort_member_pkey"') },
+      { status: 'rejected', reason: new AppError('connection terminated', 'INTERNAL_ERROR', 500) }
+    ]);
+
+    const result = await addPublicApiCohortMembersService(ORG_ID, ACTOR_ID, cohortParams, {
+      members: [
+        { email: 'a@example.com', roleId: 3 },
+        { email: 'b@example.com', roleId: 3 }
+      ]
+    });
+
+    expect(result.errors.map(({ code, message }) => ({ code, message }))).toEqual([
+      { code: 'INTERNAL_ERROR', message: 'Failed to add this member' },
+      { code: 'INTERNAL_ERROR', message: 'Failed to add this member' }
+    ]);
+    expect(JSON.stringify(result)).not.toContain('cohort_member_pkey');
+    expect(JSON.stringify(result)).not.toContain('connection terminated');
   });
 
   it('retrying the same request reports every entry as already a member instead of duplicating', async () => {

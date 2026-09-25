@@ -136,7 +136,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'evaluate_cohort_goal',
-    `Re-evaluate one goal's learner statuses now instead of waiting for the scheduled run. Returns the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+    `Re-evaluate one goal's learner statuses now instead of waiting for the scheduled run. Returns the number of learner assignments evaluated. Archived goals are not evaluated (409), so their history is kept. ${COHORT_TEAM_RULE}`,
     evaluateCohortGoalShape,
     WRITE,
     async (args) => {

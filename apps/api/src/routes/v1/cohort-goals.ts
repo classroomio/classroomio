@@ -227,14 +227,15 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/:goalId/evaluate',
     describeRoute({
-      description: `Re-evaluate one goal's learner statuses now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+      description: `Re-evaluate one goal's learner statuses now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. Archived goals are not evaluated, so their history is kept; evaluating one returns 409. ${COHORT_TEAM_RULE}`,
       tags: ['Public API Cohort Goals'],
       responses: {
         200: jsonResponse('Goal evaluated', EvaluateResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,
-        404: { description: 'Cohort or goal not found' }
+        404: { description: 'Cohort or goal not found' },
+        409: { description: 'The goal is archived' }
       }
     }),
     validator('param', ZPublicApiCohortGoalParam),

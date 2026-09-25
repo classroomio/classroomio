@@ -295,7 +295,8 @@ function decideStatus(args: {
  */
 export async function evaluateGoal(goalId: string): Promise<{ evaluated: number }> {
   const goal = await getCohortGoalById(goalId);
-  if (!goal) return { evaluated: 0 };
+
+  if (!goal || goal.status === 'archived') return { evaluated: 0 };
 
   const members = await getCohortMembers(goal.cohortId);
   const studentMembers = members.filter((member) => member.roleId === ROLE.STUDENT && member.profileId);

@@ -27,9 +27,10 @@ import {
   getCohortGoalById,
   getCohortMembers,
   getCoursesByCohort,
-  updateCohortGoal as updateCohortGoalQuery
+  updateCohortGoal as updateCohortGoalQuery,
+  upsertCohortGoalAssignments
 } from '@cio/db/queries/cohort';
-import { archiveGoal, createGoal, updateGoal } from '@api/services/cohort/goal';
+import { archiveGoal, createGoal, evaluateGoal, updateGoal } from '@api/services/cohort/goal';
 
 const COHORT_ID = 'cohort-1';
 const GOAL_ID = 'goal-1';
@@ -58,6 +59,22 @@ const EXISTING_GOAL = {
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z'
 };
+
+describe('evaluateGoal', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('skips an archived goal without touching its assignments', async () => {
+    vi.mocked(getCohortGoalById).mockResolvedValue({ ...EXISTING_GOAL, status: 'archived' });
+
+    const result = await evaluateGoal(GOAL_ID);
+
+    expect(result).toEqual({ evaluated: 0 });
+    expect(getCohortMembers).not.toHaveBeenCalled();
+    expect(upsertCohortGoalAssignments).not.toHaveBeenCalled();
+  });
+});
 
 describe('createGoal / updateGoal course scoping', () => {
   beforeEach(() => {

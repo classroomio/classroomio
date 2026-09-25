@@ -58,12 +58,16 @@ export async function addPublicApiCohortMembersService(
     }
     const member = payload.members[index]!;
     const reason = result.reason;
+    const isKnownError = reason instanceof AppError && reason.statusCode < 500;
+    if (!isKnownError) {
+      console.error('addPublicApiCohortMembersService entry failed:', reason);
+    }
     errors.push({
       index,
       email: member.email ?? null,
       profileId: member.profileId ?? null,
-      code: reason instanceof AppError ? reason.code : ErrorCodes.INTERNAL_ERROR,
-      message: reason instanceof Error ? reason.message : 'Unknown error'
+      code: isKnownError ? reason.code : ErrorCodes.INTERNAL_ERROR,
+      message: isKnownError ? reason.message : 'Failed to add this member'
     });
   });
 

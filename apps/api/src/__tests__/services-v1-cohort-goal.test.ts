@@ -212,6 +212,15 @@ describe('v1 cohort goal service', () => {
     expect(evaluateCohortGoals).not.toHaveBeenCalled();
   });
 
+  it('refuses to evaluate an archived goal, so its history is kept', async () => {
+    vi.mocked(getGoal).mockResolvedValue({ id: GOAL_ID, status: 'archived' } as Awaited<ReturnType<typeof getGoal>>);
+
+    await expect(evaluatePublicApiCohortGoalService(ORG_ID, ACTOR_ID, goalParams)).rejects.toMatchObject({
+      statusCode: 409
+    });
+    expect(evaluateGoal).not.toHaveBeenCalled();
+  });
+
   it('404s evaluating a goal that belongs to another cohort, without evaluating anything', async () => {
     vi.mocked(getGoal).mockRejectedValue(Object.assign(new Error('Goal not found'), { statusCode: 404 }));
 
