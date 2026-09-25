@@ -31,7 +31,7 @@
 {#if lmsPublicQuickOnly ? showPublicCourseLinks : true}
   <DropdownMenu.Root>
     <DropdownMenu.Trigger
-      class="absolute top-6 right-6 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 data-[state=open]:opacity-100"
+      class="absolute top-6 right-6 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
       onclick={(e) => {
         e.preventDefault();
         e.stopPropagation();

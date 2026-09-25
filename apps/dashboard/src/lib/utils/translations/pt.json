@@ -12,7 +12,8 @@
     },
     "discard": "Descartar",
     "save_changes": "Salvar alterações",
-    "scroll_to_top": "Voltar ao topo"
+    "scroll_to_top": "Voltar ao topo",
+    "delete": "Excluir"
   },
   "validations": {
     "generic": {
@@ -185,7 +186,11 @@
       "error": {
         "try_again": "Erro - Tente novamente mais tarde",
         "deleting_comments": "Erro ao excluir comentários",
-        "deleting_question": "Erro ao excluir a pergunta"
+        "deleting_question": "Erro ao excluir a pergunta",
+        "comment_failed": "Falha ao enviar comentário",
+        "delete_failed": "Falha ao excluir",
+        "missing_context": "Contexto ausente – atualize a página",
+        "update_failed": "Falha ao atualizar a pergunta"
       }
     },
     "invite": {
@@ -255,6 +260,16 @@
       "people": {
         "progress_reset": "Progresso redefinido",
         "progress_reset_failed": "Falha ao redefinir o progresso"
+      },
+      "compliance": {
+        "overview_failed": "Falha ao carregar a visão geral de conformidade",
+        "history_failed": "Falha ao carregar o histórico de conformidade",
+        "reset_success": "Redefinição do ciclo de conformidade",
+        "reset_failed": "Falha ao redefinir o ciclo de conformidade",
+        "extend_success": "Prazo de conformidade prorrogado",
+        "extend_failed": "Falha ao estender o prazo de conformidade",
+        "waive_success": "Requisito de conformidade dispensado",
+        "waive_failed": "Falha ao dispensar o requisito de conformidade"
       }
     },
     "landing_page_settings": {
@@ -2965,6 +2980,9 @@
       "create_button": "Criar",
       "error": {
         "failed_to_clone": "Falha ao clonar curso"
+      },
+      "success": {
+        "course_cloned": "Curso clonado com sucesso"
       }
     },
     "new_course_modal": {
@@ -4218,6 +4236,10 @@
         }
       },
       "personal_page_subtitle": "Escolha quais notificações por e-mail você recebe do ClassroomIO."
+    },
+    "account": {
+      "language": "Idioma",
+      "select_language": "Selecione um idioma"
     }
   },
   "profileMenu": {
@@ -4302,7 +4324,9 @@
       }
     },
     "cancel": "Cancelar",
-    "save": "Salvar"
+    "save": "Salvar",
+    "next": "Próximo",
+    "previous": "Anterior"
   },
   "welcome_modal": {
     "we_at": "Nós em",
@@ -5284,7 +5308,8 @@
       "inheritance_description": "Herde os padrões do espaço de trabalho ou defina substituições por curso."
     },
     "snackbar": {
-      "saved": "Configurações do tutor de IA salvas"
+      "saved": "Configurações do tutor de IA salvas",
+      "fetchError": "Falha ao carregar as configurações do tutor de IA"
     },
     "state": {
       "loading": "Carregando configurações do tutor de IA…"

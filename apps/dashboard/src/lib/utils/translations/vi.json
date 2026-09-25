@@ -12,7 +12,8 @@
     },
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
-    "scroll_to_top": "Cuộn lên đầu trang"
+    "scroll_to_top": "Cuộn lên đầu trang",
+    "delete": "Xóa"
   },
   "validations": {
     "generic": {
@@ -185,7 +186,11 @@
       "error": {
         "try_again": "Lỗi - Vui lòng thử lại sau",
         "deleting_comments": "Lỗi xóa bình luận",
-        "deleting_question": "Lỗi xóa câu hỏi"
+        "deleting_question": "Lỗi xóa câu hỏi",
+        "comment_failed": "Không gửi được bình luận",
+        "delete_failed": "Không thể xóa",
+        "missing_context": "Thiếu ngữ cảnh - vui lòng tải lại trang",
+        "update_failed": "Không cập nhật được câu hỏi"
       }
     },
     "invite": {
@@ -255,6 +260,16 @@
       "people": {
         "progress_reset": "Đã đặt lại tiến độ",
         "progress_reset_failed": "Không thể đặt lại tiến độ"
+      },
+      "compliance": {
+        "overview_failed": "Không tải được tổng quan về tuân thủ",
+        "history_failed": "Không tải được lịch sử tuân thủ",
+        "reset_success": "Thiết lập lại chu trình tuân thủ",
+        "reset_failed": "Không thể đặt lại chu trình tuân thủ",
+        "extend_success": "Thời hạn tuân thủ được gia hạn",
+        "extend_failed": "Không thể gia hạn thời hạn tuân thủ",
+        "waive_success": "Yêu cầu tuân thủ được miễn",
+        "waive_failed": "Không thể từ bỏ yêu cầu tuân thủ"
       }
     },
     "landing_page_settings": {
@@ -2965,6 +2980,9 @@
       "create_button": "Tạo",
       "error": {
         "failed_to_clone": "Không thể sao chép khóa học"
+      },
+      "success": {
+        "course_cloned": "Khóa học được nhân bản thành công"
       }
     },
     "new_course_modal": {
@@ -4218,6 +4236,10 @@
         }
       },
       "personal_page_subtitle": "Chọn thông báo email bạn nhận từ ClassroomIO."
+    },
+    "account": {
+      "language": "Ngôn ngữ",
+      "select_language": "Chọn một ngôn ngữ"
     }
   },
   "profileMenu": {
@@ -4302,7 +4324,9 @@
       }
     },
     "cancel": "Hủy bỏ",
-    "save": "Lưu"
+    "save": "Lưu",
+    "next": "Tiếp theo",
+    "previous": "trước đó"
   },
   "welcome_modal": {
     "we_at": "Chúng tôi ở",
@@ -5284,7 +5308,8 @@
       "inheritance_description": "Kế thừa các giá trị mặc định của không gian làm việc hoặc đặt phần ghi đè cho mỗi khóa học."
     },
     "snackbar": {
-      "saved": "Đã lưu cài đặt gia sư AI"
+      "saved": "Đã lưu cài đặt gia sư AI",
+      "fetchError": "Không tải được cài đặt gia sư AI"
     },
     "state": {
       "loading": "Đang tải cài đặt gia sư AI…"

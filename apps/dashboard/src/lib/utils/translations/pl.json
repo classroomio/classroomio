@@ -12,7 +12,8 @@
     },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany",
-    "scroll_to_top": "Przewiń do góry"
+    "scroll_to_top": "Przewiń do góry",
+    "delete": "Usuń"
   },
   "validations": {
     "generic": {
@@ -185,7 +186,11 @@
       "error": {
         "try_again": "Błąd — spróbuj ponownie później",
         "deleting_comments": "Błąd podczas usuwania komentarzy",
-        "deleting_question": "Błąd podczas usuwania pytania"
+        "deleting_question": "Błąd podczas usuwania pytania",
+        "comment_failed": "Nie udało się przesłać komentarza",
+        "delete_failed": "Nie udało się usunąć",
+        "missing_context": "Brak kontekstu — przeładuj stronę",
+        "update_failed": "Nie udało się zaktualizować pytania"
       }
     },
     "invite": {
@@ -255,6 +260,16 @@
       "people": {
         "progress_reset": "Postęp został zresetowany",
         "progress_reset_failed": "Nie udało się zresetować postępu"
+      },
+      "compliance": {
+        "overview_failed": "Nie udało się wczytać przeglądu zgodności",
+        "history_failed": "Nie udało się wczytać historii zgodności",
+        "reset_success": "Reset cyklu zgodności",
+        "reset_failed": "Nie udało się zresetować cyklu zgodności",
+        "extend_success": "Termin spełnienia wymagań przedłużony",
+        "extend_failed": "Nie udało się przedłużyć terminu spełnienia wymagań",
+        "waive_success": "Odstąpiono od wymogu zgodności",
+        "waive_failed": "Nie udało się odstąpić od wymogu zgodności"
       }
     },
     "landing_page_settings": {
@@ -2965,6 +2980,9 @@
       "create_button": "Utwórz",
       "error": {
         "failed_to_clone": "Nie udało się sklonować kursu"
+      },
+      "success": {
+        "course_cloned": "Kurs został pomyślnie sklonowany"
       }
     },
     "new_course_modal": {
@@ -4218,6 +4236,10 @@
         }
       },
       "personal_page_subtitle": "Wybierz, które powiadomienia e-mail otrzymujesz od ClassroomIO."
+    },
+    "account": {
+      "language": "Język",
+      "select_language": "Wybierz język"
     }
   },
   "profileMenu": {
@@ -4302,7 +4324,9 @@
       }
     },
     "cancel": "Anuluj",
-    "save": "Zapisz"
+    "save": "Zapisz",
+    "next": "Następny",
+    "previous": "Poprzedni"
   },
   "welcome_modal": {
     "we_at": "My o",
@@ -5284,7 +5308,8 @@
       "inheritance_description": "Dziedzicz ustawienia domyślne obszaru roboczego lub ustawiaj zastąpienia dla poszczególnych kursów."
     },
     "snackbar": {
-      "saved": "Ustawienia nauczyciela AI zostały zapisane"
+      "saved": "Ustawienia nauczyciela AI zostały zapisane",
+      "fetchError": "Nie udało się załadować ustawień nauczyciela AI"
     },
     "state": {
       "loading": "Ładowanie ustawień nauczyciela AI…"
