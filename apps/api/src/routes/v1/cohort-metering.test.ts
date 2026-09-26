@@ -78,6 +78,20 @@ vi.mock('@api/services/v1/cohort-invite', () => ({
   createPublicApiCohortInviteLinkService: mocks.ok(),
   setPublicApiCohortInviteLinkRevokedService: mocks.ok()
 }));
+vi.mock('@api/services/v1/analytics', () => ({
+  getPublicApiAnalyticsOverviewService: mocks.ok(),
+  getPublicApiAnalyticsTrafficService: mocks.ok(),
+  getPublicApiAnalyticsCountriesService: mocks.ok(),
+  getPublicApiAnalyticsFunnelService: mocks.ok(),
+  getPublicApiAnalyticsCourseTypesService: mocks.ok(),
+  getPublicApiAnalyticsTopCoursesService: mocks.ok(),
+  getPublicApiLoginActivityService: mocks.ok(),
+  getPublicApiComplianceOverviewService: mocks.ok(),
+  listPublicApiComplianceLearnersService: mocks.ok(),
+  getPublicApiLearnerAnalyticsService: mocks.ok(),
+  getPublicApiCourseAnalyticsService: mocks.ok(),
+  listPublicApiCourseAnalyticsStudentsService: mocks.ok()
+}));
 
 import { v1Router } from './index';
 
@@ -127,6 +141,21 @@ const CASES: [string, string, unknown, string][] = [
   ['POST', `/cohorts/${C}/goals/${G}/evaluate`, undefined, 'evaluate_cohort_goal']
 ];
 
+const ANALYTICS_CASES: [string, string][] = [
+  ['/analytics/overview', 'get_org_analytics_overview'],
+  ['/analytics/traffic?days=7', 'get_org_traffic_analytics'],
+  ['/analytics/countries', 'get_org_country_analytics'],
+  [`/analytics/funnel?courseId=${X}`, 'get_org_funnel_analytics'],
+  ['/analytics/course-types', 'get_org_course_type_analytics'],
+  ['/analytics/top-courses', 'get_org_top_courses_analytics'],
+  ['/analytics/login-activity', 'get_org_login_activity'],
+  ['/analytics/compliance', 'get_org_compliance_overview'],
+  ['/analytics/compliance/learners', 'list_org_compliance_learners'],
+  [`/analytics/learners/${X}`, 'get_learner_analytics'],
+  [`/courses/${C}/analytics`, 'get_course_analytics'],
+  [`/courses/${C}/analytics/students`, 'list_course_analytics_students']
+];
+
 const app = new Hono().route('/public-api/v1', v1Router);
 
 describe('default MCP key through the real v1 cohort routers (scopes and metering)', () => {
@@ -162,6 +191,37 @@ describe('default MCP key through the real v1 cohort routers (scopes and meterin
       method,
       headers: { Authorization: 'Bearer cio_mcp_test', 'content-type': 'application/json' },
       body: method === 'PUT' ? JSON.stringify({ title: 'Renamed' }) : undefined
+    });
+
+    expect(response.status).toBe(403);
+    expect(mocks.complete).not.toHaveBeenCalled();
+  });
+});
+
+describe('default MCP key through the real v1 analytics routers (scopes and metering)', () => {
+  beforeEach(() => {
+    mocks.complete.mockReset().mockResolvedValue(undefined);
+    mocks.authenticate.mockResolvedValue({
+      id: 'key-id',
+      organizationId: 'org-id',
+      createdByProfileId: 'actor-id',
+      type: 'mcp',
+      scopes: ['cohort:read', 'cohort:write', 'analytics:read']
+    });
+  });
+
+  it.each(ANALYTICS_CASES)('GET %s is metered as %s', async (path, toolName) => {
+    const response = await app.request(`/public-api/v1${path}`, {
+      headers: { Authorization: 'Bearer cio_mcp_test' }
+    });
+
+    expect(response.status).toBe(200);
+    expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, 0);
+  });
+
+  it.each([`/courses/${C}`, `/courses/${C}/students`])('keeps analytics:read out of GET %s', async (path) => {
+    const response = await app.request(`/public-api/v1${path}`, {
+      headers: { Authorization: 'Bearer cio_mcp_test' }
     });
 
     expect(response.status).toBe(403);

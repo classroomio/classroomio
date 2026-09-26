@@ -5,10 +5,17 @@ import { ErrorCodes } from '@api/utils/errors';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
+const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
+  const isRead = method === 'GET' || method === 'HEAD';
+
   if (COHORT_PATH.test(path)) {
-    return method === 'GET' || method === 'HEAD' ? 'cohort:read' : 'cohort:write';
+    return isRead ? 'cohort:read' : 'cohort:write';
+  }
+
+  if (ANALYTICS_PATH.test(path) && isRead) {
+    return 'analytics:read';
   }
 
   return null;

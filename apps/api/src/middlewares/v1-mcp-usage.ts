@@ -45,7 +45,19 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     PUT: 'update_cohort_goal',
     DELETE: 'delete_cohort_goal'
   },
-  '/public-api/v1/cohorts/:cohortId/goals/:goalId/archive': { POST: 'archive_cohort_goal' }
+  '/public-api/v1/cohorts/:cohortId/goals/:goalId/archive': { POST: 'archive_cohort_goal' },
+  '/public-api/v1/analytics/overview': { GET: 'get_org_analytics_overview' },
+  '/public-api/v1/analytics/traffic': { GET: 'get_org_traffic_analytics' },
+  '/public-api/v1/analytics/countries': { GET: 'get_org_country_analytics' },
+  '/public-api/v1/analytics/funnel': { GET: 'get_org_funnel_analytics' },
+  '/public-api/v1/analytics/course-types': { GET: 'get_org_course_type_analytics' },
+  '/public-api/v1/analytics/top-courses': { GET: 'get_org_top_courses_analytics' },
+  '/public-api/v1/analytics/login-activity': { GET: 'get_org_login_activity' },
+  '/public-api/v1/analytics/compliance': { GET: 'get_org_compliance_overview' },
+  '/public-api/v1/analytics/compliance/learners': { GET: 'list_org_compliance_learners' },
+  '/public-api/v1/analytics/learners/:profileId': { GET: 'get_learner_analytics' },
+  '/public-api/v1/courses/:courseId/analytics': { GET: 'get_course_analytics' },
+  '/public-api/v1/courses/:courseId/analytics/students': { GET: 'list_course_analytics_students' }
 };
 
 function resolveMcpToolName(method: string, routePath: string): TMcpToolName | undefined {

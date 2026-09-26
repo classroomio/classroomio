@@ -65,7 +65,19 @@ export const MCP_TOOL_CREDIT_COST = {
   assign_students_to_cohort: 1,
   get_cohort_invite_link: 0,
   create_cohort_invite_link: 1,
-  set_cohort_invite_link_revoked: 1
+  set_cohort_invite_link_revoked: 1,
+  get_org_analytics_overview: 0,
+  get_org_traffic_analytics: 0,
+  get_org_country_analytics: 0,
+  get_org_funnel_analytics: 0,
+  get_org_course_type_analytics: 0,
+  get_org_top_courses_analytics: 0,
+  get_org_login_activity: 0,
+  get_org_compliance_overview: 0,
+  list_org_compliance_learners: 0,
+  get_learner_analytics: 0,
+  get_course_analytics: 0,
+  list_course_analytics_students: 0
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -153,7 +165,19 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_org_goals_overview' ||
     toolName === 'list_my_enrolled_cohorts' ||
     toolName === 'list_my_cohort_goals' ||
-    toolName === 'get_cohort_invite_link'
+    toolName === 'get_cohort_invite_link' ||
+    toolName === 'get_org_analytics_overview' ||
+    toolName === 'get_org_traffic_analytics' ||
+    toolName === 'get_org_country_analytics' ||
+    toolName === 'get_org_funnel_analytics' ||
+    toolName === 'get_org_course_type_analytics' ||
+    toolName === 'get_org_top_courses_analytics' ||
+    toolName === 'get_org_login_activity' ||
+    toolName === 'get_org_compliance_overview' ||
+    toolName === 'list_org_compliance_learners' ||
+    toolName === 'get_learner_analytics' ||
+    toolName === 'get_course_analytics' ||
+    toolName === 'list_course_analytics_students'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

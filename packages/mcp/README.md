@@ -94,6 +94,18 @@ Current tools:
 - `get_cohort_invite_link`
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
+- `get_org_analytics_overview`
+- `get_org_traffic_analytics`
+- `get_org_country_analytics`
+- `get_org_funnel_analytics`
+- `get_org_course_type_analytics`
+- `get_org_top_courses_analytics`
+- `get_org_login_activity`
+- `get_org_compliance_overview`
+- `list_org_compliance_learners`
+- `get_learner_analytics`
+- `get_course_analytics`
+- `list_course_analytics_students`
 
 ## Auth Model
 
@@ -110,7 +122,7 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so they can't reach the rest of the public API. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. MCP keys don't get `public_api:*`, so they can't reach the rest of the public API. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -124,6 +136,14 @@ Cohort tools act as the person who created the API key and follow the same rules
 `add_cohort_members` creates memberships directly and sends no email; `invite_students_to_cohort` is the dashboard invite flow (organization invites plus emails).
 
 List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `list_cohort_goals`, `list_cohort_newsfeed_comments`, `list_my_enrolled_cohorts`, `list_my_cohort_goals`, `get_org_goals_overview`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`. `list_cohort_newsfeed` is cursor-based: pass the returned `nextCursor` back as `cursor`.
+
+Analytics tools are read-only, cost no credits, and act as the key creator:
+
+- Organization overview, traffic, countries, funnel, course types, top courses, and `get_learner_analytics` need the key creator to be an org admin or tutor. (The dashboard server lets any org member read these; the tools follow the dashboard UI, where only admins and tutors reach the analytics pages.)
+- `get_org_login_activity`, `get_org_compliance_overview`, and `list_org_compliance_learners` need an org admin.
+- `get_course_analytics` and `list_course_analytics_students` need a course tutor/admin or an org admin.
+- Traffic-style tools take `days` (1-365, default 30; login activity defaults to 90) and may be up to 10 minutes stale (login activity up to 24 hours).
+- `list_org_compliance_learners` and `list_course_analytics_students` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
 
 ## Required Environment Variables
 

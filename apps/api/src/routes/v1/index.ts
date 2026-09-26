@@ -10,6 +10,7 @@ import { publicApiCors } from '@api/middlewares/cors';
 import { publicApiScopesMiddleware } from '@api/middlewares/public-api-scopes';
 import { v1McpUsageMiddleware } from '@api/middlewares/v1-mcp-usage';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
+import { v1AnalyticsRouter } from './analytics';
 import { v1AudienceRouter } from './audience';
 import { v1CohortsRouter } from './cohorts';
 import { v1CoursesRouter } from './courses';
@@ -35,6 +36,7 @@ export const v1Router = new Hono()
     })
   )
   .use('*', v1McpUsageMiddleware)
+  .route('/analytics', v1AnalyticsRouter)
   .route('/audience', v1AudienceRouter)
   .route('/courses', v1CoursesRouter)
   .route('/cohorts', v1CohortsRouter);

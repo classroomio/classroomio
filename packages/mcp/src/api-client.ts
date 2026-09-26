@@ -23,6 +23,9 @@ import type {
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
+  TPublicApiAnalyticsFunnelQuery,
+  TPublicApiAnalyticsRangeQuery,
+  TPublicApiLoginActivityQuery,
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseToCohort,
   TPublicApiAssignStudentsToCohort,
@@ -74,6 +77,14 @@ const toPageQuerySuffix = (query: Partial<TPublicApiPaginationQuery>) => {
   const searchParams = new URLSearchParams();
   if (query.page) searchParams.set('page', String(query.page));
   if (query.limit) searchParams.set('limit', String(query.limit));
+
+  return searchParams.toString() ? `?${searchParams.toString()}` : '';
+};
+
+const toAnalyticsQuerySuffix = (query: Partial<TPublicApiAnalyticsFunnelQuery>) => {
+  const searchParams = new URLSearchParams();
+  if (query.days) searchParams.set('days', String(query.days));
+  if (query.courseId) searchParams.set('courseId', query.courseId);
 
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
 };
@@ -416,6 +427,58 @@ export class ClassroomIoApiClient {
 
   async setCohortInviteLinkRevoked(cohortId: string, payload: TPublicApiSetCohortInviteLinkRevoked) {
     return this.request(`/public-api/v1/cohorts/${cohortId}/invite-link`, { method: 'PATCH', body: payload });
+  }
+
+  async getOrgAnalyticsOverview() {
+    return this.request('/public-api/v1/analytics/overview', { method: 'GET' });
+  }
+
+  async getOrgTrafficAnalytics(query: Partial<TPublicApiAnalyticsRangeQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/traffic${toAnalyticsQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getOrgCountryAnalytics(query: Partial<TPublicApiAnalyticsRangeQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/countries${toAnalyticsQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getOrgFunnelAnalytics(query: Partial<TPublicApiAnalyticsFunnelQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/funnel${toAnalyticsQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getOrgCourseTypeAnalytics(query: Partial<TPublicApiAnalyticsRangeQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/course-types${toAnalyticsQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getOrgTopCoursesAnalytics(query: Partial<TPublicApiAnalyticsRangeQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/top-courses${toAnalyticsQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getOrgLoginActivity(query: Partial<TPublicApiLoginActivityQuery> = {}) {
+    return this.request(`/public-api/v1/analytics/login-activity${toAnalyticsQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getOrgComplianceOverview() {
+    return this.request('/public-api/v1/analytics/compliance', { method: 'GET' });
+  }
+
+  async listOrgComplianceLearners(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/analytics/compliance/learners${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getLearnerAnalytics(profileId: string) {
+    return this.request(`/public-api/v1/analytics/learners/${profileId}`, { method: 'GET' });
+  }
+
+  async getCourseAnalytics(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/analytics`, { method: 'GET' });
+  }
+
+  async listCourseAnalyticsStudents(courseId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/analytics/students${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
   }
 
   private async requestRaw<TResponse>(
