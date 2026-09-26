@@ -80,7 +80,7 @@ async function loadCertificateInput(courseId: string, userId: string, body: TCer
 
   await assertCertificateDownloadAllowed(courseId, userId);
 
-  return assembleCertificateRender(courseId, body);
+  return assembleCertificateRender(courseId, body, undefined, userId);
 }
 
 const enrollRateLimit = createRateLimiter({

@@ -3621,7 +3621,11 @@ export const learningPath = pgTable(
       name: 'learning_path_created_by_profile_id_fkey'
     }),
     unique('learning_path_public_id_unique').on(table.publicId),
-    unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
+    // Partial index (not a plain unique constraint) so soft-deleted rows keep
+    // their slug without blocking reuse.
+    uniqueIndex('idx_learning_path_org_slug_active')
+      .on(table.organizationId, table.slug)
+      .where(sql`${table.status} != 'DELETED'`),
     index('idx_learning_path_organization_id').on(table.organizationId),
     index('idx_learning_path_organization_id_is_published').on(table.organizationId, table.isPublished)
   ]

@@ -54,9 +54,34 @@
 
   const store = new ParameterizedCertificateEditorStore();
 
+  let isInitialized = false;
+
   $effect.pre(() => {
-    store.init(initialDesign, onSave);
+    if (!isInitialized || !store.isDirty) {
+      store.init(initialDesign, onSave);
+      isInitialized = true;
+    }
   });
+
+  async function handleExport(action?: () => Promise<void>): Promise<void> {
+    if (store.isDirty) {
+      await store.save();
+    }
+
+    await action?.();
+  }
+
+  function handleDownloadPdfExport(): Promise<void> {
+    return handleExport(onDownloadPdf);
+  }
+
+  function handleDownloadPngExport(): Promise<void> {
+    return handleExport(onDownloadPng);
+  }
+
+  function handlePrintExport(): Promise<void> {
+    return handleExport(onPrint);
+  }
 
   const activeTemplateMeta = $derived(
     CERTIFICATE_TEMPLATES.find((tpl) => tpl.id === store.draft.templateId) ?? CERTIFICATE_TEMPLATES[0]
@@ -189,7 +214,12 @@
             onSelect={(color) => store.setAccent(color)}
           />
         {:else if store.activePanel === 'export'}
-          <ExportPanel disabled={isFreePlan} {onDownloadPdf} {onDownloadPng} {onPrint} />
+          <ExportPanel
+            disabled={isFreePlan}
+            onDownloadPdf={handleDownloadPdfExport}
+            onDownloadPng={handleDownloadPngExport}
+            onPrint={handlePrintExport}
+          />
         {/if}
       </div>
     </aside>

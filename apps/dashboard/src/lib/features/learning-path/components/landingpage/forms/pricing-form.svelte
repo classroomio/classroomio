@@ -2,6 +2,7 @@
   import type { TLandingPage } from '@cio/utils/validation/learning-path';
   import type { LearningPathDetail } from '$features/learning-path/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { normalizeIntegerInput } from '@cio/utils/functions';
   import { PricingFormView } from '$features/ui';
 
   interface Props {
@@ -49,11 +50,11 @@
     currency = curr === 'NGN' ? 'NGN' : 'USD';
   }}
   onCostChange={(val) => {
-    cost = val;
+    cost = normalizeIntegerInput(val);
   }}
   onPaymentLinkChange={(val) => onChange({ paymentLink: val })}
   onShowDiscountChange={(checked) => onChange({ showDiscount: checked })}
-  onDiscountChange={(val) => onChange({ discount: val })}
+  onDiscountChange={(val) => onChange({ discount: normalizeIntegerInput(val, 0, 100) })}
   onGiftToggleChange={(checked) =>
     onChange({
       reward: {

@@ -9,6 +9,7 @@
   import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
   import StarIcon from '@lucide/svelte/icons/star';
   import { t } from '$lib/utils/functions/translations';
+  import { toFiniteNumber } from '@cio/utils/functions';
   import type { TLandingPage, TLandingPageReview } from '@cio/utils/validation/learning-path';
   import { AddSectionButton } from '$features/ui';
   import { parseInitialPathReviews } from '../../../utils/landing-page-utils';
@@ -22,6 +23,15 @@
 
   let reviews = $state<TLandingPageReview[]>(parseInitialPathReviews(landingPage));
   let expandedIndex = $state<number | null>(null);
+
+  // Raw rating text while typing, keyed by item id. Intermediate keystrokes
+  // are never force-rewritten; the rounded/clamped rating commits on blur
+  // so the input always shows what will be saved.
+  let ratingDrafts = $state<Record<string, string>>({});
+
+  function ratingKey(item: TLandingPageReview, index: number): string {
+    return String(item.id ?? index);
+  }
 
   $effect(() => {
     const next = parseInitialPathReviews(landingPage);
@@ -45,6 +55,8 @@
   }
 
   function handleRemove(index: number) {
+    const removedItem = reviews[index];
+    if (removedItem) delete ratingDrafts[ratingKey(removedItem, index)];
     const next = reviews.filter((_, i) => i !== index);
     reviews = next;
     if (expandedIndex === index) {
@@ -63,6 +75,29 @@
     };
     reviews = next;
     onChange({ reviews: next });
+  }
+
+  function commitRating(index: number) {
+    const item = reviews[index];
+    if (!item) return;
+
+    const key = ratingKey(item, index);
+    if (!(key in ratingDrafts)) return;
+
+    const raw = ratingDrafts[key];
+    delete ratingDrafts[key];
+
+    if (raw.trim() === '') {
+      if (item.rating !== null) handleUpdateItem(index, { rating: null });
+      return;
+    }
+
+    const parsed = toFiniteNumber(raw);
+    if (parsed === undefined) return;
+
+    const normalized = Math.max(1, Math.min(5, Math.round(parsed)));
+
+    if (normalized !== item.rating) handleUpdateItem(index, { rating: normalized });
   }
 </script>
 
@@ -83,7 +118,7 @@
               </span>
               {#if item.rating !== null}
                 <div class="flex items-center text-amber-500">
-                  {#each Array(item.rating) as _, starIdx (starIdx)}
+                  {#each Array(Math.max(0, Math.round(item.rating))) as _, starIdx (starIdx)}
                     <StarIcon size={12} class="fill-current text-amber-500" />
                   {/each}
                 </div>
@@ -150,14 +185,14 @@
                 type="number"
                 min="1"
                 max="5"
-                value={item.rating ?? ''}
+                step="1"
+                value={ratingDrafts[ratingKey(item, index)] ?? item.rating ?? ''}
                 placeholder={$t('learningPath.landing.reviews.rating_placeholder')}
                 class="mt-1 h-8 text-xs"
                 oninput={(e) => {
-                  const val = (e.currentTarget as HTMLInputElement).value;
-                  const parsed = val === '' ? null : Math.max(1, Math.min(5, Number(val) || 5));
-                  handleUpdateItem(index, { rating: parsed });
+                  ratingDrafts[ratingKey(item, index)] = (e.currentTarget as HTMLInputElement).value;
                 }}
+                onblur={() => commitRating(index)}
               />
             </div>
             <div>

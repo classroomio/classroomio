@@ -16,25 +16,25 @@
     "add": "Thêm",
     "remove": "Xóa",
     "back": "Quay lại",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
+    "close": "Đóng",
+    "edit": "Chỉnh sửa",
+    "coming_soon": "Sắp ra mắt",
     "pricing": {
       "enable_paid": "Bật trả phí",
       "yes": "Có",
       "no": "Không",
       "currency": "Tiền tệ",
       "cost": "Chi phí",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required",
-      "payment_invalid_url": "Please enter a valid URL",
+      "payment_link": "Liên kết thanh toán",
+      "payment_required": "Liên kết thanh toán là bắt buộc khi bật chế độ trả phí",
+      "payment_invalid_url": "Vui lòng nhập URL hợp lệ",
       "discount": "Giảm giá",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer learners an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "show_discount": "Hiển thị giảm giá",
+      "discount_percentage": "Phần trăm giảm giá",
+      "reward": "Phần thưởng / Quà tặng",
+      "reward_help": "Tặng học viên một ưu đãi khi hoàn thành",
+      "reward_description": "Mô tả phần thưởng",
+      "placeholder_reward": "ví dụ: buổi cố vấn 1-1, quà lưu niệm hoặc quyền truy cập cộng đồng độc quyền"
     }
   },
   "validations": {
@@ -5642,7 +5642,7 @@
       "share": "Chia sẻ",
       "invite": "Mời",
       "delete": "Xóa",
-      "view_as_student": "View as student"
+      "view_as_student": "Xem với tư cách sinh viên"
     },
     "card": {
       "actions_menu_aria": "Hành động đường dẫn",
@@ -5666,8 +5666,9 @@
       "tutor_removed": "Đã xóa gia sư khỏi lộ trình",
       "certificate_saved": "Đã lưu cài đặt chứng chỉ",
       "landing_saved": "Đã cập nhật trang đích",
-      "link_generated": "Invite link generated and copied to clipboard",
-      "settings_saved": "Learning path settings updated"
+      "landing_save_failed": "Không thể lưu trang đích",
+      "link_generated": "Đã tạo liên kết mời và sao chép vào bảng nhớ tạm",
+      "settings_saved": "Đã cập nhật cài đặt lộ trình học tập"
     },
     "analytics": {
       "title": "Phân tích",
@@ -5773,14 +5774,14 @@
         "completed": "Đã hoàn thành"
       },
       "info_title": "Giới thiệu về đăng ký lộ trình",
-      "add": "Add",
-      "last_login_at": "Last login at",
-      "you": "You",
-      "view": "View",
-      "delete_profile": "Remove",
+      "add": "Thêm",
+      "last_login_at": "Lần đăng nhập cuối",
+      "you": "Bạn",
+      "view": "Xem",
+      "delete_profile": "Xóa",
       "invite_modal": {
-        "loading": "Adding…",
-        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "loading": "Đang thêm…",
+        "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong gói của mình. Nâng cấp để thêm sinh viên.",
         "invite": "Mời gia sư",
         "invite_students": "Mời sinh viên",
         "finish": "Kết thúc"
@@ -5819,26 +5820,26 @@
       "skills": {
         "title": "Kỹ năng",
         "placeholder": "ví dụ: TypeScript, Docker, PostgreSQL",
-        "help": "Press Enter to add. These appear as chips on your landing page."
+        "help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip trên trang đích của bạn."
       },
       "instructors": {
         "title": "Giảng viên",
         "auto_populated_note": "Giảng viên được tự động tổng hợp từ các khóa học trong lộ trình này.",
         "courses_note": "{count, plural, =0 {Chưa có khóa học nào được thêm} =1 {Được lấy từ 1 khóa học trong lộ trình này} other {Được lấy từ tất cả # khóa học trong lộ trình này}}",
-        "role_placeholder": "e.g. Lead Instructor · Frontend",
-        "default_role": "Course Instructor",
-        "untitled": "Untitled instructor",
-        "add": "Add instructor",
-        "no_tutors_found": "No instructors found",
-        "min_one_required": "At least one instructor is required",
-        "remove": "Remove instructor",
-        "upload": "Instructor Logo",
-        "name": "Instructor name",
-        "name_placeholder": "Your company name",
-        "role": "Instructor Role",
-        "about": "About Instructor",
-        "about_placeholder": "A short background about the instructor",
-        "total": "No of courses"
+        "role_placeholder": "ví dụ: Giảng viên chính · Frontend",
+        "default_role": "Giảng viên khóa học",
+        "untitled": "Giảng viên chưa có tên",
+        "add": "Thêm giảng viên",
+        "no_tutors_found": "Không tìm thấy giảng viên nào",
+        "min_one_required": "Cần ít nhất một giảng viên",
+        "remove": "Xóa giảng viên",
+        "upload": "Logo giảng viên",
+        "name": "Tên giảng viên",
+        "name_placeholder": "Tên công ty của bạn",
+        "role": "Vai trò giảng viên",
+        "about": "Về giảng viên",
+        "about_placeholder": "Tiểu sử ngắn về giảng viên",
+        "total": "Tổng số khóa học"
       },
       "testimonials": {
         "title": "Cảm nhận của học viên",
@@ -5854,49 +5855,49 @@
         "question": "Câu hỏi",
         "answer": "Câu trả lời",
         "add": "Thêm câu hỏi",
-        "question_placeholder": "What is required to complete this path?",
-        "answer_placeholder": "You must complete all lessons and exercises in every course."
+        "question_placeholder": "Cần điều kiện gì để hoàn thành lộ trình này?",
+        "answer_placeholder": "Bạn phải hoàn thành tất cả bài học và bài tập trong mọi khóa học."
       },
       "header": {
-        "title_placeholder": "e.g. Fullstack Web Development",
-        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
-        "title": "Header",
-        "title_label": "Title",
-        "description_label": "Description"
+        "title_placeholder": "Ví dụ: Phát triển Web Fullstack",
+        "description_placeholder": "Tổng quan toàn diện về những gì người học sẽ đạt được...",
+        "title": "Tiêu đề",
+        "title_label": "Tiêu đề",
+        "description_label": "Mô tả"
       },
       "reviews": {
-        "title": "Reviews",
-        "untitled": "Untitled review",
+        "title": "Đánh giá",
+        "untitled": "Đánh giá chưa có tiêu đề",
         "name_placeholder": "Jane Doe",
         "avatar_placeholder": "https://...",
-        "avatar_url": "Avatar image URL",
-        "rating_placeholder": "Optional (1-5)",
-        "clear_rating": "Clear rating",
-        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
-        "add_reviews": "Add Reviews",
-        "fullname": "Full Name",
-        "description": "Description",
-        "rating": "Rating"
+        "avatar_url": "URL ảnh đại diện",
+        "rating_placeholder": "Tùy chọn (1-5)",
+        "clear_rating": "Xóa đánh giá",
+        "description_placeholder": "Lộ trình học tập này đã mang lại cho tôi đúng kỹ năng và sự tự tin mà tôi cần.",
+        "add_reviews": "Thêm đánh giá",
+        "fullname": "Tên đầy đủ",
+        "description": "Mô tả",
+        "rating": "Đánh giá"
       },
-      "preview": "Preview",
-      "save": "Save",
+      "preview": "Xem trước",
+      "save": "Lưu",
       "requirement": {
-        "title": "Requirement"
+        "title": "Yêu cầu"
       },
       "description": {
-        "title": "Description"
+        "title": "Mô tả"
       },
       "goals": {
-        "title": "Goals"
+        "title": "Mục tiêu"
       },
       "certificate": {
-        "title": "Certificate",
-        "upload_template": "Certificate template"
+        "title": "Chứng chỉ",
+        "upload_template": "Mẫu chứng chỉ"
       },
       "pricing": {
-        "title": "Pricing",
-        "payment_required": "Payment link is required",
-        "payment_invalid_url": "Please enter a valid URL",
+        "title": "Định giá",
+        "payment_required": "Cần có liên kết thanh toán cho lộ trình trả phí",
+        "payment_invalid_url": "Vui lòng nhập URL hợp lệ (ví dụ: https://pay.example.com)",
         "enable_paid": "Bật trả phí",
         "currency": "Tiền tệ",
         "cost": "Chi phí",
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "Tải lên ảnh bìa cho lộ trình học tập này. Kích thước khuyến nghị: 1200x630px.",
         "replace_image": "Thay ảnh",
         "reset_image": "Đặt lại",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
-        "open_link": "Open link in new tab",
-        "copy_link": "Copy link",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "link": "Liên kết lộ trình",
+        "generate_link": "Tạo liên kết mới",
+        "open_link": "Mở liên kết trong tab mới",
+        "copy_link": "Sao chép liên kết",
+        "setup_landing_for_link": "Thiết lập landing page để lấy link lộ trình"
       },
       "enrollment": {
         "legend": "Đăng ký & Tiến trình",
@@ -5947,21 +5948,21 @@
         "desc": "Hiển thị lộ trình học tập này cho học viên.",
         "publish_label": "Xuất bản lộ trình học tập",
         "publish_desc": "Hiển thị lộ trình này và mở cổng đăng ký.",
-        "published": "Published",
-        "unpublished": "Unpublished"
+        "published": "Đã xuất bản",
+        "unpublished": "Chưa được xuất bản"
       },
       "danger": {
         "legend": "Khu vực nguy hiểm",
         "desc": "Xóa vĩnh viễn lộ trình học tập này và toàn bộ dữ liệu liên quan.",
         "delete_button": "Xóa lộ trình học tập",
-        "delete_title": "Delete Learning Path",
-        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+        "delete_title": "Xóa lộ trình học tập",
+        "delete_description": "Bạn có chắc chắn muốn xóa \"{name}\" không? Hành động này không thể hoàn tác."
       },
       "cover_image": {
-        "legend": "Cover Image",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
-        "reset": "Reset",
+        "legend": "Ảnh bìa",
+        "desc": "Nếu bạn thêm ảnh bìa, kích thước tối thiểu là 280 x 200.",
+        "replace": "Thay thế",
+        "reset": "Đặt lại",
         "alt": "Bìa đường dẫn"
       },
       "welcome_email": {
@@ -5976,28 +5977,28 @@
         "sequential": "Sequential (must complete in order)"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
+        "legend": "Học viên có thể tự đăng ký",
         "access": "Manage access in {people}",
-        "access_people": "People",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "access_people": "Mọi người",
+        "enabled": "Đã bật",
+        "disabled": "Đã tắt"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "legend": "Tự động đăng ký vào các khóa học trong lộ trình",
+        "desc": "Tham gia lộ trình sẽ đăng ký học viên vào mọi khóa học trong lộ trình.",
+        "enabled": "Đã bật",
+        "disabled": "Đã tắt"
       }
     },
     "courses": {
-      "lessons": "Lessons",
-      "exercises": "Exercises"
+      "lessons": "Bài học",
+      "exercises": "Bài tập"
     },
     "view_as_student": {
-      "title": "This will redirect you to the Student LMS.",
-      "description": "You are about to see what a student will see when they enroll in this learning path",
-      "copy_link": "Copy link",
-      "go_to_lms": "Go to LMS"
+      "title": "Thao tác này sẽ chuyển hướng bạn đến LMS dành cho học viên.",
+      "description": "Bạn sắp biết học viên sẽ thấy gì khi họ đăng ký vào lộ trình học tập này",
+      "copy_link": "Sao chép liên kết",
+      "go_to_lms": "Đi tới LMS"
     }
   },
   "certificate": {

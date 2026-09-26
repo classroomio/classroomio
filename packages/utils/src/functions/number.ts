@@ -18,6 +18,21 @@ export function toFiniteNumber(value: unknown): number | undefined {
   return undefined;
 }
 
+/**
+ * Normalizes free-typed numeric input to a whole number clamped to [min, max].
+ * Non-numeric input falls back to min so empty or invalid text cannot reach
+ * the payload.
+ */
+export function normalizeIntegerInput(value: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): number {
+  const parsed = toFiniteNumber(value);
+
+  if (parsed === undefined) {
+    return min;
+  }
+
+  return Math.max(min, Math.min(max, Math.round(parsed)));
+}
+
 const COMPACT_COUNT_UNITS = [
   { suffix: 'b', divisor: 1_000_000_000 },
   { suffix: 'm', divisor: 1_000_000 },

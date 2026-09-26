@@ -16,25 +16,25 @@
     "add": "Hinzufügen",
     "remove": "Entfernen",
     "back": "Zurück",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
+    "close": "Schließen",
+    "edit": "Bearbeiten",
+    "coming_soon": "Kommt bald",
     "pricing": {
       "enable_paid": "Bezahlt aktivieren",
       "yes": "Ja",
       "no": "Nein",
       "currency": "Währung",
-      "cost": "Kosten",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required",
-      "payment_invalid_url": "Please enter a valid URL",
+      "cost": "Preis",
+      "payment_link": "Zahlungslink",
+      "payment_required": "Ein Zahlungslink ist erforderlich, wenn „Bezahlt“ aktiviert ist",
+      "payment_invalid_url": "Bitte geben Sie eine gültige URL ein",
       "discount": "Rabatt",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer learners an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "show_discount": "Rabatt anzeigen",
+      "discount_percentage": "Rabattprozentsatz",
+      "reward": "Belohnung / Geschenk",
+      "reward_help": "Bieten Sie Lernenden bei Abschluss einen Anreiz",
+      "reward_description": "Belohnungsbeschreibung",
+      "placeholder_reward": "z. B. 1-zu-1-Mentoring-Sitzung, Swag oder exklusiver Community-Zugang"
     }
   },
   "validations": {
@@ -440,10 +440,10 @@
       "url_copied": "Kurs-URL kopiert",
       "url_copy_failed": "URL konnte nicht kopiert werden"
     },
-    "transcription_started": "Transcription started",
-    "transcription_start_failed": "Could not start transcription",
-    "transcription_completed": "Transcription finished",
-    "transcript_fetch_failed": "Could not load transcript",
+    "transcription_started": "Die Transkription hat begonnen",
+    "transcription_start_failed": "Die Transkription konnte nicht gestartet werden",
+    "transcription_completed": "Transkription abgeschlossen",
+    "transcript_fetch_failed": "Das Transkript konnte nicht geladen werden",
     "account": {
       "workspaceCreated": "Arbeitsbereich erstellt",
       "workspaceDeleted": "Arbeitsbereich gelöscht",
@@ -5526,7 +5526,7 @@
         "landing": "Landingpage",
         "certificate": "Zertifikate",
         "settings": "Einstellungen",
-        "setup": "Aufstellen"
+        "setup": "Einrichtung"
       },
       "publish_path": "Pfad veröffentlichen",
       "unpublish_path": "Veröffentlichungspfad aufheben",
@@ -5546,25 +5546,25 @@
     },
     "setup": {
       "title": "Lernpfad einrichten",
-      "subtitle": "Führe diese Schritte aus, um {name} für deine Lernenden freizuschalten.",
-      "summary": "Ein Lernpfad wird freigeschaltet, sobald die Kurse bestellt, bepreist und aktiviert sind.",
+      "subtitle": "Schließen Sie diese Schritte ab, um {name} für Ihre Lernenden freizuschalten.",
+      "summary": "Ein Lernpfad wird live geschaltet, sobald seine Kurse geordnet, bepreist und veröffentlicht sind.",
       "progress": "{completed} von {total} abgeschlossen",
       "done": "Fertig",
       "launch_title": "{count} {count, plural, =1 {Schritt} other {Schritte}} bis zur Veröffentlichung",
-      "launch_desc": "Bestelle die Kurse, lege einen Preis fest, optimiere die Landingpage und aktiviere den Lernpfad.",
-      "activate_now": "Jetzt aktivieren",
-      "step_name_title": "Benenne und beschreibe deinen Lernpfad",
-      "step_name_desc": "Gib dem Lernpfad einen aussagekräftigen, ergebnisorientierten Namen und eine kurze Zusammenfassung.",
+      "launch_desc": "Ordnen Sie die Kurse, legen Sie einen Preis fest, gestalten Sie die Landingpage und veröffentlichen Sie sie.",
+      "activate_now": "Jetzt veröffentlichen",
+      "step_name_title": "Benennen und beschreiben Sie Ihren Pfad",
+      "step_name_desc": "Geben Sie dem Lernpfad einen aussagekräftigen, ergebnisorientierten Namen und eine kurze Zusammenfassung.",
       "step_name_action": "Details bearbeiten",
       "step_courses_title": "Kurse hinzufügen",
       "step_courses_desc": "Wählen Sie die Kurse aus, die diesen Lernpfad bilden.",
       "step_courses_action": "Kurse hinzufügen",
       "step_order_title": "Kursreihenfolge festlegen",
       "step_order_desc": "Ordnen Sie die Kurse in der Reihenfolge an, in der die Lernenden sie absolvieren sollen.",
-      "step_order_action": "Bestellung festlegen",
+      "step_order_action": "Reihenfolge festlegen",
       "step_price_title": "Legen Sie Ihren Preis fest",
       "step_price_desc": "Bieten Sie den Lernpfad als Paket an – so sehen die Lernenden die Einsparungen im Vergleich zu Einzelkursen.",
-      "step_price_action": "Festpreis",
+      "step_price_action": "Preis festlegen",
       "step_landing_title": "Passen Sie Ihre Landingpage an",
       "step_landing_desc": "Ergebnisse, Fähigkeiten, Ausbilder, Erfahrungsberichte und FAQs auf der öffentlichen Pfadseite.",
       "step_landing_action": "Anpassen",
@@ -5581,20 +5581,20 @@
       "drag_hint": "Zum Neuanordnen ziehen",
       "lessons_count": "{count} {count, plural, =1 {Lektion} other {Lektionen}}",
       "exercises_count": "{count} {count, plural, =1 {Übung} other {Übungen}}",
-      "open_course": "Offener Kurs",
+      "open_course": "Kurs öffnen",
       "remove_course": "Aus Pfad entfernen",
-      "add_course_button": "Füge dem Pfad einen Kurs hinzu",
+      "add_course_button": "Kurse hinzufügen",
       "empty_title": "Noch keine Kurse in diesem Lernpfad",
       "empty_description": "Fügen Sie Kurse hinzu, um die Lernenden durch eine strukturierte Abfolge zu führen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“.",
       "start_reorder": "Neu anordnen",
-      "end_reorder": "Nachbestellung beenden"
+      "end_reorder": "Neu anordnen beenden"
     },
     "listing": {
       "title": "Lernpfade",
       "subtitle": "Strukturierte Lernerfahrungen entwickeln und verwalten, die Lernende durch mehrere Kurse führen.",
       "create_path": "Lernpfad erstellen",
       "empty": {
-        "title": "Erstelle deinen ersten Lernpfad",
+        "title": "Erstellen Sie Ihren ersten Lernpfad",
         "description": "Mehrere Kurse lassen sich zu einer geordneten Abfolge zusammenfassen, inklusive Meilensteinverfolgung, Zugangskontrollen und optionalem Abschlusszertifikat.",
         "create_path": "Lernpfad erstellen",
         "no_matches_title": "Keine Lernpfade entsprechen Ihren aktiven Filtern",
@@ -5638,11 +5638,11 @@
       "publish_path": "Pfad veröffentlichen"
     },
     "context_menu": {
-      "open": "Offen",
+      "open": "Öffnen",
       "share": "Teilen",
       "invite": "Einladen",
       "delete": "Löschen",
-      "view_as_student": "View as student"
+      "view_as_student": "Studentenansicht"
     },
     "card": {
       "actions_menu_aria": "Pfadaktionen",
@@ -5666,8 +5666,9 @@
       "tutor_removed": "Tutor aus dem Pfad entfernt",
       "certificate_saved": "Zertifikatseinstellungen gespeichert",
       "landing_saved": "Landingpage aktualisiert",
-      "link_generated": "Invite link generated and copied to clipboard",
-      "settings_saved": "Learning path settings updated"
+      "landing_save_failed": "Landingpage konnte nicht gespeichert werden",
+      "link_generated": "Einladungslink generiert und in die Zwischenablage kopiert",
+      "settings_saved": "Lernpfadeinstellungen aktualisiert"
     },
     "analytics": {
       "title": "Analytik",
@@ -5719,7 +5720,7 @@
         "courses_completed": "Abgeschlossene Kurse"
       },
       "member": {
-        "courses_title": "Kurse in diesem Weg",
+        "courses_title": "Kurse",
         "remove": "Aus Pfad entfernen",
         "status": {
           "not_started": "Nicht gestartet",
@@ -5735,7 +5736,7 @@
       }
     },
     "people": {
-      "title": "Menschen",
+      "title": "Personen",
       "subtitle": "{count} {count, plural, =1 {Lernender} other {Lernende}} haben sich für diesen Pfad angemeldet",
       "info_banner": "Durch das Hinzufügen eines Lernenden zu diesem Pfad wird er automatisch für alle {count} {count, plural, =1 {Kurs} other {Kurse}} angemeldet. Durch das Entfernen bleiben der Kurszugriff und der Kursfortschritt erhalten.",
       "search_placeholder": "Nach Name oder E-Mail suchen…",
@@ -5773,14 +5774,14 @@
         "completed": "Abgeschlossen"
       },
       "info_title": "Informationen zur Pfadregistrierung",
-      "add": "Add",
-      "last_login_at": "Last login at",
-      "you": "You",
-      "view": "View",
-      "delete_profile": "Remove",
+      "add": "Hinzufügen",
+      "last_login_at": "Letzter Login am",
+      "you": "Du",
+      "view": "Ansicht",
+      "delete_profile": "Entfernen",
       "invite_modal": {
-        "loading": "Adding…",
-        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "loading": "Wird hinzugefügt…",
+        "student_limit_reached": "Sie haben Ihr Studentenlimit erreicht. Führen Sie ein Upgrade durch, um weitere Studierende hinzuzufügen.",
         "invite": "Laden Sie Tutoren ein",
         "invite_students": "Laden Sie Studierende ein",
         "finish": "Fertig"
@@ -5817,28 +5818,28 @@
         "preview_desc": "Besuchern erlauben, die erste Lektion jedes Kurses ohne Einschreibung anzusehen."
       },
       "skills": {
-        "title": "Fertigkeiten",
-        "placeholder": "z.B. TypeScript, Docker, PostgreSQL",
-        "help": "Press Enter to add. These appear as chips on your landing page."
+        "title": "Fähigkeiten, die Sie erwerben",
+        "placeholder": "z. B. TypeScript, Docker, PostgreSQL",
+        "help": "Drücken Sie die Eingabetaste, um hinzuzufügen. Diese werden als Chips auf Ihrer Landingpage angezeigt."
       },
       "instructors": {
         "title": "Kursleiter",
         "auto_populated_note": "Kursleiter werden automatisch aus den Kursen dieses Lernpfads übernommen.",
         "courses_note": "{count, plural, =0 {Noch keine Kurse hinzugefügt} =1 {Aus 1 Kurs in diesem Lernpfad übernommen} other {Aus allen # Kursen in diesem Lernpfad übernommen}}",
-        "role_placeholder": "e.g. Lead Instructor · Frontend",
-        "default_role": "Course Instructor",
-        "untitled": "Untitled instructor",
-        "add": "Add instructor",
-        "no_tutors_found": "No instructors found",
-        "min_one_required": "At least one instructor is required",
-        "remove": "Remove instructor",
-        "upload": "Instructor Logo",
-        "name": "Instructor name",
-        "name_placeholder": "Your company name",
-        "role": "Instructor Role",
-        "about": "About Instructor",
-        "about_placeholder": "A short background about the instructor",
-        "total": "No of courses"
+        "role_placeholder": "z. B. Hauptkursleiter · Frontend",
+        "default_role": "Kursleiter",
+        "untitled": "Unbenannter Kursleiter",
+        "add": "Kursleiter hinzufügen",
+        "no_tutors_found": "Keine Kursleiter gefunden",
+        "min_one_required": "Mindestens ein Kursleiter ist erforderlich",
+        "remove": "Kursleiter entfernen",
+        "upload": "Kursleiterlogo",
+        "name": "Name des Kursleiters",
+        "name_placeholder": "Ihr Firmenname",
+        "role": "Rolle des Kursleiters",
+        "about": "Über den Kursleiter",
+        "about_placeholder": "Kurzer Hintergrund zum Kursleiter",
+        "total": "Anzahl der Kurse"
       },
       "testimonials": {
         "title": "Erfahrungsberichte",
@@ -5854,49 +5855,49 @@
         "question": "Frage",
         "answer": "Antwort",
         "add": "FAQ hinzufügen",
-        "question_placeholder": "What is required to complete this path?",
-        "answer_placeholder": "You must complete all lessons and exercises in every course."
+        "question_placeholder": "Was ist erforderlich, um diesen Pfad abzuschließen?",
+        "answer_placeholder": "Sie müssen alle Lektionen und Übungen in jedem Kurs absolvieren."
       },
       "header": {
-        "title_placeholder": "e.g. Fullstack Web Development",
-        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
-        "title": "Header",
-        "title_label": "Title",
-        "description_label": "Description"
+        "title_placeholder": "z. B. Fullstack-Webentwicklung",
+        "description_placeholder": "Ein umfassender Überblick über das, was die Lernenden erreichen werden …",
+        "title": "Kopfbereich",
+        "title_label": "Titel",
+        "description_label": "Beschreibung"
       },
       "reviews": {
-        "title": "Reviews",
-        "untitled": "Untitled review",
+        "title": "Bewertungen",
+        "untitled": "Unbenannte Bewertung",
         "name_placeholder": "Jane Doe",
         "avatar_placeholder": "https://...",
-        "avatar_url": "Avatar image URL",
-        "rating_placeholder": "Optional (1-5)",
-        "clear_rating": "Clear rating",
-        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
-        "add_reviews": "Add Reviews",
-        "fullname": "Full Name",
-        "description": "Description",
-        "rating": "Rating"
+        "avatar_url": "Avatar-Bild-URL",
+        "rating_placeholder": "Optional (1–5)",
+        "clear_rating": "Bewertung löschen",
+        "description_placeholder": "Dieser Lernpfad hat mir genau die Fähigkeiten und das Selbstvertrauen gegeben, die ich brauchte.",
+        "add_reviews": "Bewertungen hinzufügen",
+        "fullname": "Vollständiger Name",
+        "description": "Beschreibung",
+        "rating": "Bewertung"
       },
-      "preview": "Preview",
-      "save": "Save",
+      "preview": "Vorschau",
+      "save": "Speichern",
       "requirement": {
-        "title": "Requirement"
+        "title": "Voraussetzung"
       },
       "description": {
-        "title": "Description"
+        "title": "Beschreibung"
       },
       "goals": {
-        "title": "Goals"
+        "title": "Ziele"
       },
       "certificate": {
-        "title": "Certificate",
-        "upload_template": "Certificate template"
+        "title": "Zertifikat",
+        "upload_template": "Zertifikatsvorlage"
       },
       "pricing": {
-        "title": "Pricing",
-        "payment_required": "Payment link is required",
-        "payment_invalid_url": "Please enter a valid URL",
+        "title": "Preise",
+        "payment_required": "Ein Zahlungslink ist erforderlich",
+        "payment_invalid_url": "Bitte geben Sie eine gültige URL ein",
         "enable_paid": "Bezahlt aktivieren",
         "currency": "Währung",
         "cost": "Kosten",
@@ -5914,23 +5915,23 @@
     "settings": {
       "title": "Einstellungen",
       "general": {
-        "legend": "Allgemeine Informationen",
+        "legend": "Pfaddetails",
         "desc": "Grundlegende Details zu diesem Lernpfad.",
-        "name_label": "Pfadname",
-        "name_placeholder": "z.B. Fullstack-Webentwicklung",
+        "name_label": "Pfadtitel",
+        "name_placeholder": "Schreiben Sie hier den Pfadtitel",
         "name_required": "Pfadname ist erforderlich",
-        "description_label": "Beschreibung",
-        "description_placeholder": "Eine kurze Zusammenfassung der Ziele für die Lernenden...",
+        "description_label": "Pfadbeschreibung",
+        "description_placeholder": "Schreiben Sie hier Ihre Pfadbeschreibung",
         "description_required": "Beschreibung ist erforderlich",
         "cover_image_legend": "Titelbild",
         "cover_image_desc": "Laden Sie ein Titelbild für diesen Lernpfad hoch. Empfohlene Größe: 1200x630px.",
         "replace_image": "Bild ersetzen",
         "reset_image": "Zurücksetzen",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
-        "open_link": "Open link in new tab",
-        "copy_link": "Copy link",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "link": "Pfadlink",
+        "generate_link": "Neuen Link generieren",
+        "open_link": "Link in neuem Tab öffnen",
+        "copy_link": "Link kopieren",
+        "setup_landing_for_link": "Richten Sie die Landingpage ein, um den Pfadlink zu erhalten"
       },
       "enrollment": {
         "legend": "Einschreibung & Ablauf",
@@ -5943,61 +5944,61 @@
         "auto_enroll_desc": "Lernende automatisch in alle Kurse einschreiben, sobald sie dem Pfad beitreten."
       },
       "publishing": {
-        "legend": "Veröffentlichung",
-        "desc": "Diesen Lernpfad für Lernende sichtbar machen.",
+        "legend": "Pfad veröffentlichen",
+        "desc": "Dies bestimmt, ob Ihr Pfad auf Ihrer Landingpage angezeigt wird.",
         "publish_label": "Lernpfad veröffentlichen",
         "publish_desc": "Diesen Lernpfad sichtbar machen und für Einschreibungen öffnen.",
-        "published": "Published",
-        "unpublished": "Unpublished"
+        "published": "Veröffentlicht",
+        "unpublished": "Unveröffentlicht"
       },
       "danger": {
-        "legend": "Gefahrenbereich",
-        "desc": "Diesen Lernpfad und alle zugehörigen Daten dauerhaft löschen.",
-        "delete_button": "Lernpfad löschen",
-        "delete_title": "Delete Learning Path",
-        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+        "legend": "Pfad löschen",
+        "desc": "Diesen Pfad löschen, diese Aktion kann nicht rückgängig gemacht werden. Kurse, Anmeldungen und Lernfortschritte werden nicht gelöscht.",
+        "delete_button": "Pfad löschen",
+        "delete_title": "Lernpfad löschen",
+        "delete_description": "Sind Sie sicher, dass Sie „{name}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
       },
       "cover_image": {
-        "legend": "Cover Image",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
-        "reset": "Reset",
-        "alt": "Wegabdeckung"
+        "legend": "Titelbild",
+        "desc": "Wenn Sie eines hinzufügen, sollte es mindestens 280 x 200 groß sein.",
+        "replace": "Ersetzen",
+        "reset": "Zurücksetzen",
+        "alt": "Pfad-Titelbild"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "Willkommens-E-Mail",
+        "desc": "Passen Sie die E-Mail an, die Lernende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
+        "placeholder": "Schreiben Sie die Willkommensnachricht, die Lernende bei der Anmeldung erhalten …"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Lernfortschritt",
+        "desc": "Steuern Sie, ob Lernende auf alle Kurse zugreifen können oder sie der Reihe nach absolvieren müssen.",
+        "free": "Frei — alle Kurse sind verfügbar",
+        "sequential": "Sequenziell — vorherige Kurse abschließen, um den nächsten freizuschalten"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
-        "access_people": "People",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "legend": "Lernende können sich selbst einschreiben",
+        "access": "Wenn deaktiviert, können Lernende nur über einen Einladungslink beitreten oder indem sie unter {people} hinzugefügt werden.",
+        "access_people": "Personen",
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "legend": "Automatische Einschreibung in Pfadkurse",
+        "desc": "Mit dem Beitritt zum Pfad wird der Lernende in jeden enthaltenen Kurs eingeschrieben.",
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert"
       }
     },
     "courses": {
-      "lessons": "Lessons",
-      "exercises": "Exercises"
+      "lessons": "Lektionen",
+      "exercises": "Übungen"
     },
     "view_as_student": {
-      "title": "This will redirect you to the Student LMS.",
-      "description": "You are about to see what a student will see when they enroll in this learning path",
-      "copy_link": "Copy link",
-      "go_to_lms": "Go to LMS"
+      "title": "Dadurch werden Sie zum Student LMS weitergeleitet.",
+      "description": "Sie werden gleich sehen, was ein Lernender sieht, wenn er sich für diesen Lernpfad anmeldet",
+      "copy_link": "Link kopieren",
+      "go_to_lms": "Gehen Sie zu LMS"
     }
   },
   "certificate": {

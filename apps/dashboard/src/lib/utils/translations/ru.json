@@ -16,25 +16,25 @@
     "add": "Добавить",
     "remove": "Удалить",
     "back": "Назад",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
+    "close": "Закрыть",
+    "edit": "Редактировать",
+    "coming_soon": "Скоро",
     "pricing": {
       "enable_paid": "Включить платную",
       "yes": "Да",
       "no": "Нет",
       "currency": "Валюта",
       "cost": "Стоимость",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required",
-      "payment_invalid_url": "Please enter a valid URL",
+      "payment_link": "Платежная ссылка",
+      "payment_required": "Ссылка для оплаты обязательна, когда включен платный доступ",
+      "payment_invalid_url": "Введите корректный URL",
       "discount": "Скидка",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer learners an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "show_discount": "Показать скидку",
+      "discount_percentage": "Процент скидки",
+      "reward": "Награда / Подарок",
+      "reward_help": "Предложите учащимся поощрение за завершение",
+      "reward_description": "Описание награды",
+      "placeholder_reward": "например, индивидуальная менторская сессия, мерч или доступ к закрытому сообществу"
     }
   },
   "validations": {
@@ -440,10 +440,10 @@
       "url_copied": "URL курса скопирован",
       "url_copy_failed": "Не удалось скопировать URL"
     },
-    "transcription_started": "Transcription started",
-    "transcription_start_failed": "Could not start transcription",
-    "transcription_completed": "Transcription finished",
-    "transcript_fetch_failed": "Could not load transcript",
+    "transcription_started": "Транскрипция началась",
+    "transcription_start_failed": "Не удалось начать транскрипцию",
+    "transcription_completed": "Транскрипция завершена",
+    "transcript_fetch_failed": "Не удалось загрузить расшифровку",
     "account": {
       "workspaceCreated": "Рабочая область создана",
       "workspaceDeleted": "Рабочая область удалена.",
@@ -1783,7 +1783,7 @@
                 "file_upload": "Загрузка файла",
                 "matching": "Соответствие",
                 "ordering": "Заказ",
-                "hotspot": "Hotspot",
+                "hotspot": "Хотспот",
                 "link": "Ссылки",
                 "word_bank": "Банк слов",
                 "star": "Звездный рейтинг",
@@ -5642,7 +5642,7 @@
       "share": "Поделиться",
       "invite": "Пригласить",
       "delete": "Удалить",
-      "view_as_student": "View as student"
+      "view_as_student": "Посмотреть как студент"
     },
     "card": {
       "actions_menu_aria": "Действия пути",
@@ -5666,8 +5666,9 @@
       "tutor_removed": "Тьютор удалён из траектории",
       "certificate_saved": "Настройки сертификата сохранены",
       "landing_saved": "Целевая страница обновлена",
-      "link_generated": "Invite link generated and copied to clipboard",
-      "settings_saved": "Learning path settings updated"
+      "landing_save_failed": "Не удалось сохранить целевую страницу",
+      "link_generated": "Ссылка-приглашение создана и скопирована в буфер обмена",
+      "settings_saved": "Настройки пути обучения обновлены"
     },
     "analytics": {
       "title": "Аналитика",
@@ -5773,14 +5774,14 @@
         "completed": "Завершено"
       },
       "info_title": "О регистрации пути",
-      "add": "Add",
-      "last_login_at": "Last login at",
-      "you": "You",
-      "view": "View",
-      "delete_profile": "Remove",
+      "add": "Добавить",
+      "last_login_at": "Последний вход",
+      "you": "Вы",
+      "view": "Посмотреть",
+      "delete_profile": "Удалить",
       "invite_modal": {
-        "loading": "Adding…",
-        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "loading": "Добавление…",
+        "student_limit_reached": "Вы достигли лимита учащихся. Обновите план, чтобы добавить больше студентов.",
         "invite": "Пригласить репетиторов",
         "invite_students": "Пригласить студентов",
         "finish": "Готово"
@@ -5819,26 +5820,26 @@
       "skills": {
         "title": "Навыки",
         "placeholder": "например, TypeScript, Docker, PostgreSQL",
-        "help": "Press Enter to add. These appear as chips on your landing page."
+        "help": "Нажмите Enter, чтобы добавить. Они появятся в виде меток на вашей целевой странице."
       },
       "instructors": {
         "title": "Преподаватели",
         "auto_populated_note": "Преподаватели автоматически собираются из курсов этого пути.",
         "courses_note": "{count, plural, =0 {Курсы пока не добавлены} =1 {Взято из 1 курса этого пути} other {Взято из всех # курсов этого пути}}",
-        "role_placeholder": "e.g. Lead Instructor · Frontend",
-        "default_role": "Course Instructor",
-        "untitled": "Untitled instructor",
-        "add": "Add instructor",
-        "no_tutors_found": "No instructors found",
-        "min_one_required": "At least one instructor is required",
-        "remove": "Remove instructor",
-        "upload": "Instructor Logo",
-        "name": "Instructor name",
-        "name_placeholder": "Your company name",
-        "role": "Instructor Role",
-        "about": "About Instructor",
-        "about_placeholder": "A short background about the instructor",
-        "total": "No of courses"
+        "role_placeholder": "например, Ведущий преподаватель · Frontend",
+        "default_role": "Преподаватель курса",
+        "untitled": "Преподаватель без названия",
+        "add": "Добавить преподавателя",
+        "no_tutors_found": "Преподаватели не найдены",
+        "min_one_required": "Требуется хотя бы один преподаватель",
+        "remove": "Удалить преподавателя",
+        "upload": "Логотип преподавателя",
+        "name": "Имя преподавателя",
+        "name_placeholder": "Название вашей компании",
+        "role": "Роль преподавателя",
+        "about": "О преподавателе",
+        "about_placeholder": "Краткая информация о преподавателе",
+        "total": "Количество курсов"
       },
       "testimonials": {
         "title": "Отзывы",
@@ -5854,49 +5855,49 @@
         "question": "Вопрос",
         "answer": "Ответ",
         "add": "Добавить вопрос",
-        "question_placeholder": "What is required to complete this path?",
-        "answer_placeholder": "You must complete all lessons and exercises in every course."
+        "question_placeholder": "Что нужно для завершения этого пути?",
+        "answer_placeholder": "Необходимо завершить все уроки и упражнения в каждом курсе."
       },
       "header": {
-        "title_placeholder": "e.g. Fullstack Web Development",
-        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
-        "title": "Header",
-        "title_label": "Title",
-        "description_label": "Description"
+        "title_placeholder": "например, Fullstack веб-разработка",
+        "description_placeholder": "Подробный обзор того, чего достигнут учащиеся...",
+        "title": "Шапка",
+        "title_label": "Заголовок",
+        "description_label": "Описание"
       },
       "reviews": {
-        "title": "Reviews",
-        "untitled": "Untitled review",
+        "title": "Оценки",
+        "untitled": "Отзыв без названия",
         "name_placeholder": "Jane Doe",
         "avatar_placeholder": "https://...",
-        "avatar_url": "Avatar image URL",
-        "rating_placeholder": "Optional (1-5)",
-        "clear_rating": "Clear rating",
-        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
-        "add_reviews": "Add Reviews",
-        "fullname": "Full Name",
-        "description": "Description",
-        "rating": "Rating"
+        "avatar_url": "URL изображения аватара",
+        "rating_placeholder": "Необязательно (1-5)",
+        "clear_rating": "Очистить оценку",
+        "description_placeholder": "Этот путь обучения дал мне именно те навыки и уверенность, которые были нужны.",
+        "add_reviews": "Добавить отзывы",
+        "fullname": "Полное имя",
+        "description": "Описание",
+        "rating": "Оценка"
       },
-      "preview": "Preview",
-      "save": "Save",
+      "preview": "Предпросмотр",
+      "save": "Сохранить",
       "requirement": {
-        "title": "Requirement"
+        "title": "Требование"
       },
       "description": {
-        "title": "Description"
+        "title": "Описание"
       },
       "goals": {
-        "title": "Goals"
+        "title": "Цели"
       },
       "certificate": {
-        "title": "Certificate",
-        "upload_template": "Certificate template"
+        "title": "Сертификат",
+        "upload_template": "Шаблон сертификата"
       },
       "pricing": {
-        "title": "Pricing",
-        "payment_required": "Payment link is required",
-        "payment_invalid_url": "Please enter a valid URL",
+        "title": "Цены",
+        "payment_required": "Требуется ссылка для оплаты",
+        "payment_invalid_url": "Введите корректный URL",
         "enable_paid": "Включить платную",
         "currency": "Валюта",
         "cost": "Стоимость",
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "Загрузите обложку для этого пути. Рекомендуемый размер: 1200x630px.",
         "replace_image": "Заменить изображение",
         "reset_image": "Сбросить",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
-        "open_link": "Open link in new tab",
-        "copy_link": "Copy link",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "link": "Ссылка на путь",
+        "generate_link": "Создать новую ссылку",
+        "open_link": "Открыть ссылку в новой вкладке",
+        "copy_link": "Копировать ссылку",
+        "setup_landing_for_link": "Настройте целевую страницу, чтобы получить ссылку на путь"
       },
       "enrollment": {
         "legend": "Зачисление и продвижение",
@@ -5947,57 +5948,57 @@
         "desc": "Сделайте этот путь обучения видимым для учащихся.",
         "publish_label": "Опубликовать путь обучения",
         "publish_desc": "Сделать этот путь видимым и открыть запись.",
-        "published": "Published",
-        "unpublished": "Unpublished"
+        "published": "Опубликовано",
+        "unpublished": "Неопубликовано"
       },
       "danger": {
         "legend": "Опасная зона",
         "desc": "Безвозвратно удалить этот путь обучения и все связанные с ним данные.",
         "delete_button": "Удалить путь обучения",
-        "delete_title": "Delete Learning Path",
-        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+        "delete_title": "Удалить путь обучения",
+        "delete_description": "Вы уверены, что хотите удалить \"{name}\"? Это действие нельзя отменить."
       },
       "cover_image": {
-        "legend": "Cover Image",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
-        "reset": "Reset",
-        "alt": "Покрытие пути"
+        "legend": "Обложка",
+        "desc": "Если добавляете обложку, её размер должен быть не менее 280 x 200.",
+        "replace": "Заменить",
+        "reset": "Сбросить",
+        "alt": "Обложка пути"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "Приветственное письмо",
+        "desc": "Настройте письмо, которое учащиеся получают после записи. Добавьте личную заметку, инструкции или ссылку на живую сессию.",
+        "placeholder": "Напишите приветственное сообщение, которое учащиеся получат при записи…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Продвижение учащихся",
+        "desc": "Управляйте доступом учащихся ко всем курсам или требуйте прохождения по порядку.",
+        "free": "Свободное — все курсы доступны",
+        "sequential": "Последовательное — завершите предыдущие курсы, чтобы открыть следующий"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
-        "access_people": "People",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "legend": "Учащиеся могут записываться сами",
+        "access": "Когда выключено, учащиеся могут присоединиться только по ссылке-приглашению или после добавления через раздел {people}.",
+        "access_people": "Люди",
+        "enabled": "Включено",
+        "disabled": "Отключено"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "legend": "Автозапись на курсы пути",
+        "desc": "Запись на путь автоматически зачисляет учащегося на все курсы, входящие в него.",
+        "enabled": "Включено",
+        "disabled": "Отключено"
       }
     },
     "courses": {
-      "lessons": "Lessons",
-      "exercises": "Exercises"
+      "lessons": "Уроки",
+      "exercises": "Упражнения"
     },
     "view_as_student": {
-      "title": "This will redirect you to the Student LMS.",
-      "description": "You are about to see what a student will see when they enroll in this learning path",
-      "copy_link": "Copy link",
-      "go_to_lms": "Go to LMS"
+      "title": "Вы будете перенаправлены в LMS для студентов.",
+      "description": "Вы увидите то, что видит студент при записи на этот путь обучения",
+      "copy_link": "Копировать ссылку",
+      "go_to_lms": "Перейти в LMS"
     }
   },
   "certificate": {

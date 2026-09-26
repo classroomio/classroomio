@@ -29,34 +29,44 @@ export async function downloadCertificateFile(
 }
 
 export async function printCertificateFile(fetcher: () => Promise<Response>, title: string): Promise<void> {
-  const response = await fetcher();
-  if (!response.ok) {
-    throw new Error(`Certificate download failed with status ${response.status}`);
+  const printWindow = window.open('', '_blank');
+
+  if (!printWindow) {
+    throw new Error('Popup blocked by browser');
   }
+
+  let response: Response;
+
+  try {
+    response = await fetcher();
+
+    if (!response.ok) {
+      throw new Error(`Certificate download failed with status ${response.status}`);
+    }
+  } catch (error) {
+    printWindow.close();
+    throw error;
+  }
+
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
-  const printWindow = window.open('', '_blank');
-  if (printWindow) {
-    const doc = printWindow.document;
-    doc.title = title;
-    const style = doc.createElement('style');
-    style.textContent =
-      '@page{size:A4 landscape;margin:0}body{margin:0;display:flex;align-items:center;justify-content:center;background:#fff}img{width:100vw;max-width:1100px;height:auto}';
-    doc.head.append(style);
-    const img = doc.createElement('img');
-    img.alt = '';
-    img.onload = () => {
-      setTimeout(() => {
-        printWindow.print();
-        URL.revokeObjectURL(url);
-      }, 300);
-    };
-    img.onerror = () => URL.revokeObjectURL(url);
-    img.src = url;
-    doc.body.append(img);
-  } else {
-    URL.revokeObjectURL(url);
-  }
+  const doc = printWindow.document;
+  doc.title = title;
+  const style = doc.createElement('style');
+  style.textContent =
+    '@page{size:A4 landscape;margin:0}body{margin:0;display:flex;align-items:center;justify-content:center;background:#fff}img{width:100vw;max-width:1100px;height:auto}';
+  doc.head.append(style);
+  const img = doc.createElement('img');
+  img.alt = '';
+  img.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+      URL.revokeObjectURL(url);
+    }, 300);
+  };
+  img.onerror = () => URL.revokeObjectURL(url);
+  img.src = url;
+  doc.body.append(img);
 }
 
 export function showCertificatePreviewError(): void {

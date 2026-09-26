@@ -5722,6 +5722,7 @@
       "tutor_removed": "Tutor removed from path",
       "certificate_saved": "Certificate settings saved",
       "landing_saved": "Landing page updated",
+      "landing_save_failed": "Failed to save landing page",
       "link_generated": "Invite link generated and copied to clipboard",
       "settings_saved": "Learning path settings updated"
     },

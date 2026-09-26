@@ -271,15 +271,14 @@ export async function deleteLearningPathService(
 
 /**
  * Loads a public learning path by organizationId and slug for org-site visitors.
- * Visibility is not gated on publish here;
- * joining remains gated at enroll time (PATH_NOT_PUBLISHED / FORBIDDEN).
+ * Only published paths are visible publicly.
  */
 export async function getPublicLearningPathBySlug(organizationId: string, slug: string): Promise<TLearningPathDetail> {
   try {
     return await db.transaction(async (tx) => {
       const path = await getLearningPathBySlug(organizationId, slug, tx);
 
-      if (!path) {
+      if (!path || !path.isPublished) {
         throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
       }
 

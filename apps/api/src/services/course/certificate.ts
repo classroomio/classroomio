@@ -26,11 +26,14 @@ export async function assertCertificatePreviewAllowed(courseId: string, userId: 
  * Loads the design + render data for a given course/student pair so the API
  * can hand it to `generateCertificatePdf` / `generateCertificatePng`.
  *
- * The client only sends `studentName` (+ optional studentId/issuedAt). Everything
- * else comes from the database: title, description, org name + logo, design.
+ * The recipient name is an explicit argument, never read from the request
+ * body here: student download passes the profile-resolved name, owner
+ * preview passes its gated sample name. Everything else comes from the
+ * database: title, description, org name + logo, design.
  */
-export async function assembleCertificateRender(
+async function buildCourseCertificateRender(
   courseId: string,
+  recipientName: string,
   body: TCertificateDownloadRequest,
   dbClient?: DbOrTxClient
 ): Promise<CertificateRenderInput> {
@@ -47,7 +50,7 @@ export async function assembleCertificateRender(
   const design = resolveCertificateDesign(courseRow.certificate);
 
   return buildCertificateRenderInput(design, {
-    recipientName: body.studentName,
+    recipientName,
     courseName: courseRow.title,
     courseDescription: courseRow.description ?? '',
     orgName: organization?.name ?? '',
@@ -57,13 +60,28 @@ export async function assembleCertificateRender(
   });
 }
 
+/**
+ * Student download render. The recipient name always resolves from the
+ * authenticated student's profile.
+ */
+export async function assembleCertificateRender(
+  courseId: string,
+  body: TCertificateDownloadRequest,
+  dbClient: DbOrTxClient | undefined,
+  studentUserId: string
+): Promise<CertificateRenderInput> {
+  const recipientName = await resolveCertificateRecipientName(studentUserId);
+
+  return buildCourseCertificateRender(courseId, recipientName, body, dbClient);
+}
+
 export async function assembleOwnerPreviewRender(
   courseId: string,
   userId: string,
   body: TCertificateDownloadRequest,
   dbClient?: DbOrTxClient
 ): Promise<CertificateRenderInput> {
-  const studentName = await resolveCertificateRecipientName(userId, body.studentName);
+  const previewName = body.studentName.trim() || (await resolveCertificateRecipientName(userId));
 
-  return assembleCertificateRender(courseId, { ...body, studentName }, dbClient);
+  return buildCourseCertificateRender(courseId, previewName, body, dbClient);
 }

@@ -1,7 +1,7 @@
 import { and, asc, eq, inArray, isNull, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { ROLE } from '@cio/utils/constants';
+import { INSTRUCTOR_ROLE_LABEL, ROLE } from '@cio/utils/constants';
 
 import * as schema from '../../schema';
 import type { TLearningPath, TLearningPathCourse } from '../../types';
@@ -25,11 +25,6 @@ export interface TLearningPathCourseDetail {
     imgUrl?: string;
   } | null;
 }
-
-const INSTRUCTOR_ROLE_LABEL = {
-  TUTOR: 'Tutor',
-  INSTRUCTOR: 'Instructor'
-} as const;
 
 /**
  * Lists active courses in a learning path in order, joined with course details and item counts.
@@ -317,10 +312,10 @@ export async function removeCourseFromPath(
       .orderBy(asc(schema.learningPathCourse.order));
 
     if (remaining.length > 0) {
-      const orderCase = sql<number>`CASE ${schema.learningPathCourse.id} ${sql.join(
-        remaining.map((row, index) => sql`WHEN ${row.id} THEN ${index + 1}`),
+      const orderCase = sql<number>`(CASE ${schema.learningPathCourse.id} ${sql.join(
+        remaining.map((row, index) => sql`WHEN ${row.id} THEN ${index + 1}::integer`),
         sql` `
-      )} END`;
+      )} END)::integer`;
 
       await tx
         .update(schema.learningPathCourse)
@@ -382,10 +377,10 @@ export async function reorderLearningPathCourses(
       );
     }
 
-    const orderCase = sql<number>`CASE ${schema.learningPathCourse.courseId} ${sql.join(
-      courseIds.map((courseId, index) => sql`WHEN ${courseId} THEN ${index + 1}`),
+    const orderCase = sql<number>`(CASE ${schema.learningPathCourse.courseId} ${sql.join(
+      courseIds.map((courseId, index) => sql`WHEN ${courseId} THEN ${index + 1}::integer`),
       sql` `
-    )} END`;
+    )} END)::integer`;
 
     await client
       .update(schema.learningPathCourse)

@@ -16,25 +16,25 @@
     "add": "Tilføj",
     "remove": "Fjern",
     "back": "Tilbage",
-    "close": "Close",
-    "edit": "Edit",
-    "coming_soon": "Coming soon",
+    "close": "Luk",
+    "edit": "Rediger",
+    "coming_soon": "Kommer snart",
     "pricing": {
       "enable_paid": "Aktiver betalt",
       "yes": "Ja",
       "no": "Nej",
       "currency": "Valuta",
-      "cost": "Omkostninger",
-      "payment_link": "Payment Link",
-      "payment_required": "Payment link is required",
-      "payment_invalid_url": "Please enter a valid URL",
+      "cost": "Pris",
+      "payment_link": "Betalingslink",
+      "payment_required": "Betalingslink er påkrævet, når betalt er aktiveret",
+      "payment_invalid_url": "Indtast venligst en gyldig URL",
       "discount": "Rabat",
-      "show_discount": "Show discount",
-      "discount_percentage": "Discount percentage",
-      "reward": "Reward / Gift",
-      "reward_help": "Offer learners an incentive upon completion",
-      "reward_description": "Reward description",
-      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+      "show_discount": "Vis rabat",
+      "discount_percentage": "Rabatprocent",
+      "reward": "Belønning / gave",
+      "reward_help": "Tilbyd eleverne et incitament ved færdigførelse",
+      "reward_description": "Belønningsbeskrivelse",
+      "placeholder_reward": "f.eks. 1-til-1 mentorsession, merchandise eller eksklusiv adgang til fællesskabet"
     }
   },
   "validations": {
@@ -440,10 +440,10 @@
       "url_copied": "Kursus-URL kopieret",
       "url_copy_failed": "Kunne ikke kopiere URL"
     },
-    "transcription_started": "Transcription started",
-    "transcription_start_failed": "Could not start transcription",
-    "transcription_completed": "Transcription finished",
-    "transcript_fetch_failed": "Could not load transcript",
+    "transcription_started": "Transskription startet",
+    "transcription_start_failed": "Kunne ikke starte transskription",
+    "transcription_completed": "Transskription afsluttet",
+    "transcript_fetch_failed": "Kunne ikke indlæse transskription",
     "account": {
       "workspaceCreated": "Arbejdsrum oprettet",
       "workspaceDeleted": "Arbejdsområdet er slettet",
@@ -1308,7 +1308,7 @@
           "print": "Udskriv",
           "export_hint": "Eksporter bruger dit navn som modtager, så du kan få vist det endelige layout.",
           "preview_failed": "Kunne ikke generere certifikateksempel",
-          "sample_recipient": "Eleanor Vance",
+          "sample_recipient": "Mette Jensen",
           "sample_course": "Udmærkelsescertifikat",
           "sample_description": "Som en anerkendelse af enestående præstation og eksemplarisk dedikation til håndværket.",
           "sample_org": "Det Kongelige Kunstakademi",
@@ -5642,7 +5642,7 @@
       "share": "Del",
       "invite": "Inviter",
       "delete": "Slet",
-      "view_as_student": "View as student"
+      "view_as_student": "Se som elev"
     },
     "card": {
       "actions_menu_aria": "Stihandlinger",
@@ -5666,11 +5666,12 @@
       "tutor_removed": "Underviser fjernet fra forløbet",
       "certificate_saved": "Certifikatindstillinger gemt",
       "landing_saved": "Destinationsside opdateret",
-      "link_generated": "Invite link generated and copied to clipboard",
-      "settings_saved": "Learning path settings updated"
+      "landing_save_failed": "Kunne ikke gemme landingssiden",
+      "link_generated": "Invitationslink genereret og kopieret til udklipsholder",
+      "settings_saved": "Læringsstiens indstillinger er opdateret"
     },
     "analytics": {
-      "title": "Analytics",
+      "title": "Analyse",
       "subtitle": "Hvordan eleverne bevæger sig gennem stien.",
       "empty": "Ingen data endnu. Tilmeld elever, og de vil begynde at dukke op her.",
       "empty_desc": "Tilmeld elever til dette forløb, så vises deres fremskridt her.",
@@ -5773,14 +5774,14 @@
         "completed": "Afsluttet"
       },
       "info_title": "Om stitilmelding",
-      "add": "Add",
-      "last_login_at": "Last login at",
-      "you": "You",
-      "view": "View",
-      "delete_profile": "Remove",
+      "add": "Tilføj",
+      "last_login_at": "Sidste login",
+      "you": "Dig",
+      "view": "Se",
+      "delete_profile": "Fjern",
       "invite_modal": {
-        "loading": "Adding…",
-        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "loading": "Tilføjer…",
+        "student_limit_reached": "Du har nået din elevgrænse. Opgrader for at tilføje flere elever.",
         "invite": "Inviter undervisere",
         "invite_students": "Inviter studerende",
         "finish": "Afslut"
@@ -5817,28 +5818,28 @@
         "preview_desc": "Giv besøgende mulighed for at forhåndsvise den første lektion af hvert kursus uden at tilmelde sig."
       },
       "skills": {
-        "title": "Færdigheder",
+        "title": "Færdigheder, du opnår",
         "placeholder": "f.eks. TypeScript, Docker, PostgreSQL",
-        "help": "Press Enter to add. These appear as chips on your landing page."
+        "help": "Tryk på Enter for at tilføje. De vises som chips på din landingsside."
       },
       "instructors": {
         "title": "Instruktører",
         "auto_populated_note": "Instruktører samles automatisk fra kurserne i denne sti.",
         "courses_note": "{count, plural, =0 {Ingen kurser tilføjet endnu} =1 {Hentet fra 1 kursus i denne sti} other {Hentet fra alle # kurser i denne sti}}",
-        "role_placeholder": "e.g. Lead Instructor · Frontend",
-        "default_role": "Course Instructor",
-        "untitled": "Untitled instructor",
-        "add": "Add instructor",
-        "no_tutors_found": "No instructors found",
-        "min_one_required": "At least one instructor is required",
-        "remove": "Remove instructor",
-        "upload": "Instructor Logo",
-        "name": "Instructor name",
-        "name_placeholder": "Your company name",
-        "role": "Instructor Role",
-        "about": "About Instructor",
-        "about_placeholder": "A short background about the instructor",
-        "total": "No of courses"
+        "role_placeholder": "f.eks. Hovedunderviser · Frontend",
+        "default_role": "Kursusunderviser",
+        "untitled": "Ikke-navngivet underviser",
+        "add": "Tilføj underviser",
+        "no_tutors_found": "Ingen undervisere fundet",
+        "min_one_required": "Mindst én underviser er påkrævet",
+        "remove": "Fjern underviser",
+        "upload": "Underviserlogo",
+        "name": "Undervisers navn",
+        "name_placeholder": "Dit firmanavn",
+        "role": "Underviserrolle",
+        "about": "Om underviseren",
+        "about_placeholder": "En kort baggrund om underviseren",
+        "total": "Antal kurser"
       },
       "testimonials": {
         "title": "Udtalelser",
@@ -5854,49 +5855,49 @@
         "question": "Spørgsmål",
         "answer": "Svar",
         "add": "Tilføj ofte stillet spørgsmål",
-        "question_placeholder": "What is required to complete this path?",
-        "answer_placeholder": "You must complete all lessons and exercises in every course."
+        "question_placeholder": "Hvad kræves der for at gennemføre denne sti?",
+        "answer_placeholder": "Du skal gennemføre alle lektioner og øvelser i hvert kursus."
       },
       "header": {
-        "title_placeholder": "e.g. Fullstack Web Development",
-        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
+        "title_placeholder": "f.eks. Fullstack webudvikling",
+        "description_placeholder": "Et omfattende overblik over, hvad eleverne vil opnå…",
         "title": "Header",
-        "title_label": "Title",
-        "description_label": "Description"
+        "title_label": "Titel",
+        "description_label": "Beskrivelse"
       },
       "reviews": {
-        "title": "Reviews",
-        "untitled": "Untitled review",
-        "name_placeholder": "Jane Doe",
+        "title": "Anmeldelser",
+        "untitled": "Ikke-navngivet anmeldelse",
+        "name_placeholder": "Camilla Nielsen",
         "avatar_placeholder": "https://...",
-        "avatar_url": "Avatar image URL",
-        "rating_placeholder": "Optional (1-5)",
-        "clear_rating": "Clear rating",
-        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
-        "add_reviews": "Add Reviews",
-        "fullname": "Full Name",
-        "description": "Description",
-        "rating": "Rating"
+        "avatar_url": "Avatarbilled-URL",
+        "rating_placeholder": "Valgfri (1-5)",
+        "clear_rating": "Ryd bedømmelse",
+        "description_placeholder": "Denne læringssti gav mig præcis de færdigheder og den selvtillid, jeg havde brug for.",
+        "add_reviews": "Tilføj anmeldelser",
+        "fullname": "Fulde navn",
+        "description": "Beskrivelse",
+        "rating": "Bedømmelse"
       },
-      "preview": "Preview",
-      "save": "Save",
+      "preview": "Forhåndsvisning",
+      "save": "Gem",
       "requirement": {
-        "title": "Requirement"
+        "title": "Krav"
       },
       "description": {
-        "title": "Description"
+        "title": "Beskrivelse"
       },
       "goals": {
-        "title": "Goals"
+        "title": "Mål"
       },
       "certificate": {
-        "title": "Certificate",
-        "upload_template": "Certificate template"
+        "title": "Certifikat",
+        "upload_template": "Certifikatskabelon"
       },
       "pricing": {
-        "title": "Pricing",
-        "payment_required": "Payment link is required",
-        "payment_invalid_url": "Please enter a valid URL",
+        "title": "Prissætning",
+        "payment_required": "Betalingslink er påkrævet",
+        "payment_invalid_url": "Indtast venligst en gyldig URL",
         "enable_paid": "Aktiver betalt",
         "currency": "Valuta",
         "cost": "Omkostninger",
@@ -5914,7 +5915,7 @@
     "settings": {
       "title": "Indstillinger",
       "general": {
-        "legend": "Generelle oplysninger",
+        "legend": "Stidetaljer",
         "desc": "Grundlæggende oplysninger om denne læringssti.",
         "name_label": "Stinavn",
         "name_placeholder": "f.eks. Fullstack Webudvikling",
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "Upload et forsidebillede til denne læringssti. Anbefalet størrelse: 1200x630px.",
         "replace_image": "Erstat billede",
         "reset_image": "Nulstil",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
-        "open_link": "Open link in new tab",
-        "copy_link": "Copy link",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "link": "Stilink",
+        "generate_link": "Generer nyt link",
+        "open_link": "Åbn link i ny fane",
+        "copy_link": "Kopiér link",
+        "setup_landing_for_link": "Opsæt landingsside for at få stilink"
       },
       "enrollment": {
         "legend": "Tilmelding og progression",
@@ -5943,61 +5944,61 @@
         "auto_enroll_desc": "Tilmeld automatisk elever til alle kurser, når de tilmelder sig denne sti."
       },
       "publishing": {
-        "legend": "Udgivelse",
-        "desc": "Gør denne læringssti synlig for elever.",
+        "legend": "Udgiv sti",
+        "desc": "Dette afgør, om din sti vises på din landingsside",
         "publish_label": "Udgiv læringssti",
         "publish_desc": "Gør denne læringssti synlig og åben for tilmelding.",
-        "published": "Published",
-        "unpublished": "Unpublished"
+        "published": "Udgivet",
+        "unpublished": "Upubliceret"
       },
       "danger": {
-        "legend": "Farezone",
-        "desc": "Slet denne læringssti og alle dens tilknyttede data permanent.",
+        "legend": "Slet sti",
+        "desc": "Slet denne sti. Denne handling kan ikke fortrydes. Kurser, tilmeldinger og elevers fremskridt slettes ikke.",
         "delete_button": "Slet læringssti",
-        "delete_title": "Delete Learning Path",
-        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+        "delete_title": "Slet læringssti",
+        "delete_description": "Er du sikker på, at du vil slette \"{name}\"? Denne handling kan ikke fortrydes."
       },
       "cover_image": {
-        "legend": "Cover Image",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
-        "reset": "Reset",
-        "alt": "Stidækning"
+        "legend": "Forsidebillede",
+        "desc": "Hvis du inkluderer et, skal det være mindst 280 x 200.",
+        "replace": "Udskift",
+        "reset": "Nulstil",
+        "alt": "Stiforside"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "Velkomstmail",
+        "desc": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
+        "placeholder": "Skriv den velkomstbesked, eleverne får, når de tilmelder sig…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Elevprogression",
+        "desc": "Styr, om elever kan få adgang til alle kurser eller skal gennemføre dem i rækkefølge.",
+        "free": "Fri — alle kurser er tilgængelige",
+        "sequential": "Sekventiel — gennemfør tidligere kurser for at låse næste op"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
-        "access_people": "People",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "legend": "Elever kan tilmelde sig selv",
+        "access": "Når det er slået fra, kan elever kun deltage via et invitationslink eller ved at blive tilføjet under {people}.",
+        "access_people": "Personer",
+        "enabled": "Aktiveret",
+        "disabled": "Deaktiveret"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        "legend": "Automatisk tilmelding til stiens kurser",
+        "desc": "Når en elev tilmelder sig stien, tilmeldes vedkommende alle de kurser, den indeholder.",
+        "enabled": "Aktiveret",
+        "disabled": "Deaktiveret"
       }
     },
     "courses": {
-      "lessons": "Lessons",
-      "exercises": "Exercises"
+      "lessons": "Lektioner",
+      "exercises": "Øvelser"
     },
     "view_as_student": {
-      "title": "This will redirect you to the Student LMS.",
-      "description": "You are about to see what a student will see when they enroll in this learning path",
-      "copy_link": "Copy link",
-      "go_to_lms": "Go to LMS"
+      "title": "Dette vil omdirigere dig til elev-LMS'et.",
+      "description": "Du er ved at se, hvad en elev vil se, når vedkommende tilmelder sig denne læringssti",
+      "copy_link": "Kopiér link",
+      "go_to_lms": "Gå til LMS"
     }
   },
   "certificate": {
@@ -6053,7 +6054,7 @@
       "print": "Udskriv",
       "export_hint": "Eksporter bruger dit navn som modtager, så du kan få vist det endelige layout.",
       "preview_failed": "Kunne ikke generere certifikateksempel",
-      "sample_recipient": "Eleanor Vance",
+      "sample_recipient": "Mette Jensen",
       "sample_course": "Udmærkelsescertifikat",
       "sample_description": "Som en anerkendelse af enestående præstation og eksemplarisk dedikation til håndværket.",
       "sample_org": "Det Kongelige Kunstakademi",

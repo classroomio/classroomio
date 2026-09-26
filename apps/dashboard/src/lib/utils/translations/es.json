@@ -26,7 +26,7 @@
       "currency": "Moneda",
       "cost": "Costo",
       "payment_link": "Enlace de pago",
-      "payment_required": "Payment link is required",
+      "payment_required": "El enlace de pago es obligatorio cuando el pago está activado",
       "payment_invalid_url": "Introduce una URL válida",
       "discount": "Descuento",
       "show_discount": "Mostrar descuento",
@@ -5666,6 +5666,7 @@
       "tutor_removed": "Tutor eliminado de la ruta",
       "certificate_saved": "Configuración del certificado guardada",
       "landing_saved": "Página de inicio actualizada",
+      "landing_save_failed": "No se pudo guardar la página de aterrizaje",
       "link_generated": "Enlace de invitación generado y copiado al portapapeles",
       "settings_saved": "Configuración de la ruta de aprendizaje actualizada"
     },
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "Sube una imagen de portada para esta ruta. Tamaño recomendado: 1200x630px.",
         "replace_image": "Reemplazar imagen",
         "reset_image": "Restablecer",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
+        "link": "Enlace de la ruta",
+        "generate_link": "Generar nuevo enlace",
         "open_link": "Abrir enlace en una pestaña nueva",
         "copy_link": "Copiar enlace",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "setup_landing_for_link": "Configura la página de aterrizaje para obtener el enlace de la ruta"
       },
       "enrollment": {
         "legend": "Inscripción y progresión",
@@ -5959,32 +5960,32 @@
       },
       "cover_image": {
         "legend": "Imagen de portada",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
+        "desc": "Si incluyes una, debe ser de al menos 280 x 200.",
+        "replace": "Reemplazar",
         "reset": "Restablecer",
         "alt": "Cobertura de camino"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "Correo de bienvenida",
+        "desc": "Personaliza el correo que reciben los estudiantes tras inscribirse. Añade una nota personal, instrucciones o un enlace a la sesión en vivo.",
+        "placeholder": "Escribe el mensaje de bienvenida que reciben los estudiantes al inscribirse…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Progresión del estudiante",
+        "desc": "Controla si los estudiantes pueden acceder a todos los cursos o deben completarlos en orden.",
+        "free": "Libre — todos los cursos están disponibles",
+        "sequential": "Secuencial — completa los cursos anteriores para desbloquear el siguiente"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
+        "legend": "Los estudiantes pueden inscribirse por sí mismos",
+        "access": "Cuando está desactivado, los estudiantes solo pueden unirse mediante un enlace de invitación o si se les añade desde {people}.",
         "access_people": "Personas",
         "enabled": "Activado",
         "disabled": "Desactivado"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
+        "legend": "Inscripción automática en los cursos de la ruta",
+        "desc": "Unirse a la ruta inscribe al estudiante en todos los cursos que contiene.",
         "enabled": "Activado",
         "disabled": "Desactivado"
       }
