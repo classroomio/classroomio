@@ -24,6 +24,31 @@ describe('normalizeWhisperLanguage', () => {
     expect(normalizeWhisperLanguage('yue')).toBe('yue');
   });
 
+  it('lowercases a bare code given in upper case', () => {
+    expect(normalizeWhisperLanguage('EN')).toBe('en');
+  });
+
+  it('preserves region and script subtags written by the YouTube caption path', () => {
+    expect(normalizeWhisperLanguage('en-US')).toBe('en-US');
+    expect(normalizeWhisperLanguage('zh-Hans')).toBe('zh-Hans');
+    expect(normalizeWhisperLanguage('es-419')).toBe('es-419');
+    expect(normalizeWhisperLanguage('pt-BR')).toBe('pt-BR');
+  });
+
+  it('keeps tags for languages Whisper does not support but YouTube serves', () => {
+    for (const tag of ['ig', 'zu', 'xh', 'st', 'tn', 'rw', 'ak', 'ff']) {
+      expect(normalizeWhisperLanguage(tag), `${tag} must survive normalization`).toBe(tag);
+    }
+
+    expect(normalizeWhisperLanguage('ig-NG')).toBe('ig-NG');
+  });
+
+  it('rejects anything that is not tag-shaped', () => {
+    expect(normalizeWhisperLanguage('klingon-standard')).toBe('und');
+    expect(normalizeWhisperLanguage('not a language')).toBe('und');
+    expect(normalizeWhisperLanguage('123')).toBe('und');
+  });
+
   it('falls back to und for missing or unknown values', () => {
     expect(normalizeWhisperLanguage(undefined)).toBe('und');
     expect(normalizeWhisperLanguage(null)).toBe('und');

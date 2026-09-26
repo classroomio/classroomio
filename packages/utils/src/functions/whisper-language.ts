@@ -112,11 +112,36 @@ const WHISPER_LANGUAGE_CODES: Record<string, string> = {
   yoruba: 'yo'
 };
 
-const LANGUAGE_CODE_PATTERN = /^[a-z]{2,3}$/;
+/** A primary language subtag, plus any script, region or variant subtags. */
+const BCP_47_TAG = /^([A-Za-z]{2,3})((?:-[A-Za-z0-9]{2,8})*)$/;
 
+/**
+ * Normalizes a stored caption language to a BCP 47 tag, for `<track srclang>`.
+ *
+ * Two sources write `media_transcript.language` and they disagree in shape.
+ * Whisper's `verbose_json` returns an English language *name* ("english"), which
+ * is not a tag and is what this map exists to fix. The YouTube caption provider
+ * returns real tags, often carrying a script or region subtag ("en-US",
+ * "zh-Hans", "es-419").
+ *
+ * A value that is already tag-shaped is kept verbatim, including its subtags.
+ * It is deliberately not checked against the name map above: that map covers
+ * only the languages Whisper supports, and YouTube serves captions in many it
+ * does not — Igbo, Zulu, Xhosa and Kinyarwanda among them. Rejecting anything
+ * absent from the map would rewrite those to `und`, destroying a correct tag to
+ * guard against an unassigned one like "zz" that neither source produces.
+ */
 export function normalizeWhisperLanguage(language: string | null | undefined): string {
-  const value = language?.trim().toLowerCase();
+  const value = language?.trim();
   if (!value) return 'und';
 
-  return WHISPER_LANGUAGE_CODES[value] ?? (LANGUAGE_CODE_PATTERN.test(value) ? value : 'und');
+  const mappedName = WHISPER_LANGUAGE_CODES[value.toLowerCase()];
+  if (mappedName) return mappedName;
+
+  const tag = BCP_47_TAG.exec(value);
+  if (!tag) return 'und';
+
+  const [, primarySubtag, remainingSubtags] = tag;
+
+  return `${primarySubtag.toLowerCase()}${remainingSubtags}`;
 }
