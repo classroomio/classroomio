@@ -65,7 +65,9 @@ export const MCP_TOOL_CREDIT_COST = {
   assign_students_to_cohort: 1,
   get_cohort_invite_link: 0,
   create_cohort_invite_link: 1,
-  set_cohort_invite_link_revoked: 1
+  set_cohort_invite_link_revoked: 1,
+  upload_video: 1,
+  attach_lesson_video: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;

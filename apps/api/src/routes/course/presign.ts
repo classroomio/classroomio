@@ -12,10 +12,33 @@ import {
 } from '@cio/core/utils/s3';
 
 import { Hono } from '@api/utils/hono';
-import { authMiddleware } from '@api/middlewares/auth';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import { findUnauthorizedDownloadKeys, presignAuthMiddleware } from '@api/middlewares/presign-auth';
 import { generateFileKey } from '@cio/core/utils/upload';
-import { AppError } from '@api/utils/errors';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
+import type { Context } from 'hono';
+
+const requireCourseWrite = presignAuthMiddleware(['course:write']);
+
+const PresignForbiddenResponse = {
+  description:
+    'Automation key is missing the required scope, or one or more requested keys belong to another organization'
+};
+
+function rejectUnauthorizedKeys(c: Context, keys: string[]) {
+  const unauthorizedKeys = findUnauthorizedDownloadKeys(c, keys);
+  if (unauthorizedKeys.length === 0) return null;
+
+  return c.json(
+    {
+      success: false,
+      error: 'One or more requested keys do not belong to this organization',
+      code: ErrorCodes.FORBIDDEN
+    },
+    403
+  );
+}
 
 /**
  * Advisory check on client-reported `fileSize`. Upload bytes go directly to object storage
@@ -56,7 +79,8 @@ const PresignDownloadResponse = {
 export const presignRouter = new Hono()
   .post(
     '/video/upload',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate a pre-signed URL for video upload',
       responses: {
@@ -73,7 +97,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -85,7 +110,7 @@ export const presignRouter = new Hono()
 
       assertPresignFileSizeWithinLimit(fileSize, MAX_FILE_SIZE);
 
-      const fileKey = generateFileKey(fileName);
+      const fileKey = generateFileKey(fileName, c.get('presignUploadOrgId'));
 
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
 
@@ -99,7 +124,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/upload',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate a pre-signed URL for document upload',
       responses: {
@@ -116,7 +142,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -128,7 +155,7 @@ export const presignRouter = new Hono()
 
       assertPresignFileSizeWithinLimit(fileSize, MAX_DOCUMENT_SIZE);
 
-      const fileKey = generateFileKey(fileName);
+      const fileKey = generateFileKey(fileName, c.get('presignUploadOrgId'));
 
       const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);
 
@@ -142,7 +169,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/video/download',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate pre-signed URLs for video download',
       responses: {
@@ -159,7 +187,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -168,6 +197,9 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = rejectUnauthorizedKeys(c, keys);
+      if (forbidden) return forbidden;
 
       const signedUrls = await generateVideoDownloadPresignedUrls(keys);
 
@@ -180,7 +212,8 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/download',
-    authMiddleware,
+    authOrAutomationKeyMiddleware,
+    requireCourseWrite,
     describeRoute({
       description: 'Generate pre-signed URLs for document download',
       responses: {
@@ -197,7 +230,8 @@ export const presignRouter = new Hono()
         },
         401: {
           description: 'Unauthorized'
-        }
+        },
+        403: PresignForbiddenResponse
       },
       tags: ['Presign']
     }),
@@ -206,6 +240,9 @@ export const presignRouter = new Hono()
       const body = c.req.valid('json');
 
       const { keys } = body;
+
+      const forbidden = rejectUnauthorizedKeys(c, keys);
+      if (forbidden) return forbidden;
 
       const signedUrls = await generateDocumentDownloadPresignedUrls(keys);
 

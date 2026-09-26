@@ -1,4 +1,5 @@
 import {
+  ZAttachLessonVideo,
   ZLessonCommentCreate,
   ZLessonCommentGetParam,
   ZLessonCommentUpdate,
@@ -35,11 +36,15 @@ import { ContentType } from '@cio/utils/constants';
 import { Hono } from '@api/utils/hono';
 import { ZLessonDownloadContent } from '@cio/utils/validation/course';
 import { authMiddleware } from '@api/middlewares/auth';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import { generateLessonPdf } from '@api/utils/lesson';
 import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
+import { attachUploadedVideoToLesson } from '@cio/core/services/agent/lesson-upload-video';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { handleError } from '@api/utils/errors';
 import { lessonLanguageRouter } from '@api/routes/course/lesson-language';
 import { zValidator } from '@hono/zod-validator';
@@ -107,6 +112,36 @@ export const lessonRouter = new Hono()
         return c.json({ success: true, data: lesson }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update lesson');
+      }
+    }
+  )
+  .post(
+    '/:lessonId/video',
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:write']),
+    zValidator('param', ZLessonGetParam),
+    zValidator('json', ZAttachLessonVideo),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId')!;
+        const { lessonId } = c.req.valid('param');
+        const payload = c.req.valid('json');
+        const automationKey = c.get('automationKey');
+
+        if (automationKey?.type === 'mcp') {
+          await assertMcpAutomationUsageAllowed(automationKey, 'attach_lesson_video');
+        }
+
+        const result = await attachUploadedVideoToLesson({ orgId, actorId, lessonId, ...payload });
+
+        if (automationKey?.type === 'mcp') {
+          await recordMcpAutomationUsage(automationKey, 'attach_lesson_video', { lessonId });
+        }
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to attach video to lesson');
       }
     }
   )
