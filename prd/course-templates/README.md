@@ -126,7 +126,7 @@ Let an org turn any course into a reusable template, start new courses from it, 
   - A row of 6 small cards (horizontal scroll on narrow screens): **Blank course** first (a plus on an empty thumbnail; opens the existing new-course modal), then up to 5 templates in the order from Confirmed Decision 26. With 5 or more own templates, no ClassroomIO template shows in the row; they stay one click away in the gallery.
   - **Template card** (smaller than a course card, deliberately light): 16:10 thumbnail (the template's cover image), title (one line, truncated), one muted line — "by ClassroomIO" for global templates, "Your template · Used Sep 20" for the org's own. The course-type badge sits bottom-left on the image, exactly as on course cards (Self paced, Live class, Compliance, Public). No counts, tags, publish badge or footer. Clicking opens the preview (section 2).
 - Below the band: **Your courses** heading with the existing toolbar on the right (Find Course, filter, grid/list toggle), then the unchanged course grid. Templates never appear in it.
-- **Empty state** (no courses): the band stays; the grid area shows `Empty` — title "No courses yet", description "Pick a template to see what a great ClassroomIO course looks like, or start from a blank course.", button **Browse templates**.
+- **Empty state** (no courses): the band stays — for a new org with no templates of its own it shows Blank course plus the ClassroomIO templates; the grid area shows `Empty` — title "No courses yet", description "Pick a template to see what a great ClassroomIO course looks like, or start from a blank course.", button **Browse templates**.
 - A normal course's ⋯ menu gains **Save as template…** after Clone.
 
 ### 2. Template gallery and preview (`templates.html`)

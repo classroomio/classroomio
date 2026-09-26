@@ -123,8 +123,16 @@
 
     <script>
       ICONS.chevUpDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg>';
-      document.getElementById('row').innerHTML = templateCard(null) + TEMPLATES.slice(0, 5).map((template) => templateCard(template.scope === 'org' ? { ...template, sub: `Your template · ${template.lastUsed}` } : template)).join('');
-      document.querySelector('[data-blank]').addEventListener('click', (event) => { event.preventDefault(); document.getElementById('blank').hidden = false; });
+      function renderRow(isNewOrg) {
+        const templates = TEMPLATES.filter((template) => !isNewOrg || template.scope === 'global').slice(0, 5);
+        const cards = templates.map((template) => templateCard(template.scope === 'org' ? { ...template, sub: `Your template · ${template.lastUsed}` } : template)).join('');
+        document.getElementById('row').innerHTML = templateCard(null) + cards;
+        document.querySelector('[data-blank]').addEventListener('click', (event) => {
+          event.preventDefault();
+          document.getElementById('blank').hidden = false;
+        });
+      }
+      document.addEventListener('statechange', (event) => renderRow(event.detail === 'empty'));
       document.getElementById('blank-close').addEventListener('click', () => (document.getElementById('blank').hidden = true));
       document.getElementById('open-course-menu').addEventListener('click', (event) => {
         event.stopPropagation();
