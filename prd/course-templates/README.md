@@ -174,6 +174,7 @@ Let an org turn any course into a reusable template, start new courses from it, 
   - **Locked rows** (exercise with submissions): disabled checkbox, "12 submissions — can't be updated".
   - **Edited locally** rows: amber line "You edited this on Sep 20 — pulling replaces your changes."
   - **Removed locally** new rows: "You deleted this from your course."
+- **Parent dependencies:** ticking a New lesson or exercise whose section (or lesson) is also New ticks that parent too, with a muted line "Also adds section ‹name›". Unticking a New parent unticks its New children. The service enforces the same rule.
 - Footer: "3 selected" and **Pull 3 changes** (disabled at 0). After pulling: toast "Pulled 3 changes from Customer Onboarding Academy", "Last pulled" updates, pulled rows disappear and unselected ones stay for next time.
 
 ### 6. ClassroomIO global templates
@@ -254,7 +255,6 @@ Four global templates ship with the feature. Each is a real, usable course (no l
 // course
 isTemplate: boolean('is_template').default(false).notNull(),          // backfilled to false
 templateId: uuid('template_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
-templateSettingsSyncedAt: timestamp('template_settings_synced_at', { withTimezone: true, mode: 'string' }),
 publicForAll: boolean('public_for_all').default(false).notNull(),   // set in the DB only; never in any Zod schema or update query
 
 // course_section, lesson, exercise (the three sync units)
@@ -269,6 +269,13 @@ export const templateHighlight = pgTable('template_highlight', {
   title: varchar({ length: 80 }).notNull(),
   description: varchar({ length: 200 })
 });
+
+// course_template_setting_sync (one row per setting a linked course has pulled)
+export const courseTemplateSettingSync = pgTable('course_template_setting_sync', {
+  courseId: uuid('course_id').notNull().references(() => course.id, { onDelete: 'cascade' }),
+  settingKey: varchar('setting_key').notNull(),          // a SYNCABLE_SETTINGS key
+  syncedAt: timestamp('synced_at', { withTimezone: true, mode: 'string' }).notNull()
+}, (table) => [primaryKey({ columns: [table.courseId, table.settingKey] })]);
 
 // lesson_language
 updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -300,11 +307,12 @@ for each template unit T in course.templateId:
       editedLocally = changedAt(C) > C.sourceSyncedAt
       locked        = C is exercise and exists(submission where exercise_id = C.id)
 
-settings: if template.updated_at > course.templateSettingsSyncedAt
-          → one row per SYNCABLE_SETTINGS key whose value differs
+settings: for each SYNCABLE_SETTINGS key K
+          syncedAt = course_template_setting_sync(course, K).synced_at ?? course.created_at
+          if template.updated_at > syncedAt and template[K] != course[K] → row K
 ```
 
-Skipped rows keep their old `sourceSyncedAt`, so they stay in the list until pulled. Template units deleted in the template are ignored.
+Skipped rows keep their old `sourceSyncedAt` (units) or have no newer `course_template_setting_sync` row (settings), so they stay in the list until pulled. Settings are tracked per key for this reason: one shared timestamp would hide every skipped setting after any pull. Template units deleted in the template are ignored.
 
 `SYNCABLE_SETTINGS`: description, cover image, welcome email, completion deadline, minimum completion %, final exercise (+ minimum score; the exercise id is mapped through `sourceId`), lessons tab order, content grouping, student progression, lesson comments, self-enrollment, Markdown export, lesson/course download, landing page (requirements, description, goals, skills/tools, instructor, pricing), certificate design and rules, AI tutor overrides. Never synced: see Confirmed Decision 11.
 
@@ -315,14 +323,15 @@ pullTemplateChanges(courseId, { unitIds, settingKeys }, actor):
   assert actor is ADMIN; course.templateId not null
   now = new Date()
   tx:
-    for each selected unit (re-run detection inside tx; reject locked or stale selections)
+    add missing parents: a selected New unit whose template parent (section for a lesson; section or lesson for an exercise) is also New and unselected pulls that parent in too
+    for each selected unit, parents first (re-run detection inside tx; reject locked or stale selections)
       New section  → insert after the course copy of its preceding template section, else last
-      New lesson/exercise → insert into the course copy of its template section, after its preceding sibling's copy, else last
+      New lesson/exercise → insert into the course copy of its template parent, after its preceding sibling's copy, else last
       Updated lesson    → overwrite lesson fields + upsert lesson_language per locale (records a lesson version)
       Updated exercise  → overwrite exercise fields; replace its exercise sections, questions, options (safe: no submissions)
       Updated section   → overwrite title
       set sourceId, sourceSyncedAt = now, updatedAt = now
-    for selected settings → copy values; if any, templateSettingsSyncedAt = now
+    for each selected setting K → copy the value; upsert course_template_setting_sync(course, K, synced_at = now)
   after commit: invalidate course caches
 ```
 
@@ -338,7 +347,7 @@ Setting `updatedAt = now` together with `sourceSyncedAt = now` keeps pulled rows
 
 ### Create from template / save / convert
 
-- **Create from template:** assert `canUseTemplate`; `cloneCourse(templateId, { organizationId, isTemplate: false, publicForAll: false, templateId, setSourceIds: true, now })` — every copied section/lesson/exercise gets `sourceId` and `sourceSyncedAt = now`; `templateSettingsSyncedAt = now`.
+- **Create from template:** assert `canUseTemplate`; `cloneCourse(templateId, { organizationId, isTemplate: false, publicForAll: false, templateId, setSourceIds: true, now })` — every copied section/lesson/exercise gets `sourceId` and `sourceSyncedAt = now`. No setting-sync rows are written; `course.created_at` is the settings baseline. For a **global** template (another org), lesson `teacherId` is set to `null` and lesson `callUrl` is cleared, so no platform-org user or meeting link is copied into the customer's org.
 - **Save a copy as template:** `cloneCourse(courseId, { isTemplate: true, isPublished: false })`, no students, no source links.
 - **Convert:** assert no group members with the STUDENT role; `is_template = true`, `is_published = false`.
 - Plan limit: add `templates` to `PLAN_LIMIT_RESOURCES` in `packages/utils/src/plans/limits.ts` (BASIC 1, EARLY_ADOPTER 25, ENTERPRISE unlimited); usage = non-deleted courses in the org with `is_template = true` (global templates never count).
@@ -368,7 +377,7 @@ All admin-only (`orgAdminMiddleware` on the requesting org), each returns a sing
 ## Implementation Order
 
 1. **Timestamps:** add `lesson_language.updated_at`; bump `updatedAt` in every content write (question, option, lesson language, section moves) — with a test per query.
-2. **Migration:** `is_template` backfill/default, `course.template_id`, `course.template_settings_synced_at`, `source_id`/`source_synced_at` on the three unit tables. Check the journal `when` against `main`.
+2. **Migration:** `is_template` backfill/default, `course.template_id`, `course.public_for_all`, the `course_template_setting_sync` and `template_highlight` tables, `source_id`/`source_synced_at` on the three unit tables. Check the journal `when` against `main`.
 3. **Clone refactor:** options object; source-id stamping.
 4. **Templates:** save/convert/create-from + plan limit; `template-card` + story; courses page template row and empty state; gallery page and preview dialog; menu item; template header badge.
 5. **Global templates:** `public_for_all` + `template_highlight`, env, `canUseTemplate`, ClassroomIO templates after own templates in the row and gallery, jobs seed with the four launch-template fixtures.
@@ -411,6 +420,9 @@ pnpm format:check
 25. Other orgs cannot open a global template in the editor, delete it, or read it through any route other than preview/create/pull.
 26. Global templates don't count toward the template plan limit.
 27. The empty state reads "No courses yet…" and Browse templates opens the gallery.
+28. Pulling some settings and skipping others leaves the skipped settings listed on the next review.
+29. Selecting a New lesson or exercise whose parent is also New pulls the parent too; the API applies the same rule when called directly.
+30. A course created from a global template has no lesson `teacherId` or `callUrl` copied from the platform org.
 
 ## Risks and Mitigations
 
@@ -419,7 +431,7 @@ pnpm format:check
 | A content write path forgets to bump `updated_at`, so a template change is missed | Phase 1 audits every update query with a test each; detection also compares `lesson_language` and question/option timestamps. |
 | Pulled lessons replace local edits by accident | Nothing is pre-selected; edited-locally rows carry a warning; lesson version history keeps the replaced content. |
 | Replacing questions breaks grading | Exercises with any submission are locked in UI and rejected in the service. |
-| Setting rows show local customizations after any template settings save | Settings rows appear only when the template's settings changed since the last pull and are unchecked by default. |
+| Setting rows show local customizations after any template settings save | A setting row appears only when the template changed since that setting was last pulled (per-key `course_template_setting_sync`) and still differs; rows are unchecked by default. |
 | Converting the wrong course | Convert is disabled when there are students and is a separate, explicit option from the default copy. |
 | New-item placement looks wrong after heavy local reordering | Items are placed after their nearest pulled neighbor; admins can move them after pulling. |
 | A wrong edit to a global template reaches every org's gallery at once | Only the platform team can sign in to the platform org; content changes still reach courses only when each org pulls them. |

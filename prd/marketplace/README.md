@@ -379,7 +379,7 @@ submitVersion(listingId, fields, actor):
   on tx failure: enqueue deletion of copied objects
 ```
 
-`MARKETPLACE_SANITIZE` clears `cost`, `metadata.paymentEnabled`, `metadata.paymentLink`, `metadata.discount`, `metadata.showDiscount`, `metadata.reviews`, `metadata.instructor`, `metadata.welcomeEmailMessage`, sets `isPublished = false`, `teacherId = null`, and skips tags. URL rewriting only touches URLs under the ClassroomIO media base URL (lesson `note` HTML, `videos`/`documents` JSON, `slideUrl`, `bannerImage`, `logo`); external embeds are left untouched.
+`MARKETPLACE_SANITIZE` clears `cost`, `metadata.paymentEnabled`, `metadata.paymentLink`, `metadata.discount`, `metadata.showDiscount`, `metadata.reviews`, `metadata.instructor`, `metadata.welcomeEmailMessage`, sets `isPublished = false`, clears every lesson's `teacherId` and `callUrl` (so no publisher user id or meeting link leaves the publisher's org), and skips tags. URL rewriting only touches URLs under the ClassroomIO media base URL (lesson `note` HTML, `videos`/`documents` JSON, `slideUrl`, `bannerImage`, `logo`); external embeds are left untouched.
 
 **Approve.** `tx: version.status = approved; previous live version → superseded; listing.liveVersionId = version.id; listing.status = published; listing.publishedAt ??= now`. The superseded version's snapshot is kept (imports reference `versionId`) but no longer shown.
 
@@ -393,7 +393,7 @@ importListing(slug, organizationId, actor):
   tx:
     type switch
       course_template → assert templates used < getPlanLimit('templates', plan)
-                        courseId = cloneCourse(version.snapshotCourseId, org = organizationId, isTemplate = true, teacherId = actor)
+                        courseId = cloneCourse(version.snapshotCourseId, org = organizationId, isTemplate = true, status = 'ACTIVE', lessonTeacherId = actor)   // clone copies status; reset it so the import isn't hidden as a snapshot
       doc             → assert doc limit; docId = copyDocTree(version.snapshotDocId, organizationId, visibility = 'private', owner = actor)
       image_pack      → assetIds = insert assets(provider = 'marketplace', storageKey from marketplace_version_image, org = organizationId)
       ai_skill        → skillId = insert org_ai_skill(from version)
@@ -481,10 +481,10 @@ pnpm format:check
 
 1. A signed-out visitor can load `/discover`, search, filter by type/category/license, sort, and open any published listing and publisher profile; all pages are server-rendered with unique titles and meta descriptions.
 2. Unpublished, removed, draft, and in-review listings are never returned by public routes; their slugs return 410 (removed/unpublished) or 404 (never published).
-3. An org admin can publish a course template; the snapshot contains no price, payment link, reviews, instructor, welcome email, tags, or teacher, and `isPublished = false`.
+3. An org admin can publish a course template; the snapshot contains no price, payment link, reviews, instructor, welcome email, tags, lesson teacher or lesson call link, and `isPublished = false`.
 4. Editing the source template after submission does not change the submitted or live version.
 5. A published listing with an update in review keeps serving the previous approved version until approval.
-6. Importing a course template creates a template (`is_template = true`) in the chosen org with sections, lessons (all locales), exercises, questions, and options identical to the snapshot; media URLs resolve to marketplace storage.
+6. Importing a course template creates a template (`is_template = true`, `status = 'ACTIVE'`, never `MARKETPLACE_SNAPSHOT`) in the chosen org with sections, lessons (all locales), exercises, questions, and options identical to the snapshot; media URLs resolve to marketplace storage.
 7. A free-plan org that already has 1 template cannot import a course template and sees the upgrade CTA; the API returns a plan-limit error.
 8. Non-admins cannot import, publish, or review (403), including via direct API calls.
 9. Deleting an imported image in the importer's Media library does not delete the storage object; the publisher deleting their original does not break imports.
