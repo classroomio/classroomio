@@ -58,7 +58,13 @@ vi.mock('@api/services/organization/student-limit', () => ({
   notifyStudentMilestone: vi.fn()
 }));
 
-import { getOrganizationById, getOrganizationMembersByNormalizedEmails } from '@cio/db/queries/organization';
+import {
+  createOrganizationInvites,
+  getOrganizationById,
+  getOrganizationMembersByNormalizedEmails
+} from '@cio/db/queries/organization';
+import { getCohortsByOrg } from '@cio/db/queries/cohort';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getRemainingStudentSeats } from '@api/services/organization/student-limit';
 import { importAudienceMembers } from '@api/services/organization/audience';
 import { ROLE } from '@cio/utils/constants';
@@ -146,6 +152,58 @@ describe('importAudienceMembers — seat limit', () => {
 
     expect(result.imported).toBe(0);
     expect(result.rows.every((row) => row.status === 'over_seat_limit')).toBe(true);
+  });
+});
+
+describe('importAudienceMembers — cohort invites', () => {
+  function cohortInvite(sendEmail: boolean, ...emails: string[]) {
+    return {
+      recipientCsv: ['email', ...emails].join('\n'),
+      cohortIds: ['cohort-1'],
+      allCourses: false,
+      allCohorts: false,
+      sendEmail
+    } as never;
+  }
+
+  beforeEach(() => {
+    vi.mocked(getCohortsByOrg).mockResolvedValue([{ id: 'cohort-1', name: 'Cohort A' }] as never);
+  });
+
+  it('creates an org invite tagged with the cohort for an unknown email and queues the invite email', async () => {
+    const result = await importAudienceMembers(ORG, cohortInvite(true, 'new@test.dev'), ACTOR);
+
+    expect(createOrganizationInvites).toHaveBeenCalledWith([
+      expect.objectContaining({
+        email: 'new@test.dev',
+        createdByProfileId: ACTOR,
+        metadata: expect.objectContaining({ cohortIds: ['cohort-1'] })
+      })
+    ]);
+    expect(enqueueTransactionalEmail).toHaveBeenCalledWith(
+      'studentOrgInvite',
+      expect.objectContaining({ to: 'new@test.dev' })
+    );
+    expect(result.emailsSent).toBe(1);
+  });
+
+  it('creates the invite but sends no email when sendEmail is false', async () => {
+    const result = await importAudienceMembers(ORG, cohortInvite(false, 'new@test.dev'), ACTOR);
+
+    expect(createOrganizationInvites).toHaveBeenCalled();
+    expect(enqueueTransactionalEmail).not.toHaveBeenCalled();
+    expect(result.emailsSent).toBe(0);
+  });
+
+  it('does not create an invite for an existing student; they are enrolled directly', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, cohortInvite(false, 'ada@test.dev'), ACTOR);
+
+    expect(result.rows[0].status).toBe('already_member');
+    expect(createOrganizationInvites).not.toHaveBeenCalled();
   });
 });
 
