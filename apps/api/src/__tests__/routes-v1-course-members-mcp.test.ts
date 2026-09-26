@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  assertAllowed: vi.fn(),
-  recordUsage: vi.fn()
+  reserve: vi.fn(),
+  complete: vi.fn(),
+  release: vi.fn()
 }));
 
 vi.mock('@api/services/organization/automation-usage', () => ({
-  assertMcpAutomationUsageAllowedForCategory: mocks.assertAllowed,
-  recordMcpAutomationUsageForAction: mocks.recordUsage
+  reserveMcpAutomationUsage: mocks.reserve,
+  completeMcpAutomationUsage: mocks.complete,
+  releaseMcpAutomationUsage: mocks.release
 }));
 
 vi.mock('@api/services/organization/automation-key', () => ({
@@ -76,8 +78,9 @@ const base = `/public-api/v1/courses/${COURSE_ID}`;
 
 describe('public API scopes for MCP keys', () => {
   beforeEach(() => {
-    mocks.assertAllowed.mockReset().mockResolvedValue(undefined);
-    mocks.recordUsage.mockReset().mockResolvedValue(undefined);
+    mocks.reserve.mockReset().mockResolvedValue('reservation-id');
+    mocks.complete.mockReset().mockResolvedValue(undefined);
+    mocks.release.mockReset().mockResolvedValue(undefined);
   });
 
   it('lets an MCP key reach course member routes with the course:member scopes', async () => {
@@ -115,11 +118,12 @@ describe('public API scopes for MCP keys', () => {
 
 describe('MCP usage on course member routes', () => {
   beforeEach(() => {
-    mocks.assertAllowed.mockReset().mockResolvedValue(undefined);
-    mocks.recordUsage.mockReset().mockResolvedValue(undefined);
+    mocks.reserve.mockReset().mockResolvedValue('reservation-id');
+    mocks.complete.mockReset().mockResolvedValue(undefined);
+    mocks.release.mockReset().mockResolvedValue(undefined);
   });
 
-  it('records each route under its MCP tool name, category and credit cost', async () => {
+  it('reserves each call under its category and completes it with the MCP tool name and credit cost', async () => {
     const app = buildApp({ type: 'mcp', scopes: MCP_SCOPES });
 
     await app.request(`${base}/members`);
@@ -136,7 +140,8 @@ describe('MCP usage on course member routes', () => {
     );
     await app.request(`${base}/invites/${INVITE_ID}/revoke`, { method: 'POST' });
 
-    expect(mocks.recordUsage.mock.calls.map(([, action, category, cost]) => [action, category, cost])).toEqual([
+    const categories = mocks.reserve.mock.calls.map(([, category]) => category);
+    expect(mocks.complete.mock.calls.map(([, action, cost], index) => [action, categories[index], cost])).toEqual([
       ['list_course_members', 'read', 0],
       ['add_course_member', 'write', 1],
       ['get_course_member', 'read', 0],
@@ -151,7 +156,7 @@ describe('MCP usage on course member routes', () => {
   });
 
   it('returns 429 without running the handler when the MCP rate limit is hit', async () => {
-    mocks.assertAllowed.mockRejectedValueOnce(
+    mocks.reserve.mockRejectedValueOnce(
       new AppError('Automation rate limit exceeded', ErrorCodes.AUTOMATION_RATE_LIMIT_EXCEEDED, 429)
     );
     const app = buildApp({ type: 'mcp', scopes: MCP_SCOPES });
@@ -159,7 +164,7 @@ describe('MCP usage on course member routes', () => {
     const response = await app.request(`${base}/members/${MEMBER_ID}`, { method: 'DELETE' });
 
     expect(response.status).toBe(429);
-    expect(mocks.recordUsage).not.toHaveBeenCalled();
+    expect(mocks.complete).not.toHaveBeenCalled();
   });
 
   it('does not meter non-MCP keys', async () => {
@@ -167,7 +172,7 @@ describe('MCP usage on course member routes', () => {
 
     await app.request(`${base}/members`);
 
-    expect(mocks.assertAllowed).not.toHaveBeenCalled();
-    expect(mocks.recordUsage).not.toHaveBeenCalled();
+    expect(mocks.reserve).not.toHaveBeenCalled();
+    expect(mocks.complete).not.toHaveBeenCalled();
   });
 });
