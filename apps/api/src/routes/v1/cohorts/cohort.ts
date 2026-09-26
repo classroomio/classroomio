@@ -14,7 +14,7 @@ import {
   listCohortsService,
   listPublicApiEnrolledCohortsService,
   updatePublicApiCohortService
-} from '@api/services/v1/cohort';
+} from '@api/services/v1/cohorts/cohort';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

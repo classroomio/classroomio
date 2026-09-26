@@ -21,7 +21,7 @@ import {
   listPublicApiCohortGoalsService,
   listPublicApiMyCohortGoalsService,
   updatePublicApiCohortGoalService
-} from '@api/services/v1/cohort-goal';
+} from '@api/services/v1/cohorts/goals';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

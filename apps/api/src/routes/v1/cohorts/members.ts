@@ -13,7 +13,7 @@ import {
   listPublicApiCohortMembersService,
   removePublicApiCohortMemberService,
   updatePublicApiCohortMemberService
-} from '@api/services/v1/cohort-member';
+} from '@api/services/v1/cohorts/members';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

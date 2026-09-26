@@ -64,18 +64,18 @@ import {
   listCohortsService,
   listPublicApiEnrolledCohortsService,
   updatePublicApiCohortService
-} from '@api/services/v1/cohort';
+} from '@api/services/v1/cohorts/cohort';
 import {
   addPublicApiCohortMembersService,
   listPublicApiCohortMembersService,
   removePublicApiCohortMemberService,
   updatePublicApiCohortMemberService
-} from '@api/services/v1/cohort-member';
+} from '@api/services/v1/cohorts/members';
 import {
   addPublicApiCohortCourseService,
   listPublicApiCohortCoursesService,
   removePublicApiCohortCourseService
-} from '@api/services/v1/cohort-course';
+} from '@api/services/v1/cohorts/courses';
 import { AppError } from '@api/utils/errors';
 
 const ORG_ID = 'org-1';

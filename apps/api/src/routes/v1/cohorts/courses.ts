@@ -10,7 +10,7 @@ import {
   addPublicApiCohortCourseService,
   listPublicApiCohortCoursesService,
   removePublicApiCohortCourseService
-} from '@api/services/v1/cohort-course';
+} from '@api/services/v1/cohorts/courses';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

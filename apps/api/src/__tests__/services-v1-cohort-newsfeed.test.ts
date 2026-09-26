@@ -54,7 +54,7 @@ import {
   listPublicApiCohortNewsfeedService,
   setPublicApiCohortNewsfeedReactionService,
   updatePublicApiCohortNewsfeedService
-} from '@api/services/v1/cohort-newsfeed';
+} from '@api/services/v1/cohorts/newsfeed';
 
 const ORG_ID = 'org-1';
 const OTHER_ORG_ID = 'org-2';

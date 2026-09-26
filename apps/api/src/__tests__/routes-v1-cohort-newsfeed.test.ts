@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@api/services/v1/cohort-newsfeed', () => ({
+vi.mock('@api/services/v1/cohorts/newsfeed', () => ({
   listPublicApiCohortNewsfeedService: vi.fn(),
   createPublicApiCohortNewsfeedService: vi.fn(),
   updatePublicApiCohortNewsfeedService: vi.fn(),
@@ -11,7 +11,7 @@ vi.mock('@api/services/v1/cohort-newsfeed', () => ({
   deletePublicApiCohortNewsfeedCommentService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/cohort', () => ({
+vi.mock('@api/services/v1/cohorts/cohort', () => ({
   listCohortsService: vi.fn(),
   createPublicApiCohortService: vi.fn(),
   getPublicApiCohortService: vi.fn(),
@@ -19,20 +19,20 @@ vi.mock('@api/services/v1/cohort', () => ({
   deletePublicApiCohortService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/cohort-member', () => ({
+vi.mock('@api/services/v1/cohorts/members', () => ({
   listPublicApiCohortMembersService: vi.fn(),
   addPublicApiCohortMembersService: vi.fn(),
   updatePublicApiCohortMemberService: vi.fn(),
   removePublicApiCohortMemberService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/cohort-course', () => ({
+vi.mock('@api/services/v1/cohorts/courses', () => ({
   listPublicApiCohortCoursesService: vi.fn(),
   addPublicApiCohortCourseService: vi.fn(),
   removePublicApiCohortCourseService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/cohort-goal', () => ({
+vi.mock('@api/services/v1/cohorts/goals', () => ({
   listPublicApiCohortGoalsService: vi.fn(),
   createPublicApiCohortGoalService: vi.fn(),
   getPublicApiCohortGoalService: vi.fn(),
@@ -51,7 +51,7 @@ import {
   listPublicApiCohortNewsfeedService,
   setPublicApiCohortNewsfeedReactionService,
   updatePublicApiCohortNewsfeedService
-} from '@api/services/v1/cohort-newsfeed';
+} from '@api/services/v1/cohorts/newsfeed';
 import { v1CohortsRouter } from '@api/routes/v1/cohorts';
 
 const COHORT_ID = '11111111-1111-4111-8111-111111111111';

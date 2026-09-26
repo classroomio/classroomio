@@ -38,7 +38,7 @@ import {
   getPublicApiCohortInviteLinkService,
   invitePublicApiCohortStudentsService,
   setPublicApiCohortInviteLinkRevokedService
-} from '@api/services/v1/cohort-invite';
+} from '@api/services/v1/cohorts/invites';
 
 const ORG_ID = 'org-1';
 const OTHER_ORG_ID = 'org-2';

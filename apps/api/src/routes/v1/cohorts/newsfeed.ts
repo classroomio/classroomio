@@ -22,7 +22,7 @@ import {
   listPublicApiCohortNewsfeedService,
   setPublicApiCohortNewsfeedReactionService,
   updatePublicApiCohortNewsfeedService
-} from '@api/services/v1/cohort-newsfeed';
+} from '@api/services/v1/cohorts/newsfeed';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

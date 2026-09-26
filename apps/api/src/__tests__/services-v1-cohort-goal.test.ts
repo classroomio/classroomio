@@ -61,7 +61,7 @@ import {
   listPublicApiCohortGoalsService,
   listPublicApiMyCohortGoalsService,
   updatePublicApiCohortGoalService
-} from '@api/services/v1/cohort-goal';
+} from '@api/services/v1/cohorts/goals';
 
 const ORG_ID = 'org-1';
 const OTHER_ORG_ID = 'org-2';

@@ -30,7 +30,7 @@ vi.mock('@api/services/organization/automation-usage', () => ({
   releaseMcpAutomationUsage: vi.fn()
 }));
 
-vi.mock('@api/services/v1/cohort', () => ({
+vi.mock('@api/services/v1/cohorts/cohort', () => ({
   listCohortsService: mocks.ok(),
   listPublicApiEnrolledCohortsService: mocks.ok(),
   createPublicApiCohortService: mocks.ok(),
@@ -38,18 +38,18 @@ vi.mock('@api/services/v1/cohort', () => ({
   updatePublicApiCohortService: mocks.ok(),
   deletePublicApiCohortService: mocks.ok()
 }));
-vi.mock('@api/services/v1/cohort-member', () => ({
+vi.mock('@api/services/v1/cohorts/members', () => ({
   listPublicApiCohortMembersService: mocks.ok(),
   addPublicApiCohortMembersService: mocks.ok(),
   updatePublicApiCohortMemberService: mocks.ok(),
   removePublicApiCohortMemberService: mocks.ok()
 }));
-vi.mock('@api/services/v1/cohort-course', () => ({
+vi.mock('@api/services/v1/cohorts/courses', () => ({
   listPublicApiCohortCoursesService: mocks.ok(),
   addPublicApiCohortCourseService: mocks.ok(),
   removePublicApiCohortCourseService: mocks.ok()
 }));
-vi.mock('@api/services/v1/cohort-newsfeed', () => ({
+vi.mock('@api/services/v1/cohorts/newsfeed', () => ({
   listPublicApiCohortNewsfeedService: mocks.ok(),
   createPublicApiCohortNewsfeedService: mocks.ok(),
   updatePublicApiCohortNewsfeedService: mocks.ok(),
@@ -59,7 +59,7 @@ vi.mock('@api/services/v1/cohort-newsfeed', () => ({
   createPublicApiCohortNewsfeedCommentService: mocks.ok(),
   deletePublicApiCohortNewsfeedCommentService: mocks.ok()
 }));
-vi.mock('@api/services/v1/cohort-goal', () => ({
+vi.mock('@api/services/v1/cohorts/goals', () => ({
   listPublicApiCohortGoalsService: mocks.ok(),
   createPublicApiCohortGoalService: mocks.ok(),
   getPublicApiCohortGoalService: mocks.ok(),
@@ -71,7 +71,7 @@ vi.mock('@api/services/v1/cohort-goal', () => ({
   getPublicApiOrgGoalsOverviewService: mocks.ok(),
   listPublicApiMyCohortGoalsService: mocks.ok()
 }));
-vi.mock('@api/services/v1/cohort-invite', () => ({
+vi.mock('@api/services/v1/cohorts/invites', () => ({
   invitePublicApiCohortStudentsService: mocks.ok(),
   assignPublicApiCohortStudentsService: mocks.ok(),
   getPublicApiCohortInviteLinkService: mocks.ok(),

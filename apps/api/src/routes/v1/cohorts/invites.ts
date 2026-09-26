@@ -13,7 +13,7 @@ import {
   getPublicApiCohortInviteLinkService,
   invitePublicApiCohortStudentsService,
   setPublicApiCohortInviteLinkRevokedService
-} from '@api/services/v1/cohort-invite';
+} from '@api/services/v1/cohorts/invites';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
