@@ -58,6 +58,7 @@ import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
 import { getPublicConversionOffenders } from './public-course-guard';
+import { resolveCourseBannerImage } from '../../utils/course-banner-image';
 
 export interface UpdateCourseResult {
   course: TCourse;
@@ -243,6 +244,7 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
 
     const base = {
       ...rest,
+      bannerImage: resolveCourseBannerImage(rest),
       content,
       studentLimitReached,
       metadata: {

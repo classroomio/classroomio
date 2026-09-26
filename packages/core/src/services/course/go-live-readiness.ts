@@ -13,6 +13,7 @@ import { updateCourse } from './course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
 import { sealLessonVersionsOnPublish } from '../lesson-version';
 import { db } from '@cio/db/drizzle';
+import { resolveCourseBannerImage } from '../../utils/course-banner-image';
 
 export type CourseGoLiveIssue = {
   code: string;
@@ -34,7 +35,17 @@ export type CourseGoLiveReadiness = {
 type CourseReadinessInput = {
   course: Pick<
     TCourse,
-    'id' | 'title' | 'description' | 'overview' | 'slug' | 'bannerImage' | 'metadata' | 'type' | 'cost' | 'certificate'
+    | 'id'
+    | 'title'
+    | 'description'
+    | 'overview'
+    | 'slug'
+    | 'bannerImage'
+    | 'logo'
+    | 'metadata'
+    | 'type'
+    | 'cost'
+    | 'certificate'
   >;
   contentItems: CourseContentItemRow[];
   suggestedSlug?: string;
@@ -138,7 +149,7 @@ export function evaluateCourseGoLiveReadiness(input: CourseReadinessInput): Cour
     metadataFixes.requirements = '';
   }
 
-  if (!course.bannerImage) {
+  if (!resolveCourseBannerImage(course)) {
     blockers.push(
       buildIssue('LANDING_IMAGE_MISSING', 'Add a landing-page banner or course image.', 'course.bannerImage')
     );
