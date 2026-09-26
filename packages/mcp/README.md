@@ -58,6 +58,16 @@ Current tools:
 - `tag_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
+- `list_course_members`
+- `add_course_member`
+- `get_course_member`
+- `update_course_member`
+- `delete_course_member`
+- `reset_course_member_progress`
+- `get_course_member_analytics`
+- `list_course_invites`
+- `create_course_invite`
+- `revoke_course_invite`
 - `list_org_cohorts`
 - `create_cohort`
 - `get_cohort`
@@ -110,7 +120,11 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so they can't reach the rest of the public API. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course draft/exercise tools above call internal-only endpoints and use their own scopes (`course_import:draft:*`, `course:read`/`write`, etc.). Both kinds count toward the same MCP rate limits.
+
+Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
+
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort routes and the course member and invite routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 

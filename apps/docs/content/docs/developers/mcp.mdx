@@ -150,6 +150,21 @@ Current tools:
 - `create_course_exercise_from_template`
 - `update_course_exercise`
 
+Course member and invite tools:
+
+- `list_course_members`
+- `add_course_member`
+- `get_course_member`
+- `update_course_member`
+- `delete_course_member`
+- `reset_course_member_progress`
+- `get_course_member_analytics`
+- `list_course_invites`
+- `create_course_invite`
+- `revoke_course_invite`
+
+These call the public API and need the key's `course:member:read` (list/get/analytics) and `course:member:write` (everything else) scopes, which MCP keys have by default. They count toward the same per-key and per-organization MCP rate limits as the other tools. They act as the person who created the key, with the same rule as the dashboard's People and Invites pages: that person must be a tutor/admin of the course or an org admin.
+
 Cohort tools:
 
 - `list_org_cohorts`
@@ -189,7 +204,7 @@ Cohort tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 
-Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. MCP keys can't reach the rest of the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these and the course member and invite tools, MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
 - Reading a cohort needs them to be a member of the cohort or an org admin.
 - Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.

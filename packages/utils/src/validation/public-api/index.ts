@@ -8,3 +8,6 @@ export * from './cohort-newsfeed';
 export * from './cohort-responses';
 export * from './course';
 export * from './pagination';
+export * from './course-member';
+export * from './course-member-responses';
+export * from './course-invite';

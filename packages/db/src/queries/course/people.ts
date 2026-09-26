@@ -301,7 +301,8 @@ export async function addCourseMember(
     return newMember;
   } catch (error) {
     console.error('addCourseMember error:', error);
-    throw new Error(`Failed to add course member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const message = `Failed to add course member: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    throw Object.assign(new Error(message), { cause: error });
   }
 }
 
@@ -333,7 +334,8 @@ export async function updateCourseMember(
     return updated || null;
   } catch (error) {
     console.error('updateCourseMember error:', error);
-    throw new Error(`Failed to update course member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const message = `Failed to update course member: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    throw Object.assign(new Error(message), { cause: error });
   }
 }
 

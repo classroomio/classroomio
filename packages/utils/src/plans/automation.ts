@@ -66,6 +66,16 @@ export const MCP_TOOL_CREDIT_COST = {
   get_cohort_invite_link: 0,
   create_cohort_invite_link: 1,
   set_cohort_invite_link_revoked: 1,
+  list_course_members: 0,
+  get_course_member: 0,
+  get_course_member_analytics: 0,
+  list_course_invites: 0,
+  add_course_member: 1,
+  update_course_member: 1,
+  delete_course_member: 1,
+  reset_course_member_progress: 1,
+  create_course_invite: 1,
+  revoke_course_invite: 1,
   upload_video: 1,
   attach_lesson_video: 1
 } as const;
@@ -155,7 +165,11 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_org_goals_overview' ||
     toolName === 'list_my_enrolled_cohorts' ||
     toolName === 'list_my_cohort_goals' ||
-    toolName === 'get_cohort_invite_link'
+    toolName === 'get_cohort_invite_link' ||
+    toolName === 'list_course_members' ||
+    toolName === 'get_course_member' ||
+    toolName === 'get_course_member_analytics' ||
+    toolName === 'list_course_invites'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

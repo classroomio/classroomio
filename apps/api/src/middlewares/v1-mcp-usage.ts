@@ -12,6 +12,16 @@ import { MCP_TOOL_CREDIT_COST, type TAutomationUsageCategory, type TMcpToolName 
 type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
+  '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
+  '/public-api/v1/courses/:courseId/members/:memberId': {
+    GET: 'get_course_member',
+    PUT: 'update_course_member',
+    DELETE: 'delete_course_member'
+  },
+  '/public-api/v1/courses/:courseId/members/:memberId/reset-progress': { POST: 'reset_course_member_progress' },
+  '/public-api/v1/courses/:courseId/members/:memberId/analytics': { GET: 'get_course_member_analytics' },
+  '/public-api/v1/courses/:courseId/invites': { GET: 'list_course_invites', POST: 'create_course_invite' },
+  '/public-api/v1/courses/:courseId/invites/:inviteId/revoke': { POST: 'revoke_course_invite' },
   '/public-api/v1/cohorts': { GET: 'list_org_cohorts', POST: 'create_cohort' },
   '/public-api/v1/cohorts/enrolled': { GET: 'list_my_enrolled_cohorts' },
   '/public-api/v1/cohorts/my/goals': { GET: 'list_my_cohort_goals' },
