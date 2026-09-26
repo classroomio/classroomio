@@ -57,11 +57,11 @@ vi.mock('@api/routes/v1/audience', () => ({
   v1AudienceRouter: new Hono().get('/', (c) => c.json({ success: true }))
 }));
 
-vi.mock('@api/routes/v1/courses', () => ({
-  v1CoursesRouter: new Hono().get('/', (c) => c.json({ success: true }))
+vi.mock('@api/routes/v1/courses/course', () => ({
+  v1CourseRouter: new Hono().get('/', (c) => c.json({ success: true }))
 }));
 
-vi.mock('@api/routes/v1/course-certificates', () => ({
+vi.mock('@api/routes/v1/courses/certificates', () => ({
   v1CourseCertificateRouter: new Hono().get('/', (c) => c.json({ route: 'certificate' })),
   v1CourseCertificatesRouter: new Hono().get('/', (c) => c.json({ route: 'certificates' }))
 }));

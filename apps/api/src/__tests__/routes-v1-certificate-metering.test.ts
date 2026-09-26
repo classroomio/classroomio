@@ -25,7 +25,7 @@ vi.mock('@api/services/organization/automation-key', async (importOriginal) => {
 });
 
 vi.mock('@api/routes/v1/audience', () => ({ v1AudienceRouter: new Hono() }));
-vi.mock('@api/routes/v1/courses', () => ({ v1CoursesRouter: new Hono() }));
+vi.mock('@api/routes/v1/courses/course', () => ({ v1CourseRouter: new Hono() }));
 
 vi.mock('@api/services/v1/course-certificate', () => ({
   downloadPublicApiCourseCertificateService: vi.fn(),

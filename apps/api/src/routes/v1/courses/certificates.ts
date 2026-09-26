@@ -31,7 +31,7 @@ import {
   PAGINATION_NOTE,
   courseForbiddenResponses,
   mcpRateLimitedResponse
-} from './course-certificate-route-docs';
+} from './docs';
 
 const TAG = 'Public API Course Certificates';
 

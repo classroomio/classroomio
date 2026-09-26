@@ -27,7 +27,7 @@ import {
   updatePublicApiCourseCertificateService
 } from '@api/services/v1/course-certificate';
 import { releaseMcpAutomationUsage, reserveMcpAutomationUsage } from '@api/services/organization/automation-usage';
-import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from '@api/routes/v1/course-certificates';
+import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from '@api/routes/v1/courses/certificates';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const MEMBER_ID = '22222222-2222-4222-8222-222222222222';

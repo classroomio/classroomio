@@ -87,7 +87,7 @@ const CourseDetailResponse = {
   required: ['success', 'data']
 };
 
-export const v1CoursesRouter = new Hono()
+export const v1CourseRouter = new Hono()
   .get(
     '/',
     describeRoute({

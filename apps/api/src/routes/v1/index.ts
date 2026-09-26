@@ -11,16 +11,10 @@ import { publicApiCors } from '@api/middlewares/cors';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
 import { v1AudienceRouter } from './audience';
 import { v1CoursesRouter } from './courses';
-import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from './course-certificates';
 
-const certificateScopedRoutes = new Hono()
-  .route('/courses/:courseId/certificate', v1CourseCertificateRouter)
-  .route('/courses/:courseId/certificates', v1CourseCertificatesRouter);
-
-const publicApiScopedRoutes = new Hono()
+const audienceRoutes = new Hono()
   .use('*', automationKeyScopesMiddleware(['public_api:*']))
-  .route('/audience', v1AudienceRouter)
-  .route('/courses', v1CoursesRouter);
+  .route('/', v1AudienceRouter);
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -41,5 +35,5 @@ export const v1Router = new Hono()
       keyGenerator: publicApiKeyGenerator
     })
   )
-  .route('/', certificateScopedRoutes)
-  .route('/', publicApiScopedRoutes);
+  .route('/courses', v1CoursesRouter)
+  .route('/audience', audienceRoutes);
