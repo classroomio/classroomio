@@ -1,8 +1,9 @@
 import * as z from 'zod';
 
-import { ZCertificateTemplateId } from '../course/course';
-import { ZCourseMembersQuery } from '../course/people';
 import { ZPublicApiCourseParam } from './course';
+import { ZPublicApiPaginationQuery } from './pagination';
+
+export const ZPublicApiCertificateTemplateId = z.enum(['classique', 'brutalist', 'noir', 'poster', 'minimal']);
 
 export const ZPublicApiCertificateSignatory = z.object({
   name: z.string().max(80).default(''),
@@ -12,7 +13,7 @@ export const ZPublicApiCertificateSignatory = z.object({
 });
 
 export const ZPublicApiCertificateDesign = z.object({
-  templateId: ZCertificateTemplateId,
+  templateId: ZPublicApiCertificateTemplateId,
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' }),
   subtitle: z.string().max(120).optional(),
   descriptionOverride: z.string().max(500).optional(),
@@ -47,10 +48,8 @@ export const ZPublicApiUpdateCourseCertificate = ZPublicApiCertificateSettingsFi
 );
 export type TPublicApiUpdateCourseCertificate = z.infer<typeof ZPublicApiUpdateCourseCertificate>;
 
-export const ZPublicApiListCourseCertificatesQuery = ZCourseMembersQuery.pick({
-  page: true,
-  limit: true,
-  search: true
+export const ZPublicApiListCourseCertificatesQuery = ZPublicApiPaginationQuery.extend({
+  search: z.string().trim().max(200).optional()
 });
 export type TPublicApiListCourseCertificatesQuery = z.infer<typeof ZPublicApiListCourseCertificatesQuery>;
 
