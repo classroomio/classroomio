@@ -27,6 +27,7 @@ import {
   getCourseImportDraftByIdempotencyKey,
   updateCourseImportDraft
 } from '@cio/db/queries/course-import';
+import { ZLessonVideoItem } from '@cio/utils/validation/lesson';
 import { getCourseById, isCourseSlugTaken, updateCourseSlug } from '@cio/db/queries/course';
 import { getLessonLanguagesByLessonIds } from '@cio/db/queries/lesson';
 import { getOrganizationById } from '@cio/db/queries/organization';
@@ -423,6 +424,7 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
 
   const sortedLessons = [...lessons].sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
   const lessonOrderCounters = new Map<string, number>();
+  let droppedVideoCount = 0;
   const normalizedLessons = sortedLessons.map((lesson) => {
     const sectionExternalId =
       lesson.sectionId && sectionReferenceMap.has(lesson.sectionId)
@@ -432,15 +434,31 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     const nextLessonOrder = (lessonOrderCounters.get(sectionExternalId) ?? 0) + 1;
     lessonOrderCounters.set(sectionExternalId, nextLessonOrder);
 
+    const storedVideos = Array.isArray(lesson.videos) ? lesson.videos : [];
+    const parsedVideos = storedVideos.map((video) => ZLessonVideoItem.safeParse(video));
+    const videos = parsedVideos.flatMap((result) => (result.success ? [result.data] : []));
+    droppedVideoCount += parsedVideos.length - videos.length;
+
     return {
       externalId: lesson.id,
       sectionExternalId,
       title: lesson.title,
       order: nextLessonOrder,
       isUnlocked: lesson.isUnlocked ?? undefined,
-      public: lesson.public ?? undefined
+      public: lesson.public ?? undefined,
+      ...(videos.length > 0 ? { videos } : {})
     };
   });
+
+  if (droppedVideoCount > 0) {
+    warnings.push(
+      ZCourseImportWarning.parse({
+        code: 'LESSON_VIDEO_NOT_REPRESENTABLE',
+        message: `${droppedVideoCount} lesson video(s) could not be represented in the draft and were omitted. Publishing this draft will not restore them.`,
+        severity: 'warning'
+      })
+    );
+  }
 
   const normalizedLessonLanguages: TCourseImportDraftPayload['lessonLanguages'] = [];
 
@@ -801,7 +819,8 @@ export async function publishCourseImportDraftService(
         sectionId,
         order: lesson.order,
         isUnlocked: lesson.isUnlocked,
-        public: lesson.public
+        public: lesson.public,
+        videos: lesson.videos
       });
 
       lessonIdMap.set(lesson.externalId, createdLesson.id);
@@ -988,7 +1007,8 @@ export async function publishCourseImportDraftToExistingCourseService(
           sectionId,
           ...(mergedOrder !== undefined ? { order: mergedOrder } : {}),
           isUnlocked: lesson.isUnlocked,
-          public: lesson.public
+          public: lesson.public,
+          videos: lesson.videos
         });
         lessonIdMap.set(lesson.externalId, updatedLesson.id);
         updatedLessons += 1;
@@ -1005,7 +1025,8 @@ export async function publishCourseImportDraftToExistingCourseService(
         sectionId,
         order: isMerge ? nextLessonOrder : lesson.order,
         isUnlocked: lesson.isUnlocked,
-        public: lesson.public
+        public: lesson.public,
+        videos: lesson.videos
       });
       lessonIdMap.set(lesson.externalId, createdLesson.id);
       createdLessons += 1;

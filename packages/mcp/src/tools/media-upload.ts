@@ -1,0 +1,93 @@
+import { extname } from 'node:path';
+import { readFile, stat } from 'node:fs/promises';
+
+import type { ClassroomIoApiClient } from '../api-client';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
+import type { TCoursePresignUrlUpload } from '@cio/utils/validation/course';
+import * as z from 'zod';
+
+const VIDEO_MIME_TYPES_BY_EXTENSION: Record<string, TCoursePresignUrlUpload['fileType']> = {
+  '.mp4': 'video/mp4',
+  '.mov': 'video/quicktime',
+  '.avi': 'video/x-msvideo',
+  '.mkv': 'video/x-matroska'
+};
+
+function resolveMimeType<T extends string>(filePath: string, table: Record<string, T>, kind: string): T {
+  const ext = extname(filePath).toLowerCase();
+  const mimeType = table[ext];
+  if (!mimeType) {
+    throw new Error(
+      `Unsupported ${kind} file extension "${ext || '(none)'}". Supported: ${Object.keys(table).join(', ')}`
+    );
+  }
+  return mimeType;
+}
+
+function fileNameFromPath(filePath: string): string {
+  return filePath.split(/[\\/]/).pop() ?? filePath;
+}
+
+export const ZUploadVideoToolInput = z.object({
+  filePath: z.string().min(1).describe('Absolute local file path to the video to upload.')
+});
+
+export const ZAttachLessonVideoToolInput = z.object({
+  courseId: z.string().min(1),
+  lessonId: z.string().min(1),
+  fileKey: z.string().min(1).describe('The fileKey returned by upload_video.'),
+  fileName: z.string().min(1),
+  fileType: z.string().min(1),
+  fileSize: z.number().int().min(0).optional()
+});
+
+const uploadVideoShape = ZUploadVideoToolInput.shape as unknown as ZodRawShapeCompat;
+const attachLessonVideoShape = ZAttachLessonVideoToolInput.shape as unknown as ZodRawShapeCompat;
+
+export function registerMediaUploadTools(server: McpServer, apiClient: ClassroomIoApiClient) {
+  server.tool(
+    'upload_video',
+    'Upload a local video file (mp4, mov, avi, mkv) to storage. Returns { fileKey, fileName, fileType, fileSize } — pass all of these to attach_lesson_video to actually attach the video to a lesson. This only uploads the file — it does not attach it to any lesson.',
+    uploadVideoShape,
+    async (args) => {
+      const { filePath } = ZUploadVideoToolInput.parse(args);
+      const fileType = resolveMimeType(filePath, VIDEO_MIME_TYPES_BY_EXTENSION, 'video');
+      const fileName = fileNameFromPath(filePath);
+
+      const stats = await stat(filePath);
+      const fileSize = stats.size;
+
+      // Presign first: the API validates fileSize against its own limit, so an
+      // oversized file is rejected before it is read into this process.
+      const { url: uploadUrl, fileKey } = await apiClient.presignVideoUpload({ fileName, fileType, fileSize });
+
+      const buffer = await readFile(filePath);
+      await apiClient.putToPresignedUrl(uploadUrl, buffer, fileType);
+
+      return jsonContent({ fileKey, fileName, fileType, fileSize });
+    }
+  );
+
+  server.tool(
+    'attach_lesson_video',
+    'Attach a previously uploaded video (from upload_video) to a specific lesson. Preserves any videos already on the lesson.',
+    attachLessonVideoShape,
+    async (args) => {
+      const { courseId, lessonId, ...payload } = ZAttachLessonVideoToolInput.parse(args);
+      const result = await apiClient.attachLessonVideo(courseId, lessonId, payload);
+      return jsonContent(result);
+    }
+  );
+}
+
+function jsonContent(data: unknown) {
+  return {
+    content: [
+      {
+        type: 'text' as const,
+        text: JSON.stringify(data)
+      }
+    ]
+  };
+}

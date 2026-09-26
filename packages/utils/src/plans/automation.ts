@@ -75,7 +75,9 @@ export const MCP_TOOL_CREDIT_COST = {
   delete_course_member: 1,
   reset_course_member_progress: 1,
   create_course_invite: 1,
-  revoke_course_invite: 1
+  revoke_course_invite: 1,
+  upload_video: 1,
+  attach_lesson_video: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
