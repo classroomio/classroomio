@@ -1,0 +1,125 @@
+/* course-shell.css — the course layout (course-header.svelte + content list) shared by template.html, course-content.html and course-settings.html. */
+
+.chead {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+.chead .vsep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+}
+.chead .label-here {
+  font-size: 14px;
+  font-weight: 500;
+}
+.chead .spacer {
+  flex: 1;
+}
+.btn-assistant {
+  background: linear-gradient(120deg, oklch(0.488 0.243 264.376), oklch(0.6 0.2 290));
+  color: #fff;
+}
+.bgroup {
+  display: inline-flex;
+  position: relative;
+}
+.bgroup > .btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.bgroup > .btn:nth-child(2) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none;
+  padding: 0 8px;
+}
+.subline {
+  font-size: 12.5px;
+  color: var(--muted-foreground);
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--sidebar);
+}
+
+.content-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 24px 120px;
+}
+.csec {
+  margin-bottom: 18px;
+}
+.csec-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.csec-h .n {
+  margin-left: auto;
+  font-weight: 400;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.crow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-size: 13.5px;
+}
+.crow:hover {
+  background: var(--accent);
+}
+.crow svg {
+  color: var(--muted-foreground);
+  width: 15px;
+  height: 15px;
+}
+.crow .meta {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.pop {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 60;
+  width: 300px;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+  animation: pop 0.14s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.pop .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 8px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+.pop .row:hover {
+  background: var(--accent);
+}
+.pop .row span:last-child {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  white-space: nowrap;
+}

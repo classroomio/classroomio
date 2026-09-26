@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings · Onboarding Academy — Brightpath - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <script src="proto.js"></script>
+    <style>
+      .settings { max-width: 760px; margin: 0 auto; padding: 24px 24px 120px; display: flex; flex-direction: column; gap: 32px; }
+      .scard h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 6px; }
+      .scard > p { font-size: 14px; color: var(--muted-foreground); margin: 0 0 12px; }
+      .scard .card { padding: 20px 24px; }
+      .fake-field { display: grid; gap: 6px; margin-bottom: 16px; font-size: 13.5px; }
+      .fake-field:last-child { margin-bottom: 0; }
+      .fake-field .label { margin: 0; }
+      .tpl-row { display: flex; align-items: center; gap: 14px; }
+      .tpl-row .thumb { width: 56px; height: 40px; border-radius: 6px; background: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=160&q=70&auto=format&fit=crop') center / cover; flex-shrink: 0; }
+      .tpl-row .t { font-weight: 500; font-size: 14px; }
+      .tpl-row .s { font-size: 13px; color: var(--muted-foreground); }
+      .sep { height: 1px; background: var(--border); margin: 16px 0; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="course" data-active="Settings"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Settings</span>
+          <span class="badge badge-success-soft">Published</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <div class="bgroup">
+            <button class="btn btn-outline btn-sm"><span data-icon="ext"></span>View Course Site</button>
+            <button class="btn btn-outline btn-sm" aria-label="More"><span data-icon="more"></span></button>
+          </div>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="settings">
+          <h1 class="page-title" style="margin: 0">Settings</h1>
+
+          <section class="scard" id="general">
+            <h2>General</h2>
+            <div class="card">
+              <div class="fake-field"><span class="label">Course title</span><input class="input" value="Onboarding Academy — Brightpath" /></div>
+              <div class="fake-field"><span class="label">Course Description</span><textarea class="textarea" rows="2">Customer onboarding for the Brightpath account team.</textarea></div>
+            </div>
+          </section>
+
+          <section class="scard" id="content">
+            <h2>Content</h2>
+            <div class="card">
+              <div class="fake-field"><span class="label">Student progression</span><span class="muted">Free · learners can open any unlocked lesson</span></div>
+              <div class="fake-field"><span class="label">Lesson comments</span><span class="muted">On</span></div>
+            </div>
+          </section>
+
+          <section class="scard" id="template">
+            <h2>Template</h2>
+            <p>This course was created from a template. Pull its changes when you want them — nothing changes on its own.</p>
+            <div class="card">
+              <div class="tpl-row">
+                <span class="thumb"></span>
+                <div class="grow">
+                  <a class="t" href="template.html" style="color: inherit">Customer Onboarding Academy</a>
+                  <div class="s" id="pulled-line">Last pulled Sep 12, 2026</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="review-btn" data-state-view="updates" data-open-sheet>Review updates</button>
+              </div>
+
+              <div data-state-view="updates">
+                <div class="sep"></div>
+                <div class="alert alert-information" role="alert">
+                  <span data-icon="info"></span>
+                  <div class="alert-title"><span id="alert-count">6</span> updates available</div>
+                  <div class="alert-description">3 lessons, 1 exercise and 2 settings changed in the template. Pick which ones to pull.</div>
+                </div>
+              </div>
+
+              <div data-state-view="uptodate">
+                <div class="sep"></div>
+                <div class="muted" style="font-size: 13.5px">Up to date with the template.</div>
+              </div>
+
+              <div data-state-view="deleted">
+                <div class="sep"></div>
+                <div class="alert alert-default" role="alert">
+                  <span data-icon="info"></span>
+                  <div class="alert-title">Template deleted</div>
+                  <div class="alert-description">Customer Onboarding Academy was deleted. This course keeps all its content; there's nothing left to pull.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="scard" id="delete">
+            <h2>Delete Course</h2>
+            <p>Deleting this course removes it for everyone.</p>
+            <div class="card"><button class="btn btn-destructive btn-sm">Delete Course</button></div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW SHEET -->
+    <div id="sheet-wrap" hidden>
+      <div class="sheet-scrim" data-close-sheet></div>
+      <aside class="sheet" role="dialog" aria-labelledby="sheet-title">
+        <div class="sheet-head">
+          <div class="frow" style="align-items: flex-start">
+            <div class="grow">
+              <h2 class="dialog-title" id="sheet-title">Template updates</h2>
+              <p class="dialog-desc">From <a href="template.html" style="color: var(--foreground); font-weight: 500">Customer Onboarding Academy</a>, since Sep 12. Pick what to pull — nothing is removed from your course.</p>
+            </div>
+            <button class="btn btn-ghost btn-sm" data-close-sheet aria-label="Close" style="padding: 0 6px"><span data-icon="x"></span></button>
+          </div>
+        </div>
+
+        <div class="sheet-body">
+          <div class="group-h">Content <button data-select-all="content">Select all</button></div>
+          <label class="chg"><input type="checkbox" data-group="content" /><span class="tag tag-new">New</span><span class="body"><span>Single sign-on</span><span class="where">Lesson · 2. Set up your account</span></span></label>
+          <label class="chg"><input type="checkbox" data-group="content" /><span class="tag tag-upd">Updated</span><span class="body"><span>Create your workspace</span><span class="diff-line">Content · French added</span></span></label>
+          <label class="chg"><input type="checkbox" data-group="content" /><span class="tag tag-upd">Updated</span><span class="body"><span>Meet your success team</span><span class="diff-line">Content</span><span class="warn"><span data-icon="alert"></span>You edited this on Sep 20 — pulling replaces your changes</span></span></label>
+          <label class="chg"><input type="checkbox" data-group="content" /><span class="tag tag-new">New</span><span class="body"><span>Common mistakes to avoid</span><span class="where">Lesson · 3. Your first workflow</span><span class="where">You deleted this from your course</span></span></label>
+          <div class="chg locked" title="Exercises with submissions can't be updated"><input type="checkbox" disabled /><span class="tag tag-upd">Updated</span><span class="body"><span>Setup checklist</span><span class="where frow" style="gap: 5px"><span data-icon="lock"></span>12 submissions — can't be updated</span></span></div>
+
+          <div class="group-h">Settings <button data-select-all="settings">Select all</button></div>
+          <label class="chg"><input type="checkbox" data-group="settings" /><span class="body"><span>Student progression</span><span class="diff-line">Template: Sequential · Yours: Free</span></span></label>
+          <label class="chg"><input type="checkbox" data-group="settings" /><span class="body"><span>Certificate design</span><span class="diff-line">Template: Minimal · Yours: Classique</span></span></label>
+        </div>
+
+        <div class="sheet-foot">
+          <span class="muted" style="font-size: 13px" id="selected">Nothing selected</span>
+          <span class="grow"></span>
+          <button class="btn btn-outline btn-sm" data-close-sheet>Cancel</button>
+          <button class="btn btn-primary btn-sm" id="pull" disabled>Pull changes</button>
+        </div>
+      </aside>
+    </div>
+
+    <div class="toast" id="toast" hidden>Pulled <span id="pulled-n">2</span> changes from Customer Onboarding Academy</div>
+
+    <div class="state-bar"><span class="lbl">State</span><button data-state="updates">Has updates</button><button id="open-review">Review sheet</button><button data-state="uptodate">Up to date</button><button data-state="deleted">Template deleted</button><a href="index.html">← Map</a></div>
+
+    <script>
+      const show = bindStatePicker('updates');
+      const sheet = document.getElementById('sheet-wrap');
+      let remaining = 6;
+
+      const openSheet = () => (sheet.hidden = false);
+      const closeSheet = () => (sheet.hidden = true);
+      document.querySelectorAll('[data-open-sheet]').forEach((button) => button.addEventListener('click', openSheet));
+      document.getElementById('open-review').addEventListener('click', () => { show('updates'); openSheet(); });
+      document.querySelectorAll('[data-close-sheet]').forEach((button) => button.addEventListener('click', closeSheet));
+      document.addEventListener('keydown', (event) => event.key === 'Escape' && closeSheet());
+      if (new URLSearchParams(location.search).get('review')) openSheet();
+
+      const boxes = () => [...document.querySelectorAll('.sheet-body input[type=checkbox]:not(:disabled)')];
+      const refreshFooter = () => {
+        const count = boxes().filter((box) => box.checked).length;
+        document.getElementById('selected').textContent = count ? `${count} selected` : 'Nothing selected';
+        const pull = document.getElementById('pull');
+        pull.disabled = count === 0;
+        pull.textContent = count ? `Pull ${count} change${count === 1 ? '' : 's'}` : 'Pull changes';
+      };
+      document.querySelector('.sheet-body').addEventListener('change', refreshFooter);
+      document.querySelectorAll('[data-select-all]').forEach((button) =>
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          const group = boxes().filter((box) => box.dataset.group === button.dataset.selectAll);
+          const allOn = group.every((box) => box.checked);
+          group.forEach((box) => (box.checked = !allOn));
+          refreshFooter();
+        })
+      );
+
+      document.getElementById('pull').addEventListener('click', () => {
+        const picked = boxes().filter((box) => box.checked);
+        picked.forEach((box) => box.closest('.chg').remove());
+        remaining -= picked.length;
+        document.getElementById('pulled-n').textContent = picked.length;
+        document.getElementById('alert-count').textContent = remaining;
+        document.getElementById('pulled-line').textContent = 'Last pulled just now';
+        refreshFooter();
+        closeSheet();
+        const toast = document.getElementById('toast');
+        toast.hidden = false;
+        setTimeout(() => (toast.hidden = true), 2400);
+        if (!remaining) show('uptodate');
+      });
+    </script>
+  </body>
+</html>
