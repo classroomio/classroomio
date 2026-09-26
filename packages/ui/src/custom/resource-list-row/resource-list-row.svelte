@@ -51,12 +51,14 @@
   } = $props();
 
   const layoutClass = $derived(cn(resourceListRowVariants({ align, density }), className));
+  // Svelte 5 `{#snippet child}` shadows the `child` prop; keep a separate binding for the caller snippet.
+  const rowChild = $derived(child);
 </script>
 
-{#if child}
+{#if rowChild}
   <Item.Root {variant} {size} data-density={density} {...restProps}>
     {#snippet child({ props })}
-      {@render child!({
+      {@render rowChild({
         props: {
           ...props,
           'data-density': density,

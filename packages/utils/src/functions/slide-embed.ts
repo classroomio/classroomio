@@ -214,7 +214,10 @@ export function normalizeSlideEmbedSrc(rawSrc: string, platform: SlidePlatformId
   if (platform === 'google-slides') {
     url.pathname = url.pathname.replace(/\/(pub|preview|present|view|htmlpresent)(?=\/|$)/i, '/embed');
 
-    if (!/\/embed\/?$/i.test(url.pathname) && !/\/embed\//i.test(url.pathname)) {
+    const isGoogleSlidesEmbedPath =
+      /\/(embed|pubembed)\/?$/i.test(url.pathname) || /\/(embed|pubembed)\//i.test(url.pathname);
+
+    if (!isGoogleSlidesEmbedPath) {
       url.pathname = `${url.pathname.replace(/\/$/, '')}/embed`;
     }
 

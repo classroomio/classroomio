@@ -150,6 +150,13 @@
       "breakpoints": true
     },
     {
+      "idx": 21,
+      "version": "7",
+      "when": 1790419736572,
+      "tag": "0021_mcp_key_cohort_scopes",
+      "breakpoints": true
+    },
+    {
       "idx": 22,
       "version": "7",
       "when": 1790423336572,

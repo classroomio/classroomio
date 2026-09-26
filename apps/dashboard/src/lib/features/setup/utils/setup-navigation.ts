@@ -47,7 +47,7 @@ export function goToSetupItem(id: string) {
         return;
       }
 
-      snackbar.info('setup.info_course');
+      snackbar.info('snackbar.setup.info_course');
       return;
 
     case SETUP_STEPS.CREATE_EXERCISE:
@@ -56,7 +56,7 @@ export function goToSetupItem(id: string) {
         return;
       }
 
-      snackbar.info('setup.info_lesson');
+      snackbar.info('snackbar.setup.info_lesson');
       return;
 
     case SETUP_STEPS.PUBLISH_COURSE:
@@ -67,7 +67,7 @@ export function goToSetupItem(id: string) {
         return;
       }
 
-      snackbar.info('setup.info_course');
+      snackbar.info('snackbar.setup.info_course');
       return;
 
     case SETUP_STEPS.UPDATE_PROFILE:

@@ -28,7 +28,8 @@
     reviews,
     pricing,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: CourseLandingPageProps = $props();
 
   const heroProps = $derived(alignHeroCtaWithPricing(hero, pricing));
@@ -41,7 +42,7 @@
   <main>
     <MinimalHero hero={heroProps}>
       {#snippet navigation()}
-        <MinimalNav {orgName} {logoUrl} {navItems} {authAction} />
+        <MinimalNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </MinimalHero>
 

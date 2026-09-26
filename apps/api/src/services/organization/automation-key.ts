@@ -29,6 +29,8 @@ const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]
     'course:tag:write',
     'course:exercise:read',
     'course:exercise:write',
+    'cohort:read',
+    'cohort:write',
     'course:member:read',
     'course:member:write'
   ],

@@ -4,6 +4,7 @@ import {
   ZAddCourseToCohort,
   ZAddCohortMembers,
   ZAssignExistingStudentsToCohort,
+  ZCohortNewsfeedListQuery,
   ZCreateCohort,
   ZCreateCohortGoal,
   ZCreateCohortNewsfeed,
@@ -77,10 +78,6 @@ const ZCommentParam = z.object({
   commentId: z.coerce.number().int()
 });
 const ZGoalParam = z.object({ cohortId: z.string().uuid(), goalId: z.string().uuid() });
-const ZListQuery = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(10)
-});
 const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
 
 export const cohortRouter = new Hono()
@@ -453,7 +450,7 @@ export const cohortRouter = new Hono()
     authMiddleware,
     cohortMemberMiddleware,
     zValidator('param', ZCohortParam),
-    zValidator('query', ZListQuery),
+    zValidator('query', ZCohortNewsfeedListQuery),
     async (c) => {
       try {
         const { cohortId } = c.req.valid('param');

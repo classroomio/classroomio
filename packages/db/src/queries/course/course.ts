@@ -14,10 +14,22 @@ import {
 import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import type { TCourseType } from '@cio/utils/constants/course-type';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
+
+/**
+ * `bannerImage` is the canonical course image and `logo` the deprecated column
+ * it replaced. Every query that returns a raw course row resolves through here,
+ * so a row written before the rename still carries an image for consumers that
+ * only read `bannerImage`.
+ */
+function withResolvedCourseBannerImage<T extends { bannerImage: string | null; logo: string | null }>(course: T): T {
+  return { ...course, bannerImage: resolveCourseBannerImage(course) };
+}
 
 /**
  * Base course type - extends TCourse with lessonCount
@@ -134,7 +146,7 @@ export const getPublishedCoursesBySiteName = async (
           .orderBy(asc(schema.course.displayOrder), desc(schema.course.createdAt));
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
       exerciseCount: Number(row.exerciseCount)
     }));
@@ -282,7 +294,7 @@ export const getCoursesById = async (orgId: string): Promise<TCourse[]> => {
       );
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessons: [{ count: Number(row.lessonCount) }],
       group: {
         organization: row.organization
@@ -356,12 +368,14 @@ export const getCoursesBySiteNameForSetup = async (siteName: string) => {
     .where(eq(schema.organization.siteName, siteName));
 
   return result.map((row) => ({
-    ...row.course
+    ...withResolvedCourseBannerImage(row.course)
   }));
 };
 export async function getCourseById(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+    const rows = await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+
+    return rows.map(withResolvedCourseBannerImage);
   } catch (error) {
     console.error('getCourseById error:', error);
     throw new Error(
@@ -515,7 +529,7 @@ export async function getCourseWithRelations(
         : null;
 
     return {
-      ...course,
+      ...withResolvedCourseBannerImage(course),
       group,
       attendance,
       contentItems,
@@ -762,6 +776,10 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   }
 }
 
+type OrgCoursePublishedStatus = 'published' | 'unpublished';
+type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons';
+type OrgCourseSortOrder = 'asc' | 'desc';
+
 interface GetOrgCoursesOptions {
   /** Organization ID (required) */
   orgId: string;
@@ -771,6 +789,10 @@ interface GetOrgCoursesOptions {
   courseIds?: string[];
   /** Optional search query against the course title */
   search?: string;
+  type?: TCourseType;
+  publishedStatus?: OrgCoursePublishedStatus;
+  sortKey?: OrgCourseSortKey;
+  order?: OrgCourseSortOrder;
   /** Page number (1-indexed) */
   page?: number;
   /** Page size */
@@ -785,26 +807,73 @@ export interface GetOrgCoursesResult {
   totalPages: number;
 }
 
+function orgCourseListConditions({
+  orgId,
+  courseIds,
+  search,
+  type,
+  publishedStatus
+}: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'>) {
+  const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
+
+  if (courseIds && courseIds.length > 0) {
+    conditions.push(inArray(schema.course.id, courseIds));
+  }
+
+  if (search?.trim()) {
+    conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
+  }
+
+  if (type) {
+    conditions.push(eq(schema.course.type, type));
+  }
+
+  if (publishedStatus === 'published') {
+    conditions.push(eq(schema.course.isPublished, true));
+  }
+
+  if (publishedStatus === 'unpublished') {
+    conditions.push(eq(schema.course.isPublished, false));
+  }
+
+  return conditions;
+}
+
+function orgCourseListOrderBy(sortKey?: OrgCourseSortKey, order?: OrgCourseSortOrder) {
+  const direction = order === 'asc' ? asc : desc;
+
+  if (sortKey === 'last_updated_at') {
+    return direction(sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`);
+  }
+
+  if (sortKey === 'published') {
+    return direction(schema.course.isPublished);
+  }
+
+  if (sortKey === 'lessons') {
+    return direction(sql`COUNT(DISTINCT ${schema.lesson.id})`);
+  }
+
+  return direction(schema.course.createdAt);
+}
+
 export async function countOrgCourses({
   orgId,
   profileId,
   courseIds,
-  search
-}: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search'>): Promise<number> {
+  search,
+  type,
+  publishedStatus
+}: Pick<
+  GetOrgCoursesOptions,
+  'orgId' | 'profileId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'
+>): Promise<number> {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
     }
 
-    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
-
-    if (courseIds && courseIds.length > 0) {
-      conditions.push(inArray(schema.course.id, courseIds));
-    }
-
-    if (search?.trim()) {
-      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
-    }
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
 
     const totalQuery = profileId
       ? db
@@ -842,6 +911,10 @@ export const getOrgCourses = async ({
   profileId,
   courseIds,
   search,
+  type,
+  publishedStatus,
+  sortKey,
+  order,
   page = 1,
   limit = 20
 }: GetOrgCoursesOptions): Promise<GetOrgCoursesResult> => {
@@ -856,17 +929,8 @@ export const getOrgCourses = async ({
       };
     }
 
-    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
-
-    if (courseIds && courseIds.length > 0) {
-      conditions.push(inArray(schema.course.id, courseIds));
-    }
-
-    if (search?.trim()) {
-      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
-    }
-
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search });
+    const conditions = orgCourseListConditions({ orgId, courseIds, search, type, publishedStatus });
+    const total = await countOrgCourses({ orgId, profileId, courseIds, search, type, publishedStatus });
 
     const baseQuery = db
       .select({
@@ -899,13 +963,13 @@ export const getOrgCourses = async ({
 
     const result = await itemsQuery
       .groupBy(schema.course.id)
-      .orderBy(desc(schema.course.createdAt))
+      .orderBy(orgCourseListOrderBy(sortKey, order))
       .limit(limit)
       .offset((page - 1) * limit);
 
     return {
       items: result.map((row) => ({
-        ...row.course,
+        ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
         totalStudents: Number(row.studentCount),
         exerciseCount: Number(row.exerciseCount)
@@ -1132,7 +1196,7 @@ export const getEnrolledCourses = async ({
     const upcomingByCourse = await getUpcomingSessionsForCourseIds(liveCourseIds);
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
@@ -1230,7 +1294,7 @@ export const getExploreCourses = async ({
 
     return {
       data: rows.map((row) => ({
-        ...row.course,
+        ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
         exerciseCount: Number(row.exerciseCount)
       })),

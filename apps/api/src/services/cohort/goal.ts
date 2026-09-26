@@ -4,9 +4,11 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { buildEmailBranding } from '@cio/email';
 import {
   countAssignmentsByStatus,
+  countCohortGoals,
   createCohortGoal,
   deleteCohortGoal,
   getAssignmentsForProfile,
+  getCoursesByCohort,
   getLatestCompletionRecordsForProfilesAndCourses,
   getMaxScoresForProfilesAndCourses,
   getNonComplianceCourseCompletions,
@@ -18,19 +20,32 @@ import {
   getCohortMembers,
   listAllActiveCohortGoals,
   listAssignmentsForReminderScan,
+  type TNewCohortGoal,
   type TNewCohortGoalAssignment,
   type TCohortGoal,
   type TCohortGoalAssignment,
+  type TCohortListPage,
   updateCohortGoal as updateCohortGoalQuery,
   upsertCohortGoalAssignments
 } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
-import type { TCreateCohortGoal, TUpdateCohortGoal } from '@cio/utils/validation/cohort';
+import { ZCreateCohortGoal, type TCreateCohortGoal, type TUpdateCohortGoal } from '@cio/utils/validation/cohort';
 
 const AT_RISK_DAYS = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 type GoalType = TCohortGoal['type'];
+
+/** Throws 400 unless every courseId is linked to the cohort. */
+async function assertCourseIdsBelongToCohort(cohortId: string, courseIds: string[]): Promise<void> {
+  const cohortCourses = await getCoursesByCohort(cohortId);
+  const cohortCourseIds = new Set(cohortCourses.map((row) => row.courseId));
+
+  const invalidCourseId = courseIds.find((courseId) => !cohortCourseIds.has(courseId));
+  if (invalidCourseId) {
+    throw new AppError(`Course "${invalidCourseId}" is not linked to this cohort`, ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
 
 // ─── CRUD ────────────────────────────────────────────────────────────────────
 
@@ -39,6 +54,8 @@ export async function createGoal(cohortId: string, profileId: string, data: TCre
   if (!cohort) {
     throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
   }
+
+  await assertCourseIdsBelongToCohort(cohortId, data.courseIds);
 
   try {
     const goal = await createCohortGoal({
@@ -73,10 +90,9 @@ export async function createGoal(cohortId: string, profileId: string, data: TCre
   }
 }
 
-export async function listGoals(
-  cohortId: string
+async function withStatusCounts(
+  goals: TCohortGoal[]
 ): Promise<Array<TCohortGoal & { statusCounts: Record<string, number> }>> {
-  const goals = await getCohortGoals(cohortId);
   if (goals.length === 0) return [];
 
   const counts = await countAssignmentsByStatus(goals.map((goal) => goal.id));
@@ -85,6 +101,21 @@ export async function listGoals(
     ...goal,
     statusCounts: counts.get(goal.id) ?? {}
   }));
+}
+
+export async function listGoals(
+  cohortId: string
+): Promise<Array<TCohortGoal & { statusCounts: Record<string, number> }>> {
+  const goals = await getCohortGoals(cohortId);
+
+  return withStatusCounts(goals);
+}
+
+export async function listGoalsPage(cohortId: string, page: TCohortListPage) {
+  const [goals, total] = await Promise.all([getCohortGoals(cohortId, { page }), countCohortGoals(cohortId)]);
+  const items = await withStatusCounts(goals);
+
+  return { items, total };
 }
 
 export async function getGoal(cohortId: string, goalId: string): Promise<TCohortGoal> {
@@ -96,28 +127,67 @@ export async function getGoal(cohortId: string, goalId: string): Promise<TCohort
   return goal;
 }
 
+/** Throws 400 when the goal would break the create-time rules for its type and deadline. */
+function assertGoalDefinitionIsValid(goal: TCohortGoal) {
+  const deadlineDate = goal.deadlineDate ? new Date(goal.deadlineDate).toISOString() : goal.deadlineDate;
+  const revalidation = ZCreateCohortGoal.safeParse({
+    type: goal.type,
+    title: goal.title,
+    description: goal.description,
+    courseIds: goal.courseIds,
+    requiredCount: goal.requiredCount,
+    scoreThreshold: goal.scoreThreshold,
+    teamPassRateThreshold: goal.teamPassRateThreshold,
+    reminderDaysBefore: goal.reminderDaysBefore,
+    deadlineKind: goal.deadlineKind,
+    deadlineDate,
+    relativeDays: goal.relativeDays,
+    recurringMonths: goal.recurringMonths
+  });
+
+  if (!revalidation.success) {
+    throw new AppError(
+      revalidation.error.issues[0]?.message ?? 'Goal update would leave the goal in an invalid state',
+      ErrorCodes.VALIDATION_ERROR,
+      400
+    );
+  }
+}
+
 export async function updateGoal(cohortId: string, goalId: string, data: TUpdateCohortGoal): Promise<TCohortGoal> {
   const existing = await getCohortGoalById(goalId, cohortId);
   if (!existing) {
     throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
   }
 
+  const existingCourseIds = new Set(existing.courseIds);
+  const addedCourseIds = (data.courseIds ?? []).filter((courseId) => !existingCourseIds.has(courseId));
+  if (addedCourseIds.length > 0) {
+    await assertCourseIdsBelongToCohort(cohortId, addedCourseIds);
+  }
+
+  const patch: Partial<TNewCohortGoal> = {};
+  if ('title' in data) patch.title = data.title;
+  if ('description' in data) patch.description = data.description ?? null;
+  if ('type' in data) patch.type = data.type;
+  if ('courseIds' in data) patch.courseIds = data.courseIds;
+  if ('requiredCount' in data) patch.requiredCount = data.requiredCount ?? null;
+  if ('scoreThreshold' in data) patch.scoreThreshold = data.scoreThreshold ?? null;
+  if ('teamPassRateThreshold' in data) patch.teamPassRateThreshold = data.teamPassRateThreshold ?? null;
+  if ('reminderDaysBefore' in data) patch.reminderDaysBefore = data.reminderDaysBefore;
+  if ('deadlineKind' in data) patch.deadlineKind = data.deadlineKind;
+  if ('deadlineDate' in data) patch.deadlineDate = data.deadlineDate ?? null;
+  if ('relativeDays' in data) patch.relativeDays = data.relativeDays ?? null;
+  if ('recurringMonths' in data) patch.recurringMonths = data.recurringMonths ?? null;
+  if ('status' in data) patch.status = data.status;
+
+  const changesDefinition = Object.keys(patch).some((field) => field !== 'status');
+  if (changesDefinition) {
+    assertGoalDefinitionIsValid({ ...existing, ...patch });
+  }
+
   try {
-    const updated = await updateCohortGoalQuery(cohortId, goalId, {
-      title: data.title,
-      description: data.description ?? undefined,
-      type: data.type,
-      courseIds: data.courseIds,
-      requiredCount: data.requiredCount ?? null,
-      scoreThreshold: data.scoreThreshold ?? null,
-      teamPassRateThreshold: data.teamPassRateThreshold ?? null,
-      reminderDaysBefore: data.reminderDaysBefore,
-      deadlineKind: data.deadlineKind,
-      deadlineDate: data.deadlineDate ?? null,
-      relativeDays: data.relativeDays ?? null,
-      recurringMonths: data.recurringMonths ?? null,
-      status: data.status
-    });
+    const updated = await updateCohortGoalQuery(cohortId, goalId, patch);
     if (!updated) {
       throw new AppError('Goal not found', ErrorCodes.COHORT_GOAL_NOT_FOUND, 404);
     }
@@ -225,7 +295,8 @@ function decideStatus(args: {
  */
 export async function evaluateGoal(goalId: string): Promise<{ evaluated: number }> {
   const goal = await getCohortGoalById(goalId);
-  if (!goal) return { evaluated: 0 };
+
+  if (!goal || goal.status === 'archived') return { evaluated: 0 };
 
   const members = await getCohortMembers(goal.cohortId);
   const studentMembers = members.filter((member) => member.roleId === ROLE.STUDENT && member.profileId);

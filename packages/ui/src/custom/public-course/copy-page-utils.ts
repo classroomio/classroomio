@@ -13,11 +13,13 @@ export interface StudyChatInput {
   lessonTitle: string;
   courseTitle: string;
   publicLessonUrl: string;
+  publicLessonMarkdownUrl: string;
 }
 
 export function buildStudyChatUrl(target: StudyChatTarget, input: StudyChatInput): string {
   const prompt = [
     `I'm studying "${input.lessonTitle}" from the course "${input.courseTitle}" (${input.publicLessonUrl}).`,
+    `The lesson content is available as Markdown at ${input.publicLessonMarkdownUrl}.`,
     'Help me understand the concepts, give examples, or help debug based on it.'
   ].join('\n');
   const encodedPrompt = encodeURIComponent(prompt);

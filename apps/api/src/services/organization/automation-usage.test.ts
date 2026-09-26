@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TOrganizationApiKey } from '@db/types';
 
 const mocks = vi.hoisted(() => ({
+  createOrganizationAutomationUsage: vi.fn(),
   reserveOrganizationAutomationUsage: vi.fn(),
   getActiveOrganizationPlan: vi.fn()
 }));
@@ -11,14 +12,14 @@ vi.mock('@cio/db/queries/organization', () => ({
   countOrganizationAutomationUsageSince: vi.fn(),
   countOrganizationAutomationUsageSinceByKey: vi.fn(),
   completeOrganizationAutomationUsage: vi.fn(),
-  createOrganizationAutomationUsage: vi.fn(),
+  createOrganizationAutomationUsage: mocks.createOrganizationAutomationUsage,
   getActiveOrganizationPlan: mocks.getActiveOrganizationPlan,
   listRecentOrganizationAutomationUsage: vi.fn(),
   releaseOrganizationAutomationUsage: vi.fn(),
   reserveOrganizationAutomationUsage: mocks.reserveOrganizationAutomationUsage
 }));
 
-import { reserveMcpAutomationUsage } from './automation-usage';
+import { recordMcpAutomationUsage, reserveMcpAutomationUsage } from './automation-usage';
 import { getMcpAutomationLimits } from '@cio/utils/plans';
 
 const automationKey = {
@@ -26,6 +27,36 @@ const automationKey = {
   organizationId: 'org-id',
   type: 'mcp'
 } as TOrganizationApiKey;
+
+describe('recordMcpAutomationUsage', () => {
+  beforeEach(() => {
+    mocks.createOrganizationAutomationUsage.mockReset();
+  });
+
+  it('records the credit cost defined for the tool', async () => {
+    await recordMcpAutomationUsage(automationKey, 'create_cohort_goal', { cohortId: 'cohort-id' });
+
+    expect(mocks.createOrganizationAutomationUsage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'create_cohort_goal',
+        category: 'write',
+        creditsConsumed: 1
+      })
+    );
+  });
+
+  it('records zero credits for a read tool', async () => {
+    await recordMcpAutomationUsage(automationKey, 'list_cohort_goals');
+
+    expect(mocks.createOrganizationAutomationUsage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'list_cohort_goals',
+        category: 'read',
+        creditsConsumed: 0
+      })
+    );
+  });
+});
 
 describe('reserveMcpAutomationUsage', () => {
   beforeEach(() => {

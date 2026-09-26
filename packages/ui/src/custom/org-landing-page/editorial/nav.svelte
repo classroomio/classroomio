@@ -1,22 +1,19 @@
 <script lang="ts">
-  import type { NavItem } from '../types';
+  import type { LandingNavAuthAction, NavItem, OrgLandingPageProps } from '../types';
   import { safeHref } from '../safe-href';
-  import { Button } from '../../../base/button';
   import EditableLandingSection from '../editable-section.svelte';
+  import LearnerMenu from '../learner-menu.svelte';
+  import LandingNavCta from '../landing-nav-cta.svelte';
 
   interface Props {
     orgName: string;
     logoUrl?: string;
     navItems: NavItem[];
-    authAction?: {
-      label: string;
-      href: string;
-      loading?: boolean;
-      disabled?: boolean;
-    };
+    authAction?: LandingNavAuthAction;
+    learnerAccount?: OrgLandingPageProps['learnerAccount'];
   }
 
-  let { orgName, logoUrl, navItems, authAction }: Props = $props();
+  let { orgName, logoUrl, navItems, authAction, learnerAccount }: Props = $props();
 </script>
 
 <EditableLandingSection sectionKey="navigation" capPlacement="inside">
@@ -49,19 +46,16 @@
           </nav>
         {/if}
 
-        <div class="ui:flex ui:items-center ui:gap-2.5">
-          {#if authAction}
-            <Button
-              href={safeHref(authAction.href)}
-              loading={authAction.loading}
-              disabled={authAction.disabled}
-              size="sm"
-              class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-[var(--landing-fg)] ui:text-[var(--landing-bg)] ui:hover:opacity-90"
-            >
-              {authAction.label}
-            </Button>
-          {/if}
-        </div>
+        {#if authAction || learnerAccount}
+          <div class="ui:flex ui:items-center ui:gap-3">
+            {#if authAction}
+              <LandingNavCta {authAction} theme="editorial" />
+            {/if}
+            {#if learnerAccount}
+              <LearnerMenu account={learnerAccount} {authAction} theme="editorial" />
+            {/if}
+          </div>
+        {/if}
       </div>
     </div>
   </header>
