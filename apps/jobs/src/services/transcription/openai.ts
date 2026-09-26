@@ -3,7 +3,7 @@ import { stat } from 'node:fs/promises';
 
 import OpenAI from 'openai';
 
-import { normalizeWhisperLanguage } from './whisper-language';
+import { normalizeWhisperLanguage } from '@cio/utils/functions';
 
 /** OpenAI audio transcription file size limit (bytes). */
 export const WHISPER_MAX_FILE_BYTES = 25 * 1024 * 1024;

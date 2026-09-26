@@ -44,7 +44,7 @@ const WHISPER_LANGUAGE_CODES: Record<string, string> = {
   indonesian: 'id',
   italian: 'it',
   japanese: 'ja',
-  javanese: 'jw',
+  javanese: 'jv',
   kannada: 'kn',
   kazakh: 'kk',
   khmer: 'km',
