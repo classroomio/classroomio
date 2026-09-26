@@ -27,7 +27,6 @@
   import { browser } from '$app/environment';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { Snippet } from 'svelte';
-  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     courses?: OrgCourses | UserEnrolledCourses;
@@ -42,9 +41,6 @@
     filterControls?: Snippet;
     onCardClick?: (course: (OrgCourses | UserEnrolledCourses)[number]) => void;
     emptyAction?: Snippet;
-    hasMore?: boolean;
-    isLoadingMore?: boolean;
-    onLoadMore?: () => void | Promise<void>;
   }
 
   let {
@@ -59,10 +55,7 @@
     showSortSelect = true,
     filterControls,
     onCardClick,
-    emptyAction,
-    hasMore = false,
-    isLoadingMore = false,
-    onLoadMore
+    emptyAction
   }: Props = $props();
 
   const resolvedEmptyTitle = $derived(
@@ -160,7 +153,7 @@
           id={courseData.id}
           slug={courseData.slug ?? ''}
           title={courseData.title}
-          logo={courseData.logo ?? null}
+          bannerImage={courseData.bannerImage ?? null}
           type={courseData.type}
           description={courseData.description}
           isPublished={courseData.isPublished ?? false}
@@ -179,13 +172,5 @@
         />
       {/each}
     </ResourceListRow.Group>
-  {/if}
-
-  {#if hasMore && !isLoading}
-    <div class="mt-6 flex justify-center">
-      <Button variant="secondary" loading={isLoadingMore} onclick={() => onLoadMore?.()}>
-        {$t('courses.load_more')}
-      </Button>
-    </div>
   {/if}
 </div>

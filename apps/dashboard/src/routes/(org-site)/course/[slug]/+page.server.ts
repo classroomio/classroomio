@@ -66,7 +66,6 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
   }
 
   const canonicalUrl = new URL(url.pathname, url.origin).href;
-  const ogImage = course.bannerImage || '';
 
   const pageMetaTags = Object.freeze({
     title: course.title,
@@ -79,11 +78,11 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
       description: course.description,
       images: [
         {
-          url: ogImage,
+          url: course.bannerImage || '',
           alt: course.title,
           width: 1200,
           height: 630,
-          secureUrl: ogImage.startsWith('https://') ? ogImage : undefined,
+          secureUrl: course.bannerImage ?? undefined,
           type: 'image/jpeg'
         }
       ]
@@ -94,7 +93,7 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
       cardType: 'summary_large_image' as const,
       title: course.title,
       description: course.description,
-      image: ogImage || undefined,
+      image: course.bannerImage ?? undefined,
       imageAlt: course.title
     }
   }) satisfies MetaTagsProps;

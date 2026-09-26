@@ -617,7 +617,7 @@ export async function getCoursesByCohort(
           id: schema.course.id,
           title: schema.course.title,
           description: schema.course.description,
-          coverImage: schema.course.logo,
+          coverImage: schema.course.bannerImage,
           slug: schema.course.slug,
           status: schema.course.status,
           isPublished: schema.course.isPublished

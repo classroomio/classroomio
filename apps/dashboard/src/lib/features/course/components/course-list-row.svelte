@@ -39,7 +39,7 @@
     id: string;
     slug?: string;
     title: string;
-    logo?: string | null;
+    bannerImage?: string | null;
     type?: string | null;
     description?: string;
     isPublished?: boolean;
@@ -58,7 +58,7 @@
     id,
     slug = '',
     title,
-    logo = null,
+    bannerImage = null,
     type,
     description = '',
     isPublished = false,
@@ -75,7 +75,7 @@
 
   const titleInitial = $derived(title.trim().charAt(0).toUpperCase() || 'C');
 
-  const bannerImage = $derived(logo?.trim() ? logo : '/images/classroomio-course-img-template.jpg');
+  const bannerImageUrl = $derived(bannerImage?.trim() ? bannerImage : '/images/classroomio-course-img-template.jpg');
 
   const showPublicCourseLinks = $derived(isPublished && type === 'PUBLIC' && slug.trim().length > 0);
 
@@ -253,7 +253,7 @@
       class="ui:border-border ui:bg-muted relative size-11 shrink-0 overflow-hidden rounded-md border @3xl:size-28"
       aria-hidden="true"
     >
-      <Image src={bannerImage} alt="" className="h-full w-full object-cover" />
+      <Image src={bannerImageUrl} alt="" className="h-full w-full object-cover" />
     </div>
 
     <!-- Mobile Middle Content (flex-1) / Desktop Columns 2-6 (@3xl:contents) -->

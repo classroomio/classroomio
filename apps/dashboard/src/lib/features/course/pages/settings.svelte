@@ -134,7 +134,7 @@
   };
 
   const deleteBannerImage = () => {
-    $settings.logo = '';
+    $settings.bannerImage = '';
     hasUnsavedChanges = true;
   };
 
@@ -224,11 +224,11 @@
     }
 
     try {
-      let logoUrl = $settings.logo;
+      let bannerImageUrl = $settings.bannerImage;
 
       // Upload image if avatar is provided
       if (avatar) {
-        logoUrl = await uploadImage(new File([avatar], avatar));
+        bannerImageUrl = await uploadImage(new File([avatar], avatar));
       }
 
       if (!courseApi.course) return;
@@ -265,7 +265,7 @@
         title: $settings.courseTitle,
         description: $settings.courseDescription,
         type: $settings.type,
-        logo: logoUrl,
+        bannerImage: bannerImageUrl,
         isPublished: $settings.isPublished,
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
@@ -341,7 +341,7 @@
           ? ('PUBLIC' as TCourseType)
           : (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         courseDescription: course.description,
-        logo: course.logo || '',
+        bannerImage: course.bannerImage || '',
         tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
@@ -575,7 +575,7 @@
         <div class="flex flex-col items-start gap-4 sm:flex-row">
           <img
             alt={$t('course.navItem.settings.cover_image')}
-            src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
+            src={$settings.bannerImage ? $settings.bannerImage : '/images/classroomio-course-img-template.jpg'}
             class="h-[120px] w-[168px] rounded-md border object-cover"
           />
           <div class="flex min-w-0 flex-1 flex-col gap-2">
@@ -595,7 +595,7 @@
         </div>
         {#if $handleOpenWidget.open}
           <UploadWidget
-            bind:imageURL={$settings.logo}
+            bind:imageURL={$settings.bannerImage}
             onchange={() => {
               hasUnsavedChanges = true;
             }}

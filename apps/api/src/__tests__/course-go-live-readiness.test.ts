@@ -73,8 +73,7 @@ function buildCourse(overrides: Record<string, unknown> = {}) {
     description: 'A practical course for safer day-to-day workplace decisions.',
     overview: 'Learn the policies, habits, and reporting steps that keep teams safe.',
     slug: 'workplace-safety-essentials',
-    logo: 'https://example.com/banner.jpg',
-    bannerImage: null,
+    bannerImage: 'https://example.com/banner.jpg',
     metadata: {
       description: 'A public-facing overview of the safety course.',
       goals: 'Identify hazards, report incidents, and follow safe operating procedures.',
@@ -135,7 +134,7 @@ describe('evaluateCourseGoLiveReadiness', () => {
         description: '',
         overview: 'Welcome to this amazing course',
         slug: null,
-        logo: '',
+        bannerImage: null,
         metadata: { allowNewStudent: true }
       }) as never,
       contentItems: [],

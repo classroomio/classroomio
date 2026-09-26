@@ -51,7 +51,7 @@
   <Dialog.Content class="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0" showCloseButton={false}>
     <div class="relative shrink-0 overflow-hidden">
       <img
-        src={course.logo || DEFAULT_COURSE_BANNER_IMAGE}
+        src={course.bannerImage || DEFAULT_COURSE_BANNER_IMAGE}
         alt={course.title}
         class="aspect-video w-full object-cover"
       />

@@ -696,7 +696,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const exerciseCount = typeof courseRecord.exerciseCount === 'number' ? courseRecord.exerciseCount : undefined;
     const totalStudents = typeof courseRecord.totalStudents === 'number' ? courseRecord.totalStudents : undefined;
     const image = typeof courseRecord.image === 'string' ? courseRecord.image : undefined;
-    const logo = typeof courseRecord.logo === 'string' ? courseRecord.logo : undefined;
+    const bannerImage = typeof courseRecord.bannerImage === 'string' ? courseRecord.bannerImage : undefined;
     const price = typeof courseRecord.price === 'string' ? courseRecord.price : undefined;
     const duration = typeof courseRecord.duration === 'string' ? courseRecord.duration : undefined;
     const level = typeof courseRecord.level === 'string' ? courseRecord.level : undefined;
@@ -707,7 +707,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     return {
       id: course.id,
       slug: typeof courseRecord.slug === 'string' ? courseRecord.slug : undefined,
-      logo: logo ?? null,
+      bannerImage: bannerImage ?? null,
       title: typeof courseRecord.title === 'string' ? courseRecord.title : '',
       description,
       type,
@@ -746,7 +746,7 @@ export function buildOrgLandingPageProps(
   courses: OrgPublicCourses,
   hasMoreCourses = false,
   authAction?: OrgLandingPageProps['authAction'],
-  options?: { coursesLoaded?: boolean; learnerAccount?: OrgLandingPageProps['learnerAccount'] }
+  options?: { coursesLoaded?: boolean }
 ): OrgLandingPageProps {
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
   const configuredPrimaryAction = normalizedLandingPage.hero.primaryAction;
@@ -759,7 +759,6 @@ export function buildOrgLandingPageProps(
     orgName: org.name,
     logoUrl: org.avatarUrl || undefined,
     authAction,
-    learnerAccount: options?.learnerAccount,
     ...normalizedLandingPage,
     hero: {
       ...normalizedLandingPage.hero,
