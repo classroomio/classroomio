@@ -19,6 +19,17 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
+
+/**
+ * `bannerImage` is the canonical course image and `logo` the deprecated column
+ * it replaced. Every query that returns a raw course row resolves through here,
+ * so a row written before the rename still carries an image for consumers that
+ * only read `bannerImage`.
+ */
+function withResolvedCourseBannerImage<T extends { bannerImage: string | null; logo: string | null }>(course: T): T {
+  return { ...course, bannerImage: resolveCourseBannerImage(course) };
+}
 
 /**
  * Base course type - extends TCourse with lessonCount
@@ -135,7 +146,7 @@ export const getPublishedCoursesBySiteName = async (
           .orderBy(asc(schema.course.displayOrder), desc(schema.course.createdAt));
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
       exerciseCount: Number(row.exerciseCount)
     }));
@@ -283,7 +294,7 @@ export const getCoursesById = async (orgId: string): Promise<TCourse[]> => {
       );
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessons: [{ count: Number(row.lessonCount) }],
       group: {
         organization: row.organization
@@ -357,12 +368,14 @@ export const getCoursesBySiteNameForSetup = async (siteName: string) => {
     .where(eq(schema.organization.siteName, siteName));
 
   return result.map((row) => ({
-    ...row.course
+    ...withResolvedCourseBannerImage(row.course)
   }));
 };
 export async function getCourseById(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+    const rows = await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+
+    return rows.map(withResolvedCourseBannerImage);
   } catch (error) {
     console.error('getCourseById error:', error);
     throw new Error(
@@ -516,7 +529,7 @@ export async function getCourseWithRelations(
         : null;
 
     return {
-      ...course,
+      ...withResolvedCourseBannerImage(course),
       group,
       attendance,
       contentItems,
@@ -956,7 +969,7 @@ export const getOrgCourses = async ({
 
     return {
       items: result.map((row) => ({
-        ...row.course,
+        ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
         totalStudents: Number(row.studentCount),
         exerciseCount: Number(row.exerciseCount)
@@ -1183,7 +1196,7 @@ export const getEnrolledCourses = async ({
     const upcomingByCourse = await getUpcomingSessionsForCourseIds(liveCourseIds);
 
     return result.map((row) => ({
-      ...row.course,
+      ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
@@ -1281,7 +1294,7 @@ export const getExploreCourses = async ({
 
     return {
       data: rows.map((row) => ({
-        ...row.course,
+        ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
         exerciseCount: Number(row.exerciseCount)
       })),

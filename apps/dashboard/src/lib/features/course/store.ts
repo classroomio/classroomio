@@ -28,7 +28,6 @@ export const defaultCourse: Course = {
   updatedAt: new Date().toISOString(),
   groupId: null,
   isTemplate: true,
-  logo: '',
   slug: null,
   bannerImage: null,
   attendance: [],

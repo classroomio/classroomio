@@ -30,7 +30,7 @@ export type OrgLandingPageTheme =
 export type CourseItem = {
   id: string;
   slug?: string;
-  logo?: string | null;
+  bannerImage?: string | null;
   title: string;
   description: string;
   type?: string;

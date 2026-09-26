@@ -3,7 +3,7 @@ import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
 
 type CourseSettings = {
-  logo: string;
+  bannerImage: string;
   courseTitle: string;
   courseDescription: string;
   grading: boolean;
@@ -27,7 +27,7 @@ type CourseSettings = {
 };
 
 export const settings = writable<CourseSettings>({
-  logo: '',
+  bannerImage: '',
   courseTitle: '',
   courseDescription: '',
   grading: false,
