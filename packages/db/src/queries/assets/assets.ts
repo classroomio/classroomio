@@ -339,11 +339,16 @@ export async function finalizeHlsAsset(
  * Looks up which organizations own the given storage keys. Used to authorize
  * download presigns for keys minted before organization-prefixed keys existed,
  * where ownership cannot be read off the key itself.
+ *
+ * Asset uniqueness is scoped per organization, so the same unprefixed key can
+ * be registered by more than one. Every owner is returned rather than one, so
+ * the caller can refuse a key whose ownership is ambiguous instead of matching
+ * whichever row happened to be kept.
  */
 export async function getAssetOrganizationIdsByStorageKeys(
   storageKeys: string[],
   dbClient: DbOrTxClient = db
-): Promise<Map<string, string>> {
+): Promise<Map<string, string[]>> {
   try {
     if (storageKeys.length === 0) {
       return new Map();
@@ -354,7 +359,14 @@ export async function getAssetOrganizationIdsByStorageKeys(
       .from(schema.asset)
       .where(inArray(schema.asset.storageKey, storageKeys));
 
-    return new Map(rows.filter((row) => row.storageKey).map((row) => [row.storageKey as string, row.organizationId]));
+    const ownersByKey = new Map<string, string[]>();
+    for (const row of rows) {
+      if (!row.storageKey) continue;
+
+      ownersByKey.set(row.storageKey, [...(ownersByKey.get(row.storageKey) ?? []), row.organizationId]);
+    }
+
+    return ownersByKey;
   } catch (error) {
     console.error('getAssetOrganizationIdsByStorageKeys error:', error);
     throw new Error(

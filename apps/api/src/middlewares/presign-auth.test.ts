@@ -178,7 +178,7 @@ describe('presignAuthMiddleware', () => {
     });
 
     it('allows a legacy key owned by the caller organization', async () => {
-      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-lesson.mp4', ORG_ID]]));
+      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-lesson.mp4', [ORG_ID]]]));
       const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.STUDENT } });
       const response = await post(app, '/video/download', { keys: ['V1StGXR8Z5jdHi6B-lesson.mp4'] });
 
@@ -186,7 +186,7 @@ describe('presignAuthMiddleware', () => {
     });
 
     it('rejects a legacy key owned by another organization', async () => {
-      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-secret.mp4', OTHER_ORG_ID]]));
+      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-secret.mp4', [OTHER_ORG_ID]]]));
       const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.STUDENT } });
       const response = await post(app, '/video/download', { keys: ['V1StGXR8Z5jdHi6B-secret.mp4'] });
 
@@ -194,6 +194,22 @@ describe('presignAuthMiddleware', () => {
       await expect(response.json()).resolves.toMatchObject({
         unauthorizedKeys: ['V1StGXR8Z5jdHi6B-secret.mp4']
       });
+    });
+
+    it('rejects a legacy key registered by more than one organization', async () => {
+      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-shared.mp4', [ORG_ID, OTHER_ORG_ID]]]));
+      const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.ADMIN } });
+      const response = await post(app, '/video/download', { keys: ['V1StGXR8Z5jdHi6B-shared.mp4'] });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('allows a multi-owner legacy key when the caller belongs to every owner', async () => {
+      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-shared.mp4', [ORG_ID, OTHER_ORG_ID]]]));
+      const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.ADMIN, [OTHER_ORG_ID]: ROLE.ADMIN } });
+      const response = await post(app, '/video/download', { keys: ['V1StGXR8Z5jdHi6B-shared.mp4'] });
+
+      expect(response.status).toBe(200);
     });
 
     it('does not hit the asset table when every key carries a prefix', async () => {
