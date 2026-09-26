@@ -27,8 +27,7 @@
     "start:agent-course-generation": "node dist/workers/agent-course-generation.js",
     "start:audience": "node dist/workers/audience.js",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write .",
-    "test": "tsx --test src/services/transcription/whisper-language.test.ts"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",

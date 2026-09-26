@@ -1,87 +1,65 @@
+import { normalizeWhisperLanguage } from '@cio/utils/functions';
+
 import { db } from '../drizzle';
 import { sql } from 'drizzle-orm';
 
 /**
  * Whisper's `verbose_json` response returns the detected language as an English
  * name ("english"), not a BCP 47 tag. Those names were persisted verbatim and
- * rendered into `<track srclang>`, which requires a valid tag. This rewrites
- * the stored names to codes; anything unrecognised becomes `und`.
+ * rendered into `<track srclang>`, which requires a valid tag.
+ *
+ * Normalization reuses `normalizeWhisperLanguage` so this script and the worker
+ * can never disagree about a mapping. Reports what it would change and exits
+ * without writing unless `--execute` is passed.
  */
-const LANGUAGE_NAME_TO_CODE: Record<string, string> = {
-  afrikaans: 'af',
-  arabic: 'ar',
-  bengali: 'bn',
-  cantonese: 'yue',
-  castilian: 'es',
-  chinese: 'zh',
-  czech: 'cs',
-  danish: 'da',
-  dutch: 'nl',
-  english: 'en',
-  finnish: 'fi',
-  flemish: 'nl',
-  french: 'fr',
-  german: 'de',
-  greek: 'el',
-  hausa: 'ha',
-  hebrew: 'he',
-  hindi: 'hi',
-  hungarian: 'hu',
-  indonesian: 'id',
-  italian: 'it',
-  japanese: 'ja',
-  korean: 'ko',
-  malay: 'ms',
-  moldavian: 'ro',
-  moldovan: 'ro',
-  norwegian: 'no',
-  polish: 'pl',
-  portuguese: 'pt',
-  punjabi: 'pa',
-  pushto: 'ps',
-  romanian: 'ro',
-  russian: 'ru',
-  sinhalese: 'si',
-  somali: 'so',
-  spanish: 'es',
-  swahili: 'sw',
-  swedish: 'sv',
-  tagalog: 'tl',
-  tamil: 'ta',
-  telugu: 'te',
-  thai: 'th',
-  turkish: 'tr',
-  ukrainian: 'uk',
-  urdu: 'ur',
-  vietnamese: 'vi',
-  yoruba: 'yo'
-};
-
 async function normalizeTranscriptLanguages() {
+  const shouldExecute = process.argv.includes('--execute');
+
   try {
-    let updated = 0;
-
-    for (const [name, code] of Object.entries(LANGUAGE_NAME_TO_CODE)) {
-      const result = await db.execute(sql`
-        update media_transcript
-        set language = ${code}
-        where lower(language) = ${name}
-      `);
-
-      updated += result.count ?? 0;
-    }
-
-    const leftover = await db.execute(sql`
-      update media_transcript
-      set language = 'und'
+    const rows = await db.execute(sql`
+      select distinct language
+      from media_transcript
       where language is not null
-        and language <> 'und'
-        and language !~ '^[a-z]{2,3}$'
+        and language <> ''
     `);
 
+    const changes = (rows as unknown as { language: string }[])
+      .map(({ language }) => ({ from: language, to: normalizeWhisperLanguage(language) }))
+      .filter(({ from, to }) => from !== to);
+
+    if (changes.length === 0) {
+      console.log('Transcript language normalization: nothing to do');
+      process.exit(0);
+    }
+
+    const unrecognised = changes.filter(({ to }) => to === 'und');
+
+    if (!shouldExecute) {
+      console.log('Transcript language normalization (dry run)', {
+        distinctValuesToRewrite: changes.length,
+        mappings: changes,
+        valuesFallingBackToUnd: unrecognised.map(({ from }) => from),
+        hint: 'Re-run with --execute to apply.'
+      });
+      process.exit(0);
+    }
+
+    let updatedRows = 0;
+
+    for (const { from, to } of changes) {
+      const result = await db.execute(sql`
+        update media_transcript
+        set language = ${to}
+        where language = ${from}
+      `);
+
+      updatedRows += result.count ?? 0;
+    }
+
     console.log('Transcript language normalization completed', {
-      mappedRows: updated,
-      unrecognisedRows: leftover.count ?? 0
+      distinctValuesRewritten: changes.length,
+      rowsUpdated: updatedRows,
+      valuesFellBackToUnd: unrecognised.map(({ from }) => from)
     });
     process.exit(0);
   } catch (error) {
