@@ -14,7 +14,7 @@ import {
   listCourseStudentsService,
   updatePublicApiCourseService,
   updatePublicApiCourseStructureService
-} from '@api/services/v1/course';
+} from '@api/services/v1/courses/course';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

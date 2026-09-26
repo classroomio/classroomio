@@ -27,7 +27,7 @@ vi.mock('@api/services/organization/automation-key', async (importOriginal) => {
 vi.mock('@api/routes/v1/audience', () => ({ v1AudienceRouter: new Hono() }));
 vi.mock('@api/routes/v1/courses/course', () => ({ v1CourseRouter: new Hono() }));
 
-vi.mock('@api/services/v1/course-certificate', () => ({
+vi.mock('@api/services/v1/courses/certificates', () => ({
   downloadPublicApiCourseCertificateService: vi.fn(),
   getPublicApiCourseCertificateService: vi.fn(),
   listPublicApiCourseCertificatesService: vi.fn(),
@@ -44,7 +44,7 @@ import {
   getPublicApiCourseCertificateService,
   listPublicApiCourseCertificatesService,
   updatePublicApiCourseCertificateService
-} from '@api/services/v1/course-certificate';
+} from '@api/services/v1/courses/certificates';
 import { reserveMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { v1Router } from '@api/routes/v1';
 

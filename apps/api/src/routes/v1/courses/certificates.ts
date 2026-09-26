@@ -10,7 +10,7 @@ import {
   getPublicApiCourseCertificateService,
   listPublicApiCourseCertificatesService,
   updatePublicApiCourseCertificateService
-} from '@api/services/v1/course-certificate';
+} from '@api/services/v1/courses/certificates';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

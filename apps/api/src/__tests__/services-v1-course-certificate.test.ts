@@ -60,7 +60,7 @@ import {
   listPublicApiCourseCertificatesService,
   toEffectiveCertificateSettings,
   updatePublicApiCourseCertificateService
-} from '@api/services/v1/course-certificate';
+} from '@api/services/v1/courses/certificates';
 
 const ORG_ID = 'org-1';
 const COURSE_ID = 'course-1';
@@ -128,7 +128,7 @@ const emptyPage = { items: [], page: 1, limit: 20, total: 0, totalPages: 0 } as 
 const mockCourse = (course: Record<string, unknown>) =>
   vi.mocked(getCourseById).mockResolvedValue([course] as unknown as TGetCourseByIdResult);
 
-describe('services/v1/course-certificate', () => {
+describe('services/v1/courses/certificates', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);

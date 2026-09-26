@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@api/services/v1/course-certificate', () => ({
+vi.mock('@api/services/v1/courses/certificates', () => ({
   downloadPublicApiCourseCertificateService: vi.fn(),
   getPublicApiCourseCertificateService: vi.fn(),
   updatePublicApiCourseCertificateService: vi.fn(),
@@ -25,7 +25,7 @@ import {
   getPublicApiCourseCertificateService,
   listPublicApiCourseCertificatesService,
   updatePublicApiCourseCertificateService
-} from '@api/services/v1/course-certificate';
+} from '@api/services/v1/courses/certificates';
 import { releaseMcpAutomationUsage, reserveMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from '@api/routes/v1/courses/certificates';
 
