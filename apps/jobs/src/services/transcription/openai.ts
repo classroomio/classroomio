@@ -3,6 +3,8 @@ import { stat } from 'node:fs/promises';
 
 import OpenAI from 'openai';
 
+import { normalizeWhisperLanguage } from './whisper-language';
+
 /** OpenAI audio transcription file size limit (bytes). */
 export const WHISPER_MAX_FILE_BYTES = 25 * 1024 * 1024;
 
@@ -52,7 +54,7 @@ export async function transcribeAudioFile(params: {
     ...(params.language ? { language: params.language } : {})
   });
 
-  const language = response.language ?? 'und';
+  const language = normalizeWhisperLanguage(response.language);
   const durationSeconds = response.duration ?? 0;
   const fullText = response.text?.trim() ?? '';
 
