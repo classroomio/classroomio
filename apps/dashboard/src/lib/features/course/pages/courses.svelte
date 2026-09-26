@@ -160,7 +160,7 @@
           id={courseData.id}
           slug={courseData.slug ?? ''}
           title={courseData.title}
-          logo={courseData.logo ?? null}
+          bannerImage={courseData.bannerImage ?? null}
           type={courseData.type}
           description={courseData.description}
           isPublished={courseData.isPublished ?? false}

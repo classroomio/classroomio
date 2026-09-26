@@ -65,9 +65,9 @@
 <div class="mt-7">
   <p class="mb-3 font-bold">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
 
-  {#if course.logo}
+  {#if course.bannerImage}
     <div class="ui:border-border mb-3 overflow-hidden rounded-md border">
-      <img src={course.logo} alt={course.title ?? ''} class="block aspect-video w-full object-cover" />
+      <img src={course.bannerImage} alt={course.title ?? ''} class="block aspect-video w-full object-cover" />
     </div>
   {:else}
     <div
@@ -81,11 +81,11 @@
     <Button variant="outline" onclick={widgetControl}>
       {$t('course.navItem.landing_page.editor.header_form.replace')}
     </Button>
-    {#if course.logo}
+    {#if course.bannerImage}
       <Button
         variant="outline"
         onclick={() => {
-          course.logo = '';
+          course.bannerImage = '';
           markDirty?.();
         }}
       >

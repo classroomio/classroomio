@@ -57,7 +57,7 @@ type Column = { name: string; isArray?: boolean };
 const TARGETS: Array<{ table: string; columns: Column[] }> = [
   { table: 'user', columns: [{ name: 'image' }] },
   { table: 'profile', columns: [{ name: 'avatar_url' }] },
-  { table: 'course', columns: [{ name: 'logo' }, { name: 'banner_image' }] },
+  { table: 'course', columns: [{ name: 'banner_image' }] },
   {
     table: 'assets',
     columns: [{ name: 'thumbnail_url' }, { name: 'thumbnail_candidates', isArray: true }]

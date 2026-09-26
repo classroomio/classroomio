@@ -140,7 +140,10 @@
 {#if ThemeComponent}
   {#if editMode && $handleOpenWidget.open}
     <div class="mx-auto w-full max-w-7xl px-6 py-3">
-      <UploadWidget imageURL={courseData.logo} onchange={(newLogo) => (courseData.logo = newLogo)} />
+      <UploadWidget
+        imageURL={courseData.bannerImage}
+        onchange={(newBannerImage) => (courseData.bannerImage = newBannerImage)}
+      />
     </div>
   {/if}
   <ThemeComponent {...landingProps} />

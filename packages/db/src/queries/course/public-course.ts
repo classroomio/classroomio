@@ -1,8 +1,9 @@
-import { and, asc, eq, or } from 'drizzle-orm';
+import { and, asc, eq, or, sql } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { pickLessonLanguageBody } from './lesson-language-body';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 /**
  * Queries backing the anonymous public-course surface under
@@ -112,7 +113,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         slug: schema.course.slug,
         title: schema.course.title,
         description: schema.course.description,
-        bannerImage: schema.course.bannerImage,
+        bannerImage: sql<string | null>`coalesce(nullif(${schema.course.bannerImage}, ''), ${schema.course.logo})`,
         callout: schema.course.callout,
         metadata: schema.course.metadata,
         type: schema.course.type,
@@ -270,7 +271,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         slug: courseRow.slug,
         title: courseRow.title,
         description: courseRow.description,
-        bannerImage: courseRow.bannerImage,
+        bannerImage: resolveCourseBannerImage(courseRow),
         allowMarkdownExport: courseRow.metadata?.allowMarkdownExport === true,
         callout,
         org
