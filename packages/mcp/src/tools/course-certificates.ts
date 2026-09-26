@@ -65,7 +65,7 @@ export function registerCourseCertificateTools(server: McpServer, apiClient: Cla
 
   server.tool(
     'list_course_certificates',
-    `List the issuance history of a course's certificate: the students who earned it, when it was earned, and when the certificate email was sent. Optional search matches name or email. Paginated: page (default 1) and limit (default 20, max 100); the result includes pagination. ${COURSE_TEAM_RULE}`,
+    `List the students who earned a course's certificate, when it was earned, and when the certificate email was sent. Compliance cycle and recertification history is not included. Optional search matches name or email. Paginated: page (default 1) and limit (default 20, max 100); the result includes pagination. ${COURSE_TEAM_RULE}`,
     listCourseCertificatesShape,
     READ_ONLY,
     async (args) => {

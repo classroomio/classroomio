@@ -66,7 +66,7 @@ Course certificate tools:
 - `list_course_certificates`
 - `download_course_certificate`
 
-Certificate tools call the public API certificate endpoints. MCP keys get the `course:certificate:read` and `course:certificate:write` scopes by default, and existing MCP keys were given them too. These scopes open only the certificate endpoints. Every other public API endpoint still needs `public_api:*`, which MCP keys do not have.
+Certificate tools call the public API certificate endpoints. MCP keys get the `course:certificate:read` and `course:certificate:write` scopes by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. These scopes open only the certificate endpoints. Every other public API endpoint still needs `public_api:*`, which MCP keys do not have.
 
 The tools act as the person who created the key, with the same permissions that person has in the dashboard. That role is checked on every call, so if the creator loses access, the key loses it too:
 
@@ -77,12 +77,13 @@ The tools act as the person who created the key, with the same permissions that 
 
 `update_course_certificate` is a partial update: fields you leave out keep their values, and `null` clears `deadline`, `requiredExerciseId`, `exerciseMinScorePercent`, or `emailMessage`. `design` is replaced as a whole object, so read it first and send the full design. `deadline` must be an ISO 8601 datetime with a timezone, for example `2026-12-31T23:59:59Z`.
 
-`list_course_certificates` is the issuance history. It takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email. `download_course_certificate` takes a `memberId` from that list and a `format` of `pdf` (default) or `png`.
+`list_course_certificates` lists the students who earned the course certificate, with when they earned it and when the certificate email was sent. It takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email. `download_course_certificate` takes a `memberId` from that list and a `format` of `pdf` (default) or `png`.
 
 What the tools cover compared with the dashboard:
 
-- Covered: certificate settings and design, issuance history, and downloading an issued certificate.
+- Covered: certificate settings and design, the list of students who earned the certificate, and downloading an issued certificate.
 - Not covered, on purpose: previewing a design, which is a UI concern.
+- Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
 - Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
 
 ## Auth Model

@@ -111,7 +111,7 @@ export const v1CourseCertificatesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the issuance history of a course's certificate: the students who earned it, when they earned it, and when the certificate email was sent. Optional search matches name or email. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `List the students who earned a course's certificate, when they earned it, and when the certificate email was sent. Compliance cycle and recertification history is not included. Optional search matches name or email. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Issued certificates returned successfully', IssuedCertificatesResponse),
