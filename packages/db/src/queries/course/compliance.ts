@@ -543,7 +543,7 @@ export async function getOrgComplianceLearnerRows(orgId: string): Promise<OrgCom
           isNotNull(schema.groupmember.profileId)
         )
       )
-      .orderBy(asc(schema.course.title), asc(schema.profile.fullname));
+      .orderBy(asc(schema.course.title), asc(schema.profile.fullname), asc(schema.groupmember.id));
 
     return result.map((row) => ({
       courseId: row.courseId,

@@ -176,6 +176,13 @@
       "when": 1790552013227,
       "tag": "0024_course_templates",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1790628009296,
+      "tag": "0025_mcp_key_analytics_scope",
+      "breakpoints": true
     }
   ]
 }
