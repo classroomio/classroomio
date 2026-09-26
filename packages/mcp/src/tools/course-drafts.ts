@@ -107,7 +107,7 @@ const tagCoursesShape = ZAutomationCourseTagAssignment.shape as unknown as ZodRa
 
 const SUPPORTED_QUESTION_TYPES_GUIDE = formatEnabledQuestionTypesGuide();
 const LESSON_HTML_GUIDE =
-  'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content.';
+  'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. To attach a video to a lesson, set lessons[].videos[] with a { type, link } entry (type is one of youtube, vimeo, or generic for a hosted URL). To attach a local video file instead, call upload_video and then attach_lesson_video with the values it returns.';
 
 export function registerCourseDraftTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
