@@ -3,7 +3,6 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { queryUnsplash } from './utils';
-  import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
   import { ImageUploadModal } from '@cio/ui/custom/editor';
@@ -20,8 +19,6 @@
   const uploadLimits = getResolvedUploadLimits();
   const maxLandingImageSize = uploadLimits.landingImageBytes;
 
-  let isUploading = $state(false);
-
   async function handleUnsplashSelect(url: string) {
     imageURL = url;
     onchange?.(url);
@@ -35,12 +32,7 @@
       throw new Error('File too large');
     }
 
-    isUploading = true;
-    try {
-      return await uploadImage(file);
-    } finally {
-      isUploading = false;
-    }
+    return await uploadImage(file);
   }
 
   onMount(() => {

@@ -1,0 +1,87 @@
+---
+name: api-contract-review
+description: >-
+  Design and review ClassroomIO public APIs for security, authorization, API contract
+  quality, MCP/API-key behavior, and dashboard feature parity. Use when adding
+  or reviewing API routes, public APIs, automation endpoints, or MCP tools.
+---
+
+# API Contract Review
+
+Apply this skill when designing, implementing, or reviewing a public API, automation endpoint, or MCP tool. Do not use it as a replacement for the repository's internal route, service, query, and separation-of-concerns guidance.
+
+## Start with the product contract
+
+- Identify the equivalent dashboard workflow and its supported roles, states, defaults, and business rules.
+- List the domain operations external clients need. Check the full resource lifecycle, state-changing actions, bulk operations, exports/files, search/filtering, reporting/history, notifications/webhooks, and administrative/audit operations as applicable.
+- Treat each dashboard capability as one of these categories and decide whether it belongs in the API, is intentionally UI-only, or is out of scope.
+- Treat previewing and rendering as UI concerns unless the API must produce an artifact. Expose the data or export operation clients need instead.
+- Follow established repository conventions when extending an existing API. Do not flag a method only because it differs from a generic REST preference.
+- Document included capabilities and intentional parity gaps in the PR and API docs.
+
+## Establish the actor and authorization model
+
+- Derive the actor from the authenticated session or API-key owner. Never accept a caller-supplied member/user ID to impersonate another person.
+- Check both resource organization ownership and the actor's role/access to that resource.
+- Match read and write permissions to the dashboard, but enforce them independently in the API.
+- Test organization admins, course team members, course members, unauthorized actors, cross-organization IDs, and API-key creators whose permissions later change.
+- For every new API-key or MCP scope, audit all existing endpoints reachable through that scope before widening it.
+
+## Design the endpoint contract
+
+- Use `GET` for reads and `POST` for creation/actions. Prefer `PATCH` for new partial-update APIs and `PUT` for replacement semantics, but preserve an established repository convention when extending an existing API.
+- If `PUT` retains omitted fields, explicitly document that it is an idempotent merge update, including how `null`, empty objects, and empty strings clear values. Keep the behavior consistent with existing clients.
+- Keep one predictable response shape per endpoint and use the repository's standard success, error, and pagination structures.
+- Decide whether responses contain stored values or effective/defaulted values. Prefer normalized effective values when clients must reproduce dashboard behavior.
+- Make sensitive list fields intentional and return only the personal data consumers need.
+- Document idempotency, concurrency behavior, pagination limits, filtering, sorting, and error responses in OpenAPI and client docs.
+
+## Validate at the public API boundary
+
+- Define public request and response schemas independently from internal dashboard schemas. Reuse only deliberately shared primitives.
+- Validate the format promised by the contract: dates, URLs, UUIDs, emails, enums, numeric ranges, and cross-resource relationships.
+- Do not use `z.string().min(1)` for values with a stricter format contract.
+- Validate related identifiers belong to the same organization/course and preserve existing business invariants.
+- Add contract tests so internal schema changes cannot silently change the public API.
+
+## Check security and operational failure modes
+
+- Prevent IDOR/BOLA by checking organization and actor access for every resource operation.
+- Do not trust organization IDs, roles, member IDs, or permissions supplied by the caller.
+- Rate-limit expensive and mutating operations.
+- Make rate-limit enforcement reliable and fail closed when the limiter cannot make a decision. Never silently bypass rate limits, audit events, or another security control.
+- Use transactions or row locking for read-modify-write updates that can lose fields under concurrency.
+- Protect exports/downloads with authorization and expiring access where appropriate.
+- Add audit events for administrative mutations and manual issuance.
+
+## MCP and automation checks
+
+Apply this section when the public API is exposed through MCP or automation keys.
+
+- Mark read tools read-only and mutations as write/destructive tools.
+- Ensure the default key flow grants the scopes required by new tools, or clearly document the required setup and dependency.
+- Enforce permissions in the API, not only in tool metadata.
+- Ensure tool rate limits are enforced for every invocation and remain safe when the limiter or its backing store is unavailable.
+- Keep MCP tool names, API paths, scopes, and documentation consistent.
+- Do not ship a tool that returns 403 for normally-created keys unless that is an intentional, documented rollout dependency.
+
+## Required tests
+
+- Happy-path reads, writes, exports, actions, listing, filtering, and pagination.
+- Authentication, organization isolation, and role matrix tests.
+- API-key scope and creator-permission-change tests.
+- Invalid format, omitted field, `null`, empty payload, and cross-resource validation tests.
+- Idempotency and concurrent update tests.
+- Rate-limit, limiter-failure, and audit-failure tests.
+- OpenAPI/public contract tests and MCP tool tests where applicable.
+
+## PR checklist
+
+- [ ] Dashboard reference workflow and parity boundary are documented.
+- [ ] Actor identity and authorization matrix are documented.
+- [ ] Required scopes are minimal, configured, and tested.
+- [ ] Public schemas are stable and validate the documented formats.
+- [ ] Defaults and partial-update semantics are documented.
+- [ ] Security and failure-mode tests are included.
+- [ ] Applicable resource lifecycle, actions, bulk operations, exports/files, reporting/history, notifications/webhooks, and audit operations are either supported or explicitly scoped out.
+- [ ] OpenAPI, examples, and MCP documentation match the implementation.

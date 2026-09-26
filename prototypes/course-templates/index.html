@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Course Templates · Prototype map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      body { background: var(--background); }
+      .map { width: min(820px, 100% - 32px); margin: 0 auto; padding: 56px 0 80px; }
+      .row { display: flex; gap: 14px; align-items: baseline; padding: 14px 4px; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; }
+      .row:hover b { text-decoration: underline; }
+      .row b { font-weight: 500; font-size: 14.5px; min-width: 220px; }
+      .row span { color: var(--muted-foreground); font-size: 13.5px; line-height: 1.5; }
+      h2 { font-size: 12px; font-weight: 500; color: var(--muted-foreground); margin: 34px 0 4px; }
+      .flow { font-size: 13.5px; color: var(--muted-foreground); line-height: 1.9; }
+      .flow a { color: var(--foreground); }
+    </style>
+  </head>
+  <body>
+    <div class="map">
+      <div class="frow" style="justify-content: space-between"><span class="pill">Prototype · UX source of truth</span><button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button></div>
+      <h1 class="page-title" style="font-size: 30px; margin-top: 16px">Course templates</h1>
+      <p class="page-sub" style="max-width: 620px; line-height: 1.6">Docs/Slides-style: a “Create a new course” row on the courses page and a template gallery with no tabs. ClassroomIO’s four launch templates appear for every org. Spec: <code>prd/course-templates/README.md</code>. Every screen has a state bar in the bottom-left.</p>
+
+      <h2>Journeys</h2>
+      <div class="flow">
+        Make a template: <a href="courses.html">Course ⋯ menu</a> → <a href="save-as-template.html">Save as template</a> → <a href="template.html?state=saved">Template</a><br />
+        Use a template: <a href="courses.html">Template row</a> or <a href="templates.html">Template gallery</a> → <a href="templates.html?preview=onboarding">Preview</a> → name → new course<br />
+        Pull changes: <a href="course-content.html">Alert on Content</a> → <a href="course-settings.html#template">Settings → Template</a> → <a href="course-settings.html?review=1">Review sheet</a>
+      </div>
+
+      <h2>Screens</h2>
+      <a class="row" href="courses.html"><b>Courses page</b><span>App nav bar stays; page title removed: “Create a new course” row (Blank course + small template cards), Template gallery link, course grid, empty state.</span></a>
+      <a class="row" href="templates.html"><b>Template gallery</b><span>Standard page header, scope filter (All · My templates · ClassroomIO) + search on the right, one grid: Blank course, your templates first, then ClassroomIO’s; preview dialog with outline, “Shows off” list, course name and Use template.</span></a>
+      <a class="row" href="save-as-template.html"><b>Save as template</b><span>Copy vs convert in one dialog. Convert disabled with students; published note; plan limit.</span></a>
+      <a class="row" href="template.html"><b>Template</b><span>Identical to a normal course: Template badge in the Published slot, student sections left out of the sidebar.</span></a>
+      <a class="row" href="course-content.html"><b>Linked course · Content</b><span>Alert (information) when the template has updates, linking to settings.</span></a>
+      <a class="row" href="course-settings.html"><b>Linked course · Settings</b><span>Template section: source, last pulled, Review updates → review sheet (all unchecked), locked exercise, edited-locally warning, settings rows. Up to date and template-deleted states.</span></a>
+    </div>
+  </body>
+</html>

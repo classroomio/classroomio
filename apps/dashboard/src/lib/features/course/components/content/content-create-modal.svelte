@@ -349,7 +349,7 @@
 <Dialog.Root bind:open={$contentCreateStore.open} onOpenChange={(isOpen) => !isOpen && closeModal()}>
   <Dialog.Content
     bind:ref={dialogContent}
-    class="flex max-h-[calc(100dvh-3rem)] w-[calc(100%-3rem)] max-w-[calc(100%-3rem)] flex-col overflow-hidden p-6 sm:max-h-170 sm:w-full sm:max-w-xl"
+    class="flex max-h-[calc(100dvh-3rem)] max-w-xl! flex-col overflow-hidden sm:max-h-170"
     onOpenAutoFocus={handleOpenAutoFocus}
   >
     <Dialog.Header>

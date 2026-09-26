@@ -607,6 +607,8 @@ All user-controlled URLs in org landing pages (nav links, hero CTAs, footer link
 
 **When adding new landing-page components or themes:** always route hrefs through `safeHref()`. Never pass a user-controlled string directly to `href`.
 
+Theme previews in the dashboard are visual-only. Render preview content inside an `inert` container so links, buttons, and other controls cannot navigate or trigger actions while previewing a theme.
+
 ## Emails: system vs org-branded
 
 Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.
@@ -777,6 +779,8 @@ Playwright specs and PR demos should use stable, locale-independent selectors. F
 Do not annotate every control — add hooks only for high-impact flows (auth, nav, save bars, primary actions).
 
 ## Checklist for New Routes
+
+For public API design, security, contracts, MCP/API-key behavior, and dashboard parity, read [`skills/api-contract-review/SKILL.md`](skills/api-contract-review/SKILL.md) before implementation and review.
 
 - [ ] **Validation**: Schema in `packages/utils/src/validation/{entity}/`
 - [ ] **Query**: Pure functions in `packages/db/src/queries/{domain}/`

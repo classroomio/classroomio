@@ -5,11 +5,12 @@
   import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
 
   import { t } from '$lib/utils/functions/translations';
-  import { user } from '$lib/utils/store/user';
+  import { user, profile } from '$lib/utils/store/user';
 
   import { PoweredBy } from '$features/ui';
   import { appInitApi } from '$features/app/init.svelte';
-  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { resolveOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { resolveOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import XIcon from '@lucide/svelte/icons/x';
   import FilterIcon from '@lucide/svelte/icons/filter';
@@ -51,12 +52,21 @@
   const landingSettings = $derived(normalizeLandingPageSettings(data.org.landingpage));
 
   const authAction = $derived(
-    getOrgLandingAuthAction({
-      isLoggedIn: $user.isLoggedIn,
-      isInitialized: appInitApi.isInitializedAndReady,
+    resolveOrgLandingAuthAction({
       org: data.org,
-      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
-      hasPendingInvite: !!appInitApi.pendingOrgInvite
+      locals: data.locals,
+      user: $user,
+      appInitApi
+    })
+  );
+
+  const learnerAccount = $derived(
+    resolveOrgLandingLearnerAccount({
+      org: data.org,
+      locals: data.locals,
+      user: $user,
+      profile: $profile,
+      appInitApi
     })
   );
 
@@ -381,6 +391,7 @@
             logoUrl={data.org.avatarUrl ?? undefined}
             navItems={landingSettings.navItems}
             {authAction}
+            {learnerAccount}
           />
         {/snippet}
         {#snippet children()}
@@ -393,6 +404,7 @@
         logoUrl={data.org.avatarUrl ?? undefined}
         navItems={landingSettings.navItems}
         {authAction}
+        {learnerAccount}
       />
       <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
         {#snippet children()}

@@ -56,14 +56,16 @@
 
 <Item.Root
   variant="outline"
-  class={cn(
-    'ui:group ui:relative ui:w-full ui:max-w-full ui:sm:max-w-[320px] ui:mx-auto ui:sm:mx-0 ui:p-3!',
-    className
-  )}
+  class="ui:w-full ui:max-w-full ui:sm:max-w-[320px] ui:mx-auto ui:sm:mx-0 ui:p-3!"
   {onclick}
 >
   {#snippet child({ props })}
-    <div class="ui:relative ui:block">
+    <div
+      class={cn(
+        'ui:group ui:relative ui:mx-auto ui:block ui:w-full ui:max-w-full ui:sm:mx-0 ui:sm:max-w-[320px]',
+        className
+      )}
+    >
       {@render overlay?.()}
 
       {#if href}

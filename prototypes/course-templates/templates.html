@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Template gallery - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .main { min-width: 0; }
+      .page { width: 100%; box-sizing: border-box; max-width: 1080px; margin: 0 auto; padding: 24px 28px 100px; }
+      .body-head { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 18px; }
+      .search-input { display: flex; align-items: center; gap: 8px; height: 32px; width: 240px; padding: 0 10px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--background); color: var(--muted-foreground); }
+      .search-input input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; font: inherit; font-size: 13.5px; color: var(--foreground); }
+      .no-results { grid-column: 1 / -1; text-align: center; padding: 40px 16px; font-size: 13.5px; color: var(--muted-foreground); }
+
+      .preview { max-width: 860px; padding: 0; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: min(620px, calc(100vh - 12vh - 24px)); }
+      .pv-left, .pv-right { min-height: 0; }
+      @media (max-width: 760px) { .preview { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; } .pv-left { max-height: 260px; } }
+      .pv-left { background: var(--sidebar); border-right: 1px solid var(--border); padding: 18px; overflow: auto; }
+      .pv-left .tthumb { margin-bottom: 16px; aspect-ratio: 16 / 7; }
+      .pv-left .tthumb .tart { font-size: 18px; left: 16px; top: 16px; }
+      .pv-sec { margin-bottom: 12px; }
+      .pv-sec b { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+      .pv-item { display: flex; align-items: center; gap: 8px; font-size: 12.8px; color: var(--muted-foreground); padding: 3px 0; }
+      .pv-item svg { width: 13px; height: 13px; }
+      .pv-right { display: flex; flex-direction: column; }
+      .pv-body { padding: 20px 20px 8px; overflow: auto; flex: 1; }
+      .pv-title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; margin: 6px 0 4px; }
+      .hl { display: flex; gap: 10px; padding: 7px 0; font-size: 13px; }
+      .hl svg { color: var(--primary); width: 15px; height: 15px; margin-top: 2px; }
+      .hl .d { color: var(--muted-foreground); font-size: 12.5px; }
+      .pv-foot { padding: 14px 20px 18px; border-top: 1px solid var(--border); }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-org-sidebar></div>
+      <div class="main">
+        <div data-app-header="Courses / Template gallery"></div>
+
+        <div class="page">
+          <div class="page-head">
+            <div>
+              <h1 class="page-title">Template gallery</h1>
+              <p class="page-sub">Start a course from one of your templates or one built by ClassroomIO.</p>
+            </div>
+          </div>
+
+          <div class="body-head">
+            <select class="select" id="scope" aria-label="Filter templates" style="width: auto; height: 32px">
+              <option value="all">All templates</option>
+              <option value="org">My templates</option>
+              <option value="global">ClassroomIO</option>
+            </select>
+            <label class="search-input"><span data-icon="search"></span><input id="q" placeholder="Find template" aria-label="Find template" /></label>
+          </div>
+
+          <div class="tgrid" id="grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" id="preview-scrim" hidden>
+      <div class="dialog preview" role="dialog" aria-labelledby="pv-title">
+        <div class="pv-left" id="pv-left"></div>
+        <div class="pv-right">
+          <div class="pv-body" id="pv-body"></div>
+          <div class="pv-foot" data-state-view="ready">
+            <label class="label" for="pv-name">Course name</label>
+            <input class="input" id="pv-name" />
+            <div class="frow" style="margin-top: 12px; justify-content: flex-end">
+              <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+              <a class="btn btn-secondary btn-sm" href="template.html" id="pv-open" hidden>Open template</a>
+              <button class="btn btn-primary btn-sm" id="pv-use">Use template</button>
+            </div>
+          </div>
+          <div class="pv-foot" data-state-view="creating" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px">
+            <span style="width: 18px; height: 18px; border-radius: 99px; border: 2.5px solid var(--muted); border-top-color: var(--primary); animation: spin 0.8s linear infinite"></span>
+            Copying <span id="pv-copying"></span>…
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">State</span>
+      <button data-state="ready">Preview</button>
+      <button id="s-global">Preview: ClassroomIO</button>
+      <button id="s-org">Preview: yours</button>
+      <button id="s-none">No org templates</button>
+      <a href="index.html">← Map</a>
+    </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+    <script>
+      ICONS.check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>';
+      let includeOrgTemplates = true;
+
+      const orderedTemplates = () => {
+        const own = includeOrgTemplates ? TEMPLATES.filter((template) => template.scope === 'org') : [];
+        const global = TEMPLATES.filter((template) => template.scope === 'global');
+        return [...own, ...global];
+      };
+
+      function renderGrid() {
+        const query = document.getElementById('q').value.trim().toLowerCase();
+        const scope = document.getElementById('scope').value;
+        const matches = orderedTemplates().filter((template) => (scope === 'all' || template.scope === scope) && template.title.toLowerCase().includes(query));
+        const blank = query || scope === 'global' ? '' : templateCard(null);
+        const emptyMessage = scope === 'org' && !query ? 'You haven’t made any templates yet. Save any course as a template from its ⋯ menu.' : `No templates match “${query}”.`;
+        const cards = matches.map((template) => templateCard({ ...template, sub: template.scope === 'org' ? `Your template · ${template.lastUsed}` : template.sub }, { menu: template.scope === 'org' })).join('');
+        document.getElementById('grid').innerHTML = blank + (cards || `<div class="no-results">${emptyMessage}</div>`);
+        document.querySelector('#grid [data-blank]')?.addEventListener('click', (event) => { event.preventDefault(); location.href = 'courses.html'; });
+        document.querySelectorAll('#grid [data-preview]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); openPreview(link.dataset.preview); }));
+        document.querySelectorAll('#grid [data-menu]').forEach((trigger) => {
+          trigger.dataset.bound = 'true';
+          trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const menu = document.querySelector(`[data-menu-for="${trigger.dataset.menu}"]`);
+            menu.hidden = !menu.hidden;
+          });
+        });
+      }
+
+      const show = bindStatePicker('ready');
+      const scrim = document.getElementById('preview-scrim');
+
+      function openPreview(id) {
+        const template = TEMPLATES.find((item) => item.id === id);
+        const outline = template.outline
+          .map(([section, lessons, exercises]) => `<div class="pv-sec"><b>${section}</b>${lessons.map((lesson) => `<div class="pv-item">${ICONS.lesson}${lesson}</div>`).join('')}${exercises.map((exercise) => `<div class="pv-item">${ICONS.exercise}${exercise}</div>`).join('')}</div>`)
+          .join('');
+        document.getElementById('pv-left').innerHTML = templateThumb(template, 900) + outline;
+        const byline = template.scope === 'global' ? 'by ClassroomIO' : 'Your template';
+        const highlights = template.highlights
+          ? `<div class="label" style="margin:18px 0 4px">Shows off</div>${template.highlights.map(([title, description]) => `<div class="hl">${ICONS.check}<div><div>${title}</div><div class="d">${description}</div></div></div>`).join('')}`
+          : '';
+        document.getElementById('pv-body').innerHTML = `<div class="frow" style="gap:6px"><span class="badge badge-secondary">${template.type}</span><span class="muted" style="font-size:12.5px">${byline}</span></div><h2 class="pv-title" id="pv-title">${template.title}</h2><p class="muted" style="font-size:13.5px;line-height:1.55;margin:0">${template.description}</p><p class="muted" style="font-size:12.5px;margin:10px 0 0">${template.counts}</p>${highlights}`;
+        document.getElementById('pv-name').value = template.title;
+        document.getElementById('pv-open').hidden = template.scope !== 'org';
+        document.getElementById('pv-copying').textContent = template.counts.split(' · ').slice(0, 3).join(', ');
+        show('ready');
+        scrim.hidden = false;
+        history.replaceState(null, '', `?preview=${id}`);
+      }
+
+      function closePreview() {
+        scrim.hidden = true;
+        history.replaceState(null, '', location.pathname);
+      }
+
+      document.getElementById('q').addEventListener('input', renderGrid);
+      document.getElementById('scope').addEventListener('change', renderGrid);
+      renderGrid();
+      scrim.addEventListener('click', (event) => event.target === scrim && closePreview());
+      document.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', closePreview));
+      document.addEventListener('keydown', (event) => event.key === 'Escape' && closePreview());
+      document.getElementById('pv-use').addEventListener('click', () => {
+        show('creating');
+        setTimeout(() => (location.href = 'course-content.html?state=uptodate'), 1300);
+      });
+      document.getElementById('s-global').addEventListener('click', () => openPreview('onboarding'));
+      document.getElementById('s-org').addEventListener('click', () => openPreview('org-onboarding'));
+      document.getElementById('s-none').addEventListener('click', () => { closePreview(); includeOrgTemplates = !includeOrgTemplates; renderGrid(); });
+
+      const initial = new URLSearchParams(location.search).get('preview');
+      if (initial) openPreview(initial);
+    </script>
+  </body>
+</html>

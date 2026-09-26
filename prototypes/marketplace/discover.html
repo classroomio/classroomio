@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Discover course templates, images, docs and AI skills · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="discover.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .type-tabs { display: flex; gap: 6px; margin-top: 22px; flex-wrap: wrap; }
+      .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+      .cat { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-lg); text-decoration: none; background: var(--card); font-size: 14px; font-weight: 500; transition: border-color 0.15s ease; }
+      .cat:hover { border-color: var(--primary); }
+      .cat span { font-size: 12.5px; font-weight: 400; color: var(--muted-foreground); }
+      .coll-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+      .coll-head .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: oklch(0.488 0.243 264.376 / 0.1); color: var(--primary); }
+    </style>
+  </head>
+  <body data-active="discover">
+    <div data-site-nav></div>
+
+    <section class="hero">
+      <div class="container">
+        <div class="eyebrow">Discover</div>
+        <h1 class="h1">Start from something<br />great, not a blank page.</h1>
+        <p class="lede">Free course templates, cover images, docs and AI skills published by teams on ClassroomIO. Import any of them into your workspace in one click.</p>
+        <form class="search" action="discover-browse.html" style="margin-top: 26px">
+          <span data-icon="search"></span>
+          <input name="q" placeholder="Search templates, images, docs, AI skills…" aria-label="Search the marketplace" />
+          <button class="btn btn-primary btn-sm" type="submit">Search</button>
+        </form>
+        <div class="type-tabs">
+          <a class="chip on" href="discover-browse.html">All</a>
+          <a class="chip" href="discover-browse.html?type=course"><span data-icon="course"></span>Course templates</a>
+          <a class="chip" href="discover-browse.html?type=images"><span data-icon="images"></span>Images</a>
+          <a class="chip" href="discover-browse.html?type=doc"><span data-icon="doc"></span>Docs</a>
+          <a class="chip" href="discover-browse.html?type=skill"><span data-icon="skill"></span>AI skills</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="coll-head">
+          <div class="ic"><span data-icon="star"></span></div>
+          <div class="grow"><h2 class="h2">Launch your customer academy</h2><p class="text-muted" style="margin: 2px 0 0; font-size: 14px">Picked by the ClassroomIO team · 6 listings</p></div>
+          <a class="link" href="discover-browse.html">See all <span data-icon="arrow"></span></a>
+        </div>
+        <div class="hrow" data-cards="academy"></div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="coll-head">
+          <div class="ic"><span data-icon="star"></span></div>
+          <div class="grow"><h2 class="h2">Compliance in a week</h2><p class="text-muted" style="margin: 2px 0 0; font-size: 14px">Picked by the ClassroomIO team · 4 listings</p></div>
+          <a class="link" href="discover-browse.html?category=compliance-safety">See all <span data-icon="arrow"></span></a>
+        </div>
+        <div class="hrow" data-cards="compliance"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="sec-head"><div><h2 class="h2">Browse by category</h2></div></div>
+        <div class="cat-grid">
+          <a class="cat" href="discover-browse.html?category=onboarding">Onboarding <span>64</span></a>
+          <a class="cat" href="discover-browse.html?category=compliance-safety">Compliance &amp; safety <span>48</span></a>
+          <a class="cat" href="discover-browse.html?category=product-education">Product education <span>71</span></a>
+          <a class="cat" href="discover-browse.html?category=sales-customer-success">Sales &amp; customer success <span>39</span></a>
+          <a class="cat" href="discover-browse.html?category=software-technology">Software &amp; technology <span>92</span></a>
+          <a class="cat" href="discover-browse.html?category=leadership-management">Leadership &amp; management <span>27</span></a>
+          <a class="cat" href="discover-browse.html?category=language-learning">Language learning <span>33</span></a>
+          <a class="cat" href="discover-browse.html?category=creative">Creative <span>58</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="sec-head"><div><h2 class="h2">Popular this month</h2><p>Most imported in the last 30 days</p></div><a class="link" href="discover-browse.html">See all <span data-icon="arrow"></span></a></div>
+        <div class="lgrid" data-cards="popular" data-limit="8"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="cta-band">
+          <div><h2 class="h2" style="color: #fff">Built something worth sharing?</h2><p>Publish a template, image pack, doc or AI skill. Every listing is reviewed and credited to your organization.</p></div>
+          <a class="btn btn-primary btn-lg" href="marketplace-listings.html">Publish your own</a>
+        </div>
+      </div>
+    </section>
+
+    <div data-site-foot></div>
+
+    <div class="state-bar"><span class="lbl">Prototype</span><a href="index.html">← Map</a><a href="discover-browse.html">Browse</a><a href="listing-course.html">Listing</a><a href="publisher.html">Publisher</a></div>
+
+    <script>
+      document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon]));
+      const byId = (ids) => (listing) => ids.includes(listing.id);
+      renderCards('[data-cards="academy"]', byId(['customer-onboarding-academy', 'build-a-product-101-course', 'course-covers-soft-gradients', 'python-for-analysts', 'sales-discovery-playbook', 'flat-illustration-headers']));
+      renderCards('[data-cards="compliance"]', byId(['hipaa-essentials', 'soc2-security-awareness', 'compliance-course-from-policy', 'onboarding-week-one-doc']));
+      renderCards('[data-cards="popular"]', null);
+    </script>
+  </body>
+</html>
