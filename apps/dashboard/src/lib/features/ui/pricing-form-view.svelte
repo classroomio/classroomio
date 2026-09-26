@@ -5,7 +5,7 @@
   import { ZPaymentLink } from '@cio/utils/validation/course';
 
   import { t } from '$lib/utils/functions/translations';
-  import { toFiniteNumber } from '@cio/utils/functions';
+  import { normalizeIntegerInput } from '@cio/utils/functions';
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
 
@@ -58,6 +58,40 @@
   }: Props = $props();
 
   let paymentLinkError = $state('');
+
+  // Raw text while typing cost/discount. Intermediate keystrokes (decimals,
+  // clearing the field) are never force-rewritten; the normalized number
+  // commits on blur so the input always shows what will be saved.
+  let costDraft = $state<string | null>(null);
+  let discountDraft = $state<string | null>(null);
+
+  // Drop stale drafts when committed values change externally (e.g. path switch).
+  $effect(() => {
+    void cost;
+    costDraft = null;
+  });
+  $effect(() => {
+    void discount;
+    discountDraft = null;
+  });
+
+  function commitCost() {
+    if (costDraft === null) return;
+
+    const normalized = normalizeIntegerInput(costDraft);
+    costDraft = null;
+
+    if (normalized !== cost) onCostChange(normalized);
+  }
+
+  function commitDiscount() {
+    if (discountDraft === null) return;
+
+    const normalized = normalizeIntegerInput(discountDraft, 0, 100);
+    discountDraft = null;
+
+    if (normalized !== discount) onDiscountChange(normalized);
+  }
 
   function validatePaymentLink(value: string): string {
     if (!value.trim()) return '';
@@ -131,8 +165,13 @@
           <InputField
             label={$t('common.pricing.cost')}
             type="number"
-            value={cost}
-            oninput={(e) => onCostChange(toFiniteNumber((e.currentTarget as HTMLInputElement).value) ?? 0)}
+            min={0}
+            step={1}
+            value={costDraft ?? cost}
+            oninput={(e) => {
+              costDraft = (e.currentTarget as HTMLInputElement).value;
+            }}
+            onchange={commitCost}
           />
         </Field.Field>
 
@@ -167,8 +206,14 @@
           <InputField
             label={$t('common.pricing.discount_percentage')}
             type="number"
-            value={discount}
-            oninput={(e) => onDiscountChange(toFiniteNumber((e.currentTarget as HTMLInputElement).value) ?? 0)}
+            min={0}
+            max={100}
+            step={1}
+            value={discountDraft ?? discount}
+            oninput={(e) => {
+              discountDraft = (e.currentTarget as HTMLInputElement).value;
+            }}
+            onchange={commitDiscount}
             helperMessage={percentageHelperMessage}
           />
         </Field.Field>

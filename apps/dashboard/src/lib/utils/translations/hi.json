@@ -26,7 +26,7 @@
       "currency": "मुद्रा",
       "cost": "लागत",
       "payment_link": "भुगतान लिंक",
-      "payment_required": "Payment link is required",
+      "payment_required": "भुगतान सक्षम होने पर भुगतान लिंक आवश्यक है",
       "payment_invalid_url": "कृपया एक मान्य URL दर्ज करें",
       "discount": "छूट",
       "show_discount": "छूट दिखाएं",
@@ -5666,6 +5666,7 @@
       "tutor_removed": "ट्यूटर को पथ से हटाया गया",
       "certificate_saved": "प्रमाणपत्र सेटिंग्स सहेजी गईं",
       "landing_saved": "लैंडिंग पृष्ठ अद्यतन किया गया",
+      "landing_save_failed": "लैंडिंग पेज सहेजने में विफल",
       "link_generated": "आमंत्रण लिंक बनाया गया और क्लिपबोर्ड पर कॉपी किया गया",
       "settings_saved": "लर्निंग पथ सेटिंग्स अपडेट की गईं"
     },
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "इस लर्निंग पाथ के लिए एक कवर छवि अपलोड करें। अनुशंसित आकार: 1200x630px।",
         "replace_image": "छवि बदलें",
         "reset_image": "रीसेट करें",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
+        "link": "पथ लिंक",
+        "generate_link": "नया लिंक बनाएं",
         "open_link": "नए टैब में लिंक खोलें",
         "copy_link": "लिंक कॉपी करें",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "setup_landing_for_link": "पथ लिंक पाने के लिए लैंडिंग पेज सेट करें"
       },
       "enrollment": {
         "legend": "नामांकन और प्रगति",
@@ -5959,32 +5960,32 @@
       },
       "cover_image": {
         "legend": "कवर छवि",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
+        "desc": "यदि आप कोई जोड़ते हैं, तो वह कम से कम 280 x 200 होनी चाहिए।",
+        "replace": "बदलें",
         "reset": "रीसेट करें",
         "alt": "पथ आवरण"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "स्वागत ईमेल",
+        "desc": "नामांकन के बाद शिक्षार्थियों को मिलने वाला ईमेल अनुकूलित करें। व्यक्तिगत नोट, निर्देश या लाइव सत्र लिंक जोड़ें।",
+        "placeholder": "नामांकन पर शिक्षार्थियों को मिलने वाला स्वागत संदेश लिखें…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "शिक्षार्थी प्रगति",
+        "desc": "नियंत्रित करें कि शिक्षार्थी सभी पाठ्यक्रमों तक पहुँच सकते हैं या उन्हें क्रम में पूरा करना होगा।",
+        "free": "मुक्त — सभी पाठ्यक्रम उपलब्ध हैं",
+        "sequential": "क्रमिक — अगले को अनलॉक करने के लिए पिछले पाठ्यक्रम पूरे करें"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
+        "legend": "शिक्षार्थी स्वयं नामांकन कर सकते हैं",
+        "access": "बंद होने पर, शिक्षार्थी केवल आमंत्रण लिंक से या {people} से जोड़े जाने पर ही जुड़ सकते हैं।",
         "access_people": "लोग",
         "enabled": "सक्षम",
         "disabled": "अक्षम"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
+        "legend": "पथ पाठ्यक्रमों में स्वतः नामांकन",
+        "desc": "पथ से जुड़ने पर शिक्षार्थी उसमें मौजूद हर पाठ्यक्रम में नामांकित हो जाता है।",
         "enabled": "सक्षम",
         "disabled": "अक्षम"
       }

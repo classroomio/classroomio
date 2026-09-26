@@ -26,7 +26,7 @@
       "currency": "Waluta",
       "cost": "Koszt",
       "payment_link": "Link do płatności",
-      "payment_required": "Payment link is required",
+      "payment_required": "Link płatności jest wymagany, gdy włączona jest płatność",
       "payment_invalid_url": "Wprowadź prawidłowy adres URL",
       "discount": "Rabat",
       "show_discount": "Pokaż zniżkę",
@@ -5666,6 +5666,7 @@
       "tutor_removed": "Usunięto tutora ze ścieżki",
       "certificate_saved": "Ustawienia certyfikatu zostały zapisane",
       "landing_saved": "Strona docelowa została zaktualizowana",
+      "landing_save_failed": "Nie udało się zapisać strony docelowej",
       "link_generated": "Link z zaproszeniem wygenerowany i skopiowany do schowka",
       "settings_saved": "Ustawienia ścieżki nauki zaktualizowane"
     },
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "Prześlij zdjęcie na okładkę tej ścieżki. Zalecany rozmiar: 1200x630px.",
         "replace_image": "Zmień obraz",
         "reset_image": "Resetuj",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
+        "link": "Link ścieżki",
+        "generate_link": "Generuj nowy link",
         "open_link": "Otwórz link w nowej karcie",
         "copy_link": "Kopiuj link",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "setup_landing_for_link": "Skonfiguruj stronę docelową, aby uzyskać link do ścieżki"
       },
       "enrollment": {
         "legend": "Zapisy i progresja",
@@ -5959,32 +5960,32 @@
       },
       "cover_image": {
         "legend": "Zdjęcie okładki",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
+        "desc": "Jeśli dodasz okładkę, powinna mieć co najmniej 280 x 200.",
+        "replace": "Zamień",
         "reset": "Resetuj",
         "alt": "Osłona ścieżki"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "E-mail powitalny",
+        "desc": "Dostosuj wiadomość, którą uczniowie otrzymują po zapisaniu. Dodaj osobistą notatkę, instrukcje lub link do sesji na żywo.",
+        "placeholder": "Napisz wiadomość powitalną, którą uczniowie otrzymają przy zapisie…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Postęp ucznia",
+        "desc": "Określ, czy uczniowie mają dostęp do wszystkich kursów, czy muszą ukończyć je po kolei.",
+        "free": "Dowolna — wszystkie kursy są dostępne",
+        "sequential": "Sekwencyjna — ukończ poprzednie kursy, aby odblokować następny"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
+        "legend": "Uczniowie mogą zapisywać się samodzielnie",
+        "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu z {people}.",
         "access_people": "Osoby",
         "enabled": "Włączone",
         "disabled": "Wyłączone"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
+        "legend": "Automatyczny zapis na kursy w ścieżce",
+        "desc": "Dołączenie do ścieżki zapisuje ucznia na każdy zawarty w niej kurs.",
         "enabled": "Włączone",
         "disabled": "Wyłączone"
       }

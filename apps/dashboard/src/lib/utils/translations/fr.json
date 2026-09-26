@@ -26,7 +26,7 @@
       "currency": "Devise",
       "cost": "Coût",
       "payment_link": "Lien de paiement",
-      "payment_required": "Payment link is required",
+      "payment_required": "Le lien de paiement est requis lorsque le paiement est activé",
       "payment_invalid_url": "Veuillez saisir une URL valide",
       "discount": "Remise",
       "show_discount": "Afficher la remise",
@@ -2425,7 +2425,7 @@
         "add_lesson": {
           "button_title": "Ajouter",
           "start_reorder": "Réorganiser",
-          "end_reorder": "Terminer la réapprovisionnement",
+          "end_reorder": "Terminer la réorganisation",
           "modal_heading": "Ajouter une nouvelle leçon",
           "modal_heading_section": "Ajouter une nouvelle section",
           "lesson_title": "Titre de la leçon",
@@ -5587,7 +5587,7 @@
       "empty_title": "Aucun cours dans ce parcours d'apprentissage pour l'instant",
       "empty_description": "Ajoutez des cours pour guider les apprenants à travers une séquence structurée. Commencez par cliquer sur le bouton Ajouter.",
       "start_reorder": "Réorganiser",
-      "end_reorder": "Terminer la réapprovisionnement"
+      "end_reorder": "Terminer la réorganisation"
     },
     "listing": {
       "title": "Parcours d'apprentissage",
@@ -5666,6 +5666,7 @@
       "tutor_removed": "Tuteur retiré du parcours",
       "certificate_saved": "Paramètres du certificat enregistrés",
       "landing_saved": "Page d'accueil mise à jour",
+      "landing_save_failed": "Échec de l’enregistrement de la page d’accueil",
       "link_generated": "Lien d'invitation généré et copié dans le presse-papiers",
       "settings_saved": "Paramètres du parcours mis à jour"
     },
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "Téléversez une image de couverture pour ce parcours. Taille recommandée : 1200x630px.",
         "replace_image": "Remplacer l'image",
         "reset_image": "Réinitialiser",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
+        "link": "Lien du parcours",
+        "generate_link": "Générer un nouveau lien",
         "open_link": "Ouvrir le lien dans un nouvel onglet",
         "copy_link": "Copier le lien",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "setup_landing_for_link": "Configurez la page d’accueil pour obtenir le lien du parcours"
       },
       "enrollment": {
         "legend": "Inscription et progression",
@@ -5959,32 +5960,32 @@
       },
       "cover_image": {
         "legend": "Image de couverture",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
+        "desc": "Si vous en ajoutez une, elle doit faire au moins 280 x 200.",
+        "replace": "Remplacer",
         "reset": "Réinitialiser",
         "alt": "Couverture du chemin"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "E-mail de bienvenue",
+        "desc": "Personnalisez l’e-mail que les apprenants reçoivent après leur inscription. Ajoutez une note personnelle, des instructions ou un lien de session en direct.",
+        "placeholder": "Rédigez le message de bienvenue que les apprenants reçoivent lors de leur inscription…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Progression de l’apprenant",
+        "desc": "Définissez si les apprenants peuvent accéder à tous les cours ou doivent les terminer dans l’ordre.",
+        "free": "Libre — tous les cours sont disponibles",
+        "sequential": "Séquentiel — terminez les cours précédents pour débloquer le suivant"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
+        "legend": "Les apprenants peuvent s’inscrire eux-mêmes",
+        "access": "Si désactivé, les apprenants ne peuvent rejoindre que via un lien d’invitation ou en étant ajoutés depuis {people}.",
         "access_people": "Personnes",
         "enabled": "Activé",
         "disabled": "Désactivé"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
+        "legend": "Inscription automatique aux cours du parcours",
+        "desc": "Rejoindre le parcours inscrit l’apprenant à tous les cours qu’il contient.",
         "enabled": "Activé",
         "disabled": "Désactivé"
       }

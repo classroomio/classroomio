@@ -26,7 +26,7 @@
       "currency": "Moeda",
       "cost": "Custo",
       "payment_link": "Link de pagamento",
-      "payment_required": "Payment link is required",
+      "payment_required": "O link de pagamento é obrigatório quando o pagamento está ativado",
       "payment_invalid_url": "Insira um URL válido",
       "discount": "Desconto",
       "show_discount": "Mostrar desconto",
@@ -5666,6 +5666,7 @@
       "tutor_removed": "Tutor removido da trilha",
       "certificate_saved": "Configurações do certificado salvas",
       "landing_saved": "Página de destino atualizada",
+      "landing_save_failed": "Falha ao salvar a landing page",
       "link_generated": "Link de convite gerado e copiado para a área de transferência",
       "settings_saved": "Configurações do caminho de aprendizagem atualizadas"
     },
@@ -5926,11 +5927,11 @@
         "cover_image_desc": "Envie uma imagem de capa para esta trilha. Tamanho recomendado: 1200x630px.",
         "replace_image": "Substituir imagem",
         "reset_image": "Redefinir",
-        "link": "Public link",
-        "generate_link": "Generate invite link",
+        "link": "Link da trilha",
+        "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova guia",
         "copy_link": "Copiar link",
-        "setup_landing_for_link": "Customize and publish your landing page to generate a public link."
+        "setup_landing_for_link": "Configure a landing page para obter o link da trilha"
       },
       "enrollment": {
         "legend": "Matrícula e progressão",
@@ -5959,32 +5960,32 @@
       },
       "cover_image": {
         "legend": "Imagem de capa",
-        "desc": "Upload a cover image for this learning path. Recommended size: 1200x630px.",
-        "replace": "Replace image",
+        "desc": "Se incluir uma, deve ter pelo menos 280 x 200.",
+        "replace": "Substituir",
         "reset": "Redefinir",
         "alt": "Cobertura do caminho"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "E-mail de boas-vindas",
+        "desc": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
+        "placeholder": "Escreva a mensagem de boas-vindas que os alunos recebem ao se inscrever…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Progressão do aluno",
+        "desc": "Controle se os alunos podem acessar todos os cursos ou devem concluí-los em ordem.",
+        "free": "Livre — todos os cursos estão disponíveis",
+        "sequential": "Sequencial — conclua os cursos anteriores para desbloquear o próximo"
       },
       "self_enrollment": {
-        "legend": "Self-Enrollment",
-        "access": "Manage access in {people}",
+        "legend": "Os alunos podem se inscrever sozinhos",
+        "access": "Quando desativado, os alunos só podem participar por link de convite ou ao serem adicionados em {people}.",
         "access_people": "Pessoas",
         "enabled": "Ativado",
         "disabled": "Desativado"
       },
       "auto_enroll": {
-        "legend": "Auto-Enrollment",
-        "desc": "Automatically enroll new organization members into this learning path.",
+        "legend": "Inscrição automática nos cursos da trilha",
+        "desc": "Entrar na trilha inscreve o aluno em todos os cursos que ela contém.",
         "enabled": "Ativado",
         "disabled": "Desativado"
       }

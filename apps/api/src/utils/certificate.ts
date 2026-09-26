@@ -24,6 +24,7 @@ export interface CertificateRenderFields {
   courseDescription: string;
   orgName: string;
   orgLogoUrl?: string;
+  certificateId?: string;
   studentId?: string;
   issuedAt?: string;
 }
@@ -43,9 +44,11 @@ export function buildCertificateRenderInput(
     ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' })
     : issuedAtDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
 
-  const certificateId = fields.studentId
-    ? formatCertificateId(design.idFormat, fields.studentId, issuedAtDate)
-    : formatCertificateId(design.idFormat, fallbackSequence(issuedAtDate), issuedAtDate);
+  const certificateId = fields.certificateId
+    ? fields.certificateId
+    : fields.studentId
+      ? formatCertificateId(design.idFormat, fields.studentId, issuedAtDate)
+      : formatCertificateId(design.idFormat, fallbackSequence(issuedAtDate), issuedAtDate);
 
   return {
     design,
@@ -62,17 +65,12 @@ export function buildCertificateRenderInput(
 }
 
 /**
- * Shared recipient-name fallback for certificate
- * preview/download flows: an explicit name wins, otherwise the caller's
- * profile name, otherwise a generic preview placeholder.
+ * Resolves the certificate recipient name from the caller's profile.
+ * Profile-only by design: student download flows must never render a
+ * client-supplied name. Owner-preview flows that allow a sample-name
+ * override apply it themselves (they are permission-gated).
  */
-export async function resolveCertificateRecipientName(userId: string, studentNameOverride?: string): Promise<string> {
-  const rawName = studentNameOverride?.trim();
-
-  if (rawName) {
-    return rawName;
-  }
-
+export async function resolveCertificateRecipientName(userId: string): Promise<string> {
   const profile = await getProfileById(userId);
 
   return profile?.fullname || 'Preview Recipient';

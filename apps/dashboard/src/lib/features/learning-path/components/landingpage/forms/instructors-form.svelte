@@ -7,6 +7,10 @@
   import type { TLandingPage, TLandingPageInstructor } from '@cio/utils/validation/learning-path';
   import type { LearningPathDetail } from '$features/learning-path/utils/types';
   import { AddSectionButton } from '$features/ui';
+  import { resolveInitialPathInstructors } from '../../../utils/landing-page-utils';
+  import { INSTRUCTOR_ROLE_LABEL } from '@cio/utils/constants';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import InstructorEditorItem from './instructor-editor-item.svelte';
 
   interface Props {
@@ -17,58 +21,41 @@
 
   let { landingPage, path, onChange }: Props = $props();
 
-  function getTutorsFromCourses(): TLandingPageInstructor[] {
-    const list: TLandingPageInstructor[] = [];
-    const seenNames = new Set<string>();
-
-    for (const pathCourse of path.courses ?? []) {
-      const instructor = pathCourse.instructor;
-      if (instructor?.name && instructor.name.trim()) {
-        const normalized = instructor.name.trim().toLowerCase();
-        if (!seenNames.has(normalized)) {
-          seenNames.add(normalized);
-          list.push({
-            id: `inst_${list.length + 1}`,
-            name: instructor.name.trim(),
-            role: instructor.role?.trim() || $t('learningPath.landing.instructors.default_role'),
-            imgUrl: instructor.imgUrl?.trim() || '',
-            description: '',
-            coursesNo: 1
-          });
-        } else {
-          const existing = list.find((item) => item.name.trim().toLowerCase() === normalized);
-          if (existing && typeof existing.coursesNo === 'number') {
-            existing.coursesNo += 1;
-          }
-        }
-      }
-    }
-
-    return list;
+  function getDefaultRole(): string {
+    return $t('learningPath.landing.instructors.default_role') || INSTRUCTOR_ROLE_LABEL.INSTRUCTOR;
   }
 
-  const initialTutors = getTutorsFromCourses();
-  const hasSavedInstructors = Array.isArray(landingPage.instructors) && landingPage.instructors.length > 0;
+  function resolveInstructors(draft?: TLandingPageInstructor[]): TLandingPageInstructor[] {
+    return (
+      resolveInitialPathInstructors(path, {
+        fallbackOrg: $currentOrg,
+        fallbackUser: $profile,
+        defaultRole: getDefaultRole(),
+        draftInstructors: draft
+      }) ?? []
+    );
+  }
 
-  let instructors = $state<TLandingPageInstructor[]>(
-    hasSavedInstructors ? [...landingPage.instructors!] : initialTutors
-  );
+  let instructors = $state<TLandingPageInstructor[]>(resolveInstructors(landingPage.instructors));
   let expandedId = $state<string | number | null>(null);
 
-  // If we pre-populated tutors because none were saved, immediately propagate them so they're in draft
-  if (!hasSavedInstructors && initialTutors.length > 0) {
+  // If the draft had no instructors saved yet, propagate the derived defaults to the draft
+  if ((!landingPage.instructors || landingPage.instructors.length === 0) && instructors.length > 0) {
     onChange({
-      instructors: initialTutors
+      instructors
     });
   }
 
   $effect(() => {
-    if (Array.isArray(landingPage.instructors) && landingPage.instructors.length > 0) {
-      instructors = [...landingPage.instructors];
+    const next = landingPage.instructors;
+    if (Array.isArray(next) && next.length > 0) {
+      if (JSON.stringify(next) !== JSON.stringify(instructors)) {
+        instructors = [...next];
+      }
     } else if (instructors.length === 0) {
-      const derived = getTutorsFromCourses();
-      if (derived.length > 0) {
-        instructors = derived;
+      const derived = resolveInstructors();
+      if (derived.length > 0 && JSON.stringify(derived) !== JSON.stringify(instructors)) {
+        instructors = [...derived];
         notifyChange();
       }
     }
@@ -124,7 +111,7 @@
             <div class="flex min-w-0 items-center gap-3">
               <Avatar.Root class="size-9 shrink-0">
                 {#if instructor.imgUrl}
-                  <Avatar.Image src={instructor.imgUrl} alt={instructor.name || 'Instructor'} />
+                  <Avatar.Image src={instructor.imgUrl} alt={instructor.name || INSTRUCTOR_ROLE_LABEL.INSTRUCTOR} />
                 {/if}
                 <Avatar.Fallback>
                   <UserIcon class="ui:text-muted-foreground size-4" />

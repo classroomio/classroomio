@@ -25,9 +25,12 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { learningPathApi } from '$features/learning-path/api';
   import { openPathPreview } from '../../utils/path-preview';
-  import { currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrgDomain, currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import { ZPaymentLink } from '@cio/utils/validation/course';
-  import { sanitizePathLandingPage } from '../../utils/landing-page-utils';
+  import { normalizeIntegerInput } from '@cio/utils/functions';
+  import { INSTRUCTOR_ROLE_LABEL } from '@cio/utils/constants';
+  import { resolveInitialPathInstructors, sanitizePathLandingPage } from '../../utils/landing-page-utils';
   import type { LearningPathDetail, UpdateLearningPathInput } from '../../utils/types';
   import type { TLandingPage } from '@cio/utils/validation/learning-path';
 
@@ -57,9 +60,24 @@
   let isSaving = $state(false);
   let showPaymentError = $state(false);
 
-  // Initialize draft landing page
+  // Initialize draft landing page.
+  // If no instructors were saved yet, pre-populate from the path's courses
+  // (falling back to org/user) so saves never block on missing instructors.
   // svelte-ignore state_referenced_locally
   let landingPage = $state<TLandingPage>({ ...(path.landingPage ?? {}) });
+
+  // Seed derived instructors once at init when the draft has none saved.
+  {
+    const initialInstructors = resolveInitialPathInstructors(path, {
+      fallbackOrg: $currentOrg,
+      fallbackUser: $profile,
+      defaultRole: $t('learningPath.landing.instructors.default_role') || INSTRUCTOR_ROLE_LABEL.INSTRUCTOR
+    });
+
+    if (initialInstructors) {
+      landingPage = { ...landingPage, instructors: initialInstructors };
+    }
+  }
   // svelte-ignore state_referenced_locally
   let initialSnapshot = $state(JSON.stringify(path.landingPage ?? {}));
   // svelte-ignore state_referenced_locally
@@ -94,7 +112,18 @@
   $effect(() => {
     if (path.id !== currentPathId) {
       currentPathId = path.id;
-      landingPage = { ...(path.landingPage ?? {}) };
+      const nextDraft: TLandingPage = { ...(path.landingPage ?? {}) };
+      const initialInstructors = resolveInitialPathInstructors(path, {
+        fallbackOrg: $currentOrg,
+        fallbackUser: $profile,
+        defaultRole: $t('learningPath.landing.instructors.default_role') || INSTRUCTOR_ROLE_LABEL.INSTRUCTOR
+      });
+
+      if (initialInstructors) {
+        nextDraft.instructors = initialInstructors;
+      }
+
+      landingPage = nextDraft;
       initialSnapshot = JSON.stringify(path.landingPage ?? {});
       pathCost = Number(path.cost) || 0;
       pathCurrency = (path.currency as string) === 'NGN' ? 'NGN' : 'USD';
@@ -226,17 +255,11 @@
 
     const payload = sanitizePathLandingPage(landingPage);
 
-    if (!payload.instructors || payload.instructors.length < 1) {
-      snackbar.error('learningPath.landing.instructors.min_one_required');
-      selectedSectionKey = 'instructors';
-      return;
-    }
-
     isSaving = true;
     try {
       const updateData: UpdateLearningPathInput = {
         landingPage: payload,
-        cost: pathCost,
+        cost: normalizeIntegerInput(pathCost),
         currency: pathCurrency
       };
       const updated = await learningPathApi.update(path.publicId, updateData, { showSuccessToast: false });
@@ -255,6 +278,9 @@
         showPaymentError = false;
         snackbar.success('learningPath.snackbar.landing_saved');
       }
+    } catch (error) {
+      console.error('Failed to save learning path landing page', error);
+      snackbar.error('learningPath.snackbar.landing_save_failed');
     } finally {
       isSaving = false;
     }
