@@ -25,15 +25,7 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-
-const COURSE_TEAM_RULE =
-  'The automation actor (the key creator) must be a course tutor/admin or an org admin, or this fails with 403.';
-
-const mcpRateLimitResponse = { description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit' };
-const forbiddenResponse = {
-  description:
-    'The key lacks the public_api:* or course:member:read/write scope, or the automation actor is not a course tutor/admin or org admin'
-};
+import { COURSE_TEAM_RULE, forbiddenResponse, mcpRateLimitResponse } from './docs';
 
 const MemberResponse = itemResponse(ZPublicApiCourseMemberResponse);
 
