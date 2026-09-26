@@ -118,7 +118,7 @@
             </Button>
           {/if}
           {#if isSelf}
-            <ComingSoon label={$t('course.navItem.people.you')} />
+            <ComingSoon label={$t('learningPath.people.you')} />
           {/if}
         </div>
       </div>
@@ -225,7 +225,7 @@
                 }}
               >
                 <EyeIcon class="custom mr-2 size-4" />
-                {$t('course.navItem.people.view')}
+                {$t('learningPath.people.view')}
               </DropdownMenu.Item>
             {/if}
             {#if onRemove}
@@ -237,7 +237,7 @@
                 }}
               >
                 <TrashIcon class="custom mr-2 size-4" />
-                {$t('course.navItem.people.delete_profile')}
+                {$t('learningPath.people.delete_profile')}
               </DropdownMenu.Item>
             {/if}
           </DropdownMenu.Content>

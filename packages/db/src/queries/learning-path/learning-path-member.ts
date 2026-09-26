@@ -68,10 +68,6 @@ export async function enrollMember(
   data: TNewLearningPathMember,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathMember> {
-  if (!data.profileId) {
-    throw new Error('Cannot enroll member without a profileId');
-  }
-
   try {
     const [member] = await dbClient
       .insert(schema.learningPathMember)
@@ -512,7 +508,8 @@ export async function getEnrolledPaths(
   try {
     const whereConditions = [
       eq(schema.learningPathMember.profileId, profileId),
-      isNull(schema.learningPathMember.removedAt)
+      isNull(schema.learningPathMember.removedAt),
+      eq(schema.learningPath.status, 'ACTIVE')
     ];
 
     if (organizationId) {
@@ -541,9 +538,20 @@ export async function getEnrolledPaths(
 /**
  * Updates a member's progress cache and status.
  */
+type TMemberProgressUpdate = Pick<
+  TLearningPathMember,
+  | 'status'
+  | 'progressPercent'
+  | 'completedCourseCount'
+  | 'currentCourseId'
+  | 'startedAt'
+  | 'completedAt'
+  | 'lastActivityAt'
+>;
+
 export async function updateMemberProgress(
   memberId: string,
-  data: Partial<TLearningPathMember>,
+  data: Partial<TMemberProgressUpdate>,
   dbClient: DbOrTxClient = db
 ): Promise<TLearningPathMember | null> {
   try {
@@ -634,10 +642,6 @@ export async function backfillMemberCourseProgressForAddedCourse(
     );
   }
 }
-
-/**
- * Returns progress cache records for all courses in a learning path for a member.
- */
 
 /**
  * Returns progress cache records for all courses in a learning path for a member.

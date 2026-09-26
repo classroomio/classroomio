@@ -6,8 +6,8 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   interface Props {
-    courseId: string;
-    courseTitle: string;
+    title: string;
+    backHref: string;
     templateLabel: string;
     isDirty: boolean;
     isSaving: boolean;
@@ -18,8 +18,8 @@
   }
 
   let {
-    courseId,
-    courseTitle,
+    title,
+    backHref,
     templateLabel,
     isDirty,
     isSaving,
@@ -37,16 +37,16 @@
     <Button
       variant="ghost"
       size="icon"
-      href={resolve('/courses/[id]/certificates', { id: courseId })}
+      href={resolve(backHref, {})}
       class="size-8 shrink-0"
-      aria-label={$t('course.navItem.certificates.editor.back')}
+      aria-label={$t('certificate.editor.back')}
     >
       <ArrowLeftIcon class="size-4" />
     </Button>
 
     <div class="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-      <h1 class="truncate text-sm tracking-tight sm:text-base">
-        {courseTitle}
+      <h1 class="truncate text-sm font-semibold tracking-tight sm:text-base">
+        {title}
       </h1>
 
       <div class="flex flex-wrap items-center gap-1">
@@ -55,12 +55,12 @@
         </Badge>
         {#if isDirty}
           <Badge variant="outline" class="text-[10px]">
-            {$t('course.navItem.certificates.editor.unsaved')}
+            {$t('certificate.editor.unsaved')}
           </Badge>
         {/if}
         {#if isFreePlan}
           <Badge variant="outline" class="text-[10px]">
-            {$t('course.navItem.certificates.editor.free_plan')}
+            {$t('certificate.editor.free_plan')}
           </Badge>
         {/if}
       </div>
@@ -70,7 +70,7 @@
   <div class="flex shrink-0 items-center gap-1.5">
     {#if isDirty}
       <Button variant="ghost" size="sm" type="button" onclick={onDiscard} class="hidden sm:inline-flex">
-        {$t('course.navItem.certificates.editor.discard')}
+        {$t('certificate.editor.discard')}
       </Button>
     {/if}
     <Button
@@ -81,7 +81,7 @@
       loading={isSaving}
       onclick={onSave}
     >
-      {$t('course.navItem.certificates.editor.save')}
+      {$t('certificate.editor.save')}
     </Button>
   </div>
 </header>

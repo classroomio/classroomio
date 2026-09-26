@@ -10,6 +10,12 @@ import { AppError, ErrorCodes, type ErrorCode, isUniqueConstraintViolation } fro
 // for the rest of the api codebase.
 export { AppError, ErrorCodes, type ErrorCode };
 
+export function throwAsInternal(error: unknown, fallback: string): never {
+  if (error instanceof AppError) throw error;
+
+  throw new AppError(error instanceof Error ? error.message : fallback, ErrorCodes.INTERNAL_ERROR, 500);
+}
+
 /**
  * Standard error response format
  */

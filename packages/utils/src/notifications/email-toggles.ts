@@ -73,6 +73,7 @@ export const EMAIL_TOGGLE_MAP = {
   sessionUpdated: 'session',
   studentCourseWelcome: 'enrollmentWelcome',
   studentCohortWelcome: 'enrollmentWelcome',
+  studentLearningPathWelcome: 'enrollmentWelcome',
   teacherCourseWelcome: 'enrollmentWelcome',
   studentCourseCompletion: 'courseCompletion'
 } as const satisfies Record<string, EmailNotificationToggleKey>;

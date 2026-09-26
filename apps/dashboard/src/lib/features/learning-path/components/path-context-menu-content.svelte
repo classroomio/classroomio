@@ -12,7 +12,7 @@
   interface Props {
     id: string;
     publicId: string;
-    slug?: string;
+    slug?: string | null;
     name: string;
     description?: string;
     isPublished?: boolean;
@@ -26,7 +26,7 @@
   let {
     id,
     publicId,
-    slug = '',
+    slug = null,
     name,
     isPublished = false,
     openUrl,
@@ -86,7 +86,7 @@
 
 {#if includeViewAsStudent}
   <DropdownMenu.Item onclick={() => onViewAsStudent?.()}>
-    {$t('course.header.view_as_student')}
+    {$t('learningPath.context_menu.view_as_student')}
   </DropdownMenu.Item>
   <DropdownMenu.Separator />
 {/if}

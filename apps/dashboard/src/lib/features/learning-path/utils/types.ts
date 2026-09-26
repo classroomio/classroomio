@@ -13,7 +13,6 @@ export type AddPathCoursesRequest = (typeof classroomio)['learning-path'][':path
 export type ReorderPathCoursesRequest = (typeof classroomio)['learning-path'][':pathId']['courses']['order']['$put'];
 export type RemovePathCourseRequest =
   (typeof classroomio)['learning-path'][':pathId']['courses'][':courseId']['$delete'];
-export type UpdatePathCourseRequest = (typeof classroomio)['learning-path'][':pathId']['courses'][':courseId']['$put'];
 export type ListPathMembersRequest = (typeof classroomio)['learning-path'][':pathId']['members']['$get'];
 export type AddPathMembersRequest = (typeof classroomio)['learning-path'][':pathId']['members']['$post'];
 export type RemovePathMemberRequest =
@@ -40,7 +39,6 @@ export type EnrollInLearningPathSuccess = Extract<InferResponseType<EnrollInLear
 export type AddPathCoursesSuccess = Extract<InferResponseType<AddPathCoursesRequest>, { success: true }>;
 export type ReorderPathCoursesSuccess = Extract<InferResponseType<ReorderPathCoursesRequest>, { success: true }>;
 export type RemovePathCourseSuccess = Extract<InferResponseType<RemovePathCourseRequest>, { success: true }>;
-export type UpdatePathCourseSuccess = Extract<InferResponseType<UpdatePathCourseRequest>, { success: true }>;
 export type ListPathMembersSuccess = Extract<InferResponseType<ListPathMembersRequest>, { success: true }>;
 export type AddPathMembersSuccess = Extract<InferResponseType<AddPathMembersRequest>, { success: true }>;
 export type RemovePathMemberSuccess = Extract<InferResponseType<RemovePathMemberRequest>, { success: true }>;

@@ -1,19 +1,29 @@
-import { ZPathMembersQuery } from '@cio/utils/validation/learning-path';
 import {
   ZAddLearningPathCourse,
   ZAddLearningPathMembers,
   ZCreateLearningPath,
+  ZEnrollInLearningPath,
+  ZLearningPathCertificateDownloadRequest,
+  ZLearningPathCourseParam,
+  ZLearningPathIdParam,
+  ZLearningPathMemberParam,
+  ZPathMembersQuery,
   ZPublicLearningPathQuery,
   ZReorderLearningPathCourses,
   ZUpdateLearningPath,
-  ZUpdateLearningPathCourse,
   ZVerifyLearningPathCertificateParam
 } from '@cio/utils/validation/learning-path';
 import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
 
+import type { TLearningPathCertificateDownloadRequest } from '@cio/utils/validation/learning-path';
+
 import {
   addCoursesToPathService,
   addPathMembersService,
+  assertLearningPathCertificateDownloadAllowed,
+  assertLearningPathCertificatePreviewAllowed,
+  assembleLearningPathCertificateRender,
+  assembleLearningPathOwnerPreviewRender,
   createLearningPathService,
   deleteLearningPathService,
   enrollInLearningPath,
@@ -27,12 +37,12 @@ import {
   removeCourseFromPathService,
   removePathMemberService,
   reorderPathCoursesService,
-  updateLearningPathCourseService,
   updateLearningPathService,
   verifyLearningPathCertificateService,
   resolveLearningPath,
   assertCanManageLearningPath
 } from '@api/services/learning-path';
+import { generateCertificatePdf, generateCertificatePng, sendCertificateFile } from '@api/utils/certificate';
 import {
   fetchInviteLinkForResource,
   getOrCreateInviteLinkForResource,
@@ -40,17 +50,43 @@ import {
 } from '@api/services/invite-link';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
+import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 
-const ZPathParam = z.object({ pathId: z.string().min(1) });
-const ZCourseParam = z.object({ pathId: z.string().min(1), courseId: z.string().uuid() });
-const ZMemberParam = z.object({ pathId: z.string().min(1), memberId: z.string().uuid() });
+const ZPathParam = ZLearningPathIdParam;
+const ZCourseParam = ZLearningPathCourseParam;
+const ZMemberParam = ZLearningPathMemberParam;
 const ZPersonParam = z.object({ pathId: z.string().min(1), personId: z.string().uuid() });
-const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
 
 const ZSlugParam = z.object({ slug: z.string().min(1) });
+
+const ZOrgListQuery = ZPublicLearningPathQuery.extend({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20)
+});
+
+function getOrgRoles(c: { get: (key: string) => unknown }): Record<string, number> | undefined {
+  return c.get('orgRoles') as Record<string, number> | undefined;
+}
+
+async function loadLearningPathCertificateInput(
+  pathId: string,
+  userId: string,
+  body: TLearningPathCertificateDownloadRequest,
+  orgRoles?: Record<string, number>
+) {
+  if (body.previewMode) {
+    await assertLearningPathCertificatePreviewAllowed(pathId, userId, orgRoles);
+
+    return assembleLearningPathOwnerPreviewRender(pathId, userId, body);
+  }
+
+  const issued = await assertLearningPathCertificateDownloadAllowed(pathId, userId);
+
+  return assembleLearningPathCertificateRender(pathId, userId, body, issued);
+}
 
 export const learningPathRouter = new Hono()
   /**
@@ -87,10 +123,10 @@ export const learningPathRouter = new Hono()
    * GET /learning-path?organizationId=...
    * Lists learning paths for an organization
    */
-  .get('/', authMiddleware, zValidator('query', ZOrgQuery), async (c) => {
+  .get('/', authMiddleware, zValidator('query', ZOrgListQuery), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { organizationId } = c.req.valid('query');
       const paths = await listOrgLearningPaths(organizationId, user.id, orgRoles);
 
@@ -107,7 +143,7 @@ export const learningPathRouter = new Hono()
   .post('/', authMiddleware, zValidator('json', ZCreateLearningPath), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { organizationId, ...data } = c.req.valid('json');
       const path = await createLearningPathService(organizationId, user.id, data, orgRoles);
 
@@ -139,7 +175,7 @@ export const learningPathRouter = new Hono()
   .get('/:pathId', authMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { pathId } = c.req.valid('param');
       const path = await getLearningPathDetail(pathId, user.id, orgRoles);
 
@@ -161,9 +197,23 @@ export const learningPathRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+        const orgRoles = getOrgRoles(c);
         const { pathId } = c.req.valid('param');
-        const data = c.req.valid('json');
+        const rawData = c.req.valid('json');
+        let data = rawData;
+        if (rawData.welcomeEmailMessage) {
+          data = { ...data, welcomeEmailMessage: sanitizeHtml(rawData.welcomeEmailMessage) };
+        }
+        if (rawData.certificate?.emailMessage) {
+          data = {
+            ...data,
+            certificate: {
+              ...data.certificate,
+              emailMessage: sanitizeHtml(rawData.certificate.emailMessage)
+            }
+          };
+        }
+
         const path = await updateLearningPathService(pathId, user.id, data, orgRoles);
 
         return c.json({ success: true, data: path }, 200);
@@ -179,10 +229,10 @@ export const learningPathRouter = new Hono()
    */
   .delete('/:pathId', authMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {
-      const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      c.get('user')!;
+      const orgRoles = getOrgRoles(c);
       const { pathId } = c.req.valid('param');
-      const path = await deleteLearningPathService(pathId, user.id, orgRoles);
+      const path = await deleteLearningPathService(pathId, orgRoles);
 
       return c.json({ success: true, data: path }, 200);
     } catch (error) {
@@ -194,17 +244,24 @@ export const learningPathRouter = new Hono()
    * POST /learning-path/:pathId/enroll
    * Self-enrolls the caller in a published learning path and its courses (idempotent)
    */
-  .post('/:pathId/enroll', authMiddleware, zValidator('param', ZPathParam), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const { pathId } = c.req.valid('param');
-      const member = await enrollInLearningPath(pathId, user.id);
+  .post(
+    '/:pathId/enroll',
+    authMiddleware,
+    zValidator('param', ZPathParam),
+    zValidator('json', ZEnrollInLearningPath),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { pathId } = c.req.valid('param');
+        c.req.valid('json');
+        const member = await enrollInLearningPath(pathId, user.id);
 
-      return c.json({ success: true, data: member }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to enroll in learning path');
+        return c.json({ success: true, data: member }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to enroll in learning path');
+      }
     }
-  })
+  )
 
   /**
    * POST /learning-path/:pathId/courses
@@ -218,7 +275,7 @@ export const learningPathRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+        const orgRoles = getOrgRoles(c);
         const { pathId } = c.req.valid('param');
         const data = c.req.valid('json');
         const courses = await addCoursesToPathService(pathId, data, user.id, orgRoles);
@@ -242,7 +299,7 @@ export const learningPathRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+        const orgRoles = getOrgRoles(c);
         const { pathId } = c.req.valid('param');
         const { courseIds } = c.req.valid('json');
         const result = await reorderPathCoursesService(pathId, courseIds, user.id, orgRoles);
@@ -255,37 +312,13 @@ export const learningPathRouter = new Hono()
   )
 
   /**
-   * PUT /learning-path/:pathId/courses/:courseId
-   * Updates course settings in learning path (such as learning outcomes)
-   */
-  .put(
-    '/:pathId/courses/:courseId',
-    authMiddleware,
-    zValidator('param', ZCourseParam),
-    zValidator('json', ZUpdateLearningPathCourse),
-    async (c) => {
-      try {
-        const user = c.get('user')!;
-        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
-        const { pathId, courseId } = c.req.valid('param');
-        const data = c.req.valid('json');
-        const updated = await updateLearningPathCourseService(pathId, courseId, data, user.id, orgRoles);
-
-        return c.json({ success: true, data: updated }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to update course in learning path');
-      }
-    }
-  )
-
-  /**
    * DELETE /learning-path/:pathId/courses/:courseId
    * Removes a course from a learning path
    */
   .delete('/:pathId/courses/:courseId', authMiddleware, zValidator('param', ZCourseParam), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { pathId, courseId } = c.req.valid('param');
       const removed = await removeCourseFromPathService(pathId, courseId, user.id, orgRoles);
 
@@ -307,7 +340,7 @@ export const learningPathRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+        const orgRoles = getOrgRoles(c);
         const { pathId } = c.req.valid('param');
         const query = c.req.valid('query');
         const members = await listPathMembersService(pathId, user.id, orgRoles, query);
@@ -331,7 +364,7 @@ export const learningPathRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+        const orgRoles = getOrgRoles(c);
         const { pathId } = c.req.valid('param');
         const data = c.req.valid('json');
         const members = await addPathMembersService(pathId, data, user.id, orgRoles);
@@ -350,7 +383,7 @@ export const learningPathRouter = new Hono()
   .get('/:pathId/members/:personId', authMiddleware, zValidator('param', ZPersonParam), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { pathId, personId } = c.req.valid('param');
       const detail = await getPathMemberDetailService(pathId, personId, user.id, orgRoles);
 
@@ -367,7 +400,7 @@ export const learningPathRouter = new Hono()
   .delete('/:pathId/members/:memberId', authMiddleware, zValidator('param', ZMemberParam), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { pathId, memberId } = c.req.valid('param');
       const removed = await removePathMemberService(pathId, memberId, user.id, orgRoles);
 
@@ -384,7 +417,7 @@ export const learningPathRouter = new Hono()
   .get('/:pathId/analytics', authMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { pathId } = c.req.valid('param');
       const analytics = await getPathAnalyticsService(pathId, user.id, orgRoles);
 
@@ -401,7 +434,7 @@ export const learningPathRouter = new Hono()
   .get('/:pathId/invite-link', authMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { pathId } = c.req.valid('param');
       const path = await resolveLearningPath(pathId);
       await assertCanManageLearningPath(path, user.id, orgRoles);
@@ -420,7 +453,7 @@ export const learningPathRouter = new Hono()
   .post('/:pathId/invite-link', authMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {
       const user = c.get('user')!;
-      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const orgRoles = getOrgRoles(c);
       const { pathId } = c.req.valid('param');
       const path = await resolveLearningPath(pathId);
       await assertCanManageLearningPath(path, user.id, orgRoles);
@@ -444,7 +477,7 @@ export const learningPathRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+        const orgRoles = getOrgRoles(c);
         const { pathId } = c.req.valid('param');
         const { isRevoked } = c.req.valid('json');
         const path = await resolveLearningPath(pathId);
@@ -454,6 +487,58 @@ export const learningPathRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update learning path invite link');
+      }
+    }
+  )
+
+  /**
+   * POST /learning-path/:pathId/download/certificate
+   * Streams a generated PDF of the learning path certificate
+   */
+  .post(
+    '/:pathId/download/certificate',
+    authMiddleware,
+    zValidator('param', ZPathParam),
+    zValidator('json', ZLearningPathCertificateDownloadRequest),
+    async (c) => {
+      try {
+        const { pathId } = c.req.valid('param');
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const body = c.req.valid('json');
+
+        const input = await loadLearningPathCertificateInput(pathId, user.id, body, orgRoles);
+        const buffer = await generateCertificatePdf(input);
+
+        return sendCertificateFile(c, buffer, input.data.courseName, 'pdf');
+      } catch (error) {
+        return handleError(c, error, 'Failed to download learning path certificate');
+      }
+    }
+  )
+
+  /**
+   * POST /learning-path/:pathId/download/certificate/png
+   * Streams a generated PNG of the learning path certificate
+   */
+  .post(
+    '/:pathId/download/certificate/png',
+    authMiddleware,
+    zValidator('param', ZPathParam),
+    zValidator('json', ZLearningPathCertificateDownloadRequest),
+    async (c) => {
+      try {
+        const { pathId } = c.req.valid('param');
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const body = c.req.valid('json');
+
+        const input = await loadLearningPathCertificateInput(pathId, user.id, body, orgRoles);
+        const buffer = await generateCertificatePng(input);
+
+        return sendCertificateFile(c, buffer, input.data.courseName, 'png');
+      } catch (error) {
+        return handleError(c, error, 'Failed to download learning path certificate image');
       }
     }
   );
