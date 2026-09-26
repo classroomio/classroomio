@@ -1,11 +1,9 @@
 import {
-  ZPublicApiCohortGoalOverviewItemResponse,
   ZPublicApiCohortListItemResponse,
   ZPublicApiCohortParam,
   ZPublicApiCohortResponse,
   ZPublicApiCreateCohort,
   ZPublicApiEnrolledCohortResponse,
-  ZPublicApiMyCohortGoalResponse,
   ZPublicApiPaginationQuery,
   ZPublicApiUpdateCohort
 } from '@cio/utils/validation/public-api';
@@ -17,28 +15,22 @@ import {
   listPublicApiEnrolledCohortsService,
   updatePublicApiCohortService
 } from '@api/services/v1/cohort';
-import { getPublicApiOrgGoalsOverviewService, listPublicApiMyCohortGoalsService } from '@api/services/v1/cohort-goal';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { v1CohortCoursesRouter } from './cohort-courses';
-import { v1CohortGoalsRouter } from './cohort-goals';
-import { v1CohortInvitesRouter } from './cohort-invites';
-import { v1CohortMembersRouter } from './cohort-members';
-import { v1CohortNewsfeedRouter } from './cohort-newsfeed';
 import {
   ACTOR_OWN_DATA_NOTE,
   COHORT_MEMBER_RULE,
   COHORT_TEAM_RULE,
   PAGINATION_NOTE,
   cohortForbiddenResponses
-} from './cohort-route-docs';
+} from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const CohortResponse = itemResponse(ZPublicApiCohortResponse);
 
-export const v1CohortsRouter = new Hono()
+export const v1CohortRouter = new Hono()
   .get(
     '/',
     describeRoute({
@@ -120,69 +112,6 @@ export const v1CohortsRouter = new Hono()
       }
     }
   )
-  .get(
-    '/my/goals',
-    describeRoute({
-      description: `List the automation actor's own goal assignments across their cohorts (active goals only), with status and progress. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
-      tags: ['Public API Cohort Goals'],
-      responses: {
-        200: jsonResponse('Goal assignments returned successfully', paginatedResponse(ZPublicApiMyCohortGoalResponse)),
-        400: errorResponses.badRequest,
-        401: errorResponses.unauthorized,
-        403: cohortForbiddenResponses.scope
-      }
-    }),
-    validator('query', ZPublicApiPaginationQuery),
-    async (c) => {
-      try {
-        const orgId = c.get('orgId')!;
-        const actorId = c.get('actorId');
-        const query = c.req.valid('query');
-        const result = await listPublicApiMyCohortGoalsService(orgId, actorId, query);
-
-        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
-      } catch (error) {
-        return handlePublicApiError(c, error, 'Failed to list goal assignments');
-      }
-    }
-  )
-  .get(
-    '/goals/overview',
-    describeRoute({
-      description: `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status. ${PAGINATION_NOTE} The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.`,
-      tags: ['Public API Cohort Goals'],
-      responses: {
-        200: jsonResponse(
-          'Goals overview returned successfully',
-          paginatedResponse(ZPublicApiCohortGoalOverviewItemResponse)
-        ),
-        400: errorResponses.badRequest,
-        401: errorResponses.unauthorized,
-        403: {
-          description:
-            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not an org admin or tutor'
-        }
-      }
-    }),
-    validator('query', ZPublicApiPaginationQuery),
-    async (c) => {
-      try {
-        const orgId = c.get('orgId')!;
-        const actorId = c.get('actorId');
-        const query = c.req.valid('query');
-        const result = await getPublicApiOrgGoalsOverviewService(orgId, actorId, query);
-
-        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
-      } catch (error) {
-        return handlePublicApiError(c, error, 'Failed to load goals overview');
-      }
-    }
-  )
-  .route('/:cohortId', v1CohortInvitesRouter)
-  .route('/:cohortId/members', v1CohortMembersRouter)
-  .route('/:cohortId/courses', v1CohortCoursesRouter)
-  .route('/:cohortId/newsfeed', v1CohortNewsfeedRouter)
-  .route('/:cohortId/goals', v1CohortGoalsRouter)
   .get(
     '/:cohortId',
     describeRoute({

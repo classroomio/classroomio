@@ -1,10 +1,12 @@
 import {
   ZPublicApiCohortGoalListItemResponse,
+  ZPublicApiCohortGoalOverviewItemResponse,
   ZPublicApiCohortGoalParam,
   ZPublicApiCohortGoalResponse,
   ZPublicApiCohortParam,
   ZPublicApiEvaluateCohortGoalsResponse,
   ZPublicApiCreateCohortGoal,
+  ZPublicApiMyCohortGoalResponse,
   ZPublicApiPaginationQuery,
   ZPublicApiUpdateCohortGoal
 } from '@cio/utils/validation/public-api';
@@ -15,14 +17,22 @@ import {
   evaluateAllPublicApiCohortGoalsService,
   evaluatePublicApiCohortGoalService,
   getPublicApiCohortGoalService,
+  getPublicApiOrgGoalsOverviewService,
   listPublicApiCohortGoalsService,
+  listPublicApiMyCohortGoalsService,
   updatePublicApiCohortGoalService
 } from '@api/services/v1/cohort-goal';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './cohort-route-docs';
+import {
+  ACTOR_OWN_DATA_NOTE,
+  COHORT_MEMBER_RULE,
+  COHORT_TEAM_RULE,
+  PAGINATION_NOTE,
+  cohortForbiddenResponses
+} from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const GoalResponse = itemResponse(ZPublicApiCohortGoalResponse);
@@ -249,6 +259,66 @@ export const v1CohortGoalsRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to evaluate cohort goal');
+      }
+    }
+  );
+
+export const v1OrgCohortGoalsRouter = new Hono()
+  .get(
+    '/my/goals',
+    describeRoute({
+      description: `List the automation actor's own goal assignments across their cohorts (active goals only), with status and progress. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
+      tags: ['Public API Cohort Goals'],
+      responses: {
+        200: jsonResponse('Goal assignments returned successfully', paginatedResponse(ZPublicApiMyCohortGoalResponse)),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: cohortForbiddenResponses.scope
+      }
+    }),
+    validator('query', ZPublicApiPaginationQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const query = c.req.valid('query');
+        const result = await listPublicApiMyCohortGoalsService(orgId, actorId, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to list goal assignments');
+      }
+    }
+  )
+  .get(
+    '/goals/overview',
+    describeRoute({
+      description: `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status. ${PAGINATION_NOTE} The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.`,
+      tags: ['Public API Cohort Goals'],
+      responses: {
+        200: jsonResponse(
+          'Goals overview returned successfully',
+          paginatedResponse(ZPublicApiCohortGoalOverviewItemResponse)
+        ),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        403: {
+          description:
+            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not an org admin or tutor'
+        }
+      }
+    }),
+    validator('query', ZPublicApiPaginationQuery),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const query = c.req.valid('query');
+        const result = await getPublicApiOrgGoalsOverviewService(orgId, actorId, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to load goals overview');
       }
     }
   );

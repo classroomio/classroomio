@@ -79,7 +79,7 @@ vi.mock('@api/services/v1/cohort-invite', () => ({
   setPublicApiCohortInviteLinkRevokedService: mocks.ok()
 }));
 
-import { v1Router } from './index';
+import { v1Router } from '@api/routes/v1';
 
 const C = '11111111-1111-4111-8111-111111111111';
 const X = '22222222-2222-4222-8222-222222222222';

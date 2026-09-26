@@ -18,7 +18,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { COHORT_TEAM_RULE, cohortForbiddenResponses } from './cohort-route-docs';
+import { COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, nullableItemResponse } from '@api/utils/openapi/responses';
 
 const InviteLinkResponse = itemResponse(ZPublicApiCohortInviteLinkResponse);
