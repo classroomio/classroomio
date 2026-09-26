@@ -5966,15 +5966,15 @@
         "alt": "Bìa đường dẫn"
       },
       "welcome_email": {
-        "legend": "Welcome Email",
-        "desc": "Send an automated welcome message when learners are enrolled.",
-        "placeholder": "Write a welcome message for your learners..."
+        "legend": "Email chào mừng",
+        "desc": "Tùy chỉnh email học viên nhận được sau khi ghi danh. Thêm lời nhắn cá nhân, hướng dẫn hoặc liên kết buổi học trực tiếp.",
+        "placeholder": "Viết thông điệp chào mừng học viên nhận được khi ghi danh…"
       },
       "progression": {
-        "legend": "Course Progression",
-        "desc": "Choose how learners can navigate courses in this path.",
-        "free": "Free navigation (any order)",
-        "sequential": "Sequential (must complete in order)"
+        "legend": "Tiến trình học viên",
+        "desc": "Kiểm soát việc học viên có thể truy cập tất cả khóa học hay phải hoàn thành theo thứ tự.",
+        "free": "Tự do — tất cả khóa học đều khả dụng",
+        "sequential": "Tuần tự — hoàn thành các khóa học trước để mở khóa tiếp theo"
       },
       "self_enrollment": {
         "legend": "Học viên có thể tự đăng ký",
