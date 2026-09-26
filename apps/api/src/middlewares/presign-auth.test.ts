@@ -8,11 +8,16 @@ import type { Context, Next } from 'hono';
 import { findUnauthorizedDownloadKeys, presignAuthMiddleware } from './presign-auth';
 
 const mocks = vi.hoisted(() => ({
-  hasScopes: vi.fn()
+  hasScopes: vi.fn(),
+  legacyOwners: vi.fn()
 }));
 
 vi.mock('@api/services/organization/automation-key', () => ({
   organizationApiKeyHasScopes: (scopes: string[], requiredScopes: string[]) => mocks.hasScopes(scopes, requiredScopes)
+}));
+
+vi.mock('@cio/db/queries/assets', () => ({
+  getAssetOrganizationIdsByStorageKeys: (keys: string[]) => mocks.legacyOwners(keys)
 }));
 
 const ORG_ID = '3f2504e0-4f89-11d3-9a0c-0305e82c3301';
@@ -41,7 +46,7 @@ function buildApp(seed: ContextSeed) {
     )
     .post('/video/download', presignAuthMiddleware(['course:write']), async (c) => {
       const { keys } = await c.req.json<{ keys: string[] }>();
-      const unauthorizedKeys = findUnauthorizedDownloadKeys(c, keys);
+      const unauthorizedKeys = await findUnauthorizedDownloadKeys(c, keys);
 
       if (unauthorizedKeys.length > 0) {
         return c.json({ success: false, code: ErrorCodes.FORBIDDEN, unauthorizedKeys }, 403);
@@ -63,6 +68,8 @@ describe('presignAuthMiddleware', () => {
   beforeEach(() => {
     mocks.hasScopes.mockReset();
     mocks.hasScopes.mockReturnValue(true);
+    mocks.legacyOwners.mockReset();
+    mocks.legacyOwners.mockResolvedValue(new Map());
   });
 
   describe('session callers keep working regardless of org role', () => {
@@ -162,11 +169,38 @@ describe('presignAuthMiddleware', () => {
       expect(response.status).toBe(403);
     });
 
-    it('allows a legacy key that carries no organization prefix', async () => {
+    it('allows a legacy key that no asset claims, so exercise submissions keep downloading', async () => {
       const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.STUDENT } });
       const response = await post(app, '/video/download', { keys: ['V1StGXR8Z5jdHi6B-lesson.mp4'] });
 
       expect(response.status).toBe(200);
+      expect(mocks.legacyOwners).toHaveBeenCalledWith(['V1StGXR8Z5jdHi6B-lesson.mp4']);
+    });
+
+    it('allows a legacy key owned by the caller organization', async () => {
+      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-lesson.mp4', ORG_ID]]));
+      const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.STUDENT } });
+      const response = await post(app, '/video/download', { keys: ['V1StGXR8Z5jdHi6B-lesson.mp4'] });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('rejects a legacy key owned by another organization', async () => {
+      mocks.legacyOwners.mockResolvedValue(new Map([['V1StGXR8Z5jdHi6B-secret.mp4', OTHER_ORG_ID]]));
+      const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.STUDENT } });
+      const response = await post(app, '/video/download', { keys: ['V1StGXR8Z5jdHi6B-secret.mp4'] });
+
+      expect(response.status).toBe(403);
+      await expect(response.json()).resolves.toMatchObject({
+        unauthorizedKeys: ['V1StGXR8Z5jdHi6B-secret.mp4']
+      });
+    });
+
+    it('does not hit the asset table when every key carries a prefix', async () => {
+      const app = buildApp({ orgRoles: { [ORG_ID]: ROLE.ADMIN } });
+      await post(app, '/video/download', { keys: [`${ORG_ID}/a.mp4`] });
+
+      expect(mocks.legacyOwners).not.toHaveBeenCalled();
     });
 
     it('allows keys across every org the caller belongs to', async () => {

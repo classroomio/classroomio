@@ -3,6 +3,7 @@ import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organizatio
 
 import { ErrorCodes } from '@api/utils/errors';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
+import { getAssetOrganizationIdsByStorageKeys } from '@cio/db/queries/assets';
 import { readOrganizationIdFromFileKey } from '@cio/core/utils/upload';
 
 /**
@@ -42,17 +43,41 @@ export const presignAuthMiddleware =
   };
 
 /**
- * Every requested key must belong to an organization the caller is in. Keys
- * minted before organization-prefixed keys existed carry no owner, so they are
- * allowed through rather than breaking playback of existing course media.
+ * Every requested key must belong to an organization the caller is in.
+ *
+ * Ownership comes from the key's organization prefix where present. Keys minted
+ * before that prefix existed are resolved through the asset table instead; one
+ * that no asset claims has no determinable owner and is allowed through, since
+ * exercise submission files are stored by key without an asset row and would
+ * otherwise stop downloading.
  */
-export function findUnauthorizedDownloadKeys(c: Context, keys: string[]): string[] {
+export async function findUnauthorizedDownloadKeys(c: Context, keys: string[]): Promise<string[]> {
   const allowedOrgIds = (c.get('presignOrgIds') as string[] | undefined) ?? [];
 
-  return keys.filter((key) => {
-    const ownerOrgId = readOrganizationIdFromFileKey(key);
-    if (!ownerOrgId) return false;
+  const prefixedKeys: string[] = [];
+  const legacyKeys: string[] = [];
+
+  for (const key of keys) {
+    (readOrganizationIdFromFileKey(key) ? prefixedKeys : legacyKeys).push(key);
+  }
+
+  const unauthorizedKeys = prefixedKeys.filter((key) => {
+    const ownerOrgId = readOrganizationIdFromFileKey(key)!;
 
     return !allowedOrgIds.includes(ownerOrgId);
   });
+
+  if (legacyKeys.length === 0) {
+    return unauthorizedKeys;
+  }
+
+  const legacyOwners = await getAssetOrganizationIdsByStorageKeys(legacyKeys);
+  for (const key of legacyKeys) {
+    const ownerOrgId = legacyOwners.get(key);
+    if (ownerOrgId && !allowedOrgIds.includes(ownerOrgId)) {
+      unauthorizedKeys.push(key);
+    }
+  }
+
+  return unauthorizedKeys;
 }

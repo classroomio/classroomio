@@ -17,6 +17,7 @@ import { findUnauthorizedDownloadKeys, presignAuthMiddleware } from '@api/middle
 import { generateFileKey } from '@cio/core/utils/upload';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import type { Context } from 'hono';
 
 const requireCourseWrite = presignAuthMiddleware(['course:write']);
@@ -26,8 +27,8 @@ const PresignForbiddenResponse = {
     'Automation key is missing the required scope, or one or more requested keys belong to another organization'
 };
 
-function rejectUnauthorizedKeys(c: Context, keys: string[]) {
-  const unauthorizedKeys = findUnauthorizedDownloadKeys(c, keys);
+async function rejectUnauthorizedKeys(c: Context, keys: string[]) {
+  const unauthorizedKeys = await findUnauthorizedDownloadKeys(c, keys);
   if (unauthorizedKeys.length === 0) return null;
 
   return c.json(
@@ -112,7 +113,16 @@ export const presignRouter = new Hono()
 
       const fileKey = generateFileKey(fileName, c.get('presignUploadOrgId'));
 
+      const automationKey = c.get('automationKey');
+      if (automationKey?.type === 'mcp') {
+        await assertMcpAutomationUsageAllowed(automationKey, 'upload_video');
+      }
+
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
+
+      if (automationKey?.type === 'mcp') {
+        await recordMcpAutomationUsage(automationKey, 'upload_video', { fileKey });
+      }
 
       return c.json({
         success: true,
@@ -198,7 +208,7 @@ export const presignRouter = new Hono()
 
       const { keys } = body;
 
-      const forbidden = rejectUnauthorizedKeys(c, keys);
+      const forbidden = await rejectUnauthorizedKeys(c, keys);
       if (forbidden) return forbidden;
 
       const signedUrls = await generateVideoDownloadPresignedUrls(keys);
@@ -241,7 +251,7 @@ export const presignRouter = new Hono()
 
       const { keys } = body;
 
-      const forbidden = rejectUnauthorizedKeys(c, keys);
+      const forbidden = await rejectUnauthorizedKeys(c, keys);
       if (forbidden) return forbidden;
 
       const signedUrls = await generateDocumentDownloadPresignedUrls(keys);

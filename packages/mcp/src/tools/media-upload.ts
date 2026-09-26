@@ -6,6 +6,13 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 import type { TCoursePresignUrlUpload } from '@cio/utils/validation/course';
 import * as z from 'zod';
+import { resolveUploadLimits } from '@cio/utils/config/upload-limits';
+
+/**
+ * The PUT body is buffered in this process, so the file is size-checked before
+ * it is read rather than after. Reads the same limit the API enforces.
+ */
+const { videoBytes: MAX_UPLOAD_BYTES } = resolveUploadLimits(process.env);
 
 const VIDEO_MIME_TYPES_BY_EXTENSION: Record<string, TCoursePresignUrlUpload['fileType']> = {
   '.mp4': 'video/mp4',
@@ -55,8 +62,16 @@ export function registerMediaUploadTools(server: McpServer, apiClient: Classroom
       const { filePath } = ZUploadVideoToolInput.parse(args);
       const fileType = resolveMimeType(filePath, VIDEO_MIME_TYPES_BY_EXTENSION, 'video');
       const fileName = fileNameFromPath(filePath);
-      const [buffer, stats] = await Promise.all([readFile(filePath), stat(filePath)]);
+
+      const stats = await stat(filePath);
       const fileSize = stats.size;
+      if (fileSize > MAX_UPLOAD_BYTES) {
+        throw new Error(
+          `"${fileName}" is ${Math.round(fileSize / 1024 / 1024)} MB, over the ${Math.round(MAX_UPLOAD_BYTES / 1024 / 1024)} MB upload limit.`
+        );
+      }
+
+      const buffer = await readFile(filePath);
 
       const { url: uploadUrl, fileKey } = await apiClient.presignVideoUpload({ fileName, fileType, fileSize });
       await apiClient.putToPresignedUrl(uploadUrl, buffer, fileType);
