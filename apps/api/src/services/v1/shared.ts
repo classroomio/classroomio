@@ -6,6 +6,8 @@ import {
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
 import { getOrganizationMemberIdByOrgAndProfile, getOrganizationMemberRoleId } from '@cio/db/queries/organization';
+import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
@@ -40,6 +42,13 @@ export async function assertCohortBelongsToOrganization(orgId: string, cohortId:
   }
 }
 
+export async function assertCourseBelongsToOrganization(orgId: string, courseId: string): Promise<void> {
+  const courseOrganizationId = await getCourseOrganizationId(courseId);
+  if (!courseOrganizationId || courseOrganizationId !== orgId) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+}
+
 export async function assertProfileBelongsToOrganization(orgId: string, profileId: string): Promise<void> {
   const memberId = await getOrganizationMemberIdByOrgAndProfile(orgId, profileId);
   if (!memberId) {
@@ -64,6 +73,38 @@ export async function assertOrgTeamMember(orgId: string, actorId: string | null)
     ErrorCodes.ORG_TEAM_NOT_AUTHORIZED,
     403
   );
+}
+
+/**
+ * Mirrors `orgAdminMiddleware` for the key's creator: the actor must be an org admin.
+ * Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertOrgAdmin(orgId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const roleId = await getOrganizationMemberRoleId(orgId, actorId);
+  if (roleId === ROLE.ADMIN) {
+    return;
+  }
+
+  throw new AppError('Automation actor must be an organization admin', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+}
+
+/**
+ * Mirrors `courseTeamMemberMiddleware` for the key's creator: the actor must be a course tutor/admin or an org admin.
+ * Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertCourseTeamMemberOrOrgAdmin(courseId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const isAllowed = await isCourseTeamMemberOrOrgAdmin(courseId, actorId);
+  if (!isAllowed) {
+    throw new AppError(
+      'Automation actor must be a course tutor/admin or an organization admin',
+      ErrorCodes.FORBIDDEN,
+      403
+    );
+  }
 }
 
 /**

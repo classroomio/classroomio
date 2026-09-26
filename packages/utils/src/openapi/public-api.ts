@@ -4,7 +4,7 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts, and to read analytics, with organization-scoped API keys.
 
 # Authentication
 
@@ -191,7 +191,19 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/cohorts/{cohortId}/invite/assign': 'Assign existing students to a cohort',
   'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
   'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
-  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link'
+  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link',
+  'GET /public-api/v1/analytics/overview': 'Get the organization analytics overview',
+  'GET /public-api/v1/analytics/traffic': 'Get site traffic and conversions',
+  'GET /public-api/v1/analytics/countries': 'Get traffic by country',
+  'GET /public-api/v1/analytics/funnel': 'Get the enrollment funnel',
+  'GET /public-api/v1/analytics/course-types': 'Get analytics by course type',
+  'GET /public-api/v1/analytics/top-courses': 'Get the most viewed courses',
+  'GET /public-api/v1/analytics/login-activity': 'Get student logins by day of week',
+  'GET /public-api/v1/analytics/compliance': 'Get the compliance overview',
+  'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
+  'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
+  'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
+  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -229,6 +241,10 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Cohort Invites',
     description: 'Invite students to a cohort and manage its join link.'
+  },
+  {
+    name: 'Public API Analytics',
+    description: 'Read organization, course, learner, and compliance analytics.'
   }
 ];
 

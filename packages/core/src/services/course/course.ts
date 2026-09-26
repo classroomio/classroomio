@@ -578,6 +578,93 @@ export async function getCourseProgress(courseId: string, profileId: string) {
   }
 }
 
+type TCourseAnalyticsMember = {
+  profileId: string | null;
+  profile?: { fullname?: string | null; email?: string | null; avatarUrl?: string | null } | null;
+};
+
+/**
+ * Lists a course's student members, the rows `getCourseAnalytics` reports on. Throws 404 when the course is missing.
+ */
+export async function listCourseAnalyticsStudents(courseId: string) {
+  const course = await getCourseWithRelations(courseId);
+  if (!course) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  const members = course.group?.members || [];
+
+  return members.filter(
+    (member): member is (typeof members)[number] & { profileId: string } =>
+      member.roleId === ROLE.STUDENT && member.profileId !== null
+  );
+}
+
+/**
+ * Builds per-student progress, exercise and grade rows for the given course members. Members without a profile,
+ * and members whose stats fail to load, are left out.
+ */
+export async function buildCourseStudentAnalytics(courseId: string, students: TCourseAnalyticsMember[]) {
+  const studentsWithProfile = students.filter(
+    (student): student is TCourseAnalyticsMember & { profileId: string } => student.profileId !== null
+  );
+  const lastSeenByProfileId = await getLastSeenForUserIds(studentsWithProfile.map((student) => student.profileId));
+
+  const studentAnalytics = await Promise.all(
+    studentsWithProfile.map(async (student) => {
+      try {
+        const [courseProgress, userExercisesStats] = await Promise.all([
+          getCourseProgressQuery(courseId, student.profileId),
+          getUserExercisesStats(courseId, student.profileId)
+        ]);
+
+        if (!courseProgress) {
+          return null;
+        }
+
+        const completedExercises = userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
+        const totalExercises = userExercisesStats?.length || 0;
+
+        const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
+        const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
+        const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
+
+        const lessonsCompleted = courseProgress.lessonsCompleted || 0;
+        const totalLessons = courseProgress.lessonsCount || 0;
+        // Lessons and exercises together, matching `calcCourseProgress` in
+        // the dashboard and the audience roster. Counting lessons alone
+        // reported a learner who had submitted nothing as fully complete.
+        const progressPercentage = calcPercentageWithRounding(
+          lessonsCompleted + completedExercises,
+          totalLessons + totalExercises
+        );
+        const lastSeen = lastSeenByProfileId.get(student.profileId) ?? undefined;
+
+        return {
+          id: student.profileId,
+          profile: {
+            fullname: student.profile?.fullname || 'Unknown',
+            email: student.profile?.email || '',
+            avatar_url: student.profile?.avatarUrl || ''
+          },
+          lessonsCompleted,
+          totalLessons,
+          exercisesSubmitted: completedExercises,
+          totalExercises,
+          averageGrade,
+          lastSeen,
+          progressPercentage
+        };
+      } catch (error) {
+        console.error('Error getting student overview:', error);
+        return null;
+      }
+    })
+  );
+
+  return studentAnalytics.filter((student): student is NonNullable<typeof student> => student !== null);
+}
+
 /**
  * Gets course analytics including student progress, completion rates, and grades
  * @param courseId Course ID
@@ -602,69 +689,7 @@ export async function getCourseAnalytics(courseId: string) {
     const lessons = course.contentItems.filter((item) => item.type === ContentType.Lesson);
     const exercises = course.contentItems.filter((item) => item.type === ContentType.Exercise);
 
-    // Get student analytics
-    const studentProfileIds = students
-      .map((student) => student.profileId)
-      .filter((profileId): profileId is string => profileId !== null);
-    const lastSeenByProfileId = await getLastSeenForUserIds(studentProfileIds);
-
-    const studentAnalytics = await Promise.all(
-      students
-        .filter((student) => student.profileId !== null)
-        .map(async (student) => {
-          try {
-            const [courseProgress, userExercisesStats] = await Promise.all([
-              getCourseProgressQuery(courseId, student.profileId!),
-              getUserExercisesStats(courseId, student.profileId!)
-            ]);
-
-            if (!courseProgress) {
-              return null;
-            }
-
-            const completedExercises = userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
-            const totalExercises = userExercisesStats?.length || 0;
-
-            const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
-            const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
-            const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
-
-            const lessonsCompleted = courseProgress.lessonsCompleted || 0;
-            const totalLessons = courseProgress.lessonsCount || 0;
-            // Lessons and exercises together, matching `calcCourseProgress` in
-            // the dashboard and the audience roster. Counting lessons alone
-            // reported a learner who had submitted nothing as fully complete.
-            const progressPercentage = calcPercentageWithRounding(
-              lessonsCompleted + completedExercises,
-              totalLessons + totalExercises
-            );
-            const lastSeen = lastSeenByProfileId.get(student.profileId!) ?? undefined;
-
-            return {
-              id: student.profileId,
-              profile: {
-                fullname: student.profile?.fullname || 'Unknown',
-                email: student.profile?.email || '',
-                avatar_url: student.profile?.avatarUrl || ''
-              },
-              lessonsCompleted,
-              totalLessons,
-              exercisesSubmitted: completedExercises,
-              totalExercises,
-              averageGrade,
-              lastSeen,
-              progressPercentage
-            };
-          } catch (error) {
-            console.error('Error getting student overview:', error);
-            return null;
-          }
-        })
-    );
-
-    const validStudentAnalytics = studentAnalytics.filter(
-      (student): student is NonNullable<typeof student> => student !== null
-    );
+    const validStudentAnalytics = await buildCourseStudentAnalytics(courseId, students);
 
     // Calculate aggregated metrics
     let lessonCompletionRate = 0;

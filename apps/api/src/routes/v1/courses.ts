@@ -17,6 +17,7 @@ import {
 } from '@api/services/v1/course';
 
 import { Hono } from '@api/utils/hono';
+import { v1CourseAnalyticsRouter } from './course-analytics';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
@@ -88,6 +89,7 @@ const CourseDetailResponse = {
 };
 
 export const v1CoursesRouter = new Hono()
+  .route('/:courseId/analytics', v1CourseAnalyticsRouter)
   .get(
     '/',
     describeRoute({

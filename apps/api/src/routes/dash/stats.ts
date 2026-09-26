@@ -42,9 +42,10 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/stats', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashStats), async (c) => {
     try {
-      const { orgId, siteName, bust } = c.req.valid('query');
+      const { bust } = c.req.valid('query');
+      const orgId = c.get('orgId')!;
 
-      const result = await getOrganisationAnalytics(orgId, siteName, bust);
+      const result = await getOrganisationAnalytics(orgId, undefined, bust);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
@@ -53,9 +54,10 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/login-activity', authMiddleware, orgAdminMiddleware, zValidator('query', ZLoginActivity), async (c) => {
     try {
-      const { orgId, days } = c.req.valid('query');
+      const { days } = c.req.valid('query');
+      const orgId = c.req.header('cio-org-id')!;
 
-      const result = await getStudentLoginActivity(orgId!, days);
+      const result = await getStudentLoginActivity(orgId, days);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
@@ -74,7 +76,8 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/landing-stats', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
     try {
-      const { orgId, days } = c.req.valid('query');
+      const { days } = c.req.valid('query');
+      const orgId = c.get('orgId')!;
       const bust = c.req.query('bust') === '1';
       const result = await getLandingStats(orgId, days, bust);
 
@@ -90,7 +93,8 @@ export const dashAnalyticsRouter = new Hono()
     zValidator('query', ZDashAnalyticsRange),
     async (c) => {
       try {
-        const { orgId, days } = c.req.valid('query');
+        const { days } = c.req.valid('query');
+        const orgId = c.get('orgId')!;
         const bust = c.req.query('bust') === '1';
         const result = await getCountryBreakdown(orgId, days, bust);
 
@@ -102,7 +106,8 @@ export const dashAnalyticsRouter = new Hono()
   )
   .get('/course-funnel', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashCourseFunnel), async (c) => {
     try {
-      const { orgId, days, courseId } = c.req.valid('query');
+      const { days, courseId } = c.req.valid('query');
+      const orgId = c.get('orgId')!;
       const bust = c.req.query('bust') === '1';
       const result = await getCourseFunnel(orgId, days, courseId, bust);
 
@@ -113,7 +118,8 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/popular-types', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashAnalyticsRange), async (c) => {
     try {
-      const { orgId, days } = c.req.valid('query');
+      const { days } = c.req.valid('query');
+      const orgId = c.get('orgId')!;
       const bust = c.req.query('bust') === '1';
       const result = await getPopularTypes(orgId, days, bust);
 
@@ -142,7 +148,7 @@ export const dashAnalyticsRouter = new Hono()
     zValidator('query', ZDashComplianceOverview),
     async (c) => {
       try {
-        const { orgId } = c.req.valid('query');
+        const orgId = c.req.header('cio-org-id')!;
         const result = await getOrgComplianceOverview(orgId);
 
         return c.json({ success: true, data: result }, 200);

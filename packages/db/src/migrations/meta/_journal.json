@@ -155,6 +155,13 @@
       "when": 1790419736572,
       "tag": "0021_mcp_key_cohort_scopes",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1790419881134,
+      "tag": "0022_mcp_key_analytics_scope",
+      "breakpoints": true
     }
   ]
 }
