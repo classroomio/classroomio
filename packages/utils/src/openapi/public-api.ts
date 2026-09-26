@@ -17,6 +17,8 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
+MCP keys (\`cio_mcp_...\`) can call only the course certificate endpoints. They carry the \`course:certificate:read\` and \`course:certificate:write\` scopes, and every other endpoint returns 403 for them.
+
 ## Send requests
 
 Add the key to every request:
@@ -154,7 +156,11 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
-  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure'
+  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/courses/{courseId}/certificate': 'Get course certificate settings',
+  'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
+  'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
+  'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -168,6 +174,11 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Course Certificates',
+    description:
+      "Read and update a course's certificate design and settings, list the students who earned it, and download their certificates."
   }
 ];
 

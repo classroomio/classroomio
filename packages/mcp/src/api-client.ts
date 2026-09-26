@@ -20,12 +20,24 @@ import type {
   TExerciseUpdate
 } from '@cio/utils/validation/exercise';
 
+import type {
+  TPublicApiCertificateFileFormat,
+  TPublicApiListCourseCertificatesQuery,
+  TPublicApiUpdateCourseCertificate
+} from '@cio/utils/validation/public-api';
+
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 
 type ApiSuccess<T> = {
   success: true;
   data: T;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 
 type ApiFailure = {
@@ -34,6 +46,21 @@ type ApiFailure = {
   message?: string;
   code?: string;
   field?: string;
+};
+
+type PaginatedResponse<T> = {
+  data: T;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+type RequestOptions = {
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  body?: unknown;
 };
 
 export class ClassroomIoApiError extends Error {
@@ -179,14 +206,48 @@ export class ClassroomIoApiClient {
     });
   }
 
-  private async request<TResponse>(
-    path: string,
-    options: {
-      method: 'GET' | 'POST' | 'PUT';
-      body?: unknown;
+  async getCourseCertificate(courseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/certificate`, { method: 'GET' });
+  }
+
+  async updateCourseCertificate(courseId: string, payload: TPublicApiUpdateCourseCertificate) {
+    return this.request(`/public-api/v1/courses/${courseId}/certificate`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async listCourseCertificates(courseId: string, query: Partial<TPublicApiListCourseCertificatesQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page) searchParams.set('page', String(query.page));
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.search) searchParams.set('search', query.search);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/certificates${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async downloadCourseCertificate(courseId: string, memberId: string, format: TPublicApiCertificateFileFormat) {
+    const response = await this.send(
+      `/public-api/v1/courses/${courseId}/certificates/${memberId}/download?format=${format}`,
+      { method: 'GET' }
+    );
+
+    if (!response.ok) {
+      const errorPayload = (await response.json().catch(() => null)) as ApiFailure | null;
+      throw toApiError(response.status, errorPayload);
     }
-  ): Promise<TResponse> {
-    const response = await fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
+
+    const bytes = Buffer.from(await response.arrayBuffer());
+    const mimeType = response.headers.get('content-type') ?? 'application/octet-stream';
+
+    return { base64: bytes.toString('base64'), mimeType };
+  }
+
+  private send(path: string, options: RequestOptions) {
+    return fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
         Authorization: `Bearer ${this.config.CLASSROOMIO_API_KEY}`,
@@ -195,23 +256,46 @@ export class ClassroomIoApiClient {
       },
       body: options.body ? JSON.stringify(options.body) : undefined
     });
+  }
 
+  private async requestRaw<TResponse>(path: string, options: RequestOptions): Promise<ApiSuccess<TResponse>> {
+    const response = await this.send(path, options);
     const json = (await response.json().catch(() => null)) as ApiSuccess<TResponse> | ApiFailure | null;
 
     if (!response.ok) {
-      const errorPayload = json as ApiFailure | null;
-      throw new ClassroomIoApiError(
-        errorPayload?.error ?? errorPayload?.message ?? `ClassroomIO request failed with status ${response.status}`,
-        response.status,
-        errorPayload?.code,
-        errorPayload?.field
-      );
+      throw toApiError(response.status, json as ApiFailure | null);
     }
 
     if (!json || typeof json !== 'object' || !('success' in json) || !json.success) {
       throw new ClassroomIoApiError('ClassroomIO returned an invalid response payload', response.status);
     }
 
+    return json;
+  }
+
+  private async request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
+    const json = await this.requestRaw<TResponse>(path, options);
     return json.data;
   }
+
+  private async requestPaginated<TResponse>(
+    path: string,
+    options: RequestOptions
+  ): Promise<PaginatedResponse<TResponse>> {
+    const json = await this.requestRaw<TResponse>(path, options);
+    if (!json.pagination) {
+      throw new ClassroomIoApiError('ClassroomIO returned a response without pagination metadata', 502);
+    }
+
+    return { data: json.data, pagination: json.pagination };
+  }
+}
+
+function toApiError(status: number, errorPayload: ApiFailure | null) {
+  return new ClassroomIoApiError(
+    errorPayload?.error ?? errorPayload?.message ?? `ClassroomIO request failed with status ${status}`,
+    status,
+    errorPayload?.code,
+    errorPayload?.field
+  );
 }

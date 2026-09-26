@@ -48,6 +48,8 @@ vi.mock('@api/services/organization/automation-key', () => ({
   authenticateOrganizationApiKeyService: mocks.authenticate,
   organizationApiKeyHasScopes: (keyScopes: string[], requiredScopes: string[]) =>
     requiredScopes.every((scope) => keyScopes.includes(scope)),
+  organizationApiKeyHasAnyScope: (keyScopes: string[], acceptedScopes: string[]) =>
+    acceptedScopes.some((scope) => keyScopes.includes(scope)),
   touchOrganizationApiKeyLastUsedService: mocks.touchLastUsed
 }));
 
@@ -57,6 +59,11 @@ vi.mock('@api/routes/v1/audience', () => ({
 
 vi.mock('@api/routes/v1/courses', () => ({
   v1CoursesRouter: new Hono().get('/', (c) => c.json({ success: true }))
+}));
+
+vi.mock('@api/routes/v1/course-certificates', () => ({
+  v1CourseCertificateRouter: new Hono().get('/', (c) => c.json({ route: 'certificate' })),
+  v1CourseCertificatesRouter: new Hono().get('/', (c) => c.json({ route: 'certificates' }))
 }));
 
 import { v1Router } from './index';
@@ -217,5 +224,55 @@ describe('public API rate limiting', () => {
     expect(responseStatuses.filter((status) => status === 429)).toHaveLength(1);
     expect(mocks.authenticate).toHaveBeenCalledTimes(PUBLIC_API_FAILED_AUTH_MAX_REQUESTS);
     expect(mocks.releaseFailure).not.toHaveBeenCalled();
+  });
+});
+
+describe('public API scope routing', () => {
+  const COURSE_ID = '11111111-1111-4111-8111-111111111111';
+
+  const requestAs = (scopes: string[], path: string) => {
+    mocks.authenticate.mockResolvedValue({
+      id: 'key-id',
+      organizationId: 'org-id',
+      createdByProfileId: 'profile-id',
+      type: 'mcp',
+      scopes
+    });
+
+    return v1Router.request(path, { headers: { Authorization: 'Bearer key', 'cf-connecting-ip': CLIENT_IP } });
+  };
+
+  beforeEach(() => {
+    mocks.authenticate.mockReset();
+    mocks.reserveFailure.mockResolvedValue({ allowed: true, remaining: 1000, reservationId: 'r', resetTime: 0 });
+    mocks.isAllowed.mockResolvedValue({ allowed: true, remaining: 999, reservationId: 'r', resetTime: 0 });
+  });
+
+  const mcpCertificateScopes = ['course:read', 'course:write', 'course:certificate:read', 'course:certificate:write'];
+
+  it.each([`/courses/${COURSE_ID}/certificate`, `/courses/${COURSE_ID}/certificates`])(
+    'lets a key with only certificate scopes reach %s',
+    async (path) => {
+      const response = await requestAs(mcpCertificateScopes, path);
+
+      expect(response.status).toBe(200);
+    }
+  );
+
+  it.each(['/courses', '/audience'])(
+    'keeps %s behind the public_api:* scope for certificate-only keys',
+    async (path) => {
+      const response = await requestAs(mcpCertificateScopes, path);
+
+      expect(response.status).toBe(403);
+    }
+  );
+
+  it('lets a public_api:* key reach both certificate and other routes', async () => {
+    const certificate = await requestAs(['public_api:*'], `/courses/${COURSE_ID}/certificate`);
+    const courses = await requestAs(['public_api:*'], '/courses');
+
+    expect(certificate.status).toBe(200);
+    expect(courses.status).toBe(200);
   });
 });

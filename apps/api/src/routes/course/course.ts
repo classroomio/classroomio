@@ -45,7 +45,7 @@ import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { enrollInCourse } from '@api/services/course/invite';
 import { exerciseRouter } from '@api/routes/course/exercise';
 import { extractClientIp } from '@api/utils/redis/key-generators';
-import { generateCertificatePdf, generateCertificatePng } from '@api/utils/certificate';
+import { generateCertificatePdf, generateCertificatePng, slugifyForFilename } from '@api/utils/certificate';
 import { assembleCertificateRender, assembleOwnerPreviewRender } from '@api/services/course/certificate';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { generateCoursePdf } from '@api/utils/course';
@@ -66,17 +66,6 @@ import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
 import { updateCourseWithTags } from '@api/services/course/update-course';
-
-function slugifyForFilename(value: string): string {
-  return (
-    value
-      .normalize('NFKD')
-      .replace(/[^a-zA-Z0-9 ]/g, '')
-      .trim()
-      .replace(/\s+/g, '-')
-      .slice(0, 60) || 'certificate'
-  );
-}
 
 async function loadCertificateInput(
   courseId: string,
