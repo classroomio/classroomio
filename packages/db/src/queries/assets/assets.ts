@@ -335,6 +335,31 @@ export async function finalizeHlsAsset(
   }
 }
 
+/**
+ * Patch keys into `assets.metadata` without disturbing the rest of the column.
+ * Callers that need to add a key must use this rather than passing `metadata`
+ * to `updateAsset`, which performs a plain `.set()` and replaces the column.
+ */
+export async function mergeAssetMetadata(
+  assetId: string,
+  orgId: string,
+  patch: Record<string, unknown>,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  try {
+    await dbClient
+      .update(schema.asset)
+      .set({
+        metadata: sql`coalesce(${schema.asset.metadata}, '{}'::jsonb) || ${JSON.stringify(patch)}::jsonb`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)));
+  } catch (error) {
+    console.error('mergeAssetMetadata error:', error);
+    throw new Error(`Failed to merge asset metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export interface FinalizeHls1080Input {
   byteSize: number;
   metadata: Record<string, unknown>;
