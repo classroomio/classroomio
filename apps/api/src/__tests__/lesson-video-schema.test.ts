@@ -97,7 +97,6 @@ describe('lesson schemas carry videos', () => {
 describe('ZAttachLessonVideo', () => {
   const valid = {
     fileKey: `${UPLOAD_ASSET_ID}/abc-intro.mp4`,
-    downloadUrl: 'https://storage.example.com/abc-intro.mp4?signature=x',
     fileName: 'intro.mp4',
     fileType: 'video/mp4' as const,
     fileSize: 1024
@@ -119,7 +118,10 @@ describe('ZAttachLessonVideo', () => {
     }
   );
 
-  it('rejects a non-URL downloadUrl', () => {
-    expect(ZAttachLessonVideo.safeParse({ ...valid, downloadUrl: 'not-a-url' }).success).toBe(false);
+  it('ignores a caller-supplied playback URL, which is derived server-side', () => {
+    const result = ZAttachLessonVideo.safeParse({ ...valid, downloadUrl: 'https://evil.example.com/x.mp4' });
+
+    expect(result.success).toBe(true);
+    expect(result.success && 'downloadUrl' in result.data).toBe(false);
   });
 });

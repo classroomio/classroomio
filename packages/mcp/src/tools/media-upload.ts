@@ -44,7 +44,6 @@ export const ZAttachLessonVideoToolInput = z.object({
   courseId: z.string().min(1),
   lessonId: z.string().min(1),
   fileKey: z.string().min(1).describe('The fileKey returned by upload_video.'),
-  downloadUrl: z.url().describe('The downloadUrl returned by upload_video.'),
   fileName: z.string().min(1),
   fileType: z.string().min(1),
   fileSize: z.number().int().min(0).optional()
@@ -56,7 +55,7 @@ const attachLessonVideoShape = ZAttachLessonVideoToolInput.shape as unknown as Z
 export function registerMediaUploadTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'upload_video',
-    'Upload a local video file (mp4, mov, avi, mkv) to storage. Returns { fileKey, downloadUrl, fileName, fileType, fileSize } — pass all of these to attach_lesson_video to actually attach the video to a lesson. This only uploads the file — it does not attach it to any lesson.',
+    'Upload a local video file (mp4, mov, avi, mkv) to storage. Returns { fileKey, fileName, fileType, fileSize } — pass all of these to attach_lesson_video to actually attach the video to a lesson. This only uploads the file — it does not attach it to any lesson.',
     uploadVideoShape,
     async (args) => {
       const { filePath } = ZUploadVideoToolInput.parse(args);
@@ -75,13 +74,8 @@ export function registerMediaUploadTools(server: McpServer, apiClient: Classroom
 
       const { url: uploadUrl, fileKey } = await apiClient.presignVideoUpload({ fileName, fileType, fileSize });
       await apiClient.putToPresignedUrl(uploadUrl, buffer, fileType);
-      const { urls } = await apiClient.presignVideoDownload({ keys: [fileKey] });
-      const downloadUrl = urls[fileKey];
-      if (!downloadUrl) {
-        throw new Error('Upload succeeded but no download URL was returned for the uploaded file.');
-      }
 
-      return jsonContent({ fileKey, downloadUrl, fileName, fileType, fileSize });
+      return jsonContent({ fileKey, fileName, fileType, fileSize });
     }
   );
 
