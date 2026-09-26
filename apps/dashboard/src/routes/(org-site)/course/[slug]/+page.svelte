@@ -7,6 +7,7 @@
   let { data } = $props();
 
   const orgName = $derived(data.org?.name ?? data.course?.org?.name ?? 'ClassroomIO');
+  const courseImage = $derived(data.course?.bannerImage || '');
 
   const courseJsonLd = $derived.by(() => {
     if (!data.course) return null;
@@ -21,7 +22,7 @@
         name: orgName
       },
       url: page.url.href,
-      ...(data.course.bannerImage ? { image: data.course.bannerImage } : {})
+      ...(courseImage ? { image: courseImage } : {})
     };
 
     return JSON.stringify(schema).replace(/</g, '\\u003c');

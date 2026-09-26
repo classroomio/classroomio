@@ -3,9 +3,9 @@
   import { resolve } from '$app/paths';
   import get from 'lodash/get';
 
+  import { page } from '$app/state';
   import { currentOrg } from '$lib/utils/store/org';
-  import { basePath } from '$lib/utils/store/app';
-  import { user } from '$lib/utils/store/user';
+  import { user, profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { importCourseLandingPageTheme, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
@@ -18,7 +18,14 @@
   import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { appInitApi } from '$features/app/init.svelte';
-  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import {
+    getPreviewOrgLandingAuthAction,
+    resolveOrgLandingAuthAction
+  } from '$features/org/utils/org-landing-auth-action';
+  import {
+    getPreviewOrgLandingLearnerAccount,
+    resolveOrgLandingLearnerAccount
+  } from '$features/org/utils/org-landing-learner-account';
 
   interface Props {
     editMode?: boolean;
@@ -37,25 +44,28 @@
 
   const authAction = $derived.by(() => {
     if (editMode) {
-      return $user.isLoggedIn
-        ? {
-            label: t.get(
-              $basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'
-            ),
-            href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-          }
-        : {
-            label: t.get('navigation.login'),
-            href: '/login'
-          };
+      return getPreviewOrgLandingAuthAction($user.isLoggedIn);
     }
 
-    return getOrgLandingAuthAction({
-      isLoggedIn: $user.isLoggedIn,
-      isInitialized: appInitApi.isInitializedAndReady,
+    return resolveOrgLandingAuthAction({
       org: activeOrg,
-      organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
-      hasPendingInvite: !!appInitApi.pendingOrgInvite
+      locals: page.data?.locals,
+      user: $user,
+      appInitApi
+    });
+  });
+
+  const learnerAccount = $derived.by(() => {
+    if (editMode) {
+      return getPreviewOrgLandingLearnerAccount($profile, activeOrg);
+    }
+
+    return resolveOrgLandingLearnerAccount({
+      org: activeOrg,
+      locals: page.data?.locals,
+      user: $user,
+      profile: $profile,
+      appInitApi
     });
   });
 
@@ -92,6 +102,7 @@
       enrollHref,
       enrollDisabled,
       authAction,
+      learnerAccount,
       onPaidEnrollClick: handlePaidEnrollClick
     })
   );

@@ -120,8 +120,9 @@ export function buildCourseLandingPageProps(
   org: AccountOrg | PublicOrg,
   options: {
     enrollHref: string;
-    enrollDisabled: boolean;
+    enrollDisabled?: boolean;
     authAction?: { label: string; href: string };
+    learnerAccount?: CourseLandingPageProps['learnerAccount'];
     onPaidEnrollClick?: (event: MouseEvent) => void;
   }
 ): CourseLandingPageProps {
@@ -181,6 +182,7 @@ export function buildCourseLandingPageProps(
     logoUrl: org.avatarUrl ?? undefined,
     navItems: landing.navItems.map((item) => ({ ...item, href: resolveCourseNavHref(item.href) })),
     authAction: options.authAction,
+    learnerAccount: options.learnerAccount,
     hero: {
       heading: course.title ?? landing.hero.heading,
       subheading: course.description ?? landing.hero.subheading,

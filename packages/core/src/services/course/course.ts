@@ -393,7 +393,7 @@ export async function updateCourse(
     const mergedMetadata = data.metadata ? { ...existingMetadata, ...omitUndefinedValues(data.metadata) } : undefined;
 
     const { logo: legacyLogo, ...dataWithoutLegacyLogo } = data;
-    const bannerImage = dataWithoutLegacyLogo.bannerImage ?? legacyLogo;
+    const nextBannerImage = data.bannerImage ?? legacyLogo;
 
     const sanitizedData: Partial<TCourse> = {
       ...dataWithoutLegacyLogo,
@@ -401,8 +401,8 @@ export async function updateCourse(
       overview: sanitizeOptionalHtml(data.overview),
       metadata: sanitizeCourseMetadata(mergedMetadata),
       certificate: sanitizeCourseCertificate(data.certificate),
-      ...(bannerImage !== undefined ? { bannerImage } : {}),
-      slug: data.slug
+      slug: data.slug,
+      ...(nextBannerImage !== undefined ? { bannerImage: nextBannerImage, logo: nextBannerImage } : {})
     };
 
     const [currentCourse] = await getCourseById(courseId, dbClient);
