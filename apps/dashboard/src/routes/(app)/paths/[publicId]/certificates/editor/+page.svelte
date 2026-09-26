@@ -89,7 +89,7 @@
     }
   }
 
-  async function handlePrint() {
+  async function handlePrint(printWindow: Window | null) {
     if (!path?.id) return;
 
     try {
@@ -100,7 +100,8 @@
             param: { pathId: path.id },
             json: body
           }),
-        path.name
+        path.name,
+        printWindow
       );
     } catch (error) {
       console.error('Preview print error', error);
