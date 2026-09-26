@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save as template - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>.bg { filter: blur(1.5px); opacity: 0.45; pointer-events: none; }</style>
+  </head>
+  <body>
+    <div class="app bg">
+      <div data-org-sidebar></div>
+      <div class="main"><main class="content"><div class="wrap"><h1 class="page-title">Courses</h1><div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px"><div class="card" style="height: 250px"></div><div class="card" style="height: 250px"></div><div class="card" style="height: 250px"></div></div></div></main></div>
+    </div>
+
+    <div class="scrim" data-state-view="default students published">
+      <div class="dialog" role="dialog" aria-labelledby="t">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="t">Save as template</h2>
+          <p class="dialog-desc" id="course-line">Getting started with MVC</p>
+        </div>
+        <div class="dialog-body">
+          <label class="opt"><input type="radio" name="mode" value="copy" checked /><div><div class="t">Save a copy as template</div><div class="d">The course stays as it is.</div></div></label>
+          <label class="opt" id="convert-opt"><input type="radio" name="mode" value="convert" id="convert" /><div><div class="t">Convert this course</div><div class="d" id="convert-desc">The course becomes a template. It can't be published or have students.</div></div></label>
+
+          <div id="name-field" style="margin-top: 14px">
+            <label class="label" for="name">Template name</label>
+            <input class="input" id="name" value="Getting started with MVC" />
+          </div>
+        </div>
+        <div class="dialog-foot">
+          <a class="btn btn-outline btn-sm" href="courses.html">Cancel</a>
+          <a class="btn btn-primary btn-sm" id="save" href="template.html?state=saved">Save template</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-state-view="limit">
+      <div class="dialog" role="dialog" aria-labelledby="lt">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="lt">Your plan includes 1 template</h2>
+          <p class="dialog-desc">You already have <b style="color: var(--foreground); font-weight: 500">Customer Onboarding Academy</b>. Upgrade for up to 25 templates, or delete the one you have.</p>
+        </div>
+        <div class="dialog-foot" style="margin-top: 8px">
+          <a class="btn btn-ghost btn-sm" href="templates.html" style="margin-right: auto">Manage templates</a>
+          <a class="btn btn-outline btn-sm" href="courses.html">Cancel</a>
+          <button class="btn btn-primary btn-sm">Upgrade</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar"><span class="lbl">State</span><button data-state="default">No students</button><button data-state="students">Has students</button><button data-state="published">Published, no students</button><button data-state="limit">Plan limit</button><a href="index.html">← Map</a></div>
+    <button class="icon-btn" data-theme-toggle aria-label="Toggle theme" style="position: fixed; bottom: 18px; right: 18px; z-index: 300"></button>
+
+    <script>
+      const convert = document.getElementById('convert');
+      const convertOption = document.getElementById('convert-opt');
+      const convertDescription = document.getElementById('convert-desc');
+      const nameField = document.getElementById('name-field');
+      const saveButton = document.getElementById('save');
+
+      const syncMode = () => {
+        const isConvert = document.querySelector('input[name=mode]:checked').value === 'convert';
+        nameField.hidden = isConvert;
+        saveButton.textContent = isConvert ? 'Convert to template' : 'Save template';
+      };
+      document.querySelectorAll('input[name=mode]').forEach((radio) => radio.addEventListener('change', syncMode));
+
+      document.addEventListener('statechange', (event) => {
+        const state = event.detail;
+        const courseName = state === 'students' ? 'Modern Web Development with React' : state === 'published' ? 'Data Science with Python and Pandas' : 'Getting started with MVC';
+        document.getElementById('course-line').textContent = courseName;
+        document.getElementById('name').value = courseName;
+        const hasStudents = state === 'students';
+        convert.disabled = hasStudents;
+        convertOption.classList.toggle('disabled', hasStudents);
+        convertDescription.textContent = hasStudents
+          ? 'Has 128 students — save a copy instead.'
+          : state === 'published'
+            ? 'The course becomes a template and is unpublished. It can’t have students.'
+            : 'The course becomes a template. It can’t be published or have students.';
+        document.querySelector('input[value=copy]').checked = true;
+        syncMode();
+      });
+      bindStatePicker('default');
+    </script>
+  </body>
+</html>

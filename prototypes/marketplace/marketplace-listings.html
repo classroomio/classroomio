@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Marketplace · Acadia Tutors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .cols { grid-template-columns: 64px minmax(0, 2.4fr) 1.1fr 1.5fr 0.7fr 0.8fr 32px; }
+      .thumb { width: 64px; }
+      .thumb .cover { border-radius: 6px; }
+      .thumb .type-badge, .thumb .glyph, .thumb pre, .thumb .page b { display: none; }
+      .note { grid-column: 2 / -1; font-size: 12.5px; margin-top: -4px; }
+      .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+      @media (max-width: 900px) { .stats-row { grid-template-columns: 1fr 1fr; } .cols { grid-template-columns: 56px 1fr auto; } .cols > :nth-child(n + 4):not(.note):not(:last-child) { display: none; } }
+      .menu { position: absolute; right: 12px; top: 40px; z-index: 20; background: var(--popover); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: 4px; min-width: 190px; }
+      .menu a { display: flex; gap: 8px; align-items: center; padding: 7px 9px; font-size: 13px; border-radius: 6px; color: inherit; text-decoration: none; }
+      .menu a:hover { background: var(--accent); }
+      .menu hr { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+      .empty-hero { text-align: center; padding: 48px 24px; }
+      .entry { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; text-align: left; }
+      @media (max-width: 900px) { .entry { grid-template-columns: 1fr 1fr; } }
+      .profile-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; }
+      @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-app-sidebar="marketplace"></div>
+      <div class="main">
+        <header class="topbar">
+          <div class="crumbs"><a href="#">Acadia Tutors</a><span class="sep">/</span><span class="here">Marketplace</span></div>
+          <div class="top-actions">
+            <a class="btn btn-outline btn-sm" href="discover.html"><span data-icon="ext"></span>Open Discover</a>
+            <a class="btn btn-primary btn-sm" href="publish.html"><span data-icon="plus"></span>Publish</a>
+            <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"><span data-icon="sun"></span></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1080px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Marketplace</h1>
+                <p class="page-sub">Share templates, images, docs and AI skills on <a class="text-primary" href="discover.html">classroomio.com/discover</a>, and keep track of what you've imported.</p>
+              </div>
+            </div>
+
+            <div class="utabs" style="margin-bottom: 20px">
+              <button class="utab" data-tab="published">Published by us <span class="count">5</span></button>
+              <button class="utab" data-tab="imported">Imported <span class="count">3</span></button>
+              <button class="utab" data-tab="profile">Publisher profile</button>
+            </div>
+
+            <!-- PUBLISHED -->
+            <section data-pane="published">
+              <div data-state-view="filled">
+                <div class="stats-row">
+                  <div class="card stat-card"><div class="k">Published listings</div><div class="v">3</div><div class="s">1 in review · 1 draft</div></div>
+                  <div class="card stat-card"><div class="k">Imports</div><div class="v">312</div><div class="s">+41 in the last 30 days</div></div>
+                  <div class="card stat-card"><div class="k">Average rating</div><div class="v">4.8</div><div class="s">from 38 reviews</div></div>
+                  <div class="card stat-card"><div class="k">Profile</div><div class="v" style="font-size: 15px; font-weight: 500; margin-top: 10px"><a class="text-primary" href="publisher.html">View public page ↗</a></div></div>
+                </div>
+
+                <div class="card" style="position: relative">
+                  <div class="thead cols"><span></span><span>Listing</span><span>Type</span><span>Status</span><span>Imports</span><span>Rating</span><span></span></div>
+
+                  <div class="trow cols">
+                    <div class="thumb"><div class="cover" style="--c1: #0e7490; --c2: #67e8f9; --c3: #083344"></div></div>
+                    <div><div style="font-weight: 500">IELTS Writing Task 2 in 4 Weeks</div><div class="text-muted" style="font-size: 12.5px">v2 · Updated Sep 14</div></div>
+                    <span class="text-muted">Course template</span>
+                    <span><span class="badge badge-success-soft">Published</span></span>
+                    <span class="tnum">88</span>
+                    <span class="frow" style="gap: 4px"><span class="stars" data-stars="1"></span>4.8</span>
+                    <button class="icon-btn" data-menu="published" aria-label="Listing actions"><span data-icon="more"></span></button>
+                  </div>
+
+                  <div class="trow cols">
+                    <div class="thumb"><div class="cover" style="--c1: #155e75; --c2: #a5f3fc; --c3: #164e63"></div></div>
+                    <div><div style="font-weight: 500">IELTS Speaking Mock Exams</div><div class="text-muted" style="font-size: 12.5px">v3 live · v4 submitted Sep 24</div></div>
+                    <span class="text-muted">Course template</span>
+                    <span class="frow" style="gap: 6px; flex-wrap: wrap"><span class="badge badge-success-soft">Published</span><span class="badge badge-warning">Update in review</span></span>
+                    <span class="tnum">164</span>
+                    <span class="frow" style="gap: 4px"><span class="stars" data-stars="1"></span>4.9</span>
+                    <button class="icon-btn" aria-label="Listing actions"><span data-icon="more"></span></button>
+                  </div>
+
+                  <div class="trow cols">
+                    <div class="thumb"><div class="cover cover-grid"><i style="--c: #67e8f9"></i><i style="--c: #fde68a"></i><i style="--c: #a5b4fc"></i><i style="--c: #fca5a5"></i></div></div>
+                    <div><div style="font-weight: 500">Exam Day Lesson Headers</div><div class="text-muted" style="font-size: 12.5px">v1 · Submitted Sep 23</div></div>
+                    <span class="text-muted">Image pack</span>
+                    <span><span class="badge badge-warning">In review</span></span>
+                    <span class="text-muted">—</span>
+                    <span class="text-muted">—</span>
+                    <button class="icon-btn" aria-label="Listing actions"><span data-icon="more"></span></button>
+                  </div>
+
+                  <div class="trow cols" style="border-bottom: none">
+                    <div class="thumb"><div class="cover cover-skill"></div></div>
+                    <div><div style="font-weight: 500">Band 7 essay feedback rubric</div><div class="text-muted" style="font-size: 12.5px">v1 · Reviewed Sep 21</div></div>
+                    <span class="text-muted">AI skill</span>
+                    <span><span class="badge" style="color: var(--destructive); background: oklch(0.577 0.245 27.325 / 0.08); border-color: oklch(0.577 0.245 27.325 / 0.3)">Changes requested</span></span>
+                    <span class="text-muted">—</span>
+                    <span class="text-muted">—</span>
+                    <a class="btn btn-outline btn-sm" href="publish.html?state=changes" style="padding: 0 9px">Fix</a>
+                  </div>
+                  <div class="trow" style="padding-top: 0">
+                    <div class="callout callout-danger" style="font-size: 12.5px"><span data-icon="msg"></span><div><b>ClassroomIO review:</b> The instructions quote two full paragraphs from the official IELTS band descriptors, which are copyrighted. Paraphrase them or link to the public descriptors instead, then resubmit.</div></div>
+                  </div>
+
+                  <div class="trow cols">
+                    <div class="thumb"><div class="cover" style="--c1: #334155; --c2: #94a3b8; --c3: #0f172a"></div></div>
+                    <div><div style="font-weight: 500">Grammar Bootcamp</div><div class="text-muted" style="font-size: 12.5px">Unpublished Aug 2 · was v1</div></div>
+                    <span class="text-muted">Course template</span>
+                    <span><span class="badge badge-muted">Unpublished</span></span>
+                    <span class="tnum">60</span>
+                    <span class="frow" style="gap: 4px"><span class="stars" data-stars="1"></span>4.4</span>
+                    <button class="icon-btn" aria-label="Listing actions"><span data-icon="more"></span></button>
+                  </div>
+
+                  <div class="menu" id="menu" hidden>
+                    <a href="listing-course.html"><span data-icon="ext"></span>View public page</a>
+                    <a href="publish.html?state=update"><span data-icon="up"></span>Submit update</a>
+                    <a href="#"><span data-icon="copy"></span>Copy link</a>
+                    <hr />
+                    <a href="#" style="color: var(--destructive)"><span data-icon="eyeoff"></span>Unpublish</a>
+                  </div>
+                </div>
+                <p class="hint" style="margin-top: 12px">Unpublishing removes the public page. Organizations that already imported a listing keep their copy.</p>
+              </div>
+
+              <div data-state-view="empty">
+                <div class="card empty-hero">
+                  <div style="width: 48px; height: 48px; border-radius: 12px; background: oklch(0.488 0.243 264.376 / 0.1); color: var(--primary); display: grid; place-items: center; margin: 0 auto 14px"><span data-icon="store"></span></div>
+                  <h2 class="sec-title" style="font-size: 18px">Share what you've built</h2>
+                  <p class="page-sub" style="max-width: 520px; margin: 6px auto 0">Publish a template, image pack, doc or AI skill to the ClassroomIO marketplace. Every listing is reviewed before it goes live and credited to Acadia Tutors wherever it's used.</p>
+                  <div class="entry">
+                    <a class="card card-pad" href="publish.html" style="text-decoration: none; color: inherit"><span data-icon="course"></span><div style="font-weight: 500; margin-top: 8px">Course template</div><div class="hint">From a template's ⋯ menu</div></a>
+                    <a class="card card-pad" href="publish.html?state=images" style="text-decoration: none; color: inherit"><span data-icon="images"></span><div style="font-weight: 500; margin-top: 8px">Image pack</div><div class="hint">Select images in Media</div></a>
+                    <a class="card card-pad" href="publish.html?state=doc" style="text-decoration: none; color: inherit"><span data-icon="doc"></span><div style="font-weight: 500; margin-top: 8px">Doc</div><div class="hint">From a doc's ⋯ menu</div></a>
+                    <a class="card card-pad" href="ai-skills.html" style="text-decoration: none; color: inherit"><span data-icon="skill"></span><div style="font-weight: 500; margin-top: 8px">AI skill</div><div class="hint">From AI skills settings</div></a>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- IMPORTED -->
+            <section data-pane="imported" hidden>
+              <div class="card">
+                <div class="thead" style="grid-template-columns: minmax(0, 2fr) 1fr 1.3fr 1fr 110px"><span>Imported item</span><span>Type</span><span>From</span><span>Imported</span><span></span></div>
+                <div class="trow" style="grid-template-columns: minmax(0, 2fr) 1fr 1.3fr 1fr 110px">
+                  <a href="imported-template.html" style="font-weight: 500; color: inherit; text-decoration: none">Customer Onboarding Academy</a><span class="text-muted">Course template</span>
+                  <span class="frow"><span class="pub-av" style="background: #1d4ed8">L</span>Loopwise</span><span class="text-muted">Sep 12, 2026</span>
+                  <a class="btn btn-outline btn-sm" href="imported-template.html?state=rate">Rate</a>
+                </div>
+                <div class="trow" style="grid-template-columns: minmax(0, 2fr) 1fr 1.3fr 1fr 110px">
+                  <span style="font-weight: 500">Soft Gradient Course Covers</span><span class="text-muted">Image pack · 24</span>
+                  <span class="frow"><span class="pub-av" style="background: #db2777">F</span>Fernhill Studio</span><span class="text-muted">Aug 30, 2026</span>
+                  <span class="frow" style="gap: 3px"><span class="stars" data-stars="5"></span></span>
+                </div>
+                <div class="trow" style="grid-template-columns: minmax(0, 2fr) 1fr 1.3fr 1fr 110px">
+                  <span style="font-weight: 500">Build a Product 101 course from your docs</span><span class="text-muted">AI skill</span>
+                  <span class="frow"><span class="pub-av" style="background: #1d4ed8">L</span>Loopwise</span><span class="text-muted">Sep 2, 2026</span>
+                  <a class="btn btn-outline btn-sm" href="imported-template.html?state=rate">Rate</a>
+                </div>
+              </div>
+            </section>
+
+            <!-- PROFILE -->
+            <section data-pane="profile" hidden>
+              <div class="profile-grid">
+                <div class="card card-pad">
+                  <div class="field"><span class="label">Name and logo</span><div class="frow"><span class="pub-av lg" style="background: #0891b2">A</span><div><div style="font-weight: 500">Acadia Tutors</div><div class="hint">From your organization settings</div></div></div></div>
+                  <div class="field"><label class="label" for="bio">Bio</label><textarea class="textarea" id="bio" rows="3" maxlength="280">IELTS and academic English tutors. We publish the exam-prep courses and feedback rubrics our 40 tutors use every week.</textarea><p class="hint">Shown on your publisher page. 280 characters max.</p></div>
+                  <div class="field"><label class="label" for="web">Website</label><input class="input" id="web" value="https://acadiatutors.com" /></div>
+                  <p class="hint">Member names and emails are never shown on your publisher page.</p>
+                </div>
+                <div>
+                  <div class="label" style="margin-bottom: 8px">Preview</div>
+                  <div class="card card-pad">
+                    <span class="pub-av lg" style="background: #0891b2">A</span>
+                    <div style="font-weight: 600; font-size: 17px; margin-top: 10px">Acadia Tutors</div>
+                    <p class="hint" style="font-size: 13px; line-height: 1.55">IELTS and academic English tutors. We publish the exam-prep courses and feedback rubrics our 40 tutors use every week.</p>
+                    <div class="frow" style="gap: 16px; font-size: 12.5px"><span><b>3</b> listings</span><span><b>312</b> imports</span><span><b>4.8</b> rating</span></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+        <div class="settings-bar" data-pane="profile" hidden style="position: sticky; bottom: 16px; margin: 0 auto 16px; display: flex; gap: 10px; align-items: center; padding: 8px 8px 8px 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); font-size: 13px">
+          Unsaved changes <button class="btn btn-secondary btn-sm">Discard</button><button class="btn btn-primary btn-sm">Save changes</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar"><span class="lbl">State</span><button data-state="filled">Has listings</button><button data-state="empty">Empty</button><a href="index.html">← Map</a></div>
+
+    <script>
+      Object.assign(ICONS, {
+        ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>',
+        plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>',
+        more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>',
+        up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+        copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+        eyeoff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.9 17.9A10 10 0 0 1 12 20c-7 0-10-8-10-8a18 18 0 0 1 5.1-5.9M9.9 4.2A9 9 0 0 1 12 4c7 0 10 8 10 8a18 18 0 0 1-2.2 3.2M1 1l22 22"/></svg>',
+        msg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+        store: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18l-1.5-5h-15z"/><path d="M4 9v11h16V9M9 20v-6h6v6"/></svg>'
+      });
+      document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon]));
+      document.querySelectorAll('[data-stars]').forEach((node) => (node.innerHTML = ICONS.star.repeat(Number(node.dataset.stars))));
+
+      const menu = document.getElementById('menu');
+      document.querySelector('[data-menu]').addEventListener('click', (event) => {
+        event.stopPropagation();
+        menu.hidden = !menu.hidden;
+      });
+      document.addEventListener('click', () => (menu.hidden = true));
+
+      const showTab = (tab) => {
+        document.querySelectorAll('[data-tab]').forEach((button) => button.classList.toggle('active', button.dataset.tab === tab));
+        document.querySelectorAll('[data-pane]').forEach((pane) => (pane.hidden = pane.dataset.pane !== tab));
+      };
+      document.querySelectorAll('[data-tab]').forEach((button) => button.addEventListener('click', () => showTab(button.dataset.tab)));
+      showTab(new URLSearchParams(location.search).get('tab') || 'published');
+      bindStatePicker('filled');
+    </script>
+  </body>
+</html>

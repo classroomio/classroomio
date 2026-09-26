@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Discover Marketplace · Prototype map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      body { background: var(--background); }
+      .map { width: min(1080px, 100% - 32px); margin: 0 auto; padding: 48px 0 80px; }
+      .journey { margin-top: 36px; }
+      .journey h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-foreground); font-weight: 500; margin: 0 0 12px; }
+      .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+      .scr { display: block; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-lg); text-decoration: none; color: inherit; background: var(--card); transition: border-color 0.15s ease, transform 0.15s ease; }
+      .scr:hover { border-color: var(--primary); }
+      .scr:active { transform: scale(0.99); }
+      .scr b { display: block; font-weight: 600; font-size: 14.5px; }
+      .scr span { display: block; font-size: 12.8px; color: var(--muted-foreground); margin-top: 4px; line-height: 1.5; }
+      .scr code { display: inline-block; margin-top: 10px; font-size: 11.5px; color: var(--muted-foreground); }
+      .flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; margin-top: 10px; color: var(--muted-foreground); }
+      .flow a { color: var(--primary); text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <div class="map">
+      <div class="frow" style="justify-content: space-between">
+        <div class="badge badge-primary-soft">Prototype · UX source of truth</div>
+        <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"><span data-icon="sun"></span></button>
+      </div>
+      <h1 class="page-title" style="font-size: 32px; margin-top: 14px">Discover Marketplace</h1>
+      <p class="page-sub" style="max-width: 680px">Orgs publish course templates, image packs, docs and AI skills to <b>classroomio.com/discover</b>. Anyone can browse; org admins import free, one-time copies. Every listing is reviewed. Spec: <code>prd/marketplace/README.md</code>. Each screen has a state bar at the bottom for its other states.</p>
+
+      <div class="journey">
+        <h2>Main journeys</h2>
+        <div class="card card-pad">
+          <div class="flow"><b style="color: var(--foreground)">Import:</b><a href="discover.html">Discover</a>→<a href="listing-course.html">Listing</a>→<a href="import.html?state=signedout">Log in</a>→<a href="import.html">Pick org</a>→<a href="imported-template.html?state=fresh">Imported template</a>→<a href="imported-template.html?state=rate">Rate</a></div>
+          <div class="flow"><b style="color: var(--foreground)">Publish:</b><a href="marketplace-listings.html?state=empty">Marketplace (empty)</a>→<a href="publish.html">Publish dialog</a>→<a href="review-queue.html">Platform review</a>→<a href="marketplace-listings.html">Listing published</a>→<a href="publish.html?state=update">Submit update</a></div>
+        </div>
+      </div>
+
+      <div class="journey">
+        <h2>Public visitor · classroomio.com/discover</h2>
+        <div class="cards">
+          <a class="scr" href="discover.html"><b>Discover home</b><span>Search, type tabs, featured collections, categories, popular grid, publish CTA.</span><code>discover.html</code></a>
+          <a class="scr" href="discover-browse.html"><b>Browse & search</b><span>URL-driven filters (type, category, license), sort, empty state.</span><code>discover-browse.html</code></a>
+          <a class="scr" href="listing-course.html"><b>Course template listing</b><span>Outline, what's not included, reviews, license, version notes, report. States: live, update pending, gone.</span><code>listing-course.html</code></a>
+          <a class="scr" href="listing-other.html"><b>Image pack / doc / AI skill listing</b><span>Gallery with lightbox, doc preview with sub-pages, skill instructions.</span><code>listing-other.html</code></a>
+          <a class="scr" href="publisher.html"><b>Publisher profile</b><span>Org bio, stats, published listings.</span><code>publisher.html</code></a>
+        </div>
+      </div>
+
+      <div class="journey">
+        <h2>Org admin · importing</h2>
+        <div class="cards">
+          <a class="scr" href="import.html"><b>Import flow</b><span>Signed out, org picker (tutor orgs disabled), template limit, already imported, no admin org, unavailable.</span><code>import.html</code></a>
+          <a class="scr" href="imported-template.html"><b>Imported template</b><span>Publisher credit banner, success toast, rate & review dialog, unpublished-listing credit.</span><code>imported-template.html</code></a>
+        </div>
+      </div>
+
+      <div class="journey">
+        <h2>Org admin · publishing</h2>
+        <div class="cards">
+          <a class="scr" href="marketplace-listings.html"><b>Marketplace page</b><span>Published by us (all statuses), Imported, Publisher profile. Empty state with entry points.</span><code>marketplace-listings.html</code></a>
+          <a class="scr" href="publish.html"><b>Publish / submit update</b><span>Per source type, sanitization preview, license, rights checkbox, changes requested, update.</span><code>publish.html</code></a>
+          <a class="scr" href="ai-skills.html"><b>AI skills library</b><span>Own and installed skills, editor, empty state. Skills run once AI skills launch.</span><code>ai-skills.html</code></a>
+        </div>
+      </div>
+
+      <div class="journey">
+        <h2>ClassroomIO platform admin</h2>
+        <div class="cards">
+          <a class="scr" href="review-queue.html"><b>Review queue</b><span>Oldest-first queue, snapshot + diff vs live version, automated checks, approve / request changes / remove. Reports and collections tabs.</span><code>review-queue.html</code></a>
+        </div>
+      </div>
+    </div>
+    <script>document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon]));</script>
+  </body>
+</html>
