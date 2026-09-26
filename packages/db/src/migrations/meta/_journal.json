@@ -150,10 +150,10 @@
       "breakpoints": true
     },
     {
-      "idx": 21,
+      "idx": 22,
       "version": "7",
-      "when": 1790380800000,
-      "tag": "0021_mcp_key_course_member_scopes",
+      "when": 1790423336572,
+      "tag": "0022_mcp_key_course_member_scopes",
       "breakpoints": true
     }
   ]
