@@ -90,7 +90,7 @@
     }
   }
 
-  async function handlePrint() {
+  async function handlePrint(printWindow: Window | null) {
     if (!courseId) return;
 
     try {
@@ -101,7 +101,8 @@
             param: { courseId },
             json: body
           }),
-        course?.title ?? 'Certificate'
+        course?.title ?? 'Certificate',
+        printWindow
       );
     } catch (error) {
       console.error('Preview print error', error);

@@ -79,7 +79,7 @@
     }
   }
   // svelte-ignore state_referenced_locally
-  let initialSnapshot = $state(JSON.stringify(path.landingPage ?? {}));
+  let initialSnapshot = $state(JSON.stringify(landingPage));
   // svelte-ignore state_referenced_locally
   let currentPathId = $state(path.id);
 
@@ -124,7 +124,7 @@
       }
 
       landingPage = nextDraft;
-      initialSnapshot = JSON.stringify(path.landingPage ?? {});
+      initialSnapshot = JSON.stringify(landingPage);
       pathCost = Number(path.cost) || 0;
       pathCurrency = (path.currency as string) === 'NGN' ? 'NGN' : 'USD';
       initialPricingSnapshot = JSON.stringify({

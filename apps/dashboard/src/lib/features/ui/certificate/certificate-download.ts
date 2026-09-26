@@ -28,27 +28,34 @@ export async function downloadCertificateFile(
   URL.revokeObjectURL(url);
 }
 
-export async function printCertificateFile(fetcher: () => Promise<Response>, title: string): Promise<void> {
-  const printWindow = window.open('', '_blank');
+export async function printCertificateFile(
+  fetcher: () => Promise<Response>,
+  title: string,
+  targetWindow?: Window | null
+): Promise<void> {
+  // Prefer a window opened synchronously in the click handler: popups opened
+  // after async work can lose user activation and get blocked with no message.
+  const printWindow = targetWindow ?? window.open('', '_blank');
 
   if (!printWindow) {
     throw new Error('Popup blocked by browser');
   }
 
-  let response: Response;
+  let blob: Blob;
 
   try {
-    response = await fetcher();
+    const response = await fetcher();
 
     if (!response.ok) {
       throw new Error(`Certificate download failed with status ${response.status}`);
     }
+
+    blob = await response.blob();
   } catch (error) {
     printWindow.close();
     throw error;
   }
 
-  const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const doc = printWindow.document;
   doc.title = title;

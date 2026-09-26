@@ -21,6 +21,7 @@
   import ContentPanel from './panels/content-panel.svelte';
   import ColorsPanel from './panels/colors-panel.svelte';
   import ExportPanel from './panels/export-panel.svelte';
+  import { showCertificatePreviewError } from '../certificate-download';
   import {
     ParameterizedCertificateEditorStore,
     type CertificateEditorPanel
@@ -36,7 +37,7 @@
     sampleData?: Partial<CertificateRenderData>;
     onDownloadPdf?: () => Promise<void>;
     onDownloadPng?: () => Promise<void>;
-    onPrint?: () => Promise<void>;
+    onPrint?: (printWindow: Window | null) => Promise<void>;
   }
 
   let {
@@ -65,7 +66,9 @@
 
   async function handleExport(action?: () => Promise<void>): Promise<void> {
     if (store.isDirty) {
-      await store.save();
+      const saved = await store.save();
+
+      if (!saved) return;
     }
 
     await action?.();
@@ -79,8 +82,31 @@
     return handleExport(onDownloadPng);
   }
 
-  function handlePrintExport(): Promise<void> {
-    return handleExport(onPrint);
+  async function handlePrintExport(): Promise<void> {
+    // Open synchronously in the click handler: anything opened after the
+    // save roundtrip below can lose user activation and be popup-blocked.
+    const printWindow = window.open('', '_blank');
+
+    if (!printWindow) {
+      showCertificatePreviewError();
+      return;
+    }
+
+    if (store.isDirty) {
+      const saved = await store.save();
+
+      if (!saved) {
+        printWindow.close();
+        return;
+      }
+    }
+
+    try {
+      await onPrint?.(printWindow);
+    } catch (error) {
+      printWindow.close();
+      throw error;
+    }
   }
 
   const activeTemplateMeta = $derived(

@@ -1,6 +1,27 @@
 import { t } from '$lib/utils/functions/translations';
 import type { LearningPathDetail, SetupStep } from './types';
 
+/**
+ * The landing step counts only when the author customized real page copy.
+ * Any saved key (e.g. a derived instructor or a toggled setting) must not
+ * mark it complete while the title and body are still blank.
+ */
+export function hasLandingContent(path: LearningPathDetail): boolean {
+  const landingPage = path.landingPage;
+
+  if (!landingPage) return false;
+
+  return Boolean(
+    landingPage.title?.trim() ||
+      landingPage.description?.trim() ||
+      landingPage.requirements?.trim() ||
+      landingPage.goals?.trim() ||
+      (landingPage.skills && landingPage.skills.length > 0) ||
+      (landingPage.reviews && landingPage.reviews.length > 0) ||
+      (landingPage.faqs && landingPage.faqs.length > 0)
+  );
+}
+
 export function getSetupSteps(path: LearningPathDetail | null | undefined, basePath: string): SetupStep[] {
   if (!path) return [];
 
@@ -8,7 +29,7 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
   const isAddCoursesDone = Boolean(path.courses && path.courses.length > 0);
   const isOrderDone = Boolean(path.courseOrderSetAt || (path.courses && path.courses.length >= 2));
   const isPriceDone = path.cost !== undefined && path.cost !== null;
-  const isLandingDone = Boolean(path.landingPage && Object.keys(path.landingPage).length > 0);
+  const isLandingDone = hasLandingContent(path);
   const isPublishDone = Boolean(path.isPublished);
 
   const rawSteps = [
