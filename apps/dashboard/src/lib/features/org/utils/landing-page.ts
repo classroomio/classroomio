@@ -20,6 +20,7 @@ import {
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
 import { isAllowedHref } from '@cio/utils/validation/shared';
 import { t } from '$lib/utils/functions/translations';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 export const landingPageThemes = [
   'minimal',
@@ -696,7 +697,10 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const exerciseCount = typeof courseRecord.exerciseCount === 'number' ? courseRecord.exerciseCount : undefined;
     const totalStudents = typeof courseRecord.totalStudents === 'number' ? courseRecord.totalStudents : undefined;
     const image = typeof courseRecord.image === 'string' ? courseRecord.image : undefined;
-    const bannerImage = typeof courseRecord.bannerImage === 'string' ? courseRecord.bannerImage : undefined;
+    const bannerImage = resolveCourseBannerImage({
+      bannerImage: typeof courseRecord.bannerImage === 'string' ? courseRecord.bannerImage : null,
+      logo: typeof courseRecord.logo === 'string' ? courseRecord.logo : null
+    });
     const price = typeof courseRecord.price === 'string' ? courseRecord.price : undefined;
     const duration = typeof courseRecord.duration === 'string' ? courseRecord.duration : undefined;
     const level = typeof courseRecord.level === 'string' ? courseRecord.level : undefined;
@@ -707,7 +711,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     return {
       id: course.id,
       slug: typeof courseRecord.slug === 'string' ? courseRecord.slug : undefined,
-      bannerImage: bannerImage ?? null,
+      bannerImage,
       title: typeof courseRecord.title === 'string' ? courseRecord.title : '',
       description,
       type,

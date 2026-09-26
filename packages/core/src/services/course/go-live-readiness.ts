@@ -13,7 +13,7 @@ import { updateCourse } from './course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
 import { sealLessonVersionsOnPublish } from '../lesson-version';
 import { db } from '@cio/db/drizzle';
-import { resolveCourseBannerImage } from '../../utils/course-banner-image';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 export type CourseGoLiveIssue = {
   code: string;

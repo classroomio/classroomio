@@ -617,7 +617,7 @@ export async function getCoursesByCohort(
           id: schema.course.id,
           title: schema.course.title,
           description: schema.course.description,
-          coverImage: schema.course.bannerImage,
+          coverImage: sql<string | null>`coalesce(nullif(${schema.course.bannerImage}, ''), ${schema.course.logo})`,
           slug: schema.course.slug,
           status: schema.course.status,
           isPublished: schema.course.isPublished

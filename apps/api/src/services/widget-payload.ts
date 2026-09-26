@@ -15,7 +15,7 @@ import {
 import type { TWidget } from '@db/types';
 import * as csstree from 'css-tree';
 import { env } from '@cio/core/config/env';
-import { resolveCourseBannerImage } from '@cio/core/utils/course-banner-image';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 const DEFAULT_EMBED_CDN_BASE_URL = EMBED_PUBLIC_BASE_URL;

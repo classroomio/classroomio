@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ZCourseUpdateBase } from '@cio/utils/validation/course';
 import { ZPublicApiUpdateCourse } from '@cio/utils/validation/public-api';
-import { resolveCourseBannerImage } from '@cio/core/utils/course-banner-image';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 describe('bannerImage on course update', () => {
   it('ZCourseUpdateBase accepts and preserves bannerImage', () => {
