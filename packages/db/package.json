@@ -94,8 +94,7 @@
     "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
     "db:migrate-course-logo-to-banner-image": "tsx src/scripts/migrate-course-logo-to-banner-image.ts",
     "db:remove-landing-contact": "tsx src/scripts/remove-landing-page-contact-nav.ts",
-    "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts",
-    "db:normalize-transcript-languages": "tsx src/scripts/normalize-transcript-languages.ts"
+    "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",
