@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { ROLE } from '../../constants/roles';
 import { ZPublicApiCourseParam } from './course';
+import { ZPublicApiPaginationQuery } from './pagination';
 
 const ZPublicApiCourseRoleId = z
   .union([z.literal(ROLE.ADMIN), z.literal(ROLE.TUTOR), z.literal(ROLE.STUDENT)])
@@ -12,9 +13,7 @@ export const ZPublicApiCourseMemberParam = ZPublicApiCourseParam.extend({
 });
 export type TPublicApiCourseMemberParam = z.infer<typeof ZPublicApiCourseMemberParam>;
 
-export const ZPublicApiCourseMembersQuery = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+export const ZPublicApiCourseMembersQuery = ZPublicApiPaginationQuery.extend({
   search: z.string().trim().max(200).optional(),
   roleId: z.coerce.number().int().min(1).optional()
 });

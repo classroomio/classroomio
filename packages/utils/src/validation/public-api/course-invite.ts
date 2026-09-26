@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { ZPublicApiCourseParam } from './course';
+import { ZPublicApiPaginationQuery } from './pagination';
 
 export const ZPublicApiCourseInviteParam = ZPublicApiCourseParam;
 export type TPublicApiCourseInviteParam = z.infer<typeof ZPublicApiCourseInviteParam>;
@@ -32,8 +33,5 @@ export const ZPublicApiCreateCourseInvite = z
   );
 export type TPublicApiCreateCourseInvite = z.infer<typeof ZPublicApiCreateCourseInvite>;
 
-export const ZPublicApiCourseInvitesQuery = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20)
-});
+export const ZPublicApiCourseInvitesQuery = ZPublicApiPaginationQuery;
 export type TPublicApiCourseInvitesQuery = z.infer<typeof ZPublicApiCourseInvitesQuery>;
