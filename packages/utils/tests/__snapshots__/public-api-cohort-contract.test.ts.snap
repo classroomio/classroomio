@@ -1,0 +1,604 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API cohort request contract > ZPublicApiAddCohortMembers keeps its published shape > ZPublicApiAddCohortMembers 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "members": {
+      "items": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+          "profileId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "roleId": {
+            "anyOf": [
+              {
+                "const": 2,
+                "type": "number",
+              },
+              {
+                "const": 3,
+                "type": "number",
+              },
+            ],
+          },
+        },
+        "required": [
+          "roleId",
+        ],
+        "type": "object",
+      },
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "required": [
+    "members",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiAddCourseToCohort keeps its published shape > ZPublicApiAddCourseToCohort 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiAssignStudentsToCohort keeps its published shape > ZPublicApiAssignStudentsToCohort 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "profileIds": {
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+    "sendEmail": {
+      "default": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "profileIds",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCohortNewsfeedQuery keeps its published shape > ZPublicApiCohortNewsfeedQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "cursor": {
+      "type": "string",
+    },
+    "limit": {
+      "default": 10,
+      "maximum": 50,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCreateCohort keeps its published shape > ZPublicApiCreateCohort 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "coverImage": {
+      "format": "uri",
+      "type": "string",
+    },
+    "description": {
+      "maxLength": 2000,
+      "type": "string",
+    },
+    "name": {
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "name",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCreateCohortGoal keeps its published shape > ZPublicApiCreateCohortGoal 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseIds": {
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+    "deadlineDate": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "deadlineKind": {
+      "default": "none",
+      "enum": [
+        "absolute",
+        "relative_to_join",
+        "recurring",
+        "none",
+      ],
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "maxLength": 2000,
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "recurringMonths": {
+      "anyOf": [
+        {
+          "maximum": 120,
+          "minimum": 1,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "relativeDays": {
+      "anyOf": [
+        {
+          "maximum": 3650,
+          "minimum": 1,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "reminderDaysBefore": {
+      "default": [
+        7,
+        1,
+      ],
+      "items": {
+        "maximum": 365,
+        "minimum": 0,
+        "type": "integer",
+      },
+      "maxItems": 5,
+      "type": "array",
+    },
+    "requiredCount": {
+      "anyOf": [
+        {
+          "maximum": 50,
+          "minimum": 1,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "scoreThreshold": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "teamPassRateThreshold": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "title": {
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string",
+    },
+    "type": {
+      "enum": [
+        "complete_all",
+        "n_of_m",
+        "score",
+        "pass_rate",
+        "readiness",
+      ],
+      "type": "string",
+    },
+  },
+  "required": [
+    "type",
+    "title",
+    "courseIds",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCreateCohortNewsfeed keeps its published shape > ZPublicApiCreateCohortNewsfeed 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "content": {
+      "minLength": 1,
+      "type": "string",
+    },
+    "isPinned": {
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "content",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiCreateCohortNewsfeedComment keeps its published shape > ZPublicApiCreateCohortNewsfeedComment 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "content": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "content",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiInviteStudentsToCohort keeps its published shape > ZPublicApiInviteStudentsToCohort 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "recipientCsv": {
+      "maxLength": 25000,
+      "minLength": 1,
+      "type": "string",
+    },
+    "sendEmail": {
+      "default": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "recipientCsv",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiSetCohortInviteLinkRevoked keeps its published shape > ZPublicApiSetCohortInviteLinkRevoked 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "isRevoked": {
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "isRevoked",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiSetCohortReaction keeps its published shape > ZPublicApiSetCohortReaction 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "reaction": {
+      "anyOf": [
+        {
+          "enum": [
+            "clap",
+            "smile",
+            "thumbsup",
+            "thumbsdown",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "reaction",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiUpdateCohort keeps its published shape > ZPublicApiUpdateCohort 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "coverImage": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "description": {
+      "anyOf": [
+        {
+          "maxLength": 2000,
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "name": {
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string",
+    },
+    "status": {
+      "enum": [
+        "ACTIVE",
+        "INACTIVE",
+        "ARCHIVED",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiUpdateCohortGoal keeps its published shape > ZPublicApiUpdateCohortGoal 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseIds": {
+      "items": {
+        "format": "uuid",
+        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+        "type": "string",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+    "deadlineDate": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "deadlineKind": {
+      "enum": [
+        "absolute",
+        "relative_to_join",
+        "recurring",
+        "none",
+      ],
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "maxLength": 2000,
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "recurringMonths": {
+      "anyOf": [
+        {
+          "maximum": 120,
+          "minimum": 1,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "relativeDays": {
+      "anyOf": [
+        {
+          "maximum": 3650,
+          "minimum": 1,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "reminderDaysBefore": {
+      "items": {
+        "maximum": 365,
+        "minimum": 0,
+        "type": "integer",
+      },
+      "maxItems": 5,
+      "type": "array",
+    },
+    "requiredCount": {
+      "anyOf": [
+        {
+          "maximum": 50,
+          "minimum": 1,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "scoreThreshold": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "status": {
+      "enum": [
+        "active",
+        "archived",
+      ],
+      "type": "string",
+    },
+    "teamPassRateThreshold": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "title": {
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string",
+    },
+    "type": {
+      "enum": [
+        "complete_all",
+        "n_of_m",
+        "score",
+        "pass_rate",
+        "readiness",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiUpdateCohortMember keeps its published shape > ZPublicApiUpdateCohortMember 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "roleId": {
+      "anyOf": [
+        {
+          "const": 2,
+          "type": "number",
+        },
+        {
+          "const": 3,
+          "type": "number",
+        },
+      ],
+    },
+  },
+  "required": [
+    "roleId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API cohort request contract > ZPublicApiUpdateCohortNewsfeed keeps its published shape > ZPublicApiUpdateCohortNewsfeed 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "content": {
+      "minLength": 1,
+      "type": "string",
+    },
+    "isPinned": {
+      "type": "boolean",
+    },
+  },
+  "type": "object",
+}
+`;
