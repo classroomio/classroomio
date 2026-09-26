@@ -22,10 +22,24 @@ import type {
 
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type {
+  TPublicApiAddCourseMember,
+  TPublicApiCourseMemberAnalyticsQuery,
+  TPublicApiCourseMembersQuery,
+  TPublicApiCourseInvitesQuery,
+  TPublicApiCreateCourseInvite,
+  TPublicApiUpdateCourseMember
+} from '@cio/utils/validation/public-api';
 
 type ApiSuccess<T> = {
   success: true;
   data: T;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 
 type ApiFailure = {
@@ -34,6 +48,16 @@ type ApiFailure = {
   message?: string;
   code?: string;
   field?: string;
+};
+
+type PaginatedResponse<T> = {
+  data: T;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 
 export class ClassroomIoApiError extends Error {
@@ -179,13 +203,92 @@ export class ClassroomIoApiClient {
     });
   }
 
-  private async request<TResponse>(
+  // ─── Course Members (public API) ────────────────────────────────────────
+
+  async listCourseMembers(courseId: string, query: Partial<TPublicApiCourseMembersQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page) searchParams.set('page', String(query.page));
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.search) searchParams.set('search', query.search);
+    if (query.roleId) searchParams.set('roleId', String(query.roleId));
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/members${querySuffix}`, { method: 'GET' });
+  }
+
+  async addCourseMember(courseId: string, payload: TPublicApiAddCourseMember) {
+    return this.request(`/public-api/v1/courses/${courseId}/members`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async getCourseMember(courseId: string, memberId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/members/${memberId}`, { method: 'GET' });
+  }
+
+  async updateCourseMember(courseId: string, memberId: string, payload: TPublicApiUpdateCourseMember) {
+    return this.request(`/public-api/v1/courses/${courseId}/members/${memberId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteCourseMember(courseId: string, memberId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/members/${memberId}`, { method: 'DELETE' });
+  }
+
+  async resetCourseMemberProgress(courseId: string, memberId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/members/${memberId}/reset-progress`, {
+      method: 'POST'
+    });
+  }
+
+  async getCourseMemberAnalytics(
+    courseId: string,
+    memberId: string,
+    query: Partial<TPublicApiCourseMemberAnalyticsQuery> = {}
+  ) {
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) searchParams.set(key, String(value));
+    }
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.request(`/public-api/v1/courses/${courseId}/members/${memberId}/analytics${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  // ─── Course Invites (public API) ────────────────────────────────────────
+
+  async listCourseInvites(courseId: string, query: Partial<TPublicApiCourseInvitesQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page) searchParams.set('page', String(query.page));
+    if (query.limit) searchParams.set('limit', String(query.limit));
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/invites${querySuffix}`, { method: 'GET' });
+  }
+
+  async createCourseInvite(courseId: string, payload: TPublicApiCreateCourseInvite) {
+    return this.request(`/public-api/v1/courses/${courseId}/invites`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async revokeCourseInvite(courseId: string, inviteId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/invites/${inviteId}/revoke`, { method: 'POST' });
+  }
+
+  private async requestRaw<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT';
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
       body?: unknown;
     }
-  ): Promise<TResponse> {
+  ): Promise<ApiSuccess<TResponse>> {
     const response = await fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
@@ -212,6 +315,32 @@ export class ClassroomIoApiClient {
       throw new ClassroomIoApiError('ClassroomIO returned an invalid response payload', response.status);
     }
 
+    return json;
+  }
+
+  private async request<TResponse>(
+    path: string,
+    options: {
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      body?: unknown;
+    }
+  ): Promise<TResponse> {
+    const json = await this.requestRaw<TResponse>(path, options);
     return json.data;
+  }
+
+  private async requestPaginated<TResponse>(
+    path: string,
+    options: {
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      body?: unknown;
+    }
+  ): Promise<PaginatedResponse<TResponse>> {
+    const json = await this.requestRaw<TResponse>(path, options);
+    if (!json.pagination) {
+      throw new ClassroomIoApiError('ClassroomIO returned a response without pagination metadata', 502);
+    }
+
+    return { data: json.data, pagination: json.pagination };
   }
 }

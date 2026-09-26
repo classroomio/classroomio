@@ -1,5 +1,6 @@
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import {
   addCourseMember,
   deleteCourseMember,
@@ -226,6 +227,9 @@ export async function addMember(
     if (error instanceof AppError) {
       throw error;
     }
+    if (isUniqueConstraintViolation(error)) {
+      throw new AppError('Already a member of this course', ErrorCodes.CONFLICT, 409);
+    }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to add course member',
       ErrorCodes.INTERNAL_ERROR,
@@ -351,6 +355,9 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     if (error instanceof AppError) {
       throw error;
     }
+    if (isUniqueConstraintViolation(error)) {
+      throw new AppError('Already a member of this course', ErrorCodes.CONFLICT, 409);
+    }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to add course members',
       ErrorCodes.INTERNAL_ERROR,
@@ -392,6 +399,9 @@ export async function updateMember(courseId: string, memberId: string, data: Par
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
+    }
+    if (isUniqueConstraintViolation(error)) {
+      throw new AppError('Another member of this course already uses that email', ErrorCodes.CONFLICT, 409);
     }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update course member',

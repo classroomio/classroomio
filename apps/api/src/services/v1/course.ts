@@ -18,17 +18,10 @@ import {
   getCourseImportStructureService,
   publishCourseImportDraftToExistingCourseService
 } from '@api/services/course-import/course-import';
-import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationCourses } from '@api/services/organization';
 import { listCourseMembers } from '@api/services/course/people';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-
-async function assertCourseBelongsToOrganization(orgId: string, courseId: string): Promise<void> {
-  const courseOrganizationId = await getCourseOrganizationId(courseId);
-  if (!courseOrganizationId || courseOrganizationId !== orgId) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-  }
-}
+import { assertCourseBelongsToOrganization } from '@api/services/v1/shared';
 
 export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
   return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);

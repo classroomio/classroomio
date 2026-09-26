@@ -13,6 +13,8 @@ export const ZOrganizationApiKeyScope = z.enum([
   'course:tag:write',
   'course:exercise:read',
   'course:exercise:write',
+  'course:member:read',
+  'course:member:write',
   'public_api:*'
 ]);
 export type TOrganizationApiKeyScope = z.infer<typeof ZOrganizationApiKeyScope>;
@@ -27,12 +29,18 @@ export const ZOrganizationAutomationUsageQuery = z.object({
 });
 export type TOrganizationAutomationUsageQuery = z.infer<typeof ZOrganizationAutomationUsageQuery>;
 
-export const ZCreateOrganizationApiKey = z.object({
-  type: ZOrganizationApiKeyType,
-  label: z.string().min(1).max(120).optional(),
-  expiresAt: z.string().datetime().optional(),
-  scopes: z.array(ZOrganizationApiKeyScope).min(1).optional()
-});
+export const ZCreateOrganizationApiKey = z
+  .object({
+    type: ZOrganizationApiKeyType,
+    label: z.string().min(1).max(120).optional(),
+    expiresAt: z.string().datetime().optional(),
+    scopes: z.array(ZOrganizationApiKeyScope).min(1).optional()
+  })
+  // MCP keys only get route-level public API scopes; public_api:* would open every /v1 route.
+  .refine((data) => data.type !== 'mcp' || !data.scopes?.includes('public_api:*'), {
+    message: 'MCP keys cannot have the public_api:* scope',
+    path: ['scopes']
+  });
 export type TCreateOrganizationApiKey = z.infer<typeof ZCreateOrganizationApiKey>;
 
 export const ZOrganizationApiKeyParam = z.object({

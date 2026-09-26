@@ -148,6 +148,13 @@
       "when": 1789960316363,
       "tag": "0020_lesson_slides",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1790423336572,
+      "tag": "0022_mcp_key_course_member_scopes",
+      "breakpoints": true
     }
   ]
 }

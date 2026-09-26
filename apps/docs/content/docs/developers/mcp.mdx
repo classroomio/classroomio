@@ -150,6 +150,21 @@ Current tools:
 - `create_course_exercise_from_template`
 - `update_course_exercise`
 
+Course member and invite tools:
+
+- `list_course_members`
+- `add_course_member`
+- `get_course_member`
+- `update_course_member`
+- `delete_course_member`
+- `reset_course_member_progress`
+- `get_course_member_analytics`
+- `list_course_invites`
+- `create_course_invite`
+- `revoke_course_invite`
+
+These call the public API and need the key's `course:member:read` (list/get/analytics) and `course:member:write` (everything else) scopes, which MCP keys have by default. They count toward the same per-key and per-organization MCP rate limits as the other tools. They act as the person who created the key, with the same rule as the dashboard's People and Invites pages: that person must be a tutor/admin of the course or an org admin.
+
 ## Draft Model
 
 A draft is a saved, structured course proposal. It is not the live course.
