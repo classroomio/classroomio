@@ -50,6 +50,10 @@ export const presignAuthMiddleware =
  * that no asset claims has no determinable owner and is allowed through, since
  * exercise submission files are stored by key without an asset row and would
  * otherwise stop downloading.
+ *
+ * A legacy key registered by more than one organization is only allowed when
+ * the caller belongs to all of them — the object behind it is shared, so a
+ * partial match is not enough.
  */
 export async function findUnauthorizedDownloadKeys(c: Context, keys: string[]): Promise<string[]> {
   const allowedOrgIds = (c.get('presignOrgIds') as string[] | undefined) ?? [];
@@ -73,8 +77,8 @@ export async function findUnauthorizedDownloadKeys(c: Context, keys: string[]): 
 
   const legacyOwners = await getAssetOrganizationIdsByStorageKeys(legacyKeys);
   for (const key of legacyKeys) {
-    const ownerOrgId = legacyOwners.get(key);
-    if (ownerOrgId && !allowedOrgIds.includes(ownerOrgId)) {
+    const ownerOrgIds = legacyOwners.get(key) ?? [];
+    if (ownerOrgIds.length > 0 && !ownerOrgIds.every((ownerOrgId) => allowedOrgIds.includes(ownerOrgId))) {
       unauthorizedKeys.push(key);
     }
   }
