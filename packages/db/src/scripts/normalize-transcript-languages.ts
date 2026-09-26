@@ -20,7 +20,6 @@ async function normalizeTranscriptLanguages() {
       select distinct language
       from media_transcript
       where language is not null
-        and language <> ''
     `);
 
     const changes = (rows as unknown as { language: string }[])
