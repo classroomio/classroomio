@@ -22,6 +22,16 @@ import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './s
 import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 /**
+ * `bannerImage` is the canonical course image and `logo` the deprecated column
+ * it replaced. Every query that returns a raw course row resolves through here,
+ * so a row written before the rename still carries an image for consumers that
+ * only read `bannerImage`.
+ */
+function withResolvedCourseBannerImage<T extends { bannerImage: string | null; logo: string | null }>(course: T): T {
+  return { ...course, bannerImage: resolveCourseBannerImage(course) };
+}
+
+/**
  * Base course type - extends TCourse with lessonCount
  * Used by public endpoint for landing pages
  */
@@ -363,7 +373,9 @@ export const getCoursesBySiteNameForSetup = async (siteName: string) => {
 };
 export async function getCourseById(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+    const rows = await dbClient.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
+
+    return rows.map(withResolvedCourseBannerImage);
   } catch (error) {
     console.error('getCourseById error:', error);
     throw new Error(
@@ -894,16 +906,6 @@ export async function countOrgCourses({
  * @param options.profileId Optional profile ID to filter by membership
  * @returns Array of courses with admin-level data
  */
-/**
- * `bannerImage` is the canonical course image and `logo` the deprecated column
- * it replaced. Every query that returns a raw course row resolves through here,
- * so a row written before the rename still carries an image for consumers that
- * only read `bannerImage`.
- */
-function withResolvedCourseBannerImage<T extends { bannerImage: string | null; logo: string | null }>(course: T): T {
-  return { ...course, bannerImage: resolveCourseBannerImage(course) };
-}
-
 export const getOrgCourses = async ({
   orgId,
   profileId,
