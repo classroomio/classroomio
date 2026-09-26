@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { CourseInfoBlocks, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
   import { courseLandingTokens } from './course-landing-page.tokens';
+  import { richTextChildren } from './course-tokens-base';
   import EditableLandingSection from './editable-section.svelte';
   import AwardIcon from '@lucide/svelte/icons/award';
   import SafeHtmlContent from '../safe-html-content/safe-html-content.svelte';
@@ -32,6 +33,7 @@
   };
 
   const layout = $derived<InfoLayout>(layoutByTheme[variant] ?? 'prose-grid');
+  const infoBlockBodyClass = $derived(`${t.infoBlockBody} ${richTextChildren}`);
 
   type BlockKey = 'requirement' | 'description' | 'goals';
   type Block = { id: BlockKey; eyebrow: string; heading: string; html: string; monoLabel: string };
@@ -81,7 +83,7 @@
               <article id={block.id} class={t.infoBlock}>
                 <span class={t.infoBlockEyebrow}>{block.eyebrow}</span>
                 <h2 class={t.infoBlockHeading}>{block.heading}</h2>
-                <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
+                <div class={infoBlockBodyClass}><SafeHtmlContent content={block.html} /></div>
               </article>
             </EditableLandingSection>
           {/each}
@@ -93,7 +95,7 @@
               <article id={block.id} class={t.infoBlock}>
                 <span class={t.infoBlockEyebrow}>{block.eyebrow}</span>
                 <h2 class={t.infoBlockHeading}>{block.heading}</h2>
-                <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
+                <div class={infoBlockBodyClass}><SafeHtmlContent content={block.html} /></div>
               </article>
             </EditableLandingSection>
           {/each}
@@ -116,7 +118,7 @@
                 </div>
                 <div class="ui:p-6">
                   <h2 class={`${t.infoBlockHeading} ui:mb-3`}>{block.heading}</h2>
-                  <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
+                  <div class={infoBlockBodyClass}><SafeHtmlContent content={block.html} /></div>
                 </div>
               </article>
             </EditableLandingSection>
@@ -140,7 +142,7 @@
                 </div>
                 <div>
                   <h2 class={`${t.infoBlockHeading} ui:mb-4`}>{block.heading}</h2>
-                  <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
+                  <div class={infoBlockBodyClass}><SafeHtmlContent content={block.html} /></div>
                 </div>
               </article>
             </EditableLandingSection>
@@ -155,7 +157,7 @@
                   <span class={t.infoBlockEyebrow}>{block.eyebrow}</span>
                   <h2 class={`${t.infoBlockHeading} ui:mt-2`}>{block.heading}</h2>
                 </div>
-                <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
+                <div class={infoBlockBodyClass}><SafeHtmlContent content={block.html} /></div>
               </article>
             </EditableLandingSection>
           {/each}

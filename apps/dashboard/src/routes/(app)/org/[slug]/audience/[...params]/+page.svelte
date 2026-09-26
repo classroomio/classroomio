@@ -14,7 +14,7 @@
       ? buildUserAnalyticsExportDocument(data.analytics, {
           course: $t('analytics.courses'),
           lessonsCompleted: $t('analytics.lessons_completed'),
-          lessons: $t('course.navItem.lessons.title'),
+          lessons: $t('course.navItem.lessons.heading_v2'),
           exercisesCompleted: $t('analytics.exercises_completed'),
           exercises: $t('analytics.exercises'),
           progress: $t('analytics.progress'),

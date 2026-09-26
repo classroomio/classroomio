@@ -12,7 +12,8 @@
     },
     "discard": "Abandonner les modifications",
     "save_changes": "Enregistrer les modifications",
-    "scroll_to_top": "Remonter en haut"
+    "scroll_to_top": "Remonter en haut",
+    "delete": "Supprimer"
   },
   "validations": {
     "generic": {
@@ -185,7 +186,11 @@
       "error": {
         "try_again": "Erreur - Veuillez réessayer plus tard",
         "deleting_comments": "Erreur lors de la suppression des commentaires",
-        "deleting_question": "Erreur lors de la suppression de la question"
+        "deleting_question": "Erreur lors de la suppression de la question",
+        "comment_failed": "Échec de l'envoi du commentaire",
+        "delete_failed": "Échec de la suppression",
+        "missing_context": "Contexte manquant — veuillez recharger la page",
+        "update_failed": "Échec de la mise à jour de la question"
       }
     },
     "invite": {
@@ -255,6 +260,16 @@
       "people": {
         "progress_reset": "Progression réinitialisée",
         "progress_reset_failed": "Échec de la réinitialisation de la progression"
+      },
+      "compliance": {
+        "overview_failed": "Échec du chargement de l'aperçu de la conformité",
+        "history_failed": "Échec du chargement de l'historique de conformité",
+        "reset_success": "Réinitialisation du cycle de conformité",
+        "reset_failed": "Échec de la réinitialisation du cycle de conformité",
+        "extend_success": "Délai de conformité prolongé",
+        "extend_failed": "Échec de la prolongation du délai de conformité",
+        "waive_success": "Exigence de conformité levée",
+        "waive_failed": "Échec de la dérogation à l'exigence de conformité"
       }
     },
     "landing_page_settings": {
@@ -2965,6 +2980,9 @@
       "create_button": "Créer",
       "error": {
         "failed_to_clone": "Échec du clonage du cours"
+      },
+      "success": {
+        "course_cloned": "Cours cloné avec succès"
       }
     },
     "new_course_modal": {
@@ -3045,7 +3063,8 @@
       "tags": "Étiquettes",
       "empty_tags": "Aucune balise disponible"
     },
-    "page_subtitle": "Là où les leçons deviennent des cours et les cours deviennent des inscriptions."
+    "page_subtitle": "Là où les leçons deviennent des cours et les cours deviennent des inscriptions.",
+    "load_more": "Charger plus"
   },
   "ai": {
     "help_me": "Aide-moi à écrire",
@@ -4218,6 +4237,10 @@
         }
       },
       "personal_page_subtitle": "Choisissez les notifications par e-mail que vous recevez de ClassroomIO."
+    },
+    "account": {
+      "language": "Langue",
+      "select_language": "Sélectionnez une langue"
     }
   },
   "profileMenu": {
@@ -4302,7 +4325,9 @@
       }
     },
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "next": "Suivant",
+    "previous": "Précédent"
   },
   "welcome_modal": {
     "we_at": "Nous à",
@@ -5154,7 +5179,7 @@
       "open_in_chat": "Ouvrir dans le chat"
     },
     "share": {
-      "label": "Partager sur les réseaux sociaux",
+      "label": "Partager ce cours",
       "facebook": "Facebook",
       "linkedin": "LinkedIn",
       "x": "X",
@@ -5284,7 +5309,8 @@
       "inheritance_description": "Héritez des valeurs par défaut de l'espace de travail ou définissez des remplacements par cours."
     },
     "snackbar": {
-      "saved": "Paramètres du tuteur IA enregistrés"
+      "saved": "Paramètres du tuteur IA enregistrés",
+      "fetchError": "Échec du chargement des paramètres du tuteur IA"
     },
     "state": {
       "loading": "Chargement des paramètres du tuteur IA…"
@@ -5627,6 +5653,21 @@
       "misinformation": "Désinformation",
       "privacy": "Atteinte à la vie privée",
       "other": "Autre"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menu du compte, connecté en tant que {email}",
+      "trigger_label_anonymous": "Menu du compte",
+      "my_courses": "Mes cours",
+      "my_certificates": "Mes certificats",
+      "account_settings": "Paramètres du compte",
+      "theme": "Thème",
+      "continue_learning": "Poursuivre l'apprentissage",
+      "not_enrolled_note": "Pas encore inscrit à cette académie ? Les destinations disponibles s'afficheront après votre inscription.",
+      "theme_light": "Lumière",
+      "theme_dark": "Sombre",
+      "theme_system": "Système"
     }
   }
 }

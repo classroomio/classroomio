@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Courses - ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .main { min-width: 0; }
+      .content { padding: 0; }
+      .list { max-width: 1080px; margin: 0 auto; padding: 24px 28px 90px; }
+      .list-head { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+      .list-head h2 { font-size: 15px; font-weight: 500; margin: 0 auto 0 0; }
+      .search-box { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border: 1px solid var(--input); border-radius: var(--radius-md); width: 220px; font-size: 13.5px; color: var(--muted-foreground); background: var(--background); }
+      .cgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+      .ccard { position: relative; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); display: flex; flex-direction: column; }
+      .ccard .banner { position: relative; height: 150px; border-radius: calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0 0; background: var(--c1); background-image: radial-gradient(120% 90% at 100% 0%, var(--c2) 0%, transparent 60%), radial-gradient(90% 80% at 0% 100%, var(--c3) 0%, transparent 70%); }
+      .ccard .banner .badge { position: absolute; left: 10px; bottom: 10px; }
+      .ccard .body { padding: 12px 14px; flex: 1; text-decoration: none; color: inherit; }
+      .ccard .title { font-weight: 500; font-size: 14.5px; line-height: 1.35; }
+      .ccard .desc { font-size: 13px; color: var(--muted-foreground); margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .ccard .foot { border-top: 1px solid var(--border); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted-foreground); }
+      .ccard .foot .r { text-align: right; line-height: 1.5; }
+      .ccard .kebab { position: absolute; top: 10px; right: 10px; opacity: 0; transition: opacity 0.15s ease; }
+      .ccard:hover .kebab, .ccard.force .kebab { opacity: 1; }
+      .ccard .menu { top: 46px; right: 10px; }
+      .empty { text-align: center; padding: 56px 20px; border: 1px dashed var(--border); border-radius: var(--radius-lg); }
+      .empty .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--muted); display: grid; place-items: center; margin: 0 auto 12px; color: var(--muted-foreground); }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div data-org-sidebar></div>
+      <div class="main">
+        <div data-app-header="Courses"></div>
+        <main class="content">
+          <section class="band">
+            <div class="band-inner">
+              <div class="band-head">
+                <h2>Create a new course</h2>
+                <a class="btn btn-ghost btn-sm" href="templates.html">Template gallery <span data-icon="chevUpDown"></span></a>
+              </div>
+              <div class="templates-row" id="row"></div>
+            </div>
+          </section>
+
+          <section class="list">
+            <div class="list-head">
+              <h2>Your courses</h2>
+              <div class="search-box"><span data-icon="search"></span>Find Course</div>
+              <button class="icon-btn" aria-label="Filter"><span data-icon="filter"></span></button>
+              <button class="icon-btn" aria-label="Toggle view"><span data-icon="grid"></span></button>
+            </div>
+
+            <div class="cgrid" data-state-view="courses">
+              <div class="ccard">
+                <div class="banner photo" style="background: url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=640&q=70&auto=format&fit=crop')"><span class="badge badge-secondary"><span data-icon="user"></span>Self paced</span></div>
+                <button class="icon-btn kebab" data-menu="card-course" aria-label="Course actions"><span data-icon="more"></span></button>
+                <div class="menu" data-menu-for="card-course" hidden>
+                  <button class="menu-item"><span data-icon="ext"></span>View course site</button>
+                  <div class="menu-sep"></div>
+                  <button class="menu-item"><span data-icon="copy"></span>Clone</button>
+                  <a class="menu-item" href="save-as-template.html"><span data-icon="template"></span>Save as template…</a>
+                  <button class="menu-item"><span data-icon="share"></span>Share</button>
+                  <button class="menu-item"><span data-icon="invite"></span>Invite</button>
+                  <div class="menu-sep"></div>
+                  <button class="menu-item" style="color: var(--destructive)"><span data-icon="trash"></span>Delete</button>
+                </div>
+                <a class="body" href="course-content.html"><div class="title">Onboarding Academy — Brightpath</div><div class="desc">Customer onboarding for the Brightpath account team, made from the Customer Onboarding Academy template.</div></a>
+                <div class="foot"><span class="badge badge-success-soft">Published</span><span class="r">15 lessons &amp; 5 exercises<br />42 students</span></div>
+              </div>
+              <div class="ccard">
+                <div class="banner photo" style="background: url('https://images.unsplash.com/photo-1619410283995-43d9134e7656?w=640&q=70&auto=format&fit=crop')"><span class="badge badge-secondary"><span data-icon="user"></span>Self paced</span></div>
+                <div class="body"><div class="title">Modern Web Development with React</div><div class="desc">Build production React apps: components, state, routing, testing and deployment.</div></div>
+                <div class="foot"><span class="badge badge-success-soft">Published</span><span class="r">18 lessons &amp; 6 exercises<br />128 students</span></div>
+              </div>
+              <div class="ccard">
+                <div class="banner photo" style="background: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=640&q=70&auto=format&fit=crop')"><span class="badge badge-secondary"><span style="width: 8px; height: 8px; border-radius: 9px; background: #ef4444"></span>Live class</span></div>
+                <div class="body"><div class="title">Getting started with MVC</div><div class="desc">Models, views and controllers, explained through one small app built live.</div></div>
+                <div class="foot"><span class="badge badge-muted">Unpublished</span><span class="r">8 lessons &amp; 2 exercises<br />0 students</span></div>
+              </div>
+              <div class="ccard">
+                <div class="banner photo" style="background: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=640&q=70&auto=format&fit=crop')"><span class="badge badge-secondary"><span data-icon="user"></span>Self paced</span></div>
+                <div class="body"><div class="title">Data Science with Python and Pandas</div><div class="desc">From notebooks to clean, reproducible analysis with pandas.</div></div>
+                <div class="foot"><span class="badge badge-success-soft">Published</span><span class="r">12 lessons &amp; 4 exercises<br />64 students</span></div>
+              </div>
+            </div>
+
+            <div class="empty" data-state-view="empty">
+              <div class="ic"><span data-icon="template"></span></div>
+              <div style="font-weight: 500">No courses yet</div>
+              <p class="muted" style="font-size: 13.5px; margin: 6px auto 16px; max-width: 380px; line-height: 1.55">Pick a template to see what a great ClassroomIO course looks like, or start from a blank course.</p>
+              <a class="btn btn-primary btn-sm" href="templates.html">Browse templates</a>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="scrim" id="blank" hidden>
+      <div class="dialog">
+        <div class="dialog-head"><h2 class="dialog-title">Create a Course</h2><p class="dialog-desc">What type of course are you looking at?</p></div>
+        <div class="dialog-body">
+          <label class="opt"><input type="radio" name="t" checked /><div><div class="t">Self Paced</div><div class="d">Best for courses where students can take lessons at their own pace</div></div></label>
+          <label class="opt"><input type="radio" name="t" /><div><div class="t">Live Class</div><div class="d">Ideal for bootcamps where lessons are time based</div></div></label>
+          <label class="opt"><input type="radio" name="t" /><div><div class="t">Compliance</div><div class="d">Recurring training with retakes, reminders, and renewal tracking</div></div></label>
+          <label class="opt"><input type="radio" name="t" /><div><div class="t">Public</div><div class="d">Free, no-signup course pages you can share publicly — great for lead gen</div></div></label>
+        </div>
+        <div class="dialog-foot"><button class="btn btn-outline btn-sm" id="blank-close">Cancel</button><button class="btn btn-primary btn-sm">Next</button></div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">State</span>
+      <button data-state="courses">Has courses</button>
+      <button data-state="empty">No courses</button>
+      <button id="open-course-menu">Course ⋯ menu</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      ICONS.chevUpDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg>';
+      function renderRow(isNewOrg) {
+        const templates = TEMPLATES.filter((template) => !isNewOrg || template.scope === 'global').slice(0, 5);
+        const cards = templates.map((template) => templateCard(template.scope === 'org' ? { ...template, sub: `Your template · ${template.lastUsed}` } : template)).join('');
+        document.getElementById('row').innerHTML = templateCard(null) + cards;
+        document.querySelector('[data-blank]').addEventListener('click', (event) => {
+          event.preventDefault();
+          document.getElementById('blank').hidden = false;
+        });
+      }
+      document.addEventListener('statechange', (event) => renderRow(event.detail === 'empty'));
+      document.getElementById('blank-close').addEventListener('click', () => (document.getElementById('blank').hidden = true));
+      document.getElementById('open-course-menu').addEventListener('click', (event) => {
+        event.stopPropagation();
+        document.querySelector('[data-menu-for="card-course"]').hidden = false;
+        document.querySelector('.ccard').classList.add('force');
+      });
+      bindStatePicker('courses');
+    </script>
+  </body>
+</html>

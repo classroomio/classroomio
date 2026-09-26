@@ -14,7 +14,7 @@
           name: $t('audience.name'),
           email: $t('audience.email'),
           lessonsCompleted: $t('analytics.lessons_completed'),
-          lessons: $t('course.navItem.lessons.title'),
+          lessons: $t('course.navItem.lessons.heading_v2'),
           exercisesSubmitted: $t('analytics.exercises_completed'),
           exercises: $t('analytics.exercises'),
           progress: $t('analytics.progress'),

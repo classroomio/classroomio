@@ -18,6 +18,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     socialProof,
     info,
@@ -36,7 +37,7 @@
 </script>
 
 <LandingThemeScope theme="quartz" class="ui:font-sans">
-  <QuartzNav {orgName} {logoUrl} {navItems} {authAction} />
+  <QuartzNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
 
   <main class="ui:@container ui:max-w-[1200px] ui:mx-auto ui:border-x ui:border-[var(--landing-border)]">
     <QuartzHero hero={heroForCourse} imageFit="natural" compact />

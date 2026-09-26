@@ -30,7 +30,8 @@
     callout,
     links,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: OrgLandingPageProps = $props();
 
   function formatCost(cost?: number, currency = 'USD'): string {
@@ -95,7 +96,7 @@
   <main>
     <EditorialHero {hero} {courses} {labels}>
       {#snippet navigation()}
-        <EditorialNav {orgName} {logoUrl} {navItems} {authAction} />
+        <EditorialNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </EditorialHero>
 

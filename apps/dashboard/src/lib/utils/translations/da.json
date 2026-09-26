@@ -12,7 +12,8 @@
     },
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
-    "scroll_to_top": "Rul til toppen"
+    "scroll_to_top": "Rul til toppen",
+    "delete": "Slet"
   },
   "validations": {
     "generic": {
@@ -185,7 +186,11 @@
       "error": {
         "try_again": "Fejl - prøv venligst igen senere",
         "deleting_comments": "Fejl ved sletning af kommentarer",
-        "deleting_question": "Fejl ved sletning af spørgsmål"
+        "deleting_question": "Fejl ved sletning af spørgsmål",
+        "comment_failed": "Kunne ikke indsende kommentar",
+        "delete_failed": "Kunne ikke slette",
+        "missing_context": "Manglende kontekst — genindlæs siden",
+        "update_failed": "Spørgsmålet kunne ikke opdateres"
       }
     },
     "invite": {
@@ -255,6 +260,16 @@
       "people": {
         "progress_reset": "Fremskridt nulstillet",
         "progress_reset_failed": "Kunne ikke nulstille fremskridt"
+      },
+      "compliance": {
+        "overview_failed": "Kunne ikke indlæse overholdelsesoversigt",
+        "history_failed": "Kunne ikke indlæse overholdelseshistorik",
+        "reset_success": "Overholdelsescyklus nulstilles",
+        "reset_failed": "Overholdelsescyklus kunne ikke nulstilles",
+        "extend_success": "Overholdelsesfrist forlænget",
+        "extend_failed": "Overholdelsesfristen kunne ikke forlænges",
+        "waive_success": "Overholdelseskrav frafaldet",
+        "waive_failed": "Kunne ikke give afkald på overholdelseskravet"
       }
     },
     "landing_page_settings": {
@@ -2965,6 +2980,9 @@
       "create_button": "Opret",
       "error": {
         "failed_to_clone": "Kurset kunne ikke klones"
+      },
+      "success": {
+        "course_cloned": "Kurset blev klonet"
       }
     },
     "new_course_modal": {
@@ -3045,7 +3063,8 @@
       "tags": "Tags",
       "empty_tags": "Ingen tags tilgængelige"
     },
-    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger."
+    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger.",
+    "load_more": "Indlæs mere"
   },
   "ai": {
     "help_me": "Hjælp mig med at skrive",
@@ -4218,6 +4237,10 @@
         }
       },
       "personal_page_subtitle": "Vælg hvilke e-mailnotifikationer du modtager fra ClassroomIO."
+    },
+    "account": {
+      "language": "Sprog",
+      "select_language": "Vælg et sprog"
     }
   },
   "profileMenu": {
@@ -4302,7 +4325,9 @@
       }
     },
     "cancel": "Annuller",
-    "save": "Gem"
+    "save": "Gem",
+    "next": "Næste",
+    "previous": "Forrige"
   },
   "welcome_modal": {
     "we_at": "Vi kl",
@@ -5154,7 +5179,7 @@
       "open_in_chat": "Åbn i chat"
     },
     "share": {
-      "label": "Del på sociale medier",
+      "label": "Del dette kursus",
       "facebook": "Facebook",
       "linkedin": "LinkedIn",
       "x": "X",
@@ -5284,7 +5309,8 @@
       "inheritance_description": "Nedarv arbejdsområdestandarder eller sæt tilsidesættelser pr. kursus."
     },
     "snackbar": {
-      "saved": "AI-vejlederindstillinger gemt"
+      "saved": "AI-vejlederindstillinger gemt",
+      "fetchError": "Kunne ikke indlæse AI-vejlederindstillinger"
     },
     "state": {
       "loading": "Indlæser AI-vejlederindstillinger..."
@@ -5627,6 +5653,21 @@
       "misinformation": "Misinformation",
       "privacy": "Brud på privatlivet",
       "other": "Andet"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Kontomenu, logget ind som {email}",
+      "trigger_label_anonymous": "Kontomenu",
+      "my_courses": "Mine kurser",
+      "my_certificates": "Mine certifikater",
+      "account_settings": "Kontoindstillinger",
+      "theme": "Tema",
+      "continue_learning": "Fortsæt læring",
+      "not_enrolled_note": "Ikke tilmeldt dette akademi endnu — læringsdestinationer vises efter tilmelding.",
+      "theme_light": "Lys",
+      "theme_dark": "Mørk",
+      "theme_system": "System"
     }
   }
 }

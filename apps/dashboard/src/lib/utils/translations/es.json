@@ -12,7 +12,8 @@
     },
     "discard": "Descartar",
     "save_changes": "Guardar cambios",
-    "scroll_to_top": "Volver al inicio"
+    "scroll_to_top": "Volver al inicio",
+    "delete": "Eliminar"
   },
   "validations": {
     "generic": {
@@ -185,7 +186,11 @@
       "error": {
         "try_again": "Error: inténtelo de nuevo más tarde",
         "deleting_comments": "Error al eliminar comentarios",
-        "deleting_question": "Error al eliminar la pregunta"
+        "deleting_question": "Error al eliminar la pregunta",
+        "comment_failed": "No se pudo enviar el comentario",
+        "delete_failed": "No se pudo eliminar",
+        "missing_context": "Falta contexto: recarga la página",
+        "update_failed": "No se pudo actualizar la pregunta"
       }
     },
     "invite": {
@@ -255,6 +260,16 @@
       "people": {
         "progress_reset": "Progreso restablecido",
         "progress_reset_failed": "No se pudo restablecer el progreso"
+      },
+      "compliance": {
+        "overview_failed": "No se pudo cargar la descripción general de cumplimiento",
+        "history_failed": "No se pudo cargar el historial de cumplimiento",
+        "reset_success": "Restablecimiento del ciclo de cumplimiento",
+        "reset_failed": "No se pudo restablecer el ciclo de cumplimiento",
+        "extend_success": "Se amplía el plazo de cumplimiento",
+        "extend_failed": "No se pudo extender el plazo de cumplimiento",
+        "waive_success": "Exención del requisito de cumplimiento",
+        "waive_failed": "No se pudo renunciar al requisito de cumplimiento"
       }
     },
     "landing_page_settings": {
@@ -2965,6 +2980,9 @@
       "create_button": "crear",
       "error": {
         "failed_to_clone": "No se pudo clonar el curso"
+      },
+      "success": {
+        "course_cloned": "Curso clonado exitosamente"
       }
     },
     "new_course_modal": {
@@ -3045,7 +3063,8 @@
       "tags": "Etiquetas",
       "empty_tags": "No hay etiquetas disponibles"
     },
-    "page_subtitle": "Donde las lecciones se convierten en cursos y los cursos en inscripciones."
+    "page_subtitle": "Donde las lecciones se convierten en cursos y los cursos en inscripciones.",
+    "load_more": "Cargar más"
   },
   "ai": {
     "help_me": "Ayúdame a escribir",
@@ -4218,6 +4237,10 @@
         }
       },
       "personal_page_subtitle": "Elige qué notificaciones por correo recibes de ClassroomIO."
+    },
+    "account": {
+      "language": "Idioma",
+      "select_language": "Seleccione un idioma"
     }
   },
   "profileMenu": {
@@ -4302,7 +4325,9 @@
       }
     },
     "cancel": "Cancelar",
-    "save": "Guardar"
+    "save": "Guardar",
+    "next": "Siguiente",
+    "previous": "Anterior"
   },
   "welcome_modal": {
     "we_at": "nosotros en",
@@ -5154,7 +5179,7 @@
       "open_in_chat": "Abrir en el chat"
     },
     "share": {
-      "label": "Compartir en redes sociales",
+      "label": "Compartir este curso",
       "facebook": "Facebook",
       "linkedin": "LinkedIn",
       "x": "X",
@@ -5284,7 +5309,8 @@
       "inheritance_description": "Herede los valores predeterminados del espacio de trabajo o establezca anulaciones por curso."
     },
     "snackbar": {
-      "saved": "Configuración del tutor de IA guardada"
+      "saved": "Configuración del tutor de IA guardada",
+      "fetchError": "No se pudo cargar la configuración del tutor de IA"
     },
     "state": {
       "loading": "Cargando la configuración del tutor de IA..."
@@ -5627,6 +5653,21 @@
       "misinformation": "Desinformación",
       "privacy": "Violación de la privacidad",
       "other": "Otro"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menú de cuenta, sesión iniciada como {email}",
+      "trigger_label_anonymous": "Menú de cuenta",
+      "my_courses": "Mis cursos",
+      "my_certificates": "Mis certificados",
+      "account_settings": "Configuración de la cuenta",
+      "theme": "Tema",
+      "continue_learning": "Continuar aprendiendo",
+      "not_enrolled_note": "Aún no estás inscrito en esta academia; los destinos de aprendizaje aparecerán después de registrarte.",
+      "theme_light": "Luz",
+      "theme_dark": "Oscuridad",
+      "theme_system": "Sistema"
     }
   }
 }

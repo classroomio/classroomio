@@ -8,8 +8,9 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { SimpleLogoNav } from '@cio/ui/custom/simple-logo-nav';
   import { buildOrgLandingPageProps, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
-  import { user } from '$lib/utils/store/user';
-  import { getOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { user, profile } from '$lib/utils/store/user';
+  import { resolveOrgLandingAuthAction } from '$features/org/utils/org-landing-auth-action';
+  import { resolveOrgLandingLearnerAccount } from '$features/org/utils/org-landing-learner-account';
 
   let { data } = $props();
 
@@ -21,17 +22,25 @@
       : 'ClassroomIO - One Platform for Customer, Partner, and Employee Training'
   );
 
-  const authAction = $derived.by(() =>
-    data.org
-      ? getOrgLandingAuthAction({
-          isLoggedIn: $user.isLoggedIn,
-          isInitialized: appInitApi.isInitializedAndReady,
-          org: data.org,
-          organizations: appInitApi.data?.success ? appInitApi.data.organizations : [],
-          hasPendingInvite: !!appInitApi.pendingOrgInvite
-        })
-      : undefined
+  const authAction = $derived(
+    resolveOrgLandingAuthAction({
+      org: data.org,
+      locals: data.locals,
+      user: $user,
+      appInitApi
+    })
   );
+
+  const learnerAccount = $derived(
+    resolveOrgLandingLearnerAccount({
+      org: data.org,
+      locals: data.locals,
+      user: $user,
+      profile: $profile,
+      appInitApi
+    })
+  );
+
   const ThemeComponent = $derived(data.ThemeComponent);
 
   const landingPageProps = $derived.by(() => {
@@ -42,7 +51,8 @@
       normalizeLandingPageSettings(data.org.landingpage),
       data.courses,
       data.hasMoreCourses,
-      authAction
+      authAction,
+      { learnerAccount }
     );
   });
 
