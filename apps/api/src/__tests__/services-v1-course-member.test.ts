@@ -54,7 +54,7 @@ import {
   listCourseMembersService,
   resetCourseMemberProgressService,
   updateCourseMemberService
-} from '@api/services/v1/course-member';
+} from '@api/services/v1/courses/members';
 
 const ORG_ID = 'org-1';
 const COURSE_ID = 'course-1';
@@ -65,7 +65,7 @@ const courseParams = { courseId: COURSE_ID };
 const memberParams = { courseId: COURSE_ID, memberId: MEMBER_ID };
 const firstPage = { page: 1, limit: 20 };
 
-describe('services/v1/course-member', () => {
+describe('services/v1/courses/members', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);

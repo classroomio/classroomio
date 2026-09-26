@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@api/services/v1/course-member', () => ({
+vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn(),
   addCourseMemberService: vi.fn(),
   getCourseMemberService: vi.fn(),
@@ -10,7 +10,7 @@ vi.mock('@api/services/v1/course-member', () => ({
   getCourseMemberAnalyticsService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/course-invite', () => ({
+vi.mock('@api/services/v1/courses/invites', () => ({
   listCourseInvitesService: vi.fn(),
   createCourseInviteService: vi.fn(),
   revokeCourseInviteService: vi.fn()
@@ -29,12 +29,12 @@ import {
   deleteCourseMemberService,
   listCourseMembersService,
   updateCourseMemberService
-} from '@api/services/v1/course-member';
+} from '@api/services/v1/courses/members';
 import {
   createCourseInviteService,
   listCourseInvitesService,
   revokeCourseInviteService
-} from '@api/services/v1/course-invite';
+} from '@api/services/v1/courses/invites';
 import { v1CoursesRouter } from '@api/routes/v1/courses';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';

@@ -26,7 +26,7 @@ import {
   createCourseInviteService,
   listCourseInvitesService,
   revokeCourseInviteService
-} from '@api/services/v1/course-invite';
+} from '@api/services/v1/courses/invites';
 
 const ORG_ID = 'org-1';
 const COURSE_ID = 'course-1';
@@ -38,7 +38,7 @@ const invitePayload = { preset: 'MULTI_USE_30D', recipientEmails: ['a@example.co
   typeof createCourseInviteService
 >[3];
 
-describe('services/v1/course-invite', () => {
+describe('services/v1/courses/invites', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);

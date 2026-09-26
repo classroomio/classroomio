@@ -11,7 +11,7 @@ import {
   createCourseInviteService,
   listCourseInvitesService,
   revokeCourseInviteService
-} from '@api/services/v1/course-invite';
+} from '@api/services/v1/courses/invites';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

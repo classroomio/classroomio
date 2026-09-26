@@ -19,7 +19,7 @@ import {
   listCourseMembersService,
   resetCourseMemberProgressService,
   updateCourseMemberService
-} from '@api/services/v1/course-member';
+} from '@api/services/v1/courses/members';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';

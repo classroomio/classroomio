@@ -17,7 +17,7 @@ vi.mock('@api/services/organization/automation-key', () => ({
     requiredScopes.every((scope) => keyScopes.includes(scope))
 }));
 
-vi.mock('@api/services/v1/course-member', () => ({
+vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 }),
   addCourseMemberService: vi.fn().mockResolvedValue({}),
   getCourseMemberService: vi.fn().mockResolvedValue({}),
@@ -27,7 +27,7 @@ vi.mock('@api/services/v1/course-member', () => ({
   getCourseMemberAnalyticsService: vi.fn().mockResolvedValue({})
 }));
 
-vi.mock('@api/services/v1/course-invite', () => ({
+vi.mock('@api/services/v1/courses/invites', () => ({
   listCourseInvitesService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 }),
   createCourseInviteService: vi.fn().mockResolvedValue({}),
   revokeCourseInviteService: vi.fn().mockResolvedValue({})
