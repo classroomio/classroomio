@@ -335,6 +335,34 @@ export async function finalizeHlsAsset(
   }
 }
 
+/**
+ * Looks up which organizations own the given storage keys. Used to authorize
+ * download presigns for keys minted before organization-prefixed keys existed,
+ * where ownership cannot be read off the key itself.
+ */
+export async function getAssetOrganizationIdsByStorageKeys(
+  storageKeys: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Map<string, string>> {
+  try {
+    if (storageKeys.length === 0) {
+      return new Map();
+    }
+
+    const rows = await dbClient
+      .select({ storageKey: schema.asset.storageKey, organizationId: schema.asset.organizationId })
+      .from(schema.asset)
+      .where(inArray(schema.asset.storageKey, storageKeys));
+
+    return new Map(rows.filter((row) => row.storageKey).map((row) => [row.storageKey as string, row.organizationId]));
+  } catch (error) {
+    console.error('getAssetOrganizationIdsByStorageKeys error:', error);
+    throw new Error(
+      `Failed to get asset organizations by storage keys: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface FinalizeHls1080Input {
   byteSize: number;
   metadata: Record<string, unknown>;

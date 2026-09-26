@@ -1,5 +1,8 @@
+import { AppError, ErrorCodes } from '@cio/utils/errors';
+
 import { attachAssetService, createAssetFromUploadService } from '../assets/assets';
 import { getLesson, updateLessonService } from '../lesson/lesson';
+import { readOrganizationIdFromFileKey } from '../../utils/upload';
 
 interface LessonVideoEntry {
   type: 'youtube' | 'vimeo' | 'generic' | 'upload' | 'google_drive';
@@ -14,6 +17,7 @@ interface LessonVideoEntry {
 export interface AttachUploadedVideoToLessonInput {
   orgId: string;
   actorId: string;
+  courseId: string;
   lessonId: string;
   fileKey: string;
   downloadUrl: string;
@@ -39,9 +43,18 @@ export interface AttachUploadedVideoToLessonResult {
 export async function attachUploadedVideoToLesson(
   input: AttachUploadedVideoToLessonInput
 ): Promise<AttachUploadedVideoToLessonResult> {
-  const { orgId, actorId, lessonId, fileKey, downloadUrl, fileName, fileType, fileSize } = input;
+  const { orgId, actorId, courseId, lessonId, fileKey, downloadUrl, fileName, fileType, fileSize } = input;
+
+  const fileKeyOrgId = readOrganizationIdFromFileKey(fileKey);
+  if (fileKeyOrgId && fileKeyOrgId !== orgId) {
+    throw new AppError('Storage key does not belong to this organization', ErrorCodes.FORBIDDEN, 403);
+  }
 
   const lesson = await getLesson(lessonId);
+  if (lesson.courseId !== courseId) {
+    throw new AppError('Lesson does not belong to this course', ErrorCodes.LESSON_NOT_FOUND, 404);
+  }
+
   const lessonWithVideos = lesson as { id: string; title: string; videos?: LessonVideoEntry[] | null };
   const existingVideos = lessonWithVideos.videos ?? [];
 

@@ -125,6 +125,7 @@ export const lessonRouter = new Hono()
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId')!;
+        const courseId = c.req.param('courseId')!;
         const { lessonId } = c.req.valid('param');
         const payload = c.req.valid('json');
         const automationKey = c.get('automationKey');
@@ -133,7 +134,7 @@ export const lessonRouter = new Hono()
           await assertMcpAutomationUsageAllowed(automationKey, 'attach_lesson_video');
         }
 
-        const result = await attachUploadedVideoToLesson({ orgId, actorId, lessonId, ...payload });
+        const result = await attachUploadedVideoToLesson({ orgId, actorId, courseId, lessonId, ...payload });
 
         if (automationKey?.type === 'mcp') {
           await recordMcpAutomationUsage(automationKey, 'attach_lesson_video', { lessonId });
