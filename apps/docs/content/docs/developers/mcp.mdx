@@ -157,7 +157,7 @@ Course certificate tools:
 - `list_course_certificates`
 - `download_course_certificate`
 
-Certificate tools call the public API certificate endpoints. MCP keys get the `course:certificate:read` and `course:certificate:write` scopes by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. These scopes open only the certificate endpoints. Every other public API endpoint still needs `public_api:*`, which MCP keys do not have.
+Certificate tools call the public API certificate endpoints. MCP keys get the `course:certificate:read` and `course:certificate:write` scopes by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. These scopes open only the certificate endpoints.
 
 The tools act as the person who created the key, with the same permissions that person has in the dashboard. That role is checked on every call, so if the creator loses access, the key loses it too:
 
@@ -176,6 +176,73 @@ What the tools cover compared with the dashboard:
 - Not covered, on purpose: previewing a design, which is a UI concern.
 - Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
 - Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
+
+Course member and invite tools:
+
+- `list_course_members`
+- `add_course_member`
+- `get_course_member`
+- `update_course_member`
+- `delete_course_member`
+- `reset_course_member_progress`
+- `get_course_member_analytics`
+- `list_course_invites`
+- `create_course_invite`
+- `revoke_course_invite`
+
+These call the public API and need the key's `course:member:read` (list/get/analytics) and `course:member:write` (everything else) scopes, which MCP keys have by default. They count toward the same per-key and per-organization MCP rate limits as the other tools. They act as the person who created the key, with the same rule as the dashboard's People and Invites pages: that person must be a tutor/admin of the course or an org admin.
+
+Cohort tools:
+
+- `list_org_cohorts`
+- `create_cohort`
+- `get_cohort`
+- `update_cohort`
+- `delete_cohort`
+- `list_cohort_members`
+- `add_cohort_members`
+- `update_cohort_member`
+- `delete_cohort_member`
+- `list_cohort_courses`
+- `add_cohort_course`
+- `remove_cohort_course`
+- `list_cohort_newsfeed`
+- `create_cohort_newsfeed_post`
+- `update_cohort_newsfeed_post`
+- `update_cohort_newsfeed_reaction`
+- `delete_cohort_newsfeed_post`
+- `list_cohort_newsfeed_comments`
+- `create_cohort_newsfeed_comment`
+- `delete_cohort_newsfeed_comment`
+- `list_cohort_goals`
+- `create_cohort_goal`
+- `get_cohort_goal`
+- `update_cohort_goal`
+- `archive_cohort_goal`
+- `delete_cohort_goal`
+- `evaluate_cohort_goal`
+- `evaluate_all_cohort_goals`
+- `get_org_goals_overview`
+- `list_my_cohort_goals`
+- `list_my_enrolled_cohorts`
+- `invite_students_to_cohort`
+- `assign_students_to_cohort`
+- `get_cohort_invite_link`
+- `create_cohort_invite_link`
+- `set_cohort_invite_link_revoked`
+
+Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these and the course member, invite, and certificate tools, MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
+
+- Reading a cohort needs them to be a member of the cohort or an org admin.
+- Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.
+- Posting, commenting, and reacting are done as them, so they also need to be a member of the cohort. Reacting only changes their own reaction.
+- A comment can also be deleted by its author.
+- The organization goals overview needs them to be an org admin or tutor.
+- "My" enrolled cohorts and goals are their own, limited to the key's organization.
+
+`add_cohort_members` adds people to a cohort directly without sending any email. To invite people the way the dashboard does, with an invitation email, use `invite_students_to_cohort`.
+
+List tools take `page` and `limit` (default 20, max 100). The newsfeed is cursor-based instead: pass the returned `nextCursor` back as `cursor`.
 
 ## Draft Model
 

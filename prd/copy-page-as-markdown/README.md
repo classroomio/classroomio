@@ -31,7 +31,7 @@ Learners increasingly mix course content with AI tools — pasting lesson text i
 - Public lesson pages only: `/course/[slug]/lesson/[itemSlug]`.
 - Per-course toggle in course settings (`metadata.allowMarkdownExport`). Default: off.
 - Server-side HTML → Markdown conversion with videos stripped.
-- A bookmarkable `.../markdown` URL that returns the lesson as `text/markdown`.
+- A bookmarkable `.../<itemSlug>.md` URL that returns the lesson as `text/markdown`.
 - Split button on the public lesson shell with four actions: Copy Page, View as Markdown, Open in ChatGPT, Open in Claude.
 
 ### Out of scope (v1)
@@ -49,7 +49,7 @@ Learners increasingly mix course content with AI tools — pasting lesson text i
 3. **Default value is off.** Teachers must explicitly opt in. This avoids silently exposing course content as easily copyable Markdown to courses created before the feature shipped.
 4. **HTML → Markdown conversion runs on the server**, not in the browser, so the `turndown` dependency does not ship to learners and a real bookmarkable `.md` URL exists.
 5. **Videos are excluded** from the Markdown output. `<iframe>`, `<video>`, and known video-host anchor tags (YouTube, Vimeo, Loom) are stripped before conversion.
-6. **The same `/markdown` URL serves three purposes:** target of "View as Markdown", source the client fetches for "Copy Page", and the URL embedded in the AI prompt templates.
+6. **The same `.md` URL serves three purposes:** target of "View as Markdown", source the client fetches for "Copy Page", and the URL embedded in the AI prompt templates.
 7. **Open in ChatGPT / Open in Claude use a course-specific prompt template** containing the lesson title, course title, and the public lesson URL.
 8. **No v0 destination** in v1. Revisit if usage data shows demand from teachers running code-heavy courses.
 
@@ -86,13 +86,13 @@ When the course has `metadata.allowMarkdownExport === true`, the public lesson p
 
 **Primary "Copy Page" button**
 
-1. Fetches `/course/<slug>/lesson/<itemSlug>/markdown` (returns `text/markdown`).
+1. Fetches `/course/<slug>/lesson/<itemSlug>.md` (returns `text/markdown`).
 2. Writes the response body to the clipboard via the existing `copyToClipboard` utility.
 3. Shows a `Copied` snackbar on success, error snackbar on failure.
 
 **View as Markdown**
 
-Opens `/course/<slug>/lesson/<itemSlug>/markdown` in a new tab. Browser renders the raw Markdown inline (response is `text/markdown; charset=utf-8`, no `Content-Disposition: attachment` so it does not download).
+Opens `/course/<slug>/lesson/<itemSlug>.md` in a new tab. Browser renders the raw Markdown inline (response is `text/markdown; charset=utf-8`, no `Content-Disposition: attachment` so it does not download).
 
 **Open in ChatGPT**
 
@@ -106,6 +106,7 @@ Opens `https://claude.ai/new?q=<encoded prompt>` in a new tab. The exact param n
 
 ```
 I'm studying "<lesson title>" from the course "<course title>" (<public lesson URL>).
+The lesson content is available as Markdown at <public lesson Markdown URL>.
 Help me understand the concepts, give examples, or help debug based on it.
 ```
 
@@ -128,7 +129,7 @@ Conversion rules:
 
 ### Gating
 
-`GET /course/<slug>/lesson/<itemSlug>/markdown` returns **404** when the course has `metadata.allowMarkdownExport !== true`. This makes the toggle authoritative — the URL cannot be used to bypass the teacher's preference.
+`GET /course/<slug>/lesson/<itemSlug>.md` returns **404** when the course has `metadata.allowMarkdownExport !== true`. This makes the toggle authoritative — the URL cannot be used to bypass the teacher's preference.
 
 ## Technical Notes
 
@@ -166,7 +167,7 @@ No database migration is required — the toggle lives in the existing JSONB `me
 1. **Claude URL parameter.** `claude.ai/new?q=…` is the current convention but is not officially documented. Implementation must verify before merge and fall back to a no-parameter open if it breaks.
 2. **Sanitiser/turndown interaction.** Some tiptap output (custom embed nodes, fancy tables) may produce odd Markdown. The PR should include a smoke test with at least one rich lesson (mixed headings, images, code blocks, a table, and a YouTube embed).
 3. **Markdown URL as exfiltration vector.** The endpoint is gated by `metadata.allowMarkdownExport`, but teachers may not realise that toggling the switch on makes a public, scrapable URL available. Helper text on the setting calls this out explicitly.
-4. **Future surfaces.** If learners ask for "copy entire course" or "copy section", we will revisit; the v1 endpoint shape (`/lesson/<itemSlug>/markdown`) leaves room for sibling endpoints like `/section/<sectionSlug>/markdown`.
+4. **Future surfaces.** If learners ask for "copy entire course" or "copy section", we will revisit; the v1 endpoint shape (`/lesson/<itemSlug>.md`) leaves room for sibling endpoints like `/section/<sectionSlug>.md`.
 
 ## Verification
 
@@ -175,10 +176,10 @@ End-to-end checks before sign-off:
 1. `pnpm --filter @cio/db build` succeeds with the extended metadata type.
 2. `pnpm --filter @cio/api build` succeeds with the new route and `turndown` dep.
 3. Toggling the setting in course settings persists across reload.
-4. With the toggle **off**, the Copy Page button is not rendered on the public lesson page, and a direct `GET /…/markdown` returns 404.
+4. With the toggle **off**, the Copy Page button is not rendered on the public lesson page, and a direct `GET /….md` returns 404.
 5. With the toggle **on**:
    - Copy Page → snackbar `Copied`; pasted result is clean Markdown with no `<iframe>`/`<video>`.
    - View as Markdown → new tab shows the raw Markdown inline.
-   - Open in ChatGPT → new tab at `chatgpt.com/?prompt=…` with the templated prompt and current public URL.
-   - Open in Claude → new tab at `claude.ai/new?q=…` with the templated prompt and current public URL.
+   - Open in ChatGPT → new tab at `chatgpt.com/?prompt=…` with the templated prompt, current public URL, and Markdown URL.
+   - Open in Claude → new tab at `claude.ai/new?q=…` with the templated prompt, current public URL, and Markdown URL.
 6. Lesson with embedded YouTube / Loom iframes — Markdown output has those stripped, surrounding text intact.

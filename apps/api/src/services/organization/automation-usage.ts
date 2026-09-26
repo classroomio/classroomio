@@ -1,15 +1,15 @@
 import { env } from '@cio/core/config/env';
-import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveOrganizationApiKeys,
   countOrganizationAutomationUsageSince,
   countOrganizationAutomationUsageSinceByKey,
+  completeOrganizationAutomationUsage,
   createOrganizationAutomationUsage,
-  deleteOrganizationAutomationUsage,
   getActiveOrganizationPlan,
   listRecentOrganizationAutomationUsage,
-  lockOrganizationAutomationUsage
+  releaseOrganizationAutomationUsage,
+  reserveOrganizationAutomationUsage
 } from '@cio/db/queries/organization';
 import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/types';
 import {
@@ -17,6 +17,8 @@ import {
   getMcpAutomationCategory,
   canUsePublicApi,
   getMcpAutomationLimits,
+  MCP_TOOL_CREDIT_COST,
+  type TAutomationUsageCategory,
   type TMcpToolName
 } from '@cio/utils/plans';
 
@@ -134,68 +136,111 @@ export async function getOrganizationAutomationUsageSummaryService(
   };
 }
 
-async function assertWithinMcpRateLimits(
+/**
+ * Category-level rate limiting, shared by the tool-name entry point below and
+ * by /v1 (which has no per-tool identity to key off of — one automation key
+ * can be hit by a plain API call or by any MCP tool, so /v1 derives a
+ * category straight from the HTTP method instead).
+ */
+async function getMcpCategoryLimits(organizationId: string, category: TAutomationUsageCategory) {
+  const { rateLimits } = getMcpAutomationLimits(await getOrganizationPlanName(organizationId));
+  const perMinute = `${category}PerMinute` as const;
+
+  return { keyLimit: rateLimits.perKey[perMinute], orgLimit: rateLimits.perOrg[perMinute] };
+}
+
+export async function assertMcpAutomationUsageAllowedForCategory(
   automationKey: TOrganizationApiKey,
-  toolName: TMcpToolName,
-  dbClient: DbOrTxClient = db
+  category: TAutomationUsageCategory
 ): Promise<void> {
-  const planName = await getOrganizationPlanName(automationKey.organizationId);
-  const limits = getMcpAutomationLimits(planName);
-  const category = getMcpAutomationCategory(toolName);
-  const now = new Date();
-  const minuteWindowStart = getMinuteWindowStart(now).toISOString();
+  const { keyLimit, orgLimit } = await getMcpCategoryLimits(automationKey.organizationId, category);
+  const minuteWindowStart = getMinuteWindowStart().toISOString();
 
   const [keyRequestsInWindow, orgRequestsInWindow] = await Promise.all([
-    countOrganizationAutomationUsageSinceByKey(automationKey.id, category, minuteWindowStart, dbClient),
-    countOrganizationAutomationUsageSince(
-      automationKey.organizationId,
-      automationKey.type,
-      category,
-      minuteWindowStart,
-      dbClient
-    )
+    countOrganizationAutomationUsageSinceByKey(automationKey.id, category, minuteWindowStart),
+    countOrganizationAutomationUsageSince(automationKey.organizationId, automationKey.type, category, minuteWindowStart)
   ]);
-
-  const keyLimit =
-    category === 'read'
-      ? limits.rateLimits.perKey.readPerMinute
-      : category === 'write'
-        ? limits.rateLimits.perKey.writePerMinute
-        : limits.rateLimits.perKey.publishPerMinute;
-
-  const orgLimit =
-    category === 'read'
-      ? limits.rateLimits.perOrg.readPerMinute
-      : category === 'write'
-        ? limits.rateLimits.perOrg.writePerMinute
-        : limits.rateLimits.perOrg.publishPerMinute;
 
   if (keyRequestsInWindow >= keyLimit || orgRequestsInWindow >= orgLimit) {
     throw new AppError('Automation rate limit exceeded', ErrorCodes.AUTOMATION_RATE_LIMIT_EXCEEDED, 429);
   }
 }
 
-function buildMcpUsageRow(
+/**
+ * Atomically checks the per-key and per-organization limits and reserves one slot, so concurrent
+ * requests can't all pass the check before any of them is recorded. Returns the reservation id to
+ * complete or release. Throws 429 over the limit, and 503 when the limiter can't record the request
+ * (fail closed).
+ */
+export async function reserveMcpAutomationUsage(
   automationKey: TOrganizationApiKey,
-  toolName: TMcpToolName,
-  metadata: Record<string, unknown>
-) {
-  return {
-    organizationId: automationKey.organizationId,
-    organizationApiKeyId: automationKey.id,
-    type: automationKey.type,
-    action: toolName,
-    category: getMcpAutomationCategory(toolName),
-    creditsConsumed: 0,
-    metadata
-  };
+  category: TAutomationUsageCategory,
+  action: string
+): Promise<string> {
+  const { keyLimit, orgLimit } = await getMcpCategoryLimits(automationKey.organizationId, category);
+
+  let reservationId: string | null;
+  try {
+    reservationId = await reserveOrganizationAutomationUsage({
+      organizationId: automationKey.organizationId,
+      organizationApiKeyId: automationKey.id,
+      type: automationKey.type,
+      category,
+      action,
+      since: getMinuteWindowStart().toISOString(),
+      keyLimit,
+      orgLimit
+    });
+  } catch {
+    throw new AppError(
+      'Automation usage could not be recorded, try again shortly',
+      ErrorCodes.AUTOMATION_USAGE_UNAVAILABLE,
+      503
+    );
+  }
+
+  if (!reservationId) {
+    throw new AppError('Automation rate limit exceeded', ErrorCodes.AUTOMATION_RATE_LIMIT_EXCEEDED, 429);
+  }
+
+  return reservationId;
+}
+
+export async function completeMcpAutomationUsage(
+  reservationId: string,
+  action: string,
+  creditsConsumed: number
+): Promise<void> {
+  await completeOrganizationAutomationUsage(reservationId, { action, creditsConsumed });
+}
+
+export async function releaseMcpAutomationUsage(reservationId: string): Promise<void> {
+  await releaseOrganizationAutomationUsage(reservationId);
 }
 
 export async function assertMcpAutomationUsageAllowed(
   automationKey: TOrganizationApiKey,
   toolName: TMcpToolName
 ): Promise<void> {
-  await assertWithinMcpRateLimits(automationKey, toolName);
+  return assertMcpAutomationUsageAllowedForCategory(automationKey, getMcpAutomationCategory(toolName));
+}
+
+export async function recordMcpAutomationUsageForAction(
+  automationKey: TOrganizationApiKey,
+  action: string,
+  category: TAutomationUsageCategory,
+  creditsConsumed: number,
+  metadata: Record<string, unknown> = {}
+): Promise<void> {
+  await createOrganizationAutomationUsage({
+    organizationId: automationKey.organizationId,
+    organizationApiKeyId: automationKey.id,
+    type: automationKey.type,
+    action,
+    category,
+    creditsConsumed,
+    metadata
+  });
 }
 
 export async function recordMcpAutomationUsage(
@@ -203,31 +248,11 @@ export async function recordMcpAutomationUsage(
   toolName: TMcpToolName,
   metadata: Record<string, unknown> = {}
 ): Promise<void> {
-  await createOrganizationAutomationUsage(buildMcpUsageRow(automationKey, toolName, metadata));
-}
-
-/**
- * Checks the tool's rate limit and records one usage row under a per-organization lock. Throws 429 at the limit;
- * returns the usage id.
- */
-export async function reserveMcpAutomationUsage(
-  automationKey: TOrganizationApiKey,
-  toolName: TMcpToolName,
-  metadata: Record<string, unknown> = {}
-): Promise<string> {
-  return db.transaction(async (tx) => {
-    await lockOrganizationAutomationUsage(automationKey.organizationId, automationKey.type, tx);
-    await assertWithinMcpRateLimits(automationKey, toolName, tx);
-
-    const usage = await createOrganizationAutomationUsage(buildMcpUsageRow(automationKey, toolName, metadata), tx);
-
-    return usage.id;
-  });
-}
-
-/**
- * Removes a reservation made by {@link reserveMcpAutomationUsage} for a call that did not succeed.
- */
-export async function releaseMcpAutomationUsage(usageId: string): Promise<void> {
-  await deleteOrganizationAutomationUsage(usageId);
+  return recordMcpAutomationUsageForAction(
+    automationKey,
+    toolName,
+    getMcpAutomationCategory(toolName),
+    MCP_TOOL_CREDIT_COST[toolName],
+    metadata
+  );
 }

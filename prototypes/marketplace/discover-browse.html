@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Browse · Discover · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="discover.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+      .active-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+      .active-filters .chip { font-size: 12.5px; padding: 3px 10px; }
+      .empty { text-align: center; padding: 56px 20px; border: 1px dashed var(--border); border-radius: var(--radius-lg); }
+      .pager { display: flex; justify-content: center; gap: 6px; margin-top: 36px; }
+    </style>
+  </head>
+  <body data-active="discover">
+    <div data-site-nav></div>
+
+    <main class="container" style="padding-top: 96px">
+      <nav class="text-muted" style="font-size: 13px; margin-bottom: 10px"><a href="discover.html" style="text-decoration: none">Discover</a> / <span id="crumb">All listings</span></nav>
+      <h1 class="h2" id="page-title" style="font-size: 30px; margin-bottom: 18px">All listings</h1>
+
+      <div class="browse">
+        <aside class="filters">
+          <div>
+            <h5>Type</h5>
+            <label><input type="radio" name="type" value="" checked />All <span class="n">428</span></label>
+            <label><input type="radio" name="type" value="course" />Course templates <span class="n">212</span></label>
+            <label><input type="radio" name="type" value="images" />Image packs <span class="n">96</span></label>
+            <label><input type="radio" name="type" value="doc" />Docs <span class="n">74</span></label>
+            <label><input type="radio" name="type" value="skill" />AI skills <span class="n">46</span></label>
+          </div>
+          <div>
+            <h5>Category</h5>
+            <label><input type="checkbox" name="cat" value="Onboarding" />Onboarding <span class="n">64</span></label>
+            <label><input type="checkbox" name="cat" value="Compliance & safety" />Compliance &amp; safety <span class="n">48</span></label>
+            <label><input type="checkbox" name="cat" value="Product education" />Product education <span class="n">71</span></label>
+            <label><input type="checkbox" name="cat" value="Sales & customer success" />Sales &amp; customer success <span class="n">39</span></label>
+            <label><input type="checkbox" name="cat" value="Software & technology" />Software &amp; technology <span class="n">92</span></label>
+            <label><input type="checkbox" name="cat" value="Leadership & management" />Leadership &amp; management <span class="n">27</span></label>
+            <label><input type="checkbox" name="cat" value="Language learning" />Language learning <span class="n">33</span></label>
+            <label><input type="checkbox" name="cat" value="Creative" />Creative <span class="n">58</span></label>
+          </div>
+          <div>
+            <h5>License</h5>
+            <label><input type="checkbox" />Free to use <span class="n">201</span></label>
+            <label><input type="checkbox" />CC BY <span class="n">133</span></label>
+            <label><input type="checkbox" />CC BY-SA <span class="n">41</span></label>
+            <label><input type="checkbox" />CC BY-NC <span class="n">53</span></label>
+          </div>
+        </aside>
+
+        <div>
+          <div class="bar">
+            <form class="search search-sm grow" onsubmit="event.preventDefault(); render()">
+              <span data-icon="search"></span>
+              <input id="q" placeholder="Search listings" aria-label="Search listings" />
+            </form>
+            <select class="select" id="sort" aria-label="Sort">
+              <option>Popular</option>
+              <option>Top rated</option>
+              <option>Newest</option>
+            </select>
+          </div>
+          <div class="frow" style="justify-content: space-between; margin-bottom: 16px">
+            <div class="active-filters" id="active"></div>
+            <span class="text-muted" style="font-size: 13px" id="count"></span>
+          </div>
+          <div class="lgrid" id="results"></div>
+          <div class="empty" id="empty" hidden>
+            <h3 style="margin: 0 0 6px; font-weight: 500">No listings match “<span id="empty-q"></span>”</h3>
+            <p class="text-muted" style="margin: 0 0 16px; font-size: 14px">Try a broader search or clear your filters.</p>
+            <button class="btn btn-outline btn-sm" onclick="clearAll()">Clear search and filters</button>
+            <h4 style="text-align: left; margin: 36px 0 14px; font-weight: 500">Popular right now</h4>
+            <div class="lgrid" data-cards="popular" data-limit="4" style="text-align: left"></div>
+          </div>
+          <div class="pager" id="pager"><a class="btn btn-outline btn-sm" href="#">1</a><a class="btn btn-ghost btn-sm" href="#">2</a><a class="btn btn-ghost btn-sm" href="#">3</a><span class="text-muted" style="padding: 6px">…</span><a class="btn btn-ghost btn-sm" href="#">18</a></div>
+        </div>
+      </div>
+    </main>
+
+    <div data-site-foot></div>
+
+    <div class="state-bar"><span class="lbl">Prototype</span><a href="index.html">← Map</a><button onclick="document.getElementById('q').value='zzqx onboarding'; render()">Empty results</button><button onclick="clearAll()">Reset</button></div>
+
+    <script>
+      document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon]));
+      renderCards('[data-cards="popular"]', null);
+      const params = new URLSearchParams(location.search);
+      const categoryKeys = { 'compliance-safety': 'Compliance & safety', onboarding: 'Onboarding', 'product-education': 'Product education', 'sales-customer-success': 'Sales & customer success', 'software-technology': 'Software & technology', 'leadership-management': 'Leadership & management', 'language-learning': 'Language learning', creative: 'Creative' };
+      if (params.get('type')) document.querySelector(`input[name=type][value="${params.get('type')}"]`).checked = true;
+      if (params.get('category')) document.querySelector(`input[name=cat][value="${categoryKeys[params.get('category')]}"]`).checked = true;
+      if (params.get('q')) document.getElementById('q').value = params.get('q');
+
+      function clearAll() {
+        document.getElementById('q').value = '';
+        document.querySelector('input[name=type][value=""]').checked = true;
+        document.querySelectorAll('input[name=cat]').forEach((box) => (box.checked = false));
+        render();
+      }
+
+      function render() {
+        const query = document.getElementById('q').value.trim().toLowerCase();
+        const type = document.querySelector('input[name=type]:checked').value;
+        const categories = [...document.querySelectorAll('input[name=cat]:checked')].map((box) => box.value);
+        const matches = LISTINGS.filter((listing) => (!type || listing.type === type) && (!categories.length || categories.includes(listing.cat)) && (!query || listing.title.toLowerCase().includes(query)));
+        document.getElementById('results').innerHTML = matches.map(listingCard).join('');
+        document.getElementById('empty').hidden = matches.length > 0;
+        document.getElementById('pager').hidden = matches.length === 0;
+        document.getElementById('empty-q').textContent = query || 'these filters';
+        document.getElementById('count').textContent = matches.length ? `${matches.length} of ${matches.length} listings` : '';
+        const title = type ? { course: 'Course templates', images: 'Image packs', doc: 'Docs', skill: 'AI skills' }[type] : categories.length === 1 ? categories[0] : 'All listings';
+        document.getElementById('page-title').textContent = query ? `Results for “${query}”` : title;
+        document.getElementById('crumb').textContent = title;
+        const chips = [...(query ? [`“${query}”`] : []), ...(type ? [title] : []), ...categories];
+        document.getElementById('active').innerHTML = chips.map((label) => `<span class="chip">${label} ×</span>`).join('');
+      }
+
+      document.querySelectorAll('.filters input').forEach((input) => input.addEventListener('change', render));
+      document.getElementById('q').addEventListener('input', render);
+      render();
+    </script>
+  </body>
+</html>

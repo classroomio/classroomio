@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Publish to marketplace · Acadia Tutors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <script src="proto.js"></script>
+    <style>
+      .bg-page { filter: blur(1.5px); opacity: 0.5; pointer-events: none; }
+      .pub-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; }
+      @media (max-width: 720px) { .pub-grid { grid-template-columns: 1fr; } }
+      .removed { list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 12px; font-size: 12.5px; }
+      .removed li::before { content: '– '; color: var(--muted-foreground); }
+      .licenses { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .count-hint { float: right; font-weight: 400; color: var(--muted-foreground); font-size: 12px; }
+      .dialog { max-height: calc(100vh - 48px); display: flex; flex-direction: column; }
+      .dialog-body { overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="app bg-page">
+      <div data-app-sidebar="courses"></div>
+      <div class="main"><main class="content"><div class="wrap"><h1 class="page-title">Templates</h1><div class="lgrid"><div class="card" style="height: 200px"></div><div class="card" style="height: 200px"></div><div class="card" style="height: 200px"></div></div></div></main></div>
+    </div>
+
+    <div class="scrim">
+      <div class="dialog dialog-lg">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="d-title">Publish to marketplace</h2>
+          <p class="dialog-desc" id="d-desc">Your listing is reviewed by the ClassroomIO team before it appears on classroomio.com/discover. We publish a frozen copy — later edits to your template won't change it until you submit an update.</p>
+        </div>
+        <div class="dialog-body">
+          <div class="callout callout-danger" data-state-view="changes" style="margin-bottom: 16px"><span data-icon="msg"></span><div><b>Changes requested · Sep 21</b><br />The instructions quote two full paragraphs from the official IELTS band descriptors, which are copyrighted. Paraphrase them or link to the public descriptors instead, then resubmit.</div></div>
+
+          <div class="pub-grid">
+            <div>
+              <div class="label" style="margin-bottom: 7px">Cover</div>
+              <div id="cover-slot"></div>
+              <button class="btn btn-outline btn-sm" style="width: 100%; justify-content: center; margin-top: 8px">Change cover</button>
+              <div class="card" style="padding: 11px 12px; margin-top: 14px; font-size: 12.5px" id="source-box"></div>
+            </div>
+
+            <div>
+              <div class="field"><label class="label" for="t">Title <span class="count-hint" id="t-count"></span></label><input class="input" id="t" maxlength="120" /></div>
+              <div class="field"><label class="label" for="s">Summary <span class="count-hint" id="s-count"></span></label><input class="input" id="s" maxlength="160" /><p class="hint">One sentence shown on listing cards and search results.</p></div>
+              <div class="field"><label class="label" for="desc">Description</label><textarea class="textarea" id="desc" rows="4" maxlength="2000"></textarea></div>
+              <div class="field" data-state-view="update"><label class="label" for="cn">What changed in this version?</label><textarea class="textarea" id="cn" rows="2" placeholder="Shown on the listing as version notes">Added a mock exam to section 4 and rewrote the band 6 → 7 lessons.</textarea></div>
+              <div class="field">
+                <label class="label" for="cat">Category</label>
+                <select class="select" id="cat"><option>Language learning</option><option>Academic</option><option>Onboarding</option><option>Compliance &amp; safety</option><option>Product education</option><option>Sales &amp; customer success</option><option>Software &amp; technology</option><option>Leadership &amp; management</option><option>Health &amp; wellness</option><option>Creative</option><option>Business</option><option>Other</option></select>
+              </div>
+              <div class="field">
+                <span class="label">License</span>
+                <div class="licenses">
+                  <label class="radio-card"><input type="radio" name="lic" /><div><b>Free to use</b><span>Anyone can use and change it. Credit optional.</span></div></label>
+                  <label class="radio-card"><input type="radio" name="lic" checked /><div><b>CC BY</b><span>Use, change and share, even commercially, with credit.</span></div></label>
+                  <label class="radio-card"><input type="radio" name="lic" /><div><b>CC BY-SA</b><span>Like CC BY, and changed copies must use the same license.</span></div></label>
+                  <label class="radio-card"><input type="radio" name="lic" /><div><b>CC BY-NC</b><span>Use and change with credit, not for commercial resale.</span></div></label>
+                </div>
+              </div>
+
+              <div class="callout" data-state-view="course update changes-course" style="margin-bottom: 14px">
+                <span data-icon="shield"></span>
+                <div>
+                  <b>Removed from the published copy</b>
+                  <ul class="removed"><li>Price and payment link</li><li>Student reviews</li><li>Instructor profile</li><li>Welcome email message</li><li>Tags</li><li>Assigned tutor</li></ul>
+                  <div class="hint" style="margin-top: 8px">Images and files on ClassroomIO are copied with the listing. YouTube, Vimeo and Google embeds stay as links.</div>
+                </div>
+              </div>
+
+              <label class="frow" style="gap: 9px; font-size: 13px; cursor: pointer; align-items: flex-start"><input type="checkbox" id="rights" style="accent-color: var(--primary); width: 15px; height: 15px; margin-top: 2px" />I have the rights to share this content under the selected license, and it follows the <a class="text-primary" href="#">listing guidelines</a>.</label>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-foot">
+          <a class="btn btn-outline btn-sm" href="marketplace-listings.html">Cancel</a>
+          <button class="btn btn-primary btn-sm" id="submit" disabled>Submit for review</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" id="done" hidden>
+      <div class="dialog" style="max-width: 440px; text-align: center; padding: 28px 24px">
+        <div style="width: 44px; height: 44px; border-radius: 999px; background: var(--success-soft); color: var(--success); display: grid; place-items: center; margin: 0 auto 12px"><span data-icon="check"></span></div>
+        <h2 class="dialog-title">Submitted for review</h2>
+        <p class="dialog-desc" style="margin: 6px 0 18px">Most listings are reviewed within 2 business days. We'll email your organization's admins when it's live or if we need changes.</p>
+        <a class="btn btn-primary btn-sm" href="marketplace-listings.html">Go to Marketplace</a>
+      </div>
+    </div>
+
+    <div class="state-bar"><span class="lbl">Source</span><button data-state="course">Course template</button><button data-state="images">Image pack</button><button data-state="doc">Doc</button><button data-state="skill">AI skill</button><button data-state="update">Submit update</button><button data-state="changes">Changes requested</button><a href="index.html">← Map</a></div>
+
+    <script>
+      Object.assign(ICONS, {
+        msg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+        shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+        check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:22px;height:22px"><path d="M20 6 9 17l-5-5"/></svg>'
+      });
+      document.querySelectorAll('[data-icon]').forEach((node) => (node.outerHTML = ICONS[node.dataset.icon]));
+
+      const SOURCES = {
+        course: { cover: LISTINGS.find((l) => l.id === 'ielts-writing-task-2'), title: 'IELTS Writing Task 2 in 4 Weeks', summary: 'A four-week plan that takes learners from band 6 to band 7 on Writing Task 2.', desc: 'Built by our tutors from 400+ marked essays. Each week covers one essay type with a model answer, a planning framework and a timed practice exercise marked against the public band descriptors.', source: '<b>Source template</b><br>IELTS Writing Task 2 in 4 Weeks<div class="hint" style="margin-top:6px">4 sections · 16 lessons · 6 exercises · EN</div>' },
+        images: { cover: LISTINGS.find((l) => l.id === 'flat-illustration-headers'), title: 'Exam Day Lesson Headers', summary: '12 calm illustrated headers for exam-prep lessons.', desc: 'Illustrated headers for reading, writing, listening and speaking lessons, in three colourways. 1920×1080 PNG.', source: '<b>12 images selected</b><br>From Media<div class="hint" style="margin-top:6px">All uploaded by your team · 18.4 MB</div>' },
+        doc: { cover: LISTINGS.find((l) => l.id === 'sales-discovery-playbook'), title: 'Tutor Handbook: Marking Speaking Tests', summary: 'How our tutors run and mark IELTS speaking mocks consistently.', desc: 'Our internal handbook for new tutors: how to run a speaking mock, what to listen for at each band, and the feedback phrases we use.', source: '<b>Source doc</b><br>Tutor Handbook<div class="hint" style="margin-top:6px">1 page · 3 sub-pages · 6,200 words</div>' },
+        skill: { cover: LISTINGS.find((l) => l.id === 'compliance-course-from-policy'), title: 'Band 7 essay feedback rubric', summary: 'Teaches the AI assistant to draft essay-feedback exercises aligned to band criteria.', desc: 'Instructions for building a Writing Task 2 feedback exercise: one question per criterion, model answers at band 6 and 7, and tutor-facing marking notes.', source: '<b>Source skill</b><br>Band 7 essay feedback rubric<div class="hint" style="margin-top:6px">3,140 characters</div>' }
+      };
+
+      const fill = (key) => {
+        const source = SOURCES[key];
+        document.getElementById('cover-slot').innerHTML = coverHtml(source.cover);
+        document.getElementById('t').value = source.title;
+        document.getElementById('s').value = source.summary;
+        document.getElementById('desc').value = source.desc;
+        document.getElementById('source-box').innerHTML = source.source;
+        updateCounts();
+      };
+      const updateCounts = () => {
+        document.getElementById('t-count').textContent = `${document.getElementById('t').value.length}/120`;
+        document.getElementById('s-count').textContent = `${document.getElementById('s').value.length}/160`;
+      };
+      document.getElementById('t').addEventListener('input', updateCounts);
+      document.getElementById('s').addEventListener('input', updateCounts);
+
+      document.addEventListener('statechange', (event) => {
+        const state = event.detail;
+        const sourceKey = state === 'update' ? 'course' : state === 'changes' ? 'skill' : state;
+        fill(sourceKey);
+        const isUpdate = state === 'update';
+        document.getElementById('d-title').textContent = isUpdate ? 'Submit update' : state === 'changes' ? 'Resubmit for review' : 'Publish to marketplace';
+        document.getElementById('d-desc').textContent = isUpdate
+          ? 'Version 3 stays live while ClassroomIO reviews version 4. Organizations that already imported this listing keep their copy.'
+          : 'Your listing is reviewed by the ClassroomIO team before it appears on classroomio.com/discover. We publish a frozen copy — later edits won’t change it until you submit an update.';
+        document.getElementById('submit').textContent = isUpdate ? 'Submit update for review' : state === 'changes' ? 'Resubmit' : 'Submit for review';
+      });
+
+      const rights = document.getElementById('rights');
+      const submit = document.getElementById('submit');
+      rights.addEventListener('change', () => (submit.disabled = !rights.checked));
+      submit.addEventListener('click', () => (document.getElementById('done').hidden = false));
+      bindStatePicker('course');
+    </script>
+  </body>
+</html>

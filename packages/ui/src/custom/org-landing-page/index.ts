@@ -80,6 +80,8 @@ export { default as LandingThemeScope } from './landing-theme-scope.svelte';
 export { default as OrgLandingPageCoursesEmpty } from './courses-empty.svelte';
 export { default as LearningPathCard } from './learning-path-card.svelte';
 export { default as LandingButton } from './landing-button.svelte';
+export { default as LearnerMenu } from './learner-menu.svelte';
+export { default as LandingNavCta } from './landing-nav-cta.svelte';
 export { default as OrgLandingPageEmbed } from './embed.svelte';
 export { default as OrgLandingPageCallout } from './callout.svelte';
 export { default as OrgLandingPageLinks } from './links.svelte';

@@ -5,16 +5,14 @@ import {
 } from '@api/constants/rate-limiter';
 import { Hono } from '@api/utils/hono';
 import { automationKeyMiddleware } from '@api/middlewares/automation-key';
-import { automationKeyScopesMiddleware } from '@api/middlewares/automation-key-scopes';
 import { createAuthenticationFailureRateLimiter, createRateLimiter } from '@api/middlewares/rate-limiter';
 import { publicApiCors } from '@api/middlewares/cors';
+import { publicApiScopesMiddleware } from '@api/middlewares/public-api-scopes';
+import { v1McpUsageMiddleware } from '@api/middlewares/v1-mcp-usage';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
 import { v1AudienceRouter } from './audience';
+import { v1CohortsRouter } from './cohorts';
 import { v1CoursesRouter } from './courses';
-
-const audienceRoutes = new Hono()
-  .use('*', automationKeyScopesMiddleware(['public_api:*']))
-  .route('/', v1AudienceRouter);
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -27,6 +25,7 @@ export const v1Router = new Hono()
     })
   )
   .use('*', automationKeyMiddleware)
+  .use('*', publicApiScopesMiddleware)
   .use(
     '*',
     createRateLimiter({
@@ -35,5 +34,7 @@ export const v1Router = new Hono()
       keyGenerator: publicApiKeyGenerator
     })
   )
+  .use('*', v1McpUsageMiddleware)
+  .route('/audience', v1AudienceRouter)
   .route('/courses', v1CoursesRouter)
-  .route('/audience', audienceRoutes);
+  .route('/cohorts', v1CohortsRouter);

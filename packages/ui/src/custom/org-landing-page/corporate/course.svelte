@@ -19,6 +19,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     socialProof,
     info,
@@ -41,7 +42,7 @@
   <main>
     <CorporateHero {orgName} hero={heroProps}>
       {#snippet navigation()}
-        <CorporateNav {orgName} {logoUrl} {navItems} {authAction} />
+        <CorporateNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </CorporateHero>
 

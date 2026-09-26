@@ -22,7 +22,7 @@
   interface OrderedCourseItem {
     id: string;
     title: string;
-    logo: string;
+    bannerImage: string;
     displayOrder: number | null;
   }
 
@@ -107,7 +107,7 @@
     const items: OrderedCourseItem[] = courses.map((course) => ({
       id: course.id,
       title: typeof course.title === 'string' ? course.title : '',
-      logo: typeof course.logo === 'string' ? course.logo : '',
+      bannerImage: typeof course.bannerImage === 'string' ? course.bannerImage : '',
       displayOrder: typeof course.displayOrder === 'number' ? course.displayOrder : null
     }));
 
@@ -315,8 +315,8 @@
                 {index + 1}
               </span>
 
-              {#if courseItem.logo}
-                <img src={courseItem.logo} alt="" class="size-10 shrink-0 rounded object-cover" loading="lazy" />
+              {#if courseItem.bannerImage}
+                <img src={courseItem.bannerImage} alt="" class="size-10 shrink-0 rounded object-cover" loading="lazy" />
               {:else}
                 <div
                   class="ui:text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded bg-gray-100"

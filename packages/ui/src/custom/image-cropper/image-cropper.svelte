@@ -14,6 +14,7 @@
     maxFileSize,
     disabled = false,
     skipCrop = false,
+    outputFormat,
     children,
     ...rest
   }: ImageCropperRootProps = $props();
@@ -29,7 +30,8 @@
     onFileSelected: box.with(() => onFileSelected),
     maxFileSize: box.with(() => maxFileSize),
     disabled: box.with(() => disabled ?? undefined),
-    skipCrop: box.with(() => skipCrop)
+    skipCrop: box.with(() => skipCrop),
+    outputFormat: box.with(() => outputFormat)
   });
 
   onDestroy(() => rootState.dispose());

@@ -25,7 +25,7 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
+  "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo", "src/**/*.test.ts"],
   "references": [
     { "path": "../../packages/core" },
     { "path": "../../packages/db" },

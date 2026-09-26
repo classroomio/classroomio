@@ -19,6 +19,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     socialProof,
     info,
@@ -38,7 +39,7 @@
 </script>
 
 <LandingThemeScope theme="classic" class="ui:bg-[var(--landing-bg-section)] ui:font-sans">
-  <ClassicNav {orgName} {logoUrl} {navItems} {authAction} />
+  <ClassicNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
 
   <main>
     <ClassicHero hero={heroProps} />

@@ -29,6 +29,10 @@ const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]
     'course:tag:write',
     'course:exercise:read',
     'course:exercise:write',
+    'cohort:read',
+    'cohort:write',
+    'course:member:read',
+    'course:member:write',
     'course:certificate:read',
     'course:certificate:write'
   ],
@@ -80,13 +84,6 @@ export function organizationApiKeyHasScopes(
 
   const scopeSet = new Set(keyScopes);
   return requiredScopes.every((scope) => scopeSet.has(scope));
-}
-
-export function organizationApiKeyHasAnyScope(
-  keyScopes: string[],
-  acceptedScopes: readonly TOrganizationApiKeyScope[]
-): boolean {
-  return acceptedScopes.some((scope) => keyScopes.includes(scope));
 }
 
 export async function listOrganizationApiKeysService(

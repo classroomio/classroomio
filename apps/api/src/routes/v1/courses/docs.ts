@@ -36,8 +36,13 @@ export const courseForbiddenResponses = {
   teamWrite: forbidden('course:certificate:write', TEAM_FORBIDDEN)
 };
 
-export const mcpRateLimitedResponse = {
-  description: 'MCP key only: the automation rate limit for this tool was exceeded'
+export const mcpRateLimitResponse = {
+  description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit'
+};
+
+export const forbiddenResponse = {
+  description:
+    'The key lacks the public_api:* or course:member:read/write scope, or the automation actor is not a course tutor/admin or org admin'
 };
 
 const SignatorySchema = {

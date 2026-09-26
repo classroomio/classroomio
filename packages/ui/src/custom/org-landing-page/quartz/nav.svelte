@@ -1,17 +1,18 @@
 <script lang="ts">
-  import type { OrgLandingPageProps } from '../types';
+  import type { LandingNavAuthAction, OrgLandingPageProps } from '../types';
   import { safeHref } from '../safe-href';
-  import LandingButton from '../landing-button.svelte';
-  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import LearnerMenu from '../learner-menu.svelte';
+  import LandingNavCta from '../landing-nav-cta.svelte';
 
   type Props = {
     orgName?: string;
     logoUrl?: string;
     navItems?: OrgLandingPageProps['navItems'];
-    authAction?: OrgLandingPageProps['authAction'];
+    authAction?: LandingNavAuthAction;
+    learnerAccount?: OrgLandingPageProps['learnerAccount'];
   };
 
-  let { orgName = '', logoUrl, navItems = [], authAction }: Props = $props();
+  let { orgName = '', logoUrl, navItems = [], authAction, learnerAccount }: Props = $props();
 </script>
 
 <nav
@@ -44,11 +45,15 @@
       </div>
     {/if}
 
-    {#if authAction}
-      <LandingButton variant="primary" size="sm" href={authAction.href} disabled={authAction.disabled}>
-        {authAction.label}
-        <ArrowRightIcon class="ui:size-3.5 custom" aria-hidden="true" />
-      </LandingButton>
+    {#if authAction || learnerAccount}
+      <div class="ui:flex ui:items-center ui:gap-3">
+        {#if authAction}
+          <LandingNavCta {authAction} theme="quartz" />
+        {/if}
+        {#if learnerAccount}
+          <LearnerMenu account={learnerAccount} {authAction} theme="quartz" />
+        {/if}
+      </div>
     {/if}
   </div>
 </nav>

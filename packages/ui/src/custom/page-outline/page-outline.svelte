@@ -119,10 +119,10 @@
 
 {#if items.length > 0}
   <nav class={cn(visibilityClass, 'ui:w-full', className)} aria-label={label}>
-    <p class="ui:mb-3 ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
+    <p class="ui:mb-3 ui:text-sm ui:font-semibold ui:text-foreground">
       {label}
     </p>
-    <ul class="ui:border-l ui:border-border">
+    <ul class="ui:border-l-2 ui:border-dotted ui:border-border">
       {#each items as item (item.id)}
         {@const isActive = activeId === item.id}
         <li>
@@ -130,15 +130,18 @@
             href={`#${item.id}`}
             aria-current={isActive ? 'location' : undefined}
             class={cn(
-              'ui:block ui:border-l-2 ui:-ml-px ui:py-1 ui:text-sm ui:leading-snug ui:transition-colors',
+              'ui:relative ui:block ui:py-1 ui:text-sm ui:leading-snug ui:transition-colors',
               indentClass(item.level),
-              isActive
-                ? 'ui:border-primary ui:font-medium ui:text-foreground'
-                : 'ui:border-transparent ui:text-muted-foreground ui:hover:text-foreground',
-              item.level === 1 && 'ui:font-medium'
+              isActive ? 'ui:font-medium ui:text-primary' : 'ui:text-muted-foreground ui:hover:text-foreground'
             )}
             onclick={(event) => handleSelect(event, item.id)}
           >
+            {#if isActive}
+              <span
+                class="ui:absolute ui:top-1/2 ui:-left-0.5 ui:h-4 ui:w-0.5 ui:-translate-y-1/2 ui:rounded-full ui:bg-primary"
+                aria-hidden="true"
+              ></span>
+            {/if}
             {item.title}
           </a>
         </li>

@@ -12,8 +12,7 @@
   import { Button } from '../../base/button';
   import { QuestionList } from '../exercise-question';
   import { cn } from '../../tools';
-  import { PageOutline } from '../page-outline';
-  import { outlineFromSections } from '../page-outline/heading-utils';
+  import { slugifyHeading } from '../page-outline/heading-utils';
   import Callout from './callout.svelte';
   import { SafeHtmlContent } from '../safe-html-content';
   import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicExerciseViewData } from './types';
@@ -40,9 +39,8 @@
     summaryTemplate?: string;
     /** Actions rendered beside the exercise title (e.g. Copy Page). */
     titleActions?: Snippet;
-    /** Actions rendered under the page outline (share, open in chat). */
+    /** Actions rendered in the right rail (share, open in chat). */
     outlineActions?: Snippet;
-    outlineLabel?: string;
     class?: string;
   }
 
@@ -61,7 +59,6 @@
     summaryTemplate = 'You got [[correct]] / [[total]] correct.',
     titleActions,
     outlineActions,
-    outlineLabel = 'On this page',
     class: className
   }: Props = $props();
 
@@ -353,18 +350,7 @@
     showAttemptsPicker && selectValue !== 'live' ? newAttemptOptionLabel : tryAgainLabel
   );
 
-  const outlineItems = $derived(
-    exercise.isUnlocked
-      ? outlineFromSections(
-          exercise.title,
-          exercise.questions.map((question, index) => ({
-            id: `question-${getExerciseQuestionContractKey(question, index)}`,
-            title: question.title
-          }))
-        )
-      : []
-  );
-  const titleId = $derived(outlineItems[0]?.id);
+  const titleId = $derived(slugifyHeading(exercise.title));
 </script>
 
 <article class={cn('ui:flex ui:w-full', className)}>
@@ -466,19 +452,12 @@
     </div>
   </div>
 
-  {#if outlineItems.length > 0 || outlineActions}
-    <aside
-      class="ui:sticky ui:top-12 ui:z-10 ui:hidden ui:h-[calc(100dvh-3rem)] ui:w-56 ui:shrink-0 ui:self-start ui:overflow-y-auto ui:lg:block"
-    >
-      <div class="ui:px-4 ui:py-8">
-        {#if outlineItems.length > 0}
-          <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />
-        {/if}
-        {#if outlineActions}
-          <div class={outlineItems.length > 0 ? 'ui:mt-6 ui:border-t ui:border-border ui:pt-4' : ''}>
-            {@render outlineActions()}
-          </div>
-        {/if}
+  {#if outlineActions}
+    <aside class="ui:hidden ui:w-60 ui:shrink-0 ui:lg:block">
+      <div class="ui:sticky ui:top-12 ui:z-10 ui:h-[calc(100dvh-3rem)] ui:overflow-y-auto">
+        <div class="ui:px-4 ui:py-8">
+          {@render outlineActions()}
+        </div>
       </div>
     </aside>
   {/if}

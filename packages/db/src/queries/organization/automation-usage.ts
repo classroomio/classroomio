@@ -2,34 +2,12 @@ import * as schema from '@db/schema';
 
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
 
-import { db, type DbOrTxClient } from '@db/drizzle';
+import { db } from '@db/drizzle';
 import type { TAutomationUsageCategory, TNewOrganizationAutomationUsage, TOrganizationApiKeyType } from '@db/types';
 
-/**
- * Transaction-scoped lock serializing usage checks and inserts for one organization and key type.
- * Released automatically when the transaction ends.
- */
-export const lockOrganizationAutomationUsage = async (
-  organizationId: string,
-  type: TOrganizationApiKeyType,
-  dbClient: DbOrTxClient
-) => {
+export const createOrganizationAutomationUsage = async (data: TNewOrganizationAutomationUsage) => {
   try {
-    await dbClient.execute(
-      sql`select pg_advisory_xact_lock(hashtext(${`automation_usage:${organizationId}:${type}`}))`
-    );
-  } catch (error) {
-    console.error('lockOrganizationAutomationUsage error:', error);
-    throw new Error('Failed to lock organization automation usage');
-  }
-};
-
-export const createOrganizationAutomationUsage = async (
-  data: TNewOrganizationAutomationUsage,
-  dbClient: DbOrTxClient = db
-) => {
-  try {
-    const [row] = await dbClient.insert(schema.organizationAutomationUsage).values(data).returning();
+    const [row] = await db.insert(schema.organizationAutomationUsage).values(data).returning();
 
     if (!row) {
       throw new Error('Failed to create organization automation usage');
@@ -45,11 +23,10 @@ export const createOrganizationAutomationUsage = async (
 export const countOrganizationAutomationUsageSinceByKey = async (
   organizationApiKeyId: string,
   category: TAutomationUsageCategory,
-  since: string,
-  dbClient: DbOrTxClient = db
+  since: string
 ): Promise<number> => {
   try {
-    const [row] = await dbClient
+    const [row] = await db
       .select({ total: count() })
       .from(schema.organizationAutomationUsage)
       .where(
@@ -71,11 +48,10 @@ export const countOrganizationAutomationUsageSince = async (
   organizationId: string,
   type: TOrganizationApiKeyType,
   category: TAutomationUsageCategory,
-  since: string,
-  dbClient: DbOrTxClient = db
+  since: string
 ): Promise<number> => {
   try {
-    const [row] = await dbClient
+    const [row] = await db
       .select({ total: count() })
       .from(schema.organizationAutomationUsage)
       .where(
@@ -94,12 +70,87 @@ export const countOrganizationAutomationUsageSince = async (
   }
 };
 
-export const deleteOrganizationAutomationUsage = async (usageId: string) => {
+/**
+ * Counts and reserves one usage slot in a single transaction, under an advisory lock per
+ * organization + key type + category, so concurrent requests can't all pass the limit check
+ * before any of them is recorded. Returns the reserved row id, or null when a limit is reached.
+ */
+export const reserveOrganizationAutomationUsage = async (input: {
+  organizationId: string;
+  organizationApiKeyId: string;
+  type: TOrganizationApiKeyType;
+  category: TAutomationUsageCategory;
+  action: string;
+  since: string;
+  keyLimit: number;
+  orgLimit: number;
+}): Promise<string | null> => {
+  const { organizationId, organizationApiKeyId, type, category, action, since, keyLimit, orgLimit } = input;
+
   try {
-    await db.delete(schema.organizationAutomationUsage).where(eq(schema.organizationAutomationUsage.id, usageId));
+    return await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`automation_usage:${organizationId}:${type}:${category}`}))`
+      );
+
+      const inWindow = and(
+        eq(schema.organizationAutomationUsage.type, type),
+        eq(schema.organizationAutomationUsage.category, category),
+        gte(schema.organizationAutomationUsage.createdAt, since)
+      );
+      const [[keyRow], [orgRow]] = await Promise.all([
+        tx
+          .select({ total: count() })
+          .from(schema.organizationAutomationUsage)
+          .where(and(eq(schema.organizationAutomationUsage.organizationApiKeyId, organizationApiKeyId), inWindow)),
+        tx
+          .select({ total: count() })
+          .from(schema.organizationAutomationUsage)
+          .where(and(eq(schema.organizationAutomationUsage.organizationId, organizationId), inWindow))
+      ]);
+
+      if (Number(keyRow?.total ?? 0) >= keyLimit || Number(orgRow?.total ?? 0) >= orgLimit) {
+        return null;
+      }
+
+      const [row] = await tx
+        .insert(schema.organizationAutomationUsage)
+        .values({ organizationId, organizationApiKeyId, type, action, category, creditsConsumed: 0 })
+        .returning({ id: schema.organizationAutomationUsage.id });
+
+      if (!row) {
+        throw new Error('Failed to reserve organization automation usage');
+      }
+
+      return row.id;
+    });
   } catch (error) {
-    console.error('deleteOrganizationAutomationUsage error:', error);
-    throw new Error('Failed to delete organization automation usage');
+    console.error('reserveOrganizationAutomationUsage error:', error);
+    throw new Error('Failed to reserve organization automation usage');
+  }
+};
+
+export const completeOrganizationAutomationUsage = async (
+  id: string,
+  data: { action: string; creditsConsumed: number; metadata?: Record<string, unknown> }
+) => {
+  try {
+    await db
+      .update(schema.organizationAutomationUsage)
+      .set({ action: data.action, creditsConsumed: data.creditsConsumed, metadata: data.metadata ?? {} })
+      .where(eq(schema.organizationAutomationUsage.id, id));
+  } catch (error) {
+    console.error('completeOrganizationAutomationUsage error:', error);
+    throw new Error('Failed to complete organization automation usage');
+  }
+};
+
+export const releaseOrganizationAutomationUsage = async (id: string) => {
+  try {
+    await db.delete(schema.organizationAutomationUsage).where(eq(schema.organizationAutomationUsage.id, id));
+  } catch (error) {
+    console.error('releaseOrganizationAutomationUsage error:', error);
+    throw new Error('Failed to release organization automation usage');
   }
 };
 

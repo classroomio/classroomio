@@ -1,0 +1,212 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course member request contract > ZPublicApiAddCourseMember keeps its published shape > ZPublicApiAddCourseMember 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "email": {
+      "format": "email",
+      "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+      "type": "string",
+    },
+    "name": {
+      "description": "Used in the welcome email sent to added tutors/admins",
+      "type": "string",
+    },
+    "profileId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "roleId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+        {
+          "const": 3,
+          "type": "number",
+        },
+      ],
+      "description": "1 = admin, 2 = tutor, 3 = student",
+    },
+  },
+  "required": [
+    "roleId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course member request contract > ZPublicApiCourseInvitesQuery keeps its published shape > ZPublicApiCourseInvitesQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course member request contract > ZPublicApiCourseMemberAnalyticsQuery keeps its published shape > ZPublicApiCourseMemberAnalyticsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "includeProgressImpact": {
+      "default": "false",
+      "enum": [
+        "true",
+        "false",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course member request contract > ZPublicApiCourseMembersQuery keeps its published shape > ZPublicApiCourseMembersQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "roleId": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "search": {
+      "maxLength": 200,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course member request contract > ZPublicApiCreateCourseInvite keeps its published shape > ZPublicApiCreateCourseInvite 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "allowedDomains": {
+      "items": {
+        "minLength": 1,
+        "type": "string",
+      },
+      "maxItems": 100,
+      "type": "array",
+    },
+    "allowedEmails": {
+      "items": {
+        "format": "email",
+        "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+        "type": "string",
+      },
+      "maxItems": 100,
+      "type": "array",
+    },
+    "expiresAt": {
+      "minLength": 1,
+      "type": "string",
+    },
+    "maxUses": {
+      "maximum": 1000,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "metadata": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string",
+      },
+      "type": "object",
+    },
+    "preset": {
+      "default": "MULTI_USE_30D",
+      "enum": [
+        "ONE_TIME_24H",
+        "MULTI_USE_7D",
+        "MULTI_USE_30D",
+        "CUSTOM",
+      ],
+      "type": "string",
+    },
+    "recipientCsv": {
+      "maxLength": 25000,
+      "type": "string",
+    },
+    "recipientEmails": {
+      "items": {
+        "format": "email",
+        "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+        "type": "string",
+      },
+      "maxItems": 500,
+      "type": "array",
+    },
+    "sendEmail": {
+      "default": false,
+      "type": "boolean",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course member request contract > ZPublicApiUpdateCourseMember keeps its published shape > ZPublicApiUpdateCourseMember 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "email": {
+      "format": "email",
+      "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+      "type": "string",
+    },
+    "roleId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+        {
+          "const": 3,
+          "type": "number",
+        },
+      ],
+      "description": "1 = admin, 2 = tutor, 3 = student",
+    },
+  },
+  "type": "object",
+}
+`;

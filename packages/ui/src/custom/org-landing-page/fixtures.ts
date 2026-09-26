@@ -53,7 +53,8 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
       title: 'Workplace Safety Certification',
       description:
         'OSHA-aligned training covering hazard identification, emergency procedures, and workplace safety best practices.',
-      logo: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      bannerImage:
+        'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
       cost: 0,
       currency: 'USD',
       type: 'SELF_PACED',
@@ -72,7 +73,8 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
       title: 'Data Privacy & GDPR Compliance',
       description:
         'Comprehensive program covering data handling, privacy regulations, GDPR requirements, and breach response protocols.',
-      logo: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      bannerImage:
+        'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
       cost: 49.0,
       currency: 'USD',
       type: 'SELF_PACED',
@@ -91,7 +93,8 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
       title: 'Anti-Harassment & DEI Training',
       description:
         'State-mandated harassment prevention training with modules on inclusive workplace culture and bystander intervention.',
-      logo: 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      bannerImage:
+        'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
       cost: 0,
       currency: 'USD',
       type: 'SELF_PACED',
@@ -110,7 +113,8 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
       title: 'Information Security Certification',
       description:
         'Prepare for SOC 2 and ISO 27001 audits with training on access controls, incident response, and security policies.',
-      logo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+      bannerImage:
+        'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
       cost: 99.0,
       currency: 'USD',
       type: 'SELF_PACED',

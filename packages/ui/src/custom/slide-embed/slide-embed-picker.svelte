@@ -24,6 +24,8 @@
     labels?: SlideEmbedPickerLabels;
     docsBaseUrl?: string;
     onAdd?: (slide: SlideEmbed) => void;
+    hideAddButton?: boolean;
+    canAdd?: boolean;
     class?: string;
   }
 
@@ -31,6 +33,8 @@
     labels = DEFAULT_SLIDE_EMBED_PICKER_LABELS,
     docsBaseUrl = DEFAULT_DOCS_BASE_URL,
     onAdd,
+    hideAddButton = false,
+    canAdd = $bindable(false),
     class: className = ''
   }: Props = $props();
 
@@ -68,6 +72,10 @@
     return parseResult.reason === 'unsupported' ? labels.unsupportedPlatform : labels.invalidEmbed;
   });
 
+  $effect(() => {
+    canAdd = !!previewSlide;
+  });
+
   function selectPlatform(platformId: SlidePlatformId) {
     selectedId = platformId;
     rawEmbed = '';
@@ -82,6 +90,10 @@
 
     onAdd?.(slide);
     rawEmbed = '';
+  }
+
+  export function submit() {
+    addEmbed();
   }
 </script>
 
@@ -169,7 +181,9 @@
       />
 
       <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
-        <Button type="button" disabled={!previewSlide} onclick={addEmbed}>{labels.addEmbed}</Button>
+        {#if !hideAddButton}
+          <Button type="button" disabled={!previewSlide} onclick={addEmbed}>{labels.addEmbed}</Button>
+        {/if}
         <Button
           variant="outline"
           size="sm"

@@ -47,7 +47,7 @@
     openInClaude: 'Open in Claude'
   };
 
-  const DEMO_MARKDOWN_URL = '/course/ai-for-builders/lesson/hallucination-and-limitations/markdown';
+  const DEMO_MARKDOWN_URL = '/course/ai-for-builders/lesson/hallucination-and-limitations.md';
   const DEMO_PAGE_URL = 'https://example.com/course/ai-for-builders/lesson/hallucination-and-limitations';
   const DEMO_CHATGPT_URL = 'https://chatgpt.com/?prompt=demo';
   const DEMO_CLAUDE_URL = 'https://claude.ai/new?q=demo';

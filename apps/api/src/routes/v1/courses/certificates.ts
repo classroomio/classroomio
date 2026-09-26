@@ -16,8 +16,6 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, jsonResponse } from '@api/utils/openapi/responses';
-import { automationKeyAnyScopeMiddleware } from '@api/middlewares/automation-key-scopes';
-import { mcpToolUsageMiddleware } from '@api/middlewares/mcp-tool-usage';
 import { slugifyForFilename } from '@api/utils/certificate';
 import {
   CERTIFICATE_DOWNLOAD_DESCRIPTION,
@@ -30,15 +28,12 @@ import {
   IssuedCertificatesResponse,
   PAGINATION_NOTE,
   courseForbiddenResponses,
-  mcpRateLimitedResponse
+  mcpRateLimitResponse
 } from './docs';
 
 const TAG = 'Public API Course Certificates';
 
 const CONTENT_TYPES = { pdf: 'application/pdf', png: 'image/png' } as const;
-
-const certificateReadScope = automationKeyAnyScopeMiddleware(['public_api:*', 'course:certificate:read']);
-const certificateWriteScope = automationKeyAnyScopeMiddleware(['public_api:*', 'course:certificate:write']);
 
 export const v1CourseCertificateRouter = new Hono()
   .get(
@@ -52,12 +47,10 @@ export const v1CourseCertificateRouter = new Hono()
         401: errorResponses.unauthorized,
         403: courseForbiddenResponses.member,
         404: { description: 'Course not found' },
-        429: mcpRateLimitedResponse
+        429: mcpRateLimitResponse
       }
     }),
-    certificateReadScope,
     validator('param', ZPublicApiCourseParam),
-    mcpToolUsageMiddleware('get_course_certificate'),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
@@ -85,13 +78,11 @@ export const v1CourseCertificateRouter = new Hono()
         401: errorResponses.unauthorized,
         403: courseForbiddenResponses.teamWrite,
         404: { description: 'Course not found' },
-        429: mcpRateLimitedResponse
+        429: mcpRateLimitResponse
       }
     }),
-    certificateWriteScope,
     validator('param', ZPublicApiCourseParam),
     validator('json', ZPublicApiUpdateCourseCertificate),
-    mcpToolUsageMiddleware('update_course_certificate'),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
@@ -119,13 +110,11 @@ export const v1CourseCertificatesRouter = new Hono()
         401: errorResponses.unauthorized,
         403: courseForbiddenResponses.team,
         404: { description: 'Course not found' },
-        429: mcpRateLimitedResponse
+        429: mcpRateLimitResponse
       }
     }),
-    certificateReadScope,
     validator('param', ZPublicApiCourseParam),
     validator('query', ZPublicApiListCourseCertificatesQuery),
-    mcpToolUsageMiddleware('list_course_certificates'),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
@@ -153,13 +142,11 @@ export const v1CourseCertificatesRouter = new Hono()
         404: {
           description: 'Course not found, or the member is not a student of the course who earned the certificate'
         },
-        429: mcpRateLimitedResponse
+        429: mcpRateLimitResponse
       }
     }),
-    certificateReadScope,
     validator('param', ZPublicApiCourseCertificateMemberParam),
     validator('query', ZPublicApiDownloadCourseCertificateQuery),
-    mcpToolUsageMiddleware('download_course_certificate'),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;

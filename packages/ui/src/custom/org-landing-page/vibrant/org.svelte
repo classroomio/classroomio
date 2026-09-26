@@ -30,7 +30,8 @@
     callout,
     links,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: OrgLandingPageProps = $props();
 
   const featured = $derived(courses[0]);
@@ -55,7 +56,7 @@
   <main>
     <VibrantHero {hero} {labels}>
       {#snippet navigation()}
-        <VibrantNav {orgName} {logoUrl} {navItems} {authAction} />
+        <VibrantNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </VibrantHero>
 

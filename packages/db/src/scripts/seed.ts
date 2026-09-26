@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { seedAccount } from '@db/utils/seed/account';
 import { seedCompliance } from '@db/utils/seed/compliance';
 import { MVC_SECTION_ID, PANDAS_SECTION_ID, REACT_SECTION_ID, seedCourseSections } from '@db/utils/seed/courseSection';
+import { seedCourseraDummyCourses } from '@db/utils/seed/courseraDummyCourses';
 import { seedCourses } from '@db/utils/seed/course';
 import { seedExercise } from '@db/utils/seed/exercise';
 import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
@@ -59,6 +60,7 @@ const orderedSeeds = [
   'exercises',
   'questions',
   'templates',
+  'coursera-dummy-courses',
   'compliance',
   'react-people-progress',
   'learner-lifecycle',
@@ -108,7 +110,13 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
     organizationId: ENTERPRISE_ORG_ID,
     userIds: [ENTERPRISE_ADMIN_USER_ID, ENTERPRISE_STUDENT_USER_ID],
     groupIds: [],
-    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'compliance', 'newsfeed-threads']
+    seedNames: [
+      ...COMMON_ORGANIZATION_SEEDS,
+      'organization-plan',
+      'coursera-dummy-courses',
+      'compliance',
+      'newsfeed-threads'
+    ]
   },
   'skillshare-test': {
     organizationId: EARLY_ADOPTER_ORG_ID,
@@ -198,6 +206,7 @@ Flags:
   --exercises                Seed exercises
   --questions                Seed questions
   --templates                Seed exercise templates
+  --coursera-dummy-courses   Seed 40 dummy courses on coursera-test
   --compliance               Seed compliance demo data (coursera-test org)
   --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
   --react-people-progress    Seed React course students with varied progress (udemy-test)
@@ -349,6 +358,14 @@ const seedFunctions = {
   templates: async () => {
     console.log('📝 Seeding exercise templates...');
     await seedExerciseTemplates();
+  },
+  'coursera-dummy-courses': async () => {
+    console.log('📝 Seeding 40 dummy courses (coursera-test)...');
+    await seedCourseraDummyCourses({
+      enterpriseOrgId: ENTERPRISE_ORG_ID,
+      enterpriseAdminUserId: ENTERPRISE_ADMIN_USER_ID,
+      enterpriseStudentUserId: ENTERPRISE_STUDENT_USER_ID
+    });
   },
   compliance: async () => {
     console.log('📝 Seeding compliance demo data (coursera-test)...');

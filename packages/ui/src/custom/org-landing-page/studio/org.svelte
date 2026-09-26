@@ -29,7 +29,8 @@
     callout,
     links,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: OrgLandingPageProps = $props();
 </script>
 
@@ -37,7 +38,7 @@
   <main>
     <StudioHero {hero} {courses}>
       {#snippet navigation()}
-        <StudioNav {orgName} {logoUrl} {navItems} {authAction} />
+        <StudioNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </StudioHero>
 

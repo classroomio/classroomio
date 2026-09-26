@@ -32,6 +32,9 @@
     </Button>
     <div class="ui:flex ui:flex-col ui:gap-4">
       {@render children?.()}
+      {#if dialogState.rootState.error}
+        <p class="ui:text-center ui:text-sm ui:text-destructive" role="alert">{dialogState.rootState.error}</p>
+      {/if}
     </div>
   </Dialog.Content>
 </Dialog.Root>

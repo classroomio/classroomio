@@ -479,7 +479,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       overview: '<p>Annual HIPAA refresher covering PHI handling, breach reporting, and minimum-necessary access.</p>',
       groupId: HIPAA_GROUP_ID,
       isTemplate: false,
-      logo: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=600&q=70',
+      bannerImage: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=600&q=70',
       slug: 'hipaa-awareness-2026',
       metadata: {
         goals: '',
@@ -515,7 +515,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       overview: '<p>Twice-yearly SOC 2 security fundamentals. Required for engineering, IT, and operations.</p>',
       groupId: SOC2_GROUP_ID,
       isTemplate: false,
-      logo: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=600&q=70',
+      bannerImage: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=600&q=70',
       slug: 'soc2-security-basics',
       metadata: {
         goals: '',

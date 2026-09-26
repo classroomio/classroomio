@@ -9,7 +9,13 @@ vi.mock('@api/services/v1/courses/certificates', () => ({
 
 vi.mock('@api/services/organization/automation-usage', () => ({
   reserveMcpAutomationUsage: vi.fn(),
+  completeMcpAutomationUsage: vi.fn(),
   releaseMcpAutomationUsage: vi.fn()
+}));
+
+vi.mock('@api/services/organization/automation-key', () => ({
+  organizationApiKeyHasScopes: (keyScopes: string[], requiredScopes: string[]) =>
+    requiredScopes.every((scope) => keyScopes.includes(scope))
 }));
 
 vi.mock('@api/utils/certificate', () => ({
@@ -26,13 +32,19 @@ import {
   listPublicApiCourseCertificatesService,
   updatePublicApiCourseCertificateService
 } from '@api/services/v1/courses/certificates';
-import { releaseMcpAutomationUsage, reserveMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import {
+  completeMcpAutomationUsage,
+  releaseMcpAutomationUsage,
+  reserveMcpAutomationUsage
+} from '@api/services/organization/automation-usage';
+import { publicApiScopesMiddleware } from '@api/middlewares/public-api-scopes';
+import { v1McpUsageMiddleware } from '@api/middlewares/v1-mcp-usage';
 import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from '@api/routes/v1/courses/certificates';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const MEMBER_ID = '22222222-2222-4222-8222-222222222222';
-const CERTIFICATE_PATH = `/courses/${COURSE_ID}/certificate`;
-const CERTIFICATES_PATH = `/courses/${COURSE_ID}/certificates`;
+const CERTIFICATE_PATH = `/public-api/v1/courses/${COURSE_ID}/certificate`;
+const CERTIFICATES_PATH = `/public-api/v1/courses/${COURSE_ID}/certificates`;
 const DOWNLOAD_PATH = `${CERTIFICATES_PATH}/${MEMBER_ID}/download`;
 
 const buildKey = (type: TOrganizationApiKey['type'], scopes: TOrganizationApiKeyScope[]) =>
@@ -41,16 +53,22 @@ const buildKey = (type: TOrganizationApiKey['type'], scopes: TOrganizationApiKey
 const apiKey = buildKey('api', ['public_api:*']);
 const mcpKey = buildKey('mcp', ['course:read', 'course:certificate:read', 'course:certificate:write']);
 
-const buildApp = (automationKey: TOrganizationApiKey | null = apiKey) =>
-  new Hono()
+// Same middleware order as the real v1 router: key, route scope check, then MCP metering.
+const buildApp = (automationKey: TOrganizationApiKey | null = apiKey) => {
+  const v1 = new Hono()
     .use('*', async (c, next) => {
       c.set('orgId', 'org-1');
       c.set('actorId', 'actor-1');
       c.set('automationKey', automationKey);
       await next();
     })
+    .use('*', publicApiScopesMiddleware)
+    .use('*', v1McpUsageMiddleware)
     .route('/courses/:courseId/certificate', v1CourseCertificateRouter)
     .route('/courses/:courseId/certificates', v1CourseCertificatesRouter);
+
+  return new Hono().route('/public-api/v1', v1);
+};
 
 const jsonRequest = (method: string, body: unknown) => ({
   method,
@@ -62,6 +80,8 @@ describe('v1 course certificate routes', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.mocked(reserveMcpAutomationUsage).mockResolvedValue('usage-1');
+    vi.mocked(completeMcpAutomationUsage).mockResolvedValue(undefined);
+    vi.mocked(releaseMcpAutomationUsage).mockResolvedValue(undefined);
   });
 
   describe('settings', () => {
@@ -136,7 +156,7 @@ describe('v1 course certificate routes', () => {
     });
 
     it('rejects a non-uuid course id with 400', async () => {
-      const response = await buildApp().request('/courses/not-a-uuid/certificate');
+      const response = await buildApp().request('/public-api/v1/courses/not-a-uuid/certificate');
 
       expect(response.status).toBe(400);
       expect(getPublicApiCourseCertificateService).not.toHaveBeenCalled();
@@ -301,9 +321,8 @@ describe('v1 course certificate routes', () => {
 
       expect(response.status).toBe(200);
       expect(callOrder).toEqual(['reserve', 'handler']);
-      expect(reserveMcpAutomationUsage).toHaveBeenCalledWith(mcpKey, 'update_course_certificate', {
-        courseId: COURSE_ID
-      });
+      expect(reserveMcpAutomationUsage).toHaveBeenCalledWith(mcpKey, 'write', 'pending PATCH');
+      expect(completeMcpAutomationUsage).toHaveBeenCalledWith('usage-1', 'update_course_certificate', 1);
       expect(releaseMcpAutomationUsage).not.toHaveBeenCalled();
     });
 
@@ -317,9 +336,8 @@ describe('v1 course certificate routes', () => {
       const response = await buildApp(mcpKey).request(DOWNLOAD_PATH);
 
       expect(response.status).toBe(200);
-      expect(reserveMcpAutomationUsage).toHaveBeenCalledWith(mcpKey, 'download_course_certificate', {
-        courseId: COURSE_ID
-      });
+      expect(reserveMcpAutomationUsage).toHaveBeenCalledWith(mcpKey, 'read', 'pending GET');
+      expect(completeMcpAutomationUsage).toHaveBeenCalledWith('usage-1', 'download_course_certificate', 0);
     });
 
     it('returns 429 and skips the handler when the MCP limit is exceeded', async () => {
@@ -339,7 +357,7 @@ describe('v1 course certificate routes', () => {
 
       const response = await buildApp(mcpKey).request(CERTIFICATE_PATH, jsonRequest('PATCH', { isDownloadable: true }));
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(503);
       expect(updatePublicApiCourseCertificateService).not.toHaveBeenCalled();
     });
 
@@ -351,10 +369,9 @@ describe('v1 course certificate routes', () => {
       const response = await buildApp(mcpKey).request(CERTIFICATE_PATH);
 
       expect(response.status).toBe(404);
-      expect(reserveMcpAutomationUsage).toHaveBeenCalledWith(mcpKey, 'get_course_certificate', {
-        courseId: COURSE_ID
-      });
+      expect(reserveMcpAutomationUsage).toHaveBeenCalledWith(mcpKey, 'read', 'pending GET');
       expect(releaseMcpAutomationUsage).toHaveBeenCalledWith('usage-1');
+      expect(completeMcpAutomationUsage).not.toHaveBeenCalled();
     });
 
     it('keeps the handler response when releasing the reservation fails', async () => {
