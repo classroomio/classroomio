@@ -1,4 +1,7 @@
-import type { TLandingPage, TLandingPageReview } from '@cio/utils/validation/learning-path';
+import type { TLandingPage, TLandingPageInstructor, TLandingPageReview } from '@cio/utils/validation/learning-path';
+import { INSTRUCTOR_ROLE_LABEL } from '@cio/utils/constants';
+import { normalizeIntegerInput } from '@cio/utils/functions';
+import type { LearningPathDetail } from './types';
 
 export function dedupeSkills(skills: string[] | undefined): string[] | undefined {
   if (!skills) return undefined;
@@ -66,6 +69,10 @@ export function sanitizePathLandingPage(draft: TLandingPage): TLandingPage {
         coursesNo: item.coursesNo ?? undefined
       }))
       .filter((item) => item.name);
+
+    if (sanitized.instructors.length === 0) {
+      delete sanitized.instructors;
+    }
   }
 
   if (Array.isArray(sanitized.reviews)) {
@@ -75,11 +82,18 @@ export function sanitizePathLandingPage(draft: TLandingPage): TLandingPage {
         hide: Boolean(item.hide),
         name: item.name.trim(),
         avatar_url: item.avatar_url?.trim() ?? '',
-        rating: typeof item.rating === 'number' && !isNaN(item.rating) ? item.rating : null,
+        rating:
+          typeof item.rating === 'number' && !isNaN(item.rating)
+            ? Math.max(1, Math.min(5, Math.round(item.rating)))
+            : null,
         created_at: typeof item.created_at === 'number' ? item.created_at : Date.now(),
         description: item.description.trim()
       }))
       .filter((item) => item.name && item.description);
+  }
+
+  if (typeof sanitized.discount === 'number' && !isNaN(sanitized.discount)) {
+    sanitized.discount = normalizeIntegerInput(sanitized.discount, 0, 100);
   }
 
   if (Array.isArray(sanitized.faqs)) {
@@ -113,4 +127,102 @@ export function parseInitialPathReviews(landingPage: TLandingPage): TLandingPage
     description: item.description ?? '',
     hide: Boolean(item.hide)
   }));
+}
+
+/**
+ * Derives landing-page instructors from a path's courses.
+ * Pure — shared by `path-landing-editor.svelte` (initial draft) and
+ * `instructors-form.svelte` (empty-state fallback). Falls back to the
+ * org name/avatar or the current user's profile when no course
+ * instructor is available.
+ */
+export function getTutorsFromCourses(
+  path: LearningPathDetail,
+  fallbackOrg?: { name?: string | null; avatarUrl?: string | null } | null,
+  fallbackUser?: { fullname?: string | null; avatarUrl?: string | null } | null,
+  defaultRole: string = INSTRUCTOR_ROLE_LABEL.INSTRUCTOR
+): TLandingPageInstructor[] {
+  const list: TLandingPageInstructor[] = [];
+  const seenNames = new Set<string>();
+
+  for (const pathCourse of path.courses ?? []) {
+    const instructor = pathCourse.instructor;
+
+    if (instructor?.name && instructor.name.trim()) {
+      const normalized = instructor.name.trim().toLowerCase();
+
+      if (!seenNames.has(normalized)) {
+        seenNames.add(normalized);
+        list.push({
+          id: `inst_${list.length + 1}`,
+          name: instructor.name.trim(),
+          role: instructor.role?.trim() || defaultRole,
+          imgUrl: instructor.imgUrl?.trim() || '',
+          description: '',
+          coursesNo: 1
+        });
+      } else {
+        const existing = list.find((item) => item.name.trim().toLowerCase() === normalized);
+
+        if (existing && typeof existing.coursesNo === 'number') {
+          existing.coursesNo += 1;
+        }
+      }
+    }
+  }
+
+  if (list.length === 0 && (fallbackOrg?.name || fallbackUser?.fullname)) {
+    list.push({
+      id: 'inst_default',
+      name: fallbackOrg?.name || fallbackUser?.fullname || defaultRole,
+      role: defaultRole,
+      imgUrl: fallbackOrg?.avatarUrl || fallbackUser?.avatarUrl || '',
+      description: '',
+      coursesNo: path.courses?.length || 1
+    });
+  }
+
+  return list;
+}
+
+export interface ResolveInitialPathInstructorsOptions {
+  fallbackOrg?: { name?: string | null; avatarUrl?: string | null } | null;
+  fallbackUser?: { fullname?: string | null; avatarUrl?: string | null } | null;
+  defaultRole?: string;
+  draftInstructors?: TLandingPageInstructor[] | null;
+}
+
+/**
+ * Resolves the initial instructors for the landing-page draft:
+ * saved or draft instructors win, otherwise derive from courses/org/profile.
+ */
+export function resolveInitialPathInstructors(
+  path: LearningPathDetail,
+  options: ResolveInitialPathInstructorsOptions = {}
+): TLandingPageInstructor[] | undefined {
+  const { fallbackOrg, fallbackUser, defaultRole = INSTRUCTOR_ROLE_LABEL.INSTRUCTOR, draftInstructors } = options;
+
+  const rawInstructors = draftInstructors ?? path.landingPage?.instructors;
+  if (Array.isArray(rawInstructors) && rawInstructors.length > 0) {
+    return rawInstructors.map((item, idx): TLandingPageInstructor => {
+      const imgUrl =
+        item.imgUrl || ('avatarUrl' in item && typeof item.avatarUrl === 'string' ? item.avatarUrl : '') || '';
+      const description = item.description || ('bio' in item && typeof item.bio === 'string' ? item.bio : '') || '';
+      const rawCount = item.coursesNo ?? ('courseNo' in item && item.courseNo != null ? item.courseNo : undefined);
+      const coursesNo: string | number = typeof rawCount === 'number' || typeof rawCount === 'string' ? rawCount : 1;
+
+      return {
+        id: item.id ?? `inst_${idx + 1}`,
+        name: item.name,
+        role: item.role ?? defaultRole,
+        imgUrl,
+        description,
+        coursesNo
+      };
+    });
+  }
+
+  const derived = getTutorsFromCourses(path, fallbackOrg, fallbackUser, defaultRole);
+
+  return derived.length > 0 ? derived : undefined;
 }

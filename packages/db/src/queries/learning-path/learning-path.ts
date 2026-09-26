@@ -489,9 +489,18 @@ export async function deleteLearningPath(id: string, dbClient: DbOrTxClient = db
   try {
     // Deletion is soft: the row stays with status DELETED so
     // public reads (filtered to ACTIVE) hide it while history is preserved.
+    // Tombstone the slug to free the clean slug for reuse while preserving
+    // the original value for restore if need be (`original.split('__deleted_')[0]`).
+    const [existing] = await dbClient
+      .select({ slug: schema.learningPath.slug })
+      .from(schema.learningPath)
+      .where(eq(schema.learningPath.id, id));
+
+    const tombstoneSlug = existing?.slug ? `${existing.slug}__deleted_${Date.now()}` : null;
+
     const [deleted] = await dbClient
       .update(schema.learningPath)
-      .set({ status: 'DELETED', updatedAt: new Date().toISOString() })
+      .set({ status: 'DELETED', slug: tombstoneSlug, updatedAt: new Date().toISOString() })
       .where(eq(schema.learningPath.id, id))
       .returning();
 

@@ -8,7 +8,6 @@ import {
   resolveCertificateRecipientName,
   type CertificateRenderInput
 } from '@api/utils/certificate';
-import { ZLearningPathCertificateDesign } from '@cio/utils/validation/learning-path';
 
 import { assertCanManageLearningPath, resolveLearningPath } from './learning-path';
 
@@ -17,15 +16,14 @@ export type TIssuedLearningPathCertificate = {
   issuedAt: string;
 };
 
-async function resolvePathCertificateContext(pathId: string, userId: string, studentNameOverride?: string) {
+async function resolvePathCertificateContext(pathId: string, userId: string) {
   const path = await resolveLearningPath(pathId);
 
   const organization = await getOrganizationById(path.organizationId);
 
-  const parsedDesign = ZLearningPathCertificateDesign.safeParse(path.certificate?.design);
-  const design = resolveCertificateDesign(parsedDesign.success ? parsedDesign.data : undefined);
+  const design = resolveCertificateDesign(path.certificate);
 
-  const studentName = await resolveCertificateRecipientName(userId, studentNameOverride);
+  const studentName = await resolveCertificateRecipientName(userId);
 
   const orgName = organization?.name ?? '';
   const orgLogoUrl = organization?.avatarUrl ?? undefined;
@@ -74,17 +72,19 @@ export async function assertLearningPathCertificateDownloadAllowed(
 }
 
 /**
- * Preview render for path team members. Uses caller-supplied preview values.
+ * Preview render for path team members. A caller-supplied sample name is
+ * allowed here only (permission-gated); student download ignores it.
  */
 export async function assembleLearningPathOwnerPreviewRender(
   pathId: string,
   userId: string,
   body: TLearningPathCertificateDownloadRequest
 ): Promise<CertificateRenderInput> {
-  const context = await resolvePathCertificateContext(pathId, userId, body.studentName);
+  const context = await resolvePathCertificateContext(pathId, userId);
+  const previewName = body.studentName?.trim() || context.studentName;
 
   return buildCertificateRenderInput(context.design, {
-    recipientName: context.studentName,
+    recipientName: previewName,
     courseName: context.path.name,
     courseDescription: context.path.description ?? '',
     orgName: context.orgName,
@@ -104,7 +104,8 @@ export async function assembleLearningPathCertificateRender(
   body: TLearningPathCertificateDownloadRequest,
   issued: TIssuedLearningPathCertificate
 ): Promise<CertificateRenderInput> {
-  const context = await resolvePathCertificateContext(pathId, userId, body.studentName);
+  // Student download must resolve recipient name from profile, ignoring client input
+  const context = await resolvePathCertificateContext(pathId, userId);
 
   return buildCertificateRenderInput(context.design, {
     recipientName: context.studentName,
@@ -112,7 +113,7 @@ export async function assembleLearningPathCertificateRender(
     courseDescription: context.path.description ?? '',
     orgName: context.orgName,
     orgLogoUrl: context.orgLogoUrl,
-    studentId: issued.certificateId,
+    certificateId: issued.certificateId,
     issuedAt: issued.issuedAt
   });
 }

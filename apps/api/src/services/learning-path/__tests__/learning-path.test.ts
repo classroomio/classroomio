@@ -153,23 +153,39 @@ describe('learning-path services', () => {
   });
 
   describe('getPublicLearningPathBySlug', () => {
-    it('resolves unpublished paths like the course slug endpoint', async () => {
+    it('resolves published paths with courses and certificate counts', async () => {
       const mockPath = {
+        id: 'path-1',
+        organizationId: 'org-1',
+        name: 'Published Path',
+        description: 'Desc',
+        slug: 'published-path',
+        isPublished: true
+      };
+      mocks.getLearningPathBySlug.mockResolvedValue(mockPath);
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.countIssuedCertificates.mockResolvedValue(0);
+
+      const result = await getPublicLearningPathBySlug('org-1', 'published-path');
+
+      expect(mocks.getLearningPathBySlug).toHaveBeenCalledWith('org-1', 'published-path', transactionClient);
+      expect(result).toMatchObject({ id: 'path-1', courses: [], certificatesIssued: 0 });
+    });
+
+    it('throws 404 for unpublished paths', async () => {
+      mocks.getLearningPathBySlug.mockResolvedValue({
         id: 'path-1',
         organizationId: 'org-1',
         name: 'Draft Path',
         description: 'Desc',
         slug: 'draft-path',
         isPublished: false
-      };
-      mocks.getLearningPathBySlug.mockResolvedValue(mockPath);
-      mocks.listLearningPathCourses.mockResolvedValue([]);
-      mocks.countIssuedCertificates.mockResolvedValue(0);
+      });
 
-      const result = await getPublicLearningPathBySlug('org-1', 'draft-path');
-
-      expect(mocks.getLearningPathBySlug).toHaveBeenCalledWith('org-1', 'draft-path', transactionClient);
-      expect(result).toMatchObject({ id: 'path-1', courses: [], certificatesIssued: 0 });
+      await expect(getPublicLearningPathBySlug('org-1', 'draft-path')).rejects.toMatchObject({
+        code: ErrorCodes.LEARNING_PATH_NOT_FOUND,
+        statusCode: 404
+      });
     });
 
     it('throws 404 when the slug does not exist', async () => {
