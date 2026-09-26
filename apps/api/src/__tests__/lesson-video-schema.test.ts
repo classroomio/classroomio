@@ -125,3 +125,32 @@ describe('ZAttachLessonVideo', () => {
     expect(result.success && 'downloadUrl' in result.data).toBe(false);
   });
 });
+
+describe('draft seeding round-trips lesson videos', () => {
+  it('accepts the shape the snapshot builder emits for a seeded lesson', () => {
+    const result = ZCourseImportDraftLesson.safeParse({
+      externalId: 'lesson-1',
+      sectionExternalId: 'section-1',
+      title: 'Intro',
+      order: 1,
+      videos: [
+        { type: 'youtube', link: 'https://youtube.com/watch?v=abc' },
+        {
+          type: 'upload',
+          link: `/hls/${UPLOAD_ASSET_ID}/master.m3u8`,
+          assetId: UPLOAD_ASSET_ID,
+          metadata: { hls: true, hlsRenditions: ['p360', 'p720'] }
+        }
+      ]
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.success && result.data.videos).toHaveLength(2);
+  });
+
+  it('rejects a stored video the snapshot builder must drop rather than carry', () => {
+    expect(ZLessonVideoItem.safeParse({ type: 'generic', link: 'javascript:alert(1)' }).success).toBe(false);
+    expect(ZLessonVideoItem.safeParse({ type: 'not-a-provider', link: 'https://example.com' }).success).toBe(false);
+    expect(ZLessonVideoItem.safeParse({ link: 'https://example.com' }).success).toBe(false);
+  });
+});
