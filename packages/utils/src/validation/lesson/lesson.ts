@@ -8,35 +8,30 @@ import { ZSlug } from '../shared/slug';
 /** Uploaded videos are served through the HLS proxy as a root-relative path. */
 const HLS_PROXY_PATH = /^\/hls\/[\w./-]+$/;
 
-export const ZLessonVideoItem = z
-  .object({
-    type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
-    link: z.string().refine((value) => HLS_PROXY_PATH.test(value) || isAllowedHref(value), {
-      message: 'Video link scheme is not allowed'
-    }),
-    key: z.string().optional(),
-    assetId: z.string().uuid().optional(),
-    watchEnforced: z.boolean().optional(),
-    fileName: z.string().optional(),
-    metadata: z
-      .object({
-        svid: z.string().optional(),
-        title: z.string().optional(),
-        description: z.string().optional(),
-        thumbnailUrl: z.string().optional(),
-        duration: z.number().optional(),
-        aspectRatio: z.string().optional(),
-        createdAt: z.string().optional(),
-        videoId: z.string().optional(),
-        hash: z.string().optional()
-      })
-      .catchall(z.unknown())
-      .optional()
-  })
-  .refine((video) => video.type !== 'upload' || Boolean(video.assetId), {
-    message: 'An uploaded video must reference the assetId it was created from',
-    path: ['assetId']
-  });
+export const ZLessonVideoItem = z.object({
+  type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
+  link: z.string().refine((value) => HLS_PROXY_PATH.test(value) || isAllowedHref(value), {
+    message: 'Video link scheme is not allowed'
+  }),
+  key: z.string().optional(),
+  assetId: z.string().uuid().optional(),
+  watchEnforced: z.boolean().optional(),
+  fileName: z.string().optional(),
+  metadata: z
+    .object({
+      svid: z.string().optional(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      thumbnailUrl: z.string().optional(),
+      duration: z.number().optional(),
+      aspectRatio: z.string().optional(),
+      createdAt: z.string().optional(),
+      videoId: z.string().optional(),
+      hash: z.string().optional()
+    })
+    .catchall(z.unknown())
+    .optional()
+});
 export type TLessonVideoItem = z.infer<typeof ZLessonVideoItem>;
 
 export const ZLessonSlide = z

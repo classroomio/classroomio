@@ -125,32 +125,26 @@ describe('draft seeding round-trips lesson videos', () => {
   });
 });
 
-describe('an uploaded video cannot exist without its asset', () => {
-  it('rejects an upload entry carrying no assetId', () => {
+describe('legacy upload entries stay readable', () => {
+  it('accepts an upload entry that predates assetId, so an ordinary save is not blocked', () => {
     const result = ZLessonVideoItem.safeParse({
       type: 'upload',
-      link: `/hls/${UPLOAD_ASSET_ID}/master.m3u8`
+      link: 'https://storage.example.com/abc-intro.mp4?signature=x',
+      key: 'abc-intro.mp4'
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
-  it('rejects an upload entry on a draft lesson carrying no assetId', () => {
+  it('accepts a legacy upload entry through a draft lesson, so seeding does not drop it', () => {
     const result = ZCourseImportDraftLesson.safeParse({
       externalId: 'lesson-1',
       sectionExternalId: 'section-1',
       title: 'Intro',
       order: 1,
-      videos: [{ type: 'upload', link: '/hls/abc/master.m3u8' }]
+      videos: [{ type: 'upload', link: 'https://storage.example.com/abc.mp4', key: 'abc.mp4' }]
     });
 
-    expect(result.success).toBe(false);
-  });
-
-  it('still accepts external providers without an assetId', () => {
-    for (const type of ['youtube', 'vimeo', 'generic'] as const) {
-      const result = ZLessonVideoItem.safeParse({ type, link: 'https://example.com/video' });
-      expect(result.success, `${type} should not require an assetId`).toBe(true);
-    }
+    expect(result.success).toBe(true);
   });
 });
