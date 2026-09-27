@@ -14,10 +14,12 @@
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import Loader2Icon from '@lucide/svelte/icons/loader-2';
   import { t } from '$lib/utils/functions/translations';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import { currentOrg } from '$lib/utils/store/org';
   import { orgCertificatePresetsApi, type OrgCertificatePreset } from '$features/plugins';
-  import TemplateBrowserDialog, { type StarterTemplate } from './template-browser-dialog.svelte';
   import { resolveCertificateDesign } from '@cio/certificates';
+  import { STARTER_TEMPLATES, type StarterTemplate } from '../types';
 
   interface Props {
     orgSlug: string;
@@ -278,8 +280,34 @@
   </Page.Body>
 </Page.Root>
 
-<TemplateBrowserDialog
-  open={isCatalogOpen}
-  onClose={() => (isCatalogOpen = false)}
-  onSelectTemplate={handleSelectStarterTemplate}
-/>
+<Dialog.Root bind:open={isCatalogOpen}>
+  <Dialog.Content class="max-h-[85vh] max-w-4xl overflow-hidden p-0">
+    <Dialog.Header class="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
+      <Dialog.Title class="flex items-center gap-2 text-base font-bold">
+        <CompassIcon class="size-5 text-amber-500" />
+        <span>Built-in Template Presets</span>
+      </Dialog.Title>
+    </Dialog.Header>
+    <div class="grid max-h-[60vh] grid-cols-1 gap-4 overflow-y-auto p-6 sm:grid-cols-2 lg:grid-cols-3">
+      {#each STARTER_TEMPLATES as starter}
+        <button
+          type="button"
+          class="flex cursor-pointer flex-col rounded-xl border border-slate-200 bg-white p-4 text-left transition-all hover:border-amber-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+          onclick={() => handleSelectStarterTemplate(starter)}
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold">{starter.name}</span>
+            <Badge variant="outline" class="text-[10px]">{starter.style}</Badge>
+          </div>
+          <p class="mt-2 flex-1 text-xs text-slate-500">{starter.description}</p>
+          <div
+            class="mt-4 flex items-center justify-between border-t border-slate-100 pt-2 text-xs font-semibold text-amber-600 dark:border-slate-800"
+          >
+            <span>Use Template</span>
+            <ArrowRightIcon class="size-3.5" />
+          </div>
+        </button>
+      {/each}
+    </div>
+  </Dialog.Content>
+</Dialog.Root>

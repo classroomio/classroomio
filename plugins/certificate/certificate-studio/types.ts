@@ -1,41 +1,58 @@
 import type { CertificateTemplateId } from '@cio/certificates';
 
-export interface OrgCertificatePreset {
-  id: string;
-  orgId?: string;
-  name: string;
-  description?: string | null;
-  design?: Record<string, any> | null;
-  isActive?: boolean | null;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
-}
-
 export type ToolCategory = 'layout' | 'borders' | 'typography' | 'badges' | 'qrcode' | 'signatories' | 'background';
 
-export type SelectedElement =
-  | 'border'
-  | 'recipient'
-  | 'title'
-  | 'body'
-  | 'badge'
-  | 'qrcode'
-  | 'signatories'
-  | 'background'
-  | 'layout';
-
-export type TypographyTarget = 'title' | 'recipient' | 'body';
-
-export interface CertificateStudioProps {
-  orgSlug: string;
-  preset?: OrgCertificatePreset | null;
-  starterTemplateId?: CertificateTemplateId;
-  initialName?: string;
-  initialAccentColor?: string;
-  initialSubtitle?: string;
-  onSaveSuccess?: (preset: OrgCertificatePreset) => void;
-  onBack?: () => void;
+export interface StarterTemplate {
+  id: CertificateTemplateId;
+  name: string;
+  style: string;
+  description: string;
+  accentColor: string;
+  subtitle: string;
 }
+
+export const STARTER_TEMPLATES: StarterTemplate[] = [
+  {
+    id: 'classique',
+    name: 'Honors Diploma',
+    style: 'Victorian',
+    description: 'Traditional academic elegance with ornate borders, classic serif fonts, and gold leaf accents.',
+    accentColor: '#d4af37',
+    subtitle: 'Certificate of Achievement'
+  },
+  {
+    id: 'poster',
+    name: 'Modern Tech Badge',
+    style: 'Art Deco',
+    description: 'Geometric Bauhaus-inspired layout with bold framing, ideal for engineering and software courses.',
+    accentColor: '#ff5722',
+    subtitle: 'Verified Technical Credential'
+  },
+  {
+    id: 'noir',
+    name: 'Executive Master',
+    style: 'Executive Noir',
+    description: 'High-contrast dark atelier design tailored for executive leadership and professional certifications.',
+    accentColor: '#d4af37',
+    subtitle: 'Executive Leadership Diploma'
+  },
+  {
+    id: 'minimal',
+    name: 'Clean Fellowship',
+    style: 'Minimalist',
+    description: 'Contemporary typography with delicate hairline rules, generous whitespace, and pure simplicity.',
+    accentColor: '#0a0a0a',
+    subtitle: 'Professional Fellowship'
+  },
+  {
+    id: 'brutalist',
+    name: 'Architectural Certificate',
+    style: 'Raw Modern',
+    description: 'Bold typographic hierarchy and editorial structure tailored for design and creative disciplines.',
+    accentColor: '#ff4500',
+    subtitle: 'Certificate of Completion'
+  }
+];
 
 export const PALETTE_SWATCHES = [
   '#D4AF37',

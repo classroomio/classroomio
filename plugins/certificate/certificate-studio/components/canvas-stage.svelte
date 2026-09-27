@@ -1,203 +1,140 @@
 <script lang="ts">
   import { Certificate } from '@cio/ui';
-  import SparklesIcon from '@lucide/svelte/icons/sparkles';
+  import { Button } from '@cio/ui/base/button';
+  import * as Tooltip from '@cio/ui/base/tooltip';
+  import LayoutIcon from '@lucide/svelte/icons/layout';
+  import SquareIcon from '@lucide/svelte/icons/square';
+  import TypeIcon from '@lucide/svelte/icons/type';
+  import AwardIcon from '@lucide/svelte/icons/award';
+  import QrCodeIcon from '@lucide/svelte/icons/qr-code';
+  import PenToolIcon from '@lucide/svelte/icons/pen-tool';
+  import PaletteIcon from '@lucide/svelte/icons/palette';
+  import ZoomInIcon from '@lucide/svelte/icons/zoom-in';
+  import ZoomOutIcon from '@lucide/svelte/icons/zoom-out';
+  import Maximize2Icon from '@lucide/svelte/icons/maximize-2';
+  import { t } from '$lib/utils/functions/translations';
   import type { CertificateDesign } from '@cio/certificates';
-  import type { SelectedElement, ToolCategory } from '../types';
-  import FloatingToolsDock from './floating-tools-dock.svelte';
+  import type { ToolCategory } from '../types';
 
   interface Props {
-    compiledDesign: CertificateDesign;
+    design: CertificateDesign;
     previewData: Record<string, any>;
     zoom: number;
-    showGrid: boolean;
-    showRulers: boolean;
-    selectedElement: SelectedElement;
     selectedTool: ToolCategory;
     onSelectTool: (tool: ToolCategory) => void;
-    onHotspotClick: (element: SelectedElement) => void;
+    onZoomIn: () => void;
+    onZoomOut: () => void;
+    onFit: () => void;
     stageElement?: HTMLDivElement | null;
   }
 
   let {
-    compiledDesign,
+    design,
     previewData,
     zoom,
-    showGrid,
-    showRulers,
-    selectedElement,
     selectedTool,
     onSelectTool,
-    onHotspotClick,
+    onZoomIn,
+    onZoomOut,
+    onFit,
     stageElement = $bindable(null)
   }: Props = $props();
+
+  const TOOLS = [
+    { id: 'layout' as const, label: 'certificate_studio.tool_layout', icon: LayoutIcon },
+    { id: 'borders' as const, label: 'certificate_studio.tool_borders', icon: SquareIcon },
+    { id: 'typography' as const, label: 'certificate_studio.tool_typography', icon: TypeIcon },
+    { id: 'badges' as const, label: 'certificate_studio.tool_badges', icon: AwardIcon },
+    { id: 'qrcode' as const, label: 'certificate_studio.tool_qrcode', icon: QrCodeIcon },
+    { id: 'signatories' as const, label: 'certificate_studio.tool_signatories', icon: PenToolIcon },
+    { id: 'background' as const, label: 'certificate_studio.tool_background', icon: PaletteIcon }
+  ];
+
+  const zoomPercent = $derived(Math.round(zoom * 100));
 </script>
 
-<main class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-200/70 dark:bg-slate-950">
-  <!-- Top banner hint / canvas indicator -->
+<main class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-100 dark:bg-slate-950">
+  <!-- Top canvas status bar -->
   <div
-    class="flex h-8 shrink-0 items-center justify-between border-b border-black/5 bg-white/40 px-4 text-[11px] text-slate-500 dark:border-white/5 dark:bg-slate-900/40"
+    class="flex h-8 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/70 px-4 text-[11px] text-slate-500 backdrop-blur-xs dark:border-slate-800 dark:bg-slate-900/70"
   >
     <div class="flex items-center gap-2">
-      <span class="font-medium tracking-wide">INTERACTIVE REAL-TIME CANVAS (A4 Landscape: 1100 × 780)</span>
-      <span class="hidden font-mono text-[10px] text-slate-400 sm:inline">297mm × 210mm</span>
+      <span class="font-medium tracking-wide">CANVAS (A4 Landscape: 1100 × 780)</span>
+      <span class="font-mono text-[10px] text-slate-400">297mm × 210mm</span>
     </div>
-    <div class="flex items-center gap-1.5 text-amber-700/80 dark:text-amber-400/80">
-      <SparklesIcon class="size-3 text-amber-500" />
-      <span class="text-[10px]">Tip: Click any element to inspect</span>
+    <div class="flex items-center gap-1.5">
+      <Button variant="ghost" size="sm" class="h-6 w-6 p-0" onclick={onZoomOut} title="Zoom Out">
+        <ZoomOutIcon class="size-3.5 text-slate-500" />
+      </Button>
+      <span class="min-w-8 text-center font-mono text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+        {zoomPercent}%
+      </span>
+      <Button variant="ghost" size="sm" class="h-6 w-6 p-0" onclick={onZoomIn} title="Zoom In">
+        <ZoomInIcon class="size-3.5 text-slate-500" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="h-6 gap-1 px-1.5 text-[11px] text-slate-500"
+        onclick={onFit}
+        title="Fit to screen"
+      >
+        <Maximize2Icon class="size-3" />
+        <span>Fit</span>
+      </Button>
     </div>
   </div>
 
   <!-- Live Canvas Container -->
   <div
     bind:this={stageElement}
-    class="relative flex flex-1 items-center justify-center overflow-hidden p-4 select-none"
+    class="relative flex flex-1 items-center justify-center overflow-hidden bg-[radial-gradient(circle,#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] p-6 select-none dark:bg-[radial-gradient(circle,#334155_1px,transparent_1px)]"
   >
-    <!-- Grid Pattern Overlay if enabled -->
-    {#if showGrid}
-      <div
-        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,#94a3b8_1px,transparent_1px)] [background-size:24px_24px] opacity-40 dark:bg-[radial-gradient(circle,#475569_1px,transparent_1px)]"
-      ></div>
-    {/if}
-
-    <!-- Scaled Layout Sizer: ensures flexbox layout precisely matches visual scaled dimensions -->
+    <!-- Scaled Layout Sizer -->
     <div
-      class="relative flex shrink-0 items-center justify-center transition-[width,height] duration-100 ease-out"
+      class="relative flex shrink-0 items-center justify-center transition-[width,height] duration-75 ease-out"
       style:width="{Math.round(1100 * zoom)}px"
       style:height="{Math.round(780 * zoom)}px"
     >
-      <!-- Scaled Certificate Frame -->
       <div
-        class="absolute origin-center transition-transform duration-100 ease-out"
+        class="absolute origin-center rounded-xs shadow-2xl transition-transform duration-75 ease-out"
         style:width="1100px"
         style:height="780px"
         style:transform="scale({zoom})"
       >
-        <!-- Rulers / Safe Margin Guides if enabled -->
-        {#if showRulers}
-          <div
-            class="pointer-events-none absolute inset-6 z-20 rounded-xs border border-dashed border-sky-400/80 bg-sky-500/5 shadow-xs"
-          >
-            <span class="absolute top-1 left-2 font-mono text-[9px] font-bold text-sky-600 uppercase">
-              Safe Print Margin (25mm)
-            </span>
-          </div>
-        {/if}
-
-        <!-- Actual Certificate Renderer -->
-        <div class="h-full w-full rounded-sm shadow-2xl">
-          <Certificate.Preview
-            design={compiledDesign}
-            data={previewData}
-            zoom={1.0}
-            showControls={false}
-            class="h-full w-full"
-          />
-        </div>
-
-        <!-- Interactive Hotspot Click Overlays -->
-        <div class="absolute inset-0 z-10">
-          <!-- Border Hotspot (outer rim) -->
-          <button
-            type="button"
-            class="absolute inset-0 cursor-pointer border-4 border-transparent transition-colors hover:border-amber-400/40 {selectedElement ===
-            'border'
-              ? 'border-amber-500/70 shadow-inner'
-              : ''}"
-            title="Click to edit Border properties"
-            onclick={() => onHotspotClick('border')}
-            aria-label="Edit Border"
-          ></button>
-
-          <!-- Title Hotspot -->
-          <button
-            type="button"
-            class="absolute top-[80px] left-[150px] h-[90px] w-[800px] cursor-pointer rounded-sm border-2 border-transparent transition-colors hover:border-amber-400/50 hover:bg-amber-400/5 {selectedElement ===
-            'title'
-              ? 'border-amber-500 bg-amber-400/10'
-              : ''}"
-            title="Click to edit Title typography"
-            onclick={() => onHotspotClick('title')}
-            aria-label="Edit Title"
-          ></button>
-
-          <!-- Recipient Hotspot -->
-          <button
-            type="button"
-            class="absolute top-[210px] left-[150px] h-[100px] w-[800px] cursor-pointer rounded-sm border-2 border-transparent transition-colors hover:border-amber-400/50 hover:bg-amber-400/5 {selectedElement ===
-            'recipient'
-              ? 'border-amber-500 bg-amber-400/10'
-              : ''}"
-            title="Click to edit Recipient typography"
-            onclick={() => onHotspotClick('recipient')}
-            aria-label="Edit Recipient"
-          ></button>
-
-          <!-- Body / Description Hotspot -->
-          <button
-            type="button"
-            class="absolute top-[320px] left-[170px] h-[90px] w-[760px] cursor-pointer rounded-sm border-2 border-transparent transition-colors hover:border-amber-400/50 hover:bg-amber-400/5 {selectedElement ===
-            'body'
-              ? 'border-amber-500 bg-amber-400/10'
-              : ''}"
-            title="Click to edit Description typography"
-            onclick={() => onHotspotClick('body')}
-            aria-label="Edit Description"
-          ></button>
-
-          <!-- Signatories Hotspot -->
-          <button
-            type="button"
-            class="absolute bottom-[40px] left-[60px] h-[140px] w-[350px] cursor-pointer rounded-sm border-2 border-transparent transition-colors hover:border-amber-400/50 hover:bg-amber-400/5 {selectedElement ===
-            'signatories'
-              ? 'border-amber-500 bg-amber-400/10'
-              : ''}"
-            title="Click to edit Signatory 1"
-            onclick={() => onHotspotClick('signatories')}
-            aria-label="Edit Signatories"
-          ></button>
-
-          <!-- Badge / Seal Hotspot -->
-          <button
-            type="button"
-            class="absolute bottom-[40px] left-[480px] h-[140px] w-[140px] cursor-pointer rounded-full border-2 border-transparent transition-colors hover:border-amber-400/50 hover:bg-amber-400/5 {selectedElement ===
-            'badge'
-              ? 'border-amber-500 bg-amber-400/10'
-              : ''}"
-            title="Click to edit Badge / Seal"
-            onclick={() => onHotspotClick('badge')}
-            aria-label="Edit Badge"
-          ></button>
-
-          <!-- Signatory 2 Hotspot -->
-          <button
-            type="button"
-            class="absolute right-[60px] bottom-[40px] h-[140px] w-[350px] cursor-pointer rounded-sm border-2 border-transparent transition-colors hover:border-amber-400/50 hover:bg-amber-400/5 {selectedElement ===
-            'signatories'
-              ? 'border-amber-500 bg-amber-400/10'
-              : ''}"
-            title="Click to edit Signatory 2"
-            onclick={() => onHotspotClick('signatories')}
-            aria-label="Edit Signatories"
-          ></button>
-
-          <!-- QR Code Hotspot (bottom-right) -->
-          {#if compiledDesign.qrCode?.enabled}
-            <button
-              type="button"
-              class="absolute right-[30px] bottom-[30px] h-[55px] w-[160px] cursor-pointer rounded-sm border-2 border-transparent transition-colors hover:border-amber-400/50 hover:bg-amber-400/5 {selectedElement ===
-              'qrcode'
-                ? 'border-amber-500 bg-amber-400/10'
-                : ''}"
-              title="Click to edit QR Code settings"
-              onclick={() => onHotspotClick('qrcode')}
-              aria-label="Edit QR Code"
-            ></button>
-          {/if}
-        </div>
+        <Certificate.Preview {design} data={previewData} zoom={1.0} showControls={false} class="h-full w-full" />
       </div>
     </div>
   </div>
 
-  <!-- Figma-style Floating Toolbar Dock -->
-  <FloatingToolsDock {selectedTool} {onSelectTool} />
+  <!-- Floating Tools Dock -->
+  <div
+    class="pointer-events-auto absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl dark:border-slate-800/90 dark:bg-slate-900/95"
+  >
+    {#each TOOLS as tool (tool.id)}
+      <Tooltip.Root delayDuration={150}>
+        <Tooltip.Trigger>
+          <Button
+            variant={selectedTool === tool.id ? 'secondary' : 'ghost'}
+            size="icon"
+            class="size-9 rounded-full transition-all active:scale-95 {selectedTool === tool.id
+              ? 'bg-amber-100 text-amber-900 shadow-xs dark:bg-amber-950 dark:text-amber-200'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'}"
+            onclick={() => onSelectTool(tool.id)}
+            aria-label={$t(tool.label)}
+          >
+            <svelte:component
+              this={tool.icon}
+              class="size-4 shrink-0 {selectedTool === tool.id
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-slate-600 dark:text-slate-400'}"
+            />
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content side="top" sideOffset={8} class="text-xs font-medium">
+          {$t(tool.label)}
+        </Tooltip.Content>
+      </Tooltip.Root>
+    {/each}
+  </div>
 </main>

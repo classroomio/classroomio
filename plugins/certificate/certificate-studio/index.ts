@@ -31,7 +31,7 @@ export function certificateStudio(options: CertificateStudioOptions = {}): Plugi
     },
     routes: {
       '/': () => import('./components/certificate-templates-page.svelte'),
-      '/editor': () => import('./components/certificate-studio-editor-page.svelte')
+      '/editor': () => import('./components/certificate-studio-builder.svelte')
     }
   });
 }
