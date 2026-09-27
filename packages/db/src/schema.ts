@@ -3267,7 +3267,7 @@ export const cohortMember = pgTable(
   ]
 );
 
-export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
+export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT', 'LEARNING_PATH']);
 
 /**
  * Permanent, revocable share links for resource invites (course, cohort, ...).
@@ -3284,6 +3284,7 @@ export const inviteLink = pgTable(
     resourceType: inviteLinkResourceType('resource_type').notNull(),
     courseId: uuid('course_id'),
     cohortId: uuid('cohort_id'),
+    learningPathId: uuid('learning_path_id'),
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     /** Raw token, kept so staff can re-copy the link. */
     token: text().notNull(),
@@ -3318,6 +3319,11 @@ export const inviteLink = pgTable(
       name: 'invite_link_cohort_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'invite_link_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
       columns: [table.roleId],
       foreignColumns: [role.id],
       name: 'invite_link_role_id_fkey'
@@ -3326,11 +3332,13 @@ export const inviteLink = pgTable(
     // One link per (resource, role); NULLs are distinct so the two never collide.
     unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
     unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
+    unique('invite_link_learning_path_id_role_id_unique').on(table.learningPathId, table.roleId),
     check(
       'invite_link_resource_target_check',
       sql`(
-        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL)
-        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL)
+        (${table.resourceType}::text = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL AND ${table.learningPathId} IS NULL)
+        OR (${table.resourceType}::text = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.learningPathId} IS NULL)
+        OR (${table.resourceType}::text = 'LEARNING_PATH' AND ${table.learningPathId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.cohortId} IS NULL)
       )`
     ),
     index('idx_invite_link_organization_id').on(table.organizationId)
@@ -3625,7 +3633,7 @@ export const learningPathMember = pgTable(
       .primaryKey()
       .notNull(),
     learningPathId: uuid('learning_path_id').notNull(),
-    profileId: uuid('profile_id'),
+    profileId: uuid('profile_id').notNull(),
     email: text(),
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),

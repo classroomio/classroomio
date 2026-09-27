@@ -1,21 +1,16 @@
 import { ApiError, BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
-  AddPathCoursesRequest,
   CreateLearningPathData,
   CreateLearningPathInput,
   CreateLearningPathRequest,
   DeleteLearningPathRequest,
   GetLearningPathDetailRequest,
   LearningPathAccessOptions,
-  LearningPathCourseItem,
   LearningPathDetail,
   LearningPathSummary,
   ListLearningPathsRequest,
-  ReorderPathCoursesRequest,
-  RemovePathCourseRequest,
   UpdateLearningPathData,
-  UpdateLearningPathRequest,
-  UpdatePathCourseRequest
+  UpdateLearningPathRequest
 } from '../utils/types';
 import {
   ZCreateLearningPath,
@@ -36,7 +31,8 @@ export class LearningPathApi extends BaseApiWithErrors {
   private isPathDirty = $state(false);
   private inFlightPathRequests = new Map<string, Promise<LearningPathDetail | null>>();
   private pathRequestSeq = 0;
-  private activePathRequestSeq = 0;
+  private listedOrgId: string | null = null;
+  private listPathsRequestSeq = 0;
   isNotFound = $state(false);
   loadError = $state<string | null>(null);
 
@@ -52,7 +48,6 @@ export class LearningPathApi extends BaseApiWithErrors {
     }
 
     const navSeq = ++this.pathRequestSeq;
-    this.activePathRequestSeq = navSeq;
     this.isNotFound = false;
     this.loadError = null;
 
@@ -67,7 +62,7 @@ export class LearningPathApi extends BaseApiWithErrors {
 
       // Only the latest navigation may write shared state; earlier
       // requests resolve for their caller but leave currentPath alone.
-      if (this.activePathRequestSeq !== navSeq) {
+      if (this.pathRequestSeq !== navSeq) {
         return detail;
       }
 
@@ -85,7 +80,7 @@ export class LearningPathApi extends BaseApiWithErrors {
 
       return detail;
     } catch (error) {
-      if (this.activePathRequestSeq !== navSeq) {
+      if (this.pathRequestSeq !== navSeq) {
         return null;
       }
 
@@ -122,11 +117,16 @@ export class LearningPathApi extends BaseApiWithErrors {
     const orgId = organizationId || get(currentOrg).id;
     if (!orgId) return;
 
+    this.listedOrgId = orgId;
+    const seq = ++this.listPathsRequestSeq;
+
     await this.execute<ListLearningPathsRequest>({
       requestFn: () => classroomio['learning-path'].$get({ query: { organizationId: orgId } }),
       logContext: 'listing learning paths',
       onSuccess: (result) => {
-        this.paths = result.data;
+        if (this.listedOrgId === orgId && seq === this.listPathsRequestSeq) {
+          this.paths = result.data;
+        }
       }
     });
   }
@@ -270,100 +270,6 @@ export class LearningPathApi extends BaseApiWithErrors {
         this.invalidatePath(pathId);
         orgNavCountsApi.adjustCount('learningPaths', -1);
         snackbar.success('learningPath.snackbar.deleted');
-      }
-    });
-  }
-
-  async addCourses(pathId: string, courseIds: string[]): Promise<boolean> {
-    if (courseIds.length === 0) {
-      return false;
-    }
-
-    const res = await this.execute<AddPathCoursesRequest>({
-      requestFn: () =>
-        classroomio['learning-path'][':pathId']['courses'].$post({
-          param: { pathId },
-          json: { courseIds }
-        }),
-      logContext: 'adding courses to learning path',
-      onSuccess: async () => {
-        await this.refreshPath(pathId);
-        snackbar.success(
-          courseIds.length === 1 ? 'learningPath.snackbar.course_added' : 'learningPath.snackbar.courses_added'
-        );
-      }
-    });
-
-    return Boolean(res?.success);
-  }
-
-  async removeCourse(pathId: string, courseId: string): Promise<void> {
-    await this.execute<RemovePathCourseRequest>({
-      requestFn: () =>
-        classroomio['learning-path'][':pathId']['courses'][':courseId'].$delete({
-          param: { pathId, courseId }
-        }),
-      logContext: 'removing course from learning path',
-      onSuccess: () => {
-        if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.publicId === pathId)) {
-          const remaining = this.currentPath.courses.filter((c) => c.courseId !== courseId && c.id !== courseId);
-          this.currentPath.courses = remaining.map((c, idx) => ({ ...c, order: idx + 1 }));
-        }
-        this.paths = this.paths.map((p) => {
-          if (p.id === pathId || p.publicId === pathId) {
-            return { ...p, courseCount: Math.max(0, (p.courseCount || 1) - 1) };
-          }
-          return p;
-        });
-        snackbar.success('learningPath.snackbar.course_removed');
-      }
-    });
-  }
-
-  async reorderCourses(pathId: string, courseIds: string[]): Promise<void> {
-    await this.execute<ReorderPathCoursesRequest>({
-      requestFn: () =>
-        classroomio['learning-path'][':pathId']['courses']['order'].$put({
-          param: { pathId },
-          json: { courseIds }
-        }),
-      logContext: 'reordering courses in learning path',
-      onSuccess: () => {
-        if (this.currentPath && (this.currentPath.id === pathId || this.currentPath.publicId === pathId)) {
-          const courseMap = new Map(this.currentPath.courses.map((c) => [c.courseId, c]));
-          const reordered: LearningPathCourseItem[] = [];
-          courseIds.forEach((cid, index) => {
-            const match = courseMap.get(cid);
-            if (match) {
-              reordered.push({ ...match, order: index + 1 });
-            }
-          });
-          this.currentPath.courses = reordered;
-        }
-        snackbar.success('learningPath.snackbar.reordered');
-      }
-    });
-  }
-
-  async updateCourseOutcomes(pathId: string, courseId: string, outcomes: string[]): Promise<void> {
-    await this.execute<UpdatePathCourseRequest>({
-      requestFn: () =>
-        classroomio['learning-path'][':pathId']['courses'][':courseId'].$put({
-          param: { pathId, courseId },
-          json: { outcomes }
-        }),
-      logContext: 'updating course outcomes in learning path',
-      onSuccess: (result) => {
-        if (
-          result.data &&
-          this.currentPath &&
-          (this.currentPath.id === pathId || this.currentPath.publicId === pathId)
-        ) {
-          const index = this.currentPath.courses.findIndex((c) => c.courseId === courseId);
-          if (index !== -1) {
-            this.currentPath.courses[index].outcomes = result.data.outcomes;
-          }
-        }
       }
     });
   }

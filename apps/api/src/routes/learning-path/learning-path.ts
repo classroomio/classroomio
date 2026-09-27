@@ -9,6 +9,7 @@ import {
   ZUpdateLearningPathCourse,
   ZVerifyLearningPathCertificateParam
 } from '@cio/utils/validation/learning-path';
+import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
 
 import {
   addCoursesToPathService,
@@ -19,6 +20,7 @@ import {
   getEnrolledLearningPaths,
   getLearningPathDetail,
   getPathAnalyticsService,
+  getPathMemberDetailService,
   getPublicLearningPathBySlug,
   listOrgLearningPaths,
   listPathMembersService,
@@ -27,8 +29,15 @@ import {
   reorderPathCoursesService,
   updateLearningPathCourseService,
   updateLearningPathService,
-  verifyLearningPathCertificateService
+  verifyLearningPathCertificateService,
+  resolveLearningPath,
+  assertCanManageLearningPath
 } from '@api/services/learning-path';
+import {
+  fetchInviteLinkForResource,
+  getOrCreateInviteLinkForResource,
+  toggleInviteLinkForResource
+} from '@api/services/invite-link';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
@@ -38,6 +47,7 @@ import { z } from 'zod';
 const ZPathParam = z.object({ pathId: z.string().min(1) });
 const ZCourseParam = z.object({ pathId: z.string().min(1), courseId: z.string().uuid() });
 const ZMemberParam = z.object({ pathId: z.string().min(1), memberId: z.string().uuid() });
+const ZPersonParam = z.object({ pathId: z.string().min(1), personId: z.string().uuid() });
 const ZOrgQuery = z.object({ organizationId: z.string().uuid() });
 
 const ZSlugParam = z.object({ slug: z.string().min(1) });
@@ -334,6 +344,23 @@ export const learningPathRouter = new Hono()
   )
 
   /**
+   * GET /learning-path/:pathId/members/:personId
+   * Returns a member with per-course progress rows in path order
+   */
+  .get('/:pathId/members/:personId', authMiddleware, zValidator('param', ZPersonParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const { pathId, personId } = c.req.valid('param');
+      const detail = await getPathMemberDetailService(pathId, personId, user.id, orgRoles);
+
+      return c.json({ success: true, data: detail }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to get learning path member detail');
+    }
+  })
+
+  /**
    * DELETE /learning-path/:pathId/members/:memberId
    * Soft-removes a member from a learning path and revokes their grants
    */
@@ -365,4 +392,68 @@ export const learningPathRouter = new Hono()
     } catch (error) {
       return handleError(c, error, 'Failed to get learning path analytics');
     }
-  });
+  })
+
+  /**
+   * GET /learning-path/:pathId/invite-link
+   * Returns the path's shareable join link, or null if one was never created.
+   */
+  .get('/:pathId/invite-link', authMiddleware, zValidator('param', ZPathParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const { pathId } = c.req.valid('param');
+      const path = await resolveLearningPath(pathId);
+      await assertCanManageLearningPath(path, user.id, orgRoles);
+      const result = await fetchInviteLinkForResource('LEARNING_PATH', path.id);
+
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load learning path invite link');
+    }
+  })
+
+  /**
+   * POST /learning-path/:pathId/invite-link
+   * Returns the path's shareable join link, creating it on first call.
+   */
+  .post('/:pathId/invite-link', authMiddleware, zValidator('param', ZPathParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+      const { pathId } = c.req.valid('param');
+      const path = await resolveLearningPath(pathId);
+      await assertCanManageLearningPath(path, user.id, orgRoles);
+      const result = await getOrCreateInviteLinkForResource('LEARNING_PATH', path.id, user.id);
+
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to create learning path invite link');
+    }
+  })
+
+  /**
+   * PATCH /learning-path/:pathId/invite-link
+   * Disables or re-enables the path's shareable join link.
+   */
+  .patch(
+    '/:pathId/invite-link',
+    authMiddleware,
+    zValidator('param', ZPathParam),
+    zValidator('json', ZToggleInviteLink),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+        const { pathId } = c.req.valid('param');
+        const { isRevoked } = c.req.valid('json');
+        const path = await resolveLearningPath(pathId);
+        await assertCanManageLearningPath(path, user.id, orgRoles);
+        const result = await toggleInviteLinkForResource('LEARNING_PATH', path.id, isRevoked, user.id);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update learning path invite link');
+      }
+    }
+  );

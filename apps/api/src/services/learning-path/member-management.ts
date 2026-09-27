@@ -1,10 +1,14 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   enrollMember,
   getMemberById,
-  getPathCourseFunnelStats,
+  getPathAnalyticsStudents,
+  getPathAnalyticsSummary,
+  getPathCourseFunnelWithDropoff,
+  getPathMemberDetail,
+  getStuckItems,
   grantCourseAccess,
   initializeMemberCourseProgress,
   listLearningPathCourses,
@@ -15,6 +19,7 @@ import {
 import { getCourseGroupIds } from '@cio/db/queries/course/course';
 import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import type { TAddLearningPathMembers, TPathMembersQuery } from '@cio/utils/validation/learning-path';
+import type { TListMembersResult } from '@cio/db/queries/learning-path';
 
 import { assertCanManageLearningPath, resolveLearningPath } from './learning-path';
 
@@ -26,11 +31,82 @@ export async function listPathMembersService(
   userId: string,
   orgRoles: Record<string, number> | undefined,
   options: TPathMembersQuery
-) {
+): Promise<TListMembersResult> {
   const path = await resolveLearningPath(pathId);
   await assertCanManageLearningPath(path, userId, orgRoles);
 
   return await listLearningPathMembers(path.id, options);
+}
+
+/**
+ * Enrolls one profile into a learning path, initializes progress cache,
+ * and auto-enrolls into the path's courses when autoEnroll is enabled.
+ * Shared by manual adds, audience bulk imports and invite acceptance so every
+ * front creates exactly the same rows.
+ */
+export async function enrollProfileInLearningPath(
+  path: { id: string; autoEnroll: boolean; sequentialUnlock: boolean },
+  input: { profileId: string; email?: string | null; roleId: number; grantedByProfileId?: string },
+  dbClient: DbOrTxClient = db
+) {
+  const member = await enrollMember(
+    {
+      learningPathId: path.id,
+      profileId: input.profileId,
+      email: input.email ?? null,
+      roleId: input.roleId,
+      status: 'NOT_STARTED'
+    },
+    dbClient
+  );
+
+  const courses = await listLearningPathCourses(path.id, dbClient);
+
+  await initializeMemberCourseProgress(
+    member.id,
+    courses.map((course) => ({ id: course.id, order: course.order })),
+    path.sequentialUnlock,
+    dbClient
+  );
+
+  if (path.autoEnroll) {
+    const courseIds = courses.map((course) => course.courseId);
+    const courseGroups = courseIds.length > 0 ? await getCourseGroupIds(courseIds, dbClient) : [];
+
+    if (courseGroups.length > 0) {
+      const groupMemberValues = courseGroups
+        .filter((entry): entry is { courseId: string; groupId: string } => Boolean(entry.groupId))
+        .map((entry) => ({
+          groupId: entry.groupId,
+          profileId: input.profileId,
+          roleId: ROLE.STUDENT
+        }));
+
+      await insertGroupMembersOnConflictDoNothing(groupMemberValues, dbClient);
+
+      for (const entry of courseGroups) {
+        if (!entry.groupId) continue;
+
+        const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, input.profileId, dbClient);
+
+        if (groupMemberId) {
+          await grantCourseAccess(
+            {
+              groupmemberId: groupMemberId,
+              courseId: entry.courseId,
+              profileId: input.profileId,
+              source: 'LEARNING_PATH',
+              learningPathId: path.id,
+              grantedByProfileId: input.grantedByProfileId
+            },
+            dbClient
+          );
+        }
+      }
+    }
+  }
+
+  return member;
 }
 
 /**
@@ -52,70 +128,53 @@ export async function addPathMembersService(
   }
 
   return await db.transaction(async (tx) => {
-    const courses = await listLearningPathCourses(path.id, tx);
-    const courseIds = courses.map((course) => course.courseId);
-    const courseGroups = courseIds.length > 0 ? await getCourseGroupIds(courseIds, tx) : [];
-
     const enrolledMembers = [];
 
     for (const memberInput of payload.members) {
-      const member = await enrollMember(
+      if (!memberInput.profileId) {
+        throw new AppError(
+          'Learning path members must have a profile. Invite new learners by email so they join the path when they accept the invite.',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+
+      const member = await enrollProfileInLearningPath(
+        path,
         {
-          learningPathId: path.id,
-          profileId: memberInput.profileId ?? null,
+          profileId: memberInput.profileId,
           email: memberInput.email ?? null,
           roleId: memberInput.roleId,
-          status: 'NOT_STARTED'
+          grantedByProfileId: userId
         },
         tx
       );
 
       enrolledMembers.push(member);
-
-      if (memberInput.profileId) {
-        await initializeMemberCourseProgress(
-          member.id,
-          courses.map((course) => ({ id: course.id, order: course.order })),
-          path.sequentialUnlock,
-          tx
-        );
-
-        if (path.autoEnroll && courseGroups.length > 0) {
-          const groupMemberValues = courseGroups
-            .filter((entry): entry is { courseId: string; groupId: string } => Boolean(entry.groupId))
-            .map((entry) => ({
-              groupId: entry.groupId,
-              profileId: memberInput.profileId!,
-              roleId: ROLE.STUDENT
-            }));
-
-          await insertGroupMembersOnConflictDoNothing(groupMemberValues, tx);
-
-          for (const entry of courseGroups) {
-            if (!entry.groupId) continue;
-
-            const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, memberInput.profileId!, tx);
-
-            if (groupMemberId) {
-              await grantCourseAccess(
-                {
-                  groupmemberId: groupMemberId,
-                  courseId: entry.courseId,
-                  profileId: memberInput.profileId!,
-                  source: 'LEARNING_PATH',
-                  learningPathId: path.id,
-                  grantedByProfileId: userId
-                },
-                tx
-              );
-            }
-          }
-        }
-      }
     }
 
     return enrolledMembers;
   });
+}
+
+/**
+ * Returns a member with per-course progress rows in path order.
+ */
+export async function getPathMemberDetailService(
+  pathId: string,
+  personId: string,
+  userId: string,
+  orgRoles?: Record<string, number>
+) {
+  const path = await resolveLearningPath(pathId);
+  await assertCanManageLearningPath(path, userId, orgRoles);
+
+  const detail = await getPathMemberDetail(path.id, personId);
+  if (!detail) {
+    throw new AppError('Learning path member not found', ErrorCodes.LEARNING_PATH_MEMBER_NOT_FOUND, 404);
+  }
+
+  return detail;
 }
 
 /**
@@ -154,47 +213,17 @@ export async function getPathAnalyticsService(pathId: string, userId: string, or
   const path = await resolveLearningPath(pathId);
   await assertCanManageLearningPath(path, userId, orgRoles);
 
-  const members = await listLearningPathMembers(path.id);
-  const courses = await listLearningPathCourses(path.id);
-
-  const totalMembers = members.length;
-  let notStartedCount = 0;
-  let inProgressCount = 0;
-  let completedCount = 0;
-  let totalProgress = 0;
-
-  for (const m of members) {
-    if (m.status === 'COMPLETED') {
-      completedCount++;
-    } else if (m.status === 'IN_PROGRESS') {
-      inProgressCount++;
-    } else {
-      notStartedCount++;
-    }
-
-    totalProgress += m.progressPercent ?? 0;
-  }
-
-  const averageProgress = totalMembers > 0 ? Math.round(totalProgress / totalMembers) : 0;
-
-  const funnelStats = await getPathCourseFunnelStats(path.id);
-
-  const courseFunnel = funnelStats.map((f) => ({
-    courseId: f.courseId,
-    title: f.title,
-    order: f.order,
-    completedCount: f.completedCount,
-    completionRate: totalMembers > 0 ? Math.round((f.completedCount / totalMembers) * 100) : 0
-  }));
+  const [summary, funnel, stuckItems, students] = await Promise.all([
+    getPathAnalyticsSummary(path.id),
+    getPathCourseFunnelWithDropoff(path.id),
+    getStuckItems(path.id),
+    getPathAnalyticsStudents(path.id)
+  ]);
 
   return {
-    summary: {
-      totalMembers,
-      notStarted: notStartedCount,
-      inProgress: inProgressCount,
-      completed: completedCount,
-      averageProgress
-    },
-    courses: courseFunnel
+    summary,
+    funnel,
+    stuckItems,
+    students
   };
 }

@@ -25,7 +25,11 @@
   const resourceType = $derived(data.invite?.resource?.resourceType);
 
   const joinLabel = $derived(
-    resourceType === 'COHORT' ? $t('invite_link.join.cohort_button') : $t('invite_link.join.course_button')
+    resourceType === 'COHORT'
+      ? $t('invite_link.join.cohort_button')
+      : resourceType === 'LEARNING_PATH'
+        ? $t('invite_link.join.learning_path_button')
+        : $t('invite_link.join.course_button')
   );
 
   function buildAuthParams(pathname: string): string {

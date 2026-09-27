@@ -76,7 +76,7 @@ CREATE TABLE "learning_path_course" (
 CREATE TABLE "learning_path_member" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"learning_path_id" uuid NOT NULL,
-	"profile_id" uuid,
+	"profile_id" uuid NOT NULL,
 	"email" text,
 	"role_id" bigint NOT NULL,
 	"enrolled_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -144,3 +144,9 @@ CREATE INDEX "idx_learning_path_member_learning_path_id" ON "learning_path_membe
 CREATE INDEX "idx_learning_path_member_profile_id" ON "learning_path_member" USING btree ("profile_id");--> statement-breakpoint
 CREATE INDEX "idx_learning_path_member_course_member_id" ON "learning_path_member_course" USING btree ("learning_path_member_id");--> statement-breakpoint
 CREATE INDEX "idx_learning_path_member_course_path_course_id" ON "learning_path_member_course" USING btree ("learning_path_course_id");
+ALTER TYPE "public"."INVITE_LINK_RESOURCE_TYPE" ADD VALUE 'LEARNING_PATH';--> statement-breakpoint
+ALTER TABLE "invite_link" ADD COLUMN "learning_path_id" uuid;--> statement-breakpoint
+ALTER TABLE "invite_link" ADD CONSTRAINT "invite_link_learning_path_id_fkey" FOREIGN KEY ("learning_path_id") REFERENCES "public"."learning_path"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "invite_link" ADD CONSTRAINT "invite_link_learning_path_id_role_id_unique" UNIQUE("learning_path_id","role_id");--> statement-breakpoint
+ALTER TABLE "invite_link" DROP CONSTRAINT "invite_link_resource_target_check";--> statement-breakpoint
+ALTER TABLE "invite_link" ADD CONSTRAINT "invite_link_resource_target_check" CHECK (("invite_link"."resource_type"::text = 'COURSE' AND "invite_link"."course_id" IS NOT NULL AND "invite_link"."cohort_id" IS NULL AND "invite_link"."learning_path_id" IS NULL) OR ("invite_link"."resource_type"::text = 'COHORT' AND "invite_link"."cohort_id" IS NOT NULL AND "invite_link"."course_id" IS NULL AND "invite_link"."learning_path_id" IS NULL) OR ("invite_link"."resource_type"::text = 'LEARNING_PATH' AND "invite_link"."learning_path_id" IS NOT NULL AND "invite_link"."course_id" IS NULL AND "invite_link"."cohort_id" IS NULL));--> statement-breakpoint

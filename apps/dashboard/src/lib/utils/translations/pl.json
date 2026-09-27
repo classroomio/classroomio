@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importuj użytkowników",
-      "description": "Dodaj uczniów do swojej organizacji, wprowadzając ich adresy e-mail. Opcjonalnie przypisz je do kursów i wyślij e-maile z zaproszeniami.",
+      "description": "Dodaj uczniów do swojej organizacji, wprowadzając ich adresy e-mail. Opcjonalnie przypisz ich do kursów, kohort lub ścieżek edukacyjnych i wyślij e-maile z zaproszeniem.",
       "emails_label": "Adresy e-mail",
       "emails_placeholder": "Wpisz adresy e-mail oddzielone przecinkami, znakami nowej linii lub średnikami\nnp. alice@example.com, bob@example.com",
       "course_access": "Dostęp do kursu",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} nowych zaproszeń, {assigned} istniejących studentów z dostępem do kursu, {pendingInvitesRenewed} odnowionych oczekujących zaproszeń (wysłano e-maile: {emailsSent})",
       "snackbar_no_emails": "Proszę podać przynajmniej jeden adres e-mail",
       "snackbar_failed": "Nie udało się zaimportować użytkowników",
-      "page_subtitle": "Dodaj wiele osób naraz przez e-mail, a potem przypisz im kursy lub kohorty, jeśli chcesz.",
+      "page_subtitle": "Dodaj wiele osób naraz przez e-mail, a potem przypisz im kursy, kohorty lub ścieżki edukacyjne, jeśli chcesz.",
       "cohort_access": "Dostęp do kohort",
       "no_cohorts": "Bez przypisania do kohorty",
       "all_cohorts": "Wszystkie kohorty",
       "select_cohorts": "Wybierz konkretne kohorty",
       "select_cohorts_placeholder": "Wybierz kohorty...",
+      "select_paths_placeholder": "Wybierz ścieżki edukacyjne...",
+      "path_access": "Dostęp do ścieżek edukacyjnych",
+      "no_paths": "Bez przypisania do ścieżki edukacyjnej",
+      "all_paths": "Wszystkie ścieżki edukacyjne",
+      "select_paths": "Wybierz konkretne ścieżki edukacyjne",
       "drop_csv": "Upuść plik CSV tutaj lub kliknij, aby wybrać jeden",
       "csv_hint": "Plik CSV w formacie UTF-8 z kolumną adresu e-mail. Maks. liczba wierszy: {rows}, 5 MB.",
       "download_template": "Pobierz szablon",
@@ -5402,11 +5407,13 @@
       "disabled": "Ten link z zaproszeniem został wyłączony.",
       "closed": "Nowi członkowie nie są już przyjmowani.",
       "succeeded": "Dołączyłeś",
-      "failed": "Nie udało się dołączyć. Spróbuj ponownie."
+      "failed": "Nie udało się dołączyć. Spróbuj ponownie.",
+      "learning_path_button": "Dołącz do ścieżki"
     },
     "load_failed": "Nie można załadować linku z zaproszeniem",
     "generate_failed": "Nie można utworzyć linku z zaproszeniem",
-    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem"
+    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem",
+    "learning_path_description": "Każda osoba posiadająca ten link może dołączyć do tej ścieżki edukacyjnej i wszystkich zawartych na niej kursów. Udostępnij zamiast wpisywać maile jeden po drugim."
   },
   "lms": {
     "view_landing_page": "Strona główna"
@@ -5620,7 +5627,117 @@
       "reordered": "Zaktualizowano kolejność kursów",
       "course_added": "Kurs dodany",
       "courses_added": "Dodano kursy",
-      "course_removed": "Kurs usunięty"
+      "course_removed": "Kurs usunięty",
+      "members_added": "Uczestnicy dodani do ścieżki",
+      "member_removed": "Uczestnik został usunięty ze ścieżki",
+      "tutors_added": "Tutorzy dodani do ścieżki",
+      "tutor_added": "Dodano tutora do ścieżki",
+      "tutor_removed": "Usunięto tutora ze ścieżki"
+    },
+    "analytics": {
+      "title": "Analityka",
+      "subtitle": "Jak uczniowie poruszają się po ścieżce.",
+      "empty": "Brak danych. Zarejestruj uczniów, a oni zaczną się tutaj pojawiać.",
+      "empty_desc": "Zapisz uczniów na tę ścieżkę, a ich postępy pojawią się tutaj.",
+      "stuck": {
+        "title": "Gdzie uczniowie utknęli",
+        "subtitle": "Lekcje i ćwiczenia blokujące obecnie najwięcej uczniów.",
+        "badge": "{count} utknęło",
+        "lesson_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} zatrzymali się na tej lekcji.",
+        "exercise_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} wykonują to ćwiczenie od ponad 2 tygodni.",
+        "empty": "Obecnie żaden z uczniów nie utknął w miejscu. Wielki postęp!",
+        "empty_desc": "Gdy uczniowie utkną, pojawią się tutaj.",
+        "lesson_prefix": "Lekcja:",
+        "exercise_prefix": "Ćwiczenie:",
+        "showing": "Wyświetlanie od {start} do {end} z {total} elementów",
+        "table": {
+          "item": "Element",
+          "course": "Kurs"
+        }
+      },
+      "funnel": {
+        "title": "Lejek kursu",
+        "subtitle": "Ilu uczniów dotarło i ukończyło każdy kurs, w kolejności.",
+        "completed": "ukończone",
+        "in_progress": "w toku",
+        "drop": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} odpadli po kursie {n}",
+        "biggest_drop": "największy spadek",
+        "certificates": "Przyznano {count} {count, plural, one {certyfikat} few {certyfikaty} many {certyfikatów} other {certyfikatów}}"
+      },
+      "stat": {
+        "learners": "Uczniowie",
+        "active": "Aktywni uczniowie",
+        "active_desc": "pracował w ciągu ostatnich 14 dni",
+        "completion_rate": "Stopień ukończenia",
+        "completion_desc": "Ukończono {completed} z {total}",
+        "avg_time": "Średni czas ukończenia",
+        "avg_time_desc": "poprzez uzupełnienia",
+        "enrolled_desc": "+{count} w tym miesiącu",
+        "pending_line": "{count} {count, plural, one {oczekujące zaproszenie} few {oczekujące zaproszenia} many {oczekujących zaproszeń} other {oczekujących zaproszeń}}",
+        "team_desc": "{count, plural, one {# tutor w zespole ścieżki} few {# tutorzy w zespole ścieżki} many {# tutorów w zespole ścieżki} other {# tutorów w zespole ścieżki}}",
+        "avg_time_weeks": "{value} tyg.",
+        "avg_time_days": "{value} dni"
+      },
+      "students": {
+        "subtitle": "Postęp ścieżki na ucznia, bieżący kurs i data rejestracji.",
+        "title": "Przegląd postępów uczniów",
+        "courses_completed": "Ukończone kursy"
+      },
+      "member": {
+        "courses_title": "Kursy na tej ścieżce",
+        "remove": "Usuń ze ścieżki",
+        "status": {
+          "not_started": "Nie rozpoczęte",
+          "in_progress": "W toku",
+          "completed": "Ukończono",
+          "locked": "Zablokowane"
+        },
+        "export": "Eksportuj plik CSV",
+        "progress_label": "Postęp ścieżki"
+      },
+      "export": {
+        "status": "Status"
+      }
+    },
+    "people": {
+      "title": "Ludzie",
+      "subtitle": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} zarejestrowani na tej ścieżce",
+      "info_banner": "Dodanie ucznia do tej ścieżki automatycznie rejestruje go na wszystkich {count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}. Usunięcie ich powoduje zachowanie dostępu do kursu i postępów.",
+      "search_placeholder": "Szukaj według nazwy lub adresu e-mail…",
+      "empty": "Nie zapisano jeszcze żadnych uczniów. Aby rozpocząć, dodaj uczniów.",
+      "no_results": "Żaden uczeń nie pasuje do Twojego wyszukiwania.",
+      "invite": {
+        "title": "Dodaj uczniów do ścieżki",
+        "bulk_title": "Zaproś e-mailem",
+        "bulk_description": "Wpisz adresy e-mail oddzielone przecinkami lub nowymi wierszami.",
+        "bulk_submit": "Dodaj uczniów"
+      },
+      "remove": {
+        "title": "Usuń ucznia",
+        "title_non_student": "Usuń członka",
+        "confirm": "Czy na pewno chcesz usunąć {name} z tej ścieżki szkoleniowej? Zachowają dostęp do kursu i postępy.",
+        "confirm_non_student": "Czy na pewno chcesz usunąć {name} z tej ścieżki? Ta osoba straci dostęp do zarządzania tą ścieżką.",
+        "cancel": "Anuluj",
+        "yes": "Usuń"
+      },
+      "badge": {
+        "certificate_earned": "Certyfikat zdobyty",
+        "not_started": "Nie rozpoczęte"
+      },
+      "table": {
+        "learner": "Uczeń",
+        "progress": "Postęp ścieżki",
+        "current_course": "Aktualny kurs",
+        "enrolled": "Zapisany",
+        "actions": "Działania"
+      },
+      "filter": {
+        "all": "Cały postęp",
+        "not_started": "Nie rozpoczęte",
+        "in_progress": "W toku",
+        "completed": "Ukończono"
+      },
+      "info_title": "Informacje o rejestracji ścieżki"
     }
   }
 }

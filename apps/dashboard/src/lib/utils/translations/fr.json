@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importer des utilisateurs",
-      "description": "Ajoutez des étudiants à votre organisation en saisissant leurs adresses e-mail. Vous pouvez éventuellement les attribuer à des cours et envoyer des e-mails d'invitation.",
+      "description": "Ajoutez des étudiants à votre organisation en saisissant leurs adresses e-mail. Vous pouvez éventuellement les attribuer à des cours, des cohortes ou des parcours d'apprentissage et envoyer des e-mails d'invitation.",
       "emails_label": "Adresses e-mail",
       "emails_placeholder": "Saisissez les e-mails séparés par des virgules, des nouvelles lignes ou des points-virgules\npar ex. alice@exemple.com, bob@exemple.com",
       "course_access": "Accès aux cours",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} nouvelles invitations, {assigned} étudiants existants avec accès au cours, {pendingInvitesRenewed} invitations en attente renouvelées ({emailsSent} e-mails envoyés)",
       "snackbar_no_emails": "Veuillez saisir au moins une adresse e-mail",
       "snackbar_failed": "Échec de l'importation des utilisateurs",
-      "page_subtitle": "Ajoutez plusieurs personnes à la fois par e-mail, puis attribuez-leur des cours ou des cohortes si vous le souhaitez.",
+      "page_subtitle": "Ajoutez plusieurs personnes à la fois par e-mail, puis attribuez-leur des cours, des cohortes ou des parcours d'apprentissage si vous le souhaitez.",
       "cohort_access": "Accès aux cohortes",
       "no_cohorts": "Aucune attribution de cohorte",
       "all_cohorts": "Toutes les cohortes",
       "select_cohorts": "Sélectionnez des cohortes spécifiques",
       "select_cohorts_placeholder": "Choisissez des cohortes...",
+      "select_paths_placeholder": "Choisissez des parcours d'apprentissage...",
+      "path_access": "Accès aux parcours d'apprentissage",
+      "no_paths": "Aucune attribution de parcours d'apprentissage",
+      "all_paths": "Tous les parcours d'apprentissage",
+      "select_paths": "Sélectionnez des parcours d'apprentissage spécifiques",
       "drop_csv": "Déposez un fichier CSV ici, ou cliquez pour en choisir un.",
       "csv_hint": "Fichier CSV UTF-8 avec une colonne d'adresse e-mail. Jusqu'à {rows} lignes, 5 Mo.",
       "download_template": "Téléchargez le modèle",
@@ -5402,11 +5407,13 @@
       "disabled": "Ce lien d'invitation est désactivé.",
       "closed": "Les nouvelles inscriptions ne sont plus acceptées.",
       "succeeded": "Vous vous êtes inscrit(e)",
-      "failed": "Impossible de vous inscrire. Veuillez réessayer."
+      "failed": "Impossible de vous inscrire. Veuillez réessayer.",
+      "learning_path_button": "Rejoindre le parcours d'apprentissage"
     },
     "load_failed": "Impossible de charger le lien d'invitation",
     "generate_failed": "Impossible de créer le lien d'invitation",
-    "toggle_failed": "Impossible de mettre à jour le lien d'invitation"
+    "toggle_failed": "Impossible de mettre à jour le lien d'invitation",
+    "learning_path_description": "Toute personne disposant de ce lien peut rejoindre ce parcours d'apprentissage et tous les cours qu'il contient. Partagez-le au lieu de saisir les e-mails un par un."
   },
   "lms": {
     "view_landing_page": "Accueil"
@@ -5620,7 +5627,117 @@
       "reordered": "Ordre des cours mis à jour",
       "course_added": "Cours ajouté",
       "courses_added": "Cours ajoutés",
-      "course_removed": "Cours supprimé"
+      "course_removed": "Cours supprimé",
+      "members_added": "Apprenants ajoutés au parcours",
+      "member_removed": "Apprenant retiré du chemin",
+      "tutors_added": "Tuteurs ajoutés au parcours",
+      "tutor_added": "Tuteur ajouté au parcours",
+      "tutor_removed": "Tuteur retiré du parcours"
+    },
+    "analytics": {
+      "title": "Analyse",
+      "subtitle": "Comment les apprenants progressent tout au long du parcours.",
+      "empty": "Aucune donnée pour l'instant. Inscrivez des apprenants et ils commenceront à apparaître ici.",
+      "empty_desc": "Inscrivez des apprenants à ce parcours et leur progression s'affichera ici.",
+      "stuck": {
+        "title": "Où les apprenants sont bloqués",
+        "subtitle": "Les cours et exercices bloquent actuellement le plus grand nombre d’apprenants.",
+        "badge": "{count} bloqué",
+        "lesson_desc": "{count} {count, plural, =1 {apprenant} other {apprenants}} se sont arrêtés à cette leçon.",
+        "exercise_desc": "{count} {count, plural, =1 {apprenant} other {apprenants}} suivent cet exercice depuis plus de deux semaines.",
+        "empty": "Aucun apprenant n'est actuellement bloqué. Belle avancée !",
+        "empty_desc": "Quand des apprenants sont bloqués, ils apparaîtront ici.",
+        "lesson_prefix": "Leçon :",
+        "exercise_prefix": "Exercice :",
+        "showing": "Affichage de {start} à {end} sur {total} éléments",
+        "table": {
+          "item": "Élément",
+          "course": "Cours"
+        }
+      },
+      "funnel": {
+        "title": "Entonnoir de cours",
+        "subtitle": "Combien d’apprenants ont atteint et terminé chaque cours, dans l’ordre.",
+        "completed": "terminé",
+        "in_progress": "en cours",
+        "drop": "{count} {count, plural, =1 {apprenant} other {apprenants}} abandonnés après le cours {n}",
+        "biggest_drop": "la plus grosse baisse",
+        "certificates": "{count} {count, plural, =1 {certificat} other {certificats}} décernés"
+      },
+      "stat": {
+        "learners": "Apprenants",
+        "active": "Apprenants actifs",
+        "active_desc": "travaillé au cours des 14 derniers jours",
+        "completion_rate": "Taux d'achèvement",
+        "completion_desc": "{completed} sur {total} terminé",
+        "avg_time": "Temps moyen pour terminer",
+        "avg_time_desc": "à travers les achèvements",
+        "enrolled_desc": "+{count} ce mois-ci",
+        "pending_line": "{count} {count, plural, =1 {invitation en attente} other {invitations en attente}}",
+        "team_desc": "{count, plural, one {# tuteur dans l'équipe du parcours} other {# tuteurs dans l'équipe du parcours}}",
+        "avg_time_weeks": "{value} sem.",
+        "avg_time_days": "{value} jours"
+      },
+      "students": {
+        "subtitle": "Progression du parcours par apprenant, cours en cours et date d'inscription.",
+        "title": "Aperçu de la progression des apprenants",
+        "courses_completed": "Cours terminés"
+      },
+      "member": {
+        "courses_title": "Cours dans ce parcours",
+        "remove": "Supprimer du chemin",
+        "status": {
+          "not_started": "Pas commencé",
+          "in_progress": "En cours",
+          "completed": "Terminé",
+          "locked": "Verrouillé"
+        },
+        "export": "Exporter au format CSV",
+        "progress_label": "Progression du chemin"
+      },
+      "export": {
+        "status": "Statut"
+      }
+    },
+    "people": {
+      "title": "Les gens",
+      "subtitle": "{count} {count, plural, =1 {apprenant} other {apprenants}} inscrits dans ce parcours",
+      "info_banner": "L'ajout d'un apprenant à ce parcours l'inscrit automatiquement à tous les {count} {count, plural, =1 {cours} other {cours}}. Les supprimer préserve leur accès aux cours et leur progression.",
+      "search_placeholder": "Rechercher par nom ou par email…",
+      "empty": "Aucun apprenant inscrit pour l'instant. Ajoutez des apprenants pour commencer.",
+      "no_results": "Aucun apprenant ne correspond à votre recherche.",
+      "invite": {
+        "title": "Ajouter des apprenants au parcours",
+        "bulk_title": "Inviter par email",
+        "bulk_description": "Saisissez les adresses e-mail séparées par des virgules ou des nouvelles lignes.",
+        "bulk_submit": "Ajouter des apprenants"
+      },
+      "remove": {
+        "title": "Supprimer l'apprenant",
+        "title_non_student": "Retirer le membre",
+        "confirm": "Êtes-vous sûr de vouloir supprimer {name} de ce parcours de formation ? Ils conserveront leur accès aux cours et leur progression.",
+        "confirm_non_student": "Voulez-vous vraiment retirer {name} de ce parcours ? Cette personne perdra l'accès à la gestion de ce parcours.",
+        "cancel": "Annuler",
+        "yes": "Supprimer"
+      },
+      "badge": {
+        "certificate_earned": "Certificat obtenu",
+        "not_started": "Pas commencé"
+      },
+      "table": {
+        "learner": "Apprenant",
+        "progress": "Progression du chemin",
+        "current_course": "Cours actuel",
+        "enrolled": "Inscrit",
+        "actions": "Actions"
+      },
+      "filter": {
+        "all": "Tous les progrès",
+        "not_started": "Pas commencé",
+        "in_progress": "En cours",
+        "completed": "Terminé"
+      },
+      "info_title": "À propos de l'inscription au parcours"
     }
   }
 }

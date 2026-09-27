@@ -715,7 +715,7 @@
     },
     "import": {
       "title": "Importer brugere",
-      "description": "Tilføj elever til din organisation ved at indtaste deres e-mailadresser. Tildel dem eventuelt til kurser og send invitationsmails.",
+      "description": "Tilføj elever til din organisation ved at indtaste deres e-mailadresser. Tildel dem eventuelt kurser, kohorter eller læringsstier, og send invitationsmails.",
       "emails_label": "E-mail-adresser",
       "emails_placeholder": "Indtast e-mails adskilt af kommaer, nye linjer eller semikolon\nf.eks. alice@example.com, bob@example.com",
       "course_access": "Kursusadgang",
@@ -728,12 +728,17 @@
       "snackbar_success": "{imported} nye invitationer, {assigned} eksisterende studerende med kursusadgang, {pendingInvitesRenewed} afventende invitationer fornyet ({emailsSent} e-mails sendt)",
       "snackbar_no_emails": "Indtast venligst mindst én e-mailadresse",
       "snackbar_failed": "Kunne ikke importere brugere",
-      "page_subtitle": "Tilføj mange personer på én gang via e-mail, og tildel dem kurser eller kohorter, hvis du vil.",
+      "page_subtitle": "Tilføj mange personer på én gang via e-mail, og tildel dem kurser, kohorter eller læringsstier, hvis du vil.",
       "cohort_access": "Kohorteadgang",
       "no_cohorts": "Ingen kohortetildeling",
       "all_cohorts": "Alle kohorter",
       "select_cohorts": "Vælg specifikke kohorter",
       "select_cohorts_placeholder": "Vælg kohorter...",
+      "select_paths_placeholder": "Vælg læringsstier...",
+      "path_access": "Læringsstiadgang",
+      "no_paths": "Ingen læringsstitildeling",
+      "all_paths": "Alle læringsstier",
+      "select_paths": "Vælg specifikke læringsstier",
       "drop_csv": "Slip en CSV-fil her, eller klik for at vælge en",
       "csv_hint": "UTF-8 CSV med en e-mail-kolonne. Op til {rows} rækker, 5 MB.",
       "download_template": "Download skabelonen",
@@ -5402,11 +5407,13 @@
       "disabled": "Dette invitationslink er blevet deaktiveret.",
       "closed": "Dette accepterer ikke længere nye medlemmer.",
       "succeeded": "Du er tilmeldt",
-      "failed": "Kunne ikke deltage. Prøv igen."
+      "failed": "Kunne ikke deltage. Prøv igen.",
+      "learning_path_button": "Deltag i læringsstien"
     },
     "load_failed": "Kunne ikke indlæse invitationslinket",
     "generate_failed": "Kunne ikke oprette invitationslinket",
-    "toggle_failed": "Kunne ikke opdatere invitationslinket"
+    "toggle_failed": "Kunne ikke opdatere invitationslinket",
+    "learning_path_description": "Alle med dette link kan deltage i denne læringssti og hvert kursus i den. Del det i stedet for at indtaste e-mails én efter én."
   },
   "lms": {
     "view_landing_page": "Hjem"
@@ -5620,7 +5627,117 @@
       "reordered": "Kursusrækkefølgen er opdateret",
       "course_added": "Kursus tilføjet",
       "courses_added": "Kurser tilføjet",
-      "course_removed": "Kursus fjernet"
+      "course_removed": "Kursus fjernet",
+      "members_added": "Elever føjet til stien",
+      "member_removed": "Elev fjernet fra stien",
+      "tutors_added": "Undervisere tilføjet til stien",
+      "tutor_added": "Underviser tilføjet til forløbet",
+      "tutor_removed": "Underviser fjernet fra forløbet"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Hvordan eleverne bevæger sig gennem stien.",
+      "empty": "Ingen data endnu. Tilmeld elever, og de vil begynde at dukke op her.",
+      "empty_desc": "Tilmeld elever til dette forløb, så vises deres fremskridt her.",
+      "stuck": {
+        "title": "Hvor eleverne sidder fast",
+        "subtitle": "Lektioner og øvelser blokerer for flest elever lige nu.",
+        "badge": "{count} sidder fast",
+        "lesson_desc": "{count} {count, plural, =1 {elev} other {elever}} stoppede ved denne lektion.",
+        "exercise_desc": "{count} {count, plural, =1 {elev} other {elever}} har haft denne øvelse i gang i over 2 uger.",
+        "empty": "Ingen elever sidder fast i øjeblikket. Store fremskridt!",
+        "empty_desc": "Når elever sidder fast, vises de her.",
+        "lesson_prefix": "Lektion:",
+        "exercise_prefix": "Øvelse:",
+        "showing": "Viser {start} til {end} af {total} elementer",
+        "table": {
+          "item": "Element",
+          "course": "Kursus"
+        }
+      },
+      "funnel": {
+        "title": "Kursustragt",
+        "subtitle": "Hvor mange elever har nået og gennemført hvert kursus i rækkefølge.",
+        "completed": "afsluttet",
+        "in_progress": "i gang",
+        "drop": "{count} {count, plural, =1 {elev} other {elever}} faldt efter kursus {n}",
+        "biggest_drop": "største frafald",
+        "certificates": "{count} {count, plural, =1 {certifikat} other {certifikater}} tildelt"
+      },
+      "stat": {
+        "learners": "Elever",
+        "active": "Aktive elever",
+        "active_desc": "arbejdet inden for de sidste 14 dage",
+        "completion_rate": "Gennemførelsesgrad",
+        "completion_desc": "{completed} af {total} færdig",
+        "avg_time": "Gns. tid til at blive færdig",
+        "avg_time_desc": "på tværs af færdiggørelser",
+        "enrolled_desc": "+{count} denne måned",
+        "pending_line": "{count} {count, plural, =1 {afventende invitation} other {afventende invitationer}}",
+        "team_desc": "{count, plural, one {# underviser på path-teamet} other {# undervisere på path-teamet}}",
+        "avg_time_weeks": "{value} uger",
+        "avg_time_days": "{value} dage"
+      },
+      "students": {
+        "subtitle": "Kursusforløb pr. elev, nuværende kursus og tilmeldingsdato.",
+        "title": "Overblik over elevers fremskridt",
+        "courses_completed": "Gennemførte kurser"
+      },
+      "member": {
+        "courses_title": "Kurser på denne vej",
+        "remove": "Fjern fra stien",
+        "status": {
+          "not_started": "Ikke startet",
+          "in_progress": "I gang",
+          "completed": "Afsluttet",
+          "locked": "Låst"
+        },
+        "export": "Eksporter CSV",
+        "progress_label": "Sti fremskridt"
+      },
+      "export": {
+        "status": "Status"
+      }
+    },
+    "people": {
+      "title": "Mennesker",
+      "subtitle": "{count} {count, plural, =1 {elev} other {elever}} tilmeldt denne sti",
+      "info_banner": "Hvis du tilføjer en elev til denne sti, tilmeldes vedkommende automatisk i alle {count} {count, plural, =1 {kursus} other {kurser}}. Fjernelse af dem bevarer deres kursusadgang og fremskridt.",
+      "search_placeholder": "Søg på navn eller e-mail...",
+      "empty": "Ingen elever er tilmeldt endnu. Tilføj elever for at komme i gang.",
+      "no_results": "Ingen elever matcher din søgning.",
+      "invite": {
+        "title": "Tilføj elever til stien",
+        "bulk_title": "Inviter via e-mail",
+        "bulk_description": "Indtast e-mailadresser adskilt af kommaer eller nye linjer.",
+        "bulk_submit": "Tilføj elever"
+      },
+      "remove": {
+        "title": "Fjern eleven",
+        "title_non_student": "Fjern medlem",
+        "confirm": "Er du sikker på, at du vil fjerne {name} fra denne læringssti? De vil beholde deres kursusadgang og fremskridt.",
+        "confirm_non_student": "Er du sikker på, at du vil fjerne {name} fra dette forløb? Vedkommende mister adgangen til at administrere forløbet.",
+        "cancel": "Annuller",
+        "yes": "Fjern"
+      },
+      "badge": {
+        "certificate_earned": "Certifikat optjent",
+        "not_started": "Ikke startet"
+      },
+      "table": {
+        "learner": "Elev",
+        "progress": "Sti fremskridt",
+        "current_course": "Nuværende kursus",
+        "enrolled": "Tilmeldt",
+        "actions": "Handlinger"
+      },
+      "filter": {
+        "all": "Alle fremskridt",
+        "not_started": "Ikke startet",
+        "in_progress": "I gang",
+        "completed": "Afsluttet"
+      },
+      "info_title": "Om stitilmelding"
     }
   }
 }

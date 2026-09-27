@@ -1,4 +1,4 @@
-import { and, count, desc, eq, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
 import { randomBytes } from 'node:crypto';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -7,7 +7,7 @@ import { resolveSlugCollision, slugifyTitle } from '@cio/utils/validation';
 import { ROLE } from '@cio/utils/constants';
 
 import * as schema from '../../schema';
-import type { TLearningPath, TNewLearningPath } from '../../types';
+import type { TLearningPath, TLearningPathMember, TNewLearningPath } from '../../types';
 
 export interface TLearningPathWithCounts extends TLearningPath {
   courseCount: number;
@@ -330,6 +330,144 @@ export async function updateLearningPath(
     console.error('updateLearningPath error:', error);
     throw new Error(
       `Failed to update learning path "${id}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Returns the id, name and enrollment settings for learning paths in an organization.
+ * Used to validate audience-import path assignments and to label invite emails.
+ */
+export async function getOrgLearningPathsByIds(
+  orgId: string,
+  pathIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Array<Pick<TLearningPath, 'id' | 'name' | 'autoEnroll' | 'sequentialUnlock'>>> {
+  if (pathIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await dbClient
+      .select({
+        id: schema.learningPath.id,
+        name: schema.learningPath.name,
+        autoEnroll: schema.learningPath.autoEnroll,
+        sequentialUnlock: schema.learningPath.sequentialUnlock
+      })
+      .from(schema.learningPath)
+      .where(and(eq(schema.learningPath.organizationId, orgId), inArray(schema.learningPath.id, pathIds)));
+
+    return rows;
+  } catch (error) {
+    console.error('getOrgLearningPathsByIds error:', error);
+    throw new Error(
+      `Failed to get learning paths by organization: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Returns the organization ID for a learning path.
+ */
+export async function getLearningPathOrgId(
+  learningPathId: string,
+  dbClient: DbOrTxClient = db
+): Promise<string | null> {
+  try {
+    const [row] = await dbClient
+      .select({ organizationId: schema.learningPath.organizationId })
+      .from(schema.learningPath)
+      .where(eq(schema.learningPath.id, learningPathId))
+      .limit(1);
+
+    return row?.organizationId ?? null;
+  } catch (error) {
+    console.error('getLearningPathOrgId error:', error);
+    throw new Error(
+      `Failed to get organization ID for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Returns ordered list of active course UUIDs in a learning path (with transaction support).
+ */
+export async function getCourseIdsByLearningPathId(
+  learningPathId: string,
+  dbClient: DbOrTxClient = db
+): Promise<string[]> {
+  try {
+    const rows = await dbClient
+      .select({ courseId: schema.learningPathCourse.courseId })
+      .from(schema.learningPathCourse)
+      .where(
+        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
+      )
+      .orderBy(asc(schema.learningPathCourse.order));
+
+    return rows.map((r) => r.courseId);
+  } catch (error) {
+    console.error('getCourseIdsByLearningPathId error:', error);
+    throw new Error(
+      `Failed to get course ids in learning path: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Inserts a learning path member if not already present. Returns the created member or null if already exists.
+ */
+export async function insertLearningPathMemberIfAbsent(
+  data: { learningPathId: string; roleId: number; profileId: string; email: string },
+  dbClient: DbOrTxClient = db
+): Promise<TLearningPathMember | null> {
+  try {
+    const [member] = await dbClient
+      .insert(schema.learningPathMember)
+      .values({
+        learningPathId: data.learningPathId,
+        profileId: data.profileId,
+        email: data.email,
+        roleId: data.roleId,
+        status: 'NOT_STARTED',
+        enrolledAt: new Date().toISOString()
+      })
+      .onConflictDoNothing({
+        target: [schema.learningPathMember.learningPathId, schema.learningPathMember.profileId]
+      })
+      .returning();
+
+    return member ?? null;
+  } catch (error) {
+    console.error('insertLearningPathMemberIfAbsent error:', error);
+    throw new Error(
+      `Failed to insert learning path member: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Locks a learning path row for update and returns it.
+ * Used to prevent concurrent state changes during invite acceptance.
+ */
+export async function lockLearningPathStatusForAccept(
+  learningPathId: string,
+  dbClient: DbOrTxClient = db
+): Promise<{ id: string; isPublished: boolean } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.learningPath.id, isPublished: schema.learningPath.isPublished })
+      .from(schema.learningPath)
+      .where(eq(schema.learningPath.id, learningPathId))
+      .for('update')
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('lockLearningPathStatusForAccept error:', error);
+    throw new Error(
+      `Failed to lock learning path for accept: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

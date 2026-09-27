@@ -6444,6 +6444,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "learning_path_id": {
+          "name": "learning_path_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "role_id": {
           "name": "role_id",
           "type": "bigint",
@@ -6568,6 +6574,15 @@
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "invite_link_learning_path_id_fkey": {
+          "name": "invite_link_learning_path_id_fkey",
+          "tableFrom": "invite_link",
+          "tableTo": "learning_path",
+          "columnsFrom": ["learning_path_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -6586,13 +6601,18 @@
           "name": "invite_link_cohort_id_role_id_unique",
           "nullsNotDistinct": false,
           "columns": ["cohort_id", "role_id"]
+        },
+        "invite_link_learning_path_id_role_id_unique": {
+          "name": "invite_link_learning_path_id_role_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["learning_path_id", "role_id"]
         }
       },
       "policies": {},
       "checkConstraints": {
         "invite_link_resource_target_check": {
           "name": "invite_link_resource_target_check",
-          "value": "(\n        (\"invite_link\".\"resource_type\" = 'COURSE' AND \"invite_link\".\"course_id\" IS NOT NULL AND \"invite_link\".\"cohort_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\" = 'COHORT' AND \"invite_link\".\"cohort_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL)\n      )"
+          "value": "(\n        (\"invite_link\".\"resource_type\"::text = 'COURSE' AND \"invite_link\".\"course_id\" IS NOT NULL AND \"invite_link\".\"cohort_id\" IS NULL AND \"invite_link\".\"learning_path_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\"::text = 'COHORT' AND \"invite_link\".\"cohort_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL AND \"invite_link\".\"learning_path_id\" IS NULL)\n        OR (\"invite_link\".\"resource_type\"::text = 'LEARNING_PATH' AND \"invite_link\".\"learning_path_id\" IS NOT NULL AND \"invite_link\".\"course_id\" IS NULL AND \"invite_link\".\"cohort_id\" IS NULL)\n      )"
         }
       },
       "isRLSEnabled": false
@@ -7265,7 +7285,7 @@
           "name": "profile_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "email": {
           "name": "email",
@@ -13934,7 +13954,7 @@
     "public.INVITE_LINK_RESOURCE_TYPE": {
       "name": "INVITE_LINK_RESOURCE_TYPE",
       "schema": "public",
-      "values": ["COURSE", "COHORT"]
+      "values": ["COURSE", "COHORT", "LEARNING_PATH"]
     },
     "public.JOB_STATUS": {
       "name": "JOB_STATUS",
