@@ -23,9 +23,6 @@ import type {
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
-  TPublicApiCourseAnalyticsQuery,
-  TPublicApiCourseAnalyticsStudentsQuery,
-  TPublicApiOrgAnalyticsQuery,
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseMember,
   TPublicApiAddCourseToCohort,
@@ -34,13 +31,18 @@ import type {
   TPublicApiCohortNewsfeedQuery,
   TPublicApiCourseInvitesQuery,
   TPublicApiCourseMemberAnalyticsQuery,
+  TPublicApiCourseAnalyticsQuery,
+  TPublicApiCourseAnalyticsStudentsQuery,
   TPublicApiCourseMembersQuery,
+  TPublicApiCreateAsset,
   TPublicApiCreateCohort,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
   TPublicApiCreateCohortNewsfeedComment,
   TPublicApiCreateCourseInvite,
+  TPublicApiCreateLesson,
   TPublicApiInviteStudentsToCohort,
+  TPublicApiOrgAnalyticsQuery,
   TPublicApiListCourseCertificatesQuery,
   TPublicApiPaginationQuery,
   TPublicApiSetCohortInviteLinkRevoked,
@@ -50,7 +52,8 @@ import type {
   TPublicApiUpdateCohortMember,
   TPublicApiUpdateCohortNewsfeed,
   TPublicApiUpdateCourseCertificate,
-  TPublicApiUpdateCourseMember
+  TPublicApiUpdateCourseMember,
+  TPublicApiUpdateLesson
 } from '@cio/utils/validation/public-api';
 
 type ApiSuccess<T> = {
@@ -614,6 +617,42 @@ export class ClassroomIoApiClient {
     }
 
     return json;
+  }
+
+  // ─── Media and lessons (public API) ──────────────────────────────────────
+
+  async createAssetUpload(payload: TPublicApiCreateAsset) {
+    return this.request<{ assetId: string; uploadUrl: string; expiresAt: string }>('/public-api/v1/assets', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async createLesson(courseId: string, payload: Omit<TPublicApiCreateLesson, never>) {
+    return this.request(`/public-api/v1/courses/${encodeURIComponent(courseId)}/lessons`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLesson(courseId: string, lessonId: string, payload: Omit<TPublicApiUpdateLesson, never>) {
+    return this.request(
+      `/public-api/v1/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}`,
+      { method: 'PUT', body: payload }
+    );
+  }
+
+  /** Sends bytes straight to storage. No ClassroomIO header — the URL's signature is the auth. */
+  async putToPresignedUrl(presignedUrl: string, body: Buffer, contentType: string): Promise<void> {
+    const response = await fetch(presignedUrl, {
+      method: 'PUT',
+      headers: { 'content-type': contentType },
+      body: body as unknown as BodyInit
+    });
+
+    if (!response.ok) {
+      throw new ClassroomIoApiError(`Upload to storage failed with status ${response.status}`, response.status);
+    }
   }
 
   private async request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
