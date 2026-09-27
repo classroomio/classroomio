@@ -232,6 +232,13 @@
       "when": 1791626490131,
       "tag": "0032_early_adopter_claim",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1791748761307,
+      "tag": "0033_media_upload_pipeline",
+      "breakpoints": true
     }
   ]
 }
