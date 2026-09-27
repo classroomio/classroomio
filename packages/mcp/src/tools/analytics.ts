@@ -1,9 +1,9 @@
 import {
-  ZPublicApiAnalyticsFunnelQuery,
-  ZPublicApiAnalyticsRangeQuery,
-  ZPublicApiCourseParam,
   ZPublicApiLearnerAnalyticsParam,
-  ZPublicApiLoginActivityQuery,
+  ZPublicApiCourseAnalyticsQuery,
+  ZPublicApiCourseAnalyticsStudentsQuery,
+  ZPublicApiCourseParam,
+  ZPublicApiOrgAnalyticsQuery,
   ZPublicApiPaginationQuery
 } from '@cio/utils/validation/public-api';
 
@@ -15,19 +15,17 @@ import { PAGINATED, READ_ONLY, jsonContent } from './cohort-tool-text';
 const ORG_TEAM_RULE = 'The API key creator must be an org admin or tutor, otherwise 403.';
 const ORG_ADMIN_RULE = 'The API key creator must be an org admin, otherwise 403.';
 const COURSE_TEAM_RULE = 'The API key creator must be a course tutor/admin or an org admin, otherwise 403.';
-const RANGE = 'days (1-365, default 30) sets the window, counted back from today (UTC). May be up to 10 minutes stale.';
+const FRESHNESS = 'Each section may be up to 10 minutes old (login activity: 24 hours); meta.generatedAt says when.';
 
-export const ZAnalyticsRangeToolInput = ZPublicApiAnalyticsRangeQuery;
-export const ZAnalyticsFunnelToolInput = ZPublicApiAnalyticsFunnelQuery;
-export const ZLoginActivityToolInput = ZPublicApiLoginActivityQuery;
+export const ZOrgAnalyticsToolInput = ZPublicApiOrgAnalyticsQuery;
 export const ZListComplianceLearnersToolInput = ZPublicApiPaginationQuery;
 export const ZLearnerAnalyticsToolInput = ZPublicApiLearnerAnalyticsParam;
-export const ZCourseAnalyticsToolInput = ZPublicApiCourseParam;
-export const ZListCourseAnalyticsStudentsToolInput = ZPublicApiCourseParam.extend(ZPublicApiPaginationQuery.shape);
+export const ZCourseAnalyticsToolInput = ZPublicApiCourseParam.extend(ZPublicApiCourseAnalyticsQuery.shape);
+export const ZListCourseAnalyticsStudentsToolInput = ZPublicApiCourseParam.extend(
+  ZPublicApiCourseAnalyticsStudentsQuery.shape
+);
 
-const rangeShape = ZAnalyticsRangeToolInput.shape as unknown as ZodRawShapeCompat;
-const funnelShape = ZAnalyticsFunnelToolInput.shape as unknown as ZodRawShapeCompat;
-const loginActivityShape = ZLoginActivityToolInput.shape as unknown as ZodRawShapeCompat;
+const orgAnalyticsShape = ZOrgAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
 const complianceLearnersShape = ZListComplianceLearnersToolInput.shape as unknown as ZodRawShapeCompat;
 const learnerAnalyticsShape = ZLearnerAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
 const courseAnalyticsShape = ZCourseAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
@@ -35,114 +33,32 @@ const courseAnalyticsStudentsShape = ZListCourseAnalyticsStudentsToolInput.shape
 
 export function registerAnalyticsTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
-    'get_org_analytics_overview',
-    `Organization totals (courses, students, certificates issued), the top 5 courses by students with completion and certification rates, and the 5 most recent certificates. ${ORG_TEAM_RULE}`,
-    {},
-    READ_ONLY,
-    async () => {
-      const result = await apiClient.getOrgAnalyticsOverview();
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_org_traffic_analytics',
-    `Landing and course page views, unique visitors, enrollments and completions, with a per-day series. Counts come from a daily rollup, so today may be incomplete. ${RANGE} ${ORG_TEAM_RULE}`,
-    rangeShape,
+    'get_org_analytics',
+    `Organization analytics. Pick sections with include (default ["overview"]): overview (totals, top courses by students, recent certificates), traffic (views, visitors, enrollments, completions, per-day series), countries, funnel (landing → course page → enrollment → completion), courseTypes, topCourses (most viewed), loginActivity (logins by day of week, org admin only), compliance (status counts, org admin only). days is 7, 30, 90 or 365 (default 30); limit (1-20, default 5) caps list sections. Sections the key creator can't see are left out and listed in meta.omitted. ${FRESHNESS} ${ORG_TEAM_RULE}`,
+    orgAnalyticsShape,
     READ_ONLY,
     async (args) => {
-      const query = ZAnalyticsRangeToolInput.parse(args);
-      const result = await apiClient.getOrgTrafficAnalytics(query);
+      const query = ZOrgAnalyticsToolInput.parse(args);
+      const result = await apiClient.getOrgAnalytics(query);
       return jsonContent(result);
     }
   );
 
   server.tool(
-    'get_org_country_analytics',
-    `Views and enrollments by visitor country, top 20 countries by views. ${RANGE} ${ORG_TEAM_RULE}`,
-    rangeShape,
-    READ_ONLY,
-    async (args) => {
-      const query = ZAnalyticsRangeToolInput.parse(args);
-      const result = await apiClient.getOrgCountryAnalytics(query);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_org_funnel_analytics',
-    `Conversion funnel: landing view → course page view → enrollment → completion, with the conversion ratio between steps. Pass courseId for one course (the landing step is then left out). ${RANGE} ${ORG_TEAM_RULE}`,
-    funnelShape,
-    READ_ONLY,
-    async (args) => {
-      const query = ZAnalyticsFunnelToolInput.parse(args);
-      const result = await apiClient.getOrgFunnelAnalytics(query);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_org_course_type_analytics',
-    `Views, enrollments and completions grouped by course type. ${RANGE} ${ORG_TEAM_RULE}`,
-    rangeShape,
-    READ_ONLY,
-    async (args) => {
-      const query = ZAnalyticsRangeToolInput.parse(args);
-      const result = await apiClient.getOrgCourseTypeAnalytics(query);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_org_top_courses_analytics',
-    `The 10 most viewed course pages. For the courses with the most students, use get_org_analytics_overview. ${RANGE} ${ORG_TEAM_RULE}`,
-    rangeShape,
-    READ_ONLY,
-    async (args) => {
-      const query = ZAnalyticsRangeToolInput.parse(args);
-      const result = await apiClient.getOrgTopCoursesAnalytics(query);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_org_login_activity',
-    `Student logins grouped by day of week (Sun-Sat, always 7 entries) over the last days (1-365, default 90). May be up to 24 hours stale. ${ORG_ADMIN_RULE}`,
-    loginActivityShape,
-    READ_ONLY,
-    async (args) => {
-      const query = ZLoginActivityToolInput.parse(args);
-      const result = await apiClient.getOrgLoginActivity(query);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_org_compliance_overview',
-    `Compliance status counts across the organization's compliance courses, overall and per course, from each learner's latest cycle. Use list_org_compliance_learners for the learners. ${ORG_ADMIN_RULE}`,
-    {},
-    READ_ONLY,
-    async () => {
-      const result = await apiClient.getOrgComplianceOverview();
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'list_org_compliance_learners',
-    `One row per student per compliance course with their latest status, due date and validity, ordered by course title then learner name. ${PAGINATED} ${ORG_ADMIN_RULE}`,
+    'list_compliance_learners',
+    `One row per student per compliance course with their latest status, due date and validity, ordered by course title then learner name. For the counts, use get_org_analytics with include ["compliance"]. ${PAGINATED} ${ORG_ADMIN_RULE}`,
     complianceLearnersShape,
     READ_ONLY,
     async (args) => {
       const query = ZListComplianceLearnersToolInput.parse(args);
-      const result = await apiClient.listOrgComplianceLearners(query);
+      const result = await apiClient.listComplianceLearners(query);
       return jsonContent(result);
     }
   );
 
   server.tool(
     'get_learner_analytics',
-    `A learner's progress and grades across every course they're enrolled in within this organization, with per-exercise results. profileId must belong to the organization (404 otherwise). ${ORG_TEAM_RULE}`,
+    `A learner's progress and grades across every course they're enrolled in within this organization, with per-exercise results. profileId is the id list_compliance_learners and list_course_analytics_students return; 404 if it isn't in the organization. ${ORG_TEAM_RULE}`,
     learnerAnalyticsShape,
     READ_ONLY,
     async (args) => {
@@ -154,19 +70,19 @@ export function registerAnalyticsTools(server: McpServer, apiClient: ClassroomIo
 
   server.tool(
     'get_course_analytics',
-    `Course totals (tutors, students, lessons, exercises) and per-student averages for progress, exercise completion and grade. Use list_course_analytics_students for the per-student rows. ${COURSE_TEAM_RULE}`,
+    `Course analytics. Pick sections with include (default ["summary"]): summary (tutors, students, lessons, exercises, and per-student averages for progress, exercise completion and grade) and funnel (course page → enrollment → completion over days: 7, 30, 90 or 365, default 30). Use list_course_analytics_students for the per-student rows. ${FRESHNESS} ${COURSE_TEAM_RULE}`,
     courseAnalyticsShape,
     READ_ONLY,
     async (args) => {
-      const { courseId } = ZCourseAnalyticsToolInput.parse(args);
-      const result = await apiClient.getCourseAnalytics(courseId);
+      const { courseId, ...query } = ZCourseAnalyticsToolInput.parse(args);
+      const result = await apiClient.getCourseAnalytics(courseId, query);
       return jsonContent(result);
     }
   );
 
   server.tool(
     'list_course_analytics_students',
-    `Per-student progress, exercise submissions, average grade and last seen for a course, ordered by name. ${PAGINATED} ${COURSE_TEAM_RULE}`,
+    `Per-student progress, exercise submissions, average grade and last seen for a course, ordered by name. Paginated: page (default 1) and limit (default 20, max 50); the result includes pagination. ${COURSE_TEAM_RULE}`,
     courseAnalyticsStudentsShape,
     READ_ONLY,
     async (args) => {

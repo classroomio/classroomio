@@ -1,18 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@api/services/v1/analytics/analytics', () => ({
-  getPublicApiAnalyticsOverviewService: vi.fn(),
-  getPublicApiAnalyticsTrafficService: vi.fn(),
-  getPublicApiAnalyticsCountriesService: vi.fn(),
-  getPublicApiAnalyticsFunnelService: vi.fn(),
-  getPublicApiAnalyticsCourseTypesService: vi.fn(),
-  getPublicApiAnalyticsTopCoursesService: vi.fn(),
-  getPublicApiLoginActivityService: vi.fn(),
-  getPublicApiComplianceOverviewService: vi.fn(),
-  listPublicApiComplianceLearnersService: vi.fn(),
-  getPublicApiLearnerAnalyticsService: vi.fn(),
+vi.mock('@api/services/v1/analytics/org', () => ({
+  getPublicApiOrgAnalyticsService: vi.fn(),
+  listPublicApiComplianceLearnersService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/analytics/course', () => ({
   getPublicApiCourseAnalyticsService: vi.fn(),
   listPublicApiCourseAnalyticsStudentsService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/analytics/learner', () => ({
+  getPublicApiLearnerAnalyticsService: vi.fn()
 }));
 
 vi.mock('@api/services/v1/courses/course', () => ({
@@ -29,22 +28,25 @@ vi.mock('@api/services/v1/courses/course', () => ({
 import { Hono } from '@api/utils/hono';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
-  getPublicApiAnalyticsFunnelService,
-  getPublicApiAnalyticsOverviewService,
-  getPublicApiAnalyticsTrafficService,
   getPublicApiCourseAnalyticsService,
-  getPublicApiLearnerAnalyticsService,
-  getPublicApiLoginActivityService,
-  listPublicApiComplianceLearnersService,
   listPublicApiCourseAnalyticsStudentsService
-} from '@api/services/v1/analytics/analytics';
+} from '@api/services/v1/analytics/course';
+import {
+  getPublicApiOrgAnalyticsService,
+  listPublicApiComplianceLearnersService
+} from '@api/services/v1/analytics/org';
 import { getCourseService } from '@api/services/v1/courses/course';
+import { getPublicApiLearnerAnalyticsService } from '@api/services/v1/analytics/learner';
 import { v1AnalyticsRouter } from '@api/routes/v1/analytics';
 import { v1CoursesRouter } from '@api/routes/v1/courses';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 const PROFILE_ID = '22222222-2222-4222-8222-222222222222';
 const EMPTY_PAGE = { items: [], pagination: { page: 2, limit: 5, total: 0, totalPages: 0 } };
+const ORG_RESULT = {
+  data: { overview: { totalStudents: 3 } },
+  meta: { include: ['overview'], days: 30, limit: 5, omitted: [], generatedAt: '2026-09-27T10:00:00.000Z' }
+};
 
 const app = new Hono()
   .use('*', async (c, next) => {
@@ -55,59 +57,62 @@ const app = new Hono()
   .route('/analytics', v1AnalyticsRouter)
   .route('/courses', v1CoursesRouter);
 
-describe('v1 analytics routes', () => {
+describe('GET /analytics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('returns the overview for the key org and actor', async () => {
-    vi.mocked(getPublicApiAnalyticsOverviewService).mockResolvedValue({ totalStudents: 3 } as never);
+  it('defaults to the overview section with data, meta and a private cache header', async () => {
+    vi.mocked(getPublicApiOrgAnalyticsService).mockResolvedValue(ORG_RESULT as never);
 
-    const response = await app.request('/analytics/overview');
+    const response = await app.request('/analytics');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ success: true, data: { totalStudents: 3 } });
-    expect(getPublicApiAnalyticsOverviewService).toHaveBeenCalledWith('org-1', 'actor-1');
-  });
-
-  it('defaults the traffic window to 30 days and coerces days', async () => {
-    vi.mocked(getPublicApiAnalyticsTrafficService).mockResolvedValue({} as never);
-
-    await app.request('/analytics/traffic');
-    await app.request('/analytics/traffic?days=7');
-
-    expect(getPublicApiAnalyticsTrafficService).toHaveBeenNthCalledWith(1, 'org-1', 'actor-1', { days: 30 });
-    expect(getPublicApiAnalyticsTrafficService).toHaveBeenNthCalledWith(2, 'org-1', 'actor-1', { days: 7 });
-  });
-
-  it.each(['days=0', 'days=366', 'days=abc'])('rejects %s with 400', async (query) => {
-    const response = await app.request(`/analytics/traffic?${query}`);
-
-    expect(response.status).toBe(400);
-    expect(getPublicApiAnalyticsTrafficService).not.toHaveBeenCalled();
-  });
-
-  it('defaults login activity to 90 days', async () => {
-    vi.mocked(getPublicApiLoginActivityService).mockResolvedValue([] as never);
-
-    await app.request('/analytics/login-activity');
-
-    expect(getPublicApiLoginActivityService).toHaveBeenCalledWith('org-1', 'actor-1', { days: 90 });
-  });
-
-  it('passes the funnel courseId and rejects a non-uuid one', async () => {
-    vi.mocked(getPublicApiAnalyticsFunnelService).mockResolvedValue({ steps: [] } as never);
-
-    const ok = await app.request(`/analytics/funnel?courseId=${COURSE_ID}`);
-    const bad = await app.request('/analytics/funnel?courseId=nope');
-
-    expect(ok.status).toBe(200);
-    expect(bad.status).toBe(400);
-    expect(getPublicApiAnalyticsFunnelService).toHaveBeenCalledTimes(1);
-    expect(getPublicApiAnalyticsFunnelService).toHaveBeenCalledWith('org-1', 'actor-1', {
+    expect(response.headers.get('Cache-Control')).toBe('private, max-age=60');
+    expect(await response.json()).toEqual({ success: true, ...ORG_RESULT });
+    expect(getPublicApiOrgAnalyticsService).toHaveBeenCalledWith('org-1', 'actor-1', {
+      include: ['overview'],
       days: 30,
-      courseId: COURSE_ID
+      limit: 5
     });
+  });
+
+  it('parses a comma-separated include with days and limit', async () => {
+    vi.mocked(getPublicApiOrgAnalyticsService).mockResolvedValue(ORG_RESULT as never);
+
+    await app.request('/analytics?include=traffic,%20compliance&days=90&limit=10');
+
+    expect(getPublicApiOrgAnalyticsService).toHaveBeenCalledWith('org-1', 'actor-1', {
+      include: ['traffic', 'compliance'],
+      days: 90,
+      limit: 10
+    });
+  });
+
+  it.each(['days=14', 'days=0', 'days=abc', 'include=bogus', 'include=', 'limit=0', 'limit=21'])(
+    'rejects %s with 400',
+    async (query) => {
+      const response = await app.request(`/analytics?${query}`);
+
+      expect(response.status).toBe(400);
+      expect(getPublicApiOrgAnalyticsService).not.toHaveBeenCalled();
+    }
+  );
+
+  it('returns 403 when the service rejects the actor', async () => {
+    vi.mocked(getPublicApiOrgAnalyticsService).mockRejectedValue(
+      new AppError('Automation actor must be an organization admin or tutor', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403)
+    );
+
+    const response = await app.request('/analytics');
+
+    expect(response.status).toBe(403);
+  });
+});
+
+describe('GET /analytics/compliance/learners and /analytics/learners/:profileId', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
   it('paginates compliance learners', async () => {
@@ -138,41 +143,59 @@ describe('v1 analytics routes', () => {
     expect(missing.status).toBe(404);
     expect(getPublicApiLearnerAnalyticsService).toHaveBeenCalledWith('org-1', 'actor-1', { profileId: PROFILE_ID });
   });
-
-  it('returns 403 when the service rejects the actor', async () => {
-    vi.mocked(getPublicApiLoginActivityService).mockRejectedValue(
-      new AppError('Automation actor must be an organization admin', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403)
-    );
-
-    const response = await app.request('/analytics/login-activity');
-
-    expect(response.status).toBe(403);
-  });
 });
 
-describe('v1 course analytics routes', () => {
+describe('GET /courses/:courseId/analytics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('routes /courses/:courseId/analytics to course analytics, not the course detail handler', async () => {
-    vi.mocked(getPublicApiCourseAnalyticsService).mockResolvedValue({ totalStudents: 1 } as never);
+  it('routes to course analytics, not the course detail handler, defaulting to the summary', async () => {
+    const result = {
+      data: { summary: { totalStudents: 1 } },
+      meta: { include: ['summary'], days: 30, generatedAt: null }
+    };
+    vi.mocked(getPublicApiCourseAnalyticsService).mockResolvedValue(result as never);
 
     const response = await app.request(`/courses/${COURSE_ID}/analytics`);
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ success: true, data: { totalStudents: 1 } });
-    expect(getPublicApiCourseAnalyticsService).toHaveBeenCalledWith('org-1', 'actor-1', { courseId: COURSE_ID });
+    expect(await response.json()).toEqual({ success: true, ...result });
+    expect(getPublicApiCourseAnalyticsService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { courseId: COURSE_ID },
+      { include: ['summary'], days: 30 }
+    );
     expect(getCourseService).not.toHaveBeenCalled();
   });
 
-  it('paginates course analytics students', async () => {
+  it('accepts the funnel section and rejects org-only sections', async () => {
+    vi.mocked(getPublicApiCourseAnalyticsService).mockResolvedValue({ data: {}, meta: {} } as never);
+
+    const ok = await app.request(`/courses/${COURSE_ID}/analytics?include=summary,funnel&days=7`);
+    const bad = await app.request(`/courses/${COURSE_ID}/analytics?include=traffic`);
+
+    expect(ok.status).toBe(200);
+    expect(bad.status).toBe(400);
+    expect(getPublicApiCourseAnalyticsService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { courseId: COURSE_ID },
+      { include: ['summary', 'funnel'], days: 7 }
+    );
+  });
+
+  it('paginates course analytics students and caps limit at 50', async () => {
     vi.mocked(listPublicApiCourseAnalyticsStudentsService).mockResolvedValue(EMPTY_PAGE as never);
 
     const response = await app.request(`/courses/${COURSE_ID}/analytics/students?page=2&limit=5`);
+    const tooMany = await app.request(`/courses/${COURSE_ID}/analytics/students?limit=51`);
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ success: true, data: [], pagination: EMPTY_PAGE.pagination });
+    expect(tooMany.status).toBe(400);
+    expect(listPublicApiCourseAnalyticsStudentsService).toHaveBeenCalledTimes(1);
     expect(listPublicApiCourseAnalyticsStudentsService).toHaveBeenCalledWith(
       'org-1',
       'actor-1',

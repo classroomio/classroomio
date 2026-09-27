@@ -78,19 +78,16 @@ vi.mock('@api/services/v1/cohorts/invites', () => ({
   createPublicApiCohortInviteLinkService: mocks.ok(),
   setPublicApiCohortInviteLinkRevokedService: mocks.ok()
 }));
-vi.mock('@api/services/v1/analytics/analytics', () => ({
-  getPublicApiAnalyticsOverviewService: mocks.ok(),
-  getPublicApiAnalyticsTrafficService: mocks.ok(),
-  getPublicApiAnalyticsCountriesService: mocks.ok(),
-  getPublicApiAnalyticsFunnelService: mocks.ok(),
-  getPublicApiAnalyticsCourseTypesService: mocks.ok(),
-  getPublicApiAnalyticsTopCoursesService: mocks.ok(),
-  getPublicApiLoginActivityService: mocks.ok(),
-  getPublicApiComplianceOverviewService: mocks.ok(),
-  listPublicApiComplianceLearnersService: mocks.ok(),
-  getPublicApiLearnerAnalyticsService: mocks.ok(),
+vi.mock('@api/services/v1/analytics/org', () => ({
+  getPublicApiOrgAnalyticsService: mocks.ok(),
+  listPublicApiComplianceLearnersService: mocks.ok()
+}));
+vi.mock('@api/services/v1/analytics/course', () => ({
   getPublicApiCourseAnalyticsService: mocks.ok(),
   listPublicApiCourseAnalyticsStudentsService: mocks.ok()
+}));
+vi.mock('@api/services/v1/analytics/learner', () => ({
+  getPublicApiLearnerAnalyticsService: mocks.ok()
 }));
 
 import { v1Router } from '@api/routes/v1';
@@ -142,15 +139,9 @@ const CASES: [string, string, unknown, string][] = [
 ];
 
 const ANALYTICS_CASES: [string, string][] = [
-  ['/analytics/overview', 'get_org_analytics_overview'],
-  ['/analytics/traffic?days=7', 'get_org_traffic_analytics'],
-  ['/analytics/countries', 'get_org_country_analytics'],
-  [`/analytics/funnel?courseId=${X}`, 'get_org_funnel_analytics'],
-  ['/analytics/course-types', 'get_org_course_type_analytics'],
-  ['/analytics/top-courses', 'get_org_top_courses_analytics'],
-  ['/analytics/login-activity', 'get_org_login_activity'],
-  ['/analytics/compliance', 'get_org_compliance_overview'],
-  ['/analytics/compliance/learners', 'list_org_compliance_learners'],
+  ['/analytics', 'get_org_analytics'],
+  ['/analytics?include=traffic,compliance&days=7', 'get_org_analytics'],
+  ['/analytics/compliance/learners', 'list_compliance_learners'],
   [`/analytics/learners/${X}`, 'get_learner_analytics'],
   [`/courses/${C}/analytics`, 'get_course_analytics'],
   [`/courses/${C}/analytics/students`, 'list_course_analytics_students']

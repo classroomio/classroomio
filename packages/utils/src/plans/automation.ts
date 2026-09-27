@@ -80,15 +80,8 @@ export const MCP_TOOL_CREDIT_COST = {
   list_course_certificates: 0,
   download_course_certificate: 0,
   update_course_certificate: 1,
-  get_org_analytics_overview: 0,
-  get_org_traffic_analytics: 0,
-  get_org_country_analytics: 0,
-  get_org_funnel_analytics: 0,
-  get_org_course_type_analytics: 0,
-  get_org_top_courses_analytics: 0,
-  get_org_login_activity: 0,
-  get_org_compliance_overview: 0,
-  list_org_compliance_learners: 0,
+  get_org_analytics: 0,
+  list_compliance_learners: 0,
   get_learner_analytics: 0,
   get_course_analytics: 0,
   list_course_analytics_students: 0
@@ -187,15 +180,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_certificate' ||
     toolName === 'list_course_certificates' ||
     toolName === 'download_course_certificate' ||
-    toolName === 'get_org_analytics_overview' ||
-    toolName === 'get_org_traffic_analytics' ||
-    toolName === 'get_org_country_analytics' ||
-    toolName === 'get_org_funnel_analytics' ||
-    toolName === 'get_org_course_type_analytics' ||
-    toolName === 'get_org_top_courses_analytics' ||
-    toolName === 'get_org_login_activity' ||
-    toolName === 'get_org_compliance_overview' ||
-    toolName === 'list_org_compliance_learners' ||
+    toolName === 'get_org_analytics' ||
+    toolName === 'list_compliance_learners' ||
     toolName === 'get_learner_analytics' ||
     toolName === 'get_course_analytics' ||
     toolName === 'list_course_analytics_students'

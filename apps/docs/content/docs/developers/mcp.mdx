@@ -246,26 +246,21 @@ List tools take `page` and `limit` (default 20, max 100). The newsfeed is cursor
 
 Analytics tools:
 
-- `get_org_analytics_overview`
-- `get_org_traffic_analytics`
-- `get_org_country_analytics`
-- `get_org_funnel_analytics`
-- `get_org_course_type_analytics`
-- `get_org_top_courses_analytics`
-- `get_org_login_activity`
-- `get_org_compliance_overview`
-- `list_org_compliance_learners`
+- `get_org_analytics`
+- `list_compliance_learners`
 - `get_learner_analytics`
 - `get_course_analytics`
 - `list_course_analytics_students`
 
 Analytics tools are read-only and cost no credits. They need the key's `analytics:read` scope, which MCP keys have by default, and act as the person who created the key:
 
-- The organization overview, traffic, countries, funnel, course types, top courses, and a learner's analytics need them to be an org admin or tutor.
-- Login activity and compliance need them to be an org admin.
-- Course analytics need them to be a course tutor/admin or an org admin.
+- `get_org_analytics` and `get_learner_analytics` need them to be an org admin or tutor. The `loginActivity` and `compliance` sections need an org admin; for a tutor they are left out and listed in `meta.omitted`.
+- `list_compliance_learners` needs an org admin.
+- `get_course_analytics` and `list_course_analytics_students` need them to be a course tutor/admin or an org admin.
 
-Traffic-style tools take `days` (1-365, default 30; login activity defaults to 90). Results may be up to 10 minutes old (login activity up to 24 hours). The compliance learner list and the course student list take `page` and `limit` (default 20, max 100).
+`get_org_analytics` returns only the sections you ask for in `include` (default `overview`): `overview`, `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`, `loginActivity`, `compliance`. `get_course_analytics` takes `summary` and `funnel` (default `summary`). Both take `days` (7, 30, 90 or 365; default 30), and `get_org_analytics` takes `limit` (1-20, default 5) for its list sections.
+
+Each section is cached for up to 10 minutes (login activity: 24 hours), and `meta.generatedAt` says when the oldest one was computed. `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50.
 
 ## Draft Model
 

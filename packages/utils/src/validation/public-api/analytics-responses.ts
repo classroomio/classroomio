@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { PUBLIC_API_COURSE_ANALYTICS_SECTIONS, PUBLIC_API_ORG_ANALYTICS_SECTIONS } from './analytics';
 
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
 const timestamp = z.string();
@@ -172,7 +173,7 @@ export const ZPublicApiLearnerAnalyticsResponse = z.object({
   )
 });
 
-export const ZPublicApiCourseAnalyticsResponse = z.object({
+export const ZPublicApiCourseAnalyticsSummaryResponse = z.object({
   totalTutors: z.number(),
   totalStudents: z.number(),
   totalLessons: z.number(),
@@ -194,4 +195,45 @@ export const ZPublicApiCourseAnalyticsStudentResponse = z.object({
   averageGrade: z.number(),
   progressPercentage: z.number(),
   lastSeen: nullableTimestamp
+});
+
+const ZGeneratedAt = z
+  .string()
+  .nullable()
+  .describe('When the oldest returned section was computed (ISO 8601); null when no section was returned');
+
+export const ZPublicApiOrgAnalyticsResponse = z
+  .object({
+    overview: ZPublicApiAnalyticsOverviewResponse.optional(),
+    traffic: ZPublicApiAnalyticsTrafficResponse.optional(),
+    countries: z.array(ZPublicApiAnalyticsCountryResponse).optional(),
+    funnel: ZPublicApiAnalyticsFunnelResponse.optional(),
+    courseTypes: z.array(ZPublicApiAnalyticsCourseTypeResponse).optional(),
+    topCourses: z.array(ZPublicApiAnalyticsTopCourseResponse).optional(),
+    loginActivity: z.array(ZPublicApiLoginActivityResponse).optional(),
+    compliance: ZPublicApiComplianceOverviewResponse.optional()
+  })
+  .describe('Only the requested sections the caller may see are present');
+
+export const ZPublicApiOrgAnalyticsMeta = z.object({
+  include: z.array(z.enum(PUBLIC_API_ORG_ANALYTICS_SECTIONS)),
+  days: z.number(),
+  limit: z.number(),
+  omitted: z
+    .array(z.object({ section: z.enum(PUBLIC_API_ORG_ANALYTICS_SECTIONS), reason: z.enum(['requires_org_admin']) }))
+    .describe('Requested sections left out because the key creator may not see them'),
+  generatedAt: ZGeneratedAt
+});
+
+export const ZPublicApiCourseAnalyticsResponse = z
+  .object({
+    summary: ZPublicApiCourseAnalyticsSummaryResponse.optional(),
+    funnel: ZPublicApiAnalyticsFunnelResponse.optional()
+  })
+  .describe('Only the requested sections are present');
+
+export const ZPublicApiCourseAnalyticsMeta = z.object({
+  include: z.array(z.enum(PUBLIC_API_COURSE_ANALYTICS_SECTIONS)),
+  days: z.number(),
+  generatedAt: ZGeneratedAt
 });

@@ -158,3 +158,14 @@ export function dashAnalyticsKey(route: string, orgId: string, days: number, ext
 
 /** TTL for engagement analytics caches (10 min). */
 export const DASH_ANALYTICS_TTL_SECONDS = 600;
+
+/**
+ * Redis key for one public API analytics section, e.g. `public-api:analytics:traffic:{orgId}:30`.
+ * Value: `{ data, generatedAt }`. TTL: `PUBLIC_API_ANALYTICS_TTL_SECONDS`, or 24h for login activity.
+ */
+export function publicApiAnalyticsKey(section: string, ...parts: Array<string | number>): string {
+  return ['public-api:analytics', section, ...parts].join(':');
+}
+
+export const PUBLIC_API_ANALYTICS_TTL_SECONDS = 600;
+export const PUBLIC_API_LOGIN_ACTIVITY_TTL_SECONDS = 86_400;

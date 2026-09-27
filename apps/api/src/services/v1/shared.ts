@@ -79,14 +79,14 @@ export async function assertEmailBelongsToOrganization(orgId: string, email: str
 
 /**
  * Mirrors `orgTeamMemberMiddleware` for the key's creator: the actor must be an org admin or tutor.
- * Throws 401 without an actor and 403 otherwise.
+ * Returns the actor's role. Throws 401 without an actor and 403 otherwise.
  */
-export async function assertOrgTeamMember(orgId: string, actorId: string | null): Promise<void> {
+export async function assertOrgTeamMember(orgId: string, actorId: string | null): Promise<number> {
   assertAutomationActor(actorId);
 
   const roleId = await getOrganizationMemberRoleId(orgId, actorId);
   if (roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) {
-    return;
+    return roleId;
   }
 
   throw new AppError(

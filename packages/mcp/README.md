@@ -104,15 +104,8 @@ Current tools:
 - `get_cohort_invite_link`
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
-- `get_org_analytics_overview`
-- `get_org_traffic_analytics`
-- `get_org_country_analytics`
-- `get_org_funnel_analytics`
-- `get_org_course_type_analytics`
-- `get_org_top_courses_analytics`
-- `get_org_login_activity`
-- `get_org_compliance_overview`
-- `list_org_compliance_learners`
+- `get_org_analytics`
+- `list_compliance_learners`
 - `get_learner_analytics`
 - `get_course_analytics`
 - `list_course_analytics_students`
@@ -180,11 +173,12 @@ List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `l
 
 Analytics tools are read-only, cost no credits, and act as the key creator:
 
-- Organization overview, traffic, countries, funnel, course types, top courses, and `get_learner_analytics` need the key creator to be an org admin or tutor. (The dashboard server lets any org member read these; the tools follow the dashboard UI, where only admins and tutors reach the analytics pages.)
-- `get_org_login_activity`, `get_org_compliance_overview`, and `list_org_compliance_learners` need an org admin.
-- `get_course_analytics` and `list_course_analytics_students` need a course tutor/admin or an org admin.
-- Traffic-style tools take `days` (1-365, default 30; login activity defaults to 90) and may be up to 10 minutes stale (login activity up to 24 hours).
-- `list_org_compliance_learners` and `list_course_analytics_students` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
+- `get_org_analytics` returns the sections picked with `include` (default `overview`): `overview`, `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`, `loginActivity`, `compliance`. It takes `days` (7, 30, 90 or 365; default 30) and `limit` (1-20, default 5) for list sections, and returns `{ data, meta }`.
+- `get_org_analytics` and `get_learner_analytics` need the key creator to be an org admin or tutor. (The dashboard server lets any org member read these; the tools follow the dashboard UI, where only admins and tutors reach the analytics pages.) `loginActivity` and `compliance` need an org admin; for a tutor they are left out and listed in `meta.omitted`.
+- `list_compliance_learners` needs an org admin.
+- `get_course_analytics` (sections `summary`, `funnel`) and `list_course_analytics_students` need a course tutor/admin or an org admin.
+- Each section is cached for up to 10 minutes (login activity: 24 hours); `meta.generatedAt` says when the oldest one was computed.
+- `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50. Both return `{ data, pagination }`.
 
 ## Required Environment Variables
 

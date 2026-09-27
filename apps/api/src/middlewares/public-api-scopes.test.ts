@@ -18,8 +18,9 @@ function buildApp(scopes: string[]) {
     .put('/courses/:courseId', (c) => c.json({ success: true }))
     .delete('/courses/:courseId', (c) => c.json({ success: true }))
     .get('/audience', (c) => c.json({ success: true }))
-    .get('/analytics/overview', (c) => c.json({ success: true }))
-    .post('/analytics/overview', (c) => c.json({ success: true }))
+    .get('/analytics', (c) => c.json({ success: true }))
+    .post('/analytics', (c) => c.json({ success: true }))
+    .get('/analytics/learners/:profileId', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId/students', (c) => c.json({ success: true }))
@@ -54,10 +55,11 @@ describe('publicApiScopesMiddleware', () => {
   it('lets analytics:read reach only analytics GETs', async () => {
     const app = buildApp(['analytics:read']);
 
-    expect((await app.request('/public-api/v1/analytics/overview')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics')).status).toBe(200);
     expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(200);
     expect((await app.request('/public-api/v1/courses/c1/analytics/students')).status).toBe(200);
-    expect((await app.request('/public-api/v1/analytics/overview', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/learners/p1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics', { method: 'POST' })).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1/students')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1')).status).toBe(403);
     expect((await app.request('/public-api/v1/cohorts')).status).toBe(403);
@@ -66,7 +68,7 @@ describe('publicApiScopesMiddleware', () => {
   it('keeps cohort-scoped keys out of analytics', async () => {
     const app = buildApp(COHORT_SCOPES);
 
-    expect((await app.request('/public-api/v1/analytics/overview')).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(403);
   });
 

@@ -1,11 +1,17 @@
+export const TAG = 'Public API Analytics';
+
 export const ORG_TEAM_RULE =
   'The automation actor (the key creator) must be an org admin or tutor, or this fails with 403.';
 export const ORG_ADMIN_RULE = 'The automation actor (the key creator) must be an org admin, or this fails with 403.';
 export const COURSE_TEAM_RULE =
   'The automation actor (the key creator) must be a course tutor/admin or an org admin, or this fails with 403.';
-export const RANGE_NOTE = 'days (1-365, default 30) sets the window, counted back from today (UTC).';
-export const CACHE_NOTE = 'Results may be cached for up to 10 minutes.';
+export const CACHE_NOTE =
+  'Each section is cached for up to 10 minutes (login activity: 24 hours); meta.generatedAt says when the oldest one was computed.';
+export const LIST_CACHE_NOTE = 'Results may be cached for up to 10 minutes.';
 export const PAGINATION_NOTE = 'Paginated with page (default 1) and limit (default 20, max 100).';
+
+/** Tells clients and proxies how long they may reuse an analytics response. Private: it is org data. */
+export const ANALYTICS_CACHE_CONTROL = 'private, max-age=60';
 
 export const analyticsForbiddenResponses = {
   orgTeam: {
