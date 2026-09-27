@@ -2,12 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   createHlsAssetPlaceholder: vi.fn(),
+  deleteAsset: vi.fn(),
   generateVideoUploadPresignedUrl: vi.fn(),
   getStorageConfig: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/assets', () => ({
-  createHlsAssetPlaceholder: mocks.createHlsAssetPlaceholder
+  createHlsAssetPlaceholder: mocks.createHlsAssetPlaceholder,
+  deleteAsset: mocks.deleteAsset
 }));
 
 vi.mock('@cio/core/utils/s3', () => ({
@@ -39,6 +41,7 @@ describe('createPublicApiAssetUploadService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.createHlsAssetPlaceholder.mockResolvedValue({ id: ASSET_ID });
+    mocks.deleteAsset.mockResolvedValue({ id: ASSET_ID });
     mocks.generateVideoUploadPresignedUrl.mockResolvedValue('https://storage.example.com/signed?sig=x');
     mocks.getStorageConfig.mockReturnValue({ presignUploadExpiresSeconds: 3600 });
   });
@@ -58,7 +61,11 @@ describe('createPublicApiAssetUploadService', () => {
   it('derives the storage key from the asset id rather than issuing a separate one', async () => {
     const result = await createPublicApiAssetUploadService(ORG_ID, ACTOR_ID, payload);
 
-    expect(mocks.generateVideoUploadPresignedUrl).toHaveBeenCalledWith(`${ASSET_ID}/source.mp4`, 'video/mp4');
+    expect(mocks.generateVideoUploadPresignedUrl).toHaveBeenCalledWith(
+      `${ASSET_ID}/source.mp4`,
+      'video/mp4',
+      payload.byteSize
+    );
     expect(result.assetId).toBe(ASSET_ID);
     expect(result).not.toHaveProperty('fileKey');
   });
@@ -73,7 +80,11 @@ describe('createPublicApiAssetUploadService', () => {
       mimeType: mimeType as typeof payload.mimeType
     });
 
-    expect(mocks.generateVideoUploadPresignedUrl).toHaveBeenCalledWith(`${ASSET_ID}/source.${extension}`, mimeType);
+    expect(mocks.generateVideoUploadPresignedUrl).toHaveBeenCalledWith(
+      `${ASSET_ID}/source.${extension}`,
+      mimeType,
+      payload.byteSize
+    );
   });
 
   it('reports when the upload URL stops working', async () => {
@@ -86,6 +97,27 @@ describe('createPublicApiAssetUploadService', () => {
   it('refuses a request with no automation actor', async () => {
     await expect(createPublicApiAssetUploadService(ORG_ID, null, payload)).rejects.toMatchObject({ statusCode: 401 });
     expect(mocks.createHlsAssetPlaceholder).not.toHaveBeenCalled();
+  });
+
+  it('signs the declared size into the URL so the limit cannot be bypassed by uploading more', async () => {
+    await createPublicApiAssetUploadService(ORG_ID, ACTOR_ID, payload);
+
+    const [, , signedLength] = mocks.generateVideoUploadPresignedUrl.mock.calls[0];
+    expect(signedLength).toBe(payload.byteSize);
+  });
+
+  it('discards the reserved asset when signing fails, so no row is left without an upload URL', async () => {
+    mocks.generateVideoUploadPresignedUrl.mockRejectedValue(new Error('KMS unavailable'));
+
+    await expect(createPublicApiAssetUploadService(ORG_ID, ACTOR_ID, payload)).rejects.toThrow('KMS unavailable');
+    expect(mocks.deleteAsset).toHaveBeenCalledWith(ASSET_ID, ORG_ID);
+  });
+
+  it('still surfaces the signing failure when the cleanup delete also fails', async () => {
+    mocks.generateVideoUploadPresignedUrl.mockRejectedValue(new Error('KMS unavailable'));
+    mocks.deleteAsset.mockRejectedValue(new Error('row is gone'));
+
+    await expect(createPublicApiAssetUploadService(ORG_ID, ACTOR_ID, payload)).rejects.toThrow('KMS unavailable');
   });
 
   it('refuses a declared size over the upload limit before reserving anything', async () => {

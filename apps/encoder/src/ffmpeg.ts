@@ -5,6 +5,8 @@ import type { SourceInfo } from './plan';
 
 const execFileAsync = promisify(execFile);
 const MAX_OUTPUT_BYTES = 16 * 1024 * 1024;
+/** ffprobe reads untrusted media, so it gets a hard ceiling of its own. */
+const PROBE_TIMEOUT_MS = 120_000;
 
 const FFMPEG = process.env.FFMPEG_PATH ?? 'ffmpeg';
 const FFPROBE = process.env.FFPROBE_PATH ?? 'ffprobe';
@@ -34,7 +36,7 @@ export async function probeSource(inputPath: string): Promise<SourceInfo> {
   const { stdout } = await execFileAsync(
     FFPROBE,
     ['-v', 'error', '-print_format', 'json', '-show_format', '-show_streams', inputPath],
-    { maxBuffer: MAX_OUTPUT_BYTES }
+    { maxBuffer: MAX_OUTPUT_BYTES, timeout: PROBE_TIMEOUT_MS }
   );
 
   const probe = JSON.parse(stdout) as { streams?: ProbeStream[]; format?: { duration?: string } };
