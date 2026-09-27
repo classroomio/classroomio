@@ -46,8 +46,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run utils tests
-        run: pnpm --filter @cio/utils test
+      # Three utils test files reach `@cio/utils/constants`, a self-referencing
+      # import that resolves through dist, so the package must be built first.
+      - name: Build and test utils
+        run: pnpm --filter @cio/utils build && pnpm --filter @cio/utils test
 
       - name: Prepare dashboard env
         run: cp apps/dashboard/.env.example apps/dashboard/.env

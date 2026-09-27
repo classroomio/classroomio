@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { NonAutoGradableQuestionOffender } from '@cio/utils/validation/course';
 
 const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
@@ -58,7 +59,15 @@ describe('updateCourseWithTags', () => {
   });
 
   it('passes through the conversion offenders updateCourse reports', async () => {
-    const offenders = [{ questionId: 'question-1', title: 'Free text answer' }];
+    const offenders: NonAutoGradableQuestionOffender[] = [
+      {
+        questionId: 'question-1',
+        questionTitle: 'Describe your approach',
+        exerciseId: 'exercise-1',
+        exerciseTitle: 'Week 1 reflection',
+        typeId: 3
+      }
+    ];
     mocks.updateCourse.mockResolvedValue({
       course: { id: 'course-1', title: 'Updated course' },
       conversionOffenders: offenders
