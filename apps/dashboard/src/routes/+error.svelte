@@ -7,16 +7,21 @@
   import HeartCrack from '@lucide/svelte/icons/heart-crack';
 
   const isNotFound = $derived(page.status === 404);
-  const isCourseRoute = $derived(page.url.pathname.startsWith('/courses/'));
+  const isOrgSite = $derived(Boolean(page.data.isOrgSite));
 
   console.error('Error message:', page.error?.message);
   console.error('Error page:', page.url);
 
   function goHome() {
+    if (isOrgSite) {
+      goto('/');
+      return;
+    }
+
     window.location.href = 'https://classroomio.com';
   }
 
-  function goToLms() {
+  function continueLearning() {
     goto('/lms');
   }
 </script>
@@ -34,12 +39,15 @@
     layout="full-page"
     showLogo={true}
   >
-    <div class="flex gap-2">
+    <div class="flex items-center gap-2">
+      {#if isOrgSite}
+        <Button variant="link" onclick={continueLearning}>Continue Learning</Button>
+      {/if}
       <HoverableItem>
         {#snippet children(isHovered)}
-          <Button onclick={isCourseRoute ? goToLms : goHome}>
+          <Button onclick={goHome}>
             <HomeIcon {isHovered} size={16} ariaHidden={true} />
-            {isCourseRoute ? 'Go to LMS' : 'Go Home'}
+            Go Home
           </Button>
         {/snippet}
       </HoverableItem>
