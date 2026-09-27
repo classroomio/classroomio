@@ -1138,25 +1138,6 @@
 
       <SettingsSeparator />
 
-      <Field.Field id="markdown-export" class="scroll-mt-24" orientation="horizontal">
-        <Field.Content>
-          <Field.Label for="allow-markdown-export">
-            <a href="#markdown-export" class="hover:underline">{$t('course.navItem.settings.allow_markdown_export')}</a>
-          </Field.Label>
-          <Field.Description>{$t('course.navItem.settings.allow_markdown_export_description')}</Field.Description>
-        </Field.Content>
-        <Switch
-          id="allow-markdown-export"
-          checked={$settings.allowMarkdownExport}
-          onCheckedChange={(checked) => {
-            $settings.allowMarkdownExport = checked;
-            hasUnsavedChanges = true;
-          }}
-        />
-      </Field.Field>
-
-      <SettingsSeparator />
-
       <Field.Set id="publish" class="scroll-mt-24">
         <AttentionHighlight id="publish">
           <Field.Field orientation="horizontal">
@@ -1235,6 +1216,25 @@
           </Button>
         </Field.Field>
       {/if}
+
+      <SettingsSeparator />
+
+      <Field.Field id="markdown-export" class="scroll-mt-24" orientation="horizontal">
+        <Field.Content>
+          <Field.Label for="allow-markdown-export">
+            <a href="#markdown-export" class="hover:underline">{$t('course.navItem.settings.allow_markdown_export')}</a>
+          </Field.Label>
+          <Field.Description>{$t('course.navItem.settings.allow_markdown_export_description')}</Field.Description>
+        </Field.Content>
+        <Switch
+          id="allow-markdown-export"
+          checked={$settings.allowMarkdownExport}
+          onCheckedChange={(checked) => {
+            $settings.allowMarkdownExport = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+      </Field.Field>
     </Field.Group>
   </SettingsCard>
 

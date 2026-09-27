@@ -76,8 +76,6 @@ export const MCP_TOOL_CREDIT_COST = {
   reset_course_member_progress: 1,
   create_course_invite: 1,
   revoke_course_invite: 1,
-  upload_video: 1,
-  attach_lesson_video: 1,
   get_course_certificate: 0,
   list_course_certificates: 0,
   download_course_certificate: 0,

@@ -22,8 +22,6 @@ import type {
 
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
-import type { TAttachLessonVideo } from '@cio/utils/validation/lesson';
-import type { TCoursePresignUrlUpload, TCourseDownloadPresignedUrl } from '@cio/utils/validation/course';
 import type {
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseMember,
@@ -581,40 +579,6 @@ export class ClassroomIoApiClient {
     return json;
   }
 
-  async presignVideoUpload(payload: TCoursePresignUrlUpload) {
-    return this.requestFlat<{ url: string; fileKey: string }>('/course/presign/video/upload', {
-      method: 'POST',
-      body: payload
-    });
-  }
-
-  async presignVideoDownload(payload: TCourseDownloadPresignedUrl) {
-    return this.requestFlat<{ urls: Record<string, string> }>('/course/presign/video/download', {
-      method: 'POST',
-      body: payload
-    });
-  }
-
-  async attachLessonVideo(courseId: string, lessonId: string, payload: TAttachLessonVideo) {
-    return this.request(`/course/${encodeURIComponent(courseId)}/lesson/${encodeURIComponent(lessonId)}/video`, {
-      method: 'POST',
-      body: payload
-    });
-  }
-
-  /** Uploads bytes directly to a presigned storage URL. No ClassroomIO auth header — the URL's signature is the auth. */
-  async putToPresignedUrl(presignedUrl: string, body: Buffer, contentType: string): Promise<void> {
-    const response = await fetch(presignedUrl, {
-      method: 'PUT',
-      headers: { 'content-type': contentType },
-      body: body as unknown as BodyInit
-    });
-
-    if (!response.ok) {
-      throw new ClassroomIoApiError(`Upload to storage failed with status ${response.status}`, response.status);
-    }
-  }
-
   private async request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
     const json = await this.requestRaw<TResponse>(path, options);
     return json.data;
@@ -630,24 +594,6 @@ export class ClassroomIoApiClient {
     }
 
     return { data: json.data, pagination: json.pagination };
-  }
-
-  /** Like {@link request}, but for routes that return their payload as flat top-level fields instead of under `data`. */
-  private async requestFlat<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
-    const response = await this.send(path, options);
-
-    const json = (await response.json().catch(() => null)) as ({ success: true } & TResponse) | ApiFailure | null;
-
-    if (!response.ok) {
-      throw toApiError(response.status, json as ApiFailure | null);
-    }
-
-    if (!json || typeof json !== 'object' || !('success' in json) || !json.success) {
-      throw new ClassroomIoApiError('ClassroomIO returned an invalid response payload', response.status);
-    }
-
-    const { success: _success, ...rest } = json;
-    return rest as TResponse;
   }
 }
 

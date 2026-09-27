@@ -109,6 +109,10 @@ export const courseRouter = new Hono()
       const { slug } = c.req.valid('param');
       const course = await getCourse(undefined, slug);
 
+      if (!course.isPublished) {
+        throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+      }
+
       return c.json(
         {
           success: true,
