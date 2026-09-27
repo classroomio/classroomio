@@ -5,10 +5,11 @@
 
   interface Props {
     checked: boolean;
+    disabled?: boolean;
     onToggle: (nextChecked: boolean) => void;
   }
 
-  let { checked = true, onToggle }: Props = $props();
+  let { checked = true, disabled = false, onToggle }: Props = $props();
 </script>
 
 <div class="ui:border-border ui:bg-card mb-5 flex items-center justify-between rounded-lg border p-4">
@@ -26,5 +27,5 @@
     </div>
   </div>
 
-  <Switch {checked} onCheckedChange={onToggle} aria-label={$t('learningPath.builder.unlock_rule_title')} />
+  <Switch {checked} {disabled} onCheckedChange={onToggle} aria-label={$t('learningPath.builder.unlock_rule_title')} />
 </div>

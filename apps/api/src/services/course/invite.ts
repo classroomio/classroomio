@@ -661,6 +661,10 @@ export async function enrollInCourse(
     throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
+  if (courseWithRelations.requiresLearningPath) {
+    throw new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   const courseMetadata =
     (courseWithRelations.metadata as {
       allowSelfEnrollment?: boolean;
@@ -957,6 +961,10 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     }
 
     const { invite, course, organization } = inviteRow;
+
+    if (course.requiresLearningPath) {
+      throw new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400);
+    }
 
     const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
     const ipDiversity = await countInviteDistinctPreviewIps(invite.id, sinceIso);

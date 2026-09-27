@@ -24,7 +24,12 @@
 
     isPublishing = true;
     try {
-      await learningPathApi.updatePath(path.id, { isPublished: true });
+      const updated = await learningPathApi.update(path.id, { isPublished: true }, { showSuccessToast: false });
+      if (!updated) {
+        snackbar.error('learningPath.workspace.publish_failed');
+        return;
+      }
+
       snackbar.success('learningPath.workspace.published');
 
       open = false;

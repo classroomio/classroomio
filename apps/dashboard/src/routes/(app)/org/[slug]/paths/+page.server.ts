@@ -1,12 +1,27 @@
-import { MOCK_PATHS } from '$features/learning-path/utils/mock-data';
+import { safeServerApi } from '$lib/utils/services/api/server';
+import { classroomio, getApiHeaders, type InferResponseType } from '$lib/utils/services/api';
 
-export const load = async ({ parent, params }) => {
+type ListPathsRequest = (typeof classroomio)['learning-path']['$get'];
+type ListPathsSuccess = Extract<InferResponseType<ListPathsRequest>, { success: true }>;
+
+export const load = async ({ parent, params, cookies, locals }) => {
   const { orgId } = await parent();
 
+  if (!orgId || !locals.user?.id) {
+    return {
+      orgSlug: params.slug,
+      orgId,
+      paths: [],
+      loadError: null
+    };
+  }
+
+  const result = await safeServerApi<ListPathsSuccess>(() =>
+    classroomio['learning-path'].$get({ query: { organizationId: orgId } }, getApiHeaders(cookies, orgId))
+  );
+
   return {
-    orgSlug: params.slug,
-    orgId,
-    // Phase 1 handoff: swap MOCK_PATHS for real API call when Phase 1 routes are mounted
-    paths: MOCK_PATHS
+    paths: result.ok ? result.body.data : null,
+    loadError: result.ok ? null : result.message || 'Failed to load learning paths'
   };
 };

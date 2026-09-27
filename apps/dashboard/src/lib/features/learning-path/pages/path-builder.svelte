@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { DeleteModal } from '$features/ui';
+  import { DeleteModal, LearningEntityIcon } from '$features/ui';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import BookIcon from '@lucide/svelte/icons/book';
@@ -7,7 +8,6 @@
   import { learningPathApi } from '../api';
   import { AddCourseToPathModal, CourseRow, UnlockToggle } from '../components';
   import type { LearningPathCourseItem, LearningPathDetail } from '../utils/types';
-  import { LearningEntityIcon } from '$features/ui';
 
   interface Props {
     path: LearningPathDetail;
@@ -21,6 +21,12 @@
   let courseToRemove = $state<LearningPathCourseItem | null>(null);
   let showDeleteModal = $state(false);
   let isRemoving = $state(false);
+  let isUpdatingUnlock = $state(false);
+  let sequentialUnlock = $state(path.sequentialUnlock);
+
+  $effect(() => {
+    sequentialUnlock = path.sequentialUnlock;
+  });
 
   $effect(() => {
     if (path && path.courses) {
@@ -47,8 +53,28 @@
     path.courses = updated;
   }
 
-  function handleUnlockToggle(nextChecked: boolean) {
-    void learningPathApi.updatePath(path.id, { sequentialUnlock: nextChecked });
+  async function handleUnlockToggle(nextChecked: boolean) {
+    if (isUpdatingUnlock) return;
+
+    isUpdatingUnlock = true;
+    const previousChecked = sequentialUnlock;
+    sequentialUnlock = nextChecked;
+
+    try {
+      const result = await learningPathApi.update(path.id, { sequentialUnlock: nextChecked });
+      if (!result) {
+        sequentialUnlock = previousChecked;
+      } else {
+        path.sequentialUnlock = result.sequentialUnlock;
+        sequentialUnlock = result.sequentialUnlock;
+      }
+    } catch (err) {
+      sequentialUnlock = previousChecked;
+      console.error('Failed to update sequential unlock setting:', err);
+      snackbar.error();
+    } finally {
+      isUpdatingUnlock = false;
+    }
   }
 
   function handleOpenRemoveDialog(course: LearningPathCourseItem) {
@@ -61,10 +87,13 @@
 
     isRemoving = true;
     try {
-      await learningPathApi.removeCourse(path.id, courseToRemove.id);
+      await learningPathApi.removeCourse(path.id, courseToRemove.courseId);
+    } catch (err) {
+      console.error('Failed to remove course from learning path:', err);
+      snackbar.error();
+    } finally {
       showDeleteModal = false;
       courseToRemove = null;
-    } finally {
       isRemoving = false;
     }
   }
@@ -102,7 +131,7 @@
 
   {#if courseItems.length > 0}
     <!-- Unlock in order toggle rule -->
-    <UnlockToggle checked={path.sequentialUnlock} onToggle={handleUnlockToggle} />
+    <UnlockToggle checked={sequentialUnlock} disabled={isUpdatingUnlock} onToggle={handleUnlockToggle} />
   {/if}
 
   {#if courseItems.length === 0}

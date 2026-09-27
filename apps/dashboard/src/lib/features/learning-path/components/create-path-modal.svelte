@@ -4,7 +4,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { t } from '$lib/utils/functions/translations';
-  import { slugify } from '../utils/learning-path-utils';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { learningPathApi } from '../api';
 
   interface Props {
@@ -18,7 +18,6 @@
   let name = $state('');
   let description = $state('');
   let isSubmitting = $state(false);
-  let errorMessage = $state<string | undefined>();
 
   const cannotSubmit = $derived(!name.trim() || !description.trim() || isSubmitting);
 
@@ -34,7 +33,7 @@
     name = '';
     description = '';
     isSubmitting = false;
-    errorMessage = undefined;
+    learningPathApi.errors = {};
   }
 
   async function handleSubmit(e: SubmitEvent) {
@@ -42,22 +41,21 @@
     if (cannotSubmit) return;
 
     isSubmitting = true;
-    errorMessage = undefined;
 
     try {
-      const rawSlug = slugify(name.trim());
-      const generatedSlug = rawSlug || `path-${Date.now().toString().slice(-4)}`;
-      const newPath = await learningPathApi.createPath({
+      const newPath = await learningPathApi.create({
         name: name.trim(),
-        slug: generatedSlug,
         description: description.trim()
       });
+
+      if (!newPath) return;
 
       resetForm();
       open = false;
       onCreated(newPath.publicId);
-    } catch (err: unknown) {
-      errorMessage = err instanceof Error ? err.message : $t('learningPath.modals.create.failed');
+    } catch (error) {
+      console.error('Failed to create learning path:', error);
+      snackbar.error('learningPath.modals.create.failed');
     } finally {
       isSubmitting = false;
     }
@@ -78,7 +76,7 @@
           className="w-full"
           isRequired={true}
           bind:value={name}
-          {errorMessage}
+          errorMessage={learningPathApi.errors.name}
           autoComplete={false}
           autoFocus={true}
         />
@@ -90,6 +88,7 @@
           placeholder={$t('learningPath.modals.create.desc_placeholder')}
           className="mb-4"
           isRequired={true}
+          errorMessage={learningPathApi.errors.description}
         />
       </div>
 

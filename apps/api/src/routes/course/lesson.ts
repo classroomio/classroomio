@@ -32,6 +32,7 @@ import {
 } from '@api/services/lesson';
 import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
 import { evaluateCourseCertification } from '@api/services/course/completion';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ContentType } from '@cio/utils/constants';
 
 import { Hono } from '@api/utils/hono';
@@ -276,6 +277,10 @@ export const lessonRouter = new Hono()
             console.error('Failed to evaluate course certification after lesson completion:', certError);
           });
         }
+
+        void syncCourseProgressInLearningPaths(courseId, user.id).catch((syncError) => {
+          console.error('Failed to sync learning path progress after lesson completion:', syncError);
+        });
 
         return c.json({ success: true, data: completion }, 200);
       } catch (error) {
