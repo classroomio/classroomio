@@ -304,7 +304,100 @@
     "discard": "Discard",
     "save_changes": "Save changes",
     "refresh": "Refresh",
-    "scroll_to_top": "Scroll to top"
+    "scroll_to_top": "Scroll to top",
+    "add": "Add",
+    "remove": "Remove",
+    "back": "Back",
+    "close": "Close",
+    "edit": "Edit",
+    "coming_soon": "Coming soon",
+    "pricing": {
+      "enable_paid": "Enable Paid",
+      "yes": "Yes",
+      "no": "No",
+      "currency": "Currency",
+      "cost": "Price",
+      "payment_link": "Payment Link",
+      "payment_required": "Payment link is required when paid is enabled",
+      "payment_invalid_url": "Please enter a valid URL",
+      "discount": "Discount",
+      "show_discount": "Show discount",
+      "discount_percentage": "Discount percentage",
+      "reward": "Reward / Gift",
+      "reward_help": "Offer learners an incentive upon completion",
+      "reward_description": "Reward description",
+      "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
+    }
+  },
+  "certificate": {
+    "tab_design": "Design",
+    "tab_settings": "Settings",
+    "allow": "Allow students download certificate",
+    "email_message_label": "Email Message",
+    "email_message_placeholder": "e.g. We are proud of your progress — keep learning!",
+    "rules": "Rules",
+    "editor": {
+      "title": "Certificate design",
+      "back": "Back",
+      "unsaved": "Unsaved changes",
+      "free_plan": "Available on Pro",
+      "discard": "Discard",
+      "save": "Save",
+      "saved": "Certificate design saved.",
+      "save_failed": "Could not save the certificate design. Check the form and try again.",
+      "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
+      "sections": "Editor sections",
+      "preview": "Certificate preview",
+      "panel_templates": "Templates",
+      "panel_templates_subtitle": "Select a template for your certificate.",
+      "panel_content": "Content",
+      "panel_content_subtitle": "Configure subtitles, descriptions, and signatories.",
+      "panel_colors": "Colors",
+      "panel_colors_subtitle": "Customize the accent color.",
+      "panel_export": "Export",
+      "panel_export_subtitle": "Preview the current design as it will be delivered.",
+      "section_header": "Header copy",
+      "section_signatories": "Signatories",
+      "section_reference": "Reference",
+      "subtitle": "Subtitle",
+      "subtitle_placeholder": "Awarded with Highest Distinction",
+      "description_override": "Description override",
+      "description_override_placeholder": "Defaults to the description.",
+      "description_override_hint": "Leave blank to fall back to the description on save.",
+      "signatory_one_name": "Signatory 1 name",
+      "signatory_one_role": "Signatory 1 role",
+      "signatory_two_name": "Signatory 2 name",
+      "signatory_two_role": "Signatory 2 role",
+      "signatory_one_toggle": "Show signatory 1",
+      "signatory_two_toggle": "Show signatory 2",
+      "signature_upload": "Signature image",
+      "signature_upload_hint": "Upload a signature image (optional)",
+      "signature_dont_crop": "Don't Crop",
+      "id_format": "Certificate ID format",
+      "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
+      "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
+      "templates_hint": "Templates render with the same renderer used for the downloaded PDF and PNG.",
+      "download_pdf": "Download PDF",
+      "download_png": "Download PNG",
+      "print": "Print",
+      "export_hint": "Exports use your name as the recipient so you can preview the final layout.",
+      "preview_failed": "Could not generate certificate preview",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Certificate of Excellence",
+      "sample_description": "In recognition of outstanding achievement and exemplary dedication to the craft.",
+      "sample_org": "The Royal Academy of Arts",
+      "summary_title": "Active design",
+      "summary_subtitle": "Snapshot of how the certificate will look when issued.",
+      "field_template": "Template",
+      "field_accent": "Accent",
+      "field_signatories": "Signatories",
+      "customize_design": "Customize design",
+      "signatory_one": "Signatory 1",
+      "signatory_two": "Signatory 2",
+      "signatory_name": "Signatory name",
+      "signatory_role": "Signatory role",
+      "signature_image": "Signature image"
+    }
   },
   "compliance": {
     "title": "Compliance",
@@ -3610,7 +3703,12 @@
           "field_template": "Template",
           "field_accent": "Accent",
           "field_signatories": "Signatories",
-          "customize_design": "Customize design"
+          "customize_design": "Customize design",
+          "signatory_one": "Signatory 1",
+          "signatory_two": "Signatory 2",
+          "signatory_name": "Signatory name",
+          "signatory_role": "Signatory role",
+          "signature_image": "Signature image"
         }
       },
       "landing_page": {
@@ -4709,7 +4807,8 @@
       "error": {
         "try_later": "Something's not right - Please try later",
         "exercise_not_complete": "Complete all exercises to mark as complete"
-      }
+      },
+      "section_updated": "Course section updated successfully"
     },
     "marks": {
       "error": "Error fetching marks"
@@ -5499,7 +5598,9 @@
       "exercises_count": "{count} {count, plural, =1 {exercise} other {exercises}}",
       "open_course": "Open course",
       "remove_course": "Remove from path",
-      "add_course_button": "Add Courses"
+      "add_course_button": "Add Courses",
+      "start_reorder": "Reorder",
+      "end_reorder": "End Reorder"
     },
     "setup": {
       "title": "Set up your path",
@@ -5560,8 +5661,8 @@
         "courses": "Courses",
         "people": "People",
         "analytics": "Analytics",
-        "landing": "Landing page",
-        "certificate": "Certificate",
+        "landing": "Landing Page",
+        "certificate": "Certificates",
         "settings": "Settings"
       },
       "coming_soon": {
@@ -5580,7 +5681,8 @@
       "open": "Open",
       "share": "Share",
       "invite": "Invite",
-      "delete": "Delete"
+      "delete": "Delete",
+      "view_as_student": "View as student"
     },
     "modals": {
       "create": {
@@ -5617,7 +5719,12 @@
       "member_removed": "Learner removed from path",
       "tutor_added": "Tutor added to path",
       "tutors_added": "Tutors added to path",
-      "tutor_removed": "Tutor removed from path"
+      "tutor_removed": "Tutor removed from path",
+      "certificate_saved": "Certificate settings saved",
+      "landing_saved": "Landing page updated",
+      "landing_save_failed": "Failed to save landing page",
+      "link_generated": "Invite link generated and copied to clipboard",
+      "settings_saved": "Learning path settings updated"
     },
     "people": {
       "title": "People",
@@ -5657,6 +5764,18 @@
         "bulk_title": "Invite by email",
         "bulk_description": "Enter email addresses separated by commas or new lines.",
         "bulk_submit": "Add learners"
+      },
+      "add": "Add",
+      "last_login_at": "Last login at",
+      "you": "You",
+      "view": "View",
+      "delete_profile": "Remove",
+      "invite_modal": {
+        "loading": "Adding…",
+        "student_limit_reached": "You have reached your student limit. Upgrade to add more students.",
+        "invite": "Invite Tutors",
+        "invite_students": "Add Students",
+        "finish": "Finish"
       }
     },
     "analytics": {
@@ -5723,6 +5842,203 @@
       "export": {
         "status": "Status"
       }
+    },
+    "certificate": {
+      "title": "Certificates",
+      "awarded_count": "{count, plural, =0 {No certificates awarded yet} =1 {1 certificate awarded so far} other {# certificates awarded so far}}",
+      "allow": "Allow students download certificate",
+      "email_message_label": "Email Message",
+      "email_message_placeholder": "e.g. Congratulations on completing the learning path!",
+      "editor": {
+        "title": "Certificate design"
+      }
+    },
+    "landing": {
+      "page_builder": "Page Builder",
+      "display_section": "Display section",
+      "header": {
+        "title_placeholder": "e.g. Fullstack Web Development",
+        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
+        "title": "Header",
+        "title_label": "Title",
+        "description_label": "Description"
+      },
+      "hero": {
+        "title": "Hero",
+        "headline": "Headline",
+        "headline_placeholder": "e.g. Become a Senior Fullstack Engineer",
+        "subheadline": "Subheadline",
+        "subheadline_placeholder": "e.g. Master modern frontend, backend, and deployment through project-based learning."
+      },
+      "access": {
+        "title": "Visitor access",
+        "description": "Controls how much content non-enrolled visitors can explore on the public path page.",
+        "teaser_title": "Teaser",
+        "teaser_desc": "Show course titles and high-level outcomes only.",
+        "syllabus_title": "Syllabus (recommended)",
+        "syllabus_desc": "Show full course curriculum with lesson titles and locked indicators.",
+        "preview_title": "Preview",
+        "preview_desc": "Allow visitors to preview the first lesson of each course without enrolling."
+      },
+      "skills": {
+        "title": "Skills you'll gain",
+        "help": "Press Enter to add. These appear as chips on your landing page.",
+        "placeholder": "e.g. TypeScript, Docker, PostgreSQL"
+      },
+      "instructors": {
+        "title": "Instructors",
+        "role_placeholder": "e.g. Lead Instructor · Frontend",
+        "default_role": "Course Instructor",
+        "untitled": "Untitled instructor",
+        "add": "Add instructor",
+        "no_tutors_found": "No instructors found",
+        "min_one_required": "At least one instructor is required",
+        "remove": "Remove instructor",
+        "auto_populated_note": "Instructors are automatically gathered from the courses included in this path.",
+        "courses_note": "{count, plural, =0 {No courses added yet} =1 {Pulled from 1 course in this path} other {Pulled from all # courses in this path}}",
+        "upload": "Instructor Logo",
+        "name": "Instructor name",
+        "name_placeholder": "Your company name",
+        "role": "Instructor Role",
+        "about": "About Instructor",
+        "about_placeholder": "A short background about the instructor",
+        "total": "No of courses"
+      },
+      "testimonials": {
+        "title": "Testimonials",
+        "untitled": "Untitled testimonial",
+        "name": "Name",
+        "role": "Role / Title",
+        "quote": "Quote",
+        "add": "Add testimonial"
+      },
+      "reviews": {
+        "title": "Reviews",
+        "untitled": "Untitled review",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "Avatar image URL",
+        "rating_placeholder": "Optional (1-5)",
+        "clear_rating": "Clear rating",
+        "description_placeholder": "This learning path gave me the exact skills and confidence I needed.",
+        "add_reviews": "Add Reviews",
+        "fullname": "Full Name",
+        "description": "Description",
+        "rating": "Rating"
+      },
+      "faqs": {
+        "title": "FAQs",
+        "untitled": "Untitled FAQ",
+        "question": "Question",
+        "question_placeholder": "What is required to complete this path?",
+        "answer": "Answer",
+        "answer_placeholder": "You must complete all lessons and exercises in every course.",
+        "add": "Add FAQ"
+      },
+      "preview": "Preview",
+      "save": "Save",
+      "requirement": {
+        "title": "Requirement"
+      },
+      "description": {
+        "title": "Description"
+      },
+      "goals": {
+        "title": "Goals"
+      },
+      "certificate": {
+        "title": "Certificate",
+        "upload_template": "Certificate template"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "enable_paid": "Enable Paid",
+        "currency": "Currency",
+        "cost": "Cost",
+        "payment": "Payment Link",
+        "payment_required": "Payment link is required",
+        "payment_invalid_url": "Please enter a valid URL",
+        "payment_helper": "Stripe, Lemon Squeezy or any payment link",
+        "discount": "Discount",
+        "no": "No",
+        "yes": "Yes",
+        "percent": "Discount Percent",
+        "percentage_helper": "In Percentage %",
+        "gift_on_completion": "Gift on Completion",
+        "gift": "About Gift"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "general": {
+        "legend": "Path Details",
+        "desc": "Basic details about this learning path.",
+        "name_label": "Path title",
+        "name_placeholder": "Write the path title here",
+        "name_required": "Path name is required",
+        "description_label": "Path Description",
+        "description_placeholder": "Write your path description here",
+        "description_required": "Description is required",
+        "link": "Path Link",
+        "generate_link": "Generate new link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
+        "setup_landing_for_link": "Setup landing page to get path link"
+      },
+      "cover_image": {
+        "legend": "Cover Image",
+        "desc": "If you include one, it should be at least 280 x 200.",
+        "replace": "Replace",
+        "reset": "Reset",
+        "alt": "Path cover"
+      },
+      "welcome_email": {
+        "legend": "Welcome email",
+        "desc": "Customize the email learners receive after they enroll. Add a personal note, instructions, or a live session link.",
+        "placeholder": "Write the welcome message learners get when they enroll…"
+      },
+      "progression": {
+        "legend": "Learner progression",
+        "desc": "Control whether learners can access all courses or must complete them in order.",
+        "free": "Free — all courses are available",
+        "sequential": "Sequential — complete prior courses to unlock next"
+      },
+      "self_enrollment": {
+        "legend": "Learners can enroll themselves",
+        "access": "When off, learners can only join through an invite link or by being added from {people}.",
+        "access_people": "People",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "auto_enroll": {
+        "legend": "Auto-enroll in path courses",
+        "desc": "Joining the path enrolls the learner in every course it contains.",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "publishing": {
+        "legend": "Publish Path",
+        "desc": "This determines if your path displays on your landing page",
+        "published": "Published",
+        "unpublished": "Unpublished"
+      },
+      "danger": {
+        "legend": "Delete Path",
+        "desc": "Delete this path, this action cannot be undone. Courses, enrollments, and learner progress are not deleted.",
+        "delete_button": "Delete Path",
+        "delete_title": "Delete Learning Path",
+        "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+      }
+    },
+    "courses": {
+      "lessons": "Lessons",
+      "exercises": "Exercises"
+    },
+    "view_as_student": {
+      "title": "This will redirect you to the Student LMS.",
+      "description": "You are about to see what a student will see when they enroll in this learning path",
+      "copy_link": "Copy link",
+      "go_to_lms": "Go to LMS"
     }
   }
 }

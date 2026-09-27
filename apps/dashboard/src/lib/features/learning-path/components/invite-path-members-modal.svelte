@@ -41,7 +41,7 @@
   const selectedTutors = $derived(tutors.filter((tutor) => selectedIds.includes(tutor.id.toString())));
   const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, pathMembersApi.members));
   const inviteLink = $derived(buildResourceInviteLink(pathInviteLinkApi.inviteLink?.token, $currentOrg));
-  const INVITE_MODAL = 'course.navItem.people.invite_modal';
+  const INVITE_MODAL = 'learningPath.people.invite_modal';
 
   function getTutors(team: OrgTeamMember[], members: typeof pathMembersApi.members): Tutor[] {
     const existingTutorProfileIds = new Set(

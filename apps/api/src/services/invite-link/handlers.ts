@@ -7,7 +7,8 @@ import {
   insertCohortMemberIfAbsent,
   lockCohortStatusForAccept
 } from '@cio/db/queries/cohort';
-import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
+import { ROLE } from '@cio/utils/constants';
+import { enrollProfileInLearningPath, sendLearningPathWelcomeEmail } from '@api/services/learning-path';
 import {
   getCourseIdsByLearningPathId,
   getLearningPathById,
@@ -116,6 +117,35 @@ async function sendCohortWelcomeEmail(input: {
   }
 }
 
+async function sendCourseWelcomeEmail(input: {
+  organization: TInviteLinkWithContext['organization'];
+  course: NonNullable<TInviteLinkWithContext['course']>;
+  profileId: string;
+  email: string;
+}): Promise<void> {
+  const { organization, course, profileId, email } = input;
+  const loginUrl = getDashboardBaseUrl(organization);
+  const branding = buildEmailBranding(organization);
+
+  try {
+    await enqueueTransactionalEmail('studentCourseWelcome', {
+      to: email,
+      fields: {
+        orgName: organization.name,
+        courseName: course.title || 'Course',
+        loginUrl,
+        customMessage: course.welcomeEmailMessage ?? undefined,
+        branding
+      },
+      from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+      idempotencyKey: `invite-link-course-welcome:${course.id}:${profileId}`,
+      preference: { organizationId: organization.id, recipientProfileId: profileId }
+    });
+  } catch (error) {
+    console.error('sendCourseWelcomeEmail enqueue error', { courseId: course.id, profileId }, error);
+  }
+}
+
 const courseHandler: InviteLinkHandler = {
   async resolveOrganizationId(courseId) {
     const courseOrgData = await getCourseWithOrgData(courseId);
@@ -170,11 +200,20 @@ const courseHandler: InviteLinkHandler = {
     return { isFreshJoin };
   },
 
-  async afterCommit(context, profileId) {
+  async afterCommit(context, profileId, email, { isFreshJoin }) {
     const course = requireCourse(context);
 
     await ensureComplianceEnrollmentRecordsForProfiles([course.id], [profileId]);
     await invalidateOrgStats(context.organization.id);
+
+    if (isFreshJoin && email && context.invite.roleId === ROLE.STUDENT) {
+      await sendCourseWelcomeEmail({
+        organization: context.organization,
+        course,
+        profileId,
+        email
+      });
+    }
   },
 
   redirectTo() {
@@ -278,7 +317,7 @@ const learningPathHandler: InviteLinkHandler = {
       resourceName: learningPath.name,
       description: learningPath.description,
       coverImage: learningPath.coverImage,
-      isResourceOpen: learningPath.isPublished
+      isResourceOpen: learningPath.status === 'ACTIVE'
     };
   },
 
@@ -286,7 +325,7 @@ const learningPathHandler: InviteLinkHandler = {
     const learningPath = requireLearningPath(context);
     const locked = await lockLearningPathStatusForAccept(learningPath.id, tx);
 
-    if (!locked || !locked.isPublished) {
+    if (!locked || locked.status !== 'ACTIVE') {
       throw new AppError('This invite is no longer accepting new members', ErrorCodes.VALIDATION_ERROR, 403);
     }
 
@@ -323,31 +362,14 @@ const learningPathHandler: InviteLinkHandler = {
 
     await invalidateOrgStats(context.organization.id);
 
-    if (isFreshJoin && email) {
-      const loginUrl = getDashboardBaseUrl(context.organization);
-      const branding = buildEmailBranding(context.organization);
-      const from = buildEmailFromName(`${context.organization.name} (via ClassroomIO.com)`);
-
-      try {
-        await enqueueTransactionalEmail('studentLearningPathWelcome', {
-          to: email,
-          fields: {
-            orgName: context.organization.name,
-            learningPathName: learningPath.name,
-            loginUrl,
-            branding
-          },
-          from,
-          idempotencyKey: `invite-link-learning-path-welcome:${learningPath.id}:${profileId}`,
-          preference: { organizationId: context.organization.id, recipientProfileId: profileId }
-        });
-      } catch (error) {
-        console.error(
-          'sendLearningPathWelcomeEmail enqueue error',
-          { learningPathId: learningPath.id, profileId },
-          error
-        );
-      }
+    if (isFreshJoin && email && context.invite.roleId === ROLE.STUDENT) {
+      await sendLearningPathWelcomeEmail({
+        organization: context.organization,
+        learningPath,
+        profileId,
+        email,
+        idempotencyKey: `invite-link-learning-path-welcome:${learningPath.id}:${profileId}`
+      });
     }
   },
 

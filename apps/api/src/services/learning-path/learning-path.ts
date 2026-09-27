@@ -1,8 +1,10 @@
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import { containsDisallowedHrefs } from '@cio/utils/validation/shared';
 import { db } from '@cio/db/drizzle';
-import type { TCreateLearningPath, TUpdateLearningPath } from '@cio/utils/validation/learning-path';
+import type { TCreateLearningPathInput, TUpdateLearningPath } from '@cio/utils/validation/learning-path';
 import {
+  countIssuedCertificates,
   createLearningPath,
   deleteLearningPath,
   enrollMember,
@@ -22,6 +24,7 @@ import type { DbOrTxClient } from '@cio/db/drizzle';
 
 export interface TLearningPathDetail extends TLearningPath {
   courses: TLearningPathCourseDetail[];
+  certificatesIssued: number;
 }
 
 /**
@@ -98,12 +101,7 @@ export async function listOrgLearningPaths(
 
     return await listLearningPaths(organizationId, { tutorProfileId: userId });
   } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to list learning paths',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throwAsInternal(error, 'Failed to list learning paths');
   }
 }
 
@@ -113,7 +111,7 @@ export async function listOrgLearningPaths(
 export async function createLearningPathService(
   organizationId: string,
   userId: string,
-  data: Omit<TCreateLearningPath, 'organizationId'> & { organizationId?: string },
+  data: TCreateLearningPathInput,
   orgRoles?: Record<string, number>
 ): Promise<TLearningPath> {
   try {
@@ -153,12 +151,7 @@ export async function createLearningPathService(
       return created;
     });
   } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to create learning path',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throwAsInternal(error, 'Failed to create learning path');
   }
 }
 
@@ -171,39 +164,39 @@ export async function getLearningPathDetail(
   orgRoles?: Record<string, number>
 ): Promise<TLearningPathDetail> {
   try {
-    const path = await resolveLearningPath(pathId);
+    return await db.transaction(async (tx) => {
+      const path = await resolveLearningPath(pathId, tx);
+      const roleId = orgRoles?.[path.organizationId];
 
-    const roleId = orgRoles?.[path.organizationId];
+      if (roleId === ROLE.ADMIN) {
+        // Org admins can always view
+      } else if (roleId === ROLE.TUTOR) {
+        if (!path.isPublished) {
+          const canView = await isTutorAssigned(path, userId, tx);
 
-    if (roleId === ROLE.ADMIN) {
-      // Org admins can always view
-    } else if (roleId === ROLE.TUTOR) {
-      if (!path.isPublished) {
-        const canView = await isTutorAssigned(path, userId);
-        if (!canView) {
+          if (!canView) {
+            throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
+          }
+        }
+      } else if (!path.isPublished) {
+        const member = await getMemberByPathAndProfile(path.id, userId, tx);
+
+        if (!member || member.removedAt) {
           throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
         }
       }
-    } else if (!path.isPublished) {
-      const member = await getMemberByPathAndProfile(path.id, userId);
-      if (!member || member.removedAt) {
-        throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
-      }
-    }
 
-    const courses = await listLearningPathCourses(path.id);
+      const courses = await listLearningPathCourses(path.id, tx);
+      const certificatesIssued = await countIssuedCertificates(path.id, tx);
 
-    return {
-      ...path,
-      courses
-    };
+      return {
+        ...path,
+        courses,
+        certificatesIssued
+      };
+    });
   } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get learning path detail',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throwAsInternal(error, 'Failed to get learning path detail');
   }
 }
 
@@ -217,22 +210,32 @@ export async function updateLearningPathService(
   orgRoles?: Record<string, number>
 ): Promise<TLearningPath> {
   try {
-    const path = await resolveLearningPath(pathId);
-    await assertCanManageLearningPath(path, userId, orgRoles);
+    return await db.transaction(async (tx) => {
+      const path = await resolveLearningPath(pathId, tx);
+      await assertCanManageLearningPath(path, userId, orgRoles, tx);
 
-    const updated = await updateLearningPath(path.id, data);
-    if (!updated) {
-      throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
-    }
+      if (data.landingPage && containsDisallowedHrefs(data.landingPage)) {
+        throw new AppError('Landing page contains disallowed links', ErrorCodes.VALIDATION_ERROR, 400);
+      }
 
-    return updated;
+      if (data.slug && data.slug !== path.slug) {
+        const existingWithSlug = await getLearningPathBySlug(path.organizationId, data.slug, tx);
+
+        if (existingWithSlug && existingWithSlug.id !== path.id) {
+          throw new AppError('A learning path with this URL slug already exists', ErrorCodes.VALIDATION_ERROR, 400);
+        }
+      }
+
+      const updated = await updateLearningPath(path.id, data, tx);
+
+      if (!updated) {
+        throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
+      }
+
+      return updated;
+    });
   } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to update learning path',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throwAsInternal(error, 'Failed to update learning path');
   }
 }
 
@@ -242,79 +245,72 @@ export async function updateLearningPathService(
  */
 export async function deleteLearningPathService(
   pathId: string,
-  _userId: string,
   orgRoles?: Record<string, number>
 ): Promise<TLearningPath> {
   try {
-    const path = await resolveLearningPath(pathId);
+    return await db.transaction(async (tx) => {
+      const path = await resolveLearningPath(pathId, tx);
+      const roleId = orgRoles?.[path.organizationId];
 
-    const roleId = orgRoles?.[path.organizationId];
-    if (roleId !== ROLE.ADMIN) {
-      throw new AppError('Only organization admins can delete learning paths', ErrorCodes.UNAUTHORIZED, 403);
-    }
+      if (roleId !== ROLE.ADMIN) {
+        throw new AppError('Only organization admins can delete learning paths', ErrorCodes.UNAUTHORIZED, 403);
+      }
 
-    const deleted = await deleteLearningPath(path.id);
-    if (!deleted) {
-      throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
-    }
+      const deleted = await deleteLearningPath(path.id, tx);
 
-    return deleted;
+      if (!deleted) {
+        throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
+      }
+
+      return deleted;
+    });
   } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to delete learning path',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throwAsInternal(error, 'Failed to delete learning path');
   }
 }
 
 /**
  * Loads a public learning path by organizationId and slug for org-site visitors.
- * Only returns published learning paths.
+ * Only published paths are visible publicly.
  */
 export async function getPublicLearningPathBySlug(organizationId: string, slug: string): Promise<TLearningPathDetail> {
   try {
-    const path = await getLearningPathBySlug(organizationId, slug);
+    return await db.transaction(async (tx) => {
+      const path = await getLearningPathBySlug(organizationId, slug, tx);
 
-    if (!path || !path.isPublished) {
-      throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
-    }
+      if (!path || !path.isPublished) {
+        throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
+      }
 
-    const courses = await listLearningPathCourses(path.id);
+      const courses = await listLearningPathCourses(path.id, tx);
+      const certificatesIssued = await countIssuedCertificates(path.id, tx);
 
-    return {
-      ...path,
-      courses
-    };
+      return {
+        ...path,
+        courses,
+        certificatesIssued
+      };
+    });
   } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get public learning path',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throwAsInternal(error, 'Failed to get public learning path');
   }
 }
 
 /**
  * Publicly verifies a learning path certificate by its unique public certificateId.
  */
-export async function verifyLearningPathCertificateService(certificateId: string) {
+export async function verifyLearningPathCertificateService(
+  certificateId: string
+): Promise<Awaited<ReturnType<typeof getLearningPathCertificateVerification>>> {
   try {
     const verified = await getLearningPathCertificateVerification(certificateId);
 
     if (!verified) {
-      throw new AppError('Certificate not found', ErrorCodes.NOT_FOUND, 404);
+      throw new AppError('Certificate not found', ErrorCodes.LEARNING_PATH_CERTIFICATE_NOT_FOUND, 404);
     }
 
     return verified;
   } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to verify learning path certificate',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throwAsInternal(error, 'Failed to verify learning path certificate');
   }
 }

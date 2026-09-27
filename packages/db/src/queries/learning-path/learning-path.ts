@@ -3,7 +3,6 @@ import { randomBytes } from 'node:crypto';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getPostgresError } from '@cio/utils/errors';
-import { resolveSlugCollision, slugifyTitle } from '@cio/utils/validation';
 import { ROLE } from '@cio/utils/constants';
 
 import * as schema from '../../schema';
@@ -58,7 +57,7 @@ export async function countLearningPathsByOrg(
   dbClient: DbOrTxClient = db
 ): Promise<number> {
   try {
-    const whereConditions = [eq(schema.learningPath.organizationId, orgId)];
+    const whereConditions = [eq(schema.learningPath.organizationId, orgId), eq(schema.learningPath.status, 'ACTIVE')];
 
     if (options?.tutorProfileId) {
       whereConditions.push(buildTutorLearningPathCondition(options.tutorProfileId));
@@ -125,7 +124,10 @@ export async function listLearningPaths(
       )
     `.as('completionsCount');
 
-    const whereConditions = [eq(schema.learningPath.organizationId, organizationId)];
+    const whereConditions = [
+      eq(schema.learningPath.organizationId, organizationId),
+      eq(schema.learningPath.status, 'ACTIVE')
+    ];
 
     if (options?.tutorProfileId) {
       whereConditions.push(buildTutorLearningPathCondition(options.tutorProfileId));
@@ -164,7 +166,8 @@ export async function listLearningPaths(
 }
 
 /**
- * Creates a new learning path with unique publicId and org-scoped unique slug.
+ * Creates a new learning path with unique publicId and no slug.
+ * The public slug is minted later at landing/go-live time.
  */
 export async function createLearningPath(
   data: TCreateLearningPathInput,
@@ -197,24 +200,10 @@ export async function createLearningPath(
         throw new Error('Failed to generate a unique publicId for learning path');
       }
 
-      const baseSlug = slugifyTitle(data.name || 'untitled');
-      const existingRows = await dbClient
-        .select({ slug: schema.learningPath.slug })
-        .from(schema.learningPath)
-        .where(eq(schema.learningPath.organizationId, data.organizationId));
-
-      const takenSlugs = existingRows.map((r) => r.slug);
-      // Offset the candidate slug by attempt so a retry does not re-select
-      // the same slug that just collided under concurrency.
-      const slug =
-        attempt === 0
-          ? resolveSlugCollision(baseSlug, takenSlugs)
-          : resolveSlugCollision(`${baseSlug}-${attempt + 1}`, [...takenSlugs, baseSlug]);
-
       const payload: TNewLearningPath = {
         ...data,
         publicId,
-        slug,
+        slug: null,
         isPublished: data.isPublished ?? false
       };
 
@@ -225,12 +214,10 @@ export async function createLearningPath(
 
       return created;
     } catch (error) {
-      // Retry creation after unique-constraint collisions
+      // Retry creation after publicId unique-constraint collisions
       const postgresError = getPostgresError(error);
       const isRetryableUniqueViolation =
-        postgresError?.code === '23505' &&
-        (postgresError.constraint === 'learning_path_public_id_unique' ||
-          postgresError.constraint === 'learning_path_organization_id_slug_unique');
+        postgresError?.code === '23505' && postgresError.constraint === 'learning_path_public_id_unique';
 
       if (isRetryableUniqueViolation && attempt + 1 < MAX_CREATE_ATTEMPTS) {
         continue;
@@ -250,7 +237,11 @@ export async function createLearningPath(
  */
 export async function getLearningPathById(id: string, dbClient: DbOrTxClient = db): Promise<TLearningPath | null> {
   try {
-    const [path] = await dbClient.select().from(schema.learningPath).where(eq(schema.learningPath.id, id)).limit(1);
+    const [path] = await dbClient
+      .select()
+      .from(schema.learningPath)
+      .where(and(eq(schema.learningPath.id, id), eq(schema.learningPath.status, 'ACTIVE')))
+      .limit(1);
 
     return path || null;
   } catch (error) {
@@ -270,7 +261,7 @@ export async function getLearningPathByPublicId(
     const [path] = await dbClient
       .select()
       .from(schema.learningPath)
-      .where(eq(schema.learningPath.publicId, publicId))
+      .where(and(eq(schema.learningPath.publicId, publicId), eq(schema.learningPath.status, 'ACTIVE')))
       .limit(1);
 
     return path || null;
@@ -294,7 +285,13 @@ export async function getLearningPathBySlug(
     const [path] = await dbClient
       .select()
       .from(schema.learningPath)
-      .where(and(eq(schema.learningPath.organizationId, organizationId), eq(schema.learningPath.slug, slug)))
+      .where(
+        and(
+          eq(schema.learningPath.organizationId, organizationId),
+          eq(schema.learningPath.slug, slug),
+          eq(schema.learningPath.status, 'ACTIVE')
+        )
+      )
       .limit(1);
 
     return path || null;
@@ -342,7 +339,7 @@ export async function getOrgLearningPathsByIds(
   orgId: string,
   pathIds: string[],
   dbClient: DbOrTxClient = db
-): Promise<Array<Pick<TLearningPath, 'id' | 'name' | 'autoEnroll' | 'sequentialUnlock'>>> {
+): Promise<Array<Pick<TLearningPath, 'id' | 'name' | 'autoEnroll' | 'sequentialUnlock' | 'welcomeEmailMessage'>>> {
   if (pathIds.length === 0) {
     return [];
   }
@@ -353,10 +350,17 @@ export async function getOrgLearningPathsByIds(
         id: schema.learningPath.id,
         name: schema.learningPath.name,
         autoEnroll: schema.learningPath.autoEnroll,
-        sequentialUnlock: schema.learningPath.sequentialUnlock
+        sequentialUnlock: schema.learningPath.sequentialUnlock,
+        welcomeEmailMessage: schema.learningPath.welcomeEmailMessage
       })
       .from(schema.learningPath)
-      .where(and(eq(schema.learningPath.organizationId, orgId), inArray(schema.learningPath.id, pathIds)));
+      .where(
+        and(
+          eq(schema.learningPath.organizationId, orgId),
+          inArray(schema.learningPath.id, pathIds),
+          eq(schema.learningPath.status, 'ACTIVE')
+        )
+      );
 
     return rows;
   } catch (error) {
@@ -454,10 +458,14 @@ export async function insertLearningPathMemberIfAbsent(
 export async function lockLearningPathStatusForAccept(
   learningPathId: string,
   dbClient: DbOrTxClient = db
-): Promise<{ id: string; isPublished: boolean } | null> {
+): Promise<{ id: string; isPublished: boolean; status: string } | null> {
   try {
     const [row] = await dbClient
-      .select({ id: schema.learningPath.id, isPublished: schema.learningPath.isPublished })
+      .select({
+        id: schema.learningPath.id,
+        isPublished: schema.learningPath.isPublished,
+        status: schema.learningPath.status
+      })
       .from(schema.learningPath)
       .where(eq(schema.learningPath.id, learningPathId))
       .for('update')
@@ -479,7 +487,22 @@ export async function lockLearningPathStatusForAccept(
  */
 export async function deleteLearningPath(id: string, dbClient: DbOrTxClient = db): Promise<TLearningPath | null> {
   try {
-    const [deleted] = await dbClient.delete(schema.learningPath).where(eq(schema.learningPath.id, id)).returning();
+    // Deletion is soft: the row stays with status DELETED so
+    // public reads (filtered to ACTIVE) hide it while history is preserved.
+    // Tombstone the slug to free the clean slug for reuse while preserving
+    // the original value for restore if need be (`original.split('__deleted_')[0]`).
+    const [existing] = await dbClient
+      .select({ slug: schema.learningPath.slug })
+      .from(schema.learningPath)
+      .where(eq(schema.learningPath.id, id));
+
+    const tombstoneSlug = existing?.slug ? `${existing.slug}__deleted_${Date.now()}` : null;
+
+    const [deleted] = await dbClient
+      .update(schema.learningPath)
+      .set({ status: 'DELETED', slug: tombstoneSlug, updatedAt: new Date().toISOString() })
+      .where(eq(schema.learningPath.id, id))
+      .returning();
 
     return deleted || null;
   } catch (error) {

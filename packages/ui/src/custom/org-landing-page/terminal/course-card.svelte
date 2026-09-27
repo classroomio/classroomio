@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CourseItem, OrgLandingPageLabels } from '../types';
+  import { safeHref } from '../safe-href';
 
   interface Props {
     course: CourseItem;
@@ -9,10 +10,9 @@
 
   let { course, disableCourseLinks = false, labels }: Props = $props();
 
-  const href = $derived.by(() => {
-    if (disableCourseLinks) return undefined;
-    return course.link || (course.slug ? `/course/${course.slug}` : undefined);
-  });
+  const rawHref = $derived(course.link || (course.slug ? `/course/${course.slug}` : undefined));
+
+  const href = $derived(disableCourseLinks ? undefined : rawHref ? safeHref(rawHref) : undefined);
 
   function slugify(c: CourseItem): string {
     if (c.slug) return c.slug;

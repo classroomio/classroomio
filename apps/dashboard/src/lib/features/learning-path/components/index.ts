@@ -18,3 +18,6 @@ export { default as ViewPathAsStudentModal } from './view-path-as-student-modal.
 export { default as InvitePathMembersModal } from './invite-path-members-modal.svelte';
 export * from './people';
 export * from './analytics';
+export * from './certificate';
+export * from './landingpage';
+export * from './settings';

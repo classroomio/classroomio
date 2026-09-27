@@ -12,7 +12,30 @@
     },
     "discard": "Abandonner les modifications",
     "save_changes": "Enregistrer les modifications",
-    "scroll_to_top": "Remonter en haut"
+    "scroll_to_top": "Remonter en haut",
+    "add": "Ajouter",
+    "remove": "Supprimer",
+    "back": "Retour",
+    "close": "Fermer",
+    "edit": "Modifier",
+    "coming_soon": "Bientôt disponible",
+    "pricing": {
+      "enable_paid": "Activer le paiement",
+      "yes": "Oui",
+      "no": "Non",
+      "currency": "Devise",
+      "cost": "Coût",
+      "payment_link": "Lien de paiement",
+      "payment_required": "Le lien de paiement est requis lorsque le paiement est activé",
+      "payment_invalid_url": "Veuillez saisir une URL valide",
+      "discount": "Remise",
+      "show_discount": "Afficher la remise",
+      "discount_percentage": "Pourcentage de remise",
+      "reward": "Récompense / Cadeau",
+      "reward_help": "Offrez aux apprenants une récompense une fois la formation terminée",
+      "reward_description": "Description de la récompense",
+      "placeholder_reward": "p. ex. séance de mentorat individuel, goodies ou accès exclusif à la communauté"
+    }
   },
   "validations": {
     "generic": {
@@ -1301,7 +1324,12 @@
           "signature_upload_hint": "Téléchargez une image de signature (facultatif)",
           "signature_dont_crop": "Ne pas recadrer",
           "signature_upload_in_progress": "Attendez la fin du téléchargement de la signature avant de sauvegarder.",
-          "save_failed": "Impossible d'enregistrer la conception du certificat. Vérifiez le formulaire et réessayez."
+          "save_failed": "Impossible d'enregistrer la conception du certificat. Vérifiez le formulaire et réessayez.",
+          "signatory_one": "Signataire 1",
+          "signatory_two": "Signataire 2",
+          "signatory_name": "Nom du signataire",
+          "signatory_role": "Rôle du signataire",
+          "signature_image": "Image de signature"
         }
       },
       "people": {
@@ -2397,7 +2425,7 @@
         "add_lesson": {
           "button_title": "Ajouter",
           "start_reorder": "Réorganiser",
-          "end_reorder": "Terminer la réapprovisionnement",
+          "end_reorder": "Terminer la réorganisation",
           "modal_heading": "Ajouter une nouvelle leçon",
           "modal_heading_section": "Ajouter une nouvelle section",
           "lesson_title": "Titre de la leçon",
@@ -5496,7 +5524,7 @@
         "people": "Personnes",
         "analytics": "Statistiques",
         "landing": "Page de destination",
-        "certificate": "Certificat",
+        "certificate": "Certificats",
         "settings": "Paramètres",
         "setup": "Installation"
       },
@@ -5557,7 +5585,9 @@
       "remove_course": "Retirer du parcours",
       "add_course_button": "Ajouter le cours au parcours",
       "empty_title": "Aucun cours dans ce parcours d'apprentissage pour l'instant",
-      "empty_description": "Ajoutez des cours pour guider les apprenants à travers une séquence structurée. Commencez par cliquer sur le bouton Ajouter."
+      "empty_description": "Ajoutez des cours pour guider les apprenants à travers une séquence structurée. Commencez par cliquer sur le bouton Ajouter.",
+      "start_reorder": "Réorganiser",
+      "end_reorder": "Terminer la réorganisation"
     },
     "listing": {
       "title": "Parcours d'apprentissage",
@@ -5611,7 +5641,8 @@
       "open": "Ouvert",
       "share": "Partager",
       "invite": "Inviter",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "view_as_student": "Voir en tant qu'étudiant"
     },
     "card": {
       "actions_menu_aria": "Actions sur le chemin",
@@ -5632,7 +5663,12 @@
       "member_removed": "Apprenant retiré du chemin",
       "tutors_added": "Tuteurs ajoutés au parcours",
       "tutor_added": "Tuteur ajouté au parcours",
-      "tutor_removed": "Tuteur retiré du parcours"
+      "tutor_removed": "Tuteur retiré du parcours",
+      "certificate_saved": "Paramètres du certificat enregistrés",
+      "landing_saved": "Page d'accueil mise à jour",
+      "landing_save_failed": "Échec de l’enregistrement de la page d’accueil",
+      "link_generated": "Lien d'invitation généré et copié dans le presse-papiers",
+      "settings_saved": "Paramètres du parcours mis à jour"
     },
     "analytics": {
       "title": "Analyse",
@@ -5737,7 +5773,302 @@
         "in_progress": "En cours",
         "completed": "Terminé"
       },
-      "info_title": "À propos de l'inscription au parcours"
+      "info_title": "À propos de l'inscription au parcours",
+      "add": "Ajouter",
+      "last_login_at": "Dernière connexion le",
+      "you": "Vous",
+      "view": "Voir",
+      "delete_profile": "Supprimer",
+      "invite_modal": {
+        "loading": "Ajout…",
+        "student_limit_reached": "Vous avez atteint votre limite d'étudiants. Passez à un plan supérieur pour ajouter plus d'étudiants.",
+        "invite": "Inviter des tuteurs",
+        "invite_students": "Inviter des étudiants",
+        "finish": "Terminer"
+      }
+    },
+    "certificate": {
+      "title": "Certificats",
+      "awarded_count": "{count, plural, =0 {Aucun certificat délivré pour le moment} =1 {1 certificat délivré jusqu'à présent} other {# certificats délivrés jusqu'à présent}}",
+      "allow": "Autoriser les étudiants à télécharger le certificat",
+      "email_message_label": "Message électronique",
+      "email_message_placeholder": "ex. Félicitations pour avoir complété ce parcours d'apprentissage !",
+      "editor": {
+        "title": "Conception du certificat"
+      }
+    },
+    "landing": {
+      "page_builder": "Générateur de page",
+      "display_section": "Afficher la section",
+      "hero": {
+        "title": "En-tête",
+        "headline": "Titre principal",
+        "headline_placeholder": "ex. Devenez développeur Fullstack Senior",
+        "subheadline": "Sous-titre",
+        "subheadline_placeholder": "ex. Maîtrisez le frontend, backend et déploiement moderne par des projets pratiques."
+      },
+      "access": {
+        "title": "Accès visiteur",
+        "description": "Contrôle ce que les visiteurs non inscrits peuvent explorer sur la page publique.",
+        "teaser_title": "Aperçu rapide",
+        "teaser_desc": "Afficher uniquement les titres des cours et les objectifs généraux.",
+        "syllabus_title": "Programme (recommandé)",
+        "syllabus_desc": "Afficher le programme complet avec titres des leçons et indicateurs de verrouillage.",
+        "preview_title": "Prévisualisation",
+        "preview_desc": "Permettre aux visiteurs de prévisualiser la première leçon de chaque cours sans inscription."
+      },
+      "skills": {
+        "title": "Compétences",
+        "placeholder": "ex. TypeScript, Docker, PostgreSQL",
+        "help": "Appuyez sur Entrée pour ajouter. Elles apparaîtront sous forme de badges sur votre page de présentation."
+      },
+      "instructors": {
+        "title": "Instructeurs",
+        "auto_populated_note": "Les instructeurs sont récupérés automatiquement depuis les cours de ce parcours.",
+        "courses_note": "{count, plural, =0 {Aucun cours ajouté pour le moment} =1 {Tiré de 1 cours de ce parcours} other {Tiré de l'ensemble des # cours de ce parcours}}",
+        "role_placeholder": "p. ex. Instructeur principal · Frontend",
+        "default_role": "Instructeur du cours",
+        "untitled": "Instructeur sans titre",
+        "add": "Ajouter un instructeur",
+        "no_tutors_found": "Aucun instructeur trouvé",
+        "min_one_required": "Au moins un instructeur est requis",
+        "remove": "Supprimer l'instructeur",
+        "upload": "Logo de l'instructeur",
+        "name": "Nom de l'instructeur",
+        "name_placeholder": "Nom de votre entreprise",
+        "role": "Rôle de l'instructeur",
+        "about": "À propos de l'instructeur",
+        "about_placeholder": "Une brève présentation de l'instructeur",
+        "total": "Nombre de cours"
+      },
+      "testimonials": {
+        "title": "Témoignages",
+        "untitled": "Témoignage sans titre",
+        "name": "Nom",
+        "role": "Rôle / Fonction",
+        "quote": "Citation",
+        "add": "Ajouter un témoignage"
+      },
+      "faqs": {
+        "title": "FAQ",
+        "untitled": "Question sans titre",
+        "question": "Question",
+        "answer": "Réponse",
+        "add": "Ajouter une question",
+        "question_placeholder": "Que faut-il pour terminer ce parcours ?",
+        "answer_placeholder": "Vous devez terminer toutes les leçons et tous les exercices de chaque cours."
+      },
+      "header": {
+        "title_placeholder": "p. ex. Développement Web Fullstack",
+        "description_placeholder": "Un aperçu complet de ce que les apprenants accompliront...",
+        "title": "En-tête",
+        "title_label": "Titre",
+        "description_label": "Description"
+      },
+      "reviews": {
+        "title": "Avis",
+        "untitled": "Avis sans titre",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "URL de l'image d'avatar",
+        "rating_placeholder": "Facultatif (1-5)",
+        "clear_rating": "Effacer la note",
+        "description_placeholder": "Ce parcours m'a donné exactement les compétences et la confiance dont j'avais besoin.",
+        "add_reviews": "Ajouter des avis",
+        "fullname": "Nom complet",
+        "description": "Description",
+        "rating": "Note"
+      },
+      "preview": "Aperçu",
+      "save": "Enregistrer les modifications",
+      "requirement": {
+        "title": "Exigence"
+      },
+      "description": {
+        "title": "Description"
+      },
+      "goals": {
+        "title": "Objectifs"
+      },
+      "certificate": {
+        "title": "Certificat",
+        "upload_template": "Modèle de certificat"
+      },
+      "pricing": {
+        "title": "Tarification",
+        "payment_required": "Le lien de paiement est requis",
+        "payment_invalid_url": "Veuillez saisir une URL valide",
+        "enable_paid": "Activer le paiement",
+        "currency": "Devise",
+        "cost": "Coût",
+        "payment": "Lien de paiement",
+        "payment_helper": "Stripe, Lemon Squeezy ou tout autre lien de paiement",
+        "discount": "Remise",
+        "no": "Non",
+        "yes": "Oui",
+        "percent": "Pourcentage de remise",
+        "percentage_helper": "En pourcentage %",
+        "gift_on_completion": "Cadeau à la fin",
+        "gift": "À propos du cadeau"
+      }
+    },
+    "settings": {
+      "title": "Paramètres",
+      "general": {
+        "legend": "Informations générales",
+        "desc": "Informations de base sur ce parcours d'apprentissage.",
+        "name_label": "Nom du parcours",
+        "name_placeholder": "ex. Développement Web Fullstack",
+        "name_required": "Le nom du parcours est requis",
+        "description_label": "Description",
+        "description_placeholder": "Un court résumé de ce que les apprenants vont accomplir...",
+        "description_required": "La description est requise",
+        "cover_image_legend": "Image de couverture",
+        "cover_image_desc": "Téléversez une image de couverture pour ce parcours. Taille recommandée : 1200x630px.",
+        "replace_image": "Remplacer l'image",
+        "reset_image": "Réinitialiser",
+        "link": "Lien du parcours",
+        "generate_link": "Générer un nouveau lien",
+        "open_link": "Ouvrir le lien dans un nouvel onglet",
+        "copy_link": "Copier le lien",
+        "setup_landing_for_link": "Configurez la page d’accueil pour obtenir le lien du parcours"
+      },
+      "enrollment": {
+        "legend": "Inscription et progression",
+        "desc": "Configurez la manière dont les apprenants s'inscrivent et progressent.",
+        "self_enrollment_label": "Autoriser l'auto-inscription",
+        "self_enrollment_desc": "Les apprenants peuvent s'inscrire eux-mêmes à ce parcours.",
+        "sequential_unlock_label": "Déverrouillage séquentiel des cours",
+        "sequential_unlock_desc": "Les apprenants doivent compléter les cours dans l'ordre.",
+        "auto_enroll_label": "Inscription automatique aux cours du parcours",
+        "auto_enroll_desc": "Inscrire automatiquement les apprenants à tous les cours lors de leur inscription au parcours."
+      },
+      "publishing": {
+        "legend": "Publication",
+        "desc": "Rendre ce parcours d'apprentissage visible pour les apprenants.",
+        "publish_label": "Publier le parcours",
+        "publish_desc": "Rendre ce parcours visible et ouvert aux inscriptions.",
+        "published": "Publié",
+        "unpublished": "Non publié"
+      },
+      "danger": {
+        "legend": "Zone dangereuse",
+        "desc": "Supprimer définitivement ce parcours d'apprentissage et toutes ses données associées.",
+        "delete_button": "Supprimer le parcours d'apprentissage",
+        "delete_title": "Supprimer le parcours",
+        "delete_description": "Voulez-vous vraiment supprimer \"{name}\" ? Cette action est irréversible."
+      },
+      "cover_image": {
+        "legend": "Image de couverture",
+        "desc": "Si vous en ajoutez une, elle doit faire au moins 280 x 200.",
+        "replace": "Remplacer",
+        "reset": "Réinitialiser",
+        "alt": "Couverture du chemin"
+      },
+      "welcome_email": {
+        "legend": "E-mail de bienvenue",
+        "desc": "Personnalisez l’e-mail que les apprenants reçoivent après leur inscription. Ajoutez une note personnelle, des instructions ou un lien de session en direct.",
+        "placeholder": "Rédigez le message de bienvenue que les apprenants reçoivent lors de leur inscription…"
+      },
+      "progression": {
+        "legend": "Progression de l’apprenant",
+        "desc": "Définissez si les apprenants peuvent accéder à tous les cours ou doivent les terminer dans l’ordre.",
+        "free": "Libre — tous les cours sont disponibles",
+        "sequential": "Séquentiel — terminez les cours précédents pour débloquer le suivant"
+      },
+      "self_enrollment": {
+        "legend": "Les apprenants peuvent s’inscrire eux-mêmes",
+        "access": "Si désactivé, les apprenants ne peuvent rejoindre que via un lien d’invitation ou en étant ajoutés depuis {people}.",
+        "access_people": "Personnes",
+        "enabled": "Activé",
+        "disabled": "Désactivé"
+      },
+      "auto_enroll": {
+        "legend": "Inscription automatique aux cours du parcours",
+        "desc": "Rejoindre le parcours inscrit l’apprenant à tous les cours qu’il contient.",
+        "enabled": "Activé",
+        "disabled": "Désactivé"
+      }
+    },
+    "courses": {
+      "lessons": "Leçons",
+      "exercises": "Exercices"
+    },
+    "view_as_student": {
+      "title": "Vous allez être redirigé vers le LMS étudiant.",
+      "description": "Vous êtes sur le point de voir ce qu'un étudiant verra lorsqu'il s'inscrira à ce parcours",
+      "copy_link": "Copier le lien",
+      "go_to_lms": "Aller au LMS"
+    }
+  },
+  "certificate": {
+    "tab_design": "Design",
+    "tab_settings": "Paramètres",
+    "allow": "Autoriser les étudiants à télécharger le certificat",
+    "email_message_label": "Message électronique",
+    "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !",
+    "rules": "Règles",
+    "editor": {
+      "title": "Conception de certificat",
+      "back": "Retour aux certificats",
+      "unsaved": "Non enregistré",
+      "free_plan": "Forfait gratuit",
+      "discard": "Jeter",
+      "save": "Enregistrer les modifications",
+      "saved": "Modèle de certificat enregistré",
+      "save_failed": "Impossible d'enregistrer la conception du certificat. Vérifiez le formulaire et réessayez.",
+      "signature_upload_in_progress": "Attendez la fin du téléchargement de la signature avant de sauvegarder.",
+      "sections": "Sections de l'éditeur",
+      "preview": "Aperçu en direct",
+      "panel_templates": "Modèles",
+      "panel_templates_subtitle": "Choisissez un modèle pour ancrer le style visuel.",
+      "panel_content": "Contenu",
+      "panel_content_subtitle": "Affinez les mots qui apparaissent sur le certificat.",
+      "panel_colors": "Couleur d'accentuation",
+      "panel_colors_subtitle": "Utilisé pour la ligne du destinataire, les accents et le tampon.",
+      "panel_export": "Exporter",
+      "panel_export_subtitle": "Prévisualisez la conception actuelle telle qu’elle sera livrée.",
+      "section_header": "Copie d'en-tête",
+      "section_signatories": "Signataires",
+      "section_reference": "Référence",
+      "subtitle": "Sous-titre",
+      "subtitle_placeholder": "Récompensé par la plus haute distinction",
+      "description_override": "Remplacement de la description",
+      "description_override_placeholder": "La valeur par défaut est la description du cours.",
+      "description_override_hint": "Laissez vide pour revenir à la description du cours lors de la sauvegarde.",
+      "signatory_one_name": "Signataire 1 nom",
+      "signatory_one_role": "Signataire 1 rôle",
+      "signatory_two_name": "Nom du signataire 2",
+      "signatory_two_role": "Rôle du signataire 2",
+      "signatory_one_toggle": "Afficher le signataire 1",
+      "signatory_two_toggle": "Afficher le signataire 2",
+      "signature_upload": "Image signature",
+      "signature_upload_hint": "Téléchargez une image de signature (facultatif)",
+      "signature_dont_crop": "Ne pas recadrer",
+      "id_format": "Format de l'identifiant du certificat",
+      "id_format_hint": "Utilisez '{'seq'}' pour les quatre derniers chiffres, '{'year'}' pour l'année d'émission, '{'month'}' pour le mois.",
+      "accent_hint": "La couleur d'accent apparaît sur la règle du destinataire, les tampons et le surlignage du titre du modèle.",
+      "templates_hint": "Les modèles s'affichent avec le même moteur de rendu que celui utilisé pour les fichiers PDF et PNG téléchargés.",
+      "download_pdf": "Télécharger le PDF",
+      "download_png": "Télécharger le PNG",
+      "print": "Imprimer",
+      "export_hint": "Les exportations utilisent votre nom comme destinataire afin que vous puissiez prévisualiser la mise en page finale.",
+      "preview_failed": "Impossible de générer un aperçu du certificat",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Certificat d'excellence",
+      "sample_description": "En reconnaissance de réalisations exceptionnelles et d’un dévouement exemplaire au métier.",
+      "sample_org": "L'Académie Royale des Arts",
+      "summary_title": "Conception active",
+      "summary_subtitle": "Aperçu de l'apparence du certificat une fois émis.",
+      "field_template": "Modèle",
+      "field_accent": "Accent",
+      "field_signatories": "Signataires",
+      "customize_design": "Personnaliser le design",
+      "signatory_one": "Signataire 1",
+      "signatory_two": "Signataire 2",
+      "signatory_name": "Nom du signataire",
+      "signatory_role": "Rôle du signataire",
+      "signature_image": "Image de signature"
     }
   }
 }

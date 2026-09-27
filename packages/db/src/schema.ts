@@ -22,6 +22,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
+import type { CertificateTemplateId } from '@cio/certificates';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
@@ -765,7 +766,7 @@ export const course = pgTable(
       theme?: string;
       /** Atelier-era certificate design. Source of truth for new courses. */
       design?: {
-        templateId: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
+        templateId: CertificateTemplateId;
         accentColor: string;
         subtitle?: string;
         descriptionOverride?: string;
@@ -3527,7 +3528,8 @@ export const learningPath = pgTable(
     publicId: varchar('public_id', { length: 8 }).notNull(),
     organizationId: uuid('organization_id').notNull(),
     name: varchar().notNull(),
-    slug: varchar().notNull(),
+    slug: varchar(),
+    status: text().default('ACTIVE').notNull(),
     description: text().notNull(),
     coverImage: text('cover_image'),
     isPublished: boolean('is_published').default(false).notNull(),
@@ -3537,36 +3539,69 @@ export const learningPath = pgTable(
       .default(sql`'0'`)
       .notNull(),
     currency: varchar().default('USD').notNull(),
-    showSavings: boolean('show_savings').default(true).notNull(),
     sequentialUnlock: boolean('sequential_unlock').default(true).notNull(),
     selfEnrollment: boolean('self_enrollment').default(true).notNull(),
     autoEnroll: boolean('auto_enroll').default(true).notNull(),
-    certificateEnabled: boolean('certificate_enabled').default(true).notNull(),
-    certificateTitle: text('certificate_title'),
-    certificateIssuer: text('certificate_issuer'),
-    certificateDesign: jsonb('certificate_design').default({}).$type<{
-      templateId?: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
-      accentColor?: string;
-      subtitle?: string;
-      descriptionOverride?: string;
-      signatories?: { name: string; role: string; enabled?: boolean; signatureUrl?: string }[];
-      /** `{seq}` / `{year}` / `{month}`; defaults to `LP-XXXX-XXXX`. */
-      idFormat?: string;
+    certificate: jsonb().default({}).$type<{
+      isDownloadable?: boolean;
+      theme?: string;
+      design?: {
+        templateId?: CertificateTemplateId;
+        accentColor?: string;
+        subtitle?: string;
+        descriptionOverride?: string;
+        signatories?: { name: string; role: string; enabled?: boolean; signatureUrl?: string }[];
+        /** `{seq}` / `{year}` / `{month}`; defaults to `N° {seq}`. */
+        idFormat?: string;
+      };
+      emailMessage?: string | null;
     }>(),
-    /** Copy only. Testimonial/FAQ `id` keys are list keys, not FKs. */
+    welcomeEmailMessage: text('welcome_email_message'),
+    /** Copy only. FAQ `id` keys are list keys, not FKs. */
     landingPage: jsonb('landing_page').default({}).$type<{
-      headline?: string;
-      subheadline?: string;
+      title?: string;
+      description?: string;
+      requirements?: string;
+      showRequirements?: boolean;
+      showDescription?: boolean;
       visitorAccess?: 'teaser' | 'syllabus' | 'preview';
-      outcomes?: string[];
+      goals?: string;
+      showGoals?: boolean;
       skills?: string[];
-      showInstructors?: boolean;
-      showTestimonials?: boolean;
-      testimonials?: { id: string; name: string; role?: string; avatarUrl?: string; quote: string }[];
+      instructors?: Array<{
+        id?: string | number;
+        name: string;
+        role?: string;
+        avatarUrl?: string;
+        imgUrl?: string;
+        description?: string;
+        bio?: string;
+        coursesNo?: string | number;
+        courseNo?: string | number;
+      }>;
+      reviews?: Array<{
+        id: number;
+        hide: boolean;
+        name: string;
+        avatar_url: string;
+        rating: number | null;
+        created_at: number;
+        description: string;
+      }>;
+      showCertificate?: boolean;
+      certificateTemplateUrl?: string;
+      paymentEnabled?: boolean;
+      paymentLink?: string;
+      showDiscount?: boolean;
+      discount?: number;
+      reward?: {
+        show: boolean;
+        description?: string;
+      };
       showFaqs?: boolean;
       faqs?: { id: string; question: string; answer: string }[];
       showRating?: boolean;
-      rating?: { average: number; count: number };
+      rating?: { average: number; count: number } | null;
     }>(),
     /** Set when the teacher first confirms course order; not derivable from other columns. */
     courseOrderSetAt: timestamp('course_order_set_at', { withTimezone: true, mode: 'string' }),
@@ -3586,7 +3621,11 @@ export const learningPath = pgTable(
       name: 'learning_path_created_by_profile_id_fkey'
     }),
     unique('learning_path_public_id_unique').on(table.publicId),
-    unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
+    // Partial index (not a plain unique constraint) so soft-deleted rows keep
+    // their slug without blocking reuse.
+    uniqueIndex('idx_learning_path_org_slug_active')
+      .on(table.organizationId, table.slug)
+      .where(sql`${table.status} != 'DELETED'`),
     index('idx_learning_path_organization_id').on(table.organizationId),
     index('idx_learning_path_organization_id_is_published').on(table.organizationId, table.isPublished)
   ]
@@ -3603,7 +3642,6 @@ export const learningPathCourse = pgTable(
     courseId: uuid('course_id').notNull(),
     /** Not unique: reorder rewrites every row in one transaction. */
     order: integer().notNull(),
-    outcomes: jsonb().default([]).notNull().$type<string[]>(),
     addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     /** Soft-remove so member progress cache survives course removal. */
     removedAt: timestamp('removed_at', { withTimezone: true, mode: 'string' })

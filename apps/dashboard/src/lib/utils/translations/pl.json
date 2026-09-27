@@ -12,7 +12,30 @@
     },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany",
-    "scroll_to_top": "Przewiń do góry"
+    "scroll_to_top": "Przewiń do góry",
+    "add": "Dodaj",
+    "remove": "Usuń",
+    "back": "Wstecz",
+    "close": "Zamknij",
+    "edit": "Edytuj",
+    "coming_soon": "Wkrótce",
+    "pricing": {
+      "enable_paid": "Włącz Płatne",
+      "yes": "Tak",
+      "no": "Nie",
+      "currency": "Waluta",
+      "cost": "Koszt",
+      "payment_link": "Link do płatności",
+      "payment_required": "Link płatności jest wymagany, gdy włączona jest płatność",
+      "payment_invalid_url": "Wprowadź prawidłowy adres URL",
+      "discount": "Rabat",
+      "show_discount": "Pokaż zniżkę",
+      "discount_percentage": "Procent zniżki",
+      "reward": "Nagroda / Prezent",
+      "reward_help": "Zaoferuj uczniom zachętę za ukończenie",
+      "reward_description": "Opis nagrody",
+      "placeholder_reward": "np. sesja mentoringowa 1 na 1, gadżety lub ekskluzywny dostęp do społeczności"
+    }
   },
   "validations": {
     "generic": {
@@ -1301,7 +1324,12 @@
           "signature_upload_hint": "Prześlij obraz podpisu (opcjonalnie)",
           "signature_dont_crop": "Nie przycinaj",
           "signature_upload_in_progress": "Przed zapisaniem poczekaj na zakończenie przesyłania podpisu.",
-          "save_failed": "Nie można zapisać projektu certyfikatu. Sprawdź formularz i spróbuj ponownie."
+          "save_failed": "Nie można zapisać projektu certyfikatu. Sprawdź formularz i spróbuj ponownie.",
+          "signatory_one": "Sygnatariusz 1",
+          "signatory_two": "Sygnatariusz 2",
+          "signatory_name": "Nazwisko sygnatariusza",
+          "signatory_role": "Rola sygnatariusza",
+          "signature_image": "Obraz podpisu"
         }
       },
       "people": {
@@ -5496,7 +5524,7 @@
         "people": "Osoby",
         "analytics": "Analityka",
         "landing": "Strona docelowa",
-        "certificate": "Certyfikat",
+        "certificate": "Certyfikaty",
         "settings": "Ustawienia",
         "setup": "Konfiguracja"
       },
@@ -5557,7 +5585,9 @@
       "remove_course": "Usuń ze ścieżki",
       "add_course_button": "Dodaj kurs do ścieżki",
       "empty_title": "Nie ma jeszcze kursów w tej ścieżce szkoleniowej",
-      "empty_description": "Dodaj kursy, które poprowadzą uczniów przez ustrukturyzowaną sekwencję. Zacznij od kliknięcia przycisku Dodaj."
+      "empty_description": "Dodaj kursy, które poprowadzą uczniów przez ustrukturyzowaną sekwencję. Zacznij od kliknięcia przycisku Dodaj.",
+      "start_reorder": "Zmień kolejność",
+      "end_reorder": "Zakończ zmianę kolejności"
     },
     "listing": {
       "title": "Ścieżki edukacyjne",
@@ -5611,7 +5641,8 @@
       "open": "Otwórz",
       "share": "Udostępnij",
       "invite": "Zaproś",
-      "delete": "Usuń"
+      "delete": "Usuń",
+      "view_as_student": "Zobacz jako uczeń"
     },
     "card": {
       "actions_menu_aria": "Działania na ścieżce",
@@ -5632,7 +5663,12 @@
       "member_removed": "Uczestnik został usunięty ze ścieżki",
       "tutors_added": "Tutorzy dodani do ścieżki",
       "tutor_added": "Dodano tutora do ścieżki",
-      "tutor_removed": "Usunięto tutora ze ścieżki"
+      "tutor_removed": "Usunięto tutora ze ścieżki",
+      "certificate_saved": "Ustawienia certyfikatu zostały zapisane",
+      "landing_saved": "Strona docelowa została zaktualizowana",
+      "landing_save_failed": "Nie udało się zapisać strony docelowej",
+      "link_generated": "Link z zaproszeniem wygenerowany i skopiowany do schowka",
+      "settings_saved": "Ustawienia ścieżki nauki zaktualizowane"
     },
     "analytics": {
       "title": "Analityka",
@@ -5737,7 +5773,302 @@
         "in_progress": "W toku",
         "completed": "Ukończono"
       },
-      "info_title": "Informacje o rejestracji ścieżki"
+      "info_title": "Informacje o rejestracji ścieżki",
+      "add": "Dodaj",
+      "last_login_at": "Ostatnie logowanie",
+      "you": "Ty",
+      "view": "Zobacz",
+      "delete_profile": "Usuń",
+      "invite_modal": {
+        "loading": "Dodawanie…",
+        "student_limit_reached": "Osiągnięto limit uczniów. Uaktualnij plan, aby dodać więcej uczniów.",
+        "invite": "Zaproś korepetytorów",
+        "invite_students": "Zaproś uczniów",
+        "finish": "Zakończ"
+      }
+    },
+    "certificate": {
+      "title": "Certyfikaty",
+      "awarded_count": "{count, plural, =0 {Brak przyznanych certyfikatów} =1 {Dotychczas przyznano 1 certyfikat} other {Dotychczas przyznano # certyfikatów}}",
+      "allow": "Pozwól uczniom pobrać certyfikat",
+      "email_message_label": "Wiadomość e-mail",
+      "email_message_placeholder": "np. Gratulacje z okazji ukończenia ścieżki edukacyjnej!",
+      "editor": {
+        "title": "Projekt certyfikatu"
+      }
+    },
+    "landing": {
+      "page_builder": "Kreator stron",
+      "display_section": "Pokaż sekcję",
+      "hero": {
+        "title": "Nagłówek główny",
+        "headline": "Tytuł",
+        "headline_placeholder": "np. Zostań starszym programistą Fullstack",
+        "subheadline": "Podtytuł",
+        "subheadline_placeholder": "np. Opanuj nowoczesny frontend, backend i wdrożenia poprzez projekty praktyczne."
+      },
+      "access": {
+        "title": "Dostęp dla odwiedzających",
+        "description": "Określa, ile treści niezapisani odwiedzający mogą przeglądać na publicznej stronie ścieżki.",
+        "teaser_title": "Zajawka",
+        "teaser_desc": "Pokaż tylko tytuły kursów i główne efekty kształcenia.",
+        "syllabus_title": "Program nauczania (zalecane)",
+        "syllabus_desc": "Pokaż pełny program z tytułami lekcji i oznaczeniami zablokowanych treści.",
+        "preview_title": "Podgląd",
+        "preview_desc": "Zezwól odwiedzającym na bezpłatny podgląd pierwszej lekcji każdego kursu bez zapisywania się."
+      },
+      "skills": {
+        "title": "Umiejętności",
+        "placeholder": "np. TypeScript, Docker, PostgreSQL",
+        "help": "Naciśnij Enter, aby dodać. Pojawią się jako tagi na stronie docelowej."
+      },
+      "instructors": {
+        "title": "Instruktorzy",
+        "auto_populated_note": "Instruktorzy są automatycznie pobierani z kursów wchodzących w skład tej ścieżki.",
+        "courses_note": "{count, plural, =0 {Nie dodano jeszcze kursów} =1 {Pobrane z 1 kursu w tej ścieżce} other {Pobrane ze wszystkich # kursów w tej ścieżce}}",
+        "role_placeholder": "np. Główny instruktor · Frontend",
+        "default_role": "Instruktor kursu",
+        "untitled": "Instruktor bez nazwy",
+        "add": "Dodaj instruktora",
+        "no_tutors_found": "Nie znaleziono instruktorów",
+        "min_one_required": "Wymagany jest co najmniej jeden instruktor",
+        "remove": "Usuń instruktora",
+        "upload": "Logo instruktora",
+        "name": "Imię i nazwisko instruktora",
+        "name_placeholder": "Nazwa Twojej firmy",
+        "role": "Rola instruktora",
+        "about": "O instruktorze",
+        "about_placeholder": "Krótkie informacje o instruktorze",
+        "total": "Liczba kursów"
+      },
+      "testimonials": {
+        "title": "Opinie",
+        "untitled": "Opinia bez tytułu",
+        "name": "Imię i nazwisko",
+        "role": "Rola / Stanowisko",
+        "quote": "Cytat",
+        "add": "Dodaj opinię"
+      },
+      "faqs": {
+        "title": "Często zadawane pytania",
+        "untitled": "Pytanie bez tytułu",
+        "question": "Pytanie",
+        "answer": "Odpowiedź",
+        "add": "Dodaj pytanie",
+        "question_placeholder": "Co jest wymagane do ukończenia tej ścieżki?",
+        "answer_placeholder": "Musisz ukończyć wszystkie lekcje i ćwiczenia w każdym kursie."
+      },
+      "header": {
+        "title_placeholder": "np. Fullstack Web Development",
+        "description_placeholder": "Kompleksowy przegląd tego, co osiągną uczniowie...",
+        "title": "Nagłówek",
+        "title_label": "Tytuł",
+        "description_label": "Opis"
+      },
+      "reviews": {
+        "title": "Opinie",
+        "untitled": "Opinia bez tytułu",
+        "name_placeholder": "Jane Doe",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "Adres URL zdjęcia profilowego",
+        "rating_placeholder": "Opcjonalnie (1-5)",
+        "clear_rating": "Wyczyść ocenę",
+        "description_placeholder": "Ta ścieżka nauki dała mi dokładnie takie umiejętności i pewność siebie, jakich potrzebowałem.",
+        "add_reviews": "Dodaj opinie",
+        "fullname": "Imię i nazwisko",
+        "description": "Opis",
+        "rating": "Ocena"
+      },
+      "preview": "Podgląd",
+      "save": "Zapisz zmiany",
+      "requirement": {
+        "title": "Wymaganie"
+      },
+      "description": {
+        "title": "Opis"
+      },
+      "goals": {
+        "title": "Cele"
+      },
+      "certificate": {
+        "title": "Certyfikat",
+        "upload_template": "Szablon certyfikatu"
+      },
+      "pricing": {
+        "title": "Cennik",
+        "payment_required": "Link do płatności jest wymagany",
+        "payment_invalid_url": "Wprowadź prawidłowy adres URL",
+        "enable_paid": "Włącz Płatne",
+        "currency": "Waluta",
+        "cost": "Koszt",
+        "payment": "Link do płatności",
+        "payment_helper": "Stripe, Lemon Squeezy lub dowolny link do płatności",
+        "discount": "Rabat",
+        "no": "Nie",
+        "yes": "Tak",
+        "percent": "Procent rabatu",
+        "percentage_helper": "W procentach%",
+        "gift_on_completion": "Prezent po ukończeniu",
+        "gift": "O prezencie"
+      }
+    },
+    "settings": {
+      "title": "Ustawienia",
+      "general": {
+        "legend": "Informacje ogólne",
+        "desc": "Podstawowe informacje o tej ścieżce edukacyjnej.",
+        "name_label": "Nazwa ścieżki",
+        "name_placeholder": "np. Programowanie Fullstack",
+        "name_required": "Nazwa ścieżki jest wymagana",
+        "description_label": "Opis",
+        "description_placeholder": "Krótkie podsumowanie tego, co osiągną uczniowie...",
+        "description_required": "Opis jest wymagany",
+        "cover_image_legend": "Zdjęcie na okładce",
+        "cover_image_desc": "Prześlij zdjęcie na okładkę tej ścieżki. Zalecany rozmiar: 1200x630px.",
+        "replace_image": "Zmień obraz",
+        "reset_image": "Resetuj",
+        "link": "Link ścieżki",
+        "generate_link": "Generuj nowy link",
+        "open_link": "Otwórz link w nowej karcie",
+        "copy_link": "Kopiuj link",
+        "setup_landing_for_link": "Skonfiguruj stronę docelową, aby uzyskać link do ścieżki"
+      },
+      "enrollment": {
+        "legend": "Zapisy i progresja",
+        "desc": "Skonfiguruj, jak uczniowie zapisują się i przechodzą przez kursy.",
+        "self_enrollment_label": "Zezwalaj na samodzielny zapis",
+        "self_enrollment_desc": "Uczniowie mogą sami zapisać się na tę ścieżkę.",
+        "sequential_unlock_label": "Sekwencyjne odblokowywanie kursów",
+        "sequential_unlock_desc": "Uczniowie muszą ukończyć kursy w określonej kolejności.",
+        "auto_enroll_label": "Automatyczny zapis na kursy ścieżki",
+        "auto_enroll_desc": "Automatycznie zapisuj uczniów na wszystkie kursy po dołączeniu do ścieżki."
+      },
+      "publishing": {
+        "legend": "Publikacja",
+        "desc": "Spraw, aby ta ścieżka była widoczna dla uczniów.",
+        "publish_label": "Opublikuj ścieżkę edukacyjną",
+        "publish_desc": "Spraw, aby ta ścieżka była widoczna i otwórz zapisy.",
+        "published": "Opublikowana",
+        "unpublished": "Nieopublikowana"
+      },
+      "danger": {
+        "legend": "Strefa zagrożenia",
+        "desc": "Trwale usuń tę ścieżkę edukacyjną i wszystkie powiązane z nią dane.",
+        "delete_button": "Usuń ścieżkę edukacyjną",
+        "delete_title": "Usuń ścieżkę nauki",
+        "delete_description": "Czy na pewno chcesz usunąć \"{name}\"? Tej akcji nie można cofnąć."
+      },
+      "cover_image": {
+        "legend": "Zdjęcie okładki",
+        "desc": "Jeśli dodasz okładkę, powinna mieć co najmniej 280 x 200.",
+        "replace": "Zamień",
+        "reset": "Resetuj",
+        "alt": "Osłona ścieżki"
+      },
+      "welcome_email": {
+        "legend": "E-mail powitalny",
+        "desc": "Dostosuj wiadomość, którą uczniowie otrzymują po zapisaniu. Dodaj osobistą notatkę, instrukcje lub link do sesji na żywo.",
+        "placeholder": "Napisz wiadomość powitalną, którą uczniowie otrzymają przy zapisie…"
+      },
+      "progression": {
+        "legend": "Postęp ucznia",
+        "desc": "Określ, czy uczniowie mają dostęp do wszystkich kursów, czy muszą ukończyć je po kolei.",
+        "free": "Dowolna — wszystkie kursy są dostępne",
+        "sequential": "Sekwencyjna — ukończ poprzednie kursy, aby odblokować następny"
+      },
+      "self_enrollment": {
+        "legend": "Uczniowie mogą zapisywać się samodzielnie",
+        "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu z {people}.",
+        "access_people": "Osoby",
+        "enabled": "Włączone",
+        "disabled": "Wyłączone"
+      },
+      "auto_enroll": {
+        "legend": "Automatyczny zapis na kursy w ścieżce",
+        "desc": "Dołączenie do ścieżki zapisuje ucznia na każdy zawarty w niej kurs.",
+        "enabled": "Włączone",
+        "disabled": "Wyłączone"
+      }
+    },
+    "courses": {
+      "lessons": "Lekcje",
+      "exercises": "Ćwiczenia"
+    },
+    "view_as_student": {
+      "title": "Spowoduje to przekierowanie do LMS dla uczniów.",
+      "description": "Zobaczysz to, co zobaczy uczeń po zapisaniu się na tę ścieżkę nauki",
+      "copy_link": "Kopiuj link",
+      "go_to_lms": "Przejdź do LMS"
+    }
+  },
+  "certificate": {
+    "tab_design": "Projekt",
+    "tab_settings": "Ustawienia",
+    "allow": "Pozwól uczniom pobrać certyfikat",
+    "email_message_label": "Wiadomość e-mail",
+    "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!",
+    "rules": "Zasady",
+    "editor": {
+      "title": "Projekt certyfikatu",
+      "back": "Wracając do certyfikatów",
+      "unsaved": "Niezapisane",
+      "free_plan": "Darmowy plan",
+      "discard": "Odrzuć",
+      "save": "Zapisz zmiany",
+      "saved": "Projekt certyfikatu został zapisany",
+      "save_failed": "Nie można zapisać projektu certyfikatu. Sprawdź formularz i spróbuj ponownie.",
+      "signature_upload_in_progress": "Przed zapisaniem poczekaj na zakończenie przesyłania podpisu.",
+      "sections": "Sekcje redaktorskie",
+      "preview": "Podgląd na żywo",
+      "panel_templates": "Szablony",
+      "panel_templates_subtitle": "Wybierz szablon, aby zakotwiczyć styl wizualny.",
+      "panel_content": "Treść",
+      "panel_content_subtitle": "Dostosuj słowa pojawiające się na certyfikacie.",
+      "panel_colors": "Kolor akcentujący",
+      "panel_colors_subtitle": "Używany do określenia linii odbiorcy, akcentów i stempla.",
+      "panel_export": "Eksportuj",
+      "panel_export_subtitle": "Wyświetl podgląd aktualnego projektu w momencie jego dostarczenia.",
+      "section_header": "Kopia nagłówka",
+      "section_signatories": "Sygnatariusze",
+      "section_reference": "Odniesienie",
+      "subtitle": "Podtytuł",
+      "subtitle_placeholder": "Odznaczony Najwyższym Wyróżnieniem",
+      "description_override": "Zastąpienie opisu",
+      "description_override_placeholder": "Domyślnie jest to opis kursu.",
+      "description_override_hint": "Pozostaw puste, aby po zapisaniu powrócić do opisu kursu.",
+      "signatory_one_name": "Imię i nazwisko sygnatariusza 1",
+      "signatory_one_role": "Sygnatariusz 1 rola",
+      "signatory_two_name": "Imię i nazwisko sygnatariusza 2",
+      "signatory_two_role": "Rola sygnatariusza 2",
+      "signatory_one_toggle": "Pokaż sygnatariusza 1",
+      "signatory_two_toggle": "Pokaż sygnatariusza 2",
+      "signature_upload": "Podpisowy obraz",
+      "signature_upload_hint": "Prześlij obraz podpisu (opcjonalnie)",
+      "signature_dont_crop": "Nie przycinaj",
+      "id_format": "Format identyfikatora certyfikatu",
+      "id_format_hint": "Użyj „{'seq'}' dla ostatnich czterech cyfr, '{'year'}' dla roku wydania, '{'month'}' dla miesiąca.",
+      "accent_hint": "Kolor akcentujący pojawia się na regule odbiorcy, znaczkach i wyróżnieniu nagłówka szablonu.",
+      "templates_hint": "Szablony są renderowane przy użyciu tego samego modułu renderującego, który jest używany w przypadku pobranych plików PDF i PNG.",
+      "download_pdf": "Pobierz PDF",
+      "download_png": "Pobierz PNG",
+      "print": "Wydrukuj",
+      "export_hint": "Eksporty używają Twojego imienia i nazwiska jako odbiorcy, dzięki czemu możesz wyświetlić podgląd ostatecznego układu.",
+      "preview_failed": "Nie można wygenerować podglądu certyfikatu",
+      "sample_recipient": "Eleanor Vance",
+      "sample_course": "Certyfikat doskonałości",
+      "sample_description": "W uznaniu wybitnych osiągnięć i wzorowego poświęcenia rzemiosłu.",
+      "sample_org": "Królewska Akademia Sztuk",
+      "summary_title": "Aktywny projekt",
+      "summary_subtitle": "Migawka przedstawiająca wygląd certyfikatu po wydaniu.",
+      "field_template": "Szablon",
+      "field_accent": "Akcent",
+      "field_signatories": "Sygnatariusze",
+      "customize_design": "Dostosuj projekt",
+      "signatory_one": "Sygnatariusz 1",
+      "signatory_two": "Sygnatariusz 2",
+      "signatory_name": "Nazwisko sygnatariusza",
+      "signatory_role": "Rola sygnatariusza",
+      "signature_image": "Obraz podpisu"
     }
   }
 }
