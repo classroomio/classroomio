@@ -75,7 +75,11 @@ export const MCP_TOOL_CREDIT_COST = {
   delete_course_member: 1,
   reset_course_member_progress: 1,
   create_course_invite: 1,
-  revoke_course_invite: 1
+  revoke_course_invite: 1,
+  get_course_certificate: 0,
+  list_course_certificates: 0,
+  download_course_certificate: 0,
+  update_course_certificate: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -167,7 +171,10 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_course_members' ||
     toolName === 'get_course_member' ||
     toolName === 'get_course_member_analytics' ||
-    toolName === 'list_course_invites'
+    toolName === 'list_course_invites' ||
+    toolName === 'get_course_certificate' ||
+    toolName === 'list_course_certificates' ||
+    toolName === 'download_course_certificate'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

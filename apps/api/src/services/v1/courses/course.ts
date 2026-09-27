@@ -22,6 +22,7 @@ import { getOrganizationCourses } from '@api/services/organization';
 import { listCourseMembers } from '@api/services/course/people';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseBelongsToOrganization } from '@api/services/v1/shared';
+import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
 export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
   return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);
@@ -67,6 +68,7 @@ export async function updatePublicApiCourseService(
   payload: TPublicApiUpdateCourse
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCertificateChangeAllowed(params.courseId, payload.certificate);
 
   return updateCourseService(params.courseId, payload);
 }

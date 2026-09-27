@@ -105,6 +105,33 @@ Current tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 
+Course certificate tools:
+
+- `get_course_certificate`
+- `update_course_certificate`
+- `list_course_certificates`
+- `download_course_certificate`
+
+Certificate tools call the public API certificate endpoints. MCP keys get the `course:certificate:read` and `course:certificate:write` scopes by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. These scopes open only the certificate endpoints.
+
+The tools act as the person who created the key, with the same permissions that person has in the dashboard. That role is checked on every call, so if the creator loses access, the key loses it too:
+
+- Reading the certificate settings and design needs them to be a member of the course (including access through a program) or an org admin.
+- Changing the settings or design, listing who earned the certificate, and downloading a certificate need them to be a course tutor/admin or an org admin.
+
+`get_course_certificate` and `update_course_certificate` return effective settings: stored values with the dashboard's defaults filled in where nothing is stored (`isDownloadable` false, `threshold` 100, the default design, and so on).
+
+`update_course_certificate` is a partial update: fields you leave out keep their values, and `null` clears `deadline`, `requiredExerciseId`, `exerciseMinScorePercent`, or `emailMessage`. `design` is replaced as a whole object, so read it first and send the full design. `deadline` must be an ISO 8601 datetime with a timezone, for example `2026-12-31T23:59:59Z`. Like the dashboard, it needs a paid plan: on the Basic (free) plan it fails with 403 `UPGRADE_REQUIRED`.
+
+`list_course_certificates` lists the students who earned the course certificate, with when they earned it and when the certificate email was sent. It takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email. `download_course_certificate` takes a `memberId` from that list and a `format` of `pdf` (default) or `png`.
+
+What the tools cover compared with the dashboard:
+
+- Covered: certificate settings and design, the list of students who earned the certificate, and downloading an issued certificate.
+- Not covered, on purpose: previewing a design, which is a UI concern.
+- Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
+- Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
+
 ## Auth Model
 
 The package expects an org-scoped ClassroomIO automation key generated from `Automation -> MCP` in the ClassroomIO dashboard.
@@ -124,7 +151,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort routes and the course member and invite routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, and course certificate routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 

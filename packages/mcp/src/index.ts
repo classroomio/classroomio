@@ -6,6 +6,7 @@ import { getConfig } from './config';
 import { registerCohortGoalTools } from './tools/cohort-goals';
 import { registerCohortNewsfeedTools } from './tools/cohort-newsfeed';
 import { registerCohortTools } from './tools/cohorts';
+import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseDraftTools } from './tools/course-drafts';
 import { registerCourseMemberTools } from './tools/course-members';
 
@@ -22,6 +23,7 @@ async function main() {
   registerCohortNewsfeedTools(server, apiClient);
   registerCohortGoalTools(server, apiClient);
   registerCourseMemberTools(server, apiClient);
+  registerCourseCertificateTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

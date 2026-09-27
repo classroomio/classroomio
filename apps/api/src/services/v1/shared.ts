@@ -6,7 +6,8 @@ import {
   isCohortMember,
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
-import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { isCourseTeamMemberOrOrgAdmin, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import {
   getOrganizationMemberIdByOrgAndProfile,
   getOrganizationMemberRoleId,
@@ -164,6 +165,26 @@ export async function assertCohortNewsfeedCommentAuthorOrTeam(
   }
 
   throw new AppError('Only the comment author or a cohort team member can do this', ErrorCodes.COHORT_FORBIDDEN, 403);
+}
+
+/**
+ * Mirrors `courseMemberMiddleware` for the key's creator: the actor must be a course member (including program
+ * access) or an org admin. Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertCourseMemberOrOrgAdmin(courseId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const isAllowed = await isUserCourseMemberOrOrgAdmin(courseId, actorId);
+  if (isAllowed) {
+    return;
+  }
+
+  const hasProgramAccess = await ensureProgramCourseAccess(courseId, actorId);
+  if (hasProgramAccess) {
+    return;
+  }
+
+  throw new AppError('Automation actor must be a course member or an organization admin', ErrorCodes.FORBIDDEN, 403);
 }
 
 export async function assertCourseTeamMemberOrOrgAdmin(courseId: string, actorId: string | null): Promise<void> {

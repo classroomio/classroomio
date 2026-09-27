@@ -11,3 +11,4 @@ export * from './pagination';
 export * from './course-member';
 export * from './course-member-responses';
 export * from './course-invite';
+export * from './course-certificate';

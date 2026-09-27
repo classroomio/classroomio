@@ -17,6 +17,8 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, and every other endpoint returns 403 for them.
+
 ## Send requests
 
 Add the key to every request:
@@ -155,6 +157,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
   'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/courses/{courseId}/certificate': 'Get course certificate settings',
+  'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
+  'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
+  'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
   'GET /public-api/v1/courses/{courseId}/members': 'List course members',
   'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
   'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
@@ -215,6 +221,11 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Course Certificates',
+    description:
+      "Read and update a course's certificate design and settings, list the students who earned it, and download their certificates."
   },
   {
     name: 'Public API Course Members',

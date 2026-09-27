@@ -33,6 +33,10 @@ vi.mock('@api/services/v1/cohorts/cohort', () => ({
   listCohortsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
 }));
 
+vi.mock('@api/services/v1/courses/certificates', () => ({
+  getPublicApiCourseCertificateService: vi.fn().mockResolvedValue({})
+}));
+
 vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 })
 }));
@@ -41,7 +45,7 @@ import { v1Router } from '@api/routes/v1';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 
-// The MCP default scopes once both the cohort and the course member APIs are in.
+// The MCP default scopes once the cohort, course member, and certificate APIs are in.
 const MCP_DEFAULT_SCOPES = [
   'course_import:draft:create',
   'course_import:draft:read',
@@ -55,7 +59,9 @@ const MCP_DEFAULT_SCOPES = [
   'cohort:read',
   'cohort:write',
   'course:member:read',
-  'course:member:write'
+  'course:member:write',
+  'course:certificate:read',
+  'course:certificate:write'
 ];
 
 const app = new Hono().route('/public-api/v1', v1Router);
@@ -63,7 +69,7 @@ const app = new Hono().route('/public-api/v1', v1Router);
 const request = (path: string) =>
   app.request(`/public-api/v1${path}`, { headers: { Authorization: 'Bearer cio_mcp_test' } });
 
-describe('default MCP key across the cohort and course member APIs', () => {
+describe('default MCP key across the cohort, course member, and certificate APIs', () => {
   beforeEach(() => {
     mocks.complete.mockReset().mockResolvedValue(undefined);
     mocks.authenticate.mockResolvedValue({
@@ -77,7 +83,8 @@ describe('default MCP key across the cohort and course member APIs', () => {
 
   it.each([
     ['/cohorts', 'list_org_cohorts'],
-    [`/courses/${COURSE_ID}/members`, 'list_course_members']
+    [`/courses/${COURSE_ID}/members`, 'list_course_members'],
+    [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate']
   ])('reaches %s and meters it as %s', async (path, toolName) => {
     const response = await request(path);
 

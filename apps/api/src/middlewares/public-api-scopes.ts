@@ -6,6 +6,7 @@ import { organizationApiKeyHasScopes } from '@api/services/organization/automati
 
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
 const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
+const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   if (COHORT_PATH.test(path)) {
@@ -14,6 +15,10 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (COURSE_MEMBER_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? 'course:member:read' : 'course:member:write';
+  }
+
+  if (COURSE_CERTIFICATE_PATH.test(path)) {
+    return method === 'GET' || method === 'HEAD' ? 'course:certificate:read' : 'course:certificate:write';
   }
 
   return null;
