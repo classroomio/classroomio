@@ -5,6 +5,8 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { getConfig } from './config';
 import { registerCohortGoalTools } from './tools/cohort-goals';
 import { registerCohortNewsfeedTools } from './tools/cohort-newsfeed';
+import { registerLessonTools } from './tools/lessons';
+import { registerMediaUploadTools } from './tools/media-upload';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseDraftTools } from './tools/course-drafts';
@@ -22,6 +24,8 @@ async function main() {
   registerCohortTools(server, apiClient);
   registerCohortNewsfeedTools(server, apiClient);
   registerCohortGoalTools(server, apiClient);
+  registerMediaUploadTools(server, apiClient);
+  registerLessonTools(server, apiClient);
   registerCourseMemberTools(server, apiClient);
   registerCourseCertificateTools(server, apiClient);
 

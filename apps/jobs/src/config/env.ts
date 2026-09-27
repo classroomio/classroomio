@@ -29,6 +29,23 @@ const envSchema = z.object({
   TRANSCRIBE_WORKER_CONCURRENCY: z.string().optional(),
   EMAIL_WORKER_CONCURRENCY: z.string().optional(),
   AGENT_COURSE_GENERATION_WORKER_CONCURRENCY: z.string().optional(),
+  HLS_DISPATCH_CONCURRENCY: z.string().optional(),
+
+  /**
+   * Fly.io machine that runs the HLS encoder. Unset disables dispatch, so the
+   * queue drains to `skipped` rather than backing up on an instance that has no
+   * encoder configured.
+   */
+  FLY_API_TOKEN: z.string().optional(),
+  FLY_APP_NAME: z.string().optional(),
+  FLY_ENCODER_IMAGE: z.string().optional(),
+  FLY_ENCODER_REGION: z.string().optional(),
+  FLY_ENCODER_MACHINE_CPUS: z.string().optional(),
+  FLY_ENCODER_MACHINE_MEMORY_MB: z.string().optional(),
+  /** Ceiling on a downloaded source, passed to the machine (it inherits no fly.toml env). */
+  FLY_ENCODER_MAX_SOURCE_BYTES: z.string().optional(),
+  /** Where the encoder calls back to. Must be reachable from Fly. */
+  ENCODER_CALLBACK_API_URL: z.string().optional(),
 
   /** Optional OpenAI key — when unset, transcribe-audio jobs no-op and OpenAI-backed agent runs fail config checks. */
   OPENAI_API_KEY: z.string().optional(),

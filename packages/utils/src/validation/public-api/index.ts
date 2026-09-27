@@ -1,3 +1,4 @@
+export * from './asset';
 export * from './audience';
 export * from './cohort';
 export * from './cohort-course';
@@ -7,8 +8,9 @@ export * from './cohort-member';
 export * from './cohort-newsfeed';
 export * from './cohort-responses';
 export * from './course';
-export * from './pagination';
+export * from './course-certificate';
+export * from './course-invite';
 export * from './course-member';
 export * from './course-member-responses';
-export * from './course-invite';
-export * from './course-certificate';
+export * from './lesson';
+export * from './pagination';

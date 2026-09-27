@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream';
 import type {
   TAutomationCourseTagAssignment,
   TAutomationDraftTagAssignment,
@@ -22,6 +23,11 @@ import type {
 
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type {
+  TPublicApiCreateAsset,
+  TPublicApiCreateLesson,
+  TPublicApiUpdateLesson
+} from '@cio/utils/validation/public-api';
 import type {
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseMember,
@@ -577,6 +583,59 @@ export class ClassroomIoApiClient {
     }
 
     return json;
+  }
+
+  // ─── Media and lessons (public API) ──────────────────────────────────────
+
+  async createAssetUpload(payload: TPublicApiCreateAsset) {
+    return this.request<{ assetId: string; uploadUrl: string; expiresAt: string }>('/public-api/v1/assets', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async createLesson(courseId: string, payload: Omit<TPublicApiCreateLesson, never>) {
+    return this.request(`/public-api/v1/courses/${encodeURIComponent(courseId)}/lessons`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLesson(courseId: string, lessonId: string, payload: Omit<TPublicApiUpdateLesson, never>) {
+    return this.request(
+      `/public-api/v1/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}`,
+      { method: 'PUT', body: payload }
+    );
+  }
+
+  /** Sends bytes straight to storage. No ClassroomIO header — the URL's signature is the auth. */
+  /**
+   * Streams a file to storage.
+   *
+   * `content-length` is set explicitly for two reasons: a stream body would
+   * otherwise be sent chunked, and the presigned URL signs that header — so the
+   * request must declare exactly the size the reservation was checked against.
+   */
+  async putToPresignedUrl(
+    presignedUrl: string,
+    body: Readable,
+    contentType: string,
+    contentLength: number
+  ): Promise<void> {
+    const response = await fetch(presignedUrl, {
+      method: 'PUT',
+      headers: {
+        'content-type': contentType,
+        'content-length': String(contentLength)
+      },
+      body: Readable.toWeb(body) as unknown as BodyInit,
+      // Required by undici to send a streaming request body.
+      duplex: 'half'
+    } as RequestInit & { duplex: 'half' });
+
+    if (!response.ok) {
+      throw new ClassroomIoApiError(`Upload to storage failed with status ${response.status}`, response.status);
+    }
   }
 
   private async request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
