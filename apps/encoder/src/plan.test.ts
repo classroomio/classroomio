@@ -6,10 +6,12 @@ import {
   buildVarStreamMap,
   evenWidthFor,
   gopSize,
+  outputDimensions,
   outputFps,
+  scaleExpressionFor,
   selectRungs,
   type SourceInfo
-} from './plan';
+} from './plan.js';
 
 const source = (overrides: Partial<SourceInfo> = {}): SourceInfo => ({
   width: 1920,
@@ -18,6 +20,56 @@ const source = (overrides: Partial<SourceInfo> = {}): SourceInfo => ({
   durationSeconds: 600,
   hasAudio: true,
   ...overrides
+});
+
+const portrait = (overrides: Partial<SourceInfo> = {}): SourceInfo =>
+  source({ width: 1080, height: 1920, ...overrides });
+
+describe('portrait sources', () => {
+  it('sizes the ladder by the short side, not the long one', () => {
+    expect(selectRungs(portrait()).map((rung) => rung.name)).toEqual(['p360', 'p720', 'p1080']);
+    expect(selectRungs(portrait({ width: 720, height: 1280 })).map((r) => r.name)).toEqual(['p360', 'p720']);
+  });
+
+  it('gives the top rung the full short side rather than a 608-wide frame', () => {
+    const [, , top] = selectRungs(portrait());
+    expect(outputDimensions(top!, portrait())).toEqual({ width: 1080, height: 1920 });
+  });
+
+  it('scales the width so ffmpeg derives the height', () => {
+    const [, , top] = selectRungs(portrait());
+    expect(scaleExpressionFor(top!, portrait())).toBe('1080:-2');
+  });
+
+  it('keeps landscape scaling on the height', () => {
+    const [, , top] = selectRungs(source());
+    expect(scaleExpressionFor(top!, source())).toBe('-2:1080');
+  });
+
+  it('reports the real frame in the master playlist', () => {
+    const playlist = buildMasterPlaylist({ rungs: selectRungs(portrait()), source: portrait() });
+
+    expect(playlist).toContain('RESOLUTION=1080x1920');
+    expect(playlist).toContain('RESOLUTION=720x1280');
+    expect(playlist).toContain('RESOLUTION=360x640');
+  });
+
+  it('never upscales either dimension', () => {
+    const info = portrait({ width: 720, height: 1280 });
+
+    for (const rung of selectRungs(info)) {
+      const { width, height } = outputDimensions(rung, info);
+      expect(width).toBeLessThanOrEqual(info.width);
+      expect(height).toBeLessThanOrEqual(info.height);
+    }
+  });
+
+  it('treats a square source as landscape so one branch owns the tie', () => {
+    const square = source({ width: 1080, height: 1080 });
+
+    expect(scaleExpressionFor(selectRungs(square)[2]!, square)).toBe('-2:1080');
+    expect(outputDimensions(selectRungs(square)[2]!, square)).toEqual({ width: 1080, height: 1080 });
+  });
 });
 
 describe('selectRungs', () => {
