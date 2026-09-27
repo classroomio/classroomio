@@ -2,6 +2,8 @@ import { log } from '../utils/logger';
 import { env } from '../config/env';
 
 const FLY_API = 'https://api.machines.dev/v1';
+/** A hung Fly API must not hold a dispatch slot, or the claim, indefinitely. */
+const FLY_API_TIMEOUT_MS = 30_000;
 
 export interface EncoderJobEnvironment {
   CIO_ASSET_ID: string;
@@ -41,6 +43,7 @@ export async function startEncoderMachine(jobEnv: EncoderJobEnvironment): Promis
 
   const response = await fetch(`${FLY_API}/apps/${env.FLY_APP_NAME}/machines`, {
     method: 'POST',
+    signal: AbortSignal.timeout(FLY_API_TIMEOUT_MS),
     headers: {
       Authorization: `Bearer ${env.FLY_API_TOKEN}`,
       'content-type': 'application/json'

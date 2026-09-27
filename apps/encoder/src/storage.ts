@@ -1,6 +1,6 @@
 import { createWriteStream } from 'node:fs';
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { Readable } from 'node:stream';
+import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import path from 'node:path';
 
@@ -25,31 +25,23 @@ export async function downloadSource(sourceUrl: string, destination: string): Pr
   }
 
   let written = 0;
-  const counter = new Readable({ read() {} });
-  const reader = response.body.getReader();
+  const counter = new Transform({
+    transform(chunk: Buffer, _encoding, callback) {
+      written += chunk.byteLength;
 
-  void (async () => {
-    try {
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        written += value.byteLength;
-        if (written > MAX_SOURCE_BYTES) {
-          counter.destroy(new Error(`Source exceeded the ${MAX_SOURCE_BYTES} byte limit while downloading`));
-          return;
-        }
-
-        counter.push(Buffer.from(value));
+      if (written > MAX_SOURCE_BYTES) {
+        callback(new Error(`Source exceeded the ${MAX_SOURCE_BYTES} byte limit while downloading`));
+        return;
       }
 
-      counter.push(null);
-    } catch (error) {
-      counter.destroy(error as Error);
+      callback(null, chunk);
     }
-  })();
+  });
 
-  await pipeline(counter, createWriteStream(destination));
+  // `pipeline` over the web stream rather than a hand-rolled reader loop: a
+  // no-op `read()` with unchecked `push()` ignores backpressure, so a fast
+  // network against a slow disk can hold the whole source in memory.
+  await pipeline(Readable.fromWeb(response.body), counter, createWriteStream(destination));
 
   return written;
 }

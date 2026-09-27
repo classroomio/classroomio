@@ -1,4 +1,4 @@
-import type { EncoderConfig } from './config';
+import type { EncoderConfig } from './config.js';
 
 export interface FinalizeInput {
   manifestPath: string;
