@@ -1,7 +1,8 @@
-import { ContentType } from '@cio/utils/constants';
+import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 
 const DEFAULT_CONTENT_GROUPING = true;
 
@@ -19,6 +20,10 @@ export async function assertEnrolledStudentContentAccess(params: {
 
   const course = courseRow[0];
   if (!course) return;
+
+  if (progress.roleId === ROLE.STUDENT && !course.isPublished) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
 
   const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
   const progressionMode = course.metadata?.progressionMode ?? 'free';

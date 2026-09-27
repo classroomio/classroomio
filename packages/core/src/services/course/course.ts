@@ -226,6 +226,10 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
       ? (course.group?.members?.find((member) => member.profileId === profileId)?.roleId ?? null)
       : null;
 
+    if (roleId === ROLE.STUDENT && !course.isPublished) {
+      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
+
     const content = profileId
       ? await annotateCourseContentWithProgression({
           courseId: course.id,
