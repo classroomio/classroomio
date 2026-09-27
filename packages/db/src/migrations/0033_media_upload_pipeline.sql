@@ -1,3 +1,8 @@
+--> Track server-side HLS conversion per asset. `none` covers assets that were
+--> never queued and assets encoded in the browser, which record their manifest
+--> directly without passing through this state machine.
+ALTER TABLE "assets" ADD COLUMN IF NOT EXISTS "hls_status" varchar DEFAULT 'none' NOT NULL;
+--> statement-breakpoint
 --> Give existing MCP keys the media scope that new MCP keys get by default, so an
 --> MCP key can reach the public API's asset upload route.
 --> Only keys holding the full previous default set are touched, so a key created
