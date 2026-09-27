@@ -10,5 +10,5 @@ ALTER TABLE "assets" ADD COLUMN IF NOT EXISTS "hls_status" varchar DEFAULT 'none
 UPDATE "organization_api_key"
 SET "scopes" = "scopes" || '["media:write"]'::jsonb
 WHERE "type" = 'mcp'
-  AND "scopes" @> '["course_import:draft:create", "course_import:draft:read", "course_import:draft:update", "course_import:draft:publish", "course:read", "course:write", "course:tag:write", "course:exercise:read", "course:exercise:write", "cohort:read", "cohort:write", "course:member:read", "course:member:write", "course:certificate:read", "course:certificate:write", "analytics:read"]'::jsonb
+  AND "scopes" @> '["course_import:draft:create", "course_import:draft:read", "course_import:draft:update", "course_import:draft:publish", "course:read", "course:write", "course:tag:write", "course:exercise:read", "course:exercise:write", "cohort:read", "cohort:write", "course:member:read", "course:member:write", "course:certificate:read", "course:certificate:write"]'::jsonb
   AND NOT "scopes" @> '["media:write"]'::jsonb;

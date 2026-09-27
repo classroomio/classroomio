@@ -7,6 +7,8 @@ export type AuthSession = {
     automationKey: TOrganizationApiKey | null;
     orgId: string | null;
     orgRoles: Record<string, number>;
+    /** Asset an encoder job token authorizes, set by `encoderJobMiddleware`. */
+    encoderAssetId: string | undefined;
     session: typeof auth.$Infer.Session.session | null;
     user: typeof auth.$Infer.Session.user | null;
     userRole: number | null;
