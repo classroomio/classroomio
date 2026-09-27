@@ -1,4 +1,4 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 // Capabilities API
 export type GetOrgCapabilitiesRequest = typeof classroomio.plugins.capabilities.$get;
@@ -15,6 +15,9 @@ export type UpdateCertPresetRequest =
   (typeof classroomio.plugins)['certificate-studio']['presets'][':presetId']['$put'];
 export type DeleteCertPresetRequest =
   (typeof classroomio.plugins)['certificate-studio']['presets'][':presetId']['$delete'];
+
+export type CreateCertPresetPayload = InferRequestType<CreateCertPresetRequest>['json'];
+export type UpdateCertPresetPayload = InferRequestType<UpdateCertPresetRequest>['json'];
 
 export type GetCertPresetsSuccess = Extract<InferResponseType<GetCertPresetsRequest>, { success: true }>;
 export type OrgCertificatePreset = GetCertPresetsSuccess['data'][number];

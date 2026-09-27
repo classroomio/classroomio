@@ -4,7 +4,9 @@ import type {
   GetCertPresetsRequest,
   GetCertPresetRequest,
   CreateCertPresetRequest,
+  CreateCertPresetPayload,
   UpdateCertPresetRequest,
+  UpdateCertPresetPayload,
   DeleteCertPresetRequest
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
@@ -97,10 +99,7 @@ class OrgCertificatePresetsApi extends BaseApiWithErrors {
     }
   }
 
-  async createPreset(
-    orgId: string,
-    data: { name: string; description?: string; design: Record<string, unknown> }
-  ): Promise<OrgCertificatePreset | null> {
+  async createPreset(orgId: string, data: CreateCertPresetPayload): Promise<OrgCertificatePreset | null> {
     const targetOrgId = orgId || this.activeOrgId;
     if (!targetOrgId) return null;
 
@@ -112,7 +111,7 @@ class OrgCertificatePresetsApi extends BaseApiWithErrors {
         requestFn: () =>
           classroomio.plugins['certificate-studio'].presets.$post(
             {
-              json: data as any
+              json: data
             },
             {
               headers: { 'cio-org-id': targetOrgId }
@@ -136,7 +135,7 @@ class OrgCertificatePresetsApi extends BaseApiWithErrors {
   async updatePreset(
     orgId: string,
     presetId: string,
-    data: { name?: string; description?: string | null; design?: Record<string, unknown> }
+    data: UpdateCertPresetPayload
   ): Promise<OrgCertificatePreset | null> {
     const targetOrgId = orgId || this.activeOrgId;
     if (!targetOrgId) return null;
@@ -150,7 +149,7 @@ class OrgCertificatePresetsApi extends BaseApiWithErrors {
           classroomio.plugins['certificate-studio'].presets[':presetId'].$put(
             {
               param: { presetId },
-              json: data as any
+              json: data
             },
             {
               headers: { 'cio-org-id': targetOrgId }
