@@ -47,7 +47,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build and test utils
-        run: pnpm --filter @cio/utils build && pnpm --filter @cio/utils test
+        run: pnpm --filter @cio/utils^... build && pnpm --filter @cio/utils build && pnpm --filter @cio/utils test
 
       - name: Prepare dashboard env
         run: cp apps/dashboard/.env.example apps/dashboard/.env
