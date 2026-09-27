@@ -780,7 +780,7 @@ Do not annotate every control — add hooks only for high-impact flows (auth, na
 
 ## Checklist for New Routes
 
-For public API design, security, contracts, MCP/API-key behavior, and dashboard parity, read [`skills/api-contract-review/SKILL.md`](skills/api-contract-review/SKILL.md) before implementation and review.
+For public API design, security, contracts, MCP/API-key behavior, and dashboard parity, read [`skills/public-api-review/SKILL.md`](skills/public-api-review/SKILL.md) before implementation and review.
 
 - [ ] **Validation**: Schema in `packages/utils/src/validation/{entity}/`
 - [ ] **Query**: Pure functions in `packages/db/src/queries/{domain}/`
