@@ -2,9 +2,13 @@ import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import type { GetOrgCapabilitiesRequest, OrgCapabilityItem, UpdateOrgCapabilityRequest } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { snackbar } from '$features/ui/snackbar/store';
+import { configuredPlugins } from '@plugins';
+import { resolvePluginCapabilities } from '@cio/sdk';
+
+const configuredCapabilities = resolvePluginCapabilities(configuredPlugins);
 
 class OrgCapabilitiesApi extends BaseApiWithErrors {
-  capabilitiesByOrg = new SvelteMap<string, OrgCapabilityItem[]>();
+  enabledCapabilityIdsByOrg = new SvelteMap<string, SvelteSet<string>>();
   isLoadingByOrg = new SvelteMap<string, boolean>();
   loadedOrgIds = new SvelteSet<string>();
   activeOrgId = $state<string | null>(null);
@@ -16,50 +20,63 @@ class OrgCapabilitiesApi extends BaseApiWithErrors {
   }
 
   get capabilities(): OrgCapabilityItem[] {
-    if (!this.activeOrgId) return [];
+    const enabledSet = this.activeOrgId ? this.enabledCapabilityIdsByOrg.get(this.activeOrgId) : null;
 
-    return this.capabilitiesByOrg.get(this.activeOrgId) ?? [];
+    return configuredCapabilities.map((capability) => ({
+      ...capability,
+      isEnabled: enabledSet ? enabledSet.has(capability.id) : false
+    }));
   }
 
   isOrgLoading(orgId?: string): boolean {
     const targetOrgId = orgId || this.activeOrgId;
-    if (!targetOrgId) return false;
+    if (!targetOrgId) {
+      return false;
+    }
 
     return this.isLoadingByOrg.get(targetOrgId) ?? false;
   }
 
   hasLoaded(orgId?: string): boolean {
     const targetOrgId = orgId || this.activeOrgId;
-    if (!targetOrgId) return false;
+    if (!targetOrgId) {
+      return false;
+    }
 
     return this.loadedOrgIds.has(targetOrgId);
   }
 
   get enabledCapabilityIds(): Set<string> {
-    return new Set(this.capabilities.filter((capability) => capability.isEnabled).map((capability) => capability.id));
+    if (!this.activeOrgId) {
+      return new Set();
+    }
+
+    return this.enabledCapabilityIdsByOrg.get(this.activeOrgId) ?? new Set();
   }
 
   isEnabled(capabilityId: string, orgId?: string): boolean {
     const targetOrgId = orgId || this.activeOrgId;
-    if (!targetOrgId) return false;
+    if (!targetOrgId) {
+      return false;
+    }
 
-    return (
-      this.capabilitiesByOrg
-        .get(targetOrgId)
-        ?.some((capability) => capability.id === capabilityId && capability.isEnabled) ?? false
-    );
+    return this.enabledCapabilityIdsByOrg.get(targetOrgId)?.has(capabilityId) ?? false;
   }
 
   async ensureCapabilities(orgId: string) {
     this.activeOrgId = orgId;
 
-    if (this.loadedOrgIds.has(orgId) || this.isOrgLoading(orgId)) return;
+    if (this.loadedOrgIds.has(orgId) || this.isOrgLoading(orgId)) {
+      return;
+    }
 
     await this.fetchCapabilities(orgId);
   }
 
   async fetchCapabilities(orgId: string) {
-    if (!orgId) return;
+    if (!orgId) {
+      return;
+    }
 
     this.activeOrgId = orgId;
     this.isLoadingByOrg.set(orgId, true);
@@ -72,9 +89,11 @@ class OrgCapabilitiesApi extends BaseApiWithErrors {
         requestFn: () => classroomio.plugins.capabilities.$get({}, { headers: { 'cio-org-id': orgId } }),
         logContext: 'fetching org capabilities',
         onSuccess: (response) => {
-          if (this.requestSequenceByOrg.get(orgId) !== requestSequence) return;
+          if (this.requestSequenceByOrg.get(orgId) !== requestSequence) {
+            return;
+          }
 
-          this.capabilitiesByOrg.set(orgId, response.data);
+          this.enabledCapabilityIdsByOrg.set(orgId, new SvelteSet(response.data));
           this.loadedOrgIds.add(orgId);
         }
       });
@@ -87,13 +106,22 @@ class OrgCapabilitiesApi extends BaseApiWithErrors {
 
   async toggleCapability(capabilityId: string, isEnabled: boolean, orgId?: string) {
     const targetOrgId = orgId || this.activeOrgId;
-    if (!targetOrgId) return;
+    if (!targetOrgId) {
+      return;
+    }
 
-    const previousCapabilities = this.capabilitiesByOrg.get(targetOrgId) ?? [];
-    const optimisticCapabilities = previousCapabilities.map((capability) =>
-      capability.id === capabilityId ? { ...capability, isEnabled } : capability
-    );
-    this.capabilitiesByOrg.set(targetOrgId, optimisticCapabilities);
+    let orgSet = this.enabledCapabilityIdsByOrg.get(targetOrgId);
+    if (!orgSet) {
+      orgSet = new SvelteSet();
+      this.enabledCapabilityIdsByOrg.set(targetOrgId, orgSet);
+    }
+
+    const wasEnabled = orgSet.has(capabilityId);
+    if (isEnabled) {
+      orgSet.add(capabilityId);
+    } else {
+      orgSet.delete(capabilityId);
+    }
 
     await this.execute<UpdateOrgCapabilityRequest>({
       requestFn: () =>
@@ -103,16 +131,22 @@ class OrgCapabilitiesApi extends BaseApiWithErrors {
         ),
       logContext: 'toggling org capability',
       onSuccess: (response) => {
-        const updatedCapabilities = optimisticCapabilities.map((capability) =>
-          capability.id === capabilityId ? response.data : capability
-        );
-        this.capabilitiesByOrg.set(targetOrgId, updatedCapabilities);
+        const isNowEnabled = response.data.isEnabled;
+        if (isNowEnabled) {
+          orgSet.add(capabilityId);
+        } else {
+          orgSet.delete(capabilityId);
+        }
 
-        const messageKey = isEnabled ? 'plugins.snackbar_enabled' : 'plugins.snackbar_disabled';
+        const messageKey = isNowEnabled ? 'plugins.snackbar_enabled' : 'plugins.snackbar_disabled';
         snackbar.success(messageKey);
       },
       onError: () => {
-        this.capabilitiesByOrg.set(targetOrgId, previousCapabilities);
+        if (wasEnabled) {
+          orgSet.add(capabilityId);
+        } else {
+          orgSet.delete(capabilityId);
+        }
       }
     });
   }

@@ -1,6 +1,10 @@
-import { getOrgCapabilities, upsertOrgCapability } from '@cio/db/queries/plugins/org-capability';
+import {
+  getOrgEnabledCapabilityIds,
+  isOrgCapabilityEnabled,
+  upsertOrgCapability
+} from '@cio/db/queries/plugins/org-capability';
 import { configuredPlugins } from '@cio/plugins';
-import { resolvePluginCapabilities, type OrgCapabilitySummary } from '@cio/sdk';
+import { resolvePluginCapabilities } from '@cio/sdk';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 const configuredCapabilities = resolvePluginCapabilities(configuredPlugins);
@@ -21,10 +25,7 @@ export async function assertOrgCapabilityEnabled(orgId: string, capabilityId: st
     );
   }
 
-  const orgCapabilities = await getOrgCapabilities(orgId);
-  const isEnabled = orgCapabilities.some(
-    (capability) => capability.capabilityId === capabilityId && capability.isEnabled
-  );
+  const isEnabled = await isOrgCapabilityEnabled(orgId, capabilityId);
 
   if (!isEnabled) {
     throw new AppError(
@@ -35,32 +36,21 @@ export async function assertOrgCapabilityEnabled(orgId: string, capabilityId: st
   }
 }
 
-export async function listOrgCapabilitiesService(orgId: string): Promise<OrgCapabilitySummary[]> {
+export async function listOrgCapabilitiesService(orgId: string): Promise<string[]> {
   if (!orgId) {
     throw new AppError('Organization ID is required', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  const orgCapabilities = await getOrgCapabilities(orgId);
-  const orgCapabilitiesById = new Map(
-    orgCapabilities.map((capability) => [capability.capabilityId, capability] as const)
-  );
+  const enabledDbIds = await getOrgEnabledCapabilityIds(orgId);
 
-  return configuredCapabilities.map((capability) => {
-    const orgCapability = orgCapabilitiesById.get(capability.id);
-
-    return {
-      ...capability,
-      isEnabled: orgCapability?.isEnabled ?? false,
-      updatedAt: orgCapability?.updatedAt ?? null
-    };
-  });
+  return enabledDbIds.filter((capabilityId) => configuredCapabilitiesById.has(capabilityId));
 }
 
 export async function setOrgCapabilityService(
   orgId: string,
   capabilityId: string,
   isEnabled: boolean
-): Promise<OrgCapabilitySummary> {
+): Promise<{ capabilityId: string; isEnabled: boolean }> {
   if (!orgId) {
     throw new AppError('Organization ID is required', ErrorCodes.VALIDATION_ERROR, 400);
   }
@@ -74,8 +64,7 @@ export async function setOrgCapabilityService(
   const updatedCapability = await upsertOrgCapability(orgId, capabilityId, isEnabled);
 
   return {
-    ...configuredCapability,
-    isEnabled: updatedCapability.isEnabled,
-    updatedAt: updatedCapability.updatedAt ?? null
+    capabilityId: updatedCapability.capabilityId,
+    isEnabled: updatedCapability.isEnabled
   };
 }

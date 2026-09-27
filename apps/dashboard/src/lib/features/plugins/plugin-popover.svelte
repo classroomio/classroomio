@@ -101,7 +101,7 @@
 
     <!-- Scrollable container -->
     <div class="flex-1 space-y-1 divide-y divide-slate-100 overflow-y-auto p-2 dark:divide-slate-800/60">
-      {#if orgCapabilitiesApi.isOrgLoading() && plugins.length === 0}
+      {#if orgCapabilitiesApi.isOrgLoading() && !orgCapabilitiesApi.hasLoaded()}
         <div class="flex h-48 flex-col items-center justify-center gap-2 text-slate-400">
           <Loader2Icon class="size-5 animate-spin" />
           <span class="text-xs">{$t('plugins.loading')}</span>

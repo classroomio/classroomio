@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const queryMocks = vi.hoisted(() => ({
-  getOrgCapabilities: vi.fn(),
+  getOrgEnabledCapabilityIds: vi.fn(),
+  isOrgCapabilityEnabled: vi.fn(),
   upsertOrgCapability: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/plugins/org-capability', () => ({
-  getOrgCapabilities: queryMocks.getOrgCapabilities,
+  getOrgEnabledCapabilityIds: queryMocks.getOrgEnabledCapabilityIds,
+  isOrgCapabilityEnabled: queryMocks.isOrgCapabilityEnabled,
   upsertOrgCapability: queryMocks.upsertOrgCapability
 }));
 
@@ -18,35 +20,38 @@ import {
 
 describe('organization plugin capabilities', () => {
   beforeEach(() => {
-    queryMocks.getOrgCapabilities.mockReset();
+    queryMocks.getOrgEnabledCapabilityIds.mockReset();
+    queryMocks.isOrgCapabilityEnabled.mockReset();
     queryMocks.upsertOrgCapability.mockReset();
   });
 
   it('lists only capabilities derived from configured plugins', async () => {
-    queryMocks.getOrgCapabilities.mockResolvedValue([
-      {
-        capabilityId: 'certificate_studio',
-        isEnabled: true,
-        updatedAt: '2026-09-23T10:00:00.000Z'
-      },
-      {
-        capabilityId: 'removed_plugin_capability',
-        isEnabled: true,
-        updatedAt: '2026-09-23T10:00:00.000Z'
-      }
-    ]);
+    queryMocks.getOrgEnabledCapabilityIds.mockResolvedValue(['certificate_studio', 'removed_plugin_capability']);
 
     const capabilities = await listOrgCapabilitiesService('org-1');
 
-    expect(capabilities.some((capability) => capability.id === 'certificate_studio')).toBe(true);
-    expect(capabilities.some((capability) => capability.id === 'removed_plugin_capability')).toBe(false);
+    expect(capabilities).toContain('certificate_studio');
+    expect(capabilities).not.toContain('removed_plugin_capability');
   });
 
   it('does not authorize a stale enabled row for an unconfigured plugin', async () => {
     await expect(assertOrgCapabilityEnabled('org-1', 'removed_plugin_capability')).rejects.toMatchObject({
       statusCode: 403
     });
-    expect(queryMocks.getOrgCapabilities).not.toHaveBeenCalled();
+    expect(queryMocks.isOrgCapabilityEnabled).not.toHaveBeenCalled();
+  });
+
+  it('authorizes an enabled configured plugin', async () => {
+    queryMocks.isOrgCapabilityEnabled.mockResolvedValue(true);
+    await expect(assertOrgCapabilityEnabled('org-1', 'certificate_studio')).resolves.toBeUndefined();
+    expect(queryMocks.isOrgCapabilityEnabled).toHaveBeenCalledWith('org-1', 'certificate_studio');
+  });
+
+  it('rejects an authorized configured plugin if disabled in db', async () => {
+    queryMocks.isOrgCapabilityEnabled.mockResolvedValue(false);
+    await expect(assertOrgCapabilityEnabled('org-1', 'certificate_studio')).rejects.toMatchObject({
+      statusCode: 403
+    });
   });
 
   it('rejects toggles for capabilities absent from configured plugins', async () => {

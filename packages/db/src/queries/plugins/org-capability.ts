@@ -1,5 +1,5 @@
 import * as schema from '@db/schema';
-import { db, eq, type DbOrTxClient } from '@db/drizzle';
+import { and, db, eq, type DbOrTxClient } from '@db/drizzle';
 import type { TOrgCapability } from '@db/types';
 
 export async function getOrgCapabilities(orgId: string, txClient: DbOrTxClient = db): Promise<TOrgCapability[]> {
@@ -8,6 +8,43 @@ export async function getOrgCapabilities(orgId: string, txClient: DbOrTxClient =
   }
 
   return txClient.select().from(schema.orgCapability).where(eq(schema.orgCapability.orgId, orgId));
+}
+
+export async function getOrgEnabledCapabilityIds(orgId: string, txClient: DbOrTxClient = db): Promise<string[]> {
+  if (!orgId) {
+    throw new Error('orgId is required to fetch org capabilities');
+  }
+
+  const records = await txClient
+    .select({ capabilityId: schema.orgCapability.capabilityId })
+    .from(schema.orgCapability)
+    .where(and(eq(schema.orgCapability.orgId, orgId), eq(schema.orgCapability.isEnabled, true)));
+
+  return records.map((record) => record.capabilityId);
+}
+
+export async function isOrgCapabilityEnabled(
+  orgId: string,
+  capabilityId: string,
+  txClient: DbOrTxClient = db
+): Promise<boolean> {
+  if (!orgId || !capabilityId) {
+    return false;
+  }
+
+  const [record] = await txClient
+    .select({ id: schema.orgCapability.id })
+    .from(schema.orgCapability)
+    .where(
+      and(
+        eq(schema.orgCapability.orgId, orgId),
+        eq(schema.orgCapability.capabilityId, capabilityId),
+        eq(schema.orgCapability.isEnabled, true)
+      )
+    )
+    .limit(1);
+
+  return Boolean(record);
 }
 
 export async function upsertOrgCapability(

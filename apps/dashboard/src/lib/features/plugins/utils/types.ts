@@ -1,11 +1,16 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
+import type { PluginCapabilityDefinition } from '@cio/sdk';
 
 // Capabilities API
 export type GetOrgCapabilitiesRequest = typeof classroomio.plugins.capabilities.$get;
 export type UpdateOrgCapabilityRequest = (typeof classroomio.plugins.capabilities)[':capabilityId']['$put'];
 
 export type GetCapabilitiesSuccess = Extract<InferResponseType<GetOrgCapabilitiesRequest>, { success: true }>;
-export type OrgCapabilityItem = GetCapabilitiesSuccess['data'][number];
+export type EnabledCapabilityIds = GetCapabilitiesSuccess['data'];
+
+export interface OrgCapabilityItem extends PluginCapabilityDefinition {
+  isEnabled: boolean;
+}
 
 // Certificate Studio Presets API
 export type GetCertPresetsRequest = (typeof classroomio.plugins)['certificate-studio']['presets']['$get'];
