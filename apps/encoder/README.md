@@ -50,7 +50,12 @@ FLY_ENCODER_IMAGE=registry.fly.io/classroomio-encoder:deployment-...
 FLY_ENCODER_REGION=iad
 ENCODER_CALLBACK_API_URL=https://api.classroomio.com
 HLS_SIGNING_SECRET=...       # must match the API's value
+FLY_ENCODER_MAX_SOURCE_BYTES=2147483648   # optional; defaults to 2GiB in the encoder
 ```
+
+Machines are created through the Machines API, which does not inherit `fly.toml`'s
+`[env]`, so every variable the encoder reads is passed per job by the dispatcher.
+That is why the source-size ceiling is configured here and not in `fly.toml`.
 
 `HLS_SIGNING_SECRET` is already used for playback cookies. The dispatcher signs
 job tokens with it and the API verifies them, so both sides must agree.

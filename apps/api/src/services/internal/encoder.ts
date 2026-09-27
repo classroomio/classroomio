@@ -5,7 +5,7 @@ import type {
   TEncoderProgress
 } from '@cio/utils/validation/assets';
 
-import { finalizeServerHls, getAssetById, setAssetHlsStatus } from '@cio/db/queries/assets';
+import { failConvertingAsset, finalizeServerHls, getAssetById, touchConvertingAsset } from '@cio/db/queries/assets';
 import { generateUploadPresignedUrl } from '@cio/core/utils/s3';
 import { getStorageConfig } from '@cio/core/config/storage';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -73,7 +73,11 @@ export async function recordEncoderProgressService(
   payload: TEncoderProgress
 ): Promise<void> {
   await assertEncodableAsset(assetId, orgId);
-  await setAssetHlsStatus(assetId, orgId, 'converting');
+
+  const stillOwned = await touchConvertingAsset(assetId, orgId);
+  if (!stillOwned) {
+    throw new AppError('Asset is no longer converting', ErrorCodes.CONFLICT, 409);
+  }
 
   console.info('HLS encoder progress', { assetId, stage: payload.stage, percent: payload.percent });
 }
@@ -84,7 +88,6 @@ export async function finalizeEncoderOutputService(
   payload: TEncoderFinalize
 ): Promise<void> {
   await assertEncodableAsset(assetId, orgId);
-  await setAssetHlsStatus(assetId, orgId, 'converting');
 
   const finalized = await finalizeServerHls(assetId, orgId, {
     manifestKey: `${assetId}/${payload.manifestPath}`,
@@ -113,6 +116,10 @@ export async function failEncoderJobService(assetId: string, orgId: string, payl
     throw new AppError('Asset not found', ErrorCodes.NOT_FOUND, 404);
   }
 
-  await setAssetHlsStatus(assetId, orgId, 'failed');
+  const failed = await failConvertingAsset(assetId, orgId);
+  if (!failed) {
+    throw new AppError('Asset is no longer converting', ErrorCodes.CONFLICT, 409);
+  }
+
   console.error('HLS encoder reported failure', { assetId, reason: payload.reason });
 }

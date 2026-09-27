@@ -42,6 +42,8 @@ const envSchema = z.object({
   FLY_ENCODER_REGION: z.string().optional(),
   FLY_ENCODER_MACHINE_CPUS: z.string().optional(),
   FLY_ENCODER_MACHINE_MEMORY_MB: z.string().optional(),
+  /** Ceiling on a downloaded source, passed to the machine (it inherits no fly.toml env). */
+  FLY_ENCODER_MAX_SOURCE_BYTES: z.string().optional(),
   /** Where the encoder calls back to. Must be reachable from Fly. */
   ENCODER_CALLBACK_API_URL: z.string().optional(),
 

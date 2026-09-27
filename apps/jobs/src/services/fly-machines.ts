@@ -10,6 +10,16 @@ export interface EncoderJobEnvironment {
   CIO_API_URL: string;
 }
 
+/**
+ * A machine created through the Machines API inherits nothing from `fly.toml`,
+ * so anything the encoder reads from the environment has to be sent here.
+ */
+function buildMachineEnv(jobEnv: EncoderJobEnvironment): Record<string, string> {
+  const maxSourceBytes = env.FLY_ENCODER_MAX_SOURCE_BYTES;
+
+  return maxSourceBytes ? { ...jobEnv, CIO_MAX_SOURCE_BYTES: maxSourceBytes } : { ...jobEnv };
+}
+
 export function isFlyEncoderConfigured(): boolean {
   return Boolean(env.FLY_API_TOKEN && env.FLY_APP_NAME && env.FLY_ENCODER_IMAGE && env.ENCODER_CALLBACK_API_URL);
 }
@@ -40,7 +50,7 @@ export async function startEncoderMachine(jobEnv: EncoderJobEnvironment): Promis
       region: env.FLY_ENCODER_REGION || undefined,
       config: {
         image: env.FLY_ENCODER_IMAGE,
-        env: jobEnv,
+        env: buildMachineEnv(jobEnv),
         auto_destroy: true,
         restart: { policy: 'no' },
         guest: {

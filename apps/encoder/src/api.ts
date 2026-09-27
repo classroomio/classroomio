@@ -9,6 +9,9 @@ export interface FinalizeInput {
   durationSeconds: number;
 }
 
+/** A stalled API must not keep a paid machine alive waiting on a callback. */
+const CALLBACK_TIMEOUT_MS = 60_000;
+
 /**
  * The encoder's only channel to ClassroomIO. Every call carries the job token,
  * which names the asset — so no request here passes an asset id, and a token
@@ -24,7 +27,8 @@ export class EncoderApi {
         Authorization: `Bearer ${this.config.jobToken}`,
         'content-type': 'application/json'
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(CALLBACK_TIMEOUT_MS)
     });
 
     const json = (await response.json().catch(() => null)) as { success?: boolean; data?: T; error?: string } | null;

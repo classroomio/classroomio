@@ -2,8 +2,9 @@ import type { TPublicApiLessonVideo } from '@cio/utils/validation/public-api';
 
 import { getAssetById, markAssetUploadComplete, setAssetHlsStatus } from '@cio/db/queries/assets';
 import { enqueueHlsEncode, isRedisConfigured } from '@cio/jobs';
-import { headVideoObject } from '@cio/core/utils/s3';
+import { deleteVideoObject, headVideoObject } from '@cio/core/utils/s3';
 import { startMediaJob } from '@cio/core/services/jobs/media-jobs';
+import { MAX_FILE_SIZE } from '@api/constants/upload';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 /** Shape persisted on `lesson.videos`, which the internal readers already expect. */
@@ -69,7 +70,14 @@ async function completeUploadedVideo(orgId: string, actorId: string, assetId: st
 
   const completed = await markAssetUploadComplete(assetId, orgId, storageKey);
   if (!completed) {
-    throw new AppError('Asset upload was already completed', ErrorCodes.CONFLICT, 409);
+    // Another attach won the conditional update. Reuse its key rather than
+    // failing, matching the already-completed branch above.
+    const winner = await getAssetById(assetId, orgId);
+    if (!winner?.storageKey) {
+      throw new AppError('Asset upload could not be completed', ErrorCodes.CONFLICT, 409);
+    }
+
+    return { type: 'upload', link: '', key: winner.storageKey, assetId };
   }
 
   await queuePostUploadWork(orgId, actorId, assetId, storageKey);
@@ -85,12 +93,37 @@ async function findUploadedObjectKey(assetId: string): Promise<string | null> {
     const key = `${assetId}/source.${extension}`;
     const head = await headVideoObject(key);
 
-    if (head.exists && head.byteSize > 0) {
-      return key;
+    if (!head.exists || head.byteSize === 0) {
+      continue;
     }
+
+    await assertUploadWithinLimit(key, head.byteSize);
+
+    return key;
   }
 
   return null;
+}
+
+/**
+ * The presigned URL signs the declared size, so an oversized object should not
+ * be reachable. Enforced again on the real bytes because the limit protects
+ * storage and encode cost, and the object is dropped so it cannot be retried.
+ */
+async function assertUploadWithinLimit(key: string, byteSize: number): Promise<void> {
+  if (byteSize <= MAX_FILE_SIZE) {
+    return;
+  }
+
+  await deleteVideoObject(key).catch((error) => {
+    console.error('Failed to delete oversized upload', { key, error });
+  });
+
+  throw new AppError(
+    `Uploaded file exceeds the maximum of ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`,
+    ErrorCodes.VALIDATION_ERROR,
+    413
+  );
 }
 
 /**
