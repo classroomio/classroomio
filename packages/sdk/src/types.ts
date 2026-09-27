@@ -3,6 +3,7 @@ export const PLUGIN_CATEGORIES = ['activity', 'block', 'integration', 'certifica
 export type PluginCategory = (typeof PLUGIN_CATEGORIES)[number];
 
 export const SLOT_NAMES = [
+  'lms.banner',
   'lesson.activity',
   'lesson.sidebar',
   'course.sidebar',

@@ -74,6 +74,7 @@
     variant="page"
   />
 {:else if contentLength > 0}
+  <PluginSlot name="course.sidebar" context={{ course: courseApi.course, contentData }} />
   <div
     class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3"
     role="region"

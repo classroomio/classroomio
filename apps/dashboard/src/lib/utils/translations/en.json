@@ -40,6 +40,26 @@
       "certificate_title": "Certificate of completion",
       "presented_to": "Proudly presented to",
       "completion_of": "For completion of"
+    },
+    "announcement_banner": {
+      "name": "Announcement Banner",
+      "description": "Dismissable broadcast banner at the top of the learner LMS for important notices."
+    },
+    "lesson_reading_time": {
+      "name": "Lesson Reading Time",
+      "description": "Displays estimated reading time and a collapsible focus stopwatch in lessons."
+    },
+    "completion_celebration": {
+      "name": "Completion Celebration",
+      "description": "Fires an celebratory confetti burst and shareable milestone badge upon course completion."
+    },
+    "learner_up_next": {
+      "name": "Learner Up Next",
+      "description": "Displays a 1-click resume card with progress tracking on the course page."
+    },
+    "lesson_acknowledgment": {
+      "name": "Lesson Acknowledgment",
+      "description": "Adds a learner compliance acknowledgment checkbox and audit log at the bottom of lessons."
     }
   },
   "certificate_studio": {

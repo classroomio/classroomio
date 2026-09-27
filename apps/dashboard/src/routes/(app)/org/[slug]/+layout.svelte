@@ -9,6 +9,7 @@
   import { AddOrgModal } from '$features/org';
   import { appConfig } from '$lib/utils/config';
   import { SHELL_REGISTRY, SidebarShell } from '$features/ui/shells';
+  import { PluginSlot } from '$features/plugins';
 
   let { data, children } = $props();
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
@@ -45,6 +46,8 @@
 {#if PUBLIC_IS_SELFHOSTED !== 'true'}
   <AddOrgModal />
 {/if}
+
+<PluginSlot name="lms.banner" />
 
 <ShellComponent {isSettingsRoute} {data}>
   {@render children?.()}
