@@ -69,3 +69,10 @@ export const ZCompressVideoPayload = z.object({
     .optional()
 });
 export type TCompressVideoPayload = z.infer<typeof ZCompressVideoPayload>;
+
+export const ZHlsEncodePayload = z.object({
+  assetId: z.string().uuid(),
+  storageKey: z.string().min(1),
+  actorContext: ZActorContext
+});
+export type THlsEncodePayload = z.infer<typeof ZHlsEncodePayload>;

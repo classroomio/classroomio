@@ -3,6 +3,7 @@ import {
   DeleteObjectCommandInput,
   GetObjectCommand,
   GetObjectCommandInput,
+  HeadObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput
 } from '@aws-sdk/client-s3';
@@ -135,6 +136,24 @@ export async function generateDownloadPresignedUrls(
  * @param contentType MIME type of the file
  * @returns Presigned URL for upload
  */
+/**
+ * Whether an object exists, used to confirm a presigned upload actually landed
+ * before an asset is treated as uploaded. Returns its size so a zero-byte PUT
+ * is not mistaken for a successful upload.
+ */
+export async function headVideoObject(key: string): Promise<{ exists: boolean; byteSize: number }> {
+  const config = getStorageConfig();
+  const client = getS3Client();
+
+  try {
+    const head = await client.send(new HeadObjectCommand({ Bucket: config.bucketVideos, Key: key }));
+
+    return { exists: true, byteSize: head.ContentLength ?? 0 };
+  } catch {
+    return { exists: false, byteSize: 0 };
+  }
+}
+
 export async function generateUploadPresignedUrl(
   fileKey: string,
   bucketName: string,
