@@ -37,7 +37,7 @@ describe('0023_mcp_key_media_scope', () => {
 
   it('requires exactly the MCP default set as it stood before media:write', () => {
     const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
-    const priorDefault = DEFAULT_SCOPES.mcp.filter((scope) => scope !== 'media:write');
+    const priorDefault = DEFAULT_SCOPES.mcp.filter((scope: string) => scope !== 'media:write');
 
     expect(new Set(required)).toEqual(new Set(priorDefault));
   });
