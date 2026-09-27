@@ -33,9 +33,9 @@ Per the ClassroomIO Plugin Architecture (ADR-001) and `@cio/sdk`, every plugin m
 
 ---
 
-### 2. Custom Certificate Templates Plugin
+### 2. Certificate Studio Plugin
 * **Category**: `certificate`
-* **Convention Path & ID**: `plugins/certificate/certificate-modern-gold/` (ID: `certificate_modern_gold`)
+* **Convention Path & ID**: `plugins/certificate/certificate-studio/` (ID: `certificate_studio`)
 * **What it does**: Enables organizations to design and issue bespoke certificate templates that reflect their visual identity.
 * **Key Features**:
   * Declarative SVG and HTML certificate layouts.

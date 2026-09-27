@@ -2,12 +2,6 @@
   "plugins": {
     "integration_linkedin_certificate": {
       "add_to_linkedin": "Ajouter à LinkedIn"
-    },
-    "certificate_modern_gold": {
-      "verified_credential": "Titre vérifié",
-      "certificate_title": "Certificat de réussite",
-      "presented_to": "Fièrement décerné à",
-      "completion_of": "Pour avoir terminé"
     }
   },
   "common": {

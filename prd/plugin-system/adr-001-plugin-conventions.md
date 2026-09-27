@@ -52,7 +52,7 @@ Plugins must be located under the top-level `plugins/` directory, organized stri
   - `certificate` — Custom certificate themes, renderers, and credential badges.
   - `landing` — Public landing page sections, hero units, and footer elements.
   - `enrollment` — Custom admission, payment, or invitation flows.
-- The directory name `<plugin-slug>` must be kebab-case (e.g., `certificate-modern-gold`, `linkedin-certificate`, `xp-leaderboard`).
+- The directory name `<plugin-slug>` must be kebab-case (e.g., `certificate-studio`, `linkedin-certificate`, `xp-leaderboard`).
 - The primary entry point **must** be named `index.ts`.
 
 ---
@@ -62,25 +62,25 @@ Plugins must be located under the top-level `plugins/` directory, organized stri
 A plugin must be exported as a **named factory function** that returns the result of calling `definePlugin()` from `@cio/sdk`, and must also be re-exported from the central barrel at `plugins/index.ts`.
 
 ```ts
-// plugins/certificate/certificate-modern-gold/index.ts
+// plugins/certificate/certificate-studio/index.ts
 import { definePlugin, type PluginDefinition } from '@cio/sdk';
 
-export interface ModernGoldCertificateOptions {
+export interface CertificateStudioOptions {
   description?: string;
 }
 
-export function modernGoldCertificate(options: ModernGoldCertificateOptions = {}): PluginDefinition {
+export function certificateStudio(options: CertificateStudioOptions = {}): PluginDefinition {
   return definePlugin({
-    id: 'certificate_modern_gold',
-    name: 'Modern Gold Certificate',
+    id: 'certificate_studio',
+    name: 'Certificate Studio',
     version: '1.0.0',
     category: 'certificate',
-    description: options.description ?? 'A prestigious dark slate and gold certificate template.',
+    description: options.description ?? 'Interactive visual certificate designer.',
     // ...
   });
 }
 
-export default modernGoldCertificate;
+export default certificateStudio;
 ```
 
 #### Central Barrel Export (`plugins/index.ts`)
@@ -88,7 +88,7 @@ All in-tree plugins must be re-exported from the central `plugins/index.ts` barr
 
 ```ts
 // plugins/index.ts
-export { modernGoldCertificate, type ModernGoldCertificateOptions } from './certificate/certificate-modern-gold';
+export { certificateStudio, type CertificateStudioOptions } from './certificate/certificate-studio';
 export { linkedinCertificate, type LinkedInCertificateOptions } from './integration/linkedin-certificate';
 ```
 
@@ -97,13 +97,13 @@ Then in `classroomio.config.ts`, consumers import and invoke plugins cleanly:
 ```ts
 import { defineConfig } from '@cio/sdk';
 import { topNav } from '@cio/sdk/layouts';
-import { linkedinCertificate, modernGoldCertificate } from './plugins';
+import { linkedinCertificate, certificateStudio } from './plugins';
 
 export default defineConfig({
   layout: topNav(),
   plugins: [
     linkedinCertificate(),
-    modernGoldCertificate({ description: 'Custom description' })
+    certificateStudio()
   ]
 });
 ```
@@ -125,7 +125,7 @@ The `id` property is the permanent unique identifier for the plugin across datab
 
 | Category | Valid Plugin ID | Invalid Plugin ID (Fails Tests) |
 | :--- | :--- | :--- |
-| `certificate` | `certificate_modern_gold` | `modern_gold` *(missing category prefix)* |
+| `certificate` | `certificate_studio` | `studio` *(missing category prefix)* |
 | `integration` | `integration_linkedin_cert` | `integration-linkedin-cert` *(contains hyphens)* |
 | `activity` | `activity_role_play` | `Activity_role_play` *(contains uppercase)* |
 | `block` | `block_xp_counter` | `block__xp__counter` *(double underscore)* |

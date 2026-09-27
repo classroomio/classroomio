@@ -27,13 +27,7 @@
     return {
       studentName: $profile.fullname || 'Recipient',
       studentId: $profile.id || undefined,
-      issuedAt: normalizeCertificateIssuedAt(evaluation?.certificateEarnedAt),
-      labels: {
-        certificateTitle: $t('plugins.certificate_modern_gold.certificate_title'),
-        completionLabel: $t('plugins.certificate_modern_gold.completion_of'),
-        presentedToLabel: $t('plugins.certificate_modern_gold.presented_to'),
-        verifiedCredentialLabel: $t('plugins.certificate_modern_gold.verified_credential')
-      }
+      issuedAt: normalizeCertificateIssuedAt(evaluation?.certificateEarnedAt)
     } as const;
   }
 

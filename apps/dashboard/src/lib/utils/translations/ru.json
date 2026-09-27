@@ -2,12 +2,6 @@
   "plugins": {
     "integration_linkedin_certificate": {
       "add_to_linkedin": "Добавить в LinkedIn"
-    },
-    "certificate_modern_gold": {
-      "verified_credential": "Подтверждённый документ",
-      "certificate_title": "Сертификат об окончании",
-      "presented_to": "С гордостью вручается",
-      "completion_of": "За завершение"
     }
   },
   "common": {

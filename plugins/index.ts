@@ -1,7 +1,6 @@
 import type { PluginDefinition } from '@cio/sdk';
 
 import { linkedinCertificate } from './integration/linkedin-certificate/index.js';
-import { modernGoldCertificate } from './certificate/certificate-modern-gold/index.js';
 import { certificateStudio } from './certificate/certificate-studio/index.js';
 import { announcementBanner } from './engagement/announcement-banner/index.js';
 import { lessonReadingTime } from './learner/lesson-reading-time/index.js';
@@ -12,7 +11,6 @@ import { lessonAcknowledgment } from './compliance/lesson-acknowledgment/index.j
 /** First-party plugins enabled in both dashboard and API runtimes. */
 export const configuredPlugins: PluginDefinition[] = [
   linkedinCertificate(),
-  modernGoldCertificate(),
   certificateStudio(),
   announcementBanner(),
   lessonReadingTime(),
@@ -25,11 +23,6 @@ export const configuredPlugins: PluginDefinition[] = [
  * ClassroomIO Plugins
  * Central barrel exporting all available first-party and in-tree plugins.
  */
-
-export {
-  modernGoldCertificate,
-  type ModernGoldCertificateOptions
-} from './certificate/certificate-modern-gold/index.js';
 
 export { linkedinCertificate, type LinkedInCertificateOptions } from './integration/linkedin-certificate/index.js';
 

@@ -131,7 +131,6 @@ import { trafficInspector } from './analytics/traffic-inspector/index.js';
 
 export const configuredPlugins: PluginDefinition[] = [
   linkedinCertificate(),
-  modernGoldCertificate(),
   certificateStudio(),
   trafficInspector() // <--- Single point of registration
 ];

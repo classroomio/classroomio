@@ -21,20 +21,6 @@
     },
     {
       "idx": 1,
-      "id": "certificate_modern_gold",
-      "name": "Modern Gold Certificate",
-      "version": "1.0.0",
-      "category": "certificate",
-      "description": "A prestigious dark slate and gold certificate template with custom typography and official seal.",
-      "path": "plugins/certificate/certificate-modern-gold",
-      "activation": {
-        "kind": "always"
-      },
-      "renderers": ["modern_gold"],
-      "when": 1789200000000
-    },
-    {
-      "idx": 2,
       "id": "certificate_studio",
       "name": "Certificate Studio",
       "version": "1.0.0",

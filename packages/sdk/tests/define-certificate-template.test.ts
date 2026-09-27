@@ -7,10 +7,10 @@ import {
   type CertificateTemplateDefinition
 } from '@cio/sdk';
 
-function template(id = 'modern_gold') {
+function template(id = 'sample_template') {
   return defineCertificateTemplate({
     id,
-    label: 'Modern Gold',
+    label: 'Sample Template',
     description: 'A data-only certificate template.',
     body: '<div>{{recipientName}}</div>',
     styles: '.certificate { color: {{accentColor}}; }'
@@ -21,22 +21,22 @@ describe('defineCertificateTemplate', () => {
   it('accepts a declarative template and aggregates it through resolveConfig', () => {
     const certificateTemplate = template();
     const plugin = definePlugin({
-      id: 'certificate_modern_gold',
-      name: 'Modern Gold',
+      id: 'certificate_sample',
+      name: 'Sample Certificate',
       version: '1.0.0',
       category: 'certificate',
-      description: 'Modern gold certificates.',
+      description: 'Sample certificates.',
       certificateTemplates: [certificateTemplate]
     });
     const resolved = resolveConfig(defineConfig({ plugins: [plugin] }));
 
-    expect(resolved.certificateTemplates.modern_gold).toBe(certificateTemplate);
+    expect(resolved.certificateTemplates.sample_template).toBe(certificateTemplate);
   });
 
   it('rejects raw template objects that bypass the helper', () => {
     const rawTemplate: CertificateTemplateDefinition = {
-      id: 'modern_gold',
-      label: 'Modern Gold',
+      id: 'sample_template',
+      label: 'Sample Template',
       description: 'Raw template.',
       body: '<div></div>',
       styles: '.certificate {}'
@@ -44,11 +44,11 @@ describe('defineCertificateTemplate', () => {
 
     expect(() =>
       definePlugin({
-        id: 'certificate_modern_gold',
-        name: 'Modern Gold',
+        id: 'certificate_sample',
+        name: 'Sample Certificate',
         version: '1.0.0',
         category: 'certificate',
-        description: 'Modern gold certificates.',
+        description: 'Sample certificates.',
         certificateTemplates: [rawTemplate]
       })
     ).toThrow(/defineCertificateTemplate/i);
