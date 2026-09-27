@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream';
 import type {
   TAutomationCourseTagAssignment,
   TAutomationDraftTagAssignment,
@@ -643,12 +644,29 @@ export class ClassroomIoApiClient {
   }
 
   /** Sends bytes straight to storage. No ClassroomIO header — the URL's signature is the auth. */
-  async putToPresignedUrl(presignedUrl: string, body: Buffer, contentType: string): Promise<void> {
+  /**
+   * Streams a file to storage.
+   *
+   * `content-length` is set explicitly for two reasons: a stream body would
+   * otherwise be sent chunked, and the presigned URL signs that header — so the
+   * request must declare exactly the size the reservation was checked against.
+   */
+  async putToPresignedUrl(
+    presignedUrl: string,
+    body: Readable,
+    contentType: string,
+    contentLength: number
+  ): Promise<void> {
     const response = await fetch(presignedUrl, {
       method: 'PUT',
-      headers: { 'content-type': contentType },
-      body: body as unknown as BodyInit
-    });
+      headers: {
+        'content-type': contentType,
+        'content-length': String(contentLength)
+      },
+      body: Readable.toWeb(body) as unknown as BodyInit,
+      // Required by undici to send a streaming request body.
+      duplex: 'half'
+    } as RequestInit & { duplex: 'half' });
 
     if (!response.ok) {
       throw new ClassroomIoApiError(`Upload to storage failed with status ${response.status}`, response.status);

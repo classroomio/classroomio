@@ -4,6 +4,12 @@ export const MAX_OUTPUT_FPS = 30;
 
 export interface Rung {
   name: string;
+  /**
+   * Sizes the *short* side, so `p720` means 720 across the narrow dimension in
+   * either orientation. Selecting on the long side would give a portrait source
+   * a rung whose label and bitrate ceiling describe a much larger frame than it
+   * actually produces.
+   */
   height: number;
   /** Ceiling, not a target — paired with CRF so quiet footage costs less. */
   maxrateKbps: number;
@@ -37,7 +43,45 @@ export interface SourceInfo {
  * exactly the case that most needs more than one rung.
  */
 export function selectRungs(source: SourceInfo): Rung[] {
-  return ALL_RUNGS.filter((rung) => rung.height <= source.height);
+  const shortSide = shortSideOf(source);
+
+  return ALL_RUNGS.filter((rung) => rung.height <= shortSide);
+}
+
+function shortSideOf(source: SourceInfo): number {
+  if (source.width <= 0) return source.height;
+
+  return Math.min(source.width, source.height);
+}
+
+function isPortrait(source: SourceInfo): boolean {
+  return source.width > 0 && source.height > source.width;
+}
+
+/**
+ * The frame a rung actually produces. ffmpeg is given `-2` for the long side so
+ * it preserves the aspect ratio and rounds to an even number; this mirrors that
+ * arithmetic for the master playlist's RESOLUTION.
+ */
+export function outputDimensions(rung: Rung, source: SourceInfo): { width: number; height: number } {
+  if (isPortrait(source)) {
+    return { width: rung.height, height: evenScaled(rung.height, source.height, source.width) };
+  }
+
+  return { width: evenScaled(rung.height, source.width, source.height), height: rung.height };
+}
+
+function evenScaled(target: number, numerator: number, denominator: number): number {
+  if (denominator <= 0) return target;
+
+  const scaled = Math.round((numerator * target) / denominator);
+
+  return scaled % 2 === 0 ? scaled : scaled + 1;
+}
+
+/** The ffmpeg scale expression for a rung, sizing whichever side is shorter. */
+export function scaleExpressionFor(rung: Rung, source: SourceInfo): string {
+  return isPortrait(source) ? `${rung.height}:-2` : `-2:${rung.height}`;
 }
 
 export function outputFps(source: SourceInfo): number {
@@ -69,7 +113,8 @@ export function buildFfmpegArgs(input: {
   const filters = [
     `[0:v]split=${rungs.length}${splitOutputs}`,
     ...rungs.map(
-      (rung, index) => `[${labels[index]}src]scale=-2:${rung.height}:flags=lanczos,fps=${fps}[${labels[index]}out]`
+      (rung, index) =>
+        `[${labels[index]}src]scale=${scaleExpressionFor(rung, source)}:flags=lanczos,fps=${fps}[${labels[index]}out]`
     )
   ].join(';');
 
@@ -161,14 +206,14 @@ export function buildMasterPlaylist(input: { rungs: Rung[]; source: SourceInfo }
   const audioBitrate = source.hasAudio ? 128 : 0;
 
   for (const rung of rungs) {
-    const width = evenWidthFor(rung.height, source);
+    const { width, height } = outputDimensions(rung, source);
     const bandwidth = (rung.maxrateKbps + audioBitrate) * 1000;
     const average = Math.round(bandwidth * 0.85);
     const codecs = source.hasAudio ? 'avc1.640028,mp4a.40.2' : 'avc1.640028';
     const audioAttribute = source.hasAudio ? ',AUDIO="aud"' : '';
 
     lines.push(
-      `#EXT-X-STREAM-INF:BANDWIDTH=${bandwidth},AVERAGE-BANDWIDTH=${average},RESOLUTION=${width}x${rung.height},CODECS="${codecs}"${audioAttribute}`,
+      `#EXT-X-STREAM-INF:BANDWIDTH=${bandwidth},AVERAGE-BANDWIDTH=${average},RESOLUTION=${width}x${height},CODECS="${codecs}"${audioAttribute}`,
       `${rung.name}/playlist.m3u8`
     );
   }
@@ -176,11 +221,7 @@ export function buildMasterPlaylist(input: { rungs: Rung[]; source: SourceInfo }
   return `${lines.join('\n')}\n`;
 }
 
-/** `scale=-2:h` keeps the aspect ratio and forces an even width; mirror that here. */
+/** Landscape width for a rung height. Kept for callers that only need the width. */
 export function evenWidthFor(height: number, source: SourceInfo): number {
-  if (source.height <= 0) return height;
-
-  const scaled = Math.round((source.width * height) / source.height);
-
-  return scaled % 2 === 0 ? scaled : scaled + 1;
+  return outputDimensions({ name: '', height, maxrateKbps: 0, crf: 0 }, source).width;
 }

@@ -1,4 +1,5 @@
-import { readFile, stat } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
 import { extname } from 'node:path';
 
 import type { ClassroomIoApiClient } from '../api-client';
@@ -50,7 +51,7 @@ export function registerMediaUploadTools(server: McpServer, apiClient: Classroom
       // Reserve before reading: the API validates the declared size against the
       // organization's limit, so an oversized file is refused before it is
       // pulled into this process.
-      const { byteSize } = { byteSize: (await stat(filePath)).size };
+      const byteSize = (await stat(filePath)).size;
       const { assetId, uploadUrl } = await apiClient.createAssetUpload({
         kind: 'video',
         fileName,
@@ -58,8 +59,9 @@ export function registerMediaUploadTools(server: McpServer, apiClient: Classroom
         byteSize
       });
 
-      const body = await readFile(filePath);
-      await apiClient.putToPresignedUrl(uploadUrl, body, mimeType);
+      // Streamed rather than read into a Buffer: a large video would otherwise
+      // sit in this process in full, and concurrent uploads would multiply that.
+      await apiClient.putToPresignedUrl(uploadUrl, createReadStream(filePath), mimeType, byteSize);
 
       return jsonContent({ assetId, fileName, mimeType, byteSize });
     }

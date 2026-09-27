@@ -50,27 +50,36 @@ const worker = new Worker(
       return { status: 'skipped' as const };
     }
 
-    const token = mintEncoderJobToken({ assetId, organizationId: orgId });
-    if (!token) {
-      await setAssetHlsStatus(assetId, orgId, 'failed');
-      throw new Error('HLS_SIGNING_SECRET is not set, so no job token could be minted');
+    // Anything that throws from here on must release the claim, or the retry
+    // finds the asset still `converting`, reports `skipped` and *succeeds* —
+    // which also means the final-attempt handler never marks it failed.
+    try {
+      const token = mintEncoderJobToken({ assetId, organizationId: orgId });
+      if (!token) {
+        throw new Error('HLS_SIGNING_SECRET is not set, so no job token could be minted');
+      }
+
+      const signedSources = await generateVideoDownloadPresignedUrls([storageKey]);
+      const sourceUrl = signedSources[storageKey];
+      if (!sourceUrl) {
+        throw new Error(`Could not sign the source object for asset ${assetId}`);
+      }
+
+      const machineId = await startEncoderMachine({
+        CIO_ASSET_ID: assetId,
+        CIO_JOB_TOKEN: token.token,
+        CIO_SOURCE_URL: sourceUrl,
+        CIO_API_URL: env.ENCODER_CALLBACK_API_URL!
+      });
+
+      return { status: 'dispatched' as const, machineId };
+    } catch (error) {
+      await setAssetHlsStatus(assetId, orgId, 'pending').catch((releaseError) => {
+        log.error('hls-dispatch-claim-release-failed', { assetId, error: errorMessage(releaseError) });
+      });
+
+      throw error;
     }
-
-    const signedSources = await generateVideoDownloadPresignedUrls([storageKey]);
-    const sourceUrl = signedSources[storageKey];
-    if (!sourceUrl) {
-      await setAssetHlsStatus(assetId, orgId, 'failed');
-      throw new Error(`Could not sign the source object for asset ${assetId}`);
-    }
-
-    const machineId = await startEncoderMachine({
-      CIO_ASSET_ID: assetId,
-      CIO_JOB_TOKEN: token.token,
-      CIO_SOURCE_URL: sourceUrl,
-      CIO_API_URL: env.ENCODER_CALLBACK_API_URL!
-    });
-
-    return { status: 'dispatched' as const, machineId };
   },
   { connection, concurrency }
 );

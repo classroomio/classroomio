@@ -2,11 +2,11 @@ import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { EncoderApi } from './api';
-import { readConfig } from './config';
-import { encodeTimeoutMs, probeSource, runFfmpeg } from './ffmpeg';
-import { buildFfmpegArgs, buildMasterPlaylist, selectRungs } from './plan';
-import { downloadSource, listOutputs, uploadOutputs } from './storage';
+import { EncoderApi } from './api.js';
+import { readConfig } from './config.js';
+import { encodeTimeoutMs, probeSource, runFfmpeg } from './ffmpeg.js';
+import { buildFfmpegArgs, buildMasterPlaylist, selectRungs } from './plan.js';
+import { downloadSource, listOutputs, uploadOutputs } from './storage.js';
 
 /**
  * One encode, then exit.
