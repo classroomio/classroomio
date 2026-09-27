@@ -1,5 +1,5 @@
 ---
-name: api-contract-review
+name: public-api-review
 description: >-
   Design and review ClassroomIO public APIs for security, authorization, API contract
   quality, MCP/API-key behavior, and dashboard feature parity. Use when adding
