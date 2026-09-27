@@ -16,6 +16,7 @@ export const CERTIFICATE_UPDATE_DESCRIPTION = [
   'design is not merged: it replaces the whole stored design, so read it first and send the full object.',
   'Sending design without theme sets theme to design.templateId, as the dashboard editor does.',
   'deadline must be an ISO 8601 datetime with a timezone (for example 2026-12-31T23:59:59Z).',
+  'Certificates need a paid plan: on the Basic (free) plan this fails with 403 UPGRADE_REQUIRED, as the dashboard locks these settings.',
   EFFECTIVE_SETTINGS_NOTE
 ].join(' ');
 
@@ -33,7 +34,10 @@ const forbidden = (scope: string, actorRule: string) => ({
 export const courseForbiddenResponses = {
   member: forbidden('course:certificate:read', MEMBER_FORBIDDEN),
   team: forbidden('course:certificate:read', TEAM_FORBIDDEN),
-  teamWrite: forbidden('course:certificate:write', TEAM_FORBIDDEN)
+  teamWrite: forbidden(
+    'course:certificate:write',
+    `${TEAM_FORBIDDEN}, or the organization is on the Basic plan (UPGRADE_REQUIRED)`
+  )
 };
 
 export const mcpRateLimitResponse = {

@@ -66,6 +66,7 @@ import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
 import { updateCourseWithTags } from '@api/services/course/update-course';
+import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
 
 async function loadCertificateInput(
   courseId: string,
@@ -319,6 +320,8 @@ export const courseRouter = new Hono()
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
         const { tagIds, ...courseData } = validatedData;
+
+        await assertCertificateChangeAllowed(courseId, courseData.certificate);
 
         if (courseData.metadata?.welcomeEmailMessage) {
           courseData.metadata = {

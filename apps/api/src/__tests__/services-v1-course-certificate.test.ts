@@ -34,6 +34,10 @@ vi.mock('@api/services/course/certificate', () => ({
   assembleCertificateRender: vi.fn()
 }));
 
+vi.mock('@api/services/course/certificate-plan', () => ({
+  assertCertificatesEnabled: vi.fn()
+}));
+
 vi.mock('@api/utils/certificate', async () => {
   const certificates = await import('@cio/certificates');
 
@@ -53,14 +57,16 @@ import { getCourseById, getCourseByIdForUpdate } from '@cio/db/queries/course/co
 import { getCourseMember, getPaginatedCourseMembers } from '@cio/db/queries/course/people';
 import { ensureProgramCourseAccess, updateCourse } from '@cio/core/services/course/course';
 import { assembleCertificateRender } from '@api/services/course/certificate';
+import { assertCertificatesEnabled } from '@api/services/course/certificate-plan';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { generateCertificatePdf, generateCertificatePng } from '@api/utils/certificate';
 import {
   downloadPublicApiCourseCertificateService,
   getPublicApiCourseCertificateService,
   listPublicApiCourseCertificatesService,
-  toEffectiveCertificateSettings,
   updatePublicApiCourseCertificateService
 } from '@api/services/v1/courses/certificates';
+import { toEffectiveCertificateSettings } from '@api/services/course/certificate-settings';
 
 const ORG_ID = 'org-1';
 const COURSE_ID = 'course-1';
@@ -304,6 +310,32 @@ describe('services/v1/courses/certificates', () => {
   });
 
   describe('update', () => {
+    it('checks the certificate plan for the key org before saving', async () => {
+      await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, { isDownloadable: false });
+
+      expect(assertCertificatesEnabled).toHaveBeenCalledWith(ORG_ID);
+    });
+
+    it('returns 403 UPGRADE_REQUIRED on the Basic plan without opening the transaction', async () => {
+      vi.mocked(assertCertificatesEnabled).mockRejectedValueOnce(
+        new AppError('Certificates require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403)
+      );
+
+      await expect(
+        updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, { isDownloadable: true })
+      ).rejects.toMatchObject({ statusCode: 403, code: ErrorCodes.UPGRADE_REQUIRED });
+      expect(db.transaction).not.toHaveBeenCalled();
+      expect(updateCourse).not.toHaveBeenCalled();
+    });
+
+    it('does not gate reads, the issued list, or downloads on the plan', async () => {
+      await getPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params);
+      await listPublicApiCourseCertificatesService(ORG_ID, ACTOR_ID, params, firstPage);
+      await downloadPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, memberParams, pdfQuery);
+
+      expect(assertCertificatesEnabled).not.toHaveBeenCalled();
+    });
+
     it('locks the course row and saves through the dashboard updateCourse in the same transaction', async () => {
       const result = await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, { isDownloadable: false });
 

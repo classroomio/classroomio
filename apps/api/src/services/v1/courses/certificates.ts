@@ -5,7 +5,6 @@ import type {
   TPublicApiListCourseCertificatesQuery,
   TPublicApiUpdateCourseCertificate
 } from '@cio/utils/validation/public-api';
-import type { TCourse } from '@cio/db/types';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
@@ -13,41 +12,15 @@ import { updateCourse } from '@cio/core/services/course/course';
 import { getCourseById, getCourseByIdForUpdate } from '@cio/db/queries/course/course';
 import { getCourseMember, getPaginatedCourseMembers } from '@cio/db/queries/course/people';
 import { assembleCertificateRender } from '@api/services/course/certificate';
-import { generateCertificatePdf, generateCertificatePng, resolveCertificateDesign } from '@api/utils/certificate';
+import { toEffectiveCertificateSettings } from '@api/services/course/certificate-settings';
+import { assertCertificatesEnabled } from '@api/services/course/certificate-plan';
+import { generateCertificatePdf, generateCertificatePng } from '@api/utils/certificate';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   assertCourseBelongsToOrganization,
   assertCourseMemberOrOrgAdmin,
   assertCourseTeamMemberOrOrgAdmin
 } from '@api/services/v1/shared';
-
-const DEFAULT_THRESHOLD = 100;
-const DEFAULT_EXERCISE_MIN_SCORE_PERCENT = 100;
-
-type TCertificateCourse = Pick<TCourse, 'certificate' | 'type' | 'compliance'>;
-
-/**
- * Returns the settings the dashboard shows and completion evaluation applies: stored values with defaults filled in.
- */
-export function toEffectiveCertificateSettings(course: TCertificateCourse) {
-  const stored = course.certificate ?? {};
-  const design = resolveCertificateDesign(stored);
-  const requiredExerciseId = stored.requiredExerciseId ?? null;
-  const complianceMinScore = course.type === 'COMPLIANCE' ? (course.compliance?.passingScore ?? null) : null;
-  const requiredExerciseMinScore =
-    stored.exerciseMinScorePercent ?? complianceMinScore ?? DEFAULT_EXERCISE_MIN_SCORE_PERCENT;
-
-  return {
-    isDownloadable: stored.isDownloadable ?? false,
-    theme: stored.theme ?? design.templateId,
-    design,
-    deadline: stored.deadline ?? null,
-    threshold: stored.threshold ?? DEFAULT_THRESHOLD,
-    requiredExerciseId,
-    exerciseMinScorePercent: requiredExerciseId ? requiredExerciseMinScore : (stored.exerciseMinScorePercent ?? null),
-    emailMessage: stored.emailMessage ?? null
-  };
-}
 
 async function getActiveCourse(courseId: string) {
   const [course] = await getCourseById(courseId);
@@ -83,6 +56,7 @@ export async function updatePublicApiCourseCertificateService(
 ) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
   await assertCourseTeamMemberOrOrgAdmin(params.courseId, actorId);
+  await assertCertificatesEnabled(orgId);
 
   return db.transaction(async (tx) => {
     const [existingCourse] = await getCourseByIdForUpdate(params.courseId, tx);

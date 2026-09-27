@@ -53,7 +53,7 @@ export function registerCourseCertificateTools(server: McpServer, apiClient: Cla
 
   server.tool(
     'update_course_certificate',
-    `Partially update a course's certificate settings and design. Only the fields you send change; omitted fields keep their current values. Send null to clear deadline, requiredExerciseId, exerciseMinScorePercent, or emailMessage. design is replaced as a whole object, so read it with get_course_certificate first and send the full design. Sending design without theme sets theme to design.templateId. deadline must be an ISO 8601 datetime with a timezone, e.g. 2026-12-31T23:59:59Z. Returns the effective settings. ${COURSE_TEAM_RULE}`,
+    `Partially update a course's certificate settings and design. Only the fields you send change; omitted fields keep their current values. Send null to clear deadline, requiredExerciseId, exerciseMinScorePercent, or emailMessage. design is replaced as a whole object, so read it with get_course_certificate first and send the full design. Sending design without theme sets theme to design.templateId. deadline must be an ISO 8601 datetime with a timezone, e.g. 2026-12-31T23:59:59Z. Returns the effective settings. Certificates need a paid plan: on the Basic (free) plan this fails with 403 UPGRADE_REQUIRED. ${COURSE_TEAM_RULE}`,
     updateCourseCertificateShape,
     WRITE,
     async (args) => {
