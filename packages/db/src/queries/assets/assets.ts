@@ -562,6 +562,65 @@ export async function claimAssetForHlsEncode(
   }
 }
 
+/**
+ * Refresh a converting asset's `updatedAt` so a long encode is not reclaimed by
+ * the stale-claim window, without being able to move a finished or failed asset
+ * back to `converting`. Returns false when the job no longer owns the asset.
+ */
+export async function touchConvertingAsset(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [touched] = await dbClient
+      .update(schema.asset)
+      .set({ updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return Boolean(touched);
+  } catch (error) {
+    console.error('touchConvertingAsset error:', error);
+    throw new Error(`Failed to touch converting asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Mark a conversion failed, conditional on the asset still being `converting`,
+ * so a superseded job's failure cannot un-ready an asset another job finalized.
+ */
+export async function failConvertingAsset(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [failed] = await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'failed', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return Boolean(failed);
+  } catch (error) {
+    console.error('failConvertingAsset error:', error);
+    throw new Error(`Failed to fail converting asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export interface FinalizeServerHlsInput {
   manifestKey: string;
   audioKey: string | null;

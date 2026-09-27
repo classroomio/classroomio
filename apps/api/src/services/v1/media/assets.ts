@@ -1,6 +1,6 @@
 import type { TPublicApiAssetUploadResponse, TPublicApiCreateAsset } from '@cio/utils/validation/public-api';
 
-import { createHlsAssetPlaceholder } from '@cio/db/queries/assets';
+import { createHlsAssetPlaceholder, deleteAsset } from '@cio/db/queries/assets';
 import { getStorageConfig } from '@cio/core/config/storage';
 import { generateVideoUploadPresignedUrl } from '@cio/core/utils/s3';
 import { MAX_FILE_SIZE } from '@api/constants/upload';
@@ -47,8 +47,33 @@ export async function createPublicApiAssetUploadService(
   });
 
   const storageKey = `${asset.id}/source.${EXTENSION_BY_MIME_TYPE[payload.mimeType]}`;
-  const uploadUrl = await generateVideoUploadPresignedUrl(storageKey, payload.mimeType);
+  const uploadUrl = await presignOrDiscardPlaceholder(asset.id, orgId, storageKey, payload);
   const expiresAt = new Date(Date.now() + getStorageConfig().presignUploadExpiresSeconds * 1000).toISOString();
 
   return { assetId: asset.id, uploadUrl, expiresAt };
+}
+
+/**
+ * Sign the upload, dropping the reserved row if signing fails. Without this the
+ * caller keeps an asset it was never given a URL for, and nothing else cleans it
+ * up: the abort endpoint is caller-triggered and the caller has no id yet.
+ *
+ * `byteSize` is signed into the URL, so the bytes uploaded must match the size
+ * checked against the limit above.
+ */
+async function presignOrDiscardPlaceholder(
+  assetId: string,
+  orgId: string,
+  storageKey: string,
+  payload: TPublicApiCreateAsset
+): Promise<string> {
+  try {
+    return await generateVideoUploadPresignedUrl(storageKey, payload.mimeType, payload.byteSize);
+  } catch (error) {
+    await deleteAsset(assetId, orgId).catch((cleanupError) => {
+      console.error('Failed to discard asset placeholder after signing failure', { assetId, cleanupError });
+    });
+
+    throw error;
+  }
 }
