@@ -46,8 +46,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Three utils test files reach `@cio/utils/constants`, a self-referencing
-      # import that resolves through dist, so the package must be built first.
       - name: Build and test utils
         run: pnpm --filter @cio/utils build && pnpm --filter @cio/utils test
 
