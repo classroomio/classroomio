@@ -1,0 +1,15 @@
+# Machines are created per job by the dispatcher in apps/jobs, so this app runs
+# no long-lived process and has no services or health checks. `fly deploy` only
+# publishes the image the dispatcher then boots.
+app = "classroomio-encoder"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Ceiling on a downloaded source, enforced while streaming.
+  CIO_MAX_SOURCE_BYTES = "2147483648"
+
+# No [[services]]: nothing listens. No [http_service]: nothing is routed.
+# Machine size, region and env are set per job via the Machines API.
