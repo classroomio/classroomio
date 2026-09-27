@@ -112,23 +112,6 @@ export const ZLessonGetParam = z.object({
 });
 export type TLessonGetParam = z.infer<typeof ZLessonGetParam>;
 
-/**
- * The playback URL is derived from `fileKey` server-side; a caller-supplied one
- * would be stored as the lesson video's link and is never trusted.
- */
-export const ZAttachLessonVideo = z.object({
-  fileKey: z
-    .string()
-    .min(1)
-    .refine((value) => !value.includes('..') && !value.startsWith('/'), {
-      message: 'fileKey is not a valid storage key'
-    }),
-  fileName: z.string().min(1),
-  fileType: z.enum(ALLOWED_CONTENT_TYPES),
-  fileSize: z.number().int().min(0).optional()
-});
-export type TAttachLessonVideo = z.infer<typeof ZAttachLessonVideo>;
-
 export const ZLessonListQuery = z.object({
   sectionId: z.string().optional(),
   courseId: z.string().min(1)

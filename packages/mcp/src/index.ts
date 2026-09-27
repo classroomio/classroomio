@@ -8,7 +8,6 @@ import { registerCohortNewsfeedTools } from './tools/cohort-newsfeed';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseDraftTools } from './tools/course-drafts';
 import { registerCourseMemberTools } from './tools/course-members';
-import { registerMediaUploadTools } from './tools/media-upload';
 
 async function main() {
   const config = getConfig();
@@ -23,7 +22,6 @@ async function main() {
   registerCohortNewsfeedTools(server, apiClient);
   registerCohortGoalTools(server, apiClient);
   registerCourseMemberTools(server, apiClient);
-  registerMediaUploadTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
