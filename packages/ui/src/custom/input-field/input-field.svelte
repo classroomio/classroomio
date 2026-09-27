@@ -105,6 +105,7 @@
     required={isRequired}
     disabled={isDisabled}
     autocomplete={autoComplete ? 'on' : 'off'}
+    autofocus={autoFocus || undefined}
     aria-invalid={errorMessage ? 'true' : undefined}
     onkeydown={onKeyDown}
     onchange={handleInputChange}

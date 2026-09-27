@@ -755,8 +755,10 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
-    /** Independent enroll blocked. Do not revoke grants that already exist. */
-    requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
+    /** Independent enroll blocked. Do not revoke grants that already exist.
+     * TODO: Uncomment during API implementation phase and generate migration
+     */
+    // requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
     /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
     displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{

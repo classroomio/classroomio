@@ -9,15 +9,10 @@
   import { t } from '$lib/utils/functions/translations';
 
   async function createCourse() {
-    if ($copyCourseModal.isSaving || courseCloneApi.isLoading) return;
+    if (courseCloneApi.isLoading) return;
 
     await courseCloneApi.clone($copyCourseModal.id, $copyCourseModal.title, $copyCourseModal.description);
   }
-
-  // Sync loading state with modal store
-  $effect(() => {
-    $copyCourseModal.isSaving = courseCloneApi.isLoading;
-  });
 </script>
 
 <Dialog.Root bind:open={$copyCourseModal.open}>
@@ -51,7 +46,7 @@
       {/if}
 
       <div class="mt-5 flex flex-row-reverse items-center">
-        <Button type="submit" loading={$copyCourseModal.isSaving}>
+        <Button type="submit" loading={courseCloneApi.isLoading}>
           {$t('courses.copy_course.create_button')}
         </Button>
       </div>

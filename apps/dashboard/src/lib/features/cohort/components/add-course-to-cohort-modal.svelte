@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-  import { untrack } from 'svelte';
+  import { onDestroy, untrack } from 'svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
@@ -46,9 +45,7 @@
   const canGoToPreviousPage = $derived(currentPage > 1);
   const canGoToNextPage = $derived(currentPage < totalPages);
   const emptyMessage = $derived(
-    searchValue.trim()
-      ? $t('cohorts.courses.no_matching_courses') || 'No courses match your search.'
-      : $t('cohorts.courses.no_available_courses') || 'No available courses to add.'
+    searchValue.trim() ? $t('cohorts.courses.no_matching_courses') : $t('cohorts.courses.no_available_courses')
   );
   const multiSelectItems = $derived(
     paginatedCourses.map((course) => ({
@@ -125,12 +122,12 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="max-w-md">
-    <Dialog.Header>
-      <Dialog.Title>{$t('cohorts.courses.add_modal_title') || 'Add Course to Cohort'}</Dialog.Title>
+  <Dialog.Content class="flex max-h-[85vh] max-w-md flex-col overflow-hidden">
+    <Dialog.Header class="shrink-0">
+      <Dialog.Title>{$t('cohorts.courses.add_modal_title')}</Dialog.Title>
     </Dialog.Header>
 
-    <div class="flex flex-col gap-4 py-2">
+    <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto py-2">
       <MultiSelectList
         class="border-0"
         {emptyMessage}
@@ -141,12 +138,12 @@
         onToggle={(id) => toggleCourse(id)}
         namePrefix="cohort-course"
         listClass="max-h-60"
-        searchPlaceholder={$t('cohorts.courses.search_placeholder') || 'Search courses'}
+        searchPlaceholder={$t('cohorts.courses.search_placeholder')}
         bind:searchValue
       >
         {#snippet headingSnippet()}
           <p class="text-sm font-medium">
-            {$t('cohorts.courses.select_courses') || $t('cohorts.courses.select_course') || 'Select course(s)'}
+            {$t('cohorts.courses.select_courses')}
             {#if selectedCount > 0}
               <span class="ui:text-muted-foreground text-xs">
                 {$t('audience.selected_count', { count: selectedCount })}
@@ -162,7 +159,7 @@
             {$t('cohorts.courses.pagination_status', {
               page: currentPage,
               totalPages
-            }) || `Page ${currentPage} of ${totalPages}`}
+            })}
           </span>
 
           <div class="flex items-center gap-2">
@@ -172,7 +169,7 @@
               onclick={() => goToPage(currentPage - 1)}
               disabled={!canGoToPreviousPage || showLoadingState}
             >
-              {$t('app.previous') || 'Previous'}
+              {$t('app.previous')}
             </Button>
             <Button
               variant="outline"
@@ -180,19 +177,25 @@
               onclick={() => goToPage(currentPage + 1)}
               disabled={!canGoToNextPage || showLoadingState}
             >
-              {$t('app.next') || 'Next'}
+              {$t('app.next')}
             </Button>
           </div>
         </div>
       {/if}
     </div>
 
-    <Dialog.Footer>
+    <Dialog.Footer class="shrink-0 pt-3">
       <Button variant="outline" onclick={closeModal} disabled={cohortApi.isLoading}>
-        {$t('app.cancel') || 'Cancel'}
+        {$t('app.cancel')}
       </Button>
       <Button onclick={handleAdd} loading={cohortApi.isLoading} disabled={selectedCount === 0 || cohortApi.isLoading}>
-        {$t('cohorts.courses.add') || 'Add Course'}
+        {#if cohortApi.isLoading}
+          {$t('cohorts.courses.adding')}
+        {:else if selectedCount > 0}
+          {$t('cohorts.courses.add_count', { count: selectedCount })}
+        {:else}
+          {$t('cohorts.courses.add')}
+        {/if}
       </Button>
     </Dialog.Footer>
   </Dialog.Content>
