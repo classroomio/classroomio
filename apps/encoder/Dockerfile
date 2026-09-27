@@ -18,6 +18,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+# package.json comes too: it carries "type": "module", so dist/*.js is ESM by
+# declaration rather than by Node's syntax detection, which is experimental and
+# off on older runtimes.
+COPY apps/encoder/package.json ./package.json
 COPY --from=build /app/dist ./dist
 
 # Nothing here needs root, and this process handles untrusted media.
