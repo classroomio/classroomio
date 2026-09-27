@@ -71,7 +71,7 @@ import {
   getPublicApiLoginActivityService,
   listPublicApiComplianceLearnersService,
   listPublicApiCourseAnalyticsStudentsService
-} from '@api/services/v1/analytics';
+} from '@api/services/v1/analytics/analytics';
 
 const ORG_ID = 'org-1';
 const OTHER_ORG_ID = 'org-2';

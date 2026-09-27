@@ -78,7 +78,7 @@ vi.mock('@api/services/v1/cohorts/invites', () => ({
   createPublicApiCohortInviteLinkService: mocks.ok(),
   setPublicApiCohortInviteLinkRevokedService: mocks.ok()
 }));
-vi.mock('@api/services/v1/analytics', () => ({
+vi.mock('@api/services/v1/analytics/analytics', () => ({
   getPublicApiAnalyticsOverviewService: mocks.ok(),
   getPublicApiAnalyticsTrafficService: mocks.ok(),
   getPublicApiAnalyticsCountriesService: mocks.ok(),

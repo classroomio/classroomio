@@ -7,12 +7,12 @@ import {
 import {
   getPublicApiCourseAnalyticsService,
   listPublicApiCourseAnalyticsStudentsService
-} from '@api/services/v1/analytics';
+} from '@api/services/v1/analytics/analytics';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { COURSE_TEAM_RULE, PAGINATION_NOTE, analyticsForbiddenResponses } from './analytics-route-docs';
+import { COURSE_TEAM_RULE, PAGINATION_NOTE, analyticsForbiddenResponses } from '../analytics/docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const TAG = 'Public API Analytics';

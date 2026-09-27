@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@api/services/v1/analytics', () => ({
+vi.mock('@api/services/v1/analytics/analytics', () => ({
   getPublicApiAnalyticsOverviewService: vi.fn(),
   getPublicApiAnalyticsTrafficService: vi.fn(),
   getPublicApiAnalyticsCountriesService: vi.fn(),
@@ -15,7 +15,7 @@ vi.mock('@api/services/v1/analytics', () => ({
   listPublicApiCourseAnalyticsStudentsService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/course', () => ({
+vi.mock('@api/services/v1/courses/course', () => ({
   createPublicApiCourseService: vi.fn(),
   deletePublicApiCourseService: vi.fn(),
   exportCourseService: vi.fn(),
@@ -37,8 +37,8 @@ import {
   getPublicApiLoginActivityService,
   listPublicApiComplianceLearnersService,
   listPublicApiCourseAnalyticsStudentsService
-} from '@api/services/v1/analytics';
-import { getCourseService } from '@api/services/v1/course';
+} from '@api/services/v1/analytics/analytics';
+import { getCourseService } from '@api/services/v1/courses/course';
 import { v1AnalyticsRouter } from '@api/routes/v1/analytics';
 import { v1CoursesRouter } from '@api/routes/v1/courses';
 

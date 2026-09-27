@@ -27,7 +27,7 @@ import {
   getPublicApiLearnerAnalyticsService,
   getPublicApiLoginActivityService,
   listPublicApiComplianceLearnersService
-} from '@api/services/v1/analytics';
+} from '@api/services/v1/analytics/analytics';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
@@ -39,12 +39,12 @@ import {
   PAGINATION_NOTE,
   RANGE_NOTE,
   analyticsForbiddenResponses
-} from './analytics-route-docs';
+} from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const TAG = 'Public API Analytics';
 
-export const v1AnalyticsRouter = new Hono()
+export const v1OrgAnalyticsRouter = new Hono()
   .get(
     '/overview',
     describeRoute({
