@@ -8,30 +8,35 @@ import { ZSlug } from '../shared/slug';
 /** Uploaded videos are served through the HLS proxy as a root-relative path. */
 const HLS_PROXY_PATH = /^\/hls\/[\w./-]+$/;
 
-export const ZLessonVideoItem = z.object({
-  type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
-  link: z.string().refine((value) => HLS_PROXY_PATH.test(value) || isAllowedHref(value), {
-    message: 'Video link scheme is not allowed'
-  }),
-  key: z.string().optional(),
-  assetId: z.string().uuid().optional(),
-  watchEnforced: z.boolean().optional(),
-  fileName: z.string().optional(),
-  metadata: z
-    .object({
-      svid: z.string().optional(),
-      title: z.string().optional(),
-      description: z.string().optional(),
-      thumbnailUrl: z.string().optional(),
-      duration: z.number().optional(),
-      aspectRatio: z.string().optional(),
-      createdAt: z.string().optional(),
-      videoId: z.string().optional(),
-      hash: z.string().optional()
-    })
-    .catchall(z.unknown())
-    .optional()
-});
+export const ZLessonVideoItem = z
+  .object({
+    type: z.enum(['youtube', 'vimeo', 'generic', 'upload', 'google_drive']),
+    link: z.string().refine((value) => HLS_PROXY_PATH.test(value) || isAllowedHref(value), {
+      message: 'Video link scheme is not allowed'
+    }),
+    key: z.string().optional(),
+    assetId: z.string().uuid().optional(),
+    watchEnforced: z.boolean().optional(),
+    fileName: z.string().optional(),
+    metadata: z
+      .object({
+        svid: z.string().optional(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        thumbnailUrl: z.string().optional(),
+        duration: z.number().optional(),
+        aspectRatio: z.string().optional(),
+        createdAt: z.string().optional(),
+        videoId: z.string().optional(),
+        hash: z.string().optional()
+      })
+      .catchall(z.unknown())
+      .optional()
+  })
+  .refine((video) => video.type !== 'upload' || Boolean(video.assetId), {
+    message: 'An uploaded video must reference the assetId it was created from',
+    path: ['assetId']
+  });
 export type TLessonVideoItem = z.infer<typeof ZLessonVideoItem>;
 
 export const ZLessonSlide = z
@@ -111,23 +116,6 @@ export const ZLessonGetParam = z.object({
   lessonId: z.string().min(1)
 });
 export type TLessonGetParam = z.infer<typeof ZLessonGetParam>;
-
-/**
- * The playback URL is derived from `fileKey` server-side; a caller-supplied one
- * would be stored as the lesson video's link and is never trusted.
- */
-export const ZAttachLessonVideo = z.object({
-  fileKey: z
-    .string()
-    .min(1)
-    .refine((value) => !value.includes('..') && !value.startsWith('/'), {
-      message: 'fileKey is not a valid storage key'
-    }),
-  fileName: z.string().min(1),
-  fileType: z.enum(ALLOWED_CONTENT_TYPES),
-  fileSize: z.number().int().min(0).optional()
-});
-export type TAttachLessonVideo = z.infer<typeof ZAttachLessonVideo>;
 
 export const ZLessonListQuery = z.object({
   sectionId: z.string().optional(),

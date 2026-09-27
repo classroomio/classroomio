@@ -12,19 +12,15 @@ import {
 } from '@cio/core/utils/s3';
 
 import { Hono } from '@api/utils/hono';
-import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
-import { findUnauthorizedDownloadKeys, presignAuthMiddleware } from '@api/middlewares/presign-auth';
+import { authMiddleware } from '@api/middlewares/auth';
+import { findUnauthorizedDownloadKeys, resolveUploadOrganizationId } from '@api/middlewares/presign-auth';
 import { generateFileKey } from '@cio/core/utils/upload';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
-import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import type { Context } from 'hono';
 
-const requireCourseWrite = presignAuthMiddleware(['course:write']);
-
 const PresignForbiddenResponse = {
-  description:
-    'Automation key is missing the required scope, or one or more requested keys belong to another organization'
+  description: 'One or more requested keys belong to an organization the caller is not a member of'
 };
 
 async function rejectUnauthorizedKeys(c: Context, keys: string[]) {
@@ -80,8 +76,7 @@ const PresignDownloadResponse = {
 export const presignRouter = new Hono()
   .post(
     '/video/upload',
-    authOrAutomationKeyMiddleware,
-    requireCourseWrite,
+    authMiddleware,
     describeRoute({
       description: 'Generate a pre-signed URL for video upload',
       responses: {
@@ -111,18 +106,9 @@ export const presignRouter = new Hono()
 
       assertPresignFileSizeWithinLimit(fileSize, MAX_FILE_SIZE);
 
-      const fileKey = generateFileKey(fileName, c.get('presignUploadOrgId'));
-
-      const automationKey = c.get('automationKey');
-      if (automationKey?.type === 'mcp') {
-        await assertMcpAutomationUsageAllowed(automationKey, 'upload_video');
-      }
+      const fileKey = generateFileKey(fileName, resolveUploadOrganizationId(c));
 
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
-
-      if (automationKey?.type === 'mcp') {
-        await recordMcpAutomationUsage(automationKey, 'upload_video', { fileKey });
-      }
 
       return c.json({
         success: true,
@@ -134,8 +120,7 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/upload',
-    authOrAutomationKeyMiddleware,
-    requireCourseWrite,
+    authMiddleware,
     describeRoute({
       description: 'Generate a pre-signed URL for document upload',
       responses: {
@@ -165,7 +150,7 @@ export const presignRouter = new Hono()
 
       assertPresignFileSizeWithinLimit(fileSize, MAX_DOCUMENT_SIZE);
 
-      const fileKey = generateFileKey(fileName, c.get('presignUploadOrgId'));
+      const fileKey = generateFileKey(fileName, resolveUploadOrganizationId(c));
 
       const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);
 
@@ -179,8 +164,7 @@ export const presignRouter = new Hono()
   )
   .post(
     '/video/download',
-    authOrAutomationKeyMiddleware,
-    requireCourseWrite,
+    authMiddleware,
     describeRoute({
       description: 'Generate pre-signed URLs for video download',
       responses: {
@@ -222,8 +206,7 @@ export const presignRouter = new Hono()
   )
   .post(
     '/document/download',
-    authOrAutomationKeyMiddleware,
-    requireCourseWrite,
+    authMiddleware,
     describeRoute({
       description: 'Generate pre-signed URLs for document download',
       responses: {

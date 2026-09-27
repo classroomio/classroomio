@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ZAttachLessonVideo, ZLessonCreate, ZLessonUpdate, ZLessonVideoItem } from '@cio/utils/validation/lesson';
+import { ZLessonCreate, ZLessonUpdate, ZLessonVideoItem } from '@cio/utils/validation/lesson';
 import { ZCourseImportDraftLesson } from '@cio/utils/validation/course-import';
 
 const UPLOAD_ASSET_ID = 'b2f0a5d4-8c1e-4a6b-9d3f-2e7c8a1b4d5e';
@@ -31,6 +31,7 @@ describe('ZLessonVideoItem', () => {
     const result = ZLessonVideoItem.safeParse({
       type: 'upload',
       link: `/hls/${UPLOAD_ASSET_ID}/master.m3u8`,
+      assetId: UPLOAD_ASSET_ID,
       metadata: { hls: true, hlsRenditions: ['p360', 'p720'], hls1080Status: 'ready', sourceHeight: 1080 }
     });
 
@@ -47,6 +48,7 @@ describe('ZLessonVideoItem', () => {
     const result = ZLessonVideoItem.safeParse({
       type: 'upload',
       link: '/hls/x/master.m3u8',
+      assetId: UPLOAD_ASSET_ID,
       metadata: { duration: '120' }
     });
     expect(result.success).toBe(false);
@@ -94,38 +96,6 @@ describe('lesson schemas carry videos', () => {
   });
 });
 
-describe('ZAttachLessonVideo', () => {
-  const valid = {
-    fileKey: `${UPLOAD_ASSET_ID}/abc-intro.mp4`,
-    fileName: 'intro.mp4',
-    fileType: 'video/mp4' as const,
-    fileSize: 1024
-  };
-
-  it('accepts a well-formed payload', () => {
-    expect(ZAttachLessonVideo.safeParse(valid).success).toBe(true);
-  });
-
-  it('rejects a fileType outside the allowed upload content types', () => {
-    const result = ZAttachLessonVideo.safeParse({ ...valid, fileType: 'application/x-msdownload' });
-    expect(result.success).toBe(false);
-  });
-
-  it.each(['../../etc/passwd', '/absolute/key.mp4', 'org/../other/key.mp4'])(
-    'rejects traversal in fileKey: %s',
-    (fileKey) => {
-      expect(ZAttachLessonVideo.safeParse({ ...valid, fileKey }).success).toBe(false);
-    }
-  );
-
-  it('ignores a caller-supplied playback URL, which is derived server-side', () => {
-    const result = ZAttachLessonVideo.safeParse({ ...valid, downloadUrl: 'https://evil.example.com/x.mp4' });
-
-    expect(result.success).toBe(true);
-    expect(result.success && 'downloadUrl' in result.data).toBe(false);
-  });
-});
-
 describe('draft seeding round-trips lesson videos', () => {
   it('accepts the shape the snapshot builder emits for a seeded lesson', () => {
     const result = ZCourseImportDraftLesson.safeParse({
@@ -152,5 +122,35 @@ describe('draft seeding round-trips lesson videos', () => {
     expect(ZLessonVideoItem.safeParse({ type: 'generic', link: 'javascript:alert(1)' }).success).toBe(false);
     expect(ZLessonVideoItem.safeParse({ type: 'not-a-provider', link: 'https://example.com' }).success).toBe(false);
     expect(ZLessonVideoItem.safeParse({ link: 'https://example.com' }).success).toBe(false);
+  });
+});
+
+describe('an uploaded video cannot exist without its asset', () => {
+  it('rejects an upload entry carrying no assetId', () => {
+    const result = ZLessonVideoItem.safeParse({
+      type: 'upload',
+      link: `/hls/${UPLOAD_ASSET_ID}/master.m3u8`
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects an upload entry on a draft lesson carrying no assetId', () => {
+    const result = ZCourseImportDraftLesson.safeParse({
+      externalId: 'lesson-1',
+      sectionExternalId: 'section-1',
+      title: 'Intro',
+      order: 1,
+      videos: [{ type: 'upload', link: '/hls/abc/master.m3u8' }]
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('still accepts external providers without an assetId', () => {
+    for (const type of ['youtube', 'vimeo', 'generic'] as const) {
+      const result = ZLessonVideoItem.safeParse({ type, link: 'https://example.com/video' });
+      expect(result.success, `${type} should not require an assetId`).toBe(true);
+    }
   });
 });
