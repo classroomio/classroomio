@@ -29,7 +29,7 @@ import {
   updateLessonWatchProgressService,
   upsertLessonCompletionService
 } from '@api/services/lesson';
-import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
+import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { ContentType } from '@cio/utils/constants';
 
@@ -53,7 +53,11 @@ export const lessonRouter = new Hono()
   // Lesson CRUD routes
   .get('/', authMiddleware, courseMemberMiddleware, zValidator('query', ZLessonListQuery), async (c) => {
     try {
+      const user = c.get('user')!;
       const { courseId, sectionId } = c.req.valid('query');
+
+      await assertEnrolledStudentCourseAccess({ courseId, profileId: user.id });
+
       const lessons = await listLessons(courseId, sectionId);
 
       return c.json({ success: true, data: lessons }, 200);
