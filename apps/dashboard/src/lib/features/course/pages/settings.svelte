@@ -14,6 +14,7 @@
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
   import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
   import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
+  import TemplateSettingsSection from '$features/course/components/template-settings-section.svelte';
   import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
@@ -1111,72 +1112,76 @@
 
   <SettingsCard id="access" title={$t('course.navItem.settings.access_card_title')}>
     <Field.Group>
-      <Field.Set id="self-enrollment" class="scroll-mt-24">
-        <Field.Field orientation="horizontal">
-          <Field.Content>
-            <Field.Label for="allow-self-enrollment">
-              <a href="#self-enrollment" class="hover:underline">{$t('course.navItem.settings.allow')}</a>
-            </Field.Label>
-            <Field.Description>
-              {selfEnrollmentAccessParts.before}<a
-                href={peoplePageHref}
-                data-testid="course-settings-people-link"
-                class="ui:text-primary">{$t('course.navItem.settings.access_people')}</a
-              >{selfEnrollmentAccessParts.after}
-            </Field.Description>
-          </Field.Content>
-          <Switch
-            id="allow-self-enrollment"
-            checked={$settings.allowSelfEnrollment}
-            onCheckedChange={(checked) => {
-              $settings.allowSelfEnrollment = checked;
-              hasUnsavedChanges = true;
-            }}
-          />
-        </Field.Field>
-      </Field.Set>
-
-      <SettingsSeparator />
-
-      <Field.Set id="publish" class="scroll-mt-24">
-        <AttentionHighlight id="publish">
+      {#if !courseApi.course?.isTemplate}
+        <Field.Set id="self-enrollment" class="scroll-mt-24">
           <Field.Field orientation="horizontal">
             <Field.Content>
-              <Field.Label for="is-published">
-                <a href="#publish" class="hover:underline">{$t('course.navItem.settings.publish')}</a>
+              <Field.Label for="allow-self-enrollment">
+                <a href="#self-enrollment" class="hover:underline">{$t('course.navItem.settings.allow')}</a>
               </Field.Label>
-              <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
+              <Field.Description>
+                {selfEnrollmentAccessParts.before}<a
+                  href={peoplePageHref}
+                  data-testid="course-settings-people-link"
+                  class="ui:text-primary">{$t('course.navItem.settings.access_people')}</a
+                >{selfEnrollmentAccessParts.after}
+              </Field.Description>
             </Field.Content>
-            <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
+            <Switch
+              id="allow-self-enrollment"
+              checked={$settings.allowSelfEnrollment}
+              onCheckedChange={(checked) => {
+                $settings.allowSelfEnrollment = checked;
+                hasUnsavedChanges = true;
+              }}
+            />
           </Field.Field>
-        </AttentionHighlight>
+        </Field.Set>
 
-        {#if showLockedContentNotice}
-          <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>
-            <LockOpenIcon />
-            <Alert.Title>
-              {$t('course.navItem.settings.locked_content.title', { count: lockedContentItems.length })}
-            </Alert.Title>
-            <Alert.Description>
-              {isLiveClassCourse
-                ? $t('course.navItem.settings.locked_content.description_live')
-                : $t('course.navItem.settings.locked_content.description')}
-              <Button
-                variant="outline"
-                size="sm"
-                class="mt-2 w-fit"
-                loading={isUnlockingAll}
-                disabled={isUnlockingAll}
-                onclick={handleUnlockAllContent}
-              >
-                {$t('course.navItem.settings.locked_content.unlock_all')}
-              </Button>
-            </Alert.Description>
-          </Alert.Root>
-        {/if}
-      </Field.Set>
+        <SettingsSeparator />
+      {/if}
 
-      <SettingsSeparator />
+      {#if !courseApi.course?.isTemplate}
+        <Field.Set id="publish" class="scroll-mt-24">
+          <AttentionHighlight id="publish">
+            <Field.Field orientation="horizontal">
+              <Field.Content>
+                <Field.Label for="is-published">
+                  <a href="#publish" class="hover:underline">{$t('course.navItem.settings.publish')}</a>
+                </Field.Label>
+                <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
+              </Field.Content>
+              <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
+            </Field.Field>
+          </AttentionHighlight>
+
+          {#if showLockedContentNotice}
+            <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>
+              <LockOpenIcon />
+              <Alert.Title>
+                {$t('course.navItem.settings.locked_content.title', { count: lockedContentItems.length })}
+              </Alert.Title>
+              <Alert.Description>
+                {isLiveClassCourse
+                  ? $t('course.navItem.settings.locked_content.description_live')
+                  : $t('course.navItem.settings.locked_content.description')}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="mt-2 w-fit"
+                  loading={isUnlockingAll}
+                  disabled={isUnlockingAll}
+                  onclick={handleUnlockAllContent}
+                >
+                  {$t('course.navItem.settings.locked_content.unlock_all')}
+                </Button>
+              </Alert.Description>
+            </Alert.Root>
+          {/if}
+        </Field.Set>
+
+        <SettingsSeparator />
+      {/if}
 
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
@@ -1237,6 +1242,8 @@
       </Field.Field>
     </Field.Group>
   </SettingsCard>
+
+  <TemplateSettingsSection />
 
   <SettingsCard
     id="delete"

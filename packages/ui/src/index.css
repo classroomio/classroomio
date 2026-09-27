@@ -19,13 +19,12 @@
  *                             desktop sidebar rail, the side panel.
  *   z-app-bar-elevated (150) A sidebar (mobile sheet or desktop) that must render above other
  *                             z-app-bar content while open, e.g. the course content sidebar.
- *   z-modal             (200) Blocking dialogs/drawers.
+ *   z-modal             (200) Blocking dialogs, sheets, and drawers.
  *   z-menu-elevated     (250) Dropdown/select/popover content that must escape a z-app-bar,
  *                             z-app-bar-elevated, or z-modal ancestor.
  *
- * Anything not listed (dropdowns, sheets, drawers) uses Tailwind's default `z-50`,
- * which already sits above normal page content. Tooltips use `z-menu-elevated` so they
- * remain visible over `z-app-bar` chrome such as the transcript side panel.
+ * Tooltips use `z-menu-elevated` so they remain visible over `z-app-bar` chrome such as
+ * the transcript side panel.
  */
 @utility z-app-bar {
   z-index: 100;

@@ -601,3 +601,45 @@ export interface PublicConversionPersistedState {
   offenders: NonAutoGradableQuestionOffender[];
   resolvedExerciseIds: string[];
 }
+
+export type ListCourseTemplatesRequest = (typeof classroomio.course)['template']['$get'];
+export type ListCourseTemplatesSuccess = Extract<InferResponseType<ListCourseTemplatesRequest>, { success: true }>;
+export type CourseTemplateCards = ListCourseTemplatesSuccess['data'];
+export type CourseTemplateCard = CourseTemplateCards['org'][number];
+
+export type PreviewCourseTemplateRequest = (typeof classroomio.course)['template'][':templateId']['preview']['$get'];
+export type PreviewCourseTemplateSuccess = Extract<InferResponseType<PreviewCourseTemplateRequest>, { success: true }>;
+export type CourseTemplatePreviewSettings = {
+  certificate: boolean;
+  deadline: string | null;
+  threshold: number | null;
+  finalExercise: { title: string; score: number } | null;
+  sequential: boolean;
+  grading: boolean;
+  commentsOff: boolean;
+  lessonDownload: boolean;
+  selfEnrollment: boolean;
+  aiTutor: boolean;
+  compliance: { months: number; mandatory: boolean } | null;
+};
+export type CourseTemplatePreview = Omit<PreviewCourseTemplateSuccess['data'], 'settings'> & {
+  settings: CourseTemplatePreviewSettings;
+  curated: boolean;
+};
+
+export type CreateCourseFromTemplateRequest = (typeof classroomio.course)['template'][':templateId']['course']['$post'];
+export type DuplicateCourseTemplateRequest =
+  (typeof classroomio.course)['template'][':templateId']['duplicate']['$post'];
+export type SaveCourseTemplateRequest = (typeof classroomio.course)[':courseId']['template']['$post'];
+export type ConvertCourseTemplateRequest = (typeof classroomio.course)[':courseId']['template']['convert']['$post'];
+export type DeleteCourseTemplateRequest = (typeof classroomio.course)[':courseId']['$delete'];
+
+export type GetCourseTemplateUpdatesRequest = (typeof classroomio.course)[':courseId']['template-updates']['$get'];
+export type GetCourseTemplateUpdatesSuccess = Extract<
+  InferResponseType<GetCourseTemplateUpdatesRequest>,
+  { success: true }
+>;
+export type CourseTemplateUpdates = GetCourseTemplateUpdatesSuccess['data'];
+
+export type PullCourseTemplateUpdatesRequest =
+  (typeof classroomio.course)[':courseId']['template-updates']['pull']['$post'];

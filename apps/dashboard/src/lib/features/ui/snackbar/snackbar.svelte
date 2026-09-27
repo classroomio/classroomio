@@ -17,12 +17,23 @@
 
   function showToast() {
     const message = $t($snackbarStore.message);
-    const { autoHideDuration, id, severity } = $snackbarStore;
+    const { action, autoHideDuration, id, severity } = $snackbarStore;
 
     const options = {
       duration: autoHideDuration || 5000,
       onDismiss: handleClose,
       onAutoClose: handleClose,
+      ...(action
+        ? {
+            action: {
+              label: $t(action.label),
+              onClick: () => {
+                action.onClick();
+                handleClose();
+              }
+            }
+          }
+        : {}),
       // Stated rather than inherited: resolving a toast by id merges the new
       // data over the old toast, so a loading toast's `false` would otherwise
       // stick to the outcome that replaces it.

@@ -439,6 +439,10 @@ export async function updateCourse(
       }
     }
 
+    if (currentCourse.isTemplate && data.isPublished) {
+      throw new AppError('Templates cannot be published', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     const nextType = sanitizedData.type ?? currentCourse.type;
     const nextIsPublished = data.isPublished ?? currentCourse.isPublished;
     const nextDeadline = resolveCourseCertificateDeadline(currentCourse.certificate?.deadline, data.certificate);

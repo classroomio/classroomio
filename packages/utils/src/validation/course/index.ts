@@ -6,6 +6,8 @@
  */
 
 export * from './course';
+export * from './course-template';
+export * from './template-sync';
 export * from './course-type';
 export * from './callout';
 export * from './compliance';

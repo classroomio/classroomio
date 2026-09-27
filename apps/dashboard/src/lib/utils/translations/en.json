@@ -464,7 +464,7 @@
       "search": "Search settings..."
     },
     "subheadings": {
-      "view_site": "Open Academy"
+      "view_site": "Your Academy"
     },
     "tabs": {
       "profile_tab": "Profile",
@@ -1890,9 +1890,9 @@
     "afternoon_heading": "Good Afternoon",
     "evening_heading": "Good Evening",
     "create_course": "Create Course",
-    "view_site": "Open Academy",
-    "visit_site": "Open Academy",
-    "open_academy": "Open Academy",
+    "view_site": "Your Academy",
+    "visit_site": "Your Academy",
+    "open_academy": "Your Academy",
     "current_lesson": "Currently Learning",
     "currently_learning": "Currently Learning",
     "learner": "Student",
@@ -2082,7 +2082,7 @@
         "live_class": "Live Class"
       },
       "template": {
-        "heading": "Or start from a template",
+        "heading": "Or start with a prompt",
         "product_101": {
           "title": "Product 101 Course",
           "description": "A fundamentals course teaching customers how to use your product.",
@@ -5653,5 +5653,180 @@
     "format_json": "JSON",
     "copied": "Copied to clipboard",
     "copy_failed": "Could not copy to clipboard"
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Create a new course",
+      "gallery": "Template gallery",
+      "yours": "Your courses",
+      "blank": "Blank course",
+      "blank_subtitle": "Start from scratch"
+    },
+    "card": {
+      "curated": "Curated template",
+      "yours": "Your template",
+      "used": "Your template · Used {date}"
+    },
+    "gallery": {
+      "back": "All courses",
+      "title": "Template gallery",
+      "subtitle": "Start a course from one of your templates or one built by ClassroomIO.",
+      "search": "Find template",
+      "scope_all": "All templates",
+      "scope_org": "My templates",
+      "scope_global": "ClassroomIO",
+      "empty_org": "You haven’t made any templates yet. Save any course as a template from its ⋯ menu.",
+      "no_match": "No templates match “{query}”.",
+      "empty_global": "No ClassroomIO templates yet."
+    },
+    "preview": {
+      "course_name": "Course name",
+      "use": "Use template",
+      "open": "Open template",
+      "cancel": "Cancel",
+      "loading": "Loading template…",
+      "copying": "Copying {sections, plural, one {# section} other {# sections}}, {lessons, plural, one {# lesson} other {# lessons}}…",
+      "created": "Course created from {title}",
+      "shows_off": "Shows off",
+      "settings": "Settings",
+      "certificate": "Certificate enabled",
+      "deadline": "Deadline {date}",
+      "threshold": "Complete {percent}% of the course",
+      "final_exercise": "Pass “{title}” at {percent}%",
+      "sequential": "Lessons unlock in order",
+      "grading": "A tutor grades submissions",
+      "comments_off": "Lesson comments are off",
+      "lesson_download": "Learners can download lessons",
+      "self_enrollment": "Learners can join themselves",
+      "ai_tutor": "AI tutor is on",
+      "compliance_retake": "Retake every {months, plural, one {# month} other {# months}}",
+      "compliance_mandatory": "Mandatory",
+      "counts": "{sections} sections · {lessons} lessons · {exercises} exercises",
+      "questions": "{count, plural, one {# question} other {# questions}}"
+    },
+    "menu": {
+      "open": "Open",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "save": "Save as template…",
+      "create_course": "Create course from template",
+      "duplicated": "Template duplicated",
+      "deleted": "Template deleted"
+    },
+    "save": {
+      "title": "Save as template",
+      "copy": "Save a copy as template",
+      "copy_description": "The course stays as it is.",
+      "convert": "Convert this course",
+      "convert_description": "The course becomes a template. It can't be published or have students.",
+      "has_students": "Has {count, plural, one {# student} other {# students}} — save a copy instead.",
+      "unpublish": "Converting unpublishes this course.",
+      "name": "Template name",
+      "save_button": "Save template",
+      "convert_button": "Convert to template",
+      "saved": "Template saved",
+      "converted": "Course converted to a template",
+      "limit_title": "Your plan includes {count, plural, one {# template} other {# templates}}",
+      "limit_body": "You already have {used, plural, one {{title}} other {# templates}}. Upgrade for more templates, or delete one you have.",
+      "upgrade": "Upgrade",
+      "manage": "Manage templates",
+      "view_templates": "View templates"
+    },
+    "empty": {
+      "title": "No courses yet",
+      "description": "Pick a template to see what a great ClassroomIO course looks like, or start from a blank course.",
+      "browse": "Browse templates"
+    },
+    "editor": {
+      "badge": "Template"
+    },
+    "sync": {
+      "alert_title": "Template has {count, plural, one {# update} other {# updates}}",
+      "alert_body": "{title} changed since you last pulled on {date}.",
+      "review_in_settings": "Review in settings",
+      "section_title": "Template",
+      "last_pulled": "Last pulled {date}",
+      "review": "Review updates",
+      "up_to_date": "Up to date with the template.",
+      "deleted": "{title} was deleted. This course keeps all its content; there's nothing left to pull.",
+      "deleted_unknown": "This template was deleted. This course keeps all its content; there's nothing left to pull.",
+      "available_detail": "{count, plural, one {# update available} other {# updates available}} — {list}.",
+      "join": "{rest} and {last}",
+      "sections_count": "{count, plural, one {# section} other {# sections}}",
+      "settings_count": "{count, plural, one {# setting} other {# settings}}",
+      "content": "Content",
+      "settings": "Settings",
+      "select_all": "Select all",
+      "new": "New",
+      "updated": "Updated",
+      "locked": "{count, plural, one {# submission — can't be updated} other {# submissions — can't be updated}}",
+      "edited_locally": "You edited this on {date} — pulling replaces your changes.",
+      "removed_locally": "You deleted this from your course.",
+      "also_adds": "Also adds {kind}: {title}",
+      "template_value": "Template: {value}",
+      "yours_value": "Yours: {value}",
+      "yes": "Yes",
+      "no": "No",
+      "empty_value": "None",
+      "custom_value": "Custom",
+      "selected": "{count, plural, one {# selected} other {# selected}}",
+      "pull": "Pull {count, plural, one {# change} other {# changes}}",
+      "pulled": "Pulled {count, plural, one {# change} other {# changes}} from {title}",
+      "kind": {
+        "section": "Section",
+        "lesson": "Lesson",
+        "exercise": "Exercise"
+      },
+      "detail": {
+        "title": "Title",
+        "content": "Content",
+        "locales": "{locales} added"
+      },
+      "setting": {
+        "description": "Description",
+        "bannerImage": "Cover image",
+        "welcomeEmail": "Welcome email",
+        "completionDeadline": "Completion deadline",
+        "completionThreshold": "Completion threshold",
+        "finalExercise": "Final exercise",
+        "lessonTabsOrder": "Lesson tabs",
+        "contentGrouping": "Content grouping",
+        "progression": "Progression",
+        "comments": "Lesson comments",
+        "selfEnrollment": "Self-enrollment",
+        "markdownExport": "Markdown export",
+        "lessonDownload": "Lesson download",
+        "landingRequirements": "Landing requirements",
+        "landingDescription": "Landing description",
+        "landingGoals": "Landing goals",
+        "landingSkills": "Skills",
+        "landingTools": "Tools",
+        "landingInstructor": "Instructor",
+        "pricing": "Pricing",
+        "certificateDesign": "Certificate design",
+        "certificateRules": "Certificate rules",
+        "aiTutor": "AI tutor"
+      },
+      "section_description": "This course was created from a template. Pull its changes when you want them — nothing changes on its own.",
+      "updates_title": "{count, plural, one {# update available} other {# updates available}}",
+      "deleted_title": "Template deleted",
+      "sheet_title": "Template updates",
+      "sheet_description": "From {title}, since {date}. Pick what to pull — nothing is removed from your course.",
+      "nothing_selected": "Nothing selected",
+      "loading": "Loading updates…",
+      "value": {
+        "free": "Free",
+        "sequential": "Sequential",
+        "no_price": "Free",
+        "pass_mark": "Pass mark {score}"
+      },
+      "template_label": "Template",
+      "yours_label": "Yours"
+    },
+    "home": {
+      "heading": "Or start from a template",
+      "description": "A complete course with lessons, exercises and settings. Copy it, then make it yours.",
+      "browse": "Browse all templates"
+    }
   }
 }

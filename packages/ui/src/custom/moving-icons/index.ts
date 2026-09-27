@@ -6,6 +6,7 @@ export { default as BotIcon } from './bot.svelte';
 export { default as BotOffIcon } from './bot-off.svelte';
 export { default as CertificateIcon } from './certificate.svelte';
 export { default as ChartColumnIcon } from './chart-column.svelte';
+export { default as ChevronsUpDownIcon } from './chevrons-up-down.svelte';
 export { default as CloseIcon } from './close.svelte';
 export { default as CommunityIcon } from './community.svelte';
 export { default as ContentIcon } from './content.svelte';

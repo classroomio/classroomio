@@ -34,7 +34,7 @@ export async function seedCourses({
       overview:
         '<p>"Getting Started with MVC. is designed for beginners and aspiring developers, this course provides a solid foundation for understanding the principles and practices behind MVC, a widely adopted design pattern in software development.</p>',
       groupId: mvcGroupId,
-      isTemplate: true,
+      isTemplate: false,
       bannerImage: '',
       slug: 'getting-started-with-mvc',
       metadata: {
@@ -61,7 +61,7 @@ export async function seedCourses({
         "By the end of this course, you'll be equipped to build interactive and responsive web applications, making you a proficient React developer ready for the demands of today's web development landscape.",
       overview: 'Welcome to this amazing course 🚀 ',
       groupId: reactGroupId,
-      isTemplate: true,
+      isTemplate: false,
       bannerImage:
         'https://images.unsplash.com/photo-1565843708714-52ecf69ab81f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MTE1NTV8MHwxfHNlYXJjaHwxOHx8cmVhY3QlMjBkZXZ8ZW58MHx8fHwxNzA3Nzk5NDMyfDA&ixlib=rb-4.0.3&q=80&w=1080',
       slug: 'modern-web-development',
@@ -89,7 +89,7 @@ export async function seedCourses({
         'Unlock the power of data with our "Data Science with Python and Pandas" course. Dive into Python programming fundamentals and then journey into the world of Pandas for efficient data manipulation and analysis. Learn essential data cleaning and preprocessing techniques before venturing into statistical analysis using Pandas. Cap off your exploration with data visualization using Matplotlib and Seaborn.',
       overview: 'Welcome to this amazing course 🚀 ',
       groupId: pandasGroupId,
-      isTemplate: true,
+      isTemplate: false,
       bannerImage:
         'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MTE1NTV8MHwxfHNlYXJjaHwxOHx8ZGF0YSUyMHNjaWVuY2V8ZW58MHx8fHwxNzA3Nzk5MzMwfDA&ixlib=rb-4.0.3&q=80&w=1080',
       slug: 'data-science-with-python-and-pandas-1702919269375',

@@ -7,14 +7,15 @@
   interface Props {
     variant: OrgLandingPageTheme;
     instructor: CourseInstructor;
+    logoUrl?: string;
     labels?: CourseLandingPageLabels;
   }
 
-  let { variant, instructor, labels }: Props = $props();
+  let { variant, instructor, logoUrl, labels }: Props = $props();
 
   const t = $derived(courseLandingTokens(variant));
 
-  const fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(instructor.name);
+  const fallbackAvatar = $derived(logoUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(instructor.name));
   const coursesLabel = $derived(
     instructor.coursesNo
       ? (labels?.instructorCoursesLabel?.(instructor.coursesNo) ?? `${instructor.coursesNo} courses on the platform`)
@@ -37,7 +38,7 @@
         <div class={t.instructorShell}>
           <div class={t.instructorAvatarWrap}>
             <img
-              src={instructor.imgUrl ?? fallbackAvatar}
+              src={instructor.imgUrl || fallbackAvatar}
               alt={instructor.name}
               class={t.instructorAvatar}
               loading="lazy"

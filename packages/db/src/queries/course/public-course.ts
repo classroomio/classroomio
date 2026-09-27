@@ -88,7 +88,7 @@ export async function getCourseRowBySlug(courseSlug: string): Promise<{
         status: schema.course.status
       })
       .from(schema.course)
-      .where(eq(schema.course.slug, courseSlug))
+      .where(and(eq(schema.course.slug, courseSlug), eq(schema.course.isTemplate, false)))
       .limit(1);
 
     return row ?? null;
@@ -122,7 +122,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         groupId: schema.course.groupId
       })
       .from(schema.course)
-      .where(eq(schema.course.slug, courseSlug))
+      .where(and(eq(schema.course.slug, courseSlug), eq(schema.course.isTemplate, false)))
       .limit(1);
 
     if (!courseRow) return null;
@@ -354,7 +354,7 @@ export async function getPublicCourseItem(
       })
       .from(schema.course)
       .leftJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .where(eq(schema.course.slug, courseSlug))
+      .where(and(eq(schema.course.slug, courseSlug), eq(schema.course.isTemplate, false)))
       .limit(1);
 
     if (!courseRow) return null;
@@ -509,7 +509,7 @@ export async function getPublicLessonMarkdownSource(
         status: schema.course.status
       })
       .from(schema.course)
-      .where(eq(schema.course.slug, courseSlug))
+      .where(and(eq(schema.course.slug, courseSlug), eq(schema.course.isTemplate, false)))
       .limit(1);
 
     if (!courseRow) return null;

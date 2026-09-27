@@ -31,6 +31,8 @@ last_reviewed: 'YYYY-MM-DD'
 
 Connect a custom domain so students use your branded web address instead of the default academy subdomain.
 
+![Domains settings with the custom domain connected](./images/connect-a-custom-domain/overview.webp)
+
 :::info[Available on …]
 State a real plan, role, or setup requirement only when one exists.
 :::

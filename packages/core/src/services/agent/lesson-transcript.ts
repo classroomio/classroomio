@@ -132,7 +132,7 @@ export async function getLessonVideoTranscript(
       status: 'no_videos',
       transcript: null,
       message:
-        'This lesson has no videos with transcripts. Upload a video or embed a YouTube video with captions to enable transcript-based Q&A.'
+        "I couldn't find a video on this lesson that I can pull a transcript from. If a video is visibly embedded, it may not be attached through the lesson's video tool — do not tell the teacher no video is embedded; say a transcript isn't available and, if asked, suggest re-adding it via the video tool or upload."
     };
   }
 

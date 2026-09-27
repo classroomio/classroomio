@@ -2925,7 +2925,7 @@
       "untitled_course": "Khóa học không có tiêu đề",
       "untitled_course_description": "Chi tiết khóa học sẽ được trợ lý điền vào sau khi thiết lập.",
       "template": {
-        "heading": "Hoặc bắt đầu từ một mẫu",
+        "heading": "Hoặc bắt đầu bằng một câu lệnh",
         "submit": "Tiếp tục",
         "skip": "Thay vào đó hãy trả lời trong cuộc trò chuyện",
         "submitted_summary": "Đã gửi câu trả lời",
@@ -3080,8 +3080,8 @@
     "afternoon_heading": "Chào buổi chiều",
     "evening_heading": "Chào buổi tối",
     "create_course": "Tạo khóa học",
-    "view_site": "Học viện mở",
-    "visit_site": "Học viện mở",
+    "view_site": "Học viện của bạn",
+    "visit_site": "Học viện của bạn",
     "current_lesson": "Hiện đang học",
     "your_progress": "Sự tiến bộ của bạn",
     "continue": "Tiếp tục",
@@ -3136,7 +3136,7 @@
     "login_activity_description": "Những ngày hoạt động tích cực nhất trong tuần (90 ngày qua)",
     "login_activity_no_data": "Chưa có hoạt động đăng nhập",
     "login_activity_logins": "lần đăng nhập",
-    "open_academy": "Học viện mở",
+    "open_academy": "Học viện của bạn",
     "explore_more_courses": "Khám phá thêm các khóa học",
     "view_more": "Xem thêm",
     "upcoming_sessions_heading": "Phiên trực tiếp"
@@ -3995,7 +3995,7 @@
       "notifications_tab": "Thông báo"
     },
     "subheadings": {
-      "view_site": "Học viện mở"
+      "view_site": "Học viện của bạn"
     },
     "auth": {
       "title": "Xác thực",
@@ -5668,6 +5668,181 @@
       "theme_light": "Sáng",
       "theme_dark": "Tối",
       "theme_system": "Hệ thống"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Tạo một khóa học mới",
+      "gallery": "Thư viện mẫu",
+      "yours": "Các khóa học của bạn",
+      "blank": "Khóa học trống",
+      "blank_subtitle": "Bắt đầu lại từ đầu"
+    },
+    "card": {
+      "yours": "Mẫu của bạn",
+      "used": "Mẫu của bạn · Đã sử dụng {date}",
+      "curated": "Mẫu tuyển chọn"
+    },
+    "gallery": {
+      "title": "Thư viện mẫu",
+      "subtitle": "Bắt đầu một khóa học từ một trong các mẫu của bạn hoặc một mẫu do ClassroomIO xây dựng.",
+      "search": "Tìm mẫu",
+      "scope_all": "Tất cả các mẫu",
+      "scope_org": "Mẫu của tôi",
+      "scope_global": "Lớp họcIO",
+      "empty_org": "Bạn chưa tạo bất kỳ mẫu nào. Lưu bất kỳ khóa học nào dưới dạng mẫu từ menu ⋯ của nó.",
+      "no_match": "Không có mẫu nào khớp với “{query}”.",
+      "empty_global": "Chưa có mẫu của ClassroomIO.",
+      "back": "Tất cả các khóa học"
+    },
+    "preview": {
+      "course_name": "Tên khóa học",
+      "use": "Sử dụng mẫu",
+      "open": "Mở mẫu",
+      "cancel": "Hủy bỏ",
+      "copying": "Đang sao chép {sections, plural, one {# phần} other {# phần}}, {lessons, plural, one {# bài học} other {# bài học}}…",
+      "created": "Khóa học được tạo từ {title}",
+      "shows_off": "Hiển thị",
+      "counts": "{sections} phần · {lessons} bài học · {exercises} bài tập",
+      "questions": "{count, plural, one {# câu hỏi} other {# câu hỏi}}",
+      "loading": "Đang tải mẫu…",
+      "settings": "Cài đặt",
+      "certificate": "Đã bật chứng chỉ",
+      "deadline": "Hạn chót {date}",
+      "threshold": "Hoàn thành {percent}% khóa học",
+      "final_exercise": "Vượt qua “{title}” ở mức {percent}%",
+      "sequential": "Bài học mở khóa theo thứ tự",
+      "grading": "Gia sư chấm bài nộp",
+      "comments_off": "Tính năng bình luận bài học đã tắt",
+      "lesson_download": "Người học có thể tải bài học",
+      "self_enrollment": "Người học có thể tự mình tham gia",
+      "ai_tutor": "Gia sư AI đang bật",
+      "compliance_retake": "Thi lại mỗi {months, plural, one {# tháng} other {# tháng}}",
+      "compliance_mandatory": "bắt buộc"
+    },
+    "menu": {
+      "open": "Mở",
+      "duplicate": "trùng lặp",
+      "delete": "Xóa",
+      "save": "Lưu dưới dạng mẫu…",
+      "create_course": "Tạo khóa học từ mẫu",
+      "duplicated": "Mẫu bị trùng lặp",
+      "deleted": "Đã xóa mẫu"
+    },
+    "save": {
+      "title": "Lưu dưới dạng mẫu",
+      "copy": "Lưu một bản sao làm mẫu",
+      "copy_description": "Khóa học vẫn như cũ.",
+      "convert": "Chuyển đổi khóa học này",
+      "convert_description": "Khóa học trở thành một khuôn mẫu. Nó không thể được xuất bản hoặc có sinh viên.",
+      "has_students": "Có {count, plural, one {# học sinh} other {# học sinh}} — thay vào đó hãy lưu một bản sao.",
+      "unpublish": "Chuyển đổi chưa xuất bản khóa học này.",
+      "name": "Tên mẫu",
+      "save_button": "Lưu mẫu",
+      "convert_button": "Chuyển đổi sang mẫu",
+      "saved": "Đã lưu mẫu",
+      "converted": "Khóa học được chuyển đổi thành mẫu",
+      "limit_title": "Kế hoạch của bạn bao gồm {count, plural, one {# mẫu} other {# mẫu}}",
+      "limit_body": "Bạn đã có {used, plural, one {{title}} other {# mẫu}}. Hãy nâng cấp để có thêm mẫu hoặc xóa mẫu bạn có.",
+      "upgrade": "Nâng cấp",
+      "manage": "Quản lý mẫu",
+      "view_templates": "Xem mẫu"
+    },
+    "empty": {
+      "title": "Chưa có khóa học nào",
+      "description": "Chọn một mẫu để xem khóa học ClassroomIO tuyệt vời trông như thế nào hoặc bắt đầu từ một khóa học trống.",
+      "browse": "Duyệt mẫu"
+    },
+    "editor": {
+      "badge": "mẫu"
+    },
+    "sync": {
+      "alert_title": "Mẫu có {count, plural, one {# cập nhật} other {# cập nhật}}",
+      "alert_body": "{title} đã thay đổi kể từ lần cuối bạn truy cập vào {date}.",
+      "review_in_settings": "Xem lại trong cài đặt",
+      "section_title": "mẫu",
+      "last_pulled": "Lần kéo cuối cùng là {date}",
+      "review": "Xem lại thông tin cập nhật",
+      "up_to_date": "Cập nhật với mẫu.",
+      "deleted": "{title} đã bị xóa. Khóa học này giữ lại tất cả nội dung của nó; không còn gì để kéo nữa.",
+      "deleted_unknown": "Mẫu này đã bị xóa. Khóa học này giữ lại tất cả nội dung của nó; không còn gì để kéo nữa.",
+      "available_detail": "{count, plural, one {# bản cập nhật có sẵn} other {# bản cập nhật có sẵn}} — {list}.",
+      "join": "{rest} và {last}",
+      "sections_count": "{count, plural, one {# phần} other {# phần}}",
+      "settings_count": "{count, plural, one {# cài đặt} other {# cài đặt}}",
+      "content": "Nội dung",
+      "settings": "Cài đặt",
+      "select_all": "Chọn tất cả",
+      "new": "Mới",
+      "updated": "Đã cập nhật",
+      "locked": "{count, plural, one {# bài nộp — không thể cập nhật} other {# bài nộp — không thể cập nhật}}",
+      "edited_locally": "Bạn đã chỉnh sửa nội dung này vào {date} — thao tác kéo sẽ thay thế các thay đổi của bạn.",
+      "removed_locally": "Bạn đã xóa nội dung này khỏi khóa học của mình.",
+      "also_adds": "Đồng thời thêm {kind}: {title}",
+      "template_value": "Mẫu: {value}",
+      "yours_value": "Của bạn: {value}",
+      "yes": "Có",
+      "no": "Không",
+      "empty_value": "không có",
+      "custom_value": "tùy chỉnh",
+      "selected": "{count, plural, one {# đã chọn} other {# đã chọn}}",
+      "pull": "Kéo {count, plural, one {# thay đổi} other {# thay đổi}}",
+      "pulled": "Đã kéo {count, plural, one {# thay đổi} other {# thay đổi}} từ {title}",
+      "kind": {
+        "section": "Phần",
+        "lesson": "Bài học",
+        "exercise": "tập thể dục"
+      },
+      "detail": {
+        "title": "Tiêu đề",
+        "content": "Nội dung",
+        "locales": "đã thêm {locales}"
+      },
+      "setting": {
+        "description": "Mô tả",
+        "bannerImage": "Ảnh bìa",
+        "welcomeEmail": "Email chào mừng",
+        "completionDeadline": "Thời hạn hoàn thành",
+        "completionThreshold": "Ngưỡng hoàn thành",
+        "finalExercise": "Bài tập cuối cùng",
+        "lessonTabsOrder": "Tab bài học",
+        "contentGrouping": "Nhóm nội dung",
+        "progression": "Tiến triển",
+        "comments": "Bình luận bài học",
+        "selfEnrollment": "Tự ghi danh",
+        "markdownExport": "Xuất khẩu giảm giá",
+        "lessonDownload": "Tải bài học",
+        "landingRequirements": "Yêu cầu hạ cánh",
+        "landingDescription": "Mô tả đích",
+        "landingGoals": "Mục tiêu hạ cánh",
+        "landingSkills": "Kỹ năng",
+        "landingTools": "Công cụ",
+        "landingInstructor": "Người hướng dẫn",
+        "pricing": "Định giá",
+        "certificateDesign": "Thiết kế chứng chỉ",
+        "certificateRules": "Quy tắc chứng chỉ",
+        "aiTutor": "Gia sư AI"
+      },
+      "section_description": "Khóa học này được tạo từ một mẫu. Kéo các thay đổi khi bạn muốn — không có gì tự thay đổi.",
+      "updates_title": "{count, plural, one {# cập nhật có sẵn} other {# cập nhật có sẵn}}",
+      "deleted_title": "Đã xóa mẫu",
+      "sheet_title": "Cập nhật mẫu",
+      "sheet_description": "Từ {title}, kể từ {date}. Chọn những gì cần kéo — không có gì bị xóa khỏi khóa học của bạn.",
+      "nothing_selected": "Chưa chọn gì",
+      "loading": "Đang tải cập nhật…",
+      "value": {
+        "free": "Tự do",
+        "sequential": "Tuần tự",
+        "no_price": "Miễn phí",
+        "pass_mark": "Đạt điểm {score}"
+      },
+      "template_label": "Mẫu",
+      "yours_label": "Của bạn"
+    },
+    "home": {
+      "heading": "Hoặc bắt đầu từ một mẫu",
+      "description": "Một khóa học hoàn chỉnh với các bài học, bài tập và cài đặt. Sao chép nó, sau đó biến nó thành của bạn.",
+      "browse": "Duyệt qua tất cả các mẫu"
     }
   }
 }

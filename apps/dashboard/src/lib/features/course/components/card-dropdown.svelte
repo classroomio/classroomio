@@ -13,6 +13,7 @@
     slug?: string;
     /** Compact menu for LMS course cards */
     lmsPublicQuickOnly?: boolean;
+    studentCount?: number;
   }
 
   let {
@@ -22,7 +23,8 @@
     isPublished = false,
     courseType = null,
     slug = '',
-    lmsPublicQuickOnly = false
+    lmsPublicQuickOnly = false,
+    studentCount = 0
   }: Props = $props();
 
   const showPublicCourseLinks = $derived(isPublished && courseType === 'PUBLIC' && slug.trim().length > 0);
@@ -42,7 +44,16 @@
       </IconButton>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content align="end">
-      <CourseContextMenuContent {id} {title} {description} {isPublished} {courseType} {slug} {lmsPublicQuickOnly} />
+      <CourseContextMenuContent
+        {id}
+        {title}
+        {description}
+        {isPublished}
+        {courseType}
+        {slug}
+        {lmsPublicQuickOnly}
+        {studentCount}
+      />
     </DropdownMenu.Content>
   </DropdownMenu.Root>
 {/if}

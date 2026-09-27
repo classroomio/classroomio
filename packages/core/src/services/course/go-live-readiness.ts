@@ -284,6 +284,10 @@ export async function publishCourseWhenReady(courseId: string) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
+  if (course.isTemplate) {
+    throw new AppError('Templates cannot be published', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   const slug = await ensureCourseSlug(courseId, course.title);
 
   // Publishing seals the snapshot students were served, so both writes share one transaction.
