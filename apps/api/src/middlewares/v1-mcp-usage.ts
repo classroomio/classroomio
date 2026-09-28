@@ -77,8 +77,9 @@ export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
     return next();
   }
 
-  // Every v1 tool is GET→read or write→write, so the category is known before routing.
-  const category: TAutomationUsageCategory = c.req.method === 'GET' ? 'read' : 'write';
+  // GET and HEAD are reads (as in publicApiScopesMiddleware); everything else is a write, known before routing.
+  const isRead = c.req.method === 'GET' || c.req.method === 'HEAD';
+  const category: TAutomationUsageCategory = isRead ? 'read' : 'write';
 
   let reservationId: string;
   try {
