@@ -7,9 +7,6 @@ import { isAllowedHref } from '../shared';
 import { ZLearningPathCertificateConfig } from './certificate';
 import { ZLandingPage } from './landing-page';
 
-export const LEARNING_PATH_DIFFICULTY = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const;
-export type TLearningPathDifficultyValue = (typeof LEARNING_PATH_DIFFICULTY)[number];
-
 export const LEARNING_PATH_MEMBER_STATUS = ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'] as const;
 export type TLearningPathMemberStatusValue = (typeof LEARNING_PATH_MEMBER_STATUS)[number];
 
@@ -38,8 +35,6 @@ export const ZUpdateLearningPath = z.object({
     .optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   isPublished: z.boolean().optional(),
-  difficulty: z.enum(LEARNING_PATH_DIFFICULTY).nullable().optional(),
-  estimatedDurationMinutes: z.number().int().min(0).nullable().optional(),
   cost: z.number().int().min(0).optional(),
   currency: z.enum(['NGN', 'USD']).optional(),
   sequentialUnlock: z.boolean().optional(),
@@ -66,11 +61,7 @@ export const ZReorderLearningPathCourses = z.object({
 });
 export type TReorderLearningPathCourses = z.infer<typeof ZReorderLearningPathCourses>;
 
-export const ZEnrollInLearningPath = z
-  .object({
-    paymentReference: z.string().optional()
-  })
-  .optional();
+export const ZEnrollInLearningPath = z.object({}).optional();
 export type TEnrollInLearningPath = z.infer<typeof ZEnrollInLearningPath>;
 
 export const ZPathMembersQuery = z.object({
@@ -81,6 +72,20 @@ export const ZPathMembersQuery = z.object({
   search: z.string().optional()
 });
 export type TPathMembersQuery = z.infer<typeof ZPathMembersQuery>;
+
+/**
+ * Member adds above this size run on the queue instead of in the request.
+ * Mirrors `AUDIENCE_BULK_SYNC_MAX` for audience lifecycle actions.
+ */
+export const LEARNING_PATH_BULK_SYNC_MAX = 50;
+
+export const ZGetLearningPathsQuery = z.object({
+  organizationId: z.string().uuid(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().optional()
+});
+export type TGetLearningPathsQuery = z.infer<typeof ZGetLearningPathsQuery>;
 
 export const ZAddLearningPathMembers = z.object({
   members: z
@@ -105,6 +110,19 @@ export const ZPublicLearningPathQuery = z.object({
 });
 export type TPublicLearningPathQuery = z.infer<typeof ZPublicLearningPathQuery>;
 
+export const ZPublicLearningPathsQuery = z.object({
+  organizationId: z.string().uuid(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().optional()
+});
+export type TPublicLearningPathsQuery = z.infer<typeof ZPublicLearningPathsQuery>;
+
+export const ZEnrolledLearningPathsQuery = z.object({
+  organizationId: z.string().uuid().optional()
+});
+export type TEnrolledLearningPathsQuery = z.infer<typeof ZEnrolledLearningPathsQuery>;
+
 export const ZVerifyLearningPathCertificateParam = z.object({
   certificateId: z.string().min(1)
 });
@@ -126,6 +144,13 @@ export const ZLearningPathMemberParam = z.object({
   memberId: z.string().min(1)
 });
 export type TLearningPathMemberParam = z.infer<typeof ZLearningPathMemberParam>;
+
+export const ZUpdateLearningPathMemberRole = z.object({
+  roleId: z.union([z.literal(ROLE.STUDENT), z.literal(ROLE.TUTOR)], {
+    error: 'roleId must be STUDENT or TUTOR'
+  })
+});
+export type TUpdateLearningPathMemberRole = z.infer<typeof ZUpdateLearningPathMemberRole>;
 
 export const ZLearningPathCertificateDownloadRequest = z.object({
   studentName: z.string().max(255).optional(),

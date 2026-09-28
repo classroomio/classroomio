@@ -50,7 +50,8 @@ export const JOB_NAMES = {
     run: 'run'
   },
   audience: {
-    bulkAction: 'bulk-action'
+    bulkAction: 'bulk-action',
+    pathBulkEnroll: 'path-bulk-enroll'
   },
   maintenance: {
     retentionCompact: 'retention-compact',

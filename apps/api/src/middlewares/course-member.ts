@@ -36,8 +36,8 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const { isMember, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, user.id);
-    if (isMember) {
+    const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, user.id);
+    if (hasLiveGrant || isTeamMemberOrAdmin) {
       if (!isTeamMemberOrAdmin) {
         await assertCourseNotLockedForStudent(courseId, user.id);
       }

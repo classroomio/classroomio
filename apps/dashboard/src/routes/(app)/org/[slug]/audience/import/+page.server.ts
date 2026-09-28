@@ -29,13 +29,18 @@ export const load = async ({ parent, cookies }) => {
       classroomio.cohort.$get({ query: { organizationId: orgId } }, getApiHeaders(cookies, orgId))
     ),
     safeServerApi<ListPathsSuccess>(() =>
-      classroomio['learning-path'].$get({ query: { organizationId: orgId } }, getApiHeaders(cookies, orgId))
+      classroomio['learning-path'].$get(
+        { query: { organizationId: orgId, page: 1, limit: 100 } },
+        getApiHeaders(cookies, orgId)
+      )
     )
   ]);
+
+  const pathsBody = pathsResult.ok ? pathsResult.body : null;
 
   return {
     courses: coursesResult.ok ? coursesResult.body.data : [],
     cohorts: cohortsResult.ok ? cohortsResult.body.data : [],
-    paths: pathsResult.ok ? pathsResult.body.data : []
+    paths: pathsBody && Array.isArray(pathsBody.data) ? pathsBody.data : []
   };
 };

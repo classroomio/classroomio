@@ -16,12 +16,14 @@ import type { TGroupmember } from '@cio/db/types';
 import type { CourseMemberWithProfile } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
+import { getCourseById, getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
+import { revokeGrantsForGroupmember } from '@cio/db/queries/learning-path';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { recordDirectCourseGrant } from './enrollment-grants';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 
@@ -123,7 +125,24 @@ export async function addMember(
       throw new AppError('Either profileId or email must be provided', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
+    if (data.roleId === ROLE.STUDENT) {
+      const [courseRow] = await getCourseById(courseId);
+
+      if (courseRow?.requiresLearningPath) {
+        throw new AppError(
+          'This course can only be accessed through a learning path',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+    }
+
     const addedMember = await addCourseMember(courseId, data);
+
+    await recordDirectCourseGrant(
+      { groupmemberId: addedMember.id, courseId, profileId: addedMember.profileId },
+      { source: 'ADMIN_ADD' }
+    );
 
     if (data.roleId === ROLE.STUDENT) {
       const statsOrgId = await getOrgIdByCourseId(courseId);
@@ -265,6 +284,18 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
     }
 
+    if (members.some((member) => member.roleId === ROLE.STUDENT)) {
+      const [courseRow] = await getCourseById(courseId);
+
+      if (courseRow?.requiresLearningPath) {
+        throw new AppError(
+          'This course can only be accessed through a learning path',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+    }
+
     const courseName = courseOrgData.courseTitle || '';
     const orgName = courseOrgData.orgName || 'ClassroomIO';
     const orgSiteName = courseOrgData.orgSiteName || '';
@@ -282,6 +313,11 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       for (const member of members) {
         const addedMember = await addCourseMember(courseId, member);
         addedMembers.push(addedMember);
+
+        await recordDirectCourseGrant(
+          { groupmemberId: addedMember.id, courseId, profileId: addedMember.profileId },
+          { source: 'ADMIN_ADD' }
+        );
 
         if (member.roleId === ROLE.STUDENT) {
           addedStudentMember = true;
@@ -414,6 +450,8 @@ export async function deleteMember(courseId: string, memberId: string) {
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
+
+    await revokeGrantsForGroupmember(deleted.id);
 
     if (deleted.roleId === ROLE.STUDENT) {
       const statsOrgId = await getOrgIdByCourseId(courseId);

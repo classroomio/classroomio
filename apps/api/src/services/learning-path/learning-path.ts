@@ -2,7 +2,11 @@ import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { containsDisallowedHrefs } from '@cio/utils/validation/shared';
 import { db } from '@cio/db/drizzle';
-import type { TCreateLearningPathInput, TUpdateLearningPath } from '@cio/utils/validation/learning-path';
+import type {
+  TCreateLearningPathInput,
+  TPublicLearningPathsQuery,
+  TUpdateLearningPath
+} from '@cio/utils/validation/learning-path';
 import {
   countIssuedCertificates,
   createLearningPath,
@@ -15,12 +19,15 @@ import {
   getMemberByPathAndProfile,
   listLearningPathCourses,
   listLearningPaths,
+  listPublicLearningPaths,
+  revokeLearningPathGrantsForPath,
   updateLearningPath,
   type TLearningPathCourseDetail,
-  type TLearningPathWithCounts
+  type TPaginatedLearningPaths
 } from '@cio/db/queries/learning-path';
 import type { TLearningPath } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import { QUEUE_NAMES, getQueue, getQueueJobEnvelope, type JobEnvelope } from '@cio/jobs';
 
 export interface TLearningPathDetail extends TLearningPath {
   courses: TLearningPathCourseDetail[];
@@ -87,8 +94,9 @@ export async function assertCanManageLearningPath(
 export async function listOrgLearningPaths(
   organizationId: string,
   userId: string,
-  orgRoles?: Record<string, number>
-): Promise<TLearningPathWithCounts[]> {
+  orgRoles?: Record<string, number>,
+  query?: { page?: number; limit?: number; search?: string }
+): Promise<TPaginatedLearningPaths> {
   try {
     const roleId = orgRoles?.[organizationId];
     if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) {
@@ -96,10 +104,19 @@ export async function listOrgLearningPaths(
     }
 
     if (roleId === ROLE.ADMIN) {
-      return await listLearningPaths(organizationId);
+      return await listLearningPaths(organizationId, {
+        page: query?.page,
+        limit: query?.limit,
+        search: query?.search
+      });
     }
 
-    return await listLearningPaths(organizationId, { tutorProfileId: userId });
+    return await listLearningPaths(organizationId, {
+      tutorProfileId: userId,
+      page: query?.page,
+      limit: query?.limit,
+      search: query?.search
+    });
   } catch (error) {
     throwAsInternal(error, 'Failed to list learning paths');
   }
@@ -187,7 +204,8 @@ export async function getLearningPathDetail(
       }
 
       const courses = await listLearningPathCourses(path.id, tx);
-      const certificatesIssued = await countIssuedCertificates(path.id, tx);
+      const isTeam = roleId === ROLE.ADMIN || (roleId === ROLE.TUTOR && (await isTutorAssigned(path, userId, tx)));
+      const certificatesIssued = isTeam ? await countIssuedCertificates(path.id, tx) : 0;
 
       return {
         ...path,
@@ -198,6 +216,36 @@ export async function getLearningPathDetail(
   } catch (error) {
     throwAsInternal(error, 'Failed to get learning path detail');
   }
+}
+
+/**
+ * Status of a queued bulk enrollment, scoped to the path's organization so an
+ * admin of one org cannot read another org's run by guessing a job id.
+ */
+export async function getBulkPathEnrollmentStatus(
+  pathId: string,
+  jobId: string,
+  userId: string,
+  orgRoles?: Record<string, number>,
+  pollCount = 0
+): Promise<JobEnvelope> {
+  const path = await resolveLearningPath(pathId);
+  await assertCanManageLearningPath(path, userId, orgRoles);
+
+  const job = await getQueue(QUEUE_NAMES.audience).getJob(jobId);
+  const payloadOrgId = (job?.data as { organizationId?: string } | undefined)?.organizationId;
+
+  if (!job || payloadOrgId !== path.organizationId) {
+    throw new AppError('Bulk enrollment not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const envelope = await getQueueJobEnvelope(QUEUE_NAMES.audience, jobId, 'path-bulk-enroll', pollCount);
+
+  if (!envelope) {
+    throw new AppError('Bulk enrollment not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  return envelope;
 }
 
 /**
@@ -241,7 +289,10 @@ export async function updateLearningPathService(
 
 /**
  * Deletes a learning path.
- * Preserves course rows, group members, and student progress.
+ * Preserves course rows, group members, and student progress. Revokes the
+ * path's LEARNING_PATH grants in the same transaction so no access derived
+ * from the deleted container can stay live; learners keeping another live
+ * grant (independent, cohort, …) are unaffected.
  */
 export async function deleteLearningPathService(
   pathId: string,
@@ -262,6 +313,8 @@ export async function deleteLearningPathService(
         throw new AppError('Learning path not found', ErrorCodes.LEARNING_PATH_NOT_FOUND, 404);
       }
 
+      await revokeLearningPathGrantsForPath(path.id, tx);
+
       return deleted;
     });
   } catch (error) {
@@ -270,10 +323,29 @@ export async function deleteLearningPathService(
 }
 
 /**
+ * Lists published learning paths for an organization's public catalog.
+ * Unauthenticated-safe projection (see listPublicLearningPaths).
+ */
+export async function listPublicLearningPathsService(organizationId: string, query: TPublicLearningPathsQuery) {
+  try {
+    return await listPublicLearningPaths(
+      organizationId,
+      { page: query.page, limit: query.limit, search: query.search },
+      db
+    );
+  } catch (error) {
+    throwAsInternal(error, 'Failed to list public learning paths');
+  }
+}
+
+/**
  * Loads a public learning path by organizationId and slug for org-site visitors.
  * Only published paths are visible publicly.
  */
-export async function getPublicLearningPathBySlug(organizationId: string, slug: string): Promise<TLearningPathDetail> {
+export async function getPublicLearningPathBySlug(
+  organizationId: string,
+  slug: string
+): Promise<Omit<TLearningPathDetail, 'welcomeEmailMessage'>> {
   try {
     return await db.transaction(async (tx) => {
       const path = await getLearningPathBySlug(organizationId, slug, tx);
@@ -285,8 +357,12 @@ export async function getPublicLearningPathBySlug(organizationId: string, slug: 
       const courses = await listLearningPathCourses(path.id, tx);
       const certificatesIssued = await countIssuedCertificates(path.id, tx);
 
+      // welcomeEmailMessage is post-enrollment content: never serve it to
+      // unauthenticated visitors.
+      const { welcomeEmailMessage: _welcomeEmailMessage, ...publicPath } = path;
+
       return {
-        ...path,
+        ...publicPath,
         courses,
         certificatesIssued
       };

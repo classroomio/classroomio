@@ -1,17 +1,31 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   AddPathMembersRequest,
+  BulkEnrollOutcome,
+  GetBulkEnrollStatusRequest,
   GetPathMemberDetailRequest,
   LearningPathMemberItem,
   ListPathMembersRequest,
   PathMemberDetail,
   PathMembersListOptions,
   PathMembersPagination,
-  RemovePathMemberRequest
+  RemovePathMemberRequest,
+  UpdatePathMemberRoleRequest
 } from '../utils/types';
 import { ROLE } from '@cio/utils/constants';
 import { snackbar } from '$features/ui/snackbar/store';
 import { toPathMembersRequestQuery } from '../utils/path-people-utils';
+
+/** True when the add-members call was queued for background processing. */
+export function isQueuedAddMembersResult(data: unknown): data is { mode: 'queued'; jobId: string; requested: number } {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'mode' in data &&
+    (data as { mode: unknown }).mode === 'queued' &&
+    typeof (data as { jobId: unknown }).jobId === 'string'
+  );
+}
 
 class PathMembersApi extends BaseApiWithErrors {
   members = $state<LearningPathMemberItem[]>([]);
@@ -48,9 +62,9 @@ class PathMembersApi extends BaseApiWithErrors {
       logContext: 'listing path members',
       onSuccess: (result) => {
         if (seq !== this.membersRequestSeq) return;
-        this.members = result.data.data;
-        this.membersPagination = result.data.pagination;
-        this.membersEnrolledTotal = result.data.enrolledTotal;
+        this.members = result.data;
+        this.membersPagination = result.pagination;
+        this.membersEnrolledTotal = result.enrolledTotal;
       }
     });
     if (seq === this.membersRequestSeq) {
@@ -71,12 +85,34 @@ class PathMembersApi extends BaseApiWithErrors {
           json: { members }
         }),
       logContext: 'adding path members',
-      onSuccess: () => {
+      onSuccess: (result) => {
+        // Queued bulk adds resolve their toast when polling finishes.
+        if (isQueuedAddMembersResult(result.data)) {
+          return;
+        }
         snackbar.success(successKey);
       }
     });
 
     return res;
+  }
+
+  async getBulkEnrollStatus(pathId: string, jobId: string, pollCount = 0) {
+    let envelope: GetBulkEnrollStatusSuccess['data'] | null = null;
+
+    await this.execute<GetBulkEnrollStatusRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['bulk-enrollment'][':jobId'].$get({
+          param: { pathId, jobId },
+          query: { pollCount }
+        }),
+      logContext: 'reading bulk enrollment status',
+      onSuccess: (result) => {
+        envelope = result.data;
+      }
+    });
+
+    return envelope;
   }
 
   async removeMember(pathId: string, memberId: string, options: { isStudent?: boolean } = {}) {
@@ -90,6 +126,22 @@ class PathMembersApi extends BaseApiWithErrors {
       onSuccess: () => {
         this.members = this.members.filter((m) => m.id !== memberId);
         snackbar.success(isStudent ? 'learningPath.snackbar.member_removed' : 'learningPath.snackbar.tutor_removed');
+      }
+    });
+
+    return res;
+  }
+
+  async updateMemberRole(pathId: string, memberId: string, roleId: number) {
+    const res = await this.execute<UpdatePathMemberRoleRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['members'][':memberId'].$patch({
+          param: { pathId, memberId },
+          json: { roleId }
+        }),
+      logContext: 'updating path member role',
+      onSuccess: () => {
+        snackbar.success('learningPath.snackbar.member_role_updated');
       }
     });
 

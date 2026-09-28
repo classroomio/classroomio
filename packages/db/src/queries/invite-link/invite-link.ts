@@ -153,6 +153,7 @@ export type TInviteLinkWithContext = {
     description: string | null;
     coverImage: string | null;
     slug: string | null;
+    publicId: string | null;
     status: string;
     isPublished: boolean;
     welcomeEmailMessage: string | null;
@@ -194,6 +195,7 @@ export async function getInviteLinkByTokenHash(
         learningPathDescription: schema.learningPath.description,
         learningPathCoverImage: schema.learningPath.coverImage,
         learningPathSlug: schema.learningPath.slug,
+        learningPathPublicId: schema.learningPath.publicId,
         learningPathStatus: schema.learningPath.status,
         learningPathIsPublished: schema.learningPath.isPublished,
         learningPathWelcomeEmailMessage: schema.learningPath.welcomeEmailMessage
@@ -239,6 +241,7 @@ export async function getInviteLinkByTokenHash(
             description: row.learningPathDescription ?? null,
             coverImage: row.learningPathCoverImage ?? null,
             slug: row.learningPathSlug ?? null,
+            publicId: row.learningPathPublicId ?? null,
             status: row.learningPathStatus ?? '',
             isPublished: !!row.learningPathIsPublished,
             welcomeEmailMessage: row.learningPathWelcomeEmailMessage ?? null

@@ -680,13 +680,25 @@ class OrgApi extends BaseApiWithErrors {
       logContext: 'assigning audience to courses',
       onSuccess: (response) => {
         const d = response.data;
-        snackbar.success(
-          t.get('audience.assign.snackbar_success', {
-            assigned: d.assigned,
-            alreadyEnrolled: d.alreadyEnrolled,
-            emailsSent: d.emailsSent
-          })
-        );
+        const skippedNames = d.skippedPathGatedCourseNames ?? [];
+        if (skippedNames.length > 0) {
+          snackbar.info(
+            t.get('audience.assign.snackbar_partial', {
+              assigned: d.assigned,
+              alreadyEnrolled: d.alreadyEnrolled,
+              emailsSent: d.emailsSent,
+              names: skippedNames.join(', ')
+            })
+          );
+        } else {
+          snackbar.success(
+            t.get('audience.assign.snackbar_success', {
+              assigned: d.assigned,
+              alreadyEnrolled: d.alreadyEnrolled,
+              emailsSent: d.emailsSent
+            })
+          );
+        }
         this.success = true;
       },
       onError: (result) => {

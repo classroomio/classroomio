@@ -1086,8 +1086,6 @@ interface PathSeed {
   description: string;
   coverImage: string | null;
   isPublished: boolean;
-  difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
-  estimatedDurationMinutes: number;
   sequentialUnlock: boolean;
   courseOrderSetDaysAgo: number | null;
   certificateTitle: string | null;
@@ -1231,8 +1229,6 @@ const PATH_SEEDS: PathSeed[] = [
     coverImage:
       'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
     isPublished: true,
-    difficulty: 'INTERMEDIATE',
-    estimatedDurationMinutes: 720,
     sequentialUnlock: true,
     courseOrderSetDaysAgo: 130,
     certificateTitle: 'Full-Stack Developer Bootcamp Certificate',
@@ -1249,8 +1245,6 @@ const PATH_SEEDS: PathSeed[] = [
     coverImage:
       'https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
     isPublished: true,
-    difficulty: 'INTERMEDIATE',
-    estimatedDurationMinutes: 360,
     sequentialUnlock: false,
     courseOrderSetDaysAgo: 40,
     certificateTitle: 'Frontend & Data Science Skills Certificate',
@@ -1266,8 +1260,6 @@ const PATH_SEEDS: PathSeed[] = [
       'A work-in-progress path covering MVC architecture and modern React. Still a draft — it is not visible to learners until it is published.',
     coverImage: null,
     isPublished: false,
-    difficulty: 'BEGINNER',
-    estimatedDurationMinutes: 240,
     sequentialUnlock: true,
     courseOrderSetDaysAgo: null,
     certificateTitle: null,
@@ -1283,8 +1275,6 @@ const PATH_SEEDS: PathSeed[] = [
       'A two-course sprint from React interfaces to Pandas analysis. Every enrolled learner finishes — the funnel shows certificates with no drop-off.',
     coverImage: null,
     isPublished: true,
-    difficulty: 'INTERMEDIATE',
-    estimatedDurationMinutes: 180,
     sequentialUnlock: true,
     courseOrderSetDaysAgo: 15,
     certificateTitle: 'React to Pandas Sprint Certificate',
@@ -1300,8 +1290,6 @@ const PATH_SEEDS: PathSeed[] = [
       'Six courses from MVC fundamentals to tested TypeScript. The funnel tableau: a drop after course 2, the biggest drop after course 4, and certificates with a final drop on the last course.',
     coverImage: null,
     isPublished: true,
-    difficulty: 'ADVANCED',
-    estimatedDurationMinutes: 720,
     sequentialUnlock: true,
     courseOrderSetDaysAgo: 10,
     certificateTitle: 'Full-Stack Professional Certificate',
@@ -1401,8 +1389,6 @@ function buildPathInsertValues(pathSeed: PathSeed, testOrgId: string, now: Date)
     description: pathSeed.description,
     coverImage: pathSeed.coverImage,
     isPublished: pathSeed.isPublished,
-    difficulty: pathSeed.difficulty,
-    estimatedDurationMinutes: pathSeed.estimatedDurationMinutes,
     cost: 0,
     currency: 'USD',
     sequentialUnlock: pathSeed.sequentialUnlock,
@@ -2675,8 +2661,6 @@ async function seedMinimalPath(plan: MinimalPathPlan, now: Date) {
       description: plan.description,
       coverImage: null,
       isPublished: true,
-      difficulty: 'BEGINNER' as const,
-      estimatedDurationMinutes: 120,
       cost: 0,
       currency: 'USD',
       sequentialUnlock: plan.sequentialUnlock,

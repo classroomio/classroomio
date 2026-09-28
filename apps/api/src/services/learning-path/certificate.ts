@@ -10,6 +10,7 @@ import {
 } from '@api/utils/certificate';
 
 import { assertCanManageLearningPath, resolveLearningPath } from './learning-path';
+import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 
 export type TIssuedLearningPathCertificate = {
   certificateId: string;
@@ -57,6 +58,12 @@ export async function assertLearningPathCertificateDownloadAllowed(
 
   if (!member || member.removedAt || member.status !== 'COMPLETED' || !path.certificate?.isDownloadable) {
     throw new AppError('Certificate not available', ErrorCodes.UNAUTHORIZED, 403);
+  }
+
+  const certificatesEnabled = await orgHasCertificatesEnabled(path.organizationId);
+
+  if (!certificatesEnabled) {
+    throw new AppError('Certificates are not available on your plan', ErrorCodes.UNAUTHORIZED, 403);
   }
 
   const issued = await getLearningPathCertificate(member.id);

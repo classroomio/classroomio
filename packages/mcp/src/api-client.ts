@@ -20,6 +20,14 @@ import type {
   TExerciseUpdate
 } from '@cio/utils/validation/exercise';
 
+import type {
+  TPublicApiCreateLearningPath,
+  TPublicApiLearningPathCourseParam,
+  TPublicApiLearningPathParam,
+  TPublicApiLearningPathsQuery,
+  TPublicApiReorderPathCourses,
+  TPublicApiUpdateLearningPath
+} from '@cio/utils/validation/public-api';
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 
@@ -179,10 +187,83 @@ export class ClassroomIoApiClient {
     });
   }
 
+  async listLearningPaths(query: Partial<TPublicApiLearningPathsQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page !== undefined) searchParams.set('page', String(query.page));
+    if (query.limit !== undefined) searchParams.set('limit', String(query.limit));
+    if (query.search) searchParams.set('search', query.search);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.request(`/v1/learning-paths${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async getLearningPathDetail(pathId: TPublicApiLearningPathParam['pathId']) {
+    return this.request(`/v1/learning-paths/${pathId}`, {
+      method: 'GET'
+    });
+  }
+
+  async createLearningPath(payload: TPublicApiCreateLearningPath) {
+    return this.request('/v1/learning-paths', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async addCoursesToLearningPath(
+    pathId: TPublicApiLearningPathParam['pathId'],
+    payload: { courseId?: string; courseIds?: string[] }
+  ) {
+    return this.request(`/v1/learning-paths/${pathId}/courses`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLearningPath(pathId: TPublicApiLearningPathParam['pathId'], payload: TPublicApiUpdateLearningPath) {
+    return this.request(`/v1/learning-paths/${pathId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async reorderLearningPathCourses(
+    pathId: TPublicApiLearningPathParam['pathId'],
+    payload: TPublicApiReorderPathCourses
+  ) {
+    return this.request(`/v1/learning-paths/${pathId}/courses/order`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async listLearningPathStudents(pathId: TPublicApiLearningPathParam['pathId']) {
+    return this.request(`/v1/learning-paths/${pathId}/students`, {
+      method: 'GET'
+    });
+  }
+
+  async removeCourseFromLearningPath(
+    pathId: TPublicApiLearningPathCourseParam['pathId'],
+    courseId: TPublicApiLearningPathCourseParam['courseId']
+  ) {
+    return this.request(`/v1/learning-paths/${pathId}/courses/${courseId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async deleteLearningPath(pathId: TPublicApiLearningPathParam['pathId']) {
+    return this.request(`/v1/learning-paths/${pathId}`, {
+      method: 'DELETE'
+    });
+  }
+
   private async request<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT';
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
       body?: unknown;
     }
   ): Promise<TResponse> {

@@ -3502,8 +3502,6 @@ export const cohortGoalAssignment = pgTable(
 
 // ─── Learning Paths ──────────────────────────────────────────────────────────
 
-export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']);
-
 export const learningPathMemberStatus = pgEnum('LEARNING_PATH_MEMBER_STATUS', [
   'NOT_STARTED',
   'IN_PROGRESS',
@@ -3516,6 +3514,8 @@ export const learningPathCourseStatus = pgEnum('LEARNING_PATH_COURSE_STATUS', [
   'IN_PROGRESS',
   'COMPLETED'
 ]);
+
+export const learningPathCertificateStatus = pgEnum('LEARNING_PATH_CERTIFICATE_STATUS', ['valid', 'revoked']);
 
 export const learningPath = pgTable(
   'learning_path',
@@ -3533,8 +3533,6 @@ export const learningPath = pgTable(
     description: text().notNull(),
     coverImage: text('cover_image'),
     isPublished: boolean('is_published').default(false).notNull(),
-    difficulty: learningPathDifficulty(),
-    estimatedDurationMinutes: integer('estimated_duration_minutes'),
     cost: bigint({ mode: 'number' })
       .default(sql`'0'`)
       .notNull(),
@@ -3695,7 +3693,7 @@ export const learningPathMember = pgTable(
       columns: [table.profileId],
       foreignColumns: [profile.id],
       name: 'learning_path_member_profile_id_fkey'
-    }).onDelete('cascade'),
+    }),
     foreignKey({
       columns: [table.roleId],
       foreignColumns: [role.id],
@@ -3707,9 +3705,16 @@ export const learningPathMember = pgTable(
       name: 'learning_path_member_current_course_id_fkey'
     }).onDelete('set null'),
     unique('learning_path_member_path_id_profile_id_unique').on(table.learningPathId, table.profileId),
-    unique('learning_path_member_path_id_email_unique').on(table.learningPathId, table.email),
+    // Partial (not a plain unique constraint) so soft-deleted members can
+    // re-enroll or be re-invited without colliding on email.
+    uniqueIndex('idx_learning_path_member_path_email_active')
+      .on(table.learningPathId, table.email)
+      .where(sql`${table.removedAt} IS NULL`),
     index('idx_learning_path_member_learning_path_id').on(table.learningPathId),
-    index('idx_learning_path_member_profile_id').on(table.profileId)
+    index('idx_learning_path_member_profile_id').on(table.profileId),
+    index('idx_learning_path_member_path_role_status')
+      .on(table.learningPathId, table.roleId, table.status)
+      .where(sql`${table.removedAt} IS NULL`)
   ]
 );
 
@@ -3768,7 +3773,7 @@ export const learningPathCertificateIssue = pgTable(
     title: text().notNull(),
     issuer: text(),
     issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    status: varchar().default('valid').notNull(),
+    status: learningPathCertificateStatus().default('valid').notNull(),
     revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
     fileUrl: text('file_url')
   },
@@ -3787,7 +3792,7 @@ export const learningPathCertificateIssue = pgTable(
       columns: [table.profileId],
       foreignColumns: [profile.id],
       name: 'learning_path_certificate_issue_profile_id_fkey'
-    }).onDelete('cascade'),
+    }),
     unique('learning_path_certificate_issue_certificate_id_key').on(table.certificateId),
     unique('learning_path_certificate_issue_member_id_key').on(table.learningPathMemberId),
     index('idx_learning_path_certificate_issue_profile_id').on(table.profileId),
@@ -3864,7 +3869,10 @@ export const courseEnrollmentGrant = pgTable(
     index('idx_course_enrollment_grant_groupmember_id').on(table.groupmemberId),
     index('idx_course_enrollment_grant_cohort_id_course_id').on(table.cohortId, table.courseId),
     index('idx_course_enrollment_grant_learning_path_id_course_id').on(table.learningPathId, table.courseId),
-    index('idx_course_enrollment_grant_profile_id').on(table.profileId)
+    index('idx_course_enrollment_grant_profile_id').on(table.profileId),
+    index('idx_course_enrollment_grant_lp_profile_revoked')
+      .on(table.learningPathId, table.profileId)
+      .where(sql`${table.revokedAt} IS NULL`)
   ]
 );
 

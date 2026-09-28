@@ -239,7 +239,7 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, user.id, tx);
 
     if (!orgMemberId) {
-      await assertStudentCapacityOrThrow(organizationId, 1);
+      await assertStudentCapacityOrThrow(organizationId, 1, tx);
 
       // `verified` is membership confirmation, not email ownership.
       await createOrganizationMember(

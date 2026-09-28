@@ -38,6 +38,13 @@ export const ZGetOrganizationCoursesQuery = z.object({
 
 export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
 
+export const ZEnrolledCoursesQuery = z.object({
+  /** When true, only courses with a live non-path grant (My Learning course cards). */
+  nonPathOnly: z.coerce.boolean().default(false)
+});
+
+export type TEnrolledCoursesQuery = z.infer<typeof ZEnrolledCoursesQuery>;
+
 export const ZCourseReorder = z.object({
   courses: z
     .array(

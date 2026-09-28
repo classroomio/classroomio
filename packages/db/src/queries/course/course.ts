@@ -74,7 +74,8 @@ export const getPublishedCoursesBySiteName = async (
     const conditions = [
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
-      eq(schema.course.isPublished, true)
+      eq(schema.course.isPublished, true),
+      eq(schema.course.requiresLearningPath, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -161,7 +162,8 @@ export const countPublishedCoursesBySiteName = async (
     const conditions = [
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
-      eq(schema.course.isPublished, true)
+      eq(schema.course.isPublished, true),
+      eq(schema.course.requiresLearningPath, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -367,6 +369,30 @@ export async function getCourseById(courseId: string, dbClient: DbOrTxClient = d
     throw new Error(
       `Failed to get course by ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * Returns the id and title of every given course that requires enrollment
+ * through a learning path. Bulk enrollment flows use this to skip direct
+ * course assignment (reporting the skip) instead of failing the whole batch.
+ */
+export async function getRequiresLearningPathCourses(
+  courseIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Array<{ id: string; title: string }>> {
+  if (courseIds.length === 0) {
+    return [];
+  }
+
+  try {
+    return await dbClient
+      .select({ id: schema.course.id, title: schema.course.title })
+      .from(schema.course)
+      .where(and(inArray(schema.course.id, courseIds), eq(schema.course.requiresLearningPath, true)));
+  } catch (error) {
+    console.error('getRequiresLearningPathCourses error:', error);
+    throw new Error(`Failed to get path-gated courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -1019,6 +1045,13 @@ interface GetEnrolledCoursesOptions {
   orgId: string;
   /** Student's profile ID (required) */
   profileId: string;
+  /**
+   * When true, only courses where the profile holds a live non-path grant
+   * (My Learning course cards per the learning-paths PRD). Defaults to false
+   * to preserve the legacy groupmember/program listing until the merging
+   * LMS branch adopts the split. Requires the grant backfill to have run.
+   */
+  nonPathOnly?: boolean;
 }
 
 /**
@@ -1030,7 +1063,8 @@ interface GetEnrolledCoursesOptions {
  */
 export const getEnrolledCourses = async ({
   orgId,
-  profileId
+  profileId,
+  nonPathOnly = false
 }: GetEnrolledCoursesOptions): Promise<TStudentCourse[]> => {
   try {
     const latestComplianceCycles = db
@@ -1122,7 +1156,18 @@ export const getEnrolledCourses = async ({
         and(
           eq(schema.group.organizationId, orgId),
           eq(schema.course.status, 'ACTIVE'),
-          or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id))
+          or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id)),
+          ...(nonPathOnly
+            ? [
+                sql`EXISTS (
+                  SELECT 1 FROM ${schema.courseEnrollmentGrant} g
+                  WHERE g.course_id = ${schema.course.id}
+                    AND g.profile_id = ${profileId}
+                    AND g.revoked_at IS NULL
+                    AND g.source != 'LEARNING_PATH'
+                )`
+              ]
+            : [])
         )
       )
       .groupBy(schema.course.id, schema.groupmember.id, schema.courseCompletionRecord.id)
@@ -1182,6 +1227,7 @@ export const getExploreCourses = async ({
       eq(schema.group.organizationId, orgId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.requiresLearningPath, false),
       isNull(schema.groupmember.id),
       // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
       // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,

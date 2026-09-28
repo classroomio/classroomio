@@ -1,6 +1,11 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
-import { getCourseGroupIds, getCourseWithOrgData, lockCourseStatusForAccept } from '@cio/db/queries/course';
+import {
+  getCourseById,
+  getCourseGroupIds,
+  getCourseWithOrgData,
+  lockCourseStatusForAccept
+} from '@cio/db/queries/course';
 import {
   getCohortById,
   getCourseIdsByCohortIds,
@@ -9,14 +14,18 @@ import {
 } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
 import { enrollProfileInLearningPath, sendLearningPathWelcomeEmail } from '@api/services/learning-path';
+import { ensureCohortCourseGrants } from '@api/services/cohort/cohort';
 import {
-  getCourseIdsByLearningPathId,
+  getCourseIdsInPath,
   getLearningPathById,
   getLearningPathOrgId,
   getMemberByPathAndProfile,
   lockLearningPathStatusForAccept
 } from '@cio/db/queries/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
+import { recordDirectCourseGrant } from '@api/services/course/enrollment-grants';
+import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
@@ -182,11 +191,17 @@ const courseHandler: InviteLinkHandler = {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
+    const [courseRow] = await getCourseById(course.id, tx);
+
+    if (courseRow?.requiresLearningPath) {
+      throw new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     const existingMemberId = await getGroupMemberIdByGroupAndProfile(locked.groupId, profileId, tx);
     const isFreshJoin = !existingMemberId;
 
     if (isFreshJoin) {
-      await addGroupMember(
+      const [createdMember] = await addGroupMember(
         {
           groupId: locked.groupId,
           roleId: context.invite.roleId,
@@ -195,6 +210,14 @@ const courseHandler: InviteLinkHandler = {
         },
         tx
       );
+
+      if (createdMember) {
+        await recordDirectCourseGrant(
+          { groupmemberId: createdMember.id, courseId: course.id, profileId },
+          { source: 'INVITE' },
+          tx
+        );
+      }
     }
 
     return { isFreshJoin };
@@ -267,6 +290,7 @@ const cohortHandler: InviteLinkHandler = {
       const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
 
       await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId, tx);
+      await ensureCohortCourseGrants(cohort.id, profileId, profileId, tx, cohortCourseIds);
     }
 
     return { isFreshJoin };
@@ -329,6 +353,10 @@ const learningPathHandler: InviteLinkHandler = {
       throw new AppError('This invite is no longer accepting new members', ErrorCodes.VALIDATION_ERROR, 403);
     }
 
+    if (context.invite.roleId === ROLE.STUDENT) {
+      await assertStudentCapacityOrThrow(context.organization.id, 1, tx);
+    }
+
     const path = await getLearningPathById(learningPath.id, tx);
 
     if (!path) {
@@ -354,7 +382,7 @@ const learningPathHandler: InviteLinkHandler = {
 
   async afterCommit(context, profileId, email, { isFreshJoin }) {
     const learningPath = requireLearningPath(context);
-    const pathCourseIds = await getCourseIdsByLearningPathId(learningPath.id);
+    const pathCourseIds = await getCourseIdsInPath(learningPath.id);
 
     if (pathCourseIds.length > 0) {
       await ensureComplianceEnrollmentRecordsForProfiles(pathCourseIds, [profileId]);
@@ -363,6 +391,13 @@ const learningPathHandler: InviteLinkHandler = {
     await invalidateOrgStats(context.organization.id);
 
     if (isFreshJoin && email && context.invite.roleId === ROLE.STUDENT) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.ENROLLMENT_COMPLETED,
+        orgId: context.organization.id,
+        userId: profileId,
+        props: { path: 'learning-path', learningPathId: learningPath.id, source: 'invite-link' }
+      });
+
       await sendLearningPathWelcomeEmail({
         organization: context.organization,
         learningPath,

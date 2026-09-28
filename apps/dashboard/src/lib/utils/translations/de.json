@@ -734,7 +734,9 @@
       "cancel": "Abbrechen",
       "snackbar_success": "{assigned} Benutzer den Kursen zugewiesen ({alreadyEnrolled} bereits angemeldet, {emailsSent} E-Mails gesendet)",
       "snackbar_no_courses": "Bitte wählen Sie mindestens einen Kurs aus",
-      "snackbar_failed": "Kurse konnten nicht zugewiesen werden"
+      "snackbar_failed": "Kurse konnten nicht zugewiesen werden",
+      "snackbar_partial": "Zugewiesene {assigned} Benutzer ({alreadyEnrolled} hatte bereits Zugriff, {emailsSent} E-Mails gesendet). Übersprungene Nur-Pfad-Kurse: {names} – Weisen Sie den enthaltenen Lernpfad zu oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen.",
+      "path_only_badge": "Nur Pfad"
     },
     "import": {
       "title": "Benutzer importieren",
@@ -785,7 +787,9 @@
       },
       "submit_count": "{count} Studierende importieren",
       "result_heading": "{count} Studierende importiert",
-      "start_over": "Wählen Sie eine andere Datei"
+      "start_over": "Wählen Sie eine andere Datei",
+      "skipped_path_gated_title": "{count} Nur-Pfad-Kurse wurden übersprungen",
+      "skipped_path_gated_description": "{names}. Für diese Kurse ist die Anmeldung über einen Lernpfad erforderlich. Weisen Sie entweder den enthaltenden Lernpfad zu (dadurch werden auch die anderen Kurse gewährt) oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen."
     },
     "page_subtitle": "Sehen Sie, wer zu Ihrer Organisation gehört, wer lernt, wer eingeladen ist und wie Sie sie erreichen.",
     "user_analytics": {
@@ -921,7 +925,8 @@
       "custom": "Benutzerdefinierte Filter",
       "all": "Alle Studierenden"
     },
-    "learner_count": "{count} Studierende"
+    "learner_count": "{count} Studierende",
+    "path_only_badge": "Nur Pfad"
   },
   "community": {
     "title": "Gemeinschaft",
@@ -1079,7 +1084,9 @@
         "generate_link": "Neuen Link generieren",
         "open_link": "Link in neuem Tab öffnen",
         "copy_link": "Link kopieren",
-        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest."
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "requires_learning_path": "Lernpfad erforderlich",
+        "requires_learning_path_desc": "Wenn diese Option aktiviert ist, können Lernende nur über einen Lernpfad auf diesen Kurs zugreifen. Bestehende Anmeldungen bleiben erhalten."
       },
       "analytics": {
         "title": "Analysen"
@@ -1448,7 +1455,8 @@
             "title": "Schülerzugang gewähren",
             "description": "Gewähren Sie {email} Zugang zu diesem Kurs. Wir senden eine Einladungs-E-Mail, damit die Person Ihrer Organisation beitreten und in diesem Kurs eingeschrieben werden kann.",
             "cancel": "Abbrechen",
-            "send_invite": "Einladung senden"
+            "send_invite": "Einladung senden",
+            "path_gated_notice": "Für diesen Kurs ist eine Anmeldung über einen Lernpfad erforderlich, daher kann kein direkter Zugriff gewährt werden. Weisen Sie stattdessen den enthaltenden Lernpfad zu – oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen."
           },
           "invite_new_students_title": "Neue Schüler einladen",
           "invite_new_students_description": "Laden Sie neue Personen in Ihre Organisation ein und weisen Sie sie diesem Kurs vorab zu. Sie erstellen ein Konto, nehmen die Einladung an und erhalten Zugang.",
@@ -1493,9 +1501,16 @@
             "multi_use_30d": "Mehrfachnutzung (30 Tage)",
             "custom": "Benutzerdefiniert"
           },
-          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
+          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen.",
+          "path_gated_notice_title": "Die Studierenden schließen sich über einen Lernpfad zusammen",
+          "path_gated_notice_description": "Für diesen Kurs ist eine Anmeldung über einen Lernpfad erforderlich, daher können Studierende nicht hierher eingeladen werden. Sie können unten weiterhin Tutoren einladen. Um Schülern Zugriff zu gewähren, weisen Sie den enthaltenen Lernpfad zu – oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen."
         },
-        "learner": "Studierende/r"
+        "learner": "Studierende/r",
+        "source": "Quelle",
+        "source_learning_path": "Lernpfad",
+        "source_cohort": "Kohorte",
+        "source_filter_all": "Alle Quellen",
+        "source_filter_direct": "Direkt"
       },
       "marks": {
         "title": "Markierungen",
@@ -4177,9 +4192,6 @@
       "command_palette": {
         "title": "Befehlspalette",
         "description": "Suchen und navigieren Sie in Ihrer Organisation",
-        "placeholder": "Durchsuchen Sie Kurse, Kohorten, Widgets, Studenten, Tags, Einstellungen ...",
-        "org_placeholder": "Durchsuchen Sie Kurse, Kohorten, Widgets, Studenten, Tags, Einstellungen ...",
-        "lms_placeholder": "Durchsuchen Sie Ihre Kurse, Kohorten und Lernseiten ...",
         "lms_description": "Durchsuchen und navigieren Sie in Ihrem Lernarbeitsbereich",
         "empty": "Keine Ergebnisse gefunden",
         "loading": "Suche...",
@@ -4195,8 +4207,12 @@
           "tags": "Tags",
           "students": "Studenten",
           "settings": "Einstellungen",
-          "cohorts": "Kohorten"
-        }
+          "cohorts": "Kohorten",
+          "learning_paths": "Lernpfade"
+        },
+        "placeholder": "Durchsuchen Sie Kurse, Kohorten, Lernpfade, Widgets, Studenten, Tags, Einstellungen ...",
+        "org_placeholder": "Durchsuchen Sie Kurse, Kohorten, Lernpfade, Widgets, Studenten, Tags, Einstellungen ...",
+        "lms_placeholder": "Durchsuchen Sie Ihre Kurse, Kohorten, Lernpfade und Lernseiten ..."
       }
     },
     "cancel": "Abbrechen",
@@ -5668,7 +5684,9 @@
       "landing_saved": "Landingpage aktualisiert",
       "landing_save_failed": "Landingpage konnte nicht gespeichert werden",
       "link_generated": "Einladungslink generiert und in die Zwischenablage kopiert",
-      "settings_saved": "Lernpfadeinstellungen aktualisiert"
+      "settings_saved": "Lernpfadeinstellungen aktualisiert",
+      "member_role_updated": "Mitgliedsrolle aktualisiert",
+      "delete_failed": "Der Lernpfad konnte nicht gelöscht werden"
     },
     "analytics": {
       "title": "Analytik",
@@ -5784,8 +5802,15 @@
         "student_limit_reached": "Sie haben Ihr Studentenlimit erreicht. Führen Sie ein Upgrade durch, um weitere Studierende hinzuzufügen.",
         "invite": "Laden Sie Tutoren ein",
         "invite_students": "Laden Sie Studierende ein",
-        "finish": "Fertig"
-      }
+        "finish": "Fertig",
+        "bulk_enroll_queued": "{count} Mitglieder werden im Hintergrund registriert…",
+        "bulk_enroll_success": "Eingeschriebene {enrolled} Mitglieder ({invited} eingeladen)",
+        "bulk_enroll_partial": "Eingeschriebene {enrolled} Mitglieder ({invited} eingeladen, {failed} fehlgeschlagen)",
+        "bulk_enroll_failed": "Die Hintergrundregistrierung ist fehlgeschlagen",
+        "bulk_enroll_lost": "Den Überblick über die Hintergrundregistrierung verloren"
+      },
+      "change_role_to_tutor": "Machen Sie einen Nachhilfelehrer",
+      "change_role_to_student": "Schüler machen"
     },
     "certificate": {
       "title": "Zertifikate",

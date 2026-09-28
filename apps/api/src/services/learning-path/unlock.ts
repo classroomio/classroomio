@@ -1,13 +1,13 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
-  getActiveGrantsForCourseAndProfile,
   getCourseCompletionStatsForProfile,
   getCourseIdsInPath,
   getLearningPathCertificate,
   getMemberByPathAndProfile,
   getPathsContainingCourseForMember,
   getSingleMemberCourseProgress,
+  hasLiveNonPathGrant,
   issueLearningPathCertificate,
   listLearningPathCourses,
   updateMemberProgress,
@@ -15,9 +15,13 @@ import {
 } from '@cio/db/queries/learning-path';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getOrganizationById } from '@cio/db/queries/organization';
+import { getProfileById } from '@cio/db/queries/auth';
+import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import type { TLearningPath } from '@cio/db/types';
 
 import { resolveLearningPath } from './learning-path';
+import { sendLearningPathCompletionEmail } from './email';
 
 /**
  * Checks whether a single course is complete for a student within a learning path.
@@ -63,6 +67,43 @@ export interface TPathCompletionResult {
   completedAt: string | null;
   certificateId: string | null;
   progressPercent: number;
+}
+
+/**
+ * Sends the completion email exactly once per learner, after their first
+ * completion is persisted. Fire-and-forget: delivery failure only logs.
+ */
+async function sendCompletionEmailOnFirstCompletion(
+  path: TLearningPath,
+  memberId: string,
+  profileId: string,
+  certificateId: string | null
+): Promise<void> {
+  try {
+    const studentProfile = await getProfileById(profileId);
+
+    if (!studentProfile?.email) {
+      return;
+    }
+
+    const organization = await getOrganizationById(path.organizationId);
+
+    if (!organization) {
+      return;
+    }
+
+    await sendLearningPathCompletionEmail({
+      organization,
+      learningPath: path,
+      profileId,
+      email: studentProfile.email,
+      studentName: studentProfile.fullname || studentProfile.email,
+      certificateAvailable: Boolean(certificateId),
+      idempotencyKey: `learning-path-completion:${memberId}`
+    });
+  } catch (error) {
+    console.error('sendCompletionEmailOnFirstCompletion error', { pathId: path.id, profileId }, error);
+  }
 }
 
 /**
@@ -118,8 +159,9 @@ export async function evaluatePathCompletion(
   if (isComplete) {
     const nowIso = new Date().toISOString();
     const completedAt = member.completedAt ?? nowIso;
+    const isFirstCompletion = !member.completedAt || member.status !== 'COMPLETED';
 
-    if (!member.completedAt || member.status !== 'COMPLETED') {
+    if (isFirstCompletion) {
       await updateMemberProgress(
         member.id,
         {
@@ -135,7 +177,9 @@ export async function evaluatePathCompletion(
     }
 
     let certificateId: string | null = null;
-    if (path.certificate?.isDownloadable) {
+    const certificatesEnabled = await orgHasCertificatesEnabled(path.organizationId);
+
+    if (certificatesEnabled && path.certificate?.isDownloadable) {
       const existingCert = await getLearningPathCertificate(member.id, dbClient);
       if (existingCert) {
         certificateId = existingCert.certificateId;
@@ -158,6 +202,26 @@ export async function evaluatePathCompletion(
         );
         certificateId = cert.certificateId;
       }
+    }
+
+    if (isFirstCompletion) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.COURSE_COMPLETED,
+        orgId: path.organizationId,
+        userId: profileId,
+        props: { path: 'learning-path', learningPathId: path.id }
+      });
+
+      if (certificateId) {
+        trackServerEvent({
+          eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
+          orgId: path.organizationId,
+          userId: profileId,
+          props: { path: 'learning-path', learningPathId: path.id, certificateId }
+        });
+      }
+
+      void sendCompletionEmailOnFirstCompletion(path, member.id, profileId, certificateId);
     }
 
     return {
@@ -209,7 +273,7 @@ export async function assertCourseNotLockedForStudent(
   dbClient: DbOrTxClient = db
 ): Promise<void> {
   // 1. Check if user is a course team member or org admin
-  const isTeam = await isCourseTeamMemberOrOrgAdmin(courseId, profileId);
+  const isTeam = await isCourseTeamMemberOrOrgAdmin(courseId, profileId, dbClient);
   if (isTeam) {
     return;
   }
@@ -221,9 +285,11 @@ export async function assertCourseNotLockedForStudent(
     return;
   }
 
-  // 3. Standalone grant bypass: if student has a non-learning-path grant, allow access
-  const activeGrants = await getActiveGrantsForCourseAndProfile(courseId, profileId, dbClient);
-  const hasStandaloneGrant = activeGrants.some((grant) => grant.source !== 'LEARNING_PATH');
+  // 3. Standalone grant bypass: any live non-learning-path grant (self-enroll,
+  // invite, cohort, import, …) is an independent enrollment, so it is not
+  // gated by another path's sequential unlock. A cohort learner who also
+  // joined a path keeps cohort access regardless of path progress.
+  const hasStandaloneGrant = await hasLiveNonPathGrant(courseId, profileId, dbClient);
   if (hasStandaloneGrant) {
     return;
   }

@@ -3,6 +3,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
+  import * as Alert from '@cio/ui/base/alert';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import * as Field from '@cio/ui/base/field';
   import * as Table from '@cio/ui/base/table';
@@ -37,6 +38,7 @@
   interface Course {
     id: string;
     title: string;
+    requiresLearningPath?: boolean;
   }
 
   interface Cohort {
@@ -74,6 +76,7 @@
   let unknownColumns = $state<string[]>([]);
   let resultRows = $state<AudienceImportResultRows>([]);
   let importedCount = $state(0);
+  let skippedPathGatedCourseNames = $state<string[]>([]);
 
   let courseAccessMode = $state('none');
   let cohortAccessMode = $state('none');
@@ -163,6 +166,7 @@
 
       resultRows = result.data.rows ?? [];
       importedCount = result.data.imported ?? 0;
+      skippedPathGatedCourseNames = result.data.skippedPathGatedCourseNames ?? [];
       step = 'result';
     } finally {
       isSubmitting = false;
@@ -178,6 +182,7 @@
     unknownColumns = [];
     resultRows = [];
     importedCount = 0;
+    skippedPathGatedCourseNames = [];
   }
 
   // Writes only; nothing here reads `controls`, so this cannot loop.
@@ -316,7 +321,11 @@
           listClass="max-h-40"
           heading={$t('audience.assign.select_courses')}
           emptyMessage={$t('audience.import.select_courses_placeholder')}
-          items={courses.map((c) => ({ id: c.id, label: c.title || c.id }))}
+          items={courses.map((c) => ({
+            id: c.id,
+            label: c.title || c.id,
+            description: c.requiresLearningPath ? $t('audience.path_only_badge') : undefined
+          }))}
           isSelected={(id) => selectedCourseIds.has(id)}
           onToggle={toggleCourse}
           namePrefix="import-course"
@@ -389,6 +398,16 @@
 {:else}
   <div class="space-y-6 pb-10">
     <p class="text-sm font-medium">{$t('audience.import.result_heading', { count: importedCount })}</p>
+
+    {#if skippedPathGatedCourseNames.length > 0}
+      <Alert.Callout
+        variant="warning"
+        title={$t('audience.import.skipped_path_gated_title', { count: skippedPathGatedCourseNames.length })}
+        description={$t('audience.import.skipped_path_gated_description', {
+          names: skippedPathGatedCourseNames.join(', ')
+        })}
+      />
+    {/if}
 
     <div class="max-h-80 overflow-auto rounded-md border">
       <Table.Root>

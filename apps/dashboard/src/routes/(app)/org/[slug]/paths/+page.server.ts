@@ -17,11 +17,18 @@ export const load = async ({ parent, params, cookies, locals }) => {
   }
 
   const result = await safeServerApi<ListPathsSuccess>(() =>
-    classroomio['learning-path'].$get({ query: { organizationId: orgId } }, getApiHeaders(cookies, orgId))
+    classroomio['learning-path'].$get(
+      { query: { organizationId: orgId, page: 1, limit: 100 } },
+      getApiHeaders(cookies, orgId)
+    )
   );
 
+  const body = result.ok ? result.body : null;
+  const paths = body && Array.isArray(body.data) ? body.data : [];
+
   return {
-    paths: result.ok ? result.body.data : null,
+    paths: result.ok ? paths : null,
+    pathsPagination: body?.pagination ?? null,
     loadError: result.ok ? null : result.message || 'Failed to load learning paths'
   };
 };

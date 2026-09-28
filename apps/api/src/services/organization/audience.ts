@@ -35,8 +35,18 @@ import {
   hasActiveOrganizationInviteForEmail,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
-import { getCourseGroupIds, getOrgCourseGroups, getOrgCourses } from '@cio/db/queries/course';
-import { getExistingPathMembers, getOrgLearningPathsByIds, listLearningPaths } from '@cio/db/queries/learning-path';
+import {
+  getCourseGroupIds,
+  getOrgCourseGroups,
+  getOrgCourses,
+  getRequiresLearningPathCourses
+} from '@cio/db/queries/course';
+import {
+  getCourseIdsInPath,
+  getExistingPathMembers,
+  getOrgLearningPathsByIds,
+  listLearningPaths
+} from '@cio/db/queries/learning-path';
 import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
 import { sendLearningPathWelcomeEmail } from '@api/services/learning-path/email';
 import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
@@ -44,9 +54,12 @@ import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { membershipKey } from '@cio/utils/functions';
 import crypto from 'node:crypto';
+import { db } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { assertStudentCapacityOrThrow, getRemainingStudentSeats } from './student-limit';
+import { ensureCohortCourseGrants } from '@api/services/cohort/cohort';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
+import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 import { getWelcomeSessionIcs } from '../course/session-invite';
 
@@ -54,6 +67,32 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ORG_INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 /** Parallel outbound invite emails; avoids sequential SMTP/API latency per recipient. */
 const EMAIL_SEND_CONCURRENCY = 5;
+/** Parallel grant upserts; bounded so large imports cannot exhaust the DB pool. */
+const GRANT_WRITE_CONCURRENCY = 10;
+
+// Heavier than grant upserts (one transaction per pair: org membership,
+// path member, progress cache, course grants), so it gets its own knob even
+// though the value matches today. Tune independently if enrollments strain
+// the pool before grant writes do, or vice versa.
+const PATH_ENROLL_CONCURRENCY = 10;
+
+/**
+ * Courses skipped by bulk assignment because they require enrollment through
+ * a learning path. Reported so admins can assign the containing path instead.
+ */
+export interface TSkippedPathGatedCourses {
+  courseIds: string[];
+  courseNames: string[];
+}
+
+const NO_SKIPPED_PATH_GATED: TSkippedPathGatedCourses = { courseIds: [], courseNames: [] };
+
+function mergeSkippedPathGated(...skipped: TSkippedPathGatedCourses[]): TSkippedPathGatedCourses {
+  const courseIds = [...new Set(skipped.flatMap((entry) => entry.courseIds))];
+  const courseNames = [...new Set(skipped.flatMap((entry) => entry.courseNames))];
+
+  return { courseIds, courseNames };
+}
 
 async function mapWithConcurrency<T, R>(items: T[], concurrency: number, fn: (item: T) => Promise<R>): Promise<R[]> {
   if (items.length === 0) {
@@ -133,7 +172,7 @@ async function resolvePathIdsAndNamesForImport(orgId: string, data: TImportAudie
   let pathNames: string[] = [];
 
   if (data.allPaths) {
-    const paths = await listLearningPaths(orgId);
+    const { data: paths } = await listLearningPaths(orgId);
     pathIds = paths.map((path) => path.id);
     pathNames = paths.map((path) => path.name).filter(Boolean);
   } else if (data.pathIds && data.pathIds.length > 0) {
@@ -151,9 +190,26 @@ async function enrollAudienceStudentProfilesInCourses(
   profileIds: string[],
   courseIds: string[],
   shouldSendEmail: boolean
-): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
+): Promise<{
+  assigned: number;
+  alreadyEnrolled: number;
+  emailsSent: number;
+  skippedPathGated: TSkippedPathGatedCourses;
+}> {
   if (courseIds.length === 0 || profileIds.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, skippedPathGated: NO_SKIPPED_PATH_GATED };
+  }
+
+  const gatedCourses = await getRequiresLearningPathCourses(courseIds);
+  const gatedIds = new Set(gatedCourses.map((course) => course.id));
+  const directCourseIds = courseIds.filter((courseId) => !gatedIds.has(courseId));
+  const skippedPathGated: TSkippedPathGatedCourses = {
+    courseIds: gatedCourses.map((course) => course.id),
+    courseNames: gatedCourses.map((course) => course.title).filter(Boolean)
+  };
+
+  if (directCourseIds.length === 0) {
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, skippedPathGated };
   }
 
   const uniqueProfileIds = [...new Set(profileIds)];
@@ -162,10 +218,10 @@ async function enrollAudienceStudentProfilesInCourses(
   const validProfileIds = new Set(studentMembers.map((m) => m.profileId!));
   const profileEmailMap = new Map(studentMembers.filter((m) => m.profileId).map((m) => [m.profileId!, m.email ?? '']));
 
-  const courseGroups = await getOrgCourseGroups(orgId, courseIds);
+  const courseGroups = await getOrgCourseGroups(orgId, directCourseIds);
 
   if (courseGroups.length === 0) {
-    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0, skippedPathGated };
   }
 
   const validGroupIds = courseGroups.map((cg) => cg.groupId).filter(Boolean) as string[];
@@ -194,7 +250,13 @@ async function enrollAudienceStudentProfilesInCourses(
   }
 
   if (validProfiles.length > 0) {
-    await ensureComplianceEnrollmentRecordsForProfiles(courseIds, validProfiles);
+    await ensureComplianceEnrollmentRecordsForProfiles(directCourseIds, validProfiles);
+    await recordDirectCourseGrantsBulk({
+      groupIds: validGroupIds,
+      profileIds: validProfiles,
+      courseIds: directCourseIds,
+      source: 'ORG_AUDIENCE'
+    });
   }
 
   let emailsSent = 0;
@@ -236,7 +298,8 @@ async function enrollAudienceStudentProfilesInCourses(
   return {
     assigned: toInsert.length,
     alreadyEnrolled,
-    emailsSent
+    emailsSent,
+    skippedPathGated
   };
 }
 
@@ -302,6 +365,24 @@ async function enrollAudienceStudentProfilesInCohorts(
     if (enrolledCount > 0) {
       await invalidateOrgStats(orgId);
     }
+
+    // Records cohort provenance per cohort so People views can show it.
+    // Grants are idempotent, so re-running only repairs missing rows.
+    // Bounded parallelism: cohorts × profiles can be thousands of upserts.
+    const grantPairs = (
+      await Promise.all(
+        validCohortIds.map(async (cohortId) => {
+          const courseIdsInCohort = await getCourseIdsByCohortIds([cohortId]);
+          return validProfiles.map((profileId) => ({ cohortId, profileId, courseIds: courseIdsInCohort }));
+        })
+      )
+    )
+      .flat()
+      .filter((pair) => pair.courseIds.length > 0);
+
+    await mapWithConcurrency(grantPairs, GRANT_WRITE_CONCURRENCY, (pair) =>
+      ensureCohortCourseGrants(pair.cohortId, pair.profileId, undefined, db, pair.courseIds)
+    );
 
     await ensureComplianceEnrollmentRecordsForProfiles(cohortCourseIds, validProfiles);
   }
@@ -377,18 +458,27 @@ async function enrollAudienceStudentProfilesInPaths(
   const toInsert = pairs.filter((pair) => !existingSet.has(membershipKey(pair.learningPathId, pair.profileId)));
   const alreadyEnrolled = pairs.length - toInsert.length;
 
-  for (const pair of toInsert) {
-    const path = pathById.get(pair.learningPathId)!;
-
-    await enrollProfileInLearningPath(path, {
+  // Bounded fan-out: pairs are independent (one transaction each) and the
+  // capacity check inside takes the org row lock, so parallel pairs cannot
+  // overshoot quota. Fail-fast like the serial loop it replaces.
+  await mapWithConcurrency(toInsert, PATH_ENROLL_CONCURRENCY, (pair) =>
+    enrollProfileInLearningPath(pathById.get(pair.learningPathId)!, {
       profileId: pair.profileId,
       email: profileEmailMap.get(pair.profileId) || undefined,
       roleId: ROLE.STUDENT
-    });
-  }
+    })
+  );
 
   if (toInsert.length > 0) {
     await invalidateOrgStats(orgId);
+  }
+
+  // Compliance courses track enrollment records for due dates and renewals.
+  // Mirrors the direct/cohort audience flows above: runs after enrollment for
+  // every assigned student; the helper no-ops for non-compliance courses.
+  if (toInsert.length > 0) {
+    const pathCourseIds = (await Promise.all(paths.map((path) => getCourseIdsInPath(path.id)))).flat();
+    await ensureComplianceEnrollmentRecordsForProfiles(pathCourseIds, validProfiles);
   }
 
   let emailsSent = 0;
@@ -409,6 +499,7 @@ async function enrollAudienceStudentProfilesInPaths(
               learningPath: {
                 id: pair.learningPathId,
                 name: pathNameById.get(pair.learningPathId) || 'Learning path',
+                publicId: pathById.get(pair.learningPathId)?.publicId ?? null,
                 welcomeEmailMessage: pathById.get(pair.learningPathId)?.welcomeEmailMessage
               },
               profileId: pair.profileId,
@@ -570,7 +661,22 @@ async function createStudentOrgInvitesAndSendEmails(input: {
   return { created: emails.length, emailsSent, emailsFailed };
 }
 
-export async function importAudienceMembers(orgId: string, data: TImportAudienceMembers, invitedByProfileId: string) {
+export interface TAudienceImportOutcome extends AudienceImportResult {
+  assigned: number;
+  alreadyEnrolledInCourses: number;
+  alreadyEnrolledInCohorts: number;
+  alreadyEnrolledInPaths: number;
+  pendingInvitesRenewed: number;
+  skippedPathGatedCourses: string[];
+  skippedPathGatedCourseNames: string[];
+  truncated: number;
+}
+
+export async function importAudienceMembers(
+  orgId: string,
+  data: TImportAudienceMembers,
+  invitedByProfileId: string
+): Promise<TAudienceImportOutcome> {
   const organization = await getOrganizationById(orgId);
   if (!organization || !organization.siteName) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
@@ -607,7 +713,17 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   if (candidateEmails.length === 0) {
     // Nothing importable at all is still a successful call with per-row
     // reasons, so the UI can show which rows failed and why.
-    return buildImportResult(rows, { imported: 0, enrolled: 0, emailsSent: 0, emailsFailed: 0 });
+    return {
+      ...buildImportResult(rows, { imported: 0, enrolled: 0, emailsSent: 0, emailsFailed: 0 }),
+      assigned: 0,
+      alreadyEnrolledInCourses: 0,
+      alreadyEnrolledInCohorts: 0,
+      alreadyEnrolledInPaths: 0,
+      pendingInvitesRenewed: 0,
+      skippedPathGatedCourses: [],
+      skippedPathGatedCourseNames: [],
+      truncated: parsed.truncated
+    };
   }
 
   const memberRows = await getOrganizationMembersByNormalizedEmails(orgId, candidateEmails);
@@ -690,6 +806,7 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   let imported = 0;
   let importEmailsSent = 0;
   let importEmailsFailed = 0;
+  let newEmailsSkipped: TSkippedPathGatedCourses = NO_SKIPPED_PATH_GATED;
 
   if (newEmails.length > 0) {
     // Capacity was already resolved above; this keeps the milestone emails
@@ -705,8 +822,18 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       }))
     );
 
-    if (courseIds.length > 0) {
-      const courseGroupMappings = await getCourseGroupIds(courseIds);
+    // Pending profiles enroll directly only into courses that accept it —
+    // path-gated courses wait for the learning-path invite below.
+    const gatedForNewEmails = await getRequiresLearningPathCourses(courseIds);
+    const gatedIdsForNewEmails = new Set(gatedForNewEmails.map((course) => course.id));
+    const directCourseIdsForNewEmails = courseIds.filter((courseId) => !gatedIdsForNewEmails.has(courseId));
+    newEmailsSkipped = {
+      courseIds: gatedForNewEmails.map((course) => course.id),
+      courseNames: gatedForNewEmails.map((course) => course.title).filter(Boolean)
+    };
+
+    if (directCourseIdsForNewEmails.length > 0) {
+      const courseGroupMappings = await getCourseGroupIds(directCourseIdsForNewEmails);
       const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
 
       if (validGroupIds.length > 0) {
@@ -716,9 +843,15 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
           await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
           await invalidateOrgStats(orgId);
           await ensureComplianceEnrollmentRecordsForProfiles(
-            courseIds,
+            directCourseIdsForNewEmails,
             profiles.map((profile) => profile.id)
           );
+          await recordDirectCourseGrantsBulk({
+            groupIds: validGroupIds,
+            profileIds: profiles.map((profile) => profile.id),
+            courseIds: directCourseIdsForNewEmails,
+            source: 'ORG_AUDIENCE'
+          });
         }
       }
     }
@@ -783,6 +916,8 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     pendingEmailsFailed = pendingOutcome.emailsFailed;
   }
 
+  const skippedPathGated = mergeSkippedPathGated(assignedToCourses.skippedPathGated, newEmailsSkipped);
+
   return {
     ...buildImportResult(rows, {
       imported,
@@ -801,6 +936,8 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     alreadyEnrolledInCohorts: assignedToCohorts.alreadyEnrolled,
     alreadyEnrolledInPaths: assignedToPaths.alreadyEnrolled,
     pendingInvitesRenewed: pendingStudentEmails.length,
+    skippedPathGatedCourses: skippedPathGated.courseIds,
+    skippedPathGatedCourseNames: skippedPathGated.courseNames,
     truncated: parsed.truncated
   };
 }
@@ -1002,7 +1139,18 @@ export async function revokeAudiencePendingInvite(
   return { revoked: true };
 }
 
-export async function assignAudienceToCourses(orgId: string, data: TAssignAudienceCourses) {
+export interface TAssignAudienceToCoursesResult {
+  assigned: number;
+  alreadyEnrolled: number;
+  emailsSent: number;
+  skippedPathGatedCourses: string[];
+  skippedPathGatedCourseNames: string[];
+}
+
+export async function assignAudienceToCourses(
+  orgId: string,
+  data: TAssignAudienceCourses
+): Promise<TAssignAudienceToCoursesResult> {
   const organization = await getOrganizationById(orgId);
   if (!organization) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
@@ -1011,7 +1159,12 @@ export async function assignAudienceToCourses(orgId: string, data: TAssignAudien
   const courseIds = data.courseIds ?? [];
   const cohortIds = data.cohortIds ?? [];
 
-  let assignedToCourses = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  let assignedToCourses = {
+    assigned: 0,
+    alreadyEnrolled: 0,
+    emailsSent: 0,
+    skippedPathGated: NO_SKIPPED_PATH_GATED
+  };
   let assignedToCohorts = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
 
   if (courseIds.length > 0) {
@@ -1047,7 +1200,9 @@ export async function assignAudienceToCourses(orgId: string, data: TAssignAudien
   return {
     assigned: assignedToCourses.assigned + assignedToCohorts.assigned,
     alreadyEnrolled: assignedToCourses.alreadyEnrolled + assignedToCohorts.alreadyEnrolled,
-    emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent
+    emailsSent: assignedToCourses.emailsSent + assignedToCohorts.emailsSent,
+    skippedPathGatedCourses: assignedToCourses.skippedPathGated.courseIds,
+    skippedPathGatedCourseNames: assignedToCourses.skippedPathGated.courseNames
   };
 }
 

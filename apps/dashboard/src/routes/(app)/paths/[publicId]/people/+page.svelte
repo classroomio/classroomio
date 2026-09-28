@@ -14,18 +14,15 @@
   import { ROLES } from '$lib/utils/constants/roles';
   import { isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import {
-    DeleteConfirmation,
-    InvitePathMembersModal,
-    PathMemberRow,
-    deletePathMemberModal
-  } from '$features/learning-path';
+  import { DeleteConfirmation, PathMemberRow, deletePathMemberModal } from '$features/learning-path';
+  import InvitationModal from '$features/people/components/invitation-modal.svelte';
   import { RefreshPageData, TablePagination, UpgradeBanner } from '$features/ui';
   import { learningPathApi, pathMembersApi } from '$features/learning-path/api';
   import type { LearningPathMemberItem } from '$features/learning-path/utils/types';
   import {
     ALL_ROLES_FILTER,
     DEFAULT_PATH_PEOPLE_PAGE_SIZE,
+    isPathStudentMember,
     shouldIgnoreRowNavigation
   } from '$features/learning-path/utils/path-people-utils';
 
@@ -154,6 +151,17 @@
       isStudent: Number(member.roleId) === ROLE.STUDENT
     };
     deletePathMemberModal.set({ open: true });
+  }
+
+  async function handleChangeRole(member: LearningPathMemberItem) {
+    if (!pathId) return;
+
+    const nextRole = isPathStudentMember(member) ? ROLE.TUTOR : ROLE.STUDENT;
+    const updated = await pathMembersApi.updateMemberRole(pathId, member.id, nextRole);
+
+    if (updated) {
+      refreshCurrentPage();
+    }
   }
 
   function gotoMember(member: LearningPathMemberItem) {
@@ -314,9 +322,11 @@
                       showActions
                       canManage={canManageMembers}
                       canView={canManageMembers}
+                      canAssignTutor={$isOrgAdmin === true}
                       navigable
                       onView={gotoMember}
                       onRemove={openRemoveDialog}
+                      onChangeRole={handleChangeRole}
                       onRowClick={handleRowClick}
                       onRowKeydown={handleRowKeydown}
                     />
@@ -343,7 +353,16 @@
 </Page.Root>
 
 {#if pathId}
-  <InvitePathMembersModal {pathId} onMembersChanged={refreshCurrentPage} />
+  <InvitationModal
+    resourceType="LEARNING_PATH"
+    resourceId={pathId}
+    titleKey="learningPath.people.invite.title"
+    linkDescriptionKey="invite_link.learning_path_description"
+    bulkTitleKey="learningPath.people.invite.bulk_title"
+    bulkDescriptionKey="learningPath.people.invite.bulk_description"
+    bulkSubmitKey="learningPath.people.invite.bulk_submit"
+    onMembersChanged={refreshCurrentPage}
+  />
 {/if}
 
 <DeleteConfirmation

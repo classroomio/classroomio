@@ -41,7 +41,9 @@ import {
   updateCohortNewsfeedReaction
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
-import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
+import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
+import { grantCourseAccess, revokeCohortGrants } from '@cio/db/queries/learning-path';
+import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
 import { getProfileByEmail } from '@cio/db/queries/auth';
 import {
   getOrgMembersByProfileIds,
@@ -49,7 +51,7 @@ import {
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 
@@ -62,7 +64,9 @@ type CohortMemberEnrollment = {
 async function enrollCohortStudentsInGroups(
   organizationId: string,
   groupIds: string[],
-  members: CohortMemberEnrollment[]
+  members: CohortMemberEnrollment[],
+  courseIds: string[],
+  cohortId: string
 ) {
   const studentMembers = members.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
   const uniqueGroupIds = [...new Set(groupIds)];
@@ -105,6 +109,14 @@ async function enrollCohortStudentsInGroups(
     });
     await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
     await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
+  });
+
+  await recordDirectCourseGrantsBulk({
+    groupIds: uniqueGroupIds,
+    profileIds: studentProfileIds,
+    courseIds,
+    source: 'COHORT',
+    cohortId
   });
 
   if (studentMilestoneNotification) {
@@ -221,7 +233,49 @@ export async function listCohortMembers(cohortId: string) {
   }
 }
 
-export async function addCohortMembers(cohortId: string, data: TAddCohortMembers) {
+/**
+ * Records COHORT provenance grants for a profile across a cohort's courses.
+ * The caller enrolls the groupmember rows; this only records why, so People
+ * views can show the cohort source and permission checks can tell cohort
+ * access apart from standalone access. Idempotent via the grant upsert.
+ */
+export async function ensureCohortCourseGrants(
+  cohortId: string,
+  profileId: string,
+  grantedByProfileId: string | undefined,
+  dbClient: DbOrTxClient,
+  courseIds: string[]
+): Promise<void> {
+  if (courseIds.length === 0) {
+    return;
+  }
+
+  const courseGroups = await getCourseGroupIds(courseIds, dbClient);
+
+  for (const entry of courseGroups) {
+    if (!entry.groupId) {
+      continue;
+    }
+
+    const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, profileId, dbClient);
+
+    if (groupMemberId) {
+      await grantCourseAccess(
+        {
+          groupmemberId: groupMemberId,
+          courseId: entry.courseId,
+          profileId,
+          source: 'COHORT',
+          cohortId,
+          grantedByProfileId
+        },
+        dbClient
+      );
+    }
+  }
+}
+
+export async function addCohortMembers(cohortId: string, data: TAddCohortMembers, actorProfileId?: string) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
@@ -302,6 +356,14 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
               })),
               tx
             );
+
+            await ensureCohortCourseGrants(
+              cohortId,
+              member.profileId,
+              actorProfileId,
+              tx,
+              cohortCourses.map((course) => course.course.id)
+            );
           }
 
           return { member, studentMilestoneNotification };
@@ -341,6 +403,11 @@ export async function removeCohortMemberService(_cohortId: string, memberId: str
     if (!deleted) {
       throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
     }
+
+    if (deleted.profileId) {
+      await revokeCohortGrants(deleted.cohortId, deleted.profileId);
+    }
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -426,7 +493,7 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
       .filter((groupId): groupId is string => Boolean(groupId));
 
     if (students.length > 0 && courseGroupIds.length > 0) {
-      await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students);
+      await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students, [data.courseId], cohortId);
     }
 
     return result;

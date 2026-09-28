@@ -734,7 +734,9 @@
       "cancel": "Anuluj",
       "snackbar_success": "Przypisano {assigned} użytkowników do kursów ({alreadyEnrolled} jest już zapisanych, wysłano e-maile: {emailsSent})",
       "snackbar_no_courses": "Proszę wybrać przynajmniej jeden kurs",
-      "snackbar_failed": "Nie udało się przypisać kursów"
+      "snackbar_failed": "Nie udało się przypisać kursów",
+      "snackbar_partial": "Przypisano {assigned} użytkowników ({alreadyEnrolled} miało już dostęp, wysłano e-maile: {emailsSent}). Pominięte kursy zawierające tylko ścieżkę: {names} — przypisz zawierającą ścieżkę nauczania lub wyłącz opcję „Wymaga ścieżki szkoleniowej” w ustawieniach kursu.",
+      "path_only_badge": "Tylko ścieżka"
     },
     "import": {
       "title": "Importuj użytkowników",
@@ -785,7 +787,9 @@
       },
       "submit_count": "Importuj {count} studentów",
       "result_heading": "Zaimportowano {count} studentów",
-      "start_over": "Wybierz inny plik"
+      "start_over": "Wybierz inny plik",
+      "skipped_path_gated_title": "Pominięto {count} kursów obejmujących wyłącznie ścieżkę",
+      "skipped_path_gated_description": "{names}. Na te kursy wymagane jest zapisanie się na ścieżkę edukacyjną. Przypisz zawierającą ścieżkę szkoleniową (to zapewnia również inne kursy) lub wyłącz opcję „Wymaga ścieżki szkoleniowej” w ustawieniach kursu."
     },
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {
@@ -921,7 +925,8 @@
       "custom": "Filtry niestandardowe",
       "all": "Wszyscy studenci"
     },
-    "learner_count": "{count} studentów"
+    "learner_count": "{count} studentów",
+    "path_only_badge": "Tylko ścieżka"
   },
   "community": {
     "title": "Społeczność",
@@ -1079,7 +1084,9 @@
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
         "copy_link": "Skopiuj link",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją."
+        "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
+        "requires_learning_path": "Wymagaj ścieżki szkoleniowej",
+        "requires_learning_path_desc": "Gdy ta opcja jest włączona, uczniowie mogą uzyskać dostęp do tego kursu wyłącznie poprzez ścieżkę edukacyjną. Istniejące zapisy zostaną zachowane."
       },
       "analytics": {
         "title": "Analityka"
@@ -1448,7 +1455,8 @@
             "title": "Udostępnij dostęp studentowi",
             "description": "Przyznaj {email} dostęp do tego kursu. Wyślemy zaproszenie e-mailem, aby dołączył do Twojej organizacji i zapisał się na ten kurs.",
             "cancel": "Anuluj",
-            "send_invite": "Wyślij zaproszenie"
+            "send_invite": "Wyślij zaproszenie",
+            "path_gated_notice": "Ten kurs wymaga zapisania się na ścieżkę edukacyjną, dlatego nie można przyznać bezpośredniego dostępu. Zamiast tego przypisz zawierającą ścieżkę szkoleniową lub wyłącz opcję „Wymaga ścieżki szkoleniowej” w ustawieniach kursu."
           },
           "invite_new_students_title": "Zaproś nowych uczniów",
           "invite_new_students_description": "Zaproś nowe osoby do organizacji i wstępnie przypisz je do tego kursu. Utworzą konto, zaakceptują zaproszenie i uzyskają dostęp.",
@@ -1493,9 +1501,16 @@
             "multi_use_30d": "Wielokrotnego użytku (30 dni)",
             "custom": "Niestandardowe"
           },
-          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów."
+          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów.",
+          "path_gated_notice_title": "Studenci przyłączają się poprzez ścieżkę edukacyjną",
+          "path_gated_notice_description": "Ten kurs wymaga zapisania się na ścieżkę edukacyjną, dlatego nie można zapraszać na niego studentów. Nadal możesz zapraszać korepetytorów poniżej. Aby zapewnić uczniom dostęp, przypisz zawierającą ścieżkę uczenia się lub wyłącz opcję „Wymaga ścieżki nauki” w ustawieniach kursu."
         },
-        "learner": "Student"
+        "learner": "Student",
+        "source": "Źródło",
+        "source_learning_path": "Ścieżka edukacyjna",
+        "source_cohort": "Kohorta",
+        "source_filter_all": "Wszystkie źródła",
+        "source_filter_direct": "Bezpośrednie"
       },
       "marks": {
         "title": "Znaki",
@@ -4177,9 +4192,6 @@
       "command_palette": {
         "title": "Paleta poleceń",
         "description": "Wyszukuj i poruszaj się po organizacji",
-        "placeholder": "Szukaj kursów, kohort, widżetów, uczniów, tagów, ustawień...",
-        "org_placeholder": "Szukaj kursów, kohort, widżetów, uczniów, tagów, ustawień...",
-        "lms_placeholder": "Przeszukuj swoje kursy, kohorty i strony edukacyjne...",
         "lms_description": "Wyszukuj i poruszaj się po swoim obszarze roboczym do nauki",
         "empty": "Nie znaleziono żadnych wyników",
         "loading": "Wyszukiwanie...",
@@ -4195,8 +4207,12 @@
           "tags": "Tagi",
           "students": "Studenci",
           "settings": "Ustawienia",
-          "cohorts": "Kohorty"
-        }
+          "cohorts": "Kohorty",
+          "learning_paths": "Ścieżki uczenia się"
+        },
+        "placeholder": "Przeszukuj kursy, kohorty, ścieżki edukacyjne, widżety, uczniów, tagi, ustawienia...",
+        "org_placeholder": "Przeszukuj kursy, kohorty, ścieżki edukacyjne, widżety, uczniów, tagi, ustawienia...",
+        "lms_placeholder": "Przeszukuj swoje kursy, kohorty, ścieżki edukacyjne i strony edukacyjne..."
       }
     },
     "cancel": "Anuluj",
@@ -5668,7 +5684,9 @@
       "landing_saved": "Strona docelowa została zaktualizowana",
       "landing_save_failed": "Nie udało się zapisać strony docelowej",
       "link_generated": "Link z zaproszeniem wygenerowany i skopiowany do schowka",
-      "settings_saved": "Ustawienia ścieżki nauki zaktualizowane"
+      "settings_saved": "Ustawienia ścieżki nauki zaktualizowane",
+      "member_role_updated": "Rola członka została zaktualizowana",
+      "delete_failed": "Nie udało się usunąć ścieżki szkoleniowej"
     },
     "analytics": {
       "title": "Analityka",
@@ -5784,8 +5802,15 @@
         "student_limit_reached": "Osiągnięto limit uczniów. Uaktualnij plan, aby dodać więcej uczniów.",
         "invite": "Zaproś korepetytorów",
         "invite_students": "Zaproś uczniów",
-        "finish": "Zakończ"
-      }
+        "finish": "Zakończ",
+        "bulk_enroll_queued": "Rejestruję {count} członków w tle…",
+        "bulk_enroll_success": "Zarejestrowani członkowie: {enrolled} ({invited} zaproszeni)",
+        "bulk_enroll_partial": "Zarejestrowani członkowie: {enrolled} ({invited} zaproszeni, {failed} nie powiodło się)",
+        "bulk_enroll_failed": "Rejestracja w tle nie powiodła się",
+        "bulk_enroll_lost": "Utracono śledzenie rejestracji w tle"
+      },
+      "change_role_to_tutor": "Zrób korepetytora",
+      "change_role_to_student": "Zrób studenta"
     },
     "certificate": {
       "title": "Certyfikaty",

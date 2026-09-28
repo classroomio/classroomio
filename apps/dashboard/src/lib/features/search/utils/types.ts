@@ -11,7 +11,15 @@ export type SearchLmsResponse = InferResponseType<SearchLmsRequest>;
 export type SearchLmsSuccess = Extract<SearchLmsResponse, { success: true }>;
 export type SearchLmsData = SearchLmsSuccess['data'];
 
-export type SearchResultKind = 'course' | 'cohort' | 'widget' | 'tag' | 'audience' | 'nav' | 'settings';
+export type SearchResultKind =
+  | 'course'
+  | 'cohort'
+  | 'learning_path'
+  | 'widget'
+  | 'tag'
+  | 'audience'
+  | 'nav'
+  | 'settings';
 export type SearchScope = 'org' | 'lms';
 
 export interface SearchResultItem {

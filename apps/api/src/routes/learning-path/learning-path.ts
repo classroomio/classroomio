@@ -3,19 +3,24 @@ import {
   ZAddLearningPathMembers,
   ZCreateLearningPath,
   ZEnrollInLearningPath,
+  ZEnrolledLearningPathsQuery,
+  ZGetLearningPathsQuery,
   ZLearningPathCertificateDownloadRequest,
   ZLearningPathCourseParam,
   ZLearningPathIdParam,
   ZLearningPathMemberParam,
   ZPathMembersQuery,
   ZPublicLearningPathQuery,
+  ZPublicLearningPathsQuery,
   ZReorderLearningPathCourses,
   ZUpdateLearningPath,
+  ZUpdateLearningPathMemberRole,
   ZVerifyLearningPathCertificateParam
 } from '@cio/utils/validation/learning-path';
 import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
 
 import type { TLearningPathCertificateDownloadRequest } from '@cio/utils/validation/learning-path';
+import type { TLearningPath } from '@cio/db/types';
 
 import {
   addCoursesToPathService,
@@ -27,20 +32,21 @@ import {
   createLearningPathService,
   deleteLearningPathService,
   enrollInLearningPath,
+  getBulkPathEnrollmentStatus,
   getEnrolledLearningPaths,
   getLearningPathDetail,
   getPathAnalyticsService,
   getPathMemberDetailService,
   getPublicLearningPathBySlug,
+  listPublicLearningPathsService,
   listOrgLearningPaths,
   listPathMembersService,
   removeCourseFromPathService,
   removePathMemberService,
   reorderPathCoursesService,
   updateLearningPathService,
-  verifyLearningPathCertificateService,
-  resolveLearningPath,
-  assertCanManageLearningPath
+  updatePathMemberRoleService,
+  verifyLearningPathCertificateService
 } from '@api/services/learning-path';
 import { generateCertificatePdf, generateCertificatePng, sendCertificateFile } from '@api/utils/certificate';
 import {
@@ -50,6 +56,10 @@ import {
 } from '@api/services/invite-link';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { learningPathMemberMiddleware } from '@api/middlewares/learning-path-member';
+import { learningPathTeamMiddleware } from '@api/middlewares/learning-path-team';
+import { extractClientIp } from '@api/utils/redis/key-generators';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
@@ -61,15 +71,23 @@ const ZMemberParam = ZLearningPathMemberParam;
 const ZPersonParam = z.object({ pathId: z.string().min(1), personId: z.string().uuid() });
 
 const ZSlugParam = z.object({ slug: z.string().min(1) });
-
-const ZOrgListQuery = ZPublicLearningPathQuery.extend({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20)
-});
+const ZBulkStatusParam = z.object({ pathId: z.string().min(1), jobId: z.string().min(1) });
+const ZBulkStatusQuery = z.object({ pollCount: z.coerce.number().int().min(0).default(0) });
 
 function getOrgRoles(c: { get: (key: string) => unknown }): Record<string, number> | undefined {
   return c.get('orgRoles') as Record<string, number> | undefined;
 }
+
+const enrollRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Too many enrollment attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `lp-enroll:${actor}:${c.req.param('pathId')}`;
+  }
+});
 
 async function loadLearningPathCertificateInput(
   pathId: string,
@@ -89,6 +107,20 @@ async function loadLearningPathCertificateInput(
 }
 
 export const learningPathRouter = new Hono()
+  /**
+   * GET /learning-path/public?organizationId=...
+   * Public catalog route for learning paths (unauthenticated, published only)
+   */
+  .get('/public', zValidator('query', ZPublicLearningPathsQuery), async (c) => {
+    try {
+      const query = c.req.valid('query');
+      const result = await listPublicLearningPathsService(query.organizationId, query);
+
+      return c.json({ success: true, data: result.data, pagination: result.pagination }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list public learning paths');
+    }
+  })
   /**
    * GET /learning-path/public/:slug?organizationId=...
    * Public landing route for learning paths (unauthenticated)
@@ -121,16 +153,16 @@ export const learningPathRouter = new Hono()
   })
   /**
    * GET /learning-path?organizationId=...
-   * Lists learning paths for an organization
+   * Lists learning paths for an organization (paginated)
    */
-  .get('/', authMiddleware, zValidator('query', ZOrgListQuery), async (c) => {
+  .get('/', authMiddleware, zValidator('query', ZGetLearningPathsQuery), async (c) => {
     try {
       const user = c.get('user')!;
       const orgRoles = getOrgRoles(c);
-      const { organizationId } = c.req.valid('query');
-      const paths = await listOrgLearningPaths(organizationId, user.id, orgRoles);
+      const { organizationId, page, limit, search } = c.req.valid('query');
+      const result = await listOrgLearningPaths(organizationId, user.id, orgRoles, { page, limit, search });
 
-      return c.json({ success: true, data: paths }, 200);
+      return c.json({ success: true, data: result.data, pagination: result.pagination }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list learning paths');
     }
@@ -155,12 +187,15 @@ export const learningPathRouter = new Hono()
 
   /**
    * GET /learning-path/enrolled
-   * Returns caller's enrolled learning paths with live progress and per-course unlock status
+   * Returns caller's enrolled learning paths with live progress and per-course unlock status.
+   * Accepts an optional organizationId to scope to one workspace; omitted
+   * returns enrollments across organizations (existing behavior).
    */
-  .get('/enrolled', authMiddleware, async (c) => {
+  .get('/enrolled', authMiddleware, zValidator('query', ZEnrolledLearningPathsQuery), async (c) => {
     try {
       const user = c.get('user')!;
-      const paths = await getEnrolledLearningPaths(user.id);
+      const { organizationId } = c.req.valid('query');
+      const paths = await getEnrolledLearningPaths(user.id, organizationId);
 
       return c.json({ success: true, data: paths }, 200);
     } catch (error) {
@@ -192,6 +227,7 @@ export const learningPathRouter = new Hono()
   .put(
     '/:pathId',
     authMiddleware,
+    learningPathTeamMiddleware,
     zValidator('param', ZPathParam),
     zValidator('json', ZUpdateLearningPath),
     async (c) => {
@@ -227,7 +263,7 @@ export const learningPathRouter = new Hono()
    * DELETE /learning-path/:pathId
    * Deletes a learning path
    */
-  .delete('/:pathId', authMiddleware, zValidator('param', ZPathParam), async (c) => {
+  .delete('/:pathId', authMiddleware, learningPathTeamMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {
       c.get('user')!;
       const orgRoles = getOrgRoles(c);
@@ -247,6 +283,7 @@ export const learningPathRouter = new Hono()
   .post(
     '/:pathId/enroll',
     authMiddleware,
+    enrollRateLimit,
     zValidator('param', ZPathParam),
     zValidator('json', ZEnrollInLearningPath),
     async (c) => {
@@ -270,6 +307,7 @@ export const learningPathRouter = new Hono()
   .post(
     '/:pathId/courses',
     authMiddleware,
+    learningPathTeamMiddleware,
     zValidator('param', ZPathParam),
     zValidator('json', ZAddLearningPathCourse),
     async (c) => {
@@ -294,6 +332,7 @@ export const learningPathRouter = new Hono()
   .put(
     '/:pathId/courses/order',
     authMiddleware,
+    learningPathTeamMiddleware,
     zValidator('param', ZPathParam),
     zValidator('json', ZReorderLearningPathCourses),
     async (c) => {
@@ -315,18 +354,24 @@ export const learningPathRouter = new Hono()
    * DELETE /learning-path/:pathId/courses/:courseId
    * Removes a course from a learning path
    */
-  .delete('/:pathId/courses/:courseId', authMiddleware, zValidator('param', ZCourseParam), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const orgRoles = getOrgRoles(c);
-      const { pathId, courseId } = c.req.valid('param');
-      const removed = await removeCourseFromPathService(pathId, courseId, user.id, orgRoles);
+  .delete(
+    '/:pathId/courses/:courseId',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZCourseParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const { pathId, courseId } = c.req.valid('param');
+        const removed = await removeCourseFromPathService(pathId, courseId, user.id, orgRoles);
 
-      return c.json({ success: true, data: removed }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to remove course from learning path');
+        return c.json({ success: true, data: removed }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to remove course from learning path');
+      }
     }
-  })
+  )
 
   /**
    * GET /learning-path/:pathId/members
@@ -335,6 +380,7 @@ export const learningPathRouter = new Hono()
   .get(
     '/:pathId/members',
     authMiddleware,
+    learningPathTeamMiddleware,
     zValidator('param', ZPathParam),
     zValidator('query', ZPathMembersQuery),
     async (c) => {
@@ -345,7 +391,7 @@ export const learningPathRouter = new Hono()
         const query = c.req.valid('query');
         const members = await listPathMembersService(pathId, user.id, orgRoles, query);
 
-        return c.json({ success: true, data: members }, 200);
+        return c.json({ success: true, ...members }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to list learning path members');
       }
@@ -354,11 +400,13 @@ export const learningPathRouter = new Hono()
 
   /**
    * POST /learning-path/:pathId/members
-   * Batch adds members to a learning path and auto-enrolls into courses
+   * Batch adds members to a learning path and auto-enrolls into courses.
+   * Adds above the bulk threshold are queued and return 202 for polling.
    */
   .post(
     '/:pathId/members',
     authMiddleware,
+    learningPathTeamMiddleware,
     zValidator('param', ZPathParam),
     zValidator('json', ZAddLearningPathMembers),
     async (c) => {
@@ -367,11 +415,40 @@ export const learningPathRouter = new Hono()
         const orgRoles = getOrgRoles(c);
         const { pathId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const members = await addPathMembersService(pathId, data, user.id, orgRoles);
+        const result = await addPathMembersService(pathId, data, user.id, orgRoles);
 
-        return c.json({ success: true, data: members }, 201);
+        if (!Array.isArray(result)) {
+          return c.json({ success: true, data: result }, 202);
+        }
+
+        return c.json({ success: true, data: result }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to add learning path members');
+      }
+    }
+  )
+
+  /**
+   * GET /learning-path/:pathId/bulk-enrollment/:jobId
+   * Status of a queued bulk member add for polling.
+   */
+  .get(
+    '/:pathId/bulk-enrollment/:jobId',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZBulkStatusParam),
+    zValidator('query', ZBulkStatusQuery),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const { pathId, jobId } = c.req.valid('param');
+        const { pollCount } = c.req.valid('query');
+        const envelope = await getBulkPathEnrollmentStatus(pathId, jobId, user.id, orgRoles, pollCount);
+
+        return c.json({ success: true, data: envelope }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to read bulk enrollment status');
       }
     }
   )
@@ -380,41 +457,78 @@ export const learningPathRouter = new Hono()
    * GET /learning-path/:pathId/members/:personId
    * Returns a member with per-course progress rows in path order
    */
-  .get('/:pathId/members/:personId', authMiddleware, zValidator('param', ZPersonParam), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const orgRoles = getOrgRoles(c);
-      const { pathId, personId } = c.req.valid('param');
-      const detail = await getPathMemberDetailService(pathId, personId, user.id, orgRoles);
+  .get(
+    '/:pathId/members/:personId',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZPersonParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const { pathId, personId } = c.req.valid('param');
+        const detail = await getPathMemberDetailService(pathId, personId, user.id, orgRoles);
 
-      return c.json({ success: true, data: detail }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to get learning path member detail');
+        return c.json({ success: true, data: detail }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to get learning path member detail');
+      }
     }
-  })
+  )
 
   /**
    * DELETE /learning-path/:pathId/members/:memberId
    * Soft-removes a member from a learning path and revokes their grants
    */
-  .delete('/:pathId/members/:memberId', authMiddleware, zValidator('param', ZMemberParam), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const orgRoles = getOrgRoles(c);
-      const { pathId, memberId } = c.req.valid('param');
-      const removed = await removePathMemberService(pathId, memberId, user.id, orgRoles);
+  .delete(
+    '/:pathId/members/:memberId',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZMemberParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const { pathId, memberId } = c.req.valid('param');
+        const removed = await removePathMemberService(pathId, memberId, user.id, orgRoles);
 
-      return c.json({ success: true, data: removed }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to remove learning path member');
+        return c.json({ success: true, data: removed }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to remove learning path member');
+      }
     }
-  })
+  )
+
+  /**
+   * PATCH /learning-path/:pathId/members/:memberId
+   * Changes a member's role between student and tutor
+   */
+  .patch(
+    '/:pathId/members/:memberId',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZMemberParam),
+    zValidator('json', ZUpdateLearningPathMemberRole),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const { pathId, memberId } = c.req.valid('param');
+        const { roleId } = c.req.valid('json');
+        const updated = await updatePathMemberRoleService(pathId, memberId, roleId, user.id, orgRoles);
+
+        return c.json({ success: true, data: updated }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update learning path member role');
+      }
+    }
+  )
 
   /**
    * GET /learning-path/:pathId/analytics
    * Returns funnel metrics across courses in the learning path
    */
-  .get('/:pathId/analytics', authMiddleware, zValidator('param', ZPathParam), async (c) => {
+  .get('/:pathId/analytics', authMiddleware, learningPathTeamMiddleware, zValidator('param', ZPathParam), async (c) => {
     try {
       const user = c.get('user')!;
       const orgRoles = getOrgRoles(c);
@@ -431,39 +545,44 @@ export const learningPathRouter = new Hono()
    * GET /learning-path/:pathId/invite-link
    * Returns the path's shareable join link, or null if one was never created.
    */
-  .get('/:pathId/invite-link', authMiddleware, zValidator('param', ZPathParam), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const orgRoles = getOrgRoles(c);
-      const { pathId } = c.req.valid('param');
-      const path = await resolveLearningPath(pathId);
-      await assertCanManageLearningPath(path, user.id, orgRoles);
-      const result = await fetchInviteLinkForResource('LEARNING_PATH', path.id);
+  .get(
+    '/:pathId/invite-link',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZPathParam),
+    async (c) => {
+      try {
+        const path = c.get('learningPath') as TLearningPath;
+        const result = await fetchInviteLinkForResource('LEARNING_PATH', path.id);
 
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to load learning path invite link');
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load learning path invite link');
+      }
     }
-  })
+  )
 
   /**
    * POST /learning-path/:pathId/invite-link
    * Returns the path's shareable join link, creating it on first call.
    */
-  .post('/:pathId/invite-link', authMiddleware, zValidator('param', ZPathParam), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const orgRoles = getOrgRoles(c);
-      const { pathId } = c.req.valid('param');
-      const path = await resolveLearningPath(pathId);
-      await assertCanManageLearningPath(path, user.id, orgRoles);
-      const result = await getOrCreateInviteLinkForResource('LEARNING_PATH', path.id, user.id);
+  .post(
+    '/:pathId/invite-link',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZPathParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const path = c.get('learningPath') as TLearningPath;
+        const result = await getOrCreateInviteLinkForResource('LEARNING_PATH', path.id, user.id);
 
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to create learning path invite link');
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create learning path invite link');
+      }
     }
-  })
+  )
 
   /**
    * PATCH /learning-path/:pathId/invite-link
@@ -472,16 +591,14 @@ export const learningPathRouter = new Hono()
   .patch(
     '/:pathId/invite-link',
     authMiddleware,
+    learningPathTeamMiddleware,
     zValidator('param', ZPathParam),
     zValidator('json', ZToggleInviteLink),
     async (c) => {
       try {
         const user = c.get('user')!;
-        const orgRoles = getOrgRoles(c);
-        const { pathId } = c.req.valid('param');
         const { isRevoked } = c.req.valid('json');
-        const path = await resolveLearningPath(pathId);
-        await assertCanManageLearningPath(path, user.id, orgRoles);
+        const path = c.get('learningPath') as TLearningPath;
         const result = await toggleInviteLinkForResource('LEARNING_PATH', path.id, isRevoked, user.id);
 
         return c.json({ success: true, data: result }, 200);
@@ -498,6 +615,7 @@ export const learningPathRouter = new Hono()
   .post(
     '/:pathId/download/certificate',
     authMiddleware,
+    learningPathMemberMiddleware,
     zValidator('param', ZPathParam),
     zValidator('json', ZLearningPathCertificateDownloadRequest),
     async (c) => {
@@ -524,6 +642,7 @@ export const learningPathRouter = new Hono()
   .post(
     '/:pathId/download/certificate/png',
     authMiddleware,
+    learningPathMemberMiddleware,
     zValidator('param', ZPathParam),
     zValidator('json', ZLearningPathCertificateDownloadRequest),
     async (c) => {

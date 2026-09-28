@@ -33,11 +33,12 @@
     aria-label={$t('learningPath.listing.create_path')}
     disabled={!$isOrgAdmin}
     onclick={handleClick}
+    testId="path-listing-create"
   >
     <PlusIcon size={16} />
   </Button>
 {:else}
-  <Button {variant} onclick={handleClick} disabled={!$isOrgAdmin}>
+  <Button {variant} onclick={handleClick} disabled={!$isOrgAdmin} testId="path-listing-create">
     {$t('learningPath.listing.create_path')}
   </Button>
 {/if}

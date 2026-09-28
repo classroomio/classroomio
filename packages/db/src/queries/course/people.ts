@@ -1,10 +1,10 @@
 import * as schema from '@db/schema';
 
 import { TGroupmember, TNewGroupmember } from '@db/types';
-import { and, asc, count, eq, ilike, isNull, or } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -14,6 +14,10 @@ export type CourseMemberWithProfile = TGroupmember & {
     avatarUrl: string | null;
     email: string | null;
   } | null;
+  /** Latest non-revoked grant source for this membership, if the grant ledger has one. */
+  enrollmentSource: string | null;
+  /** Learning path id when the latest grant came from one, for team deep-links. */
+  enrollmentSourcePathId: string | null;
 };
 
 export interface PaginatedCourseMembersOptions {
@@ -35,12 +39,76 @@ function mapCourseMemberRows(
   rows: Array<{
     member: TGroupmember;
     profile: CourseMemberWithProfile['profile'];
+    enrollmentSource: string | null;
+    enrollmentSourcePathId: string | null;
   }>
 ): CourseMemberWithProfile[] {
   return rows.map((row) => ({
     ...row.member,
-    profile: row.profile || null
+    profile: row.profile || null,
+    enrollmentSource: row.enrollmentSource,
+    enrollmentSourcePathId: row.enrollmentSourcePathId
   }));
+}
+
+/**
+ * Latest non-revoked grant provenance for one course membership, for People
+ * views that show whether a learner arrived directly, via cohort, or via a
+ * learning path. Null when the grant ledger has no row (pre-ledger rows).
+ */
+function latestGrantSourceColumns(courseId: string) {
+  return {
+    enrollmentSource: sql<string | null>`(
+      SELECT ceg.source
+      FROM ${schema.courseEnrollmentGrant} ceg
+      WHERE ceg.groupmember_id = ${schema.groupmember.id}
+        AND ceg.course_id = ${courseId}
+        AND ceg.revoked_at IS NULL
+      ORDER BY ceg.granted_at DESC
+      LIMIT 1
+    )`.as('enrollmentSource'),
+    enrollmentSourcePathId: sql<string | null>`(
+      SELECT ceg.learning_path_id
+      FROM ${schema.courseEnrollmentGrant} ceg
+      WHERE ceg.groupmember_id = ${schema.groupmember.id}
+        AND ceg.course_id = ${courseId}
+        AND ceg.revoked_at IS NULL
+      ORDER BY ceg.granted_at DESC
+      LIMIT 1
+    )`.as('enrollmentSourcePathId')
+  };
+}
+
+/**
+ * Returns the enrollment source for a given groupmember/course pair.
+ * Used by People views to show "Direct", "Learning Path", "Cohort", etc.
+ */
+export async function getEnrollmentSource(
+  groupmemberId: string,
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<string | null> {
+  try {
+    const [row] = await dbClient
+      .select({ source: schema.courseEnrollmentGrant.source })
+      .from(schema.courseEnrollmentGrant)
+      .where(
+        and(
+          eq(schema.courseEnrollmentGrant.groupmemberId, groupmemberId),
+          eq(schema.courseEnrollmentGrant.courseId, courseId),
+          isNull(schema.courseEnrollmentGrant.revokedAt)
+        )
+      )
+      .orderBy(sql`${schema.courseEnrollmentGrant.grantedAt} DESC`)
+      .limit(1);
+
+    return (row?.source as string | null) ?? null;
+  } catch (error) {
+    console.error('getEnrollmentSource error:', error);
+    throw new Error(
+      `Failed to get enrollment source for member "${groupmemberId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
 }
 
 /**
@@ -60,7 +128,8 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
           username: schema.profile.username,
           avatarUrl: schema.profile.avatarUrl,
           email: schema.profile.email
-        }
+        },
+        ...latestGrantSourceColumns(courseId)
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -118,7 +187,8 @@ export async function getPaginatedCourseMembers(
           username: schema.profile.username,
           avatarUrl: schema.profile.avatarUrl,
           email: schema.profile.email
-        }
+        },
+        ...latestGrantSourceColumns(courseId)
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -149,21 +219,7 @@ export async function getPaginatedCourseMembers(
  * @param memberId Member ID
  * @returns Course member with profile data or null if not found
  */
-export async function getCourseMember(
-  courseId: string,
-  memberId: string
-): Promise<
-  | (TGroupmember & {
-      profile: {
-        id: string;
-        fullname: string | null;
-        username: string | null;
-        avatarUrl: string | null;
-        email: string | null;
-      } | null;
-    })
-  | null
-> {
+export async function getCourseMember(courseId: string, memberId: string): Promise<CourseMemberWithProfile | null> {
   try {
     const result = await db
       .select({
@@ -174,7 +230,8 @@ export async function getCourseMember(
           username: schema.profile.username,
           avatarUrl: schema.profile.avatarUrl,
           email: schema.profile.email
-        }
+        },
+        ...latestGrantSourceColumns(courseId)
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -188,7 +245,9 @@ export async function getCourseMember(
 
     return {
       ...result[0].member,
-      profile: result[0].profile || null
+      profile: result[0].profile || null,
+      enrollmentSource: result[0].enrollmentSource,
+      enrollmentSourcePathId: result[0].enrollmentSourcePathId
     };
   } catch (error) {
     console.error('getCourseMember error:', error);

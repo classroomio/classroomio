@@ -20,7 +20,7 @@ import {
   setLinkInviteRevoked,
   updateOrganizationMemberById
 } from '@cio/db/queries/organization';
-import { getCourseGroupIds } from '@cio/db/queries/course';
+import { getCourseGroupIds, getRequiresLearningPathCourses } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
@@ -41,8 +41,11 @@ import {
 } from '@api/utils/org';
 import { getOrgLearningPathsByIds } from '@cio/db/queries/learning-path';
 import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
+import { ensureCohortCourseGrants } from '@api/services/cohort/cohort';
+import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
@@ -204,20 +207,40 @@ async function enrollOrganizationInviteUser(
     email: string;
     roleId: number;
   }
-): Promise<number> {
+): Promise<{ enrolledCount: number; skippedPathGatedCourseIds: string[]; enrolledPathIds: string[] }> {
   let enrolledCount = 0;
+  let skippedPathGatedCourseIds: string[] = [];
+  const enrolledPathIds: string[] = [];
 
   if (params.courseIds.length > 0) {
-    const courseGroupMappings = await getCourseGroupIds(params.courseIds, tx);
-    const courseGroupIds = courseGroupMappings.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+    // Path-gated courses are skipped, not failed: the invite still grants org
+    // membership plus every other resource, and the skip is audit-trailed.
+    const gatedCourses = await getRequiresLearningPathCourses(params.courseIds, tx);
+    skippedPathGatedCourseIds = gatedCourses.map((course) => course.id);
+    const gatedIds = new Set(skippedPathGatedCourseIds);
+    const directCourseIds = params.courseIds.filter((courseId) => !gatedIds.has(courseId));
 
-    enrolledCount += await enrollUsersInCourseGroups(
-      courseGroupIds,
-      [{ profileId: params.profileId, email: params.email }],
-      params.roleId,
-      tx
-    );
-    await ensureComplianceEnrollmentRecordsForProfiles(params.courseIds, [params.profileId], tx);
+    if (directCourseIds.length > 0) {
+      const courseGroupMappings = await getCourseGroupIds(directCourseIds, tx);
+      const courseGroupIds = courseGroupMappings.map((mapping) => mapping.groupId).filter(Boolean) as string[];
+
+      enrolledCount += await enrollUsersInCourseGroups(
+        courseGroupIds,
+        [{ profileId: params.profileId, email: params.email }],
+        params.roleId,
+        tx
+      );
+      await ensureComplianceEnrollmentRecordsForProfiles(directCourseIds, [params.profileId], tx);
+      await recordDirectCourseGrantsBulk(
+        {
+          groupIds: courseGroupIds,
+          profileIds: [params.profileId],
+          courseIds: directCourseIds,
+          source: 'ORG_AUDIENCE'
+        },
+        tx
+      );
+    }
   }
 
   if (params.cohortIds.length > 0) {
@@ -256,6 +279,11 @@ async function enrollOrganizationInviteUser(
       );
       await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [params.profileId], tx);
     }
+
+    for (const cohortId of params.cohortIds) {
+      const courseIdsInCohort = await getCourseIdsByCohortIds([cohortId], tx);
+      await ensureCohortCourseGrants(cohortId, params.profileId, params.profileId, tx, courseIdsInCohort);
+    }
   }
 
   if (params.pathIds.length > 0) {
@@ -273,10 +301,11 @@ async function enrollOrganizationInviteUser(
         tx
       );
       enrolledCount += 1;
+      enrolledPathIds.push(path.id);
     }
   }
 
-  return enrolledCount;
+  return { enrolledCount, skippedPathGatedCourseIds, enrolledPathIds };
 }
 
 /**
@@ -480,7 +509,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const enrolledCount = await enrollOrganizationInviteUser(tx, {
+    const { enrolledCount, skippedPathGatedCourseIds, enrolledPathIds } = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
       pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
@@ -496,7 +525,9 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
-      enrolledCount
+      enrolledCount,
+      skippedPathGatedCourseIds,
+      enrolledPathIds
     };
   });
 
@@ -513,12 +544,26 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       targetEmail: normalizedEmail,
       ipAddress: context.ipAddress,
       userAgent: context.userAgent,
-      metadata: { alreadyAccepted: false }
+      metadata: {
+        alreadyAccepted: false,
+        skippedPathGatedCourseIds: result.skippedPathGatedCourseIds
+      }
     });
   }
 
   if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
+  }
+
+  if (!result.alreadyAccepted && result.invite.roleId === ROLE.STUDENT) {
+    for (const pathId of result.enrolledPathIds) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.ENROLLMENT_COMPLETED,
+        orgId: result.invite.organizationId,
+        userId: user.id,
+        props: { path: 'learning-path', learningPathId: pathId, source: 'org-invite' }
+      });
+    }
   }
 
   if (result.studentMilestoneNotification) {
@@ -766,7 +811,7 @@ export async function acceptOrganizationInviteById(
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const enrolledCount = await enrollOrganizationInviteUser(tx, {
+    const { enrolledCount, skippedPathGatedCourseIds, enrolledPathIds } = await enrollOrganizationInviteUser(tx, {
       courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
       cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
       pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
@@ -782,7 +827,9 @@ export async function acceptOrganizationInviteById(
       roleId: row.invite.roleId,
       alreadyAccepted,
       studentMilestoneNotification,
-      enrolledCount
+      enrolledCount,
+      skippedPathGatedCourseIds,
+      enrolledPathIds
     };
   });
 
@@ -795,12 +842,26 @@ export async function acceptOrganizationInviteById(
       targetEmail: normalizedEmail,
       ipAddress: context.ipAddress,
       userAgent: context.userAgent,
-      metadata: { alreadyAccepted: false }
+      metadata: {
+        alreadyAccepted: false,
+        skippedPathGatedCourseIds: result.skippedPathGatedCourseIds
+      }
     });
   }
 
   if (result.enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
     await invalidateOrgStats(result.invite.organizationId);
+  }
+
+  if (!result.alreadyAccepted && result.invite.roleId === ROLE.STUDENT) {
+    for (const pathId of result.enrolledPathIds) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.ENROLLMENT_COMPLETED,
+        orgId: result.invite.organizationId,
+        userId: user.id,
+        props: { path: 'learning-path', learningPathId: pathId, source: 'org-invite' }
+      });
+    }
   }
 
   if (result.studentMilestoneNotification) {

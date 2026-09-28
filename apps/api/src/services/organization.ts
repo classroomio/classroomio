@@ -525,11 +525,12 @@ export async function getOrganizationNavCounts(orgId: string, userId: string, us
  *
  * @param orgId - The organization ID
  * @param userId - User ID for filtering
+ * @param options.nonPathOnly - Only courses with a live non-path grant
  * @returns Array of enrolled courses
  */
-export async function getUserEnrolledCourses(orgId: string, userId: string) {
+export async function getUserEnrolledCourses(orgId: string, userId: string, options?: { nonPathOnly?: boolean }) {
   try {
-    return getEnrolledCourses({ orgId, profileId: userId });
+    return getEnrolledCourses({ orgId, profileId: userId, nonPathOnly: options?.nonPathOnly });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

@@ -18,6 +18,8 @@
     "paths": {
       "@cio/db/types": ["./node_modules/@cio/db/dist/types.d.ts"],
       "@cio/db/*": ["./node_modules/@cio/db/dist/*"],
+      "@cio/email": ["./node_modules/@cio/email/dist/index.d.ts"],
+      "@cio/email/*": ["./node_modules/@cio/email/dist/*"],
       "@cio/utils": ["./node_modules/@cio/utils/dist/index.d.ts"],
       "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"],
       "@cio/jobs": ["./node_modules/@cio/jobs/dist/index.d.ts"],
@@ -26,7 +28,13 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
-  "references": [{ "path": "../db" }, { "path": "../utils" }, { "path": "../ai-assistant" }, { "path": "../jobs" }],
+  "references": [
+    { "path": "../db" },
+    { "path": "../utils" },
+    { "path": "../ai-assistant" },
+    { "path": "../jobs" },
+    { "path": "../email" }
+  ],
   "tsc-alias": {
     "resolveFullPaths": true,
     "verbose": false

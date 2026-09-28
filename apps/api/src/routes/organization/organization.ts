@@ -8,6 +8,7 @@ import {
   ZCreateOrganization,
   ZAudienceExportQuery,
   ZBulkAudienceAction,
+  ZEnrolledCoursesQuery,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
   ZGetOrgSetup,
@@ -562,24 +563,31 @@ export const organizationRouter = new Hono()
    * Gets enrolled courses for a user in an organization (used in lms)
    * Requires authentication and organization membership
    */
-  .get('/courses/enrolled', authMiddleware, orgMemberMiddleware, async (c) => {
-    try {
-      const user = c.get('user')!;
+  .get(
+    '/courses/enrolled',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('query', ZEnrolledCoursesQuery),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
 
-      const orgId = c.req.header('cio-org-id')!;
-      const result = await getUserEnrolledCourses(orgId, user.id);
+        const orgId = c.req.header('cio-org-id')!;
+        const { nonPathOnly } = c.req.valid('query');
+        const result = await getUserEnrolledCourses(orgId, user.id, { nonPathOnly });
 
-      return c.json(
-        {
-          success: true,
-          data: result
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch courses');
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch courses');
+      }
     }
-  })
+  )
   /**
    * GET /organization/learning-paths/enrolled
    * Gets caller's enrolled learning paths with live progress and per-course unlock status in an organization

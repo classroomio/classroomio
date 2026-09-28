@@ -105,7 +105,7 @@
       }
     } catch (err) {
       console.error('Failed to delete learning path:', err);
-      snackbar.error();
+      snackbar.error('learningPath.snackbar.delete_failed');
     } finally {
       deleteModalOpen = false;
       isDeleting = false;

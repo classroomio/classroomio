@@ -11,6 +11,7 @@ import { publicApiCors } from '@api/middlewares/cors';
 import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/utils/redis/key-generators';
 import { v1AudienceRouter } from './audience';
 import { v1CoursesRouter } from './courses';
+import { v1LearningPathsRouter } from './learning-paths';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -33,4 +34,5 @@ export const v1Router = new Hono()
     })
   )
   .route('/audience', v1AudienceRouter)
-  .route('/courses', v1CoursesRouter);
+  .route('/courses', v1CoursesRouter)
+  .route('/learning-paths', v1LearningPathsRouter);

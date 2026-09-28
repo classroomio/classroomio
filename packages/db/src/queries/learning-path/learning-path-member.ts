@@ -536,6 +536,30 @@ export async function getEnrolledPaths(
 }
 
 /**
+ * Updates a member's role in a learning path.
+ */
+export async function updateMemberRole(
+  memberId: string,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<TLearningPathMember | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.learningPathMember)
+      .set({ roleId })
+      .where(eq(schema.learningPathMember.id, memberId))
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('updateMemberRole error:', error);
+    throw new Error(
+      `Failed to update role for member "${memberId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Updates a member's progress cache and status.
  */
 type TMemberProgressUpdate = Pick<

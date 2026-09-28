@@ -17,6 +17,8 @@ export type ListPathMembersRequest = (typeof classroomio)['learning-path'][':pat
 export type AddPathMembersRequest = (typeof classroomio)['learning-path'][':pathId']['members']['$post'];
 export type RemovePathMemberRequest =
   (typeof classroomio)['learning-path'][':pathId']['members'][':memberId']['$delete'];
+export type UpdatePathMemberRoleRequest =
+  (typeof classroomio)['learning-path'][':pathId']['members'][':memberId']['$patch'];
 export type GetPathAnalyticsRequest = (typeof classroomio)['learning-path'][':pathId']['analytics']['$get'];
 export type GetPathMemberDetailRequest =
   (typeof classroomio)['learning-path'][':pathId']['members'][':personId']['$get'];
@@ -41,6 +43,16 @@ export type ReorderPathCoursesSuccess = Extract<InferResponseType<ReorderPathCou
 export type RemovePathCourseSuccess = Extract<InferResponseType<RemovePathCourseRequest>, { success: true }>;
 export type ListPathMembersSuccess = Extract<InferResponseType<ListPathMembersRequest>, { success: true }>;
 export type AddPathMembersSuccess = Extract<InferResponseType<AddPathMembersRequest>, { success: true }>;
+export type GetBulkEnrollStatusRequest =
+  (typeof classroomio)['learning-path'][':pathId']['bulk-enrollment'][':jobId']['$get'];
+export type GetBulkEnrollStatusSuccess = Extract<InferResponseType<GetBulkEnrollStatusRequest>, { success: true }>;
+/** Completion value the bulk-enrollment worker returns; mirrors the API outcome shape. */
+export type BulkEnrollOutcome = {
+  requested: number;
+  enrolled: number;
+  invited: number;
+  failed: Array<{ key: string; reason: string }>;
+};
 export type RemovePathMemberSuccess = Extract<InferResponseType<RemovePathMemberRequest>, { success: true }>;
 export type GetPathAnalyticsSuccess = Extract<InferResponseType<GetPathAnalyticsRequest>, { success: true }>;
 export type GetPathMemberDetailSuccess = Extract<InferResponseType<GetPathMemberDetailRequest>, { success: true }>;
@@ -52,12 +64,14 @@ export type TogglePathInviteLinkSuccess = Extract<InferResponseType<TogglePathIn
 export type CreateLearningPathData = CreateLearningPathSuccess['data'];
 export type UpdateLearningPathData = UpdateLearningPathSuccess['data'];
 export type LearningPathSummary = ListLearningPathsSuccess['data'][number];
+export type LearningPathsPagination = ListLearningPathsSuccess['pagination'];
 export type LearningPathDetail = GetLearningPathDetailSuccess['data'];
 export type LearningPathCourseItem = LearningPathDetail['courses'][number];
 export type EnrolledLearningPath = GetEnrolledLearningPathsSuccess['data'][number];
-// Members endpoint returns a paginated shape: { data, pagination }
-export type PathMembersPagination = ListPathMembersSuccess['data']['pagination'];
-export type PathMembersData = ListPathMembersSuccess['data']['data'];
+// Members endpoint returns a paginated shape: { data, pagination, enrolledTotal }
+export type PathMembersPagination = ListPathMembersSuccess['pagination'];
+export type PathMembersData = ListPathMembersSuccess['data'];
+export type PathMembersEnrolledTotal = ListPathMembersSuccess['enrolledTotal'];
 export type LearningPathMemberItem = PathMembersData[number];
 export type LearningPathAnalytics = GetPathAnalyticsSuccess['data'];
 export type PathAnalyticsSummary = LearningPathAnalytics['summary'];

@@ -1,32 +1,26 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
 import {
-  enrollMember,
   getCourseCompletionStatsForProfile,
+  getCourseIdsInPath,
   getEnrolledPaths,
   getLearningPathCertificate,
   getMemberByPathAndProfile,
   getMemberCourseProgress,
-  grantCourseAccess,
-  initializeMemberCourseProgress,
   listLearningPathCourses,
   type TLearningPathCourseDetail
 } from '@cio/db/queries/learning-path';
-import { getCourseGroupIds } from '@cio/db/queries/course/course';
-import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
-import {
-  createOrganizationMember,
-  getOrganizationById,
-  getOrganizationMemberIdByOrgAndProfile
-} from '@cio/db/queries/organization';
+import { getOrganizationById, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { getProfileById } from '@cio/db/queries/auth';
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
 
 import { resolveLearningPath } from './learning-path';
+import { enrollProfileInLearningPath } from './member-management';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { syncPathProgressForMember } from './unlock';
 import { sendLearningPathWelcomeEmail } from './email';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 
 export interface TEnrolledCourseProgress extends TLearningPathCourseDetail {
   isUnlocked: boolean;
@@ -68,6 +62,10 @@ export async function enrollInLearningPath(pathId: string, profileId: string): P
       throw new AppError('Self-enrollment is disabled for this learning path', ErrorCodes.FORBIDDEN, 403);
     }
 
+    if (path.cost > 0) {
+      throw new AppError('Paid learning paths require an invite or payment', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     // Enforce organization-level enrollment safeguards
     const organization = await getOrganizationById(path.organizationId, transactionClient);
     if (!organization) {
@@ -85,86 +83,24 @@ export async function enrollInLearningPath(pathId: string, profileId: string): P
       );
     }
 
-    if (!orgMemberId) {
-      await assertStudentCapacityOrThrow(path.organizationId, 1, transactionClient);
-
-      await createOrganizationMember(
-        {
-          organizationId: path.organizationId,
-          roleId: ROLE.STUDENT,
-          profileId,
-          verified: true
-        },
-        transactionClient
-      );
-    }
-
     const existingMember = await getMemberByPathAndProfile(path.id, profileId, transactionClient);
     const isFreshJoin = !existingMember;
 
-    // 1. Enroll member in learning path
-    const member = await enrollMember(
-      {
-        learningPathId: path.id,
-        profileId,
-        roleId: ROLE.STUDENT,
-        status: 'NOT_STARTED'
-      },
-      transactionClient
-    );
-
-    // 2. Fetch courses in path
-    const courses = await listLearningPathCourses(path.id, transactionClient);
-    const courseIds = courses.map((course) => course.courseId);
-
-    // 2b. Initialize member course progress cache
-    await initializeMemberCourseProgress(
-      member.id,
-      courses.map((course) => ({ id: course.id, order: course.order })),
-      path.sequentialUnlock,
-      transactionClient
-    );
-
-    if (courseIds.length > 0) {
-      // 3. Auto-enroll in each course's group
-      const courseGroups = await getCourseGroupIds(courseIds, transactionClient);
-
-      const groupMemberValues = courseGroups
-        .filter((entry): entry is { courseId: string; groupId: string } => Boolean(entry.groupId))
-        .map((entry) => ({
-          groupId: entry.groupId,
-          profileId,
-          roleId: ROLE.STUDENT
-        }));
-
-      await insertGroupMembersOnConflictDoNothing(groupMemberValues, transactionClient);
-
-      // 4. Record grant provenance for each course
-      for (const entry of courseGroups) {
-        if (!entry.groupId) continue;
-
-        const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, profileId, transactionClient);
-
-        if (groupMemberId) {
-          await grantCourseAccess(
-            {
-              groupmemberId: groupMemberId,
-              courseId: entry.courseId,
-              profileId,
-              source: 'LEARNING_PATH',
-              learningPathId: path.id
-            },
-            transactionClient
-          );
-        }
-      }
-    }
+    const member = await enrollProfileInLearningPath(path, { profileId, roleId: ROLE.STUDENT }, transactionClient);
 
     const studentProfile = await getProfileById(profileId);
     const studentEmail = studentProfile?.email ?? null;
 
     return { member, path, organization, isFreshJoin, email: studentEmail };
   });
+
+  // Compliance courses track enrollment records for due dates and renewals.
+  // Mirrors course self-enroll: runs post-commit, and the helper skips
+  // non-compliance courses, missing memberships, and existing records itself.
+  if (isFreshJoin) {
+    const pathCourseIds = await getCourseIdsInPath(path.id);
+    await ensureComplianceEnrollmentRecordsForProfiles(pathCourseIds, [profileId]);
+  }
 
   if (isFreshJoin && email) {
     await sendLearningPathWelcomeEmail({
@@ -173,6 +109,15 @@ export async function enrollInLearningPath(pathId: string, profileId: string): P
       profileId,
       email,
       idempotencyKey: `self-enroll-learning-path-welcome:${path.id}:${profileId}`
+    });
+  }
+
+  if (isFreshJoin) {
+    trackServerEvent({
+      eventType: SERVER_EVENTS.ENROLLMENT_COMPLETED,
+      orgId: path.organizationId,
+      userId: profileId,
+      props: { path: 'learning-path', learningPathId: path.id, source: 'self-enroll' }
     });
   }
 
@@ -206,6 +151,10 @@ function unlockedCoursesFromStats(
 /**
  * Returns learning paths that the student is actively enrolled in,
  * including live progress calculations and per-course unlock status.
+ *
+ * Path course lists are pre-fetched in parallel and each enrolled path is
+ * then processed concurrently, so latency stays flat as enrollments grow
+ * instead of scaling with one serial round-trip per path.
  */
 export async function getEnrolledLearningPaths(
   profileId: string,
@@ -214,89 +163,103 @@ export async function getEnrolledLearningPaths(
   try {
     const enrolledRows = await getEnrolledPaths(profileId, organizationId);
 
-    const results: TEnrolledLearningPathWithProgress[] = [];
+    if (enrolledRows.length === 0) {
+      return [];
+    }
+
     const syncedPathIds = new Set<string>();
 
-    for (const { member, learningPath } of enrolledRows) {
-      const courses = await listLearningPathCourses(learningPath.id);
-      const courseIds = courses.map((course) => course.courseId);
+    // Pre-fetch every path's course list concurrently.
+    const pathCourseMap = new Map<string, TLearningPathCourseDetail[]>();
+    await Promise.all(
+      enrolledRows.map(async ({ learningPath }) => {
+        const courses = await listLearningPathCourses(learningPath.id);
+        pathCourseMap.set(learningPath.id, courses);
+      })
+    );
 
-      // Fetch completion stats once per course in parallel
-      const statsResults = await Promise.all(
-        courses.map((course) => getCourseCompletionStatsForProfile(course.courseId, profileId))
-      );
-      const completionByCourseId = new Map(courses.map((course, i) => [course.courseId, statsResults[i].isComplete]));
+    const results = await Promise.all(
+      enrolledRows.map(async ({ member, learningPath }) => {
+        const courses = pathCourseMap.get(learningPath.id) ?? [];
+        const courseIds = courses.map((course) => course.courseId);
 
-      // Derive unlock status from pre-computed completion
-      const unlocked = unlockedCoursesFromStats(learningPath.sequentialUnlock, courseIds, completionByCourseId);
+        // Fetch completion stats once per course in parallel
+        const statsResults = await Promise.all(
+          courses.map((course) => getCourseCompletionStatsForProfile(course.courseId, profileId))
+        );
+        const completionByCourseId = new Map(courses.map((course, i) => [course.courseId, statsResults[i].isComplete]));
 
-      const cachedProgressRows = await getMemberCourseProgress(member.id);
-      const progressByPathCourseId = new Map(cachedProgressRows.map((r) => [r.learningPathCourseId, r]));
+        // Derive unlock status from pre-computed completion
+        const unlocked = unlockedCoursesFromStats(learningPath.sequentialUnlock, courseIds, completionByCourseId);
 
-      const coursesWithProgress: TEnrolledCourseProgress[] = [];
-      let completedCount = 0;
-      let hasDrift = false;
+        const cachedProgressRows = await getMemberCourseProgress(member.id);
+        const progressByPathCourseId = new Map(cachedProgressRows.map((r) => [r.learningPathCourseId, r]));
 
-      for (const course of courses) {
-        const isComplete = completionByCourseId.get(course.courseId) ?? false;
-        if (isComplete) {
-          completedCount++;
-        }
+        const coursesWithProgress: TEnrolledCourseProgress[] = [];
+        let completedCount = 0;
+        let hasDrift = false;
 
-        const isUnlocked = unlocked.includes(course.courseId);
-        coursesWithProgress.push({
-          ...course,
-          isUnlocked,
-          isComplete
-        });
-
-        // Detect cache drift
-        const cached = progressByPathCourseId.get(course.id);
-        const expectedStatus = isComplete ? 'COMPLETED' : !isUnlocked ? 'LOCKED' : undefined;
-        const hasStatusDrift =
-          (expectedStatus && cached?.status !== expectedStatus) || (cached?.status === 'LOCKED' && isUnlocked);
-        if (!cached || hasStatusDrift) {
-          hasDrift = true;
-        }
-      }
-
-      // Self-heal the path's cached progress once in the background
-      if (hasDrift && !syncedPathIds.has(learningPath.id)) {
-        syncedPathIds.add(learningPath.id);
-        void syncPathProgressForMember(learningPath.id, profileId).catch((syncErr) => {
-          console.error('Self-healing learning path progress cache failed:', syncErr);
-        });
-      }
-
-      const totalCourses = courses.length;
-      const progressPercent = totalCourses > 0 ? Math.round((completedCount / totalCourses) * 100) : 0;
-
-      const certificateRow = await getLearningPathCertificate(member.id);
-      const certificateData = certificateRow
-        ? {
-            certificateId: certificateRow.certificateId,
-            issuedAt: certificateRow.issuedAt,
-            fileUrl: certificateRow.fileUrl
+        for (const course of courses) {
+          const isComplete = completionByCourseId.get(course.courseId) ?? false;
+          if (isComplete) {
+            completedCount++;
           }
-        : null;
 
-      const memberProgressData = {
-        id: member.id,
-        status: member.status,
-        enrolledAt: member.enrolledAt,
-        completedAt: member.completedAt,
-        progressPercent,
-        completedCourseCount: completedCount,
-        currentCourseId: member.currentCourseId
-      };
+          const isUnlocked = unlocked.includes(course.courseId);
+          coursesWithProgress.push({
+            ...course,
+            isUnlocked,
+            isComplete
+          });
 
-      results.push({
-        ...learningPath,
-        member: memberProgressData,
-        certificate: certificateData,
-        courses: coursesWithProgress
-      });
-    }
+          // Detect cache drift
+          const cached = progressByPathCourseId.get(course.id);
+          const expectedStatus = isComplete ? 'COMPLETED' : !isUnlocked ? 'LOCKED' : undefined;
+          const hasStatusDrift =
+            (expectedStatus && cached?.status !== expectedStatus) || (cached?.status === 'LOCKED' && isUnlocked);
+          if (!cached || hasStatusDrift) {
+            hasDrift = true;
+          }
+        }
+
+        // Self-heal the path's cached progress once in the background
+        if (hasDrift && !syncedPathIds.has(learningPath.id)) {
+          syncedPathIds.add(learningPath.id);
+          void syncPathProgressForMember(learningPath.id, profileId).catch((syncErr) => {
+            console.error('Self-healing learning path progress cache failed:', syncErr);
+          });
+        }
+
+        const totalCourses = courses.length;
+        const progressPercent = totalCourses > 0 ? Math.round((completedCount / totalCourses) * 100) : 0;
+
+        const certificateRow = await getLearningPathCertificate(member.id);
+        const certificateData = certificateRow
+          ? {
+              certificateId: certificateRow.certificateId,
+              issuedAt: certificateRow.issuedAt,
+              fileUrl: certificateRow.fileUrl
+            }
+          : null;
+
+        const memberProgressData = {
+          id: member.id,
+          status: member.status,
+          enrolledAt: member.enrolledAt,
+          completedAt: member.completedAt,
+          progressPercent,
+          completedCourseCount: completedCount,
+          currentCourseId: member.currentCourseId
+        };
+
+        return {
+          ...learningPath,
+          member: memberProgressData,
+          certificate: certificateData,
+          courses: coursesWithProgress
+        };
+      })
+    );
 
     return results;
   } catch (error) {

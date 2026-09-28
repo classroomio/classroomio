@@ -15,6 +15,7 @@ function emptyResults(): GroupedSearchResults {
   return {
     course: [],
     cohort: [],
+    learning_path: [],
     widget: [],
     tag: [],
     audience: [],
@@ -147,6 +148,16 @@ function mapSearchResults(data: SearchOrgData, currentOrgPath: string): GroupedS
     })
   );
 
+  results.learning_path = (data.paths ?? []).map(
+    (path): SearchResultItem => ({
+      kind: 'learning_path',
+      id: path.id,
+      title: path.name,
+      subtitle: summarize(path.description),
+      url: `/paths/${path.publicId}`
+    })
+  );
+
   results.widget = data.widgets.map(
     (widget): SearchResultItem => ({
       kind: 'widget',
@@ -200,6 +211,16 @@ function mapLmsSearchResults(data: SearchLmsData): GroupedSearchResults {
       title: cohort.name,
       subtitle: summarize(cohort.description),
       url: `/cohorts/${cohort.id}/courses`
+    })
+  );
+
+  results.learning_path = (data.paths ?? []).map(
+    (path): SearchResultItem => ({
+      kind: 'learning_path',
+      id: path.id,
+      title: path.name,
+      subtitle: summarize(path.description),
+      url: `/paths/${path.publicId}`
     })
   );
 

@@ -37,6 +37,7 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { recordDirectCourseGrant } from './enrollment-grants';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
@@ -713,12 +714,19 @@ export async function enrollInCourse(
     });
   }
 
-  await addGroupMember({
+  const [createdMember] = await addGroupMember({
     groupId,
     roleId: ROLE.STUDENT,
     profileId: user.id,
     email: normalizedEmail
   });
+
+  if (createdMember) {
+    await recordDirectCourseGrant(
+      { groupmemberId: createdMember.id, courseId, profileId: user.id },
+      { source: 'SELF_ENROLL' }
+    );
+  }
 
   await invalidateOrgStats(org.id);
 
@@ -1060,7 +1068,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       );
     }
 
-    await addGroupMember(
+    const [createdMember] = await addGroupMember(
       {
         groupId: course.groupId,
         roleId: ROLE.STUDENT,
@@ -1069,6 +1077,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       },
       tx
     );
+
+    if (createdMember) {
+      await recordDirectCourseGrant(
+        { groupmemberId: createdMember.id, courseId: course.id, profileId: user.id },
+        { source: 'INVITE', grantedByProfileId: invite.createdByProfileId ?? undefined },
+        tx
+      );
+    }
 
     await markUserAndProfileEmailVerified(user.id, tx);
 

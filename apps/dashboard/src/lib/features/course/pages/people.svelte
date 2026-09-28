@@ -18,10 +18,10 @@
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { ComingSoon, RoleBasedSecurity, TablePagination, UpgradeBanner } from '$features/ui';
   import { TruncatedWithTooltip } from '$features/ui';
-  import InvitationModal from '$features/course/components/people/invitation-modal.svelte';
+  import InvitationModal from '$features/people/components/invitation-modal.svelte';
   import GrantAccessModal from '$features/course/components/people/grant-access-modal.svelte';
   import DeleteConfirmation from '$features/course/components/people/delete-confirmation.svelte';
-  import { isStudentLimitReached } from '$lib/utils/store/org';
+  import { isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
 
   import { profile } from '$lib/utils/store/user';
   import type { CourseMembers, CourseMember, CourseMembersPagination } from '$features/course/utils/types';
@@ -51,6 +51,7 @@
 
   let member = $state<MemberDeleteTarget>({});
   let filterBy: string = $state(`${ROLES[0].value}`);
+  let sourceFilter: string = $state('all');
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
   let memberRows = $state<CourseMembers>([]);
@@ -218,6 +219,27 @@
   }
 
   const selectOptions = $derived(ROLES.map((role) => ({ label: $t(role.label), value: `${role.value}` })));
+  const sourceOptions = $derived([
+    { label: $t('course.navItem.people.source_filter_all'), value: 'all' },
+    { label: $t('course.navItem.people.source_filter_direct'), value: 'direct' },
+    { label: $t('course.navItem.people.source_learning_path'), value: 'LEARNING_PATH' },
+    { label: $t('course.navItem.people.source_cohort'), value: 'COHORT' }
+  ]);
+
+  /** Page-local source filter over the loaded page (no refetch). */
+  const visibleRows = $derived.by(() => {
+    if (sourceFilter === 'LEARNING_PATH' || sourceFilter === 'COHORT') {
+      return memberRows.filter((person) => person.enrollmentSource === sourceFilter);
+    }
+
+    if (sourceFilter === 'direct') {
+      return memberRows.filter(
+        (person) => person.enrollmentSource !== 'LEARNING_PATH' && person.enrollmentSource !== 'COHORT'
+      );
+    }
+
+    return memberRows;
+  });
 </script>
 
 <InvitationModal onMembersChanged={refreshCurrentPage} />
@@ -250,6 +272,20 @@
         </Select.Group>
       </Select.Content>
     </Select.Root>
+    <Select.Root type="single" name="source" bind:value={sourceFilter}>
+      <Select.Trigger class="max-w-[130px]">
+        {sourceOptions.find((option) => option.value === sourceFilter)?.label}
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Group>
+          {#each sourceOptions as option (option.value)}
+            <Select.Item value={option.value} label={option.label} disabled={option.value === sourceFilter}>
+              {option.label}
+            </Select.Item>
+          {/each}
+        </Select.Group>
+      </Select.Content>
+    </Select.Root>
   </div>
 
   <div class="overflow-x-auto rounded-md border">
@@ -258,6 +294,7 @@
         <Table.Header>
           <Table.Row>
             <Table.Head>{$t('course.navItem.people.learner')}</Table.Head>
+            <Table.Head>{$t('course.navItem.people.source')}</Table.Head>
             <Table.Head>{$t('course.navItem.people.progress')}</Table.Head>
             <Table.Head class="max-w-[220px]">{$t('course.navItem.people.stage')}</Table.Head>
             <Table.Head>{$t('course.navItem.people.last_login_at')}</Table.Head>
@@ -268,18 +305,18 @@
         <Table.Body>
           {#if isLoadingMembers && memberRows.length === 0}
             <Table.Row>
-              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+              <Table.Cell colspan={7} class="ui:text-muted-foreground py-8 text-center text-sm">
                 {$t('course.navItem.people.invite_modal.loading')}
               </Table.Cell>
             </Table.Row>
-          {:else if memberRows.length === 0}
+          {:else if visibleRows.length === 0}
             <Table.Row>
-              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+              <Table.Cell colspan={7} class="ui:text-muted-foreground py-8 text-center text-sm">
                 {$t('course.search.empty')}
               </Table.Cell>
             </Table.Row>
           {:else}
-            {#each memberRows as person (person.id)}
+            {#each visibleRows as person (person.id)}
               <Table.Row
                 class={person.profileId ? navigableRowClass : 'group'}
                 tabindex={person.profileId ? 0 : undefined}
@@ -361,6 +398,25 @@
                         <Chip value={$t('course.navItem.people.pending')} className="bg-yellow-200 text-yellow-700" />
                       </div>
                     </div>
+                  {/if}
+                </Table.Cell>
+
+                <Table.Cell class="min-w-[110px]">
+                  {#if person.enrollmentSource === 'LEARNING_PATH' && person.enrollmentSourcePathId}
+                    {#if $isOrgAdmin}
+                      <a
+                        href={`/paths/${person.enrollmentSourcePathId}`}
+                        class="ui:text-primary text-sm font-medium hover:underline"
+                      >
+                        <Badge variant="outline">{$t('course.navItem.people.source_learning_path')}</Badge>
+                      </a>
+                    {:else}
+                      <Badge variant="outline">{$t('course.navItem.people.source_learning_path')}</Badge>
+                    {/if}
+                  {:else if person.enrollmentSource === 'COHORT'}
+                    <Badge variant="outline">{$t('course.navItem.people.source_cohort')}</Badge>
+                  {:else}
+                    <span class="ui:text-muted-foreground text-sm">—</span>
                   {/if}
                 </Table.Cell>
 
