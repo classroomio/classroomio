@@ -312,6 +312,53 @@
   .add-row-tile:hover { border-color: var(--ring); color: var(--foreground); background: var(--accent); }
   .add-row-tile svg { width: 15px; height: 15px; stroke-width: 2; }
 
+  /* slide section: production-accurate add control + card menu + picker */
+  .dd-menu { position: relative; display: inline-flex; flex-shrink: 0; }
+  .dd-menu-panel {
+    position: absolute; right: 0; top: calc(100% + 4px); min-width: 168px; background: var(--popover); color: var(--popover-foreground);
+    border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: 4px; z-index: 60; display: none;
+  }
+  .dd-menu.open .dd-menu-panel { display: block; }
+  .dd-menu-item {
+    display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: var(--radius-sm);
+    border: none; background: transparent; font-size: 13px; text-align: left; cursor: pointer; font: inherit; color: var(--foreground);
+  }
+  .dd-menu-item:hover { background: var(--accent); }
+  .dd-menu-item.danger { color: #dc2626; }
+  .dd-menu-item svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
+  .slide-platform-ic { display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: var(--radius-md); flex-shrink: 0; }
+  .slide-platform-ic svg { width: 100%; height: 100%; }
+  .dialog-wide { max-width: 860px; }
+  .slide-picker { display: flex; flex-direction: column; min-height: 380px; width: 100%; border: 1px dashed var(--border); border-radius: var(--radius-xl); background: var(--background); overflow: hidden; }
+  @media (min-width: 768px) { .slide-picker { flex-direction: row; } }
+  .slide-picker-side { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  @media (min-width: 768px) { .slide-picker-side { width: 216px; border-bottom: none; border-right: 1px solid var(--border); } }
+  .slide-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--input); border-radius: var(--radius-md); padding: 0 8px; box-shadow: var(--shadow-2xs); }
+  .slide-search svg { width: 14px; height: 14px; color: var(--muted-foreground); flex-shrink: 0; }
+  .slide-search input { border: none; background: transparent; height: 32px; font: inherit; font-size: 13px; flex: 1; outline: none; color: var(--foreground); }
+  .slide-nav { display: flex; flex-direction: column; gap: 2px; overflow: auto; max-height: 220px; }
+  @media (min-width: 768px) { .slide-nav { max-height: none; flex: 1; } }
+  .slide-nav-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border-radius: var(--radius-md); border: none; background: transparent; font-size: 13px; text-align: left; cursor: pointer; font: inherit; color: var(--foreground); }
+  .slide-nav-item:hover { background: color-mix(in oklab, var(--muted) 60%, transparent); }
+  .slide-nav-item.active { background: var(--secondary); color: var(--secondary-foreground); }
+  .slide-nav-item .slide-platform-ic { width: 28px; height: 28px; }
+  .slide-picker-main { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 16px; overflow: auto; min-width: 0; }
+  .slide-platform-head { display: flex; align-items: center; gap: 12px; }
+  .slide-platform-head .slide-platform-ic { width: 40px; height: 40px; }
+  .slide-platform-head .nm { font-size: 15px; font-weight: 600; }
+  .slide-platform-head .hint { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
+  .slide-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .slide-steps li { display: flex; gap: 10px; font-size: 13px; }
+  .slide-steps .num { width: 20px; height: 20px; border-radius: 999px; background: var(--foreground); color: var(--background); flex-shrink: 0; display: grid; place-items: center; font-size: 11px; font-weight: 600; margin-top: 1px; }
+  .slide-steps .txt { color: var(--muted-foreground); }
+  .slide-embed-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .slide-preview-label { font-size: 13px; font-weight: 500; margin: 0 0 8px; }
+  .slide-preview-box { background: var(--muted); border: 1px dashed var(--border); border-radius: var(--radius-md); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); font-size: 13px; text-align: center; padding: 12px; }
+  .slide-preview-ready { color: #059669; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+  .slide-preview-ready svg { width: 14px; height: 14px; stroke-width: 2.4; }
+  .slide-preview-frame { background: var(--muted); border-radius: var(--radius-md); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); overflow: hidden; }
+  .slide-preview-frame svg { width: 32px; height: 32px; stroke-width: 1.5; }
+
   .add-content-row { display: flex; flex-wrap: wrap; gap: 12px; }
   .add-tile { flex: 1 1 140px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; color: var(--muted-foreground); cursor: pointer; background: transparent; font: inherit; }
   .add-tile:hover { border-color: var(--ring); background: var(--accent); color: var(--foreground); }
@@ -515,10 +562,18 @@
             <div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Slide</div>
             <div class="media-grid edit-only" id="slideGrid">
               <div class="media-card">
-                <div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><div class="cap">Props vs State — Slide Deck</div></div>
+                <div class="media-thumb">
+                  <span class="slide-platform-ic" style="width:48px;height:48px"><svg viewBox="0 0 24 24" fill="none"><path fill="#FBBC04" d="M16.09 15.273H7.91v-4.637h8.18v4.637zm1.728-8.523h2.91v15.614c0 .904-.733 1.636-1.637 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.068v6.75h3.841zm-.363 2.523H6.545v7.363h10.91V9.273zm-2.728-5.979V6h6.001l-6-6v3.294z"/></svg></span>
+                  <div class="cap">Google Slides</div>
+                </div>
                 <div class="media-body"><div class="media-info">
-                  <div class="media-title-row"><div class="media-title">Props vs State — Slide Deck</div>
-                    <button class="icon-btn edit-only" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  <div class="media-title-row"><div class="media-title">Google Slides</div>
+                    <div class="dd-menu">
+                      <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Slide actions" onclick="toggleSlideMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                      <div class="dd-menu-panel">
+                        <button class="dd-menu-item danger" onclick="removeSlideCard(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove slide</button>
+                      </div>
+                    </div>
                   </div>
                   <div class="media-sub">docs.google.com</div>
                 </div></div>
@@ -530,7 +585,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
               </div>
               <div class="preview-media-caption">
-                <div class="preview-media-title">Props vs State — Slide Deck</div>
+                <div class="preview-media-title">Google Slides</div>
                 <div class="preview-media-sub">docs.google.com</div>
               </div>
             </div>
@@ -804,15 +859,6 @@
         </div>
       </div>
       <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('document')">Add document</button></div>`,
-    'slide-more': `
-      <div class="dialog-head"><h2 class="dialog-title">Add slide</h2><p class="dialog-desc">Paste a link from any of the 10 supported slide platforms.</p></div>
-      <div class="dialog-body">
-        <div class="platform-grid">
-          ${['Google Slides','Canva','PowerPoint','Keynote','Figma','Prezi','Pitch','Gamma','SlideShare','Beautiful'].map((n,i)=>`<button type="button" class="platform-btn ${i===1?'on':''}"><span class="sw" style="background:hsl(${i*36},55%,45%)">${n.slice(0,2).toUpperCase()}</span><span class="nm">${n}</span></button>`).join('')}
-        </div>
-        <div class="field"><label class="label">Slide link</label><input class="input" value="https://www.canva.com/design/thinking-in-components" /></div>
-      </div>
-      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('slide-more')">Add slide</button></div>`,
     'video-more': `
       <div class="dialog-head"><h2 class="dialog-title">Add video</h2><p class="dialog-desc">The same "Add video" dialog used today, with all six sources.</p></div>
       <div class="dialog-body">
@@ -832,8 +878,140 @@
     lib: '<p class="hint" style="margin:0 0 8px">Previously uploaded to this workspace:</p><div class="media-thumb" style="width:100px;aspect-ratio:16/9;border-radius:6px"><svg class="big" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></div>',
     gd: '<button class="btn btn-outline btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2v20M2 12h20"/></svg>Connect Google Drive</button>'
   };
+
+  // ---- Slide platforms (matches @cio/ui SlideEmbedPicker / SlidePlatformIcon exactly) ----
+  const SLIDE_PLATFORMS = [
+    { id: 'google-slides', name: 'Google Slides' },
+    { id: 'canva', name: 'Canva' },
+    { id: 'powerpoint', name: 'PowerPoint' },
+    { id: 'keynote', name: 'Keynote' },
+    { id: 'figma', name: 'Figma Slides' },
+    { id: 'prezi', name: 'Prezi' },
+    { id: 'pitch', name: 'Pitch' },
+    { id: 'gamma', name: 'Gamma' },
+    { id: 'slideshare', name: 'SlideShare' },
+    { id: 'beautiful', name: 'Beautiful.ai' }
+  ];
+  const SLIDE_PLATFORM_ICONS = {
+    'google-slides': '<svg viewBox="0 0 24 24" fill="none"><path fill="#FBBC04" d="M16.09 15.273H7.91v-4.637h8.18v4.637zm1.728-8.523h2.91v15.614c0 .904-.733 1.636-1.637 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.068v6.75h3.841zm-.363 2.523H6.545v7.363h10.91V9.273zm-2.728-5.979V6h6.001l-6-6v3.294z"/></svg>',
+    canva:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="canva-g" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#00C4CC"/><stop offset="1" stop-color="#7D2AE8"/></linearGradient></defs><circle cx="12" cy="12" r="12" fill="url(#canva-g)"/><path d="M16.7 7.55c-1.15-1.45-3.05-2.25-5.05-2.05-2.85.3-4.85 2.7-4.85 5.55 0 2.95 2.2 5.4 5.15 5.55 1.85.1 3.55-.7 4.65-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/><path d="M16.15 6.85c.35-.45.15-.85-.25-.75-1.15.3-1.85.15-2.55.1" fill="none" stroke="#fff" stroke-width="1.15" stroke-linecap="round"/></svg>',
+    powerpoint:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="ppt-g" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#DE5A2C"/><stop offset="1" stop-color="#C43E1C"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#ppt-g)"/><path fill="#fff" d="M8.15 6.4h4.15c2.42 0 3.95 1.38 3.95 3.48 0 2.14-1.56 3.52-3.98 3.52H9.85v4.2H8.15V6.4zm1.7 1.55v3.9h2.28c1.42 0 2.28-.72 2.28-1.96 0-1.22-.86-1.94-2.28-1.94H9.85z"/></svg>',
+    keynote:
+      '<svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#F4F4F6"/><defs><linearGradient id="kn-g" x1="8" y1="5" x2="16" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#FF8A3D"/><stop offset="1" stop-color="#FF3B30"/></linearGradient></defs><path fill="url(#kn-g)" d="M12 4.4 18.2 12 12 19.6 5.8 12 12 4.4Z"/></svg>',
+    figma:
+      '<svg viewBox="0 0 38 57" fill="none"><path fill="#1ABCFE" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0Z"/><path fill="#0ACF83" d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0Z"/><path fill="#FF7262" d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19Z"/><path fill="#F24E1E" d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5Z"/><path fill="#A259FF" d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5Z"/></svg>',
+    prezi:
+      '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#1A1A2E"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#3181FF" stroke-width="1.6"/><circle cx="12" cy="12" r="2.1" fill="#3181FF"/></svg>',
+    pitch:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="pitch-g" x1="20" y1="3" x2="4" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#6B4DE6"/><stop offset="1" stop-color="#4F2CC8"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#pitch-g)"/><rect x="6.4" y="13.35" width="4.15" height="4.15" rx="1.35" fill="#fff"/><rect x="6.4" y="8.55" width="6.35" height="4.15" rx="1.35" fill="#fff"/><path fill="#fff" d="M6.4 3.75h9.35c.9 0 1.85.72 1.85 1.85v.45c0 1.13-.95 2.05-1.85 2.05H7.75A1.35 1.35 0 0 1 6.4 6.75V3.75Z"/></svg>',
+    gamma:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gamma-g" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#1B1F3B"/><stop offset="1" stop-color="#3B5BDB"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#gamma-g)"/><path fill="#fff" d="M15.9 7.15 12 4.85 8.1 7.15 12 9.45l3.9-2.3Zm.95 1.65-3.9 2.3v4.6l3.9-2.3v-4.6Zm-8.8 0v4.6l3.9 2.3v-4.6l-3.9-2.3ZM12 19.15l3.9-2.3-3.9-2.3-3.9 2.3 3.9 2.3Z"/></svg>',
+    slideshare:
+      '<svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#fff"/><circle cx="9" cy="12" r="4" fill="#008ED2"/><circle cx="16" cy="12" r="4" fill="#008ED2"/></svg>',
+    beautiful:
+      '<svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#152238"/><path fill="#fff" d="M8.2 5.9h2.25v4.15c.5-.6 1.25-.95 2.15-.95 2.15 0 3.6 1.6 3.6 3.85s-1.5 3.9-3.65 3.9c-1.05 0-1.9-.4-2.4-1.1v.9H8.2V5.9zm2.25 6.55c0 1.3.8 2.2 2 2.2 1.2 0 1.95-.9 1.95-2.2s-.75-2.2-1.95-2.2-2 .9-2 2.2z"/><circle cx="16.05" cy="16.35" r="1.45" fill="#3DDCFF"/></svg>'
+  };
+  const SLIDE_PLATFORM_COPY = {
+    'google-slides': { hint: 'File → Share → Publish to web → Embed', steps: ['Open your deck and choose File → Share → Publish to web.', 'Switch to the Embed tab and click Publish.', 'Copy the iframe embed code and paste it here.'] },
+    canva: { hint: 'Share → More → Embed', steps: ['Above the editor, click Share → More.', 'Choose Embed and confirm (this makes the design public).', 'Copy the HTML embed code and paste it here.'] },
+    powerpoint: { hint: 'PowerPoint for the web → File → Share → Embed', steps: ['Save the deck to OneDrive, then open it in PowerPoint for the web.', 'Choose File → Share → Embed and pick your dimensions.', 'Copy the iframe embed code and paste it here. We size the player ourselves.'] },
+    keynote: { hint: 'Collaborate → Copy Link, then embed', steps: ['Click Collaborate and set access to Anyone with the link · View only.', 'Copy the iCloud link, then get the embed code for your website.', 'Paste the iframe embed code here.'] },
+    figma: { hint: 'Share a Figma Slides file and copy the embed', steps: ['Open your Figma Slides file and enable link sharing.', 'Copy the embed code for the /slides or /deck file.', 'Paste the iframe embed code here.'] },
+    prezi: { hint: 'Share → Embed', steps: ['From the dashboard, open Share on your presentation.', 'Click Embed and copy the code.', 'Paste the iframe embed code here.'] },
+    pitch: { hint: 'Share externally → Copy embed code', steps: ['Click Share → Share externally and create a public link.', 'Open the link Options (⋯) and choose Copy embed code.', 'Paste the iframe embed code here.'] },
+    gamma: { hint: 'Share → enable public access → copy iframe', steps: ['Open Share and toggle Allow public access.', 'Copy the generated iframe embed code.', 'Paste the iframe embed code here.'] },
+    slideshare: { hint: 'Share → Embed under the deck', steps: ['Open the public deck on slideshare.net.', 'Click Share under the viewer and open the Embed tab.', 'Copy the iframe embed code and paste it here.'] },
+    beautiful: { hint: 'Sharing Settings → Public → Get Embed Code', steps: ['Open Sharing Settings and switch the deck to Public.', 'Click Get Embed Code.', 'Paste the iframe embed code here.'] }
+  };
+  let slideSelectedId = SLIDE_PLATFORMS[0].id;
+
+  function buildSlidePickerDialog() {
+    const platform = SLIDE_PLATFORMS.find((p) => p.id === slideSelectedId);
+    const copy = SLIDE_PLATFORM_COPY[slideSelectedId];
+    const navHtml = SLIDE_PLATFORMS.map(
+      (p) => `<button type="button" class="slide-nav-item ${p.id === slideSelectedId ? 'active' : ''}" data-platform="${p.id}" onclick="selectSlidePlatform('${p.id}')"><span class="slide-platform-ic">${SLIDE_PLATFORM_ICONS[p.id]}</span><span>${p.name}</span></button>`
+    ).join('');
+    const stepsHtml = copy.steps
+      .map((step, i) => `<li><span class="num">${i + 1}</span><span class="txt">${step}</span></li>`)
+      .join('');
+
+    return `
+      <div class="dialog-head"><h2 class="dialog-title">Add a slide</h2></div>
+      <div class="dialog-body">
+        <div class="slide-picker">
+          <div class="slide-picker-side">
+            <div class="slide-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="search" id="slideSearch" placeholder="Search platforms" autocomplete="off" oninput="filterSlidePlatforms(this.value)" /></div>
+            <nav class="slide-nav" id="slideNav">${navHtml}</nav>
+          </div>
+          <div class="slide-picker-main">
+            <div class="slide-platform-head">
+              <span class="slide-platform-ic">${SLIDE_PLATFORM_ICONS[slideSelectedId]}</span>
+              <div><p class="nm">${platform.name}</p><p class="hint">${copy.hint}</p></div>
+            </div>
+            <ol class="slide-steps">${stepsHtml}</ol>
+            <div class="field"><label class="label">Paste embed code</label><textarea class="textarea" id="slideEmbedInput" rows="4" placeholder="Paste the full iframe embed code here" oninput="onSlideEmbedInput()"></textarea></div>
+            <div class="slide-embed-actions">
+              <a class="btn btn-outline btn-sm" href="https://classroomio.com/help/build-courses/add-slides-and-presentations#${slideSelectedId}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>How to embed ${platform.name}</a>
+            </div>
+            <div>
+              <p class="slide-preview-label">Preview</p>
+              <div id="slidePreviewArea"><div class="slide-preview-box">Paste the full iframe embed code here</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="slideAddBtn" disabled onclick="confirmAdd('slide-more')">Add slide</button></div>`;
+  }
+
+  function selectSlidePlatform(id) {
+    slideSelectedId = id;
+    document.getElementById('dialogBox').innerHTML = buildSlidePickerDialog();
+  }
+
+  function filterSlidePlatforms(query) {
+    const q = query.trim().toLowerCase();
+    document.querySelectorAll('#slideNav .slide-nav-item').forEach((btn) => {
+      const name = btn.textContent.trim().toLowerCase();
+      btn.hidden = !name.includes(q);
+    });
+  }
+
+  function onSlideEmbedInput() {
+    const hasText = document.getElementById('slideEmbedInput').value.trim().length > 0;
+    document.getElementById('slideAddBtn').disabled = !hasText;
+    const platform = SLIDE_PLATFORMS.find((p) => p.id === slideSelectedId);
+    document.getElementById('slidePreviewArea').innerHTML = hasText
+      ? `<p class="slide-preview-ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Embed ready</p><div class="slide-preview-frame"><span class="slide-platform-ic" style="width:40px;height:40px">${SLIDE_PLATFORM_ICONS[slideSelectedId]}</span></div>`
+      : '<div class="slide-preview-box">Paste the full iframe embed code here</div>';
+  }
+
+  function toggleSlideMenu(btn) {
+    const menu = btn.closest('.dd-menu');
+    const wasOpen = menu.classList.contains('open');
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+    if (!wasOpen) menu.classList.add('open');
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dd-menu')) document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+  });
+
+  function removeSlideCard(btn) {
+    btn.closest('.media-card').remove();
+  }
+
   function openAddDialog(kind) {
-    document.getElementById('dialogBox').innerHTML = dialogTemplates[kind];
+    const dialogBox = document.getElementById('dialogBox');
+    if (kind === 'slide-more') {
+      slideSelectedId = SLIDE_PLATFORMS[0].id;
+      dialogBox.style.maxWidth = '860px';
+      dialogBox.innerHTML = buildSlidePickerDialog();
+      document.body.classList.add('dialog-open');
+      return;
+    }
+    dialogBox.style.maxWidth = '480px';
+    dialogBox.innerHTML = dialogTemplates[kind];
     document.body.classList.add('dialog-open');
     const tabs = document.getElementById('videoTabs');
     if (tabs) {
@@ -910,10 +1088,25 @@
       document.querySelector('#videoGrid .add-media-tile').insertAdjacentElement('beforebegin', card);
     }
     if (kind === 'slide-more') {
+      const platform = SLIDE_PLATFORMS.find((p) => p.id === slideSelectedId);
       const card = document.createElement('div');
       card.className = 'media-card';
-      card.innerHTML = `<div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><div class="cap">Thinking in Components — Slide Deck</div></div>
-        <div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">Thinking in Components — Slide Deck</div></div><div class="media-sub">canva.com</div></div></div>`;
+      card.innerHTML = `
+        <div class="media-thumb">
+          <span class="slide-platform-ic" style="width:48px;height:48px">${SLIDE_PLATFORM_ICONS[slideSelectedId]}</span>
+          <div class="cap">${platform.name}</div>
+        </div>
+        <div class="media-body"><div class="media-info">
+          <div class="media-title-row"><div class="media-title">${platform.name}</div>
+            <div class="dd-menu">
+              <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Slide actions" onclick="toggleSlideMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+              <div class="dd-menu-panel">
+                <button class="dd-menu-item danger" onclick="removeSlideCard(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove slide</button>
+              </div>
+            </div>
+          </div>
+          <div class="media-sub">example.com</div>
+        </div></div>`;
       document.querySelector('#slideGrid .add-media-tile').insertAdjacentElement('beforebegin', card);
     }
     closeDialog();
@@ -922,6 +1115,7 @@
 
   // ---- Empty-lesson Add content flow ----
   function toggleAddMenu() {
+    document.getElementById('dialogBox').style.maxWidth = '480px';
     document.getElementById('dialogBox').innerHTML = `
       <div class="dialog-head"><h2 class="dialog-title">Add content</h2><p class="dialog-desc">Choose a content type. This opens the same add flow used everywhere else in ClassroomIO.</p></div>
       <div class="dialog-body"><div class="add-content-row">
