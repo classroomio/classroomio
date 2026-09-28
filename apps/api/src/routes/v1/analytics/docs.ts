@@ -10,8 +10,8 @@ export const CACHE_NOTE =
 export const LIST_CACHE_NOTE = 'Results may be cached for up to 10 minutes.';
 export const PAGINATION_NOTE = 'Paginated with page (default 1) and limit (default 20, max 100).';
 
-/** Tells clients and proxies how long they may reuse an analytics response. Private: it is org data. */
-export const ANALYTICS_CACHE_CONTROL = 'private, max-age=60';
+/** Responses depend on the API key, not just the URL, so no cache (private ones included) may store them. */
+export const ANALYTICS_CACHE_CONTROL = 'private, no-store';
 
 export const analyticsForbiddenResponses = {
   orgTeam: {

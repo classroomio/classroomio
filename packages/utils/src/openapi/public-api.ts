@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, and every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 

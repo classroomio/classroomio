@@ -62,13 +62,13 @@ describe('GET /analytics', () => {
     vi.clearAllMocks();
   });
 
-  it('defaults to the overview section with data, meta and a private cache header', async () => {
+  it('defaults to the overview section with data, meta and a no-store cache header', async () => {
     vi.mocked(getPublicApiOrgAnalyticsService).mockResolvedValue(ORG_RESULT as never);
 
     const response = await app.request('/analytics');
 
     expect(response.status).toBe(200);
-    expect(response.headers.get('Cache-Control')).toBe('private, max-age=60');
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
     expect(await response.json()).toEqual({ success: true, ...ORG_RESULT });
     expect(getPublicApiOrgAnalyticsService).toHaveBeenCalledWith('org-1', 'actor-1', {
       include: ['overview'],
