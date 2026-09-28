@@ -42,6 +42,15 @@ export interface CertificateQrCodeConfig {
   position?: 'bottom_right' | 'bottom_left' | 'center' | string;
 }
 
+export interface CertificateLayoutConfig {
+  headerOffsetY?: number;
+  titleOffsetY?: number;
+  recipientOffsetY?: number;
+  courseOffsetY?: number;
+  badgeOffsetY?: number;
+  footerOffsetY?: number;
+}
+
 export interface CertificateDesign {
   rendererTemplateId: CertificateTemplateId;
   templateId: CertificateTemplateId; // for backwards compatibility
@@ -56,6 +65,7 @@ export interface CertificateDesign {
   background?: CertificateBackgroundConfig;
   badge?: CertificateBadgeConfig;
   qrCode?: CertificateQrCodeConfig;
+  layout?: CertificateLayoutConfig;
 }
 
 export interface StoredCertificateSignatory {
@@ -79,6 +89,7 @@ export interface StoredCertificateDesign {
   background?: CertificateBackgroundConfig;
   badge?: CertificateBadgeConfig;
   qrCode?: CertificateQrCodeConfig;
+  layout?: CertificateLayoutConfig;
 }
 
 /**

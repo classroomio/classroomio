@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
+  import { onDestroy, onMount } from 'svelte';
+  import { afterNavigate, goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
+  import { isFocusMode, exitFocusMode } from '$features/course/store/focus-mode';
   import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
   import { CourseSidebar } from '$features/course/components/sidebar';
@@ -177,7 +178,23 @@
       // localStorage unavailable
     }
   });
+
+  afterNavigate(() => {
+    exitFocusMode();
+  });
+
+  onDestroy(() => {
+    exitFocusMode();
+  });
 </script>
+
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'Escape' && $isFocusMode) {
+      exitFocusMode();
+    }
+  }}
+/>
 
 <svelte:head>
   <title>{courseApi.course?.title || 'ClassroomIO Course'}</title>
@@ -213,17 +230,21 @@
   data-sveltekit-preload-data="off"
   style={`--sidebar-width: ${sidebarWidth}px; --side-panel-width: ${sidePanel.width}px;`}
 >
-  <CourseSidebar
-    path={currentPath}
-    id={data.courseId}
-    {isCourseReady}
-    {sidebarWidth}
-    onSidebarWidthPreview={handleSidebarWidthPreview}
-    onSidebarWidthChange={handleSidebarWidthChange}
-  />
+  {#if !$isFocusMode}
+    <CourseSidebar
+      path={currentPath}
+      id={data.courseId}
+      {isCourseReady}
+      {sidebarWidth}
+      onSidebarWidthPreview={handleSidebarWidthPreview}
+      onSidebarWidthChange={handleSidebarWidthChange}
+    />
+  {/if}
 
-  <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
-    <CourseHeader />
+  <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav && !$isFocusMode ? 'pb-24' : ''}">
+    {#if !$isFocusMode}
+      <CourseHeader />
+    {/if}
     <ContentCreateModal />
     <CourseCompletionModal />
 
@@ -244,7 +265,7 @@
 
       {@render children?.()}
 
-      {#if showContentAskAiBar}
+      {#if showContentAskAiBar && !$isFocusMode}
         <ContentAskAiBar
           class={contentAskAiWidthClass}
           bottomClass={contentAskAiBarBottomClass}
@@ -252,11 +273,13 @@
         />
       {/if}
 
-      {#if showMobileBottomNav}
+      {#if showMobileBottomNav && !$isFocusMode}
         <CourseMobileBottomNav courseId={data.courseId} path={currentPath} />
       {/if}
     {/if}
   </Sidebar.Inset>
 
-  <SidePanelRail onWidthPreview={handleSidePanelWidthPreview} />
+  {#if !$isFocusMode}
+    <SidePanelRail onWidthPreview={handleSidePanelWidthPreview} />
+  {/if}
 </Sidebar.Provider>

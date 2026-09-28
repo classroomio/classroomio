@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Play, ArrowRight, CheckCircle2, BookOpen } from '@lucide/svelte';
+  import { isCourseLearnerView, isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
 
   interface ContentItem {
     id: string;
@@ -26,6 +27,8 @@
   }
 
   let { course = {}, contentData }: Props = $props();
+
+  const isLearner = $derived(Boolean($isCourseLearnerView || $isOrgStudent || $isStudentExperience));
 
   const allNavigableItems = $derived.by(() => {
     if (!contentData) return [];
@@ -59,7 +62,7 @@
   });
 </script>
 
-{#if totalCount > 0}
+{#if isLearner && totalCount > 0}
   {#if upNextItem && nextUrl}
     <div
       class="border-primary/20 from-primary/5 via-card to-card mb-6 overflow-hidden rounded-xl border bg-linear-to-r p-4 shadow-xs sm:p-5"

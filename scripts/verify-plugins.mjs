@@ -8,6 +8,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const PLUGINS_DIR = join(ROOT, 'plugins');
 const EN_TRANSLATIONS_PATH = join(ROOT, 'apps', 'dashboard', 'src', 'lib', 'utils', 'translations', 'en.json');
 const PLUGINS_BARREL_PATH = join(PLUGINS_DIR, 'index.ts');
+const JOURNAL_PATH = join(PLUGINS_DIR, 'meta', '_journal.json');
 
 const VALID_CATEGORIES = ['activity', 'block', 'integration', 'certificate', 'landing', 'enrollment'];
 
@@ -128,7 +129,7 @@ function getNestedProperty(obj, path) {
 }
 
 /** Comprehensive audit of a single discovered plugin */
-async function auditPlugin(plugin, enTranslations, barrelContent) {
+async function auditPlugin(plugin, enTranslations, barrelContent, journalEntries = []) {
   const errors = [];
   const warnings = [];
   const indexContent = await readFile(plugin.indexPath, 'utf8');
@@ -295,6 +296,14 @@ async function auditPlugin(plugin, enTranslations, barrelContent) {
     }
   }
 
+  // 6. Journal Ledger Verification
+  if (pluginId && Array.isArray(journalEntries)) {
+    const journalEntry = journalEntries.find((e) => e.id === pluginId);
+    if (!journalEntry) {
+      warnings.push(`Journal Ledger: Plugin "${pluginId}" is not registered in plugins/meta/_journal.json.`);
+    }
+  }
+
   const status = errors.length > 0 ? 'FAIL' : warnings.length > 0 ? 'WARN' : 'PASS';
 
   return {
@@ -332,6 +341,16 @@ async function main() {
     barrelContent = await readFile(PLUGINS_BARREL_PATH, 'utf8');
   }
 
+  let journalEntries = [];
+  if (existsSync(JOURNAL_PATH)) {
+    try {
+      const journalJson = JSON.parse(await readFile(JOURNAL_PATH, 'utf8'));
+      journalEntries = journalJson.entries || [];
+    } catch {
+      // Ignored
+    }
+  }
+
   // Discover all plugins
   const discovered = await discoverPlugins(PLUGINS_DIR);
 
@@ -353,7 +372,7 @@ async function main() {
 
   const results = [];
   for (const target of targets) {
-    const result = await auditPlugin(target, enTranslations, barrelContent);
+    const result = await auditPlugin(target, enTranslations, barrelContent, journalEntries);
     results.push(result);
   }
 

@@ -7,14 +7,38 @@
   import * as Field from '@cio/ui/base/field';
   import { t } from '$lib/utils/functions/translations';
   import type { CertificateDesign } from '@cio/certificates';
-  import { FONT_OPTIONS, PALETTE_SWATCHES, type ToolCategory } from '../types';
+  import { FONT_OPTIONS, PALETTE_SWATCHES, type ToolCategory, type StudioElementId } from '../types';
 
   interface Props {
     selectedTool: ToolCategory;
+    selectedElement?: StudioElementId | null;
+    onSelectTool?: (tool: ToolCategory) => void;
+    onSelectElement?: (element: StudioElementId | null) => void;
     design: CertificateDesign;
   }
 
-  let { selectedTool = 'borders', design = $bindable() }: Props = $props();
+  let {
+    selectedTool = 'borders',
+    selectedElement = null,
+    onSelectTool = () => {},
+    onSelectElement = () => {},
+    design = $bindable()
+  }: Props = $props();
+
+  const LAYERS: {
+    id: StudioElementId;
+    label: string;
+    tool: ToolCategory;
+    offsetKey?: keyof NonNullable<CertificateDesign['layout']>;
+  }[] = [
+    { id: 'title', label: 'Title', tool: 'typography', offsetKey: 'titleOffsetY' },
+    { id: 'recipient', label: 'Recipient', tool: 'typography', offsetKey: 'recipientOffsetY' },
+    { id: 'course', label: 'Course', tool: 'layout', offsetKey: 'courseOffsetY' },
+    { id: 'badge', label: 'Seal', tool: 'badges', offsetKey: 'badgeOffsetY' },
+    { id: 'sig-left', label: 'Signatures', tool: 'signatories', offsetKey: 'footerOffsetY' },
+    { id: 'qrcode', label: 'QR Code', tool: 'qrcode' },
+    { id: 'border', label: 'Border', tool: 'borders' }
+  ];
 
   // Ensure nested objects exist to avoid undefined errors
   $effect.pre(() => {
@@ -31,6 +55,15 @@
       design.background = { style: 'parchment', primaryColor: '#faf8f2', secondaryColor: '#f3ede0' };
     if (!design.badge) design.badge = { style: 'gold_seal', label: 'OFFICIAL SEAL', foilColor: design.accentColor };
     if (!design.qrCode) design.qrCode = { enabled: true };
+    if (!design.layout) {
+      design.layout = {
+        titleOffsetY: 0,
+        recipientOffsetY: 0,
+        courseOffsetY: 0,
+        badgeOffsetY: 0,
+        footerOffsetY: 0
+      };
+    }
     if (!design.signatories) {
       design.signatories = [
         { name: 'Dr. Robert Ford', role: 'Dean of Academics', enabled: true },
@@ -56,6 +89,50 @@
       >
         {selectedTool}
       </Badge>
+    </div>
+  </div>
+
+  <!-- Layers Quick Navigation -->
+  <div class="border-b border-slate-100 bg-slate-50/70 px-3.5 py-2.5 dark:border-slate-800 dark:bg-slate-900/50">
+    <div class="mb-1.5 flex items-center justify-between">
+      <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+        {$t('certificate_studio.layers') || 'Layers & Elements'}
+      </span>
+      {#if selectedElement}
+        <button
+          type="button"
+          class="text-[10px] text-amber-600 hover:underline dark:text-amber-400"
+          onclick={() => onSelectElement(null)}
+        >
+          Deselect
+        </button>
+      {/if}
+    </div>
+    <div class="flex flex-wrap gap-1">
+      {#each LAYERS as layer}
+        <button
+          type="button"
+          class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium transition-all {selectedElement ===
+          layer.id
+            ? 'bg-amber-600 text-white shadow-xs'
+            : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'}"
+          onclick={() => {
+            onSelectElement(layer.id);
+            onSelectTool(layer.tool);
+          }}
+        >
+          <span>{layer.label}</span>
+          {#if layer.offsetKey && (design.layout?.[layer.offsetKey] ?? 0) !== 0}
+            <span
+              class="rounded-full px-1 font-mono text-[9px] {selectedElement === layer.id
+                ? 'bg-amber-700 text-white'
+                : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200'}"
+            >
+              {(design.layout?.[layer.offsetKey] ?? 0) > 0 ? '+' : ''}{design.layout?.[layer.offsetKey]}px
+            </span>
+          {/if}
+        </button>
+      {/each}
     </div>
   </div>
 
@@ -267,7 +344,7 @@
         {/each}
       </Field.Group>
     {:else}
-      <Field.Group class="space-y-3">
+      <Field.Group class="space-y-4">
         <Field.Field>
           <Field.Label class="text-xs font-semibold">{$t('certificate_studio.field_subtitle')}</Field.Label>
           <Input bind:value={design.subtitle} class="h-8 text-xs" />
@@ -277,6 +354,145 @@
           <Field.Label class="text-xs font-semibold">{$t('certificate_studio.field_description')}</Field.Label>
           <Textarea bind:value={design.descriptionOverride} rows={3} class="text-xs" />
         </Field.Field>
+
+        <div class="border-t border-slate-100 pt-3 dark:border-slate-800">
+          <div class="mb-3 flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Item Positions (Y-Axis)</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="h-6 px-2 text-[10px] text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+              onclick={() => {
+                if (design.layout) {
+                  design.layout.titleOffsetY = 0;
+                  design.layout.recipientOffsetY = 0;
+                  design.layout.courseOffsetY = 0;
+                  design.layout.badgeOffsetY = 0;
+                  design.layout.footerOffsetY = 0;
+                }
+              }}
+            >
+              Reset All
+            </Button>
+          </div>
+
+          <div class="space-y-3">
+            <Field.Field>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-medium text-slate-600 dark:text-slate-400">Title Position</span>
+                <span class="font-mono text-slate-500"
+                  >{(design.layout?.titleOffsetY ?? 0) > 0
+                    ? `+${design.layout?.titleOffsetY}px`
+                    : `${design.layout?.titleOffsetY ?? 0}px`}</span
+                >
+              </div>
+              <input
+                type="range"
+                min="-60"
+                max="60"
+                step="2"
+                value={design.layout?.titleOffsetY ?? 0}
+                oninput={(e) => {
+                  if (!design.layout) design.layout = {};
+                  design.layout.titleOffsetY = parseInt(e.currentTarget.value, 10);
+                }}
+                class="w-full accent-amber-600"
+              />
+            </Field.Field>
+
+            <Field.Field>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-medium text-slate-600 dark:text-slate-400">Recipient Name</span>
+                <span class="font-mono text-slate-500"
+                  >{(design.layout?.recipientOffsetY ?? 0) > 0
+                    ? `+${design.layout?.recipientOffsetY}px`
+                    : `${design.layout?.recipientOffsetY ?? 0}px`}</span
+                >
+              </div>
+              <input
+                type="range"
+                min="-60"
+                max="60"
+                step="2"
+                value={design.layout?.recipientOffsetY ?? 0}
+                oninput={(e) => {
+                  if (!design.layout) design.layout = {};
+                  design.layout.recipientOffsetY = parseInt(e.currentTarget.value, 10);
+                }}
+                class="w-full accent-amber-600"
+              />
+            </Field.Field>
+
+            <Field.Field>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-medium text-slate-600 dark:text-slate-400">Course & Description</span>
+                <span class="font-mono text-slate-500"
+                  >{(design.layout?.courseOffsetY ?? 0) > 0
+                    ? `+${design.layout?.courseOffsetY}px`
+                    : `${design.layout?.courseOffsetY ?? 0}px`}</span
+                >
+              </div>
+              <input
+                type="range"
+                min="-60"
+                max="60"
+                step="2"
+                value={design.layout?.courseOffsetY ?? 0}
+                oninput={(e) => {
+                  if (!design.layout) design.layout = {};
+                  design.layout.courseOffsetY = parseInt(e.currentTarget.value, 10);
+                }}
+                class="w-full accent-amber-600"
+              />
+            </Field.Field>
+
+            <Field.Field>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-medium text-slate-600 dark:text-slate-400">Seal / Badge</span>
+                <span class="font-mono text-slate-500"
+                  >{(design.layout?.badgeOffsetY ?? 0) > 0
+                    ? `+${design.layout?.badgeOffsetY}px`
+                    : `${design.layout?.badgeOffsetY ?? 0}px`}</span
+                >
+              </div>
+              <input
+                type="range"
+                min="-60"
+                max="60"
+                step="2"
+                value={design.layout?.badgeOffsetY ?? 0}
+                oninput={(e) => {
+                  if (!design.layout) design.layout = {};
+                  design.layout.badgeOffsetY = parseInt(e.currentTarget.value, 10);
+                }}
+                class="w-full accent-amber-600"
+              />
+            </Field.Field>
+
+            <Field.Field>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-medium text-slate-600 dark:text-slate-400">Signatures / Footer</span>
+                <span class="font-mono text-slate-500"
+                  >{(design.layout?.footerOffsetY ?? 0) > 0
+                    ? `+${design.layout?.footerOffsetY}px`
+                    : `${design.layout?.footerOffsetY ?? 0}px`}</span
+                >
+              </div>
+              <input
+                type="range"
+                min="-60"
+                max="60"
+                step="2"
+                value={design.layout?.footerOffsetY ?? 0}
+                oninput={(e) => {
+                  if (!design.layout) design.layout = {};
+                  design.layout.footerOffsetY = parseInt(e.currentTarget.value, 10);
+                }}
+                class="w-full accent-amber-600"
+              />
+            </Field.Field>
+          </div>
+        </div>
       </Field.Group>
     {/if}
   </div>

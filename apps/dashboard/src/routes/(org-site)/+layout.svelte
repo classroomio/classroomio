@@ -7,6 +7,7 @@
   import { getRequestBaseUrl } from '$lib/utils/services/api';
   import type { Snippet } from 'svelte';
   import type { PublicOrg } from '$features/app/types';
+  import { PluginSlot } from '$features/plugins';
 
   interface Props {
     children?: Snippet;
@@ -43,5 +44,6 @@
 {#if data.org?.isRestricted || $currentOrg.isRestricted}
   <PageRestricted />
 {:else}
+  <PluginSlot name="lms.banner" />
   {@render children?.()}
 {/if}

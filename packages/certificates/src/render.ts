@@ -172,7 +172,8 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
     typography: design?.typography,
     background: design?.background,
     badge: design?.badge,
-    qrCode: design?.qrCode
+    qrCode: design?.qrCode,
+    layout: design?.layout
   };
 }
 

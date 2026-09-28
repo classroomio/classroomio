@@ -3,6 +3,7 @@
   import { appConfig } from '$lib/utils/config';
   import { orgCapabilitiesApi } from './store/org-capabilities.svelte';
   import { resolveActiveSlotLoaders, type SlotName } from '@cio/sdk';
+  import { isCourseLearnerView, isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
 
   interface Props {
     name: SlotName;
@@ -11,6 +12,8 @@
   }
 
   let { name, context = {}, class: className = '' }: Props = $props();
+
+  const isLearner = $derived(Boolean($isCourseLearnerView || $isOrgStudent || $isStudentExperience));
 
   const components = $derived(
     resolveActiveSlotLoaders({
@@ -25,7 +28,7 @@
   <div class={className}>
     {#each components as loadComponent, index (`${name}-${index}`)}
       {#await loadComponent() then { default: Component }}
-        <Component {...context} />
+        <Component {isLearner} {...context} />
       {/await}
     {/each}
   </div>

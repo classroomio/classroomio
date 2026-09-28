@@ -42,6 +42,91 @@
         "adminOnly": true
       },
       "when": 1789200000000
+    },
+    {
+      "idx": 2,
+      "id": "activity_announcement_banner",
+      "name": "Announcement Banner",
+      "version": "1.0.0",
+      "category": "activity",
+      "description": "Dismissable broadcast banner at the top of the learner LMS for important notices.",
+      "path": "plugins/activity/announcement-banner",
+      "activation": {
+        "kind": "org-capability",
+        "capabilityId": "announcement_banner",
+        "nameKey": "plugins.announcement_banner.name",
+        "descriptionKey": "plugins.announcement_banner.description"
+      },
+      "slots": ["lms.banner"],
+      "when": 1789200000001
+    },
+    {
+      "idx": 3,
+      "id": "activity_lesson_reading_time",
+      "name": "Lesson Reading Time",
+      "version": "1.0.0",
+      "category": "activity",
+      "description": "Displays estimated reading time and provides a focus stopwatch for students during lessons.",
+      "path": "plugins/activity/lesson-reading-time",
+      "activation": {
+        "kind": "org-capability",
+        "capabilityId": "lesson_reading_time",
+        "nameKey": "plugins.lesson_reading_time.name",
+        "descriptionKey": "plugins.lesson_reading_time.description"
+      },
+      "slots": ["lesson.after"],
+      "when": 1789200000002
+    },
+    {
+      "idx": 4,
+      "id": "activity_completion_celebration",
+      "name": "Completion Celebration",
+      "version": "1.0.0",
+      "category": "activity",
+      "description": "Fires an celebratory confetti burst and shareable milestone badge upon course completion.",
+      "path": "plugins/activity/completion-celebration",
+      "activation": {
+        "kind": "org-capability",
+        "capabilityId": "completion_celebration",
+        "nameKey": "plugins.completion_celebration.name",
+        "descriptionKey": "plugins.completion_celebration.description"
+      },
+      "slots": ["certificate.actions"],
+      "when": 1789200000003
+    },
+    {
+      "idx": 5,
+      "id": "activity_learner_up_next",
+      "name": "Learner Up Next",
+      "version": "1.0.0",
+      "category": "activity",
+      "description": "Displays a 1-click resume card with progress tracking on the course page.",
+      "path": "plugins/activity/learner-up-next",
+      "activation": {
+        "kind": "org-capability",
+        "capabilityId": "learner_up_next",
+        "nameKey": "plugins.learner_up_next.name",
+        "descriptionKey": "plugins.learner_up_next.description"
+      },
+      "slots": ["course.sidebar"],
+      "when": 1789200000004
+    },
+    {
+      "idx": 6,
+      "id": "activity_lesson_acknowledgment",
+      "name": "Lesson Acknowledgment",
+      "version": "1.0.0",
+      "category": "activity",
+      "description": "Adds a learner compliance acknowledgment checkbox and audit log at the bottom of lessons.",
+      "path": "plugins/activity/lesson-acknowledgment",
+      "activation": {
+        "kind": "org-capability",
+        "capabilityId": "lesson_acknowledgment",
+        "nameKey": "plugins.lesson_acknowledgment.name",
+        "descriptionKey": "plugins.lesson_acknowledgment.description"
+      },
+      "slots": ["lesson.after"],
+      "when": 1789200000005
     }
   ]
 }

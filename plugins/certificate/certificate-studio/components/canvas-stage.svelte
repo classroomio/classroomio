@@ -14,14 +14,17 @@
   import Maximize2Icon from '@lucide/svelte/icons/maximize-2';
   import { t } from '$lib/utils/functions/translations';
   import type { CertificateDesign } from '@cio/certificates';
-  import type { ToolCategory } from '../types';
+  import type { ToolCategory, StudioElementId } from '../types';
+  import CanvasElementZone from './canvas-element-zone.svelte';
 
   interface Props {
     design: CertificateDesign;
     previewData: Record<string, any>;
     zoom: number;
     selectedTool: ToolCategory;
+    selectedElement?: StudioElementId | null;
     onSelectTool: (tool: ToolCategory) => void;
+    onSelectElement?: (element: StudioElementId | null) => void;
     onZoomIn: () => void;
     onZoomOut: () => void;
     onFit: () => void;
@@ -33,12 +36,65 @@
     previewData,
     zoom,
     selectedTool,
+    selectedElement = null,
     onSelectTool,
+    onSelectElement = () => {},
     onZoomIn,
     onZoomOut,
     onFit,
     stageElement = $bindable(null)
   }: Props = $props();
+
+  let hoveredZone = $state<StudioElementId | null>(null);
+
+  const layout = $derived(design.layout ?? {});
+  const titleY = $derived(75 + (layout.titleOffsetY ?? 0));
+  const recipientY = $derived(205 + (layout.recipientOffsetY ?? 0));
+  const courseY = $derived(315 + (layout.courseOffsetY ?? 0));
+  const badgeY = $derived(560 + (layout.badgeOffsetY ?? 0));
+  const footerY = $derived(570 + (layout.footerOffsetY ?? 0));
+
+  function nudgeOffset(key: keyof NonNullable<CertificateDesign['layout']>, delta: number) {
+    if (!design.layout) design.layout = {};
+    const current = (design.layout[key] as number) ?? 0;
+    design.layout[key] = current + delta;
+  }
+
+  function resetOffset(key: keyof NonNullable<CertificateDesign['layout']>) {
+    if (!design.layout) return;
+    design.layout[key] = 0;
+  }
+
+  function handleSelect(id: StudioElementId, tool: ToolCategory) {
+    onSelectElement(id);
+    onSelectTool(tool);
+  }
+
+  function handleKeyDown(e: KeyboardEvent) {
+    if (!selectedElement) return;
+    const target = e.target as HTMLElement;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName) || target?.isContentEditable) return;
+
+    const delta = e.shiftKey ? 10 : 2;
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (selectedElement === 'title') nudgeOffset('titleOffsetY', -delta);
+      else if (selectedElement === 'recipient') nudgeOffset('recipientOffsetY', -delta);
+      else if (selectedElement === 'course') nudgeOffset('courseOffsetY', -delta);
+      else if (selectedElement === 'badge') nudgeOffset('badgeOffsetY', -delta);
+      else if (selectedElement === 'sig-left' || selectedElement === 'sig-right') nudgeOffset('footerOffsetY', -delta);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (selectedElement === 'title') nudgeOffset('titleOffsetY', delta);
+      else if (selectedElement === 'recipient') nudgeOffset('recipientOffsetY', delta);
+      else if (selectedElement === 'course') nudgeOffset('courseOffsetY', delta);
+      else if (selectedElement === 'badge') nudgeOffset('badgeOffsetY', delta);
+      else if (selectedElement === 'sig-left' || selectedElement === 'sig-right') nudgeOffset('footerOffsetY', delta);
+    } else if (e.key === 'Escape') {
+      onSelectElement(null);
+    }
+  }
 
   const TOOLS = [
     { id: 'layout' as const, label: 'certificate_studio.tool_layout', icon: LayoutIcon },
@@ -52,6 +108,8 @@
 
   const zoomPercent = $derived(Math.round(zoom * 100));
 </script>
+
+<svelte:window onkeydown={handleKeyDown} />
 
 <main class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-slate-100 dark:bg-slate-950">
   <!-- Top canvas status bar -->
@@ -103,6 +161,166 @@
         style:transform="scale({zoom})"
       >
         <Certificate.Preview {design} data={previewData} zoom={1.0} showControls={false} class="h-full w-full" />
+
+        <!-- Interactive Canvas Stage Overlay for Element Hover, Selection & Nudge -->
+        <div class="absolute inset-0 z-20" onclick={() => onSelectElement(null)} role="presentation">
+          <!-- Border / Frame Perimeter (Layer 10: Behind text/badges so interior clicks reach text elements) -->
+          <div
+            role="button"
+            tabindex="0"
+            class="pointer-events-auto absolute inset-3 z-10 cursor-pointer rounded-xs transition-all duration-150 {selectedElement ===
+              'border' || selectedTool === 'borders'
+              ? 'border-2 border-amber-500 shadow-sm ring-1 ring-amber-500/30'
+              : hoveredZone === 'border'
+                ? 'border-2 border-dashed border-amber-400'
+                : 'border border-transparent hover:border-amber-300/40'}"
+            onmouseenter={() => (hoveredZone = 'border')}
+            onmouseleave={() => {
+              if (hoveredZone === 'border') hoveredZone = null;
+            }}
+            onclick={(e) => {
+              e.stopPropagation();
+              handleSelect('border', 'borders');
+            }}
+            onkeydown={(e) => {
+              if (e.key === 'Enter') handleSelect('border', 'borders');
+            }}
+            aria-label="Certificate Border"
+          >
+            {#if selectedElement === 'border' || (hoveredZone === 'border' && !selectedElement)}
+              <div
+                class="pointer-events-auto absolute top-2 left-2 flex items-center gap-1 rounded bg-amber-600 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm select-none"
+              >
+                <span>Border & Frame</span>
+              </div>
+            {/if}
+          </div>
+
+          <!-- Title & Subtitle Zone -->
+          <CanvasElementZone
+            id="title"
+            label="Title & Heading"
+            tool="typography"
+            selected={selectedElement === 'title'}
+            hovered={hoveredZone === 'title'}
+            offset={layout.titleOffsetY ?? 0}
+            left={140}
+            top={titleY}
+            width={820}
+            height={125}
+            onSelect={handleSelect}
+            onHover={(id) => (hoveredZone = id)}
+            onNudge={(delta) => nudgeOffset('titleOffsetY', delta)}
+            onReset={() => resetOffset('titleOffsetY')}
+          />
+
+          <!-- Recipient Name Zone -->
+          <CanvasElementZone
+            id="recipient"
+            label="Recipient Name"
+            tool="typography"
+            selected={selectedElement === 'recipient'}
+            hovered={hoveredZone === 'recipient'}
+            offset={layout.recipientOffsetY ?? 0}
+            left={160}
+            top={recipientY}
+            width={780}
+            height={95}
+            onSelect={handleSelect}
+            onHover={(id) => (hoveredZone = id)}
+            onNudge={(delta) => nudgeOffset('recipientOffsetY', delta)}
+            onReset={() => resetOffset('recipientOffsetY')}
+          />
+
+          <!-- Course & Description Zone -->
+          <CanvasElementZone
+            id="course"
+            label="Course & Description"
+            tool="layout"
+            selected={selectedElement === 'course'}
+            hovered={hoveredZone === 'course'}
+            offset={layout.courseOffsetY ?? 0}
+            left={160}
+            top={courseY}
+            width={780}
+            height={135}
+            onSelect={handleSelect}
+            onHover={(id) => (hoveredZone = id)}
+            onNudge={(delta) => nudgeOffset('courseOffsetY', delta)}
+            onReset={() => resetOffset('courseOffsetY')}
+          />
+
+          <!-- Official Seal / Badge Zone -->
+          <CanvasElementZone
+            id="badge"
+            label="Official Seal"
+            tool="badges"
+            isCircle={true}
+            selected={selectedElement === 'badge'}
+            hovered={hoveredZone === 'badge'}
+            offset={layout.badgeOffsetY ?? 0}
+            left={480}
+            top={badgeY}
+            width={140}
+            height={140}
+            onSelect={handleSelect}
+            onHover={(id) => (hoveredZone = id)}
+            onNudge={(delta) => nudgeOffset('badgeOffsetY', delta)}
+            onReset={() => resetOffset('badgeOffsetY')}
+          />
+
+          <!-- Signatories Zone (Left) -->
+          <CanvasElementZone
+            id="sig-left"
+            label="Signatures"
+            tool="signatories"
+            selected={selectedElement === 'sig-left'}
+            hovered={hoveredZone === 'sig-left'}
+            offset={layout.footerOffsetY ?? 0}
+            left={90}
+            top={footerY}
+            width={270}
+            height={125}
+            onSelect={handleSelect}
+            onHover={(id) => (hoveredZone = id)}
+            onNudge={(delta) => nudgeOffset('footerOffsetY', delta)}
+            onReset={() => resetOffset('footerOffsetY')}
+          />
+
+          <!-- Signatories Zone (Right) -->
+          <CanvasElementZone
+            id="sig-right"
+            label="Signatures"
+            tool="signatories"
+            selected={selectedElement === 'sig-right'}
+            hovered={hoveredZone === 'sig-right'}
+            offset={layout.footerOffsetY ?? 0}
+            left={740}
+            top={footerY}
+            width={270}
+            height={125}
+            onSelect={handleSelect}
+            onHover={(id) => (hoveredZone = id)}
+            onNudge={(delta) => nudgeOffset('footerOffsetY', delta)}
+            onReset={() => resetOffset('footerOffsetY')}
+          />
+
+          <!-- QR Code Zone -->
+          <CanvasElementZone
+            id="qrcode"
+            label="QR Code"
+            tool="qrcode"
+            selected={selectedElement === 'qrcode'}
+            hovered={hoveredZone === 'qrcode'}
+            right={28}
+            bottom={24}
+            width={160}
+            height={65}
+            onSelect={handleSelect}
+            onHover={(id) => (hoveredZone = id)}
+            onNudge={() => {}}
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -112,6 +330,7 @@
     class="pointer-events-auto absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl dark:border-slate-800/90 dark:bg-slate-900/95"
   >
     {#each TOOLS as tool (tool.id)}
+      {@const Icon = tool.icon}
       <Tooltip.Root delayDuration={150}>
         <Tooltip.Trigger>
           <Button
@@ -120,11 +339,18 @@
             class="size-9 rounded-full transition-all active:scale-95 {selectedTool === tool.id
               ? 'bg-amber-100 text-amber-900 shadow-xs dark:bg-amber-950 dark:text-amber-200'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'}"
-            onclick={() => onSelectTool(tool.id)}
+            onclick={() => {
+              onSelectTool(tool.id);
+              if (tool.id === 'typography') onSelectElement('title');
+              else if (tool.id === 'borders') onSelectElement('border');
+              else if (tool.id === 'badges') onSelectElement('badge');
+              else if (tool.id === 'layout') onSelectElement('course');
+              else if (tool.id === 'signatories') onSelectElement('sig-left');
+              else if (tool.id === 'qrcode') onSelectElement('qrcode');
+            }}
             aria-label={$t(tool.label)}
           >
-            <svelte:component
-              this={tool.icon}
+            <Icon
               class="size-4 shrink-0 {selectedTool === tool.id
                 ? 'text-amber-600 dark:text-amber-400'
                 : 'text-slate-600 dark:text-slate-400'}"

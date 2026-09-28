@@ -11,7 +11,7 @@
   import Loader2Icon from '@lucide/svelte/icons/loader-2';
   import { t } from '$lib/utils/functions/translations';
   import type { CertificateDesign, CertificateTemplateId } from '@cio/certificates';
-  import type { ToolCategory } from '../types';
+  import type { ToolCategory, StudioElementId } from '../types';
 
   import StudioHeader from './studio-header.svelte';
   import CanvasStage from './canvas-stage.svelte';
@@ -35,6 +35,35 @@
   let isSaving = $state(false);
   let isPreviewModalOpen = $state(false);
   let selectedTool = $state<ToolCategory>('borders');
+  let selectedElement = $state<StudioElementId | null>(null);
+
+  function handleSelectElement(el: StudioElementId | null) {
+    selectedElement = el;
+    if (!el) return;
+    if (el === 'title' || el === 'recipient') selectedTool = 'typography';
+    else if (el === 'course') selectedTool = 'layout';
+    else if (el === 'badge') selectedTool = 'badges';
+    else if (el === 'sig-left' || el === 'sig-right') selectedTool = 'signatories';
+    else if (el === 'qrcode') selectedTool = 'qrcode';
+    else if (el === 'border') selectedTool = 'borders';
+  }
+
+  function handleSelectTool(tool: ToolCategory) {
+    selectedTool = tool;
+    if (tool === 'typography' && selectedElement !== 'title' && selectedElement !== 'recipient') {
+      selectedElement = 'title';
+    } else if (tool === 'borders') {
+      selectedElement = 'border';
+    } else if (tool === 'badges') {
+      selectedElement = 'badge';
+    } else if (tool === 'layout') {
+      selectedElement = 'course';
+    } else if (tool === 'signatories') {
+      selectedElement = 'sig-left';
+    } else if (tool === 'qrcode') {
+      selectedElement = 'qrcode';
+    }
+  }
 
   let templateName = $state('Acme Honors Gold 2026');
 
@@ -221,14 +250,22 @@
         {previewData}
         zoom={currentZoom}
         {selectedTool}
-        onSelectTool={(tool) => (selectedTool = tool)}
+        {selectedElement}
+        onSelectTool={handleSelectTool}
+        onSelectElement={handleSelectElement}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onFit={handleFit}
         bind:stageElement
       />
 
-      <InspectorPanel {selectedTool} bind:design />
+      <InspectorPanel
+        {selectedTool}
+        {selectedElement}
+        onSelectTool={handleSelectTool}
+        onSelectElement={handleSelectElement}
+        bind:design
+      />
     </div>
 
     <!-- Lightweight Fullscreen Preview Dialog -->
@@ -247,7 +284,7 @@
         </div>
         <Dialog.Footer class="border-t border-slate-100 px-5 py-3 dark:border-slate-800">
           <Button variant="outline" size="sm" onclick={() => (isPreviewModalOpen = false)}>
-            {$t('certificate_studio.close')}
+            {$t('certificate_studio.close') || 'Close Preview'}
           </Button>
         </Dialog.Footer>
       </Dialog.Content>

@@ -26,6 +26,7 @@ All plugins must strictly satisfy these non-negotiable rules:
 | **7. Reactive Collections** | Use `SvelteSet` and `SvelteMap` from `svelte/reactivity` for reactive collections. | Native `Set` and `Map` are non-reactive in Svelte 5 and fail to trigger UI updates on mutation. |
 | **8. Full Localization** | Every plugin capability must have its `nameKey` and `descriptionKey` defined in `apps/dashboard/src/lib/utils/translations/en.json`. | Prevents unlocalized raw keys from leaking to organization administrators. |
 | **9. Central Registration** | All active first-party plugins must be added to `configuredPlugins` and re-exported in `plugins/index.ts`. | Ensures both the dashboard and API runtimes can resolve active plugins. |
+| **10. Plugin Journal Ledger** | Every plugin must be registered in `plugins/meta/_journal.json` with an incremented `idx`, manifest `id`, `name`, `category`, `path`, capability metadata, slots/routes, and millisecond timestamp `when`. | Maintains an immutable audit trail, version ledger, and discovery index for all ClassroomIO plugins. |
 
 ---
 
@@ -128,7 +129,29 @@ Register the plugin in `plugins/index.ts`:
 2. Add the factory invocation to `configuredPlugins`.
 3. Export the factory and its option types.
 
-### Step 6: Automated Verification
+### Step 6: Plugin Journal Registration
+Append an entry to `plugins/meta/_journal.json` maintaining the sequential index, manifest metadata, path, activation, slots/routes, and millisecond creation timestamp:
+```json
+{
+  "idx": 2,
+  "id": "activity_my_plugin",
+  "name": "My Plugin",
+  "version": "1.0.0",
+  "category": "activity",
+  "description": "Concise feature summary.",
+  "path": "plugins/activity/my-plugin",
+  "activation": {
+    "kind": "org-capability",
+    "capabilityId": "my_plugin",
+    "nameKey": "plugins.my_plugin.name",
+    "descriptionKey": "plugins.my_plugin.description"
+  },
+  "slots": ["lesson.after"],
+  "when": 1789200000000
+}
+```
+
+### Step 7: Automated Verification
 Run the verification suite to prove the implementation satisfies all architectural guardrails.
 
 ---
@@ -180,6 +203,7 @@ The automated verifier checks:
 - [x] **Slot Integrity**: Valid slot names matching SDK `SLOT_NAMES`, target component files exist on disk.
 - [x] **Translation Keys**: All `nameKey` and `descriptionKey` strings exist in `en.json`.
 - [x] **Central Export**: Plugin is exported and present in `configuredPlugins`.
+- [x] **Journal Ledger**: Plugin is registered with matching metadata in `plugins/meta/_journal.json`.
 - [x] **Import Hygiene**: No forbidden imports (`lucide-svelte`, `@cio/db/queries`).
 - [x] **Theme Tokens**: No arbitrary hardcoded `#hex` colors in component markup.
 - [x] **Runes Conformance**: No legacy `export let` or `<svelte:component>` in modern components.

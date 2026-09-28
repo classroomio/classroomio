@@ -24,8 +24,23 @@ export const DEFAULT_ORG_CUSTOMIZATION = {
   apps: { poll: true, comments: true },
   course: { grading: true, newsfeed: true },
   dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
-  auth: { backgroundImage: '' }
-} as NonNullable<AccountOrg['customization']>;
+  auth: { backgroundImage: '' },
+  announcement: {
+    backgroundColor: '#2563EB',
+    mode: 'dynamic',
+    customMessage: 'Welcome! Explore newly released courses and interactive training tracks in your academy.',
+    customLinkText: 'Explore Courses',
+    customLinkUrl: '/lms/explore'
+  }
+} as NonNullable<AccountOrg['customization']> & {
+  announcement?: {
+    backgroundColor: string;
+    mode: 'dynamic' | 'custom';
+    customMessage: string;
+    customLinkText: string;
+    customLinkUrl: string;
+  };
+};
 
 export function mergeAccountOrgFromServer(org: AccountOrg | PublicOrg): AccountOrg {
   const plans = org.plans.map((plan) => ({

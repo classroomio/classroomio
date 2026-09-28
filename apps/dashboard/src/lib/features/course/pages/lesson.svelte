@@ -28,6 +28,7 @@
   import { courseApi, lessonApi } from '$features/course/api';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
+  import { isFocusMode } from '$features/course/store/focus-mode';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
 
@@ -541,8 +542,15 @@
           <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
         {:else if lessonApi.lesson && !isMaterialsEmpty}
           {#key lessonId}
-            <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
-              {#if !hasLessonVideos}
+            <div
+              class="mb-20 flex w-full flex-col transition-all duration-300"
+              class:max-w-3xl={$isFocusMode}
+              class:mx-auto={$isFocusMode}
+              class:pt-4={$isFocusMode}
+              in:fade={{ delay: 500 }}
+              out:fade
+            >
+              {#if !hasLessonVideos && !$isFocusMode}
                 <LessonMaterialActions showSummarize {lessonId} alignWithNote />
               {/if}
 
@@ -552,7 +560,7 @@
 
               <PluginSlot name="lesson.after" context={{ lessonId, courseId, lesson: lessonApi.lesson }} class="mt-4" />
 
-              {#if showLessonComments}
+              {#if showLessonComments && !$isFocusMode}
                 <hr class="my-2" />
 
                 <Comments {lessonId} />
@@ -634,8 +642,6 @@
             {#each viewModeComponents as Component, index (index)}
               <Component {mode} {lessonId} {courseId} />
             {/each}
-
-            <PluginSlot name="lesson.after" context={{ lessonId, courseId, lesson: lessonApi.lesson }} class="mt-4" />
 
             {#if showLessonComments}
               <hr class="my-2" />

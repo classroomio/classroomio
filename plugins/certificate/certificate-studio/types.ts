@@ -2,6 +2,16 @@ import type { CertificateTemplateId } from '@cio/certificates';
 
 export type ToolCategory = 'layout' | 'borders' | 'typography' | 'badges' | 'qrcode' | 'signatories' | 'background';
 
+export type StudioElementId =
+  | 'title'
+  | 'recipient'
+  | 'course'
+  | 'badge'
+  | 'sig-left'
+  | 'sig-right'
+  | 'qrcode'
+  | 'border';
+
 export interface StarterTemplate {
   id: CertificateTemplateId;
   name: string;

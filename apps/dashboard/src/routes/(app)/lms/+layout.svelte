@@ -2,6 +2,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import LmsHeader from '$features/ui/navigation/lms-header.svelte';
   import { LMSSidebar } from '$features/ui/sidebar/lms-sidebar';
+  import { PluginSlot } from '$features/plugins';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -10,14 +11,18 @@
   let { children }: Props = $props();
 </script>
 
-<Sidebar.Provider>
-  <LMSSidebar />
+<PluginSlot name="lms.banner" />
 
-  <Sidebar.Inset>
-    <LmsHeader />
+<div class="transition-[padding] duration-200" style="padding-top: var(--sidebar-top-offset, 0px);">
+  <Sidebar.Provider>
+    <LMSSidebar />
 
-    <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-4">
-      {@render children?.()}
-    </div>
-  </Sidebar.Inset>
-</Sidebar.Provider>
+    <Sidebar.Inset>
+      <LmsHeader />
+
+      <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-4">
+        {@render children?.()}
+      </div>
+    </Sidebar.Inset>
+  </Sidebar.Provider>
+</div>

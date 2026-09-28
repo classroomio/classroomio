@@ -11,6 +11,7 @@
   import Loader2Icon from '@lucide/svelte/icons/loader-2';
   import SearchIcon from '@lucide/svelte/icons/search';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
 
   let isOpen = $state(false);
   let searchQuery = $state('');
@@ -87,15 +88,26 @@
         </div>
       </div>
 
-      <!-- Search input -->
-      <div class="relative mt-2.5">
-        <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-slate-400" />
-        <Input
-          type="search"
-          placeholder={$t('plugins.search_placeholder')}
-          bind:value={searchQuery}
-          class="w-full rounded-md border border-slate-200 bg-white py-1.5 pr-2.5 pl-9! text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
-        />
+      <!-- Search input & Settings icon -->
+      <div class="mt-2.5 flex items-center gap-1.5">
+        <div class="relative flex-1">
+          <SearchIcon class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+          <Input
+            type="search"
+            placeholder={$t('plugins.search_placeholder')}
+            bind:value={searchQuery}
+            class="h-8 w-full rounded-md border border-slate-200 bg-white py-1.5 pr-2.5 pl-8! text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
+          />
+        </div>
+        <a
+          href="{$currentOrgPath}/settings/plugins"
+          onclick={() => (isOpen = false)}
+          class="flex size-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+          title={$t('plugins.settings_title') || 'Plugin Settings'}
+          aria-label={$t('plugins.settings_title') || 'Plugin Settings'}
+        >
+          <SettingsIcon class="size-4" />
+        </a>
       </div>
     </div>
 

@@ -15,6 +15,12 @@ export const renderModular: TemplateRenderer = ({ design, data }: TemplateRender
   const background = design.background ?? {};
   const badge = design.badge ?? {};
   const qrCode = design.qrCode ?? { enabled: true, position: 'bottom_right' };
+  const layout = design.layout ?? {};
+  const titleShift = layout.titleOffsetY ?? 0;
+  const recipientShift = layout.recipientOffsetY ?? 0;
+  const courseShift = layout.courseOffsetY ?? 0;
+  const badgeShift = layout.badgeOffsetY ?? 0;
+  const footerShift = layout.footerOffsetY ?? 0;
 
   const primaryColor = border.primaryColor || design.accentColor || '#d4af37';
   const cornerAccent = border.accentColor || primaryColor;
@@ -296,7 +302,7 @@ export const renderModular: TemplateRenderer = ({ design, data }: TemplateRender
         </div>
 
         <!-- Main Title & Subtitle -->
-        <div class="title-zone">
+        <div class="title-zone" style="${titleShift ? `transform: translateY(${titleShift}px);` : ''}">
           <h1 class="main-title" style="font-family: '${titleFont}', serif; letter-spacing: ${letterSpacing}em;">
             ${title}
           </h1>
@@ -306,7 +312,7 @@ export const renderModular: TemplateRenderer = ({ design, data }: TemplateRender
         </div>
 
         <!-- Recipient -->
-        <div class="recipient-zone">
+        <div class="recipient-zone" style="${recipientShift ? `transform: translateY(${recipientShift}px);` : ''}">
           <div class="recipient-name" style="font-family: '${recipientFont}', cursive, serif;">
             ${recipient}
           </div>
@@ -314,7 +320,7 @@ export const renderModular: TemplateRenderer = ({ design, data }: TemplateRender
         </div>
 
         <!-- Course & Description -->
-        <div class="course-zone">
+        <div class="course-zone" style="${courseShift ? `transform: translateY(${courseShift}px);` : ''}">
           <div class="course-name" style="font-family: '${titleFont}', serif;">
             ${escapeHtml(data.courseName)}
           </div>
@@ -329,12 +335,12 @@ export const renderModular: TemplateRenderer = ({ design, data }: TemplateRender
         </div>
 
         <!-- Footer / Signatures, Seal, QR -->
-        <div class="footer-zone">
+        <div class="footer-zone" style="${footerShift ? `transform: translateY(${footerShift}px);` : ''}">
           <div class="sig-container">
             ${sigOneHtml}
           </div>
 
-          <div class="badge-container">
+          <div class="badge-container" style="${badgeShift ? `transform: translateY(${badgeShift}px);` : ''}">
             ${badgeSvg}
           </div>
 
