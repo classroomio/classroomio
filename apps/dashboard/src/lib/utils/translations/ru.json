@@ -4341,6 +4341,15 @@
     "customers": "Создавайте курсы для моих клиентов",
     "explore": "Просто здесь, чтобы исследовать",
     "articles": "Статьи",
+    "ai": "ИИ",
+    "ai_select": "Выберите ИИ-помощника",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Поисковая система",
     "social": "Социальные сети",
     "friends": "Друзья и семья",

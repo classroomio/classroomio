@@ -4341,6 +4341,15 @@
     "customers": "Opret kurser for mine kunder",
     "explore": "Bare her for at udforske",
     "articles": "Artikler",
+    "ai": "AI",
+    "ai_select": "Vælg en AI-assistent",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Søgemaskine",
     "social": "Sociale medier",
     "friends": "Venner og familie",

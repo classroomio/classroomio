@@ -4341,6 +4341,15 @@
     "customers": "Erstellen Sie Kurse für meine Kunden",
     "explore": "Nur zum Erkunden hier",
     "articles": "Artikel",
+    "ai": "KI",
+    "ai_select": "Wählen Sie einen KI-Assistenten",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Suchmaschine",
     "social": "Soziale Medien",
     "friends": "Freunde und Familie",

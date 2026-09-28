@@ -281,6 +281,15 @@
     "customers": "Create courses for my customers",
     "explore": "Just here to explore",
     "articles": "Articles",
+    "ai": "AI",
+    "ai_select": "Select an AI assistant",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Search engine",
     "social": "Social media",
     "friends": "Friends and family",

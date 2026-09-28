@@ -31,10 +31,39 @@ export const GOALS = [
   }
 ];
 
+export const AI_SOURCE_VALUE = 'ai';
+
+export const AI_PROVIDERS = [
+  {
+    label: 'onboarding.ai_providers.chatgpt',
+    value: 'ChatGPT'
+  },
+  {
+    label: 'onboarding.ai_providers.claude',
+    value: 'Claude'
+  },
+  {
+    label: 'onboarding.ai_providers.gemini',
+    value: 'Gemini'
+  },
+  {
+    label: 'onboarding.ai_providers.grok',
+    value: 'Grok'
+  },
+  {
+    label: 'onboarding.ai_providers.perplexity',
+    value: 'Perplexity'
+  }
+];
+
 export const SOURCES = [
   {
     label: 'onboarding.articles',
     value: 'articles'
+  },
+  {
+    label: 'onboarding.ai',
+    value: AI_SOURCE_VALUE
   },
   {
     label: 'onboarding.search',
