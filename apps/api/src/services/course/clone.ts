@@ -13,6 +13,7 @@ import {
   createOrGetAssetByStorageKey,
   createQuestions,
   createAssetUsage,
+  deleteAssetUsagesByTargetSlots,
   getActiveAssetBySourceUrl,
   getAssetsByIds,
   getCourseById,
@@ -83,12 +84,15 @@ export async function remapContentAssets<T>(
 
 type LessonAssetRefs = Pick<TLesson, 'id' | 'videos' | 'documents'>;
 
+const LESSON_MEDIA_SLOTS = ['lesson_video', 'lesson_document'];
+
 /**
- * Records `asset_usages` rows for the videos and documents a copied lesson points at,
- * so the assets show as in use in the target org's media library. References to
- * assets outside `organizationId` are skipped. No background media work is queued.
+ * Makes each lesson's `lesson_video` and `lesson_document` usages match the videos
+ * and documents it now points at, so replaced media stops showing as in use and
+ * current media shows as in use in the target org's library. References to assets
+ * outside `organizationId` are skipped. No background media work is queued.
  */
-export async function attachLessonAssetUsages(
+export async function syncLessonAssetUsages(
   lessons: LessonAssetRefs[],
   organizationId: string,
   userId: string,
@@ -111,6 +115,10 @@ export async function attachLessonAssetUsages(
   const referencedIds = [...new Set(slots.flatMap((slot) => (slot.assetId ? [slot.assetId] : [])))];
   const ownedAssets = await getAssetsByIds(referencedIds, organizationId, dbClient);
   const ownedIds = new Set(ownedAssets.map((asset) => asset.id));
+
+  for (const lesson of lessons) {
+    await deleteAssetUsagesByTargetSlots('lesson', lesson.id, LESSON_MEDIA_SLOTS, dbClient);
+  }
 
   for (const slot of slots) {
     if (!slot.assetId || !ownedIds.has(slot.assetId)) continue;
@@ -178,7 +186,8 @@ async function copyAsset(asset: TAsset, organizationId: string, userId: string, 
       isExternal: asset.isExternal,
       status: asset.status,
       metadata: asset.metadata,
-      createdByProfileId: userId
+      createdByProfileId: userId,
+      sourceOrganizationId: asset.sourceOrganizationId ?? asset.organizationId
     },
     dbClient
   );
@@ -360,7 +369,7 @@ async function cloneCourseWithClient(
   });
 
   if (targetOrgId) {
-    await attachLessonAssetUsages(newLessons, targetOrgId, options.userId, tx);
+    await syncLessonAssetUsages(newLessons, targetOrgId, options.userId, tx);
   }
 
   const languageCopies = replaceAssetIds(oldLessonLanguages, assetIds);

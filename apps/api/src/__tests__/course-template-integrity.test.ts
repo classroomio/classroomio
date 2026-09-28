@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { eq, inArray } from 'drizzle-orm';
 
 import { courseRouter } from '@api/routes/course/course';
-import { cloneCourse } from '@api/services/course/clone';
+import { cloneCourse, syncLessonAssetUsages } from '@api/services/course/clone';
 import { convertCourseToTemplate } from '@api/services/course/course-template';
 import { pullCourseTemplateUpdates } from '@api/services/course/template-sync';
 import { Hono } from '@api/utils/hono';
@@ -209,6 +209,7 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
         const targetAssets = await tx.select().from(schema.asset).where(eq(schema.asset.organizationId, courseOrg.id));
         expect(targetAssets).toHaveLength(1);
         expect(targetAssets[0].sourceUrl).toBe(sourceUrl);
+        expect(targetAssets[0].sourceOrganizationId).toBe(templateOrg.id);
 
         const clonedLessons = await tx
           .select({ id: schema.lesson.id, videos: schema.lesson.videos })
@@ -225,6 +226,69 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
           .where(eq(schema.assetUsage.assetId, targetAssets[0].id));
         expect(usages.map((usage) => usage.targetId).sort()).toEqual(clonedLessons.map((lesson) => lesson.id).sort());
         expect(usages.every((usage) => usage.slotType === 'lesson_video' && usage.targetType === 'lesson')).toBe(true);
+
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    }
+  });
+
+  it('moves lesson media usages to the assets a pulled lesson now uses', async () => {
+    const { db } = await import('@db/drizzle');
+    const { createOrganization } = await import('@db/queries/organization');
+    const schema = await import('@db/schema');
+
+    const rollback = new Error('rollback');
+    try {
+      await db.transaction(async (tx) => {
+        const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
+        if (!profile) throw rollback;
+
+        const organization = await createOrganization({ name: `tpl-usage-${Date.now()}` }, tx);
+        const [removedVideo, keptVideo, bannerAsset] = await tx
+          .insert(schema.asset)
+          .values([
+            { organizationId: organization.id, kind: 'video', provider: 'youtube', title: 'Removed' },
+            { organizationId: organization.id, kind: 'video', provider: 'youtube', title: 'Kept' },
+            { organizationId: organization.id, kind: 'image', title: 'Banner' }
+          ])
+          .returning();
+        const lessonId = crypto.randomUUID();
+        await tx.insert(schema.assetUsage).values({
+          organizationId: organization.id,
+          assetId: bannerAsset.id,
+          targetType: 'lesson',
+          targetId: lessonId,
+          slotType: 'lesson_cover'
+        });
+
+        const oldVideos = [{ type: 'youtube' as const, link: 'https://youtu.be/a', assetId: removedVideo.id }];
+        const newVideos = [{ type: 'youtube' as const, link: 'https://youtu.be/b', assetId: keptVideo.id }];
+        await syncLessonAssetUsages(
+          [{ id: lessonId, videos: oldVideos, documents: [] }],
+          organization.id,
+          profile.id,
+          tx
+        );
+        await syncLessonAssetUsages(
+          [{ id: lessonId, videos: newVideos, documents: [] }],
+          organization.id,
+          profile.id,
+          tx
+        );
+
+        const usages = await tx
+          .select({ assetId: schema.assetUsage.assetId, slotType: schema.assetUsage.slotType })
+          .from(schema.assetUsage)
+          .where(eq(schema.assetUsage.targetId, lessonId));
+        expect(usages).toHaveLength(2);
+        expect(usages).toEqual(
+          expect.arrayContaining([
+            { assetId: keptVideo.id, slotType: 'lesson_video' },
+            { assetId: bannerAsset.id, slotType: 'lesson_cover' }
+          ])
+        );
 
         throw rollback;
       });

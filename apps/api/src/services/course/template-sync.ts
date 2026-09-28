@@ -56,7 +56,7 @@ import {
 
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { attachLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
+import { syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
 
 type SyncGraph = {
   sections: TCourseSection[];
@@ -530,7 +530,7 @@ export async function pullCourseTemplateUpdates(
           },
           tx
         );
-        await attachLessonAssetUsages(
+        await syncLessonAssetUsages(
           [{ id: existing.id, videos: remapped.videos, documents: remapped.documents }],
           courseOrgId,
           userId,
@@ -593,7 +593,7 @@ export async function pullCourseTemplateUpdates(
       if (!created) throw new AppError('Failed to pull lesson', ErrorCodes.INTERNAL_ERROR, 500);
 
       courseGraph.lessons.push(created);
-      await attachLessonAssetUsages([created], courseOrgId, userId, tx);
+      await syncLessonAssetUsages([created], courseOrgId, userId, tx);
       await writeLessonLanguages(
         lesson.id,
         created.id,

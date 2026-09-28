@@ -140,6 +140,8 @@ export type DetectedSettingChange = {
   key: SyncableSettingKey;
   templateValue: unknown;
   courseValue: unknown;
+  /** Template unit that must be pulled with this setting, e.g. a final exercise the course has no copy of. */
+  requiresUnitId?: string;
 };
 
 type CopyRef = {
@@ -379,9 +381,16 @@ function certificate(course: SettingCarrier): SettingCertificate {
   return course.certificate ?? {};
 }
 
+function uncopiedFinalExerciseId(template: SettingCarrier, exerciseCopyBySourceId: Map<string, string>) {
+  const requiredId = certificate(template).requiredExerciseId ?? null;
+  if (!requiredId || exerciseCopyBySourceId.has(requiredId)) return null;
+
+  return requiredId;
+}
+
 function finalExerciseValue(course: SettingCarrier, exerciseIds: Map<string, string> | null) {
   const requiredId = certificate(course).requiredExerciseId ?? null;
-  const mappedId = exerciseIds && requiredId ? (exerciseIds.get(requiredId) ?? null) : requiredId;
+  const mappedId = exerciseIds && requiredId ? (exerciseIds.get(requiredId) ?? requiredId) : requiredId;
 
   return {
     exerciseId: mappedId,
@@ -480,9 +489,13 @@ export function detectSettingChanges(input: {
         ? readSettingValue(input.template, key, input.exerciseCopyBySourceId)
         : readSettingValue(input.template, key, null);
     const courseValue = readSettingValue(input.course, key, null);
-    if (same(templateValue, courseValue)) continue;
+    const requiresUnitId =
+      key === 'finalExercise' ? uncopiedFinalExerciseId(input.template, input.exerciseCopyBySourceId) : null;
+    if (!requiresUnitId && same(templateValue, courseValue)) continue;
 
-    changes.push({ key, templateValue, courseValue });
+    changes.push(
+      requiresUnitId ? { key, templateValue, courseValue, requiresUnitId } : { key, templateValue, courseValue }
+    );
   }
 
   return changes;
@@ -525,7 +538,10 @@ export function applySettingChanges(
         break;
       case 'finalExercise': {
         const requiredId = templateCertificate.requiredExerciseId ?? null;
-        nextCertificate.requiredExerciseId = requiredId ? (exerciseCopyBySourceId.get(requiredId) ?? null) : null;
+        const courseRequiredId = certificate(course).requiredExerciseId ?? null;
+        nextCertificate.requiredExerciseId = requiredId
+          ? (exerciseCopyBySourceId.get(requiredId) ?? courseRequiredId)
+          : null;
         nextCertificate.exerciseMinScorePercent = templateCertificate.exerciseMinScorePercent ?? null;
         certificateChanged = true;
         break;
@@ -634,7 +650,15 @@ export function preparePullSelection(
     return { ok: false, reason: 'stale' };
   }
 
-  const selected = new Set(unitIds);
+  const requiredUnitIds: string[] = [];
+  for (const setting of settings) {
+    if (!setting.requiresUnitId || !settingKeys.includes(setting.key)) continue;
+    if (!unitsById.has(setting.requiresUnitId)) return { ok: false, reason: 'stale' };
+
+    requiredUnitIds.push(setting.requiresUnitId);
+  }
+
+  const selected = new Set([...unitIds, ...requiredUnitIds]);
   const visit = (id: string) => {
     const unit = unitsById.get(id);
     if (!unit?.parentId) return;
@@ -649,7 +673,7 @@ export function preparePullSelection(
     visit(parent.id);
   };
 
-  for (const id of unitIds) visit(id);
+  for (const id of [...selected]) visit(id);
 
   if ([...selected].some((id) => unitsById.get(id)?.locked)) return { ok: false, reason: 'locked' };
 

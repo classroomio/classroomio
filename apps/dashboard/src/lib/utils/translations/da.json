@@ -5742,7 +5742,7 @@
       "convert_button": "Konverter til skabelon",
       "saved": "Skabelonen er gemt",
       "converted": "Kursus konverteret til skabelon",
-      "limit_title": "Din plan inkluderer {count, plural, one {# template} other {# templates}}",
+      "limit_title": "Din plan inkluderer {count, plural, one {# skabelon} other {# skabeloner}}",
       "limit_body": "Du har allerede {used, plural, one {{title}} other {# skabeloner}}. Opgrader for at få flere skabeloner, eller slet en du har.",
       "upgrade": "Opgrader",
       "manage": "Administrer skabeloner",

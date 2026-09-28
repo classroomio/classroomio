@@ -62,3 +62,8 @@ CREATE TABLE "course_template_setting_sync" (
 
 ALTER TABLE "course_template_setting_sync"
 ADD CONSTRAINT "course_template_setting_sync_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "course"("id") ON DELETE CASCADE;
+
+ALTER TABLE "assets" ADD COLUMN "source_organization_id" uuid;
+
+ALTER TABLE "assets"
+ADD CONSTRAINT "assets_source_organization_id_fkey" FOREIGN KEY ("source_organization_id") REFERENCES "organization"("id") ON UPDATE CASCADE ON DELETE SET NULL;

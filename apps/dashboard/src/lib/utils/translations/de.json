@@ -5742,7 +5742,7 @@
       "convert_button": "In Vorlage konvertieren",
       "saved": "Vorlage gespeichert",
       "converted": "Kurs in eine Vorlage konvertiert",
-      "limit_title": "Ihr Plan umfasst {count, plural, one {# template} other {# templates}}",
+      "limit_title": "Ihr Plan umfasst {count, plural, one {# Vorlage} other {# Vorlagen}}",
       "limit_body": "Sie haben bereits {used, plural, one {{title}} other {# Vorlagen}}. Führen Sie ein Upgrade durch, um weitere Vorlagen zu erhalten, oder löschen Sie eine vorhandene Vorlage.",
       "upgrade": "Upgrade",
       "manage": "Vorlagen verwalten",

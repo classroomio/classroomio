@@ -5742,7 +5742,7 @@
       "convert_button": "Convertir en modèle",
       "saved": "Modèle enregistré",
       "converted": "Cours converti en modèle",
-      "limit_title": "Votre forfait comprend {count, plural, one {# template} other {# templates}}",
+      "limit_title": "Votre forfait comprend {count, plural, one {# modèle} other {# modèles}}",
       "limit_body": "Vous avez déjà {used, plural, one {{title}} other {# modèles}}. Mettez à niveau pour plus de modèles ou supprimez-en un dont vous disposez.",
       "upgrade": "Mise à niveau",
       "manage": "Gérer les modèles",

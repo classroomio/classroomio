@@ -5742,7 +5742,7 @@
       "convert_button": "Converter em modelo",
       "saved": "Modelo salvo",
       "converted": "Curso convertido em modelo",
-      "limit_title": "Seu plano inclui {count, plural, one {# template} other {# templates}}",
+      "limit_title": "Seu plano inclui {count, plural, one {# modelo} other {# modelos}}",
       "limit_body": "Você já tem {used, plural, one {{title}} other {# modelos}}. Atualize para obter mais modelos ou exclua um que você tenha.",
       "upgrade": "Atualizar",
       "manage": "Gerenciar modelos",

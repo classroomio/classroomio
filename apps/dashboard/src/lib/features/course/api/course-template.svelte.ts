@@ -72,22 +72,36 @@ export class CourseTemplateApi extends BaseApiWithErrors {
   pulling = $state(false);
   updatesLoading = $state(false);
   private updatesRequest = 0;
+  private listRequest = 0;
+  private cardsOrgId: string | null = null;
 
+  /**
+   * Loads template cards for the current org. Cards from another org are cleared
+   * first, and a response is dropped when a newer request has started since.
+   */
   async list() {
     const organizationId = get(currentOrg).id;
     if (!organizationId) return;
 
+    if (this.cardsOrgId !== organizationId) {
+      this.cards = null;
+      this.cardsOrgId = organizationId;
+    }
+
+    const requestId = ++this.listRequest;
     this.listing = true;
     try {
       await this.execute<ListCourseTemplatesRequest>({
         requestFn: () => classroomio.course.template.$get({ query: { organizationId } }),
         logContext: 'listing templates',
         onSuccess: (response) => {
+          if (requestId !== this.listRequest) return;
+
           this.cards = response.data;
         }
       });
     } finally {
-      this.listing = false;
+      if (requestId === this.listRequest) this.listing = false;
     }
   }
 

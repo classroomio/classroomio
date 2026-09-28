@@ -173,6 +173,47 @@ export async function getActiveAssetBySourceUrl(
   }
 }
 
+/**
+ * For each storage key, the organizations whose files the caller may read through
+ * server-made copies: the `sourceOrganizationId` of copies held by `orgIds`.
+ */
+export async function getCopiedAssetSourceOrganizationIds(
+  storageKeys: string[],
+  orgIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Map<string, string[]>> {
+  try {
+    const sources = new Map<string, string[]>();
+    if (storageKeys.length === 0 || orgIds.length === 0) return sources;
+
+    const rows = await dbClient
+      .select({ storageKey: schema.asset.storageKey, sourceOrganizationId: schema.asset.sourceOrganizationId })
+      .from(schema.asset)
+      .where(
+        and(
+          inArray(schema.asset.storageKey, storageKeys),
+          inArray(schema.asset.organizationId, orgIds),
+          sql`${schema.asset.sourceOrganizationId} is not null`
+        )
+      );
+
+    for (const row of rows) {
+      if (!row.storageKey || !row.sourceOrganizationId) continue;
+
+      const orgsForKey = sources.get(row.storageKey) ?? [];
+      orgsForKey.push(row.sourceOrganizationId);
+      sources.set(row.storageKey, orgsForKey);
+    }
+
+    return sources;
+  } catch (error) {
+    console.error('getCopiedAssetSourceOrganizationIds error:', error);
+    throw new Error(
+      `Failed to get copied asset source organizations: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getAssetsByIds(
   assetIds: string[],
   orgId?: string,
@@ -718,6 +759,39 @@ export async function deleteAssetUsagesByTarget(
     console.error('deleteAssetUsagesByTarget error:', error);
     throw new Error(
       `Failed to delete asset usages by target: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Removes the usages a target holds in the given slots, leaving its other slots
+ * untouched. Returns the number of rows removed.
+ */
+export async function deleteAssetUsagesByTargetSlots(
+  targetType: string,
+  targetId: string,
+  slotTypes: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    if (slotTypes.length === 0) return 0;
+
+    const deleted = await dbClient
+      .delete(schema.assetUsage)
+      .where(
+        and(
+          eq(schema.assetUsage.targetType, targetType),
+          eq(schema.assetUsage.targetId, targetId),
+          inArray(schema.assetUsage.slotType, slotTypes)
+        )
+      )
+      .returning({ id: schema.assetUsage.id });
+
+    return deleted.length;
+  } catch (error) {
+    console.error('deleteAssetUsagesByTargetSlots error:', error);
+    throw new Error(
+      `Failed to delete asset usages by target slots: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

@@ -8,11 +8,13 @@ import type { Context, Next } from 'hono';
 import { findUnauthorizedDownloadKeys, resolveUploadOrganizationId } from './presign-auth';
 
 const mocks = vi.hoisted(() => ({
-  legacyOwners: vi.fn()
+  legacyOwners: vi.fn(),
+  copySources: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/assets', () => ({
-  getAssetOrganizationIdsByStorageKeys: (keys: string[]) => mocks.legacyOwners(keys)
+  getAssetOrganizationIdsByStorageKeys: (keys: string[]) => mocks.legacyOwners(keys),
+  getCopiedAssetSourceOrganizationIds: (keys: string[], orgIds: string[]) => mocks.copySources(keys, orgIds)
 }));
 
 const ORG_ID = '3f2504e0-4f89-11d3-9a0c-0305e82c3301';
@@ -53,6 +55,8 @@ describe('presign authorization helpers', () => {
   beforeEach(() => {
     mocks.legacyOwners.mockReset();
     mocks.legacyOwners.mockResolvedValue(new Map());
+    mocks.copySources.mockReset();
+    mocks.copySources.mockResolvedValue(new Map());
   });
 
   describe('every org role can presign, because students need these routes', () => {
@@ -142,11 +146,39 @@ describe('presign authorization helpers', () => {
       expect(response.status).toBe(403);
     });
 
-    it('does not hit the asset table when every key carries a prefix', async () => {
+    it('does not hit the asset table when every key carries an owned prefix', async () => {
       const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
       await post(app, '/video/download', { keys: [`${ORG_ID}/a.mp4`] });
 
       expect(mocks.legacyOwners).not.toHaveBeenCalled();
+      expect(mocks.copySources).not.toHaveBeenCalled();
+    });
+
+    it('allows a key copied from another org into a course the caller belongs to', async () => {
+      const key = `${OTHER_ORG_ID}/template-video.mp4`;
+      mocks.copySources.mockResolvedValue(new Map([[key, [OTHER_ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.STUDENT });
+      const response = await post(app, '/video/download', { keys: [key] });
+
+      expect(response.status).toBe(200);
+      expect(mocks.copySources).toHaveBeenCalledWith([key], [ORG_ID]);
+    });
+
+    it('allows a legacy key shared by the original org and its copy', async () => {
+      mocks.legacyOwners.mockResolvedValue(new Map([['shared.mp4', [OTHER_ORG_ID, ORG_ID]]]));
+      mocks.copySources.mockResolvedValue(new Map([['shared.mp4', [OTHER_ORG_ID]]]));
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: ['shared.mp4'] });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('still rejects a foreign key when no copy of it is held by the caller', async () => {
+      const app = buildApp({ [ORG_ID]: ROLE.ADMIN });
+      const response = await post(app, '/video/download', { keys: [`${OTHER_ORG_ID}/theirs.mp4`] });
+
+      expect(response.status).toBe(403);
+      expect(mocks.copySources).toHaveBeenCalledWith([`${OTHER_ORG_ID}/theirs.mp4`], [ORG_ID]);
     });
   });
 });

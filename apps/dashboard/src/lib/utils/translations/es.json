@@ -5742,7 +5742,7 @@
       "convert_button": "Convertir a plantilla",
       "saved": "Plantilla guardada",
       "converted": "Curso convertido a plantilla",
-      "limit_title": "Tu plan incluye {count, plural, one {# template} other {# templates}}",
+      "limit_title": "Tu plan incluye {count, plural, one {# plantilla} other {# plantillas}}",
       "limit_body": "Ya tienes {used, plural, one {{title}} other {# plantillas}}. Actualice para obtener más plantillas o elimine una que tenga.",
       "upgrade": "Actualizar",
       "manage": "Administrar plantillas",

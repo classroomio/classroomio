@@ -1177,6 +1177,8 @@ export const asset = pgTable(
     status: varchar().default('active').notNull(),
     metadata: jsonb().default({}),
     createdByProfileId: uuid('created_by_profile_id'),
+    /** Org that owned the original asset when this row was copied into another org by the server. */
+    sourceOrganizationId: uuid('source_organization_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
@@ -1188,6 +1190,13 @@ export const asset = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('cascade'),
+    foreignKey({
+      columns: [table.sourceOrganizationId],
+      foreignColumns: [organization.id],
+      name: 'assets_source_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
     foreignKey({
       columns: [table.createdByProfileId],
       foreignColumns: [profile.id],
