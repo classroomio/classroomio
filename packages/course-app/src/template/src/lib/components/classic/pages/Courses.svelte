@@ -108,7 +108,7 @@
               </div>
             </div>
             <section
-              class="grid w-full grid-cols-1 place-items-center sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3"
+              class="grid w-full grid-cols-1 place-items-center md:grid-cols-2 xl:grid-cols-3"
             >
               {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                 <CourseCard
