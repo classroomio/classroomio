@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson Editor Redesign</title>
+<style>
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.488 0.243 264.376);
+    --primary-foreground: oklch(0.97 0.014 254.604);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --success: oklch(0.596 0.145 163.225);
+    --success-foreground: #fff;
+    --success-soft: oklch(0.596 0.145 163.225 / 0.12);
+    --warning: oklch(0.666 0.179 58.318);
+    --warning-foreground: #fff;
+    --warning-soft: oklch(0.666 0.179 58.318 / 0.14);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.205 0 0);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.424 0.199 265.638);
+      --primary-foreground: oklch(0.97 0.014 254.604);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --success: oklch(0.696 0.17 162.48);
+      --success-foreground: oklch(0.262 0.051 172.552);
+      --success-soft: oklch(0.696 0.17 162.48 / 0.16);
+      --warning: oklch(0.769 0.188 70.08);
+      --warning-foreground: oklch(0.279 0.077 45.635);
+      --warning-soft: oklch(0.769 0.188 70.08 / 0.16);
+    }
+  }
+  :root[data-theme='dark'] {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.424 0.199 265.638);
+    --primary-foreground: oklch(0.97 0.014 254.604);
+    --secondary: oklch(0.274 0.006 286.033);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --success: oklch(0.696 0.17 162.48);
+    --success-foreground: oklch(0.262 0.051 172.552);
+    --success-soft: oklch(0.696 0.17 162.48 / 0.16);
+    --warning: oklch(0.769 0.188 70.08);
+    --warning-foreground: oklch(0.279 0.077 45.635);
+    --warning-soft: oklch(0.769 0.188 70.08 / 0.16);
+  }
+
+  * { box-sizing: border-box; border-color: var(--border); }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; }
+  code { font-family: ui-monospace, monospace; }
+  [hidden] { display: none !important; }
+
+  /* ===== prototype chrome (not part of the design — wayfinding only) ===== */
+  .proto-bar {
+    position: sticky; top: 0; z-index: 500;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 16px; background: color-mix(in oklab, var(--foreground) 5%, var(--background));
+    border-bottom: 1px dashed var(--border); font-size: 12px; color: var(--muted-foreground);
+  }
+  .proto-bar b { color: var(--foreground); font-weight: 600; }
+  .screen-switch { display: inline-flex; padding: 3px; background: var(--muted); border-radius: var(--radius-lg); gap: 2px; }
+  .screen-switch button {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-md);
+    border: none; background: transparent; font-size: 12.5px; font-weight: 500; color: var(--muted-foreground); cursor: pointer;
+  }
+  .screen-switch button.on { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-2xs); }
+  .proto-bar .sp { flex: 1; }
+  .proto-note { font-size: 11.5px; }
+
+  /* ===== buttons / badges / cards (mirrors @cio/ui) ===== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md);
+    font-size: 14px; font-weight: 500; white-space: nowrap; height: 36px; padding: 0 16px; border: 1px solid transparent;
+    cursor: pointer; transition: background .12s, border-color .12s, color .12s; box-shadow: var(--shadow-2xs); user-select: none;
+  }
+  .btn svg { width: 16px; height: 16px; stroke-width: 2; flex-shrink: 0; }
+  .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+  .btn-primary:hover { background: color-mix(in oklab, var(--primary) 90%, transparent); }
+  .btn-outline { background: var(--background); border-color: var(--input); color: var(--foreground); }
+  .btn-outline:hover { background: var(--accent); color: var(--accent-foreground); }
+  .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; gap: 6px; }
+  .btn-sm svg { width: 15px; height: 15px; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius-md); border: 1px solid transparent; padding: 2px 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .badge-success-soft { background: var(--success-soft); color: var(--success); }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: var(--radius-md); border: 1px solid var(--input); background: var(--background);
+    display: grid; place-items: center; color: var(--muted-foreground); cursor: pointer; box-shadow: var(--shadow-2xs); flex-shrink: 0;
+  }
+  .icon-btn:hover { color: var(--foreground); background: var(--accent); }
+  .icon-btn svg { width: 15px; height: 15px; stroke-width: 2; }
+  .seg-toggle { display: inline-flex; padding: 3px; background: var(--muted); border-radius: var(--radius-lg); gap: 2px; }
+  .seg-toggle button { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-md); border: none; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted-foreground); cursor: pointer; }
+  .seg-toggle button.on { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-2xs); }
+  .seg-toggle svg { width: 14px; height: 14px; stroke-width: 2; }
+  .input, .textarea, .select {
+    width: 100%; font: inherit; font-size: 14px; color: var(--foreground); background: transparent; border: 1px solid var(--input);
+    border-radius: var(--radius-md); padding: 7px 12px; outline: none; box-shadow: var(--shadow-2xs); transition: border-color .12s, box-shadow .12s;
+  }
+  .input:focus, .textarea:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); }
+  .textarea { resize: vertical; min-height: 76px; line-height: 1.55; }
+  .label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .hint { font-size: 12px; color: var(--muted-foreground); margin-top: 5px; }
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; cursor: pointer; display: inline-block; }
+  .switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; z-index: 1; }
+  .switch .track { position: absolute; inset: 0; background: var(--input); border-radius: 999px; transition: background .15s; }
+  .switch .knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px; background: var(--background); box-shadow: var(--shadow-sm); transition: transform .15s; }
+  .switch input:checked + .track { background: var(--primary); }
+  .switch input:checked ~ .knob { transform: translateX(16px); }
+
+  /* ===== course shell ===== */
+  .shell { display: grid; grid-template-columns: 236px 1fr; min-height: calc(100vh - 49px); }
+  .course-sidebar { background: var(--sidebar); border-right: 1px solid var(--sidebar-border); padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .back-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted-foreground); padding: 6px 8px; border-radius: var(--radius-md); margin-bottom: 4px; }
+  .back-link:hover { background: var(--sidebar-accent); color: var(--foreground); }
+  .back-link svg { width: 15px; height: 15px; stroke-width: 2; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--radius-md); color: var(--sidebar-foreground); font-weight: 400; font-size: 14px; }
+  .nav-item svg { width: 16px; height: 16px; stroke-width: 2; color: var(--muted-foreground); flex-shrink: 0; }
+  .nav-item:hover { background: var(--sidebar-accent); }
+  .nav-item.active { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 500; }
+  .nav-item.active svg { color: var(--sidebar-accent-foreground); }
+  .tree-section { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); margin-top: 6px; }
+  .tree-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px 7px 22px; border-radius: var(--radius-md); font-size: 13px; color: var(--sidebar-foreground); }
+  .tree-item svg { width: 14px; height: 14px; stroke-width: 2; color: #0284c7; flex-shrink: 0; }
+  .tree-item span.t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-item:hover { background: var(--sidebar-accent); }
+  .tree-item.active { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 500; }
+  .tree-item .done { margin-left: auto; color: var(--success); flex-shrink: 0; }
+  .sidebar-foot { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 8px; border-top: 1px solid var(--sidebar-border); }
+  .avatar { width: 28px; height: 28px; border-radius: 999px; background: var(--secondary); color: var(--secondary-foreground); display: grid; place-items: center; font-weight: 600; font-size: 11px; flex-shrink: 0; }
+  .who .nm { font-size: 13px; font-weight: 500; }
+  .who .rl { font-size: 11px; color: var(--muted-foreground); }
+  .course-main { display: flex; flex-direction: column; min-width: 0; }
+  .course-topbar { height: 48px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; padding: 0 16px; }
+  .course-topbar .divider { width: 1px; height: 16px; background: var(--border); }
+  .course-topbar .lbl { font-size: 13.5px; font-weight: 500; }
+  .course-topbar .spacer { flex: 1; }
+
+  /* ===== lesson header ===== */
+  .lesson-header { padding: 20px 28px 0; }
+  .lesson-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .lesson-title-col { min-width: 0; flex: 1; }
+  .lesson-title-input {
+    font-size: 21px; font-weight: 500; letter-spacing: -.02em; border: 1px solid transparent; border-radius: var(--radius-md);
+    padding: 4px 8px; margin: -4px 0 0 -8px; width: 100%; max-width: 620px; background: transparent; color: var(--foreground); font-family: inherit;
+  }
+  .lesson-title-input:hover { border-color: var(--border); }
+  .lesson-title-input:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); background: var(--background); }
+  .lesson-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding-left: 8px; font-size: 12px; color: var(--muted-foreground); }
+  .lesson-meta-row .slug { font-family: ui-monospace, monospace; }
+  .lesson-actions-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .save-status { font-size: 13px; color: var(--muted-foreground); min-width: 40px; text-align: right; }
+
+  /* ===== canvas ===== */
+  .canvas-wrap { padding: 22px 28px 60px; max-width: 820px; margin: 0 auto; width: 100%; }
+  .canvas { display: flex; flex-direction: column; gap: 20px; }
+  .content-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 18px 20px 22px; }
+  .section-eyebrow { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 14px; }
+  .section-eyebrow svg { width: 14px; height: 14px; stroke-width: 2.2; }
+
+  .preview-banner {
+    display: none; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: var(--radius-md);
+    background: color-mix(in oklab, var(--primary) 8%, var(--background)); border: 1px solid color-mix(in oklab, var(--primary) 25%, transparent);
+    font-size: 12.8px; line-height: 1.5; color: var(--foreground); margin-bottom: 20px;
+  }
+  .preview-banner svg { width: 16px; height: 16px; stroke-width: 2; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
+  .preview-banner b { font-weight: 600; }
+  .mode-preview .preview-banner { display: flex; }
+  .mode-preview .edit-only { display: none !important; }
+  .mode-preview .content-section { background: transparent; border-color: transparent; padding-left: 0; padding-right: 0; }
+  .mode-preview .lesson-title-input { pointer-events: none; border-color: transparent !important; box-shadow: none !important; }
+  .mode-preview .section-eyebrow { display: none; }
+  #screen-desktop:not(.mode-preview) .preview-only { display: none !important; }
+
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .media-card { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .media-thumb { position: relative; aspect-ratio: 16/9; background: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; }
+  .media-thumb svg.big { width: 36px; height: 36px; stroke-width: 1.5; color: var(--muted-foreground); }
+  .media-thumb .cap { font-size: 12px; font-weight: 500; color: var(--muted-foreground); text-align: center; }
+  .media-thumb .dur { position: absolute; right: 8px; bottom: 8px; background: rgb(0 0 0 / .8); color: #fff; font-size: 11px; font-weight: 500; padding: 2px 6px; border-radius: 4px; }
+  .media-body { display: flex; gap: 10px; padding: 12px; }
+  .media-info { min-width: 0; flex: 1; }
+  .media-title-row { display: flex; align-items: flex-start; gap: 6px; }
+  .media-title { font-size: 14px; font-weight: 600; line-height: 1.35; flex: 1; min-width: 0; }
+  .media-sub { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; line-height: 1.4; }
+  .add-media-tile { border: 1.5px dashed var(--border); border-radius: var(--radius-lg); aspect-ratio: 16/9; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--muted-foreground); font-size: 12.5px; font-weight: 500; cursor: pointer; background: transparent; }
+  .add-media-tile:hover { border-color: var(--ring); color: var(--foreground); background: var(--accent); }
+  .add-media-tile svg { width: 18px; height: 18px; stroke-width: 2; }
+
+  /* preview-only, large learner-facing renders (video / slide / document) */
+  .preview-video-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .preview-video-player .play-btn { width: 60px; height: 60px; border-radius: 999px; background: rgb(255 255 255 / .16); border: 1.5px solid rgb(255 255 255 / .55); display: grid; place-items: center; cursor: pointer; }
+  .preview-video-player .play-btn svg { width: 24px; height: 24px; fill: #fff; stroke: none; margin-left: 3px; }
+  .preview-media-caption { margin-top: 12px; }
+  .preview-media-title { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+  .preview-media-sub { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; }
+  .preview-slide-frame { width: 100%; aspect-ratio: 16/9; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted-foreground); }
+  .preview-slide-frame svg { width: 42px; height: 42px; stroke-width: 1.4; }
+  .preview-doc-link { display: flex; align-items: center; gap: 12px; }
+  .preview-doc-link .info { display: flex; flex-direction: column; gap: 3px; }
+  .preview-doc-link .name { font-size: 13.5px; font-weight: 600; }
+  .preview-doc-link .open { font-size: 12.5px; font-weight: 500; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; }
+  .preview-doc-link .open svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+  .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
+  .note-toolbar .tb-btn:hover { background: var(--accent); color: var(--foreground); }
+  .note-toolbar .tb-btn svg { width: 15px; height: 15px; stroke-width: 2.2; }
+  .note-toolbar .tb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 5px; }
+  .note-content { font-size: 14.5px; line-height: 1.7; color: var(--foreground); }
+  .note-content h3 { font-size: 16.5px; font-weight: 600; margin: 0 0 8px; letter-spacing: -.01em; }
+  .note-content p { margin: 0 0 12px; }
+  .note-content ul { margin: 0 0 12px; padding-left: 20px; }
+  .note-content li { margin-bottom: 4px; }
+  .note-content code { background: var(--muted); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
+  .note-content strong { font-weight: 600; }
+
+  .file-row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px solid var(--border); }
+  .file-row:last-child { border-bottom: none; }
+  .file-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: color-mix(in oklab, var(--destructive) 12%, transparent); color: var(--destructive); display: grid; place-items: center; flex-shrink: 0; }
+  .file-icon svg { width: 15px; height: 15px; stroke-width: 2; }
+  .file-info { min-width: 0; flex: 1; }
+  .file-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-size { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
+  .file-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .radio { width: 14px; height: 14px; border-radius: 999px; border: 1px solid var(--input); accent-color: var(--primary); flex-shrink: 0; }
+  .doc-mode-row { display: flex; align-items: center; gap: 18px; padding: 0 4px 14px; }
+  .doc-mode-row label { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--foreground); cursor: pointer; }
+  .add-row-tile { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; margin-top: 4px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 11px; color: var(--muted-foreground); font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; font: inherit; }
+  .add-row-tile:hover { border-color: var(--ring); color: var(--foreground); background: var(--accent); }
+  .add-row-tile svg { width: 15px; height: 15px; stroke-width: 2; }
+
+  .add-content-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .add-tile { flex: 1 1 140px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; color: var(--muted-foreground); cursor: pointer; background: transparent; font: inherit; }
+  .add-tile:hover { border-color: var(--ring); background: var(--accent); color: var(--foreground); }
+  .add-tile .ic { width: 32px; height: 32px; border-radius: 999px; background: var(--muted); display: grid; place-items: center; }
+  .add-tile .ic svg { width: 15px; height: 15px; stroke-width: 2; }
+  .add-tile .nm { font-size: 12.5px; font-weight: 500; }
+
+  .empty-page { border: 1px dashed var(--border); border-radius: var(--radius-xl); max-width: 560px; margin: 40px auto 0; padding: 48px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .empty-page .ic { width: 40px; height: 40px; border-radius: var(--radius-lg); background: var(--muted); display: grid; place-items: center; }
+  .empty-page .ic svg { width: 20px; height: 20px; stroke-width: 1.7; }
+  .empty-page h2 { font-size: 16.5px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .empty-page p { font-size: 13px; color: var(--muted-foreground); max-width: 360px; margin: 0; line-height: 1.55; }
+
+  /* settings slider */
+  .slider-overlay { position: fixed; inset: 0; background: rgb(0 0 0 / .5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+  .slider-panel { position: fixed; top: 0; right: 0; height: 100%; width: 75%; max-width: 360px; background: var(--background); border-left: 1px solid var(--border); box-shadow: -8px 0 24px -8px rgb(0 0 0 / .25); z-index: 201; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .3s cubic-bezier(.32,.72,0,1); }
+  .settings-open .slider-overlay { opacity: 1; pointer-events: auto; }
+  .settings-open .slider-panel { transform: translateX(0); }
+  .slider-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid var(--border); }
+  .slider-head h2 { font-size: 15px; font-weight: 600; margin: 0 0 3px; letter-spacing: -.01em; }
+  .slider-head p { font-size: 12px; color: var(--muted-foreground); margin: 0; }
+  .slider-body { flex: 1; overflow-y: auto; padding: 18px; }
+  .field-set + .field-set { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .field-legend { font-size: 13.5px; font-weight: 500; margin: 0 0 4px; }
+  .field-desc { font-size: 12px; color: var(--muted-foreground); line-height: 1.5; margin: 0 0 14px; }
+  .field-stack { display: flex; flex-direction: column; gap: 14px; }
+  .field-row-h { display: flex; align-items: center; gap: 10px; }
+  .field-checklist { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; padding: 12px; background: var(--muted); border-radius: var(--radius-md); }
+  .checkbox { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--input); accent-color: var(--primary); flex-shrink: 0; }
+
+  /* dialog */
+  .scrim { position: fixed; inset: 0; background: oklch(0 0 0 / .55); z-index: 300; display: none; align-items: center; justify-content: center; padding: 24px; overflow: auto; }
+  .dialog-open .scrim { display: flex; }
+  .dialog { background: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 24px 60px -12px rgb(0 0 0 / .35); width: 100%; max-width: 440px; }
+  .dialog-head { padding: 18px 20px 0; }
+  .dialog-title { font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 4px; }
+  .dialog-desc { font-size: 12px; color: var(--muted-foreground); margin: 0; line-height: 1.5; }
+  .dialog-body { padding: 16px 20px; }
+  .dialog-foot { padding: 14px 20px 18px; display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--border); margin-top: 4px; }
+  .utabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); overflow-x: auto; margin: -2px -2px 14px; padding: 0 2px; }
+  .utab { padding: 8px 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; white-space: nowrap; }
+  .utab:hover { color: var(--foreground); }
+  .utab.active { color: var(--foreground); border-bottom-color: var(--primary); }
+  .drop { border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 24px 16px; text-align: center; background: var(--muted); }
+  .drop svg { width: 22px; height: 22px; stroke-width: 1.7; color: var(--muted-foreground); margin-bottom: 8px; }
+  .drop .t { font-size: 13px; font-weight: 500; margin: 0 0 3px; }
+  .drop .h { font-size: 11.5px; color: var(--muted-foreground); margin: 0; }
+  .platform-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
+  .platform-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 4px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--background); cursor: pointer; font: inherit; }
+  .platform-btn:hover { border-color: var(--ring); background: var(--accent); }
+  .platform-btn.on { border-color: var(--primary); background: color-mix(in oklab, var(--primary) 8%, transparent); }
+  .platform-btn .sw { width: 24px; height: 24px; border-radius: var(--radius-sm); display: grid; place-items: center; font-size: 9.5px; font-weight: 700; color: #fff; }
+  .platform-btn .nm { font-size: 10px; color: var(--muted-foreground); line-height: 1.2; }
+
+  /* mobile mockup */
+  .phone-wrap { display: flex; justify-content: center; padding: 28px 16px 50px; }
+  .phone-frame { width: min(390px, 100%); background: var(--background); border-radius: 30px; border: 7px solid #111; box-shadow: 0 24px 50px -18px rgb(0 0 0 / .4); overflow: hidden; height: min(760px, 78vh); display: flex; flex-direction: column; }
+  :root[data-theme='dark'] .phone-frame, @media (prefers-color-scheme: dark) { }
+  .phone-screen { position: relative; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+  .force-mobile .lesson-header { padding: 14px 16px 0; }
+  .force-mobile .lesson-header-row { flex-direction: column; align-items: stretch; }
+  .force-mobile .canvas-wrap { padding: 16px 16px 50px; }
+  .force-mobile .media-grid { grid-template-columns: 1fr; }
+  .force-mobile .add-content-row { flex-direction: column; }
+  .force-mobile .slider-panel { width: 100%; max-width: none; }
+
+  /* real responsive breakpoint for the desktop screen */
+  @media (max-width: 780px) {
+    .shell { grid-template-columns: 1fr; }
+    .course-sidebar { display: none; }
+    .lesson-header { padding: 16px 16px 0; }
+    .lesson-header-row { flex-direction: column; align-items: stretch; }
+    .canvas-wrap { padding: 16px 16px 50px; }
+    .slider-panel { width: 100%; max-width: none; }
+    .proto-bar { padding: 8px 12px; }
+  }
+</style>
+  </head>
+  <body>
+
+<div class="proto-bar">
+  <b>Lesson Editor Redesign</b>
+  <span class="proto-note">clickable prototype · not shipped code</span>
+  <span class="sp"></span>
+  <div class="screen-switch" id="screenSwitch">
+    <button class="on" data-screen="desktop">Desktop canvas</button>
+    <button data-screen="empty">Empty lesson</button>
+    <button data-screen="mobile">Mobile</button>
+  </div>
+</div>
+
+<!-- ============ SCREEN: DESKTOP CANVAS ============ -->
+<section class="screen" id="screen-desktop">
+  <div class="shell">
+    <aside class="course-sidebar">
+      <a class="back-link" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Courses</a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>Newsfeed</a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Content</a>
+      <div class="tree-section">Lessons</div>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Introduction to React</span><span class="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span></a>
+      <a class="tree-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Components and Props</span></a>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">State and Lifecycle</span></a>
+      <a class="nav-item" href="#" style="margin-top:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>People</a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>Analytics</a>
+      <div class="sidebar-foot"><div class="avatar">AT</div><div class="who"><div class="nm">Admin Teacher</div><div class="rl">Admin</div></div></div>
+    </aside>
+
+    <div class="course-main">
+      <header class="course-topbar">
+        <button class="icon-btn" aria-label="Toggle sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+        <div class="divider"></div>
+        <span class="lbl">Content</span>
+        <span class="badge badge-success-soft">Published</span>
+        <span class="spacer"></span>
+        <a class="btn btn-outline btn-sm" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>View course site</a>
+      </header>
+
+      <div class="lesson-header">
+        <div class="lesson-header-row">
+          <div class="lesson-title-col">
+            <input class="lesson-title-input" id="lessonTitle" value="Components and Props: Building Reusable UI Elements" />
+            <div class="lesson-meta-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:12px;height:12px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+              <span>Unlocked</span><span>·</span><span class="slug">/components-and-props</span>
+            </div>
+          </div>
+          <div class="lesson-actions-row">
+            <span class="save-status" id="saveStatus">Saved</span>
+            <button class="icon-btn" title="Lock lesson" aria-label="Lock lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></button>
+            <button class="icon-btn" title="Version history" aria-label="Version history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></button>
+            <button class="icon-btn" title="Lesson settings" aria-label="Lesson settings" id="btnSettingsDesktop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+            <div class="seg-toggle" id="modeToggle">
+              <button class="on" data-mode="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button>
+              <button data-mode="preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main class="canvas-wrap">
+        <div class="preview-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <div><b>In-app learner experience.</b> This is how the lesson looks to an enrolled, logged-in learner. The public course page (for visitors who haven't enrolled) currently shows less — only the video and note — so treat this as the authenticated view, not the public one.</div>
+        </div>
+
+        <div class="canvas" id="canvas">
+          <section class="content-section" data-type="video">
+            <div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</div>
+            <div class="media-grid edit-only" id="videoGrid">
+              <div class="media-card">
+                <div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><div class="cap">React Props Explained in 10 Minutes</div><div class="dur">10:24</div></div>
+                <div class="media-body"><div class="media-info">
+                  <div class="media-title-row"><div class="media-title">React Props Explained in 10 Minutes</div>
+                    <button class="icon-btn edit-only" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                  <div class="media-sub">Web Dev Simplified</div><div class="media-sub">10:24 · YouTube</div>
+                </div></div>
+              </div>
+              <button class="add-media-tile edit-only" onclick="openAddDialog('video-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add another video</button>
+            </div>
+            <div class="preview-only">
+              <div class="preview-video-player">
+                <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
+              </div>
+              <div class="preview-media-caption">
+                <div class="preview-media-title">React Props Explained in 10 Minutes</div>
+                <div class="preview-media-sub">Web Dev Simplified · 10:24</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-section" data-type="note">
+            <div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</div>
+            <div class="note-toolbar edit-only">
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg></button>
+              <div class="tb-sep"></div>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg></button>
+              <div class="tb-sep"></div>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 6.1H3M21 12.1H3M15.1 18H3"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+            </div>
+            <div class="note-content" contenteditable="true">
+              <h3>What are Props?</h3>
+              <p>Props (short for <strong>properties</strong>) are how React components receive data from their parent. They're read-only — a component should never modify the props it receives.</p>
+              <ul>
+                <li>Passed like HTML attributes: <code>&lt;Avatar name="Ada" /&gt;</code></li>
+                <li>Read inside the component via <code>props.name</code>, or by destructuring</li>
+                <li>Flow in one direction: parent → child</li>
+              </ul>
+              <p>In the next lesson we'll compare props to state — the other half of how React components hold onto data.</p>
+            </div>
+          </section>
+
+          <section class="content-section" data-type="slide">
+            <div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Slide</div>
+            <div class="media-grid edit-only" id="slideGrid">
+              <div class="media-card">
+                <div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><div class="cap">Props vs State — Slide Deck</div></div>
+                <div class="media-body"><div class="media-info">
+                  <div class="media-title-row"><div class="media-title">Props vs State — Slide Deck</div>
+                    <button class="icon-btn edit-only" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                  <div class="media-sub">docs.google.com</div>
+                </div></div>
+              </div>
+              <button class="add-media-tile edit-only" onclick="openAddDialog('slide-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add slide</button>
+            </div>
+            <div class="preview-only">
+              <div class="preview-slide-frame">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+              </div>
+              <div class="preview-media-caption">
+                <div class="preview-media-title">Props vs State — Slide Deck</div>
+                <div class="preview-media-sub">docs.google.com</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-section" data-type="document">
+            <div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Document</div>
+            <div id="documentList">
+              <div class="doc-entry" data-mode="note">
+                <div class="file-row edit-only">
+                  <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+                  <div class="file-info"><div class="file-name">Product Setup Guide.pdf</div><div class="file-size">860 KB</div></div>
+                  <div class="file-actions">
+                    <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
+                    <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+                <div class="doc-mode-row edit-only">
+                  <label><input type="radio" name="docMode-1" class="radio" value="note" checked onchange="setDocMode(this)" /> Add as Note</label>
+                  <label><input type="radio" name="docMode-1" class="radio" value="link" onchange="setDocMode(this)" /> Add as Downloadable Link</label>
+                </div>
+                <div class="note-content preview-only doc-preview-note">
+                  <h3>Product Setup Guide</h3>
+                  <p><strong>Getting Started</strong></p>
+                  <p>To set up your account, first verify your email address, then complete your organization profile. Once verified, invite your team members from the People tab so they can start collaborating right away.</p>
+                </div>
+                <div class="preview-doc-link preview-only doc-preview-link" hidden>
+                  <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+                  <div class="info">
+                    <span class="name">Product Setup Guide.pdf</span>
+                    <span class="open">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="add-row-tile edit-only" onclick="openAddDialog('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add document</button>
+          </section>
+
+          <div class="edit-only" id="addContentZone" style="display:none">
+            <div class="section-eyebrow" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</div>
+            <div class="add-content-row" id="addContentRow"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="slider-overlay" onclick="closeSettings('Desktop')"></div>
+  <aside class="slider-panel" role="dialog" aria-label="Lesson settings">
+    <div class="slider-head">
+      <div><h2>Lesson settings</h2><p>Applies to this lesson only.</p></div>
+      <button class="icon-btn" onclick="closeSettings('Desktop')" aria-label="Close settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="slider-body">
+      <div class="field-set">
+        <p class="field-legend">Live class</p>
+        <p class="field-desc">Shown to students because this course runs as scheduled live sessions.</p>
+        <div class="field-stack">
+          <div class="field"><label class="label" for="callUrl">Call URL</label><input class="input" id="callUrl" value="https://meet.google.com/abc-defg-hij" /></div>
+          <div style="display:flex;gap:10px">
+            <div class="field" style="flex:1"><label class="label" for="sessDate">Date</label><input class="input" id="sessDate" type="date" value="2026-10-02" /></div>
+            <div class="field" style="flex:1"><label class="label" for="sessTz">Timezone</label><select class="select" id="sessTz"><option>West Africa Time (WAT)</option><option>Eastern Time (ET)</option><option>UTC</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="field-set">
+        <p class="field-legend">Completion</p>
+        <p class="field-desc">Controls when this lesson counts as complete for a student.</p>
+        <div class="field-stack">
+          <div class="field"><label class="label" for="completionPolicy">Completion policy</label>
+            <select class="select" id="completionPolicy" onchange="onPolicyChange()">
+              <option value="manual">Manual — student marks it complete</option>
+              <option value="video_watch" selected>Video watch — must watch required videos</option>
+              <option value="none">None — always counts as complete</option>
+            </select>
+          </div>
+          <div class="field" id="watchThresholdField"><label class="label" for="watchThreshold">Video-watch threshold</label><input class="input" id="watchThreshold" type="number" value="95" style="max-width:110px" /><p class="hint">Percentage of the video's duration a student must watch.</p></div>
+          <div class="field" id="watchEnforceField"><label class="label">Videos that must be watched</label><p class="hint" style="margin-top:0">Only uploaded videos can be enforced — embedded/linked videos can't be tracked.</p>
+            <div class="field-checklist"><label class="field-row-h"><input type="checkbox" class="checkbox" id="wv1" checked /><span class="label" style="margin:0">React Props Explained in 10 Minutes</span></label></div>
+          </div>
+        </div>
+      </div>
+      <div class="field-set">
+        <p class="field-legend">Engagement</p>
+        <p class="field-desc">Comments are on for this course — turn them off for just this lesson if needed.</p>
+        <div class="field-row-h"><label class="switch"><input type="checkbox" id="commentsToggle" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Allow comments on this lesson</span></div>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<!-- ============ SCREEN: EMPTY LESSON ============ -->
+<section class="screen" id="screen-empty" hidden>
+  <div class="shell">
+    <aside class="course-sidebar">
+      <a class="back-link" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Courses</a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Content</a>
+      <div class="tree-section">Lessons</div>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Introduction to React</span><span class="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span></a>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Components and Props</span></a>
+      <a class="tree-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">State and Lifecycle</span></a>
+      <div class="sidebar-foot"><div class="avatar">AT</div><div class="who"><div class="nm">Admin Teacher</div><div class="rl">Admin</div></div></div>
+    </aside>
+    <div class="course-main">
+      <header class="course-topbar">
+        <button class="icon-btn" aria-label="Toggle sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+        <div class="divider"></div><span class="lbl">Content</span><span class="badge badge-success-soft">Published</span><span class="spacer"></span>
+        <a class="btn btn-outline btn-sm" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>View course site</a>
+      </header>
+      <div class="lesson-header">
+        <div class="lesson-header-row">
+          <div class="lesson-title-col">
+            <input class="lesson-title-input" value="State and Lifecycle: Managing Data in React Applications" />
+            <div class="lesson-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:12px;height:12px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg><span>Unlocked</span><span>·</span><span class="slug">/state-and-lifecycle</span></div>
+          </div>
+          <div class="lesson-actions-row"><span class="save-status">Saved</span>
+            <button class="icon-btn" title="Lesson settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+            <div class="seg-toggle"><button class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button></div>
+          </div>
+        </div>
+      </div>
+      <main class="canvas-wrap">
+        <div id="emptyState">
+          <div class="empty-page">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
+            <h2>This lesson doesn't have any content yet</h2>
+            <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
+            <button class="btn btn-primary btn-sm" onclick="toggleAddMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
+          </div>
+        </div>
+        <div class="canvas" id="emptyCanvas"></div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN: MOBILE ============ -->
+<section class="screen" id="screen-mobile" hidden>
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen force-mobile" id="mobileScreen">
+        <header class="course-topbar">
+          <button class="icon-btn" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+          <span class="lbl">Content</span><span class="spacer"></span><span class="badge badge-success-soft">Published</span>
+        </header>
+        <div class="lesson-header">
+          <div class="lesson-header-row">
+            <div class="lesson-title-col">
+              <input class="lesson-title-input" style="font-size:17px" value="Components and Props: Building Reusable UI Elements" />
+              <div class="lesson-meta-row"><span class="slug">/components-and-props</span></div>
+            </div>
+            <div class="lesson-actions-row">
+              <span class="save-status">Saved</span>
+              <button class="icon-btn" id="btnSettingsMobile" title="Lesson settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+              <div class="seg-toggle"><button class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+            </div>
+          </div>
+        </div>
+        <main class="canvas-wrap">
+          <div class="canvas">
+            <section class="content-section" data-type="video">
+              <div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</div>
+              <div class="media-grid"><div class="media-card">
+                <div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><div class="cap">React Props Explained in 10 Minutes</div><div class="dur">10:24</div></div>
+                <div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">React Props Explained in 10 Minutes</div></div><div class="media-sub">Web Dev Simplified · 10:24</div></div></div>
+              </div></div>
+            </section>
+            <section class="content-section" data-type="note">
+              <div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</div>
+              <div class="note-toolbar">
+                <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
+                <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg></button>
+                <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="3" x2="3.01" y1="6" y2="6"/></svg></button>
+              </div>
+              <div class="note-content"><h3>What are Props?</h3><p>Props (short for <strong>properties</strong>) are how React components receive data from their parent — read-only, one direction, parent to child.</p></div>
+            </section>
+            <div class="edit-only">
+              <div class="section-eyebrow" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</div>
+              <div class="add-content-row">
+                <button class="add-tile"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span><span class="nm">Slide</span></button>
+                <button class="add-tile"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="nm">Document</span></button>
+              </div>
+            </div>
+          </div>
+        </main>
+        <div class="slider-overlay" style="position:absolute" onclick="closeSettings('Mobile')"></div>
+        <aside class="slider-panel" style="position:absolute" role="dialog" aria-label="Lesson settings">
+          <div class="slider-head"><div><h2>Lesson settings</h2><p>Applies to this lesson only.</p></div><button class="icon-btn" onclick="closeSettings('Mobile')" aria-label="Close settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+          <div class="slider-body">
+            <div class="field-set"><p class="field-legend">Completion</p><p class="field-desc">Controls when this lesson counts as complete for a student.</p>
+              <div class="field-stack">
+                <div class="field"><label class="label">Completion policy</label><select class="select"><option>Manual — student marks it complete</option><option selected>Video watch — must watch required videos</option><option>None — always counts as complete</option></select></div>
+                <div class="field"><label class="label">Video-watch threshold</label><input class="input" type="number" value="95" style="max-width:110px" /></div>
+              </div>
+            </div>
+            <div class="field-set"><p class="field-legend">Engagement</p><div class="field-row-h"><label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Allow comments on this lesson</span></div></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="scrim" id="scrim" onclick="if (event.target === this) closeDialog()"><div class="dialog dialog-lg" id="dialogBox" style="max-width:480px"></div></div>
+
+<script>
+  // ---- screen switching ----
+  const screenSwitch = document.getElementById('screenSwitch');
+  screenSwitch.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('.screen-switch button').forEach((b) => b.classList.toggle('on', b === btn));
+    document.querySelectorAll('.screen').forEach((s) => (s.hidden = s.id !== 'screen-' + btn.dataset.screen));
+  });
+
+  // ---- Edit / Preview toggle (scoped to the desktop screen) ----
+  document.getElementById('modeToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('#modeToggle button').forEach((b) => b.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('screen-desktop').classList.toggle('mode-preview', btn.dataset.mode === 'preview');
+  });
+
+  // ---- Settings slider (desktop + mobile, each scoped to their own screen) ----
+  function openSettings(which) {
+    document.getElementById('screen-' + which.toLowerCase()).classList.add('settings-open');
+  }
+  function closeSettings(which) {
+    document.getElementById('screen-' + which.toLowerCase()).classList.remove('settings-open');
+  }
+  document.getElementById('btnSettingsDesktop').onclick = () => openSettings('Desktop');
+  document.getElementById('btnSettingsMobile').onclick = () => openSettings('Mobile');
+
+  function onPolicyChange() {
+    const isWatch = document.getElementById('completionPolicy').value === 'video_watch';
+    document.getElementById('watchThresholdField').style.display = isWatch ? '' : 'none';
+    document.getElementById('watchEnforceField').style.display = isWatch ? '' : 'none';
+  }
+
+  // ---- Add-content dialogs (desktop screen: video / document) ----
+  const dialogTemplates = {
+    document: `
+      <div class="dialog-head"><h2 class="dialog-title">Add document</h2><p class="dialog-desc">Upload a file, then choose how it should be used in the lesson.</p></div>
+      <div class="dialog-body">
+        <div class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg><p class="t">Team Roles &amp; Permissions.pdf</p><p class="h">540 KB · ready to upload</p></div>
+        <div class="field" style="margin-top:16px">
+          <label class="label">Document</label>
+          <div class="doc-mode-row" id="newDocModeRow" style="padding:0">
+            <label><input type="radio" name="newDocMode" value="note" class="radio" /> Add as Note</label>
+            <label><input type="radio" name="newDocMode" value="link" class="radio" checked /> Add as Downloadable Link</label>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('document')">Add document</button></div>`,
+    'slide-more': `
+      <div class="dialog-head"><h2 class="dialog-title">Add slide</h2><p class="dialog-desc">Paste a link from any of the 10 supported slide platforms.</p></div>
+      <div class="dialog-body">
+        <div class="platform-grid">
+          ${['Google Slides','Canva','PowerPoint','Keynote','Figma','Prezi','Pitch','Gamma','SlideShare','Beautiful'].map((n,i)=>`<button type="button" class="platform-btn ${i===1?'on':''}"><span class="sw" style="background:hsl(${i*36},55%,45%)">${n.slice(0,2).toUpperCase()}</span><span class="nm">${n}</span></button>`).join('')}
+        </div>
+        <div class="field"><label class="label">Slide link</label><input class="input" value="https://www.canva.com/design/thinking-in-components" /></div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('slide-more')">Add slide</button></div>`,
+    'video-more': `
+      <div class="dialog-head"><h2 class="dialog-title">Add video</h2><p class="dialog-desc">The same "Add video" dialog used today, with all six sources.</p></div>
+      <div class="dialog-body">
+        <div class="utabs" id="videoTabs">
+          <button class="utab active" data-tab="yt">YouTube</button><button class="utab" data-tab="vm">Vimeo</button><button class="utab" data-tab="em">Embed link</button>
+          <button class="utab" data-tab="up">Upload</button><button class="utab" data-tab="lib">Library</button><button class="utab" data-tab="gd">Google Drive</button>
+        </div>
+        <div id="videoTabPane"><div class="field"><label class="label">YouTube URL</label><input class="input" value="https://www.youtube.com/watch?v=dpw9EHDh2bM" /></div></div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('video-more')">Add video</button></div>`
+  };
+  const videoTabPanes = {
+    yt: '<div class="field"><label class="label">YouTube URL</label><input class="input" value="https://www.youtube.com/watch?v=dpw9EHDh2bM" /></div>',
+    vm: '<div class="field"><label class="label">Vimeo URL</label><input class="input" placeholder="https://vimeo.com/..." /></div>',
+    em: '<div class="field"><label class="label">Embed code</label><textarea class="textarea" placeholder="&lt;iframe ...&gt;"></textarea></div>',
+    up: '<div class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg><p class="t">Drop a video file, or click to browse</p><p class="h">Uploads are transcoded to HLS automatically</p></div>',
+    lib: '<p class="hint" style="margin:0 0 8px">Previously uploaded to this workspace:</p><div class="media-thumb" style="width:100px;aspect-ratio:16/9;border-radius:6px"><svg class="big" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></div>',
+    gd: '<button class="btn btn-outline btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2v20M2 12h20"/></svg>Connect Google Drive</button>'
+  };
+  function openAddDialog(kind) {
+    document.getElementById('dialogBox').innerHTML = dialogTemplates[kind];
+    document.body.classList.add('dialog-open');
+    const tabs = document.getElementById('videoTabs');
+    if (tabs) {
+      tabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.utab');
+        if (!btn) return;
+        tabs.querySelectorAll('.utab').forEach((t) => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('videoTabPane').innerHTML = videoTabPanes[btn.dataset.tab];
+      });
+    }
+  }
+  function closeDialog() { document.body.classList.remove('dialog-open'); }
+
+  function simulateSave() {
+    const el = document.getElementById('saveStatus');
+    el.textContent = 'Saving…';
+    clearTimeout(simulateSave._t);
+    simulateSave._t = setTimeout(() => (el.textContent = 'Saved'), 900);
+  }
+  document.getElementById('lessonTitle').addEventListener('input', simulateSave);
+  document.querySelector('#screen-desktop .note-content').addEventListener('input', simulateSave);
+
+  let docEntryCount = 1;
+
+  function setDocMode(radioEl) {
+    const entry = radioEl.closest('.doc-entry');
+    const mode = radioEl.value;
+    entry.dataset.mode = mode;
+    entry.querySelector('.doc-preview-note').hidden = mode !== 'note';
+    entry.querySelector('.doc-preview-link').hidden = mode !== 'link';
+  }
+
+  function confirmAdd(kind) {
+    if (kind === 'document') {
+      const mode = document.querySelector('input[name="newDocMode"]:checked').value;
+      docEntryCount += 1;
+      const groupName = 'docMode-' + docEntryCount;
+      const el = document.createElement('div');
+      el.className = 'doc-entry';
+      el.dataset.mode = mode;
+      el.innerHTML = `
+        <div class="file-row edit-only">
+          <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+          <div class="file-info"><div class="file-name">Team Roles &amp; Permissions.pdf</div><div class="file-size">540 KB</div></div>
+          <div class="file-actions">
+            <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
+            <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          </div>
+        </div>
+        <div class="doc-mode-row edit-only">
+          <label><input type="radio" name="${groupName}" class="radio" value="note" ${mode === 'note' ? 'checked' : ''} onchange="setDocMode(this)" /> Add as Note</label>
+          <label><input type="radio" name="${groupName}" class="radio" value="link" ${mode === 'link' ? 'checked' : ''} onchange="setDocMode(this)" /> Add as Downloadable Link</label>
+        </div>
+        <div class="note-content preview-only doc-preview-note" ${mode !== 'note' ? 'hidden' : ''}>
+          <h3>Team Roles &amp; Permissions</h3>
+          <p>Each workspace member has a role that controls what they can see and do. Admins manage billing and settings, tutors manage course content and grading, and students access enrolled courses only.</p>
+        </div>
+        <div class="preview-doc-link preview-only doc-preview-link" ${mode !== 'link' ? 'hidden' : ''}>
+          <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+          <div class="info">
+            <span class="name">Team Roles &amp; Permissions.pdf</span>
+            <span class="open">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </div>`;
+      document.getElementById('documentList').appendChild(el);
+    }
+    if (kind === 'video-more') {
+      const card = document.createElement('div');
+      card.className = 'media-card';
+      card.innerHTML = `<div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><div class="cap">Props: The Complete Guide</div><div class="dur">14:02</div></div>
+        <div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">Props: The Complete Guide</div></div><div class="media-sub">Codevolution</div><div class="media-sub">14:02 · YouTube</div></div></div>`;
+      document.querySelector('#videoGrid .add-media-tile').insertAdjacentElement('beforebegin', card);
+    }
+    if (kind === 'slide-more') {
+      const card = document.createElement('div');
+      card.className = 'media-card';
+      card.innerHTML = `<div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><div class="cap">Thinking in Components — Slide Deck</div></div>
+        <div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">Thinking in Components — Slide Deck</div></div><div class="media-sub">canva.com</div></div></div>`;
+      document.querySelector('#slideGrid .add-media-tile').insertAdjacentElement('beforebegin', card);
+    }
+    closeDialog();
+    simulateSave();
+  }
+
+  // ---- Empty-lesson Add content flow ----
+  function toggleAddMenu() {
+    document.getElementById('dialogBox').innerHTML = `
+      <div class="dialog-head"><h2 class="dialog-title">Add content</h2><p class="dialog-desc">Choose a content type. This opens the same add flow used everywhere else in ClassroomIO.</p></div>
+      <div class="dialog-body"><div class="add-content-row">
+        <button class="add-tile" onclick="pickType('video')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></span><span class="nm">Video</span></button>
+        <button class="add-tile" onclick="pickType('note')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span><span class="nm">Note</span></button>
+        <button class="add-tile" onclick="pickType('slide')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span><span class="nm">Slide</span></button>
+        <button class="add-tile" onclick="pickType('document')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="nm">Document</span></button>
+      </div></div>`;
+    document.body.classList.add('dialog-open');
+  }
+  const addFlows = {
+    video: { title: 'Add video', desc: 'YouTube, Vimeo, an embed link, direct upload, your media library, or Google Drive — all six existing sources.', body: '<div class="field"><label class="label">YouTube URL</label><input class="input" placeholder="https://youtube.com/watch?v=..." /></div>', confirm: 'Add video' },
+    note: { title: 'Add note', desc: "Notes don't need a picker — this just reveals an empty rich-text section, ready to type into.", body: '<p class="hint" style="margin:0">An empty note section will appear in the canvas.</p>', confirm: 'Add note' },
+    slide: { title: 'Add slide', desc: 'Paste a link from any of the 10 supported slide platforms.', body: `<div class="platform-grid">${['Google Slides','Canva','PowerPoint','Keynote','Figma','Prezi','Pitch','Gamma','SlideShare','Beautiful'].map((n,i)=>`<button class="platform-btn ${i===0?'on':''}"><span class="sw" style="background:hsl(${i*36},55%,45%)">${n.slice(0,2).toUpperCase()}</span><span class="nm">${n}</span></button>`).join('')}</div><div class="field"><label class="label">Slide link</label><input class="input" placeholder="https://docs.google.com/presentation/..." /></div>`, confirm: 'Add slide' },
+    document: { title: 'Add document', desc: 'Upload a file to attach to this lesson.', body: '<div class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg><p class="t">Drag and drop, or click to upload</p><p class="h">PDF, DOCX, PPTX up to 50MB</p></div>', confirm: 'Add document' }
+  };
+  function pickType(kind) {
+    const f = addFlows[kind];
+    document.getElementById('dialogBox').innerHTML = `<div class="dialog-head"><h2 class="dialog-title">${f.title}</h2><p class="dialog-desc">${f.desc}</p></div><div class="dialog-body">${f.body}</div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="toggleAddMenu()">Back</button><button class="btn btn-primary btn-sm" onclick="insertSection('${kind}')">${f.confirm}</button></div>`;
+  }
+  const sections = {
+    video: `<section class="content-section"><div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</div><div class="media-grid"><div class="media-card"><div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><div class="cap">State vs Props in React</div><div class="dur">8:47</div></div><div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">State vs Props in React</div></div><div class="media-sub">Codevolution</div><div class="media-sub">8:47 · YouTube</div></div></div></div></div></section>`,
+    note: `<section class="content-section"><div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</div><div class="note-content" contenteditable="true"><p style="color:var(--muted-foreground)">Start writing…</p></div></section>`,
+    slide: `<section class="content-section"><div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Slide</div><div class="media-grid"><div class="media-card"><div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><div class="cap">State Lifecycle — Slide Deck</div></div><div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">State Lifecycle — Slide Deck</div></div><div class="media-sub">docs.google.com</div></div></div></div></div></section>`,
+    document: `<section class="content-section"><div class="section-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Document</div><div class="file-row"><div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div><div class="file-info"><div class="file-name">useEffect-cheatsheet.pdf</div><div class="file-size">640 KB</div></div></div></section>`
+  };
+  function insertSection(kind) {
+    document.getElementById('emptyCanvas').insertAdjacentHTML('beforeend', sections[kind]);
+    document.getElementById('emptyState').style.display = 'none';
+    closeDialog();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (document.body.classList.contains('dialog-open')) closeDialog();
+    else document.querySelectorAll('.settings-open').forEach((el) => el.classList.remove('settings-open'));
+  });
+</script>
+  </body>
+</html>
