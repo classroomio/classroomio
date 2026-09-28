@@ -4405,6 +4405,15 @@
     "customers": "Criar cursos para meus clientes",
     "explore": "Só estou aqui para explorar",
     "articles": "Artigos",
+    "ai": "IA",
+    "ai_select": "Selecione um assistente de IA",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Mecanismo de busca",
     "social": "Redes sociais",
     "friends": "Amigos e família",

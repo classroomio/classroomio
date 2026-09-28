@@ -4405,6 +4405,15 @@
     "customers": "Tạo khóa học cho khách hàng của tôi",
     "explore": "Chỉ ở đây để khám phá",
     "articles": "Bài viết",
+    "ai": "AI",
+    "ai_select": "Chọn một trợ lý AI",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Công cụ tìm kiếm",
     "social": "Phương tiện truyền thông xã hội",
     "friends": "Bạn bè và gia đình",

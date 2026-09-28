@@ -4405,6 +4405,15 @@
     "customers": "मेरे ग्राहकों के लिए पाठ्यक्रम बनाएं",
     "explore": "बस यहाँ अन्वेषण करने के लिए",
     "articles": "लेख",
+    "ai": "एआई",
+    "ai_select": "एक एआई सहायक चुनें",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "खोज इंजन",
     "social": "सोशल मीडिया",
     "friends": "दोस्त और परिवार",

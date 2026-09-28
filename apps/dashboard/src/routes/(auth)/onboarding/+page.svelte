@@ -9,8 +9,16 @@
   import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
   import { generateSitename } from '$lib/utils/functions/org';
   import { t } from '$lib/utils/functions/translations';
-  import { GOALS, ONBOARDING_STEPS, SOURCES, DROPDOWN_ITEMS } from '$features/onboarding/utils/constants';
+  import {
+    AI_PROVIDERS,
+    AI_SOURCE_VALUE,
+    GOALS,
+    ONBOARDING_STEPS,
+    SOURCES,
+    DROPDOWN_ITEMS
+  } from '$features/onboarding/utils/constants';
   import type { OnboardingField } from '$features/onboarding/utils/types';
+  import { resolveOnboardingSource } from '$features/onboarding/utils/source';
   import { untrack } from 'svelte';
 
   let fields: OnboardingField = $state({
@@ -20,6 +28,8 @@
     locale: 'en'
   });
   let isSiteNameTouched = $state(false);
+  let selectedSource = $state('');
+  let selectedAiProvider = $state('');
 
   const progress = $derived(Math.round((onboardingApi.step / Object.keys(ONBOARDING_STEPS).length) * 100));
 
@@ -49,6 +59,13 @@
   $effect(() => {
     setOrgSiteName(fields.orgName, isSiteNameTouched);
   });
+
+  function submitOnboarding() {
+    const source = resolveOnboardingSource(selectedSource, selectedAiProvider);
+    const submittedFields = { ...fields, source };
+
+    onboardingApi.submit(submittedFields);
+  }
 </script>
 
 {#if $profile.id}
@@ -144,9 +161,26 @@
                 <!-- Loop through Goals -->
                 {#each SOURCES as source}
                   <label class="mb-1 inline-flex w-full items-center font-light dark:text-white">
-                    <input type="radio" bind:group={fields.source} name="source" value={source.value} class="mr-2" />
+                    <input type="radio" bind:group={selectedSource} name="source" value={source.value} class="mr-2" />
                     {$t(source.label)}
                   </label>
+                  {#if source.value === AI_SOURCE_VALUE && selectedSource === AI_SOURCE_VALUE}
+                    <div class="mb-3 w-full pl-6">
+                      <Select.Root type="single" bind:value={selectedAiProvider}>
+                        <Select.Trigger class="w-full">
+                          {$t(
+                            AI_PROVIDERS.find((provider) => provider.value === selectedAiProvider)?.label ??
+                              'onboarding.ai_select'
+                          )}
+                        </Select.Trigger>
+                        <Select.Content>
+                          {#each AI_PROVIDERS as provider}
+                            <Select.Item value={provider.value}>{$t(provider.label)}</Select.Item>
+                          {/each}
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+                  {/if}
                 {/each}
                 <!-- Goal: Error message -->
                 {#if onboardingApi.errors.source}
@@ -187,7 +221,7 @@
               {$t('onboarding.back')}
             </Button>
           {/if}
-          <Button loading={onboardingApi.isLoading} onclick={() => onboardingApi.submit(fields)}>
+          <Button loading={onboardingApi.isLoading} onclick={submitOnboarding}>
             {$t('onboarding.continue')}
           </Button>
         </div>
