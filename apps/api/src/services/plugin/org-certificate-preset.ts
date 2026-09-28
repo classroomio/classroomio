@@ -12,7 +12,7 @@ import { CERTIFICATE_TEMPLATES } from '@cio/certificates';
 import { assertOrgCapabilityEnabled } from './org-capability';
 
 function assertValidRendererId(rendererId: string) {
-  const isBuiltIn = CERTIFICATE_TEMPLATES.some((t) => t.id === rendererId);
+  const isBuiltIn = rendererId === 'modular' || CERTIFICATE_TEMPLATES.some((t) => t.id === rendererId);
 
   if (!isBuiltIn) {
     throw new AppError(`Unknown certificate renderer "${rendererId}"`, ErrorCodes.VALIDATION_ERROR, 400);

@@ -69,19 +69,21 @@ export type TCertificateSignatory = z.infer<typeof ZCertificateSignatory>;
 export const ZCertificateTemplateId = z.enum(['classique', 'brutalist', 'noir', 'poster', 'minimal']);
 export type TCertificateTemplateId = z.infer<typeof ZCertificateTemplateId>;
 
-export const ZCertificateDesign = z.object({
-  rendererTemplateId: z.string().min(1).default('classique'),
-  templateId: z.string().optional(),
-  sourcePresetId: z.string().uuid().optional(),
-  accentColor: z
-    .string()
-    .regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' })
-    .default('#0F62FE'),
-  subtitle: z.string().max(256).optional(),
-  descriptionOverride: z.string().max(1000).optional(),
-  signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]),
-  idFormat: z.string().max(64).optional().default('CERT-{seq}')
-});
+export const ZCertificateDesign = z
+  .object({
+    rendererTemplateId: z.string().min(1).default('classique'),
+    templateId: z.string().optional(),
+    sourcePresetId: z.string().uuid().optional(),
+    accentColor: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' })
+      .default('#0F62FE'),
+    subtitle: z.string().max(256).optional(),
+    descriptionOverride: z.string().max(1000).optional(),
+    signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]),
+    idFormat: z.string().max(64).optional().default('CERT-{seq}')
+  })
+  .passthrough();
 export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;
 
 /**

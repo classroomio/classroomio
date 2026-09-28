@@ -45,24 +45,156 @@
     stageElement = $bindable(null)
   }: Props = $props();
 
+  let canvasContainer = $state<HTMLDivElement | null>(null);
   let hoveredZone = $state<StudioElementId | null>(null);
 
+  interface ElementRect {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  }
+
+  type ElementRects = Record<StudioElementId, ElementRect>;
+
+  let measuredRects = $state<Partial<ElementRects>>({});
+
   const layout = $derived(design.layout ?? {});
-  const titleY = $derived(75 + (layout.titleOffsetY ?? 0));
-  const recipientY = $derived(205 + (layout.recipientOffsetY ?? 0));
-  const courseY = $derived(315 + (layout.courseOffsetY ?? 0));
-  const badgeY = $derived(560 + (layout.badgeOffsetY ?? 0));
-  const footerY = $derived(570 + (layout.footerOffsetY ?? 0));
+
+  const CALIBRATED_FALLBACKS: ElementRects = {
+    title: { left: 140, top: 75, width: 820, height: 110 },
+    recipient: { left: 160, top: 195, width: 780, height: 85 },
+    course: { left: 160, top: 295, width: 780, height: 115 },
+    badge: { left: 485, top: 565, width: 130, height: 130 },
+    'sig-left': { left: 110, top: 565, width: 240, height: 130 },
+    'sig-right': { left: 550, top: 565, width: 240, height: 130 },
+    qrcode: { left: 915, top: 690, width: 155, height: 60 },
+    border: { left: 12, top: 12, width: 1076, height: 756 }
+  };
+
+  function getRect(id: StudioElementId): ElementRect {
+    if (measuredRects[id]) {
+      return measuredRects[id]!;
+    }
+    const fallback = CALIBRATED_FALLBACKS[id] ?? { left: 0, top: 0, width: 100, height: 100 };
+    if (id === 'title') return { ...fallback, top: fallback.top + (layout.titleOffsetY ?? 0) };
+    if (id === 'recipient') return { ...fallback, top: fallback.top + (layout.recipientOffsetY ?? 0) };
+    if (id === 'course') return { ...fallback, top: fallback.top + (layout.courseOffsetY ?? 0) };
+    if (id === 'badge') return { ...fallback, top: fallback.top + (layout.badgeOffsetY ?? 0) };
+    if (id === 'sig-left' || id === 'sig-right')
+      return { ...fallback, top: fallback.top + (layout.footerOffsetY ?? 0) };
+    return fallback;
+  }
+
+  function measureIframeElements() {
+    if (!canvasContainer) return;
+    const iframe = canvasContainer.querySelector('iframe');
+    const doc = iframe?.contentDocument;
+    if (!doc) return;
+
+    const cert = doc.querySelector('.t-modular') || doc.body;
+    if (!cert) return;
+    const certRect = cert.getBoundingClientRect();
+    if (certRect.width === 0 || certRect.height === 0) return;
+
+    const toRect = (el: Element | null, padX = 8, padY = 6): ElementRect | null => {
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) return null;
+      return {
+        left: Math.round(r.left - certRect.left - padX),
+        top: Math.round(r.top - certRect.top - padY),
+        width: Math.round(r.width + padX * 2),
+        height: Math.round(r.height + padY * 2)
+      };
+    };
+
+    const next: Partial<ElementRects> = {};
+
+    const titleEl = doc.querySelector('.title-zone');
+    const titleRect = toRect(titleEl, 12, 6);
+    if (titleRect) next.title = titleRect;
+
+    const recipientEl = doc.querySelector('.recipient-zone');
+    const recipientRect = toRect(recipientEl, 16, 6);
+    if (recipientRect) next.recipient = recipientRect;
+
+    const courseEl = doc.querySelector('.course-zone');
+    const courseRect = toRect(courseEl, 16, 8);
+    if (courseRect) next.course = courseRect;
+
+    const badgeEl = doc.querySelector('.badge-container svg') || doc.querySelector('.badge-container');
+    const badgeRect = toRect(badgeEl, 6, 6);
+    if (badgeRect) next.badge = badgeRect;
+
+    const sigCols = doc.querySelectorAll('.footer-zone .sig-col');
+    if (sigCols[0]) {
+      const leftSigRect = toRect(sigCols[0], 10, 8);
+      if (leftSigRect) next['sig-left'] = leftSigRect;
+    }
+    if (sigCols[1]) {
+      const rightSigRect = toRect(sigCols[1], 10, 8);
+      if (rightSigRect) next['sig-right'] = rightSigRect;
+    }
+
+    const qrEl = doc.querySelector('.modular-qr');
+    const qrRect = toRect(qrEl, 4, 4);
+    if (qrRect) next.qrcode = qrRect;
+
+    measuredRects = { ...measuredRects, ...next };
+  }
+
+  $effect(() => {
+    // Read reactive design and previewData to trigger updates
+    const _d = design;
+    const _p = previewData;
+
+    const rafId = requestAnimationFrame(() => {
+      measureIframeElements();
+    });
+    const timerId = setTimeout(measureIframeElements, 60);
+    const timerId2 = setTimeout(measureIframeElements, 250);
+
+    if (canvasContainer) {
+      const iframe = canvasContainer.querySelector('iframe');
+      const doc = iframe?.contentDocument;
+      if (doc?.fonts?.ready) {
+        doc.fonts.ready.then(measureIframeElements).catch(() => {});
+      }
+    }
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timerId);
+      clearTimeout(timerId2);
+    };
+  });
 
   function nudgeOffset(key: keyof NonNullable<CertificateDesign['layout']>, delta: number) {
     if (!design.layout) design.layout = {};
     const current = (design.layout[key] as number) ?? 0;
     design.layout[key] = current + delta;
+
+    if (selectedElement && measuredRects[selectedElement]) {
+      measuredRects[selectedElement] = {
+        ...measuredRects[selectedElement]!,
+        top: measuredRects[selectedElement]!.top + delta
+      };
+    }
   }
 
   function resetOffset(key: keyof NonNullable<CertificateDesign['layout']>) {
     if (!design.layout) return;
+    const current = (design.layout[key] as number) ?? 0;
     design.layout[key] = 0;
+
+    if (selectedElement && measuredRects[selectedElement]) {
+      measuredRects[selectedElement] = {
+        ...measuredRects[selectedElement]!,
+        top: measuredRects[selectedElement]!.top - current
+      };
+    }
+    setTimeout(measureIframeElements, 50);
   }
 
   function handleSelect(id: StudioElementId, tool: ToolCategory) {
@@ -155,6 +287,7 @@
       style:height="{Math.round(780 * zoom)}px"
     >
       <div
+        bind:this={canvasContainer}
         class="absolute origin-center rounded-xs shadow-2xl transition-transform duration-75 ease-out"
         style:width="1100px"
         style:height="780px"
@@ -204,10 +337,10 @@
             selected={selectedElement === 'title'}
             hovered={hoveredZone === 'title'}
             offset={layout.titleOffsetY ?? 0}
-            left={140}
-            top={titleY}
-            width={820}
-            height={125}
+            left={getRect('title').left}
+            top={getRect('title').top}
+            width={getRect('title').width}
+            height={getRect('title').height}
             onSelect={handleSelect}
             onHover={(id) => (hoveredZone = id)}
             onNudge={(delta) => nudgeOffset('titleOffsetY', delta)}
@@ -222,10 +355,10 @@
             selected={selectedElement === 'recipient'}
             hovered={hoveredZone === 'recipient'}
             offset={layout.recipientOffsetY ?? 0}
-            left={160}
-            top={recipientY}
-            width={780}
-            height={95}
+            left={getRect('recipient').left}
+            top={getRect('recipient').top}
+            width={getRect('recipient').width}
+            height={getRect('recipient').height}
             onSelect={handleSelect}
             onHover={(id) => (hoveredZone = id)}
             onNudge={(delta) => nudgeOffset('recipientOffsetY', delta)}
@@ -240,10 +373,10 @@
             selected={selectedElement === 'course'}
             hovered={hoveredZone === 'course'}
             offset={layout.courseOffsetY ?? 0}
-            left={160}
-            top={courseY}
-            width={780}
-            height={135}
+            left={getRect('course').left}
+            top={getRect('course').top}
+            width={getRect('course').width}
+            height={getRect('course').height}
             onSelect={handleSelect}
             onHover={(id) => (hoveredZone = id)}
             onNudge={(delta) => nudgeOffset('courseOffsetY', delta)}
@@ -259,10 +392,10 @@
             selected={selectedElement === 'badge'}
             hovered={hoveredZone === 'badge'}
             offset={layout.badgeOffsetY ?? 0}
-            left={480}
-            top={badgeY}
-            width={140}
-            height={140}
+            left={getRect('badge').left}
+            top={getRect('badge').top}
+            width={getRect('badge').width}
+            height={getRect('badge').height}
             onSelect={handleSelect}
             onHover={(id) => (hoveredZone = id)}
             onNudge={(delta) => nudgeOffset('badgeOffsetY', delta)}
@@ -277,10 +410,10 @@
             selected={selectedElement === 'sig-left'}
             hovered={hoveredZone === 'sig-left'}
             offset={layout.footerOffsetY ?? 0}
-            left={90}
-            top={footerY}
-            width={270}
-            height={125}
+            left={getRect('sig-left').left}
+            top={getRect('sig-left').top}
+            width={getRect('sig-left').width}
+            height={getRect('sig-left').height}
             onSelect={handleSelect}
             onHover={(id) => (hoveredZone = id)}
             onNudge={(delta) => nudgeOffset('footerOffsetY', delta)}
@@ -295,10 +428,10 @@
             selected={selectedElement === 'sig-right'}
             hovered={hoveredZone === 'sig-right'}
             offset={layout.footerOffsetY ?? 0}
-            left={740}
-            top={footerY}
-            width={270}
-            height={125}
+            left={getRect('sig-right').left}
+            top={getRect('sig-right').top}
+            width={getRect('sig-right').width}
+            height={getRect('sig-right').height}
             onSelect={handleSelect}
             onHover={(id) => (hoveredZone = id)}
             onNudge={(delta) => nudgeOffset('footerOffsetY', delta)}
@@ -312,10 +445,10 @@
             tool="qrcode"
             selected={selectedElement === 'qrcode'}
             hovered={hoveredZone === 'qrcode'}
-            right={28}
-            bottom={24}
-            width={160}
-            height={65}
+            left={getRect('qrcode').left}
+            top={getRect('qrcode').top}
+            width={getRect('qrcode').width}
+            height={getRect('qrcode').height}
             onSelect={handleSelect}
             onHover={(id) => (hoveredZone = id)}
             onNudge={() => {}}
