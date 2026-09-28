@@ -5,7 +5,6 @@ import {
   addCourseMember,
   deleteCourseMember,
   getCourseMember,
-  getCourseMembers,
   getPaginatedCourseMembers,
   getCourseTeachers,
   updateCourseMember
@@ -57,27 +56,6 @@ async function addProgressSummaries(courseId: string, members: CourseMemberWithP
       enrolledAt: progress.enrolledAt
     };
   });
-}
-
-/**
- * Gets every course member (people) for a course.
- * @param courseId Course ID
- * @returns Array of course members with profile and progress data
- */
-export async function listCourseMembers(courseId: string) {
-  try {
-    const members = await getCourseMembers(courseId);
-    return await addProgressSummaries(courseId, members);
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to list course members',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
 }
 
 /**
