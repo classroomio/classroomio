@@ -1,5 +1,8 @@
 import * as z from 'zod';
 
+/** Coursera Test in the local seed. Production should set its own org id. */
+export const DEFAULT_PLATFORM_TEMPLATES_ORG_ID = '2b8f4a1c-6d3e-4b2a-9f7e-1c4d8a6e9b0f';
+
 const envSchema = z.object({
   // Legacy Cloudflare R2 config (used when OBJECT_STORAGE_* vars are absent)
   CLOUDFLARE_ACCESS_KEY: z.string().optional(),
@@ -107,6 +110,8 @@ const envSchema = z.object({
   UPLOAD_MAX_LANDING_IMAGE_MB: z.string().optional(),
   /** Max media thumbnail upload size in megabytes (default 5). */
   UPLOAD_MAX_THUMBNAIL_MB: z.string().optional(),
+  /** Org that owns ClassroomIO launch templates. Empty hides them. */
+  PLATFORM_TEMPLATES_ORG_ID: z.union([z.string().uuid(), z.literal('')]).default(DEFAULT_PLATFORM_TEMPLATES_ORG_ID),
   /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcripts. */
   SUPADATA_API_KEY: z.string().optional(),
   /** YouTube caption provider identifier (default 'supadata'). */

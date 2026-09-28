@@ -470,7 +470,45 @@ fields.email = '';
 - **Effect mirrors props into local state** — use `$bindable`, `bind:`, or derive a value; only copy props when you need a draft the user can cancel.
 - **Effect fetches or navigates on every dependency tick** — gate with a guard, run on submit/route enter, or track “already loaded” so work runs once per intent.
 
-When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup.
+When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup that does not depend on the current org. Org-scoped page data is covered below.
+
+### Loading org-scoped page data
+
+The app shell renders the page before `currentOrg` is set. A fetch in `onMount` that returns when the org id is missing does nothing on a full reload, then succeeds on the next client navigation, because the org is already in the store.
+
+Load that data in an `$effect` that reads `$currentOrg.id` and returns until the id is set. Remember which org you already loaded only after the id is present, so the effect runs again when the id arrives. If the fetch bails on a missing org id, do not mark that load as done first — the next run has to be allowed to try again.
+
+`onMount` stays right for one-time setup that does not need the org, such as reading `localStorage` or attaching a listener.
+
+```svelte
+let listedOrgId = '';
+
+$effect(() => {
+  const organizationId = $currentOrg.id;
+  if (!organizationId || organizationId === listedOrgId) return;
+
+  listedOrgId = organizationId;
+  void courseTemplateApi.list();
+});
+```
+
+### Skeleton cards
+
+A card row or gallery shows skeleton cards until the first payload arrives. The gap before the request starts is still loading: `cards === null` while the loading flag is still false is an empty row, not a finished one.
+
+Show skeletons while there are no cards yet. Keep the cards you already have during a later refetch. Use the card's `loading` prop, or `Skeleton` blocks with the same footprint, so the row does not jump when the data arrives. A small fixed count is enough — the template row uses three, the gallery four.
+
+```svelte
+{#if !courseTemplateApi.cards}
+  {#each [0, 1, 2] as index (index)}
+    <TemplateCard loading />
+  {/each}
+{:else}
+  {#each templates as template (template.id)}
+    <TemplateCard title={template.title} />
+  {/each}
+{/if}
+```
 
 ### Server-Side API Calls
 
@@ -736,6 +774,8 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Load org-scoped page data in an `$effect` that waits for `$currentOrg.id` (see **Loading org-scoped page data**)
+- Show skeleton cards until the first card payload arrives (see **Skeleton cards**)
 - Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 - Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
 - In certificate templates, compute font sizes for dynamic text using `FIELDS` and `prepareCertificateRenderContext` (`packages/certificates`)
@@ -755,6 +795,8 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 - Use `new Set()`/`new Map()` for mutable reactive state — use `SvelteSet`/`SvelteMap` instead
 - Wrap `SvelteSet`/`SvelteMap` in `$state()` — they are already reactive
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
+- **Fetch org-scoped page data in `onMount`** — the org id is often still empty, so a full reload no-ops and the next client navigation is what finally loads (see **Loading org-scoped page data**)
+- **Leave a card row blank on first load** — show skeleton cards until cards exist, including the gap before the request starts (see **Skeleton cards**)
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 - Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)

@@ -53,7 +53,7 @@
     {#if chips}
       <CourseChips variant="vibrant" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="vibrant" {instructor} {labels} />
+    <CourseInstructor variant="vibrant" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="vibrant" {reviews} {labels} />
     <CoursePricing variant="vibrant" {pricing} {labels} />
   </main>

@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "build:clean": "rimraf dist tsconfig.tsbuildinfo && pnpm run build",
-    "predev": "pnpm --filter @cio/core run build",
+    "predev": "pnpm --filter @cio/core run build:incremental",
     "dev": "pnpm --filter @cio/api --parallel \"/^dev:.*/\"",
     "dev:server": "tsx watch src/index.ts",
     "dev:tsc": "tsc -p tsconfig.json --watch --preserveWatchOutput",

@@ -51,7 +51,7 @@
     {#if chips}
       <CourseChips variant="classic" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="classic" {instructor} {labels} />
+    <CourseInstructor variant="classic" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="classic" {reviews} {labels} />
     <CoursePricing variant="classic" {pricing} {labels} />
   </main>

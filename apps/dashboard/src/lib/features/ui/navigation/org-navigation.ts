@@ -135,7 +135,8 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/courses',
     icon: CourseIcon,
     countKey: 'courses',
-    matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
+    matchPattern: '^/org/[^/]+/courses(/.*)?$',
+    nestedRoutes: [{ titleKey: 'course_templates.gallery.title', path: 'templates' }]
   },
   {
     group: 'content',

@@ -53,7 +53,7 @@
     {#if chips}
       <CourseChips variant="studio" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="studio" {instructor} {labels} />
+    <CourseInstructor variant="studio" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="studio" {reviews} {labels} />
     <CoursePricing variant="studio" {pricing} {labels} />
   </main>

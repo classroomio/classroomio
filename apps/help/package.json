@@ -8,7 +8,8 @@
     "deploy": "pnpm run build && wrangler deploy",
     "validate": "blume validate",
     "check-stale": "node scripts/check-stale-docs.mjs",
-    "register-sidebar-pages": "node scripts/register-sidebar-pages.mjs"
+    "register-sidebar-pages": "node scripts/register-sidebar-pages.mjs",
+    "frame-screenshot": "node scripts/frame-screenshot.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "7.0.3",
@@ -21,6 +22,7 @@
     "tailwindcss": "4.1.18"
   },
   "devDependencies": {
+    "sharp": "^0.34.5",
     "ts-morph": "28.0.0",
     "wrangler": "4.86.0"
   },

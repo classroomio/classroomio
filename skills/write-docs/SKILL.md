@@ -84,7 +84,7 @@ Read [references/editorial-standard.md](references/editorial-standard.md) before
 
 Read [references/media-and-linking.md](references/media-and-linking.md) whenever the article adds, removes, or meaningfully changes screenshots, videos, diagrams, internal links, anchors, or related guides.
 
-Media is selected after the written procedure is known. Do not add a screenshot quota or use a video to compensate for missing written instructions.
+Every article includes one lead screenshot after the opening paragraph and before the first `##`. Choose any further screenshots after the written procedure is known. Do not add extra screenshots to fill space, and do not use a video to compensate for missing written instructions.
 
 ### 6. Write the MDX
 

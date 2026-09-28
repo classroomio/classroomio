@@ -2925,7 +2925,7 @@
       "untitled_course": "शीर्षक रहित पाठ्यक्रम",
       "untitled_course_description": "सेटअप के बाद पाठ्यक्रम का विवरण सहायक द्वारा भरा जाएगा।",
       "template": {
-        "heading": "या किसी टेम्पलेट से प्रारंभ करें",
+        "heading": "या किसी प्रॉम्प्ट से शुरू करें",
         "submit": "जारी रखें",
         "skip": "इसके बजाय चैट में उत्तर दें",
         "submitted_summary": "उत्तर प्रस्तुत किये गये",
@@ -3080,8 +3080,8 @@
     "afternoon_heading": "शुभ दोपहर",
     "evening_heading": "शुभ संध्या",
     "create_course": "पाठ्यक्रम बनाएं",
-    "view_site": "अकादमी खोलें",
-    "visit_site": "अकादमी खोलें",
+    "view_site": "आपकी अकादमी",
+    "visit_site": "आपकी अकादमी",
     "current_lesson": "वर्तमान में सीख रहा हूँ",
     "your_progress": "आपकी प्रगति",
     "continue": "जारी रखें",
@@ -3136,7 +3136,7 @@
     "login_activity_description": "सप्ताह के सर्वाधिक सक्रिय दिन (पिछले 90 दिन)",
     "login_activity_no_data": "अभी तक कोई लॉगिन गतिविधि नहीं",
     "login_activity_logins": "लॉगिन",
-    "open_academy": "अकादमी खोलें",
+    "open_academy": "आपकी अकादमी",
     "explore_more_courses": "अधिक पाठ्यक्रम खोजें",
     "view_more": "और देखें",
     "upcoming_sessions_heading": "लाइव सत्र"
@@ -3995,7 +3995,7 @@
       "notifications_tab": "सूचनाएँ"
     },
     "subheadings": {
-      "view_site": "अकादमी खोलें"
+      "view_site": "आपकी अकादमी"
     },
     "auth": {
       "title": "प्रमाणीकरण",
@@ -5668,6 +5668,181 @@
       "theme_light": "प्रकाश",
       "theme_dark": "अंधेरा",
       "theme_system": "सिस्टम"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "एक नया पाठ्यक्रम बनाएं",
+      "gallery": "टेम्पलेट गैलरी",
+      "yours": "आपके पाठ्यक्रम",
+      "blank": "रिक्त पाठ्यक्रम",
+      "blank_subtitle": "शून्य से शुरू करें"
+    },
+    "card": {
+      "yours": "आपका टेम्पलेट",
+      "used": "आपका टेम्प्लेट · प्रयुक्त {date}",
+      "curated": "क्यूरेटेड टेम्पलेट"
+    },
+    "gallery": {
+      "title": "टेम्पलेट गैलरी",
+      "subtitle": "अपने किसी टेम्प्लेट या ClassroomIO द्वारा निर्मित किसी टेम्प्लेट से पाठ्यक्रम प्रारंभ करें।",
+      "search": "टेम्पलेट ढूंढें",
+      "scope_all": "सभी टेम्पलेट",
+      "scope_org": "मेरे टेम्पलेट्स",
+      "scope_global": "क्लासरूमआईओ",
+      "empty_org": "आपने अभी तक कोई टेम्पलेट नहीं बनाया है. किसी भी पाठ्यक्रम को उसके ⋯ मेनू से टेम्पलेट के रूप में सहेजें।",
+      "no_match": "कोई भी टेम्प्लेट \"{query}\" से मेल नहीं खाता।",
+      "empty_global": "अभी कोई ClassroomIO टेम्प्लेट नहीं है।",
+      "back": "सभी पाठ्यक्रम"
+    },
+    "preview": {
+      "course_name": "कोर्स का नाम",
+      "use": "टेम्प्लेट का उपयोग करें",
+      "open": "टेम्प्लेट खोलें",
+      "cancel": "रद्द करें",
+      "copying": "{sections, plural, one {# अनुभाग} other {# अनुभाग}}, {lessons, plural, one {# पाठ} other {# पाठ}} कॉपी हो रहे हैं…",
+      "created": "पाठ्यक्रम {title} से बनाया गया",
+      "shows_off": "दिखावा करता है",
+      "counts": "{sections} अनुभाग · {lessons} पाठ · {exercises} अभ्यास",
+      "questions": "{count, plural, one {# प्रश्न} other {# प्रश्न}}",
+      "loading": "टेम्पलेट लोड हो रहा है…",
+      "settings": "सेटिंग्स",
+      "certificate": "प्रमाणपत्र सक्षम",
+      "deadline": "समयसीमा {date}",
+      "threshold": "पाठ्यक्रम का {percent}% पूरा करें",
+      "final_exercise": "\"{title}\" को {percent}% पर पास करें",
+      "sequential": "पाठ क्रम में अनलॉक होते हैं",
+      "grading": "एक ट्यूटर प्रस्तुतियाँ ग्रेड करता है",
+      "comments_off": "पाठ टिप्पणियाँ बंद हैं",
+      "lesson_download": "शिक्षार्थी पाठ डाउनलोड कर सकते हैं",
+      "self_enrollment": "शिक्षार्थी स्वयं शामिल हो सकते हैं",
+      "ai_tutor": "एआई ट्यूटर चालू है",
+      "compliance_retake": "हर {months, plural, one {# महीने} other {# महीने}} दोबारा लें",
+      "compliance_mandatory": "अनिवार्य"
+    },
+    "menu": {
+      "open": "खुला",
+      "duplicate": "डुप्लिकेट",
+      "delete": "हटाएँ",
+      "save": "टेम्पलेट के रूप में सहेजें...",
+      "create_course": "टेम्प्लेट से पाठ्यक्रम बनाएं",
+      "duplicated": "टेम्प्लेट डुप्लिकेट किया गया",
+      "deleted": "टेम्पलेट हटा दिया गया"
+    },
+    "save": {
+      "title": "टेम्पलेट के रूप में सहेजें",
+      "copy": "एक प्रति टेम्पलेट के रूप में सहेजें",
+      "copy_description": "पाठ्यक्रम जस का तस है.",
+      "convert": "इस पाठ्यक्रम को परिवर्तित करें",
+      "convert_description": "पाठ्यक्रम एक टेम्पलेट बन जाता है. इसे प्रकाशित नहीं किया जा सकता या इसमें छात्र नहीं हो सकते।",
+      "has_students": "{count, plural, one {# विद्यार्थी है} other {# विद्यार्थी हैं}} — इसके बजाय एक प्रति सहेजें।",
+      "unpublish": "परिवर्तित करने से यह पाठ्यक्रम अप्रकाशित हो जाता है।",
+      "name": "टेम्पलेट का नाम",
+      "save_button": "टेम्प्लेट सहेजें",
+      "convert_button": "टेम्पलेट में कनवर्ट करें",
+      "saved": "टेम्प्लेट सहेजा गया",
+      "converted": "पाठ्यक्रम को एक टेम्पलेट में परिवर्तित किया गया",
+      "limit_title": "आपकी योजना में {count, plural, one {# टेम्प्लेट} other {# टेम्प्लेट}} शामिल हैं",
+      "limit_body": "आपके पास पहले से {used, plural, one {{title}} other {# टेम्पलेट}} हैं। अधिक टेम्पलेट के लिए अपग्रेड करें, या जो आपके पास है उसे हटा दें।",
+      "upgrade": "अपग्रेड करें",
+      "manage": "टेम्प्लेट प्रबंधित करें",
+      "view_templates": "टेम्प्लेट देखें"
+    },
+    "empty": {
+      "title": "अभी तक कोई पाठ्यक्रम नहीं",
+      "description": "यह देखने के लिए कि एक बढ़िया ClassroomIO पाठ्यक्रम कैसा दिखता है, एक टेम्पलेट चुनें, या एक रिक्त पाठ्यक्रम से शुरुआत करें।",
+      "browse": "टेम्प्लेट ब्राउज़ करें"
+    },
+    "editor": {
+      "badge": "टेम्पलेट"
+    },
+    "sync": {
+      "alert_title": "टेम्प्लेट में {count, plural, one {# अपडेट} other {# अपडेट}} हैं",
+      "alert_body": "आपके द्वारा अंतिम बार {title} को खींचे जाने के बाद से {date} बदल गया है।",
+      "review_in_settings": "सेटिंग्स में समीक्षा करें",
+      "section_title": "टेम्पलेट",
+      "last_pulled": "अंतिम बार निकाला गया {date}",
+      "review": "अद्यतनों की समीक्षा करें",
+      "up_to_date": "टेम्पलेट के साथ अद्यतित।",
+      "deleted": "{title} हटा दिया गया. यह पाठ्यक्रम अपनी सारी सामग्री रखता है; खींचने के लिए कुछ भी नहीं बचा है.",
+      "deleted_unknown": "यह टेम्प्लेट हटा दिया गया था. यह पाठ्यक्रम अपनी सारी सामग्री रखता है; खींचने के लिए कुछ भी नहीं बचा है.",
+      "available_detail": "{count, plural, one {# अपडेट उपलब्ध} other {# अपडेट उपलब्ध}} — {list}।",
+      "join": "{rest} और {last}",
+      "sections_count": "{count, plural, one {# अनुभाग} other {# अनुभाग}}",
+      "settings_count": "{count, plural, one {# सेटिंग} other {# सेटिंग}}",
+      "content": "सामग्री",
+      "settings": "सेटिंग्स",
+      "select_all": "सभी का चयन करें",
+      "new": "नया",
+      "updated": "अद्यतन किया गया",
+      "locked": "{count, plural, one {# सबमिशन — अपडेट नहीं हो सकता} other {# सबमिशन — अपडेट नहीं हो सकते}}",
+      "edited_locally": "आपने इसे {date} को संपादित किया - खींचने से आपके परिवर्तन प्रतिस्थापित हो जाते हैं।",
+      "removed_locally": "आपने इसे अपने पाठ्यक्रम से हटा दिया है.",
+      "also_adds": "{kind} भी जोड़ता है: {title}",
+      "template_value": "टेम्पलेट: {value}",
+      "yours_value": "आपका: {value}",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "empty_value": "कोई नहीं",
+      "custom_value": "कस्टम",
+      "selected": "{count, plural, one {# चयनित} other {# चयनित}}",
+      "pull": "{count, plural, one {# बदलाव} other {# बदलाव}} खींचें",
+      "pulled": "{title} से {count, plural, one {# बदलाव} other {# बदलाव}} खींचे गए",
+      "kind": {
+        "section": "धारा",
+        "lesson": "पाठ",
+        "exercise": "व्यायाम"
+      },
+      "detail": {
+        "title": "शीर्षक",
+        "content": "सामग्री",
+        "locales": "{locales} जोड़ा गया"
+      },
+      "setting": {
+        "description": "विवरण",
+        "bannerImage": "कवर छवि",
+        "welcomeEmail": "आपका स्वागत है ईमेल",
+        "completionDeadline": "पूर्ण करने की समय सीमा",
+        "completionThreshold": "समापन सीमा",
+        "finalExercise": "अंतिम अभ्यास",
+        "lessonTabsOrder": "पाठ टैब",
+        "contentGrouping": "सामग्री समूहन",
+        "progression": "प्रगति",
+        "comments": "पाठ टिप्पणियाँ",
+        "selfEnrollment": "स्व-नामांकन",
+        "markdownExport": "मार्कडाउन निर्यात",
+        "lessonDownload": "पाठ डाउनलोड करें",
+        "landingRequirements": "लैंडिंग आवश्यकताएँ",
+        "landingDescription": "लैंडिंग विवरण",
+        "landingGoals": "लैंडिंग लक्ष्य",
+        "landingSkills": "कौशल",
+        "landingTools": "उपकरण",
+        "landingInstructor": "प्रशिक्षक",
+        "pricing": "मूल्य निर्धारण",
+        "certificateDesign": "प्रमाणपत्र डिज़ाइन",
+        "certificateRules": "प्रमाणपत्र नियम",
+        "aiTutor": "एआई ट्यूटर"
+      },
+      "section_description": "यह पाठ्यक्रम एक टेम्प्लेट से बना है। बदलाव तब खींचें जब आप चाहें — अपने आप कुछ नहीं बदलता।",
+      "updates_title": "{count, plural, one {# अपडेट उपलब्ध} other {# अपडेट उपलब्ध}}",
+      "deleted_title": "टेम्प्लेट हटाया गया",
+      "sheet_title": "टेम्प्लेट अपडेट",
+      "sheet_description": "{title} से, {date} के बाद से। चुनें कि क्या खींचना है — आपके पाठ्यक्रम से कुछ नहीं हटता।",
+      "nothing_selected": "कुछ भी चयनित नहीं",
+      "loading": "अपडेट लोड हो रहे हैं…",
+      "value": {
+        "free": "मुक्त",
+        "sequential": "क्रमिक",
+        "no_price": "निःशुल्क",
+        "pass_mark": "उत्तीर्ण चिह्न {score}"
+      },
+      "template_label": "टेम्पलेट",
+      "yours_label": "आपका"
+    },
+    "home": {
+      "heading": "या किसी टेम्पलेट से प्रारंभ करें",
+      "description": "पाठ, अभ्यास और सेटिंग्स के साथ एक संपूर्ण पाठ्यक्रम। इसे कॉपी करें, फिर इसे अपना बनाएं।",
+      "browse": "सभी टेम्प्लेट ब्राउज़ करें"
     }
   }
 }

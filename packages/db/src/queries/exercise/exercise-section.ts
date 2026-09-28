@@ -3,6 +3,8 @@ import * as schema from '@db/schema';
 import { asc, db, eq, inArray } from '@db/drizzle';
 import type { DbOrTxClient } from '@db/drizzle';
 import type { TNewExerciseSection } from '@db/types';
+import { stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
+import { touchExercisesUpdatedAt } from './exercise';
 
 export async function getExerciseSectionsByExerciseId(exerciseId: string, dbClient: DbOrTxClient = db) {
   try {
@@ -105,9 +107,13 @@ export async function moveQuestionToSection(
   try {
     const [updated] = await dbClient
       .update(schema.question)
-      .set({ exerciseSectionId })
+      .set(stampContentUpdatedAt({ exerciseSectionId }))
       .where(eq(schema.question.id, questionId))
       .returning();
+
+    if (updated) {
+      await touchExercisesUpdatedAt([updated.exerciseId], dbClient);
+    }
 
     return updated || null;
   } catch (error) {
@@ -124,11 +130,16 @@ export async function bulkMoveQuestionsToSection(
   if (questionIds.length === 0) return [];
 
   try {
-    return dbClient
+    const updated = await dbClient
       .update(schema.question)
-      .set({ exerciseSectionId })
+      .set(stampContentUpdatedAt({ exerciseSectionId }))
       .where(inArray(schema.question.id, questionIds))
       .returning();
+    await touchExercisesUpdatedAt(
+      updated.map((question) => question.exerciseId),
+      dbClient
+    );
+    return updated;
   } catch (error) {
     console.error('bulkMoveQuestionsToSection error:', error);
     throw new Error(`Failed to move questions to section: ${error instanceof Error ? error.message : 'Unknown error'}`);

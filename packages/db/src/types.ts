@@ -60,6 +60,10 @@ export type TNewSubmissionstatus = typeof schema.submissionstatus.$inferInsert;
 
 export type TCourse = typeof schema.course.$inferSelect;
 export type TNewCourse = typeof schema.course.$inferInsert;
+export type TTemplateHighlight = typeof schema.templateHighlight.$inferSelect;
+export type TNewTemplateHighlight = typeof schema.templateHighlight.$inferInsert;
+export type TCourseTemplateSettingSync = typeof schema.courseTemplateSettingSync.$inferSelect;
+export type TNewCourseTemplateSettingSync = typeof schema.courseTemplateSettingSync.$inferInsert;
 export type TCourseCompletionRecord = typeof schema.courseCompletionRecord.$inferSelect;
 export type TNewCourseCompletionRecord = typeof schema.courseCompletionRecord.$inferInsert;
 export type TCourseCompletionNotificationEvent = typeof schema.courseCompletionNotificationEvent.$inferSelect;

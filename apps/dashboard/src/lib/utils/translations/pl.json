@@ -2925,7 +2925,7 @@
       "untitled_course": "Kurs bez tytułu",
       "untitled_course_description": "Szczegóły kursu zostaną wypełnione przez asystenta po konfiguracji.",
       "template": {
-        "heading": "Lub zacznij od szablonu",
+        "heading": "Lub zacznij od promptu",
         "submit": "Kontynuuj",
         "skip": "Zamiast tego odpowiedz na czacie",
         "submitted_summary": "Odpowiedzi przesłane",
@@ -3080,8 +3080,8 @@
     "afternoon_heading": "Dzień dobry",
     "evening_heading": "Dobry wieczór",
     "create_course": "Utwórz kurs",
-    "view_site": "Otwarta Akademia",
-    "visit_site": "Otwarta Akademia",
+    "view_site": "Twoja akademia",
+    "visit_site": "Twoja akademia",
     "current_lesson": "Aktualnie się uczę",
     "your_progress": "Twój postęp",
     "continue": "Kontynuuj",
@@ -3136,7 +3136,7 @@
     "login_activity_description": "Najbardziej aktywne dni tygodnia (ostatnie 90 dni)",
     "login_activity_no_data": "Brak aktywności związanej z logowaniem",
     "login_activity_logins": "logowania",
-    "open_academy": "Otwarta Akademia",
+    "open_academy": "Twoja akademia",
     "explore_more_courses": "Przeglądaj więcej kursów",
     "view_more": "Zobacz więcej",
     "upcoming_sessions_heading": "Sesje na żywo"
@@ -3995,7 +3995,7 @@
       "notifications_tab": "Powiadomienia"
     },
     "subheadings": {
-      "view_site": "Otwarta Akademia"
+      "view_site": "Twoja akademia"
     },
     "auth": {
       "title": "Uwierzytelnianie",
@@ -5668,6 +5668,181 @@
       "theme_light": "Jasny",
       "theme_dark": "Ciemny",
       "theme_system": "System"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Utwórz nowy kurs",
+      "gallery": "Galeria szablonów",
+      "yours": "Twoje kursy",
+      "blank": "Pusty kurs",
+      "blank_subtitle": "Zacznij od zera"
+    },
+    "card": {
+      "yours": "Twój szablon",
+      "used": "Twój szablon · Używany {date}",
+      "curated": "Wyselekcjonowany szablon"
+    },
+    "gallery": {
+      "title": "Galeria szablonów",
+      "subtitle": "Rozpocznij kurs, korzystając z jednego ze swoich szablonów lub szablonu utworzonego przez ClassroomIO.",
+      "search": "Znajdź szablon",
+      "scope_all": "Wszystkie szablony",
+      "scope_org": "Moje szablony",
+      "scope_global": "KlasaIO",
+      "empty_org": "Nie masz jeszcze żadnych szablonów. Zapisz dowolny kurs jako szablon z menu ⋯.",
+      "no_match": "Żaden szablon nie pasuje do „{query}”.",
+      "empty_global": "Nie ma jeszcze szablonów ClassroomIO.",
+      "back": "Wszystkie kursy"
+    },
+    "preview": {
+      "course_name": "Nazwa kursu",
+      "use": "Użyj szablonu",
+      "open": "Otwórz szablon",
+      "cancel": "Anuluj",
+      "copying": "Kopiowanie {sections, plural, one {# sekcji} few {# sekcji} many {# sekcji} other {# sekcji}}, {lessons, plural, one {# lekcji} few {# lekcji} many {# lekcji} other {# lekcji}}…",
+      "created": "Kurs utworzony z {title}",
+      "shows_off": "Popisuje się",
+      "counts": "{sections} sekcje · {lessons} lekcje · {exercises} ćwiczenia",
+      "questions": "{count, plural, one {# pytanie} few {# pytania} many {# pytań} other {# pytania}}",
+      "loading": "Ładowanie szablonu…",
+      "settings": "Ustawienia",
+      "certificate": "Certyfikat włączony",
+      "deadline": "Termin {date}",
+      "threshold": "Ukończ {percent}% kursu",
+      "final_exercise": "Przekaż „{title}” za {percent}%",
+      "sequential": "Lekcje odblokowują się w kolejności",
+      "grading": "Nauczyciel ocenia przesłane prace",
+      "comments_off": "Komentarze do lekcji są wyłączone",
+      "lesson_download": "Uczniowie mogą pobierać lekcje",
+      "self_enrollment": "Uczniowie mogą sami dołączyć",
+      "ai_tutor": "Nauczyciel AI jest włączony",
+      "compliance_retake": "Powtarzaj co {months, plural, one {# miesiąc} other {# miesiące}}",
+      "compliance_mandatory": "Obowiązkowe"
+    },
+    "menu": {
+      "open": "Otwórz",
+      "duplicate": "Duplikat",
+      "delete": "Usuń",
+      "save": "Zapisz jako szablon…",
+      "create_course": "Utwórz kurs z szablonu",
+      "duplicated": "Szablon zduplikowany",
+      "deleted": "Szablon usunięty"
+    },
+    "save": {
+      "title": "Zapisz jako szablon",
+      "copy": "Zapisz kopię jako szablon",
+      "copy_description": "Kurs pozostaje taki jaki jest.",
+      "convert": "Konwertuj ten kurs",
+      "convert_description": "Kurs staje się szablonem. Nie można go opublikować ani mieć uczniów.",
+      "has_students": "Ma {count, plural, one {# ucznia} few {# uczniów} many {# uczniów} other {# ucznia}} — zamiast tego zapisz kopię.",
+      "unpublish": "Konwersja powoduje cofnięcie publikacji tego kursu.",
+      "name": "Nazwa szablonu",
+      "save_button": "Zapisz szablon",
+      "convert_button": "Konwertuj na szablon",
+      "saved": "Szablon został zapisany",
+      "converted": "Kurs przekonwertowany na szablon",
+      "limit_title": "Twój plan obejmuje {count, plural, one {# szablon} few {# szablony} many {# szablonów} other {# szablonu}}",
+      "limit_body": "Masz już {used, plural, one {{title}} few {# szablony} many {# szablonów} other {# szablonu}}. Uaktualnij, aby uzyskać więcej szablonów lub usuń jeden, który posiadasz.",
+      "upgrade": "Uaktualnij",
+      "manage": "Zarządzaj szablonami",
+      "view_templates": "Zobacz szablony"
+    },
+    "empty": {
+      "title": "Nie ma jeszcze żadnych kursów",
+      "description": "Wybierz szablon, aby zobaczyć, jak wygląda świetny kurs ClassroomIO, lub zacznij od pustego kursu.",
+      "browse": "Przeglądaj szablony"
+    },
+    "editor": {
+      "badge": "Szablon"
+    },
+    "sync": {
+      "alert_title": "Szablon ma {count, plural, one {# aktualizację} few {# aktualizacje} many {# aktualizacji} other {# aktualizacji}}",
+      "alert_body": "{title} zmieniło się od czasu ostatniego przejazdu w dniu {date}.",
+      "review_in_settings": "Sprawdź w ustawieniach",
+      "section_title": "Szablon",
+      "last_pulled": "Ostatnio wyciągnięte {date}",
+      "review": "Przejrzyj aktualizacje",
+      "up_to_date": "Na bieżąco z szablonem.",
+      "deleted": "{title} został usunięty. W tym kursie zachowana jest cała jego zawartość; nie ma już co ciągnąć.",
+      "deleted_unknown": "Ten szablon został usunięty. W tym kursie zachowana jest cała jego zawartość; nie ma już co ciągnąć.",
+      "available_detail": "{count, plural, one {# dostępna aktualizacja} few {# dostępne aktualizacje} many {# dostępnych aktualizacji} other {# dostępnej aktualizacji}} — {list}.",
+      "join": "{rest} i {last}",
+      "sections_count": "{count, plural, one {# sekcja} few {# sekcje} many {# sekcji} other {# sekcji}}",
+      "settings_count": "{count, plural, one {# ustawienie} few {# ustawienia} many {# ustawień} other {# ustawienia}}",
+      "content": "Treść",
+      "settings": "Ustawienia",
+      "select_all": "Zaznacz wszystko",
+      "new": "Nowy",
+      "updated": "Zaktualizowano",
+      "locked": "{count, plural, one {# zgłoszenie — nie można zaktualizować} few {# zgłoszenia — nie można zaktualizować} many {# zgłoszeń — nie można zaktualizować} other {# zgłoszenia}}",
+      "edited_locally": "Edytowałeś to {date} — przeciągnięcie zastępuje Twoje zmiany.",
+      "removed_locally": "Usunąłeś to ze swojego kursu.",
+      "also_adds": "Dodaje także {kind}: {title}",
+      "template_value": "Szablon: {value}",
+      "yours_value": "Twoje: {value}",
+      "yes": "Tak",
+      "no": "Nie",
+      "empty_value": "Żadne",
+      "custom_value": "Niestandardowe",
+      "selected": "{count, plural, one {# wybrane} few {# wybrane} many {# wybranych} other {# wybranego}}",
+      "pull": "Pobierz {count, plural, one {# zmianę} few {# zmiany} many {# zmian} other {# zmiany}}",
+      "pulled": "Pobrano {count, plural, one {# zmianę} few {# zmiany} many {# zmian} other {# zmiany}} z {title}",
+      "kind": {
+        "section": "Sekcja",
+        "lesson": "Lekcja",
+        "exercise": "Ćwicz"
+      },
+      "detail": {
+        "title": "Tytuł",
+        "content": "Treść",
+        "locales": "Dodano {locales}"
+      },
+      "setting": {
+        "description": "Opis",
+        "bannerImage": "Obraz na okładce",
+        "welcomeEmail": "Witamy e-mail",
+        "completionDeadline": "Termin realizacji",
+        "completionThreshold": "Próg ukończenia",
+        "finalExercise": "Ćwiczenie końcowe",
+        "lessonTabsOrder": "Zakładki z lekcjami",
+        "contentGrouping": "Grupowanie treści",
+        "progression": "Postęp",
+        "comments": "Komentarze do lekcji",
+        "selfEnrollment": "Samodzielna rejestracja",
+        "markdownExport": "Eksport przecen",
+        "lessonDownload": "Pobieranie lekcji",
+        "landingRequirements": "Wymagania dotyczące lądowania",
+        "landingDescription": "Opis lądowania",
+        "landingGoals": "Cele lądowania",
+        "landingSkills": "Umiejętności",
+        "landingTools": "Narzędzia",
+        "landingInstructor": "Instruktor",
+        "pricing": "Ceny",
+        "certificateDesign": "Projekt certyfikatu",
+        "certificateRules": "Zasady certyfikatu",
+        "aiTutor": "Nauczyciel sztucznej inteligencji"
+      },
+      "section_description": "Ten kurs powstał z szablonu. Pobierz zmiany, kiedy chcesz — nic nie zmienia się samo.",
+      "updates_title": "{count, plural, one {# aktualizacja dostępna} few {# aktualizacje dostępne} many {# aktualizacji dostępnych} other {# aktualizacji}}",
+      "deleted_title": "Szablon usunięty",
+      "sheet_title": "Aktualizacje szablonu",
+      "sheet_description": "Z {title}, od {date}. Wybierz, co pobrać — z twojego kursu nic nie zostanie usunięte.",
+      "nothing_selected": "Nic nie wybrano",
+      "loading": "Ładowanie aktualizacji…",
+      "value": {
+        "free": "Dowolnie",
+        "sequential": "Sekwencyjnie",
+        "no_price": "Bezpłatny",
+        "pass_mark": "Wynik pozytywny {score}"
+      },
+      "template_label": "Szablon",
+      "yours_label": "Twój"
+    },
+    "home": {
+      "heading": "Lub zacznij od szablonu",
+      "description": "Kompletny kurs z lekcjami, ćwiczeniami i ustawieniami. Skopiuj go, a następnie uczyń go swoim.",
+      "browse": "Przeglądaj wszystkie szablony"
     }
   }
 }

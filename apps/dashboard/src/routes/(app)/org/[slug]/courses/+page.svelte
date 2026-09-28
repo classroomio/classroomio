@@ -1,6 +1,10 @@
 <script lang="ts">
   import CoursesPage from '$features/course/pages/courses.svelte';
-  import CreateCourseButton from '$features/course/components/create-course-button.svelte';
+  import TemplateRow from '$features/course/components/template-row.svelte';
+  import { Button } from '@cio/ui/base/button';
+  import { CreateCourseButton } from '$features/course/components';
+  import { isStudentExperience } from '$lib/utils/store/app';
+  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import CourseFilterPopover from '$features/course/components/course-filter-popover.svelte';
   import { courseMetaDeta } from '$features/course/utils/store';
   import {
@@ -50,6 +54,9 @@
   let appliedUrlSearch = $state('');
 
   const filtersFromUrl = $derived(parseCourseListFilters(page.url.searchParams));
+  const listIsUnfiltered = $derived(
+    !searchValue.trim() && selectedTags.length === 0 && courseType === 'all' && publishedStatus === 'all'
+  );
   const hasMoreCourses = $derived(data.pagination?.hasMore ?? false);
 
   $effect(() => {
@@ -222,42 +229,52 @@
   <title>Courses - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full">
-  <Page.Header>
-    <Page.HeaderContent>
-      <Page.Title>{$t('courses.heading')}</Page.Title>
-      <Page.Subtitle>{$t('courses.page_subtitle')}</Page.Subtitle>
-    </Page.HeaderContent>
-    <Page.Action>
-      <CreateCourseButton isResponsive />
-    </Page.Action>
-  </Page.Header>
-  <Page.Body>
-    {#snippet child()}
-      <CoursesPage
-        courses={data.courses}
-        bind:searchValue
-        bind:sortKey
-        showSortSelect={false}
-        hasMore={hasMoreCourses}
-        {isLoadingMore}
-        onLoadMore={loadMoreCourses}
-      >
-        {#snippet filterControls()}
-          <CourseFilterPopover
-            bind:sortKey
-            bind:selectedOrder
-            bind:courseType
-            bind:publishedStatus
-            {courseTypeOptions}
-            {selectedTags}
-            tagGroups={data.tagGroups}
-            {isFiltering}
-            onToggleTag={toggleTag}
-            onClearFilters={clearFilters}
-          />
-        {/snippet}
-      </CoursesPage>
-    {/snippet}
-  </Page.Body>
+<Page.Root class="w-full gap-0">
+  {#if !$isStudentExperience}
+    <TemplateRow />
+  {/if}
+  <div class="mx-auto w-full max-w-6xl px-4 pt-3">
+    <Page.Body>
+      {#snippet child()}
+        <CoursesPage
+          courses={data.courses}
+          bind:searchValue
+          bind:sortKey
+          showSortSelect={false}
+          hasMore={hasMoreCourses}
+          {isLoadingMore}
+          onLoadMore={loadMoreCourses}
+          sectionTitle={$isStudentExperience ? undefined : $t('course_templates.row.yours')}
+          emptyTitle={$isStudentExperience || !listIsUnfiltered ? undefined : $t('course_templates.empty.title')}
+          emptyDescription={$isStudentExperience || !listIsUnfiltered
+            ? undefined
+            : $t('course_templates.empty.description')}
+        >
+          {#snippet emptyAction()}
+            {#if !$isStudentExperience && listIsUnfiltered && $isOrgAdmin}
+              <Button onclick={() => goto(`${$currentOrgPath}/courses/templates`)}>
+                {$t('course_templates.empty.browse')}
+              </Button>
+            {:else if !$isStudentExperience}
+              <CreateCourseButton isResponsive />
+            {/if}
+          {/snippet}
+          {#snippet filterControls()}
+            <CourseFilterPopover
+              bind:sortKey
+              bind:selectedOrder
+              bind:courseType
+              bind:publishedStatus
+              {courseTypeOptions}
+              {selectedTags}
+              tagGroups={data.tagGroups}
+              {isFiltering}
+              onToggleTag={toggleTag}
+              onClearFilters={clearFilters}
+            />
+          {/snippet}
+        </CoursesPage>
+      {/snippet}
+    </Page.Body>
+  </div>
 </Page.Root>

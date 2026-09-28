@@ -45,6 +45,7 @@
     hasMore?: boolean;
     isLoadingMore?: boolean;
     onLoadMore?: () => void | Promise<void>;
+    sectionTitle?: string;
   }
 
   let {
@@ -62,7 +63,8 @@
     emptyAction,
     hasMore = false,
     isLoadingMore = false,
-    onLoadMore
+    onLoadMore,
+    sectionTitle
   }: Props = $props();
 
   const resolvedEmptyTitle = $derived(
@@ -116,25 +118,30 @@
   isLoading={$deleteCourseModal.isDeleting}
 />
 
-<Page.BodyHeader align="right" class="p-0!">
-  <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
-  {#if showSortSelect}
-    <SortSelect options={filterOptions} bind:value={sortKey} />
+<div class={sectionTitle ? 'flex flex-wrap items-center justify-between gap-3' : ''}>
+  {#if sectionTitle}
+    <h2 class="text-sm font-medium">{sectionTitle}</h2>
   {/if}
-  {@render filterControls?.()}
-
-  {#if !isLMS}
-    {#if $courseMetaDeta.view === 'list'}
-      <IconButton onclick={() => setViewPreference('grid')}>
-        <GridIcon size={16} />
-      </IconButton>
-    {:else}
-      <IconButton onclick={() => setViewPreference('list')}>
-        <ListIcon size={16} />
-      </IconButton>
+  <Page.BodyHeader align="right" class="p-0!">
+    <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
+    {#if showSortSelect}
+      <SortSelect options={filterOptions} bind:value={sortKey} />
     {/if}
-  {/if}
-</Page.BodyHeader>
+    {@render filterControls?.()}
+
+    {#if !isLMS}
+      {#if $courseMetaDeta.view === 'list'}
+        <IconButton onclick={() => setViewPreference('grid')}>
+          <GridIcon size={16} />
+        </IconButton>
+      {:else}
+        <IconButton onclick={() => setViewPreference('list')}>
+          <ListIcon size={16} />
+        </IconButton>
+      {/if}
+    {/if}
+  </Page.BodyHeader>
+</div>
 
 <div class="mx-auto mt-4 w-full flex-1">
   {#if isLoading}
@@ -145,10 +152,10 @@
     </section>
   {:else if !courses.length}
     <Empty title={resolvedEmptyTitle} description={resolvedEmptyDescription} icon={LibraryBigIcon} variant="page">
-      {#if !isLMS && !$isStudentExperience}
-        <CreateCourseButton isResponsive />
-      {:else if emptyAction}
+      {#if emptyAction}
         {@render emptyAction()}
+      {:else if !isLMS && !$isStudentExperience}
+        <CreateCourseButton isResponsive />
       {/if}
     </Empty>
   {:else if isLMS || $courseMetaDeta.view === 'grid'}

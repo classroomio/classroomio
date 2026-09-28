@@ -1,6 +1,11 @@
 import { SNACKBAR_SEVERITY } from './constants';
 import { writable } from 'svelte/store';
 
+export type SnackbarAction = {
+  label: string;
+  onClick: () => void;
+};
+
 export const snackbarStoreInitialState = {
   open: false,
   message: '',
@@ -8,18 +13,20 @@ export const snackbarStoreInitialState = {
   handleClose: () => {},
   autoHideDuration: 6000,
   /** When set, the toast replaces the one already holding this id. */
-  id: undefined as string | undefined
+  id: undefined as string | undefined,
+  action: undefined as SnackbarAction | undefined
 };
 
 export const snackbarStore = writable({ ...snackbarStoreInitialState });
 
-function show(message: string, severity: string, id?: string, autoHideDuration?: number) {
+function show(message: string, severity: string, id?: string, autoHideDuration?: number, action?: SnackbarAction) {
   snackbarStore.update((store) => {
     store.open = true;
     store.message = message;
     store.severity = severity;
     store.id = id;
     store.autoHideDuration = autoHideDuration ?? snackbarStoreInitialState.autoHideDuration;
+    store.action = action;
 
     return store;
   });
@@ -28,8 +35,8 @@ function show(message: string, severity: string, id?: string, autoHideDuration?:
 let loadingToastCount = 0;
 
 export const snackbar = {
-  success(message = 'snackbar.success', id?: string) {
-    show(message, SNACKBAR_SEVERITY.SUCCESS, id);
+  success(message = 'snackbar.success', id?: string, action?: SnackbarAction) {
+    show(message, SNACKBAR_SEVERITY.SUCCESS, id, undefined, action);
   },
   error(message = 'snackbar.something', id?: string) {
     show(message, SNACKBAR_SEVERITY.ERROR, id);

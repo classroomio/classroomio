@@ -2925,7 +2925,7 @@
       "untitled_course": "Курс без названия",
       "untitled_course_description": "Детали курса будут заполнены ассистентом после настройки.",
       "template": {
-        "heading": "Или начните с шаблона",
+        "heading": "Или начните с промпта",
         "submit": "Продолжить",
         "skip": "Вместо этого ответьте в чате",
         "submitted_summary": "Ответы отправлены",
@@ -3080,8 +3080,8 @@
     "afternoon_heading": "Добрый день",
     "evening_heading": "Добрый вечер",
     "create_course": "Создать курс",
-    "view_site": "Открытая Академия",
-    "visit_site": "Открытая Академия",
+    "view_site": "Ваша академия",
+    "visit_site": "Ваша академия",
     "current_lesson": "В настоящее время учусь",
     "your_progress": "Ваш прогресс",
     "continue": "Продолжить",
@@ -3136,7 +3136,7 @@
     "login_activity_description": "Самые активные дни недели (последние 90 дней)",
     "login_activity_no_data": "Пока нет активности входа",
     "login_activity_logins": "входов",
-    "open_academy": "Открытая Академия",
+    "open_academy": "Ваша академия",
     "explore_more_courses": "Ознакомьтесь с другими курсами",
     "view_more": "Посмотреть больше",
     "upcoming_sessions_heading": "Живые сессии"
@@ -3995,7 +3995,7 @@
       "notifications_tab": "Уведомления"
     },
     "subheadings": {
-      "view_site": "Открытая Академия"
+      "view_site": "Ваша академия"
     },
     "auth": {
       "title": "Аутентификация",
@@ -5668,6 +5668,181 @@
       "theme_light": "Светлый",
       "theme_dark": "Темный",
       "theme_system": "Система"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Создать новый курс",
+      "gallery": "Галерея шаблонов",
+      "yours": "Ваши курсы",
+      "blank": "Пустой курс",
+      "blank_subtitle": "Начать с нуля"
+    },
+    "card": {
+      "curated": "Отобранный шаблон",
+      "yours": "Ваш шаблон",
+      "used": "Ваш шаблон · Использован {date}"
+    },
+    "gallery": {
+      "title": "Галерея шаблонов",
+      "subtitle": "Начните курс со своего шаблона или с шаблона ClassroomIO.",
+      "search": "Найти шаблон",
+      "scope_all": "Все шаблоны",
+      "scope_org": "Мои шаблоны",
+      "scope_global": "ClassroomIO",
+      "empty_org": "Вы ещё не создали шаблоны. Сохраните любой курс как шаблон из меню ⋯.",
+      "no_match": "Нет шаблонов по запросу «{query}».",
+      "empty_global": "Шаблонов ClassroomIO пока нет.",
+      "back": "Все курсы"
+    },
+    "preview": {
+      "course_name": "Название курса",
+      "use": "Использовать шаблон",
+      "open": "Открыть шаблон",
+      "cancel": "Отмена",
+      "copying": "Копирование {sections, plural, one {# раздела} few {# разделов} many {# разделов} other {# раздела}}, {lessons, plural, one {# урока} few {# уроков} many {# уроков} other {# урока}}…",
+      "created": "Курс создан из {title}",
+      "shows_off": "Что внутри",
+      "settings": "Настройки",
+      "certificate": "Сертификат включён",
+      "deadline": "Срок {date}",
+      "threshold": "Пройдите {percent}% курса",
+      "final_exercise": "Сдайте «{title}» на {percent}%",
+      "sequential": "Уроки открываются по порядку",
+      "grading": "Преподаватель проверяет работы",
+      "comments_off": "Комментарии к урокам выключены",
+      "lesson_download": "Ученики могут скачивать уроки",
+      "self_enrollment": "Ученики могут записаться сами",
+      "ai_tutor": "ИИ-тьютор включён",
+      "compliance_retake": "Повтор каждые {months, plural, one {# месяц} few {# месяца} many {# месяцев} other {# месяца}}",
+      "compliance_mandatory": "Обязательный",
+      "counts": "{sections} разделов · {lessons} уроков · {exercises} заданий",
+      "questions": "{count, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}}",
+      "loading": "Загрузка шаблона…"
+    },
+    "menu": {
+      "open": "Открыть",
+      "duplicate": "Дублировать",
+      "delete": "Удалить",
+      "save": "Сохранить как шаблон…",
+      "create_course": "Создать курс из шаблона",
+      "duplicated": "Шаблон продублирован",
+      "deleted": "Шаблон удалён"
+    },
+    "save": {
+      "title": "Сохранить как шаблон",
+      "copy": "Сохранить копию как шаблон",
+      "copy_description": "Курс остаётся как есть.",
+      "convert": "Преобразовать этот курс",
+      "convert_description": "Курс становится шаблоном. Его нельзя опубликовать, и в нём не может быть студентов.",
+      "has_students": "Есть {count, plural, one {# студент} few {# студента} many {# студентов} other {# студента}} — вместо этого сохраните копию.",
+      "unpublish": "Преобразование снимает курс с публикации.",
+      "name": "Название шаблона",
+      "save_button": "Сохранить шаблон",
+      "convert_button": "Преобразовать в шаблон",
+      "saved": "Шаблон сохранён",
+      "converted": "Курс преобразован в шаблон",
+      "limit_title": "В вашем плане {count, plural, one {# шаблон} few {# шаблона} many {# шаблонов} other {# шаблона}}",
+      "limit_body": "У вас уже {used, plural, one {{title}} few {# шаблона} many {# шаблонов} other {# шаблона}}. Перейдите на более высокий план или удалите один из шаблонов.",
+      "upgrade": "Повысить план",
+      "manage": "Управлять шаблонами",
+      "view_templates": "К шаблонам"
+    },
+    "empty": {
+      "title": "Курсов пока нет",
+      "description": "Выберите шаблон, чтобы увидеть, как выглядит хороший курс, или начните с пустого.",
+      "browse": "Смотреть шаблоны"
+    },
+    "editor": {
+      "badge": "Шаблон"
+    },
+    "sync": {
+      "alert_title": "В шаблоне {count, plural, one {# обновление} few {# обновления} many {# обновлений} other {# обновления}}",
+      "alert_body": "{title} изменился с последней загрузки {date}.",
+      "review_in_settings": "Проверить в настройках",
+      "section_title": "Шаблон",
+      "last_pulled": "Последняя загрузка {date}",
+      "review": "Проверить обновления",
+      "up_to_date": "Совпадает с шаблоном.",
+      "deleted": "{title} удалён. Курс сохраняет всё содержимое; забирать больше нечего.",
+      "deleted_unknown": "Этот шаблон удалён. Курс сохраняет всё содержимое; забирать больше нечего.",
+      "available_detail": "{count, plural, one {# обновление} few {# обновления} many {# обновлений} other {# обновления}} — {list}.",
+      "join": "{rest} и {last}",
+      "sections_count": "{count, plural, one {# раздел} few {# раздела} many {# разделов} other {# раздела}}",
+      "settings_count": "{count, plural, one {# настройка} few {# настройки} many {# настроек} other {# настройки}}",
+      "content": "Содержание",
+      "settings": "Настройки",
+      "select_all": "Выбрать все",
+      "new": "Новое",
+      "updated": "Обновлено",
+      "locked": "{count, plural, one {# ответ — обновить нельзя} few {# ответа — обновить нельзя} many {# ответов — обновить нельзя} other {# ответа — обновить нельзя}}",
+      "edited_locally": "Вы правили это {date} — загрузка заменит ваши изменения.",
+      "removed_locally": "Вы удалили это из своего курса.",
+      "also_adds": "Также добавляет {kind}: {title}",
+      "template_value": "Шаблон: {value}",
+      "yours_value": "У вас: {value}",
+      "yes": "Да",
+      "no": "Нет",
+      "empty_value": "Нет",
+      "custom_value": "Своё",
+      "selected": "{count, plural, one {# выбран} few {# выбрано} many {# выбрано} other {# выбрано}}",
+      "pull": "Забрать {count, plural, one {# изменение} few {# изменения} many {# изменений} other {# изменения}}",
+      "pulled": "Забрано {count, plural, one {# изменение} few {# изменения} many {# изменений} other {# изменения}} из {title}",
+      "kind": {
+        "section": "Раздел",
+        "lesson": "Урок",
+        "exercise": "Задание"
+      },
+      "detail": {
+        "title": "Название",
+        "content": "Содержание",
+        "locales": "Добавлено: {locales}"
+      },
+      "setting": {
+        "description": "Описание",
+        "bannerImage": "Обложка",
+        "welcomeEmail": "Приветственное письмо",
+        "completionDeadline": "Срок завершения",
+        "completionThreshold": "Порог завершения",
+        "finalExercise": "Итоговое задание",
+        "lessonTabsOrder": "Вкладки урока",
+        "contentGrouping": "Группировка содержания",
+        "progression": "Прохождение",
+        "comments": "Комментарии к уроку",
+        "selfEnrollment": "Самостоятельная запись",
+        "markdownExport": "Экспорт в Markdown",
+        "lessonDownload": "Скачивание урока",
+        "landingRequirements": "Требования на странице",
+        "landingDescription": "Описание на странице",
+        "landingGoals": "Цели на странице",
+        "landingSkills": "Навыки",
+        "landingTools": "Инструменты",
+        "landingInstructor": "Преподаватель",
+        "pricing": "Цена",
+        "certificateDesign": "Оформление сертификата",
+        "certificateRules": "Правила сертификата",
+        "aiTutor": "ИИ-наставник"
+      },
+      "section_description": "Этот курс создан из шаблона. Забирайте изменения, когда они вам нужны — само ничего не меняется.",
+      "updates_title": "{count, plural, one {# обновление доступно} few {# обновления доступно} many {# обновлений доступно} other {# обновления}}",
+      "deleted_title": "Шаблон удалён",
+      "sheet_title": "Обновления шаблона",
+      "sheet_description": "Из «{title}», с {date}. Выберите, что забрать — из вашего курса ничего не удаляется.",
+      "nothing_selected": "Ничего не выбрано",
+      "loading": "Загрузка обновлений…",
+      "value": {
+        "free": "Свободно",
+        "sequential": "По порядку",
+        "no_price": "Бесплатно",
+        "pass_mark": "Проходной балл {score}"
+      },
+      "template_label": "Шаблон",
+      "yours_label": "Ваш"
+    },
+    "home": {
+      "heading": "Или начните с шаблона",
+      "description": "Полный курс с уроками, упражнениями и настройками. Скопируйте его, а затем сделайте своим.",
+      "browse": "Просмотреть все шаблоны"
     }
   }
 }
