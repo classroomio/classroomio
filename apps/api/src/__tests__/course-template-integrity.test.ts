@@ -209,7 +209,6 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
         const targetAssets = await tx.select().from(schema.asset).where(eq(schema.asset.organizationId, courseOrg.id));
         expect(targetAssets).toHaveLength(1);
         expect(targetAssets[0].sourceUrl).toBe(sourceUrl);
-        expect(targetAssets[0].sourceOrganizationId).toBe(templateOrg.id);
 
         const clonedLessons = await tx
           .select({ id: schema.lesson.id, videos: schema.lesson.videos })

@@ -1,6 +1,6 @@
 import type { Context } from 'hono';
 
-import { getAssetOrganizationIdsByStorageKeys, getCopiedAssetSourceOrganizationIds } from '@cio/db/queries/assets';
+import { getAssetOrganizationIdsByStorageKeys } from '@cio/db/queries/assets';
 import { readOrganizationIdFromFileKey } from '@cio/core/utils/upload';
 
 /**
@@ -40,33 +40,34 @@ export function resolveUploadOrganizationId(c: Context): string | undefined {
  * A legacy key registered by more than one organization is only allowed when the
  * caller belongs to all of them — the object behind it is shared, so a partial
  * match is not enough.
- *
- * A server-made copy of an asset (a course cloned from another org's template)
- * lends the caller's org the access of the org it was copied from, for that key
- * only. Clients cannot set a copy's source org, so this never widens access past
- * what the original org already had.
  */
 export async function findUnauthorizedDownloadKeys(c: Context, keys: string[]): Promise<string[]> {
-  const callerOrgIds = callerOrganizationIds(c);
-  const legacyKeys = keys.filter((key) => !readOrganizationIdFromFileKey(key));
-  const legacyOwners =
-    legacyKeys.length > 0 ? await getAssetOrganizationIdsByStorageKeys(legacyKeys) : new Map<string, string[]>();
+  const allowedOrgIds = callerOrganizationIds(c);
 
-  const isAllowed = (key: string, allowedOrgIds: string[]) => {
-    const prefixOrgId = readOrganizationIdFromFileKey(key);
-    if (prefixOrgId) return allowedOrgIds.includes(prefixOrgId);
+  const prefixedKeys: string[] = [];
+  const legacyKeys: string[] = [];
 
-    const ownerOrgIds = legacyOwners.get(key) ?? [];
-    return ownerOrgIds.every((ownerOrgId) => allowedOrgIds.includes(ownerOrgId));
-  };
+  for (const key of keys) {
+    (readOrganizationIdFromFileKey(key) ? prefixedKeys : legacyKeys).push(key);
+  }
 
-  const deniedKeys = keys.filter((key) => !isAllowed(key, callerOrgIds));
-  if (deniedKeys.length === 0) return [];
+  const unauthorizedKeys = prefixedKeys.filter((key) => {
+    const ownerOrgId = readOrganizationIdFromFileKey(key)!;
 
-  const copySources = await getCopiedAssetSourceOrganizationIds(deniedKeys, callerOrgIds);
-
-  return deniedKeys.filter((key) => {
-    const copySourceOrgIds = copySources.get(key) ?? [];
-    return !isAllowed(key, [...callerOrgIds, ...copySourceOrgIds]);
+    return !allowedOrgIds.includes(ownerOrgId);
   });
+
+  if (legacyKeys.length === 0) {
+    return unauthorizedKeys;
+  }
+
+  const legacyOwners = await getAssetOrganizationIdsByStorageKeys(legacyKeys);
+  for (const key of legacyKeys) {
+    const ownerOrgIds = legacyOwners.get(key) ?? [];
+    if (ownerOrgIds.length > 0 && !ownerOrgIds.every((ownerOrgId) => allowedOrgIds.includes(ownerOrgId))) {
+      unauthorizedKeys.push(key);
+    }
+  }
+
+  return unauthorizedKeys;
 }

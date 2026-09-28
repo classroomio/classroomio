@@ -10,7 +10,7 @@ import {
   createLessonLanguages,
   createLessons,
   createOptions,
-  createOrGetAssetByStorageKey,
+  createAsset,
   createQuestions,
   createAssetUsage,
   deleteAssetUsagesByTargetSlots,
@@ -33,6 +33,7 @@ import {
 
 import { ROLE } from '@cio/utils/constants';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 
 const ASSET_ID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi;
 
@@ -53,13 +54,13 @@ function collectAssetIds(value: unknown): string[] {
   return matches ? [...new Set(matches)] : [];
 }
 
-function replaceAssetIds<T>(value: T, assetIds: Map<string, string>): T {
-  if (assetIds.size === 0) return value;
+function replaceAssetIds<T>(value: T, replacements: Map<string, string>): T {
+  if (replacements.size === 0) return value;
 
   let serialized = JSON.stringify(value);
-  for (const [sourceId, copiedId] of assetIds) {
-    if (sourceId !== copiedId) {
-      serialized = serialized.split(sourceId).join(copiedId);
+  for (const [source, copy] of replacements) {
+    if (source !== copy) {
+      serialized = serialized.split(source).join(copy);
     }
   }
 
@@ -146,51 +147,61 @@ async function copyAssetsIntoOrg(
   dbClient: DbOrTxClient
 ) {
   const assets = await getAssetsByIds(assetIds, sourceOrgId, dbClient);
-  const copiedIds = new Map<string, string>();
+  const replacements = new Map<string, string>();
 
   for (const asset of assets) {
     const copied = await copyAsset(asset, organizationId, userId, dbClient);
-    copiedIds.set(asset.id, copied.id);
+    for (const [source, copy] of copied) replacements.set(source, copy);
   }
 
-  return copiedIds;
+  return replacements;
 }
 
-async function copyAsset(asset: TAsset, organizationId: string, userId: string, dbClient: DbOrTxClient) {
-  if (asset.organizationId === organizationId) return asset;
+/**
+ * Brings an asset into `organizationId` and returns the source → copy pairs to
+ * rewrite in content. Uploaded files are transferred into storage the target org
+ * owns; external links reuse the org's asset for the same URL when there is one.
+ */
+async function copyAsset(
+  asset: TAsset,
+  organizationId: string,
+  userId: string,
+  dbClient: DbOrTxClient
+): Promise<[string, string][]> {
+  if (asset.organizationId === organizationId) return [];
 
-  if (asset.isExternal && asset.sourceUrl) {
-    const existing = await getActiveAssetBySourceUrl(organizationId, asset.provider, asset.sourceUrl, dbClient);
-    if (existing) return existing;
+  if (asset.provider === 'upload') {
+    const transfer = await transferUploadedAsset(asset, organizationId, userId, dbClient);
+    return transfer.replacements;
   }
 
-  return createOrGetAssetByStorageKey(
+  const existing = asset.sourceUrl
+    ? await getActiveAssetBySourceUrl(organizationId, asset.provider, asset.sourceUrl, dbClient)
+    : null;
+  if (existing) return [[asset.id, existing.id]];
+
+  const created = await createAsset(
     {
       organizationId,
       kind: asset.kind,
       provider: asset.provider,
       storageProvider: asset.storageProvider,
-      storageKey: asset.storageKey,
-      hlsManifestKey: asset.hlsManifestKey,
-      hlsAudioKey: asset.hlsAudioKey,
       sourceUrl: asset.sourceUrl,
       mimeType: asset.mimeType,
-      byteSize: asset.byteSize,
-      checksum: asset.checksum,
       title: asset.title,
       description: asset.description,
       thumbnailUrl: asset.thumbnailUrl,
-      thumbnailCandidates: asset.thumbnailCandidates,
       durationSeconds: asset.durationSeconds,
       aspectRatio: asset.aspectRatio,
       isExternal: asset.isExternal,
       status: asset.status,
       metadata: asset.metadata,
-      createdByProfileId: userId,
-      sourceOrganizationId: asset.sourceOrganizationId ?? asset.organizationId
+      createdByProfileId: userId
     },
     dbClient
   );
+
+  return [[asset.id, created.id]];
 }
 
 function metadataWithoutReviews(metadata: TCourse['metadata']): TCourse['metadata'] {
@@ -209,7 +220,9 @@ export async function cloneCourse(
     return created.course;
   }
 
-  const created = await db.transaction(async (tx) => cloneCourseWithClient(courseId, options, tx));
+  const created = await withAssetStorageRollback(() =>
+    db.transaction(async (tx) => cloneCourseWithClient(courseId, options, tx))
+  );
   await invalidateOrgStats(created.organizationId);
 
   return created.course;

@@ -37,6 +37,7 @@ import {
 } from '@db/queries';
 import { env } from '@cio/core/config/env';
 import { recordLessonLanguageVersion } from '@cio/core/services/lesson-version';
+import { withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
 import {
   applySettingChanges,
   detectSettingChanges,
@@ -435,110 +436,169 @@ export async function pullCourseTemplateUpdates(
   requestedUnitIds: string[],
   requestedSettingKeys: SyncableSettingKey[]
 ) {
-  const pulled = await db.transaction(async (tx) => {
-    await lockCourseForUpdate(courseId, tx);
-    const { course, template, templateOrgId, courseOrgId } = await requireLinkedCourse(courseId, orgId, tx);
-    if (!template || template.status === 'DELETED') {
-      throw new AppError('Template not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-    }
-
-    const templateGraph = await loadGraph(template.id, tx);
-    const courseGraph = await loadGraph(course.id, tx);
-    const syncRows = await listTemplateSettingSync(course.id, tx);
-    const syncedAtByKey = Object.fromEntries(syncRows.map((row) => [row.settingKey, row.syncedAt])) as Partial<
-      Record<SyncableSettingKey, string>
-    >;
-    const units = detectFromGraphs(course, templateGraph, courseGraph);
-    const settings = settingChangesFor(template, course, courseGraph, syncedAtByKey);
-    const selection = preparePullSelection(units, settings, requestedUnitIds, requestedSettingKeys);
-    if (!selection.ok) {
-      const message =
-        selection.reason === 'locked'
-          ? 'An exercise with submissions cannot be updated'
-          : selection.reason === 'empty'
-            ? 'Choose at least one change'
-            : 'Template changes are out of date';
-      throw new AppError(
-        message,
-        selection.reason === 'empty' ? ErrorCodes.VALIDATION_ERROR : ErrorCodes.CONFLICT,
-        selection.reason === 'empty' ? 400 : 409
-      );
-    }
-
-    const selected = new Set(selection.unitIds);
-    const syncedAt = new Date().toISOString();
-    const crossOrg = Boolean(templateOrgId && courseOrgId && templateOrgId !== courseOrgId);
-    const stamped = { sectionIds: [] as string[], lessonIds: [] as string[], exerciseIds: [] as string[] };
-
-    const templateSections = templateGraph.sections.slice().sort((left, right) => left.order - right.order);
-    for (const section of templateSections) {
-      if (!selected.has(section.id)) continue;
-
-      const existing = copyBySource(courseGraph.sections, section.id);
-      if (existing) {
-        await updateCourseSection(existing.id, { title: section.title, updatedAt: syncedAt }, tx);
-        stamped.sectionIds.push(existing.id);
-        continue;
+  const pulled = await withAssetStorageRollback(() =>
+    db.transaction(async (tx) => {
+      await lockCourseForUpdate(courseId, tx);
+      const { course, template, templateOrgId, courseOrgId } = await requireLinkedCourse(courseId, orgId, tx);
+      if (!template || template.status === 'DELETED') {
+        throw new AppError('Template not found', ErrorCodes.COURSE_NOT_FOUND, 404);
       }
 
-      const order = insertionOrder(
-        templateSections,
-        section.id,
-        sourceOrders(courseGraph.sections),
-        courseGraph.sections
-      );
-      await shiftCourseSectionOrders(course.id, order, tx);
-      bumpOrders(courseGraph.sections, order);
-      const createdSections = await createCourseSections(
-        [{ title: section.title, order, courseId: course.id, sourceId: section.id, sourceSyncedAt: syncedAt }],
-        tx
-      );
-      const created = createdSections[0];
-      if (!created) throw new AppError('Failed to pull section', ErrorCodes.INTERNAL_ERROR, 500);
+      const templateGraph = await loadGraph(template.id, tx);
+      const courseGraph = await loadGraph(course.id, tx);
+      const syncRows = await listTemplateSettingSync(course.id, tx);
+      const syncedAtByKey = Object.fromEntries(syncRows.map((row) => [row.settingKey, row.syncedAt])) as Partial<
+        Record<SyncableSettingKey, string>
+      >;
+      const units = detectFromGraphs(course, templateGraph, courseGraph);
+      const settings = settingChangesFor(template, course, courseGraph, syncedAtByKey);
+      const selection = preparePullSelection(units, settings, requestedUnitIds, requestedSettingKeys);
+      if (!selection.ok) {
+        const message =
+          selection.reason === 'locked'
+            ? 'An exercise with submissions cannot be updated'
+            : selection.reason === 'empty'
+              ? 'Choose at least one change'
+              : 'Template changes are out of date';
+        throw new AppError(
+          message,
+          selection.reason === 'empty' ? ErrorCodes.VALIDATION_ERROR : ErrorCodes.CONFLICT,
+          selection.reason === 'empty' ? 400 : 409
+        );
+      }
 
-      courseGraph.sections.push(created);
-      stamped.sectionIds.push(created.id);
-    }
+      const selected = new Set(selection.unitIds);
+      const syncedAt = new Date().toISOString();
+      const crossOrg = Boolean(templateOrgId && courseOrgId && templateOrgId !== courseOrgId);
+      const stamped = { sectionIds: [] as string[], lessonIds: [] as string[], exerciseIds: [] as string[] };
 
-    const templateLessons = templateGraph.lessons.slice().sort((left, right) => left.order - right.order);
-    for (const lesson of templateLessons) {
-      if (!selected.has(lesson.id)) continue;
+      const templateSections = templateGraph.sections.slice().sort((left, right) => left.order - right.order);
+      for (const section of templateSections) {
+        if (!selected.has(section.id)) continue;
 
-      const existing = copyBySource(courseGraph.lessons, lesson.id);
-      const remapped = await remapContentAssets(lesson, templateOrgId, courseOrgId, userId, tx);
-      if (existing) {
-        await updateLesson(
-          existing.id,
-          {
-            note: remapped.note,
-            videoUrl: remapped.videoUrl,
-            slideUrl: remapped.slideUrl,
-            slides: remapped.slides,
-            title: remapped.title,
-            public: remapped.public,
-            lessonAt: remapped.lessonAt,
-            teacherId: crossOrg ? null : remapped.teacherId,
-            callUrl: crossOrg ? null : remapped.callUrl,
-            isUnlocked: remapped.isUnlocked,
-            completionPolicy: remapped.completionPolicy,
-            videoWatchThreshold: remapped.videoWatchThreshold,
-            commentsEnabled: remapped.commentsEnabled,
-            videos: remapped.videos,
-            documents: remapped.documents,
-            slug: remapped.slug,
-            updatedAt: syncedAt
-          },
+        const existing = copyBySource(courseGraph.sections, section.id);
+        if (existing) {
+          await updateCourseSection(existing.id, { title: section.title, updatedAt: syncedAt }, tx);
+          stamped.sectionIds.push(existing.id);
+          continue;
+        }
+
+        const order = insertionOrder(
+          templateSections,
+          section.id,
+          sourceOrders(courseGraph.sections),
+          courseGraph.sections
+        );
+        await shiftCourseSectionOrders(course.id, order, tx);
+        bumpOrders(courseGraph.sections, order);
+        const createdSections = await createCourseSections(
+          [{ title: section.title, order, courseId: course.id, sourceId: section.id, sourceSyncedAt: syncedAt }],
           tx
         );
-        await syncLessonAssetUsages(
-          [{ id: existing.id, videos: remapped.videos, documents: remapped.documents }],
-          courseOrgId,
-          userId,
+        const created = createdSections[0];
+        if (!created) throw new AppError('Failed to pull section', ErrorCodes.INTERNAL_ERROR, 500);
+
+        courseGraph.sections.push(created);
+        stamped.sectionIds.push(created.id);
+      }
+
+      const templateLessons = templateGraph.lessons.slice().sort((left, right) => left.order - right.order);
+      for (const lesson of templateLessons) {
+        if (!selected.has(lesson.id)) continue;
+
+        const existing = copyBySource(courseGraph.lessons, lesson.id);
+        const remapped = await remapContentAssets(lesson, templateOrgId, courseOrgId, userId, tx);
+        if (existing) {
+          await updateLesson(
+            existing.id,
+            {
+              note: remapped.note,
+              videoUrl: remapped.videoUrl,
+              slideUrl: remapped.slideUrl,
+              slides: remapped.slides,
+              title: remapped.title,
+              public: remapped.public,
+              lessonAt: remapped.lessonAt,
+              teacherId: crossOrg ? null : remapped.teacherId,
+              callUrl: crossOrg ? null : remapped.callUrl,
+              isUnlocked: remapped.isUnlocked,
+              completionPolicy: remapped.completionPolicy,
+              videoWatchThreshold: remapped.videoWatchThreshold,
+              commentsEnabled: remapped.commentsEnabled,
+              videos: remapped.videos,
+              documents: remapped.documents,
+              slug: remapped.slug,
+              updatedAt: syncedAt
+            },
+            tx
+          );
+          await syncLessonAssetUsages(
+            [{ id: existing.id, videos: remapped.videos, documents: remapped.documents }],
+            courseOrgId,
+            userId,
+            tx
+          );
+          await writeLessonLanguages(
+            lesson.id,
+            existing.id,
+            templateGraph,
+            templateOrgId,
+            courseOrgId,
+            userId,
+            syncedAt,
+            tx
+          );
+          stamped.lessonIds.push(existing.id);
+          continue;
+        }
+
+        const parentId = lesson.sectionId ? (copyBySource(courseGraph.sections, lesson.sectionId)?.id ?? null) : null;
+        if (lesson.sectionId && !parentId) {
+          throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
+        }
+
+        const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
+        const placed = courseGraph.lessons.filter((sibling) => (sibling.sectionId ?? null) === parentId);
+        const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
+        await shiftLessonOrders(course.id, parentId, order, tx);
+        bumpOrders(placed, order);
+        const createdLessons = await createLessons(
+          [
+            {
+              note: remapped.note,
+              videoUrl: remapped.videoUrl,
+              slideUrl: remapped.slideUrl,
+              slides: remapped.slides,
+              courseId: course.id,
+              title: remapped.title,
+              public: remapped.public,
+              lessonAt: remapped.lessonAt,
+              teacherId: crossOrg ? null : remapped.teacherId,
+              isComplete: false,
+              callUrl: crossOrg ? null : remapped.callUrl,
+              order,
+              isUnlocked: remapped.isUnlocked,
+              completionPolicy: remapped.completionPolicy,
+              videoWatchThreshold: remapped.videoWatchThreshold,
+              commentsEnabled: remapped.commentsEnabled,
+              videos: remapped.videos,
+              documents: remapped.documents,
+              sectionId: parentId,
+              slug: remapped.slug,
+              sourceId: lesson.id,
+              sourceSyncedAt: syncedAt
+            }
+          ],
           tx
         );
+        const created = createdLessons[0];
+        if (!created) throw new AppError('Failed to pull lesson', ErrorCodes.INTERNAL_ERROR, 500);
+
+        courseGraph.lessons.push(created);
+        await syncLessonAssetUsages([created], courseOrgId, userId, tx);
         await writeLessonLanguages(
           lesson.id,
-          existing.id,
+          created.id,
           templateGraph,
           templateOrgId,
           courseOrgId,
@@ -546,174 +606,117 @@ export async function pullCourseTemplateUpdates(
           syncedAt,
           tx
         );
-        stamped.lessonIds.push(existing.id);
-        continue;
+        stamped.lessonIds.push(created.id);
       }
 
-      const parentId = lesson.sectionId ? (copyBySource(courseGraph.sections, lesson.sectionId)?.id ?? null) : null;
-      if (lesson.sectionId && !parentId) {
-        throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
-      }
+      const templateExercises = templateGraph.exercises.slice().sort((left, right) => left.order - right.order);
+      for (const exercise of templateExercises) {
+        if (!selected.has(exercise.id)) continue;
 
-      const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
-      const placed = courseGraph.lessons.filter((sibling) => (sibling.sectionId ?? null) === parentId);
-      const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
-      await shiftLessonOrders(course.id, parentId, order, tx);
-      bumpOrders(placed, order);
-      const createdLessons = await createLessons(
-        [
-          {
-            note: remapped.note,
-            videoUrl: remapped.videoUrl,
-            slideUrl: remapped.slideUrl,
-            slides: remapped.slides,
-            courseId: course.id,
-            title: remapped.title,
-            public: remapped.public,
-            lessonAt: remapped.lessonAt,
-            teacherId: crossOrg ? null : remapped.teacherId,
-            isComplete: false,
-            callUrl: crossOrg ? null : remapped.callUrl,
-            order,
-            isUnlocked: remapped.isUnlocked,
-            completionPolicy: remapped.completionPolicy,
-            videoWatchThreshold: remapped.videoWatchThreshold,
-            commentsEnabled: remapped.commentsEnabled,
-            videos: remapped.videos,
-            documents: remapped.documents,
-            sectionId: parentId,
-            slug: remapped.slug,
-            sourceId: lesson.id,
-            sourceSyncedAt: syncedAt
-          }
-        ],
-        tx
-      );
-      const created = createdLessons[0];
-      if (!created) throw new AppError('Failed to pull lesson', ErrorCodes.INTERNAL_ERROR, 500);
+        const existing = copyBySource(courseGraph.exercises, exercise.id);
+        const remapped = await remapContentAssets(exercise, templateOrgId, courseOrgId, userId, tx);
+        if (existing) {
+          await updateExercise(
+            existing.id,
+            {
+              title: remapped.title,
+              description: remapped.description,
+              dueBy: remapped.dueBy,
+              sectionDisplayMode: remapped.sectionDisplayMode,
+              isUnlocked: remapped.isUnlocked,
+              allowMultipleAttempts: remapped.allowMultipleAttempts,
+              completionPolicy: remapped.completionPolicy,
+              passThreshold: remapped.passThreshold,
+              slug: remapped.slug,
+              updatedAt: syncedAt
+            },
+            tx
+          );
+          await copyExerciseBody(exercise.id, existing.id, templateGraph, templateOrgId, courseOrgId, userId, tx);
+          stamped.exerciseIds.push(existing.id);
+          continue;
+        }
 
-      courseGraph.lessons.push(created);
-      await syncLessonAssetUsages([created], courseOrgId, userId, tx);
-      await writeLessonLanguages(
-        lesson.id,
-        created.id,
-        templateGraph,
-        templateOrgId,
-        courseOrgId,
-        userId,
-        syncedAt,
-        tx
-      );
-      stamped.lessonIds.push(created.id);
-    }
+        const parentSectionId = exercise.sectionId
+          ? (copyBySource(courseGraph.sections, exercise.sectionId)?.id ?? null)
+          : null;
+        const parentLessonId = exercise.lessonId
+          ? (copyBySource(courseGraph.lessons, exercise.lessonId)?.id ?? null)
+          : null;
+        if ((exercise.sectionId && !parentSectionId) || (exercise.lessonId && !parentLessonId)) {
+          throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
+        }
 
-    const templateExercises = templateGraph.exercises.slice().sort((left, right) => left.order - right.order);
-    for (const exercise of templateExercises) {
-      if (!selected.has(exercise.id)) continue;
-
-      const existing = copyBySource(courseGraph.exercises, exercise.id);
-      const remapped = await remapContentAssets(exercise, templateOrgId, courseOrgId, userId, tx);
-      if (existing) {
-        await updateExercise(
-          existing.id,
-          {
-            title: remapped.title,
-            description: remapped.description,
-            dueBy: remapped.dueBy,
-            sectionDisplayMode: remapped.sectionDisplayMode,
-            isUnlocked: remapped.isUnlocked,
-            allowMultipleAttempts: remapped.allowMultipleAttempts,
-            completionPolicy: remapped.completionPolicy,
-            passThreshold: remapped.passThreshold,
-            slug: remapped.slug,
-            updatedAt: syncedAt
-          },
+        const templateSiblings = templateExercises.filter((sibling) =>
+          exercise.sectionId
+            ? sibling.sectionId === exercise.sectionId
+            : sibling.lessonId === exercise.lessonId && !sibling.sectionId
+        );
+        const placed = courseGraph.exercises.filter((sibling) =>
+          parentSectionId
+            ? sibling.sectionId === parentSectionId
+            : parentLessonId
+              ? sibling.lessonId === parentLessonId && !sibling.sectionId
+              : !sibling.sectionId && !sibling.lessonId
+        );
+        const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
+        await shiftExerciseOrders(
+          course.id,
+          { sectionId: parentSectionId, lessonId: parentSectionId ? null : parentLessonId },
+          order,
           tx
         );
-        await copyExerciseBody(exercise.id, existing.id, templateGraph, templateOrgId, courseOrgId, userId, tx);
-        stamped.exerciseIds.push(existing.id);
-        continue;
+        bumpOrders(placed, order);
+        const createdExercises = await createExercises(
+          [
+            {
+              title: remapped.title,
+              description: remapped.description,
+              dueBy: remapped.dueBy,
+              lessonId: parentLessonId,
+              courseId: course.id,
+              sectionId: parentSectionId,
+              sectionDisplayMode: remapped.sectionDisplayMode,
+              order,
+              isUnlocked: remapped.isUnlocked,
+              allowMultipleAttempts: remapped.allowMultipleAttempts,
+              completionPolicy: remapped.completionPolicy,
+              passThreshold: remapped.passThreshold,
+              slug: remapped.slug,
+              sourceId: exercise.id,
+              sourceSyncedAt: syncedAt
+            }
+          ],
+          tx
+        );
+        const created = createdExercises[0];
+        if (!created) throw new AppError('Failed to pull exercise', ErrorCodes.INTERNAL_ERROR, 500);
+
+        courseGraph.exercises.push(created);
+        await copyExerciseBody(exercise.id, created.id, templateGraph, templateOrgId, courseOrgId, userId, tx);
+        stamped.exerciseIds.push(created.id);
       }
 
-      const parentSectionId = exercise.sectionId
-        ? (copyBySource(courseGraph.sections, exercise.sectionId)?.id ?? null)
-        : null;
-      const parentLessonId = exercise.lessonId
-        ? (copyBySource(courseGraph.lessons, exercise.lessonId)?.id ?? null)
-        : null;
-      if ((exercise.sectionId && !parentSectionId) || (exercise.lessonId && !parentLessonId)) {
-        throw new AppError('Template changes are out of date', ErrorCodes.CONFLICT, 409);
+      if (selection.settingKeys.length > 0) {
+        const patch = applySettingChanges(
+          toCarrier(course),
+          toCarrier(template),
+          selection.settingKeys,
+          exerciseCopyMap(courseGraph.exercises)
+        );
+        const remappedPatch = await remapContentAssets(patch, templateOrgId, courseOrgId, userId, tx);
+        await updateCourse(course.id, remappedPatch as Partial<TCourse>, tx);
+        await upsertTemplateSettingSync(course.id, selection.settingKeys, syncedAt, tx);
       }
 
-      const templateSiblings = templateExercises.filter((sibling) =>
-        exercise.sectionId
-          ? sibling.sectionId === exercise.sectionId
-          : sibling.lessonId === exercise.lessonId && !sibling.sectionId
-      );
-      const placed = courseGraph.exercises.filter((sibling) =>
-        parentSectionId
-          ? sibling.sectionId === parentSectionId
-          : parentLessonId
-            ? sibling.lessonId === parentLessonId && !sibling.sectionId
-            : !sibling.sectionId && !sibling.lessonId
-      );
-      const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
-      await shiftExerciseOrders(
-        course.id,
-        { sectionId: parentSectionId, lessonId: parentSectionId ? null : parentLessonId },
-        order,
-        tx
-      );
-      bumpOrders(placed, order);
-      const createdExercises = await createExercises(
-        [
-          {
-            title: remapped.title,
-            description: remapped.description,
-            dueBy: remapped.dueBy,
-            lessonId: parentLessonId,
-            courseId: course.id,
-            sectionId: parentSectionId,
-            sectionDisplayMode: remapped.sectionDisplayMode,
-            order,
-            isUnlocked: remapped.isUnlocked,
-            allowMultipleAttempts: remapped.allowMultipleAttempts,
-            completionPolicy: remapped.completionPolicy,
-            passThreshold: remapped.passThreshold,
-            slug: remapped.slug,
-            sourceId: exercise.id,
-            sourceSyncedAt: syncedAt
-          }
-        ],
-        tx
-      );
-      const created = createdExercises[0];
-      if (!created) throw new AppError('Failed to pull exercise', ErrorCodes.INTERNAL_ERROR, 500);
+      await stampCopiedTemplateUnits({ ...stamped, syncedAt }, tx);
 
-      courseGraph.exercises.push(created);
-      await copyExerciseBody(exercise.id, created.id, templateGraph, templateOrgId, courseOrgId, userId, tx);
-      stamped.exerciseIds.push(created.id);
-    }
-
-    if (selection.settingKeys.length > 0) {
-      const patch = applySettingChanges(
-        toCarrier(course),
-        toCarrier(template),
-        selection.settingKeys,
-        exerciseCopyMap(courseGraph.exercises)
-      );
-      const remappedPatch = await remapContentAssets(patch, templateOrgId, courseOrgId, userId, tx);
-      await updateCourse(course.id, remappedPatch as Partial<TCourse>, tx);
-      await upsertTemplateSettingSync(course.id, selection.settingKeys, syncedAt, tx);
-    }
-
-    await stampCopiedTemplateUnits({ ...stamped, syncedAt }, tx);
-
-    return {
-      unitIds: selection.unitIds,
-      settingKeys: selection.settingKeys
-    };
-  });
+      return {
+        unitIds: selection.unitIds,
+        settingKeys: selection.settingKeys
+      };
+    })
+  );
 
   await invalidateOrgStats(orgId);
   return pulled;
