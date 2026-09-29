@@ -490,7 +490,8 @@
       "success": "Dziękujemy. Przejrzymy to zgłoszenie.",
       "error": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
       "already_submitted": "Już zgłosiłeś tę treść."
-    }
+    },
+    "spam_blocked": "Zostało to zablokowane, ponieważ wygląda na spam."
   },
   "explore": {
     "heading": "Poznaj nasze kursy",

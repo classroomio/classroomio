@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import {
   checkEmailsExistInOrg,
   claimPendingOrganizationInvite,
@@ -273,6 +274,12 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
   if (emailsToInvite.length === 0) {
     return [];
   }
+
+  await assertSpamAllowed({
+    action: 'invite',
+    actor: { userId: invitedByProfileId },
+    fields: { orgName: organization.name, recipientCount: emailsToInvite.length }
+  });
 
   const members = await createOrganizationMembers(
     emailsToInvite.map((email) => ({

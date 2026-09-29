@@ -490,7 +490,8 @@
       "success": "Tak. Vi gennemgår denne anmeldelse.",
       "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
       "already_submitted": "Du har allerede anmeldt dette."
-    }
+    },
+    "spam_blocked": "Dette blev blokeret, fordi det ligner spam."
   },
   "explore": {
     "heading": "Udforsk vores kurser",

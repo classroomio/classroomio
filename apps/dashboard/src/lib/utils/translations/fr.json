@@ -490,7 +490,8 @@
       "success": "Merci. Nous examinerons ce signalement.",
       "error": "Impossible d'envoyer le signalement. Veuillez réessayer.",
       "already_submitted": "Vous avez déjà signalé ce contenu."
-    }
+    },
+    "spam_blocked": "Ce message a été bloqué car il ressemble à du spam."
   },
   "explore": {
     "heading": "Découvrez nos cours",

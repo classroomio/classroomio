@@ -6,6 +6,7 @@ import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { b64EnvelopeRewrite } from '@api/middlewares/b64-envelope';
 import { handleError, AppError } from '@api/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import { MAX_AGENT_DOCUMENT_SIZE } from '@api/constants/upload';
 import { zValidator } from '@hono/zod-validator';
 import { streamText, stepCountIs, convertToModelMessages } from 'ai';
@@ -80,6 +81,29 @@ import { buildModelContextMessages } from '@cio/core/services/agent/model-contex
 import { summarizeConversation } from '@cio/core/services/agent/summarize';
 import { agentHistoryRouter } from './history';
 import { agentRunsRouter } from './runs';
+
+function latestUserText(messages: unknown[]): string {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index] as {
+      role?: string;
+      content?: unknown;
+      parts?: Array<{ type?: string; text?: string }>;
+    };
+
+    if (message?.role !== 'user') continue;
+
+    if (typeof message.content === 'string') return message.content;
+
+    if (Array.isArray(message.parts)) {
+      return message.parts
+        .filter((part) => part.type === 'text' && part.text)
+        .map((part) => part.text)
+        .join('\n');
+    }
+  }
+
+  return '';
+}
 
 const agentCoreRouter = new Hono()
   .get('/status', authMiddleware, orgMemberMiddleware, zValidator('query', ZAgentStatusQuery), async (c) => {
@@ -390,6 +414,12 @@ const agentCoreRouter = new Hono()
 
     try {
       const { courseId, conversationId, messages, context, model: requestedModel } = c.req.valid('json');
+
+      await assertSpamAllowed({
+        action: 'ai_chat',
+        actor: { userId: user.id, email: user.email },
+        fields: { content: latestUserText(messages) }
+      });
 
       const isTeamMember = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
       const role = isTeamMember ? AgentRole.TEACHER : AgentRole.STUDENT;
