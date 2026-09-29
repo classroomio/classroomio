@@ -810,35 +810,35 @@
 
 <svelte:window onkeydown={handleEnterKey} />
 
+{#if isTakingQuestions}
+  <div class="mb-6 flex min-w-0 items-center gap-3">
+    <span class="ui:text-muted-foreground shrink-0 text-sm tabular-nums">
+      {#if hasSectionedExercise}
+        {Object.values($questionnaireMetaData.answers).filter((answer) => hasAnswerValue(answer))
+          .length}/{$questionnaire.questions.length}
+      {:else}
+        {$questionnaireMetaData.currentQuestionIndex}/{$questionnaire.questions.length}
+      {/if}
+    </span>
+    <Progress class="min-w-0 flex-1" value={$questionnaireMetaData.progressValue} />
+    {#if hasInstructions}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        class="shrink-0"
+        aria-pressed={isInstructionsOpen}
+        onclick={toggleInstructions}
+      >
+        <InfoIcon />
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}
+      </Button>
+    {/if}
+  </div>
+{/if}
+
 <div class={isInstructionsDocked ? 'grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]' : ''}>
   <div class="min-w-0">
-    {#if isTakingQuestions}
-      <div class="mb-6 flex min-w-0 items-center gap-3">
-        <span class="ui:text-muted-foreground shrink-0 text-sm tabular-nums">
-          {#if hasSectionedExercise}
-            {Object.values($questionnaireMetaData.answers).filter((answer) => hasAnswerValue(answer))
-              .length}/{$questionnaire.questions.length}
-          {:else}
-            {$questionnaireMetaData.currentQuestionIndex}/{$questionnaire.questions.length}
-          {/if}
-        </span>
-        <Progress class="min-w-0 flex-1" value={$questionnaireMetaData.progressValue} />
-        {#if hasInstructions}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            class="shrink-0"
-            aria-pressed={isInstructionsOpen}
-            onclick={toggleInstructions}
-          >
-            <InfoIcon />
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}
-          </Button>
-        {/if}
-      </div>
-    {/if}
-
     {#if preview}
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <Preview
