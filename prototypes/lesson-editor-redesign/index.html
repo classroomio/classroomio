@@ -268,11 +268,10 @@
   .block-gap .gap-add {
     width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: 1px solid var(--border); background: var(--background);
     color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
-    opacity: 0; transform: scale(.85); transition: opacity .12s, transform .12s, border-color .12s, color .12s, box-shadow .12s;
+    transition: border-color .12s, color .12s, box-shadow .12s;
   }
   .block-gap .gap-add svg { width: 14px; height: 14px; stroke-width: 2; }
-  .block-gap:hover .gap-add, .block-gap .gap-add:focus-visible { opacity: 1; transform: scale(1); }
-  .block-gap .gap-add:hover { border-color: var(--ring); color: var(--foreground); box-shadow: var(--shadow-md); }
+  .block-gap .gap-add:hover, .block-gap .gap-add:focus-visible { border-color: var(--ring); color: var(--foreground); box-shadow: var(--shadow-md); }
   .content-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .content-type-btn {
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; border: 1px solid var(--border);
