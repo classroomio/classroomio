@@ -155,6 +155,7 @@
     cursor: pointer; transition: background .12s, border-color .12s, color .12s; box-shadow: var(--shadow-2xs); user-select: none;
   }
   .btn svg { width: 16px; height: 16px; stroke-width: 2; flex-shrink: 0; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
   .btn-primary { background: var(--primary); color: var(--primary-foreground); }
   .btn-primary:hover { background: color-mix(in oklab, var(--primary) 90%, transparent); }
   .btn-outline { background: var(--background); border-color: var(--input); color: var(--foreground); }
@@ -419,6 +420,8 @@
   .drop svg { width: 22px; height: 22px; stroke-width: 1.7; color: var(--muted-foreground); margin-bottom: 8px; }
   .drop .t { font-size: 13px; font-weight: 500; margin: 0 0 3px; }
   .drop .h { font-size: 11.5px; color: var(--muted-foreground); margin: 0; }
+  button.drop { width: 100%; cursor: pointer; font: inherit; color: inherit; }
+  button.drop:hover, button.drop.drag-over { border-color: var(--ring); background: var(--accent); }
   .platform-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
   .platform-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 4px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--background); cursor: pointer; font: inherit; }
   .platform-btn:hover { border-color: var(--ring); background: var(--accent); }
@@ -904,16 +907,23 @@
     document: `
       <div class="dialog-head"><h2 class="dialog-title">Add document</h2></div>
       <div class="dialog-body">
-        <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
-          <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
-          <div class="file-info"><div class="file-name">Team Roles &amp; Permissions.pdf</div><div class="file-size">540 KB</div></div>
+        <input type="file" id="docFileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" hidden onchange="onDocFileInputChange(this)" />
+        <div id="docFileArea">
+          <button type="button" class="drop" onclick="document.getElementById('docFileInput').click()"
+            ondragover="event.preventDefault(); this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="onDocFileDrop(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg>
+            <p class="t">Drag and drop, or click to upload</p>
+            <p class="h">PDF, DOCX, PPTX up to 50MB</p>
+          </button>
         </div>
-        <div class="doc-mode-row" id="newDocModeRow" style="padding:14px 4px 0">
+        <div class="doc-mode-row" id="newDocModeRow" style="padding:14px 4px 0" hidden>
           <label><input type="radio" name="newDocMode" value="note" class="radio" /> Add as Note</label>
           <label><input type="radio" name="newDocMode" value="link" class="radio" checked /> Add as Downloadable Link</label>
         </div>
       </div>
-      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('document')">Add document</button></div>`,
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="docAddBtn" disabled onclick="confirmAdd('document')">Add document</button></div>`,
     'video-more': `
       <div class="dialog-head"><h2 class="dialog-title">Add video</h2><p class="dialog-desc">The same "Add video" dialog used today, with all six sources.</p></div>
       <div class="dialog-body">
@@ -1154,16 +1164,30 @@
       </section>`;
   }
 
-  function buildDocumentBlock(mode) {
+  function escapeHtml(str) {
+    const chars = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return String(str).replace(/[&<>"']/g, (c) => chars[c]);
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function buildDocumentBlock(mode, file) {
     docEntryCount += 1;
     const groupName = 'docMode-' + docEntryCount;
+    const fileName = escapeHtml(file.name);
+    const fileSize = escapeHtml(file.size);
+    const displayName = escapeHtml(file.name.replace(/\.[^./]+$/, ''));
     return `
       <section class="content-section" data-type="document">
         ${blockHead('Document', ICON_DOCUMENT)}
         <div class="doc-entry" data-mode="${mode}">
           <div class="file-row edit-only">
             <div class="file-icon">${ICON_DOCUMENT}</div>
-            <div class="file-info"><div class="file-name">Team Roles &amp; Permissions.pdf</div><div class="file-size">540 KB</div></div>
+            <div class="file-info"><div class="file-name">${fileName}</div><div class="file-size">${fileSize}</div></div>
             <div class="file-actions">
               <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
               <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
@@ -1175,13 +1199,13 @@
             <label><input type="radio" name="${groupName}" class="radio" value="link" ${mode === 'link' ? 'checked' : ''} onchange="setDocMode(this)" /> Add as Downloadable Link</label>
           </div>
           <div class="note-content preview-only doc-preview-note" ${mode !== 'note' ? 'hidden' : ''}>
-            <h3>Team Roles &amp; Permissions</h3>
+            <h3>${displayName}</h3>
             <p>Each workspace member has a role that controls what they can see and do. Admins manage billing and settings, tutors manage course content and grading, and students access enrolled courses only.</p>
           </div>
           <div class="preview-doc-link preview-only doc-preview-link" ${mode !== 'link' ? 'hidden' : ''}>
             <div class="file-icon">${ICON_DOCUMENT}</div>
             <div class="info">
-              <span class="name">Team Roles &amp; Permissions.pdf</span>
+              <span class="name">${fileName}</span>
               <span class="open">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             </div>
           </div>
@@ -1252,6 +1276,7 @@
       document.body.classList.add('dialog-open');
       return;
     }
+    if (kind === 'document') selectedDocFile = null;
     dialogBox.style.maxWidth = '480px';
     dialogBox.innerHTML = dialogTemplates[kind];
     document.body.classList.add('dialog-open');
@@ -1267,6 +1292,33 @@
     }
   }
   function closeDialog() { document.body.classList.remove('dialog-open'); }
+
+  let selectedDocFile = null;
+
+  function onDocFileChosen(file) {
+    if (!file) return;
+    selectedDocFile = { name: file.name, size: formatFileSize(file.size) };
+    document.getElementById('docFileArea').innerHTML = `
+      <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
+        <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+        <div class="file-info"><div class="file-name">${escapeHtml(selectedDocFile.name)}</div><div class="file-size">${escapeHtml(selectedDocFile.size)}</div></div>
+        <div class="file-actions">
+          <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('docFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        </div>
+      </div>`;
+    document.getElementById('newDocModeRow').hidden = false;
+    document.getElementById('docAddBtn').disabled = false;
+  }
+
+  function onDocFileInputChange(input) {
+    onDocFileChosen(input.files && input.files[0]);
+  }
+
+  function onDocFileDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    onDocFileChosen(e.dataTransfer.files && e.dataTransfer.files[0]);
+  }
 
   function simulateSave() {
     const el = document.getElementById('saveStatus');
@@ -1292,8 +1344,10 @@
 
   function confirmAdd(kind) {
     if (kind === 'document') {
+      if (!selectedDocFile) return;
       const mode = document.querySelector('input[name="newDocMode"]:checked').value;
-      insertBlock(activeCanvasId, buildDocumentBlock(mode));
+      insertBlock(activeCanvasId, buildDocumentBlock(mode, selectedDocFile));
+      selectedDocFile = null;
     }
     if (kind === 'video-more') {
       insertBlock(activeCanvasId, buildVideoBlock());
