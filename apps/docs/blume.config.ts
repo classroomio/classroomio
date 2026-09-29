@@ -4,18 +4,63 @@ import { extractOperations, type ApiDocument } from 'blume/openapi/model.ts';
 import { z } from 'zod';
 
 const API_ROUTE = '/api';
-const apiSpec = JSON.parse(
-  readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')
-) as ApiDocument;
+const apiSpec = JSON.parse(readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')) as ApiDocument;
 const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_ROUTE);
-const apiSidebarGroups = apiTags.map((tag) => ({
+
+// Sidebar layout for the API tab: resource sections, then one group per tag.
+// Without this, Blume orders tags by first path seen, which scatters them.
+const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
+  { label: 'Audience', tags: ['Public API Audience'] },
+  {
+    label: 'Courses',
+    tags: [
+      'Public API Courses',
+      'Public API Course Members',
+      'Public API Course Invites',
+      'Public API Course Certificates'
+    ]
+  },
+  {
+    label: 'Cohorts',
+    tags: [
+      'Public API Cohorts',
+      'Public API Cohort Members',
+      'Public API Cohort Courses',
+      'Public API Cohort Invites',
+      'Public API Cohort Goals',
+      'Public API Cohort Newsfeed'
+    ]
+  }
+];
+
+const tagGroup = (tag: (typeof apiTags)[number]) => ({
   label: tag.name.replace(/^Public API /, ''),
   display: 'group' as const,
-  collapsed: false,
+  collapsed: true,
   items: Object.values(apiOperations)
     .filter((operation) => operation.tagSlug === tag.slug)
     .map((operation) => operation.route)
-}));
+});
+
+const placedTags = new Set(API_SECTIONS.flatMap((section) => section.tags));
+const unplacedTags = apiTags.filter((tag) => !placedTags.has(tag.name));
+if (unplacedTags.length > 0) {
+  console.warn(
+    `[docs] API tags missing from API_SECTIONS in blume.config.ts: ${unplacedTags.map((tag) => tag.name).join(', ')}`
+  );
+}
+
+const apiSidebarSections = [
+  ...API_SECTIONS.map((section) => ({
+    label: section.label,
+    display: 'flat' as const,
+    items: apiTags
+      .filter((tag) => section.tags.includes(tag.name))
+      .sort((a, b) => section.tags.indexOf(a.name) - section.tags.indexOf(b.name))
+      .map(tagGroup)
+  })).filter((section) => section.items.length > 0),
+  ...unplacedTags.map(tagGroup)
+];
 
 /**
  * The site is served at classroomio.com/docs, proxied to this worker by the
@@ -180,7 +225,7 @@ export default defineConfig({
       {
         label: 'API',
         root: API_ROUTE,
-        items: [API_ROUTE, ...apiSidebarGroups]
+        items: [API_ROUTE, ...apiSidebarSections]
       }
     ]
   }

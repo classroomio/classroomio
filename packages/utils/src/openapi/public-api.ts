@@ -230,7 +230,12 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Course Members',
     description:
-      "Manage a course's membership and invites — list, add, update roles, remove, reset progress, view analytics, and invite people into the course. A course member row is distinct from Public API Audience (organization-wide people); adding a member here requires the person already be an organization member — use the invites endpoints to onboard someone new."
+      "Manage a course's membership — list, add, update roles, remove, reset progress, and view analytics. A course member row is distinct from Public API Audience (organization-wide people); adding a member here requires the person already be an organization member — use Public API Course Invites to onboard someone new."
+  },
+  {
+    name: 'Public API Course Invites',
+    description:
+      'Invite people to a course by email or CSV, list invites, and revoke pending ones. Invites can onboard people who are not yet organization members.'
   },
   {
     name: 'Public API Cohorts',
