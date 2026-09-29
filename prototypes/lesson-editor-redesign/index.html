@@ -255,6 +255,14 @@
   }
   .add-content-trigger:hover { border-color: var(--ring); background: var(--accent); color: var(--foreground); }
   .add-content-trigger svg { width: 16px; height: 16px; stroke-width: 2; }
+  .block-inline-add {
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 14px; padding: 6px;
+    border: none; background: transparent; color: var(--muted-foreground); font-size: 12.5px; font-weight: 500; cursor: pointer; font: inherit;
+    border-radius: var(--radius-md);
+  }
+  .block-inline-add:hover { background: var(--accent); color: var(--foreground); }
+  .block-inline-add svg { width: 14px; height: 14px; stroke-width: 2; }
+  .content-section:last-of-type .block-inline-add { display: none; }
   .content-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .content-type-btn {
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; border: 1px solid var(--border);
@@ -278,17 +286,8 @@
   .mode-preview .lesson-title-input { pointer-events: none; border-color: transparent !important; box-shadow: none !important; }
   #screen-desktop:not(.mode-preview) .preview-only { display: none !important; }
 
-  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-  .media-card { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   .media-thumb { position: relative; aspect-ratio: 16/9; background: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; }
   .media-thumb svg.big { width: 36px; height: 36px; stroke-width: 1.5; color: var(--muted-foreground); }
-  .media-thumb .cap { font-size: 12px; font-weight: 500; color: var(--muted-foreground); text-align: center; }
-  .media-thumb .dur { position: absolute; right: 8px; bottom: 8px; background: rgb(0 0 0 / .8); color: #fff; font-size: 11px; font-weight: 500; padding: 2px 6px; border-radius: 4px; }
-  .media-body { display: flex; gap: 10px; padding: 12px; }
-  .media-info { min-width: 0; flex: 1; }
-  .media-title-row { display: flex; align-items: flex-start; gap: 6px; }
-  .media-title { font-size: 14px; font-weight: 600; line-height: 1.35; flex: 1; min-width: 0; }
-  .media-sub { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; line-height: 1.4; }
 
   /* preview-only, large learner-facing renders (video / slide / document) */
   .preview-video-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -435,7 +434,6 @@
   .force-mobile .lesson-header { padding: 14px 16px 0; }
   .force-mobile .lesson-header-row { flex-direction: column; align-items: stretch; }
   .force-mobile .canvas-wrap { padding: 16px 16px 50px; }
-  .force-mobile .media-grid { grid-template-columns: 1fr; }
   .force-mobile .slider-panel { width: 100%; max-width: none; }
 
   /* real responsive breakpoint for the desktop screen */
@@ -533,24 +531,14 @@
                 </div>
               </div>
             </div>
-            <div class="media-grid edit-only">
-              <div class="media-card">
-                <div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><div class="cap">React Props Explained in 10 Minutes</div><div class="dur">10:24</div></div>
-                <div class="media-body"><div class="media-info">
-                  <div class="media-title-row"><div class="media-title">React Props Explained in 10 Minutes</div></div>
-                  <div class="media-sub">Web Dev Simplified</div><div class="media-sub">10:24 · YouTube</div>
-                </div></div>
-              </div>
+            <div class="preview-video-player">
+              <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
             </div>
-            <div class="preview-only">
-              <div class="preview-video-player">
-                <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
-              </div>
-              <div class="preview-media-caption">
-                <div class="preview-media-title">React Props Explained in 10 Minutes</div>
-                <div class="preview-media-sub">Web Dev Simplified · 10:24</div>
-              </div>
+            <div class="preview-media-caption">
+              <div class="preview-media-title">React Props Explained in 10 Minutes</div>
+              <div class="preview-media-sub">Web Dev Simplified · 10:24</div>
             </div>
+            <button class="block-inline-add edit-only" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.content-section'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
           </section>
 
           <section class="content-section" data-type="note">
@@ -586,6 +574,7 @@
               </ul>
               <p>In the next lesson we'll compare props to state — the other half of how React components hold onto data.</p>
             </div>
+            <button class="block-inline-add edit-only" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.content-section'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
           </section>
 
           <section class="content-section" data-type="slide">
@@ -600,27 +589,14 @@
                 </div>
               </div>
             </div>
-            <div class="media-grid edit-only">
-              <div class="media-card">
-                <div class="media-thumb">
-                  <span class="slide-platform-ic" style="width:48px;height:48px"><svg viewBox="0 0 24 24" fill="none"><path fill="#FBBC04" d="M16.09 15.273H7.91v-4.637h8.18v4.637zm1.728-8.523h2.91v15.614c0 .904-.733 1.636-1.637 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.068v6.75h3.841zm-.363 2.523H6.545v7.363h10.91V9.273zm-2.728-5.979V6h6.001l-6-6v3.294z"/></svg></span>
-                  <div class="cap">Google Slides</div>
-                </div>
-                <div class="media-body"><div class="media-info">
-                  <div class="media-title-row"><div class="media-title">Google Slides</div></div>
-                  <div class="media-sub">docs.google.com</div>
-                </div></div>
-              </div>
+            <div class="preview-slide-frame">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
             </div>
-            <div class="preview-only">
-              <div class="preview-slide-frame">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
-              </div>
-              <div class="preview-media-caption">
-                <div class="preview-media-title">Google Slides</div>
-                <div class="preview-media-sub">docs.google.com</div>
-              </div>
+            <div class="preview-media-caption">
+              <div class="preview-media-title">Google Slides</div>
+              <div class="preview-media-sub">docs.google.com</div>
             </div>
+            <button class="block-inline-add edit-only" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.content-section'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
           </section>
 
           <section class="content-section" data-type="document">
@@ -661,6 +637,7 @@
                 </div>
               </div>
             </div>
+            <button class="block-inline-add edit-only" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.content-section'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
           </section>
 
           <div class="empty-page edit-only" id="canvasEmptyState" hidden>
@@ -807,19 +784,14 @@
                   </div>
                 </div>
               </div>
-              <div class="media-grid edit-only"><div class="media-card">
-                <div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><div class="cap">React Props Explained in 10 Minutes</div><div class="dur">10:24</div></div>
-                <div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">React Props Explained in 10 Minutes</div></div><div class="media-sub">Web Dev Simplified · 10:24</div></div></div>
-              </div></div>
-              <div class="preview-only">
-                <div class="preview-video-player">
-                  <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
-                </div>
-                <div class="preview-media-caption">
-                  <div class="preview-media-title">React Props Explained in 10 Minutes</div>
-                  <div class="preview-media-sub">Web Dev Simplified · 10:24</div>
-                </div>
+              <div class="preview-video-player">
+                <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
               </div>
+              <div class="preview-media-caption">
+                <div class="preview-media-title">React Props Explained in 10 Minutes</div>
+                <div class="preview-media-sub">Web Dev Simplified · 10:24</div>
+              </div>
+              <button class="block-inline-add edit-only" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.content-section'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
             </section>
             <section class="content-section" data-type="note">
               <div class="block-head edit-only">
@@ -839,6 +811,7 @@
                 <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="3" x2="3.01" y1="6" y2="6"/></svg></button>
               </div>
               <div class="note-content" contenteditable="true"><h3>What are Props?</h3><p>Props (short for <strong>properties</strong>) are how React components receive data from their parent — read-only, one direction, parent to child.</p></div>
+              <button class="block-inline-add edit-only" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.content-section'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
             </section>
 
             <div class="empty-page edit-only" id="mobileCanvasEmptyState" hidden>
@@ -929,15 +902,15 @@
   // ---- Add-content dialogs (desktop screen: video / document) ----
   const dialogTemplates = {
     document: `
-      <div class="dialog-head"><h2 class="dialog-title">Add document</h2><p class="dialog-desc">Upload a file, then choose how it should be used in the lesson.</p></div>
+      <div class="dialog-head"><h2 class="dialog-title">Add document</h2></div>
       <div class="dialog-body">
-        <div class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg><p class="t">Team Roles &amp; Permissions.pdf</p><p class="h">540 KB · ready to upload</p></div>
-        <div class="field" style="margin-top:16px">
-          <label class="label">Document</label>
-          <div class="doc-mode-row" id="newDocModeRow" style="padding:0">
-            <label><input type="radio" name="newDocMode" value="note" class="radio" /> Add as Note</label>
-            <label><input type="radio" name="newDocMode" value="link" class="radio" checked /> Add as Downloadable Link</label>
-          </div>
+        <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
+          <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+          <div class="file-info"><div class="file-name">Team Roles &amp; Permissions.pdf</div><div class="file-size">540 KB</div></div>
+        </div>
+        <div class="doc-mode-row" id="newDocModeRow" style="padding:14px 4px 0">
+          <label><input type="radio" name="newDocMode" value="note" class="radio" /> Add as Note</label>
+          <label><input type="radio" name="newDocMode" value="link" class="radio" checked /> Add as Downloadable Link</label>
         </div>
       </div>
       <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('document')">Add document</button></div>`,
@@ -1111,6 +1084,7 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>';
   const ICON_DOCUMENT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
+  const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
 
   function blockHead(label, iconSvg) {
     return `
@@ -1127,25 +1101,22 @@
       </div>`;
   }
 
+  function blockInlineAdd() {
+    return `<button class="block-inline-add edit-only" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.content-section'))">${ICON_PLUS}Add content</button>`;
+  }
+
   function buildVideoBlock() {
     return `
       <section class="content-section" data-type="video">
         ${blockHead('Video', ICON_VIDEO)}
-        <div class="media-grid edit-only">
-          <div class="media-card">
-            <div class="media-thumb"><svg class="big" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><div class="cap">Props: The Complete Guide</div><div class="dur">14:02</div></div>
-            <div class="media-body"><div class="media-info"><div class="media-title-row"><div class="media-title">Props: The Complete Guide</div></div><div class="media-sub">Codevolution</div><div class="media-sub">14:02 · YouTube</div></div></div>
-          </div>
+        <div class="preview-video-player">
+          <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
         </div>
-        <div class="preview-only">
-          <div class="preview-video-player">
-            <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
-          </div>
-          <div class="preview-media-caption">
-            <div class="preview-media-title">Props: The Complete Guide</div>
-            <div class="preview-media-sub">Codevolution · 14:02</div>
-          </div>
+        <div class="preview-media-caption">
+          <div class="preview-media-title">Props: The Complete Guide</div>
+          <div class="preview-media-sub">Codevolution · 14:02</div>
         </div>
+        ${blockInlineAdd()}
       </section>`;
   }
 
@@ -1165,34 +1136,21 @@
           <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
         </div>
         <div class="note-content" contenteditable="true"><p style="color:var(--muted-foreground)">Start writing…</p></div>
+        ${blockInlineAdd()}
       </section>`;
   }
 
   function buildSlideBlock(platformId) {
     const platform = SLIDE_PLATFORMS.find((p) => p.id === platformId);
-    const icon = SLIDE_PLATFORM_ICONS[platformId];
     return `
       <section class="content-section" data-type="slide">
         ${blockHead('Slide', ICON_SLIDE)}
-        <div class="media-grid edit-only">
-          <div class="media-card">
-            <div class="media-thumb">
-              <span class="slide-platform-ic" style="width:48px;height:48px">${icon}</span>
-              <div class="cap">${platform.name}</div>
-            </div>
-            <div class="media-body"><div class="media-info">
-              <div class="media-title-row"><div class="media-title">${platform.name}</div></div>
-              <div class="media-sub">example.com</div>
-            </div></div>
-          </div>
+        <div class="preview-slide-frame">${ICON_SLIDE}</div>
+        <div class="preview-media-caption">
+          <div class="preview-media-title">${platform.name}</div>
+          <div class="preview-media-sub">example.com</div>
         </div>
-        <div class="preview-only">
-          <div class="preview-slide-frame">${ICON_SLIDE}</div>
-          <div class="preview-media-caption">
-            <div class="preview-media-title">${platform.name}</div>
-            <div class="preview-media-sub">example.com</div>
-          </div>
-        </div>
+        ${blockInlineAdd()}
       </section>`;
   }
 
@@ -1228,20 +1186,30 @@
             </div>
           </div>
         </div>
+        ${blockInlineAdd()}
       </section>`;
   }
 
   let activeCanvasId = 'canvas';
+  let activeInsertAfterEl = null;
 
   function insertBlock(canvasId, html) {
     const canvas = document.getElementById(canvasId);
-    const trigger = canvas.querySelector('.add-content-trigger');
-    trigger.insertAdjacentHTML('beforebegin', html);
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    const block = wrapper.firstElementChild;
+    const insertAfter =
+      activeInsertAfterEl && activeInsertAfterEl.isConnected && activeInsertAfterEl.closest('.canvas') === canvas
+        ? activeInsertAfterEl
+        : null;
+    if (insertAfter) insertAfter.insertAdjacentElement('afterend', block);
+    else canvas.querySelector('.add-content-trigger').insertAdjacentElement('beforebegin', block);
     updateEmptyState(canvasId);
   }
 
-  function openAddContentMenu(canvasId) {
+  function openAddContentMenu(canvasId, afterEl) {
     activeCanvasId = canvasId;
+    activeInsertAfterEl = afterEl || null;
     document.getElementById('dialogBox').style.maxWidth = '480px';
     document.getElementById('dialogBox').innerHTML = `
       <div class="dialog-head"><h2 class="dialog-title">Add content</h2><p class="dialog-desc">Choose a content type to add to this lesson.</p></div>
