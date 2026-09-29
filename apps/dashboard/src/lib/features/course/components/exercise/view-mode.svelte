@@ -352,7 +352,7 @@
     if (stringifiedQuestionnaireMetaData) {
       const autoSavedData = JSON.parse(stringifiedQuestionnaireMetaData);
       if (autoSavedData) {
-        questionnaireMetaData.set(autoSavedData);
+        questionnaireMetaData.update((metaData) => ({ ...autoSavedData, exerciseId: metaData.exerciseId }));
       }
     }
     isLoadingAutoSavedData = false;
