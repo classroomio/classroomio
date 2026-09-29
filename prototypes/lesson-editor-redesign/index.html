@@ -285,6 +285,17 @@
   .preview-banner svg { width: 16px; height: 16px; stroke-width: 2; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
   .preview-banner b { font-weight: 600; }
   .mode-preview .preview-banner { display: flex; }
+
+  .reorder-hint-banner {
+    display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: var(--radius-md);
+    background: color-mix(in oklab, var(--primary) 8%, var(--background)); border: 1px solid color-mix(in oklab, var(--primary) 25%, transparent);
+    font-size: 12.8px; line-height: 1.5; color: var(--foreground); margin-bottom: 20px;
+  }
+  .reorder-hint-banner .ic { width: 16px; height: 16px; stroke-width: 2; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
+  .reorder-hint-banner .txt { flex: 1; }
+  .reorder-hint-banner b { font-weight: 600; }
+  .reorder-hint-banner .dismiss { flex-shrink: 0; width: 22px; height: 22px; padding: 0; }
+  .reorder-hint-banner .dismiss svg { width: 13px; height: 13px; stroke-width: 2; }
   .mode-preview .edit-only { display: none !important; }
   .mode-preview .content-section { background: transparent; border-color: transparent; padding-left: 0; padding-right: 0; }
   .mode-preview .lesson-title-input { pointer-events: none; border-color: transparent !important; box-shadow: none !important; }
@@ -525,6 +536,12 @@
         <div class="preview-banner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
           <div><b>In-app learner experience.</b> This is how the lesson looks to an enrolled, logged-in learner. The public course page (for visitors who haven't enrolled) currently shows less — only the video and note — so treat this as the authenticated view, not the public one.</div>
+        </div>
+
+        <div class="reorder-hint-banner edit-only" id="reorderHint">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+          <div class="txt"><b>Tip:</b> Grab the ⠿ handle on any block and drag it to reorder your lesson content.</div>
+          <button class="icon-btn dismiss" aria-label="Dismiss tip" onclick="dismissReorderHint()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
 
         <div class="canvas" id="canvas">
@@ -865,6 +882,16 @@
   }
   setProtoBarHeightVar();
   window.addEventListener('resize', setProtoBarHeightVar);
+
+  // ---- reorder hint banner (dismissible, remembered per browser) ----
+  const REORDER_HINT_KEY = 'lessonEditorReorderHintDismissed';
+  function dismissReorderHint() {
+    localStorage.setItem(REORDER_HINT_KEY, '1');
+    document.querySelectorAll('.reorder-hint-banner').forEach((el) => (el.hidden = true));
+  }
+  if (localStorage.getItem(REORDER_HINT_KEY) === '1') {
+    document.querySelectorAll('.reorder-hint-banner').forEach((el) => (el.hidden = true));
+  }
 
   // ---- theme toggle ----
   const themeBtn = document.getElementById('theme');
