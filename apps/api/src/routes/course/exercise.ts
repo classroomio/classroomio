@@ -36,10 +36,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
-import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
-import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-member-or-automation-key';
-import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { createSubmissionService, listExerciseSubmissionsOverview } from '@api/services/submission';
 import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
 import { ContentType } from '@cio/utils/constants';
@@ -47,38 +44,21 @@ import { zValidator } from '@hono/zod-validator';
 
 export const exerciseRouter = new Hono()
   // Exercise CRUD routes
-  .get(
-    '/',
-    authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:read']),
-    zValidator('query', ZExerciseListQuery),
-    async (c) => {
-      try {
-        const courseId = c.req.param('courseId')!;
-        const user = c.get('user');
-        const automationKey = c.get('automationKey');
-        const { lessonId, sectionId } = c.req.valid('query');
+  .get('/', authMiddleware, courseMemberMiddleware, zValidator('query', ZExerciseListQuery), async (c) => {
+    try {
+      const courseId = c.req.param('courseId')!;
+      const user = c.get('user')!;
+      const { lessonId, sectionId } = c.req.valid('query');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'list_course_exercises');
-        }
+      await assertEnrolledStudentCourseAccess({ courseId, profileId: user.id });
 
-        if (user?.id) {
-          await assertEnrolledStudentCourseAccess({ courseId, profileId: user.id });
-        }
+      const exercises = await listExercises(courseId, { lessonId, sectionId }, user.id);
 
-        const exercises = await listExercises(courseId, { lessonId, sectionId }, user?.id);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'list_course_exercises', { courseId, lessonId, sectionId });
-        }
-
-        return c.json({ success: true, data: exercises }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to list exercises');
-      }
+      return c.json({ success: true, data: exercises }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list exercises');
     }
-  )
+  })
   .get('/:exerciseId/submissions', authMiddleware, courseMemberMiddleware, async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
@@ -114,74 +94,35 @@ export const exerciseRouter = new Hono()
       return handleError(c, error, 'Failed to fetch notification status');
     }
   })
-  .get(
-    '/:exerciseId',
-    authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:read']),
-    zValidator('param', ZExerciseGetParam),
-    async (c) => {
-      try {
-        const { exerciseId } = c.req.valid('param');
-        const user = c.get('user');
-        const automationKey = c.get('automationKey');
+  .get('/:exerciseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
+    try {
+      const { exerciseId } = c.req.valid('param');
+      const user = c.get('user')!;
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'get_course_exercise');
-        }
+      await assertEnrolledStudentContentAccess({
+        courseId: c.req.param('courseId')!,
+        profileId: user.id,
+        contentId: exerciseId,
+        type: ContentType.Exercise
+      });
 
-        if (user?.id && !automationKey) {
-          await assertEnrolledStudentContentAccess({
-            courseId: c.req.param('courseId')!,
-            profileId: user.id,
-            contentId: exerciseId,
-            type: ContentType.Exercise
-          });
-        }
+      const exercise = await getExercise(exerciseId, undefined, user.id);
 
-        const exercise = await getExercise(exerciseId, undefined, user?.id);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'get_course_exercise', {
-            courseId: c.req.param('courseId')!,
-            exerciseId
-          });
-        }
-
-        return c.json({ success: true, data: exercise }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch exercise');
-      }
+      return c.json({ success: true, data: exercise }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch exercise');
     }
-  )
-  .post(
-    '/',
-    authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:write']),
-    zValidator('json', ZExerciseCreate),
-    async (c) => {
-      try {
-        const data = c.req.valid('json');
-        const automationKey = c.get('automationKey');
+  })
+  .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZExerciseCreate), async (c) => {
+    try {
+      const data = c.req.valid('json');
+      const exercise = await createExercise(data);
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'create_course_exercise');
-        }
-
-        const exercise = await createExercise(data);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'create_course_exercise', {
-            courseId: c.req.param('courseId')!,
-            exerciseId: exercise.id
-          });
-        }
-
-        return c.json({ success: true, data: exercise }, 201);
-      } catch (error) {
-        return handleError(c, error, 'Failed to create exercise');
-      }
+      return c.json({ success: true, data: exercise }, 201);
+    } catch (error) {
+      return handleError(c, error, 'Failed to create exercise');
     }
-  )
+  })
   /**
    * POST /course/:courseId/exercise/from-template
    * Creates an exercise from a template
@@ -189,18 +130,13 @@ export const exerciseRouter = new Hono()
    */
   .post(
     '/from-template',
-    authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:write']),
+    authMiddleware,
+    courseMemberMiddleware,
     zValidator('json', ZExerciseFromTemplate),
     async (c) => {
       try {
         const courseId = c.req.param('courseId')!;
-        const automationKey = c.get('automationKey');
         const { lessonId, sectionId, order, templateId } = c.req.valid('json');
-
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'create_course_exercise_from_template');
-        }
 
         // Fetch template from database
         const template = await fetchTemplateById(templateId);
@@ -214,14 +150,6 @@ export const exerciseRouter = new Hono()
 
         const exercise = await createExerciseFromTemplate(courseId, lessonId, sectionId, order, template);
 
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'create_course_exercise_from_template', {
-            courseId,
-            exerciseId: exercise.id,
-            templateId
-          });
-        }
-
         return c.json({ success: true, data: exercise }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to create exercise from template');
@@ -230,8 +158,8 @@ export const exerciseRouter = new Hono()
   )
   .put(
     '/:exerciseId',
-    authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:write']),
+    authMiddleware,
+    courseMemberMiddleware,
     zValidator('param', ZExerciseGetParam),
     zValidator('json', ZExerciseUpdate),
     async (c) => {
@@ -239,14 +167,9 @@ export const exerciseRouter = new Hono()
         const { exerciseId } = c.req.valid('param');
         const data = c.req.valid('json');
         const courseId = c.req.param('courseId')!;
-        const user = c.get('user');
-        const automationKey = c.get('automationKey');
+        const user = c.get('user')!;
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'update_course_exercise');
-        }
-
-        if (!automationKey && user && data.isUnlocked !== undefined) {
+        if (data.isUnlocked !== undefined) {
           const isAuthorized = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
 
           if (!isAuthorized) {
@@ -262,10 +185,6 @@ export const exerciseRouter = new Hono()
         }
 
         const exercise = await updateExerciseService(exerciseId, data);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'update_course_exercise', { courseId, exerciseId });
-        }
 
         return c.json({ success: true, data: exercise }, 200);
       } catch (error) {

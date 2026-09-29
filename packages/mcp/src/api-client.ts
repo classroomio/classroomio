@@ -12,17 +12,18 @@ import type {
   TCourseImportDraftPublishToCourse,
   TCourseImportDraftUpdate
 } from '@cio/utils/validation/course-import';
-import type {
-  TExerciseCreate,
-  TExerciseFromTemplate,
-  TExerciseGetParam,
-  TExerciseListQuery,
-  TExerciseUpdate
-} from '@cio/utils/validation/exercise';
 
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
+  TPublicApiCourseExercisesQuery,
+  TPublicApiCourseMarksQuery,
+  TPublicApiCourseSubmissionsQuery,
+  TPublicApiCreateCourseExercise,
+  TPublicApiExerciseTemplatesQuery,
+  TPublicApiGradeCourseSubmission,
+  TPublicApiUpdateCourseExercise,
+  TPublicApiUpdateCourseSubmission,
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseMember,
   TPublicApiAddCourseToCohort,
@@ -92,6 +93,15 @@ const toPageQuerySuffix = (query: Partial<TPublicApiPaginationQuery>) => {
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
 };
 
+const toQuerySuffix = (query: Record<string, string | number | undefined>) => {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined && value !== '') searchParams.set(key, String(value));
+  }
+
+  return searchParams.toString() ? `?${searchParams.toString()}` : '';
+};
+
 export class ClassroomIoApiError extends Error {
   constructor(
     message: string,
@@ -157,44 +167,79 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async listCourseExercises(courseId: string, query: TExerciseListQuery = {}) {
-    const searchParams = new URLSearchParams();
-    if (query.lessonId) searchParams.set('lessonId', query.lessonId);
-    if (query.sectionId) searchParams.set('sectionId', query.sectionId);
-
-    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/course/${courseId}/exercise${querySuffix}`, {
+  async listCourseExercises(courseId: string, query: Partial<TPublicApiCourseExercisesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/exercises${toQuerySuffix(query)}`, {
       method: 'GET'
     });
   }
 
-  async getCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId']) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
-      method: 'GET'
-    });
+  async getCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, { method: 'GET' });
   }
 
-  async createCourseExercise(courseId: string, payload: Omit<TExerciseCreate, 'courseId'>) {
-    return this.request(`/course/${courseId}/exercise`, {
-      method: 'POST',
-      body: {
-        ...payload,
-        courseId
-      }
-    });
+  async createCourseExercise(courseId: string, payload: TPublicApiCreateCourseExercise) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises`, { method: 'POST', body: payload });
   }
 
-  async createCourseExerciseFromTemplate(courseId: string, payload: TExerciseFromTemplate) {
-    return this.request(`/course/${courseId}/exercise/from-template`, {
-      method: 'POST',
-      body: payload
-    });
-  }
-
-  async updateCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId'], payload: TExerciseUpdate) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
+  async updateCourseExercise(courseId: string, exerciseId: string, payload: TPublicApiUpdateCourseExercise) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, {
       method: 'PUT',
       body: payload
+    });
+  }
+
+  async deleteCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, { method: 'DELETE' });
+  }
+
+  async notifyCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify`, { method: 'POST' });
+  }
+
+  async getCourseExerciseNotifyStatus(courseId: string, exerciseId: string, jobId: string, pollCount?: number) {
+    const path = `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify/${encodeURIComponent(jobId)}`;
+    return this.request(`${path}${toQuerySuffix({ pollCount })}`, { method: 'GET' });
+  }
+
+  async listExerciseTemplates(query: Partial<TPublicApiExerciseTemplatesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/exercise-templates${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getExerciseTemplate(templateId: number) {
+    return this.request(`/public-api/v1/exercise-templates/${templateId}`, { method: 'GET' });
+  }
+
+  async listCourseSubmissions(courseId: string, query: Partial<TPublicApiCourseSubmissionsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/submissions${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getCourseSubmission(courseId: string, submissionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, { method: 'GET' });
+  }
+
+  async gradeCourseSubmission(courseId: string, submissionId: string, payload: TPublicApiGradeCourseSubmission) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}/grades`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async updateCourseSubmission(courseId: string, submissionId: string, payload: TPublicApiUpdateCourseSubmission) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteCourseSubmission(courseId: string, submissionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, { method: 'DELETE' });
+  }
+
+  async getCourseMarks(courseId: string, query: Partial<TPublicApiCourseMarksQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/marks${toQuerySuffix(query)}`, {
+      method: 'GET'
     });
   }
 

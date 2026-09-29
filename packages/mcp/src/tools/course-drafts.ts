@@ -18,17 +18,9 @@ import {
   ZCourseImportDraftPublishToCourseBase,
   ZCourseImportDraftUpdate
 } from '@cio/utils/validation/course-import';
-import {
-  ZExerciseCreate,
-  ZExerciseFromTemplate,
-  ZExerciseGetParam,
-  ZExerciseListQuery,
-  ZExerciseUpdate
-} from '@cio/utils/validation/exercise';
 
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { formatEnabledQuestionTypesGuide } from '@cio/question-types';
 import { ZGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 
@@ -38,29 +30,6 @@ export const ZUpdateCourseDraftToolInput = ZCourseImportDraftUpdate.extend({
 
 export const ZTagCourseDraftToolInput = ZAutomationDraftTagAssignment.extend({
   draftId: ZAutomationDraftTagParam.shape.draftId
-});
-
-export const ZListCourseExercisesToolInput = ZExerciseListQuery.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZGetCourseExerciseToolInput = ZExerciseGetParam.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZCreateCourseExerciseToolInput = ZExerciseCreate.omit({
-  courseId: true
-}).extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZCreateCourseExerciseFromTemplateToolInput = ZExerciseFromTemplate.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
-export const ZUpdateCourseExerciseToolInput = ZExerciseUpdate.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId,
-  exerciseId: ZExerciseGetParam.shape.exerciseId
 });
 
 export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend({
@@ -92,12 +61,6 @@ const getCourseStructureShape = ZCourseImportCourseParam.shape as unknown as Zod
 const getCourseDraftShape = ZCourseImportDraftGetParam.shape as unknown as ZodRawShapeCompat;
 const updateCourseDraftShape = ZUpdateCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
 const tagCourseDraftShape = ZTagCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
-const listCourseExercisesShape = ZListCourseExercisesToolInput.shape as unknown as ZodRawShapeCompat;
-const getCourseExerciseShape = ZGetCourseExerciseToolInput.shape as unknown as ZodRawShapeCompat;
-const createCourseExerciseShape = ZCreateCourseExerciseToolInput.shape as unknown as ZodRawShapeCompat;
-const createCourseExerciseFromTemplateShape =
-  ZCreateCourseExerciseFromTemplateToolInput.shape as unknown as ZodRawShapeCompat;
-const updateCourseExerciseShape = ZUpdateCourseExerciseToolInput.shape as unknown as ZodRawShapeCompat;
 const updateCourseLandingPageShape = ZUpdateCourseLandingPageToolInput.shape as unknown as ZodRawShapeCompat;
 const reorderCourseContentShape = ZReorderCourseContentToolInput.shape as unknown as ZodRawShapeCompat;
 const publishCourseDraftShape = ZPublishCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
@@ -105,7 +68,6 @@ const publishCourseDraftToExistingCourseShape =
   ZPublishCourseDraftToExistingCourseToolInput.shape as unknown as ZodRawShapeCompat;
 const tagCoursesShape = ZAutomationCourseTagAssignment.shape as unknown as ZodRawShapeCompat;
 
-const SUPPORTED_QUESTION_TYPES_GUIDE = formatEnabledQuestionTypesGuide();
 const LESSON_HTML_GUIDE =
   'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. To attach a video to a lesson, set lessons[].videos[] with a { type, link } entry (type is one of youtube, vimeo, or generic for a hosted URL); uploading a local video file is not yet available through this tool.';
 
@@ -184,61 +146,6 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
     async (args) => {
       const { draftId } = ZCourseImportDraftGetParam.parse(args);
       const result = await apiClient.getCourseDraft(draftId);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'list_course_exercises',
-    'List exercises for a live course, optionally filtered by lessonId or sectionId.',
-    listCourseExercisesShape,
-    async (args) => {
-      const { courseId, ...query } = ZListCourseExercisesToolInput.parse(args);
-      const result = await apiClient.listCourseExercises(courseId, query);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_course_exercise',
-    'Fetch a single exercise from a live course, including its questions and options.',
-    getCourseExerciseShape,
-    async (args) => {
-      const { courseId, exerciseId } = ZGetCourseExerciseToolInput.parse(args);
-      const result = await apiClient.getCourseExercise(courseId, exerciseId);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'create_course_exercise',
-    `Create a new exercise directly on a live course. Use this for adding exercises after a course has already been published. ${SUPPORTED_QUESTION_TYPES_GUIDE}`,
-    createCourseExerciseShape,
-    async (args) => {
-      const { courseId, ...payload } = ZCreateCourseExerciseToolInput.parse(args);
-      const result = await apiClient.createCourseExercise(courseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'create_course_exercise_from_template',
-    'Create a new exercise on a live course from an existing template.',
-    createCourseExerciseFromTemplateShape,
-    async (args) => {
-      const { courseId, ...payload } = ZCreateCourseExerciseFromTemplateToolInput.parse(args);
-      const result = await apiClient.createCourseExerciseFromTemplate(courseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'update_course_exercise',
-    `Update an existing exercise on a live course, including questions and options. ${SUPPORTED_QUESTION_TYPES_GUIDE}`,
-    updateCourseExerciseShape,
-    async (args) => {
-      const { courseId, exerciseId, ...payload } = ZUpdateCourseExerciseToolInput.parse(args);
-      const result = await apiClient.updateCourseExercise(courseId, exerciseId, payload);
       return jsonContent(result);
     }
   );
