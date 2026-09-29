@@ -249,6 +249,11 @@
   .block-drag { display: flex; align-items: center; cursor: grab; color: var(--muted-foreground); flex-shrink: 0; margin-left: -4px; border-radius: var(--radius-sm); padding: 2px; position: relative; }
   .block-drag:hover { background: var(--accent); color: var(--foreground); }
   .block-drag svg { width: 15px; height: 15px; stroke-width: 2; }
+  .block-move { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex-shrink: 0; border: none; background: transparent; color: var(--muted-foreground); border-radius: var(--radius-sm); padding: 0; cursor: pointer; }
+  .block-move:hover { background: var(--accent); color: var(--foreground); }
+  .block-move svg { width: 13px; height: 13px; stroke-width: 2.4; }
+  .content-section:first-of-type .move-up { visibility: hidden; }
+  .content-section:last-of-type .move-down { visibility: hidden; }
 
   /* lightweight hover tooltip, shown via [data-tip] */
   [data-tip] { position: relative; }
@@ -553,6 +558,8 @@
           <section class="content-section" data-type="video">
             <div class="block-head edit-only">
               <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -580,6 +587,8 @@
           <section class="content-section" data-type="note">
             <div class="block-head edit-only">
               <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -620,6 +629,8 @@
           <section class="content-section" data-type="slide">
             <div class="block-head edit-only">
               <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Slide</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -647,6 +658,8 @@
           <section class="content-section" data-type="document">
             <div class="block-head edit-only">
               <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Document</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -815,6 +828,8 @@
             <section class="content-section" data-type="video">
               <div class="block-head edit-only">
                 <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+                <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+                <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
                 <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</span>
                 <span class="sp"></span>
                 <div class="dd-menu">
@@ -841,6 +856,8 @@
             <section class="content-section" data-type="note">
               <div class="block-head edit-only">
                 <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+                <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+                <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
                 <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</span>
                 <span class="sp"></span>
                 <div class="dd-menu">
@@ -1127,6 +1144,28 @@
     simulateSave();
   }
 
+  function moveBlock(btn, direction) {
+    const section = btn.closest('.content-section');
+    const canvas = section.closest('.canvas');
+    const gap = section.nextElementSibling && section.nextElementSibling.classList.contains('block-gap') ? section.nextElementSibling : null;
+    if (direction < 0) {
+      const prevGap = section.previousElementSibling;
+      if (!prevGap || !prevGap.classList.contains('block-gap')) return;
+      const prevSection = prevGap.previousElementSibling;
+      if (!prevSection || !prevSection.classList.contains('content-section')) return;
+      canvas.insertBefore(section, prevSection);
+      if (gap) canvas.insertBefore(gap, prevSection);
+    } else {
+      if (!gap) return;
+      const nextSection = gap.nextElementSibling;
+      if (!nextSection || !nextSection.classList.contains('content-section')) return;
+      const nextGap = nextSection.nextElementSibling && nextSection.nextElementSibling.classList.contains('block-gap') ? nextSection.nextElementSibling : null;
+      canvas.insertBefore(nextSection, section);
+      if (nextGap) canvas.insertBefore(nextGap, section);
+    }
+    simulateSave();
+  }
+
   function updateEmptyState(canvasId) {
     const canvas = document.getElementById(canvasId);
     const hasBlocks = canvas.querySelectorAll('.content-section').length > 0;
@@ -1152,6 +1191,8 @@
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+  const ICON_CHEVRON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg>';
+  const ICON_CHEVRON_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
 
   function blockHead(label, iconSvg, editKind) {
     const editItem = editKind
@@ -1160,6 +1201,8 @@
     return `
       <div class="block-head edit-only">
         <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder">${ICON_DRAG}</span>
+        <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)">${ICON_CHEVRON_UP}</button>
+        <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)">${ICON_CHEVRON_DOWN}</button>
         <span class="block-type">${iconSvg}${label}</span>
         <span class="sp"></span>
         <div class="dd-menu">
