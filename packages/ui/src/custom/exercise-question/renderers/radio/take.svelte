@@ -63,6 +63,7 @@
           <OptionImage
             src={optionImageUrl}
             alt={label('question.edit.image_alt')}
+            {labels}
             variant="take"
             hasAnyImageInOptions={optionsHaveImages}
           />

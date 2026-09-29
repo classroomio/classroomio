@@ -1791,7 +1791,9 @@
               "try_again": "Prøv igen",
               "back": "Tilbage",
               "begin_section": "Start sektion",
-              "complete_section": "Fuldfør afsnit"
+              "complete_section": "Fuldfør afsnit",
+              "instructions": "Instruktioner",
+              "close_instructions": "Luk instruktionerne"
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",
@@ -1840,7 +1842,8 @@
               "title": "Titel",
               "heading": "Beskrivelse",
               "describe": "Beskriv øvelsen for din elev",
-              "no": "Ingen beskrivelse"
+              "no": "Ingen beskrivelse",
+              "expand": "Udvid"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2050,16 @@
                   "video_invalid_link": "Indtast venligst et gyldigt YouTube-link.",
                   "upload_error_only_images": "Kun billedfiler understøttes.",
                   "upload_error_skipped": "Nogle filer blev sprunget over, fordi de ikke er billeder.",
-                  "upload_error_failed": "Kunne ikke uploade billede. Prøv igen."
+                  "upload_error_failed": "Kunne ikke uploade billede. Prøv igen.",
+                  "expand": "Udvid"
+                },
+                "media": {
+                  "enlarge_image": "Klik for at forstørre",
+                  "close": "Luk",
+                  "zoom_in": "Zoom ind",
+                  "zoom_out": "Zoom ud",
+                  "previous_image": "Forrige billede",
+                  "next_image": "Næste billede"
                 }
               },
               "navigation": {

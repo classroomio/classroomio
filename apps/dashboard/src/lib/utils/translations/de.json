@@ -1791,7 +1791,9 @@
               "try_again": "Versuchen Sie es erneut",
               "back": "Zurück",
               "begin_section": "Startabschnitt",
-              "complete_section": "Vollständiger Abschnitt"
+              "complete_section": "Vollständiger Abschnitt",
+              "instructions": "Anweisungen",
+              "close_instructions": "Anweisungen schließen"
             },
             "edit_mode": {
               "delete_modal": "Übung löschen",
@@ -1840,7 +1842,8 @@
               "title": "Titel",
               "heading": "Beschreibung",
               "describe": "Beschreiben Sie Ihrem Schüler die Übung",
-              "no": "Keine Beschreibung"
+              "no": "Keine Beschreibung",
+              "expand": "Erweitern"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2050,16 @@
                   "video_invalid_link": "Bitte geben Sie einen gültigen YouTube-Link ein.",
                   "upload_error_only_images": "Es werden nur Bilddateien unterstützt.",
                   "upload_error_skipped": "Einige Dateien wurden übersprungen, da es sich nicht um Bilder handelt.",
-                  "upload_error_failed": "Bild konnte nicht hochgeladen werden. Versuchen Sie es erneut."
+                  "upload_error_failed": "Bild konnte nicht hochgeladen werden. Versuchen Sie es erneut.",
+                  "expand": "Erweitern"
+                },
+                "media": {
+                  "enlarge_image": "Zum Vergrößern anklicken",
+                  "close": "Schließen",
+                  "zoom_in": "Vergrößern",
+                  "zoom_out": "Herauszoomen",
+                  "previous_image": "Vorheriges Bild",
+                  "next_image": "Nächstes Bild"
                 }
               },
               "navigation": {

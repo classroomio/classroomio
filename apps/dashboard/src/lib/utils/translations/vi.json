@@ -1791,7 +1791,9 @@
               "try_again": "Thử lại",
               "back": "Quay lại",
               "begin_section": "Phần bắt đầu",
-              "complete_section": "Hoàn thành phần"
+              "complete_section": "Hoàn thành phần",
+              "instructions": "Hướng dẫn",
+              "close_instructions": "Đóng hướng dẫn"
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",
@@ -1840,7 +1842,8 @@
               "title": "Tiêu đề",
               "heading": "Mô tả",
               "describe": "Mô tả bài tập cho học sinh của bạn",
-              "no": "Không có mô tả"
+              "no": "Không có mô tả",
+              "expand": "Mở rộng"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2050,16 @@
                   "video_invalid_link": "Vui lòng nhập liên kết YouTube hợp lệ.",
                   "upload_error_only_images": "Chỉ hỗ trợ các tập tin hình ảnh.",
                   "upload_error_skipped": "Một số tệp đã bị bỏ qua vì chúng không phải là hình ảnh.",
-                  "upload_error_failed": "Không thể tải lên hình ảnh. Hãy thử lại."
+                  "upload_error_failed": "Không thể tải lên hình ảnh. Hãy thử lại.",
+                  "expand": "Mở rộng"
+                },
+                "media": {
+                  "enlarge_image": "Bấm vào để phóng to",
+                  "close": "Đóng",
+                  "zoom_in": "Phóng to",
+                  "zoom_out": "Thu nhỏ",
+                  "previous_image": "Hình ảnh trước đó",
+                  "next_image": "Hình ảnh tiếp theo"
                 }
               },
               "navigation": {

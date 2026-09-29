@@ -1791,7 +1791,9 @@
               "try_again": "Spróbuj ponownie",
               "back": "Powrót",
               "begin_section": "Sekcja startowa",
-              "complete_section": "Kompletna sekcja"
+              "complete_section": "Kompletna sekcja",
+              "instructions": "Instrukcje",
+              "close_instructions": "Zamknij instrukcje"
             },
             "edit_mode": {
               "delete_modal": "Usuń ćwiczenie",
@@ -1840,7 +1842,8 @@
               "title": "Tytuł",
               "heading": "Opis",
               "describe": "Opisz ćwiczenie swojemu uczniowi",
-              "no": "Brak opisu"
+              "no": "Brak opisu",
+              "expand": "Rozwiń"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2050,16 @@
                   "video_invalid_link": "Wprowadź prawidłowy link do YouTube.",
                   "upload_error_only_images": "Obsługiwane są tylko pliki obrazów.",
                   "upload_error_skipped": "Niektóre pliki zostały pominięte, ponieważ nie są obrazami.",
-                  "upload_error_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie."
+                  "upload_error_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie.",
+                  "expand": "Rozwiń"
+                },
+                "media": {
+                  "enlarge_image": "Kliknij, aby powiększyć",
+                  "close": "Zamknij",
+                  "zoom_in": "Powiększ",
+                  "zoom_out": "Pomniejsz",
+                  "previous_image": "Poprzedni obraz",
+                  "next_image": "Następny obraz"
                 }
               },
               "navigation": {
