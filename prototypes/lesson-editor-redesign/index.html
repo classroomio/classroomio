@@ -246,9 +246,19 @@
   .content-section { transition: box-shadow .15s, opacity .15s; }
   .content-section.dragging { opacity: .45; }
   .block-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-  .block-drag { display: flex; align-items: center; cursor: grab; color: var(--muted-foreground); flex-shrink: 0; margin-left: -4px; border-radius: var(--radius-sm); padding: 2px; }
+  .block-drag { display: flex; align-items: center; cursor: grab; color: var(--muted-foreground); flex-shrink: 0; margin-left: -4px; border-radius: var(--radius-sm); padding: 2px; position: relative; }
   .block-drag:hover { background: var(--accent); color: var(--foreground); }
   .block-drag svg { width: 15px; height: 15px; stroke-width: 2; }
+
+  /* lightweight hover tooltip, shown via [data-tip] */
+  [data-tip] { position: relative; }
+  [data-tip]::after {
+    content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%) translateY(4px);
+    background: var(--foreground); color: var(--background); font-size: 11.5px; font-weight: 500; padding: 4px 8px;
+    border-radius: var(--radius-sm); white-space: nowrap; pointer-events: none; opacity: 0; z-index: 20;
+    transition: opacity .12s, transform .12s;
+  }
+  [data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
   .block-type { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
   .block-type svg { width: 13px; height: 13px; stroke-width: 2.2; }
   .block-head .sp { flex: 1; }
@@ -547,7 +557,7 @@
         <div class="canvas" id="canvas">
           <section class="content-section" data-type="video">
             <div class="block-head edit-only">
-              <span class="block-drag" aria-label="Drag to reorder" title="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -569,7 +579,7 @@
 
           <section class="content-section" data-type="note">
             <div class="block-head edit-only">
-              <span class="block-drag" aria-label="Drag to reorder" title="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -605,7 +615,7 @@
 
           <section class="content-section" data-type="slide">
             <div class="block-head edit-only">
-              <span class="block-drag" aria-label="Drag to reorder" title="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Slide</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -627,7 +637,7 @@
 
           <section class="content-section" data-type="document">
             <div class="block-head edit-only">
-              <span class="block-drag" aria-label="Drag to reorder" title="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
               <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Document</span>
               <span class="sp"></span>
               <div class="dd-menu">
@@ -800,7 +810,7 @@
           <div class="canvas" id="mobileCanvas">
             <section class="content-section" data-type="video">
               <div class="block-head edit-only">
-                <span class="block-drag" aria-label="Drag to reorder" title="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+                <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
                 <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</span>
                 <span class="sp"></span>
                 <div class="dd-menu">
@@ -821,7 +831,7 @@
             </section>
             <section class="content-section" data-type="note">
               <div class="block-head edit-only">
-                <span class="block-drag" aria-label="Drag to reorder" title="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+                <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
                 <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</span>
                 <span class="sp"></span>
                 <div class="dd-menu">
@@ -883,13 +893,8 @@
   setProtoBarHeightVar();
   window.addEventListener('resize', setProtoBarHeightVar);
 
-  // ---- reorder hint banner (dismissible, remembered per browser) ----
-  const REORDER_HINT_KEY = 'lessonEditorReorderHintDismissed';
+  // ---- reorder hint banner (dismissible for this view; reappears on reload) ----
   function dismissReorderHint() {
-    localStorage.setItem(REORDER_HINT_KEY, '1');
-    document.querySelectorAll('.reorder-hint-banner').forEach((el) => (el.hidden = true));
-  }
-  if (localStorage.getItem(REORDER_HINT_KEY) === '1') {
     document.querySelectorAll('.reorder-hint-banner').forEach((el) => (el.hidden = true));
   }
 
@@ -1141,7 +1146,7 @@
   function blockHead(label, iconSvg) {
     return `
       <div class="block-head edit-only">
-        <span class="block-drag" aria-label="Drag to reorder" title="Drag to reorder">${ICON_DRAG}</span>
+        <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder">${ICON_DRAG}</span>
         <span class="block-type">${iconSvg}${label}</span>
         <span class="sp"></span>
         <div class="dd-menu">
