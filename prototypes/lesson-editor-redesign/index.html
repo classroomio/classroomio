@@ -318,11 +318,16 @@
   .preview-video-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .preview-video-player .play-btn { width: 60px; height: 60px; border-radius: 999px; background: rgb(255 255 255 / .16); border: 1.5px solid rgb(255 255 255 / .55); display: grid; place-items: center; cursor: pointer; }
   .preview-video-player .play-btn svg { width: 24px; height: 24px; fill: #fff; stroke: none; margin-left: 3px; }
+  .preview-video-player .real-media { width: 100%; height: 100%; border: 0; display: block; }
   .preview-media-caption { margin-top: 12px; }
   .preview-media-title { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
   .preview-media-sub { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; }
-  .preview-slide-frame { width: 100%; aspect-ratio: 16/9; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted-foreground); }
+  .preview-slide-frame { width: 100%; aspect-ratio: 16/9; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted-foreground); overflow: hidden; }
   .preview-slide-frame svg { width: 42px; height: 42px; stroke-width: 1.4; }
+  .preview-slide-frame .real-media { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+  .doc-preview-embed { width: 100%; aspect-ratio: 16/10; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--muted); }
+  .doc-preview-embed iframe, .doc-preview-embed img { width: 100%; height: 100%; border: 0; object-fit: contain; display: block; }
+  .doc-preview-unavailable { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; padding: 14px 16px; border: 1px dashed var(--border); border-radius: var(--radius-lg); color: var(--muted-foreground); font-size: 12.8px; line-height: 1.5; }
   .preview-doc-link { display: flex; align-items: center; gap: 12px; }
   .preview-doc-link .info { display: flex; flex-direction: column; gap: 3px; }
   .preview-doc-link .name { font-size: 13.5px; font-weight: 600; }
@@ -997,23 +1002,30 @@
       </div>
       <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="docAddBtn" disabled onclick="confirmAdd('document')">Add document</button></div>`,
     'video-more': `
-      <div class="dialog-head"><h2 class="dialog-title">Add video</h2><p class="dialog-desc">The same "Add video" dialog used today, with all six sources.</p></div>
+      <div class="dialog-head"><h2 class="dialog-title">Add video</h2><p class="dialog-desc">Paste a real link or choose a file — the actual video plays in the lesson.</p></div>
       <div class="dialog-body">
         <div class="utabs" id="videoTabs">
           <button class="utab active" data-tab="yt">YouTube</button><button class="utab" data-tab="vm">Vimeo</button><button class="utab" data-tab="em">Embed link</button>
           <button class="utab" data-tab="up">Upload</button><button class="utab" data-tab="lib">Library</button><button class="utab" data-tab="gd">Google Drive</button>
         </div>
-        <div id="videoTabPane"><div class="field"><label class="label">YouTube URL</label><input class="input" value="https://www.youtube.com/watch?v=dpw9EHDh2bM" /></div></div>
+        <div id="videoTabPane"><div class="field"><label class="label">YouTube URL</label><input class="input" id="videoYoutubeInput" placeholder="https://www.youtube.com/watch?v=..." oninput="onVideoSourceInput()" /></div></div>
       </div>
-      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAdd('video-more')">Add video</button></div>`
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="videoAddBtn" disabled onclick="confirmAdd('video-more')">Add video</button></div>`
   };
   const videoTabPanes = {
-    yt: '<div class="field"><label class="label">YouTube URL</label><input class="input" value="https://www.youtube.com/watch?v=dpw9EHDh2bM" /></div>',
-    vm: '<div class="field"><label class="label">Vimeo URL</label><input class="input" placeholder="https://vimeo.com/..." /></div>',
-    em: '<div class="field"><label class="label">Embed code</label><textarea class="textarea" placeholder="&lt;iframe ...&gt;"></textarea></div>',
-    up: '<div class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg><p class="t">Drop a video file, or click to browse</p><p class="h">Uploads are transcoded to HLS automatically</p></div>',
-    lib: '<p class="hint" style="margin:0 0 8px">Previously uploaded to this workspace:</p><div class="media-thumb" style="width:100px;aspect-ratio:16/9;border-radius:6px"><svg class="big" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></div>',
-    gd: '<button class="btn btn-outline btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2v20M2 12h20"/></svg>Connect Google Drive</button>'
+    yt: '<div class="field"><label class="label">YouTube URL</label><input class="input" id="videoYoutubeInput" placeholder="https://www.youtube.com/watch?v=..." oninput="onVideoSourceInput()" /></div>',
+    vm: '<div class="field"><label class="label">Vimeo URL</label><input class="input" id="videoVimeoInput" placeholder="https://vimeo.com/..." oninput="onVideoSourceInput()" /></div>',
+    em: '<div class="field"><label class="label">Embed code</label><textarea class="textarea" id="videoEmbedInput" placeholder="&lt;iframe ...&gt;" oninput="onVideoSourceInput()"></textarea></div>',
+    up: `<input type="file" id="videoFileInput" accept="video/*" hidden onchange="onVideoFileInputChange(this)" />
+      <div id="videoFileArea">
+        <button type="button" class="drop" onclick="document.getElementById('videoFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg>
+          <p class="t">Click to choose a video file</p>
+          <p class="h">Plays directly from your device in this lesson</p>
+        </button>
+      </div>`,
+    lib: '<p class="hint" style="margin:0 0 8px">Previously uploaded to this workspace:</p><div class="media-thumb" style="width:100px;aspect-ratio:16/9;border-radius:6px"><svg class="big" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></div><p class="hint" style="margin:8px 0 0">Not available in this prototype — no media library is connected.</p>',
+    gd: '<button class="btn btn-outline btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2v20M2 12h20"/></svg>Connect Google Drive</button><p class="hint" style="margin:8px 0 0">Not available in this prototype — no Google Drive connection.</p>'
   };
 
   // ---- Slide platforms (matches @cio/ui SlideEmbedPicker / SlidePlatformIcon exactly) ----
@@ -1223,16 +1235,18 @@
     </div>`;
   }
 
-  function buildVideoBlock() {
+  function buildVideoBlock(source) {
+    const media =
+      source.kind === 'file'
+        ? `<video class="real-media" src="${escapeHtml(source.src)}" controls preload="metadata"></video>`
+        : `<iframe class="real-media" src="${escapeHtml(source.src)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     return `
       <section class="content-section" data-type="video">
         ${blockHead('Video', ICON_VIDEO, 'video-more')}
-        <div class="preview-video-player">
-          <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
-        </div>
+        <div class="preview-video-player">${media}</div>
         <div class="preview-media-caption">
-          <div class="preview-media-title">Props: The Complete Guide</div>
-          <div class="preview-media-sub">Codevolution · 14:02</div>
+          <div class="preview-media-title">${escapeHtml(source.title)}</div>
+          <div class="preview-media-sub">${escapeHtml(source.sub)}</div>
         </div>
       </section>`;
   }
@@ -1256,15 +1270,26 @@
       </section>`;
   }
 
-  function buildSlideBlock(platformId) {
+  function buildSlideBlock(platformId, embedSrc) {
     const platform = SLIDE_PLATFORMS.find((p) => p.id === platformId);
+    let hostname = 'example.com';
+    if (embedSrc) {
+      try {
+        hostname = new URL(embedSrc, location.href).hostname;
+      } catch (err) {
+        hostname = platform.name;
+      }
+    }
+    const frame = embedSrc
+      ? `<iframe class="real-media" src="${escapeHtml(embedSrc)}" loading="lazy" allowfullscreen></iframe>`
+      : ICON_SLIDE;
     return `
       <section class="content-section" data-type="slide">
         ${blockHead('Slide', ICON_SLIDE, 'slide-more')}
-        <div class="preview-slide-frame">${ICON_SLIDE}</div>
+        <div class="preview-slide-frame">${frame}</div>
         <div class="preview-media-caption">
           <div class="preview-media-title">${platform.name}</div>
-          <div class="preview-media-sub">example.com</div>
+          <div class="preview-media-sub">${escapeHtml(hostname)}</div>
         </div>
       </section>`;
   }
@@ -1280,12 +1305,43 @@
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
-  function buildDocumentBlock(mode, file) {
+  function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(file);
+    });
+  }
+
+  async function buildDocumentNotePreview(file, objectUrl, displayName) {
+    const type = file.type || '';
+    const name = file.name.toLowerCase();
+    if (type === 'application/pdf' || name.endsWith('.pdf')) {
+      return `<h3>${displayName}</h3><div class="doc-preview-embed"><iframe src="${objectUrl}" title="${displayName}"></iframe></div>`;
+    }
+    if (type.startsWith('image/')) {
+      return `<h3>${displayName}</h3><div class="doc-preview-embed"><img src="${objectUrl}" alt="${displayName}" /></div>`;
+    }
+    if (type.startsWith('text/') || name.endsWith('.txt') || name.endsWith('.md')) {
+      try {
+        const text = await readFileAsText(file);
+        return `<h3>${displayName}</h3><pre style="white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.6;margin:0">${escapeHtml(text)}</pre>`;
+      } catch (err) {
+        return `<h3>${displayName}</h3><p style="color:var(--muted-foreground)">Couldn't read this file's text.</p>`;
+      }
+    }
+    return `<div class="doc-preview-unavailable"><h3 style="margin:0 0 2px;font-size:15px;font-weight:600;color:var(--foreground)">${displayName}</h3><p style="margin:0">Preview isn't available for this file type in the browser.</p><a class="btn btn-outline btn-sm" href="${objectUrl}" download="${escapeHtml(file.name)}">Download to view</a></div>`;
+  }
+
+  async function buildDocumentBlock(mode, file) {
     docEntryCount += 1;
     const groupName = 'docMode-' + docEntryCount;
     const fileName = escapeHtml(file.name);
-    const fileSize = escapeHtml(file.size);
+    const fileSize = escapeHtml(formatFileSize(file.size));
     const displayName = escapeHtml(file.name.replace(/\.[^./]+$/, ''));
+    const objectUrl = URL.createObjectURL(file);
+    const notePreview = await buildDocumentNotePreview(file, objectUrl, displayName);
     return `
       <section class="content-section" data-type="document">
         ${blockHead('Document', ICON_DOCUMENT)}
@@ -1294,9 +1350,8 @@
             <div class="file-icon">${ICON_DOCUMENT}</div>
             <div class="file-info"><div class="file-name">${fileName}</div><div class="file-size">${fileSize}</div></div>
             <div class="file-actions">
-              <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-              <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
-              <button class="icon-btn" style="width:30px;height:30px">${ICON_DOCUMENT}</button>
+              <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Preview file" onclick="window.open('${objectUrl}', '_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <a class="icon-btn" style="width:30px;height:30px" aria-label="Download file" href="${objectUrl}" download="${fileName}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></a>
             </div>
           </div>
           <div class="doc-mode-row edit-only">
@@ -1304,14 +1359,13 @@
             <label><input type="radio" name="${groupName}" class="radio" value="link" ${mode === 'link' ? 'checked' : ''} onchange="setDocMode(this)" /> Add as Downloadable Link</label>
           </div>
           <div class="note-content preview-only doc-preview-note" ${mode !== 'note' ? 'hidden' : ''}>
-            <h3>${displayName}</h3>
-            <p>Each workspace member has a role that controls what they can see and do. Admins manage billing and settings, tutors manage course content and grading, and students access enrolled courses only.</p>
+            ${notePreview}
           </div>
           <div class="preview-doc-link preview-only doc-preview-link" ${mode !== 'link' ? 'hidden' : ''}>
             <div class="file-icon">${ICON_DOCUMENT}</div>
             <div class="info">
               <span class="name">${fileName}</span>
-              <span class="open">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              <a class="open" href="${objectUrl}" download="${fileName}">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             </div>
           </div>
         </div>
@@ -1392,6 +1446,10 @@
       return;
     }
     if (kind === 'document') selectedDocFile = null;
+    if (kind === 'video-more') {
+      activeVideoTab = 'yt';
+      selectedVideoFile = null;
+    }
     dialogBox.style.maxWidth = '480px';
     dialogBox.innerHTML = dialogTemplates[kind];
     document.body.classList.add('dialog-open');
@@ -1403,7 +1461,9 @@
         if (!btn) return;
         tabs.querySelectorAll('.utab').forEach((t) => t.classList.remove('active'));
         btn.classList.add('active');
+        activeVideoTab = btn.dataset.tab;
         document.getElementById('videoTabPane').innerHTML = videoTabPanes[btn.dataset.tab];
+        onVideoSourceInput();
       });
     }
   }
@@ -1430,11 +1490,11 @@
 
   function onDocFileChosen(file) {
     if (!file) return;
-    selectedDocFile = { name: file.name, size: formatFileSize(file.size) };
+    selectedDocFile = file;
     document.getElementById('docFileArea').innerHTML = `
       <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
         <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
-        <div class="file-info"><div class="file-name">${escapeHtml(selectedDocFile.name)}</div><div class="file-size">${escapeHtml(selectedDocFile.size)}</div></div>
+        <div class="file-info"><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${escapeHtml(formatFileSize(file.size))}</div></div>
         <div class="file-actions">
           <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('docFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
         </div>
@@ -1451,6 +1511,112 @@
     e.preventDefault();
     e.currentTarget.classList.remove('drag-over');
     onDocFileChosen(e.dataTransfer.files && e.dataTransfer.files[0]);
+  }
+
+  // ---- Video sources: real embeds/playback, no canned demo output ----
+  let activeVideoTab = 'yt';
+  let selectedVideoFile = null;
+
+  function extractYouTubeId(url) {
+    const m = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  function extractVimeoId(url) {
+    const m = String(url).match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    return m ? m[1] : null;
+  }
+
+  function extractIframeSrc(code) {
+    const m = String(code).match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+    return m ? m[1] : null;
+  }
+
+  function extractEmbedSrc(code) {
+    const trimmed = String(code).trim();
+    if (!trimmed) return null;
+    return extractIframeSrc(trimmed) || (/^https?:\/\//i.test(trimmed) ? trimmed : null);
+  }
+
+  function getVideoSource() {
+    if (activeVideoTab === 'yt') {
+      const input = document.getElementById('videoYoutubeInput');
+      const id = input && extractYouTubeId(input.value);
+      return id ? { platform: 'youtube', src: 'https://www.youtube.com/embed/' + id, url: input.value.trim() } : null;
+    }
+    if (activeVideoTab === 'vm') {
+      const input = document.getElementById('videoVimeoInput');
+      const id = input && extractVimeoId(input.value);
+      return id ? { platform: 'vimeo', src: 'https://player.vimeo.com/video/' + id, url: input.value.trim() } : null;
+    }
+    if (activeVideoTab === 'em') {
+      const input = document.getElementById('videoEmbedInput');
+      const src = input && extractEmbedSrc(input.value);
+      return src ? { platform: 'embed', src } : null;
+    }
+    if (activeVideoTab === 'up') {
+      return selectedVideoFile ? { platform: 'file', file: selectedVideoFile } : null;
+    }
+    return null;
+  }
+
+  function onVideoSourceInput() {
+    const btn = document.getElementById('videoAddBtn');
+    if (btn) btn.disabled = !getVideoSource();
+  }
+
+  function onVideoFileInputChange(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    selectedVideoFile = file;
+    document.getElementById('videoFileArea').innerHTML = `
+      <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
+        <div class="file-icon">${ICON_VIDEO}</div>
+        <div class="file-info"><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${escapeHtml(formatFileSize(file.size))}</div></div>
+        <div class="file-actions">
+          <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('videoFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        </div>
+      </div>`;
+    onVideoSourceInput();
+  }
+
+  async function fetchOEmbedTitle(platform, url) {
+    try {
+      const endpoint =
+        platform === 'youtube'
+          ? 'https://www.youtube.com/oembed?url=' + encodeURIComponent(url) + '&format=json'
+          : 'https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url);
+      const res = await fetch(endpoint);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return { title: data.title, author: data.author_name };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  async function buildVideoSource() {
+    const raw = getVideoSource();
+    if (!raw) return null;
+    if (raw.platform === 'file') {
+      return {
+        kind: 'file',
+        src: URL.createObjectURL(raw.file),
+        title: raw.file.name.replace(/\.[^./]+$/, ''),
+        sub: 'Uploaded video'
+      };
+    }
+    if (raw.platform === 'youtube' || raw.platform === 'vimeo') {
+      const label = raw.platform === 'youtube' ? 'YouTube' : 'Vimeo';
+      const meta = await fetchOEmbedTitle(raw.platform, raw.url);
+      return {
+        kind: 'iframe',
+        src: raw.src,
+        title: meta && meta.title ? meta.title : label + ' video',
+        sub: meta && meta.author ? meta.author + ' · ' + label : label
+      };
+    }
+    return { kind: 'iframe', src: raw.src, title: 'Embedded video', sub: 'Custom embed' };
   }
 
   function simulateSave() {
@@ -1475,19 +1641,38 @@
     entry.querySelector('.doc-preview-link').hidden = mode !== 'link';
   }
 
-  function confirmAdd(kind) {
+  async function confirmAdd(kind) {
     let html = null;
+    const confirmBtn = document.querySelector('.dialog-foot .btn-primary');
     if (kind === 'document') {
       if (!selectedDocFile) return;
       const mode = document.querySelector('input[name="newDocMode"]:checked').value;
-      html = buildDocumentBlock(mode, selectedDocFile);
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Adding…';
+      }
+      html = await buildDocumentBlock(mode, selectedDocFile);
       selectedDocFile = null;
     }
     if (kind === 'video-more') {
-      html = buildVideoBlock();
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Adding…';
+      }
+      const source = await buildVideoSource();
+      if (!source) {
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = 'Add video';
+        }
+        return;
+      }
+      html = buildVideoBlock(source);
+      selectedVideoFile = null;
     }
     if (kind === 'slide-more') {
-      html = buildSlideBlock(slideSelectedId);
+      const embedSrc = extractEmbedSrc(document.getElementById('slideEmbedInput').value);
+      html = buildSlideBlock(slideSelectedId, embedSrc);
     }
     if (activeEditBlockEl) replaceBlock(activeEditBlockEl, html);
     else insertBlock(activeCanvasId, html);
