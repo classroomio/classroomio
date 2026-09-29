@@ -55,7 +55,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import FileTextIcon from '@lucide/svelte/icons/file-text';
+  import InfoIcon from '@lucide/svelte/icons/info';
   import XIcon from '@lucide/svelte/icons/x';
   import type { Question } from '$features/course/types';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
@@ -832,7 +832,7 @@
             aria-pressed={isInstructionsOpen}
             onclick={toggleInstructions}
           >
-            <FileTextIcon />
+            <InfoIcon />
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}
           </Button>
         {/if}
