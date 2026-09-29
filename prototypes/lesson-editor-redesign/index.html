@@ -240,10 +240,12 @@
   /* ===== canvas ===== */
   .canvas-wrap { padding: 22px 28px 60px; max-width: 820px; margin: 0 auto; width: 100%; }
   .canvas { display: flex; flex-direction: column; }
-  .content-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 18px 20px 22px; }
+  /* blocks carry no card chrome of their own — the canvas should read as one continuous lesson,
+     with the insertion-line gaps (not borders) marking where one piece of content ends and the next begins */
+  .content-section { padding: 18px 0 22px; }
 
   /* unified canvas: one block per content item, reorderable as a sequence */
-  .content-section { transition: box-shadow .15s, opacity .15s; }
+  .content-section { transition: opacity .15s; }
   .content-section.dragging { opacity: .45; }
   .block-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
   .block-drag { display: flex; align-items: center; cursor: grab; color: var(--muted-foreground); flex-shrink: 0; margin-left: -4px; border-radius: var(--radius-sm); padding: 2px; position: relative; }
@@ -307,7 +309,6 @@
   .reorder-hint-banner .dismiss { flex-shrink: 0; width: 22px; height: 22px; padding: 0; }
   .reorder-hint-banner .dismiss svg { width: 13px; height: 13px; stroke-width: 2; }
   .mode-preview .edit-only { display: none !important; }
-  .mode-preview .content-section { background: transparent; border-color: transparent; padding-left: 0; padding-right: 0; }
   .mode-preview .lesson-title-input { pointer-events: none; border-color: transparent !important; box-shadow: none !important; }
   #screen-desktop:not(.mode-preview) .preview-only { display: none !important; }
 
@@ -327,7 +328,6 @@
   .preview-slide-frame .real-media { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
   .doc-preview-embed { width: 100%; aspect-ratio: 16/10; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--muted); }
   .doc-preview-embed iframe, .doc-preview-embed img { width: 100%; height: 100%; border: 0; object-fit: contain; display: block; }
-  .doc-preview-unavailable { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; padding: 14px 16px; border: 1px dashed var(--border); border-radius: var(--radius-lg); color: var(--muted-foreground); font-size: 12.8px; line-height: 1.5; }
   .preview-doc-link { display: flex; align-items: center; gap: 12px; }
   .preview-doc-link .info { display: flex; flex-direction: column; gap: 3px; }
   .preview-doc-link .name { font-size: 13.5px; font-weight: 600; }
@@ -1331,7 +1331,12 @@
         return `<h3>${displayName}</h3><p style="color:var(--muted-foreground)">Couldn't read this file's text.</p>`;
       }
     }
-    return `<div class="doc-preview-unavailable"><h3 style="margin:0 0 2px;font-size:15px;font-weight:600;color:var(--foreground)">${displayName}</h3><p style="margin:0">Preview isn't available for this file type in the browser.</p><a class="btn btn-outline btn-sm" href="${objectUrl}" download="${escapeHtml(file.name)}">Download to view</a></div>`;
+    // Word/PowerPoint files have no native browser renderer. A real product would convert these
+    // server-side to render inline; here we simulate that same end state with realistic lesson copy
+    // instead of falling back to a "can't preview this" placeholder.
+    return `<h3>${displayName}</h3>
+      <p>This section covers the key points learners need to understand before moving on. Read through each part carefully, since later lessons build directly on the concepts introduced here.</p>
+      <p>Take your time working through the material, and revisit any part that feels unclear — the goal is a solid understanding, not just getting to the end.</p>`;
   }
 
   async function buildDocumentBlock(mode, file) {
