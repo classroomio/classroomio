@@ -35,7 +35,7 @@ export const v1CohortRouter = new Hono()
     '/',
     describeRoute({
       description: `List the cohorts the automation actor can see: every cohort for an org admin, otherwise only cohorts the actor belongs to. ${PAGINATION_NOTE}`,
-      tags: ['Public API Cohorts'],
+      tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohorts returned successfully', paginatedResponse(ZPublicApiCohortListItemResponse)),
         400: errorResponses.badRequest,
@@ -61,7 +61,7 @@ export const v1CohortRouter = new Hono()
     '/',
     describeRoute({
       description: 'Create a cohort. The automation actor (the key creator) is added as its tutor.',
-      tags: ['Public API Cohorts'],
+      tags: ['Cohorts'],
       responses: {
         201: jsonResponse('Cohort created successfully', CohortResponse),
         400: errorResponses.badRequest,
@@ -87,7 +87,7 @@ export const v1CohortRouter = new Hono()
     '/enrolled',
     describeRoute({
       description: `List the cohorts the automation actor is enrolled in, with the actor's role in each. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
-      tags: ['Public API Cohorts'],
+      tags: ['Cohorts'],
       responses: {
         200: jsonResponse(
           'Enrolled cohorts returned successfully',
@@ -116,7 +116,7 @@ export const v1CohortRouter = new Hono()
     '/:cohortId',
     describeRoute({
       description: `Get a cohort. ${COHORT_MEMBER_RULE}`,
-      tags: ['Public API Cohorts'],
+      tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohort returned successfully', CohortResponse),
         400: errorResponses.badRequest,
@@ -143,7 +143,7 @@ export const v1CohortRouter = new Hono()
     '/:cohortId',
     describeRoute({
       description: `Update a cohort. Send only the fields to change. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohorts'],
+      tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohort updated successfully', CohortResponse),
         400: errorResponses.badRequest,
@@ -172,7 +172,7 @@ export const v1CohortRouter = new Hono()
     '/:cohortId',
     describeRoute({
       description: `Permanently delete a cohort and its memberships, newsfeed, and goals. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohorts'],
+      tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohort deleted successfully', CohortResponse),
         400: errorResponses.badRequest,
