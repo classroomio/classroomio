@@ -3385,6 +3385,8 @@
     "analytics": "Аналитика",
     "compliance": "Соответствие требованиям",
     "cohorts": "Когорты",
+    "exit_course": "Выйти из этого курса",
+    "exit_cohort": "Выйти из этой когорты",
     "upgrade_now": "Обновите сейчас",
     "upgrade_label": "Обновить",
     "upgrade_count": "{studentCount}/{studentLimit}",

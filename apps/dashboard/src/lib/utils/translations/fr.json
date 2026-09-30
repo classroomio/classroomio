@@ -3385,6 +3385,8 @@
     "analytics": "Analytique",
     "compliance": "Conformité",
     "cohorts": "Cohortes",
+    "exit_course": "Quitter ce cours",
+    "exit_cohort": "Quitter cette cohorte",
     "upgrade_now": "Mettre à niveau maintenant",
     "upgrade_label": "Mettre à niveau",
     "upgrade_count": "{studentCount}/{studentLimit}",

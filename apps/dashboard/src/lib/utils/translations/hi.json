@@ -3385,6 +3385,8 @@
     "analytics": "विश्लेषिकी",
     "compliance": "अनुपालन",
     "cohorts": "कोहोर्ट",
+    "exit_course": "इस पाठ्यक्रम से बाहर निकलें",
+    "exit_cohort": "इस कोहोर्ट से बाहर निकलें",
     "upgrade_now": "अभी अपग्रेड करें",
     "upgrade_label": "अपग्रेड",
     "upgrade_count": "{studentCount}/{studentLimit}",

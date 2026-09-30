@@ -1439,7 +1439,9 @@
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} of {studentLimit} students",
     "upgrade_left": "{count} left",
-    "cohorts": "Cohorts"
+    "cohorts": "Cohorts",
+    "exit_course": "Exit this course",
+    "exit_cohort": "Exit this cohort"
   },
   "pricing": {
     "plan_names": {
