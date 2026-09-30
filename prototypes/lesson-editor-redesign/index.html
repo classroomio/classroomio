@@ -414,20 +414,15 @@
   .chart-type-tabs button.active { background: var(--card); color: var(--foreground); box-shadow: var(--shadow-md); }
   .chart-data-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
 
-  .flash-block { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .flash-card { perspective: 1200px; width: 100%; max-width: 420px; aspect-ratio: 16/9; cursor: pointer; }
+  .flash-block { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 18px; }
+  .flash-card { position: relative; perspective: 1200px; aspect-ratio: 1/1; cursor: pointer; }
   .flash-card-inner { position: relative; width: 100%; height: 100%; transition: transform .5s; transform-style: preserve-3d; }
   .flash-card.flipped .flash-card-inner { transform: rotateY(180deg); }
-  .flash-card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius-xl); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px; text-align: center; box-sizing: border-box; }
-  .flash-front { background: var(--card); }
-  .flash-back { background: color-mix(in oklab, var(--primary), transparent 92%); border-color: color-mix(in oklab, var(--primary), transparent 60%); transform: rotateY(180deg); }
-  .flash-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-foreground); }
-  .flash-text { font-size: 16.5px; font-weight: 600; margin: 0; max-width: 320px; line-height: 1.4; }
-  .flash-hint { font-size: 11px; color: var(--muted-foreground); }
-  .flash-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 4px; }
-  .flash-nav .icon-btn { width: 30px; height: 30px; }
-  .flash-nav .icon-btn svg { width: 15px; height: 15px; }
-  .flash-counter { font-size: 12.5px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; min-width: 90px; text-align: center; }
+  .flash-card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius-lg); border: 2px solid var(--primary); background: var(--card); display: flex; align-items: center; justify-content: center; padding: 16px; text-align: center; box-sizing: border-box; }
+  .flash-back { transform: rotateY(180deg); }
+  .flash-text { font-size: 15px; font-weight: 500; margin: 0; color: var(--foreground); line-height: 1.4; }
+  .flash-flip-btn { position: absolute; bottom: -8px; right: -8px; width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-md); z-index: 2; }
+  .flash-flip-btn svg { width: 14px; height: 14px; stroke-width: 2.3; }
   .flash-edit-row { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; margin-bottom: 10px; }
 
   .tabs-block { display: flex; flex-direction: column; gap: 14px; }
@@ -470,6 +465,29 @@
   .quiz-submit { align-self: center; min-width: 140px; }
   .quiz-option.submitted-correct { background: color-mix(in oklab, oklch(0.6 0.15 150), transparent 90%); }
   .quiz-option.submitted-wrong { background: color-mix(in oklab, oklch(0.55 0.2 25), transparent 90%); }
+
+  .process-block { display: flex; flex-direction: column; gap: 14px; }
+  .process-toolbar { display: flex; justify-content: flex-end; gap: 8px; }
+  .process-icon-btn { width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--muted); color: var(--foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .process-icon-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+  .process-stage { position: relative; display: flex; align-items: center; }
+  .process-step { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 20px 48px; }
+  .process-heading { font-size: 26px; font-weight: 700; letter-spacing: -.01em; outline: none; margin: 0; border-radius: var(--radius-sm); }
+  .process-heading:focus { background: var(--accent); }
+  .process-media:empty { display: none; }
+  .process-media img { max-width: 100%; max-height: 280px; border-radius: var(--radius-lg); display: block; object-fit: cover; }
+  .process-body { font-size: 14.5px; line-height: 1.6; color: var(--foreground); outline: none; max-width: 520px; margin: 0; border-radius: var(--radius-sm); }
+  .process-body:focus { background: var(--accent); }
+  .process-advance { display: inline-flex; align-items: center; gap: 6px; }
+  .process-advance svg { width: 14px; height: 14px; stroke-width: 2.4; }
+  .process-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-md); z-index: 2; }
+  .process-nav svg { width: 18px; height: 18px; stroke-width: 2.4; }
+  .process-nav:disabled { opacity: .3; cursor: default; }
+  .process-nav-prev { left: -16px; }
+  .process-nav-next { right: -16px; }
+  .process-dots { display: flex; justify-content: center; gap: 6px; }
+  .process-dots .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--border); }
+  .process-dots .dot.active { background: var(--primary); }
 
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
@@ -937,6 +955,7 @@
     <button type="button" class="dock-icon" aria-label="Add flashcards" onclick="insertFromDock('flashcards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg><span class="lb">Flashcards</span></button>
     <button type="button" class="dock-icon" aria-label="Add tabs" onclick="insertFromDock('tabs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg><span class="lb">Tabs</span></button>
     <button type="button" class="dock-icon" aria-label="Add multiple choice" onclick="insertFromDock('quiz')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="lb">Quiz</span></button>
+    <button type="button" class="dock-icon" aria-label="Add process" onclick="insertFromDock('process')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><span class="lb">Process</span></button>
   </div>
 </section>
 
@@ -1434,6 +1453,7 @@
   const ICON_CHECK_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>';
   const ICON_CLOSE_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>';
   const ICON_CHEVRON_DOWN_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
+  const ICON_PROCESS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -1978,36 +1998,24 @@
   }
 
   // ---- Flashcards: flip-card preview + a simple manage-cards dialog ----
-  function buildFlashcardsBlockHtml(data) {
-    const current = 0;
-    const card = data.cards[current] || { q: 'No cards yet', a: 'Add one below' };
-    const counterText = data.cards.length ? `Card ${current + 1} of ${data.cards.length}` : 'No cards yet';
+  function buildFlashcardHtml(card) {
     return `
-      <section class="content-section" data-type="flashcards" data-flashcards='${escapeHtml(JSON.stringify(data))}' data-current="0">
+      <div class="flash-card" onclick="flipFlashcard(this)">
+        <div class="flash-card-inner">
+          <div class="flash-card-face flash-front"><p class="flash-text">${escapeHtml(card.q)}</p></div>
+          <div class="flash-card-face flash-back"><p class="flash-text">${escapeHtml(card.a)}</p></div>
+        </div>
+        <button type="button" class="flash-flip-btn" onclick="event.stopPropagation(); flipFlashcard(this.closest('.flash-card'))" aria-label="Flip card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+      </div>`;
+  }
+
+  function buildFlashcardsBlockHtml(data) {
+    return `
+      <section class="content-section" data-type="flashcards" data-flashcards='${escapeHtml(JSON.stringify(data))}'>
         ${blockHead('Flashcards', ICON_FLASHCARDS)}
-        <div class="flash-block">
-          <div class="flash-card" onclick="flipFlashcard(this)">
-            <div class="flash-card-inner">
-              <div class="flash-card-face flash-front">
-                <span class="flash-eyebrow">Question</span>
-                <p class="flash-text">${escapeHtml(card.q)}</p>
-                <span class="flash-hint">Click to flip</span>
-              </div>
-              <div class="flash-card-face flash-back">
-                <span class="flash-eyebrow">Answer</span>
-                <p class="flash-text">${escapeHtml(card.a)}</p>
-                <span class="flash-hint">Click to flip back</span>
-              </div>
-            </div>
-          </div>
-          <div class="flash-nav">
-            <button type="button" class="icon-btn" onclick="event.stopPropagation(); navFlashcard(this,-1)" aria-label="Previous card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
-            <span class="flash-counter">${counterText}</span>
-            <button type="button" class="icon-btn" onclick="event.stopPropagation(); navFlashcard(this,1)" aria-label="Next card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
-          </div>
-          <div class="edit-only" style="text-align:center;margin-top:6px">
-            <button type="button" class="btn btn-outline btn-sm" onclick="event.stopPropagation(); openFlashcardEditor(this)">Manage cards</button>
-          </div>
+        <div class="flash-block">${data.cards.map((c) => buildFlashcardHtml(c)).join('')}</div>
+        <div class="edit-only" style="text-align:center;margin-top:14px">
+          <button type="button" class="btn btn-outline btn-sm" onclick="openFlashcardEditor(this)">Manage cards</button>
         </div>
       </section>`;
   }
@@ -2016,36 +2024,19 @@
     return buildFlashcardsBlockHtml({
       cards: [
         { q: 'What is customer retention?', a: 'The ability of a business to keep customers over time.' },
-        { q: 'Why does retention matter more than acquisition?', a: "It's typically 5-7x cheaper to keep an existing customer than to win a new one." }
+        { q: 'Why does retention matter more than acquisition?', a: "It's typically 5-7x cheaper to keep an existing customer than to win a new one." },
+        { q: 'What is a simple way to measure it?', a: 'Compare how many customers you had at the start of a period to how many remain at the end.' }
       ]
     });
   }
 
-  function renderFlashcard(section) {
+  function renderFlashcardsGrid(section) {
     const data = JSON.parse(section.dataset.flashcards);
-    let current = parseInt(section.dataset.current || '0', 10);
-    current = data.cards.length ? ((current % data.cards.length) + data.cards.length) % data.cards.length : 0;
-    section.dataset.current = current;
-    const card = data.cards[current] || { q: 'No cards yet', a: 'Add one below' };
-    const cardEl = section.querySelector('.flash-card');
-    cardEl.classList.remove('flipped');
-    cardEl.querySelector('.flash-front .flash-text').textContent = card.q;
-    cardEl.querySelector('.flash-back .flash-text').textContent = card.a;
-    section.querySelector('.flash-counter').textContent = data.cards.length ? `Card ${current + 1} of ${data.cards.length}` : 'No cards yet';
-  }
-
-  function navFlashcard(btn, dir) {
-    const section = btn.closest('.content-section');
-    const data = JSON.parse(section.dataset.flashcards);
-    if (!data.cards.length) return;
-    let current = parseInt(section.dataset.current || '0', 10);
-    current = (current + dir + data.cards.length) % data.cards.length;
-    section.dataset.current = current;
-    renderFlashcard(section);
+    section.querySelector('.flash-block').innerHTML = data.cards.map((c) => buildFlashcardHtml(c)).join('');
   }
 
   function flipFlashcard(cardEl) {
-    cardEl.classList.toggle('flipped');
+    if (cardEl) cardEl.classList.toggle('flipped');
   }
 
   let activeFlashcardsEditEl = null;
@@ -2103,8 +2094,7 @@
       .map((r) => ({ q: r.querySelector('.flash-row-q').value.trim(), a: r.querySelector('.flash-row-a').value.trim() }))
       .filter((c) => c.q || c.a);
     activeFlashcardsEditEl.dataset.flashcards = JSON.stringify({ cards });
-    activeFlashcardsEditEl.dataset.current = 0;
-    renderFlashcard(activeFlashcardsEditEl);
+    renderFlashcardsGrid(activeFlashcardsEditEl);
     closeDialog();
     activeFlashcardsEditEl = null;
     simulateSave();
@@ -2327,6 +2317,144 @@
     btn.textContent = wasCorrect ? 'Correct!' : 'Incorrect';
   }
 
+  // ---- Process: a step-by-step flow, each step with an optional image + heading + body ----
+  function buildProcessBlockHtml(data) {
+    const total = data.steps.length;
+    const step = data.steps[0];
+    const isLast = total === 1;
+    const mediaHtml = step.image ? `<img src="${escapeHtml(step.image)}" alt="" />` : '';
+    const dotsHtml = data.steps.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}"></span>`).join('');
+    return `
+      <section class="content-section" data-type="process" data-process='${escapeHtml(JSON.stringify(data))}' data-current-step="0">
+        ${blockHead('Process', ICON_PROCESS)}
+        <div class="process-block">
+          <div class="process-toolbar edit-only">
+            <input type="file" accept="image/*" hidden class="process-image-input" onchange="onProcessImageChosen(this)" />
+            <div class="dd-menu">
+              <button type="button" class="quiz-media-btn" onclick="toggleBlockMenu(this)">${ICON_IMAGE}Add media${ICON_CHEVRON_DOWN_SMALL}</button>
+              <div class="dd-menu-panel">
+                <button type="button" class="dd-menu-item" onclick="triggerProcessImageUpload(this)">${ICON_IMAGE}Image</button>
+              </div>
+            </div>
+            <button type="button" class="process-icon-btn" onclick="removeProcessStep(this)" aria-label="Delete this step">${ICON_TRASH}</button>
+          </div>
+          <div class="process-stage">
+            <button type="button" class="process-nav process-nav-prev" onclick="navProcessStep(this,-1)" aria-label="Previous step" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="process-step">
+              <h3 class="process-heading" contenteditable="true" oninput="onProcessFieldInput(this,'heading')">${escapeHtml(step.heading)}</h3>
+              <div class="process-media">${mediaHtml}</div>
+              <p class="process-body" contenteditable="true" oninput="onProcessFieldInput(this,'body')">${escapeHtml(step.body)}</p>
+              <button type="button" class="btn btn-primary process-advance" onclick="advanceProcessStep(this)">${isLast ? 'Finish' : 'Start'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+            </div>
+            <button type="button" class="process-nav process-nav-next" onclick="navProcessStep(this,1)" aria-label="Next step" ${isLast ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+          </div>
+          <div class="process-dots edit-only">${dotsHtml}</div>
+          <div class="edit-only" style="text-align:center">
+            <button type="button" class="quiz-add-option" onclick="addProcessStep(this)">${ICON_PLUS}Add step</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildProcessBlockSample() {
+    return buildProcessBlockHtml({
+      steps: [
+        {
+          heading: 'Introduction',
+          body: 'Artificial intelligence, or AI, has become one of the most transformative and rapidly evolving fields in technology. It involves the creation of intelligent machines that can perform tasks typically associated with human intelligence, such as learning, problem-solving, and decision-making.',
+          image: null
+        },
+        { heading: 'How it works', body: 'Describe what happens in this step of the process.', image: null }
+      ]
+    });
+  }
+
+  function renderProcess(section) {
+    const data = JSON.parse(section.dataset.process);
+    const total = data.steps.length;
+    let current = parseInt(section.dataset.currentStep || '0', 10);
+    current = Math.max(0, Math.min(current, total - 1));
+    section.dataset.currentStep = current;
+    const step = data.steps[current];
+    const isFirst = current === 0;
+    const isLast = current === total - 1;
+    section.querySelector('.process-heading').textContent = step.heading;
+    section.querySelector('.process-media').innerHTML = step.image ? `<img src="${escapeHtml(step.image)}" alt="" />` : '';
+    section.querySelector('.process-body').textContent = step.body;
+    const advanceBtn = section.querySelector('.process-advance');
+    advanceBtn.innerHTML = `${isLast ? 'Finish' : isFirst ? 'Start' : 'Next'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg>`;
+    section.querySelector('.process-nav-prev').disabled = isFirst;
+    section.querySelector('.process-nav-next').disabled = isLast;
+    section.querySelector('.process-dots').innerHTML = data.steps.map((_, i) => `<span class="dot${i === current ? ' active' : ''}"></span>`).join('');
+  }
+
+  function navProcessStep(btn, dir) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    const next = current + dir;
+    if (next < 0 || next >= data.steps.length) return;
+    section.dataset.currentStep = next;
+    renderProcess(section);
+  }
+
+  function advanceProcessStep(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    section.dataset.currentStep = current >= data.steps.length - 1 ? 0 : current + 1;
+    renderProcess(section);
+  }
+
+  function onProcessFieldInput(el, field) {
+    const section = el.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    data.steps[current][field] = el.textContent;
+    section.dataset.process = JSON.stringify(data);
+    simulateSave();
+  }
+
+  function triggerProcessImageUpload(btn) {
+    const block = btn.closest('.process-block');
+    block.querySelector('.process-image-input').click();
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+  }
+
+  function onProcessImageChosen(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const section = input.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    data.steps[current].image = URL.createObjectURL(file);
+    section.dataset.process = JSON.stringify(data);
+    renderProcess(section);
+    simulateSave();
+  }
+
+  function addProcessStep(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    data.steps.push({ heading: 'New step', body: 'Describe this step.', image: null });
+    section.dataset.process = JSON.stringify(data);
+    section.dataset.currentStep = data.steps.length - 1;
+    renderProcess(section);
+    simulateSave();
+  }
+
+  function removeProcessStep(btn) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.process);
+    if (data.steps.length <= 1) return;
+    const current = parseInt(section.dataset.currentStep || '0', 10);
+    data.steps.splice(current, 1);
+    section.dataset.process = JSON.stringify(data);
+    section.dataset.currentStep = Math.max(0, current - 1);
+    renderProcess(section);
+    simulateSave();
+  }
+
   let activeCanvasId = 'canvas';
   let activeGapEl = null;
   let dockGapEl = null;
@@ -2442,6 +2570,7 @@
         <button class="content-type-btn" onclick="chooseContentType('flashcards')"><span class="ic">${ICON_FLASHCARDS}</span><span class="nm">Flashcards</span></button>
         <button class="content-type-btn" onclick="chooseContentType('tabs')"><span class="ic">${ICON_TABS}</span><span class="nm">Tabs</span></button>
         <button class="content-type-btn" onclick="chooseContentType('quiz')"><span class="ic">${ICON_QUIZ}</span><span class="nm">Multiple Choice</span></button>
+        <button class="content-type-btn" onclick="chooseContentType('process')"><span class="ic">${ICON_PROCESS}</span><span class="nm">Process</span></button>
       </div></div>`;
     document.body.classList.add('dialog-open');
   }
@@ -2454,7 +2583,8 @@
     chart: buildChartBlockSample,
     flashcards: buildFlashcardsBlockSample,
     tabs: buildTabsBlockSample,
-    quiz: buildQuizBlockSample
+    quiz: buildQuizBlockSample,
+    process: buildProcessBlockSample
   };
 
   function chooseContentType(type) {
