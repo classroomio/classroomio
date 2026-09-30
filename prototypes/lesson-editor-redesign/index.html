@@ -397,6 +397,18 @@
   .image-block { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: var(--radius-xl); overflow: hidden; background: var(--muted); }
   .image-block img, .image-block .image-sample-art { width: 100%; height: 100%; display: block; object-fit: cover; }
 
+  .chart-block { display: flex; flex-direction: column; gap: 10px; }
+  .chart-title-input { font-size: 16px; font-weight: 700; border: none; background: transparent; padding: 2px 0; outline: none; border-bottom: 1px solid transparent; color: var(--foreground); width: 100%; }
+  .chart-title-input:hover, .chart-title-input:focus { border-bottom-color: var(--border); }
+  .chart-title-display { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
+  .chart-canvas { width: 100%; }
+  .chart-canvas svg.chart-svg { width: 100%; height: auto; display: block; }
+  .chart-controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid var(--border); }
+  .chart-type-tabs { display: flex; gap: 2px; background: var(--muted); border-radius: 999px; padding: 2px; }
+  .chart-type-tabs button { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; }
+  .chart-type-tabs button.active { background: var(--card); color: var(--foreground); box-shadow: var(--shadow-md); }
+  .chart-data-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
   .note-toolbar .tb-btn:hover { background: var(--accent); color: var(--foreground); }
@@ -859,6 +871,7 @@
     <button type="button" class="dock-icon" aria-label="Add slides" onclick="insertFromDock('slide')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><span class="lb">Slides</span></button>
     <button type="button" class="dock-icon" aria-label="Add note" onclick="insertFromDock('note')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="lb">Note</span></button>
     <button type="button" class="dock-icon" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="lb">Document</span></button>
+    <button type="button" class="dock-icon" aria-label="Add chart" onclick="insertFromDock('chart')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="lb">Chart</span></button>
   </div>
 </section>
 
@@ -1324,6 +1337,8 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
   const ICON_IMAGE =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+  const ICON_CHART =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>';
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -1626,6 +1641,216 @@
       </section>`;
   }
 
+  // ---- Chart: bar / line / pie / donut, generated as inline SVG from a small data model ----
+  const CHART_COLORS = [
+    'var(--primary)',
+    'oklch(0.7 0.15 200)',
+    'oklch(0.75 0.16 140)',
+    'oklch(0.78 0.17 80)',
+    'oklch(0.65 0.2 20)',
+    'oklch(0.6 0.14 300)'
+  ];
+
+  function chartPolarPoint(cx, cy, r, angle) {
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  }
+
+  function buildBarChartSvg(data) {
+    const w = 400,
+      h = 220,
+      padTop = 16,
+      padBottom = 34,
+      padSide = 16;
+    const chartW = w - padSide * 2,
+      chartH = h - padTop - padBottom;
+    const max = Math.max(...data.values, 1);
+    const n = data.values.length;
+    const gap = 14;
+    const barW = (chartW - gap * (n - 1)) / n;
+    let bars = '';
+    let labels = '';
+    data.values.forEach((v, i) => {
+      const barH = (v / max) * chartH;
+      const x = padSide + i * (barW + gap);
+      const y = padTop + chartH - barH;
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      bars += `<rect x="${x}" y="${y}" width="${barW}" height="${Math.max(barH, 1)}" rx="4" fill="${color}"/>`;
+      labels += `<text x="${x + barW / 2}" y="${h - 12}" text-anchor="middle" font-size="11" fill="var(--muted-foreground)">${escapeHtml(data.labels[i] || '')}</text>`;
+    });
+    return `<svg viewBox="0 0 ${w} ${h}" class="chart-svg">${bars}${labels}</svg>`;
+  }
+
+  function buildLineChartSvg(data) {
+    const w = 400,
+      h = 220,
+      padTop = 16,
+      padBottom = 34,
+      padSide = 20;
+    const chartW = w - padSide * 2,
+      chartH = h - padTop - padBottom;
+    const max = Math.max(...data.values, 1);
+    const n = data.values.length;
+    const stepX = n > 1 ? chartW / (n - 1) : 0;
+    const points = data.values.map((v, i) => ({
+      x: padSide + i * stepX,
+      y: padTop + chartH - (v / max) * chartH
+    }));
+    const path = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x + ',' + p.y).join(' ');
+    const dots = points.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--primary)"/>`).join('');
+    const labels = points
+      .map((p, i) => `<text x="${p.x}" y="${h - 12}" text-anchor="middle" font-size="11" fill="var(--muted-foreground)">${escapeHtml(data.labels[i] || '')}</text>`)
+      .join('');
+    return `<svg viewBox="0 0 ${w} ${h}" class="chart-svg"><path d="${path}" fill="none" stroke="var(--primary)" stroke-width="2.5"/>${dots}${labels}</svg>`;
+  }
+
+  function buildPieChartSvg(data, donut) {
+    const w = 300,
+      cx = 110,
+      cy = 110,
+      r = 90,
+      inner = donut ? 50 : 0;
+    const total = data.values.reduce((a, b) => a + b, 0) || 1;
+    let angle = -Math.PI / 2;
+    let slices = '';
+    data.values.forEach((v, i) => {
+      const sweep = (v / total) * Math.PI * 2;
+      const end = angle + sweep;
+      const p1 = chartPolarPoint(cx, cy, r, angle);
+      const p2 = chartPolarPoint(cx, cy, r, end);
+      const largeArc = sweep > Math.PI ? 1 : 0;
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      let d;
+      if (donut) {
+        const ip1 = chartPolarPoint(cx, cy, inner, end);
+        const ip2 = chartPolarPoint(cx, cy, inner, angle);
+        d = `M ${p1.x},${p1.y} A ${r},${r} 0 ${largeArc} 1 ${p2.x},${p2.y} L ${ip1.x},${ip1.y} A ${inner},${inner} 0 ${largeArc} 0 ${ip2.x},${ip2.y} Z`;
+      } else {
+        d = `M ${cx},${cy} L ${p1.x},${p1.y} A ${r},${r} 0 ${largeArc} 1 ${p2.x},${p2.y} Z`;
+      }
+      slices += `<path d="${d}" fill="${color}"/>`;
+      angle = end;
+    });
+    let legend = '';
+    data.values.forEach((v, i) => {
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      const ly = 24 + i * 22;
+      legend += `<circle cx="230" cy="${ly}" r="5" fill="${color}"/><text x="242" y="${ly + 4}" font-size="11" fill="var(--foreground)">${escapeHtml(data.labels[i] || '')}</text>`;
+    });
+    return `<svg viewBox="0 0 ${w} 220" class="chart-svg">${slices}${legend}</svg>`;
+  }
+
+  function renderChartSvg(data) {
+    if (data.type === 'line') return buildLineChartSvg(data);
+    if (data.type === 'pie') return buildPieChartSvg(data, false);
+    if (data.type === 'donut') return buildPieChartSvg(data, true);
+    return buildBarChartSvg(data);
+  }
+
+  function buildChartBlockHtml(data) {
+    const svg = renderChartSvg(data);
+    const tab = (type, label) =>
+      `<button type="button" data-ctype="${type}" class="${data.type === type ? 'active' : ''}" onclick="setChartType(this,'${type}')">${label}</button>`;
+    return `
+      <section class="content-section" data-type="chart" data-chart='${escapeHtml(JSON.stringify(data))}'>
+        ${blockHead('Chart', ICON_CHART)}
+        <div class="chart-block">
+          <input class="chart-title-input edit-only" value="${escapeHtml(data.title)}" oninput="onChartTitleInput(this)" />
+          <h3 class="chart-title-display preview-only">${escapeHtml(data.title)}</h3>
+          <div class="chart-canvas">${svg}</div>
+          <div class="chart-controls edit-only">
+            <div class="chart-type-tabs">${tab('bar', 'Bar')}${tab('line', 'Line')}${tab('pie', 'Pie')}${tab('donut', 'Donut')}</div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openChartDataEditor(this)">Edit data</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildChartBlockSample() {
+    return buildChartBlockHtml({ title: 'Quarterly Revenue', type: 'bar', labels: ['Q1', 'Q2', 'Q3', 'Q4'], values: [30, 55, 40, 70] });
+  }
+
+  function renderChart(section) {
+    const data = JSON.parse(section.dataset.chart);
+    section.querySelector('.chart-canvas').innerHTML = renderChartSvg(data);
+    const titleInput = section.querySelector('.chart-title-input');
+    const titleDisplay = section.querySelector('.chart-title-display');
+    if (titleInput) titleInput.value = data.title;
+    if (titleDisplay) titleDisplay.textContent = data.title;
+    section.querySelectorAll('.chart-type-tabs button').forEach((btn) => btn.classList.toggle('active', btn.dataset.ctype === data.type));
+  }
+
+  function setChartType(btn, type) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.chart);
+    data.type = type;
+    section.dataset.chart = JSON.stringify(data);
+    renderChart(section);
+    simulateSave();
+  }
+
+  function onChartTitleInput(input) {
+    const section = input.closest('.content-section');
+    const data = JSON.parse(section.dataset.chart);
+    data.title = input.value;
+    section.dataset.chart = JSON.stringify(data);
+    const display = section.querySelector('.chart-title-display');
+    if (display) display.textContent = input.value;
+    simulateSave();
+  }
+
+  let activeChartEditEl = null;
+
+  function buildChartDataRows(labels, values) {
+    return labels
+      .map(
+        (label, i) => `
+      <div class="chart-data-row">
+        <input class="input chart-row-label" value="${escapeHtml(label)}" style="flex:2" placeholder="Label" />
+        <input class="input chart-row-value" type="number" value="${values[i]}" style="flex:1" placeholder="Value" />
+        <button type="button" class="icon-btn" style="width:30px;height:30px;flex-shrink:0" onclick="this.closest('.chart-data-row').remove()" aria-label="Remove data point">${ICON_TRASH}</button>
+      </div>`
+      )
+      .join('');
+  }
+
+  function openChartDataEditor(btn) {
+    activeChartEditEl = btn.closest('.content-section');
+    const data = JSON.parse(activeChartEditEl.dataset.chart);
+    document.getElementById('dialogBox').style.maxWidth = '480px';
+    document.getElementById('dialogBox').innerHTML = `
+      <div class="dialog-head"><h2 class="dialog-title">Edit chart data</h2></div>
+      <div class="dialog-body">
+        <div class="field"><label class="label" for="chartDataTitle">Title</label><input class="input" id="chartDataTitle" value="${escapeHtml(data.title)}" /></div>
+        <div id="chartDataRows" style="margin-top:14px">${buildChartDataRows(data.labels, data.values)}</div>
+        <button type="button" class="btn btn-outline btn-sm" style="margin-top:4px" onclick="addChartDataRow()">${ICON_PLUS}Add data point</button>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmChartDataEdit()">Save changes</button></div>`;
+    document.body.classList.add('dialog-open');
+  }
+
+  function addChartDataRow() {
+    document.getElementById('chartDataRows').insertAdjacentHTML('beforeend', buildChartDataRows(['New'], [0]));
+  }
+
+  function confirmChartDataEdit() {
+    if (!activeChartEditEl) return;
+    const title = document.getElementById('chartDataTitle').value.trim() || 'Untitled chart';
+    const rows = [...document.querySelectorAll('#chartDataRows .chart-data-row')];
+    const labels = rows.map((r) => r.querySelector('.chart-row-label').value.trim() || 'Untitled');
+    const values = rows.map((r) => Number(r.querySelector('.chart-row-value').value) || 0);
+    const data = JSON.parse(activeChartEditEl.dataset.chart);
+    data.title = title;
+    if (labels.length) {
+      data.labels = labels;
+      data.values = values;
+    }
+    activeChartEditEl.dataset.chart = JSON.stringify(data);
+    renderChart(activeChartEditEl);
+    closeDialog();
+    activeChartEditEl = null;
+    simulateSave();
+  }
+
   let activeCanvasId = 'canvas';
   let activeGapEl = null;
   let dockGapEl = null;
@@ -1723,6 +1948,7 @@
         <button class="content-type-btn" onclick="chooseContentType('slide')"><span class="ic">${ICON_SLIDE}</span><span class="nm">Slides</span></button>
         <button class="content-type-btn" onclick="chooseContentType('note')"><span class="ic">${ICON_NOTE}</span><span class="nm">Note</span></button>
         <button class="content-type-btn" onclick="chooseContentType('document')"><span class="ic">${ICON_DOCUMENT}</span><span class="nm">Document</span></button>
+        <button class="content-type-btn" onclick="chooseContentType('chart')"><span class="ic">${ICON_CHART}</span><span class="nm">Chart</span></button>
       </div></div>`;
     document.body.classList.add('dialog-open');
   }
@@ -1731,7 +1957,8 @@
     video: buildVideoBlockSample,
     slide: buildSlideBlockSample,
     document: buildDocumentBlockSample,
-    image: buildImageBlockSample
+    image: buildImageBlockSample,
+    chart: buildChartBlockSample
   };
 
   function chooseContentType(type) {
