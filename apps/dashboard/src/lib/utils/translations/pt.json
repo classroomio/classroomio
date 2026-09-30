@@ -1791,7 +1791,9 @@
               "try_again": "Tente novamente",
               "back": "Voltar",
               "begin_section": "Seção inicial",
-              "complete_section": "Seção completa"
+              "complete_section": "Seção completa",
+              "instructions": "Instruções",
+              "close_instructions": "Fechar instruções"
             },
             "edit_mode": {
               "delete_modal": "Excluir exercício",
@@ -1840,7 +1842,8 @@
               "title": "Título",
               "heading": "Descrição",
               "describe": "Descreva o exercício para seu aluno",
-              "no": "Sem descrição"
+              "no": "Sem descrição",
+              "expand": "Expandir"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2050,16 @@
                   "video_invalid_link": "Insira um link válido do YouTube.",
                   "upload_error_only_images": "Somente arquivos de imagem são suportados.",
                   "upload_error_skipped": "Alguns arquivos foram ignorados porque não são imagens.",
-                  "upload_error_failed": "Falha ao carregar a imagem. Tente novamente."
+                  "upload_error_failed": "Falha ao carregar a imagem. Tente novamente.",
+                  "expand": "Expandir"
+                },
+                "media": {
+                  "enlarge_image": "Clique para ampliar",
+                  "close": "Fechar",
+                  "zoom_in": "Ampliar",
+                  "zoom_out": "Diminuir zoom",
+                  "previous_image": "Imagem anterior",
+                  "next_image": "Próxima imagem"
                 }
               },
               "navigation": {

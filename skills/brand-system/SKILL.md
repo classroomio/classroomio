@@ -184,3 +184,28 @@ outranks the reveal system and the element never hides).
   element per slide.
 - **Site** — fields become page sections. The gutter becomes the page gutter. `.panel` is
   the product-shot treatment, `.chip` + `.leader` the feature annotation. Grain stays.
+
+## Presenter (face) panels
+
+A thumbnail's presenter panel sits flush in the bottom-right corner, so a face that drifts
+right gets its ear cut off by the canvas edge. It drifts because a camera frame rarely has
+the face centred, and `object-fit: cover` on a photo already close to the panel's shape
+barely crops, so `object-position` cannot move it. The face lands wherever the camera put it.
+
+Frame the face in the crop, not in CSS:
+
+- Crop the photo to the panel's exact aspect ratio (300×570 is 0.526) with the head centred
+  across it: nose to ear, with a margin on both sides. Put the eyes about 40% from the top.
+  Leave `object-position` at `50% 50%`.
+- Take the crop from inside the camera panel, never from its rounded corners or the
+  background behind it.
+- To bring the face closer, shrink the crop window around the face, and stop before the
+  window becomes narrower than the head plus its margins. If the face touches the camera
+  frame's edge, the crop cannot centre it. Ask for a frame where it doesn't.
+- Use the largest source available. A still from a downsized screen recording is usually
+  under 300px wide, so the panel enlarges it and it looks soft. Ask for a full-size video
+  frame.
+- Check the render zoomed in on that corner. The downscaled preview hides a cut-off ear.
+
+The same applies to product screenshots: use a capture at least as wide as the `.cl-shot`
+box (about 1200px), never a region cut from a smaller composite.
