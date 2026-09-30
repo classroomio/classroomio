@@ -92,7 +92,7 @@ export const v1CourseRouter = new Hono()
     '/',
     describeRoute({
       description: 'List courses for the authenticated organization',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Courses returned successfully',
@@ -131,7 +131,7 @@ export const v1CourseRouter = new Hono()
     '/',
     describeRoute({
       description: 'Create a course for the authenticated organization',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         201: {
           description: 'Course created successfully',
@@ -170,7 +170,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/students',
     describeRoute({
       description: 'List enrolled students for a course',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course students returned successfully',
@@ -208,7 +208,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/export',
     describeRoute({
       description: 'Export a course structure snapshot',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course export returned successfully',
@@ -246,7 +246,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/structure',
     describeRoute({
       description: 'Get a course structure snapshot',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course structure returned successfully',
@@ -284,7 +284,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/structure',
     describeRoute({
       description: 'Synchronize a course structure using the draft payload shape',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course structure updated successfully',
@@ -326,7 +326,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId',
     describeRoute({
       description: 'Get a single course by id',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course returned successfully',
@@ -364,7 +364,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId',
     describeRoute({
       description: 'Update a course by id',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course updated successfully',
@@ -406,7 +406,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId',
     describeRoute({
       description: 'Delete a course by id',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course deleted successfully',
