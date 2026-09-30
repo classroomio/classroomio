@@ -56,7 +56,7 @@
     <ZoomableImage
       {src}
       {alt}
-      enlargeLabel={getExerciseQuestionLabel(labels, 'question.media.enlarge_image')}
+      enlargeLabel={getExerciseQuestionLabel(labels, 'question.media.enlarge_image', 'Click to enlarge')}
       class="ui:aspect-video"
       onclick={() => (isLightboxOpen = true)}
     />

@@ -27,8 +27,7 @@
   import NumberBadge from '$src/base/number-badge/number-badge.svelte';
   import QuestionTitle from './question-title.svelte';
   import { YoutubeLinkForm } from '../youtube-link-form';
-  import { ImageLightbox, ZoomableImage, type LightboxImage } from '../image-lightbox';
-  import { SafeHtmlContent } from '../safe-html-content';
+  import { ImageLightbox, ZoomableHtmlContent, ZoomableImage, type LightboxImage } from '../image-lightbox';
   import { getQuestionLightboxLabels } from './lightbox-labels';
   import { hasQuestionDescriptionContent, toQuestionDescriptionHtml } from './question-description';
   import QuestionSurface from './question-surface.svelte';
@@ -301,20 +300,6 @@
     lightboxIndex = imageIndex;
     isLightboxOpen = true;
   }
-
-  function openDescriptionImage(event: MouseEvent) {
-    const clickedImage = event.target;
-    if (!(clickedImage instanceof HTMLImageElement)) return;
-
-    const descriptionElement = event.currentTarget as HTMLElement;
-    const descriptionImages = Array.from(descriptionElement.querySelectorAll('img'));
-    const images = descriptionImages.map((image) => ({
-      src: image.src,
-      alt: image.alt || label('question.edit.image_alt')
-    }));
-
-    openLightbox(images, descriptionImages.indexOf(clickedImage));
-  }
 </script>
 
 {#snippet content()}
@@ -511,13 +496,13 @@
       {/if}
 
       {#if hasQuestionDescriptionContent(questionDescriptionHtml)}
-        <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-        <article
-          class="ui:text-sm ui:leading-relaxed ui:text-muted-foreground ui:[&_p]:m-0 ui:[&_p+p]:mt-2 ui:[&_ul]:list-disc ui:[&_ul]:pl-5 ui:[&_ol]:list-decimal ui:[&_ol]:pl-5 ui:[&_li]:mt-1 ui:[&_a]:text-primary ui:[&_a]:underline ui:[&_strong]:font-semibold ui:[&_strong]:text-foreground ui:[&_img]:my-2 ui:[&_img]:max-w-full ui:[&_img]:cursor-zoom-in ui:[&_img]:rounded-md ui:[&_img]:border ui:[&_th]:border ui:[&_th]:px-2 ui:[&_th]:py-1 ui:[&_td]:border ui:[&_td]:px-2 ui:[&_td]:py-1"
-          onclick={openDescriptionImage}
-        >
-          <SafeHtmlContent content={questionDescriptionHtml} />
-        </article>
+        <ZoomableHtmlContent
+          content={questionDescriptionHtml}
+          labels={getQuestionLightboxLabels(contract.labels)}
+          enlargeLabel={label('question.media.enlarge_image', 'Click to enlarge')}
+          fallbackAlt={label('question.edit.image_alt')}
+          class="ui:text-sm ui:leading-relaxed ui:text-muted-foreground ui:[&_p]:m-0 ui:[&_p+p]:mt-2 ui:[&_ul]:list-disc ui:[&_ul]:pl-5 ui:[&_ol]:list-decimal ui:[&_ol]:pl-5 ui:[&_li]:mt-1 ui:[&_a]:text-primary ui:[&_a]:underline ui:[&_strong]:font-semibold ui:[&_strong]:text-foreground ui:[&_img]:my-2 ui:[&_img]:max-w-full ui:[&_img]:rounded-md ui:[&_img]:border ui:[&_th]:border ui:[&_th]:px-2 ui:[&_th]:py-1 ui:[&_td]:border ui:[&_td]:px-2 ui:[&_td]:py-1"
+        />
       {/if}
 
       {#if questionImageUrls.length > 0}
@@ -526,7 +511,7 @@
             <ZoomableImage
               src={imageUrl}
               alt={label('question.edit.image_alt')}
-              enlargeLabel={label('question.media.enlarge_image')}
+              enlargeLabel={label('question.media.enlarge_image', 'Click to enlarge')}
               class={questionImageUrls.length > 1 ? 'ui:aspect-video' : ''}
               imageClass={questionImageUrls.length > 1 ? '' : 'ui:h-auto ui:max-h-[28rem]'}
               onclick={() => openLightbox(questionImages, imageIndex)}

@@ -1,9 +1,11 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { ImageLightbox, ZoomableImage } from '@cio/ui/custom/image-lightbox';
+  import { ImageLightbox, ZoomableHtmlContent, ZoomableImage } from '@cio/ui/custom/image-lightbox';
   import ImageLightboxDemo from './image-lightbox-demo.svelte';
   import { LIGHTBOX_LABELS, SCREENSHOTS } from './fixtures';
   import { FIELDS } from './fields';
+
+  const RICH_CONTENT = `<p>Open the quote editor below, then check the totals.</p><img src="${SCREENSHOTS[1].src}" alt="${SCREENSHOTS[1].alt}" /><p>Compare it with the settings screen:</p><img src="${SCREENSHOTS[2].src}" alt="" />`;
 
   const { Story } = defineMeta({
     title: 'Molecules/ImageLightbox',
@@ -57,6 +59,19 @@
         enlargeLabel="Click to enlarge"
         class="aspect-video"
         onclick={() => {}}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Zoomable Html Content">
+  {#snippet template()}
+    <div class="max-w-2xl space-y-2 text-sm [&_img]:my-2 [&_img]:max-w-full [&_img]:rounded-md [&_img]:border">
+      <ZoomableHtmlContent
+        content={RICH_CONTENT}
+        labels={LIGHTBOX_LABELS}
+        enlargeLabel="Click to enlarge"
+        fallbackAlt="Question context"
       />
     </div>
   {/snippet}

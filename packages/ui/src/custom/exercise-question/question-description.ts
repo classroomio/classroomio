@@ -1,4 +1,4 @@
-const HTML_TAG_PATTERN = /<[a-z][\s\S]*>/i;
+const EDITOR_HTML_PATTERN = /^<(p|h[1-6]|ul|ol|blockquote|pre|table|figure|div|img|hr|iframe|video)[\s>/]/i;
 const MEDIA_TAG_PATTERN = /<(img|iframe|video)\b/i;
 
 function escapeHtml(value: string): string {
@@ -11,12 +11,13 @@ function escapeHtml(value: string): string {
 }
 
 /**
- * Returns the description as HTML. Plain-text descriptions saved before the rich-text editor
- * become one paragraph per line; HTML is returned unchanged.
+ * Returns the description as HTML. Editor output (which always opens with a block tag) is returned
+ * unchanged; anything else is treated as plain text saved before the rich-text editor, escaped,
+ * and split into one paragraph per line.
  */
 export function toQuestionDescriptionHtml(description: string): string {
   const trimmedDescription = description.trim();
-  if (!trimmedDescription || HTML_TAG_PATTERN.test(trimmedDescription)) return trimmedDescription;
+  if (!trimmedDescription || EDITOR_HTML_PATTERN.test(trimmedDescription)) return trimmedDescription;
 
   return trimmedDescription
     .split(/\n+/)

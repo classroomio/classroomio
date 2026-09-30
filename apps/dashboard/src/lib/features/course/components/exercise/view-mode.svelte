@@ -553,11 +553,11 @@
 
   function handleEnterKey(e: KeyboardEvent) {
     if (hasSectionedExercise && $questionnaire.sectionDisplayMode === 'all_questions') return;
-    if (e.key !== 'Enter' || isSubmitting || !currentQuestion) return;
+    if (e.key !== 'Enter' || e.defaultPrevented || isSubmitting || !currentQuestion) return;
 
     const target = e.target as HTMLElement;
     if (target?.tagName === 'TEXTAREA' || isTextEditorTarget(target)) return;
-    if (target?.closest('[role="dialog"]')) return;
+    if (target?.closest('[role="dialog"], [data-instructions-control]')) return;
 
     e.preventDefault();
 
@@ -823,6 +823,7 @@
     <Progress class="min-w-0 flex-1" value={$questionnaireMetaData.progressValue} />
     {#if hasInstructions}
       <Button
+        data-instructions-control
         type="button"
         variant="outline"
         size="sm"
@@ -1178,7 +1179,7 @@
   </div>
 
   {#if isInstructionsDocked}
-    <aside class="sticky top-4 flex max-h-[calc(100vh-2rem)] flex-col rounded-md border">
+    <aside data-instructions-control class="sticky top-4 flex max-h-[calc(100vh-2rem)] flex-col rounded-md border">
       <div class="flex items-center gap-2 border-b px-3 py-1">
         <p class="min-w-0 flex-1 truncate text-sm font-semibold">
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}
