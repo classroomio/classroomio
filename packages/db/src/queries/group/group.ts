@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, asc, eq, inArray, isNotNull, isNull, or } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
@@ -168,6 +168,13 @@ export interface CourseAccessContext {
    * or an active organization admin).
    */
   isTeamMemberOrAdmin: boolean;
+  /**
+   * Whether the user holds any unrevoked enrollment grant for the course, of any
+   * source. This is the grant-ledger counterpart to `isMember`: rows and grants
+   * converge once the backfill has run, but during the transition either may
+   * exist without the other.
+   */
+  hasLiveGrant: boolean;
 }
 
 /**
@@ -177,14 +184,24 @@ export interface CourseAccessContext {
  * Checks active org membership where applicable.
  * Designed for middleware use, to avoid multiple sequential DB queries.
  */
-export const getCourseMemberAccess = async (courseId: string, profileId: string): Promise<CourseAccessContext> => {
+export const getCourseMemberAccess = async (
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<CourseAccessContext> => {
   const orgMembership = alias(schema.organizationmember, 'org_membership');
 
-  const result = await db
+  const result = await dbClient
     .select({
       groupMemberId: schema.groupmember.id,
       roleId: schema.groupmember.roleId,
-      orgAdminId: schema.organizationmember.id
+      orgAdminId: schema.organizationmember.id,
+      hasLiveGrant: sql<boolean>`EXISTS (
+        SELECT 1 FROM ${schema.courseEnrollmentGrant} ceg
+        WHERE ceg.course_id = ${courseId}
+          AND ceg.profile_id = ${profileId}
+          AND ceg.revoked_at IS NULL
+      )`.as('hasLiveGrant')
     })
     .from(schema.course)
     .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -219,7 +236,7 @@ export const getCourseMemberAccess = async (courseId: string, profileId: string)
     .limit(1);
 
   if (result.length === 0) {
-    return { isMember: false, isTeamMemberOrAdmin: false };
+    return { isMember: false, isTeamMemberOrAdmin: false, hasLiveGrant: false };
   }
 
   const row = result[0];
@@ -228,16 +245,9 @@ export const getCourseMemberAccess = async (courseId: string, profileId: string)
 
   return {
     isMember: true,
-    isTeamMemberOrAdmin: isOrgAdmin || isTeam
+    isTeamMemberOrAdmin: isOrgAdmin || isTeam,
+    hasLiveGrant: row.hasLiveGrant ?? false
   };
-};
-
-/**
- * Checks if a user is a member of a course's group OR an ADMIN of the organization.
- */
-export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
-  const { isMember } = await getCourseMemberAccess(courseId, profileId);
-  return isMember;
 };
 
 /**
@@ -262,8 +272,12 @@ export const getUserCourseRole = async (courseId: string, profileId: string): Pr
  * - a team member (ADMIN or TUTOR) of the course's group, OR
  * - an ADMIN of the organization that owns the course's group.
  */
-export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
-  const { isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, profileId);
+export const isCourseTeamMemberOrOrgAdmin = async (
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> => {
+  const { isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, profileId, dbClient);
   return isTeamMemberOrAdmin;
 };
 

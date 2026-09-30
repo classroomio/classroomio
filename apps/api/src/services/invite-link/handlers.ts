@@ -1,6 +1,11 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
-import { getCourseGroupIds, getCourseWithOrgData, lockCourseStatusForAccept } from '@cio/db/queries/course';
+import {
+  getCourseById,
+  getCourseGroupIds,
+  getCourseWithOrgData,
+  lockCourseStatusForAccept
+} from '@cio/db/queries/course';
 import {
   getCohortById,
   getCourseIdsByCohortIds,
@@ -8,15 +13,23 @@ import {
   lockCohortStatusForAccept
 } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
-import { enrollProfileInLearningPath, sendLearningPathWelcomeEmail } from '@api/services/learning-path';
 import {
-  getCourseIdsByLearningPathId,
+  enrollProfileInLearningPath,
+  scheduleLearningPathProgressSync,
+  sendLearningPathWelcomeEmail
+} from '@api/services/learning-path';
+import { ensureCohortCourseGrants } from '@api/services/cohort/cohort';
+import {
+  getCourseIdsInPath,
   getLearningPathById,
   getLearningPathOrgId,
   getMemberByPathAndProfile,
   lockLearningPathStatusForAccept
 } from '@cio/db/queries/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
+import { recordDirectCourseGrant } from '@api/services/course/enrollment-grants';
+import { assertCourseAllowsDirectStudentAdd, assertCourseNotPathGated } from '@api/services/course/path-gate';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
@@ -41,6 +54,11 @@ export type InviteLinkEnrollResult = {
 
 type InviteLinkHandler = {
   resolveOrganizationId(resourceId: string): Promise<string>;
+  /**
+   * Throws when the resource may not have an enabled share link. Checked when
+   * a link is created or re-enabled; viewing and disabling stay allowed.
+   */
+  assertCanEnableLink?(resourceId: string): Promise<void>;
   preview(context: TInviteLinkWithContext): InviteLinkPreview;
   /**
    * Runs inside the accept transaction, after org membership is written. Re-locks and
@@ -157,6 +175,11 @@ const courseHandler: InviteLinkHandler = {
     return courseOrgData.orgId;
   },
 
+  // Path-only courses are joined through their learning path, never a course link.
+  async assertCanEnableLink(courseId) {
+    await assertCourseAllowsDirectStudentAdd(courseId);
+  },
+
   preview(context) {
     const course = requireCourse(context);
 
@@ -166,7 +189,8 @@ const courseHandler: InviteLinkHandler = {
       description: course.description,
       coverImage: null,
       // Unpublished courses still accept link joins, like invites bypass self-enrollment.
-      isResourceOpen: course.status === 'ACTIVE'
+      // A link made before the course became path-only reads as closed.
+      isResourceOpen: course.status === 'ACTIVE' && !course.requiresLearningPath
     };
   },
 
@@ -182,11 +206,15 @@ const courseHandler: InviteLinkHandler = {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
+    const [courseRow] = await getCourseById(course.id, tx);
+
+    assertCourseNotPathGated(courseRow);
+
     const existingMemberId = await getGroupMemberIdByGroupAndProfile(locked.groupId, profileId, tx);
     const isFreshJoin = !existingMemberId;
 
     if (isFreshJoin) {
-      await addGroupMember(
+      const [createdMember] = await addGroupMember(
         {
           groupId: locked.groupId,
           roleId: context.invite.roleId,
@@ -195,6 +223,18 @@ const courseHandler: InviteLinkHandler = {
         },
         tx
       );
+
+      if (createdMember) {
+        // Team joins are role-based and intentionally grant-less (the ledger
+        // models learner access only); only students record provenance.
+        if (context.invite.roleId === ROLE.STUDENT) {
+          await recordDirectCourseGrant(
+            { groupmemberId: createdMember.id, courseId: course.id, profileId },
+            { source: 'INVITE' },
+            tx
+          );
+        }
+      }
     }
 
     return { isFreshJoin };
@@ -267,6 +307,7 @@ const cohortHandler: InviteLinkHandler = {
       const groupIds = courseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
 
       await enrollUsersInCourseGroups(groupIds, [{ profileId, email }], roleId, tx);
+      await ensureCohortCourseGrants(cohort.id, profileId, profileId, tx, cohortCourseIds);
     }
 
     return { isFreshJoin };
@@ -354,7 +395,7 @@ const learningPathHandler: InviteLinkHandler = {
 
   async afterCommit(context, profileId, email, { isFreshJoin }) {
     const learningPath = requireLearningPath(context);
-    const pathCourseIds = await getCourseIdsByLearningPathId(learningPath.id);
+    const pathCourseIds = await getCourseIdsInPath(learningPath.id);
 
     if (pathCourseIds.length > 0) {
       await ensureComplianceEnrollmentRecordsForProfiles(pathCourseIds, [profileId]);
@@ -363,6 +404,13 @@ const learningPathHandler: InviteLinkHandler = {
     await invalidateOrgStats(context.organization.id);
 
     if (isFreshJoin && email && context.invite.roleId === ROLE.STUDENT) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.ENROLLMENT_COMPLETED,
+        orgId: context.organization.id,
+        userId: profileId,
+        props: { path: 'learning-path', learningPathId: learningPath.id, source: 'invite-link' }
+      });
+
       await sendLearningPathWelcomeEmail({
         organization: context.organization,
         learningPath,
@@ -370,6 +418,11 @@ const learningPathHandler: InviteLinkHandler = {
         email,
         idempotencyKey: `invite-link-learning-path-welcome:${learningPath.id}:${profileId}`
       });
+    }
+
+    if (context.invite.roleId === ROLE.STUDENT) {
+      // Prior work in the path's courses counts, so an effectively finished path completes now.
+      scheduleLearningPathProgressSync({ pathId: learningPath.id, profileIds: [profileId] });
     }
   },
 

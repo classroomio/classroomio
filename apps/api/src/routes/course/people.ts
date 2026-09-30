@@ -1,8 +1,8 @@
 import {
   ZAddCourseMembers,
   ZCourseMembersMemberParam,
+  ZCourseMembersListQuery,
   ZCourseMembersParam,
-  ZCourseMembersQuery,
   ZResetCourseMemberProgressParam,
   ZUpdateCourseMember
 } from '@cio/utils/validation/course/people';
@@ -24,17 +24,18 @@ import { zValidator } from '@hono/zod-validator';
 export const membersRouter = new Hono()
   /**
    * GET /course/:courseId/members
-   * Gets one page of course members for a course, filtered by search term and role
+   * Gets one page of course members for a course, filtered by search term, role and enrollment source
    * Requires authentication and course team membership (admin/tutor role)
    */
   .get(
     '/',
     courseTeamMemberMiddleware,
     zValidator('param', ZCourseMembersParam),
-    zValidator('query', ZCourseMembersQuery),
+    zValidator('query', ZCourseMembersListQuery),
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');
+        // `source` rides through the service to the query layer untouched.
         const query = c.req.valid('query');
         const result = await listPaginatedCourseMembers(courseId, query);
         const pagination = {

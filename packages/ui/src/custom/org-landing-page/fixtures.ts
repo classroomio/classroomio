@@ -33,8 +33,10 @@ export const mockLearningPaths: LearningPathItem[] = [
 export const mockOrgLandingPageProps: OrgLandingPageProps = {
   orgName: 'Certifi Academy',
   logoUrl: 'https://ui-avatars.com/api/?name=CA&background=0f172a&color=fff',
+  learningPaths: mockLearningPaths,
   navItems: [
     { label: 'Courses', href: '/courses' },
+    { label: 'Learning Paths', href: '/learning-paths' },
     { label: 'About', href: '#about' },
     { label: 'Contact', href: '#contact' },
     { label: 'Sign In', href: '#signin' }

@@ -1,14 +1,17 @@
 import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   addCourseMember,
   deleteCourseMember,
+  getCourseGroupId,
   getCourseMember,
   getCourseMembers,
   getPaginatedCourseMembers,
   getCourseTeachers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
+import { getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
 import type { TAddCourseMembers, TCourseMembersQuery } from '@cio/utils/validation/course/people';
@@ -17,13 +20,56 @@ import type { CourseMemberWithProfile } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
+import { revokeGrantsForGroupmember } from '@cio/db/queries/learning-path';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { recordDirectCourseGrant } from './enrollment-grants';
+import { assertCourseAllowsDirectStudentAdd } from './path-gate';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
+
+/**
+ * Returns the existing membership row when the profile is already in the
+ * course group, so re-adds stay idempotent instead of violating the
+ * `unique_entries` constraint. Email-only entries (no profileId) skip the
+ * check and follow the insert path. Returns the row without its joined
+ * profile/grant fields so the shape matches a freshly created member.
+ */
+async function getExistingCourseMember(
+  courseId: string,
+  courseGroupId: string | null,
+  profileId: string | undefined,
+  tx: DbOrTxClient
+): Promise<TGroupmember | null> {
+  if (!profileId || !courseGroupId) {
+    return null;
+  }
+
+  const existingId = await getGroupMemberIdByGroupAndProfile(courseGroupId, profileId, tx);
+
+  if (!existingId) {
+    return null;
+  }
+
+  const existing = await getCourseMember(courseId, existingId);
+
+  if (!existing) {
+    return null;
+  }
+
+  const {
+    profile: _profile,
+    enrollmentSource: _source,
+    enrollmentSourcePathPublicId: _sourcePathId,
+    enrollmentSourceCohortId: _sourceCohortId,
+    ...member
+  } = existing;
+
+  return member;
+}
 
 /**
  * Attaches progress, stage, last login and enrollment date to student members.
@@ -109,6 +155,47 @@ export async function listPaginatedCourseMembers(courseId: string, query: TCours
 }
 
 /**
+ * Finds the profile's membership row or creates it, repairing the direct
+ * student grant on either path so re-adds stay idempotent instead of
+ * violating the `unique_entries` constraint.
+ * @param courseId Course ID
+ * @param courseGroupId Course group ID (null skips the existing-member lookup)
+ * @param memberData Member data (profileId, roleId, email, name)
+ * @param tx Transaction client owning the membership write and grant repair
+ * @returns The member row and whether it was newly created
+ */
+async function findOrCreateCourseMemberWithGrant(
+  courseId: string,
+  courseGroupId: string | null,
+  memberData: TAddCourseMembers[number],
+  tx: DbOrTxClient
+): Promise<{ member: TGroupmember; isNewMember: boolean }> {
+  const existingMember = await getExistingCourseMember(courseId, courseGroupId, memberData.profileId, tx);
+
+  if (existingMember) {
+    if (memberData.roleId === ROLE.STUDENT) {
+      const grantInput = {
+        groupmemberId: existingMember.id,
+        courseId,
+        profileId: existingMember.profileId
+      };
+      await recordDirectCourseGrant(grantInput, { source: 'ADMIN_ADD' }, tx);
+    }
+
+    return { member: existingMember, isNewMember: false };
+  }
+
+  const createdMember = await addCourseMember(courseId, memberData, tx);
+
+  if (memberData.roleId === ROLE.STUDENT) {
+    const grantInput = { groupmemberId: createdMember.id, courseId, profileId: createdMember.profileId };
+    await recordDirectCourseGrant(grantInput, { source: 'ADMIN_ADD' }, tx);
+  }
+
+  return { member: createdMember, isNewMember: true };
+}
+
+/**
  * Adds a course member (person) to a course
  * @param courseId Course ID
  * @param data Member data (profileId, roleId, email, name)
@@ -123,7 +210,19 @@ export async function addMember(
       throw new AppError('Either profileId or email must be provided', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const addedMember = await addCourseMember(courseId, data);
+    if (data.roleId === ROLE.STUDENT) {
+      await assertCourseAllowsDirectStudentAdd(courseId);
+    }
+
+    const { member: addedMember, isNewMember } = await db.transaction(async (tx) => {
+      const courseGroupId = await getCourseGroupId(courseId);
+
+      return findOrCreateCourseMemberWithGrant(courseId, courseGroupId, data, tx);
+    });
+
+    if (!isNewMember) {
+      return addedMember;
+    }
 
     if (data.roleId === ROLE.STUDENT) {
       const statsOrgId = await getOrgIdByCourseId(courseId);
@@ -265,6 +364,10 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
     }
 
+    if (members.some((member) => member.roleId === ROLE.STUDENT)) {
+      await assertCourseAllowsDirectStudentAdd(courseId);
+    }
+
     const courseName = courseOrgData.courseTitle || '';
     const orgName = courseOrgData.orgName || 'ClassroomIO';
     const orgSiteName = courseOrgData.orgSiteName || '';
@@ -275,15 +378,22 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     });
 
     // Add members sequentially so partial failures still invalidate stats for successful inserts.
-    const addedMembers = [];
+    // Already-enrolled profiles are skipped (grant repaired) so re-adding
+    // from the invite modal can never violate `unique_entries`. The response
+    // carries only newly created rows so counts stay truthful.
+    const processed: Array<{ input: TAddCourseMembers[number]; member: TGroupmember; isNew: boolean }> = [];
     let addedStudentMember = false;
+    const courseGroupId = await getCourseGroupId(courseId);
 
     try {
       for (const member of members) {
-        const addedMember = await addCourseMember(courseId, member);
-        addedMembers.push(addedMember);
+        const { member: addedMember, isNewMember } = await db.transaction(async (tx) => {
+          return findOrCreateCourseMemberWithGrant(courseId, courseGroupId, member, tx);
+        });
 
-        if (member.roleId === ROLE.STUDENT) {
+        processed.push({ input: member, member: addedMember, isNew: isNewMember });
+
+        if (isNewMember && member.roleId === ROLE.STUDENT) {
           addedStudentMember = true;
         }
       }
@@ -292,6 +402,8 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
         await invalidateOrgStats(courseOrgData.orgId);
       }
     }
+
+    const addedMembers = processed.filter((entry) => entry.isNew).map((entry) => entry.member);
 
     const studentProfileIds = members
       .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
@@ -311,11 +423,14 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
 
     const teacherEmailPromises: Promise<unknown>[] = [];
 
-    addedMembers.forEach((member, index) => {
-      const memberData = members[index];
-      const roleId = memberData.roleId;
-      const email = memberData.email;
-      const name = memberData.name;
+    for (const entry of processed) {
+      if (!entry.isNew) {
+        continue;
+      }
+
+      const roleId = entry.input.roleId;
+      const email = entry.input.email;
+      const name = entry.input.name;
 
       if ((roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) && email && name) {
         teacherEmailPromises.push(
@@ -337,7 +452,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
           })
         );
       }
-    });
+    }
 
     if (teacherEmailPromises.length > 0) {
       try {
@@ -410,7 +525,18 @@ export async function updateMember(courseId: string, memberId: string, data: Par
  */
 export async function deleteMember(courseId: string, memberId: string) {
   try {
-    const deleted = await deleteCourseMember(courseId, memberId);
+    const deleted = await db.transaction(async (tx) => {
+      const removed = await deleteCourseMember(courseId, memberId, tx);
+
+      if (!removed) {
+        return null;
+      }
+
+      await revokeGrantsForGroupmember(removed.id, tx);
+
+      return removed;
+    });
+
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
@@ -463,9 +589,12 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
     const statsOrgId = await getOrgIdByCourseId(courseId);
     await invalidateOrgStats(statsOrgId);
 
-    void syncCourseProgressInLearningPaths(courseId, member.profileId).catch((syncError) => {
-      console.error('Failed to sync learning path progress after resetting course progress:', syncError);
-    });
+    // A teacher's reset is not learner activity, so it must not move "last activity".
+    void syncCourseProgressInLearningPaths(courseId, member.profileId, undefined, { recordActivity: false }).catch(
+      (syncError) => {
+        console.error('Failed to sync learning path progress after resetting course progress:', syncError);
+      }
+    );
 
     return summary;
   } catch (error) {

@@ -16,16 +16,41 @@ const mocks = vi.hoisted(() => ({
   reorderLearningPathCourses: vi.fn(),
   isCourseTeamMemberOrOrgAdmin: vi.fn(),
   getPathsContainingCourseForMember: vi.fn(),
-  getActiveGrantsForCourseAndProfile: vi.fn(),
+  hasLiveNonPathGrant: vi.fn(),
   getCourseCompletionStatsForProfile: vi.fn(),
   listLearningPathCourses: vi.fn(),
   enrollMember: vi.fn(),
   initializeMemberCourseProgress: vi.fn(),
   grantCourseAccess: vi.fn(),
+  ensureLearningPathCourseGrants: vi.fn(),
+  revokeLearningPathGrants: vi.fn(),
+  updateMemberRole: vi.fn(),
+  getMemberById: vi.fn(),
+  revokeLearningPathGrantsForPath: vi.fn(),
+  listPublicLearningPaths: vi.fn(),
   countIssuedCertificates: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getGroupMemberIdByGroupAndProfile: vi.fn(),
-  insertGroupMembersOnConflictDoNothing: vi.fn()
+  insertGroupMembersOnConflictDoNothing: vi.fn(),
+  getEnrolledPaths: vi.fn(),
+  getMemberCourseProgress: vi.fn(),
+  getLearningPathCertificate: vi.fn(),
+  getOrganizationMemberIdByOrgAndProfile: vi.fn(),
+  getUserOrgRolesMap: vi.fn(),
+  createOrganizationMember: vi.fn(),
+  getOrganizationById: vi.fn(),
+  getProfilesByEmails: vi.fn(),
+  getProfileById: vi.fn(),
+  assertStudentCapacityOrThrow: vi.fn(),
+  ensureComplianceEnrollmentRecordsForProfiles: vi.fn(),
+  invalidateOrgStats: vi.fn(),
+  createOrganizationMembers: vi.fn(),
+  createOrganizationInvites: vi.fn(),
+  createOrganizationInviteAudits: vi.fn(),
+  getOrganizationMembersByNormalizedEmails: vi.fn(),
+  revokeActiveOrganizationInvitesByEmails: vi.fn(),
+  enqueueTransactionalEmail: vi.fn(),
+  sendLearningPathWelcomeEmail: vi.fn()
 }));
 
 const transactionClient = { id: 'test-transaction-client' };
@@ -49,12 +74,21 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   getCourseIdsInPath: mocks.getCourseIdsInPath,
   reorderLearningPathCourses: mocks.reorderLearningPathCourses,
   getPathsContainingCourseForMember: mocks.getPathsContainingCourseForMember,
-  getActiveGrantsForCourseAndProfile: mocks.getActiveGrantsForCourseAndProfile,
+  hasLiveNonPathGrant: mocks.hasLiveNonPathGrant,
   getCourseCompletionStatsForProfile: mocks.getCourseCompletionStatsForProfile,
   listLearningPathCourses: mocks.listLearningPathCourses,
   enrollMember: mocks.enrollMember,
   initializeMemberCourseProgress: mocks.initializeMemberCourseProgress,
-  grantCourseAccess: mocks.grantCourseAccess
+  grantCourseAccess: mocks.grantCourseAccess,
+  ensureLearningPathCourseGrants: mocks.ensureLearningPathCourseGrants,
+  revokeLearningPathGrants: mocks.revokeLearningPathGrants,
+  updateMemberRole: mocks.updateMemberRole,
+  getMemberById: mocks.getMemberById,
+  revokeLearningPathGrantsForPath: mocks.revokeLearningPathGrantsForPath,
+  listPublicLearningPaths: mocks.listPublicLearningPaths,
+  getEnrolledPaths: mocks.getEnrolledPaths,
+  getMemberCourseProgress: mocks.getMemberCourseProgress,
+  getLearningPathCertificate: mocks.getLearningPathCertificate
 }));
 
 vi.mock('@cio/db/queries/group', () => ({
@@ -67,11 +101,49 @@ vi.mock('@cio/db/queries/course/course', () => ({
   getCourseGroupIds: mocks.getCourseGroupIds
 }));
 
+vi.mock('@cio/db/queries/organization', () => ({
+  getOrganizationMemberIdByOrgAndProfile: mocks.getOrganizationMemberIdByOrgAndProfile,
+  getUserOrgRolesMap: mocks.getUserOrgRolesMap,
+  createOrganizationMember: mocks.createOrganizationMember,
+  getOrganizationById: mocks.getOrganizationById,
+  createOrganizationMembers: mocks.createOrganizationMembers,
+  createOrganizationInvites: mocks.createOrganizationInvites,
+  createOrganizationInviteAudits: mocks.createOrganizationInviteAudits,
+  getOrganizationMembersByNormalizedEmails: mocks.getOrganizationMembersByNormalizedEmails,
+  revokeActiveOrganizationInvitesByEmails: mocks.revokeActiveOrganizationInvitesByEmails
+}));
+
+vi.mock('@cio/db/queries/auth', () => ({
+  getProfilesByEmails: mocks.getProfilesByEmails,
+  getProfileById: mocks.getProfileById
+}));
+
+vi.mock('@api/services/organization/student-limit', () => ({
+  assertStudentCapacityOrThrow: mocks.assertStudentCapacityOrThrow
+}));
+
+vi.mock('@api/services/course/compliance', () => ({
+  ensureComplianceEnrollmentRecordsForProfiles: mocks.ensureComplianceEnrollmentRecordsForProfiles
+}));
+
+vi.mock('@cio/core/utils/redis/org-stats-cache', () => ({
+  invalidateOrgStats: mocks.invalidateOrgStats
+}));
+
+vi.mock('@api/services/jobs', () => ({
+  enqueueTransactionalEmail: mocks.enqueueTransactionalEmail
+}));
+
+vi.mock('../progress-sync-jobs', () => ({
+  scheduleLearningPathProgressSync: vi.fn()
+}));
+
 import {
   resolveLearningPath,
   assertCanManageLearningPath,
   createLearningPathService,
   listOrgLearningPaths,
+  listPublicLearningPathsService,
   getLearningPathDetail,
   updateLearningPathService,
   deleteLearningPathService,
@@ -79,7 +151,8 @@ import {
 } from '../learning-path';
 import { assertCourseNotLockedForStudent, unlockedCourses } from '../unlock';
 import { reorderPathCoursesService } from '../course-management';
-import { addPathMembersService, enrollProfileInLearningPath } from '../member-management';
+import { scheduleLearningPathProgressSync } from '../progress-sync-jobs';
+import { addPathMembersService, enrollProfileInLearningPath, updatePathMemberRoleService } from '../member-management';
 
 describe('learning-path services', () => {
   beforeEach(() => {
@@ -87,6 +160,20 @@ describe('learning-path services', () => {
     mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
       callback(transactionClient)
     );
+    mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(1);
+    mocks.getUserOrgRolesMap.mockResolvedValue({});
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue(null);
+    mocks.createOrganizationMember.mockResolvedValue({ id: 1 });
+    mocks.invalidateOrgStats.mockResolvedValue(undefined);
+    mocks.getProfilesByEmails.mockResolvedValue([]);
+    mocks.getProfileById.mockResolvedValue(null);
+    mocks.getOrganizationById.mockResolvedValue({ id: 'org-1', name: 'Org', siteName: 'org' });
+    mocks.getOrganizationMembersByNormalizedEmails.mockResolvedValue([]);
+    mocks.createOrganizationMembers.mockResolvedValue([]);
+    mocks.createOrganizationInvites.mockResolvedValue([]);
+    mocks.createOrganizationInviteAudits.mockResolvedValue([]);
+    mocks.revokeActiveOrganizationInvitesByEmails.mockResolvedValue([]);
+    mocks.enqueueTransactionalEmail.mockResolvedValue(undefined);
   });
 
   describe('resolveLearningPath', () => {
@@ -172,6 +259,25 @@ describe('learning-path services', () => {
       expect(result).toMatchObject({ id: 'path-1', courses: [], certificatesIssued: 0 });
     });
 
+    it('strips the post-enrollment welcome message from public responses', async () => {
+      mocks.getLearningPathBySlug.mockResolvedValue({
+        id: 'path-1',
+        organizationId: 'org-1',
+        name: 'Published Path',
+        description: 'Desc',
+        slug: 'published-path',
+        isPublished: true,
+        welcomeEmailMessage: 'Welcome, enrolled learner!'
+      });
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.countIssuedCertificates.mockResolvedValue(0);
+
+      const result = await getPublicLearningPathBySlug('org-1', 'published-path');
+
+      expect(result).not.toHaveProperty('welcomeEmailMessage');
+      expect(result).toMatchObject({ id: 'path-1', name: 'Published Path' });
+    });
+
     it('throws 404 for unpublished paths', async () => {
       mocks.getLearningPathBySlug.mockResolvedValue({
         id: 'path-1',
@@ -198,6 +304,31 @@ describe('learning-path services', () => {
     });
   });
 
+  describe('listPublicLearningPathsService', () => {
+    const paginatedResult = {
+      data: [{ id: 'path-1', publicId: 'AbC123Xy', name: 'Path 1', courseCount: 3 }],
+      pagination: { page: 1, limit: 20, total: 1, totalPages: 1 }
+    };
+
+    it('passes org, page, limit and search through to the public query', async () => {
+      mocks.listPublicLearningPaths.mockResolvedValue(paginatedResult);
+
+      const result = await listPublicLearningPathsService('org-1', {
+        organizationId: 'org-1',
+        page: 2,
+        limit: 10,
+        search: 'react'
+      });
+
+      expect(mocks.listPublicLearningPaths).toHaveBeenCalledWith(
+        'org-1',
+        { page: 2, limit: 10, search: 'react' },
+        expect.anything()
+      );
+      expect(result).toEqual(paginatedResult);
+    });
+  });
+
   describe('deleteLearningPathService', () => {
     const mockUuid = '12345678-1234-1234-1234-123456789abc';
 
@@ -206,10 +337,12 @@ describe('learning-path services', () => {
       const deletedRow = { ...mockPath, status: 'DELETED' };
       mocks.getLearningPathById.mockResolvedValue(mockPath);
       mocks.deleteLearningPath.mockResolvedValue(deletedRow);
+      mocks.revokeLearningPathGrantsForPath.mockResolvedValue(undefined);
 
       const result = await deleteLearningPathService(mockUuid, { 'org-1': ROLE.ADMIN });
 
       expect(mocks.deleteLearningPath).toHaveBeenCalledWith(mockUuid, transactionClient);
+      expect(mocks.revokeLearningPathGrantsForPath).toHaveBeenCalledWith(mockUuid, transactionClient);
       expect(result).toEqual(deletedRow);
     });
 
@@ -221,6 +354,26 @@ describe('learning-path services', () => {
         statusCode: 403
       });
       expect(mocks.deleteLearningPath).not.toHaveBeenCalled();
+      expect(mocks.revokeLearningPathGrantsForPath).not.toHaveBeenCalled();
+    });
+
+    it('surfaces grant-revocation failures instead of a half-deleted path', async () => {
+      const mockPath = { id: mockUuid, organizationId: 'org-1', status: 'ACTIVE' };
+      mocks.getLearningPathById.mockResolvedValue(mockPath);
+      mocks.deleteLearningPath.mockResolvedValue({ ...mockPath, status: 'DELETED' });
+      mocks.revokeLearningPathGrantsForPath.mockRejectedValue(new Error('grant store unavailable'));
+
+      // Both writes share one transaction: with a real database the throw
+      // rolls back the soft-delete too, so callers never observe a deleted
+      // path whose grants are still live.
+      await expect(deleteLearningPathService(mockUuid, { 'org-1': ROLE.ADMIN })).rejects.toMatchObject({
+        code: ErrorCodes.INTERNAL_ERROR,
+        statusCode: 500
+      });
+
+      expect(mocks.transaction).toHaveBeenCalledOnce();
+      expect(mocks.deleteLearningPath).toHaveBeenCalledWith(mockUuid, transactionClient);
+      expect(mocks.revokeLearningPathGrantsForPath).toHaveBeenCalledWith(mockUuid, transactionClient);
     });
   });
 
@@ -333,6 +486,107 @@ describe('learning-path services', () => {
     });
   });
 
+  describe('updatePathMemberRoleService', () => {
+    const validPath = {
+      id: '11111111-1111-1111-1111-111111111111',
+      organizationId: 'org-1'
+    };
+    const studentMember = {
+      id: 'member-1',
+      learningPathId: validPath.id,
+      profileId: 'profile-1',
+      roleId: ROLE.STUDENT
+    };
+
+    it('changes a student to tutor as org admin and refreshes stats', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.getMemberById.mockResolvedValue(studentMember);
+      mocks.updateMemberRole.mockResolvedValue({ ...studentMember, roleId: ROLE.TUTOR });
+
+      const result = await updatePathMemberRoleService(validPath.id, 'member-1', ROLE.TUTOR, 'admin-1', {
+        'org-1': ROLE.ADMIN
+      });
+
+      expect(mocks.updateMemberRole).toHaveBeenCalledWith('member-1', ROLE.TUTOR);
+      expect(result).toMatchObject({ id: 'member-1', roleId: ROLE.TUTOR });
+      expect(mocks.invalidateOrgStats).toHaveBeenCalledWith('org-1');
+    });
+
+    it('rejects tutor assignment by non-admins', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.getMemberByPathAndProfile.mockResolvedValue({ id: 'caller', roleId: ROLE.TUTOR, removedAt: null });
+
+      await expect(
+        updatePathMemberRoleService(validPath.id, 'member-1', ROLE.TUTOR, 'tutor-1', { 'org-1': ROLE.TUTOR })
+      ).rejects.toMatchObject({ code: ErrorCodes.UNAUTHORIZED, statusCode: 403 });
+
+      expect(mocks.updateMemberRole).not.toHaveBeenCalled();
+    });
+
+    it('throws 404 for members outside the path', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.getMemberById.mockResolvedValue({ ...studentMember, learningPathId: 'other-path' });
+
+      await expect(
+        updatePathMemberRoleService(validPath.id, 'member-1', ROLE.TUTOR, 'admin-1', { 'org-1': ROLE.ADMIN })
+      ).rejects.toMatchObject({ code: ErrorCodes.LEARNING_PATH_MEMBER_NOT_FOUND, statusCode: 404 });
+    });
+  });
+
+  describe('assertCourseNotLockedForStudent transaction scope', () => {
+    it('passes the caller transaction to the team check', async () => {
+      mocks.isCourseTeamMemberOrOrgAdmin.mockResolvedValue(false);
+      mocks.getPathsContainingCourseForMember.mockResolvedValue([]);
+
+      await assertCourseNotLockedForStudent('course-1', 'profile-1', transactionClient as never);
+
+      expect(mocks.isCourseTeamMemberOrOrgAdmin).toHaveBeenCalledWith('course-1', 'profile-1', transactionClient);
+    });
+  });
+
+  describe('listOrgLearningPaths pagination', () => {
+    const paginatedResult = {
+      data: [{ id: 'path-1', name: 'Path 1' }],
+      pagination: { page: 2, limit: 10, total: 25, totalPages: 3 }
+    };
+
+    it('passes page, limit and search through for org admins', async () => {
+      mocks.listLearningPaths.mockResolvedValue(paginatedResult);
+
+      const result = await listOrgLearningPaths(
+        'org-1',
+        'admin-1',
+        { 'org-1': ROLE.ADMIN },
+        { page: 2, limit: 10, search: 'react' }
+      );
+
+      expect(mocks.listLearningPaths).toHaveBeenCalledWith('org-1', { page: 2, limit: 10, search: 'react' });
+      expect(result).toEqual(paginatedResult);
+    });
+
+    it('scopes tutor listings to assigned paths', async () => {
+      mocks.listLearningPaths.mockResolvedValue({
+        data: [],
+        pagination: { page: 1, limit: 20, total: 0, totalPages: 0 }
+      });
+
+      await listOrgLearningPaths('org-1', 'tutor-1', { 'org-1': ROLE.TUTOR }, { page: 1, limit: 20 });
+
+      expect(mocks.listLearningPaths).toHaveBeenCalledWith(
+        'org-1',
+        expect.objectContaining({ tutorProfileId: 'tutor-1', page: 1, limit: 20 })
+      );
+    });
+
+    it('rejects non-team members', async () => {
+      await expect(listOrgLearningPaths('org-1', 'student-1', { 'org-1': ROLE.STUDENT })).rejects.toMatchObject({
+        code: ErrorCodes.UNAUTHORIZED,
+        statusCode: 403
+      });
+      expect(mocks.listLearningPaths).not.toHaveBeenCalled();
+    });
+  });
+
   describe('assertCourseNotLockedForStudent', () => {
     it('exempts course team members and org admins', async () => {
       mocks.isCourseTeamMemberOrOrgAdmin.mockResolvedValue(true);
@@ -351,7 +605,7 @@ describe('learning-path services', () => {
     it('allows access if student has a standalone (non-learning-path) enrollment grant', async () => {
       mocks.isCourseTeamMemberOrOrgAdmin.mockResolvedValue(false);
       mocks.getPathsContainingCourseForMember.mockResolvedValue([{ id: 'path-1', sequentialUnlock: true }]);
-      mocks.getActiveGrantsForCourseAndProfile.mockResolvedValue([{ id: 'grant-1', source: 'MANUAL' }]);
+      mocks.hasLiveNonPathGrant.mockResolvedValue(true);
 
       await expect(assertCourseNotLockedForStudent('course-1', 'profile-1')).resolves.toBeUndefined();
     });
@@ -359,7 +613,7 @@ describe('learning-path services', () => {
     it('allows access if enrolled path has sequentialUnlock disabled', async () => {
       mocks.isCourseTeamMemberOrOrgAdmin.mockResolvedValue(false);
       mocks.getPathsContainingCourseForMember.mockResolvedValue([{ id: 'path-1', sequentialUnlock: false }]);
-      mocks.getActiveGrantsForCourseAndProfile.mockResolvedValue([{ id: 'grant-1', source: 'LEARNING_PATH' }]);
+      mocks.hasLiveNonPathGrant.mockResolvedValue(false);
 
       await expect(assertCourseNotLockedForStudent('course-1', 'profile-1')).resolves.toBeUndefined();
     });
@@ -367,7 +621,7 @@ describe('learning-path services', () => {
     it('throws 403 COURSE_LOCKED when sequential path has locked the course', async () => {
       mocks.isCourseTeamMemberOrOrgAdmin.mockResolvedValue(false);
       mocks.getPathsContainingCourseForMember.mockResolvedValue([{ id: 'path-1', sequentialUnlock: true }]);
-      mocks.getActiveGrantsForCourseAndProfile.mockResolvedValue([{ id: 'grant-1', source: 'LEARNING_PATH' }]);
+      mocks.hasLiveNonPathGrant.mockResolvedValue(false);
       mocks.getCourseIdsInPath.mockResolvedValue(['course-0', 'course-1']);
       // course-0 is not complete for profile-1
       mocks.getCourseCompletionStatsForProfile.mockResolvedValue({ isComplete: false });
@@ -380,7 +634,7 @@ describe('learning-path services', () => {
     it('allows access when previous course in sequential path is complete', async () => {
       mocks.isCourseTeamMemberOrOrgAdmin.mockResolvedValue(false);
       mocks.getPathsContainingCourseForMember.mockResolvedValue([{ id: 'path-1', sequentialUnlock: true }]);
-      mocks.getActiveGrantsForCourseAndProfile.mockResolvedValue([{ id: 'grant-1', source: 'LEARNING_PATH' }]);
+      mocks.hasLiveNonPathGrant.mockResolvedValue(false);
       mocks.getCourseIdsInPath.mockResolvedValue(['course-0', 'course-1']);
       // course-0 is complete for profile-1
       mocks.getCourseCompletionStatsForProfile.mockResolvedValue({ isComplete: true });
@@ -424,6 +678,8 @@ describe('learning-path services', () => {
         transactionClient
       );
       expect(result).toEqual({ reordered: true });
+      // With sequential unlock, the new order changes which courses are locked.
+      expect(vi.mocked(scheduleLearningPathProgressSync)).toHaveBeenCalledWith({ pathId: validPath.id });
     });
   });
 
@@ -458,9 +714,7 @@ describe('learning-path services', () => {
     it('allows org admin to assign ROLE.TUTOR on the path but ensures course group membership receives ROLE.STUDENT', async () => {
       mocks.getLearningPathById.mockResolvedValue(validPath);
       mocks.listLearningPathCourses.mockResolvedValue([{ id: 'pc-1', courseId: 'c-1', order: 0 }]);
-      mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
       mocks.enrollMember.mockResolvedValue({ id: 'm-2', roleId: ROLE.TUTOR });
-      mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-2');
 
       const result = await addPathMembersService(
         validPath.id,
@@ -473,38 +727,92 @@ describe('learning-path services', () => {
         expect.objectContaining({ roleId: ROLE.TUTOR }),
         transactionClient
       );
-      expect(mocks.insertGroupMembersOnConflictDoNothing).toHaveBeenCalledWith(
-        [{ groupId: 'g-1', profileId: '00000000-0000-0000-0000-000000000002', roleId: ROLE.STUDENT }],
-        transactionClient
+      expect(mocks.ensureLearningPathCourseGrants).toHaveBeenCalledWith(
+        validPath.id,
+        '00000000-0000-0000-0000-000000000002',
+        'admin-1',
+        transactionClient,
+        ['c-1']
       );
       expect(result).toHaveLength(1);
     });
 
-    it('rejects email-only members: pending invites enroll on acceptance, not as path rows', async () => {
+    it('invites email-only members without a profile via org invite instead of throwing', async () => {
       mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.getProfilesByEmails.mockResolvedValue([]);
+      mocks.getOrganizationById.mockResolvedValue({ id: 'org-1', name: 'Org', siteName: 'org' });
+      mocks.getOrganizationMembersByNormalizedEmails.mockResolvedValue([]);
+      mocks.createOrganizationInvites.mockResolvedValue([{ id: 'inv-1', email: 'pending@test.dev' }]);
 
-      await expect(
-        addPathMembersService(
-          validPath.id,
-          { members: [{ email: 'pending@test.dev', roleId: ROLE.STUDENT }] },
-          'admin-1',
-          { 'org-1': ROLE.ADMIN }
-        )
-      ).rejects.toThrowError(
-        new AppError(
-          'Learning path members must have a profile. Invite new learners by email so they join the path when they accept the invite.',
-          ErrorCodes.VALIDATION_ERROR,
-          400
-        )
+      const result = await addPathMembersService(
+        validPath.id,
+        { members: [{ email: 'pending@test.dev', roleId: ROLE.STUDENT }] },
+        'admin-1',
+        { 'org-1': ROLE.ADMIN }
       );
 
       expect(mocks.enrollMember).not.toHaveBeenCalled();
+      expect(mocks.createOrganizationInvites).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            organizationId: 'org-1',
+            email: 'pending@test.dev',
+            metadata: expect.objectContaining({ pathIds: [validPath.id] })
+          })
+        ])
+      );
+      expect(mocks.enqueueTransactionalEmail).toHaveBeenCalledWith(
+        'studentLearningPathInvite',
+        expect.objectContaining({
+          to: 'pending@test.dev',
+          idempotencyKey: 'learning-path-manual-invite:inv-1'
+        })
+      );
+      expect(result).toHaveLength(0);
+    });
+
+    it('resolves email-only members to an existing profile and enrolls directly', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.getProfilesByEmails.mockResolvedValue([{ id: 'profile-found', email: 'found@test.dev' }]);
+      mocks.getMemberByPathAndProfile.mockResolvedValue(null);
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.getCourseIdsInPath.mockResolvedValue([]);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-found', roleId: ROLE.STUDENT });
+
+      const result = await addPathMembersService(
+        validPath.id,
+        { members: [{ email: 'found@test.dev', roleId: ROLE.STUDENT }] },
+        'admin-1',
+        { 'org-1': ROLE.ADMIN }
+      );
+
+      expect(mocks.enrollMember).toHaveBeenCalledWith(
+        expect.objectContaining({ profileId: 'profile-found' }),
+        transactionClient
+      );
+      expect(mocks.createOrganizationInvites).not.toHaveBeenCalled();
+      expect(mocks.ensureComplianceEnrollmentRecordsForProfiles).toHaveBeenCalledWith([], ['profile-found']);
+      expect(result).toHaveLength(1);
+    });
+
+    it('rejects email-only tutor adds without an account', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+
+      await expect(
+        addPathMembersService(validPath.id, { members: [{ email: 'tutor@test.dev', roleId: ROLE.TUTOR }] }, 'admin-1', {
+          'org-1': ROLE.ADMIN
+        })
+      ).rejects.toMatchObject({ code: ErrorCodes.VALIDATION_ERROR, statusCode: 400 });
+
+      expect(mocks.enrollMember).not.toHaveBeenCalled();
+      expect(mocks.createOrganizationInvites).not.toHaveBeenCalled();
     });
   });
 
   describe('enrollProfileInLearningPath', () => {
     const autoEnrollPath = {
       id: '11111111-1111-1111-1111-111111111111',
+      organizationId: 'org-1',
       autoEnroll: true,
       sequentialUnlock: true
     };
@@ -512,8 +820,6 @@ describe('learning-path services', () => {
     it('enrolls the profile, initializes progress and auto-enrolls courses as STUDENT', async () => {
       mocks.listLearningPathCourses.mockResolvedValue([{ id: 'pc-1', courseId: 'c-1', order: 0 }]);
       mocks.enrollMember.mockResolvedValue({ id: 'm-9', roleId: ROLE.STUDENT });
-      mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
-      mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-9');
 
       const member = await enrollProfileInLearningPath(
         autoEnrollPath,
@@ -537,19 +843,12 @@ describe('learning-path services', () => {
         true,
         transactionClient
       );
-      expect(mocks.insertGroupMembersOnConflictDoNothing).toHaveBeenCalledWith(
-        [{ groupId: 'g-1', profileId: 'profile-9', roleId: ROLE.STUDENT }],
-        transactionClient
-      );
-      expect(mocks.grantCourseAccess).toHaveBeenCalledWith(
-        expect.objectContaining({
-          groupmemberId: 'gm-9',
-          courseId: 'c-1',
-          profileId: 'profile-9',
-          source: 'LEARNING_PATH',
-          learningPathId: autoEnrollPath.id
-        }),
-        transactionClient
+      expect(mocks.ensureLearningPathCourseGrants).toHaveBeenCalledWith(
+        autoEnrollPath.id,
+        'profile-9',
+        'admin-1',
+        transactionClient,
+        ['c-1']
       );
     });
 
@@ -564,9 +863,57 @@ describe('learning-path services', () => {
       );
 
       expect(mocks.initializeMemberCourseProgress).toHaveBeenCalled();
-      expect(mocks.getCourseGroupIds).not.toHaveBeenCalled();
-      expect(mocks.insertGroupMembersOnConflictDoNothing).not.toHaveBeenCalled();
-      expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
+      expect(mocks.ensureLearningPathCourseGrants).not.toHaveBeenCalled();
+    });
+
+    it('creates org membership with quota check for new STUDENT profiles', async () => {
+      mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+      mocks.getUserOrgRolesMap.mockResolvedValue({});
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-11', roleId: ROLE.STUDENT });
+
+      await enrollProfileInLearningPath(
+        autoEnrollPath,
+        { profileId: 'profile-11', roleId: ROLE.STUDENT },
+        transactionClient as never
+      );
+
+      expect(mocks.assertStudentCapacityOrThrow).toHaveBeenCalledWith('org-1', 1, transactionClient);
+      expect(mocks.createOrganizationMember).toHaveBeenCalledWith(
+        expect.objectContaining({ organizationId: 'org-1', profileId: 'profile-11', roleId: ROLE.STUDENT }),
+        transactionClient
+      );
+    });
+
+    it('skips STUDENT org membership when the profile is already an org team member', async () => {
+      mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+      mocks.getUserOrgRolesMap.mockResolvedValue({ 'other-org': ROLE.ADMIN });
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-12', roleId: ROLE.STUDENT });
+
+      await enrollProfileInLearningPath(
+        autoEnrollPath,
+        { profileId: 'profile-12', roleId: ROLE.STUDENT },
+        transactionClient as never
+      );
+
+      expect(mocks.createOrganizationMember).not.toHaveBeenCalled();
+      expect(mocks.assertStudentCapacityOrThrow).not.toHaveBeenCalled();
+      expect(mocks.enrollMember).toHaveBeenCalled();
+    });
+
+    it('skips org membership entirely for TUTOR enrollments', async () => {
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.enrollMember.mockResolvedValue({ id: 'm-13', roleId: ROLE.TUTOR });
+
+      await enrollProfileInLearningPath(
+        autoEnrollPath,
+        { profileId: 'profile-13', roleId: ROLE.TUTOR },
+        transactionClient as never
+      );
+
+      expect(mocks.getOrganizationMemberIdByOrgAndProfile).not.toHaveBeenCalled();
+      expect(mocks.createOrganizationMember).not.toHaveBeenCalled();
     });
   });
 
@@ -589,6 +936,39 @@ describe('learning-path services', () => {
       expect(result.certificatesIssued).toBe(5);
       expect(result.courses).toHaveLength(1);
       expect(mocks.countIssuedCertificates).toHaveBeenCalledWith(testPath.id, transactionClient);
+    });
+
+    it('returns certificatesIssued for an assigned path tutor', async () => {
+      mocks.getLearningPathById.mockResolvedValue(testPath);
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.getMemberByPathAndProfile.mockResolvedValue({ id: 'tutor-m', roleId: ROLE.TUTOR, removedAt: null });
+      mocks.countIssuedCertificates.mockResolvedValue(3);
+
+      const result = await getLearningPathDetail(testPath.id, 'tutor-1', { 'org-1': ROLE.TUTOR });
+
+      expect(result.certificatesIssued).toBe(3);
+      expect(mocks.countIssuedCertificates).toHaveBeenCalled();
+    });
+
+    it('hides certificatesIssued from enrolled students', async () => {
+      mocks.getLearningPathById.mockResolvedValue(testPath);
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+
+      const result = await getLearningPathDetail(testPath.id, 'student-1', { 'org-1': ROLE.STUDENT });
+
+      expect(result.certificatesIssued).toBe(0);
+      expect(mocks.countIssuedCertificates).not.toHaveBeenCalled();
+    });
+
+    it('hides certificatesIssued from unassigned tutors', async () => {
+      mocks.getLearningPathById.mockResolvedValue(testPath);
+      mocks.listLearningPathCourses.mockResolvedValue([]);
+      mocks.getMemberByPathAndProfile.mockResolvedValue(null);
+
+      const result = await getLearningPathDetail(testPath.id, 'tutor-2', { 'org-1': ROLE.TUTOR });
+
+      expect(result.certificatesIssued).toBe(0);
+      expect(mocks.countIssuedCertificates).not.toHaveBeenCalled();
     });
 
     it('rejects landingPage update containing disallowed javascript: href', async () => {
@@ -637,6 +1017,19 @@ describe('learning-path services', () => {
 
       expect(updated.name).toBe('Updated');
       expect(mocks.updateLearningPath).toHaveBeenCalled();
+      expect(vi.mocked(scheduleLearningPathProgressSync)).not.toHaveBeenCalled();
+    });
+
+    it('resyncs member progress only when sequential unlock changes', async () => {
+      const sequentialPath = { ...testPath, sequentialUnlock: true };
+      mocks.getLearningPathById.mockResolvedValue(sequentialPath);
+      mocks.updateLearningPath.mockResolvedValue({ ...sequentialPath, sequentialUnlock: false });
+
+      await updateLearningPathService(testPath.id, 'user-1', { sequentialUnlock: true }, { 'org-1': ROLE.ADMIN });
+      expect(vi.mocked(scheduleLearningPathProgressSync)).not.toHaveBeenCalled();
+
+      await updateLearningPathService(testPath.id, 'user-1', { sequentialUnlock: false }, { 'org-1': ROLE.ADMIN });
+      expect(vi.mocked(scheduleLearningPathProgressSync)).toHaveBeenCalledWith({ pathId: testPath.id });
     });
   });
 });

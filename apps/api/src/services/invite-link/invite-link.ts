@@ -132,7 +132,11 @@ export async function getOrCreateInviteLinkForResource(
   resourceId: string,
   createdByProfileId: string
 ): Promise<InviteLinkResponse> {
-  const organizationId = await getInviteLinkHandler(resourceType).resolveOrganizationId(resourceId);
+  const handler = getInviteLinkHandler(resourceType);
+  const organizationId = await handler.resolveOrganizationId(resourceId);
+
+  // Checked before the existing-link lookup, so an old link is not handed out again either.
+  await handler.assertCanEnableLink?.(resourceId);
 
   return getOrCreateInviteLink({
     organizationId,
@@ -157,7 +161,13 @@ export async function toggleInviteLinkForResource(
   isRevoked: boolean,
   profileId: string
 ): Promise<InviteLinkResponse> {
-  await getInviteLinkHandler(resourceType).resolveOrganizationId(resourceId);
+  const handler = getInviteLinkHandler(resourceType);
+  await handler.resolveOrganizationId(resourceId);
+
+  // Disabling is always allowed, so an admin can still shut an old link.
+  if (!isRevoked) {
+    await handler.assertCanEnableLink?.(resourceId);
+  }
 
   return toggleInviteLink({ target: { resourceType, resourceId }, isRevoked, profileId });
 }
@@ -239,7 +249,7 @@ export async function acceptInviteLink(token: string, user: TAuthUser, context: 
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, user.id, tx);
 
     if (!orgMemberId) {
-      await assertStudentCapacityOrThrow(organizationId, 1);
+      await assertStudentCapacityOrThrow(organizationId, 1, tx);
 
       // `verified` is membership confirmation, not email ownership.
       await createOrganizationMember(

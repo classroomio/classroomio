@@ -536,6 +536,30 @@ export async function getEnrolledPaths(
 }
 
 /**
+ * Updates a member's role in a learning path.
+ */
+export async function updateMemberRole(
+  memberId: string,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<TLearningPathMember | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.learningPathMember)
+      .set({ roleId })
+      .where(eq(schema.learningPathMember.id, memberId))
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('updateMemberRole error:', error);
+    throw new Error(
+      `Failed to update role for member "${memberId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Updates a member's progress cache and status.
  */
 type TMemberProgressUpdate = Pick<
@@ -739,6 +763,63 @@ export async function upsertMemberCourseProgress(
     console.error('upsertMemberCourseProgress error:', error);
     throw new Error(
       `Failed to upsert member course progress: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export interface TProgressReconcileMember {
+  learningPathId: string;
+  profileId: string;
+}
+
+/**
+ * Unfinished students whose learning-path progress cache may have drifted
+ * without an event: those active or enrolled since `activeSinceIso`, and every
+ * unfinished student of a path whose course lessons or exercises were created
+ * or edited since `contentChangedSinceIso`. Completed members are left alone so
+ * a later content edit never takes a finished path away.
+ */
+export async function listMembersForProgressReconcile(
+  { activeSinceIso, contentChangedSinceIso }: { activeSinceIso: string; contentChangedSinceIso: string },
+  dbClient: DbOrTxClient = db
+): Promise<TProgressReconcileMember[]> {
+  try {
+    const rows = await dbClient.execute<{ learning_path_id: string; profile_id: string }>(sql`
+      SELECT lpm.learning_path_id, lpm.profile_id
+      FROM ${schema.learningPathMember} lpm
+      JOIN ${schema.learningPath} lp ON lp.id = lpm.learning_path_id AND lp.status = 'ACTIVE'
+      WHERE lpm.removed_at IS NULL
+        AND lpm.role_id = ${ROLE.STUDENT}
+        AND lpm.status <> 'COMPLETED'
+        AND (
+          lpm.last_activity_at >= ${activeSinceIso}
+          OR lpm.enrolled_at >= ${activeSinceIso}
+          OR EXISTS (
+            SELECT 1
+            FROM ${schema.learningPathCourse} lpc
+            WHERE lpc.learning_path_id = lpm.learning_path_id
+              AND lpc.removed_at IS NULL
+              AND (
+                EXISTS (
+                  SELECT 1 FROM ${schema.lesson} l
+                  WHERE l.course_id = lpc.course_id
+                    AND GREATEST(l.created_at, l.updated_at) >= ${contentChangedSinceIso}
+                )
+                OR EXISTS (
+                  SELECT 1 FROM ${schema.exercise} ex
+                  WHERE ex.course_id = lpc.course_id
+                    AND GREATEST(ex.created_at, ex.updated_at) >= ${contentChangedSinceIso}
+                )
+              )
+          )
+        )
+    `);
+
+    return rows.map((row) => ({ learningPathId: row.learning_path_id, profileId: row.profile_id }));
+  } catch (error) {
+    console.error('listMembersForProgressReconcile error:', error);
+    throw new Error(
+      `Failed to list members for progress reconcile: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

@@ -29,6 +29,15 @@ export const ZGetCoursesBySiteName = z.object({
 
 export type TGetCoursesBySiteName = z.infer<typeof ZGetCoursesBySiteName>;
 
+export const ZGetLearningPathsBySiteName = z.object({
+  siteName: z.string().min(1),
+  search: z.string().trim().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional()
+});
+
+export type TGetLearningPathsBySiteName = z.infer<typeof ZGetLearningPathsBySiteName>;
+
 export const ZGetOrganizationCoursesQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -37,6 +46,21 @@ export const ZGetOrganizationCoursesQuery = z.object({
 });
 
 export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
+
+export const ZEnrolledCoursesQuery = z.object({
+  /**
+   * When true, only courses taken on their own: a live non-path grant and not `requiresLearningPath`.
+   *
+   * Parsed explicitly because `z.coerce.boolean()` turns the string `"false"`
+   * into `true`, which would make `?nonPathOnly=false` silently behave as `true`.
+   */
+  nonPathOnly: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .default(false)
+    .transform((value) => value === true || value === 'true')
+});
+
+export type TEnrolledCoursesQuery = z.infer<typeof ZEnrolledCoursesQuery>;
 
 export const ZCourseReorder = z.object({
   courses: z

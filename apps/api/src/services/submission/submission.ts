@@ -72,6 +72,22 @@ async function triggerCertificationIfExerciseComplete(
   });
 }
 
+/**
+ * Grading or deleting a submission can complete or reopen a course without a
+ * learner action, so re-derive the learning-path cache without recording
+ * learner activity. Fire-and-forget: the submission change is already saved.
+ */
+function syncLearningPathsAfterSubmissionChange(courseId: string, groupMemberId: string): void {
+  void (async () => {
+    const profile = await getProfileByGroupMemberId(groupMemberId);
+    if (!profile?.id) return;
+
+    await syncCourseProgressInLearningPaths(courseId, profile.id, undefined, { recordActivity: false });
+  })().catch((syncError) => {
+    console.error('Failed to sync learning path progress after a submission change:', syncError);
+  });
+}
+
 const LEGACY_BOARD_STATUS_LABELS: Record<number, string> = {
   1: 'Submitted',
   2: 'In Progress',
@@ -795,6 +811,7 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      syncLearningPathsAfterSubmissionChange(updated.courseId, updated.submittedBy);
     }
 
     return updated;
@@ -896,6 +913,7 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      syncLearningPathsAfterSubmissionChange(updated.courseId, updated.submittedBy);
     }
 
     return updated;
@@ -927,6 +945,10 @@ export async function deleteSubmissionService(submissionId: string): Promise<TSu
     const deleted = await deleteSubmission(submissionId);
     if (!deleted) {
       throw new AppError('Failed to delete submission', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (deleted.courseId && deleted.submittedBy) {
+      syncLearningPathsAfterSubmissionChange(deleted.courseId, deleted.submittedBy);
     }
 
     return deleted;
