@@ -290,7 +290,7 @@ export async function getLessonCommentsByLessonIdPaginated(
       .leftJoin(schema.groupmember, eq(schema.lessonComment.groupmemberId, schema.groupmember.id))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
       .where(and(...whereConditions))
-      .orderBy(desc(schema.lessonComment.createdAt))
+      .orderBy(desc(schema.lessonComment.createdAt), desc(schema.lessonComment.id))
       .limit(limit + 1);
 
     // Check if there are more comments
@@ -337,6 +337,22 @@ export async function createLessonComment(data: TNewLessonComment): Promise<TLes
   } catch (error) {
     console.error('createLessonComment error:', error);
     throw new Error(`Failed to create lesson comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getLessonCommentById(commentId: number): Promise<TLessonComment | null> {
+  try {
+    const [comment] = await db
+      .select()
+      .from(schema.lessonComment)
+      .where(eq(schema.lessonComment.id, commentId))
+      .limit(1);
+    return comment || null;
+  } catch (error) {
+    console.error('getLessonCommentById error:', error);
+    throw new Error(
+      `Failed to get lesson comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

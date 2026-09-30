@@ -134,7 +134,6 @@ Current tools:
 
 - `list_org_courses`
 - `get_course_structure`
-- `reorder_course_content`
 - `update_course_landing_page`
 - `create_course_draft`
 - `create_course_draft_from_course`
@@ -192,6 +191,22 @@ Course member and invite tools:
 
 These call the public API and need the key's `course:member:read` (list/get/analytics) and `course:member:write` (everything else) scopes, which MCP keys have by default. They count toward the same per-key and per-organization MCP rate limits as the other tools. They act as the person who created the key, with the same rule as the dashboard's People and Invites pages: that person must be a tutor/admin of the course or an org admin.
 
+Course section, lesson and content tools:
+
+- `list_course_sections`, `create_course_section`, `update_course_section`, `delete_course_section`
+- `list_course_lessons`, `get_course_lesson`, `delete_course_lesson`, `notify_course_lesson_session_update`
+- `list_course_lesson_translations`, `set_course_lesson_translation`, `list_course_lesson_history`
+- `list_course_lesson_comments`, `create_course_lesson_comment`, `update_course_lesson_comment`, `delete_course_lesson_comment`
+- `reorder_course_content`, `set_course_content_unlocked`, `delete_course_content`
+
+These call the public API with the key's `course:read` (reads) and `course:write` (everything else) scopes, which MCP keys have by default. Every tool, reads included, needs the key creator to be a course tutor/admin or an org admin.
+
+- `create_course_section` with `moveUngrouped: true` moves every lesson and exercise without a section into the new section.
+- `delete_course_section`, `delete_course_lesson` and `delete_course_content` are hard deletes. Deleting a section also deletes its lessons and exercises.
+- `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
+- Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
+- Not covered here: creating and editing lessons, uploads, and restoring a lesson version.
+
 Cohort tools:
 
 - `list_org_cohorts`
@@ -231,7 +246,7 @@ Cohort tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 
-Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these and the course member, invite, and certificate tools, MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these and the course member, invite, certificate, section, lesson and content tools, MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
 - Reading a cohort needs them to be a member of the cohort or an org admin.
 - Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.

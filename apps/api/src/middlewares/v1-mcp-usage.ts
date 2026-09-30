@@ -25,6 +25,30 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/courses/:courseId/certificate': { GET: 'get_course_certificate', PATCH: 'update_course_certificate' },
   '/public-api/v1/courses/:courseId/certificates': { GET: 'list_course_certificates' },
   '/public-api/v1/courses/:courseId/certificates/:memberId/download': { GET: 'download_course_certificate' },
+  '/public-api/v1/courses/:courseId/sections': { GET: 'list_course_sections', POST: 'create_course_section' },
+  '/public-api/v1/courses/:courseId/sections/:sectionId': {
+    PUT: 'update_course_section',
+    DELETE: 'delete_course_section'
+  },
+  '/public-api/v1/courses/:courseId/lessons': { GET: 'list_course_lessons' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId': { GET: 'get_course_lesson', DELETE: 'delete_course_lesson' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/notify-session-update': {
+    POST: 'notify_course_lesson_session_update'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/translations': { GET: 'list_course_lesson_translations' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/translations/:locale': { PUT: 'set_course_lesson_translation' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/history': { GET: 'list_course_lesson_history' },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/comments': {
+    GET: 'list_course_lesson_comments',
+    POST: 'create_course_lesson_comment'
+  },
+  '/public-api/v1/courses/:courseId/lessons/:lessonId/comments/:commentId': {
+    PUT: 'update_course_lesson_comment',
+    DELETE: 'delete_course_lesson_comment'
+  },
+  '/public-api/v1/courses/:courseId/content/reorder': { PUT: 'reorder_course_content' },
+  '/public-api/v1/courses/:courseId/content': { PATCH: 'set_course_content_unlocked' },
+  '/public-api/v1/courses/:courseId/content/delete': { POST: 'delete_course_content' },
   '/public-api/v1/cohorts': { GET: 'list_org_cohorts', POST: 'create_cohort' },
   '/public-api/v1/cohorts/enrolled': { GET: 'list_my_enrolled_cohorts' },
   '/public-api/v1/cohorts/my/goals': { GET: 'list_my_cohort_goals' },
