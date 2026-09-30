@@ -1179,16 +1179,16 @@
 
   {#if isInstructionsDocked}
     <aside class="sticky top-4 flex max-h-[calc(100vh-2rem)] flex-col rounded-md border">
-      <div class="flex items-center gap-2 border-b px-4 py-3">
-        <p class="min-w-0 flex-1 truncate font-semibold">
+      <div class="flex items-center gap-2 border-b px-3 py-1">
+        <p class="min-w-0 flex-1 truncate text-sm font-semibold">
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}
         </p>
         <IconButton
           onclick={toggleInstructions}
           tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.close_instructions')}
-          size="icon-sm"
+          size="icon-xs"
         >
-          <XIcon class="h-4 w-4" />
+          <XIcon class="h-3.5 w-3.5" />
         </IconButton>
       </div>
       <ExerciseDescription class="overflow-y-auto p-4" content={$questionnaire.description} />
