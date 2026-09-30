@@ -3373,6 +3373,8 @@
     "analytics": "Analyse",
     "compliance": "Overholdelse",
     "cohorts": "Kohorter",
+    "exit_course": "Forlad dette kursus",
+    "exit_cohort": "Forlad denne kohorte",
     "upgrade_now": "Opgrader nu",
     "upgrade_label": "Opgrader",
     "upgrade_count": "{studentCount}/{studentLimit}",

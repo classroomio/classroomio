@@ -3373,6 +3373,8 @@
     "analytics": "Analysen",
     "compliance": "Compliance",
     "cohorts": "Kohorten",
+    "exit_course": "Diesen Kurs verlassen",
+    "exit_cohort": "Diese Kohorte verlassen",
     "upgrade_now": "Jetzt upgraden",
     "upgrade_label": "Upgrade",
     "upgrade_count": "{studentCount}/{studentLimit}",

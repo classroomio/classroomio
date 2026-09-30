@@ -3373,6 +3373,8 @@
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
     "cohorts": "Nhóm học tập",
+    "exit_course": "Thoát khóa học này",
+    "exit_cohort": "Thoát nhóm học tập này",
     "upgrade_now": "Nâng cấp ngay bây giờ",
     "upgrade_label": "Nâng cấp",
     "upgrade_count": "{studentCount}/{studentLimit}",
