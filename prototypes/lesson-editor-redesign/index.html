@@ -410,6 +410,24 @@
   .note-content code { background: var(--muted); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
   .note-content strong { font-weight: 600; }
 
+  /* Note callout styles: Info / Tip / Important / Warning / Highlight, chosen from the note
+     toolbar. Presentation lives on the wrapper's data-style attribute, never in the content. */
+  .style-dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; }
+  .note-callout-label { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; padding: 10px 14px 0; }
+  .note-callout-label svg { width: 15px; height: 15px; stroke-width: 2.2; }
+  .note-callout[data-style]:not([data-style=""]) { border: 1px solid; border-radius: var(--radius-lg); }
+  .note-callout[data-style]:not([data-style=""]) .note-content { padding: 6px 14px 14px; }
+  .note-callout[data-style="info"] { background: color-mix(in oklab, oklch(0.6 0.15 250), transparent 92%); border-color: color-mix(in oklab, oklch(0.6 0.15 250), transparent 60%); }
+  .note-callout[data-style="info"] .note-callout-label { color: oklch(0.5 0.17 250); }
+  .note-callout[data-style="tip"] { background: color-mix(in oklab, oklch(0.6 0.14 160), transparent 92%); border-color: color-mix(in oklab, oklch(0.6 0.14 160), transparent 60%); }
+  .note-callout[data-style="tip"] .note-callout-label { color: oklch(0.45 0.14 160); }
+  .note-callout[data-style="important"] { background: color-mix(in oklab, var(--primary), transparent 92%); border-color: color-mix(in oklab, var(--primary), transparent 60%); }
+  .note-callout[data-style="important"] .note-callout-label { color: var(--primary); }
+  .note-callout[data-style="warning"] { background: color-mix(in oklab, oklch(0.7 0.16 70), transparent 88%); border-color: color-mix(in oklab, oklch(0.7 0.16 70), transparent 55%); }
+  .note-callout[data-style="warning"] .note-callout-label { color: oklch(0.5 0.15 70); }
+  .note-callout[data-style="highlight"] { background: color-mix(in oklab, oklch(0.8 0.17 95), transparent 82%); border-color: color-mix(in oklab, oklch(0.8 0.17 95), transparent 50%); }
+  .note-callout[data-style="highlight"] .note-callout-label { color: oklch(0.45 0.13 95); }
+
   .file-row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px solid var(--border); }
   .file-row:last-child { border-bottom: none; }
   .file-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: color-mix(in oklab, var(--destructive) 12%, transparent); color: var(--destructive); display: grid; place-items: center; flex-shrink: 0; }
@@ -684,16 +702,24 @@
               <div class="tb-sep"></div>
               <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 6.1H3M21 12.1H3M15.1 18H3"/></svg></button>
               <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+              <div class="tb-sep"></div>
+              <div class="dd-menu">
+                <button type="button" class="tb-btn" aria-label="Callout style" data-tip="Callout style" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></button>
+                <div class="dd-menu-panel" id="seedNoteStyleMenu"></div>
+              </div>
             </div>
-            <div class="note-content" contenteditable="true">
-              <h3>What are Props?</h3>
-              <p>Props (short for <strong>properties</strong>) are how React components receive data from their parent. They're read-only — a component should never modify the props it receives.</p>
-              <ul>
-                <li>Passed like HTML attributes: <code>&lt;Avatar name="Ada" /&gt;</code></li>
-                <li>Read inside the component via <code>props.name</code>, or by destructuring</li>
-                <li>Flow in one direction: parent → child</li>
-              </ul>
-              <p>In the next lesson we'll compare props to state — the other half of how React components hold onto data.</p>
+            <div class="note-callout" data-style="">
+              <div class="note-callout-label" hidden></div>
+              <div class="note-content" contenteditable="true">
+                <h3>What are Props?</h3>
+                <p>Props (short for <strong>properties</strong>) are how React components receive data from their parent. They're read-only — a component should never modify the props it receives.</p>
+                <ul>
+                  <li>Passed like HTML attributes: <code>&lt;Avatar name="Ada" /&gt;</code></li>
+                  <li>Read inside the component via <code>props.name</code>, or by destructuring</li>
+                  <li>Flow in one direction: parent → child</li>
+                </ul>
+                <p>In the next lesson we'll compare props to state — the other half of how React components hold onto data.</p>
+              </div>
             </div>
           </section>
           <div class="block-gap edit-only">
@@ -1303,6 +1329,64 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
   const ICON_CHEVRON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg>';
   const ICON_CHEVRON_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
+  const ICON_STYLE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>';
+
+  const NOTE_STYLES = {
+    info: {
+      label: 'Info',
+      color: 'oklch(0.5 0.17 250)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+    },
+    tip: {
+      label: 'Tip',
+      color: 'oklch(0.45 0.14 160)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 14c.2-1 .7-1.7 1.5-2.5a5.5 5.5 0 1 0-9 0c.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>'
+    },
+    important: {
+      label: 'Important',
+      color: 'var(--primary)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>'
+    },
+    warning: {
+      label: 'Warning',
+      color: 'oklch(0.5 0.15 70)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
+    },
+    highlight: {
+      label: 'Highlight',
+      color: 'oklch(0.45 0.13 95)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/></svg>'
+    }
+  };
+
+  function buildNoteStyleMenu() {
+    const defaultItem = `<button type="button" class="dd-menu-item" onclick="setNoteStyle(this, '')"><span class="style-dot" style="background:var(--muted-foreground)"></span>Default</button>`;
+    const items = Object.entries(NOTE_STYLES)
+      .map(
+        ([key, meta]) =>
+          `<button type="button" class="dd-menu-item" onclick="setNoteStyle(this, '${key}')"><span class="style-dot" style="background:${meta.color}"></span>${meta.label}</button>`
+      )
+      .join('');
+    return defaultItem + items;
+  }
+
+  function setNoteStyle(btn, style) {
+    const section = btn.closest('.content-section');
+    const callout = section.querySelector('.note-callout');
+    const labelEl = section.querySelector('.note-callout-label');
+    callout.dataset.style = style;
+    const meta = NOTE_STYLES[style];
+    if (meta) {
+      labelEl.hidden = false;
+      labelEl.innerHTML = `${meta.icon}<span class="lbl">${meta.label}</span>`;
+    } else {
+      labelEl.hidden = true;
+      labelEl.innerHTML = '';
+    }
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+    simulateSave();
+  }
 
   function blockHead(label, iconSvg, editKind) {
     const editItem = editKind
@@ -1383,8 +1467,16 @@
           <div class="tb-sep"></div>
           <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 6.1H3M21 12.1H3M15.1 18H3"/></svg></button>
           <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+          <div class="tb-sep"></div>
+          <div class="dd-menu">
+            <button type="button" class="tb-btn" aria-label="Callout style" data-tip="Callout style" onclick="toggleBlockMenu(this)">${ICON_STYLE}</button>
+            <div class="dd-menu-panel">${buildNoteStyleMenu()}</div>
+          </div>
         </div>
-        <div class="note-content" contenteditable="true">${bodyHtml || '<p style="color:var(--muted-foreground)">Start writing…</p>'}</div>
+        <div class="note-callout" data-style="">
+          <div class="note-callout-label" hidden></div>
+          <div class="note-content" contenteditable="true">${bodyHtml || '<p style="color:var(--muted-foreground)">Start writing…</p>'}</div>
+        </div>
       </section>`;
   }
 
@@ -2012,6 +2104,8 @@
     if (e.target.closest('.note-content')) simulateSave();
   });
   document.querySelectorAll('.canvas').forEach((canvas) => updateEmptyState(canvas.id));
+  const seedNoteStyleMenu = document.getElementById('seedNoteStyleMenu');
+  if (seedNoteStyleMenu) seedNoteStyleMenu.innerHTML = buildNoteStyleMenu();
 
   async function confirmAdd(kind) {
     let html = null;
